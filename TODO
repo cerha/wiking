@@ -1,0 +1,48 @@
+Bugs:
+
+ * Cached color themes don't get updated outside process.
+
+
+Core features:
+
+ * Explicit language in RSS links.
+
+ * Independent language and filtering in WMI.
+
+ * Pytis validation messages.
+
+ * User's manual for website visitors
+
+ * Browsing support for long lists (forward/backward movement)
+
+ * Table descriptions
+
+ * Published/unpublished content
+
+ * Localizable Date/time formatting
+
+ * Support for enabled/disabled actions
+
+ * Save the exported HTML for structured text content in DB
+
+ * Acces rights management and authorization
+
+ * Content management controls outside wmi (when authorized)
+
+ * Change log and Last-Modified HTTP header support
+
+ * Locking
+
+ * META tags pointing to language variants
+
+ * Print preview
+
+ * Support multithreaded Apache MPM (currently broken).
+
+
+Extensions:
+
+ * Articles
+
+ * Image galeries
+

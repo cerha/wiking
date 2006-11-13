@@ -1,0 +1,621 @@
+# -*- coding: iso-8859-2 -*-
+# Copyright (C) 2005, 2006 Tomá¹ Cerha.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+"""Definition of core Wiking modules."""
+
+from wiking import *
+
+from pytis.extensions import \
+     SelectionType, BindingSpec, ViewSpec, CodebookSpec, \
+     HGroup, VGroup, Computer, CbComputer, \
+     ALPHANUMERIC, LOWER, ONCE, ASC, DESC, NEVER, nextval
+from mx.DateTime import now
+from lcg import _html
+import re, types
+
+_ = lcg.TranslatableTextFactory('wiking')
+
+def _modtitle(m):
+    """Return a localizable module title by module name."""
+    if m is None:
+        return ''
+    cls = globals().get(m)
+    return cls and cls.view_spec().title() or concat(m,' (',_("unknown"),')')
+
+# This constant lists names of modules which don't handle requests directly and
+# thus should not appear in the module selection for the Mapping items.
+# It should be considered a temporary hack, but the list should be maintained.
+_SYSMODULES = ('Languages', 'Modules', 'Config', 'Mapping','Panels', 'Titles')
+
+class Publishable(object):
+    "Mix-in class for modules where the records can be published/unpublished."
+    _ACTIONS = (Action(_("Publish"), 'publish',
+                       enabled=lambda r: not r['published'].value()),
+                Action(_("Unpublish"), 'unpublish',
+                       enabled=lambda r: r['published'].value()),
+                )
+    _MSG_PUBLISHED = _("The item was published.")
+    _MSG_UNPUBLISHED = _("The item was unpublished.")
+
+    def publish(self, req, object, publish=True):
+        err, msg = (None, None)
+        #log(OPR, "Publishing item:", str(object))
+        try:
+            row = self._data.make_row(published=publish)
+            self._data.update(object.key(), row)
+            object.reload()
+            msg = publish and self._MSG_PUBLISHED or self._MSG_UNPUBLISHED
+        except pd.DBException, e:
+            err = self._analyze_exception(e)
+        action = req.wmi and self.show or self.view
+        return action(req, object, msg=msg, err=err)
+
+    def unpublish(self, req, object):
+        return self.publish(req, object, publish=False)
+
+    
+class Translatable(object):
+    _ACTIONS = (Action(_("Translate"), 'translate',
+                       enabled=lambda r: not r['published'].value()),
+                )
+
+    def translate(self, req, object):
+        prefill = [(k, object.export(k)) for k in object.keys() if k != 'lang']
+        return self.add(req, prefill=dict(prefill))
+
+    
+class Panelizable(object):
+    _PANEL_DEFAULT_COUNT = 3
+    _PANEL_FIELDS = None
+    
+    def panelize(self, identifier, lang, count):
+        count = count or self._PANEL_DEFAULT_COUNT
+        if self._PANEL_FIELDS:
+            fields = [self._view.field(id) for id in self._PANEL_FIELDS]
+        else:
+            fields = self._view.columns()
+        items = [PanelItem(self._data, row, fields, self._link_provider,
+                           '/'+identifier)
+                 for row in self._data.get_rows(lang=lang, limit=count-1,
+                                                sorting=self._sorting)]
+        return items
+
+    
+class Modules(WikingModule):
+    class ModNameType(pd.String):
+        VM_UNKNOWN_MODULE = 'VM_UNKNOWN_MODULE'
+        _VALIDATION_MESSAGES = pd.String._VALIDATION_MESSAGES
+        _VALIDATION_MESSAGES[VM_UNKNOWN_MODULE] = \
+           _("Unknown module.  You either misspelled the name "
+             "or the module is not installed properly.")
+        def _check_constraints(self, value):
+            pd.String._check_constraints(self, value)
+            if not globals().has_key(value) or \
+                   not issubclass(globals()[value], WikingModule):
+                raise self._validation_error(self.VM_UNKNOWN_MODULE)
+    
+    _TITLE = _("Modules")
+    _FIELDS = (
+        Field('mod_id'),
+        Field('name',    _("Name"), type=ModNameType()),
+        Field('title',   _("Title"), virtual=True,
+              computer=Computer(lambda r: _modtitle(r['name'].value()),
+                                depends=('name',))),
+        Field('active',  _("Active")),
+        )
+    _COLUMNS = ('title', 'active')
+    _LAYOUT_COLUMNS = ('name', 'active')
+    _SORTING = (('name', ASC),)
+    _REFERER = 'name'
+    _TITLE_COLUMN = 'title'
+    _CB_SPEC = CodebookSpec(display='title')
+    
+    def menu(self):
+        modules = [str(r['name'].value())
+                   for r in self._data.get_rows(active=True)]
+        for m in ('Modules', 'Config'):
+            if m not in modules:
+                modules.append(m)
+        if 'Mapping' not in modules:
+            modules.insert(0, 'Mapping')
+        return [MenuItem('wmi/'+m, _modtitle(m)) for m in modules]
+
+    
+class Mapping(WikingModule, Publishable):
+    _TITLE = _("Mapping")
+    _FIELDS = (
+        Field('mapping_id', width=5, editable=NEVER),
+              #default=nextval('mapping_mapping_id_seq'),
+        #Field('parent', _("Parent"), codebook='Mapping'),
+        Field('identifier', _("Identifier"),
+              filter=ALPHANUMERIC, post_process=LOWER, fixed=True,
+              type=pd.Identifier()),
+        Field('mod_id', _("Module"), selection_type=SelectionType.CHOICE,
+              codebook='Modules', display=(_modtitle, 'name'),
+              validity_condition=pd.AND(*[pd.NE('name', pd.Value(pd.String(),m))
+                                          for m in _SYSMODULES])),
+        Field('modname', _("Module")),
+        Field('modtitle', _("Module"), virtual=True,
+              computer=Computer(lambda r: _modtitle(r['modname'].value()),
+                                depends=('modname',))),
+        Field('published', _("Published")),
+        Field('ord', _("Menu order"), width=5))
+    _SORTING = (('ord', ASC), ('identifier', ASC))
+    _BINDING_SPEC = {'Content': BindingSpec(_("Page content"), 'mapping_id')}
+    _REFERER = _TITLE_COLUMN = 'identifier'
+    _COLUMNS = ('identifier', 'modtitle', 'published', 'ord')
+    _LAYOUT_COLUMNS = ('identifier', 'mod_id', 'published', 'ord')
+    _CB_SPEC = CodebookSpec(display='identifier')
+    
+    def _link_provider(self, row, col, uri, wmi=False):
+        if wmi and col.id() == 'modtitle':
+            return '/wmi/' + row['modname'].value()
+        else:
+            return super(Mapping, self)._link_provider(row, col, uri, wmi)
+            
+    def modname(self, identifier):
+        row = self._data.get_row(identifier=identifier, published=True)
+        if row is None:
+            raise NotFound()
+        return row['modname'].value()
+    
+    def identifier(self, modname):
+        row = self._data.get_row(modname=modname, published=True)
+        return row and row['identifier'].value() or None
+    
+    def menu(self, lang):
+        titles = self._module('Titles').titles(lang)
+        return [MenuItem(str(row['identifier'].value()),
+                         titles.get(row['mapping_id'].value(),
+                                    row['identifier'].value()))
+                for row in self._data.get_rows(sorting=self._sorting)
+                if row['ord'].value() and row['published'].value()]
+                #and row['parent'].value() is None]
+                
+    def title(self, lang, modname):
+        row = self._data.get_row(modname=modname)
+        if row:
+            titles = self._module('Titles').titles(lang)
+            key = row['mapping_id'].value()
+            return titles.get(key, row['identifier'].value())
+        else:
+            return _modtitle(modname)
+        
+
+
+class Config(WikingModule):
+    _TITLE = _("Config")
+    _FIELDS = (
+        Field('config_id', width=0),
+        Field('title', width=0, virtual=True,
+              computer=Computer(lambda r: _("Site Configuration"), depends=())),
+        Field('site_title',     _("Site title"), width=24),
+        Field('site_subtitle',  _("Site subtitle"), width=64),
+    	Field('webmaster_addr', _("Webmaster address")),
+    	Field('theme', _("Theme"), codebook='Themes', display='name',
+              not_null=False),
+    )
+    _TITLE_COLUMN = 'title'
+    _DEFAULT_ACTIONS = (Action(_("Edit"), 'edit'),)
+
+    class Configuration(object):
+        def __init__(self, row, server):
+            self._server = server
+            for key in row.keys():
+                if key not in ('config_id', 'title'):
+                    setattr(self, key, row[key].value() or \
+                            hasattr(self, '_default_'+key) and \
+                            getattr(self, '_default_'+key)() or None)
+        def _default_webmaster_addr(self):
+            domain = self._server.server_hostname
+            if domain.startswith('www.'):
+                domain = domain[4:]
+            return 'webmaster@' + domain
+    
+    def resolve(self, req, path=None):
+        # If path is None, only resolution by key is allowed.
+        row = self._data.get_row(config_id=0)
+        return self.Object(self, self._data, row)
+    
+    def view(self, *args, **kwargs):
+        return self.show(*args, **kwargs)
+
+    def config(self, server, lang):
+        row = self._data.get_row(config_id=0)
+        return self.Configuration(row, server)
+
+    def theme(self):
+        #try:
+        #    theme = self._theme
+        #except AttributeError:
+        theme_id = self._data.get_row(config_id=0)['theme'].value()
+        theme = self._theme = self._module('Themes').theme(theme_id)
+        return theme
+
+    #def _on_update(self, object):
+    #    if hasattr(self, '_theme'):
+    #        delattr(self, '_theme')
+    
+    #def on_theme_change(self, theme_id):
+    #    if hasattr(self, '_theme'):
+    #        delattr(self, '_theme')
+        
+    
+class Panels(WikingModule, Publishable, Translatable):
+    _TITLE = _("Panels")
+    _FIELDS = (
+        Field('panel_id', width=5, editable=NEVER),
+        Field('lang', _("Language"), codebook='Languages', value_column='lang',
+              display=lcg.language_name, editable=ONCE, width=2),
+        Field('ptitle', _("Title")),
+        Field('mtitle'),
+        Field('title', _("Title"), virtual=True, width=30,
+              computer=Computer(lambda row: row['ptitle'].value() or \
+                                row['mtitle'].value() or \
+                                _modtitle(row['modname'].value()),
+                                depends=('ptitle', 'mtitle', 'modname',))),
+        Field('ord', _("Order"), width=5),
+        Field('mapping_id', _("Overview"), width=5, codebook='Mapping',
+              display='identifier', not_null=False),
+        Field('identifier', editable=NEVER),
+        Field('modname'),
+        Field('modtitle', _("Module"), virtual=True,
+              computer=Computer(lambda r: _modtitle(r['modname'].value()),
+                                depends=('modname',))),
+        Field('size', _("Items count"), width=5),
+        Field('content', _("Content"), width=50, height=10),
+        Field('published', _("Published"), default=lambda : True),
+        )
+    _SORTING = (('ord', ASC),)
+    _TITLE_COLUMN = 'title'
+    _COLUMNS = ('title', 'ord', 'modtitle', 'size', 'published')
+    _LAYOUT_COLUMNS = ('lang', 'ptitle', 'ord',  'mapping_id', 'size',
+                       'content', 'published')
+    _LIST_BY_LANGUAGE = True
+
+    def panels(self, lang):
+        parser = lcg.Parser()
+        panels = []
+        for row in self._data.get_rows(lang=lang, published=True,
+                                       sorting=self._sorting):
+            panel_id = row['identifier'].value() or str(row['panel_id'].value())
+            title = row['ptitle'].value() or row['mtitle'].value() or \
+                    _modtitle(row['modname'].value())
+            content = ()
+            if row['modname'].value():
+                mod = self._module(row['modname'].value())
+                content = tuple(mod.panelize(row['identifier'].value(),
+                                             lang, row['size'].value()))
+            if row['content'].value():
+                content += tuple(parser.parse(row['content'].value()))
+            panels.append(Panel(panel_id, title, lcg.Container(content)))
+        return panels
+                
+                
+class Languages(WikingModule):
+    _TITLE = _("Languages")
+    _FIELDS = (
+        Field('lang_id', width=0),
+        Field('lang', _("Code"), width=2, column_width=6,
+              filter=ALPHANUMERIC, post_process=LOWER, fixed=True),
+        Field('name', _("Name"), virtual=True,
+              computer=Computer(lambda r: lcg.language_name(r['lang'].value()),
+                                depends=())),
+        )
+    _REFERER = _TITLE_COLUMN = 'lang'
+    _LAYOUT_COLUMNS = ('lang',)
+    _SORTING = (('lang', ASC),)
+    _CB_SPEC = CodebookSpec(display='lang')
+
+    def languages(self):
+        return [str(r['lang'].value()) for r in self._data.get_rows()]
+
+    
+class Titles(WikingModule, Translatable):
+    _TITLE = _("Titles")
+    _FIELDS = (
+        Field('title_id'),
+        Field('mapping_id', _("Identifier"), width=5, codebook='Mapping',
+              display='identifier', editable=ONCE),
+        Field('identifier', _("Identifier"), virtual=True,
+              computer=CbComputer('mapping_id', 'identifier')),
+        Field('lang', _("Language"), codebook='Languages', value_column='lang',
+              display=lcg.language_name, editable=ONCE, width=2),
+        Field('title', _("Title")),
+        )
+    _COLUMNS = ('identifier', 'title')
+    _LAYOUT_COLUMNS = ('mapping_id', 'lang', 'title')
+    _TITLE_COLUMN = 'identifier'
+    _LIST_BY_LANGUAGE = True
+    _SORT = (('mapping_id', ASC), ('lang', ASC))
+    _EXCEPTION_MATCHERS = (
+        ('duplicate key violates unique constraint "titles_mapping_id_key"',
+         _("The title is already defined for this page in given language.")),)+\
+         WikingModule._EXCEPTION_MATCHERS
+    
+    def titles(self, lang):
+        return dict([(row['mapping_id'].value(), row['title'].value())
+                     for row in self._data.get_rows(lang=lang)])
+
+class Themes(WikingModule):
+    class Color(object):
+        def __init__(self, id, default=None, inherit=None):
+            self._id = id
+            self._default = default
+            self._inherit = inherit
+        def id(self):
+            return self._id
+        def value(self, colors):
+            return self._default or colors[self._inherit]
+        def clone(self, value):
+            return self.__class__(self._id, value or self._default,
+                                  inherit=self._inherit)
+
+    class Colors(object):
+        def __init__(self, colors):
+            self._dict = dict([(c.id(), c) for c in colors])
+            self._colors = colors
+        def __getitem__(self, key):
+            return self._dict[key].value(self)
+    
+    COLORS = (
+        Color('foreground', '#000'),
+        Color('background', '#fff'),
+        Color('border', '#bcd'),
+        Color('heading-fg', inherit='foreground'),
+        Color('heading-bg', '#d8e0f0'),
+        Color('heading-line', '#ccc', inherit='frame-border'),
+        Color('frame-fg', inherit='foreground'),
+        Color('frame-bg', '#eee'),
+        Color('frame-border', '#ddd', inherit='border'),
+        Color('link', '#03b'),
+        Color('link-visited', inherit='link'),
+        Color('link-hover', '#d60'),
+        Color('table-cell', '#f8fafb', inherit='background'),
+        Color('table-cell2', '#eaeaff', inherit='table-cell'),
+        Color('top-fg', inherit='foreground'),
+        Color('top-bg', '#efebe7', inherit='background'),
+        Color('top-border', '#9ab', inherit='border'),
+        Color('highlight-bg', '#fc8', inherit='heading-bg'), # cur. lang. bg.
+        Color('inactive-folder', '#d2d8e0'),
+        Color('button-fg', inherit='foreground'),
+        Color('button', inherit='heading-bg'),
+        Color('button-border', '#9af', inherit='border'),
+        Color('error-fg', inherit='foreground'),
+        Color('error-bg', '#fdb'),
+        Color('error-border', '#fba', inherit='border'),
+        Color('message-fg', inherit='foreground'),
+        Color('message-bg', '#cfc'),
+        Color('message-border', '#aea', inherit='border'),
+        )
+
+    _TITLE = _("Themes")
+    _FIELDS = (
+        Field('theme_id', width=0),
+        Field('name', _("Name"), width=20),
+        ) + tuple([
+        Field(c.id(), c.id(), dbcolumn=c.id().replace('-','_'),
+              type=pd.Color())
+        for c in COLORS])
+    _COLUMNS = ('name',)
+    _TITLE_COLUMN = 'name'
+
+    #def _on_update(self, object):
+    #    self._module('Config').on_theme_change(object['theme_id'])
+    
+    def theme(self, theme_id):
+        if theme_id is not None:
+            row = self._data.get_row(theme_id=theme_id)
+            colors = [c.clone(row[c.id()].value()) for c in self.COLORS]
+        else:
+            colors = self.COLORS
+        return dict(color=self.Colors(colors))
+
+# ==============================================================================
+# The modules below are able to handle requests directly.  The modules above
+# are system modules used internally by Wiking.
+# ==============================================================================
+
+class Content(WikingModule, Publishable, Translatable):
+    _TITLE = _("Pages")
+    _FIELDS = (
+        Field('content_id'),
+        Field('mapping_id', _("Identifier"), codebook='Mapping', editable=ONCE,
+              display='identifier',
+              validity_condition=pd.EQ('modname',
+                                       pd.Value(pd.String(), 'Content'))),
+        Field('identifier', _("Identifier")),
+        Field('lang', _("Language"), codebook='Languages', value_column='lang',
+              editable=ONCE, display=lcg.language_name, width=2),
+        Field('title', _("Title")),
+        Field('content', _("Content"),
+              compact=True, height=20, width=80),
+        Field('published', _("Published")))
+    _SORTING = (('mapping_id', ASC), ('lang', ASC),)
+    _LAYOUT_COLUMNS = ('mapping_id', 'lang', 'title', 'content')
+    _COLUMNS = ('title', 'identifier', 'published')
+    _CB_SPEC = CodebookSpec(display='identifier')
+    _REFERER = 'identifier'
+    _TITLE_COLUMN = 'title'
+    _EXCEPTION_MATCHERS = (
+        ('duplicate key violates unique constraint "_content_mapping_id_key"',
+         _("The page already exists in given language.")),) + \
+         WikingModule._EXCEPTION_MATCHERS
+    _EDIT_LABEL = _("Edit this page")
+    _LIST_BY_LANGUAGE = True
+    
+    def _variants(self, object):
+        return [str(r['lang'].value())
+                for r in self._data.get_rows(mapping_id=object['mapping_id'])]
+
+    def _resolve(self, req, path):
+        if len(path) > 1:
+            raise NotFound()
+        lang = req.param('lang')
+        if lang is not None:
+            row = self._data.get_row(identifier=path[0], lang=lang,
+                                     published=True)
+            if not row:
+                raise NotFound()
+            return row
+        else:
+            variants = self._data.get_rows(identifier=path[0], published=True)
+            if not variants:
+                raise NotFound()
+            for lang in req.prefered_languages():
+                for row in variants:
+                    if row['lang'].value() == lang:
+                        return row
+            raise NotAcceptable([str(r['lang'].value()) for r in variants])
+
+    def view(self, req, object, err=None, msg=None):
+        text = object['content']
+        content = text and lcg.SectionContainer(lcg.Parser().parse(text),
+                                                toc_depth=0) \
+                  or lcg.TextContent("")
+        return self._document(req, content, object, err=err, msg=msg)
+
+class News(WikingModule, Translatable, Panelizable):
+    _TITLE = _("News")
+    _FIELDS = (
+        Field('news_id', #default=nextval('news_news_id_seq'),
+              editable=NEVER),
+        Field('timestamp', _("Date"), width=19, default=now,
+              type=pd.DateTime(format='%Y-%m-%d %H:%M')),
+        Field('date', _("Date"), dbcolumn='timestamp',
+              type=pd.DateTime(format='%Y-%m-%d')),
+        Field('lang', _("Language"), codebook='Languages', value_column='lang',
+              display=lcg.language_name, editable=ONCE, width=2),
+        Field('title', _("Briefly"), column_label=_("Message"), width=32),
+        Field('content', _("Text"), height=3, width=60))
+    _SORTING = (('timestamp', DESC),)
+    _COLUMNS = ('title', 'date')
+    _LAYOUT_COLUMNS = ('lang', 'timestamp', 'title', 'content')
+    _TITLE_COLUMN = 'title'
+    _LIST_BY_LANGUAGE = True
+    _PANEL_FIELDS = ('date', 'title')
+    _RSS_TITLE_COLUMN = 'title'
+    _RSS_DESCR_COLUMN = 'content'
+    
+    class View(WikingModule.GenericView):
+        def export(self, exporter):
+            date = concat(_("Date"), ': ', self._object.export('timestamp'))
+            text = self._export_structured_text(self._object['content'],
+                                                exporter)
+            return _html.div((_html.div(date, cls='date'), text),
+                             cls='news-item')
+
+    class ListView(WikingModule.GenericListView):
+        def _export_row(self, exporter, row):
+            heading = concat(row['date'].export(), ': ', row['title'].export())
+            text = self._export_structured_text(row['content'].value(),
+                                                exporter)
+            name = 'news-item-' + row['news_id'].export()
+            return (_html.div(_html.link(heading, None, name=name),
+                              cls='list-heading'),
+                    _html.div(text, cls='list-body'))
+        
+    def _link_provider(self, row, col, uri, wmi=False):
+        if not wmi and col.id() == 'title':
+            return uri+'#news-item-'+row['news_id'].export()
+        else:
+            return super(News, self)._link_provider(row, col, uri, wmi)
+
+    
+class Stylesheets(WikingModule):
+    _TITLE = _("Styles")
+    _FIELDS = (
+        Field('stylesheet_id'),
+        Field('identifier',  _("Identifier"), width=16),
+        Field('active',      _("Active")),
+        Field('description', _("Description"), width=40),
+        Field('content',     _("Content"), height=20, width=80),
+        )
+    _LAYOUT_COLUMNS = ('identifier', 'active', 'description', 'content')
+    _COLUMNS = ('identifier', 'active', 'description')
+    _REFERER = _TITLE_COLUMN = 'identifier'
+
+    _MATCHER = re.compile(r"\$(\w[\w-]*)(?:\.(\w[\w-]*))?")
+
+    def _subst(self, theme, name, key):
+        value = theme[name]
+        if key:
+            value = value[key]
+        return value
+
+    def stylesheets(self):
+        return [str(r['identifier'].value())
+                for r in self._data.get_rows(active=True)]
+        
+    def view(self, req, object, msg=None):
+        content = object['content']
+        if content is None:
+            filename = os.path.join(cfg.wiking_dir, 'resources', 'css',
+                                    object['identifier'])
+            if os.path.exists(filename):
+                content = "".join(file(filename).readlines())
+            else:
+                raise NotFound
+        theme = self._module('Config').theme()
+        f = lambda m: self._subst(theme, *m.groups())
+        return ('text/css', self._MATCHER.sub(f, content))
+    
+
+class Users(WikingModule):
+    def _fullname(row):
+        name = row['firstname'].value()
+        surname = row['surname'].value()
+        if name and surname:
+            return name + " " + surname
+        else:
+            return name or surname or row['login'].value()
+    def _user(row):
+        nickname = row['nickname'].value()
+        if nickname:
+            return nickname
+        else:
+            return row['fullname'].value()
+    
+    _TITLE = _("Users")
+    _FIELDS = (
+        Field('uid', _("UID"), width=8, editable=NEVER),
+              #default=nextval('users_uid_seq')),
+        Field('login', _("Login"), width=16),
+        Field('password', _("Password")),
+        Field('fullname', _("Full Name"), virtual=True,
+              computer=Computer(_fullname,
+                                depends=('firstname', 'surname', 'login'))),
+        Field('user', _("Name/Nickname"), virtual=True,
+              computer=Computer(_user, depends=('fullname', 'nickname'))),
+        Field('firstname', _("First name")),
+        Field('surname', _("Surname")),
+        Field('nickname', _("Nickname")),
+        Field('email', _("E-mail"), width=24),
+        Field('phone', _("Phone")),
+        Field('address', _("Address"), height=3),
+        Field('uri', _("URI")),
+        Field('enabled', _("Enabled")),
+        Field('since', _("Registered since"), default=now,
+              type=pd.DateTime(format='%Y-%m-%d %H:%M')),
+        )
+    _COLUMNS = ('fullname', 'nickname', 'email')
+    _LAYOUT_COLUMNS = ('uid', 'login', 'password', 'firstname', 'surname',
+                       'nickname', 'email', 'phone', 'address', 'uri')
+    _REFERER = 'login'
+    _TITLE_COLUMN = 'fullname'
+
+

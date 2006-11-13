@@ -1,0 +1,342 @@
+body {
+    font-family: arial, verdana, sans-serif, helvetica;
+    color: $color.top-fg;
+    background-color: $color.top-bg;
+    font-size: 0.8em;
+    margin: 2pt 6pt;
+}
+table td, table th { 
+    font-size: 0.8em;
+}
+p {
+    margin: 0.4em 0;
+}
+hr {
+    height: 1px;
+    background: $color.border;
+    border: 0px;
+}
+h1, h2, h3, h4 {
+    color: $color.heading-fg;
+    font-weight: bold;
+    text-align: left;
+    clear: left;
+}
+h1 { 
+    background-color: $color.heading-bg;
+    padding: 1pt; 
+    border: solid $color.border;
+    border-width: 1px 0px;
+}
+h2, h3 { 
+    border: solid $color.heading-line 0px;
+    border-bottom-width: 1px;
+}
+h1 { font-size: 1.5em; }
+h2 { font-size: 1.5em; }
+h3 { font-size: 1.3em; }
+h4 { font-size: 1.2em; }
+h5,h6,h7,h8,h9 { font-size: 1.1em; }
+
+a.backref { text-decoration: none; color: $color.foreground; }
+
+a:link    { color: $color.link; }
+a:visited { color: $color.link-visited; }
+a:hover   { color: $color.link-hover; }
+
+a.backref { text-decoration: none; color: $color.foreground; }
+a:hover.backref { color: $color.foreground; }
+
+.hidden { display: none; }
+
+/* Page layout */
+
+#top { 
+}
+#top hr { display: none; }
+
+#site-title { 
+    font-size: 1.1em;
+    max-width: 70%;
+}
+
+#language-selection { 
+    position: absolute;
+    top: 2pt;
+    right: 6pt;
+    font-size: 0.8em;
+    white-space: nowrap;
+    max-width: 30%;
+    text-align: right;
+}
+#language-selection a.current { background-color: $color.highlight-bg; }
+
+#page { 
+
+}
+
+/* Menu with folders */
+#navigation-bar {
+    border-bottom: 1px solid $color.top-border;
+    padding: 0.3em 0 0 0.2em;
+}
+#navigation-bar a.navigation-link {
+    background-color: $color.inactive-folder;
+    border: solid $color.top-border 1px;
+    white-space: nowrap;
+    padding: 0 0.6em;
+    text-decoration: none;
+}
+#navigation-bar a.navigation-link.current {
+    background-color: $color.background;
+    border-bottom: solid $color.background 1px;
+}
+
+#panels hr { 
+    display: none;    
+}
+
+#content {
+    padding: 0.8em;
+    color: $color.foreground;
+    background-color: $color.background;
+    border: 1px solid $color.top-border;
+    /* This border must be part of the navigation-bar to because of MSIE... */
+    border-top-width: 0;
+    min-width: 10em;
+}
+#content h1 { 
+    margin-top: 0;
+}
+
+#clearing { 
+    height: 1px;
+}
+
+/* Wiking bar in page footer */
+
+#bottom { 
+    clear: both;
+    margin: 1em 0;
+}
+#wiking-bar { 
+    font-size: 0.9em;
+    border: solid $color.top-border;
+    border-width: 1px 0px;
+    background: $color.heading-bg;
+}
+#wiking-bar .controls { float: right; }
+#wiking-bar a { text-decoration: none; }
+#wiking-bar hr { display: none; }
+
+#last-change { 
+    text-align: right;
+    font-size: 0.75em;
+}
+
+/* Page footer */
+
+#footer { font-size: 0.8em; text-align: center; margin: 0pt; }
+#footer p { margin: 1pt 0pt; }
+#footer img { margin: 5pt; }
+#footer hr { display: none; }
+
+/* Generic Wiking styles */
+
+/* Links to unpublished pages */
+.unpublished { text-decoration: line-through; }
+
+
+div.errors, p.error, p.message { 
+    border-style: solid;
+    border-width: 1px 0;
+    padding: 0.3em;
+    margin: 1em 0;
+}
+p.message { 
+    color: $color.message-fg;
+    background: $color.message-bg;
+    border-color: $color.message-border;
+}
+div.errors, p.error { 
+    color: $color.error-fg;
+    background: $color.error-bg;
+    border-color: $color.error-border;
+}
+
+/* Specific styles for Wiking modules */
+
+div.item span.panel-field-date { 
+    font-weight: bold;
+}
+
+/* Pytis forms styles */
+
+table.browse-form {
+    border-collapse: collapse;
+}
+table.browse-form td, table.browse-form th {
+    padding: 2pt;
+    vertical-align: top;
+    white-space: nowrap;
+    border: 1px solid $color.border;
+}
+table.browse-form td {  background: $color.table-cell; }
+table.browse-form th {  background: $color.heading-bg; }
+table.browse-form td pre {
+    background-color: transparent;
+    border: none;
+}
+
+form.show-form, form.edit-form { 
+    margin: 0.4em 0;
+    padding: 0;
+}
+
+form.show-form fieldset.body, form.edit-form fieldset.body,
+form.edit-form fieldset.submit { 
+    background: $color.frame-bg;
+    border: 1px solid $color.frame-border;
+    border-width: 1px 0;;
+    margin: 0;
+}
+form.edit-form fieldset.submit { 
+    margin-top: 0.5em;
+    padding: 0.5em;
+    text-align: center;
+}
+form.show-form label, form.edit-form label { 
+    white-space: nowrap;
+}
+form.show-form td.label, form.edit-form td.label { 
+    padding: 0.15em 0.3em 0.15em 0;
+}
+form.show-form input, form.show-form textarea { 
+    background: $color.frame-bg;
+    border: 0px;
+    font-size: 1em;
+}
+form.edit-form input, form.edit-form textarea, form.edit-form select { 
+    border: 1px solid $color.border;
+}
+form.edit-form table { 
+    border-collapse: collapse;
+}
+form.edit-form fieldset.submit input { 
+    padding: 0.1em 0.5em;
+    margin: 0 1em;
+    background: $color.button;
+    border: 1px solid $color.button-border;
+}
+form.edit-form fieldset.submit input:hover { 
+    background: $color.highlight-bg;
+}
+
+p.actions { 
+    margin: 1em 0;
+}
+p.actions a { 
+    padding: 0 0.5em;
+    margin-right: 0.8em;
+    text-decoration: none;
+    color: $color.button-fg;
+    background: $color.button;
+    border: 1px solid $color.button-border;
+}
+p.actions a:hover { 
+    background: $color.highlight-bg;
+}
+
+div.list-view div.list-item {
+    margin: 1em 0;
+}
+div.list-view div.list-item div.list-heading {
+    background: $color.heading-bg;
+    border: solid $color.heading-line;
+    border-width: 1px 0;
+    font-weight: bold;
+    margin: 0;
+    padding: 0 0.3em;
+}
+div.list-view div.list-item div.list-body {
+    background: $color.frame-bg;
+    border: solid $color.frame-border;
+    border-width: 0 0 1px 0;
+    margin: 0;
+    padding: 0.1em 0.3em;
+}
+
+/* LCG Formatter styles */
+
+ul {
+    margin-top: 0.1em;
+    margin-bottom: 0.1em; 
+}
+li {
+    margin-top: 0; 
+    margin-bottom: 0; 
+}
+
+.citation, .quotation { 
+    font-style: italic;
+}
+.underline { 
+    text-decoration: underline;
+}
+dt .citation { 
+    font-style: normal;
+}
+dt em { 
+    font-weight: normal;
+}
+dl dt {
+    font-weight: bold;
+}
+
+table.lcg-table {
+    border-collapse: collapse;
+}
+table.lcg-table, table.lcg-fieldset { margin: 0.5em 0; }
+table.lcg-table td, table.lcg-table th {
+    padding: 2pt;
+    vertical-align: top;
+    white-space: nowrap;
+    border: solid $color.border 1px;
+}
+table.lcg-table td { background: $color.table-cell; }
+table.lcg-table th { background: $color.heading-bg; }
+table.lcg-table caption, table.lcg-fieldset caption {
+    font-weight: bold;
+    font-size: 1.1em;
+    text-align: left;
+}
+table.lcg-fieldset th { white-space: nowrap; }
+
+pre.lcg-preformatted-text {
+    background: $color.frame-bg;
+    border: solid $color.frame-border 1px;
+    color: $color.foreground;
+    padding: 0.3em;
+    white-space: pre;
+}
+
+div.table-of-contents { 
+    border: solid $color.frame-border;
+    border-width: 1px 0;
+    background: $color.frame-bg;
+    margin: 1em 0;
+    padding: 3pt;
+    clear: left;
+}
+div.table-of-contents a { text-decoration: none; }
+div.table-of-contents ul { 
+    margin-top: 3pt;
+    margin-bottom: 0;
+}
+
+
+
+
+
+
+

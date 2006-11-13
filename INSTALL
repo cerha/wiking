@@ -1,0 +1,19 @@
+Installation instructions for Wiking CMS
+
+Dependencies:
+
+	apache >= 2.0 (prefork MPM!)
+ 	mod_python >= 3.2.10
+	postgresql >= 7.4 (8.1 suggested)
+	python >= 2.3 (2.4 suggested)
+
+	pytis
+	pytis-extensions
+	pyPgSQL
+	mxDateTime
+
+	lcg
+
+Multithreaded Apache MPM is currently not supported.  Since it is the default
+in many distributions, please check and switch to prefork MPM to be able to run
+Wiking.

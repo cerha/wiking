@@ -1,0 +1,61 @@
+2006-11-11  Tomas Cerha  <cerha@brailcom.org>
+
+	* translations/wiking.pl.po: Updated.
+
+	* translations/wiking.es.po: New file.
+
+	* lib/wiking/util.py (DocModule): Class removed.
+
+	* lib/wiking/modules.py (Config.theme): Don't cache themes.
+
+	* lib/wiking/handler.py (SiteHandler._doc): New method.
+	(SiteHandler._resolve): Don't handle doc here.
+	(SiteHandler.handle): Handle documentation requests differently.
+
+	* lib/wiking/export.py (Exporter._node_uri): New method.
+	(Exporter._is_current): Respect just the top level id.
+	(Exporter._top): Add three divs to support several layers of
+	backgrounf images.
+
+ì006-11-08  Tomas Cerha  <cerha@brailcom.org>
+
+	* translations/wiking.pl.po: Updated.
+
+	* translations/wiking.cs.po: Updated.
+
+	* translations/wiking-help.cs.po: Updated.
+	
+	* lib/wiking/util.py (DocModule.view): Search all the available
+	language variants of the document and perform language selection
+	according to the request.
+
+	* lib/wiking/handler.py (Handler.__call__): Pass just an error
+	message to `Request.error()'.
+
+	* lib/wiking/request.py (Request.error): Accept just one argument
+	- the error message.  Escape it befor printing.
+
+2006-11-06  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/module.py (WikingModule._document)
+	(WikingModule._list): Use the new method
+	`Request.prefered_language()'.
+
+	* lib/wiking/modules.py (Modules.ModNameType): New type which only
+	allows valid Module names.
+	(Modules._FIELDS): Use it for `name'.
+
+	* lib/wiking/handler.py (Handler.__call__): Some more information
+	about the request added into the e-mail message.
+
+	* lib/wiking/request.py (Request.error): Don't print the
+	traceback, just a short error message.
+	(WikingRequest.prefered_languages): New method.
+
+2006-11-04  Tomas Cerha  <cerha@brailcom.org>
+
+	* resources/css/default.css: Syntax fixed.
+
+	* translations/wiking.pl.po: New file
+
+	* translations/wiking.cs.po: Updated.
