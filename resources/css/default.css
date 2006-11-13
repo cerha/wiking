@@ -227,10 +227,11 @@ form.edit-form table {
     border-collapse: collapse;
 }
 
-/* Modification of button controls is arguable...
 form.edit-form fieldset.submit input { 
     padding: 0.1em 0.5em;
     margin: 0 1em;
+}
+/* Modification of button controls is arguable...
     background: $color.button;
     border: 1px solid $color.button-border;
 }
