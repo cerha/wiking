@@ -77,8 +77,9 @@ class Exporter(lcg.HtmlExporter):
             skip_target = '#panel-%s ' % node.panels()[0].id()
         else:
             skip_target = '#content-heading'
-        label = hidden(_("Main navigation"),
-                       " (", _html.link(_("skip"), skip_target), ")", ":")
+        skip_lnk = hidden(" (", _html.link(_("skip"), skip_target),")")
+        label = _html.strong(concat(_("Main navigation"), skip_lnk, ":"),
+                             cls='label')
         sep = " "+hidden("|")+"\n"
         skip_all = hidden(_html.link(_("Skip all repetitive content"),
                                      '#content-heading'))

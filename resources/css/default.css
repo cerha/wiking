@@ -16,7 +16,7 @@ hr {
     background: $color.border;
     border: 0px;
 }
-h1, h2, h3, h4 {
+h1, h2, h3 {
     color: $color.heading-fg;
     font-weight: bold;
     text-align: left;
@@ -65,21 +65,24 @@ a:hover.backref { color: $color.foreground; }
     top: 2pt;
     right: 6pt;
     font-size: 0.8em;
-    white-space: nowrap;
     max-width: 30%;
     text-align: right;
 }
 #language-selection a.current { background-color: $color.highlight-bg; }
 
 #page { 
-
+    padding-top: 0.3em;
 }
 
 /* Menu with folders */
 #navigation-bar {
     border-bottom: 1px solid $color.top-border;
-    padding: 0.3em 0 0 0.2em;
+    padding-left: 0.2em;
 }
+#navigation-bar .label {
+    display: none;
+}
+
 #navigation-bar a.navigation-link {
     background-color: $color.inactive-folder;
     border: solid $color.top-border 1px;
@@ -211,17 +214,20 @@ form.show-form label, form.edit-form label {
 form.show-form td.label, form.edit-form td.label { 
     padding: 0.15em 0.3em 0.15em 0;
 }
-form.show-form input, form.show-form textarea { 
+form.show-form fieldset.body input, form.show-form textarea { 
     background: $color.frame-bg;
     border: 0px;
     font-size: 1em;
 }
-form.edit-form input, form.edit-form textarea, form.edit-form select { 
+form.edit-form fieldset.body input, form.edit-form textarea,
+form.edit-form select { 
     border: 1px solid $color.border;
 }
 form.edit-form table { 
     border-collapse: collapse;
 }
+
+/* Modification of button controls is arguable...
 form.edit-form fieldset.submit input { 
     padding: 0.1em 0.5em;
     margin: 0 1em;
@@ -231,6 +237,7 @@ form.edit-form fieldset.submit input {
 form.edit-form fieldset.submit input:hover { 
     background: $color.highlight-bg;
 }
+*/
 
 p.actions { 
     margin: 1em 0;
@@ -333,10 +340,4 @@ div.table-of-contents ul {
     margin-top: 3pt;
     margin-bottom: 0;
 }
-
-
-
-
-
-
 

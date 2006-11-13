@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-11-10 15:05+0100\n"
+"POT-Creation-Date: 2006-11-13 11:02+0100\n"
 "PO-Revision-Date: 2006-11-08 16:08+0100\n"
 "Last-Translator: Tomas Cerha <cerha@brailcom.org>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -15,7 +15,65 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../lib/wiking/handler.py:167
+#: ../lib/wiking/export.py:25
+msgid "Language:"
+msgstr "Jazyk:"
+
+#: ../lib/wiking/export.py:60
+msgid "Wiking Management Interface"
+msgstr "Rozhraní správy obsahu Wiking"
+
+#: ../lib/wiking/export.py:80 ../lib/wiking/export.py:88
+msgid "Main navigation"
+msgstr "Hlavní navigace"
+
+#: ../lib/wiking/export.py:81 ../lib/wiking/export.py:108
+msgid "skip"
+msgstr "přeskočit"
+
+#: ../lib/wiking/export.py:83
+msgid "Skip all repetitive content"
+msgstr "Přeskočit všechny opakující se části"
+
+#: ../lib/wiking/export.py:140
+msgid "US Government Section 508 Accessibility Guidelines."
+msgstr "Sekce 508 směrnic pro zpřístupnění vydaných vládou USA"
+
+#: ../lib/wiking/export.py:144
+msgid "This site conforms to the following standards:"
+msgstr "Tento portál odpovídá následujícím standardům:"
+
+#: ../lib/wiking/export.py:145
+msgid "This site can be viewed in ANY browser."
+msgstr "Tato stránka může být používána v LIBOVOLNÉM prohlížeči."
+
+#: ../lib/wiking/export.py:146
+msgid "Contact:"
+msgstr "Kontakt:"
+
+#: ../lib/wiking/export.py:155
+msgid "Leave the Management Interface"
+msgstr "Opustit rozhraní správy obsahu"
+
+#: ../lib/wiking/export.py:157
+msgid "Manage this site"
+msgstr "Správa obsahu"
+
+#: ../lib/wiking/export.py:158
+msgid "Enter the Wiking Management Interface"
+msgstr "Vstoupit do rozhraní správy obsahu Wiking"
+
+#: ../lib/wiking/export.py:161
+#, python-format
+msgid "Powered by %s %s"
+msgstr "Provozováno na %s %s"
+
+#: ../lib/wiking/export.py:170
+#, python-format
+msgid "Last change: %s, %s"
+msgstr "Poslední změna: %s, %s"
+
+#: ../lib/wiking/handler.py:184
 msgid "The requested object does not exist anymore!"
 msgstr "Požadovaný objekt již neexistuje!"
 
@@ -382,67 +440,9 @@ msgstr ""
 "Vašeho\n"
 "systému."
 
-#: ../lib/wiking/util.py:322
+#: ../lib/wiking/util.py:299
 msgid "Actions:"
 msgstr "Akce:"
-
-#: ../lib/wiking/export.py:25
-msgid "Language:"
-msgstr "Jazyk:"
-
-#: ../lib/wiking/export.py:56
-msgid "Wiking Management Interface"
-msgstr "Rozhraní správy obsahu Wiking"
-
-#: ../lib/wiking/export.py:75 ../lib/wiking/export.py:83
-msgid "Main navigation"
-msgstr "Hlavní navigace"
-
-#: ../lib/wiking/export.py:76 ../lib/wiking/export.py:103
-msgid "skip"
-msgstr "přeskočit"
-
-#: ../lib/wiking/export.py:78
-msgid "Skip all repetitive content"
-msgstr "Přeskočit všechny opakující se části"
-
-#: ../lib/wiking/export.py:135
-msgid "US Government Section 508 Accessibility Guidelines."
-msgstr "Sekce 508 směrnic pro zpřístupnění vydaných vládou USA"
-
-#: ../lib/wiking/export.py:139
-msgid "This site conforms to the following standards:"
-msgstr "Tento portál odpovídá následujícím standardům:"
-
-#: ../lib/wiking/export.py:140
-msgid "This site can be viewed in ANY browser."
-msgstr "Tato stránka může být používána v LIBOVOLNÉM prohlížeči."
-
-#: ../lib/wiking/export.py:141
-msgid "Contact:"
-msgstr "Kontakt:"
-
-#: ../lib/wiking/export.py:150
-msgid "Leave the Management Interface"
-msgstr "Opustit rozhraní správy obsahu"
-
-#: ../lib/wiking/export.py:152
-msgid "Manage this site"
-msgstr "Správa obsahu"
-
-#: ../lib/wiking/export.py:153
-msgid "Enter the Wiking Management Interface"
-msgstr "Vstoupit do rozhraní správy obsahu Wiking"
-
-#: ../lib/wiking/export.py:156
-#, python-format
-msgid "Powered by %s %s"
-msgstr "Provozováno na %s %s"
-
-#: ../lib/wiking/export.py:165
-#, python-format
-msgid "Last change: %s, %s"
-msgstr "Poslední změna: %s, %s"
 
 #~ msgid "Page"
 #~ msgstr "Stránka"

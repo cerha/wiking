@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-11-08 16:07+0100\n"
+"POT-Creation-Date: 2006-11-13 11:02+0100\n"
 "PO-Revision-Date: 2006-11-10 15:08+0100\n"
 "Last-Translator: Tomas Cerha <cerha@brailcom.org>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -15,7 +15,65 @@ msgstr ""
 "Content-Type: text/plain; charset=ISO-8859-1\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../lib/wiking/handler.py:165
+#: ../lib/wiking/export.py:25
+msgid "Language:"
+msgstr ""
+
+#: ../lib/wiking/export.py:60
+msgid "Wiking Management Interface"
+msgstr ""
+
+#: ../lib/wiking/export.py:80 ../lib/wiking/export.py:88
+msgid "Main navigation"
+msgstr "Navegación Principal"
+
+#: ../lib/wiking/export.py:81 ../lib/wiking/export.py:108
+msgid "skip"
+msgstr "saltar"
+
+#: ../lib/wiking/export.py:83
+msgid "Skip all repetitive content"
+msgstr "Saltar todas la partes repetidas"
+
+#: ../lib/wiking/export.py:140
+msgid "US Government Section 508 Accessibility Guidelines."
+msgstr ""
+
+#: ../lib/wiking/export.py:144
+msgid "This site conforms to the following standards:"
+msgstr "Este sitio ese conforme con los estándares siguientes:"
+
+#: ../lib/wiking/export.py:145
+msgid "This site can be viewed in ANY browser."
+msgstr "Este sitio se puede ver en CUALQUIER navegador."
+
+#: ../lib/wiking/export.py:146
+msgid "Contact:"
+msgstr "Contacto:"
+
+#: ../lib/wiking/export.py:155
+msgid "Leave the Management Interface"
+msgstr ""
+
+#: ../lib/wiking/export.py:157
+msgid "Manage this site"
+msgstr "Gestione el sitio entero"
+
+#: ../lib/wiking/export.py:158
+msgid "Enter the Wiking Management Interface"
+msgstr ""
+
+#: ../lib/wiking/export.py:161
+#, python-format
+msgid "Powered by %s %s"
+msgstr "Hecho con %s %s"
+
+#: ../lib/wiking/export.py:170
+#, python-format
+msgid "Last change: %s, %s"
+msgstr "Último cambio: %s, %s"
+
+#: ../lib/wiking/handler.py:184
 msgid "The requested object does not exist anymore!"
 msgstr ""
 
@@ -373,64 +431,6 @@ msgid ""
 "preferences in your browser or contact your system administrator."
 msgstr ""
 
-#: ../lib/wiking/util.py:321
+#: ../lib/wiking/util.py:299
 msgid "Actions:"
 msgstr ""
-
-#: ../lib/wiking/export.py:25
-msgid "Language:"
-msgstr ""
-
-#: ../lib/wiking/export.py:59
-msgid "Wiking Management Interface"
-msgstr ""
-
-#: ../lib/wiking/export.py:78 ../lib/wiking/export.py:86
-msgid "Main navigation"
-msgstr "Navegación Principal"
-
-#: ../lib/wiking/export.py:79 ../lib/wiking/export.py:106
-msgid "skip"
-msgstr "saltar"
-
-#: ../lib/wiking/export.py:81
-msgid "Skip all repetitive content"
-msgstr "Saltar todas la partes repetidas"
-
-#: ../lib/wiking/export.py:138
-msgid "US Government Section 508 Accessibility Guidelines."
-msgstr ""
-
-#: ../lib/wiking/export.py:142
-msgid "This site conforms to the following standards:"
-msgstr "Este sitio ese conforme con los estándares siguientes:"
-
-#: ../lib/wiking/export.py:143
-msgid "This site can be viewed in ANY browser."
-msgstr "Este sitio se puede ver en CUALQUIER navegador."
-
-#: ../lib/wiking/export.py:144
-msgid "Contact:"
-msgstr "Contacto:"
-
-#: ../lib/wiking/export.py:153
-msgid "Leave the Management Interface"
-msgstr ""
-
-#: ../lib/wiking/export.py:155
-msgid "Manage this site"
-msgstr "Gestione el sitio entero"
-
-#: ../lib/wiking/export.py:156
-msgid "Enter the Wiking Management Interface"
-msgstr ""
-
-#: ../lib/wiking/export.py:159
-#, python-format
-msgid "Powered by %s %s"
-msgstr "Hecho con %s %s"
-
-#: ../lib/wiking/export.py:168
-#, python-format
-msgid "Last change: %s, %s"
-msgstr "Último cambio: %s, %s"

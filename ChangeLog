@@ -1,3 +1,12 @@
+2006-11-13  Tomas Cerha  <cerha@brailcom.org>
+
+	* translations/wiking.*.po: Updated.
+
+	* lib/wiking/export.py (Exporter._menu): Don't hardcode the label
+	to be hidden.  Just mark it as a label.
+
+	* resources/css/default.css: Minor cleaning.
+
 2006-11-11  Tomas Cerha  <cerha@brailcom.org>
 
 	* translations/wiking.pl.po: Updated.
