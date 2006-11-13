@@ -1,0 +1,8 @@
+-*- mode: change-log -*-
+
+2006-11-13  Tomas Cerha  <cerha@brailcom.org>
+
+	Version 0.4.1
+
+	The new generation of the Wiking CMS was made available to the public.
+	New Wiking is written in Python, and is based on Pytis toolkit and LCG.
