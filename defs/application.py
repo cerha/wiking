@@ -1,5 +1,5 @@
 # -*- coding: iso-8859-2 -*-
-# Copyright (C) 2005, 2006 Tomáš Cerha.
+# Copyright (C) 2006 Brailcom, o.p.s.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-"""Definice parametrů aplikace a prvků hlavního aplikačního okna."""
+"""Pytis standalone application specification file."""
 
 import wx
 from pytis.form import *

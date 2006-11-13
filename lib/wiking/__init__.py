@@ -1,4 +1,5 @@
-# Copyright (C) 2006 Tomas Cerha <cerha@brailcom.org>
+# Copyright (C) 2006 Brailcom, o.p.s.
+# Author: Tomas Cerha <cerha@brailcom.org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,6 +18,10 @@
 __version__ = '0.4.1'
 
 import sys, os, cgitb
+
+# TODO: this can be removed once it is solved in Pytis...
+reload(sys)
+sys.setdefaultencoding('iso-8859-2')
 
 import lcg
 import pytis
