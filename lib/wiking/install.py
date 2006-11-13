@@ -1,3 +1,4 @@
+# -*- coding: iso-8859-2 -*-
 # Copyright (C) 2006 Brailcom, o.p.s.
 # Author: Tomas Cerha <cerha@brailcom.org>
 #
