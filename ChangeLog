@@ -10,6 +10,7 @@
 
 	* lib/wiking/export.py (Exporter._menu): Don't hardcode the label
 	to be hidden.  Just mark it as a label.
+	(Module): Added basic accesskey support.
 
 	* resources/css/default.css: Minor cleaning.
 
