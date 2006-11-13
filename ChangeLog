@@ -1,5 +1,11 @@
 2006-11-13  Tomas Cerha  <cerha@brailcom.org>
 
+	* defs/application.py: Fixed copyright and author information.
+
+	* lib/wiking/*.py: Fixed copyright and author information.
+
+	* COPYING: New file.
+
 	* translations/wiking.*.po: Updated.
 
 	* lib/wiking/export.py (Exporter._menu): Don't hardcode the label
