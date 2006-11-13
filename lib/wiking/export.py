@@ -83,7 +83,7 @@ class Exporter(lcg.HtmlExporter):
                              cls='label')
         sep = " "+hidden("|")+"\n"
         skip_all = hidden(_html.link(_("Skip all repetitive content"),
-                                     '#content-heading'))
+                                     '#content-heading', hotkey="2"))
         return (skip_all,
                 _html.map(_html.div((label, concat(links, separator=sep)),
                                     id="navigation-bar"),
@@ -154,10 +154,12 @@ class Exporter(lcg.HtmlExporter):
         if node.edit_label():
             ctrls += (_html.link(node.edit_label(), "?action=edit"), "|")
         if self._is_wmi_node(node):
-            ctrl = _html.link(_("Leave the Management Interface"), '/')
+            ctrl = _html.link(_("Leave the Management Interface"), '/',
+                              hotkey="9")
         else:
             ctrl = _html.link(_("Manage this site"), '/wmi',
-                              title=_("Enter the Wiking Management Interface"))
+                              title=_("Enter the Wiking Management Interface"),
+                              hotkey="9")
         ctrls += (ctrl, hidden("]"))
         result += (_html.span(concat(ctrls, separator="\n"), cls="controls"),)
         result += (_html.span(_("Powered by %s %s",
