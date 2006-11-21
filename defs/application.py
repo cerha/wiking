@@ -30,36 +30,39 @@ def default_font_encoding(resolver):
     return wx.FONTENCODING_ISO8859_2    
 
 def menu(resolver):
-    pytis.util.set_resolver(wiking.util.WikingResolver())
+    pytis.util.set_resolver(wiking.util.WikingResolver(resolver))
     __________ = MSeparator()
     return (
-        Menu(_("&Systém"), config_menu_items() +
-             (MItem(_("Spustit formuláø"), hotkey=('Alt-a', 'a'),
+        Menu(_("&System"), config_menu_items() +
+             (MItem(_("Run form"), hotkey=('Alt-a', 'a'),
                     command=cmd_run_any_form),
-              MItem(_("Zkontrolovat datové specifikace"), hotkey=('Alt-a', 'd'),
+              MItem(_("Check specifications"), hotkey=('Alt-a', 'd'),
                     command=cmd_check_menus_defs),
               __________,
               recent_forms_menu(),
               __________,
-              MItem(_("Konec"),
+              MItem(_("Exit"),
                     command=pytis.form.Application.COMMAND_EXIT,
                     hotkey='Alt-x'),         
-              )),
-        Menu(_("&Obsah"),
-             (bf(_("&Mapování"), 'Mapping'),
-              df(_("&Stránky"),  'Mapping::Content'),
-              bf(_("&Panely"),   'Panels'),
-              bf(_("&Novinky"),  'News'),
-              bf(_("S&tyly"),    'Stylesheets'),
               )
         ),
-        Menu(_("&Správa u¾ivatelù"),
-             (bf(_("&U¾ivatelé"), 'Users'),
+        Menu(_("&Content"),
+             (bf(_("&Mapping"), 'Mapping'),
+              df(_("&Content"), 'Mapping::Content'),
+              bf(_("&Panels"),  'Panels'),
+              bf(_("&News"),    'News'),
+              bf(_("&Styles"),  'Stylesheets'),
               )
         ),
-        Menu(_("Èíselní&ky"),
-             (bf(_("Jazyky"), 'Languages'),
-              bf(_("Typy"),   'Types'),
+        Menu(_("Se&tup"),
+             (bf(_("&Users"), 'Users'),
+              ef(_("&Configuration"), 'Config',
+                 select_row=(pytis.data.Value(pytis.data.Integer(), 0),)),
+              )
+        ),
+        Menu(_("Code&books"),
+             (bf(_("Languages"), 'Languages'),
+              bf(_("Modules"),   'Modules'),
               )
              )
         )
