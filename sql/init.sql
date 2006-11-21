@@ -19,7 +19,7 @@ VALUES ('css', 2, 't', NULL);
 
 INSERT INTO content (mapping_id, lang, title, content) 
 VALUES (1, 'en', 'Welcome', 
-	'Your new Wiking site has been succesfully set up.\n\n' +
+	'Your new Wiking site has been succesfully set up.\n\n'||
 	'Enter the [/wmi Wiking Management Interface] to manage the content.');
 
 INSERT INTO config (site_title) VALUES ('Wiking site');
