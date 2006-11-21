@@ -211,7 +211,7 @@ CREATE TABLE news (
 CREATE TABLE stylesheets (
 	stylesheet_id serial PRIMARY KEY,
 	identifier varchar(32) UNIQUE NOT NULL,
-	active boolean NOT NULL DEFAULT 'TRUE'
+	active boolean NOT NULL DEFAULT 'TRUE',
 	description text,
 	content text
 ) WITH OIDS;
