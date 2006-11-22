@@ -43,7 +43,7 @@ def menu(resolver):
               __________,
               MItem(_("Exit"),
                     command=pytis.form.Application.COMMAND_EXIT,
-                    hotkey='Alt-x'),         
+                    hotkey='Alt-x'),
               )
         ),
         Menu(_("&Content"),
@@ -51,7 +51,11 @@ def menu(resolver):
               df(_("&Content"), 'Mapping::Content'),
               bf(_("&Panels"),  'Panels'),
               bf(_("&News"),    'News'),
-              bf(_("&Styles"),  'Stylesheets'),
+              )
+        ),
+        Menu(_("&Appearance"),
+             (bf(_("&Styles"),  'Stylesheets'),
+              bf(_("&Themes"),  'Themes'),
               )
         ),
         Menu(_("Se&tup"),
