@@ -116,12 +116,6 @@ class WikingRequest(Request):
     _LANG_COOKIE = 'wiking_prefered_language'
     _PANELS_COOKIE = 'wiking_show_panels'
 
-    def __init__(self, *args, **kwargs):
-        super(WikingRequest, self).__init__(*args, **kwargs)
-        path = self.uri.split('/')[1:]
-        self.wmi = path and path[0] == 'wmi'
-        self.doc = path and path[0] == '__doc__'
-    
     def _init_params(self):
         params = super(WikingRequest, self)._init_params()
         lang = params.has_key('lang') and str(params['lang']) or None
