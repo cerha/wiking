@@ -114,11 +114,13 @@ class Request(object):
 class WikingRequest(Request):
     """Wiking specific methods for the request object."""
     _LANG_COOKIE = 'wiking_prefered_language'
+    _PANELS_COOKIE = 'wiking_show_panels'
 
     def __init__(self, *args, **kwargs):
         super(WikingRequest, self).__init__(*args, **kwargs)
         path = self.uri.split('/')[1:]
         self.wmi = path and path[0] == 'wmi'
+        self.doc = path and path[0] == '__doc__'
     
     def _init_params(self):
         params = super(WikingRequest, self)._init_params()
@@ -130,8 +132,19 @@ class WikingRequest(Request):
             self._prefered_language = lang
         else:
             self._prefered_language = lang or self.get_cookie(self._LANG_COOKIE)
+        if params.has_key('hide_panels'):
+            self.set_cookie(self._PANELS_COOKIE, 'no', expires=63072000)
+            self._show_panels = False
+        elif params.has_key('show_panels'):
+            self.set_cookie(self._PANELS_COOKIE, 'yes', expires=63072000)
+            self._show_panels = True
+        else:
+            self._show_panels = self.get_cookie(self._PANELS_COOKIE) != 'no'
         return params
 
+    def show_panels(self):
+        return self._show_panels
+    
     def prefered_languages(self):
         """Return a sequence of languages acceptable by the client.
 
