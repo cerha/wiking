@@ -37,9 +37,6 @@ class Exporter(lcg.HtmlExporter):
         config = node.config()
         return config.site_title + ' - ' + node.title()
 
-    def _is_wmi_node(self, node):
-        return node.id().startswith('wmi')
-
     def _is_current(self, node, item):
         nid, iid = (node.id(), item.id())
         return iid == nid or nid.startswith(iid+'/')
@@ -57,13 +54,10 @@ class Exporter(lcg.HtmlExporter):
         return concat(super(Exporter, self)._head(node), x, separator='\n  ')
     
     def _top(self, node):
-        if self._is_wmi_node(node):
-            title = _("Wiking Management Interface")
-        else:
-            config = node.config()
-            title = config.site_title
-            if config.site_subtitle:
-                title += ' &ndash; ' + config.site_subtitle
+        config = node.config()
+        title = config.site_title
+        if config.site_subtitle:
+            title += ' &ndash; ' + config.site_subtitle
         t = _html.div(_html.strong(title), id='site-title')
         return _html.div(_html.div(_html.div(t, id='top-layer3'),
                                    id='top-layer2'), id='top-layer1')
@@ -96,6 +90,10 @@ class Exporter(lcg.HtmlExporter):
     def _panels(self, node):
         panels = node.panels()
         result = [_html.hr()]
+        if panels and not node.config().show_panels:
+            return _html.div(_html.link(_("Show hidden panels"),
+                                        "?show_panels=1"),
+                             cls="panel-control show")
         for i, panel in enumerate(panels):
             title = panel.title()
             id = panel.id()
@@ -111,6 +109,10 @@ class Exporter(lcg.HtmlExporter):
                         1)
             c = _html.div(content, cls="panel-content")
             result.append(_html.div((h, c), cls="panel panel-"+id))
+        if panels:
+            result.append(_html.div(_html.link(_("Hide all panels"),
+                                               "?hide_panels=1"),
+                                    cls="panel-control hide"))
         return result
 
 
@@ -153,7 +155,7 @@ class Exporter(lcg.HtmlExporter):
         ctrls = (hidden("["),)
         if node.edit_label():
             ctrls += (_html.link(node.edit_label(), "?action=edit"), "|")
-        if self._is_wmi_node(node):
+        if node.config().wmi:
             ctrl = _html.link(_("Leave the Management Interface"), '/',
                               hotkey="9")
         else:
