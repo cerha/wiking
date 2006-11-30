@@ -21,28 +21,19 @@ from wiking import *
 _ = lcg.TranslatableTextFactory('wiking')
 
 class WikingModule(object):
-    _TITLE = None
-    _SINGULAR_TITLE = None
-    _FIELDS = ()
-    _LAYOUT = None
-    _LAYOUT_COLUMNS = None
-    _TABLE = None
-    _KEY = None
-    _SORTING = ()
-    _CB_SPEC = pp.CodebookSpec()
     _REFERER = None
     _TITLE_COLUMN = None
     _RSS_TITLE_COLUMN = None
     _RSS_DESCR_COLUMN = None
-    _COLUMNS = None
     _LIST_BY_LANGUAGE = False
-    _ACTIONS = ()
     _DEFAULT_ACTIONS = (Action(_("Edit"), 'edit'),
                         Action(_("Remove"), 'remove'),
                         Action(_("List"), 'list', context=None),
                         )
     _EDIT_LABEL = None
-
+    _PANEL_DEFAULT_COUNT = 3
+    _PANEL_FIELDS = None
+    
     _EXCEPTION_MATCHERS = (
         ('duplicate key violates unique constraint ' + \
          '"_?[a-z]+_(?P<id>[a-z_]+)_key"',
@@ -50,12 +41,12 @@ class WikingModule(object):
         ('null value in column "(?P<id>[a-z_]+)" violates not-null constraint',
          _("Empty value.  This field is mandatory.")),
         )
-        
+
     class Object(object):
-        def __init__(self, module, data, row):
+        def __init__(self, module, view, data, row):
             self._module = module
             self._data = data
-            self._prow = pp.PresentedRow(module.view_spec().fields(), data, row)
+            self._prow = pp.PresentedRow(view.fields(), data, row)
             
         def __getitem__(self, key):
             return self._prow[key].value()
@@ -79,6 +70,9 @@ class WikingModule(object):
         def row(self):
             return self._prow.row()
 
+        def prow(self):
+            return self._prow
+
         def reload(self):
             self._prow.set_row(self._data.row(self.key()))
 
@@ -89,8 +83,9 @@ class WikingModule(object):
             return content.export(exporter)
             
     class View(pytis.web.ShowForm):
-        def __init__(self, data, view, object):
-            pytis.web.ShowForm.__init__(self, data, view, object.row())
+        def __init__(self, data, view, resolver, object):
+            row = object.row()
+            pytis.web.ShowForm.__init__(self, data, view, resolver, row)
 
     class GenericView(lcg.Content, _GenericView):
         def __init__(self, data, view, object):
@@ -100,8 +95,8 @@ class WikingModule(object):
             lcg.Content.__init__(self)
             
     class ListView(pytis.web.BrowseForm):
-        def __init__(self, data, view, rows, link_provider):
-            pytis.web.BrowseForm.__init__(self, data, view, rows,
+        def __init__(self, data, view, resolver, rows, link_provider):
+            pytis.web.BrowseForm.__init__(self, data, view, resolver, rows,
                                           link_provider=link_provider)
 
     class GenericListView(ListView, _GenericView):
@@ -110,80 +105,41 @@ class WikingModule(object):
             rows = [_html.div(row, cls='list-item') for row in rows]
             return _html.div(rows, cls="list-view")
 
-    # Class methods
-    
-    def data_spec(cls):
+    def spec(cls, resolver):
         try:
-            spec = cls._data_spec
+            spec = cls._spec
         except AttributeError:
-            table = cls._TABLE or camel_case_to_lower(cls.__name__, '_')
-            #bindings = [Column(f.id(), enumerator=f.codebook())
-            def e(name):
-                return name and get_module(name).data_spec()
-            bindings = [pd.DBColumnBinding(f.id(), table, f.dbcolumn(),
-                                           enumerator=e(f.codebook()),
-                                           type_=f.type(),
-                                           **f.dbcolumn_kwargs())
-                        for f in cls._FIELDS if not f.virtual()]
-            if cls._KEY:
-                bb = dict([(b.column(), b) for b in bindings])
-                key = [bb[k] for k in cls._KEY]
-            else:
-                key = bindings[0]
-            spec = pd.DataFactory(Data, bindings, key)
-            cls._data_spec = spec
-        return spec
-    data_spec = classmethod(data_spec)
-
-    def view_spec(cls):
-        try:
-            spec = cls._view_spec
-        except AttributeError:
-            actions = []
+            if cls.Spec.table is None:
+                table = pytis.util.camel_case_to_lower(cls.__name__, '_')
+                cls.Spec.table = table
+            if not hasattr(cls.Spec, 'actions'):
+                cls.Spec.actions = ()
             for base in cls.__bases__:
                 if hasattr(base, '_ACTIONS'):
-                    actions.extend(base._ACTIONS)
-            title = cls._TITLE or ' '.join(split_camel_case(cls.__name__))
-            if cls._LAYOUT or cls._LAYOUT_COLUMNS or cls._SINGULAR_TITLE:
-                columns = cls._LAYOUT_COLUMNS or [f.id() for f in cls._FIELDS]
-                o = pp.Orientation.VERTICAL
-                group = cls._LAYOUT or pp.GroupSpec(columns, orientation=o)
-                layout = pp.LayoutSpec(cls._SINGULAR_TITLE or title, group)
-            else:
-                layout = None
-            help = HELP.get(cls.__name__)
-            spec = pp.ViewSpec(title, cls._FIELDS, layout=layout,
-                               columns=cls._COLUMNS, sorting=cls._SORTING,
-                               actions=tuple(actions), help=help)
-            cls._view_spec = spec
+                    cls.Spec.actions += base._ACTIONS
+            cls.Spec.data_cls = Data
+            spec = cls._spec = cls.Spec(resolver)
         return spec
-    view_spec = classmethod(view_spec)
-
-    def binding_spec(cls):
-        return cls._BINDING_SPEC
-    binding_spec = classmethod(binding_spec)
-    
-    def cb_spec(cls):
-        return cls._CB_SPEC
-    cb_spec = classmethod(cb_spec)
-
+    spec = classmethod(spec)
+            
     # Instance methods
     
-    def __init__(self, dbconnection, get_module):
+    def __init__(self, dbconnection, resolver, get_module):
         self._dbconnection = dbconnection
         self._module = get_module
-        self._data = self.data_spec().create(dbconnection_spec=dbconnection)
-        self._view = self.view_spec()
-        from pytis.extensions import ASC, DESC
-        mapping = {ASC:  pytis.data.ASCENDENT,
-                   DESC: pytis.data.DESCENDANT}
-        self._sorting = [(cid, mapping[dir])
-                         for cid, dir in self._view.sorting()]
+        self._resolver = resolver
+        spec = self.spec(resolver)
+        self._data = spec.data_spec().create(dbconnection_spec=dbconnection)
+        self._view = spec.view_spec()
+        key = self._data.key()
+        self._sorting = self._view.sorting()
+        if self._sorting is None:
+            self._sorting = [(c.id(), pytis.data.ASCENDENT) for c in key]
         self._exception_matchers = [(re.compile('ERROR:  '+regex+'\n'), msg)
                                     for regex, msg in self._EXCEPTION_MATCHERS]
         self._referer = self._REFERER
-        if not self._referer and len(self._data.key()) == 1:
-            self._referer = self._data.key()[0].id()
+        if not self._referer and len(key) == 1:
+            self._referer = key[0].id()
         if self._referer:
             self._referer_type = self._data.find_column(self._referer).type()
         #log(OPR, 'New module instance: %s[%x]' % (self.__class__.__name__,
@@ -229,18 +185,11 @@ class WikingModule(object):
                     return msg
         return unicode(e.exception())
 
+    def _form(self, form, *args, **kwargs):
+        return form(self._data, self._view, self._resolver, *args, **kwargs)
+    
     def _on_update(self, object):
         pass
-    
-    def _help(self, lang):
-        help = self._view.help()
-        if help:
-            translator = lcg.GettextTranslator(lang, path=TRANSLATION_PATH,
-                                               fallback=True)
-            content = lcg.Parser().parse(translator.translate(help))
-            return lcg.Section(_("Help"), content, toc_depth=99)
-        else:
-            return None
     
     def _real_title(self, lang):
         # This is quite a hack...
@@ -254,7 +203,7 @@ class WikingModule(object):
             if not subtitle and self._TITLE_COLUMN:
                 title = obj.export(self._TITLE_COLUMN)
             else:
-                title = self._view.layout().caption()
+                title = self._view.singular()
             lang = self._lang(obj)
             variants = self._variants(obj)
             edit_label = None #self._EDIT_LABEL
@@ -340,7 +289,8 @@ class WikingModule(object):
     
     def _list(self, req):
         if self._LIST_BY_LANGUAGE and not req.wmi:
-            variants = map(str, self._data.distinct('lang', sort=pd.ASCENDENT))
+            variants = [str(v.value()) for v in
+                        self._data.distinct('lang', sort=pd.ASCENDENT)]
         else:
             variants = self._module('Languages').languages()
         lang = req.prefered_language(variants)
@@ -354,8 +304,25 @@ class WikingModule(object):
         if row is None and path is not None:
             row = self._resolve(req, path)
         if row is not None:
-            return self.Object(self, self._data, row)
+            return self.Object(self, self._view, self._data, row)
         return None
+
+    def panelize(self, identifier, lang, count):
+        count = count or self._PANEL_DEFAULT_COUNT
+        if self._PANEL_FIELDS:
+            fields = [self._view.field(id) for id in self._PANEL_FIELDS]
+        else:
+            fields = self._view.columns()
+        if self._LIST_BY_LANGUAGE:
+            kwargs = {'lang': lang}
+        else:
+            kwargs = {}
+        items = [PanelItem(self._data, row, fields, self._link_provider,
+                           '/'+identifier)
+                 for row in self._data.get_rows(limit=count-1,
+                                                sorting=self._sorting,
+                                                **kwargs)]
+        return items
 
     # ===== Action handlers =====
     
@@ -387,12 +354,14 @@ class WikingModule(object):
         def link_provider(row, col):
             return self._link_provider(row, col, req.uri, wmi=req.wmi)
         lang, variants, rows = self._list(req)
-        listview = req.wmi and pytis.web.BrowseForm or self.ListView
-        content = [listview(self._data, self._view, rows, link_provider)]
+        form = req.wmi and pytis.web.BrowseForm or self.ListView
+        content = [self._form(form, rows, link_provider)]
         if req.wmi:
             a = ActionMenu(req.uri,
                            (Action(_("New record"), 'add', context=None),))
-            content.extend((a, self._help(lang)))
+            uri = '/__doc__/'+self.__class__.__name__
+            h = lcg.Link(lcg.Link.ExternalTarget(uri, _("Help")))
+            content.extend((a, h))
         elif self._RSS_DESCR_COLUMN:
             text = _("An RSS channel is available for this section:") + ' '
             title = self._real_title(lang) + ' RSS'
@@ -403,7 +372,7 @@ class WikingModule(object):
                               err=err, msg=msg)
 
     def show(self, req, object, err=None, msg=None):
-        form = pytis.web.ShowForm(self._data, self._view, object.row())
+        form = self._form(pytis.web.ShowForm, object.row())
         actions = ActionMenu(req.uri, self._actions(), self._data, object.row())
         return self._document(req, (form, req.wmi and actions or None), object,
                               err=err, msg=msg)
@@ -413,19 +382,17 @@ class WikingModule(object):
         return self._document(req, view, object, err=err, msg=msg)
     
     def add(self, req, prefill=None, errors=()):
-        form = pytis.web.EditForm(self._data, self._view, None,
-                                  handler=req.uri, prefill=prefill,
-                                  errors=errors, new=True, action='insert')
+        form = self._form(pytis.web.EditForm, None, handler=req.uri, new=True,
+                          prefill=prefill, errors=errors, action='insert')
         return self._document(req, form, subtitle=_("new record"))
 
     def edit(self, req, object, errors=(), prefill=None):
-        form = pytis.web.EditForm(self._data, self._view, object.row(),
-                                  handler=req.uri, errors=errors,
-                                  prefill=prefill, action='update')
+        form = self._form(pytis.web.EditForm, object.row(), handler=req.uri,
+                          errors=errors, prefill=prefill, action='update')
         return self._document(req, form, object, subtitle=_("edit form"))
 
     def remove(self, req, object, err=None):
-        form = pytis.web.ShowForm(self._data, self._view, object.row())
+        form = self._form(pytis.web.ShowForm, object.row())
         actions = ActionMenu(req.uri, (Action(_("Remove"), 'delete'),),
                              self._data, object.row())
         msg = _("Please, confirm removing the record permanently.")
@@ -446,7 +413,7 @@ class WikingModule(object):
                 if req.wmi:
                     return self.list(req, msg=msg)
                 else:
-                    object = self.Object(self, self._data, new_row)
+                    object = self.Object(self, self._view, self._data, new_row)
                     return self.view(req, object, msg=msg)
             except pd.DBException, e:
                 errors = self._analyze_exception(e)
