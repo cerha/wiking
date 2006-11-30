@@ -39,7 +39,8 @@ class Handler(object):
         try:
             site_handler = self._site_handlers[key]
         except KeyError:
-            site_handler = SiteHandler(server, dbconnection)
+            resolver = WikingResolver()
+            site_handler = SiteHandler(server, dbconnection, resolver)
             self._site_handlers[key] = site_handler
         return site_handler
     
@@ -100,9 +101,10 @@ class SiteHandler(object):
 
     """
 
-    def __init__(self, server, dbconnection):
+    def __init__(self, server, dbconnection, resolver):
         self._server = server
         self._dbconnection = dbconnection
+        self._resolver = resolver
         self._resolve_cache = {}
         self._module_cache = {}
         self._mapping = self._module('Mapping')
@@ -114,7 +116,8 @@ class SiteHandler(object):
         try:
             module = self._module_cache[name]
         except KeyError:
-            module = get_module(name)(self._dbconnection, self._module)
+            module = get_module(name)(self._dbconnection, self._resolver,
+                                      self._module)
             self._module_cache[name] = module
         return module
 
@@ -143,18 +146,28 @@ class SiteHandler(object):
             kwargs['object'] = arg
         return method(req, **kwargs)
 
-    def _stylesheets(self, panels):
+    def _stylesheets(self, req, panels):
         id = self._mapping.identifier('Stylesheets')
         if not id:
             return ()
+        with_panels = req.show_panels() and panels
         return ['/'+id+'/'+stylesheet
                 for stylesheet in self._module('Stylesheets').stylesheets()
-                if panels or stylesheet != 'panels.css']
+                if with_panels or stylesheet != 'panels.css']
 
     def _doc(self, req, path):
-        basename = os.path.join(lcg.config.doc_dir, *path)
+        if path and path[0] == 'lcg':
+            path = path[1:]
+            basedir = lcg.config.doc_dir
+        else:
+            basedir = os.path.join(cfg.wiking_dir, 'doc', 'modules')
+        if not os.path.exists(basedir):
+            raise Exception("Directory %s does not exist" % basedir)
+        basename = os.path.join(basedir, *path)
         import glob, codecs
         variants = [f[-6:-4] for f in glob.glob(basename+'.*.txt')]
+        if not variants:
+            raise NotFound()
         lang = req.prefered_language(variants)
         filename = '.'.join((basename, lang, 'txt'))
         f = codecs.open(filename, encoding='utf-8')
@@ -170,15 +183,15 @@ class SiteHandler(object):
 
     def handle(self, req):
         path = [item for item in req.uri.split('/')[1:] if item]
-        if path and path[0] == 'wiking-doc':
-            result = self._doc(req, path[1:])
-            menu = ()
-            panels = ()
-        elif req.wmi:
-            if len(path) == 1:
-                path += ('Content',)
-            module = self._module(path[1])
-            try:
+        req.wmi = wmi = path and path[0] == 'wmi'
+        doc = path and path[0] == '__doc__'
+        try:
+            if doc:
+                result = self._doc(req, path[1:])
+            elif wmi:
+                if len(path) == 1:
+                    path += ('Content',)
+                module = self._module(path[1])
                 try:
                     arg = module.resolve(req)
                 except NotFound:
@@ -186,35 +199,42 @@ class SiteHandler(object):
                     result = module.list(req, msg=msg)
                 else:
                     result = self._action(req, module, arg)
-            except HttpError, e:
-                req.set_status(e.ERROR_CODE)
-                result = Document(e.name(), lcg.TextContent(e.msg(req)))
-                                #variants=self._module('Languages').languages())
-            menu = self._module('Modules').menu()
-            panels = ()
-        else:
-            if not path:
-                path = ('index',)
-            try:
+            else:
+                if not path:
+                    path = ('index',)
                 module, arg = self._resolve(req, path)
                 result = self._action(req, module, arg)
                 if not isinstance(result, Document):
                     content_type, data = result
                     return req.result(data, content_type=content_type)
-            except HttpError, e:
-                req.set_status(e.ERROR_CODE)
-                result = Document(e.name(), lcg.TextContent(e.msg(req)))
-            lang = result.lang()
-            menu = self._mapping.menu(lang)
-            #row = self._data.get_row(identifier=identifier)
-            parser = lcg.Parser()
-            panels = self._panels.panels(lang)
+        except HttpError, e:
+            req.set_status(e.ERROR_CODE)
+            lang = req.prefered_language(self._module('Languages').languages(),
+                                         raise_error=False)
+            result = Document(e.name(), lcg.TextContent(e.msg(req)), lang=lang)
         config = self._module('Config').config(self._server, result.lang())
-        node = result.mknode('/'.join(path), config, menu, panels,
-                             self._stylesheets(panels))
+        if doc or wmi:
+            config.site_title = wmi and \
+                    _("Wiking Management Interface") or \
+                    _("Wiking Help System")
+            config.site_subtitle = None
+            menu = self._module('Modules').menu(path[0])
+            panels = ()
+            config.show_panels = False
+        else:
+            menu = self._mapping.menu(result.lang())
+            panels = self._panels.panels(result.lang())
+            config.show_panels = req.show_panels()
+        config.wmi = wmi
+        node = result.mknode('/'.join(path), config, menu, panels, 
+                             self._stylesheets(req, panels))
         if node.language():
-            translator = lcg.GettextTranslator(node.language(),
-                                               path=TRANSLATION_PATH,
+            path = {
+                'wiking': os.path.join(cfg.wiking_dir, 'translations'),
+                'lcg':  '/usr/local/share/lcg/translations',
+                'pytis': '/usr/local/share/pytis/translations',
+                }
+            translator = lcg.GettextTranslator(node.language(), path=path,
                                                fallback=True)
         else:
             translator = lcg.NullTranslator()
