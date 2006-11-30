@@ -1,0 +1,27 @@
+# -*- coding: utf-8; mode: structured-text -*-
+
+= Languages =
+
+This module allows you to manage the set of languages supported by
+your site.  You can add any language as it's lowercase ISO 639-1 Alpha-2
+language code.
+
+The configured languages become automatically available for creating new
+content.  This is a system module and it doesn't itself handle any content.
+
+= Language selection in WMI =
+
+The Wiking Management Interface allows you to switch to any of the
+configured languages at any time.  The important think to know is, that
+when you view a content listing of a particular module in WMI, only the
+items corresponding to the current language are shown, if the items are
+language dependent.  For language independent content, all items are shown,
+of course.
+
+= Serving the content in multiple languages =
+
+For the website visitors, the content is always selected according to their
+language preferences (browser setting).  When the content is available in
+one of the accepted languages, the best-matching variant is served.  If
+not, Error 406 (Not Acceptable) is returned and the user is allowed to
+select manually from the available language variants.

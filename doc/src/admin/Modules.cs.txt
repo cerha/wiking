@@ -1,0 +1,14 @@
+# -*- coding: utf-8; mode: structured-text -*-
+
+= Moduly =
+
+Zde spravujete seznam modulů dostupných systému Wiking.  Je možné přidávat nové
+moduly, odstraňovat nepoužívané moduly, nebo existující moduly
+povolit/zakázat.
+
+Tento modul je systémový a sám o sobě neobsluhuje žádný obsah.
+
+Před přidáním nového modulu je nutné, aby byl modul na serveru instalován
+správcem systému.  Přidáním modulu jej pouze učiníte dostupným v rozhraní
+správy obsahu.  Smazáním, či deaktivací modulu je tento modul skryt pro
+rozhraní správy obsahu (čímž je rozhraní přehlednější).

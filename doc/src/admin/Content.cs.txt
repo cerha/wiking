@@ -1,0 +1,30 @@
+# -*- coding: utf-8; mode: structured-text -*-
+
+= Stránky =
+
+Modul Stránky spravuje obecné stránky s textovým obsahem.  Každá položka
+tabulky přiřazuje vlastní obsah jedné položce /Mapování/ (identifikátoru).
+
+Vlastní obsah stránek je zadáván ve formátu „strukturovaný text LCG“.
+Více viz [/__doc__/lcg/data-formats/structured-text příručka formátování].
+
+Tento modul ve skutečnosti spravuje několik jazykových verzí každé stránky,
+ale tabulka zobrazuje pouze záznamy odpovídající /aktuálně zvolenému
+jazyku/, takže ke každému identifikátoru z tabulky mapování je zobrazena
+pouze jedna položka (odpovídající tomuto jazyku, pokud taková existuje).
+Pokud chcete spravovat jiné jazykové verze stránek, musíte nejprve přepnout
+aktuální jazyk.
+
+Pokud chcete /přidat novou stránku/, je třeba nejprve vytvořit položku v
+tabulce /Mapování/, kde je třeba pro tuto stránku zvolit identifikátor.
+Teprve poté lze pro daný identifikátor vytvořit stránku.  Stránka vlastně
+přiřazuje danému identifikátoru obsah v jednom konkrétním jazyce.
+
+Pro přidání nové jazykové verze některé stávající stránky můžete využít
+položku „Přeložit“ v menu akcí stávající stránky, nebo rovnou vytvořit
+novou položku přiřazující tento jazyk danému identifikátoru.  Výhodou akce
+„Přeložit“ je předvyplnění textu původní jazykové varianty, takže překlad
+můžete provádět přepisováním původního textu.
+
+Každá položka může být také zveřejněna/zneveřejněna, jak je popsáno v
+nápovědě modulu [Mapping Mapování].

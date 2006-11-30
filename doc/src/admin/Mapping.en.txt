@@ -1,0 +1,35 @@
+# -*- coding: utf-8; mode: structured-text -*-
+
+= Mapping =
+
+This module maps the available URIs to particular Wiking modules which
+handle them.  The /Identifier/ is the name of the resource as seen from
+outside.  The corresponding URI may be for example
+\http://www.yourdomain.com/identifier/.  Each identifier maps to a single
+/Module/, which is responsible to handle all requests to this URI.
+
+See the documentation of particular modules to learn more how they handle
+requests and how to manage the content.
+
+== Main menu management ==
+
+You can also manage the main navigation of the site here.  In the field
+/Menu order/, you simply assign a number to each item you want to appear in
+the main menu.  The items will appear in the navigation bar according to
+given order.  The items which have no number assigned will not appear in
+the menu, but they can be still referenced using their identifier.  You
+will probably want to link to those items from other pages to make them
+visible to website users.
+
+== Published/Unpublished items ==
+
+Mapping items, as well as many other content elements, can be
+published/unpublished.  An unpublished item exists in the database, so the
+author can work on it, but it is not publicly visible to the website users.
+
+Publishing a Mapping item makes the URI available on the server, however
+you also need to publish some content for this URI.  This must be done in
+the corresponding module.  On the other hand, by unpublishing an item here,
+all content becomes unavailable, even though this content may be published.
+This way you can for example unpublish all language variants of one page at
+one place.

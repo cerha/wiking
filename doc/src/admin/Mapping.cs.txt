@@ -1,0 +1,47 @@
+# -*- coding: utf-8; mode: structured-text -*-
+
+= Mapování =
+
+Mapování určuje přiřazení dostupných identifikátorů a modulů, které je
+obsluhují.  /Identifikátor/ je název položky, tak jak je viděn zvenčí a
+promítne se do adresy například jako
+/\http://www.jmenoserveru.cz/identifikator/.  Každému identifikátoru zde
+přiřadíme Modul, který jej obsluhuje.  Nejběžnějším modulem bude například
+modul /Stránky/, který položky zobrazuje jako textové stránky.  Jiné moduly
+mohou zobrazovat seznamy novinek, uživatelů apod.
+
+Pro přiřazení vlastního obsahu dané položce se přepněte na příslušný modul.
+Zde najdete také další nápovědu, která blíže vysvětluje k čemu daný modul
+slouží a jakým způsobem spravovat jeho obsah.
+
+
+== Správa hlavní nabídky ==
+
+Hlavní nabídka je jedním z nejdůležitějších navigačních prvků stránky.  V
+základním zobrazení je to vodorovná lišta záložek v horní části stránky,
+ale její vzhled a umístění mohou být přizpůsobeny pomocí stylů.
+
+Podobu hlavní nabídky ovlivníte jednoduše tím, že položkám, které v ní
+chcete zobrazit přiřadíte celé číslo v kolonce /Pořadí v menu/.  Tyto
+položky potom budou zobrazeny v hlavní nabídce v pořadí daném tímto
+pořadovým číslem.
+
+Položky, které nemají toto číslo vyplněno, nebudou v nabídce zobrazeny, ale
+může na ně být vytvořen odkaz pomocí jejich identifikátoru (například v
+textu jiné stránky).
+
+== Publikované/nepublikované položky ==
+
+Jednotlivé položky mapování, stejně jako mnoho jiných součástí obsahu,
+mohou být zveřejněny/zneveřejněny.  Neveřejná položka sice existuje v
+databázi a lze s ní tedy pracovat a spravovat její obsah, vnějším
+uživatelům však tato položka není dostupná a o její existenci se ani
+nedozví.
+
+Zveřejněním položky mapování učiníte danou adresu dostupnou.  Aby se však
+uživateli zobrazil nějaký obsah, je nutné, aby v příslušném modulu
+existoval pro danou položku také nějaký (zveřejněný) obsah.  Na druhou
+stranu zneveřejněním položky mapování zneveřejníte veškený příslušný obsah,
+nehledě na to, zda jsou jeho položky zveřejněny či nikoliv.  Protože není
+dostupná daná adresa, není dostupný ani žádný obsah.  Takto lze například
+odebrat všechny jazykové verze jedné stránky najednou.
