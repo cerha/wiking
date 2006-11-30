@@ -43,15 +43,6 @@ def get_module(name):
         import wiking.modules as modules
     return getattr(modules, name)
 
-_CAMEL_CASE_WORD = re.compile(r'[A-Z][a-z\d]+')
-def split_camel_case(string):
-    """Return a lowercase string using 'separator' to concatenate words."""
-    return _CAMEL_CASE_WORD.findall(string)
-
-def camel_case_to_lower(string, separator='-'):
-    """Return a lowercase string using 'separator' to concatenate words."""
-    return separator.join([w.lower() for w in split_camel_case(string)])
-
 def rss(title, url, items, descr=None):
     result = '''<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
@@ -138,7 +129,7 @@ def send_mail (sender, addr, subject, text, html, smtp_server='localhost'):
 class HttpError(Exception):
     ERROR_CODE = None
     def name(self):
-        name = " ".join(split_camel_case(self.__class__.__name__))
+        name = " ".join(pp.split_camel_case(self.__class__.__name__))
         return _("Error %d: %s", self.ERROR_CODE, name)
     def msg(self, req):
         pass
@@ -160,12 +151,6 @@ class NotFound(HttpError):
 class NotAcceptable(HttpError):
     ERROR_CODE = 406
     
-    def __init__(self, available):
-        self._available = tuple(available)
-
-    def available(self):
-        return self._available
-        
     def msg(self, req):
         from lcg import _html
         prefered = [lcg.language_name(l) for l in req.prefered_languages()]
@@ -174,10 +159,10 @@ class NotAcceptable(HttpError):
                lcg.concat(_("Your browser is configured to accept only the "
                             "following languages:"), ' ',
                           lcg.concat(prefered, separator=', ')))
-        if self._available:
+        if self.args:
             available = [_html.link(lcg.language_name(l),
                                     "%s?lang=%s;keep_language=1" % (req.uri, l))
-                         for l in self._available]
+                         for l in self.args[0]]
             msg += (lcg.concat(_("The available variants are:"), ' ',
                                lcg.concat(available, separator=', ')),
                     _("If you want to accept other languages permanently, "
@@ -228,11 +213,12 @@ class Document(object):
     def lang(self):
         return self._lang
     
-    def mknode(self, id, config, menu, panels, stylesheets):
+    def mknode(self, id, config, menu, panels, stylesheets, show_panels):
         return WikingNode(id, config, title=self._title, content=self._content,
                           lang=self._lang, variants=self._variants or (),
                           descr=self._descr, menu=menu, panels=panels,
-                          stylesheets=stylesheets, edit_label=self._edit_label)
+                          stylesheets=stylesheets, edit_label=self._edit_label,
+                          show_panels=show_panels)
 
     
 # ============================================================================
@@ -241,11 +227,12 @@ class Document(object):
 
 class WikingNode(lcg.ContentNode):
     
-    def __init__(self, id, config, menu=(), panels=(), stylesheets=(),
-                 edit_label=None, lang=None, variants=(), **kwargs):
+    def __init__(self, id, config, menu=(), lang=None, variants=(), panels=(),
+                 stylesheets=(), edit_label=None, show_panels=True, **kwargs):
         self._config = config
         self._menu = menu
         self._panels = panels
+        self._show_panels = show_panels
         self._stylesheets = stylesheets
         for panel in panels:
             panel.content().set_parent(self)
@@ -261,6 +248,9 @@ class WikingNode(lcg.ContentNode):
     
     def panels(self):
         return self._panels
+    
+    def show_panels(self):
+        return self._show_panels
                
     def stylesheets(self):
         return self._stylesheets
@@ -336,6 +326,8 @@ class ErrorMessage(Message):
 # Classes derived from Pytis components
 # ============================================================================
 
+Field = pytis.presentation.FieldSpec
+
 class Action(pytis.presentation.Action):
     def __init__(self, title, name, handler=None, **kwargs):
         # name determines the Wiking's method (and the 'action' argument.
@@ -346,33 +338,6 @@ class Action(pytis.presentation.Action):
         
     def name(self):
         return self._name
-    
-
-class Field(pp.FieldSpec):
-    
-    def __init__(self, id, label='', virtual=False, dbcolumn=None, type=None,
-                 codebook=None, **kwargs):
-        if virtual and type is None:
-            type = pd.String()
-        self._virtal = virtual
-        self._dbcolumn = dbcolumn or id
-        self._dbcolumn_kwargs = {}
-        for arg in ('not_null', 'value_column', 'validity_column',
-                    'validity_condition'):
-            if kwargs.has_key(arg):
-                self._dbcolumn_kwargs[arg] = kwargs[arg]
-                del kwargs[arg]
-        super(Field, self).__init__(id, label, type_=type, codebook=codebook,
-                                    **kwargs)
-
-    def virtual(self):
-        return self._virtal
-    
-    def dbcolumn(self):
-        return self._dbcolumn
-    
-    def dbcolumn_kwargs(self):
-        return self._dbcolumn_kwargs
     
 
 class Data(pd.DBDataDefault):
@@ -415,36 +380,21 @@ class WikingResolver(pytis.util.Resolver):
         assert assistant is None or isinstance(assistant, pytis.util.Resolver)
         self._assistant = assistant
     
-    def get(self, name, spec):
+    def get(self, name, spec_name):
         try:
             cls = get_module(name)
         except AttributeError, e:
             if self._assistant:
-                return self._assistant.get(name, spec)
+                return self._assistant.get(name, spec_name)
             else:
                 raise pytis.util.ResolverModuleError(name, str(e))
         try:
-            method = getattr(cls, spec)
+            spec = cls.spec(self)
         except AttributeError:
-            raise pytis.util.ResolverSpecError(name, spec)
+            return self._assistant.get(name, spec_name)
+        try:
+            method = getattr(spec, spec_name)
+        except AttributeError:
+            raise pytis.util.ResolverSpecError(name, spec_name)
         return method()
 
-# ============================================================================
-
-class DirectData(object):
-    """Direct data access with psycopg.  Currently unused..."""
-    def __init__(self, opt):
-        import psycopg
-        self._connection = psycopg.connect("dbname=%s" % opt['dbname'])
-
-    def raw_select(self, table, columns, **kwargs):
-        q = 'SELECT %s FROM %s WHERE %s' % \
-            (', '.join(['"%s"' % col for col in columns]), table,
-             ' AND '.join(['"%s" = %%s' % col for col in kwargs.keys()]))
-        cr = self._connection.cursor()
-        cr.execute(q, kwargs.values())
-        return cr.fetchall()
-
-    def select(self, table, columns, **kwargs):
-        return [dict(zip(columns, row))
-                for row in self.raw_select(table, columns, **kwargs)]
