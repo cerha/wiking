@@ -213,12 +213,11 @@ class Document(object):
     def lang(self):
         return self._lang
     
-    def mknode(self, id, config, menu, panels, stylesheets, show_panels):
+    def mknode(self, id, config, menu, panels, stylesheets):
         return WikingNode(id, config, title=self._title, content=self._content,
                           lang=self._lang, variants=self._variants or (),
                           descr=self._descr, menu=menu, panels=panels,
-                          stylesheets=stylesheets, edit_label=self._edit_label,
-                          show_panels=show_panels)
+                          stylesheets=stylesheets, edit_label=self._edit_label)
 
     
 # ============================================================================
@@ -228,11 +227,10 @@ class Document(object):
 class WikingNode(lcg.ContentNode):
     
     def __init__(self, id, config, menu=(), lang=None, variants=(), panels=(),
-                 stylesheets=(), edit_label=None, show_panels=True, **kwargs):
+                 stylesheets=(), edit_label=None, **kwargs):
         self._config = config
         self._menu = menu
         self._panels = panels
-        self._show_panels = show_panels
         self._stylesheets = stylesheets
         for panel in panels:
             panel.content().set_parent(self)
@@ -249,9 +247,6 @@ class WikingNode(lcg.ContentNode):
     def panels(self):
         return self._panels
     
-    def show_panels(self):
-        return self._show_panels
-               
     def stylesheets(self):
         return self._stylesheets
                
