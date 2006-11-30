@@ -38,15 +38,7 @@ from configuration import *
 # This is Wiking-specific configuration.  The above is Pytis config.
 cfg = Configuration()
 
-TRANSLATION_PATH = {
-    'wiking': os.path.join(cfg.wiking_dir, 'translations'),
-    'wiking-help': os.path.join(cfg.wiking_dir, 'translations'),
-    'lcg':  '/usr/local/share/lcg/translations',
-    'pytis': '/usr/local/share/pytis/translations',
-    }
-
 from util import *
-from help import *
 from module import *
 from export import *
 from request import *
