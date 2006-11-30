@@ -98,6 +98,18 @@ a:hover.backref { color: $color.foreground; }
 #panels hr { 
     display: none;    
 }
+#panels .panel-control.show {
+    position: absolute;
+    top: 1.9em;
+    right: 6pt;
+}
+#panels .panel-control a {
+    font-size: 0.8em;
+    text-decoration: none;
+}
+#panels .panel-control.hide { 
+    text-align: right;
+}
 
 #content {
     padding: 0.8em;
