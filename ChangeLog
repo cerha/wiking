@@ -1,3 +1,118 @@
+2006-11-30  Tomas Cerha  <cerha@brailcom.org>
+
+	* translations/wiking-help.cs.po: File removed.
+
+	* resources/css/default.css: Added styles for panel controls.
+
+	* lib/wiking/modules.py (Panelizable): Class removed.
+	(Modules, Mapping, Config, Languages, Themes, Stylesheets, Users) 
+	(Panels, Titles, Content, News): Specifications rewritten using
+	a class derived from `pytis.presentation.Specification'.
+
+	* lib/wiking/module.py (WikingModule._TITLE)
+	(WikingModule._SINGULAR_TITLE, WikingModule._FIELDS)
+	(WikingModule._LAYOUT, WikingModule._LAYOUT_COLUMNS)
+	(WikingModule._TABLE, WikingModule._KEY, WikingModule._SORTING)
+	(WikingModule._CB_SPEC, WikingModule._COLUMNS)
+	(WikingModule._ACTIONS):Constants removed.
+	(WikingModule._PANEL_DEFAULT_COUNT, WikingModule._PANEL_FIELDS):
+	New constants.
+	(WikingModule.Object.__init__): New argument `view'.
+	(WikingModule.Object.__init__, WikingModule.Object.prow): New
+	method.
+	(WikingModule.View.__init__): New argument `resolver'.
+	(WikingModule.ListView.__init__): New argument `resolver'.
+	(WikingModule.spec): New method.
+	(WikingModule.data_spec, WikingModule.view_spec)
+	(WikingModule.binding_spec, WikingModule.cb_spec): Methods
+	removed.
+	(WikingModule.__init__): New argument `resolver'.  Use
+	`self.spec()' to get the `Specification' instance.  Get
+	specifications form this instance.  Don't translate sorting spec.
+	(WikingModule._form): New method.
+	(WikingModule._help): Method removed.
+	(WikingModule._document): Use `self._view.singular()' instead of
+	`self._view.layout().caption()'.
+	(WikingModule._list): Soppose `distinct()' to return a sequence of
+	`Value' instances.
+	(WikingModule.resolve): Pass `self._view' to the Object
+	constructor.
+	(WikingModule.panelize): New method.
+	(WikingModule.list): Include just a link to documentation, not hte
+	help text itself.
+	(WikingModule.list, WikingModule.show, WikingModule.add) 
+	(WikingModule.edit, WikingModule.remove): Use `self._form()'
+	instead of constructing the form directly.
+	(WikingModule.insert):  Pass `self._view' to the Object
+	constructor.
+
+	* lib/wiking/handler.py (Handler._site_handler): Pass a resolver
+	instance to `SiteHandler' constructor.
+	(SiteHandler.__init__): New argument `resolver'.
+	(SiteHandler._module): Pass a resolver instance to module
+	constructor.
+	(SiteHandler._stylesheets): Accept `req' and `panels' arguments.
+	(SiteHandler._doc): Also support wiking documentation in wiking
+	doc directory.
+	(SiteHandler.handle): Heavilly rewritten.  Improved documentation
+	handling.  Pass options to the exporter in the node config.  Don't
+	use `TRANSLATION_PATH', build it here.
+
+	* lib/wiking/__init__.py (TRANSLATION_PATH): Constant removed.
+	Don't import `help'.
+
+	* lib/wiking/export.py (Exporter._is_wmi_node): Method removed.
+	(Exporter._top): Always use `config.site_title'.
+	(Exporter._panels): Hide panels if `config.show_panels' is False.
+	Show panel show/hide controls.
+	(Exporter.ctrls): Use `config.wmi' instead of `self._is_wmi_node()'.
+
+	* lib/wiking/help.py: Module removed. 
+
+	* lib/wiking/request.py (WikingRequest._PANELS_COOKIE): New class.
+	(WikingRequest._init_params): Initialize `self._show_panels'.
+	(WikingRequest.show_panels): New method.
+	(WikingRequest.__init__): Method removed.
+
+	* lib/wiking/util.py (split_camel_case, camel_case_to_lower):
+	Functions removed.
+	(HttpError.name): Use `split_camel_case' from Pytis.
+	(__init__, available): Methods removed.
+	(NotAcceptable.msg): Use `self.args' instead of `self._available'.
+	(Field): Class removed - be just an alias to
+	`pytis.presentation.FieldSpec'
+	(WikingResolver.get): Use specification classes instead of modules
+	directly.
+	(DirectData): Class removed.
+
+	* doc/modules/Titles.en.txt: New file.
+	
+	* doc/modules/Titles.cs.txt: New file.
+
+	* doc/modules/Panels.en.txt: New file.
+
+	* doc/modules/Panels.cs.txt: New file.
+
+	* doc/modules/News.en.txt: New file.
+
+	* doc/modules/News.cs.txt: New file.
+
+	* doc/modules/Modules.en.txt: New file.
+
+	* doc/modules/Modules.cs.txt: New file.
+
+	* doc/modules/Mapping.en.txt: New file.
+
+	* doc/modules/Mapping.cs.txt: New file.
+
+	* doc/modules/Languages.en.txt: New file.
+
+	* doc/modules/Languages.cs.txt: New file.
+
+	* doc/modules/Content.en.txt: New file.
+
+	* doc/modules/Content.cs.txt: New file.
+
 2006-11-21  Tomas Cerha  <cerha@brailcom.org>
 
 	* sql/init.sql: Operator fixed.
