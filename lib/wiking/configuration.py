@@ -50,3 +50,10 @@ class Configuration(pc):
         _DOC = _("Empty value (None) disables sending bug reports by e-mail.")
         _DEFAULT = None
 
+    class _Option_https_ports(pc.Option):
+        _DESCR = _("Sequence of port numbers using HTTPS.")
+        _DOC = _("If you use HTTPS on some other ports, add them to this "
+                 "list, otherwise some links may be broken (such as in RSS "
+                 "feeds).")
+        _DEFAULT = (443,)
+        
