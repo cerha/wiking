@@ -90,8 +90,15 @@ class Request(object):
 
     def abs_uri(self):
         port = self._req.connection.local_addr[1]
-        return 'http://' + self.server.server_hostname + \
-               (port and port != 80 and ':'+ str(port) or '') + self.uri
+        if port in cfg.https_ports:
+            protocol = 'https://'
+            default_port = 443
+        else:
+            protocol = 'http://'
+            default_port = 80            
+        return protocol + self.server.server_hostname + \
+               (port and port != default_port and ':'+ str(port) or '') + \
+               self.uri
     
     def error(self, message):
         self._req.content_type = "text/html; charset=UTF-8"
