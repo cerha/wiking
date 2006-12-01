@@ -1,3 +1,15 @@
+2006-12-01  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/request.py (Request.abs_uri): Guess protocol based on
+	port number.
+
+	* lib/wiking/export.py (Exporter._panels): Panel control labels
+	changed.  Represent panel headings as divs, not h1 tags.
+	(Exporter._panels): Improved handling of horizontal rules.
+
+	* lib/wiking/configuration.py: 
+	(Configuration._Option_https_ports): New option.
+
 2006-11-30  Tomas Cerha  <cerha@brailcom.org>
 
 	* translations/wiking-help.cs.po: File removed.
