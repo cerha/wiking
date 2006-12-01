@@ -78,6 +78,8 @@ a:hover.backref { color: $color.foreground; }
 #navigation-bar {
     border-bottom: 1px solid $color.top-border;
     padding-left: 0.2em;
+    /* leave some space for panel controls and wrapped languages */
+    padding-right: 4em; 
 }
 #navigation-bar .label {
     display: none;
@@ -95,10 +97,7 @@ a:hover.backref { color: $color.foreground; }
     border-bottom: solid $color.background 1px;
 }
 
-#panels hr { 
-    display: none;    
-}
-#panels .panel-control.show {
+#panels .panel-control {
     position: absolute;
     top: 1.9em;
     right: 6pt;
@@ -106,9 +105,6 @@ a:hover.backref { color: $color.foreground; }
 #panels .panel-control a {
     font-size: 0.8em;
     text-decoration: none;
-}
-#panels .panel-control.hide { 
-    text-align: right;
 }
 
 #content {
