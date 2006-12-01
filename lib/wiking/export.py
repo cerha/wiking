@@ -89,10 +89,10 @@ class Exporter(lcg.HtmlExporter):
     
     def _panels(self, node):
         panels = node.panels()
-        result = [_html.hr()]
         if panels and not node.config().show_panels:
             return _html.div(_html.link(_("Show panels"), "?show_panels=1"),
                              cls="panel-control show")
+        result = []
         for i, panel in enumerate(panels):
             id = panel.id()
             content = panel.content()
@@ -107,12 +107,12 @@ class Exporter(lcg.HtmlExporter):
                            hidden(" (", _html.link(_("skip"), next), ")")),
                           cls='title')
             c = _html.div(content, cls="panel-content")
-            hr = _html.hr(cls="hidden")
-            result.append(_html.div((h, c, hr), cls="panel panel-"+id))
+            result.append(_html.div((_html.hr(cls="hidden"), h, c),
+                                    cls="panel panel-"+id))
         if panels:
-            result.append(_html.div(_html.link(_("Hide panels"),
-                                               "?hide_panels=1"),
-                                    cls="panel-control hide"))
+            ctrl = _html.div(_html.link(_("Hide panels"), "?hide_panels=1"),
+                             cls="panel-control hide")
+            result.extend((_html.hr(cls="hidden"), ctrl))
         return result
 
 
