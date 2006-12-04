@@ -2,14 +2,11 @@
 
 = Jazyky =
 
-Tento modul slouží k správě množiny jazyků podporovaných vaším portálem.
-Můžete přidat libovolný jazyk zadáním dvouznakového kódu jazyka podle ISO
-639-1.
+Tento modul slouží k správě dostupných jazyků.  Můžete přidat libovolný jazyk
+zadáním dvouznakového kódu jazyka podle ISO 639-1.
 
 Zde zkonfigurované jazyky jsou potom automaticky dostupné pro určení jazyka
-spravovaného obsahu.
-
-Tento modul systémový a sám o sobě neobsluhuje žádný obsah.
+obsahu.
 
 == Výběr jazyka ve správcovském rozhraní systému Wiking ==
 

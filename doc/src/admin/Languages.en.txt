@@ -2,12 +2,10 @@
 
 = Languages =
 
-This module allows you to manage the set of languages supported by
-your site.  You can add any language as it's lowercase ISO 639-1 Alpha-2
-language code.
+This module allows you to manage the set of available languages.  You can add
+any language as it's lowercase ISO 639-1 Alpha-2 language code.
 
-The configured languages become automatically available for creating new
-content.  This is a system module and it doesn't itself handle any content.
+The configured languages become automatically available for content creation.
 
 = Language selection in WMI =
 
