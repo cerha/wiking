@@ -91,10 +91,9 @@ class Modules(WikingModule):
     class Spec(pp.Specification):
         class _ModNameType(pd.String):
             VM_UNKNOWN_MODULE = 'VM_UNKNOWN_MODULE'
-            _VALIDATION_MESSAGES = pd.String._VALIDATION_MESSAGES
-            _VALIDATION_MESSAGES[VM_UNKNOWN_MODULE] = \
-               _("Unknown module.  You either misspelled the name "
-                 "or the module is not installed properly.")
+            _VM_UNKNOWN_MODULE_MSG = _("Unknown module.  You either "
+                                       "misspelled the name or the module "
+                                       "is not installed properly.")
             def _check_constraints(self, value):
                 pd.String._check_constraints(self, value)
                 if not globals().has_key(value) or \
