@@ -135,7 +135,7 @@ class Mapping(WikingModule, Publishable):
             #Field('parent', _("Parent"), codebook='Mapping'),
             Field('identifier', _("Identifier"),
                   filter=ALPHANUMERIC, post_process=LOWER, fixed=True,
-                  type=pd.Identifier()),
+                  type=pd.Identifier(maxlen=32), width=20),
             Field('mod_id', _("Module"), selection_type=CHOICE,
                   codebook='Modules',
                   validity_condition=pd.AND(*[pd.NE('name',
