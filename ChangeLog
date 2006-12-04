@@ -1,3 +1,14 @@
+2006-12-04  Tomas Cerha  <cerha@brailcom.org>
+
+	* doc/modules/Languages.cs.txt: Minor improvements.
+	
+	* doc/modules/Languages.en.txt: Minor improvements.
+
+	* lib/wiking/modules.py
+	(Modules.Spec._ModNameType._VALIDATION_MESSAGES): Konstanta zru¹ena.
+	(Modules.Spec._ModNameType._VM_UNKNOWN_MODULE_MSG): Nová konstanta.
+	(Mapping.Spec): Nastav maximální délku identifikátoru.
+
 2006-12-01  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/request.py (Request.abs_uri): Guess protocol based on
