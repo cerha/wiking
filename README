@@ -1,0 +1,14 @@
+Wiking is a content management system which was designed to produce highly
+accessible web sites. You can manage your web site using a web browser.
+
+Most important features:
+
+    * Accessibility for website visitors
+    * Accessible content management and authoring
+    * Support for internationalization and multilingual content
+    * Conformance to W3C and other relevant standards 
+
+See http://www.freebsoft.org/wiking for more information.
+
+See the file INSTALL for installation instructions.
+
