@@ -7,8 +7,7 @@ Dependencies:
   * postgresql >= (8.1 suggested)
   * python >= 2.3 (2.4 suggested)
   * lcg >= 0.3.4
-  * pytis
-  * pytis-extensions
+  * pytis >= 0.1.0
   * pyPgSQL
   * mxDateTime
 
