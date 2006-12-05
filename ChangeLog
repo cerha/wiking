@@ -1,5 +1,11 @@
 2006-12-05  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/modules.py: Define aliases for useful constants here,
+	don't import them from pytis.extensions.
+	(Themes.Spec.layout): New method.
+
+	* lib/wiking/__init__.py (__version__): Don't import pytis.extensions.
+
 	* lib/wiking/util.py (cmp_versions): New function.
 
 	* Makefile: New file.
