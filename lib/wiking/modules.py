@@ -19,14 +19,18 @@
 
 from wiking import *
 
-from pytis.extensions import \
-     SelectionType, BindingSpec, ViewSpec, CodebookSpec, \
-     HGroup, VGroup, Computer, CbComputer, \
-     ALPHANUMERIC, LOWER, ONCE, ASC, DESC, NEVER, nextval
+from pytis.presentation import Computer, CbComputer
 from mx.DateTime import now
 from lcg import _html
 import re, types
-CHOICE = SelectionType.CHOICE
+
+CHOICE = pp.SelectionType.CHOICE
+ALPHANUMERIC = pp.TextFilter.ALPHANUMERIC
+LOWER = pp.PostProcess.LOWER
+ONCE = pp.Editable.ONCE
+NEVER = pp.Editable.NEVER
+ASC = pd.ASCENDENT
+DESC = pd.DESCENDANT
 
 _ = lcg.TranslatableTextFactory('wiking')
 
@@ -110,7 +114,7 @@ class Modules(WikingModule):
             )
         columns = layout = ('title', 'active')
         sorting = (('name', ASC),)
-        cb = CodebookSpec(display=(_modtitle, 'name'))
+        cb = pp.CodebookSpec(display=(_modtitle, 'name'))
     
     _REFERER = 'name'
     _TITLE_COLUMN = 'title'
@@ -148,10 +152,10 @@ class Mapping(WikingModule, Publishable):
             Field('published', _("Published")),
             Field('ord', _("Menu order"), width=5))
         sorting = (('ord', ASC), ('identifier', ASC))
-        bindings = {'Content': BindingSpec(_("Page content"), 'mapping_id')}
+        bindings = {'Content': pp.BindingSpec(_("Page content"), 'mapping_id')}
         columns = ('identifier', 'modtitle', 'published', 'ord')
         layout = ('identifier', 'mod_id', 'published', 'ord')
-        cb = CodebookSpec(display='identifier')
+        cb = pp.CodebookSpec(display='identifier')
     _REFERER = _TITLE_COLUMN = 'identifier'
     
     def _link_provider(self, row, col, uri, wmi=False):
@@ -315,7 +319,7 @@ class Languages(WikingModule):
                                  depends=())),
             )
         sorting = (('lang', ASC),)
-        cb = CodebookSpec(display=lcg.language_name)
+        cb = pp.CodebookSpec(display=lcg.language_name)
         layout = ('lang',)
         columns = ('lang', 'name')
     _REFERER = _TITLE_COLUMN = 'lang'
@@ -408,14 +412,16 @@ class Themes(WikingModule):
         title = _("Themes")
         def fields(self):
             return (
-                Field('theme_id', width=0),
+                Field('theme_id'),
                 Field('name', _("Name"), width=20),
                 ) + tuple([
                 Field(c.id(), c.id(), dbcolumn=c.id().replace('-','_'),
                       type=pd.Color())
                 for c in Themes.COLORS])
+        def layout(self):
+            return ('name',) + tuple([c.id() for c in Themes.COLORS])
         columns = ('name',)
-        cb = CodebookSpec(display='name')
+        cb = pp.CodebookSpec(display='name')
         
     _TITLE_COLUMN = 'name'
 
@@ -454,7 +460,7 @@ class Content(WikingModule, Publishable, Translatable):
         sorting = (('mapping_id', ASC), ('lang', ASC),)
         layout = ('mapping_id', 'lang', 'title', 'content')
         columns = ('title', 'identifier', 'published')
-        cb = CodebookSpec(display='identifier')
+        cb = pp.CodebookSpec(display='identifier')
         
     _REFERER = 'identifier'
     _TITLE_COLUMN = 'title'
