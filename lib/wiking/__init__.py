@@ -32,7 +32,7 @@ config.db_encoding = 'utf-8'
 
 import pytis.data as pd
 import pytis.presentation as pp
-import pytis.util, pytis.extensions, pytis.web
+import pytis.util, pytis.web
 
 from configuration import *
 # This is Wiking-specific configuration.  The above is Pytis config.
