@@ -64,13 +64,17 @@ version := $(shell echo 'import wiking; print wiking.__version__' | python)
 dir := wiking-$(version)
 file := wiking-$(version).tar.gz
 
-release: translations
+compile:
+	python -c "import compileall; compileall.compile_dir('lib')"
+#python -OO -c "import compileall; compileall.compile_dir('lib')"
+
+release: compile translations
 	@ln -s .. releases/$(dir)
-	@if [ -e releases/$(file) ]; then \
+	@if [ -f releases/$(file) ]; then \
 	   echo "Removing old file $(file)"; rm releases/$(file); fi
 	@echo "Generating $(file)..."
 	@(cd releases; tar --exclude "CVS" --exclude "*~" --exclude "#*" \
-	     --exclude "*.pyc" --exclude "*.pyo" \
-	     --exclude "config.py" --exclude releases --exclude site \
+	     --exclude ".*" --exclude releases --exclude site \
+	     --exclude "config.py" --exclude "*.pyo" \
 	     -czhf $(file) $(dir))
 	@rm releases/$(dir)
