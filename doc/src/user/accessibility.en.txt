@@ -1,0 +1,34 @@
+# -*- coding: utf-8; mode: structured-text -*-
+
+== Accessibility Statement ==
+
+This site uses the [http://www.freebsoft.org/wiking Wiking] content management
+system.  One of the major aims of this system was providing equal access to all
+users, including people with handicaps and/or special needs.  Wiking also tries
+to be neutral to user's software, hardware and settings.  Thus the resulting
+pages should be usable with any browser, font type or size, screen resolution,
+assistive technologies etc.
+
+The implementation respects relevant W3C standards.  From the accessibility
+point of view, this is in particular >>[http://www.w3.org/TR/WAI-WEBCONTENT/
+Web Content Accessibility Guidelines 1.0]<<.
+
+Although we believe, that the WCAG 1.0 requirements were met at the AAA level,
+we must admit, that a range of the criterias are of a subjective nature and
+thus it is not possible to measure accessibility objectively.  The product was
+also tested with users of different combinations of assistive technologies and
+a number of enhancements were implemented to achieve the best usability in all
+cases.
+
+You will find information about navigation and accessibility related features
+in the chapter [navigation Navigation] of the Wiking user's manual.
+
+The final accessibiliy of a site, however, does not only depend upon the
+content management system in use.  Also the actual content matters.  Wiking
+tries to help in this respect too, but it is not possible to guarantee that the
+provided fetures will be used properly.  Thus, if you have problems with
+accessibility, always contact the site administrator first.  You should be able
+to find his e-mail address at the bottom of the page.  Only when you are sure
+that your problem is caused by the Wiking system itself, contact its
+developers.  You will find contact information at the
+[http://www.freebsoft.org/wiking Wiking project website].
