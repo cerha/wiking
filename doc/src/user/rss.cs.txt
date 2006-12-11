@@ -1,10 +1,10 @@
 # -*- coding: utf-8; mode: structured-text -*-
 
-== Webov� kan�ly (RSS) ==
+== Webové kanály (RSS) ==
 
-Technologie RSS umo���uje u�ivatel�m Internetu p�ihl�sit se k odb�ru novinek z
-webu, kter� nab�z� RSS zdroj (t�¾ RSS feed, RSS kan�l).  V�ce o RSS viz
-nap�. [http://cs.wikipedia.org/wiki/RSS Wikipedia].
+Technologie RSS umožňuje uživatelům Internetu přihlásit se k odběru novinek z
+webu, který nabízí RSS zdroj (též RSS feed, RSS kanál).  Více o RSS viz
+např. [http://cs.wikipedia.org/wiki/RSS Wikipedia].
 
 Některé prohlížeče obsahují přímo zabudovanou podporu pro odebírání RSS kanálů,
 s ostatními si budete muset nainstalovat RSS čtečku jako externí program.
@@ -16,4 +16,3 @@ Systém Wiking umožňuje k položkám z různých částí portálu přistupova
 pomocí technologie RSS.  V příslušné sekci naleznete vždy na konci výpisu
 položek informaci o RSS kanálu a odkaz.  Adresu tohoto odkazu použijte k
 nastavení vaší RSS čtečky.
-
