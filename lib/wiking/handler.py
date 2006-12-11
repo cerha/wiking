@@ -128,6 +128,10 @@ class SiteHandler(object):
         if len(path) == 1 and identifier.endswith('.rss'):
             req.params['action'] = 'rss'
             identifier = identifier[:-4]
+            if len(identifier) > 3 and identifier[-3] == '.' \
+                   and identifier[-2:].isalpha():
+                req.params['lang'] = identifier[-2:]
+                identifier = identifier[:-3]
         try:
             modname = self._resolve_cache[identifier]
         except KeyError:
@@ -160,13 +164,18 @@ class SiteHandler(object):
             path = path[1:]
             basedir = lcg.config.doc_dir
         else:
-            basedir = os.path.join(cfg.wiking_dir, 'doc', 'modules')
+            basedir = os.path.join(cfg.wiking_dir, 'doc')
         if not os.path.exists(basedir):
             raise Exception("Directory %s does not exist" % basedir)
-        basename = os.path.join(basedir, *path)
         import glob, codecs
-        variants = [f[-6:-4] for f in glob.glob(basename+'.*.txt')]
-        if not variants:
+        # TODO: the documentation should be processed by LCG first into some
+        # reasonable output format.
+        for subdir in ('', 'user', 'modules'):
+            basename = os.path.join(basedir, subdir, *path)
+            variants = [f[-6:-4] for f in glob.glob(basename+'.*.txt')]
+            if variants:
+                break
+        else:
             raise NotFound()
         lang = req.prefered_language(variants)
         filename = '.'.join((basename, lang, 'txt'))
@@ -176,17 +185,18 @@ class SiteHandler(object):
         content = lcg.Parser().parse(text)
         if len(content) == 1 and isinstance(content[0], lcg.Section):
             title = content[0].title()
-            content = lcg.SectionContainer(content[0].content())
+            content = lcg.SectionContainer(content[0].content(), toc_depth=0)
         else:
-            title = filename
+            title = ' :: '.join(path)
         return Document(title, content, lang=lang, variants=variants)
 
     def handle(self, req):
         path = [item for item in req.uri.split('/')[1:] if item]
-        req.wmi = wmi = path and path[0] == 'wmi'
-        doc = path and path[0] == '__doc__'
+        req.wmi = wmi = path and path[0] == '_wmi'
+        doc = path and path[0] == '_doc'
         try:
             if doc:
+                doc = req.param('display') != 'inline'
                 result = self._doc(req, path[1:])
             elif wmi:
                 if len(path) == 1:
@@ -213,19 +223,19 @@ class SiteHandler(object):
                                          raise_error=False)
             result = Document(e.name(), lcg.TextContent(e.msg(req)), lang=lang)
         config = self._module('Config').config(self._server, result.lang())
-        if doc or wmi:
+        if wmi or doc:
             config.site_title = wmi and \
-                    _("Wiking Management Interface") or \
-                    _("Wiking Help System")
+                                _("Wiking Management Interface") or \
+                                _("Wiking Help System")
             config.site_subtitle = None
-            menu = self._module('Modules').menu(path[0])
+            menu = wmi and self._module('Modules').menu(path[0]) or ()
             panels = ()
-            config.show_panels = False
         else:
             menu = self._mapping.menu(result.lang())
             panels = self._panels.panels(result.lang())
             config.show_panels = req.show_panels()
         config.wmi = wmi
+        config.doc = doc
         node = result.mknode('/'.join(path), config, menu, panels, 
                              self._stylesheets(req, panels))
         if node.language():
