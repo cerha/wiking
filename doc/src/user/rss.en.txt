@@ -1,0 +1,18 @@
+# -*- coding: utf-8; mode: structured-text -*-
+
+== RSS feeds ==
+
+The technology of web feeds allows Internet users to subscribe to certain
+resource (called RSS feed or RSS channel) to get a quick overview of provided
+news, articles or other items.  See [http://en.wikipedia.org/wiki/RSS
+Wikipedia] for more info about RSS.
+
+Some browsers have built-in RSS support.  With other browsers you will need to
+install an RSS reader as an external application or use a web service such as
+[http://my.yahoo.com My Yahoo!], [http://reader.google.com/ Google Reader] or
+[http://www.bloglines.com/ Bloglines].
+
+Wiking makes it possible to read items from different sections of a website
+using the RSS protocol.  You will find an RSS link at the bottom of each
+section which supports it.  Use the address of this link to setup your RSS
+reader.
