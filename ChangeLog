@@ -1,3 +1,55 @@
+2006-12-11  Tomas Cerha  <cerha@brailcom.org>
+
+	* translations/wiking.cs.po (Module): Updated.
+
+	* translations/wiking.pl.po (Module): Updated.
+
+	* translations/wiking.es.po (Module): Updated.
+
+	* resources/css/default.css: Don't suppress underlining TOC links.
+
+	* lib/wiking/modules.py (Mapping._link_provider): New argument
+	`args'.  WMI uri changed to `_wmi'.
+	(Config.theme): Removed commented theme caching.
+	(News._link_provider): New argument `args'.
+
+	* lib/wiking/module.py (_on_update): Method removed.
+	(WikingModule._link_provider): New argument `args'.  Encode args
+	into the final uri.  Use `_html.uri' for generating the uri.
+	(WikingModule._list): New argument `lang'.  Use `lang' if given.
+	(WikingModule.list): Doc uri changed to `_doc'.  Add link to RSS
+	documentation.
+	(WikingModule.update): Don't call `self._on_update()'.
+
+	* lib/wiking/install.py (maybe_install): WMI uri changed to `_wmi'.
+
+	* lib/wiking/handler.py (SiteHandler._resolve): Recognize the
+	language suffix in the rss uri.
+	(SiteHandler._doc): Search all subdirectories.  Don't create TOC
+	automatically.
+	(SiteHandler.handle): WMI uri changed to `_wmi'.  Doc uri changed
+	to `_doc'.  Set the `doc' attribute of node config.  Support
+	displaying documentation inline.
+
+	* lib/wiking/export.py (Exporter._menu): Added accesskeys.
+	(Exporter._content): Cosmetic change.
+	(Exporter.ctrl): Changed WMI uri.  Also recognize the doc state.
+	(Exporter._footer): Added `Accessibility Statement' link.
+
+	* doc/modules/Mapping.cs.txt: Minor improvements.
+
+	* doc/modules/Mapping.en.txt: Minor improvements.
+
+	* doc/user/rss.cs.txt: New file.
+	
+	* doc/user/rss.en.txt: New file.
+
+2006-12-10  Tomas Cerha  <cerha@brailcom.org>
+
+	* doc/user/accessibility.cs.txt: New file.
+
+	* doc/user/accessibility.en.txt: New file.
+
 2006-12-05  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/modules.py: Define aliases for useful constants here,
