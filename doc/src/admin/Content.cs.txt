@@ -8,12 +8,11 @@ tabulky přiřazuje vlastní obsah jedné položce /Mapování/ (identifikátoru
 Vlastní obsah stránek je zadáván ve formátu „strukturovaný text LCG“.
 Více viz [/__doc__/lcg/data-formats/structured-text příručka formátování].
 
-Tento modul ve skutečnosti spravuje několik jazykových verzí každé stránky,
-ale tabulka zobrazuje pouze záznamy odpovídající /aktuálně zvolenému
-jazyku/, takže ke každému identifikátoru z tabulky mapování je zobrazena
-pouze jedna položka (odpovídající tomuto jazyku, pokud taková existuje).
-Pokud chcete spravovat jiné jazykové verze stránek, musíte nejprve přepnout
-aktuální jazyk.
+Tento modul ve skutečnosti spravuje několik jazykových verzí každé stránky, ale
+tabulka zobrazuje pouze záznamy odpovídající /aktuálně zvolenému jazyku/, takže
+ke každému identifikátoru z tabulky mapování je zobrazena pouze jedna položka
+(odpovídající tomuto jazyku, pokud taková existuje).  Pokud chcete spravovat
+jiné jazykové verze stránek, musíte nejprve přepnout aktuální jazyk.
 
 Pokud chcete /přidat novou stránku/, je třeba nejprve vytvořit položku v
 tabulce /Mapování/, kde je třeba pro tuto stránku zvolit identifikátor.

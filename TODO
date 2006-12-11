@@ -1,11 +1,4 @@
-Bugs:
-
- * Cached color themes don't get updated outside process.
-
-
 Core features:
-
- * Explicit language in RSS links.
 
  * Independent language and filtering in WMI.
 
