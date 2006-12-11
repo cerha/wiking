@@ -5,4 +5,8 @@
 	Version 0.4.1
 
 	The new generation of the Wiking CMS was made available to the public.
-	New Wiking is written in Python, and is based on Pytis toolkit and LCG.
+	New Wiking is written in Python, and is based on Pytis toolkit and
+	LCG.  This version is publically available on CVS, but there is
+	not yet an official release package.  Official release is planned
+	for version 4.2.
+	
