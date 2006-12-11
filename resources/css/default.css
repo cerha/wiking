@@ -344,7 +344,6 @@ div.table-of-contents {
     padding: 3pt;
     clear: left;
 }
-div.table-of-contents a { text-decoration: none; }
 div.table-of-contents ul { 
     margin-top: 3pt;
     margin-bottom: 0;
