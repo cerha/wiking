@@ -66,7 +66,7 @@ def maybe_install(req, dbconnection, errstr):
             err = _try_query(dbconnection, script)
             if not err:
                 return ("Database initialized."
-                        '<a href="/wmi">Enter the management interface</a>')
+                        '<a href="/_wmi">Enter the management interface</a>')
             else:
                 return "Unable to initialize the database: " + err
                 
