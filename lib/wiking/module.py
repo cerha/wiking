@@ -188,9 +188,6 @@ class WikingModule(object):
     def _form(self, form, *args, **kwargs):
         return form(self._data, self._view, self._resolver, *args, **kwargs)
     
-    def _on_update(self, object):
-        pass
-    
     def _real_title(self, lang):
         # This is quite a hack...
         title = self._module('Mapping').title(lang, self.__class__.__name__)
@@ -234,17 +231,19 @@ class WikingModule(object):
     def _actions(self):
         return tuple(self._DEFAULT_ACTIONS) + self._view.actions()
 
-    def _link_provider(self, row, col, uri, wmi=False):
+    def _link_provider(self, row, col, uri, wmi=False, args=()):
         if col.id() == self._TITLE_COLUMN:
+            from lcg import _html
             if self._referer is not None and not wmi:
-                return uri + '/' + row[self._referer].export()
+                return _html.uri(uri + '/' + row[self._referer].export(),
+                                 *args)
             else:
-                args = [(c.id(), row[c.id()].export())
-                        for c in self._data.key()]
+                args += tuple([(c.id(), row[c.id()].export())
+                               for c in self._data.key()])
                 if wmi:
-                    args.append(('action', 'show'))
-                    uri = '/wmi/'+ self.__class__.__name__
-                return uri +'?'+ ';'.join([n+'='+v for n,v in args])
+                    args += (('action', 'show'), )
+                    uri = '/_wmi/'+ self.__class__.__name__
+                return _html.uri(uri, *args)
         return None
 
     def _get_row_by_key(self, params):
@@ -287,13 +286,14 @@ class WikingModule(object):
     def _variants(self, object):
         return None
     
-    def _list(self, req):
+    def _list(self, req, lang=None):
         if self._LIST_BY_LANGUAGE and not req.wmi:
             variants = [str(v.value()) for v in
                         self._data.distinct('lang', sort=pd.ASCENDENT)]
         else:
             variants = self._module('Languages').languages()
-        lang = req.prefered_language(variants)
+        if lang is None:
+            lang = req.prefered_language(variants)
         condition = self._LIST_BY_LANGUAGE and {'lang': lang} or {}
         rows = self._data.get_rows(sorting=self._sorting, **condition)
         return lang, variants, rows
@@ -330,17 +330,17 @@ class WikingModule(object):
         if self._RSS_TITLE_COLUMN is None:
             result = ''
         else:
-            lang, variants, rows = self._list(req)
+            lang, variants, rows = self._list(req, lang=req.param('lang'))
             from xml.sax.saxutils import escape
             col = self._view.field(self._TITLE_COLUMN)
             uri = req.abs_uri()
             if uri.endswith('.rss'):
                 uri = uri[:-4]
+                if lang and uri.endswith('.'+lang):
+                    uri = uri[:-3]
+            args = lang and (('lang', lang),) or ()
             items = [(escape(row[self._RSS_TITLE_COLUMN].export()),
-                      self._link_provider(row, col, uri),
-
-                      # TODO: do odkazu pøedat explicitnì jazyk.
-                      
+                      self._link_provider(row, col, uri, args=args),
                       self._RSS_DESCR_COLUMN and \
                       escape(row[self._RSS_DESCR_COLUMN].export()) or None)
                      for row in rows[:8]]
@@ -359,15 +359,19 @@ class WikingModule(object):
         if req.wmi:
             a = ActionMenu(req.uri,
                            (Action(_("New record"), 'add', context=None),))
-            uri = '/__doc__/'+self.__class__.__name__
+            uri = '/_doc/'+self.__class__.__name__
             h = lcg.Link(lcg.Link.ExternalTarget(uri, _("Help")))
             content.extend((a, h))
         elif self._RSS_DESCR_COLUMN:
+            rss = lcg.Link.ExternalTarget(req.uri +'.'+ lang +'.rss',
+                                          self._real_title(lang) + ' RSS')
+            doc = lcg.Link.ExternalTarget('_doc/rss?display=inline',
+                                          _("more about RSS"))
             text = _("An RSS channel is available for this section:") + ' '
-            title = self._real_title(lang) + ' RSS'
-            lnk = lcg.Link(lcg.Link.ExternalTarget(req.uri +'.rss', title),
-                           type='application/rss+xml')
-            content.append(lcg.Paragraph((lcg.TextContent(text), lnk)))
+            p = (lcg.TextContent(text),
+                 lcg.Link(rss, type='application/rss+xml'),
+                 lcg.TextContent(" ("), lcg.Link(doc), lcg.TextContent(")"))
+            content.append(lcg.Paragraph(p))
         return self._document(req, content, lang=lang, variants=variants,
                               err=err, msg=msg)
 
@@ -428,7 +432,6 @@ class WikingModule(object):
             try:
                 self._data.update(object.key(), row)
                 object.reload()
-                self._on_update(object)
                 action = req.wmi and self.show or self.view
                 return action(req, object,
                               msg=_("The record was successfully updated."))
