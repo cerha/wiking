@@ -157,12 +157,13 @@ class Mapping(WikingModule, Publishable):
         layout = ('identifier', 'mod_id', 'published', 'ord')
         cb = pp.CodebookSpec(display='identifier')
     _REFERER = _TITLE_COLUMN = 'identifier'
-    
-    def _link_provider(self, row, col, uri, wmi=False):
+
+    def _link_provider(self, row, col, uri, wmi=False, args=()):
         if wmi and col.id() == 'modtitle':
-            return '/wmi/' + row['modname'].value()
+            return '/_wmi/' + row['modname'].value()
         else:
-            return super(Mapping, self)._link_provider(row, col, uri, wmi)
+            return super(Mapping, self)._link_provider(row, col, uri, wmi=wmi,
+                                                       args=args)
             
     def modname(self, identifier):
         row = self._data.get_row(identifier=identifier, published=True)
@@ -239,20 +240,8 @@ class Config(WikingModule):
         return self.Configuration(row, server)
 
     def theme(self):
-        #try:
-        #    theme = self._theme
-        #except AttributeError:
         theme_id = self._data.get_row(config_id=0)['theme'].value()
-        theme = self._theme = self._module('Themes').theme(theme_id)
-        return theme
-
-    #def _on_update(self, object):
-    #    if hasattr(self, '_theme'):
-    #        delattr(self, '_theme')
-    
-    #def on_theme_change(self, theme_id):
-    #    if hasattr(self, '_theme'):
-    #        delattr(self, '_theme')
+        return self._module('Themes').theme(theme_id)
         
     
 class Panels(WikingModule, Publishable, Translatable):
@@ -425,9 +414,6 @@ class Themes(WikingModule):
         
     _TITLE_COLUMN = 'name'
 
-    #def _on_update(self, object):
-    #    self._module('Config').on_theme_change(object['theme_id'])
-    
     def theme(self, theme_id):
         if theme_id is not None:
             row = self._data.get_row(theme_id=theme_id)
@@ -543,11 +529,12 @@ class News(WikingModule, Translatable):
                               cls='list-heading'),
                     _html.div(text, cls='list-body'))
         
-    def _link_provider(self, row, col, uri, wmi=False):
+    def _link_provider(self, row, col, uri, wmi=False, args=()):
         if not wmi and col.id() == 'title':
-            return uri+'#news-item-'+row['news_id'].export()
+            return _html.uri(uri, *args)+'#news-item-'+row['news_id'].export()
         else:
-            return super(News, self)._link_provider(row, col, uri, wmi)
+            return super(News, self)._link_provider(row, col, uri, wmi=wmi,
+                                                    args=args)
 
     
 class Stylesheets(WikingModule):
