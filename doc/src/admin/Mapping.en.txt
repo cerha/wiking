@@ -2,11 +2,13 @@
 
 = Mapping =
 
-This module maps the available URIs to particular Wiking modules which
-handle them.  The /Identifier/ is the name of the resource as seen from
-outside.  The corresponding URI may be for example
-\http://www.yourdomain.com/identifier/.  Each identifier maps to a single
-/Module/, which is responsible to handle all requests to this URI.
+This module maps the available URIs to particular Wiking modules which handle
+them.  The /Identifier/ is the name of the resource as seen from outside.  The
+item "=mypage=", for example, will have the address (URI)
+\http://www.yourdomain.com/mypage/.
+
+Each identifier maps to a single /Module/, which is responsible to handle all
+requests to this URI.
 
 See the documentation of particular modules to learn more how they handle
 requests and how to manage the content.

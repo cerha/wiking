@@ -3,12 +3,14 @@
 = Mapování =
 
 Mapování určuje přiřazení dostupných identifikátorů a modulů, které je
-obsluhují.  /Identifikátor/ je název položky, tak jak je viděn zvenčí a
-promítne se do adresy například jako
-/\http://www.jmenoserveru.cz/identifikator/.  Každému identifikátoru zde
-přiřadíme Modul, který jej obsluhuje.  Nejběžnějším modulem bude například
-modul /Stránky/, který položky zobrazuje jako textové stránky.  Jiné moduly
-mohou zobrazovat seznamy novinek, uživatelů apod.
+obsluhují.  /Identifikátor/ určuje adresu položky -- např. položka s
+identifikátorem „=mojestranka=“ bude mít v internetu adresu
+„\http://www.jmenoserveru.cz/mojestranka“.
+
+Každému identifikátoru zde přiřadíme Modul, který jej obsluhuje.  Například
+modul /Stránky/ zobrazuje položky jako textové stránky -- každému zde
+definovanému identifikátoru potom můžeme přiřadit obsah v různých jazykových
+variantách.  Jiné moduly mohou zobrazovat seznamy novinek, uživatelů apod.
 
 Pro přiřazení vlastního obsahu dané položce se přepněte na příslušný modul.
 Zde najdete také další nápovědu, která blíže vysvětluje k čemu daný modul
