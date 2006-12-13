@@ -212,7 +212,7 @@ class Document(object):
     """Independent document description."""
     
     def __init__(self, title, content, descr=None, lang=None, variants=(),
-                 edit_label=None):
+                 edit_label=None, sec_lang='en'):
         self._title = title
         if isinstance(content, (list, tuple)):
             content = lcg.SectionContainer([c for c in content if c],
@@ -222,6 +222,7 @@ class Document(object):
         self._lang = lang
         self._variants = variants
         self._edit_label = edit_label
+        self._sec_lang = sec_lang
 
     def lang(self):
         return self._lang
@@ -230,7 +231,8 @@ class Document(object):
         return WikingNode(id, config, title=self._title, content=self._content,
                           lang=self._lang, variants=self._variants or (),
                           descr=self._descr, menu=menu, panels=panels,
-                          stylesheets=stylesheets, edit_label=self._edit_label)
+                          stylesheets=stylesheets, edit_label=self._edit_label,
+                          secondary_language=self._sec_lang)
 
     
 # ============================================================================
