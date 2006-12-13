@@ -30,7 +30,7 @@ class Exporter(lcg.HtmlExporter):
     def _node_uri(self, node, lang=None):
         uri = '/'+ node.id()
         if lang is not None:
-            uri += '?lang=%s;keep_language=1' % lang
+            uri += '?setlang=%s' % lang
         return uri
     
     def _title(self, node):

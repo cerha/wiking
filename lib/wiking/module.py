@@ -334,11 +334,7 @@ class WikingModule(object):
             from xml.sax.saxutils import escape
             col = self._view.field(self._TITLE_COLUMN)
             uri = req.abs_uri()
-            if uri.endswith('.rss'):
-                uri = uri[:-4]
-                if lang and uri.endswith('.'+lang):
-                    uri = uri[:-3]
-            args = lang and (('lang', lang),) or ()
+            args = lang and (('setlang', lang),) or ()
             items = [(escape(row[self._RSS_TITLE_COLUMN].export()),
                       self._link_provider(row, col, uri, args=args),
                       self._RSS_DESCR_COLUMN and \

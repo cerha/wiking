@@ -174,7 +174,7 @@ class NotAcceptable(HttpError):
                           lcg.concat(prefered, separator=', ')))
         if self.args:
             available = [_html.link(lcg.language_name(l),
-                                    "%s?lang=%s;keep_language=1" % (req.uri, l))
+                                    "%s?setlang=%s" % (req.uri, l))
                          for l in self.args[0]]
             msg += (lcg.concat(_("The available variants are:"), ' ',
                                lcg.concat(available, separator=', ')),

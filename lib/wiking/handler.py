@@ -125,13 +125,6 @@ class SiteHandler(object):
         # return the target module and an object within this module (or a list
         # of objects) corresponding to the current request.
         identifier = path[0]
-        if len(path) == 1 and identifier.endswith('.rss'):
-            req.params['action'] = 'rss'
-            identifier = identifier[:-4]
-            if len(identifier) > 3 and identifier[-3] == '.' \
-                   and identifier[-2:].isalpha():
-                req.params['lang'] = identifier[-2:]
-                identifier = identifier[:-3]
         try:
             modname = self._resolve_cache[identifier]
         except KeyError:

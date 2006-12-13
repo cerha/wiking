@@ -37,10 +37,10 @@ class Request(object):
         self._req = req
         self._encoding = encoding
         # Store request data in real dictionaries.
-        self.uri = req.uri
         self.get_remote_host = req.get_remote_host
         self.server = req.server
         self.params = self._init_params()
+        self.uri = self._init_uri()
         options = req.get_options()
         self.options = dict([(o, options[o]) for o in options.keys()])
 
@@ -48,7 +48,10 @@ class Request(object):
         fields = mod_python.util.FieldStorage(self._req)
         return dict([(k, unicode(fields[k], self._encoding))
                      for k in fields.keys()])
-        
+
+    def _init_uri(self):
+        return self._req.uri
+    
     def param(self, name, default=None):
         return self.params.get(name, default)
         
@@ -123,16 +126,16 @@ class WikingRequest(Request):
     _LANG_COOKIE = 'wiking_prefered_language'
     _PANELS_COOKIE = 'wiking_show_panels'
 
+
     def _init_params(self):
         params = super(WikingRequest, self)._init_params()
-        lang = params.has_key('lang') and str(params['lang']) or None
-        if lang and params.has_key('keep_language'):
-            del params['keep_language']
+        if params.has_key('setlang'):
+            self._prefered_language = lang = str(params['setlang'])
+            del params['setlang']
             # Expires in 2 years (in seconds)
             self.set_cookie(self._LANG_COOKIE, lang, expires=63072000)
-            self._prefered_language = lang
         else:
-            self._prefered_language = lang or self.get_cookie(self._LANG_COOKIE)
+            self._prefered_language = self.get_cookie(self._LANG_COOKIE)
         if params.has_key('hide_panels'):
             self.set_cookie(self._PANELS_COOKIE, 'no', expires=63072000)
             self._show_panels = False
@@ -143,6 +146,16 @@ class WikingRequest(Request):
             self._show_panels = self.get_cookie(self._PANELS_COOKIE) != 'no'
         return params
 
+    def _init_uri(self):
+        uri = super(WikingRequest, self)._init_uri()
+        if uri.endswith('.rss'):
+            self.params['action'] = 'rss'
+            uri = uri[:-4]
+            if len(uri) > 3 and uri[-3] == '.' and uri[-2:].isalpha():
+                self.params['lang'] = uri[-2:]
+                uri = uri[:-3]
+        return uri
+    
     def show_panels(self):
         return self._show_panels
     
