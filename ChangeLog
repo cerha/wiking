@@ -1,3 +1,36 @@
+2006-12-13  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/request.py (Request.__init__): Call
+	`self._init_uri()' to initialize the `uri' attribute.
+	(Request._init_uri): New metohd.
+	(WikingRequest._init_params): Use argument `setlang' for explicit
+	language, not `lang' and `keep_language'.
+	(WikingRequest._init_uri): New method.  Perform RSS redirection
+	here transparently.
+
+	* lib/wiking/module.py (WikingModule.rss): Don't care about the
+	uri redirection here.  Use argument `setlang' for explicit
+	language.
+
+	* lib/wiking/handler.py (SiteHandler._action): Don't perform the
+	RSS redirect here.
+
+	* lib/wiking/export.py (Exporter._node_uri): Use argument
+	`setlang' for explicit language, not `lang' and `keep_language'.
+
+	* lib/wiking/util.py (Document.__init__): New keyword argument
+	`sec_lang'.
+	(Document.mknode): Pass `secondary_language' to the node
+	constructor.
+	(NotAcceptable.msg): Use argument `setlang' for explicit language,
+	not `lang' and `keep_language'.
+
+2006-12-12  Tomas Cerha  <cerha@brailcom.org>
+
+	* doc/modules/Languages.cs.txt (Module): Minor improvements.
+	
+	* doc/modules/Languages.en.txt (Module): Minor improvements.
+
 2006-12-11  Tomas Cerha  <cerha@brailcom.org>
 
 	* translations/wiking.cs.po (Module): Updated.
