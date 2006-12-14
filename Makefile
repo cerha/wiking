@@ -3,7 +3,11 @@ LIB = /usr/local/lib/python2.4/site-packages
 CFGFILE = /etc/wiking/config.py
 APACHECFG = /etc/apache2/conf.d/wiking
 
-.PHONY: translations
+.PHONY: translations doc
+
+doc: doc-en #doc-cs
+doc-%:
+	lcgmake --language=$* --stylesheet=default.css doc/src doc/html
 
 translations:
 	make -C translations
@@ -68,7 +72,7 @@ compile:
 	python -c "import compileall; compileall.compile_dir('lib')"
 #python -OO -c "import compileall; compileall.compile_dir('lib')"
 
-release: compile translations
+release: doc compile translations
 	@ln -s .. releases/$(dir)
 	@if [ -f releases/$(file) ]; then \
 	   echo "Removing old file $(file)"; rm releases/$(file); fi
