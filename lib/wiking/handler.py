@@ -157,13 +157,13 @@ class SiteHandler(object):
             path = path[1:]
             basedir = lcg.config.doc_dir
         else:
-            basedir = os.path.join(cfg.wiking_dir, 'doc')
+            basedir = os.path.join(cfg.wiking_dir, 'doc', 'src')
         if not os.path.exists(basedir):
             raise Exception("Directory %s does not exist" % basedir)
         import glob, codecs
         # TODO: the documentation should be processed by LCG first into some
         # reasonable output format.
-        for subdir in ('', 'user', 'modules'):
+        for subdir in ('', 'user', 'admin'):
             basename = os.path.join(basedir, subdir, *path)
             variants = [f[-6:-4] for f in glob.glob(basename+'.*.txt')]
             if variants:
