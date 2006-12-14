@@ -1,0 +1,127 @@
+# -*- coding: utf-8; mode: structured-text -*-
+
+= Navigation =
+
+Table of Contents: @TOC@
+
+
+== Main Navigation Menu == menu
+
+The main navigation menu is displayed as a row of folders at the top of the
+page by default.  In a custom style, the appearance may vary significantly, but
+the purpose always remains the same.  It is a list of links to the main
+sections of the site.  The active item is visually emphasized.  In a text
+browser (where the visual emphasis may not be supported), there is an asterisk
+appended to the active item's title.  This ensures, that the user always knows
+where he is at the moment.  Since the menu is repeated on each page, you may
+want to it while navigating the page -- see [#skip].
+
+
+== Shortcut Keys == shortcuts
+
+There are several shortcut keys (access-keys) simplifying navigation:
+
+  * *1* ... go to the home page
+  * *2* ... skip repetitive parts (go the the actual page content)
+  * *3* ... skip to the main menu
+  * *9* ... enter/leave the Wiking Management Interface
+  * *0* ... show the Accessibility Statement
+
+Usage in different types of browsers:
+
+  * Internet Explorer -- Alt + number Enter
+  * Firefox 1.x, Mozilla, Netscape 7+  -- Alt + number
+  * Konqueror -- press and release Ctrl, number
+  * Opera -- Shift + Esc + number
+  * Safari, Firefox, Mozilla, Netscape, Omniweb (on Mac OS X) -- Ctrl +
+    number
+
+Shortcut keys should not be considered the primary means of navigation.  Their
+usage varies from browser to browser and some browsers don't support them at
+all.  In addition, the key bindings are not standardized, so the behavior
+differs from site to site.
+
+Many assistive technologies implement their own page navigation features.  If
+these features substitute the above commands, they should be always preferred.
+For example the page content begins with a top level heading, thus it may be
+possible to get to it using the heading navigation feature of the AT.
+
+
+== Skipping Repetitive Parts == skip
+
+Certain parts of the page are repetitive -- they appear on each page and they
+usually don't change.  These repetitive parts are:
+
+  * [#menu]
+  * [#languages]
+  * [#panels]
+
+Wiking implements several features simplifying page navigation with respect to
+repetitive content.
+
+"Skip" links can be used in text browsers.  The first link at the top of the
+page allows you to skip all the repetitive content.  Then each repetitive part
+can be skipped individually.  
+
+Also [#shortcuts] allow you to skip repetitive content.
+
+
+== Tables of Contents ==
+
+More complicated pages with several sections (such as this one) usually use a
+Table of Contents.  Table of Contents shows the hierarchy of sections as a set
+of links allowing you to jump to a selected section directly.  Each section
+header also acts as a link back to the Table of Contents.  This feature may
+significantly simplify page navigation in longer texts.  Give it a try right on
+this page...
+
+Some pages may use multiple Tables of Contents in different levels of
+hierarchy.  In this case, the back-reference links from section headers lead
+always to the nearest TOC up in the hierarchy.
+
+
+== Language Selection == languages
+
+Wiking supports serving content in multiple languages.
+
+Selection of the most appropriate language for each user is performed
+automatically based on the [http://en.wikipedia.org/wiki/Content_negotiation
+Content Negotiation] technique.  This technique relies on the language
+preference settings of your browser.  An English speaking user, for example,
+should have English set as his/her primary language, plus any number of
+additional languages which he/she understands with their respective precedence.
+
+A selection algorithm is performed on each request.  If given page is available
+in one of the preferred languages, the highest precedence variant is returned to
+the user.  When none of the requested languages can be served, an error page
+406 (Not Acceptable) is returned and the user can select one of the available
+language variants manually.
+
+Besides the automatic selection described below, user can also select the
+language explicitly from the language selection menu.  This menu is displayed
+in the top right corner of the page (in the default style) when there are
+several language variants of the current page.  When there is just one variant,
+the language selection menu is not shown.  The menu appears right after the
+main navigation menu in a text browser.  Since the set of available language
+variants may be different for each page, the language selection menu may differ
+as well.
+
+If "cookies" are enabled, the manually selected language will be kept as the
+preferred language for further requests with even higher priority than the
+browser settings.  This feature allows you to override browser settings when you
+can't modify them, such as in an Internet cafe or at a public terminal.
+Correct browser settings should still be the preferred solution, however.
+
+
+== Panels == panels
+
+Panels are brief information windows, which are displayed by the right hand
+side in the default style.  They usually summarize the most important
+information from given website.  Panels appear unchanged on each page of the
+site.  For example a News panel may display the most recent news with links to
+more detailed messages within the News section.
+
+Panels can be hidden, using the "Hide panels" link (this link appears below the
+panels in a text browser).  This setting is sticky (panels stay hidden for the
+following requests) when "cookies" are enabled in the browser.  Panels can be
+unhidden again using the "Show panels" link.

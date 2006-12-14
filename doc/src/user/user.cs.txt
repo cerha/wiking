@@ -1,0 +1,6 @@
+# -*- coding: utf-8; mode: structured-text -*-
+
+= Uživatelská příručka systému Wiking =
+
+@NodeIndex(2)@
+

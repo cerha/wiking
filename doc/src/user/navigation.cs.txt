@@ -1,0 +1,131 @@
+# -*- coding: utf-8; mode: structured-text -*-
+
+= Navigace =
+
+Obsah: @TOC@
+
+
+== Hlavní navigační nabídka ==
+
+Nabídka hlavní navigace může mít různé formy, podle aktuálně zvoleného stylu.
+Ve výchozím stylu je zobrazena jako lišta záložek při horním okraji stránky.
+Důležitější než forma je však její význam.  Je to seznam odkazů na jednotlivé
+sekce portálu.  Aktivní položka nabídky je vždy vizuálně zvýrazněna.  V
+textovém prohlížeči (kde vizuální zvýraznění nemusí být podporováno) je navíc
+aktivní položka nabídky doplněna hvězdičkou na konci názvu položky.  Tím má
+uživatel vždy přehled kde se právě nachází.  Vzhledem k tomu, že se menu
+opakuje na každé stránce, je možné jej při procházení stránky [#skip
+přeskočit].
+
+
+== Klávesové zkratky == shortcuts
+
+Pro usnadnění pohybu na stránkách je definováno také několik klávesových
+zkratek:
+
+  * *1* ... přechod na domovskou stránku
+  * *2* ... přeskočení navigace (přesun na vlastní obsah stránky)
+  * *3* ... přesun na hlavní navigační nabídku
+  * *9* ... vstup/opuštění do rozhraní správy obsahu
+  * *0* ... zobrazit prohlášení o zpřístupnění
+
+Použití klávesových zkratek (accesskeys) v jednotlivých typech prohlížečů:
+
+  * Internet Explorer -- Alt + číslo Enter
+  * Firefox 1.x, Mozilla, Netscape 7+  -- Alt + číslo
+  * Konqueror -- stisknout a uvolnit Ctrl, číslo
+  * Opera -- Shift + Esc + číslo
+  * Safari, Firefox, Mozilla, Netscape, Omniweb (vše na Mac OS X) -- Ctrl +
+    číslo
+
+Klávesové zkratky by neměly být povážovány za primární způsob navigace.  Jejich
+použití se mezi prohlížeči různí a některé prohlížeče je nepodporují vůbec.
+Navíc jejich přiřazení není nijak standardizováno, takže chování každé stránky
+je pro uživatele jiné.
+
+Mnohé zpřístupňující technologie obsahují vlastní funkce pro pohyb po stránce,
+které mohou nahradit funkce dostupné pomocí výše zmíněných klávasových zkratek.
+Například obsah stránky je uvozen nadpisem první úrovně, proto k přesunu na
+obsah použijte funkce navigace po nadpisech, pokud to vaše zpřístupňující
+technologie umožňuje.
+
+
+== Přeskakování opakujících se částí == skip
+
+Některé části stránky se opakují -- vyskutují se na všech stránkách ve víceméně
+nezměněné podobě.  Jsou to:
+
+  * [#menu]
+  * [#languages]
+  * [#panels]
+
+Systém Wiking disponuje vlastnostmi usnadňujícími pohyb po stránce s ohledem na
+opakující se části.
+
+V textovém prohlížeči můžete použít „předskakovací“ odkazy.  První odkaz na
+začátku stránky umožňnuje přeskočit všechny tyto části najednou.  Déle je možné
+přeskočit každou část samostatně.
+
+Také [#shortcuts klávesové zkratky] umožňují opakující se části přeskočit.
+
+
+== Rejstříky ==
+
+Obsáhlejší stránky, které se skládají z více samostatných kapitol většinou
+obsahují rejstřík.  Rejstřík zachycuje hierarchii kapitol a umožňuje přesun na
+libovolnou kapitolu formou odkazu.  Nadpis každé kapitoly zároveň funguje jako
+odkaz zpět do rejstříku, čímž je podstatně zjednodušena navigace v obsáhlejších
+dokumentech.  Vyzkoušejte si tuto funkcionalitu přímo na této stránce.
+
+Některé stránky mohou obsahovat více rejstříků v různých stupních hierarchie.
+V tom případě vede odkaz z nadpisu kapitoly vždy na nejbližší nadřazený
+rejstřík.
+
+
+== Volba jazyka == languages
+
+Systém Wiking umožňuje poskytování obsahu v několika jazykových variantách.
+
+Výběr nejvhodnějšího jazyka provádí systém automaticky na základě technologie
+>>[http://en.wikipedia.org/wiki/Content_negotiation Content Negotiation]<<.
+Vychází přitom z nastavení jazykových preferencí ve Vašem prohlížeči.  Český
+uživatel by například měl mít ve svém prohlížeči nastavenu češtinu jako
+primární jazyk.  Pokud ovládáte také další jazyky, přidejte je do jazykového
+nastavení svého prohlížeče s příslušnou prioritou.
+
+Pokud máte prohlížeč správně nastavený, je při požadavku na určitou stránku
+nejprve proveden výběr z dostupných jazykových variant a je vrácena ta s
+nejvyšší nastavenou prioritou.  Pokud není obsah dostupný v žádném z
+požadovaných jazyků, je vrácena chybová stránka 406 (Not Acceptable) a
+uživateli je umožněno vybrat z dostupných jazykových variant.
+
+Kromě výše popsaného automatického určení jazyka je možné přepnout jazyk
+explicitně.  Pokud je obsah dané stránky dostupný ve více jazykových
+variantách, je jejich seznam zobrazen v pravém horním rohu stránky (umístění
+může být ovlivněno nastavením stylů).  V textových prohlížečích výběr jazyka
+následuje ihned za hlavní nabídkou.  Pokud je daná stránka dostupná pouze v
+jednom jazyce, výběr jazyků se nezobrazí.  Protože dostupné jazykové varianty
+jsou pro každou stránku nezávislé, mohou se nabízené jazyky pro různé stránky
+lišit.
+
+Pokud má uživatel v prohlížeči povolen příjem „>>cookies<<“, bude vybraný jazyk
+v příštích relacích považován za preferovaný.  Toto nastavení má vyšší prioritu
+než jazykové nastavení prohlížeče, čímž je umožňeno pohodlné přepnutí jazyka i
+v případech, kdy uživatel nemá možnost nastavení prohlížeče změnit (např. v
+internetových kavárnách, na veřejných terminálech apod.).  Správné nastavení
+jazykových předvoleb prohlížeče by však mělo být vždy preferovaným řešením.
+
+
+== Panely == panels
+
+Panely jsou malá informační okénka, která jsou ve výchozím stylu zobrazena po
+pravém boku stránky.  Většinou slouží ke shrnutí nejdůležitějších infomrací z
+daného portálu.  Panely jsou stejné na každé stránce portálu.  Například panel
+Novinek může zobrazovat souhrn posledních zpráv s odkazy na kompletní znění
+každé zprávy v sekci Novinky.
+
+Pokud nás panely obtěžují, je možné je skrýt pomocí odkazu „Skrýt panely“.  V
+textovém prohlížeči nalezneme tento odkaz za všemi panely, jinak je jeho
+výchozí poloha nad panely.  Pokud jsou povoleny „>>cookies<<“, je toto
+nastavení permanentní, to znamená že panely zůstanou skryty i pro všechny
+následující relace, dokud je opět nezobrazíme pomocí odkazu „Zobrazit panely“.
