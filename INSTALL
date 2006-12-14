@@ -21,60 +21,7 @@ installation.  You may also wish to change some variables at the beginning of
 the Makefile to customize the installation.
 
 After installing Wiking, you must configure Apache to use Wiking for serving
-your site.  This can be as simple as Adding two lines into your site's
-VirtualHost section.  An example follows:
-
-<VirtualHost *>
-  ServerName www.yourdomain.com
-  ScriptAliasMatch .* /usr/local/share/wiking/wiking.py
-  PythonOption database www.yourdomain.com
-</VirtualHost>
-
-The ScriptAliasMatch line says Apache to handle all uris on given site by
-wiking handler.  You should change the path if you installed Wiking to a
-different location.  Please note, that the file 'wiking.py' does not actually
-exist in the named directory, but that is ok.  The request will be redirected
-to the Wiking handler.  The directory must exist, however (created by the
-installation script).
-
-The PythonOption line sets the name of the database which should be used by
-Wiking to store content for given site.  The recommended practice is to use the
-site name for the database name.
-
-Once you have your site configuration ready, you may reload Apache and try
-pointing your browser to the corresponding uri.  On the first try, the database
-will not be initialized, but Wiking will detect that and guide you through the
-database initialization process.
-
-You can configure as many VirtualHosts as you want and serve them all using
-Wiking, provided that there is a separate database for each virtual host.
-
-== Additional options for Apache configuration ==
-
-You may wish to redirect certain uris to ordinary files and directories.  This
-can be simply done within the VirtualHost section.  Example:
-
-  Alias /img/ /var/www/www.yourdomain.com/img
-
-If you put this line prior to the ScriptAliasMatch line, Apache will handle all
-requests within the /img/* by serving corresponding files in given directory.
-
-Wiking currently does not support authentication (this is planned for the next
-release), so you will need to use Apache authentication to restrict access to
-your site and/or its management.
-
-You will typically want to restrict access to the Wiking Management interface.
-To do that, add the following to the end of your VirtualHost section:
-
-  <Location /wmi>
-      AuthType Basic
-      AuthName "Wiking Management Interface"
-      AuthUserFile /var/www/www.yoursite.com/passwd
-      require valid-user
-  </Location>
-
-Of course, you need to have the corresponding authentication/authorization
-modules enabled in your Apache and you will need to create and manage the
-"passwd" file.  See Apache documentation for more information.  It is also
-recommended to use password authentication in combination with an encripted
-connection.
+your site.  Please, see the included HTML documentation.  Installation
+instructions are 'in doc/html/admin.html'.  If you are installing from CVS, you
+will need to run "make doc" to generate the HTML documentation (or read the
+text source).
