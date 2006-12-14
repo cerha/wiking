@@ -147,7 +147,7 @@ a:hover.backref { color: $color.foreground; }
 
 /* Page footer */
 
-#footer { font-size: 0.8em; text-align: center; margin: 0pt; }
+#footer { font-size: 0.9em; text-align: center; margin: 0pt; }
 #footer p { margin: 1pt 0pt; }
 #footer img { margin: 5pt; }
 #footer hr { display: none; }

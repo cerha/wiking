@@ -1,5 +1,8 @@
 2006-12-14  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/modules.py (Users.Spec.fields): Transformed to a
+	method.
+
 	* Makefile (doc): New target to generate HTML documentation.
 
 	* README: Refer to the documentation.
