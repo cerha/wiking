@@ -9,14 +9,14 @@ appearance of your Wiking site.
 It is possible to edit the stylesheets directly, however this is only
 encouraged if you know CSS and Wiking stylesheet handling details.  The primary
 intended use of this module for most website administrators is management of
-predefined Wiking stylesheets.  There are several stylesheets automatically
-installed with the system.  Other may be created and shared by the Wiking user
-community.
+predefined Wiking stylesheets.  There are several stylesheets preinstalled with
+the system.  Other may be created and shared by the Wiking user community.
 
 Management is quite simple -- you can activate or deactivate any stylesheet.
 You will immediately see the results.  You can add your own stylesheets and
-override certain settings of other stylesheets.  There are two special cases -
-'default.css' and 'panels.css'.  You should not edit the contents of these
-stylesheets, since they represent the defalut styles preinstalled with the
-system.  Their contents is not in the database -- it is supplied by the system
-to allow their automatic upgrade when Wiking is upgraded.
+override certain settings of other stylesheets.
+
+There are two special cases -- 'default.css' and 'panels.css'.  You should not
+edit the contents of these stylesheets.  Their contents is not in the database
+-- it is supplied by the system to allow their automatic upgrade when Wiking is
+upgraded.
