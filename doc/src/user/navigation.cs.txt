@@ -5,7 +5,7 @@
 Obsah: @TOC@
 
 
-== Hlavní navigační nabídka ==
+== Hlavní navigační nabídka == menu
 
 Nabídka hlavní navigace může mít různé formy, podle aktuálně zvoleného stylu.
 Ve výchozím stylu je zobrazena jako lišta záložek při horním okraji stránky.
@@ -14,8 +14,8 @@ sekce portálu.  Aktivní položka nabídky je vždy vizuálně zvýrazněna.  V
 textovém prohlížeči (kde vizuální zvýraznění nemusí být podporováno) je navíc
 aktivní položka nabídky doplněna hvězdičkou na konci názvu položky.  Tím má
 uživatel vždy přehled kde se právě nachází.  Vzhledem k tomu, že se menu
-opakuje na každé stránce, je možné jej při procházení stránky [#skip
-přeskočit].
+opakuje na každé stránce, je možné jej při procházení stránky přeskočit (viz
+[#skip]).
 
 
 == Klávesové zkratky == shortcuts
@@ -31,11 +31,11 @@ zkratek:
 
 Použití klávesových zkratek (accesskeys) v jednotlivých typech prohlížečů:
 
-  * Internet Explorer -- Alt + číslo Enter
-  * Firefox 1.x, Mozilla, Netscape 7+  -- Alt + číslo
-  * Konqueror -- stisknout a uvolnit Ctrl, číslo
-  * Opera -- Shift + Esc + číslo
-  * Safari, Firefox, Mozilla, Netscape, Omniweb (vše na Mac OS X) -- Ctrl +
+  * Internet Explorer ... Alt + číslo Enter
+  * Firefox 1.x, Mozilla, Netscape 7+ ... Alt + číslo
+  * Konqueror ... stisknout a uvolnit Ctrl, číslo
+  * Opera ... Shift + Esc + číslo
+  * Safari, Firefox, Mozilla, Netscape, Omniweb (vše na Mac OS X) ... Ctrl +
     číslo
 
 Klávesové zkratky by neměly být povážovány za primární způsob navigace.  Jejich
@@ -121,8 +121,8 @@ jazykových předvoleb prohlížeče by však mělo být vždy preferovaným ře
 Panely jsou malá informační okénka, která jsou ve výchozím stylu zobrazena po
 pravém boku stránky.  Většinou slouží ke shrnutí nejdůležitějších infomrací z
 daného portálu.  Panely jsou stejné na každé stránce portálu.  Například panel
-Novinek může zobrazovat souhrn posledních zpráv s odkazy na kompletní znění
-každé zprávy v sekci Novinky.
+Novinek může zobrazovat souhrn nejčerstvějších zpráv s odkazy na kompletní
+znění každé zprávy v sekci Novinky.
 
 Pokud nás panely obtěžují, je možné je skrýt pomocí odkazu „Skrýt panely“.  V
 textovém prohlížeči nalezneme tento odkaz za všemi panely, jinak je jeho
