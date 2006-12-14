@@ -8,7 +8,11 @@ Most important features:
     * Support for internationalization and multilingual content
     * Conformance to W3C and other relevant standards 
 
-See http://www.freebsoft.org/wiking for more information.
-
 See the file INSTALL for installation instructions.
+
+HTML documentation is included.  If you obtained Wiking from CVS, you will need
+to run "make doc" to generate it.  You can also view it online at the project
+homepage.
+
+See http://www.freebsoft.org/wiking for more information.
 
