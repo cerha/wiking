@@ -135,7 +135,6 @@ class Mapping(WikingModule, Publishable):
         title = _("Mapping")
         fields = (
             Field('mapping_id', width=5, editable=NEVER),
-            #default=nextval('mapping_mapping_id_seq'),
             #Field('parent', _("Parent"), codebook='Mapping'),
             Field('identifier', _("Identifier"),
                   filter=ALPHANUMERIC, post_process=LOWER, fixed=True,
@@ -492,8 +491,7 @@ class News(WikingModule, Translatable):
     class Spec(pp.Specification):
         title = _("News")
         fields = (
-            Field('news_id', #default=nextval('news_news_id_seq'),
-                  editable=NEVER),
+            Field('news_id', editable=NEVER),
             Field('timestamp', _("Date"), width=19, default=now,
                   format='%Y-%m-%d %H:%M'),
             Field('date', _("Date"), dbcolumn='timestamp', format='%Y-%m-%d'),
@@ -579,30 +577,30 @@ class Stylesheets(WikingModule):
 
 class Users(WikingModule):
     class Spec(pp.Specification):
-        def _fullname(row):
+        title = _("Users")
+        def _fullname(self, row):
             name = row['firstname'].value()
             surname = row['surname'].value()
             if name and surname:
                 return name + " " + surname
             else:
                 return name or surname or row['login'].value()
-        def _user(row):
+        def _user(self, row):
             nickname = row['nickname'].value()
             if nickname:
                 return nickname
             else:
                 return row['fullname'].value()
-        title = _("Users")
-        fields = (
-            Field('uid', _("UID"), width=8, editable=NEVER),
-            #default=nextval('users_uid_seq')),
+        def fields(self): return (
+            Field('uid', width=8, editable=NEVER),
             Field('login', _("Login"), width=16),
             Field('password', _("Password")),
             Field('fullname', _("Full Name"), virtual=True,
-                  computer=Computer(_fullname,
-                                    depends=('firstname', 'surname', 'login'))),
+                  computer=Computer(self._fullname,
+                                    depends=('firstname','surname','login'))),
             Field('user', _("Name/Nickname"), virtual=True,
-                  computer=Computer(_user, depends=('fullname', 'nickname'))),
+                  computer=Computer(self._user,
+                                    depends=('fullname', 'nickname'))),
             Field('firstname', _("First name")),
             Field('surname', _("Surname")),
             Field('nickname', _("Nickname")),
@@ -611,11 +609,11 @@ class Users(WikingModule):
             Field('address', _("Address"), height=3),
             Field('uri', _("URI")),
             Field('enabled', _("Enabled")),
-            Field('since', _("Registered since"), default=now,
-                  format='%Y-%m-%d %H:%M'),
+            Field('since', _("Registered since"),
+                  format='%Y-%m-%d %H:%M')
             )
         columns = ('fullname', 'nickname', 'email')
-        layout = ('uid', 'login', 'password', 'firstname', 'surname',
+        layout = ('login', 'password', 'firstname', 'surname',
                   'nickname', 'email', 'phone', 'address', 'uri')
     _REFERER = 'login'
     _TITLE_COLUMN = 'fullname'
