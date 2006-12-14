@@ -7,14 +7,14 @@ Wiking].  Systém Wiking byl vyvinut tak, aby umožňil rovnocenný přístup v�
 uživatelům, včetně lidí s postižením či specifickými potřebami.  Velký důraz
 byl také kladen na neutralitu k použitému software, hardware a uživatelským
 nastavením.  Výsledné stránky by tedy měly být použitelné bez ohledu na použitý
-prohlížeč, typ a velikost písma, rozlišení obrazovky, použité zpřístupňující
+prohlížeč, typ a velikost písma, rozlišení obrazovky, zpřístupňující
 technologie atd.
 
 Implementace respektuje relevantní standardy W3C.  S ohledem na zpřístupnění je
 to zejména dokument >>[http://www.w3.org/TR/WAI-WEBCONTENT/ Web Content
 Accessibility Guidelines 1.0]<<.  Ačkoli věříme, že požadavky WCAG 1.0 jsou
 splněny v úrovni AAA, musíme připustit, že řada parametrů je natolik
-subjektivní povahy, že přesné zařazení není možné.  Dále byl produkt testován
+subjektivní povahy, že přesné zařazení není možné.  Produkt byl také testován
 uživateli různých kombinací zpřístupňujících technologií a byla přijata řada
 opatření pro zajištění co nejlepší použitelnosti ve všech případech.
 
