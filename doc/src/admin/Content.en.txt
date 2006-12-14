@@ -1,9 +1,9 @@
 # -*- coding: utf-8; mode: structured-text -*-
 
-= Content =
+= Pages =
 
-This module handles generic content pages.  Each item in the table
-assigns the actual content to one /Mapping/ item (identifier).
+This module handles generic content pages.  Each item in the table assigns
+actual content to one /Mapping/ item (identifier).
 
 The content itself can be directly edited as an ``LCG structured text''
 document.  See the [/__doc__/lcg/data-formats/structured-text formatting

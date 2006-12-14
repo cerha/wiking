@@ -1,6 +1,6 @@
 # -*- coding: utf-8; mode: structured-text -*-
 
-== RSS feeds ==
+== Web Feeds (RSS) ==
 
 The technology of web feeds allows Internet users to subscribe to certain
 resource (called RSS feed or RSS channel) to get a quick overview of provided

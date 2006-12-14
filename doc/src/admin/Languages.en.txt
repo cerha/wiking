@@ -12,7 +12,7 @@ for more information how multiple language variants are served to website
 visitors.
 
 
-= Language selection in WMI =
+== Language Selection in WMI ==
 
 The Wiking Management Interface allows you to switch to any of the configured
 languages at any time (as oposed to the normal website view, where only
