@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-12-11 22:18+0100\n"
+"POT-Creation-Date: 2006-12-13 15:47+0100\n"
 "PO-Revision-Date: 2006-11-10 07:49+0100\n"
 "Last-Translator: Pawel Loba <ploba@rogers.com>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -85,15 +85,15 @@ msgstr ""
 msgid "Contact:"
 msgstr "Kontakt:"
 
-#: ../lib/wiking/handler.py:208
+#: ../lib/wiking/handler.py:201
 msgid "The requested object does not exist anymore!"
 msgstr "¯±dany objekt ju¿ nie istnieje!"
 
-#: ../lib/wiking/handler.py:228
+#: ../lib/wiking/handler.py:221
 msgid "Wiking Management Interface"
 msgstr "Zarz±dzaj±cy Interfejs Wikinga"
 
-#: ../lib/wiking/handler.py:229
+#: ../lib/wiking/handler.py:222
 msgid "Wiking Help System"
 msgstr ""
 
@@ -101,7 +101,7 @@ msgstr ""
 msgid "Edit"
 msgstr "Edytuj"
 
-#: ../lib/wiking/module.py:30 ../lib/wiking/module.py:400
+#: ../lib/wiking/module.py:30 ../lib/wiking/module.py:396
 msgid "Remove"
 msgstr "Usuñ"
 
@@ -117,51 +117,51 @@ msgstr "Te dane ju¿ istniej±. Wprowad¼ inne warto¶ci."
 msgid "Empty value.  This field is mandatory."
 msgstr "Nie podano danych. To pole jest obowi±skowe."
 
-#: ../lib/wiking/module.py:361
+#: ../lib/wiking/module.py:357
 msgid "New record"
 msgstr "Nowy wpis"
 
-#: ../lib/wiking/module.py:363
+#: ../lib/wiking/module.py:359
 msgid "Help"
 msgstr "Pomoc"
 
-#: ../lib/wiking/module.py:369
+#: ../lib/wiking/module.py:365
 msgid "more about RSS"
 msgstr ""
 
-#: ../lib/wiking/module.py:370
+#: ../lib/wiking/module.py:366
 msgid "An RSS channel is available for this section:"
 msgstr "Kana³ RSS jest udostêpniony dla tej sekcji:"
 
-#: ../lib/wiking/module.py:391
+#: ../lib/wiking/module.py:387
 msgid "new record"
 msgstr "nowy wpis"
 
-#: ../lib/wiking/module.py:396
+#: ../lib/wiking/module.py:392
 msgid "edit form"
 msgstr "wypelnij formê"
 
-#: ../lib/wiking/module.py:402
+#: ../lib/wiking/module.py:398
 msgid "Please, confirm removing the record permanently."
 msgstr "Potwierd¼ definitywne usuniêcie wpisu."
 
-#: ../lib/wiking/module.py:404
+#: ../lib/wiking/module.py:400
 msgid "removing"
 msgstr "usuwanie"
 
-#: ../lib/wiking/module.py:416
+#: ../lib/wiking/module.py:412
 msgid "New record was successfully inserted."
 msgstr "Nowy wpis zosta³ wprowadzony."
 
-#: ../lib/wiking/module.py:437
+#: ../lib/wiking/module.py:433
 msgid "The record was successfully updated."
 msgstr "Wpis zosta³ uaktualniony."
 
-#: ../lib/wiking/module.py:452
+#: ../lib/wiking/module.py:448
 msgid "The record was deleted."
 msgstr "Wpis zosta³ usuniêty."
 
-#: ../lib/wiking/module.py:455
+#: ../lib/wiking/module.py:451
 msgid "Unable to delete record."
 msgstr "Niemo¿liwe usuniêcie wpisu."
 
@@ -459,6 +459,6 @@ msgstr ""
 "Dla wspó³pracy przegl±darki z innymi jêzykami zmien jej ustawienia b±d¼ "
 "skontaktuj siê a administratorem swojego systemu."
 
-#: ../lib/wiking/util.py:297
+#: ../lib/wiking/util.py:299
 msgid "Actions:"
 msgstr "Akcje:"
