@@ -265,7 +265,7 @@ CREATE TABLE users (
 	address text,
 	uri text,
 	enabled boolean NOT NULL DEFAULT 'FALSE',
-	since timestamp NOT NULL DEFAULT now()
+	since timestamp NOT NULL DEFAULT current_timestamp(0)
 ) WITH OIDS;
 
 CREATE TABLE config (
