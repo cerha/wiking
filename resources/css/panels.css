@@ -10,6 +10,7 @@
 }
 #navigation-bar { 
     margin-right: 17em;
+    padding-right: 0; 
 }
 
 div.panel { 
