@@ -26,6 +26,7 @@ else:
         OK = 1
     apache = Apache()
     
+import random
 import Cookie
 
 class Request(object):
@@ -61,7 +62,7 @@ class Request(object):
         except KeyError:
             return default
 
-    def get_cookie(self, name, default=None):
+    def cookie(self, name, default=None):
         cookies = Cookie.SimpleCookie(self.header('Cookie'))
         if cookies.has_key(name):
             return cookies[name].value
@@ -125,6 +126,9 @@ class WikingRequest(Request):
     """Wiking specific methods for the request object."""
     _LANG_COOKIE = 'wiking_prefered_language'
     _PANELS_COOKIE = 'wiking_show_panels'
+    _LOGIN_COOKIE = 'wiking_login'
+    _SESSION_COOKIE = 'wiking_session_key'
+    _MAX_SESSION_KEY = 0xfffffffffffffffffffffffffffff
 
 
     def _init_params(self):
@@ -135,7 +139,7 @@ class WikingRequest(Request):
             # Expires in 2 years (in seconds)
             self.set_cookie(self._LANG_COOKIE, lang, expires=63072000)
         else:
-            self._prefered_language = self.get_cookie(self._LANG_COOKIE)
+            self._prefered_language = self.cookie(self._LANG_COOKIE)
         if params.has_key('hide_panels'):
             self.set_cookie(self._PANELS_COOKIE, 'no', expires=63072000)
             self._show_panels = False
@@ -143,7 +147,19 @@ class WikingRequest(Request):
             self.set_cookie(self._PANELS_COOKIE, 'yes', expires=63072000)
             self._show_panels = True
         else:
-            self._show_panels = self.get_cookie(self._PANELS_COOKIE) != 'no'
+            self._show_panels = self.cookie(self._PANELS_COOKIE) != 'no'
+        if params.has_key('__log_in'):
+            del params['__log_in']
+            login, password = (None, None)
+            if params.has_key('login'):
+                login = params['login']
+                del params['login']
+            if params.has_key('password'):
+                password = params['password']
+                del params['password']
+            self._login = (login, password)
+        else:
+            self._login = None
         return params
 
     def _init_uri(self):
@@ -200,6 +216,18 @@ class WikingRequest(Request):
             return self._prefered_languages
 
     def prefered_language(self, variants, raise_error=True):
+        """Return the prefered variant from the list of available variants.
+
+        The preference is determined by the order of acceptable languages
+        returned by 'prefered_languages()'.
+
+        Arguments:
+
+          variants -- list of language codes of avialable language variants
+          raise_error -- if false, None is returned if there is no acceptable
+            variant in the list.  Otherwise NotAcceptable error is raised.
+
+        """
         for l in self.prefered_languages():
             if l in variants:
                 return l
@@ -207,4 +235,57 @@ class WikingRequest(Request):
             raise NotAcceptable(variants)
         else:
             return None
+
+    def login_name(self):
+        """Return the login name entered in the login form.
+
+        The returned value does not indicate anything about authentication.
+        The login name is returned even if login was not successful.
+
+        """
+        return self._login and self._login[0] or \
+               self.cookie(self._LOGIN_COOKIE)
+
+    def user(self):
+        try:
+            return self._user
+        except AttributeError:
+            return None
+    
+    def login(self, users):
+        if self._login:
+            login, password = self._login
+            if not login:
+                raise Unauthorized('Enter your login name, please!')
+            if not password:
+                raise Unauthorized('Enter your password, please!')
+            user = users.user(login)
+            if user is None or user['password'].value() != password \
+                   or not user['enabled'].value():
+                raise Unauthorized('Invalid login!')
+            # Login succesfull
+            session_key = hex(random.randint(0, self._MAX_SESSION_KEY))
+            users.save_session(user, session_key)
+            self.set_cookie(self._LOGIN_COOKIE, login, expires=63072000)
+            self.set_cookie(self._SESSION_COOKIE, session_key, expires=3600)
+            self._user = user
+        else:
+            login, key = (self.cookie(self._LOGIN_COOKIE), 
+                          self.cookie(self._SESSION_COOKIE))
+            if login and key:
+                user = users.check_session(login, key)
+                if user:
+                    self.set_cookie(self._SESSION_COOKIE, key, expires=3600)
+                    self._user = user
+        if self.param('command') == 'logout' and self.user():
+            users.close_session(self._user)
+            self._user = None
+        elif self.param('command') == 'login' and not self.user():
+            raise Unauthorized()
+        
+    def check_auth(self, permission):
+        user = self.user()
+        if not user:
+            raise Unauthorized()
+        
         
