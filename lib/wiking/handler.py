@@ -152,6 +152,17 @@ class SiteHandler(object):
                 for stylesheet in self._module('Stylesheets').stylesheets()
                 if with_panels or stylesheet != 'panels.css']
 
+    def _translator(self, lang):
+        if lang:
+            path = {
+                'wiking': os.path.join(cfg.wiking_dir, 'translations'),
+                'lcg':  '/usr/local/share/lcg/translations',
+                'pytis': '/usr/local/share/pytis/translations',
+                }
+            return lcg.GettextTranslator(lang, path=path, fallback=True)
+        else:
+            return lcg.NullTranslator()
+    
     def _doc(self, req, path):
         if path and path[0] == 'lcg':
             path = path[1:]
@@ -188,6 +199,7 @@ class SiteHandler(object):
         req.wmi = wmi = path and path[0] == '_wmi'
         doc = path and path[0] == '_doc'
         try:
+            #req.login(self._module('Users'))
             if doc:
                 doc = req.param('display') != 'inline'
                 result = self._doc(req, path[1:])
@@ -214,7 +226,13 @@ class SiteHandler(object):
             req.set_status(e.ERROR_CODE)
             lang = req.prefered_language(self._module('Languages').languages(),
                                          raise_error=False)
-            result = Document(e.name(), lcg.TextContent(e.msg(req)), lang=lang)
+            if isinstance(e, Unauthorized):
+                content = LoginDialog(req)
+                if e.args:
+                    content = (ErrorMessage(e.args[0]), content)
+            else:
+                content = lcg.TextContent(e.msg(req))
+            result = Document(e.title(), content, lang=lang)
         config = self._module('Config').config(self._server, result.lang())
         if wmi or doc:
             config.site_title = wmi and \
@@ -229,18 +247,10 @@ class SiteHandler(object):
             config.show_panels = req.show_panels()
         config.wmi = wmi
         config.doc = doc
+        config.user = req.user()
         node = result.mknode('/'.join(path), config, menu, panels, 
                              self._stylesheets(req, panels))
-        if node.language():
-            path = {
-                'wiking': os.path.join(cfg.wiking_dir, 'translations'),
-                'lcg':  '/usr/local/share/lcg/translations',
-                'pytis': '/usr/local/share/pytis/translations',
-                }
-            translator = lcg.GettextTranslator(node.language(), path=path,
-                                               fallback=True)
-        else:
-            translator = lcg.NullTranslator()
+        translator = self._translator(node.language())
         data = translator.translate(self._exporter.page(node))
         return req.result(data)
 
