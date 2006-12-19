@@ -141,7 +141,7 @@ def cmp_versions(v1, v2):
 
 class HttpError(Exception):
     ERROR_CODE = None
-    def name(self):
+    def title(self):
         name = " ".join(pp.split_camel_case(self.__class__.__name__))
         return _("Error %d: %s", self.ERROR_CODE, name)
     def msg(self, req):
@@ -182,7 +182,13 @@ class NotAcceptable(HttpError):
                       "setup the language preferences in your browser "
                       "or contact your system administrator."))
         return lcg.concat([lcg.concat("<p>", p, "</p>\n\n") for p in msg])
-    
+
+class Unauthorized(HttpError):
+    ERROR_CODE = 401
+
+    def title(self):
+        return _("Authentication required")
+
 # ============================================================================
 
 class MenuItem(object):
@@ -299,27 +305,17 @@ class ActionMenu(lcg.Content):
         return _html.p(concat(_("Actions:"), items, separator="\n"),
                        cls="actions")
           
-
 class PanelItem(lcg.Content):
-    def __init__(self, data, row, columns, link_provider, base_uri):
-        self._data = data
-        self._row = row
-        self._columns = columns
-        self._link_provider = link_provider
-        self._base_uri = base_uri
 
-    def _export_field(self, col):
-        value = self._row[col.id()].export()
-        if self._link_provider:
-            uri = self._link_provider(self._row, col, self._base_uri)
-            if uri:
-                value = _html.link(value, uri)
-        return _html.span(value, cls="panel-field-"+col.id())
+    def __init__(self, fields):
+        super(PanelItem, self).__init__()
+        self._fields = fields
         
     def export(self, exporter):
-        items = [self._export_field(col) for col in self._columns]
+        items = [_html.span(uri and _html.link(value, uri) or value,
+                            cls="panel-field-"+id)
+                 for id, value, uri in self._fields]
         return _html.div(items, cls="item")
-        
     
 class Message(lcg.TextContent):
     _CLASS = "message"
@@ -331,6 +327,30 @@ class Message(lcg.TextContent):
 class ErrorMessage(Message):
     _CLASS = "error"
     
+
+class LoginDialog(lcg.Content):
+    
+    def __init__(self, req):
+        super(LoginDialog, self).__init__()
+        self._params = req.params
+        self._uri = req.uri
+        self._login = req.login_name()
+
+    def export(self, exporter):
+        #TODO: labels!!!!!!!!!!!!
+        x = (_html.label(_("Login name")+':', id='login') + _html.br(),
+             _html.field(name='login', value=self._login, id='login',
+                         tabindex=0, size=14), _html.br(), 
+             _html.label(_("Password")+':', id='password') + _html.br(),
+             _html.field(name='password', id='password', size=14,
+                         password=True), _html.br(),
+             _html.hidden(name='__log_in', value='1'), 
+             ) + tuple([_html.hidden(name=k, value=v)
+                        for k,v in self._params.items()]) + (
+            _html.submit(_("Log in"), cls='submit'),)
+        return _html.form(x, method='POST', action=self._uri, cls='login-form')
+        
+        
     
 # ============================================================================
 # Classes derived from Pytis components
