@@ -26,6 +26,14 @@ div.panel div.title {
     background-color: $color.heading-bg;
     border-bottom: 1px solid $color.top-border; 
 }
+div.panel-login a.login-ctrl { 
+    padding: 0 0.5em;
+    margin: 0 0.3em;
+    background-color: $color.heading-bg;
+    text-decoration: none;
+    background: $color.button;
+    border: 1px solid $color.button-border;
+}
 div.panel h1 .closer { 
     position: absolute;
     right: 0.2em; 
