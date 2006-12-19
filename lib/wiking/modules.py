@@ -20,7 +20,7 @@
 from wiking import *
 
 from pytis.presentation import Computer, CbComputer
-from mx.DateTime import now
+from mx.DateTime import now, TimeDelta
 from lcg import _html
 import re, types
 
@@ -204,11 +204,13 @@ class Config(WikingModule):
                                     depends=())),
             Field('site_title',     _("Site title"), width=24),
             Field('site_subtitle',  _("Site subtitle"), width=64),
+            Field('login_panel',    _("Show login panel")),
             Field('webmaster_addr', _("Webmaster address")),
             Field('theme', _("Theme"), codebook='Themes',
                   selection_type=CHOICE, not_null=False),
             )
-        layout = ('site_title', 'site_subtitle', 'webmaster_addr', 'theme')
+        layout = ('site_title', 'site_subtitle', 'login_panel',
+                  'webmaster_addr', 'theme')
     _TITLE_COLUMN = 'title'
     _DEFAULT_ACTIONS = (Action(_("Edit"), 'edit'),)
 
@@ -492,8 +494,8 @@ class News(WikingModule, Translatable):
         title = _("News")
         fields = (
             Field('news_id', editable=NEVER),
-            Field('timestamp', _("Date"), width=19, default=now,
-                  format='%Y-%m-%d %H:%M'),
+            Field('timestamp', _("Date"), width=19, format='%Y-%m-%d %H:%M',
+                  default=lambda: now().gmtime()),
             Field('date', _("Date"), dbcolumn='timestamp', format='%Y-%m-%d'),
             Field('lang', _("Language"), codebook='Languages', editable=ONCE,
                   selection_type=CHOICE, value_column='lang'),
@@ -593,7 +595,8 @@ class Users(WikingModule):
                 return row['fullname'].value()
         def fields(self): return (
             Field('uid', width=8, editable=NEVER),
-            Field('login', _("Login"), width=16),
+            Field('login', _("Login name"), width=16,
+                  type=pd.Identifier(maxlen=16)),
             Field('password', _("Password")),
             Field('fullname', _("Full Name"), virtual=True,
                   computer=Computer(self._fullname,
@@ -609,13 +612,40 @@ class Users(WikingModule):
             Field('address', _("Address"), height=3),
             Field('uri', _("URI")),
             Field('enabled', _("Enabled")),
-            Field('since', _("Registered since"),
-                  format='%Y-%m-%d %H:%M')
+            Field('since', _("Registered since"), format='%Y-%m-%d %H:%M'),
+            Field('session_key'),
+            Field('session_expire'),
             )
         columns = ('fullname', 'nickname', 'email')
         layout = ('login', 'password', 'firstname', 'surname',
                   'nickname', 'email', 'phone', 'address', 'uri')
     _REFERER = 'login'
+    _PANEL_FIELDS = ('fullname',)
     _TITLE_COLUMN = 'fullname'
 
+    def _user(self, row):
+        return pp.PresentedRow(self._view.fields(), self._data, row)
+        
+    def _update(self, user, **kwargs):
+        key = [user[c.id()] for c in self._data.key()]
+        self._data.update(key, self._data.make_row(**kwargs))
 
+    def user(self, login):
+        return self._user(self._data.get_row(login=login))
+
+    def check_session(self, login, session_key):
+        user = self._data.get_row(login=login, session_key=session_key)
+        if user and user['session_expire'].value() > now().gmtime():
+            expire = now().gmtime() + TimeDelta(hours=1)
+            self._update(user, session_expire=expire)
+            return self._user(user)
+        else:
+            return  None
+
+    def save_session(self, user, session_key):
+        expire = now().gmtime() + TimeDelta(hours=1)
+        self._update(user, session_expire=expire, session_key=session_key)
+
+    def close_session(self, user):
+        self._update(user, session_expire=None, session_key=None)
+        
