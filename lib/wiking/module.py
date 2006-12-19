@@ -309,19 +309,19 @@ class WikingModule(object):
 
     def panelize(self, identifier, lang, count):
         count = count or self._PANEL_DEFAULT_COUNT
-        if self._PANEL_FIELDS:
-            fields = [self._view.field(id) for id in self._PANEL_FIELDS]
-        else:
-            fields = self._view.columns()
+        columns = self._PANEL_FIELDS or self._view.columns()
+        fields = [self._view.field(id) for id in columns]
+        kwargs = dict(limit=count-1, sorting=self._sorting)
         if self._LIST_BY_LANGUAGE:
-            kwargs = {'lang': lang}
-        else:
-            kwargs = {}
-        items = [PanelItem(self._data, row, fields, self._link_provider,
-                           '/'+identifier)
-                 for row in self._data.get_rows(limit=count-1,
-                                                sorting=self._sorting,
-                                                **kwargs)]
+            kwargs['lang'] = lang
+        prow = pp.PresentedRow(self._view.fields(), self._data, None)
+        items = []
+        base_uri = '/'+identifier
+        for row in self._data.get_rows(**kwargs):
+            prow.set_row(row)
+            items.append(PanelItem([(f.id(), prow[f.id()].export(),
+                                     self._link_provider(prow, f, base_uri))
+                                    for f in fields]))
         return items
 
     # ===== Action handlers =====
@@ -382,6 +382,7 @@ class WikingModule(object):
         return self._document(req, view, object, err=err, msg=msg)
     
     def add(self, req, prefill=None, errors=()):
+        #req.check_auth(pd.Permission.INSERT)
         form = self._form(pytis.web.EditForm, None, handler=req.uri, new=True,
                           prefill=prefill, errors=errors, action='insert')
         return self._document(req, form, subtitle=_("new record"))
