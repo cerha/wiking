@@ -88,13 +88,30 @@ class Exporter(lcg.HtmlExporter):
     def _page(self, node):
         return self._parts(node, ('menu', 'language_selection',
                                   'panels', 'content', 'clearing'))
+
+    def _login_ctrl(self, node):
+        user = node.config().user
+        if user:
+            u, l, cmd = (user['fullname'].value(), _("log out"), 'logout')
+        else:
+            u, l, cmd = (_('Anonymous'), _("log in"), 'login')
+        return (u, _html.link(l, '?command=%s' % cmd, cls='login-ctrl'))
     
     def _panels(self, node):
         panels = node.panels()
-        if panels and not node.config().show_panels:
-            return _html.div(_html.link(_("Show panels"), "?show_panels=1"),
-                             cls="panel-control show")
-        result = []
+        config = node.config()
+        if not panels:
+            return None
+        if not config.show_panels:
+            return _html.link(_("Show panels"), "?show_panels=1",
+                              cls='panel-control show')
+        result = [_html.link(_("Hide panels"), "?hide_panels=1",
+                             cls='panel-control hide'),
+                  _html.hr(cls="hidden")]
+        if config.login_panel:
+            user, ctrl = self._login_ctrl(node)
+            content = _html.p(concat(user, ' ', hidden('['), lnk, hidden(']')))
+            panels.insert(0, Panel('login', _("Logged user"), content))
         for i, panel in enumerate(panels):
             id = panel.id()
             content = panel.content()
@@ -109,18 +126,14 @@ class Exporter(lcg.HtmlExporter):
                            hidden(" (", _html.link(_("skip"), next), ")")),
                           cls='title')
             c = _html.div(content, cls="panel-content")
-            result.append(_html.div((_html.hr(cls="hidden"), h, c),
+            result.append(_html.div((h, c, _html.hr(cls="hidden")),
                                     cls="panel panel-"+id))
-        if panels:
-            ctrl = _html.div(_html.link(_("Hide panels"), "?hide_panels=1"),
-                             cls="panel-control hide")
-            result.extend((_html.hr(cls="hidden"), ctrl))
         return result
 
-
     def _content(self, node):
-        h = _html.h(_html.link(node.title(), None, name='content-heading'), 1)
-        content = (h, super(Exporter, self)._content(node))
+        content = (
+            _html.h(_html.link(node.title(), None, name='content-heading'), 1),
+            super(Exporter, self)._content(node))
         return _html.div(content, cls='node-id-'+node.id())
 
     def _clearing(self, node):
@@ -135,6 +148,9 @@ class Exporter(lcg.HtmlExporter):
         ctrls = (hidden("["),)
         if node.edit_label():
             ctrls += (_html.link(node.edit_label(), "?action=edit"), "|")
+        #if not node.config().login_panel:
+        #    user, ctrl = self._login_ctrl(node)
+        #    ctrls += (concat(_("Logged user"), ': ', user, ' (', ctrl, ') |'),)
         if node.config().wmi:
             ctrl = _html.link(_("Leave the Management Interface"), '/',
                               hotkey="9")
@@ -145,11 +161,11 @@ class Exporter(lcg.HtmlExporter):
                               title=_("Enter the Wiking Management Interface"),
                               hotkey="9")
         ctrls += (ctrl, hidden("]"))
-        result += (_html.span(concat(ctrls, separator="\n"), cls="controls"),)
-        result += (_html.span(_("Powered by %s %s",
+        result += (_html.span(concat(ctrls, separator="\n"), cls="controls"),
+                   _html.span(_("Powered by %s %s",
                                 _html.link("Wiking",
                                            "http://www.freebsoft.org/wiking"),
-                                wiking.__version__)),)
+                                wiking.__version__)))
         return result
         
 
