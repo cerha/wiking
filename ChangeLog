@@ -1,3 +1,58 @@
+2006-12-19  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/modules.py (Config.Spec.fields): New field `login_panel'.
+	(News.Spec.fields): Set default timestamp in GMT.
+	(Users.Spec.fields): Set type of `login' to Identifier.  New
+	columns for session handling.
+	(Users._user, Users._update, Users.user, Users.check_session) 
+	(Users.save_session, Users.close_session): New methods.
+
+	* lib/wiking/request.py (Request.get_cookie): Renamed to `cookie'.
+	(WikingRequest._LOGIN_COOKIE, WikingRequest._SESSION_COOKIE)
+	(WikingRequest._MAX_SESSION_KEY): New constants.
+	(WikingRequest._init_params): `get_cookie()' -> `cookie'.  Process
+	login form data.
+	(WikingRequest.prefered_language): Docstring added.
+	(WikingRequest.login_name): New method.
+	(WikingRequest.user): New method.
+	(WikingRequest.prefered_language): New method.
+	(WikingRequest.check_auth): New method.
+
+	* lib/wiking/util.py (Action.name): Renamed to `title()'.
+	(Unauthorized): New class.
+	(PanelItem.__init__): Take just `fields' argument.
+	(PanelItem.export): Completely rewritten.
+	(PanelItem._export_field): Method removed.
+	(LoginDialog): New class.
+
+	* lib/wiking/module.py (WikingModule.panelize): Use PresentedRow
+	to support computed columns.  Pass simplified arguments to
+	PanelItem constructor.
+	
+
+	* doc/src/user/navigation.en.txt: Updated.
+
+	* doc/src/user/navigation.cs.txt: Updated.
+
+	* lib/wiking/export.py (Exporter._page): New method.
+	(Exporter._panels): Put both panel controls above the panels.  Add
+	login panel if enabled.
+	(Exporter._content): Cosmetic changes.
+	(Exporter._wiking_bar): Cosmetic changes.
+
+	* lib/wiking/handler.py (SiteHandler._translator): New method.
+	(SiteHandler.handle): Handle also `Unauthorized' errors.  Use
+	`self._translator'.
+	(SiteHandler.handle): Set `config.user' for exporter.
+
+	* resources/css/default.css:  Added styles for login form.
+
+	* resources/css/panels.css: Added styles for login panel.
+
+	* sql/wiking.sql (users): New columns for session handling and
+	access rights.
+	(config): New column `login_panel'.
+	
 2006-12-14  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/modules.py (Users.Spec.fields): Transformed to a
