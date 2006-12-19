@@ -60,26 +60,13 @@ a:hover.backref { color: $color.foreground; }
     max-width: 70%;
 }
 
-#language-selection { 
-    position: absolute;
-    top: 2pt;
-    right: 6pt;
-    font-size: 0.8em;
-    max-width: 30%;
-    text-align: right;
-}
-#language-selection a.current { background-color: $color.highlight-bg; }
-
-#page { 
-    padding-top: 0.3em;
-}
-
 /* Menu with folders */
 #navigation-bar {
     border-bottom: 1px solid $color.top-border;
     padding-left: 0.2em;
-    /* leave some space for panel controls and wrapped languages */
-    padding-right: 4em; 
+    /* padding-bottom: 0.1em; */
+    /* leave some space for language selection and panel controls */
+    padding-right: 6em; 
 }
 #navigation-bar .label {
     display: none;
@@ -89,25 +76,40 @@ a:hover.backref { color: $color.foreground; }
     background-color: $color.inactive-folder;
     border: solid $color.top-border 1px;
     white-space: nowrap;
-    padding: 0 0.6em;
-    text-decoration: none;
+    padding: 0 0.6em; /* 0.1em 0.6em; */
+    text-decoration: none; /* ??? */
 }
 #navigation-bar a.navigation-link.current {
     background-color: $color.background;
     border-bottom: solid $color.background 1px;
 }
 
-#panels .panel-control {
+#language-selection { 
     position: absolute;
-    top: 1.9em;
+    top: 2pt;
     right: 6pt;
+    font-size: 0.9em;
+    max-width: 35%;
+    /*white-space: nowrap;*/
 }
-#panels .panel-control a {
+#language-selection a.current { background-color: $color.highlight-bg; }
+
+#panels {
+    position: relative;
+}
+#panels a.panel-control {
+    position: absolute;
+    right: 0;
+    top: -1.3em;
     font-size: 0.8em;
-    text-decoration: none;
+}
+
+#page { 
+    padding-top: 0.3em;
 }
 
 #content {
+    position: relative;
     padding: 0.8em;
     color: $color.foreground;
     background-color: $color.background;
@@ -116,6 +118,14 @@ a:hover.backref { color: $color.foreground; }
     border-top-width: 0;
     min-width: 10em;
 }
+
+#login-controls { 
+    position: absolute;
+    top: 0.7em;
+    right: 0.9em;
+    padding: 0.2em 0 0.3em 0;
+}
+
 #content h1 { 
     margin-top: 0;
 }
@@ -157,6 +167,9 @@ a:hover.backref { color: $color.foreground; }
 /* Links to unpublished pages */
 .unpublished { text-decoration: line-through; }
 
+form.login-form input {
+    margin-bottom: 0.5em;
+}
 
 div.errors, p.error, p.message { 
     border-style: solid;
@@ -205,7 +218,7 @@ form.show-form, form.edit-form {
 }
 
 form.show-form fieldset.body, form.edit-form fieldset.body,
-form.edit-form fieldset.submit { 
+form.edit-form fieldset.submit, form.login-form fieldset.body { 
     background: $color.frame-bg;
     border: 1px solid $color.frame-border;
     border-width: 1px 0;;
@@ -228,7 +241,7 @@ form.show-form fieldset.body input, form.show-form textarea {
     font-size: 1em;
 }
 form.edit-form fieldset.body input, form.edit-form textarea,
-form.edit-form select { 
+form.edit-form select, #login, #password { 
     border: 1px solid $color.border;
 }
 form.edit-form table { 
