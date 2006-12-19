@@ -100,13 +100,14 @@ požadovaných jazyků, je vrácena chybová stránka 406 (Not Acceptable) a
 uživateli je umožněno vybrat z dostupných jazykových variant.
 
 Kromě výše popsaného automatického určení jazyka je možné přepnout jazyk
-explicitně.  Pokud je obsah dané stránky dostupný ve více jazykových
-variantách, je jejich seznam zobrazen v pravém horním rohu stránky (umístění
-může být ovlivněno nastavením stylů).  V textových prohlížečích výběr jazyka
-následuje ihned za hlavní nabídkou.  Pokud je daná stránka dostupná pouze v
-jednom jazyce, výběr jazyků se nezobrazí.  Protože dostupné jazykové varianty
-jsou pro každou stránku nezávislé, mohou se nabízené jazyky pro různé stránky
-lišit.
+manuálně.  Pokud je obsah dané stránky dostupný ve více jazykových variantách,
+je jejich seznam zobrazen v pravém horním rohu stránky (umístění může být
+ovlivněno nastavením stylů).  V textových prohlížečích výběr jazyka následuje
+ihned za hlavní nabídkou.  Pokud je daná stránka dostupná pouze v jednom
+jazyce, výběr jazyků se nezobrazí.  Protože dostupné jazykové varianty jsou pro
+každou stránku nezávislé, mohou se nabízené jazyky pro různé stránky lišit.
+Aktuální jazyk, podobně jako aktuální položka menu, je vizuálně odlišen a v
+textovém prohlížěči je označen hvězdičkou.
 
 Pokud má uživatel v prohlížeči povolen příjem „>>cookies<<“, bude vybraný jazyk
 v příštích relacích považován za preferovaný.  Toto nastavení má vyšší prioritu
@@ -124,8 +125,8 @@ daného portálu.  Panely jsou stejné na každé stránce portálu.  Napříkla
 Novinek může zobrazovat souhrn nejčerstvějších zpráv s odkazy na kompletní
 znění každé zprávy v sekci Novinky.
 
-Pokud nás panely obtěžují, je možné je skrýt pomocí odkazu „Skrýt panely“.  V
-textovém prohlížeči nalezneme tento odkaz za všemi panely, jinak je jeho
-výchozí poloha nad panely.  Pokud jsou povoleny „>>cookies<<“, je toto
-nastavení permanentní, to znamená že panely zůstanou skryty i pro všechny
+Pokud nás panely obtěžují, je možné je skrýt pomocí odkazu „Skrýt panely“,
+který naleznete nad panely.  Pokud jsou povoleny „>>cookies<<“, je ukrytí
+panelů permanentní, to znamená že panely zůstanou skryty i pro všechny
 následující relace, dokud je opět nezobrazíme pomocí odkazu „Zobrazit panely“.
+Pokud stránka žádné panely neobsahuje, tyto odkazy nejsou dostupné.

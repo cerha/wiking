@@ -104,7 +104,8 @@ several language variants of the current page.  When there is just one variant,
 the language selection menu is not shown.  The menu appears right after the
 main navigation menu in a text browser.  Since the set of available language
 variants may be different for each page, the language selection menu may differ
-as well.
+as well.  Current language (as well as current menu item) is emphasized
+visually and marked by an asterisk in a text browser.
 
 If "cookies" are enabled, the manually selected language will be kept as the
 preferred language for further requests with even higher priority than the
@@ -121,7 +122,8 @@ information from given website.  Panels appear unchanged on each page of the
 site.  For example a News panel may display the most recent news with links to
 more detailed messages within the News section.
 
-Panels can be hidden, using the "Hide panels" link (this link appears below the
-panels in a text browser).  This setting is sticky (panels stay hidden for the
-following requests) when "cookies" are enabled in the browser.  Panels can be
-unhidden again using the "Show panels" link.
+Panels can be hidden, using the "Hide panels" link (located above them).  This
+setting is sticky (panels stay hidden for the following requests) when
+"cookies" are enabled in the browser.  Panels can be unhidden again using the
+"Show panels" link.  Of course, when a page doesn't use any panels, these links
+don't appear on the page.
