@@ -1,7 +1,4 @@
--- Wiking database creation script.
--- when using interactively, don't forget to:
--- REVOKE ALL on object from PUBLIC;
--- GRANT ALL on object to "www-data";
+-- Wiking database creation script. --
 
 CREATE TABLE _rowlocks ( 
    id      int, 
@@ -30,7 +27,7 @@ CREATE OR REPLACE RULE _rowlocks_update AS ON UPDATE TO _rowlocks DO INSTEAD
 CREATE OR REPLACE RULE _rowlocks_delete AS ON DELETE TO _rowlocks DO INSTEAD
   DELETE FROM _rowlocks_real WHERE id = old.id OR expires <= now();
 
---------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
 CREATE TABLE modules (
 	mod_id serial PRIMARY KEY,
@@ -38,7 +35,7 @@ CREATE TABLE modules (
 	active boolean NOT NULL DEFAULT 'TRUE'
 ) WITH OIDS;
 
---------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
 CREATE TABLE _mapping (
 	mapping_id serial PRIMARY KEY,
@@ -79,14 +76,14 @@ CREATE OR REPLACE RULE mapping_delete AS
      WHERE _mapping.mapping_id = old.mapping_id;
 );
 
---------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
 CREATE TABLE languages (
 	lang_id serial PRIMARY KEY,
 	lang char(2) UNIQUE NOT NULL
 ) WITH OIDS;
 
---------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
 CREATE TABLE titles (
 	title_id serial PRIMARY KEY,
@@ -96,7 +93,7 @@ CREATE TABLE titles (
 	UNIQUE (mapping_id, lang)
 ) WITH OIDS;
 
---------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
 CREATE TABLE _content (
 	content_id serial PRIMARY KEY,
@@ -145,7 +142,7 @@ CREATE OR REPLACE RULE content_delete AS
      WHERE _content.content_id = old.content_id;
 );
 
---------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
 CREATE TABLE _panels (
 	panel_id serial PRIMARY KEY,
@@ -196,7 +193,7 @@ CREATE OR REPLACE RULE panels_delete AS
      WHERE _panels.panel_id = old.panel_id;
 );
 
---------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
 CREATE TABLE news (
 	news_id serial PRIMARY KEY,
@@ -206,7 +203,7 @@ CREATE TABLE news (
 	"timestamp" timestamp NOT NULL DEFAULT now()
 ) WITH OIDS;
 
---------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
 CREATE TABLE stylesheets (
 	stylesheet_id serial PRIMARY KEY,
@@ -216,7 +213,7 @@ CREATE TABLE stylesheets (
 	content text
 ) WITH OIDS;
 
---------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
 CREATE TABLE themes (
 	theme_id serial PRIMARY KEY,
@@ -251,7 +248,7 @@ CREATE TABLE themes (
         message_border varchar(7)
 ) WITH OIDS;
 
---------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
 CREATE TABLE users (
 	uid serial PRIMARY KEY,
@@ -265,21 +262,24 @@ CREATE TABLE users (
 	address text,
 	uri text,
 	enabled boolean NOT NULL DEFAULT 'FALSE',
-	since timestamp NOT NULL DEFAULT current_timestamp(0)
+	author boolean NOT NULL DEFAULT 'FALSE',
+	admin boolean NOT NULL DEFAULT 'FALSE',
+	since timestamp NOT NULL DEFAULT current_timestamp(0),
+	session_key text,
+	session_expire timestamp
 ) WITH OIDS;
+
+ALTER TABLE users ALTER COLUMN since 
+      SET DEFAULT current_timestamp(0) AT TIME ZONE 'GMT';
 
 CREATE TABLE config (
 	config_id int PRIMARY KEY DEFAULT 0 CHECK (config_id = 0),
 	site_title text NOT NULL,
 	site_subtitle text,
+	login_panel boolean NOT NULL DEFAULT 'FALSE',
 	webmaster_addr text,
 	theme integer REFERENCES themes
 ) WITH OIDS;
-
---   "session_key" text,
---   "session_expire" timestamp
---   "enabled" bool DEFAULT 'FALSE' NOT NULL,
-
 
 --CREATE TABLE changes (
 --	content_id integer NOT NULL REFERENCES content ON DELETE CASCADE,
