@@ -23,14 +23,14 @@ _ = lcg.TranslatableTextFactory('wiking')
 class WikingModule(object):
     _REFERER = None
     _TITLE_COLUMN = None
-    _RSS_TITLE_COLUMN = None
-    _RSS_DESCR_COLUMN = None
     _LIST_BY_LANGUAGE = False
     _DEFAULT_ACTIONS = (Action(_("Edit"), 'edit'),
                         Action(_("Remove"), 'remove'),
                         Action(_("List"), 'list', context=None),
                         )
     _EDIT_LABEL = None
+    _RSS_TITLE_COLUMN = None
+    _RSS_DESCR_COLUMN = None
     _PANEL_DEFAULT_COUNT = 3
     _PANEL_FIELDS = None
     
@@ -41,7 +41,9 @@ class WikingModule(object):
         ('null value in column "(?P<id>[a-z_]+)" violates not-null constraint',
          _("Empty value.  This field is mandatory.")),
         )
-
+    
+    _spec_cache = {}
+    
     class Object(object):
         def __init__(self, module, view, data, row):
             self._module = module
@@ -107,8 +109,8 @@ class WikingModule(object):
 
     def spec(cls, resolver):
         try:
-            spec = cls._spec
-        except AttributeError:
+            spec = WikingModule._spec_cache[cls]
+        except KeyError:
             if cls.Spec.table is None:
                 table = pytis.util.camel_case_to_lower(cls.__name__, '_')
                 cls.Spec.table = table
@@ -118,7 +120,7 @@ class WikingModule(object):
                 if hasattr(base, '_ACTIONS'):
                     cls.Spec.actions += base._ACTIONS
             cls.Spec.data_cls = Data
-            spec = cls._spec = cls.Spec(resolver)
+            spec = WikingModule._spec_cache[cls] = cls.Spec(resolver)
         return spec
     spec = classmethod(spec)
             
@@ -286,7 +288,26 @@ class WikingModule(object):
     def _variants(self, object):
         return None
     
-    def _list(self, req, lang=None):
+    def _default_prefill(self, req):
+        if self._LIST_BY_LANGUAGE:
+            lang = req.prefered_language(self._module('Languages').languages())
+            if lang:
+                return {'lang': lang}
+        return None
+
+    def _condition(self):
+        # Can be used by a module to filter out invalid (ie outdated) records.
+        return None
+    
+    def _rows(self, lang=None, limit=None):
+        kwargs = dict(limit=limit,
+                      sorting=self._sorting,
+                      condition=self._condition())
+        if lang and self._LIST_BY_LANGUAGE:
+            kwargs['lang'] = lang
+        return self._data.get_rows(**kwargs)
+    
+    def _list(self, req, lang=None, limit=None):
         if self._LIST_BY_LANGUAGE and not req.wmi:
             variants = [str(v.value()) for v in
                         self._data.distinct('lang', sort=pd.ASCENDENT)]
@@ -294,9 +315,7 @@ class WikingModule(object):
             variants = self._module('Languages').languages()
         if lang is None:
             lang = req.prefered_language(variants)
-        condition = self._LIST_BY_LANGUAGE and {'lang': lang} or {}
-        rows = self._data.get_rows(sorting=self._sorting, **condition)
-        return lang, variants, rows
+        return lang, variants, self._rows(lang=lang)
 
     def resolve(self, req, path=None):
         # If path is None, only resolution by key is allowed.
@@ -309,41 +328,44 @@ class WikingModule(object):
 
     def panelize(self, identifier, lang, count):
         count = count or self._PANEL_DEFAULT_COUNT
-        columns = self._PANEL_FIELDS or self._view.columns()
-        fields = [self._view.field(id) for id in columns]
-        kwargs = dict(limit=count-1, sorting=self._sorting)
-        if self._LIST_BY_LANGUAGE:
-            kwargs['lang'] = lang
+        fields = [self._view.field(id)
+                  for id in self._PANEL_FIELDS or self._view.columns()]
+        base_uri = '/'+identifier
         prow = pp.PresentedRow(self._view.fields(), self._data, None)
         items = []
-        base_uri = '/'+identifier
-        for row in self._data.get_rows(**kwargs):
+        for row in self._rows(lang=lang, limit=count-1):
             prow.set_row(row)
             items.append(PanelItem([(f.id(), prow[f.id()].export(),
                                      self._link_provider(prow, f, base_uri))
                                     for f in fields]))
-        return items
+        if items:
+            return items
+        else:
+            return (lcg.TextContent(_("No records.")),)
+            
 
     # ===== Action handlers =====
     
     def rss(self, req):
-        if self._RSS_TITLE_COLUMN is None:
-            result = ''
-        else:
-            lang, variants, rows = self._list(req, lang=req.param('lang'))
-            from xml.sax.saxutils import escape
-            col = self._view.field(self._TITLE_COLUMN)
-            uri = req.abs_uri()
-            args = lang and (('setlang', lang),) or ()
-            items = [(escape(row[self._RSS_TITLE_COLUMN].export()),
-                      self._link_provider(row, col, uri, args=args),
-                      self._RSS_DESCR_COLUMN and \
-                      escape(row[self._RSS_DESCR_COLUMN].export()) or None)
-                     for row in rows[:8]]
-            config_module = self._module('Config')
-            config = config_module.config(req.server, lang)
-            title = config.site_title +' - '+ self._real_title(lang)
-            result = rss(title, uri, items, descr=config.site_subtitle)
+        if not self._RSS_TITLE_COLUMN:
+            raise NotFound
+        lang, variants, rows = self._list(req, lang=req.param('lang'), limit=8)
+        from xml.sax.saxutils import escape
+        col = self._view.field(self._TITLE_COLUMN)
+        uri = req.abs_uri()
+        args = lang and (('setlang', lang),) or ()
+        prow = pp.PresentedRow(self._view.fields(), self._data, None)
+        items = []
+        for row in rows:
+            prow.set_row(row)
+            title = escape(prow[self._RSS_TITLE_COLUMN].export())
+            uri = self._link_provider(row, col, uri, args=args)
+            descr = self._RSS_DESCR_COLUMN and \
+                    escape(prow[self._RSS_DESCR_COLUMN].export()) or None
+            items.append((title, uri, descr))
+        config = self._module('Config').config(req.server, lang)
+        title = config.site_title +' - '+ self._real_title(lang)
+        result = rss(title, uri, items, descr=config.site_subtitle)
         return ('application/xml', result)
     
     def list(self, req, err=None, msg=None):
@@ -358,7 +380,7 @@ class WikingModule(object):
             uri = '/_doc/'+self.__class__.__name__
             h = lcg.Link(lcg.Link.ExternalTarget(uri, _("Help")))
             content.extend((a, h))
-        elif self._RSS_DESCR_COLUMN:
+        elif self._RSS_TITLE_COLUMN:
             rss = lcg.Link.ExternalTarget(req.uri +'.'+ lang +'.rss',
                                           self._real_title(lang) + ' RSS')
             doc = lcg.Link.ExternalTarget('_doc/rss?display=inline',
@@ -384,7 +406,8 @@ class WikingModule(object):
     def add(self, req, prefill=None, errors=()):
         #req.check_auth(pd.Permission.INSERT)
         form = self._form(pytis.web.EditForm, None, handler=req.uri, new=True,
-                          prefill=prefill, errors=errors, action='insert')
+                          prefill=prefill or self._default_prefill(req),
+                          errors=errors, action='insert')
         return self._document(req, form, subtitle=_("new record"))
 
     def edit(self, req, object, errors=(), prefill=None):
