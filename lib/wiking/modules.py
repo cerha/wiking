@@ -20,7 +20,7 @@
 from wiking import *
 
 from pytis.presentation import Computer, CbComputer
-from mx.DateTime import now, TimeDelta
+from mx.DateTime import now, today, TimeDelta
 from lcg import _html
 import re, types
 
@@ -106,13 +106,14 @@ class Modules(WikingModule):
         title = _("Modules")
         fields = (
             Field('mod_id'),
-            Field('name',    _("Name"), type=_ModNameType()),
-            Field('title',   _("Title"), virtual=True,
+            Field('name', _("Name"), type=_ModNameType()),
+            Field('title', _("Title"), virtual=True,
                   computer=Computer(lambda r: _modtitle(r['name'].value()),
                                     depends=('name',))),
-            Field('active',  _("Active")),
+            Field('active', _("Active")),
             )
-        columns = layout = ('title', 'active')
+        columns = ('title', 'active')
+        layout = ('name', 'active')
         sorting = (('name', ASC),)
         cb = pp.CodebookSpec(display=(_modtitle, 'name'))
     
@@ -492,7 +493,7 @@ class Content(WikingModule, Publishable, Translatable):
 class News(WikingModule, Translatable):
     class Spec(pp.Specification):
         title = _("News")
-        fields = (
+        def fields(self): return (
             Field('news_id', editable=NEVER),
             Field('timestamp', _("Date"), width=19, format='%Y-%m-%d %H:%M',
                   default=lambda: now().gmtime()),
@@ -500,15 +501,21 @@ class News(WikingModule, Translatable):
             Field('lang', _("Language"), codebook='Languages', editable=ONCE,
                   selection_type=CHOICE, value_column='lang'),
             Field('title', _("Briefly"), column_label=_("Message"), width=32),
+            Field('rss_title', virtual=True,
+                  computer=Computer(self._rss_title,
+                                    depends=('title', 'date',))),
             Field('content', _("Text"), height=3, width=60))
         sorting = (('timestamp', DESC),)
         columns = ('title', 'date')
         layout = ('lang', 'timestamp', 'title', 'content')
+        def _rss_title(self, row):
+            return row['title'].value() +' ('+ row['date'].export() +')'
         
     _TITLE_COLUMN = 'title'
     _LIST_BY_LANGUAGE = True
     _PANEL_FIELDS = ('date', 'title')
-    _RSS_TITLE_COLUMN = 'title'
+    _ALLOW_RSS = True
+    _RSS_TITLE_COLUMN = 'rss_title'
     _RSS_DESCR_COLUMN = 'content'
     
     class View(WikingModule.GenericView):
@@ -524,17 +531,41 @@ class News(WikingModule, Translatable):
             heading = concat(row['date'].export(), ': ', row['title'].export())
             text = self._export_structured_text(row['content'].value(),
                                                 exporter)
-            name = 'news-item-' + row['news_id'].export()
+            name = 'item-' + row[self._view.fields()[0].id()].export()
             return (_html.div(_html.link(heading, None, name=name),
                               cls='list-heading'),
                     _html.div(text, cls='list-body'))
         
     def _link_provider(self, row, col, uri, wmi=False, args=()):
         if not wmi and col.id() == 'title':
-            return _html.uri(uri, *args)+'#news-item-'+row['news_id'].export()
+            return _html.uri(uri, *args) +'#item-'+ row[self._referer].export()
         else:
             return super(News, self)._link_provider(row, col, uri, wmi=wmi,
                                                     args=args)
+
+
+class Planner(News):
+    class Spec(pp.Specification):
+        title = _("Planner")
+        def fields(self): return (
+            Field('planner_id', editable=NEVER),
+            #TODO: mindate is computed when the spec is read!
+            Field('date', _("Date"), width=19, format='%Y-%m-%d',
+                  mindate=today().date),
+            Field('lang', _("Language"), codebook='Languages', editable=ONCE,
+                  selection_type=CHOICE, value_column='lang'),
+            Field('title', _("Briefly"), column_label=_("Event"), width=32),
+            Field('rss_title', virtual=True,
+                  computer=Computer(self._rss_title,
+                                    depends=('title', 'date',))),
+            Field('content', _("Text"), height=3, width=60))
+        sorting = (('date', ASC),)
+        columns = ('date', 'title')
+        layout = ('lang', 'date', 'title', 'content')
+        def _rss_title(self, row):
+            return row['date'].export() +': '+ row['title'].value()
+    def _condition(self):
+        return pd.GT('date', pd.Value(pd.Date(), today()))
 
     
 class Stylesheets(WikingModule):
