@@ -205,6 +205,17 @@ CREATE TABLE news (
 
 -------------------------------------------------------------------------------
 
+CREATE TABLE planner (
+	planner_id serial PRIMARY KEY,
+	title text NOT NULL,
+	lang char(2) NOT NULL REFERENCES languages(lang),
+	"date" date NOT NULL,
+	content text NOT NULL
+	UNIQUE ("date", lang, title)
+) WITH OIDS;
+
+-------------------------------------------------------------------------------
+
 CREATE TABLE stylesheets (
 	stylesheet_id serial PRIMARY KEY,
 	identifier varchar(32) UNIQUE NOT NULL,
