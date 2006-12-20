@@ -316,6 +316,7 @@ class PanelItem(lcg.Content):
                             cls="panel-field-"+id)
                  for id, value, uri in self._fields]
         return _html.div(items, cls="item")
+
     
 class Message(lcg.TextContent):
     _CLASS = "message"
@@ -376,9 +377,14 @@ class Data(pd.DBDataDefault):
         return [(k, pd.Value(self.find_column(k).type(), v))
                 for k, v in kwargs.items()]
     
-    def get_rows(self, skip=None, limit=None, sorting=(), **kwargs):
-        self.select(pd.AND(*[pd.EQ(k,v) for k,v in self._row_data(**kwargs)]),
-                    sort=sorting)
+    def get_rows(self, skip=None, limit=None, sorting=(), condition=None,
+                 **kwargs):
+        if kwargs:
+            conds = [pd.EQ(k,v) for k,v in self._row_data(**kwargs)]
+            if condition:
+                conds.append(condition)
+            condition = pd.AND(*conds)
+        self.select(condition=condition, sort=sorting)
         rows = []
         if skip:
             self.skip(skip)
