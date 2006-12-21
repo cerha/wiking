@@ -175,7 +175,16 @@ class WikingModule(object):
         if errors:
             return None, errors
         else:
-            return pytis.data.Row(rdata), None
+            row = pytis.data.Row(rdata)
+            check = self._view.check()
+            if check:
+                prow = pp.PresentedRow(self._view.fields(), self._data, row)
+                result = check(prow)
+                if result:
+                    if not isinstance(result, (list, tuple)):
+                        retult = (result, _("Integrity check failed."))
+                    return None, (result,)
+            return row, None
 
     def _analyze_exception(self, e):
         if e.exception():
