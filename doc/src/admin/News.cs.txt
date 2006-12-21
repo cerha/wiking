@@ -6,8 +6,8 @@ Modul Novinky umožňuje publikovat krátké aktuální zprávy.  Každá zpráv
 stručný nadpis, časovou známku a podrobnější text.  V základním zobrazení
 je vypsán seznam nejnovějších zpráv (nejnovější zprávy jsou nahoře).
 
-Text zprávy může být formátován jako „strukturovaný text LCG“.  Více
-informací viz. [/__doc__/lcg/data-formats/structured-text formátovací manuál].
+Text zprávy může být formátován jako „strukturovaný text LCG“ (viz
+[/__doc__/lcg/data-formats/structured-text formátovací manuál]).
 
 Zprávy pro jednotlivé jazykové verze jsou spravovány nezávisle.  Tabulka
 zobrazuje pouze záznamy odpovídající /aktuálně zvolenému jazyku/.  Pokud
