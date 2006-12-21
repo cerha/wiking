@@ -94,7 +94,7 @@ class Exporter(lcg.HtmlExporter):
         if user:
             u, l, cmd = (user['fullname'].value(), _("log out"), 'logout')
         else:
-            u, l, cmd = (_('Anonymous'), _("log in"), 'login')
+            u, l, cmd = (_('anonymous'), _("log in"), 'login')
         return (u, _html.link(l, '?command=%s' % cmd, cls='login-ctrl'))
     
     def _panels(self, node):
