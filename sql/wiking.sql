@@ -32,6 +32,7 @@ CREATE OR REPLACE RULE _rowlocks_delete AS ON DELETE TO _rowlocks DO INSTEAD
 CREATE TABLE modules (
 	mod_id serial PRIMARY KEY,
 	name varchar(32) UNIQUE,
+	ord  int,
 	active boolean NOT NULL DEFAULT 'TRUE'
 ) WITH OIDS;
 
@@ -197,21 +198,22 @@ CREATE OR REPLACE RULE panels_delete AS
 
 CREATE TABLE news (
 	news_id serial PRIMARY KEY,
-	title text NOT NULL,
 	lang char(2) NOT NULL REFERENCES languages(lang),
-	content text NOT NULL,
-	"timestamp" timestamp NOT NULL DEFAULT now()
+	"timestamp" timestamp NOT NULL DEFAULT now(),
+	title text NOT NULL,
+	content text NOT NULL
 ) WITH OIDS;
 
 -------------------------------------------------------------------------------
 
 CREATE TABLE planner (
 	planner_id serial PRIMARY KEY,
-	title text NOT NULL,
 	lang char(2) NOT NULL REFERENCES languages(lang),
-	"date" date NOT NULL,
-	content text NOT NULL
-	UNIQUE ("date", lang, title)
+	start_date date NOT NULL,
+	end_date date,
+	title text NOT NULL,
+	content text,
+	UNIQUE (start_date, lang, title)
 ) WITH OIDS;
 
 -------------------------------------------------------------------------------
