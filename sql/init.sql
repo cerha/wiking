@@ -2,14 +2,15 @@
 
 INSERT INTO languages (lang) VALUES ('en');
 
-INSERT INTO modules (name, active) VALUES ('Content', 't');
-INSERT INTO modules (name, active) VALUES ('News', 't');
-INSERT INTO modules (name, active) VALUES ('Panels', 't');
-INSERT INTO modules (name, active) VALUES ('Users', 'f');
-INSERT INTO modules (name, active) VALUES ('Titles', 't');
-INSERT INTO modules (name, active) VALUES ('Stylesheets', 't');
-INSERT INTO modules (name, active) VALUES ('Themes', 't');
-INSERT INTO modules (name, active) VALUES ('Languages', 't');
+INSERT INTO modules (name, active, ord) VALUES ('Content',     't', 10);
+INSERT INTO modules (name, active, ord) VALUES ('News',        't', 20);
+INSERT INTO modules (name, active, ord) VALUES ('Planner',     't', 30);
+INSERT INTO modules (name, active, ord) VALUES ('Panels',      't', 40);
+INSERT INTO modules (name, active, ord) VALUES ('Users',       'f', 50);
+INSERT INTO modules (name, active, ord) VALUES ('Titles',      't', 60);
+INSERT INTO modules (name, active, ord) VALUES ('Stylesheets', 't', 70);
+INSERT INTO modules (name, active, ord) VALUES ('Themes',      't', 80);
+INSERT INTO modules (name, active, ord) VALUES ('Languages',   't', 90);
 
 INSERT INTO _mapping (identifier, mod_id, published, ord)
 VALUES ('index', 1, 't', 1);
