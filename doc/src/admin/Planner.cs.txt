@@ -1,0 +1,19 @@
+# -*- coding: utf-8; mode: structured-text -*-
+
+= Plánovač =
+
+Modul plánovač slouží ke zveřejnění plánovaných akcí či událostí.  U každé
+události je určeno datum konání a volitelně může být určeno také datum ukončení
+-- to může být vhodné pro události, které trvají několik dní.  Události jsou ve
+výpisu řazeny podle tohoto data -- nedříve následující události nahoře.  Prošlé
+události (jejichž datum se stane minulostí) jsou automaticky vyřazeny z výpisu,
+takže jsou zobrazeny vždy jen budoucí události.
+
+Ke každé události lze připojit krátký text.  Ten může být formátován jako
+„strukturovaný text LCG“.  Více informací
+viz. [/__doc__/lcg/data-formats/structured-text formátovací manuál].
+
+Události pro jednotlivé jazykové verze jsou spravovány nezávisle.  Tabulka
+správcovského rozhraní zobrazuje pouze záznamy odpovídající /aktuálně zvolenému
+jazyku/.  Pokud chcete spravovat události v jiném jazyce, musíte nejprve
+přepnout aktuální jazyk.

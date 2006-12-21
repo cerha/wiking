@@ -1,5 +1,9 @@
 2006-12-21  Tomas Cerha  <cerha@brailcom.org>
 
+	* doc/src/admin/Planner.en.txt: New file.
+
+	* doc/src/admin/Planner.cs.txt: New file.
+
 	* lib/wiking/modules.py (Modules.Spec.fields): New field `ord'.
 	(Modules.Spec): Added `ord' to layout, columns and sorting.
 	(Modules.menu): Sort menu by `ord'.
