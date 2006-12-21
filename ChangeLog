@@ -1,3 +1,62 @@
+2006-12-21  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/modules.py (Modules.Spec.fields): New field `ord'.
+	(Modules.Spec): Added `ord' to layout, columns and sorting.
+	(Modules.menu): Sort menu by `ord'.
+	(Content._variants): Return only published variants.
+	(News.ListView._export_row): Export `content' only when not null.
+	(Planner.Spec.fields): New fields `start_date' and `end_date'.
+	`date' is just a virtual field computed from both dates.
+	(Planner.Spec.sorting): Sort by `start_date'.
+	(Planner.Spec._check_date, Planner.Spec._date) 
+	(Planner.Spec.check): New methods.
+	(Planner._condition): Use both dated in the condition.
+
+	* lib/wiking/module.py (WikingModule._validate): Added support for
+	the `check' constraint.
+
+	* translations/wiking.cs.po: Updated.
+
+	* lib/wiking/export.py (Exporter._login_ctrl): "Anonymous" ->
+	"anonymous".
+
+	* sql/wiking.sql (modules): New column `ord'.
+	(planner): Column `date' renamed to `start_date'.  New column
+	`end_date'.  Allow null values for `content'.
+
+	* sql/init.sql: Insert modules with order numbers.
+
+2006-12-20  Tomas Cerha  <cerha@brailcom.org>
+
+	* sql/wiking.sql (planner): New table.
+
+	* lib/wiking/util.py (Data.get_rows): New keyword argument
+	`condition'.
+
+	* lib/wiking/modules.py (Modules.Spec.columns): Use `name', not
+	`title' in layout.
+	(Content.Spec.fields): Define as a method.
+	(News.Spec.fields): New field `rss_title'.
+	(News.ListView._export_row): Don't use `news-' prefix for anchors.
+	Use the first field as a key column.
+	(News._link_provider): Don't use `news-' prefix for anchors.  Use
+	`self._referer' as key column.
+	(Planner): New class.
+
+	* lib/wiking/module.py (WikingModule._spec_cache): New attribute.
+	(WikingModule.spec): Use common cache
+	`WikingModule._cpec_cache', not a class attribute.
+	(WikingModule._default_prefill): New method.
+	(WikingModule.add): Use it.
+	(WikingModule._condition): New method.
+	(WikingModule._rows): New method.
+	(WikingModule._list): Use `self._rows'.  New argument `limit'.
+	(WikingModule.panelize): Use `self._rows'.  Handle empty list.
+	(WikingModule.rss): Raise `NotFound' when `self._RSS_TITLE_COLUMN'
+	is not defined.  Use `PresentedRow' to support virtual columns.
+	(WikingModule.list): Print RSS info when `self._RSS_TITLE_COLUMN'
+	is defined, not `self._RSS_DESCR_COLUMN'.
+
 2006-12-19  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/modules.py (Config.Spec.fields): New field `login_panel'.
