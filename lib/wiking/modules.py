@@ -111,18 +111,19 @@ class Modules(WikingModule):
                   computer=Computer(lambda r: _modtitle(r['name'].value()),
                                     depends=('name',))),
             Field('active', _("Active")),
+            Field('ord', _("Menu order"), width=5),
             )
-        columns = ('title', 'active')
-        layout = ('name', 'active')
-        sorting = (('name', ASC),)
+        columns = ('title', 'active', 'ord')
+        layout = ('name', 'active', 'ord')
+        sorting = (('ord', ASC),)
         cb = pp.CodebookSpec(display=(_modtitle, 'name'))
     
     _REFERER = 'name'
     _TITLE_COLUMN = 'title'
     
     def menu(self, prefix):
-        modules = [str(r['name'].value())
-                   for r in self._data.get_rows(active=True)]
+        modules = [str(r['name'].value()) for r in
+                   self._data.get_rows(active=True, sorting=self._sorting)]
         for m in ('Modules', 'Config'):
             if m not in modules:
                 modules.append(m)
@@ -461,7 +462,8 @@ class Content(WikingModule, Publishable, Translatable):
     
     def _variants(self, object):
         return [str(r['lang'].value())
-                for r in self._data.get_rows(mapping_id=object['mapping_id'])]
+                for r in self._data.get_rows(mapping_id=object['mapping_id'],
+                                             published=True)]
 
     def _resolve(self, req, path):
         if len(path) > 1:
@@ -528,13 +530,14 @@ class News(WikingModule, Translatable):
 
     class ListView(WikingModule.GenericListView):
         def _export_row(self, exporter, row):
-            heading = concat(row['date'].export(), ': ', row['title'].export())
-            text = self._export_structured_text(row['content'].value(),
-                                                exporter)
             name = 'item-' + row[self._view.fields()[0].id()].export()
-            return (_html.div(_html.link(heading, None, name=name),
-                              cls='list-heading'),
-                    _html.div(text, cls='list-body'))
+            h = concat(row['date'].export(), ': ', row['title'].export())
+            text = row['content'].value()
+            r = (_html.div(_html.link(h,None, name=name), cls='list-heading'),)
+            if text:
+                r += (_html.div(self._export_structured_text(text, exporter),
+                                cls='list-body'),)
+            return r
         
     def _link_provider(self, row, col, uri, wmi=False, args=()):
         if not wmi and col.id() == 'title':
@@ -549,9 +552,13 @@ class Planner(News):
         title = _("Planner")
         def fields(self): return (
             Field('planner_id', editable=NEVER),
-            #TODO: mindate is computed when the spec is read!
-            Field('date', _("Date"), width=19, format='%Y-%m-%d',
-                  mindate=today().date),
+            Field('start_date', _("Date"), width=10, format='%Y-%m-%d',
+                  constraints=(self._check_date,)),
+            Field('end_date', _("End date"), width=10, format='%Y-%m-%d',
+                  constraints=(self._check_date,)),
+            Field('date', _("Date"), virtual=True,
+                  computer=Computer(self._date,
+                                    depends=('start_date', 'end_date'))),
             Field('lang', _("Language"), codebook='Languages', editable=ONCE,
                   selection_type=CHOICE, value_column='lang'),
             Field('title', _("Briefly"), column_label=_("Event"), width=32),
@@ -559,14 +566,27 @@ class Planner(News):
                   computer=Computer(self._rss_title,
                                     depends=('title', 'date',))),
             Field('content', _("Text"), height=3, width=60))
-        sorting = (('date', ASC),)
+        sorting = (('start_date', ASC),)
         columns = ('date', 'title')
-        layout = ('lang', 'date', 'title', 'content')
+        layout = ('lang', 'start_date', 'end_date', 'title', 'content')
+        def _check_date(self, date):
+            if date < today():
+                return _("Date in the past")
+        def _date(self, row):
+            d = row['start_date'].export()
+            if row['end_date'].value():
+                d += ' - ' + row['end_date'].export()
+            return d
         def _rss_title(self, row):
             return row['date'].export() +': '+ row['title'].value()
+        def check(self, row):
+            end = row['end_date'].value()
+            if end and end <= row['start_date'].value():
+                return ("end_date",
+                        _("End date precedes start date"))
     def _condition(self):
-        return pd.GT('date', pd.Value(pd.Date(), today()))
-
+        return pd.OR(pd.GE('start_date', pd.Value(pd.Date(), today())),
+                     pd.GE('end_date', pd.Value(pd.Date(), today())))
     
 class Stylesheets(WikingModule):
     class Spec(pp.Specification):
