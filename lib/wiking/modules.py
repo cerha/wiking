@@ -497,9 +497,10 @@ class News(WikingModule, Translatable):
         title = _("News")
         def fields(self): return (
             Field('news_id', editable=NEVER),
-            Field('timestamp', _("Date"), width=19, format='%Y-%m-%d %H:%M',
+            Field('timestamp', _("Date"), width=19, type=DateTime(),
                   default=lambda: now().gmtime()),
-            Field('date', _("Date"), dbcolumn='timestamp', format='%Y-%m-%d'),
+            Field('date', _("Date"), virtual=True,
+                  computer=Computer(self._date, depends=('timestamp',))),
             Field('lang', _("Language"), codebook='Languages', editable=ONCE,
                   selection_type=CHOICE, value_column='lang'),
             Field('title', _("Briefly"), column_label=_("Message"), width=32),
@@ -511,12 +512,13 @@ class News(WikingModule, Translatable):
         columns = ('title', 'date')
         layout = ('lang', 'timestamp', 'title', 'content')
         def _rss_title(self, row):
-            return row['title'].value() +' ('+ row['date'].export() +')'
+            return row['title'].value() +' ('+ row['date'].value() +')'
+        def _date(self, row):
+            return row['timestamp'].export(show_time=False)
         
     _TITLE_COLUMN = 'title'
     _LIST_BY_LANGUAGE = True
     _PANEL_FIELDS = ('date', 'title')
-    _ALLOW_RSS = True
     _RSS_TITLE_COLUMN = 'rss_title'
     _RSS_DESCR_COLUMN = 'content'
     
@@ -552,10 +554,9 @@ class Planner(News):
         title = _("Planner")
         def fields(self): return (
             Field('planner_id', editable=NEVER),
-            Field('start_date', _("Date"), width=10, format='%Y-%m-%d',
-                  constraints=(self._check_date,)),
-            Field('end_date', _("End date"), width=10, format='%Y-%m-%d',
-                  constraints=(self._check_date,)),
+            Field('start_date', _("Date"), width=10,
+                  type=Date(not_null=True, constraints=(self._check_date,))),
+            Field('end_date', _("End date"), width=10, type=Date()),
             Field('date', _("Date"), virtual=True,
                   computer=Computer(self._date,
                                     depends=('start_date', 'end_date'))),
@@ -573,9 +574,9 @@ class Planner(News):
             if date < today():
                 return _("Date in the past")
         def _date(self, row):
-            d = row['start_date'].export()
+            d = row['start_date'].export(show_weekday=True)
             if row['end_date'].value():
-                d += ' - ' + row['end_date'].export()
+                d += ' - ' + row['end_date'].export(show_weekday=True)
             return d
         def _rss_title(self, row):
             return row['date'].export() +': '+ row['title'].value()
@@ -663,7 +664,7 @@ class Users(WikingModule):
             Field('address', _("Address"), height=3),
             Field('uri', _("URI")),
             Field('enabled', _("Enabled")),
-            Field('since', _("Registered since"), format='%Y-%m-%d %H:%M'),
+            Field('since', _("Registered since"), type=DateTime()),
             Field('session_key'),
             Field('session_expire'),
             )
