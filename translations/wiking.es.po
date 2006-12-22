@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-12-22 17:11+0100\n"
+"POT-Creation-Date: 2006-12-22 23:13+0100\n"
 "PO-Revision-Date: 2006-12-08 12:30+0100\n"
 "Last-Translator: Tomas Cerha <cerha@brailcom.org>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -101,15 +101,15 @@ msgstr "Declaración de accesibilidad"
 msgid "Contact:"
 msgstr "Contacto:"
 
-#: ../lib/wiking/handler.py:213
+#: ../lib/wiking/handler.py:202
 msgid "The requested object does not exist anymore!"
 msgstr ""
 
-#: ../lib/wiking/handler.py:239
+#: ../lib/wiking/handler.py:228
 msgid "Wiking Management Interface"
 msgstr ""
 
-#: ../lib/wiking/handler.py:240
+#: ../lib/wiking/handler.py:229
 msgid "Wiking Help System"
 msgstr ""
 
@@ -117,7 +117,7 @@ msgstr ""
 msgid "Edit"
 msgstr ""
 
-#: ../lib/wiking/module.py:28 ../lib/wiking/module.py:429
+#: ../lib/wiking/module.py:28 ../lib/wiking/module.py:441
 msgid "Remove"
 msgstr ""
 
@@ -133,59 +133,59 @@ msgstr ""
 msgid "Empty value.  This field is mandatory."
 msgstr ""
 
-#: ../lib/wiking/module.py:185
+#: ../lib/wiking/module.py:197
 msgid "Integrity check failed."
 msgstr ""
 
-#: ../lib/wiking/module.py:353
+#: ../lib/wiking/module.py:365
 msgid "No records."
 msgstr ""
 
-#: ../lib/wiking/module.py:388
+#: ../lib/wiking/module.py:400
 msgid "New record"
 msgstr ""
 
-#: ../lib/wiking/module.py:390
+#: ../lib/wiking/module.py:402
 msgid "Help"
 msgstr ""
 
-#: ../lib/wiking/module.py:396
+#: ../lib/wiking/module.py:408
 msgid "more about RSS"
 msgstr ""
 
-#: ../lib/wiking/module.py:397
+#: ../lib/wiking/module.py:409
 msgid "An RSS channel is available for this section:"
 msgstr ""
 
-#: ../lib/wiking/module.py:420
+#: ../lib/wiking/module.py:432
 msgid "new record"
 msgstr ""
 
-#: ../lib/wiking/module.py:425
+#: ../lib/wiking/module.py:437
 msgid "edit form"
 msgstr ""
 
-#: ../lib/wiking/module.py:431
+#: ../lib/wiking/module.py:443
 msgid "Please, confirm removing the record permanently."
 msgstr ""
 
-#: ../lib/wiking/module.py:433
+#: ../lib/wiking/module.py:445
 msgid "removing"
 msgstr ""
 
-#: ../lib/wiking/module.py:445
+#: ../lib/wiking/module.py:457
 msgid "New record was successfully inserted."
 msgstr ""
 
-#: ../lib/wiking/module.py:466
+#: ../lib/wiking/module.py:478
 msgid "The record was successfully updated."
 msgstr ""
 
-#: ../lib/wiking/module.py:481
+#: ../lib/wiking/module.py:493
 msgid "The record was deleted."
 msgstr ""
 
-#: ../lib/wiking/module.py:484
+#: ../lib/wiking/module.py:496
 msgid "Unable to delete record."
 msgstr ""
 
@@ -358,7 +358,7 @@ msgid "News"
 msgstr ""
 
 #: ../lib/wiking/modules.py:500 ../lib/wiking/modules.py:502
-#: ../lib/wiking/modules.py:525 ../lib/wiking/modules.py:555
+#: ../lib/wiking/modules.py:527 ../lib/wiking/modules.py:557
 #: ../lib/wiking/modules.py:560
 msgid "Date"
 msgstr ""
@@ -375,11 +375,11 @@ msgstr ""
 msgid "Text"
 msgstr ""
 
-#: ../lib/wiking/modules.py:552
+#: ../lib/wiking/modules.py:554
 msgid "Planner"
 msgstr ""
 
-#: ../lib/wiking/modules.py:558
+#: ../lib/wiking/modules.py:559
 msgid "End date"
 msgstr ""
 
