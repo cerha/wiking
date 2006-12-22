@@ -1,3 +1,31 @@
+2006-12-22  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/modules.py (News.Spec.fields): Use the `DateTime'
+	type for `timestamp'.  Make `date' a virtual column with a
+	computer.
+	(News.Spec._rss_title): Export both values.
+	(News.Spec._date): New method.
+	(Planner.Spec.fields): Use the `Date' type for `start_date' and
+	`end_date'.
+	(Planner.Spec._date): Export dates with a weekday.
+	(Users.Spec.fields): Use the `DateTime' type for the field
+	`since'.
+
+	* lib/wiking/module.py (WikingModule._datetime_formats): New
+	method.
+	(WikingModule._validate): Take `req' argument instead of just
+	value dict.  Choose the correct date/time formats for validation
+	according to current language.
+	(WikingModule.insert, WikingModule.update): Pass `req' to
+	`self._validate'.
+
+	* lib/wiking/util.py (DateTime, Date): New classes.
+	(translator): New function.
+
+	* lib/wiking/handler.py (_translator): Method removed.
+	(SiteHandler.handle): Use the `translator()' function instead of
+	the method.
+
 2006-12-21  Tomas Cerha  <cerha@brailcom.org>
 
 	* doc/src/admin/Planner.en.txt: New file.
