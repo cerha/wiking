@@ -50,7 +50,7 @@ lcg_version := $(shell echo 'import lcg; print lcg.__version__' | python)
 lcg_version_cmp := $(shell echo 'import wiking; print \
 	wiking.cmp_versions("$(lcg_version)", $(MIN_LCG_VERSION))' | python)
 
-MIN_PYTIS_VERSION = "0.1.1"
+MIN_PYTIS_VERSION = "0.1.0"
 pytis_version := $(shell echo 'import pytis; print pytis.__version__' | python)
 pytis_version_cmp := $(shell echo 'import wiking; print \
 	wiking.cmp_versions("$(pytis_version)",$(MIN_PYTIS_VERSION))' | python)
