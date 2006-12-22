@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-12-21 13:23+0100\n"
+"POT-Creation-Date: 2006-12-22 17:11+0100\n"
 "PO-Revision-Date: 2006-12-14 20:29+0100\n"
 "Last-Translator: Pawel Loba <ploba@rogers.com>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -237,7 +237,7 @@ msgstr "Nazwa"
 msgid "Title"
 msgstr "Tytu³"
 
-#: ../lib/wiking/modules.py:113 ../lib/wiking/modules.py:597
+#: ../lib/wiking/modules.py:113 ../lib/wiking/modules.py:598
 msgid "Active"
 msgstr "Actywny"
 
@@ -251,7 +251,7 @@ msgstr "Mapowanie"
 
 #: ../lib/wiking/modules.py:141 ../lib/wiking/modules.py:328
 #: ../lib/wiking/modules.py:330 ../lib/wiking/modules.py:438
-#: ../lib/wiking/modules.py:442 ../lib/wiking/modules.py:596
+#: ../lib/wiking/modules.py:442 ../lib/wiking/modules.py:597
 msgid "Identifier"
 msgstr "Identyfikator"
 
@@ -302,8 +302,8 @@ msgid "Panels"
 msgstr "Panele"
 
 #: ../lib/wiking/modules.py:255 ../lib/wiking/modules.py:332
-#: ../lib/wiking/modules.py:443 ../lib/wiking/modules.py:503
-#: ../lib/wiking/modules.py:562
+#: ../lib/wiking/modules.py:443 ../lib/wiking/modules.py:504
+#: ../lib/wiking/modules.py:563
 msgid "Language"
 msgstr "Jêzyk"
 
@@ -320,7 +320,7 @@ msgid "Items count"
 msgstr "Liczba obiektów"
 
 #: ../lib/wiking/modules.py:273 ../lib/wiking/modules.py:446
-#: ../lib/wiking/modules.py:599
+#: ../lib/wiking/modules.py:600
 msgid "Content"
 msgstr "tre¶æ"
 
@@ -362,19 +362,19 @@ msgstr "Wiadomo¶ci"
 
 #: ../lib/wiking/modules.py:500 ../lib/wiking/modules.py:502
 #: ../lib/wiking/modules.py:525 ../lib/wiking/modules.py:555
-#: ../lib/wiking/modules.py:559
+#: ../lib/wiking/modules.py:560
 msgid "Date"
 msgstr "Data"
 
-#: ../lib/wiking/modules.py:505 ../lib/wiking/modules.py:564
+#: ../lib/wiking/modules.py:506 ../lib/wiking/modules.py:565
 msgid "Briefly"
 msgstr "Krótko"
 
-#: ../lib/wiking/modules.py:505
+#: ../lib/wiking/modules.py:506
 msgid "Message"
 msgstr "Wiadomo¶æ"
 
-#: ../lib/wiking/modules.py:509 ../lib/wiking/modules.py:568
+#: ../lib/wiking/modules.py:510 ../lib/wiking/modules.py:569
 msgid "Text"
 msgstr "Tekst"
 
@@ -383,83 +383,83 @@ msgstr "Tekst"
 msgid "Planner"
 msgstr "Panele"
 
-#: ../lib/wiking/modules.py:557
+#: ../lib/wiking/modules.py:558
 msgid "End date"
 msgstr ""
 
-#: ../lib/wiking/modules.py:564
+#: ../lib/wiking/modules.py:565
 msgid "Event"
 msgstr ""
 
-#: ../lib/wiking/modules.py:574
+#: ../lib/wiking/modules.py:575
 msgid "Date in the past"
 msgstr ""
 
-#: ../lib/wiking/modules.py:586
+#: ../lib/wiking/modules.py:587
 msgid "End date precedes start date"
 msgstr ""
 
-#: ../lib/wiking/modules.py:593
+#: ../lib/wiking/modules.py:594
 msgid "Styles"
 msgstr "Style"
 
-#: ../lib/wiking/modules.py:598
+#: ../lib/wiking/modules.py:599
 msgid "Description"
 msgstr "Opis"
 
-#: ../lib/wiking/modules.py:633
+#: ../lib/wiking/modules.py:634
 msgid "Users"
 msgstr "U¿ytkownicy"
 
-#: ../lib/wiking/modules.py:649 ../lib/wiking/util.py:342
+#: ../lib/wiking/modules.py:650 ../lib/wiking/util.py:342
 msgid "Login name"
 msgstr ""
 
-#: ../lib/wiking/modules.py:651 ../lib/wiking/util.py:345
+#: ../lib/wiking/modules.py:652 ../lib/wiking/util.py:345
 msgid "Password"
 msgstr "Has³o"
 
-#: ../lib/wiking/modules.py:652
+#: ../lib/wiking/modules.py:653
 msgid "Full Name"
 msgstr "Pe³na Nazwa"
 
-#: ../lib/wiking/modules.py:655
+#: ../lib/wiking/modules.py:656
 msgid "Name/Nickname"
 msgstr "Imiê/Ksywka"
 
-#: ../lib/wiking/modules.py:658
+#: ../lib/wiking/modules.py:659
 msgid "First name"
 msgstr "Imiê"
 
-#: ../lib/wiking/modules.py:659
+#: ../lib/wiking/modules.py:660
 msgid "Surname"
 msgstr "Nazwisko"
 
-#: ../lib/wiking/modules.py:660
+#: ../lib/wiking/modules.py:661
 msgid "Nickname"
 msgstr "Ksywka"
 
-#: ../lib/wiking/modules.py:661
+#: ../lib/wiking/modules.py:662
 msgid "E-mail"
 msgstr "E-mail"
 
-#: ../lib/wiking/modules.py:662
+#: ../lib/wiking/modules.py:663
 msgid "Phone"
 msgstr "Telefon"
 
-#: ../lib/wiking/modules.py:663
+#: ../lib/wiking/modules.py:664
 msgid "Address"
 msgstr "Adres"
 
-#: ../lib/wiking/modules.py:664
+#: ../lib/wiking/modules.py:665
 msgid "URI"
 msgstr "URI"
 
-#: ../lib/wiking/modules.py:665
+#: ../lib/wiking/modules.py:666
 msgid "Enabled"
 msgstr "Dostêpny"
 
-#: ../lib/wiking/modules.py:666
+#: ../lib/wiking/modules.py:667
 msgid "Registered since"
 msgstr "Zarejestrowany od"
 
