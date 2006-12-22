@@ -147,7 +147,11 @@ class WikingModule(object):
         #log(OPR, 'New module instance: %s[%x]' % (self.__class__.__name__,
         #                                          lcg.positive_id(self)))
 
-    def _validate(self, values, new=False):
+    def _datetime_formats(self, req):
+        lang = req.prefered_language(self._module('Languages').languages())
+        return lcg.datetime_formats(translator(lang))
+        
+    def _validate(self, req, new=False):
         rdata = []
         errors = []
         kc = [c.id() for c in self._data.key()]
@@ -160,14 +164,22 @@ class WikingModule(object):
                    (editable == pp.Editable.ONCE and not new):
                 continue
             type = f.type(self._data)
-            if values.has_key(id):
-                strvalue = values[id]
+            if req.params.has_key(id):
+                strvalue = req.params[id]
             elif isinstance(type, pd.Boolean):
                 strvalue = "F"
             else:
                 strvalue = ""
-            value, error = type.validate(strvalue)
-            #log(OPR, "Validation:", (id, strvalue, error))
+            kwargs = {}
+            if isinstance(type, (Date, DateTime)):
+                formats = self._datetime_formats(req)
+                format = formats['date']
+                if isinstance(type, DateTime):
+                    tf = type.is_exact() and 'exact_time' or 'time'
+                    format += ' ' + formats[tf]
+                kwargs['format'] = format
+            value, error = type.validate(strvalue, **kwargs)
+            #log(OPR, "Validation:", (id, strvalue, kwargs, error))
             if error:
                 errors.append((id, error.message()))
             else:
@@ -437,7 +449,7 @@ class WikingModule(object):
     def insert(self, req):
         if not req.wmi:
             return
-        row, errors = self._validate(req.params, new=True)
+        row, errors = self._validate(req, new=True)
         if not errors:
             #log(OPR, "New record:", row.items())
             try:
@@ -455,7 +467,7 @@ class WikingModule(object):
     def update(self, req, object):
         if not req.wmi:
             return
-        row, errors = self._validate(req.params)
+        row, errors = self._validate(req)
         if not errors:
             #log(OPR, "Updating record:", str(object))
             try:
