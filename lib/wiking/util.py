@@ -352,6 +352,17 @@ class LoginDialog(lcg.Content):
         return _html.form(x, method='POST', action=self._uri, cls='login-form')
         
         
+def translator(lang):
+    if lang:
+        path = {
+            'wiking': os.path.join(cfg.wiking_dir, 'translations'),
+            'lcg':  '/usr/local/share/lcg/translations',
+            'lcg-locale':  '/usr/local/share/lcg/translations',
+            'pytis': '/usr/local/share/pytis/translations',
+            }
+        return lcg.GettextTranslator(lang, path=path, fallback=True)
+    else:
+        return lcg.NullTranslator()
     
 # ============================================================================
 # Classes derived from Pytis components
@@ -433,4 +444,36 @@ class WikingResolver(pytis.util.Resolver):
         except AttributeError:
             raise pytis.util.ResolverSpecError(name, spec_name)
         return method()
+
+        
+class DateTime(pytis.data.DateTime):
+    """Pytis DateTime type which exports as a 'lcg.LocalizableDateTime'."""
+    
+    def __init__(self, exact=False, **kwargs):
+        self._is_exact = exact
+        format = '%Y-%m-%d %H:%M'
+        if exact:
+            format += ':%S'
+        super(DateTime, self).__init__(format=format, **kwargs)
+
+    def is_exact(self):
+        return self._is_exact
+        
+    def _export(self, value, show_weekday=False, show_time=True, **kwargs):
+        result = super(DateTime, self)._export(value, **kwargs)
+        return lcg.LocalizableDateTime(result, show_weekday=show_weekday,
+                                       show_time=show_time)
+
+        
+# We need two types, because we need to derive from two different base classes.
+
+class Date(pytis.data.Date):
+    """Pytis Date type which exports as a 'lcg.LocalizableDateTime'."""#
+
+    def __init__(self, **kwargs):
+        super(Date, self).__init__(format='%Y-%m-%d', **kwargs)
+        
+    def _export(self, value, show_weekday=False, **kwargs):
+        result = super(Date, self)._export(value, **kwargs)
+        return lcg.LocalizableDateTime(result, show_weekday=show_weekday)
 
