@@ -152,17 +152,6 @@ class SiteHandler(object):
                 for stylesheet in self._module('Stylesheets').stylesheets()
                 if with_panels or stylesheet != 'panels.css']
 
-    def _translator(self, lang):
-        if lang:
-            path = {
-                'wiking': os.path.join(cfg.wiking_dir, 'translations'),
-                'lcg':  '/usr/local/share/lcg/translations',
-                'pytis': '/usr/local/share/pytis/translations',
-                }
-            return lcg.GettextTranslator(lang, path=path, fallback=True)
-        else:
-            return lcg.NullTranslator()
-    
     def _doc(self, req, path):
         if path and path[0] == 'lcg':
             path = path[1:]
@@ -250,8 +239,7 @@ class SiteHandler(object):
         config.user = req.user()
         node = result.mknode('/'.join(path), config, menu, panels, 
                              self._stylesheets(req, panels))
-        translator = self._translator(node.language())
-        data = translator.translate(self._exporter.page(node))
+        data = translator(node.language()).translate(self._exporter.page(node))
         return req.result(data)
 
 
