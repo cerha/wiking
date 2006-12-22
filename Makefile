@@ -12,7 +12,7 @@ doc-%:
 translations:
 	make -C translations
 
-install: translations $(APACHECFG) $(CFGFILE) $(SHARE)/wiking check_deps
+install: $(APACHECFG) $(CFGFILE) $(SHARE)/wiking
 	cp -ruv doc resources sql translations $(SHARE)/wiking
 	cp -ruv lib/wiking $(LIB)
 
