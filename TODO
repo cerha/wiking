@@ -1,24 +1,18 @@
 Core features:
 
- * Independent language and filtering in WMI.
+ * Independent language and filtering in WMI?
 
- * Pytis validation messages.
-
- * User's manual for website visitors
+ * Default language when Accept-Language is not set at all
 
  * Browsing support for long lists (forward/backward movement)
 
- * Table descriptions
-
  * Published/unpublished content
-
- * Localizable Date/time formatting
 
  * Support for enabled/disabled actions
 
  * Save the exported HTML for structured text content in DB
 
- * Acces rights management and authorization
+ * Authentication and acces rights management
 
  * Content management controls outside wmi (when authorized)
 
