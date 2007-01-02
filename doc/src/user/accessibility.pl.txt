@@ -1,40 +1,36 @@
 # -*- coding: utf-8; mode: structured-text -*-
 
-== O¶wiadczenie o Dostêpno¶ci ==
+== OÅ›wiadczenie o DostÄ™pnoÅ›ci ==
 
-Witryna ta u¿ywa [http://www.freebsoft.org/wiking Wiking] 
-systemu zarz±dzaj±cego zawarto¶ci± (content 
-management system). Jednym z g³ównych celów tego systemu jest 
-umo¿liwienie równorzêdnego dostêpu dla wszystkich u¿ytkowników ze 
-szczególnym uwzglêdnieniem osób niepe³nosprawnych lub ludzi o 
-specjalnych potrzebach. Wiking stara siê byæ niezale¿ny od oprogramowania, 
-osprzêtu i ustawieñ u¿ytkowników. Dlatego te¿ otrzymywane strony winny 
-byæ dostêpne dla ka¿dej przegl±darki, rodzaju i wielko¶ci czcionki, jak 
-rónie¿ rozdzielczo¶ci ekranu. czy specjalistycznych technologii etc.
+Witryna ta uÅ¼ywa [http://www.freebsoft.org/wiking Wiking] systemu
+zarzÄ…dzajÄ…cego zawartoÅ›ciÄ… (content management system). Jednym z gÅ‚Ã‚Ã³wnych
+celÃ³w tego systemu jest umoÅ¼liwienie rÃ³wnorzÄ™dnego dostÄ™pu dla wszystkich
+uÅ¼ytkownikÃ³w ze szczegÃ³lnym uwzglÄ™dnieniem osÃ³b niepeÅ‚nosprawnych lub ludzi o
+specjalnych potrzebach. Wiking stara siÄ™ byÄ‡ niezaleÅ¼ny od oprogramowania,
+osprzÄ™tu i ustawieÅ„ uÅ¼ytkownikÃ³w. Dlatego teÅ¼ otrzymywane strony winny byÄ‡
+dostÄ™pne dla kaÅ¼dej przeglÄ…darki, rodzaju i wielkoÅ›ci czcionki, jak rÃ³nieÅ¼
+rozdzielczoÅ›ci ekranu. czy specjalistycznych technologii etc.
 
-Realizacja honorowa³a odno¶ne standardy W3C. Ze szczególnym 
-uwzglêdnieniem >>[http://www.w3.org/TR/WAI-WEBCONTENT/ zaleceñ o 
-dostêpno¶ci zawarto¶ci stron internetowych  1.0]<<.
+Realizacja honorowaÅ‚a odnoÅ›ne standardy W3C. Ze szczegÃ³lnym uwzglÄ™dnieniem
+>>[http://www.w3.org/TR/WAI-WEBCONTENT/ Web Content Accessibility Guidelines
+1.0]<< (zaleceÅ„ o dostÄ™pnoÅ›ci zawartoÅ›ci stron internetowych).
 
-Aczkolwiek wierzymy, ¿e wymagania WCAG 1.0 s± spe³nione na poziomie AAA, 
-musimy przyznaæ, i¿ obszar kryteriów ma charakter raczej subjektywny i 
-dlatego te¿ s±dzimy, ¿e wpe³ni obiektywne okre¶lenie dostêpno¶ci nie jest 
-mo¿liwe. Produkt nasz by³ testowany z u¿ytkownikami ró¿norakich 
-technologii specjalistycznych i liczba pewnych udogodnieñ zosta³a 
-wprowadzona, aby uzyskaæ maksymaln± wszechstronno¶c we wszystkich 
-przypadkach.
+Aczkolwiek wierzymy, Å¼e wymagania WCAG 1.0 sÄ… speÅ‚nione na poziomie AAA, musimy
+przyznaÄ‡, iÅ¼ obszar kryteriÃ³w ma charakter raczej subjektywny i dlatego teÅ¼
+sÄ…dzimy, Å¼e wpeÅ‚ni obiektywne okreÅ›lenie dostÄ™pnoÅ›ci nie jest moÅ¼liwe. Produkt
+nasz byÅ‚ testowany z uÅ¼ytkownikami rÃ³Ã‚Å¼norakich technologii specjalistycznych i
+liczba pewnych udogodnieÅ„ zostaÅ‚a wprowadzona, aby uzyskaÄ‡ maksymalnÄ…
+wszechstronnoÅ›c we wszystkich przypadkach.
 
-Podrêcznik u¿ytkownika Wikinga, W rozdziale [navigation Nawigacja] 
-przedstawia informacje odnosz±ce siê do nawigacji i elementów 
-dostêpno¶ci tego produktu.
+PodrÄ™cznik uÅ¼ytkownika Wikinga, W rozdziale [navigation Nawigacja] przedstawia
+informacje odnoszÄ…ce siÄ™ do nawigacji i elementÃ³w dostÄ™pnoÅ›ci tego produktu.
 
-Koñcowa dostêpno¶æ witryny nie jest zale¿na jedynie od 
-zastosowanego systemu zarz±dzania zawarto¶ci±. Równie¿ zawarto¶æ jako 
-taka ma znaczenie. Wiking stara siê pomóc równie¿ w tym obszarze, ale 
-jest niemo¿liwym zagwarantowanie, ¿e oferowana funkcjonalno¶æ produktu 
-bêdzie wykorzystywana w³a¶ciwie. Dlatego te¿, je¶li zaistniej± jakie¶ 
-problemy nale¿y skontaktowaæ siê z administratorem witryny, którego 
-e-mail adres mo¿na zwyczajowo znale¿¼ na dole strony. Jedynie posiadaj±c 
-absolutn± pewno¶æ, ¿e problemy wynikaj± z b³êdów systemu Wiking, prosimy 
-o kontakt z jego twórcami. Mozna ich odnale¼æ na stronie 
+KoÅ„cowa dostÄ™pnoÅ›Ã‚Ä‡ witryny nie jest zaleÅ¼na jedynie od zastosowanego systemu
+zarzÄ…dzania zawartoÅ›ciÄ…. RÃ³wnieÅ¼ zawartoÅ›Ã‚Ä‡ jako taka ma znaczenie. Wiking
+stara siÄ™ pomÃ³c rÃ³wnieÅ¼ w tym obszarze, ale jest niemoÅ¼liwym zagwarantowanie,
+Å¼e oferowana funkcjonalnoÅ›Ã‚Ä‡ produktu bÄ™dzie wykorzystywana wÅ‚aÅ›ciwie. Dlatego
+teÅ¼, jeÅ›li zaistniejÄ… jakieÅ› problemy naleÅ¼y skontaktowaÄ‡ siÄ™ z administratorem
+witryny, ktÃ³rego e-mail adres moÅ¼na zwyczajowo znaleÅ¼Ã‚Åº na dole strony. Jedynie
+posiadajÄ…c absolutnÄ… pewnoÅ›Ã‚Ä‡, Å¼e problemy wynikajÄ… z bÅ‚Ã‚Ä™dÃ³w systemu Wiking,
+prosimy o kontakt z jego twÃ³rcami. Mozna ich odnaleÅºÃ‚Ä‡ na stronie
 [http://www.freebsoft.org/wiking Wiking project website].

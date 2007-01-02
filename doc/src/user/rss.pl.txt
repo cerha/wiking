@@ -1,15 +1,19 @@
 # -*- coding: utf-8; mode: structured-text -*-
 
-== Kana³y (RSS) ==
+== KanaÅ‚y (RSS) ==
 
-Technologia odczytywania nag³ówków wiadomo¶ci (Web Feeds) pozwala 
-u¿ytkownikom internetu na zapisywanie siê do specyficznych ¼róde³ zwanych 
-kana³y RSS, aby otrzymaæ szybki przegl±d wiadomo¶ci, artyku³ów czy innych 
-informacji. Odwied¼ [http://en.wikipedia.org/wiki/RSS po wiêcej informacji o 
-RSS.
+Technologia odczytywania nagÅ‚Ã‚Ã³wkÃ³w wiadomoÅ›ci (Web Feeds) pozwala uÅ¼ytkownikom
+internetu na zapisywanie siÄ™ do specyficznych ÅºrÃ³deÅ‚ zwanych kanaÅ‚y RSS, aby
+otrzymaÄ‡ szybki przeglÄ…d wiadomoÅ›ci, artykuÅ‚Ã‚Ã³w czy innych informacji. OdwiedÅº
+http://pl.wikipedia.org/wiki/RSS po wiÄ™cej informacji o RSS.
 
-Niektóre przegl±darki maj± wbudowane wspomaganie dla RSS, inne wymagaj± zainstalowania czytników RSS jako zewnêtrznych aplikacji b±d¼ u¿ywania serwisów internetowych jak na przyk³ad:
-[http://my.yahoo.com My Yahoo!], [http://reader.google.com/ Google Reader] lub
-[http://www.bloglines.com/ Bloglines].
+NiektÃ³re przeglÄ…darki majÄ… wbudowane wspomaganie dla RSS, inne wymagajÄ…
+zainstalowania czytnikÃ³w RSS jako zewnÄ™trznych aplikacji bÄ…dÅº uÅ¼ywania serwisÃ³w
+internetowych jak na przykÅ‚ad: >>[http://my.yahoo.com My Yahoo!]<<,
+>>[http://reader.google.com/ Google Reader]<< lub >>[http://www.bloglines.com/
+Bloglines]<<.
 
-Wiking umo¿liwia odczytywanie obiektów z ró¿nych sekcji witryny internetowej u¿ywaj±c protoko³u RSS. £±cze RSS znajduje siê ponad ka¿d± sekscj± wspomagaj±c± ten protoko³. Mo¿na u¿yæ tego adresu dla ustawienia swojego czytnika RSS.
+Wiking umoÅ¼liwia odczytywanie obiektÃ³w z rÃ³Ã‚Å¼nych sekcji witryny internetowej
+uÅ¼ywajÄ…c protokoÅ‚u RSS. ÅÃ‚Ä…cze RSS znajduje siÄ™ ponad kaÅ¼dÄ… sekscjÄ…
+wspomagajÄ…cÄ… ten protokoÅ‚. MoÅ¼na uÅ¼yÄ‡ tego adresu dla ustawienia swojego
+czytnika RSS.
