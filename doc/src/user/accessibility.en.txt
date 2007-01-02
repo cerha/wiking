@@ -23,10 +23,10 @@ cases.
 You will find information about navigation and accessibility related features
 in the chapter [navigation Navigation] of the Wiking user's manual.
 
-The final accessibiliy of a site, however, does not only depend upon the
+The final accessibility of a site, however, does not only depend upon the
 content management system in use.  Also the actual content matters.  Wiking
 tries to help in this respect too, but it is not possible to guarantee that the
-provided fetures will be used properly.  Thus, if you have problems with
+provided features will be used properly.  Thus, if you have problems with
 accessibility, always contact the site administrator first.  You should be able
 to find his e-mail address at the bottom of the page.  Only when you are sure
 that your problem is caused by the Wiking system itself, contact its
