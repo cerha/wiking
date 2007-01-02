@@ -1,7 +1,7 @@
 # Wiking CMS translations.
 # Copyright (C) 2006 Brailcom, o.p.s.
 # This file is distributed under the same license as the Wiking package.
-# Pawel Loba <ploba@rogers.com>, 2006
+# Pawe³ Loba <ploba@rogers.com>, 2006
 #
 msgid ""
 msgstr ""
@@ -33,27 +33,27 @@ msgstr "Przeskocz powtarzaj±c± siê tre¶æ"
 
 #: ../lib/wiking/export.py:95
 msgid "log out"
-msgstr ""
+msgstr "wyloguj siê"
 
 #: ../lib/wiking/export.py:97
 msgid "anonymous"
-msgstr ""
+msgstr "anonimowy"
 
 #: ../lib/wiking/export.py:97
 msgid "log in"
-msgstr ""
+msgstr "wloguj siê"
 
 #: ../lib/wiking/export.py:106
 msgid "Show panels"
-msgstr ""
+msgstr "Poka¿ panele"
 
 #: ../lib/wiking/export.py:108
 msgid "Hide panels"
-msgstr ""
+msgstr "Ukryj panele"
 
 #: ../lib/wiking/export.py:114
 msgid "Logged user"
-msgstr ""
+msgstr "U¿ytkownik zalogowany"
 
 #: ../lib/wiking/export.py:155
 msgid "Leave the Management Interface"
@@ -61,7 +61,7 @@ msgstr "Opu¶æ interfejs zarz±dzaj±cy"
 
 #: ../lib/wiking/export.py:158
 msgid "Leave the Help System"
-msgstr ""
+msgstr "Opu¶æ Pomoc"
 
 #: ../lib/wiking/export.py:160
 msgid "Manage this site"
@@ -79,7 +79,7 @@ msgstr "Obs³ugiwany przez %s %s"
 #: ../lib/wiking/export.py:174
 #, python-format
 msgid "Last change: %s, %s"
-msgstr "Ostatnie zmiany: %s, %s"
+msgstr "Ostatnia zmiana: %s, %s"
 
 #: ../lib/wiking/export.py:190
 msgid "US Government Section 508 Accessibility Guidelines."
@@ -87,15 +87,15 @@ msgstr "Sekcja 508 Rz±du USA O Zasadach Dostêpno¶ci"
 
 #: ../lib/wiking/export.py:194
 msgid "This site conforms to the following standards:"
-msgstr "Witryna niniejsza stosuje siê do nastêpuj±cych standardów:"
+msgstr "Witryna ta stosuje siê do nastêpuj±cych standardów:"
 
 #: ../lib/wiking/export.py:195
 msgid "This site can be viewed in ANY browser."
-msgstr "Niniejsza witryna jest wy¶wietlana poprawnie przez ka¿d± przegl±darkê."
+msgstr "Witryna ta jest wy¶wietlana poprawnie przez ka¿d± przegl±darkê."
 
 #: ../lib/wiking/export.py:196
 msgid "Accessibility Statement"
-msgstr ""
+msgstr "O¶wiadczenie o Dostêpno¶ci"
 
 #: ../lib/wiking/export.py:198
 msgid "Contact:"
@@ -103,7 +103,7 @@ msgstr "Kontakt:"
 
 #: ../lib/wiking/handler.py:202
 msgid "The requested object does not exist anymore!"
-msgstr "¯±dany objekt ju¿ nie istnieje!"
+msgstr "Wymagany obiekt ju¿ nie istnieje!"
 
 #: ../lib/wiking/handler.py:228
 msgid "Wiking Management Interface"
@@ -111,7 +111,7 @@ msgstr "Zarz±dzaj±cy Interfejs Wikinga"
 
 #: ../lib/wiking/handler.py:229
 msgid "Wiking Help System"
-msgstr ""
+msgstr "Pomoc Wikinga"
 
 #: ../lib/wiking/module.py:27 ../lib/wiking/modules.py:217
 msgid "Edit"
@@ -135,12 +135,11 @@ msgstr "Nie podano danych. To pole jest obowi±skowe."
 
 #: ../lib/wiking/module.py:197
 msgid "Integrity check failed."
-msgstr ""
+msgstr "Sprawdzian integralno¶ci nie powiód³ siê"
 
 #: ../lib/wiking/module.py:365
-#, fuzzy
 msgid "No records."
-msgstr "Nowy wpis"
+msgstr "Nie ma wpisu"
 
 #: ../lib/wiking/module.py:400
 msgid "New record"
@@ -152,11 +151,11 @@ msgstr "Pomoc"
 
 #: ../lib/wiking/module.py:408
 msgid "more about RSS"
-msgstr ""
+msgstr "Wiêcej o RSS"
 
 #: ../lib/wiking/module.py:409
 msgid "An RSS channel is available for this section:"
-msgstr "Kana³ RSS jest udostêpniony dla tej sekcji:"
+msgstr "Kana³ RSS jest dostêpny dla tej sekcji:"
 
 #: ../lib/wiking/module.py:432
 msgid "new record"
@@ -219,7 +218,7 @@ msgid ""
 "Unknown module.  You either misspelled the name or the module is not "
 "installed properly."
 msgstr ""
-"Modu³ nieznany. Nazwa modu³u zostala b³êdnie wpisana b±d¼ taki modu³ zosta³ "
+"Modu³ nieznany. Nazwa modu³u zosta³a b³êdnie wpisana b±d¼ taki modu³ zosta³ "
 "niepoprawnie zainstalowany."
 
 #: ../lib/wiking/modules.py:106
@@ -239,7 +238,7 @@ msgstr "Tytu³"
 
 #: ../lib/wiking/modules.py:113 ../lib/wiking/modules.py:598
 msgid "Active"
-msgstr "Actywny"
+msgstr "Aktywny"
 
 #: ../lib/wiking/modules.py:114 ../lib/wiking/modules.py:154
 msgid "Menu order"
@@ -287,7 +286,7 @@ msgstr "Podtytu³ witryny"
 
 #: ../lib/wiking/modules.py:209
 msgid "Show login panel"
-msgstr ""
+msgstr "Poka¿ panel logowania"
 
 #: ../lib/wiking/modules.py:210
 msgid "Webmaster address"
@@ -295,7 +294,7 @@ msgstr "Adres Webmastera"
 
 #: ../lib/wiking/modules.py:211
 msgid "Theme"
-msgstr "Temat"
+msgstr "Motyw"
 
 #: ../lib/wiking/modules.py:252
 msgid "Panels"
@@ -338,7 +337,7 @@ msgstr "Tytu³y"
 
 #: ../lib/wiking/modules.py:344
 msgid "The title is already defined for this page in given language."
-msgstr "Zdefiniowano juz tytu³ dla tej strony w danym jêzyku."
+msgstr "Tytu³ dla tej strony juz zdefiniowano dla danego jêzyka."
 
 #: ../lib/wiking/modules.py:404
 msgid "Themes"
@@ -350,7 +349,7 @@ msgstr "Strony"
 
 #: ../lib/wiking/modules.py:458
 msgid "The page already exists in given language."
-msgstr "Strona ju¿ istnieje w danym jêzyku."
+msgstr "Strona w danym jêzyku ju¿ istnieje."
 
 #: ../lib/wiking/modules.py:460
 msgid "Edit this page"
@@ -379,25 +378,24 @@ msgid "Text"
 msgstr "Tekst"
 
 #: ../lib/wiking/modules.py:554
-#, fuzzy
 msgid "Planner"
-msgstr "Panele"
+msgstr "Terminarz"
 
 #: ../lib/wiking/modules.py:559
 msgid "End date"
-msgstr ""
+msgstr "Data koñcowa"
 
 #: ../lib/wiking/modules.py:565
 msgid "Event"
-msgstr ""
+msgstr "Wydarzenie"
 
 #: ../lib/wiking/modules.py:575
 msgid "Date in the past"
-msgstr ""
+msgstr "Data w przesz³o¶ci"
 
 #: ../lib/wiking/modules.py:587
 msgid "End date precedes start date"
-msgstr ""
+msgstr "Data koñcowa poprzedza datê rozpoczêcia"
 
 #: ../lib/wiking/modules.py:594
 msgid "Styles"
@@ -413,7 +411,7 @@ msgstr "U¿ytkownicy"
 
 #: ../lib/wiking/modules.py:650 ../lib/wiking/util.py:342
 msgid "Login name"
-msgstr ""
+msgstr "Nazwa loguj±ca"
 
 #: ../lib/wiking/modules.py:652 ../lib/wiking/util.py:345
 msgid "Password"
@@ -457,7 +455,7 @@ msgstr "URI"
 
 #: ../lib/wiking/modules.py:666
 msgid "Enabled"
-msgstr "Dostêpny"
+msgstr "Udostêpniony"
 
 #: ../lib/wiking/modules.py:667
 msgid "Registered since"
@@ -471,7 +469,7 @@ msgstr "B³±d %d: %s"
 #: ../lib/wiking/util.py:155
 #, python-format
 msgid "The item '%s' does not exist on this server or cannot be served."
-msgstr "Objekt '%s' nie istnieje na tym serwerze b±d¼ nie mo¿e byæ oferowany."
+msgstr "Obiekt '%s' nie istnieje na tym serwerze b±d¼ nie mo¿e byæ oferowany."
 
 #: ../lib/wiking/util.py:157
 msgid ""
@@ -493,23 +491,22 @@ msgstr "¬ród³o '%s' niedostêpne w ¿adnym z ¿±danych jêzyków."
 
 #: ../lib/wiking/util.py:172
 msgid "Your browser is configured to accept only the following languages:"
-msgstr "Ustawienie przegl±darki pozwala na wy¶wietlanie w danych jêzykach:"
+msgstr "Ustawienie przegl±darki pozwala na wy¶wietlanie w nastêpuj±cych jêzykach:"
 
 #: ../lib/wiking/util.py:179
 msgid "The available variants are:"
 msgstr "Dostêpne warianty to:"
-
 #: ../lib/wiking/util.py:181
 msgid ""
 "If you want to accept other languages permanently, setup the language "
 "preferences in your browser or contact your system administrator."
 msgstr ""
-"Dla wspó³pracy przegl±darki z innymi jêzykami zmien jej ustawienia b±d¼ "
-"skontaktuj siê a administratorem swojego systemu."
+"Dla wspó³pracy przegl±darki z innymi jêzykami zmieñ jej ustawienia b±d¼ "
+"skontaktuj siê z administratorem swojego systemu."
 
 #: ../lib/wiking/util.py:190
 msgid "Authentication required"
-msgstr ""
+msgstr "Wymagane potwierdzenie"
 
 #: ../lib/wiking/util.py:305
 msgid "Actions:"
@@ -517,4 +514,4 @@ msgstr "Akcje:"
 
 #: ../lib/wiking/util.py:351
 msgid "Log in"
-msgstr ""
+msgstr "Wlogowanie"
