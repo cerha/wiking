@@ -1,3 +1,13 @@
+2007-01-02  Tomas Cerha  <cerha@brailcom.org>
+
+	* translations/wiking.pl.po: New translations.
+
+	* doc/src/user/accessibility.pl.txt: New file.
+
+	* doc/src/user/navigation.pl.txt: New file.
+
+	* doc/src/user/rss.pl.txt: New file.
+
 2006-12-23  Tomas Cerha  <cerha@brailcom.org>
 
 	* Makefile (install): Don't depend on `translations'.

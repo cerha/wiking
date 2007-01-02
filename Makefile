@@ -79,6 +79,6 @@ release: doc compile translations
 	@echo "Generating $(file)..."
 	@(cd releases; tar --exclude "CVS" --exclude "*~" --exclude "#*" \
 	     --exclude ".*" --exclude releases --exclude site \
-	     --exclude "config.py" --exclude "*.pyo" \
+	     --exclude "config.py*" --exclude "*.pyo" --exclude upload.sh \
 	     -czhf $(file) $(dir))
 	@rm releases/$(dir)
