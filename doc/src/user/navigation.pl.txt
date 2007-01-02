@@ -1,0 +1,125 @@
+# -*- coding: utf-8; mode: structured-text -*-
+
+= Nawigacja =
+
+Spis Tre¶ci: @TOC@
+
+
+== G³ówne menu nawigacyjne == menu
+
+G³ówne menu nawigacyjne znajduje siê na górze strony jako szereg ³±czy. W przypadku zmodyfikowanego stylu moze to wygl±daæ zupe³nie 
+inaczej, ale cel pozostaje ten sam. Jest to lista ³±czy do 
+naistotniejszych sekcji witryny. Aktywny obiekt jest wizualnie 
+zaznaczony. W przegl±darce tekstowej gdzie wizualne zaznaczenie mo¿e byæ 
+pominiête taki aktywny obiekt zaznaczony jest gwiazdk±. Zapewnia to 
+u¿ytkownikowi orientacje w po³o¿eniu w danej chwili. Poniewa¿ menu jest 
+powtarzane na ka¿dej stronie, mo¿na je przeskoczyæ -- spojrz 
+na [#skip].
+
+
+== Skróty kluczami == shortcuts
+
+Uwzglêdniono kilka skrótów kluczami (klucze dostêpu) u³atwiaj±ce 
+nawigacje:
+
+  * *1* ... przejd¼ do strony domowej
+  * *2* ... przeskocz powtarzaj±c± siê tre¶c (przejd¼ do w³a¶ciwej tre¶ci)
+  * *3* ... przeskocz do menu g³ównego
+  * *9* ... wejd¼ do/opu¶æ zarz±dzaj±cy interfejs Wikinga
+  * *0* ... poka¿ O¶wiadczenie o Dostêpno¶ci
+
+U¿ycie w ró¿nych przegl±darkach:
+
+  * Internet Explorer -- Alt + numer Enter
+  * Firefox 1.x, Mozilla, Netscape 7+  -- Alt + numer
+  * Konqueror -- naci¶nij i uwolnij Ctrl, numer
+  * Opera -- Shift + Esc + numer
+  * Safari, Firefox, Mozilla, Netscape, Omniweb (on Mac OS X) -- Ctrl +
+    numer
+
+Skróty kluczami nie powinny byæ uwa¿ane za zasadnicz± formê nawigacji. Ich
+u¿ycie zmienia siê w zale¿no¶ci od przegl±darki, a niektóre z nich
+wogóle ich nie uwzglêdniaj±. Dodatkowo,   jesli powiazanie kluczy jest
+niestandardowe to zachowanie tych skrótów mo¿e byæ inne na ró¿nych stronach.
+
+Wiele technologii specjalistycznych stosuje swoje w³asne funkcje nawigacyjne i
+one winny byæ zawsze preferowane. Je¶li na przyk³ad tre¶æ strony rozpoczyna
+siê od nag³ówka to funkcja odnalezienia nag³ówka stosowana przez
+specjalistyczna technologie winna byæ u¿yta.
+
+
+== Przeskocz powtarzaj±c± siê tre¶æ == skip
+
+Pewne czê¶ci strony powtarzaj± siê -- pojawiaj± sie na ka¿dej stronie witryny
+i z regu³y nie zmieniaj± siê. Te powtarzaj±ce siê czê¶ci to:
+
+  * [#menu]
+  * [#languages]
+  * [#panels]
+
+Wiking wprowadza kilka funkcji upraszczaj±cych nawigacje strony z
+uwzglêdnieniem powtarzaj±cej siê tre¶ci.
+"Przeskocz" ³±cza mo¿e byæ u¿yte w przegl±darka tekstowych. Piersze ³±cze
+umieszczone na pocz±tku strony umo¿liwia przeskoczenie wszelkiej powtarzaj±cej
+siê tre¶ci. Nastêpnie ka¿dy z powtarzaj±cych siê fragmentów mo¿e byæ
+przeskakiwany indiwidualnie.
+
+Równie¿ #shortcuts] pozwalaj± na przeskakiwanie powtarzaj±cej siê tre¶ci.
+
+
+== Spisy Tre¶ci ==
+
+Bardziej z³o¿one strony o kilkunastu sekcjach (takie jak ta) zwykle u¿ywaj±
+spisu tre¶ci. Spis tre¶ci oddaje strukture chierachiczn± sekcji jako grupy
+³±czy pozwalaj±c na bezpo¶rednie przemieszczenie siê do rz±danej sekcji.
+Nag³ówek ka¿dej sekcji stanowi ³±cze umieszczane w spisie tre¶ci. Taka funkcja
+mo¿e znacz±co u³atwiæ poruszanie siê szczególnie w d³u¿szym tek¶cie. Mo¿na to
+wypróbowaæ na tej sronie.
+
+Niektóre strony mog± u¿ywac wielokrotnych spisów tre¶ci zale¿nie od poziomu w
+chierachii danej strony. W takich razach, back-reference ³±cze od nag³ówka
+danej sekcji prowadzi do najbli¿szego, wy¿ej po³o¿onego spisu tre¶ci w
+chierarchii. 
+
+
+== Wybór Jêzyków == languages
+
+Wiking wspó³pracuje z wieloma jêzykami.
+
+Wybór jêzyka dla danego u¿ytkownika dokonywany jest automatycznie na bazie
+techniki [http://en.wikipedia.org/wiki/Content_negotiation Content Negotiation]. Technika opiera sie na wyborze jêzyka u¿ywanej przegl±darki. Dla
+przyk³adu, anglojêzyczny u¿ytkownik powinien wybraæ angielski jako jêzy
+podstawowy przegl±darki plus dodatkow± ilo¶æ jêzyków, którymi pos³uje siê
+ten¿e u¿ytkownik.
+
+Wybór jêzyka dokonywany jest na tej bazie. Je¶li ¿±dana strona jest
+udostepniana w jednym z wybranym przez u¿ytkownika przegl±darki jêzyków, pierszy 
+wariant jêzykowy jest wy¶wietlany u¿ytkownikowi. Je¶li ¿aden z jêzykow nie mo¿e 
+byæ zaoferowany, 
+b³êdna strona 406 (Not Acceptable) jest wy¶wietlana u¿ytkownikowi i mo¿e on 
+dokonaæ samodzielnego wyboru z po¶ród oferowanych jêzyków.
+
+Poza automatycznym wyborem opisanym powy¿ej, u¿ytkownik mo¿e dokonaæ wyboru
+jêzyka z menu jêzykowego. To menu wy¶wietlone jest w prawym górnym rogu strony
+(przy nie zmienionym stylu), kiedy wystêpuje kilka wariantów jêzykowych danej
+witryny. Je¶li wystêpuje tylko jeden wariant jêzykowy to menu jêzykowe nie
+pojawia siê. Menu to jest umieszczone za raz pod g³ównym menu nawigacyjnym w
+przegl±darkach tekstowych. Poniewa¿ grupa jêzyków mo¿e byæ ró¿na dla ka¿dej ze 
+stron to i menu wyboru jêzyka bêdzie siê ró¿niæ. Bie¿±cy jêzyk jak równie¿ aktywny obiekt z menu s± zaznaczone wizualnie b±d¼ przy pomocy gwiazdki dla przegl±darek tekstowych.
+
+Jesli ciastka s± aktywne to rêcznie wybrany jêzyk bêdzie preferowanym jêzykiem nawet bardziej ni¿ preferencje zawarte w przegl±darce. Taka funkcja pozwala na nadpisanie ustawieñ przegl±darki co mo¿e byæ korzystne w sytuacjach jak korzystanie z kawiarenek internetowych czy publicznych terminalii. Jednak¿e, ustawienia przegl±darki powinny byæ preferowan± metod±.
+
+
+== Panele == panels
+
+Panele s± oknami krótkich informacji, które s± wy¶wietlane na prawej cze¶ci strony przy
+niezmienionym stylu. Okna te zwykle przedstawiaj± najistotniejsze informacje
+dla danej witryny. Panele s± niezmienione na ka¿dej stronie witryny
+internetowej. Na przyk³ad panel wiadomo¶ci mo¿e wy¶wietlaæ wiadomo¶æ z ³±czani
+do bardziej szczegó³owego omówienia w sekcji wiadomo¶ci.
+
+Panele mog± byæ ukrywane przy u¿yciu ³±cza "ukryj panele" znajduj±cego siê nad
+nimi. To ustawienie pozostaje tak dlugo do puki panele nie zostana przywrócone
+co mo¿e byæ zrobione poprzez ³±cze "poka¿ panele" o ile ciastka w przegl±darce
+s± aktywne. Naturalnie, je¶li panele nie s± u¿ywane to nie s± wy¶wietlane na
+stronie.

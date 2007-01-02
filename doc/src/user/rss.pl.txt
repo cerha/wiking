@@ -1,0 +1,15 @@
+# -*- coding: utf-8; mode: structured-text -*-
+
+== Kana³y (RSS) ==
+
+Technologia odczytywania nag³ówków wiadomo¶ci (Web Feeds) pozwala 
+u¿ytkownikom internetu na zapisywanie siê do specyficznych ¼róde³ zwanych 
+kana³y RSS, aby otrzymaæ szybki przegl±d wiadomo¶ci, artyku³ów czy innych 
+informacji. Odwied¼ [http://en.wikipedia.org/wiki/RSS po wiêcej informacji o 
+RSS.
+
+Niektóre przegl±darki maj± wbudowane wspomaganie dla RSS, inne wymagaj± zainstalowania czytników RSS jako zewnêtrznych aplikacji b±d¼ u¿ywania serwisów internetowych jak na przyk³ad:
+[http://my.yahoo.com My Yahoo!], [http://reader.google.com/ Google Reader] lub
+[http://www.bloglines.com/ Bloglines].
+
+Wiking umo¿liwia odczytywanie obiektów z ró¿nych sekcji witryny internetowej u¿ywaj±c protoko³u RSS. £±cze RSS znajduje siê ponad ka¿d± sekscj± wspomagaj±c± ten protoko³. Mo¿na u¿yæ tego adresu dla ustawienia swojego czytnika RSS.

@@ -1,0 +1,40 @@
+# -*- coding: utf-8; mode: structured-text -*-
+
+== O¶wiadczenie o Dostêpno¶ci ==
+
+Witryna ta u¿ywa [http://www.freebsoft.org/wiking Wiking] 
+systemu zarz±dzaj±cego zawarto¶ci± (content 
+management system). Jednym z g³ównych celów tego systemu jest 
+umo¿liwienie równorzêdnego dostêpu dla wszystkich u¿ytkowników ze 
+szczególnym uwzglêdnieniem osób niepe³nosprawnych lub ludzi o 
+specjalnych potrzebach. Wiking stara siê byæ niezale¿ny od oprogramowania, 
+osprzêtu i ustawieñ u¿ytkowników. Dlatego te¿ otrzymywane strony winny 
+byæ dostêpne dla ka¿dej przegl±darki, rodzaju i wielko¶ci czcionki, jak 
+rónie¿ rozdzielczo¶ci ekranu. czy specjalistycznych technologii etc.
+
+Realizacja honorowa³a odno¶ne standardy W3C. Ze szczególnym 
+uwzglêdnieniem >>[http://www.w3.org/TR/WAI-WEBCONTENT/ zaleceñ o 
+dostêpno¶ci zawarto¶ci stron internetowych  1.0]<<.
+
+Aczkolwiek wierzymy, ¿e wymagania WCAG 1.0 s± spe³nione na poziomie AAA, 
+musimy przyznaæ, i¿ obszar kryteriów ma charakter raczej subjektywny i 
+dlatego te¿ s±dzimy, ¿e wpe³ni obiektywne okre¶lenie dostêpno¶ci nie jest 
+mo¿liwe. Produkt nasz by³ testowany z u¿ytkownikami ró¿norakich 
+technologii specjalistycznych i liczba pewnych udogodnieñ zosta³a 
+wprowadzona, aby uzyskaæ maksymaln± wszechstronno¶c we wszystkich 
+przypadkach.
+
+Podrêcznik u¿ytkownika Wikinga, W rozdziale [navigation Nawigacja] 
+przedstawia informacje odnosz±ce siê do nawigacji i elementów 
+dostêpno¶ci tego produktu.
+
+Koñcowa dostêpno¶æ witryny nie jest zale¿na jedynie od 
+zastosowanego systemu zarz±dzania zawarto¶ci±. Równie¿ zawarto¶æ jako 
+taka ma znaczenie. Wiking stara siê pomóc równie¿ w tym obszarze, ale 
+jest niemo¿liwym zagwarantowanie, ¿e oferowana funkcjonalno¶æ produktu 
+bêdzie wykorzystywana w³a¶ciwie. Dlatego te¿, je¶li zaistniej± jakie¶ 
+problemy nale¿y skontaktowaæ siê z administratorem witryny, którego 
+e-mail adres mo¿na zwyczajowo znale¿¼ na dole strony. Jedynie posiadaj±c 
+absolutn± pewno¶æ, ¿e problemy wynikaj± z b³êdów systemu Wiking, prosimy 
+o kontakt z jego twórcami. Mozna ich odnale¼æ na stronie 
+[http://www.freebsoft.org/wiking Wiking project website].
