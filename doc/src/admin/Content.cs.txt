@@ -6,7 +6,7 @@ Modul Stránky spravuje obecné stránky s textovým obsahem.  Každá položka
 tabulky přiřazuje vlastní obsah jedné položce /Mapování/ (identifikátoru).
 
 Vlastní obsah stránek je zadáván ve formátu „strukturovaný text LCG“.
-Více viz [/__doc__/lcg/data-formats/structured-text příručka formátování].
+Více viz [/_doc/lcg/data-formats/structured-text příručka formátování].
 
 Tento modul ve skutečnosti spravuje několik jazykových verzí každé stránky, ale
 tabulka zobrazuje pouze záznamy odpovídající /aktuálně zvolenému jazyku/, takže

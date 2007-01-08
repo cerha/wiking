@@ -6,7 +6,7 @@ This module handles generic content pages.  Each item in the table assigns
 actual content to one /Mapping/ item (identifier).
 
 The content itself can be directly edited as an ``LCG structured text''
-document.  See the [/__doc__/lcg/data-formats/structured-text formatting
+document.  See the [/_doc/lcg/data-formats/structured-text formatting
 manual].
 
 Multiple language variants of each page are managed by this module, but
