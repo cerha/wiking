@@ -1,12 +1,14 @@
 Core features:
 
- * Independent language and filtering in WMI?
+ * Additional RSS fields (guid, pubDate, source, lastBuildDate, language...)
 
  * Default language when Accept-Language is not set at all
 
  * Browsing support for long lists (forward/backward movement)
 
  * Published/unpublished content
+
+ * Independent language and filtering in WMI?
 
  * Support for enabled/disabled actions
 

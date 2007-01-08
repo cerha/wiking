@@ -1,3 +1,17 @@
+2007-01-08  Tomas Cerha  <cerha@brailcom.org>
+
+	* doc/src/admin/Planner.en.txt: LCG documentation link fixed.
+
+	* doc/src/admin/Planner.cs.txt: LCG documentation link fixed.
+
+	* doc/src/admin/News.en.txt: LCG documentation link fixed.
+
+	* doc/src/admin/News.cs.txt: LCG documentation link fixed.
+
+	* doc/src/admin/Content.en.txt: LCG documentation link fixed.
+
+	* doc/src/admin/Content.cs.txt: LCG documentation link fixed.
+
 2007-01-02  Tomas Cerha  <cerha@brailcom.org>
 
 	* translations/wiking.pl.po: New translations.
