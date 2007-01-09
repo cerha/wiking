@@ -1,4 +1,4 @@
-# Copyright (C) 2006 Brailcom, o.p.s.
+# Copyright (C) 2006, 2007 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -43,20 +43,29 @@ def get_module(name):
         import wiking.modules as modules
     return getattr(modules, name)
 
-def rss(title, url, items, descr=None):
+def rss(title, url, items, descr, lang=None, webmaster=None):
+    import wiking
     result = '''<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
   <channel>
     <title>%s</title>
-    <link>%s</link>''' % (title, url) + (descr and '''
-    <description>%s</description>''' % descr or '') + '''
+    <link>%s</link>
+    <description>%s</description>''' % (title, url, descr or '') + \
+    (lang and '''
+    <language>%s</language>''' % lang or '') + (webmaster and '''
+    <webMaster>%s</webMaster>''' % webmaster or '') + '''
+    <generator>Wiking %s</generator>''' % wiking.__version__ + '''
+    <ttl>60</ttl>
     %s
   </channel>
 </rss>''' % '\n    '.join(['''<item>
        <title>%s</title>
-       <link>%s</link>''' % (title, url) + (descr and '''
-       <description>%s</description>''' % descr or '') + '''
-    </item>''' for title, url, descr in items])
+       <guid>%s</guid>
+       <link>%s</link>''' % (title, url, url) + (descr and '''
+       <description>%s</description>''' % descr or '') + (date and '''
+       <pubDate>%s</pubDate>''' % date or '') + (author and '''
+       <author>%s</author>''' % author or '') + '''
+    </item>''' for title, url, descr, date, author in items])
     return result
 
 def send_mail (sender, addr, subject, text, html, smtp_server='localhost'):
