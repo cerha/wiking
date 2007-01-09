@@ -1,3 +1,20 @@
+2007-01-09  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/module.py (WikingModule._RSS_DESCR_COLUMN): New
+	constant.
+	(WikingModule.rss): Don't overwrite the base uri in the cycle.
+	Supply values for additional RSS tags.
+
+	* lib/wiking/modules.py (News.Spec.fields): Removed field `rss_title'.
+	(News.Spec._rss_title): Method removed.
+	(News._RSS_TITLE_COLUMN): Set to `title'
+	(News._RSS_DATE_COLUMN): New constant.
+	(Planner._RSS_DATE_COLUMN, Planner._RSS_TITLE_COLUMN): New constants.
+
+	* lib/wiking/util.py (rss): New keyword arguments `lang' and
+	`webmaster'.  Additional values `author' and `date' in items.
+	Support also `generator', `ttl' and `guid' elements.
+
 2007-01-08  Tomas Cerha  <cerha@brailcom.org>
 
 	* doc/src/admin/Planner.en.txt: LCG documentation link fixed.
