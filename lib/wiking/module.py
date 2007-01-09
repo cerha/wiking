@@ -1,5 +1,5 @@
 # -*- coding: iso-8859-2 -*-
-# Copyright (C) 2005, 2006 Brailcom, o.p.s.
+# Copyright (C) 2005, 2006, 2007 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -31,6 +31,7 @@ class WikingModule(object):
     _EDIT_LABEL = None
     _RSS_TITLE_COLUMN = None
     _RSS_DESCR_COLUMN = None
+    _RSS_DATE_COLUMN = None
     _PANEL_DEFAULT_COUNT = 3
     _PANEL_FIELDS = None
     
@@ -373,20 +374,28 @@ class WikingModule(object):
         lang, variants, rows = self._list(req, lang=req.param('lang'), limit=8)
         from xml.sax.saxutils import escape
         col = self._view.field(self._TITLE_COLUMN)
-        uri = req.abs_uri()
+        base_uri = req.abs_uri()
         args = lang and (('setlang', lang),) or ()
         prow = pp.PresentedRow(self._view.fields(), self._data, None)
         items = []
+        import mx.DateTime as dt
+        config = self._module('Config').config(req.server, lang)
         for row in rows:
             prow.set_row(row)
             title = escape(prow[self._RSS_TITLE_COLUMN].export())
-            uri = self._link_provider(row, col, uri, args=args)
+            uri = self._link_provider(row, col, base_uri, args=args)
             descr = self._RSS_DESCR_COLUMN and \
                     escape(prow[self._RSS_DESCR_COLUMN].export()) or None
-            items.append((title, uri, descr))
-        config = self._module('Config').config(req.server, lang)
+            if self._RSS_DATE_COLUMN:
+                v = prow[self._RSS_DATE_COLUMN].value()
+                date = dt.ARPA.str(v.localtime())
+            else:
+                date = None
+            author = config.webmaster_addr
+            items.append((title, uri, descr, date, author))
         title = config.site_title +' - '+ self._real_title(lang)
-        result = rss(title, uri, items, descr=config.site_subtitle)
+        result = rss(title, base_uri, items, config.site_subtitle,
+                     lang=lang, webmaster=config.webmaster_addr)
         return ('application/xml', result)
     
     def list(self, req, err=None, msg=None):
