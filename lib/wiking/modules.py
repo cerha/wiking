@@ -1,4 +1,4 @@
-# Copyright (C) 2006 Brailcom, o.p.s.
+# Copyright (C) 2006, 2007 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -504,23 +504,19 @@ class News(WikingModule, Translatable):
             Field('lang', _("Language"), codebook='Languages', editable=ONCE,
                   selection_type=CHOICE, value_column='lang'),
             Field('title', _("Briefly"), column_label=_("Message"), width=32),
-            Field('rss_title', virtual=True,
-                  computer=Computer(self._rss_title,
-                                    depends=('title', 'date',))),
             Field('content', _("Text"), height=3, width=60))
         sorting = (('timestamp', DESC),)
         columns = ('title', 'date')
         layout = ('lang', 'timestamp', 'title', 'content')
-        def _rss_title(self, row):
-            return row['title'].value() +' ('+ row['date'].value() +')'
         def _date(self, row):
             return row['timestamp'].export(show_time=False)
         
     _TITLE_COLUMN = 'title'
     _LIST_BY_LANGUAGE = True
     _PANEL_FIELDS = ('date', 'title')
-    _RSS_TITLE_COLUMN = 'rss_title'
+    _RSS_TITLE_COLUMN = 'title'
     _RSS_DESCR_COLUMN = 'content'
+    _RSS_DATE_COLUMN = 'timestamp'
     
     class View(WikingModule.GenericView):
         def export(self, exporter):
@@ -588,6 +584,8 @@ class Planner(News):
     def _condition(self):
         return pd.OR(pd.GE('start_date', pd.Value(pd.Date(), today())),
                      pd.GE('end_date', pd.Value(pd.Date(), today())))
+    _RSS_TITLE_COLUMN = 'rss_title'
+    _RSS_DATE_COLUMN = None
     
 class Stylesheets(WikingModule):
     class Spec(pp.Specification):
