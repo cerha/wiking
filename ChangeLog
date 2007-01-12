@@ -1,3 +1,46 @@
+2007-01-12  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/modules.py (Themes.COLORS): New colors for inactive
+	buttons.
+	(Content): Class significantly redesigned and renamed to `Pages'.
+
+	* defs/application.py: `Content' -> `Pages'.
+
+	* lib/wiking/module.py: 'pytis.web' -> `pw'.
+	(WikingModule._DEFAULT_ACTIONS): Split to `_DEFAULT_ACTIONS_FIRST'
+	and `_DEFAULT_ACTIONS_LAST'
+	(WikingModule._INSERT_MSG, WikingModule._UPDATE_MSG)
+	(WikingModule._DELETE_MSG, WikingModule._LIST_ACTIONS): New
+	constants.
+	(WikingModule.Object.update): New method.
+	(WikingModule.spec): Avoid repeating actions.  Also process
+	actions of the current class.
+	(WikingModule._validate): Skip key columns only if not `new'.
+	(WikingModule._document): Always supply all languages as variants
+	in WMI.
+	(WikingModule._actions): Return `ActionMenu' instance.
+	(WikingModule.list, WikingModule.show, WikingModule.remove): Use
+	`self._actions' in its new meaning.
+	(WikingModule.insert): Use `self._INSERT_MSG'.
+	(WikingModule.update): Use `self._UPDATE_MSG'.
+	(WikingModule.delete): Use `self._DELETE_MSG'.
+
+	* lib/wiking/handler.py (SiteHandler.handle): 'Content' -> `Pages'.
+
+	* lib/wiking/__init__.py (__version__): Import `pytis.web' as `pw'.
+
+	* lib/wiking/util.py (ActionMenu.__init__): Expect a
+	`PresentedRow' instance as the `row' argument.
+	(ActionMenu._export_item): Set the `inactive' class for inactive
+	items.
+
+	* sql/wiking.sql: Table `_content' and view `_content' replaced by
+	a redesigned table _`pages' and view `pages' and corresponding
+	rules.  New columns for inactive button colors in the table
+	`themes'.
+
+	* resources/css/default.css: Added styles for inactive action buttons.
+
 2007-01-09  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/module.py (WikingModule._RSS_DESCR_COLUMN): New

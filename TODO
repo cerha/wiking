@@ -1,20 +1,16 @@
 Core features:
 
- * Additional RSS fields (guid, pubDate, source, lastBuildDate, language...)
-
  * Default language when Accept-Language is not set at all
 
  * Browsing support for long lists (forward/backward movement)
 
- * Published/unpublished content
-
- * Independent language and filtering in WMI?
-
- * Support for enabled/disabled actions
+ * Page preview in WMI
 
  * Save the exported HTML for structured text content in DB
 
  * Authentication and acces rights management
+
+ * Independent language and filtering in WMI?
 
  * Content management controls outside wmi (when authorized)
 
@@ -26,7 +22,7 @@ Core features:
 
  * Print preview
 
- * Support multithreaded Apache MPM (currently broken).
+ * Support multithreaded Apache MPM (currently broken)
 
 
 Extensions:
