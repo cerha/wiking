@@ -291,7 +291,7 @@ class ActionMenu(lcg.Content):
         assert isinstance(uri, str), uri
         assert isinstance(actions, (tuple, list)), actions
         assert data is None or isinstance(data, pytis.data.Data), data
-        assert row is None or isinstance(row, pytis.data.Row), row
+        assert row is None or isinstance(row, pp.PresentedRow), row
         self._uri = uri
         self._data = data
         self._row = row
@@ -303,8 +303,16 @@ class ActionMenu(lcg.Content):
                         for c in self._data.key()])
         else:
             key = {}
-        target = _html.uri(self._uri, action=action.name(), **key)
-        return _html.link(action.title(), target)
+        enabled = action.enabled()
+        if callable(enabled):
+            enabled = enabled(self._row)
+        if enabled:            
+            target = _html.uri(self._uri, action=action.name(), **key)
+            cls = None
+        else:
+            target = None
+            cls = 'inactive'
+        return _html.link(action.title(), target, cls=cls)
         
     def export(self, exporter):
         # Only Wiking's Actions are considered, not `pytis.presentation.Action'.
