@@ -541,7 +541,7 @@ class Pages(WikingModule): #, Publishable, Translatable
                      self._data.get_rows(mapping_id=object['mapping_id'],
                                          condition=cond)]
             if not langs:
-                e = _("Content for this page does not exist in any language!")
+                e = _("Content for this page does not exist in any language.")
                 return self.show(req, object, err=e)
             d = pw.SelectionDialog('src_lang', _("Choose source language"),
                                    langs, action='translate',
@@ -556,7 +556,7 @@ class Pages(WikingModule): #, Publishable, Translatable
 
     def sync(self, req, object):
         err = object.update(content=object['_content'])
-        msg = not err and _("The changes were published!")
+        msg = not err and _("The changes were published.")
         return self.show(req, object, msg=msg, err=err)
         
 
