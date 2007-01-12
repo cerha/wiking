@@ -1,4 +1,4 @@
-# Copyright (C) 2006 Brailcom, o.p.s.
+# Copyright (C) 2006, 2007 Brailcom, o.p.s.
 # Author: Tomas Cerha <cerha@brailcom.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -194,7 +194,7 @@ class SiteHandler(object):
                 result = self._doc(req, path[1:])
             elif wmi:
                 if len(path) == 1:
-                    path += ('Content',)
+                    path += ('Pages',)
                 module = self._module(path[1])
                 try:
                     arg = module.resolve(req)
