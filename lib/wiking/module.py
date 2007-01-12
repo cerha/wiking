@@ -86,10 +86,10 @@ class WikingModule(object):
         def update(self, **kwargs):
             data = self._data.make_row(**kwargs)
             try:
-                self._data.update(object.key(), data)
+                self._data.update(self.key(), data)
             except pd.DBException, e:
                 return self._module._analyze_exception(e)
-            object.reload()
+            self.reload()
             return None
 
     class _GenericView(object):
