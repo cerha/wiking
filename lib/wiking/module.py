@@ -24,10 +24,10 @@ class WikingModule(object):
     _REFERER = None
     _TITLE_COLUMN = None
     _LIST_BY_LANGUAGE = False
-    _DEFAULT_ACTIONS = (Action(_("Edit"), 'edit'),
-                        Action(_("Remove"), 'remove'),
-                        Action(_("List"), 'list', context=None),
-                        )
+    _DEFAULT_ACTIONS_FIRST  = (Action(_("Edit"), 'edit'),)
+    _DEFAULT_ACTIONS_LAST   = (Action(_("Remove"), 'remove'),
+                               Action(_("List"), 'list', context=None),)
+    _LIST_ACTIONS = (Action(_("New record"), 'add', context=None),)
     _EDIT_LABEL = None
     _RSS_TITLE_COLUMN = None
     _RSS_DESCR_COLUMN = None
@@ -42,6 +42,10 @@ class WikingModule(object):
         ('null value in column "(?P<id>[a-z_]+)" violates not-null constraint',
          _("Empty value.  This field is mandatory.")),
         )
+
+    _INSERT_MSG = _("New record was successfully inserted.")
+    _UPDATE_MSG = _("The record was successfully updated.")
+    _DELETE_MSG = _("The record was deleted.")
     
     _spec_cache = {}
     
@@ -79,16 +83,25 @@ class WikingModule(object):
         def reload(self):
             self._prow.set_row(self._data.row(self.key()))
 
+        def update(self, **kwargs):
+            data = self._data.make_row(**kwargs)
+            try:
+                self._data.update(object.key(), data)
+            except pd.DBException, e:
+                return self._module._analyze_exception(e)
+            object.reload()
+            return None
+
     class _GenericView(object):
         def _export_structured_text(self, text, exporter):
             content = lcg.Container(lcg.Parser().parse(text))
             content.set_parent(self.parent())
             return content.export(exporter)
             
-    class View(pytis.web.ShowForm):
+    class View(pw.ShowForm):
         def __init__(self, data, view, resolver, object):
             row = object.row()
-            pytis.web.ShowForm.__init__(self, data, view, resolver, row)
+            pw.ShowForm.__init__(self, data, view, resolver, row)
 
     class GenericView(lcg.Content, _GenericView):
         def __init__(self, data, view, object):
@@ -97,10 +110,10 @@ class WikingModule(object):
             self._object = object
             lcg.Content.__init__(self)
             
-    class ListView(pytis.web.BrowseForm):
+    class ListView(pw.BrowseForm):
         def __init__(self, data, view, resolver, rows, link_provider):
-            pytis.web.BrowseForm.__init__(self, data, view, resolver, rows,
-                                          link_provider=link_provider)
+            pw.BrowseForm.__init__(self, data, view, resolver, rows,
+                                   link_provider=link_provider)
 
     class GenericListView(ListView, _GenericView):
         def _wrap_exported_rows(self, rows):
@@ -115,11 +128,16 @@ class WikingModule(object):
             if cls.Spec.table is None:
                 table = pytis.util.camel_case_to_lower(cls.__name__, '_')
                 cls.Spec.table = table
-            if not hasattr(cls.Spec, 'actions'):
-                cls.Spec.actions = ()
-            for base in cls.__bases__:
+            if hasattr(cls.Spec, 'actions'):
+                cls.Spec.actions = list(cls.Spec.actions)
+            else:
+                cls.Spec.actions = []
+            for base in cls.__bases__ + (cls,):
                 if hasattr(base, '_ACTIONS'):
-                    cls.Spec.actions += base._ACTIONS
+                    for action in base._ACTIONS:
+                        if action not in cls.Spec.actions:
+                            cls.Spec.actions.append(action)
+            cls.Spec.actions = tuple(cls.Spec.actions)
             cls.Spec.data_cls = Data
             spec = WikingModule._spec_cache[cls] = cls.Spec(resolver)
         return spec
@@ -157,7 +175,7 @@ class WikingModule(object):
         errors = []
         kc = [c.id() for c in self._data.key()]
         for id in self._view.layout().order():
-            if id in kc:
+            if id in kc and not new:
                 continue
             f = self._view.field(id)
             editable = f.editable()
@@ -230,7 +248,7 @@ class WikingModule(object):
             edit_label = None #self._EDIT_LABEL
         else:
             edit_label = None
-        if not variants:
+        if not variants or req.wmi:
             variants = self._module('Languages').languages()
         if isinstance(content, (list, tuple)):
             content = tuple([c for c in content if c is not None])
@@ -252,8 +270,18 @@ class WikingModule(object):
         return Document(title, content, lang=lang, variants=variants,
                         edit_label=edit_label)
 
-    def _actions(self):
-        return tuple(self._DEFAULT_ACTIONS) + self._view.actions()
+    def _actions(self, req, object=None, actions=None):
+        if not req.wmi:
+            return None
+        if not actions:
+            if object is not None:
+                actions = self._DEFAULT_ACTIONS_FIRST + \
+                          self._view.actions() + \
+                          self._DEFAULT_ACTIONS_LAST
+            else:
+                actions = self._LIST_ACTIONS
+        row = object and object.prow()
+        return ActionMenu(req.uri, actions, self._data, row)
 
     def _link_provider(self, row, col, uri, wmi=False, args=()):
         if col.id() == self._TITLE_COLUMN:
@@ -364,7 +392,6 @@ class WikingModule(object):
             return items
         else:
             return (lcg.TextContent(_("No records.")),)
-            
 
     # ===== Action handlers =====
     
@@ -402,14 +429,12 @@ class WikingModule(object):
         def link_provider(row, col):
             return self._link_provider(row, col, req.uri, wmi=req.wmi)
         lang, variants, rows = self._list(req)
-        form = req.wmi and pytis.web.BrowseForm or self.ListView
+        form = req.wmi and pw.BrowseForm or self.ListView
         content = [self._form(form, rows, link_provider)]
         if req.wmi:
-            a = ActionMenu(req.uri,
-                           (Action(_("New record"), 'add', context=None),))
             uri = '/_doc/'+self.__class__.__name__
             h = lcg.Link(lcg.Link.ExternalTarget(uri, _("Help")))
-            content.extend((a, h))
+            content.extend((self._actions(req) , h))
         elif self._RSS_TITLE_COLUMN:
             rss = lcg.Link.ExternalTarget(req.uri +'.'+ lang +'.rss',
                                           self._real_title(lang) + ' RSS')
@@ -424,9 +449,8 @@ class WikingModule(object):
                               err=err, msg=msg)
 
     def show(self, req, object, err=None, msg=None):
-        form = self._form(pytis.web.ShowForm, object.row())
-        actions = ActionMenu(req.uri, self._actions(), self._data, object.row())
-        return self._document(req, (form, req.wmi and actions or None), object,
+        form = self._form(pw.ShowForm, object.row())
+        return self._document(req, (form, self._actions(req, object)), object,
                               err=err, msg=msg)
 
     def view(self, req, object, err=None, msg=None):
@@ -435,20 +459,19 @@ class WikingModule(object):
     
     def add(self, req, prefill=None, errors=()):
         #req.check_auth(pd.Permission.INSERT)
-        form = self._form(pytis.web.EditForm, None, handler=req.uri, new=True,
+        form = self._form(pw.EditForm, None, handler=req.uri, new=True,
                           prefill=prefill or self._default_prefill(req),
                           errors=errors, action='insert')
         return self._document(req, form, subtitle=_("new record"))
 
     def edit(self, req, object, errors=(), prefill=None):
-        form = self._form(pytis.web.EditForm, object.row(), handler=req.uri,
+        form = self._form(pw.EditForm, object.row(), handler=req.uri,
                           errors=errors, prefill=prefill, action='update')
         return self._document(req, form, object, subtitle=_("edit form"))
 
     def remove(self, req, object, err=None):
-        form = self._form(pytis.web.ShowForm, object.row())
-        actions = ActionMenu(req.uri, (Action(_("Remove"), 'delete'),),
-                             self._data, object.row())
+        form = self._form(pw.ShowForm, object.row())
+        actions = self._actions(req, object, (Action(_("Remove"), 'delete'),))
         msg = _("Please, confirm removing the record permanently.")
         return self._document(req, (form, actions), object,
                               err=err, subtitle=_("removing"), msg=msg)
@@ -463,12 +486,11 @@ class WikingModule(object):
             #log(OPR, "New record:", row.items())
             try:
                 new_row, success = self._data.insert(row)
-                msg = _("New record was successfully inserted.")
                 if req.wmi:
-                    return self.list(req, msg=msg)
+                    return self.list(req, msg=self._INSERT_MSG)
                 else:
                     object = self.Object(self, self._view, self._data, new_row)
-                    return self.view(req, object, msg=msg)
+                    return self.view(req, object, msg=self._INSERT_MSG)
             except pd.DBException, e:
                 errors = self._analyze_exception(e)
         return self.add(req, prefill=req.params, errors=errors)
@@ -483,8 +505,7 @@ class WikingModule(object):
                 self._data.update(object.key(), row)
                 object.reload()
                 action = req.wmi and self.show or self.view
-                return action(req, object,
-                              msg=_("The record was successfully updated."))
+                return action(req, object, msg=self._UPDATE_MSG)
             except pd.DBException, e:
                 errors = self._analyze_exception(e)
         return self.edit(req, object, prefill=req.params, errors=errors)
@@ -499,7 +520,7 @@ class WikingModule(object):
         except pd.DBException, e:
             err = self._analyze_exception(e)
         if deleted:
-            return self.list(req, msg=_("The record was deleted."))
+            return self.list(req, msg=self._DELETE_MSG)
         else:
             return self.remove(req, object,
                                err=err or _("Unable to delete record."))
