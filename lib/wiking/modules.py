@@ -481,10 +481,12 @@ class Pages(WikingModule): #, Publishable, Translatable
                     "Please, visit the 'Mapping' module to do so.")
     
     _IS_OK = pd.NE('content', pd.Value(pd.String(), None))
-    _ACTIONS = (Action(_("Translate"), 'translate',
-                       enabled=lambda r: r['_content'].value() is None),
-                Action(_("Publish changes"), 'sync', enabled=lambda r:
+    _ACTIONS = (Action(_("Publish changes"), 'sync', enabled=lambda r:
                        r['_content'].value() != r['content'].value()),
+                Action(_("Preview"), 'preview',
+                       enabled=lambda r: r['_content'].value() is not None),
+                Action(_("Translate"), 'translate',
+                       enabled=lambda r: r['_content'].value() is None),
                 )
         
     def _variants(self, object):
@@ -513,12 +515,18 @@ class Pages(WikingModule): #, Publishable, Translatable
                         return row
             raise NotAcceptable([str(r['lang'].value()) for r in variants])
 
-    def view(self, req, object, err=None, msg=None):
-        text = object['content']
+    def view(self, req, object, err=None, msg=None, preview=False):
+        if preview:
+            text = object['_content']
+        else:
+            text = object['content']
         content = text and lcg.SectionContainer(lcg.Parser().parse(text),
                                                 toc_depth=0) \
                   or lcg.TextContent("")
         return self._document(req, content, object, err=err, msg=msg)
+
+    def preview(self, req, object, **kwargs):
+        return self.view(req, object, preview=True, **kwargs)
 
     def translate(self, req, object):
         lang = req.param('src_lang')
