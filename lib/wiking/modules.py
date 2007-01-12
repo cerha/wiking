@@ -153,7 +153,7 @@ class Mapping(WikingModule, Publishable):
             Field('published', _("Published")),
             Field('ord', _("Menu order"), width=5))
         sorting = (('ord', ASC), ('identifier', ASC))
-        bindings = {'Content': pp.BindingSpec(_("Page content"), 'mapping_id')}
+        bindings = {'Pages': pp.BindingSpec(_("Pages"), 'mapping_id')}
         columns = ('identifier', 'modtitle', 'published', 'ord')
         layout = ('identifier', 'mod_id', 'published', 'ord')
         cb = pp.CodebookSpec(display='identifier')
@@ -392,6 +392,9 @@ class Themes(WikingModule):
         Color('button-fg', inherit='foreground'),
         Color('button', inherit='heading-bg'),
         Color('button-border', '#9af', inherit='border'),
+        Color('button-inactive-fg', '#555', inherit='button-fg'),
+        Color('button-inactive', '#ccc', inherit='button'),
+        Color('button-inactive-border', '#999', inherit='button-border'),
         Color('error-fg', inherit='foreground'),
         Color('error-bg', '#fdb'),
         Color('error-border', '#fba', inherit='border'),
@@ -430,40 +433,64 @@ class Themes(WikingModule):
 # are system modules used internally by Wiking.
 # ==============================================================================
 
-class Content(WikingModule, Publishable, Translatable):
+class Pages(WikingModule): #, Publishable, Translatable
     class Spec(pp.Specification):
         title = _("Pages")
-        fields = (
-            Field('content_id'),
-            Field('mapping_id', _("Identifier"), codebook='Mapping',
-                  editable=ONCE, selection_type=CHOICE,
-                  validity_condition=pd.EQ('modname',
-                                           pd.Value(pd.String(), 'Content'))),
-            Field('identifier', _("Identifier")),
+        key = ('mapping_id', 'lang')
+        def fields(self): return (
+            Field('mapping_id'),
             Field('lang', _("Language"), codebook='Languages', editable=ONCE,
                   selection_type=CHOICE, value_column='lang'),
+            Field('identifier', _("Identifier"), editable=ONCE),
             Field('title', _("Title")),
-            Field('content', _("Content"),
+            Field('title_', _("Title"), virtual=True,
+                  computer=Computer(self._title,
+                                    depends=('title', 'identifier'))),
+            Field('_content', _("Content"),
                   compact=True, height=20, width=80),
-            Field('published', _("Published")))
-        sorting = (('mapping_id', ASC), ('lang', ASC),)
-        layout = ('mapping_id', 'lang', 'title', 'content')
-        columns = ('title', 'identifier', 'published')
+            Field('content'),
+            Field('status', _("Status"), virtual=True,
+                  computer=Computer(self._status,
+                                    depends=('content', '_content'))),
+            )
+        def _title(self, row):
+            return row['title'].value() or row['identifier'].value()
+        def _status(self, row):
+            _c = row['_content'].value()
+            if _c:
+                c = row['content'].value()
+                return c == _c and _("Ok") or _("Changed")
+            else:
+                return _("Missing")
+        sorting = (('identifier', ASC), ('lang', ASC),)
+        layout = ('identifier', 'lang', 'title', '_content')
+        columns = ('title_', 'identifier', 'status')
         cb = pp.CodebookSpec(display='identifier')
-        
+    
     _REFERER = 'identifier'
-    _TITLE_COLUMN = 'title'
+    _TITLE_COLUMN = 'title_'
     _EXCEPTION_MATCHERS = (
-        ('duplicate key violates unique constraint "_content_mapping_id_key"',
+        ('duplicate key violates unique constraint "_pages_mapping_id_key"',
          _("The page already exists in given language.")),) + \
          WikingModule._EXCEPTION_MATCHERS
     _EDIT_LABEL = _("Edit this page")
     _LIST_BY_LANGUAGE = True
     
+    _INSERT_MSG = _("New page was successfully created. Don't forget to "
+                    "publish it and possibly also add it to the main menu. "
+                    "Please, visit the 'Mapping' module to do so.")
+    
+    _IS_OK = pd.NE('content', pd.Value(pd.String(), None))
+    _ACTIONS = (Action(_("Translate"), 'translate',
+                       enabled=lambda r: r['_content'].value() is None),
+                Action(_("Publish changes"), 'sync', enabled=lambda r:
+                       r['_content'].value() != r['content'].value()),
+                )
+        
     def _variants(self, object):
         return [str(r['lang'].value())
                 for r in self._data.get_rows(mapping_id=object['mapping_id'],
-                                             published=True)]
+                                             condition=self._IS_OK)]
 
     def _resolve(self, req, path):
         if len(path) > 1:
@@ -471,12 +498,13 @@ class Content(WikingModule, Publishable, Translatable):
         lang = req.param('lang')
         if lang is not None:
             row = self._data.get_row(identifier=path[0], lang=lang,
-                                     published=True)
+                                     condition=self._IS_OK)
             if not row:
                 raise NotFound()
             return row
         else:
-            variants = self._data.get_rows(identifier=path[0], published=True)
+            variants = self._data.get_rows(identifier=path[0],
+                                           condition=self._IS_OK)
             if not variants:
                 raise NotFound()
             for lang in req.prefered_languages():
@@ -491,6 +519,38 @@ class Content(WikingModule, Publishable, Translatable):
                                                 toc_depth=0) \
                   or lcg.TextContent("")
         return self._document(req, content, object, err=err, msg=msg)
+
+    def translate(self, req, object):
+        lang = req.param('src_lang')
+        if not lang:
+            if object['_content'] is not None:
+                e = _("Content for this page already exists!")
+                return self.show(req, object, err=e)
+            cond = pd.AND(pd.NE('_content', pd.Value(pd.String(), None)),
+                          pd.NE('lang', object.row()['lang']))
+            langs = [(str(row['lang'].value()),
+                      lcg.language_name(row['lang'].value())) for row in 
+                     self._data.get_rows(mapping_id=object['mapping_id'],
+                                         condition=cond)]
+            if not langs:
+                e = _("Content for this page does not exist in any language!")
+                return self.show(req, object, err=e)
+            d = pw.SelectionDialog('src_lang', _("Choose source language"),
+                                   langs, action='translate',
+                                   hidden=[(id, object[id]) for id in
+                                           ('mapping_id', 'lang')])
+            return self._document(req, d, object, subtitle=_("translate"))
+        else:
+            row = self._data.get_row(mapping_id=object['mapping_id'],
+                                     lang=str(req.params['src_lang']))
+            prefill = dict([(k, row[k].value()) for k in ('_content','title')])
+            return self.edit(req, object, prefill=prefill)
+
+    def sync(self, req, object):
+        err = object.update(content=object['_content'])
+        msg = not err and _("The changes were published!")
+        return self.show(req, object, msg=msg, err=err)
+        
 
 class News(WikingModule, Translatable):
     class Spec(pp.Specification):
