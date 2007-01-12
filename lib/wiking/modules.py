@@ -516,7 +516,7 @@ class Pages(WikingModule): #, Publishable, Translatable
             raise NotAcceptable([str(r['lang'].value()) for r in variants])
 
     def view(self, req, object, err=None, msg=None, preview=False):
-        if preview:
+        if req.wmi and preview:
             text = object['_content']
         else:
             text = object['content']
