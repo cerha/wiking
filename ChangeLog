@@ -3,6 +3,9 @@
 	* lib/wiking/modules.py (Themes.COLORS): New colors for inactive
 	buttons.
 	(Content): Class significantly redesigned and renamed to `Pages'.
+	(Pages.view): New keyword argument `preview'.
+	(Pages.preview): New method.
+	(Pages._ACTIONS): New action `preview'.
 
 	* defs/application.py: `Content' -> `Pages'.
 
@@ -24,6 +27,7 @@
 	(WikingModule.insert): Use `self._INSERT_MSG'.
 	(WikingModule.update): Use `self._UPDATE_MSG'.
 	(WikingModule.delete): Use `self._DELETE_MSG'.
+	(WikingModule.update): Fix.
 
 	* lib/wiking/handler.py (SiteHandler.handle): 'Content' -> `Pages'.
 
