@@ -1,4 +1,4 @@
-# Copyright (C) 2006 Brailcom, o.p.s.
+# Copyright (C) 2006, 2007 Brailcom, o.p.s.
 # Author: Tomas Cerha <cerha@brailcom.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -32,7 +32,8 @@ config.db_encoding = 'utf-8'
 
 import pytis.data as pd
 import pytis.presentation as pp
-import pytis.util, pytis.web
+import pytis.web as pw
+import pytis.util
 
 from configuration import *
 # This is Wiking-specific configuration.  The above is Pytis config.
