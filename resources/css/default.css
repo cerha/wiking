@@ -275,6 +275,11 @@ p.actions a {
 p.actions a:hover { 
     background: $color.highlight-bg;
 }
+p.actions a.inactive, p.actions a.inactive:hover { 
+    color: $color.button-inactive-fg;
+    background: $color.button-inactive;
+    border-color: $color.button-inactive-border;
+}
 
 div.list-view div.list-item {
     margin: 1em 0;
