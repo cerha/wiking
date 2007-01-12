@@ -96,51 +96,52 @@ CREATE TABLE titles (
 
 -------------------------------------------------------------------------------
 
-CREATE TABLE _content (
-	content_id serial PRIMARY KEY,
+CREATE TABLE _pages (
 	mapping_id integer NOT NULL REFERENCES _mapping ON DELETE CASCADE,
 	lang char(2) NOT NULL REFERENCES languages(lang),
-	published boolean NOT NULL DEFAULT 'TRUE',
+	_content text NOT NULL,
 	content text,
-	_content text,
-	UNIQUE (mapping_id, lang)
+	PRIMARY KEY (mapping_id, lang)
 ) WITH OIDS;
 
-CREATE OR REPLACE VIEW content AS 
-SELECT c.oid, m.identifier, t.title, c.* 
-FROM (_content c JOIN _mapping m USING (mapping_id))
-     NATURAL LEFT OUTER JOIN titles t;
+CREATE OR REPLACE VIEW pages AS 
+SELECT p.oid, m.mapping_id, l.lang, m.identifier, t.title,
+       p._content, p.content
+FROM _mapping m CROSS JOIN languages l JOIN modules USING (mod_id)
+     LEFT OUTER JOIN _pages p USING (mapping_id, lang)
+     LEFT OUTER JOIN titles t USING (mapping_id, lang)
+WHERE modules.name = 'Pages';
 
-CREATE OR REPLACE RULE content_insert AS
-  ON INSERT TO content DO INSTEAD (
-     INSERT INTO _content (mapping_id, lang, content, _content)
-     VALUES (new.mapping_id, new.lang, new.content, new._content);
+CREATE OR REPLACE RULE pages_insert AS
+  ON INSERT TO pages DO INSTEAD (
+     INSERT INTO _mapping (identifier, mod_id)
+     VALUES (new.identifier, (SELECT mod_id FROM modules WHERE name='Pages'));
+     INSERT INTO _pages (mapping_id, lang, _content, content)
+     VALUES ((SELECT mapping_id FROM _mapping WHERE identifier=new.identifier),
+             new.lang, new._content, new.content);
      INSERT INTO titles (mapping_id, lang, title)
-     VALUES (new.mapping_id, new.lang, new.title)
-	);
+     VALUES ((SELECT mapping_id FROM _mapping WHERE identifier=new.identifier),
+	     new.lang, new.title)
+);
 
-CREATE OR REPLACE RULE content_update AS
-  ON UPDATE TO content DO INSTEAD (
-    UPDATE _content SET
-	published = new.published,
-	content   = new.content,
-	_content  = new._content
-    WHERE _content.content_id = old.content_id;
-    UPDATE titles SET
-	title = new.title
-    WHERE titles.mapping_id = old.mapping_id 
-          AND titles.lang = old.lang;
+CREATE OR REPLACE RULE pages_update AS
+  ON UPDATE TO pages DO INSTEAD (
+    UPDATE _pages SET _content = new._content, content = new.content
+           WHERE old._content IS NOT NULL 
+	         AND mapping_id = old.mapping_id AND lang = old.lang;
+    INSERT INTO _pages (mapping_id, lang, _content, content) 
+	   SELECT new.mapping_id, new.lang, new._content, new.content
+	   WHERE old._content IS NULL;
+    UPDATE titles SET title = new.title
+           WHERE mapping_id = old.mapping_id AND lang = old.lang;
     INSERT INTO titles (mapping_id, lang, title) 
 	   SELECT new.mapping_id, new.lang, new.title
 	   WHERE old.title IS NULL AND new.title IS NOT NULL;
 );
 
-CREATE OR REPLACE RULE content_delete AS
-  ON DELETE TO content DO INSTEAD (
-     DELETE FROM titles
-     WHERE titles.mapping_id = old.mapping_id AND titles.lang = old.lang;
-     DELETE FROM _content
-     WHERE _content.content_id = old.content_id;
+CREATE OR REPLACE RULE pages_delete AS
+  ON DELETE TO pages DO INSTEAD (
+     DELETE FROM _mapping WHERE mapping_id = old.mapping_id;
 );
 
 -------------------------------------------------------------------------------
@@ -253,6 +254,9 @@ CREATE TABLE themes (
         button_fg varchar(7),
         button varchar(7),
         button_border varchar(7),
+        button_inactive_fg varchar(7),
+        button_inactive varchar(7),
+        button_inactive_border varchar(7),
         error_fg varchar(7),
         error_bg varchar(7),
         error_border varchar(7),
