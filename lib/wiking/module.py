@@ -62,7 +62,7 @@ class WikingModule(object):
             keys = ["%s=%s" % (c.id(), self._prow[c.id()].export())
                     for c in self._data.key()]
             return "<%s module=%s %s>" % (self.__class__.__name__,
-                                          self._module.__class__.__name__,
+                                          self._module.name(),
                                           " ".join(keys))
 
         def export(self, key):
@@ -126,7 +126,7 @@ class WikingModule(object):
             spec = WikingModule._spec_cache[cls]
         except KeyError:
             if cls.Spec.table is None:
-                table = pytis.util.camel_case_to_lower(cls.__name__, '_')
+                table = pytis.util.camel_case_to_lower(cls.name(), '_')
                 cls.Spec.table = table
             if hasattr(cls.Spec, 'actions'):
                 cls.Spec.actions = list(cls.Spec.actions)
@@ -142,7 +142,11 @@ class WikingModule(object):
             spec = WikingModule._spec_cache[cls] = cls.Spec(resolver)
         return spec
     spec = classmethod(spec)
-            
+
+    def name(cls):
+        return cls.__name__
+    name = classmethod(name)
+    
     # Instance methods
     
     def __init__(self, dbconnection, resolver, get_module):
@@ -163,7 +167,7 @@ class WikingModule(object):
             self._referer = key[0].id()
         if self._referer:
             self._referer_type = self._data.find_column(self._referer).type()
-        #log(OPR, 'New module instance: %s[%x]' % (self.__class__.__name__,
+        #log(OPR, 'New module instance: %s[%x]' % (self.name(),
         #                                          lcg.positive_id(self)))
 
     def _datetime_formats(self, req):
@@ -232,7 +236,7 @@ class WikingModule(object):
     
     def _real_title(self, lang):
         # This is quite a hack...
-        title = self._module('Mapping').title(lang, self.__class__.__name__)
+        title = self._module('Mapping').title(lang, self.name())
         return title or self._view.title()
     
     def _document(self, req, content, obj=None, subtitle=None,
@@ -294,7 +298,7 @@ class WikingModule(object):
                                for c in self._data.key()])
                 if wmi:
                     args += (('action', 'show'), )
-                    uri = '/_wmi/'+ self.__class__.__name__
+                    uri = '/_wmi/'+ self.name()
                 return _html.uri(uri, *args)
         return None
 
@@ -432,7 +436,7 @@ class WikingModule(object):
         form = req.wmi and pw.BrowseForm or self.ListView
         content = [self._form(form, rows, link_provider)]
         if req.wmi:
-            uri = '/_doc/'+self.__class__.__name__
+            uri = '/_doc/'+self.name()
             h = lcg.Link(lcg.Link.ExternalTarget(uri, _("Help")))
             content.extend((self._actions(req) , h))
         elif self._RSS_TITLE_COLUMN:
