@@ -1,0 +1,31 @@
+# -*- coding: utf-8; mode: structured-text -*-
+
+= Stránky =
+
+V tomto modulu můžete vytvářet a spravovat běžné stránky obsahující text,
+případně i grafiku apod.  Vlastní obsah stránek je zadáván ve formátu
+„strukturovaný text LCG“, který je popsán v
+[/_doc/lcg/data-formats/structured-text příručce formátování].
+
+Každá stránka může existovat v několika jazykových verzích, ale tabulka
+zobrazuje pouze záznamy odpovídající /aktuálně zvolenému jazyku/.  Pokud chcete
+spravovat jiné jazykové verze stránek, musíte nejprve přepnout aktuální jazyk.
+
+Zařazení stránek do hlavní nabídky je stejně jako pro obsah z jiných modulů
+prováděno v modulu /Mapování/.  Tam lze také změnit stávající identifikátor
+nebo řídit zveřejnění/zneveřejnění jednotlivých položek.
+
+Pro každou stránku je v tabulce zobrazen také „stav“.  Ten může nabývat jedné
+ze tří hodnot:
+
+   * /Chybí/ ... stránaka není v aktuálním jazyce definována.
+
+   * /Změněno/ ... obsah stránky byl změněn, ale změny ještě nebyly
+     zveřeněny, takže návštěvníkům je zobrazován předchozí obsah.
+
+   * /Ok/ ... stránka existuje a její obsah je aktuální.
+
+Pokud stránka v daném jazyce „chybí“, lze ji vytvořit buďto přímo doplněním
+textu volbou „upravit“, nebo může být praktičtější využít volby „přeložit“.  Ta
+umožní obsah předvyplnit obsahem jiné jazykové verze, takže potom vlastní text
+vytváříme postupným přepisováním původního textu jeho překladem.
