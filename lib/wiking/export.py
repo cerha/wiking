@@ -1,4 +1,4 @@
-# Copyright (C) 2006 Brailcom, o.p.s.
+# Copyright (C) 2006, 2007 Brailcom, o.p.s.
 # Author: Tomas Cerha <cerha@brailcom.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -144,28 +144,29 @@ class Exporter(lcg.HtmlExporter):
                            
     def _wiking_bar(self, node):
         import wiking
-	result = (_html.hr(),)
+        g = _html
+        config = node.config()
+	result = (g.hr(),)
         ctrls = (hidden("["),)
         if node.edit_label():
-            ctrls += (_html.link(node.edit_label(), "?action=edit"), "|")
-        #if not node.config().login_panel:
+            ctrls += (g.link(node.edit_label(), "?action=edit"), "|")
+        #if not config.login_panel:
         #    user, ctrl = self._login_ctrl(node)
         #    ctrls += (concat(_("Logged user"), ': ', user, ' (', ctrl, ') |'),)
-        if node.config().wmi:
-            ctrl = _html.link(_("Leave the Management Interface"), '/',
-                              hotkey="9")
-        elif node.config().doc:
-            ctrl = _html.link(_("Leave the Help System"), '/')
+        if config.wmi:
+            ctrl = g.link(_("Leave the Management Interface"), '/', hotkey="9")
+        elif config.doc:
+            ctrl = g.link(_("Leave the Help System"), '/')
         else:
-            ctrl = _html.link(_("Manage this site"), '/_wmi/',
-                              title=_("Enter the Wiking Management Interface"),
-                              hotkey="9")
+            ctrl = g.link(_("Manage this site"), '/_wmi/'+config.module.name(),
+                          title=_("Enter the Wiking Management Interface"),
+                          hotkey="9")
         ctrls += (ctrl, hidden("]"))
-        result += (_html.span(concat(ctrls, separator="\n"), cls="controls"),
-                   _html.span(_("Powered by %s %s",
-                                _html.link("Wiking",
-                                           "http://www.freebsoft.org/wiking"),
-                                wiking.__version__)))
+        result += (g.span(concat(ctrls, separator="\n"), cls="controls"),
+                   g.span(_("Powered by %s %s",
+                            _html.link("Wiking",
+                                       "http://www.freebsoft.org/wiking"),
+                            wiking.__version__)))
         return result
         
 
