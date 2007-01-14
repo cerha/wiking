@@ -1,3 +1,24 @@
+2007-01-14  Tomas Cerha  <cerha@brailcom.org>
+
+	* doc/src/admin/Pages.cs.txt: New file.
+
+	* doc/src/admin/Pages.en.txt: New file.
+
+	* lib/wiking/export.py (Exporter._wiking_bar): Let the WMI link
+	point directly to the current module.
+
+	* lib/wiking/handler.py (SiteHandler.handle): Add the current
+	module to node config.
+
+	* lib/wiking/module.py (WikingModule.name): New class method.
+	(WikingModule.Object.__str__, WikingModule.spec) 
+	(WikingModule.__init__, WikingModule._real_title) 
+	(WikingModule._link_provider, WikingModule.list): Use it.
+
+	* doc/src/admin/Content.en.txt: File removed.
+
+	* doc/src/admin/Content.cs.txt: File removed.
+
 2007-01-12  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/modules.py (Themes.COLORS): New colors for inactive
