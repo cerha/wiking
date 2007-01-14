@@ -2,7 +2,7 @@
 
 INSERT INTO languages (lang) VALUES ('en');
 
-INSERT INTO modules (name, active, ord) VALUES ('Content',     't', 10);
+INSERT INTO modules (name, active, ord) VALUES ('Pages',     't', 10);
 INSERT INTO modules (name, active, ord) VALUES ('News',        't', 20);
 INSERT INTO modules (name, active, ord) VALUES ('Planner',     't', 30);
 INSERT INTO modules (name, active, ord) VALUES ('Panels',      't', 40);
@@ -14,14 +14,14 @@ INSERT INTO modules (name, active, ord) VALUES ('Languages',   't', 90);
 
 INSERT INTO _mapping (identifier, mod_id, published, ord)
 VALUES ('index', 1, 't', 1);
-
 INSERT INTO _mapping (identifier, mod_id, published, ord)
 VALUES ('css', 7, 't', NULL);
 
-INSERT INTO content (mapping_id, lang, title, content)
-VALUES (1, 'en', 'Welcome',
+UPDATE pages SET title='Welcome', _content=
     'Your new Wiking site has been succesfully set up.\n\n' ||
-    'Enter the [/_wmi Wiking Management Interface] to manage the content.');
+    'Enter the [/_wmi Wiking Management Interface] to manage the content.'
+WHERE mapping_id=1 AND lang='en';
+UPDATE pages SET content=_content;
 
 INSERT INTO config (site_title) VALUES ('Wiking site');
 
