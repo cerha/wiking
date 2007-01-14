@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-01-12 13:35+0100\n"
+"POT-Creation-Date: 2007-01-14 07:34+0100\n"
 "PO-Revision-Date: 2007-01-12 13:43+0100\n"
 "Last-Translator: Tomas Cerha <cerha@brailcom.org>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -55,61 +55,61 @@ msgstr "Skrýt panely"
 msgid "Logged user"
 msgstr "Přihlášený uživatel"
 
-#: ../lib/wiking/export.py:155
+#: ../lib/wiking/export.py:157
 msgid "Leave the Management Interface"
 msgstr "Opustit rozhraní správy obsahu"
 
-#: ../lib/wiking/export.py:158
+#: ../lib/wiking/export.py:159
 msgid "Leave the Help System"
 msgstr "Opustit systém nápovědy"
 
-#: ../lib/wiking/export.py:160
+#: ../lib/wiking/export.py:161
 msgid "Manage this site"
 msgstr "Správa obsahu"
 
-#: ../lib/wiking/export.py:161
+#: ../lib/wiking/export.py:162
 msgid "Enter the Wiking Management Interface"
 msgstr "Vstoupit do rozhraní správy obsahu Wiking"
 
-#: ../lib/wiking/export.py:165
+#: ../lib/wiking/export.py:166
 #, python-format
 msgid "Powered by %s %s"
 msgstr "Provozováno na %s %s"
 
-#: ../lib/wiking/export.py:174
+#: ../lib/wiking/export.py:175
 #, python-format
 msgid "Last change: %s, %s"
 msgstr "Poslední změna: %s, %s"
 
-#: ../lib/wiking/export.py:190
+#: ../lib/wiking/export.py:191
 msgid "US Government Section 508 Accessibility Guidelines."
 msgstr "Sekce 508 směrnic pro zpřístupnění vydaných vládou USA"
 
-#: ../lib/wiking/export.py:194
+#: ../lib/wiking/export.py:195
 msgid "This site conforms to the following standards:"
 msgstr "Tento portál odpovídá následujícím standardům:"
 
-#: ../lib/wiking/export.py:195
+#: ../lib/wiking/export.py:196
 msgid "This site can be viewed in ANY browser."
 msgstr "Tato stránka může být používána v LIBOVOLNÉM prohlížeči."
 
-#: ../lib/wiking/export.py:196
+#: ../lib/wiking/export.py:197
 msgid "Accessibility Statement"
 msgstr "Prohlášení o zpřístupnění"
 
-#: ../lib/wiking/export.py:198
+#: ../lib/wiking/export.py:199
 msgid "Contact:"
 msgstr "Kontakt:"
 
-#: ../lib/wiking/handler.py:202
+#: ../lib/wiking/handler.py:203
 msgid "The requested object does not exist anymore!"
 msgstr "Požadovaný objekt již neexistuje!"
 
-#: ../lib/wiking/handler.py:228
+#: ../lib/wiking/handler.py:229
 msgid "Wiking Management Interface"
 msgstr "Rozhraní správy obsahu Wiking"
 
-#: ../lib/wiking/handler.py:229
+#: ../lib/wiking/handler.py:230
 msgid "Wiking Help System"
 msgstr "Nápověda systému Wiking"
 
@@ -117,7 +117,7 @@ msgstr "Nápověda systému Wiking"
 msgid "Edit"
 msgstr "Upravit"
 
-#: ../lib/wiking/module.py:28 ../lib/wiking/module.py:474
+#: ../lib/wiking/module.py:28 ../lib/wiking/module.py:478
 msgid "Remove"
 msgstr "Smazat"
 
@@ -149,43 +149,43 @@ msgstr "Záznam byl úspěšně aktualizován."
 msgid "The record was deleted."
 msgstr "Záznam byl odstraněn."
 
-#: ../lib/wiking/module.py:216
+#: ../lib/wiking/module.py:220
 msgid "Integrity check failed."
 msgstr "Kontrola integrity dat selhala."
 
-#: ../lib/wiking/module.py:394
+#: ../lib/wiking/module.py:398
 msgid "No records."
 msgstr "Žádné záznamy"
 
-#: ../lib/wiking/module.py:436
+#: ../lib/wiking/module.py:440
 msgid "Help"
 msgstr "Nápověda"
 
-#: ../lib/wiking/module.py:442
+#: ../lib/wiking/module.py:446
 msgid "more about RSS"
 msgstr "více o RSS"
 
-#: ../lib/wiking/module.py:443
+#: ../lib/wiking/module.py:447
 msgid "An RSS channel is available for this section:"
 msgstr "K dispozici je také RSS kanál pro tuto sekci:"
 
-#: ../lib/wiking/module.py:465
+#: ../lib/wiking/module.py:469
 msgid "new record"
 msgstr "nový záznam"
 
-#: ../lib/wiking/module.py:470
+#: ../lib/wiking/module.py:474
 msgid "edit form"
 msgstr "úpravy"
 
-#: ../lib/wiking/module.py:475
+#: ../lib/wiking/module.py:479
 msgid "Please, confirm removing the record permanently."
 msgstr "Potvrďte, prosím, nevratné smazání záznamu."
 
-#: ../lib/wiking/module.py:477
+#: ../lib/wiking/module.py:481
 msgid "removing"
 msgstr "mazání"
 
-#: ../lib/wiking/module.py:526
+#: ../lib/wiking/module.py:530
 msgid "Unable to delete record."
 msgstr "Nepodařilo se odstranit záznam."
 

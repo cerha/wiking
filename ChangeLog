@@ -1,5 +1,12 @@
 2007-01-14  Tomas Cerha  <cerha@brailcom.org>
 
+	* translations/wiking.*.po: Updated.
+
+	* lib/wiking/install.py: Add a button for initializing the
+	database after its creation.
+
+	* sql/init.sql: Modified according to the new DB schema.
+
 	* doc/src/admin/Pages.cs.txt: New file.
 
 	* doc/src/admin/Pages.en.txt: New file.

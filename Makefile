@@ -3,6 +3,10 @@ LIB = /usr/local/lib/python2.4/site-packages
 CFGFILE = /etc/wiking/config.py
 APACHECFG = /etc/apache2/conf.d/wiking
 
+# TODO: Test whether $(LIB) exists and is in sys.path.  
+# Refuse to install if not?
+export PYTHONPATH=$(LIB)
+
 .PHONY: translations doc
 
 doc: doc-en #doc-cs
@@ -12,7 +16,9 @@ doc-%:
 translations:
 	make -C translations
 
-install: $(APACHECFG) $(CFGFILE) $(SHARE)/wiking
+install: $(SHARE)/wiking copy_files $(APACHECFG) $(CFGFILE)
+
+copy_files:
 	cp -ruv doc resources sql translations $(SHARE)/wiking
 	cp -ruv lib/wiking $(LIB)
 
@@ -24,7 +30,7 @@ uninstall:
 purge: uninstall
 	rm -f $(CFGFILE)
 
-config_dir := $(shell dirname $(CFGFILE))
+config_dir = $(shell dirname $(CFGFILE))
 
 $(CFGFILE): $(config_dir)
 	@echo "Writing $(CFGFILE)"
@@ -46,13 +52,13 @@ $(APACHECFG):
 
 
 MIN_LCG_VERSION = "0.3.4"
-lcg_version := $(shell echo 'import lcg; print lcg.__version__' | python)
-lcg_version_cmp := $(shell echo 'import wiking; print \
+lcg_version = $(shell echo 'import lcg; print lcg.__version__' | python)
+lcg_version_cmp = $(shell echo 'import wiking; print \
 	wiking.cmp_versions("$(lcg_version)", $(MIN_LCG_VERSION))' | python)
 
 MIN_PYTIS_VERSION = "0.1.0"
-pytis_version := $(shell echo 'import pytis; print pytis.__version__' | python)
-pytis_version_cmp := $(shell echo 'import wiking; print \
+pytis_version = $(shell echo 'import pytis; print pytis.__version__' | python)
+pytis_version_cmp = $(shell echo 'import wiking; print \
 	wiking.cmp_versions("$(pytis_version)",$(MIN_PYTIS_VERSION))' | python)
 
 check_deps:
@@ -64,9 +70,9 @@ check_deps:
 		"but $(pytis_version) installed."; fi
 
 
-version := $(shell echo 'import wiking; print wiking.__version__' | python)
-dir := wiking-$(version)
-file := wiking-$(version).tar.gz
+version = $(shell echo 'import wiking; print wiking.__version__' | python)
+dir = wiking-$(version)
+file = wiking-$(version).tar.gz
 
 compile:
 	python -c "import compileall; compileall.compile_dir('lib')"
