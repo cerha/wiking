@@ -1,5 +1,5 @@
 # -*- coding: iso-8859-2 -*-
-# Copyright (C) 2006 Brailcom, o.p.s.
+# Copyright (C) 2006, 2007 Brailcom, o.p.s.
 # Author: Tomas Cerha <cerha@brailcom.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -36,7 +36,8 @@ def maybe_install(req, dbconnection, errstr):
                 conn = dbconnection.modified(database='template1')
                 err = _try_query(conn, create)
             if err is None:
-                return 'Database "%s" created.' % dbname
+                return 'Database "%s" created.' % dbname + \
+                       _button('initdb', "Initialize")
             elif err == 'ERROR:  permission denied to create database\n':
                 return ('The database user does not have permission to '
                         'create databases.  You need to create the '
