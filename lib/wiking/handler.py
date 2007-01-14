@@ -187,6 +187,7 @@ class SiteHandler(object):
         path = [item for item in req.uri.split('/')[1:] if item]
         req.wmi = wmi = path and path[0] == '_wmi'
         doc = path and path[0] == '_doc'
+        module = None
         try:
             #req.login(self._module('Users'))
             if doc:
@@ -236,6 +237,7 @@ class SiteHandler(object):
             config.show_panels = req.show_panels()
         config.wmi = wmi
         config.doc = doc
+        config.module = module
         config.user = req.user()
         node = result.mknode('/'.join(path), config, menu, panels, 
                              self._stylesheets(req, panels))
