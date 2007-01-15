@@ -1,3 +1,8 @@
+2007-01-15  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/export.py (Exporter.ctrl): Only use `config.module'
+	if it is available.
+
 2007-01-14  Tomas Cerha  <cerha@brailcom.org>
 
 	* translations/wiking.*.po: Updated.
