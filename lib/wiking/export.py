@@ -158,9 +158,9 @@ class Exporter(lcg.HtmlExporter):
         elif config.doc:
             ctrl = g.link(_("Leave the Help System"), '/')
         else:
-            ctrl = g.link(_("Manage this site"), '/_wmi/'+config.module.name(),
-                          title=_("Enter the Wiking Management Interface"),
-                          hotkey="9")
+            modname = config.module and config.module.name() or ''
+            ctrl = g.link(_("Manage this site"), '/_wmi/'+modname, hotkey="9",
+                          title=_("Enter the Wiking Management Interface"))
         ctrls += (ctrl, hidden("]"))
         result += (g.span(concat(ctrls, separator="\n"), cls="controls"),
                    g.span(_("Powered by %s %s",
