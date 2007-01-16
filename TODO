@@ -2,6 +2,10 @@ Core features:
 
  * Default language when Accept-Language is not set at all
 
+ * RSS meta tags.
+
+ * Indicate unpublished items in the Not Found error (or produce another error)
+
  * Browsing support for long lists (forward/backward movement)
 
  * Page preview in WMI
