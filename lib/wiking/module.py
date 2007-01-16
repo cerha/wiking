@@ -411,12 +411,16 @@ class WikingModule(object):
         items = []
         import mx.DateTime as dt
         config = self._module('Config').config(req.server, lang)
+        tr = translator(lang)
         for row in rows:
             prow.set_row(row)
-            title = escape(prow[self._RSS_TITLE_COLUMN].export())
+            title = escape(tr.translate(prow[self._RSS_TITLE_COLUMN].export()))
             uri = self._link_provider(row, col, base_uri, args=args)
-            descr = self._RSS_DESCR_COLUMN and \
-                    escape(prow[self._RSS_DESCR_COLUMN].export()) or None
+            if self._RSS_DESCR_COLUMN:
+                exported = prow[self._RSS_DESCR_COLUMN].export()
+                descr = escape(tr.translate(exported))
+            else:
+                descr = None
             if self._RSS_DATE_COLUMN:
                 v = prow[self._RSS_DATE_COLUMN].value()
                 date = dt.ARPA.str(v.localtime())
