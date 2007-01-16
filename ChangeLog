@@ -1,3 +1,8 @@
+2007-01-16  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/module.py (WikingModule.rss): Translate `title' and
+	`descr' fields before escaping.
+
 2007-01-15  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/export.py (Exporter.ctrl): Only use `config.module'
