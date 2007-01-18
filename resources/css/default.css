@@ -49,6 +49,8 @@ a:hover.backref { color: $color.foreground; }
 
 .hidden { display: none; }
 
+img { position: relative; } /* MSIE float workaround */
+
 /* Page layout */
 
 #top { 
