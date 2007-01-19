@@ -1,3 +1,13 @@
+2007-01-19  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/module.py (WikingModule._validate)
+	(WikingModule._get_row_by_key): Use only the last value of the
+	parameter, it it is a tuple.
+
+	* lib/wiking/request.py (Request._init_params.init_value): New
+	function.
+	(Request._init_params): Use it.
+
 2007-01-18  Tomas Cerha  <cerha@brailcom.org>
 
 	* resources/css/default.css (Module): Added MSIE workaround for
