@@ -310,7 +310,10 @@ class WikingModule(object):
             kc = c.id()
             if not params.has_key(kc):
                 return None
-            value, error = c.type().validate(params[kc])
+            v = params[kc]
+            if isinstance(v, tuple):
+                v = v[-1]
+            value, error = c.type().validate(v)
             if error:
                 raise error
             key.append(value)
