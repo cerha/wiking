@@ -189,6 +189,8 @@ class WikingModule(object):
             type = f.type(self._data)
             if req.params.has_key(id):
                 strvalue = req.params[id]
+                if isinstance(strvalue, tuple):
+                    strvalue = strvalue[-1]
             elif isinstance(type, pd.Boolean):
                 strvalue = "F"
             else:
