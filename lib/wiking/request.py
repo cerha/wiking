@@ -1,4 +1,4 @@
-# Copyright (C) 2006 Brailcom, o.p.s.
+# Copyright (C) 2006, 2007 Brailcom, o.p.s.
 # Author: Tomas Cerha <cerha@brailcom.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -46,9 +46,15 @@ class Request(object):
         self.options = dict([(o, options[o]) for o in options.keys()])
 
     def _init_params(self):
+        def init_value(value):
+            if isinstance(value, (tuple, list)):
+                tuple([init_value(v) for v in value])
+            elif isinstance(value, mod_python.util.Field):
+                return value
+            else:
+                return unicode(value, self._encoding)
         fields = mod_python.util.FieldStorage(self._req)
-        return dict([(k, unicode(fields[k], self._encoding))
-                     for k in fields.keys()])
+        return dict([(k, init_value(fields[k])) for k in fields.keys()])
 
     def _init_uri(self):
         return self._req.uri
