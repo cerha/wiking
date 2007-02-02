@@ -213,8 +213,7 @@ class WikingModule(object):
             return None, errors
         else:
             row = pytis.data.Row(rdata)
-            check = self._view.check()
-            if check:
+            for check in self._view.check():
                 prow = pp.PresentedRow(self._view.fields(), self._data, row)
                 result = check(prow)
                 if result:
