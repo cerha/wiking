@@ -2,6 +2,8 @@ Core features:
 
  * Default language when Accept-Language is not set at all
 
+ * Locking
+
  * RSS meta tags.
 
  * Indicate unpublished items in the Not Found error (or produce another error)
@@ -19,8 +21,6 @@ Core features:
  * Content management controls outside wmi (when authorized)
 
  * Change log and Last-Modified HTTP header support
-
- * Locking
 
  * META tags pointing to language variants
 
