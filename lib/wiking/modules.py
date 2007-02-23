@@ -19,8 +19,9 @@
 
 from wiking import *
 
+import mx.DateTime
 from pytis.presentation import Computer, CbComputer
-from mx.DateTime import now, today, TimeDelta
+from mx.DateTime import today, TimeDelta
 from lcg import _html
 import re, types
 
@@ -29,8 +30,11 @@ ALPHANUMERIC = pp.TextFilter.ALPHANUMERIC
 LOWER = pp.PostProcess.LOWER
 ONCE = pp.Editable.ONCE
 NEVER = pp.Editable.NEVER
+ALWAYS = pp.Editable.ALWAYS
 ASC = pd.ASCENDENT
 DESC = pd.DESCENDANT
+MB = 1024**2
+now = lambda: mx.DateTime.now().gmtime()
 
 _ = lcg.TranslatableTextFactory('wiking')
 
@@ -45,53 +49,9 @@ def _modtitle(m):
 # thus should not appear in the module selection for the Mapping items.
 # It should be considered a temporary hack, but the list should be maintained.
 _SYSMODULES = ('Languages', 'Modules', 'Config', 'Mapping','Panels', 'Titles')
-
-class Publishable(object):
-    "Mix-in class for modules where the records can be published/unpublished."
-    _MSG_PUBLISHED = _("The item was published.")
-    _MSG_UNPUBLISHED = _("The item was unpublished.")
-
-    def _change_published(row):
-        data = row.data()
-        key = [row[c.id()] for c in data.key()]
-        values = data.make_row(published=not row['published'].value())
-        data.update(key, values)
-    _change_published = staticmethod(_change_published)
-    
-    _ACTIONS = (Action(_("Publish"), 'publish',
-                       handler=lambda r: Publishable._change_published(r),
-                       enabled=lambda r: not r['published'].value()),
-                Action(_("Unpublish"), 'unpublish',
-                       handler=lambda r: Publishable._change_published(r),
-                       enabled=lambda r: r['published'].value()),
-                )
-    
-    def publish(self, req, object, publish=True):
-        err, msg = (None, None)
-        #log(OPR, "Publishing item:", str(object))
-        try:
-            if publish != object['published']:
-                Publishable._change_published(object.prow())
-            object.reload()
-            msg = publish and self._MSG_PUBLISHED or self._MSG_UNPUBLISHED
-        except pd.DBException, e:
-            err = self._analyze_exception(e)
-        action = req.wmi and self.show or self.view
-        return action(req, object, msg=msg, err=err)
-
-    def unpublish(self, req, object):
-        return self.publish(req, object, publish=False)
-
-
-    
-class Translatable(object):
-    _ACTIONS = (Action(_("Translate"), 'translate'),)
-    def translate(self, req, object):
-        prefill = [(k, object.export(k)) for k in object.keys() if k != 'lang']
-        return self.add(req, prefill=dict(prefill))
-    
-    
+  
 class Modules(WikingModule):
+    """This module allows management of available modules in WMI"""
     class Spec(pp.Specification):
         class _ModNameType(pd.String):
             VM_UNKNOWN_MODULE = 'VM_UNKNOWN_MODULE'
@@ -117,9 +77,7 @@ class Modules(WikingModule):
         layout = ('name', 'active', 'ord')
         sorting = (('ord', ASC),)
         cb = pp.CodebookSpec(display=(_modtitle, 'name'))
-    
     _REFERER = 'name'
-    _TITLE_COLUMN = 'title'
     
     def menu(self, prefix):
         modules = [str(r['name'].value()) for r in
@@ -157,7 +115,7 @@ class Mapping(WikingModule, Publishable):
         columns = ('identifier', 'modtitle', 'published', 'ord')
         layout = ('identifier', 'mod_id', 'published', 'ord')
         cb = pp.CodebookSpec(display='identifier')
-    _REFERER = _TITLE_COLUMN = 'identifier'
+    _REFERER = 'identifier'
 
     def _link_provider(self, row, col, uri, wmi=False, args=()):
         if wmi and col.id() == 'modtitle':
@@ -193,7 +151,6 @@ class Mapping(WikingModule, Publishable):
             return titles.get(key, row['identifier'].value())
         else:
             return _modtitle(modname)
-        
 
 
 class Config(WikingModule):
@@ -271,13 +228,12 @@ class Panels(WikingModule, Publishable, Translatable):
                                     depends=('modname',))),
             Field('size', _("Items count"), width=5),
             Field('content', _("Content"), width=50, height=10),
-            Field('published', _("Published"), default=lambda : True),
+            Field('published', _("Published"), default=True),
             )
         sorting = (('ord', ASC),)
         columns = ('title', 'ord', 'modtitle', 'size', 'published')
         layout = ('lang', 'ptitle', 'ord',  'mapping_id', 'size',
                   'content', 'published')
-    _TITLE_COLUMN = 'title'
     _LIST_BY_LANGUAGE = True
 
     def panels(self, lang):
@@ -314,7 +270,7 @@ class Languages(WikingModule):
         cb = pp.CodebookSpec(display=lcg.language_name)
         layout = ('lang',)
         columns = ('lang', 'name')
-    _REFERER = _TITLE_COLUMN = 'lang'
+    _REFERER = 'lang'
 
     def languages(self):
         return [str(r['lang'].value()) for r in self._data.get_rows()]
@@ -337,7 +293,6 @@ class Titles(WikingModule, Translatable):
         layout = ('mapping_id', 'lang', 'title')
         sorting = (('mapping_id', ASC), ('lang', ASC))
 
-    _TITLE_COLUMN = 'identifier'
     _LIST_BY_LANGUAGE = True
     _EXCEPTION_MATCHERS = (
         ('duplicate key violates unique constraint "titles_mapping_id_key"',
@@ -418,8 +373,6 @@ class Themes(WikingModule):
         columns = ('name',)
         cb = pp.CodebookSpec(display='name')
         
-    _TITLE_COLUMN = 'name'
-
     def theme(self, theme_id):
         if theme_id is not None:
             row = self._data.get_row(theme_id=theme_id)
@@ -436,8 +389,8 @@ class Themes(WikingModule):
 class Pages(WikingModule): #, Publishable, Translatable
     class Spec(pp.Specification):
         title = _("Pages")
-        key = ('mapping_id', 'lang')
         def fields(self): return (
+            Field('page_id'),
             Field('mapping_id'),
             Field('lang', _("Language"), codebook='Languages', editable=ONCE,
                   selection_type=CHOICE, value_column='lang'),
@@ -468,7 +421,6 @@ class Pages(WikingModule): #, Publishable, Translatable
         cb = pp.CodebookSpec(display='identifier')
     
     _REFERER = 'identifier'
-    _TITLE_COLUMN = 'title_'
     _EXCEPTION_MATCHERS = (
         ('duplicate key violates unique constraint "_pages_mapping_id_key"',
          _("The page already exists in given language.")),) + \
@@ -566,49 +518,37 @@ class News(WikingModule, Translatable):
         def fields(self): return (
             Field('news_id', editable=NEVER),
             Field('timestamp', _("Date"), width=19, type=DateTime(),
-                  default=lambda: now().gmtime()),
+                  default=now),
             Field('date', _("Date"), virtual=True,
                   computer=Computer(self._date, depends=('timestamp',))),
             Field('lang', _("Language"), codebook='Languages', editable=ONCE,
                   selection_type=CHOICE, value_column='lang'),
             Field('title', _("Briefly"), column_label=_("Message"), width=32),
-            Field('content', _("Text"), height=3, width=60))
+            Field('content', _("Text"), height=3, width=60),
+            Field('date_title', virtual=True,
+                  computer=Computer(self._date_title,
+                                    depends=('date', 'title'))))
         sorting = (('timestamp', DESC),)
         columns = ('title', 'date')
         layout = ('lang', 'timestamp', 'title', 'content')
         def _date(self, row):
             return row['timestamp'].export(show_time=False)
+        def _date_title(self, row):
+            return row['date'].export() +': '+ row['title'].value()
         
-    _TITLE_COLUMN = 'title'
     _LIST_BY_LANGUAGE = True
     _PANEL_FIELDS = ('date', 'title')
     _RSS_TITLE_COLUMN = 'title'
     _RSS_DESCR_COLUMN = 'content'
     _RSS_DATE_COLUMN = 'timestamp'
-    
-    class View(WikingModule.GenericView):
-        def export(self, exporter):
-            date = concat(_("Date"), ': ', self._object.export('timestamp'))
-            text = self._export_structured_text(self._object['content'],
-                                                exporter)
-            return _html.div((_html.div(date, cls='date'), text),
-                             cls='news-item')
-
-    class ListView(WikingModule.GenericListView):
-        def _export_row(self, exporter, row):
-            name = 'item-' + row[self._view.fields()[0].id()].export()
-            h = concat(row['date'].export(), ': ', row['title'].export())
-            text = row['content'].value()
-            r = (_html.div(_html.link(h,None, name=name), cls='list-heading'),)
-            if text:
-                r += (_html.div(self._export_structured_text(text, exporter),
-                                cls='list-body'),)
-            return r
+    _CUSTOM_VIEW = CustomViewSpec(('date_title', 'content'), anchor="item-%s",
+                                  formatted_fields=('content',),
+                                  custom_list=True)
         
     def _link_provider(self, row, col, uri, wmi=False, args=()):
         if not wmi and col.id() == 'title':
             return _html.uri(uri, *args) +'#item-'+ row[self._referer].export()
-        else:
+        elif wmi:
             return super(News, self)._link_provider(row, col, uri, wmi=wmi,
                                                     args=args)
 
@@ -627,10 +567,10 @@ class Planner(News):
             Field('lang', _("Language"), codebook='Languages', editable=ONCE,
                   selection_type=CHOICE, value_column='lang'),
             Field('title', _("Briefly"), column_label=_("Event"), width=32),
-            Field('rss_title', virtual=True,
-                  computer=Computer(self._rss_title,
-                                    depends=('title', 'date',))),
-            Field('content', _("Text"), height=3, width=60))
+            Field('content', _("Text"), height=3, width=60),
+            Field('date_title', virtual=True,
+                  computer=Computer(self._date_title,
+                                    depends=('date', 'title'))))
         sorting = (('start_date', ASC),)
         columns = ('date', 'title')
         layout = ('lang', 'start_date', 'end_date', 'title', 'content')
@@ -642,7 +582,7 @@ class Planner(News):
             if row['end_date'].value():
                 d += ' - ' + row['end_date'].export(show_weekday=True)
             return d
-        def _rss_title(self, row):
+        def _date_title(self, row):
             return row['date'].export() +': '+ row['title'].value()
         def check(self, row):
             end = row['end_date'].value()
@@ -652,8 +592,60 @@ class Planner(News):
     def _condition(self):
         return pd.OR(pd.GE('start_date', pd.Value(pd.Date(), today())),
                      pd.GE('end_date', pd.Value(pd.Date(), today())))
-    _RSS_TITLE_COLUMN = 'rss_title'
+    _RSS_TITLE_COLUMN = 'date_title'
     _RSS_DATE_COLUMN = None
+
+
+class Images(WikingModule):
+    class Spec(pp.Specification):
+        title = _("Images")
+        def fields(self):
+            def fcomp(ffunc):
+                def func(row):
+                    file = row['file'].value()
+                    return file and ffunc(file) or None
+                return Computer(func, depends=('file',))
+            def imgcomp(imgfunc):
+                return fcomp(lambda f: imgfunc(f.image()))
+            return (
+            Field('image_id'),
+            Field('published'),
+            Field('file', _("File"), virtual=True, editable=ALWAYS,
+                  type=pd.Image(not_null=True, maxlen=3*MB,
+                                maxsize=(3000, 3000)),
+                  computer=Computer(self._image, depends=())
+                  ),
+            Field('title', _("Title"), width=30),
+            Field('author', _("Author"), width=30),
+            Field('location', _("Location"), width=50),
+            Field('description', _("Description"), width=80, height=5),
+            Field('taken', _("Date of creation"), type=DateTime()),
+            Field('width', _("Width"), computer=imgcomp(lambda i: i.size[0])),
+            Field('height', _("Height"), computer=imgcomp(lambda i: i.size[1])),
+            Field('size', _("Pixel size"),
+                  computer=imgcomp(lambda i: '%dx%d' % i.size)),
+            Field('bytesize', _("Byte size"),
+                  computer=fcomp(lambda f: pp.format_byte_size(len(f)))),
+            Field('filename',
+                  computer=fcomp(lambda f: f.filename())),
+            Field('exif'),
+            Field('timestamp', default=now),
+            )
+        def _image(self, row):
+            result = row['file'].value()
+            if result is None:
+                type = row['file'].type()
+                value, error = type.validate('/home/cerha/p1000561.jpg',
+                                             filename=row['filename'].value(),
+                                             strict=False)
+                if not error:
+                    result = value.value()
+            return result
+        layout = ('file', 'title', 'author', 'location', 'taken',
+                  'description')
+        columns = ('filename', 'title', 'author', 'location', 'taken',
+                   'description')
+    
     
 class Stylesheets(WikingModule):
     class Spec(pp.Specification):
@@ -668,7 +660,7 @@ class Stylesheets(WikingModule):
         layout = ('identifier', 'active', 'description', 'content')
         columns = ('identifier', 'active', 'description')
         
-    _REFERER = _TITLE_COLUMN = 'identifier'
+    _REFERER = 'identifier'
     _MATCHER = re.compile(r"\$(\w[\w-]*)(?:\.(\w[\w-]*))?")
 
     def _subst(self, theme, name, key):
@@ -693,7 +685,7 @@ class Stylesheets(WikingModule):
         theme = self._module('Config').theme()
         f = lambda m: self._subst(theme, *m.groups())
         return ('text/css', self._MATCHER.sub(f, content))
-    
+
 
 class Users(WikingModule):
     class Spec(pp.Specification):
@@ -739,7 +731,6 @@ class Users(WikingModule):
                   'nickname', 'email', 'phone', 'address', 'uri')
     _REFERER = 'login'
     _PANEL_FIELDS = ('fullname',)
-    _TITLE_COLUMN = 'fullname'
 
     def _user(self, row):
         return pp.PresentedRow(self._view.fields(), self._data, row)
@@ -753,15 +744,15 @@ class Users(WikingModule):
 
     def check_session(self, login, session_key):
         user = self._data.get_row(login=login, session_key=session_key)
-        if user and user['session_expire'].value() > now().gmtime():
-            expire = now().gmtime() + TimeDelta(hours=1)
+        if user and user['session_expire'].value() > now():
+            expire = now() + TimeDelta(hours=1)
             self._update(user, session_expire=expire)
             return self._user(user)
         else:
             return  None
 
     def save_session(self, user, session_key):
-        expire = now().gmtime() + TimeDelta(hours=1)
+        expire = now() + TimeDelta(hours=1)
         self._update(user, session_expire=expire, session_key=session_key)
 
     def close_session(self, user):
