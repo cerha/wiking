@@ -29,19 +29,31 @@ else:
 import random
 import Cookie
 
+
 class Request(object):
     """Generic convenience wrapper for the Apache request object."""
+    class _FileUpload(FileUpload):
+        """Mod_python specific implementation of the FileUpload class."""
+        def __init__(self, field):
+            self._field = field
+        def file(self):
+            return self._field.file
+        def filename(self):
+            return self._field.filename
+        def type(self):
+            return self._field.type
+    
     OK = apache.OK
     _UNIX_NEWLINE = re.compile("(?<!\r)\n")
     
     def __init__(self, req, encoding='utf-8'):
         self._req = req
         self._encoding = encoding
-        # Store request data in real dictionaries.
         self.get_remote_host = req.get_remote_host
         self.server = req.server
-        self.params = self._init_params()
         self.uri = self._init_uri()
+        # Store request data in real dictionaries.
+        self.params = self._init_params()
         options = req.get_options()
         self.options = dict([(o, options[o]) for o in options.keys()])
 
@@ -50,7 +62,7 @@ class Request(object):
             if isinstance(value, (tuple, list)):
                 tuple([init_value(v) for v in value])
             elif isinstance(value, mod_python.util.Field):
-                return value
+                return self._FileUpload(value)
             else:
                 return unicode(value, self._encoding)
         fields = mod_python.util.FieldStorage(self._req)
