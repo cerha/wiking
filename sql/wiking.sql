@@ -105,8 +105,8 @@ CREATE TABLE _pages (
 ) WITH OIDS;
 
 CREATE OR REPLACE VIEW pages AS 
-SELECT p.oid, m.mapping_id, l.lang, m.identifier, t.title,
-       p._content, p.content
+SELECT p.oid, m.mapping_id ||'.'|| l.lang as page_id, m.mapping_id, l.lang,
+       m.identifier, t.title, p._content, p.content
 FROM _mapping m CROSS JOIN languages l JOIN modules USING (mod_id)
      LEFT OUTER JOIN _pages p USING (mapping_id, lang)
      LEFT OUTER JOIN titles t USING (mapping_id, lang)
@@ -215,6 +215,25 @@ CREATE TABLE planner (
 	title text NOT NULL,
 	content text,
 	UNIQUE (start_date, lang, title)
+) WITH OIDS;
+
+-------------------------------------------------------------------------------
+
+CREATE TABLE images (
+       	image_id serial PRIMARY KEY,
+	filename varchar(64) UNIQUE NOT NULL,
+	published boolean NOT NULL DEFAULT 'TRUE',
+	width int NOT NULL,
+	height int NOT NULL,
+	"size" text NOT NULL,
+	bytesize text NOT NULL,
+	title text NOT NULL,
+	author text,
+	"location" text,
+	description text,
+	taken timestamp,
+	exif text,
+	"timestamp" timestamp NOT NULL DEFAULT now()
 ) WITH OIDS;
 
 -------------------------------------------------------------------------------
