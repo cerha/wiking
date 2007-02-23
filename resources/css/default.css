@@ -223,7 +223,7 @@ form.show-form fieldset.body, form.edit-form fieldset.body,
 form.edit-form fieldset.submit, form.login-form fieldset.body { 
     background: $color.frame-bg;
     border: 1px solid $color.frame-border;
-    border-width: 1px 0;;
+    border-width: 1px 0;
     margin: 0;
 }
 form.edit-form fieldset.submit { 
@@ -283,10 +283,10 @@ p.actions a.inactive, p.actions a.inactive:hover {
     border-color: $color.button-inactive-border;
 }
 
-div.list-view div.list-item {
+div.list-view div.view-item {
     margin: 1em 0;
 }
-div.list-view div.list-item div.list-heading {
+div.view-item div.item-heading {
     background: $color.heading-bg;
     border: solid $color.heading-line;
     border-width: 1px 0;
@@ -294,7 +294,7 @@ div.list-view div.list-item div.list-heading {
     margin: 0;
     padding: 0 0.3em;
 }
-div.list-view div.list-item div.list-body {
+div.view-item div.item-body {
     background: $color.frame-bg;
     border: solid $color.frame-border;
     border-width: 0 0 1px 0;
