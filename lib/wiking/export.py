@@ -48,13 +48,9 @@ class Exporter(lcg.HtmlExporter):
         return _html.div(part, id=name)
     
     def _head(self, node):
-        items = ['<link rel="stylesheet" type="text/css" href="%s">' % \
-                 stylesheet for stylesheet in node.stylesheets()]
-        #rss = node.config().rss
-        #if rss:
-        #    items.append('<link rel="alternate" type="application/rss+xml" '
-        #                 'title="%s" href="%s"/>' % (node.title(), rss))
-        x = "\n".join(items)
+        styles = ['<link rel="stylesheet" type="text/css" href="%s">' % \
+                  stylesheet for stylesheet in node.stylesheets()]
+        x = "\n".join(styles)
         return concat(super(Exporter, self)._head(node), x, separator='\n  ')
     
     def _top(self, node):
