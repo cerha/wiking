@@ -198,6 +198,18 @@ class Unauthorized(HttpError):
     def title(self):
         return _("Authentication required")
 
+class FileUpload(object):
+    """An abstract class for accessing uploaded file fields."""
+
+    def file(self):
+        """Return a file-like object from which the data may be read."""
+        
+    def filename(self):
+        """Return the original filename as a string"""
+        
+    def type(self):
+        """Return the mime type provided byt he UA as a string"""
+
 # ============================================================================
 
 class MenuItem(object):
@@ -333,6 +345,82 @@ class PanelItem(lcg.Content):
                             cls="panel-field-"+id)
                  for id, value, uri in self._fields]
         return _html.div(items, cls="item")
+
+
+class CustomViewSpec(object):
+    def __init__(self, divs, anchor=None, labeled_fields=(),
+                 formatted_fields=(), custom_list=False, cls='view-item'):
+        self._divs = divs
+        self._anchor = anchor
+        self._labeled_fields = labeled_fields
+        self._formated_fields = formatted_fields
+        self._custom_list = custom_list
+        self._cls = cls
+    def divs(self):
+        return self._divs
+    def anchor(self):
+        return self._anchor
+    def formatted_fields(self):
+        return self._formated_fields
+    def labeled_fields(self):
+        return self._labeled_fields
+    def custom_list(self):
+        return self._custom_list
+    def cls(self):
+        return self._cls
+
+    
+class _CustomView(object):
+    """Base class for custom view classes."""
+    def __init__(self, custom_spec=None):
+        self._custom_spec = custom_spec
+        if custom_spec:
+            self._override()
+        
+    def _export_structured_text(self, text, exporter):
+        content = lcg.Container(lcg.Parser().parse(text))
+        content.set_parent(self.parent())
+        return content.export(exporter)
+    
+    def _export_row_custom(self, exporter, row):
+        spec = self._custom_spec
+        parts = []
+        formatted = spec.formatted_fields()
+        labeled = spec.labeled_fields()
+        for id in spec.divs():
+            content = self._row[id].export()
+            if id in formatted:
+                content = self._export_structured_text(content, exporter)
+            # We can't use join to preserve TranslatableText instances.
+            if id in labeled:
+                content = self._view.field(id).label() + ": " + content
+            if not parts and spec.anchor(): # Make the first part a link target.
+                name = spec.anchor() % row[self._data.key()[0].id()].export()
+                content = _html.link(content, None, name=name)
+                cls = 'item-heading'
+            else:
+                cls = 'item-body'
+            parts.append(_html.div(content, cls=cls+' '+id))
+        return _html.div(parts, cls=spec.cls())
+
+    
+class RecordView(pw.ShowForm, _CustomView):
+    """Content element class showing one record of a module."""
+    
+    def _override(self):
+        self.export = lambda e: self._export_row_custom(e, self._row)
+        
+    
+class ListView(pw.BrowseForm, _CustomView):
+    """Content element class showing list of records of a module."""
+
+    def _override(self):
+        if self._custom_spec.custom_list():
+            self._wrap_exported_rows = self._wrap_exported_rows_custom
+            self._export_row = self._export_row_custom
+        
+    def _wrap_exported_rows_custom(self, rows):
+        return _html.div(rows, cls="list-view")
 
     
 class Message(lcg.TextContent):
