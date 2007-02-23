@@ -21,7 +21,6 @@ from wiking import *
 def maybe_install(req, dbconnection, errstr):
     """Check a DB error string and try to set it up if it is the problem.
 
-
     """
     dbname = dbconnection.database()
     if errstr == 'FATAL:  database "%s" does not exist\n' % dbname:
@@ -75,20 +74,20 @@ def maybe_install(req, dbconnection, errstr):
 
     
 def _try_query(dbconnection, query):
-    from pyPgSQL import libpq 
-    from pytis.data import dbdata
+    from pytis.data import dbapi
+    a = dbapi._DBAPIAccessor()
     try:
-        conn = dbdata._pypg_new_connection(dbconnection, None)
+        conn = a._postgresql_open_connection(dbconnection).connection()
     except pd.DBException, e:
         if e.exception() and e.exception().args:
             return e.exception().args[0]
     try:
         try:
-            conn.query(query)
-        except libpq.OperationalError, e:
+            conn.cursor().execute(query)
+        except pd.DBException, e:
             return e.args[0]
     finally:
-        conn.finish()
+        conn.close()
     return None
 
 def _button(param, label):
