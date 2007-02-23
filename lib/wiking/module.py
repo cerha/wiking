@@ -1,4 +1,3 @@
-# -*- coding: iso-8859-2 -*-
 # Copyright (C) 2005, 2006, 2007 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
@@ -20,7 +19,7 @@ from wiking import *
 
 _ = lcg.TranslatableTextFactory('wiking')
 
-class WikingModule(object):
+class Module(object):
     _REFERER = None
     _TITLE_COLUMN = None
     _LIST_BY_LANGUAGE = False
@@ -29,11 +28,6 @@ class WikingModule(object):
                                Action(_("List"), 'list', context=None),)
     _LIST_ACTIONS = (Action(_("New record"), 'add', context=None),)
     _EDIT_LABEL = None
-    _RSS_TITLE_COLUMN = None
-    _RSS_DESCR_COLUMN = None
-    _RSS_DATE_COLUMN = None
-    _PANEL_DEFAULT_COUNT = 3
-    _PANEL_FIELDS = None
     
     _EXCEPTION_MATCHERS = (
         ('duplicate key violates unique constraint ' + \
@@ -46,10 +40,13 @@ class WikingModule(object):
     _INSERT_MSG = _("New record was successfully inserted.")
     _UPDATE_MSG = _("The record was successfully updated.")
     _DELETE_MSG = _("The record was deleted.")
+    _CUSTOM_VIEW = None
     
     _spec_cache = {}
     
     class Object(object):
+        # This was meant as an encapsulation of one record within the module,
+        # but proved not to be really unuseful.  Most likely will be removed.
         def __init__(self, module, view, data, row):
             self._module = module
             self._data = data
@@ -59,11 +56,10 @@ class WikingModule(object):
             return self._prow[key].value()
 
         def __str__(self):
-            keys = ["%s=%s" % (c.id(), self._prow[c.id()].export())
-                    for c in self._data.key()]
-            return "<%s module=%s %s>" % (self.__class__.__name__,
-                                          self._module.name(),
-                                          " ".join(keys))
+            key = self._data.key()[0].id()
+            return "<%s module=%s %s=%s>" % (self.__class__.__name__,
+                                             self._module.name(), key,
+                                             self._prow[key].export())
 
         def export(self, key):
             return self._prow[key].export()
@@ -72,7 +68,7 @@ class WikingModule(object):
             return self._prow.keys()
 
         def key(self):
-            return [self._prow[c.id()] for c in self._data.key()]
+            return (self._prow[self._data.key()[0].id()],)
 
         def row(self):
             return self._prow.row()
@@ -92,38 +88,9 @@ class WikingModule(object):
             self.reload()
             return None
 
-    class _GenericView(object):
-        def _export_structured_text(self, text, exporter):
-            content = lcg.Container(lcg.Parser().parse(text))
-            content.set_parent(self.parent())
-            return content.export(exporter)
-            
-    class View(pw.ShowForm):
-        def __init__(self, data, view, resolver, object):
-            row = object.row()
-            pw.ShowForm.__init__(self, data, view, resolver, row)
-
-    class GenericView(lcg.Content, _GenericView):
-        def __init__(self, data, view, object):
-            self._data = data
-            self._view = view
-            self._object = object
-            lcg.Content.__init__(self)
-            
-    class ListView(pw.BrowseForm):
-        def __init__(self, data, view, resolver, rows, link_provider):
-            pw.BrowseForm.__init__(self, data, view, resolver, rows,
-                                   link_provider=link_provider)
-
-    class GenericListView(ListView, _GenericView):
-        def _wrap_exported_rows(self, rows):
-            from lcg import _html
-            rows = [_html.div(row, cls='list-item') for row in rows]
-            return _html.div(rows, cls="list-view")
-
     def spec(cls, resolver):
         try:
-            spec = WikingModule._spec_cache[cls]
+            spec = Module._spec_cache[cls]
         except KeyError:
             if cls.Spec.table is None:
                 table = pytis.util.camel_case_to_lower(cls.name(), '_')
@@ -139,7 +106,7 @@ class WikingModule(object):
                             cls.Spec.actions.append(action)
             cls.Spec.actions = tuple(cls.Spec.actions)
             cls.Spec.data_cls = Data
-            spec = WikingModule._spec_cache[cls] = cls.Spec(resolver)
+            spec = Module._spec_cache[cls] = cls.Spec(resolver)
         return spec
     spec = classmethod(spec)
 
@@ -156,17 +123,15 @@ class WikingModule(object):
         spec = self.spec(resolver)
         self._data = spec.data_spec().create(dbconnection_spec=dbconnection)
         self._view = spec.view_spec()
-        key = self._data.key()
+        key = self._data.key()[0].id()
         self._sorting = self._view.sorting()
         if self._sorting is None:
-            self._sorting = [(c.id(), pytis.data.ASCENDENT) for c in key]
+            self._sorting = ((key, pytis.data.ASCENDENT),)
         self._exception_matchers = [(re.compile('ERROR:  '+regex+'\n'), msg)
                                     for regex, msg in self._EXCEPTION_MATCHERS]
-        self._referer = self._REFERER
-        if not self._referer and len(key) == 1:
-            self._referer = key[0].id()
-        if self._referer:
-            self._referer_type = self._data.find_column(self._referer).type()
+        self._referer = self._REFERER or key
+        self._referer_type = self._data.find_column(self._referer).type()
+        self._title_column = self._TITLE_COLUMN or self._view.columns()[0]
         #log(OPR, 'New module instance: %s[%x]' % (self.name(),
         #                                          lcg.positive_id(self)))
 
@@ -174,28 +139,36 @@ class WikingModule(object):
         lang = req.prefered_language(self._module('Languages').languages())
         return lcg.datetime_formats(translator(lang))
         
-    def _validate(self, req, new=False):
-        rdata = []
+    def _validate(self, req, row=None):
+        if row is None:
+            row = pp.PresentedRow(self._view.fields(), self._data, None,
+                                  new=True)
         errors = []
-        kc = [c.id() for c in self._data.key()]
         for id in self._view.layout().order():
-            if id in kc and not new:
+            if not row.editable(id):
                 continue
-            f = self._view.field(id)
-            editable = f.editable()
-            if editable == pp.Editable.NEVER or \
-                   (editable == pp.Editable.ONCE and not new):
-                continue
-            type = f.type(self._data)
-            if req.params.has_key(id):
-                strvalue = req.params[id]
-                if isinstance(strvalue, tuple):
-                    strvalue = strvalue[-1]
-            elif isinstance(type, pd.Boolean):
-                strvalue = "F"
-            else:
-                strvalue = ""
+            type = row[id].type()
             kwargs = {}
+            if req.params.has_key(id):
+                value_ = req.params[id]
+                if isinstance(value_, tuple):
+                    value_ = value_[-1]
+                elif isinstance(value_, FileUpload):
+                    if isinstance(type, pd.Binary):
+                        if value_.filename():
+                            kwargs['filename'] = value_.filename()
+                            kwargs['type'] = value_.type()
+                            value_ = value_.file()
+                        else:
+                            value_ = None
+                    else:
+                        value_ = value_.filename()
+            elif isinstance(type, pd.Boolean):
+                value_ = "F"
+            elif isinstance(type, pd.Binary):
+                value_ = None
+            else:
+                value_ = ""
             if isinstance(type, (Date, DateTime)):
                 formats = self._datetime_formats(req)
                 format = formats['date']
@@ -203,24 +176,29 @@ class WikingModule(object):
                     tf = type.is_exact() and 'exact_time' or 'time'
                     format += ' ' + formats[tf]
                 kwargs['format'] = format
-            value, error = type.validate(strvalue, **kwargs)
-            #log(OPR, "Validation:", (id, strvalue, kwargs, error))
+            if isinstance(type, pd.Binary) and not value_ and not row.new():
+                continue # Keep the original file if no file is uploaded.
+            value, error = type.validate(value_, **kwargs)
+            #log(OPR, "Validation:", (id, type.not_null(), value_, kwargs, error))
             if error:
                 errors.append((id, error.message()))
             else:
-                rdata.append((id, value))
+                #log(OPR, "---:", (id, value.value()))
+                row[id] = value
+                #log(OPR, ">>>:", (id, row[id].value()))
         if errors:
             return None, errors
         else:
-            row = pytis.data.Row(rdata)
             for check in self._view.check():
-                prow = pp.PresentedRow(self._view.fields(), self._data, row)
-                result = check(prow)
+                result = check(row)
                 if result:
                     if not isinstance(result, (list, tuple)):
-                        retult = (result, _("Integrity check failed."))
+                        result = (result, _("Integrity check failed."))
                     return None, (result,)
-            return row, None
+            key = self._data.key()[0].id()
+            rdata = [(k,v) for k,v in row.row().items()
+                     if k != key or v.value() is not None]
+            return pytis.data.Row(rdata), None
 
     def _analyze_exception(self, e):
         if e.exception():
@@ -244,8 +222,8 @@ class WikingModule(object):
                   lang=None, variants=None, err=None, msg=None):
         if obj:
             # This seems strange, but it is what we want...
-            if not subtitle and self._TITLE_COLUMN:
-                title = obj.export(self._TITLE_COLUMN)
+            if not subtitle and self._title_column: # 
+                title = obj.export(self._title_column)
             else:
                 title = self._view.singular()
             lang = self._lang(obj)
@@ -289,7 +267,7 @@ class WikingModule(object):
         return ActionMenu(req.uri, actions, self._data, row)
 
     def _link_provider(self, row, col, uri, wmi=False, args=()):
-        if col.id() == self._TITLE_COLUMN:
+        if col.id() == self._title_column:
             from lcg import _html
             if self._referer is not None and not wmi:
                 return _html.uri(uri + '/' + row[self._referer].export(),
@@ -384,6 +362,123 @@ class WikingModule(object):
             return self.Object(self, self._view, self._data, row)
         return None
 
+    # ===== Action handlers =====
+    
+    def list(self, req, err=None, msg=None):
+        def link_provider(row, col):
+            return self._link_provider(row, col, req.uri, wmi=req.wmi)
+        lang, variants, rows = self._list(req)
+        content = [self._form(ListView, rows, link_provider,
+                              custom_spec=(not req.wmi and self._CUSTOM_VIEW
+                                           or None))]
+        if req.wmi:
+            uri = '/_doc/'+self.name()
+            h = lcg.Link(lcg.Link.ExternalTarget(uri, _("Help")))
+            content.extend((self._actions(req) , h))
+        elif self._RSS_TITLE_COLUMN:
+            rss = lcg.Link.ExternalTarget(req.uri +'.'+ lang +'.rss',
+                                          self._real_title(lang) + ' RSS')
+            doc = lcg.Link.ExternalTarget('_doc/rss?display=inline',
+                                          _("more about RSS"))
+            text = _("An RSS channel is available for this section:") + ' '
+            p = (lcg.TextContent(text),
+                 lcg.Link(rss, type='application/rss+xml'),
+                 lcg.TextContent(" ("), lcg.Link(doc), lcg.TextContent(")"))
+            content.append(lcg.Paragraph(p))
+        return self._document(req, content, lang=lang, variants=variants,
+                              err=err, msg=msg)
+
+    def show(self, req, object, err=None, msg=None):
+        form = self._form(pw.ShowForm, object.row())
+        return self._document(req, (form, self._actions(req, object)), object,
+                              err=err, msg=msg)
+
+    def view(self, req, object, err=None, msg=None):
+        # `show()' always uses ShowForm, while `view()' may be overriden
+        # by the module (using _CUSTOM_VIEW).
+        view = RecordView(self._data, self._view, self._resolver, object.row(),
+                          custom_spec=self._CUSTOM_VIEW)
+        return self._document(req, view, object, err=err, msg=msg)
+    
+    def add(self, req, prefill=None, errors=()):
+        #req.check_auth(pd.Permission.INSERT)
+        form = self._form(pw.EditForm, None, handler=req.uri, new=True,
+                          prefill=prefill or self._default_prefill(req),
+                          errors=errors, action='insert')
+        return self._document(req, form, subtitle=_("new record"))
+
+    def edit(self, req, object, errors=(), prefill=None):
+        form = self._form(pw.EditForm, object.row(), handler=req.uri,
+                          errors=errors, prefill=prefill, action='update')
+        return self._document(req, form, object, subtitle=_("edit form"))
+
+    def remove(self, req, object, err=None):
+        form = self._form(pw.ShowForm, object.row())
+        actions = self._actions(req, object, (Action(_("Remove"), 'delete'),))
+        msg = _("Please, confirm removing the record permanently.")
+        return self._document(req, (form, actions), object,
+                              err=err, subtitle=_("removing"), msg=msg)
+
+    # ===== Methods which actuually modify the database =====
+
+    def insert(self, req):
+        if not req.wmi:
+            return
+        row, errors = self._validate(req)
+        if not errors:
+            #log(OPR, "New record:", row.items())
+            try:
+                new_row, success = self._data.insert(row)
+                if req.wmi:
+                    return self.list(req, msg=self._INSERT_MSG)
+                else:
+                    object = self.Object(self, self._view, self._data, new_row)
+                    return self.view(req, object, msg=self._INSERT_MSG)
+            except pd.DBException, e:
+                errors = self._analyze_exception(e)
+        return self.add(req, prefill=req.params, errors=errors)
+            
+    def update(self, req, object):
+        if not req.wmi:
+            return
+        row, errors = self._validate(req, object.prow())
+        if not errors:
+            #log(OPR, "Updating record:", str(object))
+            try:
+                self._data.update(object.key(), row)
+                object.reload()
+                action = req.wmi and self.show or self.view
+                return action(req, object, msg=self._UPDATE_MSG)
+            except pd.DBException, e:
+                errors = self._analyze_exception(e)
+        return self.edit(req, object, prefill=req.params, errors=errors)
+
+    def delete(self, req, object):
+        if not req.wmi:
+            return
+        #log(OPR, "Deleting record:", str(object))
+        deleted, err = (False, None)
+        try:
+            deleted = self._data.delete(object.key())
+        except pd.DBException, e:
+            err = self._analyze_exception(e)
+        if deleted:
+            return self.list(req, msg=self._DELETE_MSG)
+        else:
+            return self.remove(req, object,
+                               err=err or _("Unable to delete record."))
+
+
+# ==============================================================================
+# Module extensions 
+# ==============================================================================
+
+
+class PanelizableModule(Module):
+
+    _PANEL_DEFAULT_COUNT = 3
+    _PANEL_FIELDS = None
+
     def panelize(self, identifier, lang, count):
         count = count or self._PANEL_DEFAULT_COUNT
         fields = [self._view.field(id)
@@ -400,15 +495,19 @@ class WikingModule(object):
             return items
         else:
             return (lcg.TextContent(_("No records.")),)
-
-    # ===== Action handlers =====
     
+class RssModule(Module):
+    
+    _RSS_TITLE_COLUMN = None
+    _RSS_DESCR_COLUMN = None
+    _RSS_DATE_COLUMN = None
+
     def rss(self, req):
         if not self._RSS_TITLE_COLUMN:
             raise NotFound
         lang, variants, rows = self._list(req, lang=req.param('lang'), limit=8)
         from xml.sax.saxutils import escape
-        col = self._view.field(self._TITLE_COLUMN)
+        col = self._view.field(self._title_column)
         base_uri = req.abs_uri()
         args = lang and (('setlang', lang),) or ()
         prow = pp.PresentedRow(self._view.fields(), self._data, None)
@@ -436,103 +535,52 @@ class WikingModule(object):
         result = rss(title, base_uri, items, config.site_subtitle,
                      lang=lang, webmaster=config.webmaster_addr)
         return ('application/xml', result)
+
     
-    def list(self, req, err=None, msg=None):
-        def link_provider(row, col):
-            return self._link_provider(row, col, req.uri, wmi=req.wmi)
-        lang, variants, rows = self._list(req)
-        form = req.wmi and pw.BrowseForm or self.ListView
-        content = [self._form(form, rows, link_provider)]
-        if req.wmi:
-            uri = '/_doc/'+self.name()
-            h = lcg.Link(lcg.Link.ExternalTarget(uri, _("Help")))
-            content.extend((self._actions(req) , h))
-        elif self._RSS_TITLE_COLUMN:
-            rss = lcg.Link.ExternalTarget(req.uri +'.'+ lang +'.rss',
-                                          self._real_title(lang) + ' RSS')
-            doc = lcg.Link.ExternalTarget('_doc/rss?display=inline',
-                                          _("more about RSS"))
-            text = _("An RSS channel is available for this section:") + ' '
-            p = (lcg.TextContent(text),
-                 lcg.Link(rss, type='application/rss+xml'),
-                 lcg.TextContent(" ("), lcg.Link(doc), lcg.TextContent(")"))
-            content.append(lcg.Paragraph(p))
-        return self._document(req, content, lang=lang, variants=variants,
-                              err=err, msg=msg)
+class WikingModule(PanelizableModule, RssModule):
+    """The default base class for all modules."""
 
-    def show(self, req, object, err=None, msg=None):
-        form = self._form(pw.ShowForm, object.row())
-        return self._document(req, (form, self._actions(req, object)), object,
-                              err=err, msg=msg)
+# Mixin module classes
 
-    def view(self, req, object, err=None, msg=None):
-        view = self.View(self._data, self._view, object)
-        return self._document(req, view, object, err=err, msg=msg)
+class Publishable(object):
+    "Mix-in class for modules where the records can be published/unpublished."
+    _MSG_PUBLISHED = _("The item was published.")
+    _MSG_UNPUBLISHED = _("The item was unpublished.")
+
+    def _change_published(row):
+        data = row.data()
+        key = [row[c.id()] for c in data.key()]
+        values = data.make_row(published=not row['published'].value())
+        data.update(key, values)
+    _change_published = staticmethod(_change_published)
     
-    def add(self, req, prefill=None, errors=()):
-        #req.check_auth(pd.Permission.INSERT)
-        form = self._form(pw.EditForm, None, handler=req.uri, new=True,
-                          prefill=prefill or self._default_prefill(req),
-                          errors=errors, action='insert')
-        return self._document(req, form, subtitle=_("new record"))
-
-    def edit(self, req, object, errors=(), prefill=None):
-        form = self._form(pw.EditForm, object.row(), handler=req.uri,
-                          errors=errors, prefill=prefill, action='update')
-        return self._document(req, form, object, subtitle=_("edit form"))
-
-    def remove(self, req, object, err=None):
-        form = self._form(pw.ShowForm, object.row())
-        actions = self._actions(req, object, (Action(_("Remove"), 'delete'),))
-        msg = _("Please, confirm removing the record permanently.")
-        return self._document(req, (form, actions), object,
-                              err=err, subtitle=_("removing"), msg=msg)
-
-    # ===== Methods which modify the database =====
-
-    def insert(self, req):
-        if not req.wmi:
-            return
-        row, errors = self._validate(req, new=True)
-        if not errors:
-            #log(OPR, "New record:", row.items())
-            try:
-                new_row, success = self._data.insert(row)
-                if req.wmi:
-                    return self.list(req, msg=self._INSERT_MSG)
-                else:
-                    object = self.Object(self, self._view, self._data, new_row)
-                    return self.view(req, object, msg=self._INSERT_MSG)
-            except pd.DBException, e:
-                errors = self._analyze_exception(e)
-        return self.add(req, prefill=req.params, errors=errors)
-            
-    def update(self, req, object):
-        if not req.wmi:
-            return
-        row, errors = self._validate(req)
-        if not errors:
-            #log(OPR, "Updating record:", str(object))
-            try:
-                self._data.update(object.key(), row)
-                object.reload()
-                action = req.wmi and self.show or self.view
-                return action(req, object, msg=self._UPDATE_MSG)
-            except pd.DBException, e:
-                errors = self._analyze_exception(e)
-        return self.edit(req, object, prefill=req.params, errors=errors)
-
-    def delete(self, req, object):
-        if not req.wmi:
-            return
-        #log(OPR, "Deleting record:", str(object))
-        deleted, err = (False, None)
+    _ACTIONS = (Action(_("Publish"), 'publish',
+                       handler=lambda r: Publishable._change_published(r),
+                       enabled=lambda r: not r['published'].value()),
+                Action(_("Unpublish"), 'unpublish',
+                       handler=lambda r: Publishable._change_published(r),
+                       enabled=lambda r: r['published'].value()),
+                )
+    
+    def publish(self, req, object, publish=True):
+        err, msg = (None, None)
+        #log(OPR, "Publishing item:", str(object))
         try:
-            deleted = self._data.delete(object.key())
+            if publish != object['published']:
+                Publishable._change_published(object.prow())
+            object.reload()
+            msg = publish and self._MSG_PUBLISHED or self._MSG_UNPUBLISHED
         except pd.DBException, e:
             err = self._analyze_exception(e)
-        if deleted:
-            return self.list(req, msg=self._DELETE_MSG)
-        else:
-            return self.remove(req, object,
-                               err=err or _("Unable to delete record."))
+        action = req.wmi and self.show or self.view
+        return action(req, object, msg=msg, err=err)
+
+    def unpublish(self, req, object):
+        return self.publish(req, object, publish=False)
+
+    
+class Translatable(object):
+    _ACTIONS = (Action(_("Translate"), 'translate'),)
+    def translate(self, req, object):
+        prefill = [(k, object.export(k)) for k in object.keys() if k != 'lang']
+        return self.add(req, prefill=dict(prefill))
