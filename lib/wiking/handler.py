@@ -121,26 +121,22 @@ class SiteHandler(object):
             self._module_cache[name] = module
         return module
 
-    def _resolve(self, req, path):
-        # return the target module and an object within this module (or a list
-        # of objects) corresponding to the current request.
-        identifier = path[0]
+    def _resolve(self, req, identifier):
+        """Return the module which is responsible for handling the request."""
         try:
             modname = self._resolve_cache[identifier]
         except KeyError:
             modname = self._mapping.modname(identifier)
             self._resolve_cache[identifier] = modname
-        module = self._module(modname)
-        arg = module.resolve(req, path)
-        return (module, arg)
+        return self._module(modname)
 
-    def _action(self, req, module, arg, **kwargs):
-        action = req.param('action', arg and 'view' or 'list')
-        if action.startswith('_') or not action.replace('_', '').isalpha():
+    def _action(self, req, module, record):
+        action = req.param('action', record and 'view' or 'list')
+        if action == 'resolve' or action.startswith('_') \
+               or not action.replace('_', '').isalpha():
             raise Exception("Invalid action.")
         method = getattr(module, action)
-        if arg:
-            kwargs['object'] = arg
+        kwargs = record and dict(record=record) or {}
         return method(req, **kwargs)
 
     def _stylesheets(self, req, panels):
@@ -193,25 +189,19 @@ class SiteHandler(object):
             if doc:
                 doc = req.param('display') != 'inline'
                 result = self._doc(req, path[1:])
-            elif wmi:
-                if len(path) == 1:
-                    path += ('Pages',)
-                module = self._module(path[1])
-                try:
-                    arg = module.resolve(req)
-                except NotFound:
-                    msg = _("The requested object does not exist anymore!")
-                    result = module.list(req, msg=msg)
-                else:
-                    result = self._action(req, module, arg)
             else:
-                if not path:
-                    path = ('index',)
-                module, arg = self._resolve(req, path)
-                result = self._action(req, module, arg)
-                if not isinstance(result, Document):
-                    content_type, data = result
-                    return req.result(data, content_type=content_type)
+                if wmi:
+                    if len(path) == 1:
+                        path += ('Pages',)
+                    module = self._module(path[1])
+                else:
+                    path = path or ('index',)
+                    module = self._resolve(req, path[0])
+                record = module.resolve(req, path)
+                result = self._action(req, module, record)
+            if not isinstance(result, Document):
+                content_type, data = result
+                return req.result(data, content_type=content_type)
         except HttpError, e:
             req.set_status(e.ERROR_CODE)
             lang = req.prefered_language(self._module('Languages').languages(),
