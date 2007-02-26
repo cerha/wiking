@@ -43,51 +43,10 @@ class Module(object):
     _CUSTOM_VIEW = None
     
     _spec_cache = {}
-    
-    class Object(object):
-        # This was meant as an encapsulation of one record within the module,
-        # but proved not to be really unuseful.  Most likely will be removed.
-        def __init__(self, module, view, data, row):
-            self._module = module
-            self._data = data
-            self._prow = pp.PresentedRow(view.fields(), data, row)
-            
-        def __getitem__(self, key):
-            return self._prow[key].value()
 
-        def __str__(self):
-            key = self._data.key()[0].id()
-            return "<%s module=%s %s=%s>" % (self.__class__.__name__,
-                                             self._module.name(), key,
-                                             self._prow[key].export())
-
-        def export(self, key):
-            return self._prow[key].export()
+    class Record(pp.PresentedRow):
+        """An abstraction of one record within the module's data object."""
         
-        def keys(self):
-            return self._prow.keys()
-
-        def key(self):
-            return (self._prow[self._data.key()[0].id()],)
-
-        def row(self):
-            return self._prow.row()
-
-        def prow(self):
-            return self._prow
-
-        def reload(self):
-            self._prow.set_row(self._data.row(self.key()))
-
-        def update(self, **kwargs):
-            data = self._data.make_row(**kwargs)
-            try:
-                self._data.update(self.key(), data)
-            except pd.DBException, e:
-                return self._module._analyze_exception(e)
-            self.reload()
-            return None
-
     def spec(cls, resolver):
         try:
             spec = Module._spec_cache[cls]
@@ -218,16 +177,16 @@ class Module(object):
         title = self._module('Mapping').title(lang, self.name())
         return title or self._view.title()
     
-    def _document(self, req, content, obj=None, subtitle=None,
+    def _document(self, req, content, record=None, subtitle=None,
                   lang=None, variants=None, err=None, msg=None):
-        if obj:
+        if record:
             # This seems strange, but it is what we want...
             if not subtitle and self._title_column: # 
-                title = obj.export(self._title_column)
+                title = record[self._title_column].export()
             else:
                 title = self._view.singular()
-            lang = self._lang(obj)
-            variants = self._variants(obj)
+            lang = self._lang(record)
+            variants = self._variants(record)
             edit_label = None #self._EDIT_LABEL
         else:
             edit_label = None
@@ -243,7 +202,7 @@ class Module(object):
             content = (ErrorMessage(err),) + tuple(content)
         if lang is None or req.wmi:
             lang = req.prefered_language(variants)
-        if not obj:
+        if not record:
             if req.wmi:
                 title = self._view.title()
             else:
@@ -253,18 +212,17 @@ class Module(object):
         return Document(title, content, lang=lang, variants=variants,
                         edit_label=edit_label)
 
-    def _actions(self, req, object=None, actions=None):
+    def _actions(self, req, record=None, actions=None):
         if not req.wmi:
             return None
         if not actions:
-            if object is not None:
+            if record is not None:
                 actions = self._DEFAULT_ACTIONS_FIRST + \
                           self._view.actions() + \
                           self._DEFAULT_ACTIONS_LAST
             else:
                 actions = self._LIST_ACTIONS
-        row = object and object.prow()
-        return ActionMenu(req.uri, actions, self._data, row)
+        return ActionMenu(req.uri, actions, self._data, record)
 
     def _link_provider(self, row, col, uri, wmi=False, args=()):
         if col.id() == self._title_column:
@@ -273,8 +231,8 @@ class Module(object):
                 return _html.uri(uri + '/' + row[self._referer].export(),
                                  *args)
             else:
-                args += tuple([(c.id(), row[c.id()].export())
-                               for c in self._data.key()])
+                key = self._data.key()[0].id()
+                args += ((key, row[key].export()),)
                 if wmi:
                     args += (('action', 'show'), )
                     uri = '/_wmi/'+ self.name()
@@ -282,19 +240,17 @@ class Module(object):
         return None
 
     def _get_row_by_key(self, params):
-        key = []
-        for c in self._data.key():
-            kc = c.id()
-            if not params.has_key(kc):
-                return None
-            v = params[kc]
-            if isinstance(v, tuple):
-                v = v[-1]
-            value, error = c.type().validate(v)
-            if error:
-                raise error
-            key.append(value)
-        row = self._data.row(key)
+        kc = self._data.key()[0]
+        key, type = kc.id(), kc.type()
+        if not params.has_key(key):
+            return None
+        v = params[key]
+        if isinstance(v, tuple):
+            v = v[-1]
+        value, error = type.validate(v)
+        if error:
+            raise error
+        row = self._data.row((value,))
         if row is None:
             raise NotFound()
         return row
@@ -315,13 +271,13 @@ class Module(object):
         else:
             raise NotFound()
 
-    def _lang(self, object):
+    def _lang(self, record):
         if self._LIST_BY_LANGUAGE:
-            return str(object['lang'])
+            return str(record['lang'].value())
         else:
             return None
         
-    def _variants(self, object):
+    def _variants(self, record):
         return None
     
     def _default_prefill(self, req):
@@ -353,13 +309,45 @@ class Module(object):
             lang = req.prefered_language(variants)
         return lang, variants, self._rows(lang=lang)
 
-    def resolve(self, req, path=None):
-        # If path is None, only resolution by key is allowed.
+    def _record(self, row):
+        """Return the Record instance representing given data row."""
+        return self.Record(self._view.fields(), self._data, row)
+    
+    def _key(self, record):
+        """Return the value of record's key for data operations."""
+        return (record[self._data.key()[0].id()],)
+    
+    def _reload(self, record):
+        """Update record data from the database."""
+        record.set_row(self._data.row(self._key(record)))
+    
+    def _insert(self, row):
+        """Insert a new row into the database and return a Record instance."""
+        new_row, success = self._data.insert(row)
+        if success:
+            return self._record(new_row)
+        else:
+            return None
+        
+    def _update(self, record, row):
+        """Update the record data in the database."""
+        self._data.update(self._key(record), row)
+
+    def _update_values(self, record, **kwargs):
+        """Update the record in the database by values of given keyword args."""
+        return self._update(record, self._data.make_row(**kwargs))
+    
+    def _delete(self, record):
+        """Delete the record from the database."""
+        return self._data.delete(self._key(record))
+
+    def resolve(self, req, path):
+        # Path is ignored in WMI (only resolution by key is allowed).
         row = self._get_row_by_key(req.params)
-        if row is None and path is not None:
+        if row is None and not req.wmi:
             row = self._resolve(req, path)
         if row is not None:
-            return self.Object(self, self._view, self._data, row)
+            return self._record(row)
         return None
 
     # ===== Action handlers =====
@@ -388,17 +376,17 @@ class Module(object):
         return self._document(req, content, lang=lang, variants=variants,
                               err=err, msg=msg)
 
-    def show(self, req, object, err=None, msg=None):
-        form = self._form(pw.ShowForm, object.row())
-        return self._document(req, (form, self._actions(req, object)), object,
+    def show(self, req, record, err=None, msg=None):
+        form = self._form(pw.ShowForm, record.row())
+        return self._document(req, (form, self._actions(req, record)), record,
                               err=err, msg=msg)
 
-    def view(self, req, object, err=None, msg=None):
+    def view(self, req, record, err=None, msg=None):
         # `show()' always uses ShowForm, while `view()' may be overriden
         # by the module (using _CUSTOM_VIEW).
-        view = RecordView(self._data, self._view, self._resolver, object.row(),
+        view = RecordView(self._data, self._view, self._resolver, record.row(),
                           custom_spec=self._CUSTOM_VIEW)
-        return self._document(req, view, object, err=err, msg=msg)
+        return self._document(req, view, record, err=err, msg=msg)
     
     def add(self, req, prefill=None, errors=()):
         #req.check_auth(pd.Permission.INSERT)
@@ -407,65 +395,62 @@ class Module(object):
                           errors=errors, action='insert')
         return self._document(req, form, subtitle=_("new record"))
 
-    def edit(self, req, object, errors=(), prefill=None):
-        form = self._form(pw.EditForm, object.row(), handler=req.uri,
+    def edit(self, req, record, errors=(), prefill=None):
+        form = self._form(pw.EditForm, record.row(), handler=req.uri,
                           errors=errors, prefill=prefill, action='update')
-        return self._document(req, form, object, subtitle=_("edit form"))
+        return self._document(req, form, record, subtitle=_("edit form"))
 
-    def remove(self, req, object, err=None):
-        form = self._form(pw.ShowForm, object.row())
-        actions = self._actions(req, object, (Action(_("Remove"), 'delete'),))
+    def remove(self, req, record, err=None):
+        form = self._form(pw.ShowForm, record.row())
+        actions = self._actions(req, record, (Action(_("Remove"), 'delete'),))
         msg = _("Please, confirm removing the record permanently.")
-        return self._document(req, (form, actions), object,
+        return self._document(req, (form, actions), record,
                               err=err, subtitle=_("removing"), msg=msg)
 
-    # ===== Methods which actuually modify the database =====
+    # ===== Action handlers which actually modify the database =====
 
     def insert(self, req):
         if not req.wmi:
             return
         row, errors = self._validate(req)
         if not errors:
-            #log(OPR, "New record:", row.items())
             try:
-                new_row, success = self._data.insert(row)
+                record = self._insert(row)
+            except pd.DBException, e:
+                errors = self._analyze_exception(e)
+            else:
                 if req.wmi:
                     return self.list(req, msg=self._INSERT_MSG)
                 else:
-                    object = self.Object(self, self._view, self._data, new_row)
-                    return self.view(req, object, msg=self._INSERT_MSG)
-            except pd.DBException, e:
-                errors = self._analyze_exception(e)
+                    return self.view(req, record, msg=self._INSERT_MSG)
         return self.add(req, prefill=req.params, errors=errors)
             
-    def update(self, req, object):
+    def update(self, req, record):
         if not req.wmi:
             return
-        row, errors = self._validate(req, object.prow())
+        row, errors = self._validate(req, record)
         if not errors:
-            #log(OPR, "Updating record:", str(object))
             try:
-                self._data.update(object.key(), row)
-                object.reload()
-                action = req.wmi and self.show or self.view
-                return action(req, object, msg=self._UPDATE_MSG)
+                self._update(record, row)
             except pd.DBException, e:
                 errors = self._analyze_exception(e)
-        return self.edit(req, object, prefill=req.params, errors=errors)
+            else:
+                action = req.wmi and self.show or self.view
+                return action(req, record, msg=self._UPDATE_MSG)
+        return self.edit(req, record, prefill=req.params, errors=errors)
 
-    def delete(self, req, object):
+    def delete(self, req, record):
         if not req.wmi:
             return
-        #log(OPR, "Deleting record:", str(object))
         deleted, err = (False, None)
         try:
-            deleted = self._data.delete(object.key())
+            deleted = self._delete(record)
         except pd.DBException, e:
             err = self._analyze_exception(e)
         if deleted:
             return self.list(req, msg=self._DELETE_MSG)
         else:
-            return self.remove(req, object,
+            return self.remove(req, record,
                                err=err or _("Unable to delete record."))
 
 
@@ -549,7 +534,7 @@ class Publishable(object):
 
     def _change_published(row):
         data = row.data()
-        key = [row[c.id()] for c in data.key()]
+        key = (row[data.key()[0].id()],)
         values = data.make_row(published=not row['published'].value())
         data.update(key, values)
     _change_published = staticmethod(_change_published)
@@ -561,26 +546,31 @@ class Publishable(object):
                        handler=lambda r: Publishable._change_published(r),
                        enabled=lambda r: r['published'].value()),
                 )
+
+    # This is all quite ugly.  It would be much better to solve invoking pytis
+    # actions in some more generic way, so that we don't need to implement an
+    # action handler method for each pytis action.
     
-    def publish(self, req, object, publish=True):
+    def publish(self, req, record, publish=True):
         err, msg = (None, None)
-        #log(OPR, "Publishing item:", str(object))
+        #log(OPR, "Publishing item:", str(record))
         try:
-            if publish != object['published']:
-                Publishable._change_published(object.prow())
-            object.reload()
+            if publish != record['published'].value():
+                Publishable._change_published(record)
+            record.reload()
             msg = publish and self._MSG_PUBLISHED or self._MSG_UNPUBLISHED
         except pd.DBException, e:
             err = self._analyze_exception(e)
         action = req.wmi and self.show or self.view
-        return action(req, object, msg=msg, err=err)
+        return action(req, record, msg=msg, err=err)
 
-    def unpublish(self, req, object):
-        return self.publish(req, object, publish=False)
+    def unpublish(self, req, record):
+        return self.publish(req, record, publish=False)
 
     
 class Translatable(object):
     _ACTIONS = (Action(_("Translate"), 'translate'),)
-    def translate(self, req, object):
-        prefill = [(k, object.export(k)) for k in object.keys() if k != 'lang']
+    def translate(self, req, record):
+        prefill = [(k, record[k].export())
+                   for k in record.keys() if k != 'lang']
         return self.add(req, prefill=dict(prefill))
