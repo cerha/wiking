@@ -187,10 +187,8 @@ class Config(WikingModule):
                 domain = domain[4:]
             return 'webmaster@' + domain
     
-    def resolve(self, req, path=None):
-        # If path is None, only resolution by key is allowed.
-        row = self._data.get_row(config_id=0)
-        return self.Object(self, self._view, self._data, row)
+    def resolve(self, req, path):
+        return self._record(self._data.get_row(config_id=0))
     
     def view(self, *args, **kwargs):
         return self.show(*args, **kwargs)
@@ -441,10 +439,10 @@ class Pages(WikingModule): #, Publishable, Translatable
                        enabled=lambda r: r['_content'].value() is None),
                 )
         
-    def _variants(self, object):
-        return [str(r['lang'].value())
-                for r in self._data.get_rows(mapping_id=object['mapping_id'],
-                                             condition=self._IS_OK)]
+    def _variants(self, record):
+        return [str(r['lang'].value()) for r in 
+                self._data.get_rows(mapping_id=record['mapping_id'].value(),
+                                    condition=self._IS_OK)]
 
     def _resolve(self, req, path):
         if len(path) > 1:
@@ -467,49 +465,53 @@ class Pages(WikingModule): #, Publishable, Translatable
                         return row
             raise NotAcceptable([str(r['lang'].value()) for r in variants])
 
-    def view(self, req, object, err=None, msg=None, preview=False):
+    def view(self, req, record, err=None, msg=None, preview=False):
         if req.wmi and preview:
-            text = object['_content']
+            text = record['_content'].value()
         else:
-            text = object['content']
+            text = record['content'].value()
         content = text and lcg.SectionContainer(lcg.Parser().parse(text),
                                                 toc_depth=0) \
                   or lcg.TextContent("")
-        return self._document(req, content, object, err=err, msg=msg)
+        return self._document(req, content, record, err=err, msg=msg)
 
-    def preview(self, req, object, **kwargs):
-        return self.view(req, object, preview=True, **kwargs)
+    def preview(self, req, record, **kwargs):
+        return self.view(req, record, preview=True, **kwargs)
 
-    def translate(self, req, object):
+    def translate(self, req, record):
         lang = req.param('src_lang')
         if not lang:
-            if object['_content'] is not None:
+            if record['_content'].value() is not None:
                 e = _("Content for this page already exists!")
-                return self.show(req, object, err=e)
+                return self.show(req, record, err=e)
             cond = pd.AND(pd.NE('_content', pd.Value(pd.String(), None)),
-                          pd.NE('lang', object.row()['lang']))
+                          pd.NE('lang', record['lang']))
             langs = [(str(row['lang'].value()),
                       lcg.language_name(row['lang'].value())) for row in 
-                     self._data.get_rows(mapping_id=object['mapping_id'],
+                     self._data.get_rows(mapping_id=record['mapping_id'].value(),
                                          condition=cond)]
             if not langs:
                 e = _("Content for this page does not exist in any language.")
-                return self.show(req, object, err=e)
+                return self.show(req, record, err=e)
             d = pw.SelectionDialog('src_lang', _("Choose source language"),
                                    langs, action='translate',
-                                   hidden=[(id, object[id]) for id in
+                                   hidden=[(id, record[id].value()) for id in
                                            ('mapping_id', 'lang')])
-            return self._document(req, d, object, subtitle=_("translate"))
+            return self._document(req, d, record, subtitle=_("translate"))
         else:
-            row = self._data.get_row(mapping_id=object['mapping_id'],
+            row = self._data.get_row(mapping_id=record['mapping_id'].value(),
                                      lang=str(req.params['src_lang']))
             prefill = dict([(k, row[k].value()) for k in ('_content','title')])
-            return self.edit(req, object, prefill=prefill)
+            return self.edit(req, record, prefill=prefill)
 
-    def sync(self, req, object):
-        err = object.update(content=object['_content'])
-        msg = not err and _("The changes were published.")
-        return self.show(req, object, msg=msg, err=err)
+    def sync(self, req, record):
+        try:
+            self._update_values(record, content=record['_content'].value())
+        except pd.DBException, e:
+            kwargs = dict(err=self._module._analyze_exception(e))
+        else:
+            kwargs = dict(msg=_("The changes were published."))
+        return self.show(req, record, **kwargs)
         
 
 class News(WikingModule, Translatable):
@@ -645,6 +647,9 @@ class Images(WikingModule):
                   'description')
         columns = ('filename', 'title', 'author', 'location', 'taken',
                    'description')
+        
+    def display(self, req, record):
+        return ("image/jpeg", record['file'].value().buffer())
     
     
 class Stylesheets(WikingModule):
@@ -673,11 +678,11 @@ class Stylesheets(WikingModule):
         return [str(r['identifier'].value())
                 for r in self._data.get_rows(active=True)]
         
-    def view(self, req, object, msg=None):
-        content = object['content']
+    def view(self, req, record, msg=None):
+        content = record['content'].value()
         if content is None:
             filename = os.path.join(cfg.wiking_dir, 'resources', 'css',
-                                    object['identifier'])
+                                    record['identifier'].value())
             if os.path.exists(filename):
                 content = "".join(file(filename).readlines())
             else:
@@ -735,10 +740,6 @@ class Users(WikingModule):
     def _user(self, row):
         return pp.PresentedRow(self._view.fields(), self._data, row)
         
-    def _update(self, user, **kwargs):
-        key = [user[c.id()] for c in self._data.key()]
-        self._data.update(key, self._data.make_row(**kwargs))
-
     def user(self, login):
         return self._user(self._data.get_row(login=login))
 
@@ -746,15 +747,15 @@ class Users(WikingModule):
         user = self._data.get_row(login=login, session_key=session_key)
         if user and user['session_expire'].value() > now():
             expire = now() + TimeDelta(hours=1)
-            self._update(user, session_expire=expire)
+            self._update_values(user, session_expire=expire)
             return self._user(user)
         else:
             return  None
 
     def save_session(self, user, session_key):
-        expire = now() + TimeDelta(hours=1)
-        self._update(user, session_expire=expire, session_key=session_key)
+        exp = now() + TimeDelta(hours=1)
+        self._update_values(user, session_expire=exp, session_key=session_key)
 
     def close_session(self, user):
-        self._update(user, session_expire=None, session_key=None)
+        self._update_values(user, session_expire=None, session_key=None)
         
