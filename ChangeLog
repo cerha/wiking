@@ -1,3 +1,14 @@
+2007-02-26  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/handler.py: Current module and record resolution
+	simplified and unified.
+
+	* lib/wiking/module.py: Database modification methods separated
+	from their action handlers.  Current record abstraction
+	refactored.
+
+	* lib/wiking/modules.py: Respect the above changes.
+
 2007-02-23  Tomas Cerha  <cerha@brailcom.org>
 
 	* resources/css/default.css: Updated.
