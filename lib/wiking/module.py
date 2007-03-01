@@ -27,7 +27,6 @@ class Module(object):
     _DEFAULT_ACTIONS_LAST   = (Action(_("Remove"), 'remove'),
                                Action(_("List"), 'list', context=None),)
     _LIST_ACTIONS = (Action(_("New record"), 'add', context=None),)
-    _EDIT_LABEL = None
     
     _EXCEPTION_MATCHERS = (
         ('duplicate key violates unique constraint ' + \
@@ -36,7 +35,7 @@ class Module(object):
         ('null value in column "(?P<id>[a-z_]+)" violates not-null constraint',
          _("Empty value.  This field is mandatory.")),
         )
-
+    
     _INSERT_MSG = _("New record was successfully inserted.")
     _UPDATE_MSG = _("The record was successfully updated.")
     _DELETE_MSG = _("The record was deleted.")
@@ -46,6 +45,17 @@ class Module(object):
 
     class Record(pp.PresentedRow):
         """An abstraction of one record within the module's data object."""
+
+        def key(self):
+            """Return the value of record's key for data operations."""
+            return (self[self._data.key()[0].id()],)
+    
+        def rowdata(self):
+            """Return record's row data for insert/update operations."""
+            key = self._data.key()[0].id()
+            rdata = [(k, v) for k, v in self.row().items()
+                     if k != key or v.value() is not None]
+            return pd.Row(rdata)
         
     def spec(cls, resolver):
         try:
@@ -75,10 +85,13 @@ class Module(object):
     
     # Instance methods
     
-    def __init__(self, dbconnection, resolver, get_module):
+    def __init__(self, dbconnection, resolver, get_module, identifier=None):
         self._dbconnection = dbconnection
         self._module = get_module
         self._resolver = resolver
+        if identifier is None and self.name() != 'Mapping':
+            identifier = self._module('Mapping').get_identifier(self.name())
+        self._identifier = identifier
         spec = self.spec(resolver)
         self._data = spec.data_spec().create(dbconnection_spec=dbconnection)
         self._view = spec.view_spec()
@@ -98,15 +111,12 @@ class Module(object):
         lang = req.prefered_language(self._module('Languages').languages())
         return lcg.datetime_formats(translator(lang))
         
-    def _validate(self, req, row=None):
-        if row is None:
-            row = pp.PresentedRow(self._view.fields(), self._data, None,
-                                  new=True)
+    def _validate(self, req, record):
         errors = []
         for id in self._view.layout().order():
-            if not row.editable(id):
+            if not record.editable(id):
                 continue
-            type = row[id].type()
+            type = record[id].type()
             kwargs = {}
             if req.params.has_key(id):
                 value_ = req.params[id]
@@ -135,29 +145,24 @@ class Module(object):
                     tf = type.is_exact() and 'exact_time' or 'time'
                     format += ' ' + formats[tf]
                 kwargs['format'] = format
-            if isinstance(type, pd.Binary) and not value_ and not row.new():
+            if isinstance(type, pd.Binary) and not value_ and not record.new():
                 continue # Keep the original file if no file is uploaded.
             value, error = type.validate(value_, **kwargs)
             #log(OPR, "Validation:", (id, type.not_null(), value_, kwargs, error))
             if error:
                 errors.append((id, error.message()))
             else:
-                #log(OPR, "---:", (id, value.value()))
-                row[id] = value
-                #log(OPR, ">>>:", (id, row[id].value()))
+                record[id] = value
         if errors:
-            return None, errors
+            return errors
         else:
             for check in self._view.check():
-                result = check(row)
+                result = check(record)
                 if result:
                     if not isinstance(result, (list, tuple)):
                         result = (result, _("Integrity check failed."))
-                    return None, (result,)
-            key = self._data.key()[0].id()
-            rdata = [(k,v) for k,v in row.row().items()
-                     if k != key or v.value() is not None]
-            return pytis.data.Row(rdata), None
+                    return (result,)
+            return None
 
     def _analyze_exception(self, e):
         if e.exception():
@@ -169,9 +174,6 @@ class Module(object):
                     return msg
         return unicode(e.exception())
 
-    def _form(self, form, *args, **kwargs):
-        return form(self._data, self._view, self._resolver, *args, **kwargs)
-    
     def _real_title(self, lang):
         # This is quite a hack...
         title = self._module('Mapping').title(lang, self.name())
@@ -180,16 +182,12 @@ class Module(object):
     def _document(self, req, content, record=None, subtitle=None,
                   lang=None, variants=None, err=None, msg=None):
         if record:
-            # This seems strange, but it is what we want...
-            if not subtitle and self._title_column: # 
+            if not subtitle and self._title_column:
                 title = record[self._title_column].export()
             else:
                 title = self._view.singular()
             lang = self._lang(record)
             variants = self._variants(record)
-            edit_label = None #self._EDIT_LABEL
-        else:
-            edit_label = None
         if not variants or req.wmi:
             variants = self._module('Languages').languages()
         if isinstance(content, (list, tuple)):
@@ -209,8 +207,7 @@ class Module(object):
                 title = self._real_title(lang)
         if subtitle:
             title = concat(title, ' :: ', subtitle)
-        return Document(title, content, lang=lang, variants=variants,
-                        edit_label=edit_label)
+        return Document(title, content, lang=lang, variants=variants)
 
     def _actions(self, req, record=None, actions=None):
         if not req.wmi:
@@ -224,21 +221,27 @@ class Module(object):
                 actions = self._LIST_ACTIONS
         return ActionMenu(req.uri, actions, self._data, record)
 
-    def _link_provider(self, row, col, uri, wmi=False, args=()):
-        if col.id() == self._title_column:
-            from lcg import _html
-            if self._referer is not None and not wmi:
-                return _html.uri(uri + '/' + row[self._referer].export(),
-                                 *args)
+    def _link_provider(self, row, cid, wmi=False, **kwargs):
+        key = self._data.key()[0].id()
+        if cid == self._title_column or cid == key:
+            if self._identifier is not None and not wmi:
+                uri = '/'+ self._identifier
             else:
-                key = self._data.key()[0].id()
-                args += ((key, row[key].export()),)
-                if wmi:
-                    args += (('action', 'show'), )
-                    uri = '/_wmi/'+ self.name()
-                return _html.uri(uri, *args)
+                kwargs['action'] = kwargs.get('action', 'show')
+                uri = '/_wmi/'+ self.name()
+            if self._referer is not None and not wmi:
+                uri += '/'+ row[self._referer].export()
+            else:
+                kwargs[key] = row[key].export()
+            from lcg import _html
+            return _html.uri(uri, **kwargs)
         return None
 
+    def _form(self, form, req, *args, **kwargs):
+        kwargs['link_provider'] = lambda row, cid: \
+                                  self._link_provider(row, cid, wmi=req.wmi)
+        return form(self._data, self._view, self._resolver, *args, **kwargs)
+    
     def _get_row_by_key(self, params):
         kc = self._data.key()[0]
         key, type = kc.id(), kc.type()
@@ -309,29 +312,23 @@ class Module(object):
             lang = req.prefered_language(variants)
         return lang, variants, self._rows(lang=lang)
 
-    def _record(self, row):
+    def _record(self, row, new=False):
         """Return the Record instance representing given data row."""
-        return self.Record(self._view.fields(), self._data, row)
-    
-    def _key(self, record):
-        """Return the value of record's key for data operations."""
-        return (record[self._data.key()[0].id()],)
+        return self.Record(self._view.fields(), self._data, row, new=new)
     
     def _reload(self, record):
         """Update record data from the database."""
-        record.set_row(self._data.row(self._key(record)))
+        record.set_row(self._data.row(record.key()))
     
-    def _insert(self, row):
+    def _insert(self, record):
         """Insert a new row into the database and return a Record instance."""
-        new_row, success = self._data.insert(row)
+        new_row, success = self._data.insert(record.rowdata())
         if success:
-            return self._record(new_row)
-        else:
-            return None
+            record.set_row(new_row)
         
-    def _update(self, record, row):
+    def _update(self, record):
         """Update the record data in the database."""
-        self._data.update(self._key(record), row)
+        self._data.update(record.key(), record.rowdata())
 
     def _update_values(self, record, **kwargs):
         """Update the record in the database by values of given keyword args."""
@@ -339,8 +336,12 @@ class Module(object):
     
     def _delete(self, record):
         """Delete the record from the database."""
-        return self._data.delete(self._key(record))
+        if not self._data.delete(record.key()):
+            raise pd.DBException('???', Exception("Unable to delete record."))
 
+    def identifier(self):
+        return self._identifier
+            
     def resolve(self, req, path):
         # Path is ignored in WMI (only resolution by key is allowed).
         row = self._get_row_by_key(req.params)
@@ -353,10 +354,8 @@ class Module(object):
     # ===== Action handlers =====
     
     def list(self, req, err=None, msg=None):
-        def link_provider(row, col):
-            return self._link_provider(row, col, req.uri, wmi=req.wmi)
         lang, variants, rows = self._list(req)
-        content = [self._form(ListView, rows, link_provider,
+        content = [self._form(ListView, req, rows,
                               custom_spec=(not req.wmi and self._CUSTOM_VIEW
                                            or None))]
         if req.wmi:
@@ -377,31 +376,31 @@ class Module(object):
                               err=err, msg=msg)
 
     def show(self, req, record, err=None, msg=None):
-        form = self._form(pw.ShowForm, record.row())
+        form = self._form(pw.ShowForm, req, record.row())
         return self._document(req, (form, self._actions(req, record)), record,
                               err=err, msg=msg)
 
     def view(self, req, record, err=None, msg=None):
         # `show()' always uses ShowForm, while `view()' may be overriden
         # by the module (using _CUSTOM_VIEW).
-        view = RecordView(self._data, self._view, self._resolver, record.row(),
+        form = self._form(RecordView, req, record.row(),
                           custom_spec=self._CUSTOM_VIEW)
-        return self._document(req, view, record, err=err, msg=msg)
+        return self._document(req, form, record, err=err, msg=msg)
     
     def add(self, req, prefill=None, errors=()):
         #req.check_auth(pd.Permission.INSERT)
-        form = self._form(pw.EditForm, None, handler=req.uri, new=True,
+        form = self._form(pw.EditForm, req, None, handler=req.uri, new=True,
                           prefill=prefill or self._default_prefill(req),
                           errors=errors, action='insert')
         return self._document(req, form, subtitle=_("new record"))
 
     def edit(self, req, record, errors=(), prefill=None):
-        form = self._form(pw.EditForm, record.row(), handler=req.uri,
+        form = self._form(pw.EditForm, req, record.row(), handler=req.uri,
                           errors=errors, prefill=prefill, action='update')
         return self._document(req, form, record, subtitle=_("edit form"))
 
     def remove(self, req, record, err=None):
-        form = self._form(pw.ShowForm, record.row())
+        form = self._form(pw.ShowForm, req, record.row())
         actions = self._actions(req, record, (Action(_("Remove"), 'delete'),))
         msg = _("Please, confirm removing the record permanently.")
         return self._document(req, (form, actions), record,
@@ -412,10 +411,11 @@ class Module(object):
     def insert(self, req):
         if not req.wmi:
             return
-        row, errors = self._validate(req)
+        record = self._record(None, new=True)
+        errors = self._validate(req, record)
         if not errors:
             try:
-                record = self._insert(row)
+                self._insert(record)
             except pd.DBException, e:
                 errors = self._analyze_exception(e)
             else:
@@ -428,10 +428,10 @@ class Module(object):
     def update(self, req, record):
         if not req.wmi:
             return
-        row, errors = self._validate(req, record)
+        errors = self._validate(req, record)
         if not errors:
             try:
-                self._update(record, row)
+                self._update(record)
             except pd.DBException, e:
                 errors = self._analyze_exception(e)
             else:
@@ -442,16 +442,12 @@ class Module(object):
     def delete(self, req, record):
         if not req.wmi:
             return
-        deleted, err = (False, None)
         try:
-            deleted = self._delete(record)
+            self._delete(record)
         except pd.DBException, e:
-            err = self._analyze_exception(e)
-        if deleted:
-            return self.list(req, msg=self._DELETE_MSG)
+            return self.remove(req, record, err=self._analyze_exception(e))
         else:
-            return self.remove(req, record,
-                               err=err or _("Unable to delete record."))
+            return self.list(req, msg=self._DELETE_MSG)
 
 
 # ==============================================================================
@@ -464,23 +460,24 @@ class PanelizableModule(Module):
     _PANEL_DEFAULT_COUNT = 3
     _PANEL_FIELDS = None
 
-    def panelize(self, identifier, lang, count):
+    def panelize(self, lang, count):
         count = count or self._PANEL_DEFAULT_COUNT
         fields = [self._view.field(id)
                   for id in self._PANEL_FIELDS or self._view.columns()]
-        base_uri = '/'+identifier
         prow = pp.PresentedRow(self._view.fields(), self._data, None)
         items = []
         for row in self._rows(lang=lang, limit=count-1):
             prow.set_row(row)
-            items.append(PanelItem([(f.id(), prow[f.id()].export(),
-                                     self._link_provider(prow, f, base_uri))
-                                    for f in fields]))
+            item = PanelItem([(f.id(), prow[f.id()].export(),
+                               self._link_provider(prow, f.id()))
+                              for f in fields])
+            items.append(item)
         if items:
             return items
         else:
             return (lcg.TextContent(_("No records.")),)
-    
+
+
 class RssModule(Module):
     
     _RSS_TITLE_COLUMN = None
@@ -493,8 +490,8 @@ class RssModule(Module):
         lang, variants, rows = self._list(req, lang=req.param('lang'), limit=8)
         from xml.sax.saxutils import escape
         col = self._view.field(self._title_column)
-        base_uri = req.abs_uri()
-        args = lang and (('setlang', lang),) or ()
+        base_uri = req.abs_uri()[:-len(req.uri)]
+        kwargs = lang and dict(setlang=lang) or {}
         prow = pp.PresentedRow(self._view.fields(), self._data, None)
         items = []
         import mx.DateTime as dt
@@ -503,7 +500,7 @@ class RssModule(Module):
         for row in rows:
             prow.set_row(row)
             title = escape(tr.translate(prow[self._RSS_TITLE_COLUMN].export()))
-            uri = self._link_provider(row, col, base_uri, args=args)
+            uri = base_uri + self._link_provider(row, col.id(), **kwargs)
             if self._RSS_DESCR_COLUMN:
                 exported = prow[self._RSS_DESCR_COLUMN].export()
                 descr = escape(tr.translate(exported))
@@ -521,10 +518,94 @@ class RssModule(Module):
                      lang=lang, webmaster=config.webmaster_addr)
         return ('application/xml', result)
 
-    
+
 class WikingModule(PanelizableModule, RssModule):
     """The default base class for all modules."""
 
+class StoredFileModule(WikingModule):
+    """Module which stores its data in files.
+
+    This class can be used by modules with binary data fields, such as images,
+    documents etc.  Pytis supports storing binary data types directly in the
+    database, however the current implementation is unfortunately too slow for
+    web usage.  Thus we workaround that making the field virtual, storing its
+    value in a file and loading it back by its 'computer'.
+
+    """
+    
+    _STORED_FIELDS = ()
+    """A sequence of pairs, where the first item is the identifier of the
+    binary field to store, and the second is the identifier of the filename
+    field.  The filename field provides the absolute path for saving the
+    file."""
+
+    class Spec(pp.Specification):
+        
+        def _file_computer(self, id, filename, origname=None, mime=None,
+                           compute=None):
+            """Return a computer loading the field value from a file."""
+            def func(row):
+                result = row[id].value()
+                # We let the `compute' function decide whether it wants to
+                # recompute the value.  If it returns None, we will load the
+                # file.
+                if result is None and compute is not None:
+                    result = compute(row)
+                if result is None and not row.new():
+                    log(OPR, "Loading file:", row[filename].value())
+                    type = row[id].type()
+                    kwargs = dict([(arg, row[fid].value())
+                                   for arg, fid in (('filename', origname),
+                                                    ('type', mime)) if fid])
+                    result = type.Buffer(row[filename].value(), **kwargs)
+                return result
+            return pp.Computer(func, depends=())
+        
+        def _filename_computer(self, subdir, name, ext, append=''):
+            """Return a computer computing filename for storing the file."""
+            def func(row):
+                fname = row[name].export() +append+'.'+ row[ext].value()
+                path = (cfg.storage, row[subdir].value(), self.table, fname)
+                return os.path.join(*path)
+            return pp.Computer(func, depends=(subdir, name, ext))
+        
+    def _save_files(self, record):
+        if not os.path.exists(cfg.storage) \
+               or not os.access(cfg.storage, os.W_OK):
+            import getpass
+            raise Exception("The configuration option 'storage' points to "
+                            "'%(dir)s', but this directory does not exist "
+                            "or is not writable by user '%(user)s'." %
+                            dict(dir=cfg.storage, user=getpass.getuser()))
+        for id, filename_id in self._STORED_FIELDS:
+            fname = record[filename_id].value()
+            dir = os.path.split(fname)[0]
+            if not os.path.exists(dir):
+                os.makedirs(dir, 0700)
+            buf = record[id].value()
+            log(OPR, "Saving file:", (fname, pp.format_byte_size(len(buf))))
+            buf.save(fname)
+        
+    def _insert(self, record):
+        super(StoredFileModule, self)._insert(record)
+        try:
+            self._save_files(record)
+        except:
+            # TODO: Rollback the transaction instead of deleting the record.
+            self._delete(record)
+            raise
+        
+    def _update(self, record):
+        super(StoredFileModule, self)._update(record)
+        self._save_files(record)
+        
+    def _delete(self, record):
+        super(StoredFileModule, self)._delete(record)
+        for id, filename_id in self._STORED_FIELDS:
+            fname = record[filename_id].value()
+            if os.path.exists(fname):
+                os.unlink(fname)
+    
 # Mixin module classes
 
 class Publishable(object):
@@ -557,7 +638,7 @@ class Publishable(object):
         try:
             if publish != record['published'].value():
                 Publishable._change_published(record)
-            record.reload()
+            self._reload(record)
             msg = publish and self._MSG_PUBLISHED or self._MSG_UNPUBLISHED
         except pd.DBException, e:
             err = self._analyze_exception(e)
@@ -574,3 +655,5 @@ class Translatable(object):
         prefill = [(k, record[k].export())
                    for k in record.keys() if k != 'lang']
         return self.add(req, prefill=dict(prefill))
+
+
