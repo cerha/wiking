@@ -219,9 +219,10 @@ CREATE TABLE planner (
 
 -------------------------------------------------------------------------------
 
-CREATE TABLE images (
+CREATE TABLE _images (
        	image_id serial PRIMARY KEY,
-	filename varchar(64) UNIQUE NOT NULL,
+	filename varchar(64) NOT NULL,
+	format varchar(4) NOT NULL,
 	published boolean NOT NULL DEFAULT 'TRUE',
 	width int NOT NULL,
 	height int NOT NULL,
@@ -235,6 +236,47 @@ CREATE TABLE images (
 	exif text,
 	"timestamp" timestamp NOT NULL DEFAULT now()
 ) WITH OIDS;
+
+CREATE OR REPLACE VIEW images AS 
+SELECT oid, *, current_database() as dbname FROM _images;
+
+CREATE OR REPLACE RULE images_insert AS
+  ON INSERT TO images DO INSTEAD (
+     INSERT INTO _images (filename, format, published, width,
+	height, "size", bytesize, title, author,
+	"location", description, taken, exif, "timestamp")
+     VALUES (new.filename, new.format, new.published, new.width,
+	new.height, new."size", new.bytesize, new.title, new.author,
+	new."location", new.description, new.taken, new.exif, new."timestamp");
+);
+
+CREATE OR REPLACE RULE images_update AS
+  ON UPDATE TO images DO INSTEAD (
+    UPDATE _images SET
+      filename = new.filename,
+      format = new.format,
+      published = new.published,
+      width = new.width,
+      height = new.height,
+      "size" = new."size",
+      bytesize = new.bytesize,
+      title = new.title,
+      author = new.author,
+      "location" = new."location",
+      description = new.description,
+      taken = new.taken,
+      exif = new.exif,
+      "timestamp" = new."timestamp"
+   WHERE image_id = old.image_id
+);
+
+CREATE OR REPLACE RULE images_delete AS
+  ON DELETE TO images DO INSTEAD (
+     DELETE FROM _images WHERE image_id = old.image_id;
+);
+
+
+
 
 -------------------------------------------------------------------------------
 
@@ -314,7 +356,7 @@ CREATE TABLE config (
 	site_subtitle text,
 	login_panel boolean NOT NULL DEFAULT 'FALSE',
 	webmaster_addr text,
-	theme integer REFERENCES themes
+	theme integer REFERENCES themes,
 ) WITH OIDS;
 
 --CREATE TABLE changes (

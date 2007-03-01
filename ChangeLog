@@ -1,3 +1,21 @@
+2007-03-01  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/modules.py: Major rewrite of URI construction.  Added
+	support for automatic image resizing and saving the resulting
+	files.
+
+	* lib/wiking/util.py: Removed support for `edit_label'...
+
+	* lib/wiking/request.py: Minor fix.
+
+	* lib/wiking/module.py: Generic support for saving binary data in
+	files.  Major rewrite of URI construction.  Other minor
+	improvements.
+
+	* lib/wiking/handler.py: Minor enhancements.
+
+	* lib/wiking/configuration.py: New option `storage'.
+
 2007-02-26  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/handler.py: Current module and record resolution
