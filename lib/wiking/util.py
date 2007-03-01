@@ -239,7 +239,7 @@ class Document(object):
     """Independent document description."""
     
     def __init__(self, title, content, descr=None, lang=None, variants=(),
-                 edit_label=None, sec_lang='en'):
+                 sec_lang='en'):
         self._title = title
         if isinstance(content, (list, tuple)):
             content = lcg.SectionContainer([c for c in content if c],
@@ -248,7 +248,6 @@ class Document(object):
         self._descr = descr
         self._lang = lang
         self._variants = variants
-        self._edit_label = edit_label
         self._sec_lang = sec_lang
 
     def lang(self):
@@ -258,7 +257,7 @@ class Document(object):
         return WikingNode(id, config, title=self._title, content=self._content,
                           lang=self._lang, variants=self._variants or (),
                           descr=self._descr, menu=menu, panels=panels,
-                          stylesheets=stylesheets, edit_label=self._edit_label,
+                          stylesheets=stylesheets,
                           secondary_language=self._sec_lang)
 
     
@@ -269,14 +268,13 @@ class Document(object):
 class WikingNode(lcg.ContentNode):
     
     def __init__(self, id, config, menu=(), lang=None, variants=(), panels=(),
-                 stylesheets=(), edit_label=None, **kwargs):
+                 stylesheets=(), **kwargs):
         self._config = config
         self._menu = menu
         self._panels = panels
         self._stylesheets = stylesheets
         for panel in panels:
             panel.content().set_parent(self)
-        self._edit_label = edit_label
         super(WikingNode, self).__init__(None, id, language=lang,
                                          language_variants=variants, **kwargs)
         
@@ -292,9 +290,6 @@ class WikingNode(lcg.ContentNode):
     def stylesheets(self):
         return self._stylesheets
                
-    def edit_label(self):
-        return self._edit_label
-
     
 class ActionMenu(lcg.Content):
     
