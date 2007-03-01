@@ -1,4 +1,4 @@
-# Copyright (C) 2006 Brailcom, o.p.s.
+# Copyright (C) 2006, 2007 Brailcom, o.p.s.
 # Author: Tomas Cerha <cerha@brailcom.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -37,6 +37,10 @@ class Configuration(pc):
     class _Option_wiking_dir(pc._StringOption):
         _DESCR = _("Base directory for Wiking shared files.")
         _DEFAULT = '/usr/local/share/wiking'
+        
+    class _Option_storage(pc._StringOption):
+        _DESCR = _("Directory for storing uploaded files.")
+        _DEFAULT = '/var/lib/wiking'
         
     class _Option_smtp_server(pc._StringOption):
         _DESCR = _("Name or address of SMTP server.")
