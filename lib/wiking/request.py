@@ -18,13 +18,9 @@
 from wiking import *
 
 if sys.modules.has_key('mod_python'):
+    # This makes it possible to import the module if mod_python is not loaded.
     from mod_python import apache
     import mod_python.util
-else:
-    # This hack makes this module importable even if mod_python is not loaded.
-    class Apache(object):
-        OK = 1
-    apache = Apache()
     
 import random
 import Cookie
@@ -43,7 +39,6 @@ class Request(object):
         def type(self):
             return self._field.type
     
-    OK = apache.OK
     _UNIX_NEWLINE = re.compile("(?<!\r)\n")
     
     def __init__(self, req, encoding='utf-8'):
@@ -51,11 +46,11 @@ class Request(object):
         self._encoding = encoding
         self.get_remote_host = req.get_remote_host
         self.server = req.server
-        self.uri = self._init_uri()
         # Store request data in real dictionaries.
         self.params = self._init_params()
         options = req.get_options()
         self.options = dict([(o, options[o]) for o in options.keys()])
+        self.uri = self._init_uri()
 
     def _init_params(self):
         def init_value(value):
