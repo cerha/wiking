@@ -1,5 +1,7 @@
 2007-03-01  Tomas Cerha  <cerha@brailcom.org>
 
+	* sql/wiking.sql: Table `images' implemented as a view.
+
 	* lib/wiking/modules.py: Major rewrite of URI construction.  Added
 	support for automatic image resizing and saving the resulting
 	files.
