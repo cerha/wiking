@@ -112,23 +112,25 @@ class SiteHandler(object):
         self._exporter = Exporter()
         #log(OPR, 'New SiteHandler instance for %s.' % dbconnection)
 
-    def _module(self, name):
+    def _module(self, name, identifier=None):
         try:
             module = self._module_cache[name]
+            if identifier is not None and module.identifier() != identifier:
+                raise KeyError(name) # Throw away...
         except KeyError:
             module = get_module(name)(self._dbconnection, self._resolver,
-                                      self._module)
+                                      self._module, identifier=identifier)
             self._module_cache[name] = module
         return module
 
-    def _resolve(self, req, identifier):
+    def _resolve(self, identifier):
         """Return the module which is responsible for handling the request."""
         try:
             modname = self._resolve_cache[identifier]
         except KeyError:
             modname = self._mapping.modname(identifier)
             self._resolve_cache[identifier] = modname
-        return self._module(modname)
+        return self._module(modname, identifier)
 
     def _action(self, req, module, record):
         action = req.param('action', record and 'view' or 'list')
@@ -140,13 +142,9 @@ class SiteHandler(object):
         return method(req, **kwargs)
 
     def _stylesheets(self, req, panels):
-        id = self._mapping.identifier('Stylesheets')
-        if not id:
-            return ()
         with_panels = req.show_panels() and panels
-        return ['/'+id+'/'+stylesheet
-                for stylesheet in self._module('Stylesheets').stylesheets()
-                if with_panels or stylesheet != 'panels.css']
+        return [uri for uri in self._module('Stylesheets').stylesheets()
+                if with_panels or not uri.endswith('panels.css')]
 
     def _doc(self, req, path):
         if path and path[0] == 'lcg':
@@ -196,7 +194,7 @@ class SiteHandler(object):
                     module = self._module(path[1])
                 else:
                     path = path or ('index',)
-                    module = self._resolve(req, path[0])
+                    module = self._resolve(path[0])
                 record = module.resolve(req, path)
                 result = self._action(req, module, record)
             if not isinstance(result, Document):
