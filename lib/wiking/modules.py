@@ -23,7 +23,7 @@ import mx.DateTime
 from pytis.presentation import Computer, CbComputer
 from mx.DateTime import today, TimeDelta
 from lcg import _html
-import re, types
+import re, copy
 
 CHOICE = pp.SelectionType.CHOICE
 ALPHANUMERIC = pp.TextFilter.ALPHANUMERIC
@@ -117,12 +117,10 @@ class Mapping(WikingModule, Publishable):
         cb = pp.CodebookSpec(display='identifier')
     _REFERER = 'identifier'
 
-    def _link_provider(self, row, col, uri, wmi=False, args=()):
-        if wmi and col.id() == 'modtitle':
+    def _link_provider(self, row, cid, wmi=False, **kwargs):
+        if wmi and cid == 'modtitle':
             return '/_wmi/' + row['modname'].value()
-        else:
-            return super(Mapping, self)._link_provider(row, col, uri, wmi=wmi,
-                                                       args=args)
+        return super(Mapping, self)._link_provider(row, cid, wmi=wmi, **kwargs)
             
     def modname(self, identifier):
         row = self._data.get_row(identifier=identifier, published=True)
@@ -130,7 +128,7 @@ class Mapping(WikingModule, Publishable):
             raise NotFound()
         return row['modname'].value()
     
-    def identifier(self, modname):
+    def get_identifier(self, modname):
         row = self._data.get_row(modname=modname, published=True)
         return row and row['identifier'].value() or None
     
@@ -167,9 +165,10 @@ class Config(WikingModule):
             Field('webmaster_addr', _("Webmaster address")),
             Field('theme', _("Theme"), codebook='Themes',
                   selection_type=CHOICE, not_null=False),
+            Field('storage', _("Upload Directory"), width=50),
             )
         layout = ('site_title', 'site_subtitle', 'login_panel',
-                  'webmaster_addr', 'theme')
+                  'webmaster_addr', 'theme', 'storage')
     _TITLE_COLUMN = 'title'
     _DEFAULT_ACTIONS = (Action(_("Edit"), 'edit'),)
 
@@ -245,8 +244,7 @@ class Panels(WikingModule, Publishable, Translatable):
             content = ()
             if row['modname'].value():
                 mod = self._module(row['modname'].value())
-                content = tuple(mod.panelize(row['identifier'].value(),
-                                             lang, row['size'].value()))
+                content = tuple(mod.panelize(lang, row['size'].value()))
             if row['content'].value():
                 content += tuple(parser.parse(row['content'].value()))
             panels.append(Panel(panel_id, title, lcg.Container(content)))
@@ -547,12 +545,12 @@ class News(WikingModule, Translatable):
                                   formatted_fields=('content',),
                                   custom_list=True)
         
-    def _link_provider(self, row, col, uri, wmi=False, args=()):
-        if not wmi and col.id() == 'title':
-            return _html.uri(uri, *args) +'#item-'+ row[self._referer].export()
+    def _link_provider(self, row, cid, wmi=False, **kwargs):
+        if not wmi and cid == 'title' and self._identifier is not None:
+            return _html.uri('/'+self._identifier, *kwargs.items()) + \
+                   '#item-'+ row[self._referer].export()
         elif wmi:
-            return super(News, self)._link_provider(row, col, uri, wmi=wmi,
-                                                    args=args)
+            return super(News, self)._link_provider(row, cid, wmi=wmi, **kwargs)
 
 
 class Planner(News):
@@ -597,16 +595,16 @@ class Planner(News):
     _RSS_TITLE_COLUMN = 'date_title'
     _RSS_DATE_COLUMN = None
 
-
-class Images(WikingModule):
-    class Spec(pp.Specification):
+    
+class Images(StoredFileModule):
+    class Spec(StoredFileModule.Spec):
         title = _("Images")
         def fields(self):
             def fcomp(ffunc):
                 def func(row):
-                    file = row['file'].value()
-                    return file and ffunc(file) or None
-                return Computer(func, depends=('file',))
+                    f = row['file'].value()
+                    return f and ffunc(f) or None
+                return pp.Computer(func, depends=('file',))
             def imgcomp(imgfunc):
                 return fcomp(lambda f: imgfunc(f.image()))
             return (
@@ -614,42 +612,94 @@ class Images(WikingModule):
             Field('published'),
             Field('file', _("File"), virtual=True, editable=ALWAYS,
                   type=pd.Image(not_null=True, maxlen=3*MB,
-                                maxsize=(3000, 3000)),
-                  computer=Computer(self._image, depends=())
-                  ),
+                                maxsize=(3000, 3000)), thumbnail='thumbnail',
+                  computer=self._file_computer('file', '_filename',
+                                               origname='filename')),
+            Field('image', virtual=True, editable=ALWAYS,
+                  type=pd.Image(not_null=True, maxlen=3*MB,
+                                maxsize=(3000, 3000)), computer=
+                  self._file_computer('image', '_image_filename',
+                               compute=lambda r: self._resize(r, (800, 800)))),
+            Field('thumbnail', virtual=True, type=pd.Image(), computer=
+                  self._file_computer('thumbnail', '_thumbnail_filename',
+                               compute=lambda r: self._resize(r, (130, 130)))),
+            Field('filename', _("File"),
+                  computer=fcomp(lambda f: f.filename())),
             Field('title', _("Title"), width=30),
             Field('author', _("Author"), width=30),
             Field('location', _("Location"), width=50),
             Field('description', _("Description"), width=80, height=5),
             Field('taken', _("Date of creation"), type=DateTime()),
+            Field('format', computer=imgcomp(lambda i: i.format.lower())),
             Field('width', _("Width"), computer=imgcomp(lambda i: i.size[0])),
             Field('height', _("Height"), computer=imgcomp(lambda i: i.size[1])),
             Field('size', _("Pixel size"),
                   computer=imgcomp(lambda i: '%dx%d' % i.size)),
             Field('bytesize', _("Byte size"),
                   computer=fcomp(lambda f: pp.format_byte_size(len(f)))),
-            Field('filename',
-                  computer=fcomp(lambda f: f.filename())),
             Field('exif'),
             Field('timestamp', default=now),
+            # Fields supporting image file storage.
+            Field('dbname'),
+            Field('_filename', virtual=True,
+                  computer=self._filename_computer('-orig')),
+            Field('_thumbnail_filename', virtual=True,
+                  computer=self._filename_computer('-thumbnail')),
+            Field('_image_filename', virtual=True,
+                  computer=self._filename_computer()),
             )
-        def _image(self, row):
-            result = row['file'].value()
-            if result is None:
-                type = row['file'].type()
-                value, error = type.validate('/home/cerha/p1000561.jpg',
-                                             filename=row['filename'].value(),
-                                             strict=False)
-                if not error:
-                    result = value.value()
-            return result
+        def _filename_computer(self, append=''):
+            args = ('dbname', 'image_id', 'format', append)
+            return super(Images.Spec, self)._filename_computer(*args)
+        def _resize(self, row, size):
+            # We use the lazy get to prevent running the computer.  This allows
+            # us to find out, whether a new file was uploaded.
+            file = row.get('file', lazy=True)
+            if file is not None and file.path() is None:
+                # Recompute the value by resizing the original image.
+                from PIL.Image import ANTIALIAS
+                from cStringIO import StringIO
+                img = copy.copy(file.image())
+                log(OPR, "Generating a thumbnail:", (img.size, size))
+                img.thumbnail(size, ANTIALIAS)
+                stream = StringIO()
+                img.save(stream, img.format)
+                return pd.Image.Buffer(buffer(stream.getvalue()))
+            else:
+                # The image will be loaded from file.
+                return None
+
         layout = ('file', 'title', 'author', 'location', 'taken',
                   'description')
         columns = ('filename', 'title', 'author', 'location', 'taken',
                    'description')
         
-    def display(self, req, record):
-        return ("image/jpeg", record['file'].value().buffer())
+    _STORED_FIELDS = (('file', '_filename'),
+                      ('image', '_image_filename'),
+                      ('thumbnail', '_thumbnail_filename'))
+        
+    def _link_provider(self, row, cid, wmi=False, **kwargs):
+        if cid == 'file':
+            cid = 'filename'
+            kwargs['action'] = wmi and 'orig' or 'view'
+        if cid == 'thumbnail':
+            cid = 'filename'
+            kwargs['action'] = 'thumbnail'
+        return super(Images, self)._link_provider(row, cid, wmi=wmi, **kwargs)
+
+    def _image(self, record, id):
+        mime = "image/" + str(record['format'].value())
+        data = record[id].value().buffer()
+        return (mime, data)
+    
+    def orig(self, req, record):
+        return self._image(record, 'file')
+    
+    def image(self, req, record):
+        return self._image(record, 'image')
+    
+    def thumbnail(self, req, record):
+        return self._image(record, 'thumbnail')
     
     
 class Stylesheets(WikingModule):
@@ -675,9 +725,12 @@ class Stylesheets(WikingModule):
         return value
 
     def stylesheets(self):
-        return [str(r['identifier'].value())
-                for r in self._data.get_rows(active=True)]
-        
+        if self._identifier:
+            return ['/'+self._identifier+'/'+str(r['identifier'].value())
+                    for r in self._data.get_rows(active=True)]
+        else:
+            return []
+            
     def view(self, req, record, msg=None):
         content = record['content'].value()
         if content is None:
@@ -737,18 +790,16 @@ class Users(WikingModule):
     _REFERER = 'login'
     _PANEL_FIELDS = ('fullname',)
 
-    def _user(self, row):
-        return pp.PresentedRow(self._view.fields(), self._data, row)
-        
     def user(self, login):
-        return self._user(self._data.get_row(login=login))
+        return self._record(self._data.get_row(login=login))
 
     def check_session(self, login, session_key):
-        user = self._data.get_row(login=login, session_key=session_key)
-        if user and user['session_expire'].value() > now():
+        row = self._data.get_row(login=login, session_key=session_key)
+        if row and row['session_expire'].value() > now():
+            user = self._record(row)
             expire = now() + TimeDelta(hours=1)
             self._update_values(user, session_expire=expire)
-            return self._user(user)
+            return user
         else:
             return  None
 
