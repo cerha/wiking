@@ -552,7 +552,7 @@ class StoredFileModule(WikingModule):
                 if result is None and compute is not None:
                     result = compute(row)
                 if result is None and not row.new():
-                    log(OPR, "Loading file:", row[filename].value())
+                    #log(OPR, "Loading file:", row[filename].value())
                     type = row[id].type()
                     kwargs = dict([(arg, row[fid].value())
                                    for arg, fid in (('filename', origname),
@@ -634,7 +634,6 @@ class Publishable(object):
     
     def publish(self, req, record, publish=True):
         err, msg = (None, None)
-        #log(OPR, "Publishing item:", str(record))
         try:
             if publish != record['published'].value():
                 Publishable._change_published(record)
