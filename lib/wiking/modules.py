@@ -165,10 +165,9 @@ class Config(WikingModule):
             Field('webmaster_addr', _("Webmaster address")),
             Field('theme', _("Theme"), codebook='Themes',
                   selection_type=CHOICE, not_null=False),
-            Field('storage', _("Upload Directory"), width=50),
             )
         layout = ('site_title', 'site_subtitle', 'login_panel',
-                  'webmaster_addr', 'theme', 'storage')
+                  'webmaster_addr', 'theme')
     _TITLE_COLUMN = 'title'
     _DEFAULT_ACTIONS = (Action(_("Edit"), 'edit'),)
 
