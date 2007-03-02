@@ -30,6 +30,15 @@ uninstall:
 purge: uninstall
 	rm -f $(CFGFILE)
 
+cvs-install: compile $(SHARE)/wiking $(APACHECFG) $(CFGFILE)
+	ln -s $(CURDIR)/lib/wiking $(LIB)/wiking
+	ln -s $(CURDIR)/doc $(CURDIR)/translations $(CURDIR)/resources $(CURDIR)/sql $(SHARE)/wiking
+
+cvs-update: do-cvs-update compile translations
+
+do-cvs-update:
+	cvs update
+
 config_dir = $(shell dirname $(CFGFILE))
 
 $(CFGFILE): $(config_dir)
