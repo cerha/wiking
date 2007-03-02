@@ -1,11 +1,5 @@
 2007-03-02  Tomas Cerha  <cerha@brailcom.org>
 
-	* lib/wiking/modules.py: Comment improved.
-
-	* lib/wiking/handler.py: Docstring improved.
-
-2007-03-02  Tomáš Cerha  <cerha@brailcom.org>
-
 	* Makefile: Added `cvs-install' option.
 
 	* lib/wiking/install.py: Use psycopg directly.
@@ -22,6 +16,8 @@
 	* lib/wiking/handler.py: Minor enhancements.
 
 	* lib/wiking/configuration.py: New option `storage'.
+
+	* lib/wiking/modules.py: Comment improved.
 
 2007-02-26  Tomas Cerha  <cerha@brailcom.org>
 
