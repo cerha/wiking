@@ -652,8 +652,9 @@ class Images(StoredFileModule):
             return super(Images.Spec, self)._filename_computer(*args)
         def _resize(self, row, size):
             # We use the lazy get to prevent running the computer.  This allows
-            # us to find out, whether a new file was uploaded.
-            file = row.get('file', lazy=True)
+            # us to find out, whether a new file was uploaded and prevents
+            # loading the value from file.
+            file = row.get('file', lazy=True).value()
             if file is not None and file.path() is None:
                 # Recompute the value by resizing the original image.
                 from PIL.Image import ANTIALIAS
