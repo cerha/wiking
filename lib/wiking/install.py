@@ -30,7 +30,7 @@ def maybe_install(req, dbconnection, errstr):
         else:
             conn = dbconnection.modified(database='postgres')
             create = "CREATE DATABASE \"%s\" WITH ENCODING 'UTF8'" % dbname
-            err = _try_query(conn, create)
+            err = _try_query(conn, create, autocommit=True)
             if err == 'FATAL:  database "postgres" does not exist\n':
                 conn = dbconnection.modified(database='template1')
                 err = _try_query(conn, create)
@@ -73,7 +73,7 @@ def maybe_install(req, dbconnection, errstr):
             
 
     
-def _try_query(dbconnection, query):
+def _try_query(dbconnection, query, autocommit=False):
     import psycopg2 as dbapi
     kwargs = dict([(k,v) for k,v in (('user',     dbconnection.user()),
                                      ('password', dbconnection.password()),
@@ -84,6 +84,9 @@ def _try_query(dbconnection, query):
     try:
         try:
             conn = dbapi.connect(**kwargs)
+            if autocommit:
+                from psycopg2 import extensions
+                conn.set_isolation_level(extensions.ISOLATION_LEVEL_AUTOCOMMIT)
             conn.cursor().execute(query)
             conn.commit()
         finally:
