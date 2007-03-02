@@ -20,7 +20,7 @@ from wiking import *
 
 def maybe_install(req, dbconnection, errstr):
     """Check a DB error string and try to set it up if it is the problem.
-
+    
     """
     dbname = dbconnection.database()
     if errstr == 'FATAL:  database "%s" does not exist\n' % dbname:
@@ -74,21 +74,22 @@ def maybe_install(req, dbconnection, errstr):
 
     
 def _try_query(dbconnection, query):
-    from pytis.data import dbapi
-    a = dbapi._DBAPIAccessor()
-    try:
-        conn = a._postgresql_open_connection(dbconnection).connection()
-    except pd.DBException, e:
-        if e.exception() and e.exception().args:
-            return e.exception().args[0]
+    import psycopg2 as dbapi
+    kwargs = dict([(k,v) for k,v in (('user',     dbconnection.user()),
+                                     ('password', dbconnection.password()),
+                                     ('database', dbconnection.database()),
+                                     ('host',     dbconnection.host()),
+                                     ('port',     dbconnection.port()))
+                   if v is not None])
     try:
         try:
+            conn = dbapi.connect(**kwargs)
             conn.cursor().execute(query)
-        except pd.DBException, e:
-            return e.args[0]
-    finally:
-        conn.close()
-    return None
+            conn.commit()
+        finally:
+            conn.close()
+    except dbapi.ProgrammingError, e:
+        return e.args[0]
 
 def _button(param, label):
     return ('<form action="/">'
