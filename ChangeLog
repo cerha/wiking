@@ -1,3 +1,9 @@
+2007-03-02  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/modules.py: Comment improved.
+
+	* lib/wiking/handler.py: Docstring improved.
+
 2007-03-02  Tomáš Cerha  <cerha@brailcom.org>
 
 	* Makefile: Added `cvs-install' option.
@@ -11,6 +17,7 @@
 	* lib/wiking/module.py: Generic support for saving binary data in
 	files.  Major rewrite of URI construction.  Other minor
 	improvements.
+	(Module): 
 
 	* lib/wiking/handler.py: Minor enhancements.
 
