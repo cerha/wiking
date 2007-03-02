@@ -1,10 +1,8 @@
-2007-03-01  Tomas Cerha  <cerha@brailcom.org>
+2007-03-02  Tomáš Cerha  <cerha@brailcom.org>
 
-	* sql/wiking.sql: Table `images' implemented as a view.
+	* Makefile: Added `cvs-install' option.
 
-	* lib/wiking/modules.py: Major rewrite of URI construction.  Added
-	support for automatic image resizing and saving the resulting
-	files.
+	* lib/wiking/install.py: Use psycopg directly.
 
 	* lib/wiking/util.py: Removed support for `edit_label'...
 
