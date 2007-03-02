@@ -22,14 +22,17 @@ _ = lcg.TranslatableTextFactory('wiking')
 class Handler(object):
     """The main Apache/mod_python handler interface.
 
-    There is just one instance of this class for the whole server.  This
-    handler redirects the requests to 'SiteHandler' instances, which are
-    specific to one site.  Multiple sites can be served this way.  One site is
-    typically one virtual host (depending on Apache configuration).
+    There is just one instance of this class for the whole server.  Well, more
+    precisely, there is one instance of the handler per each web server
+    instance -- Apache typically runs several independent instances
+    concurrently.  Anyway, this handler redirects the requests within one
+    webserver instance to 'SiteHandler' instances, which are specific to one
+    site.  Multiple sites can be served this way.  One site is typically one
+    virtual host (depending on web server configuration).
 
     The instance is callable so it can be named 'handler' and it will work as
     a mod_python handler.
-    
+
     """
     def __init__(self):
         self._site_handlers = {}
