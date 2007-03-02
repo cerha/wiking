@@ -356,7 +356,7 @@ CREATE TABLE config (
 	site_subtitle text,
 	login_panel boolean NOT NULL DEFAULT 'FALSE',
 	webmaster_addr text,
-	theme integer REFERENCES themes,
+	theme integer REFERENCES themes
 ) WITH OIDS;
 
 --CREATE TABLE changes (
