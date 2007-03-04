@@ -30,12 +30,24 @@ from lcg import _html
 concat = lcg.concat
 
 def timeit(func, *args, **kwargs):
-    # measure process time
+    """Measure the function execution time.
+
+    Invokes the function 'func' with given arguments and returns the triple
+    (function result, processor time, wall time), both times in microseconds.
+
+    """
     t1, t2 = time.clock(), time.time()
     result = func(*args, **kwargs)
     return result,  time.clock() - t1, time.time() - t2
 
 def get_module(name):
+    """Get the module class by name.
+    
+    This function replaces Pytis resolver in the web environment and is also
+    used by the Pytis resolver in the stand-alone pytis application
+    environment.
+    
+    """
     try:
         from mod_python.apache import import_module
         modules = import_module('wiking.modules', log=True)
@@ -69,58 +81,38 @@ def rss(title, url, items, descr, lang=None, webmaster=None):
     return result
 
 def send_mail (sender, addr, subject, text, html, smtp_server='localhost'):
-    """Create a mime e-mail message with text and HTML version."""
+    """Send a mime e-mail message with text and HTML version."""
     import MimeWriter
     import mimetools
-    import cStringIO
-    import time
-    
-    out = cStringIO.StringIO() # output buffer for our message 
-    htmlin = cStringIO.StringIO(html)
-    txtin = cStringIO.StringIO(text)
-
+    from cStringIO import StringIO
+    out = StringIO() # output buffer for our message 
+    htmlin = StringIO(html)
+    txtin = StringIO(text)
     writer = MimeWriter.MimeWriter(out)
-    #
-    # set up some basic headers... we put subject here
-    # because smtplib.sendmail expects it to be in the
-    # message body
-    #
+    # Set up message headers.
     writer.addheader("From", sender)
     writer.addheader("To", addr)
     writer.addheader("Subject", subject)
     writer.addheader("Date", time.strftime("%a, %d %b %Y %H:%M:%S",
-                                           time.localtime(time.time())))
     writer.addheader("MIME-Version", "1.0")
-    #
-    # start the multipart section of the message
-    # multipart/alternative seems to work better
-    # on some MUAs than multipart/mixed
-    #
+    # Start the multipart section (multipart/alternative seems to work better
+    # on some MUAs than multipart/mixed).
     writer.startmultipartbody("alternative")
     writer.flushheaders()
-    #
-    # the plain text section
-    #
+    # The plain text section.
     subpart = writer.nextpart()
     subpart.addheader("Content-Transfer-Encoding", "quoted-printable")
     pout = subpart.startbody("text/plain", [("charset", 'utf-8')])
     mimetools.encode(txtin, pout, 'quoted-printable')
     txtin.close()
-    #
-    # start the html subpart of the message
-    #
+    # The html section.
     subpart = writer.nextpart()
     subpart.addheader("Content-Transfer-Encoding", "quoted-printable")
-    #
-    # returns us a file-ish object we can write to
-    #
+    # Returns a file-like object we can write to.
     pout = subpart.startbody("text/html", [("charset", 'utf-8')])
     mimetools.encode(htmlin, pout, 'quoted-printable')
     htmlin.close()
-    #
-    # Now that we're done, close our writer and
-    # return the message body
-    #
+    # Close the writer and send the message.
     writer.lastpart()
     import smtplib
     server = smtplib.SMTP(smtp_server)
@@ -148,16 +140,34 @@ def cmp_versions(v1, v2):
 
 # ============================================================================
 
-class HttpError(Exception):
+class HttpError(Exception)
+    """Exception representing en HTTP error.
+
+    Raising this exception will be handled by returning the appropriate HTTP
+    error code to the user and displaying the error message within the content
+    part of the page.  The overall page layout, including navigation and other
+    static page content is displayed as on any other page.  These errors are
+    not logged neither emailed, since they are usually caused by an invalid
+    request.
+
+    This class is abstract.  The error code and error message must be defined
+    by a derived class.  The error message may also require certain constructor
+    arguments passed when raising the error.
+    
+    """
+    
     ERROR_CODE = None
+    
     def title(self):
         name = " ".join(pp.split_camel_case(self.__class__.__name__))
         return _("Error %d: %s", self.ERROR_CODE, name)
+    
     def msg(self, req):
         pass
 
 
 class NotFound(HttpError):
+    """Error indicating invalid request target."""
     ERROR_CODE = 404
     
     def msg(self, req):
@@ -171,6 +181,7 @@ class NotFound(HttpError):
 
     
 class NotAcceptable(HttpError):
+    """Error indicating unavailability of the resource in requested language."""
     ERROR_CODE = 406
     
     def msg(self, req):
@@ -192,14 +203,17 @@ class NotAcceptable(HttpError):
                       "or contact your system administrator."))
         return lcg.concat([lcg.concat("<p>", p, "</p>\n\n") for p in msg])
 
+
 class Unauthorized(HttpError):
+    """Error indicating that authentication is required for the resource."""
     ERROR_CODE = 401
 
     def title(self):
         return _("Authentication required")
 
+
 class FileUpload(object):
-    """An abstract class for accessing uploaded file fields."""
+    """An abstract representation of uploaded file fields."""
 
     def file(self):
         """Return a file-like object from which the data may be read."""
@@ -213,6 +227,7 @@ class FileUpload(object):
 # ============================================================================
 
 class MenuItem(object):
+    """Menu item representation to be passed to 'Document.mknode()'."""
     def __init__(self, id, title):
         self._id = id
         self._title = title
@@ -223,6 +238,7 @@ class MenuItem(object):
 
 
 class Panel(object):
+    """Panel representation to be passed to 'Document.mknode()'."""
     def __init__(self, id, title, content):
         self._id = id
         self._title = title
@@ -236,7 +252,14 @@ class Panel(object):
 
 
 class Document(object):
-    """Independent document description."""
+    """Independent Wiking document representation.
+
+    This allows us to initialize document data without actually creating the
+    'lcg.ContentNode' instance.  The instance can be created later using the
+    'mknode()' method (passing it the remaining arguments required by
+    'lcg.ContentNone' constructor.
+
+    """
     
     def __init__(self, title, content, descr=None, lang=None, variants=(),
                  sec_lang='en'):
