@@ -121,18 +121,29 @@ class Mapping(WikingModule, Publishable):
         if wmi and cid == 'modtitle':
             return '/_wmi/' + row['modname'].value()
         return super(Mapping, self)._link_provider(row, cid, wmi=wmi, **kwargs)
-            
+
     def modname(self, identifier):
-        row = self._data.get_row(identifier=identifier, published=True)
-        if row is None:
-            raise NotFound()
-        return row['modname'].value()
+        """Return the module name by identifier."""
+        try:
+            cache = self._modname_cache
+        except AttributeError:
+            cache = self._modname_cache = {}
+        try:
+            modname = cache[identifier]
+        except KeyError:
+            row = self._data.get_row(identifier=identifier, published=True)
+            if row is None:
+                raise NotFound()
+            cache[identifier] = modname = row['modname'].value()
+        return modname
     
     def get_identifier(self, modname):
+        """Return the current identifier for given module name."""
         row = self._data.get_row(modname=modname, published=True)
         return row and row['identifier'].value() or None
     
     def menu(self, lang):
+        """Return the sequence of main navigation menu items."""
         titles = self._module('Titles').titles(lang)
         return [MenuItem(str(row['identifier'].value()),
                          titles.get(row['mapping_id'].value(),
@@ -142,6 +153,7 @@ class Mapping(WikingModule, Publishable):
                 #and row['parent'].value() is None]
                 
     def title(self, lang, modname):
+        """Return localized module title for given module name."""
         row = self._data.get_row(modname=modname)
         if row:
             titles = self._module('Titles').titles(lang)
@@ -414,14 +426,15 @@ class Pages(WikingModule): #, Publishable, Translatable
         layout = ('identifier', 'lang', 'title', '_content')
         columns = ('title_', 'identifier', 'status')
         cb = pp.CodebookSpec(display='identifier')
+        bindings = {'Attachments': pp.BindingSpec(_("Attachments"), 'mapping_id')}
     
     _REFERER = 'identifier'
     _EXCEPTION_MATCHERS = (
         ('duplicate key violates unique constraint "_pages_mapping_id_key"',
          _("The page already exists in given language.")),) + \
          WikingModule._EXCEPTION_MATCHERS
-    _EDIT_LABEL = _("Edit this page")
     _LIST_BY_LANGUAGE = True
+    _RELATED_MODULES = ('Attachments',)
     
     _INSERT_MSG = _("New page was successfully created. Don't forget to "
                     "publish it and possibly also add it to the main menu. "
@@ -498,8 +511,9 @@ class Pages(WikingModule): #, Publishable, Translatable
         else:
             row = self._data.get_row(mapping_id=record['mapping_id'].value(),
                                      lang=str(req.params['src_lang']))
-            prefill = dict([(k, row[k].value()) for k in ('_content','title')])
-            return self.edit(req, record, prefill=prefill)
+            for k in ('_content','title'):
+                req.params[k] = row[k].value()
+            return self.edit(req, record)
 
     def sync(self, req, record):
         try:
@@ -511,6 +525,62 @@ class Pages(WikingModule): #, Publishable, Translatable
         return self.show(req, record, **kwargs)
         
 
+class Attachments(StoredFileModule):
+    class Spec(StoredFileModule.Spec):
+        title = _("Attachments")
+        def fields(self):
+            def fcomp(ffunc):
+                def func(row):
+                    f = row['file'].value()
+                    return f and ffunc(f) or None
+                return pp.Computer(func, depends=('file',))
+            return (
+            Field('attachment_id'),
+            Field('mapping_id'),
+            Field('page_id'),
+            Field('file', _("File"), virtual=True, editable=ALWAYS,
+                  type=pd.Binary(not_null=True, maxlen=3*MB),
+                  computer=self._file_computer('file', '_filename',
+                                               origname='filename',
+                                               mime='mime_type')),
+            Field('filename', _("Filename"),
+                  computer=fcomp(lambda f: f.filename())),
+            Field('mime_type', _("Mime-type"), width=22,
+                  computer=fcomp(lambda f: f.type())),
+            Field('lang'),
+            Field('title', _("Title"), width=30),
+            Field('description', _("Description"), width=80, height=3),
+            Field('ext', virtual=True,
+                  computer=Computer(self._ext, ('filename',))),
+            Field('bytesize', _("Byte size"),
+                  computer=fcomp(lambda f: pp.format_byte_size(len(f)))),
+            Field('listed', _("")),
+            #Field('timestamp', type=DateTime()), #, default=now),
+            # Fields supporting file storage.
+            Field('dbname'),
+            Field('_filename', virtual=True,
+                  computer=self._filename_computer('dbname', 'attachment_id',
+                                                   'ext')),
+            )
+        layout = ('file', 'title', 'description', 'listed')
+        columns = ('filename', 'title', 'bytesize', 'mime_type')
+        def _ext(self, row):
+            return os.path.splitext(row['filename'].value())[1].lower()
+
+    _STORED_FIELDS = (('file', '_filename'),)
+    _LIST_BY_LANGUAGE = True
+        
+    def _link_provider(self, row, cid, wmi=False, **kwargs):
+        if cid == 'file':
+            cid = 'filename'
+            kwargs['action'] = 'get'
+        return super(Attachments, self)._link_provider(row, cid, wmi=wmi, **kwargs)
+
+    def get(self, req, record):
+        return (str(record['mime_type'].value()),
+                record['file'].value().buffer())
+
+    
 class News(WikingModule, Translatable):
     class Spec(pp.Specification):
         title = _("News")
@@ -629,7 +699,7 @@ class Images(StoredFileModule):
             Field('location', _("Location"), width=50),
             Field('description', _("Description"), width=80, height=5),
             Field('taken', _("Date of creation"), type=DateTime()),
-            Field('format', computer=imgcomp(lambda i: i.format.lower())),
+            Field('format', computer=imgcomp(lambda i: '.'+i.format.lower())),
             Field('width', _("Width"), computer=imgcomp(lambda i: i.size[0])),
             Field('height', _("Height"), computer=imgcomp(lambda i: i.size[1])),
             Field('size', _("Pixel size"),
