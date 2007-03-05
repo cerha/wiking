@@ -48,9 +48,13 @@ class Exporter(lcg.HtmlExporter):
         return _html.div(part, id=name)
     
     def _head(self, node):
-        styles = ['<link rel="stylesheet" type="text/css" href="%s">' % \
-                  stylesheet for stylesheet in node.stylesheets()]
-        x = "\n".join(styles)
+        items = ['<link rel="stylesheet" type="text/css" href="%s">' % \
+                 stylesheet for stylesheet in node.stylesheets()]
+        #rss = node.config().rss
+        #if rss:
+        #    items.append('<link rel="alternate" type="application/rss+xml" '
+        #                 'title="%s" href="%s"/>' % (node.title(), rss))
+        x = "\n".join(items)
         return concat(super(Exporter, self)._head(node), x, separator='\n  ')
     
     def _top(self, node):
@@ -83,7 +87,7 @@ class Exporter(lcg.HtmlExporter):
         return (skip_all,
                 _html.map(_html.div((label, concat(links, separator=sep)),
                                     id="navigation-bar"),
-                          title=_("Main navigation"), name="main-navigation"))
+                          title=_("Main navigation")))
 
     def _page(self, node):
         return self._parts(node, ('menu', 'language_selection',
@@ -148,8 +152,8 @@ class Exporter(lcg.HtmlExporter):
         config = node.config()
 	result = (g.hr(),)
         ctrls = (hidden("["),)
-        if node.edit_label():
-            ctrls += (g.link(node.edit_label(), "?action=edit"), "|")
+        #if config.edit_label:
+        #    ctrls += (g.link(config.edit_label, "?action=edit"), "|")
         #if not config.login_panel:
         #    user, ctrl = self._login_ctrl(node)
         #    ctrls += (concat(_("Logged user"), ': ', user, ' (', ctrl, ') |'),)
