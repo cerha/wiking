@@ -108,7 +108,6 @@ class SiteHandler(object):
         self._server = server
         self._dbconnection = dbconnection
         self._resolver = resolver
-        self._resolve_cache = {}
         self._module_cache = {}
         self._mapping = self._module('Mapping')
         self._panels = self._module('Panels')
@@ -125,15 +124,6 @@ class SiteHandler(object):
                                       self._module, identifier=identifier)
             self._module_cache[name] = module
         return module
-
-    def _resolve(self, identifier):
-        """Return the module which is responsible for handling the request."""
-        try:
-            modname = self._resolve_cache[identifier]
-        except KeyError:
-            modname = self._mapping.modname(identifier)
-            self._resolve_cache[identifier] = modname
-        return self._module(modname, identifier)
 
     def _action(self, req, module, record):
         action = req.param('action', record and 'view' or 'list')
@@ -194,10 +184,11 @@ class SiteHandler(object):
                 if wmi:
                     if len(path) == 1:
                         path += ('Pages',)
-                    module = self._module(path[1])
+                    modname = path[1]
                 else:
                     path = path or ('index',)
-                    module = self._resolve(path[0])
+                    modname = self._mapping.modname(path[0])
+                module = self._module(modname)
                 record = module.resolve(req, path)
                 result = self._action(req, module, record)
             if not isinstance(result, Document):
