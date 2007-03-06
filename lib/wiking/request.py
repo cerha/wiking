@@ -51,6 +51,7 @@ class Request(object):
         options = req.get_options()
         self.options = dict([(o, options[o]) for o in options.keys()])
         self.uri = self._init_uri()
+        self.path = [item for item in self.uri.split('/')[1:] if item]
 
     def _init_params(self):
         def init_value(value):
