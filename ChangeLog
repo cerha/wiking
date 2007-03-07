@@ -1,3 +1,35 @@
+2007-03-07  Tomas Cerha  <cerha@brailcom.org>
+
+	* sql/wiking.sql: Added tables, views and rules supporting the
+	`Attachments' module.
+
+	* lib/wiking/util.py: Action menu constructor arguments changed.
+
+	* lib/wiking/modules.py: Use the `action_' prefix for all action
+	methods.  Minor fixes.
+
+	* lib/wiking/module.py: Fixed DB exception matching.  New URI
+	scheme in WMI.  Use the `action_' prefix for all action methods.
+	Added support for "related" modules -- records of another module
+	depending on the current record of the current module.
+
+	* lib/wiking/handler.py: Use the `action_' prefix for all action
+	methods.  Use `req.path'.
+
+2007-03-05  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/handler.py: Don't perform identifier/module name
+	caching here -- leave it up to the `Mapping' module.
+
+	* lib/wiking/modules.py: Perform caching of module identifier/name
+	assignments (for request resolution).  New module `Attachments'.
+
+	* lib/wiking/export.py: Removed duplicit anchor name.
+
+2007-03-04  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/util.py: Many docstrings added.
+
 2007-03-02  Tomas Cerha  <cerha@brailcom.org>
 
 	* Makefile: Added `cvs-install' option.
