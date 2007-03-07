@@ -1,20 +1,28 @@
 2007-03-07  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/export.py: Use named substitutions in translatable
+	texts instead of positional.
+
 	* sql/wiking.sql: Added tables, views and rules supporting the
 	`Attachments' module.
 
 	* lib/wiking/util.py: Action menu constructor arguments changed.
+	Use named substitutions in translatable texts instead of
+	positional.
 
 	* lib/wiking/modules.py: Use the `action_' prefix for all action
-	methods.  Minor fixes.
+	methods.  Minor fixes.  List attachments at the bottom of a page.
+	Resolve attachments by page identifier and filename.
 
 	* lib/wiking/module.py: Fixed DB exception matching.  New URI
 	scheme in WMI.  Use the `action_' prefix for all action methods.
 	Added support for "related" modules -- records of another module
-	depending on the current record of the current module.
+	depending on the current record of the current module.  Added
+	support for module redirection.  Use new `lcg' content
+	constructors.
 
 	* lib/wiking/handler.py: Use the `action_' prefix for all action
-	methods.  Use `req.path'.
+	methods.  Use `req.path'.  Added support for module redirection.
 
 2007-03-05  Tomas Cerha  <cerha@brailcom.org>
 
