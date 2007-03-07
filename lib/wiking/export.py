@@ -25,8 +25,6 @@ class Exporter(lcg.HtmlExporter):
     _BODY_PARTS = ('wrapper',)
     _LANGUAGE_SELECTION_LABEL = _("Language:")
 
-    t = lcg.Link.ExternalTarget
-    
     def _node_uri(self, node, lang=None):
         uri = '/'+ node.id()
         if lang is not None:
@@ -40,7 +38,7 @@ class Exporter(lcg.HtmlExporter):
     def _is_current(self, node, item):
         nid, iid = (node.id(), item.id())
         return iid == nid or nid.startswith(iid+'/')
-
+    
     def _wrapper(self, node):
         return self._parts(node, ('top', 'page', 'bottom'))
     
@@ -167,16 +165,16 @@ class Exporter(lcg.HtmlExporter):
                           title=_("Enter the Wiking Management Interface"))
         ctrls += (ctrl, hidden("]"))
         result += (g.span(concat(ctrls, separator="\n"), cls="controls"),
-                   g.span(_("Powered by %s %s",
-                            _html.link("Wiking",
-                                       "http://www.freebsoft.org/wiking"),
-                            wiking.__version__)))
+                   g.span(_("Powered by %(wiking)s %(version)s",
+                            wiking=_html.link("Wiking",
+                                            "http://www.freebsoft.org/wiking"),
+                            version=wiking.__version__)))
         return result
         
 
     def _last_change(self, node):
         return None
-	return _("Last change: %s, %s")
+	return _("Last change: %(date)s, %(user)s")
 
     def _footer(self, node):
         links = [_html.link(label, uri, title=title) + ','
