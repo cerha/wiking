@@ -126,11 +126,9 @@ class SiteHandler(object):
         return module
 
     def _action(self, req, module, record):
-        action = req.param('action', record and 'view' or 'list')
-        if action == 'resolve' or action.startswith('_') \
-               or not action.replace('_', '').isalpha():
-            raise Exception("Invalid action.")
-        method = getattr(module, action)
+        action = req.param('action', record and (req.wmi and 'show' or 'view')
+                           or 'list')
+        method = getattr(module, 'action_' + action)
         kwargs = record and dict(record=record) or {}
         return method(req, **kwargs)
 
@@ -171,25 +169,24 @@ class SiteHandler(object):
         return Document(title, content, lang=lang, variants=variants)
 
     def handle(self, req):
-        path = [item for item in req.uri.split('/')[1:] if item]
-        req.wmi = wmi = path and path[0] == '_wmi'
-        doc = path and path[0] == '_doc'
+        req.wmi = wmi = req.path and req.path[0] == '_wmi'
+        doc = req.path and req.path[0] == '_doc'
         module = None
         try:
             #req.login(self._module('Users'))
             if doc:
                 doc = req.param('display') != 'inline'
-                result = self._doc(req, path[1:])
+                result = self._doc(req, req.path[1:])
             else:
                 if wmi:
-                    if len(path) == 1:
-                        path += ('Pages',)
-                    modname = path[1]
+                    if len(req.path) == 1:
+                        req.path += ('Pages',)
+                    modname = req.path[1]
                 else:
-                    path = path or ('index',)
-                    modname = self._mapping.modname(path[0])
+                    req.path = req.path or ('index',)
+                    modname = self._mapping.modname(req.path[0])
                 module = self._module(modname)
-                record = module.resolve(req, path)
+                record = module.resolve(req)
                 result = self._action(req, module, record)
             if not isinstance(result, Document):
                 content_type, data = result
@@ -211,7 +208,7 @@ class SiteHandler(object):
                                 _("Wiking Management Interface") or \
                                 _("Wiking Help System")
             config.site_subtitle = None
-            menu = wmi and self._module('Modules').menu(path[0]) or ()
+            menu = wmi and self._module('Modules').menu(req.path[0]) or ()
             panels = ()
         else:
             menu = self._mapping.menu(result.lang())
@@ -221,7 +218,7 @@ class SiteHandler(object):
         config.doc = doc
         config.module = module
         config.user = req.user()
-        node = result.mknode('/'.join(path), config, menu, panels, 
+        node = result.mknode('/'.join(req.path), config, menu, panels, 
                              self._stylesheets(req, panels))
         data = translator(node.language()).translate(self._exporter.page(node))
         return req.result(data)
