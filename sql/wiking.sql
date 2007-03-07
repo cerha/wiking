@@ -146,6 +146,65 @@ CREATE OR REPLACE RULE pages_delete AS
 
 -------------------------------------------------------------------------------
 
+CREATE TABLE _attachments (
+       attachment_id serial PRIMARY KEY,
+       mapping_id int NOT NULL REFERENCES _mapping ON DELETE CASCADE,
+       filename varchar(64) NOT NULL,
+       mime_type text NOT NULL,
+       bytesize text NOT NULL,
+       listed boolean NOT NULL DEFAULT 'TRUE',
+       "timestamp" timestamp NOT NULL DEFAULT now(),
+       UNIQUE (mapping_id, filename)
+) WITH OIDS;
+
+CREATE TABLE _attachment_descr (
+       attachment_id int NOT NULL REFERENCES _attachments ON DELETE CASCADE,
+       lang char(2) NOT NULL REFERENCES languages(lang),
+       title text NOT NULL,
+       description text
+) WITH OIDS;
+
+CREATE OR REPLACE VIEW attachments
+AS SELECT a.oid, a.attachment_id  ||'.'|| l.lang as page_attachment_id,
+  a.attachment_id, l.lang, a.mapping_id ||'.'|| l.lang as page_id, 
+  a.mapping_id, m.identifier, a.filename, a.mime_type, a.bytesize, a.listed, a."timestamp",
+  d.title, d.description, current_database() as dbname 
+FROM _attachments a JOIN _mapping m USING (mapping_id) CROSS JOIN languages l  
+LEFT OUTER JOIN _attachment_descr d USING (attachment_id, lang);
+
+CREATE OR REPLACE RULE attachments_insert AS
+ ON INSERT TO attachments DO INSTEAD (
+    INSERT INTO _attachments (mapping_id, filename, mime_type, bytesize, listed)
+    VALUES (new.mapping_id, new.filename, 
+            new.mime_type, new.bytesize, new.listed);
+    INSERT INTO _attachment_descr (attachment_id, lang, title, description)
+    VALUES ((SELECT currval('_attachments_attachment_id_seq')),
+    	     new.lang, new.title, new.description)
+);
+
+CREATE OR REPLACE RULE attachments_update AS
+ ON UPDATE TO attachments DO INSTEAD (
+    UPDATE _attachments SET 
+    	   mapping_id = new.mapping_id, 
+	   filename = new.filename,
+	   mime_type = new.mime_type,
+	   bytesize = new.bytesize,
+	   listed = new.listed	
+           WHERE attachment_id = old.attachment_id;
+    UPDATE _attachment_descr SET title=new.title, description=new.description
+       	   WHERE attachment_id = old.attachment_id AND lang = old.lang;
+    INSERT INTO _attachment_descr (attachment_id, lang, title, description) 
+   	   SELECT new.attachment_id, new.lang, new.title, new.description
+	   WHERE old.title IS NULL;
+);
+
+CREATE OR REPLACE RULE attachments_delete AS
+  ON DELETE TO attachments DO INSTEAD (
+     DELETE FROM _attachments WHERE attachment_id = old.attachment_id;
+);
+
+-------------------------------------------------------------------------------
+
 CREATE TABLE _panels (
 	panel_id serial PRIMARY KEY,
 	lang char(2) NOT NULL REFERENCES languages(lang),
@@ -274,9 +333,6 @@ CREATE OR REPLACE RULE images_delete AS
   ON DELETE TO images DO INSTEAD (
      DELETE FROM _images WHERE image_id = old.image_id;
 );
-
-
-
 
 -------------------------------------------------------------------------------
 
