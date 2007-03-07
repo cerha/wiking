@@ -35,6 +35,7 @@ class Module(object):
         ('null value in column "(?P<id>[a-z_]+)" violates not-null constraint',
          _("Empty value.  This field is mandatory.")),
         )
+    _RELATED_MODULES = ()
     
     _INSERT_MSG = _("New record was successfully inserted.")
     _UPDATE_MSG = _("The record was successfully updated.")
@@ -95,11 +96,12 @@ class Module(object):
         spec = self.spec(resolver)
         self._data = spec.data_spec().create(dbconnection_spec=dbconnection)
         self._view = spec.view_spec()
-        key = self._data.key()[0].id()
+        self._bindings = spec.binding_spec()
+        self._key = key = self._data.key()[0].id()
         self._sorting = self._view.sorting()
         if self._sorting is None:
             self._sorting = ((key, pytis.data.ASCENDENT),)
-        self._exception_matchers = [(re.compile('ERROR:  '+regex+'\n'), msg)
+        self._exception_matchers = [(re.compile(regex), msg)
                                     for regex, msg in self._EXCEPTION_MATCHERS]
         self._referer = self._REFERER or key
         self._referer_type = self._data.find_column(self._referer).type()
@@ -112,8 +114,10 @@ class Module(object):
         return lcg.datetime_formats(translator(lang))
         
     def _validate(self, req, record):
+        # TODO: This should go to pytis.web....
         errors = []
-        for id in self._view.layout().order():
+        for f in self._view.fields():
+            id = f.id()
             if not record.editable(id):
                 continue
             type = record[id].type()
@@ -136,8 +140,10 @@ class Module(object):
                 value_ = "F"
             elif isinstance(type, pd.Binary):
                 value_ = None
-            else:
+            elif id in self._view.layout().order():
                 value_ = ""
+            else:
+                continue
             if isinstance(type, (Date, DateTime)):
                 formats = self._datetime_formats(req)
                 format = formats['date']
@@ -167,7 +173,7 @@ class Module(object):
     def _analyze_exception(self, e):
         if e.exception():
             for matcher, msg in self._exception_matchers:
-                match = matcher.match(str(e.exception()))
+                match = matcher.match(str(e.exception()).strip())
                 if match:
                     if match.groupdict().has_key('id'):
                         return ((match.group('id'), msg),)
@@ -209,7 +215,7 @@ class Module(object):
             title = concat(title, ' :: ', subtitle)
         return Document(title, content, lang=lang, variants=variants)
 
-    def _actions(self, req, record=None, actions=None):
+    def _actions(self, req, record=None, actions=None, args=None):
         if not req.wmi:
             return None
         if not actions:
@@ -219,20 +225,17 @@ class Module(object):
                           self._DEFAULT_ACTIONS_LAST
             else:
                 actions = self._LIST_ACTIONS
-        return ActionMenu(req.uri, actions, self._data, record)
+        return ActionMenu(actions, record, args=args)
 
     def _link_provider(self, row, cid, wmi=False, **kwargs):
-        key = self._data.key()[0].id()
-        if cid == self._title_column or cid == key:
-            if self._identifier is not None and not wmi:
-                uri = '/'+ self._identifier
-            else:
-                kwargs['action'] = kwargs.get('action', 'show')
+        if cid == self._title_column or cid == self._key:
+            if wmi:
                 uri = '/_wmi/'+ self.name()
-            if self._referer is not None and not wmi:
-                uri += '/'+ row[self._referer].export()
+                referer = self._key
             else:
-                kwargs[key] = row[key].export()
+                uri = '/'+ self._identifier
+                referer = self._referer
+            uri += '/'+ row[referer].export()
             from lcg import _html
             return _html.uri(uri, **kwargs)
         return None
@@ -242,30 +245,26 @@ class Module(object):
                                   self._link_provider(row, cid, wmi=req.wmi)
         return form(self._data, self._view, self._resolver, *args, **kwargs)
     
-    def _get_row_by_key(self, params):
-        kc = self._data.key()[0]
-        key, type = kc.id(), kc.type()
-        if not params.has_key(key):
-            return None
-        v = params[key]
-        if isinstance(v, tuple):
-            v = v[-1]
-        value, error = type.validate(v)
+    def _get_row_by_key(self, value):
+        if isinstance(value, tuple):
+            value = value[-1]
+        type = self._data.key()[0].type()
+        v, error = type.validate(value)
         if error:
-            raise error
-        row = self._data.row((value,))
+            raise NotFound()
+        row = self._data.row((v,))
         if row is None:
             raise NotFound()
         return row
         
-    def _resolve(self, req, path):
+    def _resolve(self, req):
         # Returns Row, None or raises HttpError.
-        if len(path) <= 1:
+        if len(req.path) <= 1:
             return None
-        elif self._referer and len(path) == 2:
-            value = path[1]
+        elif len(req.path) == 2:
+            value = req.path[1]
             if not isinstance(self._referer_type, pd.String):
-                v, e = self._referer_type.validate(path[1])
+                v, e = self._referer_type.validate(req.path[1])
                 if not e:
                     value = v.value()
                 else:
@@ -283,21 +282,25 @@ class Module(object):
     def _variants(self, record):
         return None
     
-    def _default_prefill(self, req):
-        if self._LIST_BY_LANGUAGE:
+    def _prefill(self, req, new=False):
+        keys = [f.id() for f in self._view.fields()]
+        prefill = dict([(k, req.params[k]) for k in keys
+                        if req.params.has_key(k)])
+        if new and not prefill.has_key('lang') and self._LIST_BY_LANGUAGE:
             lang = req.prefered_language(self._module('Languages').languages())
             if lang:
-                return {'lang': lang}
-        return None
+                prefill['lang'] = lang
+        return prefill
 
     def _condition(self):
         # Can be used by a module to filter out invalid (ie outdated) records.
         return None
     
-    def _rows(self, lang=None, limit=None):
-        kwargs = dict(limit=limit,
-                      sorting=self._sorting,
-                      condition=self._condition())
+    def _rows(self, lang=None, **kwargs):
+        if not kwargs.has_key('sorting'):
+            kwargs['sorting'] = self._sorting
+        if not kwargs.has_key('condition'):
+            kwargs['condition'] = self._condition()
         if lang and self._LIST_BY_LANGUAGE:
             kwargs['lang'] = lang
         return self._data.get_rows(**kwargs)
@@ -313,12 +316,14 @@ class Module(object):
         return lang, variants, self._rows(lang=lang)
 
     def _record(self, row, new=False):
-        """Return the Record instance representing given data row."""
+        """Return the Record instance initialized by given data row."""
         return self.Record(self._view.fields(), self._data, row, new=new)
     
     def _reload(self, record):
         """Update record data from the database."""
         record.set_row(self._data.row(record.key()))
+
+    # ===== Methods which modify the database =====
     
     def _insert(self, record):
         """Insert a new row into the database and return a Record instance."""
@@ -329,40 +334,78 @@ class Module(object):
     def _update(self, record):
         """Update the record data in the database."""
         self._data.update(record.key(), record.rowdata())
+        self._reload(record)
 
     def _update_values(self, record, **kwargs):
         """Update the record in the database by values of given keyword args."""
-        return self._update(record, self._data.make_row(**kwargs))
+        self._data.update(record.key(), self._data.make_row(**kwargs))
+        self._reload(record)
     
     def _delete(self, record):
         """Delete the record from the database."""
         if not self._data.delete(record.key()):
             raise pd.DBException('???', Exception("Unable to delete record."))
 
+    # ===== Public methods which are not action handlers =====
+    
     def identifier(self):
+        """Return current mapping identifier of the module as a string."""
         return self._identifier
             
-    def resolve(self, req, path):
-        # Path is ignored in WMI (only resolution by key is allowed).
-        row = self._get_row_by_key(req.params)
-        if row is None and not req.wmi:
-            row = self._resolve(req, path)
+    def resolve(self, req):
+        """Return the Record corresponding to the request or None."""
+        if req.wmi:
+            #if len(req.path) != 2:
+            #    raise NotFound()
+            #key = req.param(self._key)
+            #if key is None:
+            #    row = None
+            #else:
+            #    row = self._get_row_by_key(key)
+            if len(req.path) == 2:
+                key = req.param(self._key)
+                if key is None:
+                    row = None
+                else:
+                    row = self._get_row_by_key(key)
+            elif len(req.path) == 3:
+                row = self._get_row_by_key(req.path[2])
+            else:
+                raise NotFound()
+        else:
+            row = self._resolve(req)
         if row is not None:
             return self._record(row)
         return None
 
+    def record(self, value):
+        """Return the record corresponding to given key value."""
+        return self._record(self._data.row((value,)))
+        
+    def related(self, req, binding, modname, record):
+        """Return the listing of records related to other module's record."""
+        bcol, sbcol = binding.binding_column(), binding.side_binding_column()
+        args = {sbcol: record[bcol].value()}
+        if self._LIST_BY_LANGUAGE:
+            args['lang'] = record['lang'].value()
+        form = self._form(ListView, req, self._rows(**args), custom_spec=\
+                          (not req.wmi and self._CUSTOM_VIEW or None))
+        #lang = req.prefered_language(self._module('Languages').languages())
+        return lcg.Section(title=self._view.title(), #self._real_title(lang)
+                           content=(form, self._actions(req, args=args)))
+
     # ===== Action handlers =====
     
-    def list(self, req, err=None, msg=None):
+    def action_list(self, req, err=None, msg=None):
         lang, variants, rows = self._list(req)
-        content = [self._form(ListView, req, rows,
-                              custom_spec=(not req.wmi and self._CUSTOM_VIEW
-                                           or None))]
+        content = [self._form(ListView, req, rows, custom_spec=\
+                              (not req.wmi and self._CUSTOM_VIEW or None))]
         if req.wmi:
             uri = '/_doc/'+self.name()
             h = lcg.Link(lcg.Link.ExternalTarget(uri, _("Help")))
             content.extend((self._actions(req) , h))
         elif self._RSS_TITLE_COLUMN:
+            # TODO: This belongs to RssModule.
             rss = lcg.Link.ExternalTarget(req.uri +'.'+ lang +'.rss',
                                           self._real_title(lang) + ' RSS')
             doc = lcg.Link.ExternalTarget('_doc/rss?display=inline',
@@ -375,31 +418,35 @@ class Module(object):
         return self._document(req, content, lang=lang, variants=variants,
                               err=err, msg=msg)
 
-    def show(self, req, record, err=None, msg=None):
+    def action_show(self, req, record, err=None, msg=None):
         form = self._form(pw.ShowForm, req, record.row())
-        return self._document(req, (form, self._actions(req, record)), record,
-                              err=err, msg=msg)
+        content = [form, self._actions(req, record)]
+        for modname in self._RELATED_MODULES:
+            module, binding = self._module(modname), self._bindings[modname]
+            content.append(module.related(req, binding, self.name(), record))
+        return self._document(req, content, record, err=err, msg=msg)
 
-    def view(self, req, record, err=None, msg=None):
+    def action_view(self, req, record, err=None, msg=None):
         # `show()' always uses ShowForm, while `view()' may be overriden
         # by the module (using _CUSTOM_VIEW).
         form = self._form(RecordView, req, record.row(),
                           custom_spec=self._CUSTOM_VIEW)
         return self._document(req, form, record, err=err, msg=msg)
     
-    def add(self, req, prefill=None, errors=()):
+    def action_add(self, req, errors=()):
         #req.check_auth(pd.Permission.INSERT)
         form = self._form(pw.EditForm, req, None, handler=req.uri, new=True,
-                          prefill=prefill or self._default_prefill(req),
+                          prefill=self._prefill(req, new=True),
                           errors=errors, action='insert')
         return self._document(req, form, subtitle=_("new record"))
 
-    def edit(self, req, record, errors=(), prefill=None):
+    def action_edit(self, req, record, errors=()):
         form = self._form(pw.EditForm, req, record.row(), handler=req.uri,
-                          errors=errors, prefill=prefill, action='update')
+                          errors=errors, prefill=self._prefill(req),
+                          action='update')
         return self._document(req, form, record, subtitle=_("edit form"))
 
-    def remove(self, req, record, err=None):
+    def action_remove(self, req, record, err=None):
         form = self._form(pw.ShowForm, req, record.row())
         actions = self._actions(req, record, (Action(_("Remove"), 'delete'),))
         msg = _("Please, confirm removing the record permanently.")
@@ -408,7 +455,7 @@ class Module(object):
 
     # ===== Action handlers which actually modify the database =====
 
-    def insert(self, req):
+    def action_insert(self, req):
         if not req.wmi:
             return
         record = self._record(None, new=True)
@@ -419,13 +466,10 @@ class Module(object):
             except pd.DBException, e:
                 errors = self._analyze_exception(e)
             else:
-                if req.wmi:
-                    return self.list(req, msg=self._INSERT_MSG)
-                else:
-                    return self.view(req, record, msg=self._INSERT_MSG)
-        return self.add(req, prefill=req.params, errors=errors)
+                return self._redirect_after_insert(req, record)
+        return self.action_add(req, errors=errors)
             
-    def update(self, req, record):
+    def action_update(self, req, record):
         if not req.wmi:
             return
         errors = self._validate(req, record)
@@ -435,21 +479,36 @@ class Module(object):
             except pd.DBException, e:
                 errors = self._analyze_exception(e)
             else:
-                action = req.wmi and self.show or self.view
-                return action(req, record, msg=self._UPDATE_MSG)
-        return self.edit(req, record, prefill=req.params, errors=errors)
+                return self._redirect_after_update(req, record)
+        return self.action_edit(req, record, errors=errors)
 
-    def delete(self, req, record):
+    def action_delete(self, req, record):
         if not req.wmi:
             return
         try:
             self._delete(record)
         except pd.DBException, e:
-            return self.remove(req, record, err=self._analyze_exception(e))
+            err = self._analyze_exception(e)
+            return self.action_remove(req, record, err=err)
         else:
-            return self.list(req, msg=self._DELETE_MSG)
-
-
+            return self._redirect_after_delete(req, record)
+        
+    # ===== Request redirection after data operations ====-
+        
+    def _redirect_after_update(self, req, record):
+        action = req.wmi and self.action_show or self.action_view
+        return action(req, record, msg=self._UPDATE_MSG)
+        
+    def _redirect_after_insert(self, req, record):
+        if req.wmi:
+            return self.action_list(req, msg=self._INSERT_MSG)
+        else:
+            return self.action_view(req, record, msg=self._INSERT_MSG)
+        
+    def _redirect_after_delete(self, req, record):
+        return self.action_list(req, msg=self._DELETE_MSG)
+    
+        
 # ==============================================================================
 # Module extensions 
 # ==============================================================================
@@ -484,7 +543,7 @@ class RssModule(Module):
     _RSS_DESCR_COLUMN = None
     _RSS_DATE_COLUMN = None
 
-    def rss(self, req):
+    def action_rss(self, req):
         if not self._RSS_TITLE_COLUMN:
             raise NotFound
         lang, variants, rows = self._list(req, lang=req.param('lang'), limit=8)
@@ -554,7 +613,7 @@ class StoredFileModule(WikingModule):
                 if result is None and not row.new():
                     #log(OPR, "Loading file:", row[filename].value())
                     type = row[id].type()
-                    kwargs = dict([(arg, row[fid].value())
+                    kwargs = dict([(arg, str(row[fid].value()))
                                    for arg, fid in (('filename', origname),
                                                     ('type', mime)) if fid])
                     result = type.Buffer(row[filename].value(), **kwargs)
@@ -564,7 +623,7 @@ class StoredFileModule(WikingModule):
         def _filename_computer(self, subdir, name, ext, append=''):
             """Return a computer computing filename for storing the file."""
             def func(row):
-                fname = row[name].export() +append+'.'+ row[ext].value()
+                fname = row[name].export() + append + '.' + row[ext].value()
                 path = (cfg.storage, row[subdir].value(), self.table, fname)
                 return os.path.join(*path)
             return pp.Computer(func, depends=(subdir, name, ext))
@@ -609,7 +668,8 @@ class StoredFileModule(WikingModule):
 # Mixin module classes
 
 class Publishable(object):
-    "Mix-in class for modules where the records can be published/unpublished."
+    """Mix-in class for modules with publishable/unpublishable records."""
+    
     _MSG_PUBLISHED = _("The item was published.")
     _MSG_UNPUBLISHED = _("The item was unpublished.")
 
@@ -632,7 +692,7 @@ class Publishable(object):
     # actions in some more generic way, so that we don't need to implement an
     # action handler method for each pytis action.
     
-    def publish(self, req, record, publish=True):
+    def action_publish(self, req, record, publish=True):
         err, msg = (None, None)
         try:
             if publish != record['published'].value():
@@ -641,18 +701,25 @@ class Publishable(object):
             msg = publish and self._MSG_PUBLISHED or self._MSG_UNPUBLISHED
         except pd.DBException, e:
             err = self._analyze_exception(e)
-        action = req.wmi and self.show or self.view
+        action = req.wmi and self.action_show or self.action_view
         return action(req, record, msg=msg, err=err)
 
-    def unpublish(self, req, record):
-        return self.publish(req, record, publish=False)
+    def action_unpublish(self, req, record):
+        return self.action_publish(req, record, publish=False)
 
     
 class Translatable(object):
+    # TODO: This is currently unused, since it has an opposite logic to the
+    # "Translate" action implemented for the 'Pages' module.  The ideal
+    # solution would be to generalize the "Translate action from 'Pages' and
+    # use it as this mixin for all translatable items.  Morover this doesn't
+    # work in the new WMI URI schema...
+    
     _ACTIONS = (Action(_("Translate"), 'translate'),)
-    def translate(self, req, record):
-        prefill = [(k, record[k].export())
-                   for k in record.keys() if k != 'lang']
-        return self.add(req, prefill=dict(prefill))
+    
+    def action_translate(self, req, record):
+        req.params.update(dict([(k, record[k].export())
+                                for k in record.keys() if k != 'lang']))
+        return self.action_add(req)
 
 
