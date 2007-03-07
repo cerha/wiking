@@ -1,14 +1,15 @@
+
 # Wiking CMS translations.
 # Copyright (C) 2006, 2007 Brailcom, o.p.s.
 # This file is distributed under the same license as the Wiking package.
 # Pawe³ Loba <ploba@rogers.com>, 2006
-#
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-01-14 07:34+0100\n"
-"PO-Revision-Date: 2007-01-14 23:15+0100\n"
+"POT-Creation-Date: 2007-03-07 13:43+0100\n"
+"PO-Revision-Date: 2007-03-07 14:11+0100\n"
 "Last-Translator: Pawel Loba <ploba@rogers.com>\n"
 "Language-Team: Polish <pl@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -19,201 +20,193 @@ msgstr ""
 msgid "Language:"
 msgstr "Jêzyk:"
 
-#: ../lib/wiking/export.py:76 ../lib/wiking/export.py:126
+#: ../lib/wiking/export.py:80 ../lib/wiking/export.py:130
 msgid "skip"
 msgstr "Przeskocz"
 
-#: ../lib/wiking/export.py:77 ../lib/wiking/export.py:86
+#: ../lib/wiking/export.py:81 ../lib/wiking/export.py:90
 msgid "Main navigation"
 msgstr "G³ówna Nawigacja"
 
-#: ../lib/wiking/export.py:81
+#: ../lib/wiking/export.py:85
 msgid "Skip all repetitive content"
 msgstr "Przeskocz powtarzaj±c± siê tre¶æ"
 
-#: ../lib/wiking/export.py:95
+#: ../lib/wiking/export.py:99
 msgid "log out"
 msgstr "wyloguj siê"
 
-#: ../lib/wiking/export.py:97
+#: ../lib/wiking/export.py:101
 msgid "anonymous"
 msgstr "anonimowy"
 
-#: ../lib/wiking/export.py:97
+#: ../lib/wiking/export.py:101
 msgid "log in"
 msgstr "wloguj siê"
 
-#: ../lib/wiking/export.py:106
+#: ../lib/wiking/export.py:110
 msgid "Show panels"
 msgstr "Poka¿ panele"
 
-#: ../lib/wiking/export.py:108
+#: ../lib/wiking/export.py:112
 msgid "Hide panels"
 msgstr "Ukryj panele"
 
-#: ../lib/wiking/export.py:114
+#: ../lib/wiking/export.py:118
 msgid "Logged user"
 msgstr "U¿ytkownik zalogowany"
 
-#: ../lib/wiking/export.py:157
+#: ../lib/wiking/export.py:161
 msgid "Leave the Management Interface"
 msgstr "Opu¶æ interfejs zarz±dzaj±cy"
 
-#: ../lib/wiking/export.py:159
+#: ../lib/wiking/export.py:163
 msgid "Leave the Help System"
 msgstr "Opu¶æ Pomoc"
 
-#: ../lib/wiking/export.py:161
+#: ../lib/wiking/export.py:166
 msgid "Manage this site"
 msgstr "Zarz±dzanie witryn±"
 
-#: ../lib/wiking/export.py:162
+#: ../lib/wiking/export.py:167
 msgid "Enter the Wiking Management Interface"
 msgstr "Wejd¼ do interfejsu zarz±dzaj±cego Wikinga"
 
-#: ../lib/wiking/export.py:166
+#: ../lib/wiking/export.py:170
 #, python-format
-msgid "Powered by %s %s"
-msgstr "Obs³ugiwany przez %s %s"
+msgid "Powered by %(wiking)s %(version)s"
+msgstr "Obs³ugiwany przez %(wiking)s %(version)s"
 
-#: ../lib/wiking/export.py:175
+#: ../lib/wiking/export.py:179
 #, python-format
-msgid "Last change: %s, %s"
-msgstr "Ostatnia zmiana: %s, %s"
+msgid "Last change: %(date)s, %(user)s"
+msgstr "Ostatnia zmiana: %(date)s, %(user)s"
 
-#: ../lib/wiking/export.py:191
+#: ../lib/wiking/export.py:195
 msgid "US Government Section 508 Accessibility Guidelines."
 msgstr "Sekcja 508 Rz±du USA O Zasadach Dostêpno¶ci"
 
-#: ../lib/wiking/export.py:195
+#: ../lib/wiking/export.py:199
 msgid "This site conforms to the following standards:"
 msgstr "Witryna ta stosuje siê do nastêpuj±cych standardów:"
 
-#: ../lib/wiking/export.py:196
+#: ../lib/wiking/export.py:200
 msgid "This site can be viewed in ANY browser."
 msgstr "Witryna ta jest wy¶wietlana poprawnie przez ka¿d± przegl±darkê."
 
-#: ../lib/wiking/export.py:197
+#: ../lib/wiking/export.py:201
 msgid "Accessibility Statement"
 msgstr "O¶wiadczenie o Dostêpno¶ci"
 
-#: ../lib/wiking/export.py:199
+#: ../lib/wiking/export.py:203
 msgid "Contact:"
 msgstr "Kontakt:"
 
-#: ../lib/wiking/handler.py:203
-msgid "The requested object does not exist anymore!"
-msgstr "Wymagany obiekt ju¿ nie istnieje!"
-
-#: ../lib/wiking/handler.py:229
+#: ../lib/wiking/handler.py:209
 msgid "Wiking Management Interface"
 msgstr "Zarz±dzaj±cy Interfejs Wikinga"
 
-#: ../lib/wiking/handler.py:230
+#: ../lib/wiking/handler.py:210
 msgid "Wiking Help System"
 msgstr "Pomoc Wikinga"
 
-#: ../lib/wiking/module.py:27 ../lib/wiking/modules.py:217
+#: ../lib/wiking/module.py:26 ../lib/wiking/modules.py:184
 msgid "Edit"
 msgstr "Edytuj"
 
-#: ../lib/wiking/module.py:28 ../lib/wiking/module.py:478
+#: ../lib/wiking/module.py:27 ../lib/wiking/module.py:449
 msgid "Remove"
 msgstr "Usuñ"
 
-#: ../lib/wiking/module.py:29
+#: ../lib/wiking/module.py:28
 msgid "List"
 msgstr "Lista"
 
-#: ../lib/wiking/module.py:30
+#: ../lib/wiking/module.py:29
 msgid "New record"
 msgstr "Nowy wpis"
 
-#: ../lib/wiking/module.py:41
+#: ../lib/wiking/module.py:34
 msgid "This value already exists.  Enter a unique value."
 msgstr "Te dane ju¿ istniej±. Wprowad¼ inne warto¶ci."
 
-#: ../lib/wiking/module.py:43
+#: ../lib/wiking/module.py:36
 msgid "Empty value.  This field is mandatory."
 msgstr "Nie podano danych. To pole jest obowi±skowe."
 
-#: ../lib/wiking/module.py:46
+#: ../lib/wiking/module.py:40
 msgid "New record was successfully inserted."
 msgstr "Nowy wpis zosta³ wprowadzony."
 
-#: ../lib/wiking/module.py:47
+#: ../lib/wiking/module.py:41
 msgid "The record was successfully updated."
 msgstr "Wpis zosta³ uaktualniony."
 
-#: ../lib/wiking/module.py:48
+#: ../lib/wiking/module.py:42
 msgid "The record was deleted."
 msgstr "Wpis zosta³ usuniêty."
 
-#: ../lib/wiking/module.py:220
+#: ../lib/wiking/module.py:169
 msgid "Integrity check failed."
 msgstr "Sprawdzian integralno¶ci nie powiód³ siê"
 
-#: ../lib/wiking/module.py:398
-msgid "No records."
-msgstr "Nie ma wpisu"
-
-#: ../lib/wiking/module.py:440
+#: ../lib/wiking/module.py:403
 msgid "Help"
 msgstr "Pomoc"
 
-#: ../lib/wiking/module.py:446
+#: ../lib/wiking/module.py:410
 msgid "more about RSS"
 msgstr "Wiêcej o RSS"
 
-#: ../lib/wiking/module.py:447
+#: ../lib/wiking/module.py:411
 msgid "An RSS channel is available for this section:"
 msgstr "Kana³ RSS jest dostêpny dla tej sekcji:"
 
-#: ../lib/wiking/module.py:469
+#: ../lib/wiking/module.py:439
 msgid "new record"
 msgstr "nowy wpis"
 
-#: ../lib/wiking/module.py:474
+#: ../lib/wiking/module.py:445
 msgid "edit form"
 msgstr "wypelnij formê"
 
-#: ../lib/wiking/module.py:479
+#: ../lib/wiking/module.py:450
 msgid "Please, confirm removing the record permanently."
 msgstr "Potwierd¼ definitywne usuniêcie wpisu."
 
-#: ../lib/wiking/module.py:481
+#: ../lib/wiking/module.py:452
 msgid "removing"
 msgstr "usuwanie"
 
-#: ../lib/wiking/module.py:530
-msgid "Unable to delete record."
-msgstr "Niemo¿liwe usuniêcie wpisu."
+#: ../lib/wiking/module.py:535
+msgid "No records."
+msgstr "Nie ma wpisu"
 
-#: ../lib/wiking/modules.py:42
-msgid "unknown"
-msgstr "nieznany"
-
-#: ../lib/wiking/modules.py:51
+#: ../lib/wiking/module.py:671
 msgid "The item was published."
 msgstr "Pozycja zosta³a opublikowana."
 
-#: ../lib/wiking/modules.py:52
+#: ../lib/wiking/module.py:672
 msgid "The item was unpublished."
 msgstr "Pozycja nie zosta³a opublikowana."
 
-#: ../lib/wiking/modules.py:61
+#: ../lib/wiking/module.py:681
 msgid "Publish"
 msgstr "Opublikowaæ"
 
-#: ../lib/wiking/modules.py:64
+#: ../lib/wiking/module.py:684
 msgid "Unpublish"
 msgstr "Nie publikowaæ"
 
-#: ../lib/wiking/modules.py:88 ../lib/wiking/modules.py:488
+#: ../lib/wiking/module.py:716 ../lib/wiking/modules.py:449
 msgid "Translate"
 msgstr "Przet³umaczyæ"
 
-#: ../lib/wiking/modules.py:98
+#: ../lib/wiking/modules.py:46
+msgid "unknown"
+msgstr "nieznany"
+
+#: ../lib/wiking/modules.py:58
 msgid ""
 "Unknown module.  You either misspelled the name or the module is not "
 "installed properly."
@@ -221,152 +214,153 @@ msgstr ""
 "Modu³ nieznany. Nazwa modu³u zosta³a b³êdnie wpisana b±d¼ taki modu³ zosta³ "
 "niepoprawnie zainstalowany."
 
-#: ../lib/wiking/modules.py:106
+#: ../lib/wiking/modules.py:66
 msgid "Modules"
 msgstr "Modu³y"
 
-#: ../lib/wiking/modules.py:109 ../lib/wiking/modules.py:309
-#: ../lib/wiking/modules.py:411
+#: ../lib/wiking/modules.py:69 ../lib/wiking/modules.py:273
+#: ../lib/wiking/modules.py:374
 msgid "Name"
 msgstr "Nazwa"
 
-#: ../lib/wiking/modules.py:110 ../lib/wiking/modules.py:257
-#: ../lib/wiking/modules.py:259 ../lib/wiking/modules.py:334
-#: ../lib/wiking/modules.py:445 ../lib/wiking/modules.py:446
+#: ../lib/wiking/modules.py:70 ../lib/wiking/modules.py:223
+#: ../lib/wiking/modules.py:225 ../lib/wiking/modules.py:298
+#: ../lib/wiking/modules.py:406 ../lib/wiking/modules.py:407
+#: ../lib/wiking/modules.py:561 ../lib/wiking/modules.py:729
 msgid "Title"
 msgstr "Tytu³"
 
-#: ../lib/wiking/modules.py:113 ../lib/wiking/modules.py:664
+#: ../lib/wiking/modules.py:73 ../lib/wiking/modules.py:813
 msgid "Active"
 msgstr "Aktywny"
 
-#: ../lib/wiking/modules.py:114 ../lib/wiking/modules.py:154
+#: ../lib/wiking/modules.py:74 ../lib/wiking/modules.py:112
 msgid "Menu order"
 msgstr "Porz±dek menu"
 
-#: ../lib/wiking/modules.py:137
+#: ../lib/wiking/modules.py:95
 msgid "Mapping"
 msgstr "Mapowanie"
 
-#: ../lib/wiking/modules.py:141 ../lib/wiking/modules.py:328
-#: ../lib/wiking/modules.py:330 ../lib/wiking/modules.py:444
-#: ../lib/wiking/modules.py:663
+#: ../lib/wiking/modules.py:99 ../lib/wiking/modules.py:292
+#: ../lib/wiking/modules.py:294 ../lib/wiking/modules.py:405
+#: ../lib/wiking/modules.py:812
 msgid "Identifier"
 msgstr "Identyfikator"
 
-#: ../lib/wiking/modules.py:144 ../lib/wiking/modules.py:149
-#: ../lib/wiking/modules.py:150 ../lib/wiking/modules.py:269
+#: ../lib/wiking/modules.py:102 ../lib/wiking/modules.py:107
+#: ../lib/wiking/modules.py:108 ../lib/wiking/modules.py:235
 msgid "Module"
 msgstr "Modu³"
 
-#: ../lib/wiking/modules.py:153 ../lib/wiking/modules.py:274
+#: ../lib/wiking/modules.py:111 ../lib/wiking/modules.py:240
 msgid "Published"
 msgstr "Opublikowany"
 
-#: ../lib/wiking/modules.py:156 ../lib/wiking/modules.py:438
+#: ../lib/wiking/modules.py:114 ../lib/wiking/modules.py:399
 msgid "Pages"
 msgstr "Strony"
 
-#: ../lib/wiking/modules.py:201
+#: ../lib/wiking/modules.py:168
 msgid "Config"
 msgstr "Ustawienia"
 
-#: ../lib/wiking/modules.py:205
+#: ../lib/wiking/modules.py:172
 msgid "Site Configuration"
 msgstr "Ustawienia Witryny"
 
-#: ../lib/wiking/modules.py:207
+#: ../lib/wiking/modules.py:174
 msgid "Site title"
 msgstr "Tytu³ witryny"
 
-#: ../lib/wiking/modules.py:208
+#: ../lib/wiking/modules.py:175
 msgid "Site subtitle"
 msgstr "Podtytu³ witryny"
 
-#: ../lib/wiking/modules.py:209
+#: ../lib/wiking/modules.py:176
 msgid "Show login panel"
 msgstr "Poka¿ panel logowania"
 
-#: ../lib/wiking/modules.py:210
+#: ../lib/wiking/modules.py:177
 msgid "Webmaster address"
 msgstr "Adres Webmastera"
 
-#: ../lib/wiking/modules.py:211
+#: ../lib/wiking/modules.py:178
 msgid "Theme"
 msgstr "Motyw"
 
-#: ../lib/wiking/modules.py:252
+#: ../lib/wiking/modules.py:218
 msgid "Panels"
 msgstr "Panele"
 
-#: ../lib/wiking/modules.py:255 ../lib/wiking/modules.py:332
-#: ../lib/wiking/modules.py:442 ../lib/wiking/modules.py:572
-#: ../lib/wiking/modules.py:627
+#: ../lib/wiking/modules.py:221 ../lib/wiking/modules.py:296
+#: ../lib/wiking/modules.py:403 ../lib/wiking/modules.py:549
+#: ../lib/wiking/modules.py:625 ../lib/wiking/modules.py:668
 msgid "Language"
 msgstr "Jêzyk"
 
-#: ../lib/wiking/modules.py:264
+#: ../lib/wiking/modules.py:230
 msgid "Order"
 msgstr "Porz±dek"
 
-#: ../lib/wiking/modules.py:265
+#: ../lib/wiking/modules.py:231
 msgid "Overview"
 msgstr "Przegl±d"
 
-#: ../lib/wiking/modules.py:272
+#: ../lib/wiking/modules.py:238
 msgid "Items count"
 msgstr "Liczba obiektów"
 
-#: ../lib/wiking/modules.py:273 ../lib/wiking/modules.py:449
-#: ../lib/wiking/modules.py:666
+#: ../lib/wiking/modules.py:239 ../lib/wiking/modules.py:410
+#: ../lib/wiking/modules.py:815
 msgid "Content"
 msgstr "tre¶æ"
 
-#: ../lib/wiking/modules.py:304
+#: ../lib/wiking/modules.py:268
 msgid "Languages"
 msgstr "Jêzyki"
 
-#: ../lib/wiking/modules.py:307
+#: ../lib/wiking/modules.py:271
 msgid "Code"
 msgstr "Kod"
 
-#: ../lib/wiking/modules.py:325
+#: ../lib/wiking/modules.py:289
 msgid "Titles"
 msgstr "Tytu³y"
 
-#: ../lib/wiking/modules.py:344
+#: ../lib/wiking/modules.py:307
 msgid "The title is already defined for this page in given language."
 msgstr "Tytu³ dla tej strony juz zdefiniowano dla danego jêzyka."
 
-#: ../lib/wiking/modules.py:407
+#: ../lib/wiking/modules.py:370
 msgid "Themes"
 msgstr "Motywy"
 
-#: ../lib/wiking/modules.py:452
+#: ../lib/wiking/modules.py:413
 msgid "Status"
 msgstr "Status"
 
-#: ../lib/wiking/modules.py:462
+#: ../lib/wiking/modules.py:423
 msgid "Ok"
 msgstr "Ok"
 
-#: ../lib/wiking/modules.py:462
+#: ../lib/wiking/modules.py:423
 msgid "Changed"
 msgstr "Zmieniony"
 
-#: ../lib/wiking/modules.py:464
+#: ../lib/wiking/modules.py:425
 msgid "Missing"
 msgstr "Brakuj±cy"
 
-#: ../lib/wiking/modules.py:474
+#: ../lib/wiking/modules.py:430 ../lib/wiking/modules.py:536
+msgid "Attachments"
+msgstr ""
+
+#: ../lib/wiking/modules.py:435
 msgid "The page already exists in given language."
 msgstr "Strona w danym jêzyku ju¿ istnieje."
 
-#: ../lib/wiking/modules.py:476
-msgid "Edit this page"
-msgstr "Edytuj tê stronê"
-
-#: ../lib/wiking/modules.py:479
+#: ../lib/wiking/modules.py:440
 msgid ""
 "New page was successfully created. Don't forget to publish it and possibly "
 "also add it to the main menu. Please, visit the 'Mapping' module to do so."
@@ -374,151 +368,211 @@ msgstr ""
 "Nowa strona zostala pomy¶lnie utworzona. Nie zapomnij jej opublikowac i "
 "dodac do g³ównego menu. Modu³ mapowania poka¿e jak to zrobiæ."
 
-#: ../lib/wiking/modules.py:484
+#: ../lib/wiking/modules.py:445
 msgid "Publish changes"
 msgstr "Opublikowaæ zmiany"
 
-#: ../lib/wiking/modules.py:486
+#: ../lib/wiking/modules.py:447
 msgid "Preview"
 msgstr "Wczesny Przegl±d"
 
-#: ../lib/wiking/modules.py:535
+#: ../lib/wiking/modules.py:501
 msgid "Content for this page already exists!"
 msgstr "Tre¶æ dla tej strony ju¿ istnieje!"
 
-#: ../lib/wiking/modules.py:544
+#: ../lib/wiking/modules.py:510
 msgid "Content for this page does not exist in any language."
 msgstr "Tre¶æ tej strony nie istnieje dla ¿adnego z jêzyków."
 
-#: ../lib/wiking/modules.py:546
+#: ../lib/wiking/modules.py:512
 msgid "Choose source language"
 msgstr "Wybierz jêzyk ¼ród³a"
 
-#: ../lib/wiking/modules.py:550
+#: ../lib/wiking/modules.py:516
 msgid "translate"
 msgstr "Przet³umaczyæ"
 
-#: ../lib/wiking/modules.py:559
+#: ../lib/wiking/modules.py:530
 msgid "The changes were published."
 msgstr "Zmiany zosta³y opublikowane."
 
-#: ../lib/wiking/modules.py:565
-msgid "News"
-msgstr "Wiadomo¶ci"
+#: ../lib/wiking/modules.py:546 ../lib/wiking/modules.py:547
+#, fuzzy
+msgid "Page"
+msgstr "Strony"
 
-#: ../lib/wiking/modules.py:568 ../lib/wiking/modules.py:570
-#: ../lib/wiking/modules.py:591 ../lib/wiking/modules.py:621
-#: ../lib/wiking/modules.py:624
-msgid "Date"
-msgstr "Data"
+#: ../lib/wiking/modules.py:552 ../lib/wiking/modules.py:714
+#: ../lib/wiking/modules.py:727
+#, fuzzy
+msgid "File"
+msgstr "Tytu³"
 
-#: ../lib/wiking/modules.py:574 ../lib/wiking/modules.py:629
-msgid "Briefly"
-msgstr "Krótko"
+#: ../lib/wiking/modules.py:557
+#, fuzzy
+msgid "Filename"
+msgstr "Imiê"
 
-#: ../lib/wiking/modules.py:574
-msgid "Message"
-msgstr "Wiadomo¶æ"
+#: ../lib/wiking/modules.py:559
+msgid "Mime-type"
+msgstr ""
 
-#: ../lib/wiking/modules.py:575 ../lib/wiking/modules.py:633
-msgid "Text"
-msgstr "Tekst"
-
-#: ../lib/wiking/modules.py:618
-msgid "Planner"
-msgstr "Terminarz"
-
-#: ../lib/wiking/modules.py:623
-msgid "End date"
-msgstr "Data koñcowa"
-
-#: ../lib/wiking/modules.py:629
-msgid "Event"
-msgstr "Wydarzenie"
-
-#: ../lib/wiking/modules.py:639
-msgid "Date in the past"
-msgstr "Data w przesz³o¶ci"
-
-#: ../lib/wiking/modules.py:651
-msgid "End date precedes start date"
-msgstr "Data koñcowa poprzedza datê rozpoczêcia"
-
-#: ../lib/wiking/modules.py:660
-msgid "Styles"
-msgstr "Style"
-
-#: ../lib/wiking/modules.py:665
+#: ../lib/wiking/modules.py:562 ../lib/wiking/modules.py:732
+#: ../lib/wiking/modules.py:814
 msgid "Description"
 msgstr "Opis"
 
-#: ../lib/wiking/modules.py:700
+#: ../lib/wiking/modules.py:565 ../lib/wiking/modules.py:739
+msgid "Byte size"
+msgstr ""
+
+#: ../lib/wiking/modules.py:567
+#, fuzzy
+msgid "Listed"
+msgstr "Lista"
+
+#: ../lib/wiking/modules.py:618
+msgid "News"
+msgstr "Wiadomo¶ci"
+
+#: ../lib/wiking/modules.py:621 ../lib/wiking/modules.py:623
+#: ../lib/wiking/modules.py:662 ../lib/wiking/modules.py:665
+msgid "Date"
+msgstr "Data"
+
+#: ../lib/wiking/modules.py:627 ../lib/wiking/modules.py:670
+msgid "Briefly"
+msgstr "Krótko"
+
+#: ../lib/wiking/modules.py:627
+msgid "Message"
+msgstr "Wiadomo¶æ"
+
+#: ../lib/wiking/modules.py:628 ../lib/wiking/modules.py:671
+msgid "Text"
+msgstr "Tekst"
+
+#: ../lib/wiking/modules.py:659
+msgid "Planner"
+msgstr "Terminarz"
+
+#: ../lib/wiking/modules.py:664
+msgid "End date"
+msgstr "Data koñcowa"
+
+#: ../lib/wiking/modules.py:670
+msgid "Event"
+msgstr "Wydarzenie"
+
+#: ../lib/wiking/modules.py:680
+msgid "Date in the past"
+msgstr "Data w przesz³o¶ci"
+
+#: ../lib/wiking/modules.py:692
+msgid "End date precedes start date"
+msgstr "Data koñcowa poprzedza datê rozpoczêcia"
+
+#: ../lib/wiking/modules.py:702
+#, fuzzy
+msgid "Images"
+msgstr "Strony"
+
+#: ../lib/wiking/modules.py:730
+msgid "Author"
+msgstr ""
+
+#: ../lib/wiking/modules.py:731
+#, fuzzy
+msgid "Location"
+msgstr "Akcje:"
+
+#: ../lib/wiking/modules.py:733
+#, fuzzy
+msgid "Date of creation"
+msgstr "Ustawienia Witryny"
+
+#: ../lib/wiking/modules.py:735
+msgid "Width"
+msgstr ""
+
+#: ../lib/wiking/modules.py:736
+msgid "Height"
+msgstr ""
+
+#: ../lib/wiking/modules.py:737
+msgid "Pixel size"
+msgstr ""
+
+#: ../lib/wiking/modules.py:809
+msgid "Styles"
+msgstr "Style"
+
+#: ../lib/wiking/modules.py:852
 msgid "Users"
 msgstr "U¿ytkownicy"
 
-#: ../lib/wiking/modules.py:716 ../lib/wiking/util.py:359
+#: ../lib/wiking/modules.py:868 ../lib/wiking/util.py:473
 msgid "Login name"
 msgstr "Nazwa loguj±ca"
 
-#: ../lib/wiking/modules.py:718 ../lib/wiking/util.py:362
+#: ../lib/wiking/modules.py:870 ../lib/wiking/util.py:476
 msgid "Password"
 msgstr "Has³o"
 
-#: ../lib/wiking/modules.py:719
+#: ../lib/wiking/modules.py:871
 msgid "Full Name"
 msgstr "Pe³na Nazwa"
 
-#: ../lib/wiking/modules.py:722
+#: ../lib/wiking/modules.py:874
 msgid "Name/Nickname"
 msgstr "Imiê/Ksywka"
 
-#: ../lib/wiking/modules.py:725
+#: ../lib/wiking/modules.py:877
 msgid "First name"
 msgstr "Imiê"
 
-#: ../lib/wiking/modules.py:726
+#: ../lib/wiking/modules.py:878
 msgid "Surname"
 msgstr "Nazwisko"
 
-#: ../lib/wiking/modules.py:727
+#: ../lib/wiking/modules.py:879
 msgid "Nickname"
 msgstr "Ksywka"
 
-#: ../lib/wiking/modules.py:728
+#: ../lib/wiking/modules.py:880
 msgid "E-mail"
 msgstr "E-mail"
 
-#: ../lib/wiking/modules.py:729
+#: ../lib/wiking/modules.py:881
 msgid "Phone"
 msgstr "Telefon"
 
-#: ../lib/wiking/modules.py:730
+#: ../lib/wiking/modules.py:882
 msgid "Address"
 msgstr "Adres"
 
-#: ../lib/wiking/modules.py:731
+#: ../lib/wiking/modules.py:883
 msgid "URI"
 msgstr "URI"
 
-#: ../lib/wiking/modules.py:732
+#: ../lib/wiking/modules.py:884
 msgid "Enabled"
 msgstr "Udostêpniony"
 
-#: ../lib/wiking/modules.py:733
+#: ../lib/wiking/modules.py:885
 msgid "Registered since"
 msgstr "Zarejestrowany od"
 
-#: ../lib/wiking/util.py:155
-#, python-format
-msgid "Error %d: %s"
-msgstr "B³±d %d: %s"
-
 #: ../lib/wiking/util.py:164
+#, fuzzy, python-format
+msgid "Error %(code)d: %(name)s"
+msgstr "B³±d %(code)d: %(name)s"
+
+#: ../lib/wiking/util.py:175
 #, python-format
 msgid "The item '%s' does not exist on this server or cannot be served."
 msgstr "Obiekt '%s' nie istnieje na tym serwerze b±d¼ nie mo¿e byæ oferowany."
 
-#: ../lib/wiking/util.py:166
+#: ../lib/wiking/util.py:177
 msgid ""
 "If you are sure the web address is correct, but are encountering this error, "
 "please send an e-mail to the webmaster."
@@ -526,26 +580,26 @@ msgstr ""
 "Je¶li adres witryny jest poprawny, a mimo to wystêpuje b³±d prosimy o e-mail "
 "do webmastera."
 
-#: ../lib/wiking/util.py:169
+#: ../lib/wiking/util.py:180
 msgid "Thank you"
 msgstr "Dziêkujemy"
 
-#: ../lib/wiking/util.py:179
+#: ../lib/wiking/util.py:191
 #, python-format
 msgid ""
 "The resource '%s' is not available in either of the requested languages."
 msgstr "¬ród³o '%s' niedostêpne w ¿adnym z ¿±danych jêzyków."
 
-#: ../lib/wiking/util.py:181
+#: ../lib/wiking/util.py:193
 msgid "Your browser is configured to accept only the following languages:"
 msgstr ""
 "Ustawienie przegl±darki pozwala na wy¶wietlanie w nastêpuj±cych jêzykach:"
 
-#: ../lib/wiking/util.py:188
+#: ../lib/wiking/util.py:200
 msgid "The available variants are:"
 msgstr "Dostêpne warianty to:"
 
-#: ../lib/wiking/util.py:190
+#: ../lib/wiking/util.py:202
 msgid ""
 "If you want to accept other languages permanently, setup the language "
 "preferences in your browser or contact your system administrator."
@@ -553,17 +607,26 @@ msgstr ""
 "Dla wspó³pracy przegl±darki z innymi jêzykami zmieñ jej ustawienia b±d¼ "
 "skontaktuj siê z administratorem swojego systemu."
 
-#: ../lib/wiking/util.py:199
+#: ../lib/wiking/util.py:213
 msgid "Authentication required"
 msgstr "Wymagane potwierdzenie"
 
-#: ../lib/wiking/util.py:322
+#: ../lib/wiking/util.py:360
 msgid "Actions:"
 msgstr "Akcje:"
 
-#: ../lib/wiking/util.py:368
+#: ../lib/wiking/util.py:482
 msgid "Log in"
 msgstr "Wlogowanie"
+
+#~ msgid "The requested object does not exist anymore!"
+#~ msgstr "Wymagany obiekt ju¿ nie istnieje!"
+
+#~ msgid "Unable to delete record."
+#~ msgstr "Niemo¿liwe usuniêcie wpisu."
+
+#~ msgid "Edit this page"
+#~ msgstr "Edytuj tê stronê"
 
 #~ msgid "Page content"
 #~ msgstr "tre¶æ strony"
