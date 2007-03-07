@@ -260,6 +260,9 @@ class Module(object):
             raise NotFound()
         return row
         
+    def _redirect(self, req):
+        return None
+    
     def _resolve(self, req):
         # Returns Row, None or raises HttpError.
         if len(req.path) <= 1:
@@ -354,7 +357,11 @@ class Module(object):
     def identifier(self):
         """Return current mapping identifier of the module as a string."""
         return self._identifier
-            
+
+    def redirect(self, req):
+        """Return the module responsible for handling the request or None."""
+        return self._redirect(req)
+    
     def resolve(self, req):
         """Return the Record corresponding to the request or None."""
         if req.wmi:
@@ -399,20 +406,16 @@ class Module(object):
         content = [self._form(ListView, req, rows, custom_spec=\
                               (not req.wmi and self._CUSTOM_VIEW or None))]
         if req.wmi:
-            uri = '/_doc/'+self.name()
-            h = lcg.Link(lcg.Link.ExternalTarget(uri, _("Help")))
-            content.extend((self._actions(req) , h))
+            content.extend((self._actions(req),
+                            lcg.link('/_doc/'+self.name(), _("Help"))))
         elif self._RSS_TITLE_COLUMN:
             # TODO: This belongs to RssModule.
-            rss = lcg.Link.ExternalTarget(req.uri +'.'+ lang +'.rss',
-                                          self._real_title(lang) + ' RSS')
-            doc = lcg.Link.ExternalTarget('_doc/rss?display=inline',
-                                          _("more about RSS"))
-            text = _("An RSS channel is available for this section:") + ' '
-            p = (lcg.TextContent(text),
-                 lcg.Link(rss, type='application/rss+xml'),
-                 lcg.TextContent(" ("), lcg.Link(doc), lcg.TextContent(")"))
-            content.append(lcg.Paragraph(p))
+            content.append(lcg.p(
+                _("An RSS channel is available for this section:"), ' ',
+                lcg.link(req.uri +'.'+ lang +'.rss',
+                         self._real_title(lang) + ' RSS',
+                         type='application/rss+xml'), " (",
+                lcg.link('_doc/rss?display=inline', _("more about RSS")), ")"))
         return self._document(req, content, lang=lang, variants=variants,
                               err=err, msg=msg)
 
