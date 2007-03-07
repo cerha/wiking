@@ -455,35 +455,44 @@ class Pages(WikingModule): #, Publishable
                 self._data.get_rows(mapping_id=record['mapping_id'].value(),
                                     condition=self._IS_OK)]
 
+    def _redirect(self, req):
+        if not req.wmi and len(req.path) == 2:
+            return self._module('Attachments')
+
     def _resolve(self, req):
-        if len(req.path) > 1:
-            raise NotFound()
-        lang = req.param('lang')
-        if lang is not None:
-            row = self._data.get_row(identifier=req.path[0], lang=lang,
-                                     condition=self._IS_OK)
-            if not row:
-                raise NotFound()
-            return row
-        else:
-            variants = self._data.get_rows(identifier=req.path[0],
-                                           condition=self._IS_OK)
-            if not variants:
-                raise NotFound()
-            for lang in req.prefered_languages():
-                for row in variants:
-                    if row['lang'].value() == lang:
-                        return row
-            raise NotAcceptable([str(r['lang'].value()) for r in variants])
+        if len(req.path) == 1:
+            lang = req.param('lang')
+            if lang is not None:
+                row = self._data.get_row(identifier=req.path[0], lang=lang,
+                                         condition=self._IS_OK)
+                if row:
+                    return row
+            else:
+                variants = self._data.get_rows(identifier=req.path[0],
+                                               condition=self._IS_OK)
+                if variants:
+                    for lang in req.prefered_languages():
+                        for row in variants:
+                            if row['lang'].value() == lang:
+                                return row
+                    raise NotAcceptable([str(r['lang'].value())
+                                         for r in variants])
+        raise NotFound()
+
 
     def action_view(self, req, record, err=None, msg=None, preview=False):
         if req.wmi and preview:
             text = record['_content'].value()
         else:
             text = record['content'].value()
-        content = text and lcg.SectionContainer(lcg.Parser().parse(text),
-                                                toc_depth=0) \
-                  or lcg.TextContent("")
+        attachments = self._module('Attachments').attachments(record)
+        if text:
+            sections = lcg.Parser().parse(text)
+            if attachments:
+                sections += [attachments]
+            content = lcg.SectionContainer(sections, toc_depth=0)
+        else:
+            content = attachments
         return self._document(req, content, record, err=err, msg=msg)
 
     def action_preview(self, req, record, **kwargs):
@@ -563,12 +572,12 @@ class Attachments(StoredFileModule):
             #Field('timestamp', type=DateTime()), #, default=now),
             # Fields supporting file storage.
             Field('dbname'),
-            Field('_filename', virtual=True,
-                  computer=self._filename_computer('dbname', 'attachment_id',
-                                                   'ext')),
+            Field('_filename', virtual=True, computer=\
+                  self._filename_computer('dbname', 'attachment_id', 'ext')),
             )
         layout = ('file', 'title', 'description', 'listed')
         columns = ('filename', 'title', 'bytesize', 'mime_type', 'identifier')
+        sorting = (('identifier', ASC), ('filename', ASC))
         def _ext(self, row):
             ext = os.path.splitext(row['filename'].value())[1].lower()
             return len(ext) > 1 and ext[1:] or ext
@@ -579,7 +588,7 @@ class Attachments(StoredFileModule):
     def _link_provider(self, row, cid, wmi=False, **kwargs):
         if cid == 'file':
             cid = 'filename'
-            kwargs['action'] = 'get'
+            kwargs['action'] = 'view'
         if cid == 'identifier':
             return '/_wmi/Pages/' + row['page_id'].value()
         return super(Attachments, self)._link_provider(row, cid, wmi=wmi, **kwargs)
@@ -591,7 +600,28 @@ class Attachments(StoredFileModule):
 #         record = m.record(record['page_id'])
 #         return m.action_show(req, record, msg=self._INSERT_MSG)
 
-    def action_get(self, req, record):
+    def _resolve(self, req):
+        if len(req.path) == 2:
+            row = self._data.get_row(identifier=req.path[0],
+                                     filename=req.path[1])
+            if row:
+                return row
+        raise NotFound()
+
+    def attachments(self, page):
+        items = [(lcg.link('/'+ row['identifier'].export() + \
+                           '/'+ row['filename'].export(),
+                           row['title'].export() or row['filename'].export()),
+                  ' ('+ row['bytesize'].export() +') '+
+                  lcg.WikiText(row['description'].export())) for row in
+                 self._data.get_rows(mapping_id=page['mapping_id'].value(),
+                                     lang=page['lang'].value(), listed=True)]
+        if items:
+            return lcg.Section(title=self._view.title(), content=lcg.ul(items))
+        else:
+            return None
+
+    def action_view(self, req, record):
         return (str(record['mime_type'].value()),
                 record['file'].value().buffer())
 
