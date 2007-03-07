@@ -197,12 +197,9 @@ class Config(WikingModule):
                 domain = domain[4:]
             return 'webmaster@' + domain
     
-    def resolve(self, req, path):
+    def resolve(self, req):
         return self._record(self._data.get_row(config_id=0))
     
-    def view(self, *args, **kwargs):
-        return self.show(*args, **kwargs)
-
     def config(self, server, lang):
         row = self._data.get_row(config_id=0)
         return self.Configuration(row, server)
@@ -210,9 +207,13 @@ class Config(WikingModule):
     def theme(self):
         theme_id = self._data.get_row(config_id=0)['theme'].value()
         return self._module('Themes').theme(theme_id)
+    
+    def action_view(self, *args, **kwargs):
+        return self.action_show(*args, **kwargs)
+
         
     
-class Panels(WikingModule, Publishable, Translatable):
+class Panels(WikingModule, Publishable):
     class Spec(pp.Specification):
         title = _("Panels")
         fields = (
@@ -283,7 +284,7 @@ class Languages(WikingModule):
         return [str(r['lang'].value()) for r in self._data.get_rows()]
 
     
-class Titles(WikingModule, Translatable):
+class Titles(WikingModule):
     class Spec(pp.Specification):
         title = _("Titles")
         fields = (
@@ -393,7 +394,7 @@ class Themes(WikingModule):
 # are system modules used internally by Wiking.
 # ==============================================================================
 
-class Pages(WikingModule): #, Publishable, Translatable
+class Pages(WikingModule): #, Publishable
     class Spec(pp.Specification):
         title = _("Pages")
         def fields(self): return (
@@ -454,18 +455,18 @@ class Pages(WikingModule): #, Publishable, Translatable
                 self._data.get_rows(mapping_id=record['mapping_id'].value(),
                                     condition=self._IS_OK)]
 
-    def _resolve(self, req, path):
-        if len(path) > 1:
+    def _resolve(self, req):
+        if len(req.path) > 1:
             raise NotFound()
         lang = req.param('lang')
         if lang is not None:
-            row = self._data.get_row(identifier=path[0], lang=lang,
+            row = self._data.get_row(identifier=req.path[0], lang=lang,
                                      condition=self._IS_OK)
             if not row:
                 raise NotFound()
             return row
         else:
-            variants = self._data.get_rows(identifier=path[0],
+            variants = self._data.get_rows(identifier=req.path[0],
                                            condition=self._IS_OK)
             if not variants:
                 raise NotFound()
@@ -475,7 +476,7 @@ class Pages(WikingModule): #, Publishable, Translatable
                         return row
             raise NotAcceptable([str(r['lang'].value()) for r in variants])
 
-    def view(self, req, record, err=None, msg=None, preview=False):
+    def action_view(self, req, record, err=None, msg=None, preview=False):
         if req.wmi and preview:
             text = record['_content'].value()
         else:
@@ -485,15 +486,15 @@ class Pages(WikingModule): #, Publishable, Translatable
                   or lcg.TextContent("")
         return self._document(req, content, record, err=err, msg=msg)
 
-    def preview(self, req, record, **kwargs):
-        return self.view(req, record, preview=True, **kwargs)
+    def action_preview(self, req, record, **kwargs):
+        return self.action_view(req, record, preview=True, **kwargs)
 
-    def translate(self, req, record):
+    def action_translate(self, req, record):
         lang = req.param('src_lang')
         if not lang:
             if record['_content'].value() is not None:
                 e = _("Content for this page already exists!")
-                return self.show(req, record, err=e)
+                return self.action_show(req, record, err=e)
             cond = pd.AND(pd.NE('_content', pd.Value(pd.String(), None)),
                           pd.NE('lang', record['lang']))
             langs = [(str(row['lang'].value()),
@@ -502,7 +503,7 @@ class Pages(WikingModule): #, Publishable, Translatable
                                          condition=cond)]
             if not langs:
                 e = _("Content for this page does not exist in any language.")
-                return self.show(req, record, err=e)
+                return self.action_show(req, record, err=e)
             d = pw.SelectionDialog('src_lang', _("Choose source language"),
                                    langs, action='translate',
                                    hidden=[(id, record[id].value()) for id in
@@ -513,16 +514,16 @@ class Pages(WikingModule): #, Publishable, Translatable
                                      lang=str(req.params['src_lang']))
             for k in ('_content','title'):
                 req.params[k] = row[k].value()
-            return self.edit(req, record)
+            return self.action_edit(req, record)
 
-    def sync(self, req, record):
+    def action_sync(self, req, record):
         try:
             self._update_values(record, content=record['_content'].value())
         except pd.DBException, e:
             kwargs = dict(err=self._module._analyze_exception(e))
         else:
             kwargs = dict(msg=_("The changes were published."))
-        return self.show(req, record, **kwargs)
+        return self.action_show(req, record, **kwargs)
         
 
 class Attachments(StoredFileModule):
@@ -535,8 +536,13 @@ class Attachments(StoredFileModule):
                     return f and ffunc(f) or None
                 return pp.Computer(func, depends=('file',))
             return (
+            Field('page_attachment_id'),
             Field('attachment_id'),
-            Field('mapping_id'),
+            Field('identifier', _("Page")),
+            Field('mapping_id', _("Page"), width=5, codebook='Mapping',
+                  selection_type=CHOICE, editable=ONCE),
+            Field('lang', _("Language"), codebook='Languages', 
+                  selection_type=CHOICE, editable=ONCE, value_column='lang'),
             Field('page_id'),
             Field('file', _("File"), virtual=True, editable=ALWAYS,
                   type=pd.Binary(not_null=True, maxlen=3*MB),
@@ -547,14 +553,13 @@ class Attachments(StoredFileModule):
                   computer=fcomp(lambda f: f.filename())),
             Field('mime_type', _("Mime-type"), width=22,
                   computer=fcomp(lambda f: f.type())),
-            Field('lang'),
             Field('title', _("Title"), width=30),
             Field('description', _("Description"), width=80, height=3),
             Field('ext', virtual=True,
                   computer=Computer(self._ext, ('filename',))),
             Field('bytesize', _("Byte size"),
                   computer=fcomp(lambda f: pp.format_byte_size(len(f)))),
-            Field('listed', _("")),
+            Field('listed', _("Listed"), default=True),
             #Field('timestamp', type=DateTime()), #, default=now),
             # Fields supporting file storage.
             Field('dbname'),
@@ -563,9 +568,10 @@ class Attachments(StoredFileModule):
                                                    'ext')),
             )
         layout = ('file', 'title', 'description', 'listed')
-        columns = ('filename', 'title', 'bytesize', 'mime_type')
+        columns = ('filename', 'title', 'bytesize', 'mime_type', 'identifier')
         def _ext(self, row):
-            return os.path.splitext(row['filename'].value())[1].lower()
+            ext = os.path.splitext(row['filename'].value())[1].lower()
+            return len(ext) > 1 and ext[1:] or ext
 
     _STORED_FIELDS = (('file', '_filename'),)
     _LIST_BY_LANGUAGE = True
@@ -574,14 +580,23 @@ class Attachments(StoredFileModule):
         if cid == 'file':
             cid = 'filename'
             kwargs['action'] = 'get'
+        if cid == 'identifier':
+            return '/_wmi/Pages/' + row['page_id'].value()
         return super(Attachments, self)._link_provider(row, cid, wmi=wmi, **kwargs)
 
-    def get(self, req, record):
+#     def _redirect_after_insert(self, req, record):
+#     def _redirect_after_update(self, req, record):
+#     def _redirect_after_delete(self, req, record):
+#         m = self._module('Pages')
+#         record = m.record(record['page_id'])
+#         return m.action_show(req, record, msg=self._INSERT_MSG)
+
+    def action_get(self, req, record):
         return (str(record['mime_type'].value()),
                 record['file'].value().buffer())
 
     
-class News(WikingModule, Translatable):
+class News(WikingModule):
     class Spec(pp.Specification):
         title = _("News")
         def fields(self): return (
@@ -699,7 +714,7 @@ class Images(StoredFileModule):
             Field('location', _("Location"), width=50),
             Field('description', _("Description"), width=80, height=5),
             Field('taken', _("Date of creation"), type=DateTime()),
-            Field('format', computer=imgcomp(lambda i: '.'+i.format.lower())),
+            Field('format', computer=imgcomp(lambda i: i.format.lower())),
             Field('width', _("Width"), computer=imgcomp(lambda i: i.size[0])),
             Field('height', _("Height"), computer=imgcomp(lambda i: i.size[1])),
             Field('size', _("Pixel size"),
@@ -762,13 +777,13 @@ class Images(StoredFileModule):
         data = record[id].value().buffer()
         return (mime, data)
     
-    def orig(self, req, record):
+    def action_orig(self, req, record):
         return self._image(record, 'file')
     
-    def image(self, req, record):
+    def action_image(self, req, record):
         return self._image(record, 'image')
     
-    def thumbnail(self, req, record):
+    def action_thumbnail(self, req, record):
         return self._image(record, 'thumbnail')
     
     
@@ -801,7 +816,7 @@ class Stylesheets(WikingModule):
         else:
             return []
             
-    def view(self, req, record, msg=None):
+    def action_view(self, req, record, msg=None):
         content = record['content'].value()
         if content is None:
             filename = os.path.join(cfg.wiking_dir, 'resources', 'css',
