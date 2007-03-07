@@ -17,7 +17,7 @@
 
 from wiking import *
 
-import time, re, os
+import time, re, os, copy
 
 DBG = pytis.util.DEBUG
 EVT = pytis.util.EVENT
@@ -316,29 +316,36 @@ class WikingNode(lcg.ContentNode):
                
     
 class ActionMenu(lcg.Content):
+    """A menu of actions related to one record or the whole module."""
     
-    def __init__(self, uri, actions, data=None, row=None):
+    def __init__(self, actions, row=None, args=None, uri=None):
         super(ActionMenu, self).__init__()
-        assert isinstance(uri, str), uri
         assert isinstance(actions, (tuple, list)), actions
-        assert data is None or isinstance(data, pytis.data.Data), data
+        assert uri is None or isinstance(uri, str), uri
         assert row is None or isinstance(row, pp.PresentedRow), row
+        assert args is None or isinstance(args, dict), args
         self._uri = uri
-        self._data = data
         self._row = row
         self._actions = actions
+        self._args = args or {}
 
     def _export_item(self, action):
-        if action.context() is not None:
-            key = dict([(c.id(), self._row[c.id()].export())
-                        for c in self._data.key()])
-        else:
-            key = {}
         enabled = action.enabled()
         if callable(enabled):
             enabled = enabled(self._row)
-        if enabled:            
-            target = _html.uri(self._uri, action=action.name(), **key)
+        if enabled:
+            args = self._args
+            if self._uri is not None:
+                uri = self._uri
+            elif action.context() is None and self._row is not None:
+                if action.name() == 'delete':
+                    args = copy.copy(args)
+                    key = self._row.data().key()[0].id()
+                    args[key] = self._row[key].export()
+                uri = '.'
+            else:
+                uri = ''
+            target = _html.uri(uri, action=action.name(), **args)
             cls = None
         else:
             target = None
