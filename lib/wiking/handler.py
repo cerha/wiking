@@ -181,11 +181,15 @@ class SiteHandler(object):
                 if wmi:
                     if len(req.path) == 1:
                         req.path += ('Pages',)
+                    #modname = req.param('module', req.path[1])
                     modname = req.path[1]
                 else:
                     req.path = req.path or ('index',)
                     modname = self._mapping.modname(req.path[0])
                 module = self._module(modname)
+                redirect = module.redirect(req)
+                if redirect:
+                    module = redirect
                 record = module.resolve(req)
                 result = self._action(req, module, record)
             if not isinstance(result, Document):
@@ -232,5 +236,4 @@ class SiteHandler(object):
 #          return apache.OK
 #      else:
 #          return apache.HTTP_UNAUTHORIZED
-
 
