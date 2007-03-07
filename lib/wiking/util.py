@@ -141,6 +141,7 @@ def cmp_versions(v1, v2):
 
 # ============================================================================
 
+
 class HttpError(Exception):
     """Exception representing en HTTP error.
 
@@ -161,7 +162,7 @@ class HttpError(Exception):
     
     def title(self):
         name = " ".join(pp.split_camel_case(self.__class__.__name__))
-        return _("Error %d: %s", self.ERROR_CODE, name)
+        return _("Error %(code)d: %(name)s", code=self.ERROR_CODE, name=name)
     
     def msg(self, req):
         pass
@@ -212,7 +213,7 @@ class Unauthorized(HttpError):
     def title(self):
         return _("Authentication required")
 
-
+    
 class FileUpload(object):
     """An abstract representation of uploaded file fields."""
 
@@ -225,7 +226,9 @@ class FileUpload(object):
     def type(self):
         """Return the mime type provided byt he UA as a string"""
 
+
 # ============================================================================
+
 
 class MenuItem(object):
     """Menu item representation to be passed to 'Document.mknode()'."""
