@@ -215,7 +215,7 @@ class Module(object):
             title = concat(title, ' :: ', subtitle)
         return Document(title, content, lang=lang, variants=variants)
 
-    def _actions(self, req, record=None, actions=None, args=None):
+    def _actions(self, req, record=None, actions=None, args=None, uri=None):
         if not req.wmi:
             return None
         if not actions:
@@ -225,7 +225,7 @@ class Module(object):
                           self._DEFAULT_ACTIONS_LAST
             else:
                 actions = self._LIST_ACTIONS
-        return ActionMenu(actions, record, args=args)
+        return ActionMenu(actions, record, args=args, uri=uri)
 
     def _link_provider(self, row, cid, wmi=False, **kwargs):
         if cid == self._title_column or cid == self._key:
@@ -243,6 +243,9 @@ class Module(object):
     def _form(self, form, req, *args, **kwargs):
         kwargs['link_provider'] = lambda row, cid: \
                                   self._link_provider(row, cid, wmi=req.wmi)
+        #if isinstance(form, pw.EditForm) and req.params.has_key('module'):
+        #    kwargs['hidden'] = kwargs.get('hidden', ()) + \
+        #                       (('module', req.params['module']),)
         return form(self._data, self._view, self._resolver, *args, **kwargs)
     
     def _get_row_by_key(self, value):
@@ -355,14 +358,7 @@ class Module(object):
     def resolve(self, req):
         """Return the Record corresponding to the request or None."""
         if req.wmi:
-            #if len(req.path) != 2:
-            #    raise NotFound()
-            #key = req.param(self._key)
-            #if key is None:
-            #    row = None
-            #else:
-            #    row = self._get_row_by_key(key)
-            if len(req.path) == 2:
+            if len(req.path) == 2: # or req.params.has_key('module'):
                 key = req.param(self._key)
                 if key is None:
                     row = None
@@ -388,11 +384,13 @@ class Module(object):
         args = {sbcol: record[bcol].value()}
         if self._LIST_BY_LANGUAGE:
             args['lang'] = record['lang'].value()
-        form = self._form(ListView, req, self._rows(**args), custom_spec=\
-                          (not req.wmi and self._CUSTOM_VIEW or None))
+        content = (
+            self._form(ListView, req, self._rows(**args), custom_spec=\
+                       (not req.wmi and self._CUSTOM_VIEW or None)),
+            self._actions(req, args=args, uri='/_wmi/' + self.name()))
         #lang = req.prefered_language(self._module('Languages').languages())
-        return lcg.Section(title=self._view.title(), #self._real_title(lang)
-                           content=(form, self._actions(req, args=args)))
+        #title = self._real_title(lang)
+        return lcg.Section(title=self._view.title(), content=content)
 
     # ===== Action handlers =====
     
