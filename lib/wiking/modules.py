@@ -22,7 +22,6 @@ from wiking import *
 import mx.DateTime
 from pytis.presentation import Computer, CbComputer
 from mx.DateTime import today, TimeDelta
-from lcg import _html
 import re, copy
 
 CHOICE = pp.SelectionType.CHOICE
@@ -612,7 +611,7 @@ class Attachments(StoredFileModule):
         items = [(lcg.link('/'+ row['identifier'].export() + \
                            '/'+ row['filename'].export(),
                            row['title'].export() or row['filename'].export()),
-                  ' ('+ row['bytesize'].export() +') '+
+                  ' ('+ row['bytesize'].export() +') ',
                   lcg.WikiText(row['description'].export())) for row in
                  self._data.get_rows(mapping_id=page['mapping_id'].value(),
                                      lang=page['lang'].value(), listed=True)]
@@ -661,7 +660,7 @@ class News(WikingModule):
         
     def _link_provider(self, row, cid, wmi=False, **kwargs):
         if not wmi and cid == 'title' and self._identifier is not None:
-            return _html.uri('/'+self._identifier, *kwargs.items()) + \
+            return make_uri('/'+self._identifier, *kwargs.items()) + \
                    '#item-'+ row[self._referer].export()
         elif wmi:
             return super(News, self)._link_provider(row, cid, wmi=wmi, **kwargs)

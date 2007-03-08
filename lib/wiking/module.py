@@ -212,7 +212,7 @@ class Module(object):
             else:
                 title = self._real_title(lang)
         if subtitle:
-            title = concat(title, ' :: ', subtitle)
+            title = lcg.concat(title, ' :: ', subtitle)
         return Document(title, content, lang=lang, variants=variants)
 
     def _actions(self, req, record=None, actions=None, args=None, uri=None):
@@ -236,8 +236,7 @@ class Module(object):
                 uri = '/'+ self._identifier
                 referer = self._referer
             uri += '/'+ row[referer].export()
-            from lcg import _html
-            return _html.uri(uri, **kwargs)
+            return make_uri(uri, **kwargs)
         return None
 
     def _form(self, form, req, *args, **kwargs):
