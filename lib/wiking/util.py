@@ -26,121 +26,6 @@ log = pytis.util.StreamLogger(sys.stderr).log
 
 _ = lcg.TranslatableTextFactory('wiking')
 
-from lcg import _html
-concat = lcg.concat
-
-def timeit(func, *args, **kwargs):
-    """Measure the function execution time.
-
-    Invokes the function 'func' with given arguments and returns the triple
-    (function result, processor time, wall time), both times in microseconds.
-
-    """
-    t1, t2 = time.clock(), time.time()
-    result = func(*args, **kwargs)
-    return result,  time.clock() - t1, time.time() - t2
-
-def get_module(name):
-    """Get the module class by name.
-    
-    This function replaces Pytis resolver in the web environment and is also
-    used by the Pytis resolver in the stand-alone pytis application
-    environment.
-    
-    """
-    try:
-        from mod_python.apache import import_module
-        modules = import_module('wiking.modules', log=True)
-    except ImportError:
-        import wiking.modules as modules
-    return getattr(modules, name)
-
-def rss(title, url, items, descr, lang=None, webmaster=None):
-    import wiking
-    result = '''<?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0">
-  <channel>
-    <title>%s</title>
-    <link>%s</link>
-    <description>%s</description>''' % (title, url, descr or '') + \
-    (lang and '''
-    <language>%s</language>''' % lang or '') + (webmaster and '''
-    <webMaster>%s</webMaster>''' % webmaster or '') + '''
-    <generator>Wiking %s</generator>''' % wiking.__version__ + '''
-    <ttl>60</ttl>
-    %s
-  </channel>
-</rss>''' % '\n    '.join(['''<item>
-       <title>%s</title>
-       <guid>%s</guid>
-       <link>%s</link>''' % (title, url, url) + (descr and '''
-       <description>%s</description>''' % descr or '') + (date and '''
-       <pubDate>%s</pubDate>''' % date or '') + (author and '''
-       <author>%s</author>''' % author or '') + '''
-    </item>''' for title, url, descr, date, author in items])
-    return result
-
-def send_mail(sender, addr, subject, text, html, smtp_server='localhost'):
-    """Send a mime e-mail message with text and HTML version."""
-    import MimeWriter
-    import mimetools
-    from cStringIO import StringIO
-    out = StringIO() # output buffer for our message 
-    htmlin = StringIO(html)
-    txtin = StringIO(text)
-    writer = MimeWriter.MimeWriter(out)
-    # Set up message headers.
-    writer.addheader("From", sender)
-    writer.addheader("To", addr)
-    writer.addheader("Subject", subject)
-    writer.addheader("Date", time.strftime("%a, %d %b %Y %H:%M:%S",
-                                           time.localtime(time.time())))
-    writer.addheader("MIME-Version", "1.0")
-    # Start the multipart section (multipart/alternative seems to work better
-    # on some MUAs than multipart/mixed).
-    writer.startmultipartbody("alternative")
-    writer.flushheaders()
-    # The plain text section.
-    subpart = writer.nextpart()
-    subpart.addheader("Content-Transfer-Encoding", "quoted-printable")
-    pout = subpart.startbody("text/plain", [("charset", 'utf-8')])
-    mimetools.encode(txtin, pout, 'quoted-printable')
-    txtin.close()
-    # The html section.
-    subpart = writer.nextpart()
-    subpart.addheader("Content-Transfer-Encoding", "quoted-printable")
-    # Returns a file-like object we can write to.
-    pout = subpart.startbody("text/html", [("charset", 'utf-8')])
-    mimetools.encode(htmlin, pout, 'quoted-printable')
-    htmlin.close()
-    # Close the writer and send the message.
-    writer.lastpart()
-    import smtplib
-    server = smtplib.SMTP(smtp_server)
-    try:
-        server.sendmail(sender, addr, out.getvalue())
-    finally:
-        out.close()
-        server.quit()
-
-
-def cmp_versions(v1, v2):
-    """Compare version strings, such as '0.3.1' and return the result.
-
-    The returned value is -1, 0 or 1 such as for the builtin 'cmp()' function.
-    
-    """
-    v1a = [int(v) for v in v1.split('.')]
-    v2a = [int(v) for v in v2.split('.')]
-    for (n1, n2) in zip(v1a, v2a):
-        c = cmp(n1, n2)
-        if c != 0:
-            return c
-    return 0
-
-
-# ============================================================================
-
 
 class HttpError(Exception):
     """Exception representing en HTTP error.
@@ -165,7 +50,8 @@ class HttpError(Exception):
         return _("Error %(code)d: %(name)s", code=self.ERROR_CODE, name=name)
     
     def msg(self, req):
-        pass
+        """Return the error message as an 'lcg.Content' element structure.""" 
+        return None
 
 
 class NotFound(HttpError):
@@ -179,7 +65,7 @@ class NotFound(HttpError):
                  "but are encountering this error, please send "
                  "an e-mail to the webmaster."),
                _("Thank you"))
-        return lcg.concat([lcg.concat("<p>", p, "</p>\n\n") for p in msg])
+        return lcg.coerce([lcg.p(p) for p in msg])
 
     
 class NotAcceptable(HttpError):
@@ -187,23 +73,21 @@ class NotAcceptable(HttpError):
     ERROR_CODE = 406
     
     def msg(self, req):
-        from lcg import _html
-        prefered = [lcg.language_name(l) for l in req.prefered_languages()]
         msg = (_("The resource '%s' is not available in either of "
                  "the requested languages.", req.uri),
-               lcg.concat(_("Your browser is configured to accept only the "
-                            "following languages:"), ' ',
-                          lcg.concat(prefered, separator=', ')))
+               (_("Your browser is configured to accept only the "
+                  "following languages:"), ' ',
+                lcg.concat([lcg.language_name(l) for l in
+                            req.prefered_languages()], separator=', ')))
         if self.args:
-            available = [_html.link(lcg.language_name(l),
-                                    "%s?setlang=%s" % (req.uri, l))
-                         for l in self.args[0]]
-            msg += (lcg.concat(_("The available variants are:"), ' ',
-                               lcg.concat(available, separator=', ')),
+            msg += ((_("The available variants are:"), ' ',
+                     lcg.join([lcg.link("%s?setlang=%s" % (req.uri, l),
+                                        label=lcg.language_name(l),)
+                               for l in self.args[0]], separator=', ')),
                     _("If you want to accept other languages permanently, "
                       "setup the language preferences in your browser "
                       "or contact your system administrator."))
-        return lcg.concat([lcg.concat("<p>", p, "</p>\n\n") for p in msg])
+        return lcg.coerce([lcg.p(p) for p in msg])
 
 
 class Unauthorized(HttpError):
@@ -213,7 +97,8 @@ class Unauthorized(HttpError):
     def title(self):
         return _("Authentication required")
 
-    
+# ============================================================================
+
 class FileUpload(object):
     """An abstract representation of uploaded file fields."""
 
@@ -225,9 +110,6 @@ class FileUpload(object):
         
     def type(self):
         """Return the mime type provided byt he UA as a string"""
-
-
-# ============================================================================
 
 
 class MenuItem(object):
@@ -332,7 +214,7 @@ class ActionMenu(lcg.Content):
         self._actions = actions
         self._args = args or {}
 
-    def _export_item(self, action):
+    def _export_item(self, action, g):
         enabled = action.enabled()
         if callable(enabled):
             enabled = enabled(self._row)
@@ -348,21 +230,23 @@ class ActionMenu(lcg.Content):
                 uri = '.'
             else:
                 uri = ''
-            target = _html.uri(uri, action=action.name(), **args)
+            target = g.uri(uri, action=action.name(), **args)
             cls = None
         else:
             target = None
             cls = 'inactive'
-        return _html.link(action.title(), target, cls=cls)
+        return g.link(action.title(), target, cls=cls)
         
     def export(self, exporter):
+        g = exporter.generator()
         # Only Wiking's Actions are considered, not `pytis.presentation.Action'.
-        items = concat([self._export_item(a) for a in self._actions
+        items = lcg.concat([self._export_item(a, g) for a in self._actions
                         if isinstance(a, Action)],
-                       separator=_html.span(" |\n", cls="hidden"))
-        return _html.p(concat(_("Actions:"), items, separator="\n"),
-                       cls="actions")
-          
+                       separator=g.span(" |\n", cls="hidden"))
+        return g.p(lcg.concat(_("Actions:"), items, separator="\n"),
+                   cls="actions")
+
+    
 class PanelItem(lcg.Content):
 
     def __init__(self, fields):
@@ -370,10 +254,11 @@ class PanelItem(lcg.Content):
         self._fields = fields
         
     def export(self, exporter):
-        items = [_html.span(uri and _html.link(value, uri) or value,
+        g = exporter.generator()
+        items = [g.span(uri and g.link(value, uri) or value,
                             cls="panel-field-"+id)
                  for id, value, uri in self._fields]
-        return _html.div(items, cls="item")
+        return g.div(items, cls="item")
 
 
 class CustomViewSpec(object):
@@ -412,6 +297,7 @@ class _CustomView(object):
         return content.export(exporter)
     
     def _export_row_custom(self, exporter, row):
+        g = exporter.generator()
         spec = self._custom_spec
         parts = []
         formatted = spec.formatted_fields()
@@ -425,12 +311,12 @@ class _CustomView(object):
                 content = self._view.field(id).label() + ": " + content
             if not parts and spec.anchor(): # Make the first part a link target.
                 name = spec.anchor() % row[self._data.key()[0].id()].export()
-                content = _html.link(content, None, name=name)
+                content = g.link(content, None, name=name)
                 cls = 'item-heading'
             else:
                 cls = 'item-body'
-            parts.append(_html.div(content, cls=cls+' '+id))
-        return _html.div(parts, cls=spec.cls())
+            parts.append(g.div(content, cls=cls+' '+id))
+        return g.div(parts, cls=spec.cls())
 
     
 class RecordView(pw.ShowForm, _CustomView):
@@ -448,15 +334,16 @@ class ListView(pw.BrowseForm, _CustomView):
             self._wrap_exported_rows = self._wrap_exported_rows_custom
             self._export_row = self._export_row_custom
         
-    def _wrap_exported_rows_custom(self, rows):
-        return _html.div(rows, cls="list-view")
+    def _wrap_exported_rows_custom(self, exporter, rows):
+        return exporter.generator().div(rows, cls="list-view")
 
     
 class Message(lcg.TextContent):
     _CLASS = "message"
     
     def export(self, exporter):
-        return _html.p(_html.escape(self._text), cls=self._CLASS) + "\n"
+        g = exporter.generator()
+        return g.p(g.escape(self._text), cls=self._CLASS) + "\n"
 
   
 class ErrorMessage(Message):
@@ -472,18 +359,19 @@ class LoginDialog(lcg.Content):
         self._login = req.login_name()
 
     def export(self, exporter):
+        g = exporter.generator()
         #TODO: labels!!!!!!!!!!!!
-        x = (_html.label(_("Login name")+':', id='login') + _html.br(),
-             _html.field(name='login', value=self._login, id='login',
-                         tabindex=0, size=14), _html.br(), 
-             _html.label(_("Password")+':', id='password') + _html.br(),
-             _html.field(name='password', id='password', size=14,
-                         password=True), _html.br(),
-             _html.hidden(name='__log_in', value='1'), 
-             ) + tuple([_html.hidden(name=k, value=v)
+        x = (g.label(_("Login name")+':', id='login') + g.br(),
+             g.field(name='login', value=self._login, id='login', tabindex=0,
+                     size=14), g.br(), 
+             g.label(_("Password")+':', id='password') + g.br(),
+             g.field(name='password', id='password', size=14, password=True),
+             g.br(),
+             g.hidden(name='__log_in', value='1'), 
+             ) + tuple([g.hidden(name=k, value=v)
                         for k,v in self._params.items()]) + (
-            _html.submit(_("Log in"), cls='submit'),)
-        return _html.form(x, method='POST', action=self._uri, cls='login-form')
+            g.submit(_("Log in"), cls='submit'),)
+        return g.form(x, method='POST', action=self._uri, cls='login-form')
         
         
 def translator(lang):
@@ -610,4 +498,129 @@ class Date(pytis.data.Date):
     def _export(self, value, show_weekday=False, **kwargs):
         result = super(Date, self)._export(value, **kwargs)
         return lcg.LocalizableDateTime(result, show_weekday=show_weekday)
+
+
+# ============================================================================
+# Misc functions
+# ============================================================================
+
+
+
+def timeit(func, *args, **kwargs):
+    """Measure the function execution time.
+
+    Invokes the function 'func' with given arguments and returns the triple
+    (function result, processor time, wall time), both times in microseconds.
+
+    """
+    t1, t2 = time.clock(), time.time()
+    result = func(*args, **kwargs)
+    return result,  time.clock() - t1, time.time() - t2
+
+def get_module(name):
+    """Get the module class by name.
+    
+    This function replaces Pytis resolver in the web environment and is also
+    used by the Pytis resolver in the stand-alone pytis application
+    environment.
+    
+    """
+    try:
+        from mod_python.apache import import_module
+        modules = import_module('wiking.modules', log=True)
+    except ImportError:
+        import wiking.modules as modules
+    return getattr(modules, name)
+
+def rss(title, url, items, descr, lang=None, webmaster=None):
+    import wiking
+    result = '''<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>%s</title>
+    <link>%s</link>
+    <description>%s</description>''' % (title, url, descr or '') + \
+    (lang and '''
+    <language>%s</language>''' % lang or '') + (webmaster and '''
+    <webMaster>%s</webMaster>''' % webmaster or '') + '''
+    <generator>Wiking %s</generator>''' % wiking.__version__ + '''
+    <ttl>60</ttl>
+    %s
+  </channel>
+</rss>''' % '\n    '.join(['''<item>
+       <title>%s</title>
+       <guid>%s</guid>
+       <link>%s</link>''' % (title, url, url) + (descr and '''
+       <description>%s</description>''' % descr or '') + (date and '''
+       <pubDate>%s</pubDate>''' % date or '') + (author and '''
+       <author>%s</author>''' % author or '') + '''
+    </item>''' for title, url, descr, date, author in items])
+    return result
+
+def send_mail(sender, addr, subject, text, html, smtp_server='localhost'):
+    """Send a mime e-mail message with text and HTML version."""
+    import MimeWriter
+    import mimetools
+    from cStringIO import StringIO
+    out = StringIO() # output buffer for our message 
+    htmlin = StringIO(html)
+    txtin = StringIO(text)
+    writer = MimeWriter.MimeWriter(out)
+    # Set up message headers.
+    writer.addheader("From", sender)
+    writer.addheader("To", addr)
+    writer.addheader("Subject", subject)
+    writer.addheader("Date", time.strftime("%a, %d %b %Y %H:%M:%S",
+                                           time.localtime(time.time())))
+    writer.addheader("MIME-Version", "1.0")
+    # Start the multipart section (multipart/alternative seems to work better
+    # on some MUAs than multipart/mixed).
+    writer.startmultipartbody("alternative")
+    writer.flushheaders()
+    # The plain text section.
+    subpart = writer.nextpart()
+    subpart.addheader("Content-Transfer-Encoding", "quoted-printable")
+    pout = subpart.startbody("text/plain", [("charset", 'utf-8')])
+    mimetools.encode(txtin, pout, 'quoted-printable')
+    txtin.close()
+    # The html section.
+    subpart = writer.nextpart()
+    subpart.addheader("Content-Transfer-Encoding", "quoted-printable")
+    # Returns a file-like object we can write to.
+    pout = subpart.startbody("text/html", [("charset", 'utf-8')])
+    mimetools.encode(htmlin, pout, 'quoted-printable')
+    htmlin.close()
+    # Close the writer and send the message.
+    writer.lastpart()
+    import smtplib
+    server = smtplib.SMTP(smtp_server)
+    try:
+        server.sendmail(sender, addr, out.getvalue())
+    finally:
+        out.close()
+        server.quit()
+
+
+def cmp_versions(v1, v2):
+    """Compare version strings, such as '0.3.1' and return the result.
+
+    The returned value is -1, 0 or 1 such as for the builtin 'cmp()' function.
+    
+    """
+    v1a = [int(v) for v in v1.split('.')]
+    v2a = [int(v) for v in v2.split('.')]
+    for (n1, n2) in zip(v1a, v2a):
+        c = cmp(n1, n2)
+        if c != 0:
+            return c
+    return 0
+
+
+def make_uri(base, *args, **kwargs):
+    """Return a URI constructed from given base URI and args."""
+    args += tuple(kwargs.items())
+    if args:
+        return base + '?' + ';'.join(["%s=%s" % item for item in args])
+    else:
+        return base
 
