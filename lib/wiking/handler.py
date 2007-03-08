@@ -204,7 +204,7 @@ class SiteHandler(object):
                 if e.args:
                     content = (ErrorMessage(e.args[0]), content)
             else:
-                content = lcg.TextContent(e.msg(req))
+                content = e.msg(req)
             result = Document(e.title(), content, lang=lang)
         config = self._module('Config').config(self._server, result.lang())
         if wmi or doc:
