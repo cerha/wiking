@@ -485,14 +485,20 @@ class Pages(WikingModule): #, Publishable
         else:
             text = record['content'].value()
         attachments = self._module('Attachments').attachments(record)
+        items = [(lcg.link(a.uri(), a.title()), ' ('+ a.bytesize() +') ',
+                  lcg.WikiText(a.descr() or ''))
+                 for a in attachments if a.listed()]
+        attachments_section = lcg.Section(title=_("Attachments"),
+                                          content=lcg.ul(items))
         if text:
             sections = lcg.Parser().parse(text)
-            if attachments:
-                sections += [attachments]
+            if attachments_section:
+                sections += [attachments_section]
             content = lcg.SectionContainer(sections, toc_depth=0)
         else:
-            content = attachments
-        return self._document(req, content, record, err=err, msg=msg)
+            content = attachments_section
+        return self._document(req, content, record, resources=attachments,
+                              err=err, msg=msg)
 
     def action_preview(self, req, record, **kwargs):
         return self.action_view(req, record, preview=True, **kwargs)
@@ -580,7 +586,24 @@ class Attachments(StoredFileModule):
         def _ext(self, row):
             ext = os.path.splitext(row['filename'].value())[1].lower()
             return len(ext) > 1 and ext[1:] or ext
-
+    class Attachment(lcg.Resource):
+        def __init__(self, row):
+            file = row['filename'].export()
+            uri = '/'+ row['identifier'].export() + '/'+ file
+            title = row['title'].export() or file
+            descr = row['description'].value()
+            self._bytesize = row['bytesize'].export()
+            self._listed = row['listed'].value()
+            super(Attachments.Attachment, self).__init__(file, uri=uri,
+                                                         title=title,
+                                                         descr=descr)
+        def bytesize(self):
+            return self._bytesize
+        def listed(self):
+            return self._listed
+    class Image(Attachment, lcg.Image):
+        pass
+            
     _STORED_FIELDS = (('file', '_filename'),)
     _LIST_BY_LANGUAGE = True
         
@@ -608,18 +631,15 @@ class Attachments(StoredFileModule):
         raise NotFound()
 
     def attachments(self, page):
-        items = [(lcg.link('/'+ row['identifier'].export() + \
-                           '/'+ row['filename'].export(),
-                           row['title'].export() or row['filename'].export()),
-                  ' ('+ row['bytesize'].export() +') ',
-                  lcg.WikiText(row['description'].export())) for row in
-                 self._data.get_rows(mapping_id=page['mapping_id'].value(),
-                                     lang=page['lang'].value(), listed=True)]
-        if items:
-            return lcg.Section(title=self._view.title(), content=lcg.ul(items))
-        else:
-            return None
-
+        def resource(row):
+            if row['mime_type'].value().startswith('image/'):
+                return self.Image(row)
+            else:
+                return self.Attachment(row)
+        return [resource(row) for row in
+                self._data.get_rows(mapping_id=page['mapping_id'].value(),
+                                    lang=page['lang'].value())]
+                
     def action_view(self, req, record):
         return (str(record['mime_type'].value()),
                 record['file'].value().buffer())
@@ -840,7 +860,9 @@ class Stylesheets(WikingModule):
 
     def stylesheets(self):
         if self._identifier:
-            return ['/'+self._identifier+'/'+str(r['identifier'].value())
+            return [lcg.Stylesheet(r['identifier'].value(),
+                                   uri=('/'+ self._identifier + \
+                                        '/'+ r['identifier'].value()))
                     for r in self._data.get_rows(active=True)]
         else:
             return []
