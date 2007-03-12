@@ -148,7 +148,7 @@ class Document(object):
     """
     
     def __init__(self, title, content, descr=None, lang=None, variants=(),
-                 sec_lang='en'):
+                 sec_lang='en', resources=()):
         self._title = title
         if isinstance(content, (list, tuple)):
             content = lcg.SectionContainer([c for c in content if c],
@@ -158,6 +158,7 @@ class Document(object):
         self._lang = lang
         self._variants = variants
         self._sec_lang = sec_lang
+        self._resources = resources
 
     def lang(self):
         return self._lang
@@ -166,7 +167,7 @@ class Document(object):
         return WikingNode(id, config, title=self._title, content=self._content,
                           lang=self._lang, variants=self._variants or (),
                           descr=self._descr, menu=menu, panels=panels,
-                          stylesheets=stylesheets,
+                          stylesheets=stylesheets, resources=self._resources,
                           secondary_language=self._sec_lang)
 
     
@@ -177,10 +178,12 @@ class Document(object):
 class WikingNode(lcg.ContentNode):
     
     def __init__(self, id, config, menu=(), lang=None, variants=(), panels=(),
-                 stylesheets=(), **kwargs):
+                 stylesheets=(), resources=(), **kwargs):
         self._config = config
         self._menu = menu
         self._panels = panels
+        self._resources = tuple(resources) + tuple(stylesheets)
+        self._resource_dict = None
         self._stylesheets = stylesheets
         for panel in panels:
             panel.content().set_parent(self)
@@ -195,10 +198,19 @@ class WikingNode(lcg.ContentNode):
     
     def panels(self):
         return self._panels
-    
-    def stylesheets(self):
-        return self._stylesheets
-               
+
+    def resources(self, cls=None):
+        if cls is not None:
+            return [r for r in self._resources if isinstance(r, cls)]
+        else:
+            return self._resources
+        
+    def resource(self, cls, file, **kwargs):
+        if self._resource_dict is None:
+            self._resource_dict = dict([(r.file(), r)
+                                        for r in self._resources])
+        resource = self._resource_dict.get(file)
+        return isinstance(resource, cls) and resource or None
     
 class ActionMenu(lcg.Content):
     """A menu of actions related to one record or the whole module."""
