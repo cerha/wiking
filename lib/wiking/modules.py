@@ -678,12 +678,13 @@ class News(WikingModule):
                                   formatted_fields=('content',),
                                   custom_list=True)
         
-    def _link_provider(self, row, cid, wmi=False, **kwargs):
+    def _link_provider(self, row, cid, wmi=False, target=None, **kwargs):
         if not wmi and cid == 'title' and self._identifier is not None:
-            return make_uri('/'+self._identifier, *kwargs.items()) + \
+            return make_uri('/'+self._identifier, **kwargs) + \
                    '#item-'+ row[self._referer].export()
-        elif wmi:
-            return super(News, self)._link_provider(row, cid, wmi=wmi, **kwargs)
+        elif not issubclass(target, Panel):
+            return super(News, self)._link_provider(row, cid, wmi=wmi,
+                                                    target=target, **kwargs)
 
 
 class Planner(News):
@@ -722,11 +723,12 @@ class Planner(News):
             if end and end <= row['start_date'].value():
                 return ("end_date",
                         _("End date precedes start date"))
+    _RSS_TITLE_COLUMN = 'date_title'
+    _RSS_LINK_COLUMN = 'title'
+    _RSS_DATE_COLUMN = None
     def _condition(self):
         return pd.OR(pd.GE('start_date', pd.Value(pd.Date(), today())),
                      pd.GE('end_date', pd.Value(pd.Date(), today())))
-    _RSS_TITLE_COLUMN = 'date_title'
-    _RSS_DATE_COLUMN = None
 
     
 class Images(StoredFileModule):
