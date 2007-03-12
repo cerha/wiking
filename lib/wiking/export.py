@@ -45,15 +45,14 @@ class Exporter(lcg.HtmlExporter):
     def _part(self, part, name):
         return self._generator.div(part, id=name)
     
-    def _head(self, node):
-        items = ['<link rel="stylesheet" type="text/css" href="%s">' % \
-                 stylesheet for stylesheet in node.stylesheets()]
-        #rss = node.config().rss
-        #if rss:
-        #    items.append('<link rel="alternate" type="application/rss+xml" '
-        #                 'title="%s" href="%s"/>' % (node.title(), rss))
-        x = "\n".join(items)
-        return concat(super(Exporter, self)._head(node), x, separator='\n  ')
+    #def _head(self, node):
+    #    result = super(Exporter, self)._head(node)
+    #    rss = node.config().rss
+    #    if rss:
+    #        result = concat(result, '<link rel="alternate" '
+    #                        'type="application/rss+xml" title="%s" href="%s"/>'
+    #                        % (node.title(), rss), separator='\n  ')
+    #    return result
     
     def _top(self, node):
         g = self._generator
