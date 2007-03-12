@@ -7,8 +7,9 @@
 	as the corresponding `Resource' instances.
 
 	* lib/wiking/module.py: Pass keyword arguments to `Document'
-	constructor.
-
+	constructor.  Allow link generation depending on the target
+	component which uses the link.
+	
 	* lib/wiking/handler.py: Expect `lcg.Stylesheet' instances from
 	`Stylesheets.stylesheets()'.  Use `Exporter.export()' instead of
 	`Exporter.page()'.
