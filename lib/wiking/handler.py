@@ -134,8 +134,8 @@ class SiteHandler(object):
 
     def _stylesheets(self, req, panels):
         with_panels = req.show_panels() and panels
-        return [uri for uri in self._module('Stylesheets').stylesheets()
-                if with_panels or not uri.endswith('panels.css')]
+        return [sheet for sheet in self._module('Stylesheets').stylesheets()
+                if with_panels or not sheet.file() == 'panels.css']
 
     def _doc(self, req, path):
         if path and path[0] == 'lcg':
@@ -224,7 +224,8 @@ class SiteHandler(object):
         config.user = req.user()
         node = result.mknode('/'.join(req.path), config, menu, panels, 
                              self._stylesheets(req, panels))
-        data = translator(node.language()).translate(self._exporter.page(node))
+        exported = self._exporter.export(node)
+        data = translator(node.language()).translate(exported)
         return req.result(data)
 
 
