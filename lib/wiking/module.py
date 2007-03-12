@@ -188,10 +188,10 @@ class Module(object):
     def _document(self, req, content, record=None, subtitle=None,
                   lang=None, variants=None, err=None, msg=None, **kwargs):
         if record:
-            if not subtitle and self._title_column:
-                title = record[self._title_column].export()
-            else:
+            if subtitle:
                 title = self._view.singular()
+            else:
+                title = record[self._title_column].export()
             lang = self._lang(record)
             variants = self._variants(record)
         if not variants or req.wmi:
@@ -227,7 +227,7 @@ class Module(object):
                 actions = self._LIST_ACTIONS
         return ActionMenu(actions, record, args=args, uri=uri)
 
-    def _link_provider(self, row, cid, wmi=False, **kwargs):
+    def _link_provider(self, row, cid, wmi=False, target=None, **kwargs):
         if cid == self._title_column or cid == self._key:
             if wmi:
                 uri = '/_wmi/'+ self.name()
@@ -241,7 +241,7 @@ class Module(object):
 
     def _form(self, form, req, *args, **kwargs):
         kwargs['link_provider'] = lambda row, cid: \
-                                  self._link_provider(row, cid, wmi=req.wmi)
+                         self._link_provider(row, cid, wmi=req.wmi, target=form)
         #if isinstance(form, pw.EditForm) and req.params.has_key('module'):
         #    kwargs['hidden'] = kwargs.get('hidden', ()) + \
         #                       (('module', req.params['module']),)
@@ -528,7 +528,7 @@ class PanelizableModule(Module):
         for row in self._rows(lang=lang, limit=count-1):
             prow.set_row(row)
             item = PanelItem([(f.id(), prow[f.id()].export(),
-                               self._link_provider(prow, f.id()))
+                               self._link_provider(prow, f.id(), target=Panel))
                               for f in fields])
             items.append(item)
         if items:
@@ -540,6 +540,7 @@ class PanelizableModule(Module):
 class RssModule(Module):
     
     _RSS_TITLE_COLUMN = None
+    _RSS_LINK_COLUMN = None
     _RSS_DESCR_COLUMN = None
     _RSS_DATE_COLUMN = None
 
@@ -548,9 +549,9 @@ class RssModule(Module):
             raise NotFound
         lang, variants, rows = self._list(req, lang=req.param('lang'), limit=8)
         from xml.sax.saxutils import escape
-        col = self._view.field(self._title_column)
+        link_column = self._RSS_LINK_COLUMN or self._RSS_TITLE_COLUMN
         base_uri = req.abs_uri()[:-len(req.uri)]
-        kwargs = lang and dict(setlang=lang) or {}
+        args = lang and dict(setlang=lang) or {}
         prow = pp.PresentedRow(self._view.fields(), self._data, None)
         items = []
         import mx.DateTime as dt
@@ -559,7 +560,8 @@ class RssModule(Module):
         for row in rows:
             prow.set_row(row)
             title = escape(tr.translate(prow[self._RSS_TITLE_COLUMN].export()))
-            uri = base_uri + self._link_provider(row, col.id(), **kwargs)
+            uri = self._link_provider(row, link_column, **args)
+            uri = uri and base_uri + uri or None
             if self._RSS_DESCR_COLUMN:
                 exported = prow[self._RSS_DESCR_COLUMN].export()
                 descr = escape(tr.translate(exported))
