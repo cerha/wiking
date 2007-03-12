@@ -186,7 +186,7 @@ class Module(object):
         return title or self._view.title()
     
     def _document(self, req, content, record=None, subtitle=None,
-                  lang=None, variants=None, err=None, msg=None):
+                  lang=None, variants=None, err=None, msg=None, **kwargs):
         if record:
             if not subtitle and self._title_column:
                 title = record[self._title_column].export()
@@ -213,7 +213,7 @@ class Module(object):
                 title = self._real_title(lang)
         if subtitle:
             title = lcg.concat(title, ' :: ', subtitle)
-        return Document(title, content, lang=lang, variants=variants)
+        return Document(title, content, lang=lang, variants=variants, **kwargs)
 
     def _actions(self, req, record=None, actions=None, args=None, uri=None):
         if not req.wmi:
