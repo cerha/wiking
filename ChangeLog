@@ -1,3 +1,21 @@
+2007-03-12  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/util.py: Support LCG resources and use don't
+	implement custom stylesheet passing.
+
+	* lib/wiking/modules.py: Generate page attachments and stylesheets
+	as the corresponding `Resource' instances.
+
+	* lib/wiking/module.py: Pass keyword arguments to `Document'
+	constructor.
+
+	* lib/wiking/handler.py: Expect `lcg.Stylesheet' instances from
+	`Stylesheets.stylesheets()'.  Use `Exporter.export()' instead of
+	`Exporter.page()'.
+
+	* lib/wiking/export.py: Rely on superclass to include stylesheet
+	links in the header.
+
 2007-03-08  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/util.py: Use LCG's generator instead of the `_html'
