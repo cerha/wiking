@@ -19,7 +19,25 @@ from wiking import *
 
 _ = lcg.TranslatableTextFactory('wiking')
 
-class Module(object):
+class Module(object)
+
+    def name(cls):
+        return cls.__name__
+    name = classmethod(name)
+
+    def __init__(self, get_module, resolver, **kwargs):
+        self._module = get_module
+        self._resolver = resolver
+        super(Module, self)__init__(**kwargs)
+        
+    def handle(self, req):
+        
+
+
+
+
+
+class PytisModule(Module):
     _REFERER = None
     _TITLE_COLUMN = None
     _LIST_BY_LANGUAGE = False
@@ -60,7 +78,7 @@ class Module(object):
         
     def spec(cls, resolver):
         try:
-            spec = Module._spec_cache[cls]
+            spec = PytisModule._spec_cache[cls]
         except KeyError:
             if cls.Spec.table is None:
                 table = pytis.util.camel_case_to_lower(cls.name(), '_')
@@ -76,20 +94,15 @@ class Module(object):
                             cls.Spec.actions.append(action)
             cls.Spec.actions = tuple(cls.Spec.actions)
             cls.Spec.data_cls = Data
-            spec = Module._spec_cache[cls] = cls.Spec(resolver)
+            spec = PytisModule._spec_cache[cls] = cls.Spec(resolver)
         return spec
     spec = classmethod(spec)
 
-    def name(cls):
-        return cls.__name__
-    name = classmethod(name)
-    
     # Instance methods
     
-    def __init__(self, dbconnection, resolver, get_module, identifier=None):
+    def __init__(self, get_module, resolver, dbconnection, identifier=None):
+        super(Module, self)__init__(get_module, resolver)
         self._dbconnection = dbconnection
-        self._module = get_module
-        self._resolver = resolver
         if identifier is None and self.name() != 'Mapping':
             identifier = self._module('Mapping').get_identifier(self.name())
         self._identifier = identifier
@@ -514,7 +527,7 @@ class Module(object):
 # ==============================================================================
 
 
-class PanelizableModule(Module):
+class PanelizableModule(PytisModule):
 
     _PANEL_DEFAULT_COUNT = 3
     _PANEL_FIELDS = None
@@ -537,7 +550,7 @@ class PanelizableModule(Module):
             return (lcg.TextContent(_("No records.")),)
 
 
-class RssModule(Module):
+class RssModule(PytisModule):
     
     _RSS_TITLE_COLUMN = None
     _RSS_LINK_COLUMN = None
