@@ -180,8 +180,21 @@ class PytisModule(Module, ActionHandler):
         self._referer = self._REFERER or key
         self._referer_type = self._data.find_column(self._referer).type()
         self._title_column = self._TITLE_COLUMN or self._view.columns()[0]
+        self._cached_identifier = (None, None)
         #log(OPR, 'New module instance: %s[%x]' % (self.name(),
         #                                          lcg.positive_id(self)))
+
+    def _identifier(self, req):
+        """Return module's current mapping identifier as a string or None."""
+        # Since the identifiers may be used many times, they are cached at
+        # least for the duration of one request.  We cannot cache them over
+        # requests, sice there is no way to invalidate them in the multiprocess
+        # server invironment.
+        req_, identifier = self._cached_identifier
+        if req is not req_:
+            identifier = self._module('Mapping').get_identifier(self.name())
+            self._cached_identifier = (req, identifier)
+        return identifier
         
     def _datetime_formats(self, req):
         lang = req.prefered_language(self._module('Languages').languages())
@@ -307,7 +320,7 @@ class PytisModule(Module, ActionHandler):
                 uri = '/_wmi/'+ self.name()
                 referer = self._key
             else:
-                uri = '/'+ req.path[0]
+                uri = '/'+ self._identifier(req)
                 referer = self._referer
             uri += '/'+ row[referer].export()
             return make_uri(uri, **kwargs)
