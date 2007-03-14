@@ -128,18 +128,15 @@ class SiteHandler(object):
         self._exporter = Exporter()
         #log(OPR, 'New SiteHandler instance for %s.' % dbconnection)
 
-    def _module(self, name, identifier=None):
+    def _module(self, name):
         try:
             module = self._module_cache[name]
-            if identifier is not None and module.identifier() != identifier:
-                raise KeyError(name) # Throw away...
         except KeyError:
             cls = get_module(name)
             args = (self._module, self._resolver)
-            kwargs = dict(identifier=identifier)
             if issubclass(cls, PytisModule):
                 args += (self._dbconnection,)
-            module = cls(*args, **kwargs)
+            module = cls(*args)
             self._module_cache[name] = module
         return module
 
@@ -175,7 +172,7 @@ class SiteHandler(object):
             panels = ()
         else:
             menu = self._mapping.menu(result.lang())
-            panels = self._panels.panels(result.lang())
+            panels = self._panels.panels(req, result.lang())
             config.show_panels = req.show_panels()
         config.wmi = req.wmi
         config.doc = doc
