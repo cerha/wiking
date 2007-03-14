@@ -48,9 +48,171 @@ def _modtitle(m):
 # thus should not appear in the module selection for the Mapping items.
 # It should be considered a temporary hack, but the list should be maintained.
 _SYSMODULES = ('Languages', 'Modules', 'Config', 'Mapping','Panels', 'Titles')
-  
+
+
+class Mapping(WikingModule, Publishable):
+    """Mapping available URIs to the modules which handle them.
+
+    The Wiking Handler always uses the first part of the URI path to query this
+    module for the module which is responsible for handling the request and
+    then postpones the request to this module.  The first part of the URI path
+    is refered to as the ``identifier''.  For example in the URI
+    `http://www.yourdomain.com/xxx/yyy' the identifier is `xxx'.
+    
+    This implementation uses static mapping as well as database based mapping,
+    which may be modified through the Wiking Management Interface.
+
+    """
+    
+    class Spec(pp.Specification):
+        title = _("Mapping")
+        fields = (
+            Field('mapping_id', width=5, editable=NEVER),
+            #Field('parent', _("Parent"), codebook='Mapping'),
+            Field('identifier', _("Identifier"),
+                  filter=ALPHANUMERIC, post_process=LOWER, fixed=True,
+                  type=pd.Identifier(maxlen=32), width=20),
+            Field('mod_id', _("Module"), selection_type=CHOICE,
+                  codebook='Modules',
+                  validity_condition=pd.AND(*[pd.NE('name',
+                                                    pd.Value(pd.String(),_m))
+                                              for _m in _SYSMODULES])),
+            Field('modname', _("Module")),
+            Field('modtitle', _("Module"), virtual=True,
+                  computer=Computer(lambda r: _modtitle(r['modname'].value()),
+                                    depends=('modname',))),
+            Field('published', _("Published")),
+            Field('ord', _("Menu order"), width=5))
+        sorting = (('ord', ASC), ('identifier', ASC))
+        bindings = {'Pages': pp.BindingSpec(_("Pages"), 'mapping_id')}
+        columns = ('identifier', 'modtitle', 'published', 'ord')
+        layout = ('identifier', 'mod_id', 'published', 'ord')
+        cb = pp.CodebookSpec(display='identifier')
+    _REFERER = 'identifier'
+    _STATIC_MAPPING = {'_doc': 'Documentation',
+                       '_wmi': 'WikingManagementInterface'}
+
+    def _link_provider(self, row, cid, wmi=False, **kwargs):
+        if wmi and cid == 'modtitle':
+            return '/_wmi/' + row['modname'].value()
+        return super(Mapping, self)._link_provider(row, cid, wmi=wmi, **kwargs)
+
+    def modname(self, identifier):
+        """Return the name of the module for the given identifier."""
+        try:
+            modname = self._STATIC_MAPPING[identifier]
+        except KeyError:
+            try:
+                cache = self._modname_cache
+            except AttributeError:
+                cache = self._modname_cache = {}
+            try:
+                modname = cache[identifier]
+            except KeyError:
+                row = self._data.get_row(identifier=identifier, published=True)
+                if row is None:
+                    raise NotFound()
+                cache[identifier] = modname = row['modname'].value()
+        return modname
+    
+    def get_identifier(self, modname):
+        """Return the current identifier for given module name."""
+        row = self._data.get_row(modname=modname, published=True)
+        return row and row['identifier'].value() or None
+    
+    def menu(self, lang):
+        """Return the sequence of main navigation menu items.
+
+        The argument `lang' denotes the language which should be used for
+        localizing the item titles.  It is one of the language codes as
+        returned by `Languages.languages()'.
+
+        Returns a sequence of 'MenuItem' instances.
+        
+        """
+        titles = self._module('Titles').titles(lang)
+        return [MenuItem(str(row['identifier'].value()),
+                         titles.get(row['mapping_id'].value(),
+                                    row['identifier'].value()))
+                for row in self._data.get_rows(sorting=self._sorting)
+                if row['ord'].value() and row['published'].value()]
+                #and row['parent'].value() is None]
+                
+    def title(self, lang, modname):
+        """Return localized module title for given module name.
+
+        The argument `lang' denotes the language which should be used for
+        localizing the title.  It is one of the language codes as returned by
+        `Languages.languages()'.
+
+        """
+        row = self._data.get_row(modname=modname)
+        if row:
+            titles = self._module('Titles').titles(lang)
+            key = row['mapping_id'].value()
+            return titles.get(key, row['identifier'].value())
+        else:
+            return _modtitle(modname)
+
+
+class Documentation(Module):
+    """Serve the on-line documentation.
+
+    This module is not bound to a data object.  It only serves the on-line
+    documentation from files on the disk.
+
+    """
+    def handle(self, req):
+        path = req.path[1:]
+        if path and path[0] == 'lcg':
+            path = path[1:]
+            basedir = lcg.config.doc_dir
+        else:
+            basedir = os.path.join(cfg.wiking_dir, 'doc', 'src')
+        if not os.path.exists(basedir):
+            raise Exception("Directory %s does not exist" % basedir)
+        import glob, codecs
+        # TODO: the documentation should be processed by LCG first into some
+        # reasonable output format.  Now we just search the file in all the
+        # source directories and format it.  No global navigation is used.
+        for subdir in ('', 'user', 'admin'):
+            basename = os.path.join(basedir, subdir, *path)
+            variants = [f[-6:-4] for f in glob.glob(basename+'.*.txt')]
+            if variants:
+                break
+        else:
+            raise NotFound()
+        lang = req.prefered_language(variants)
+        filename = '.'.join((basename, lang, 'txt'))
+        f = codecs.open(filename, encoding='utf-8')
+        text = "".join(f.readlines())
+        f.close()
+        content = lcg.Parser().parse(text)
+        if len(content) == 1 and isinstance(content[0], lcg.Section):
+            title = content[0].title()
+            content = lcg.SectionContainer(content[0].content(), toc_depth=0)
+        else:
+            title = ' :: '.join(path)
+        return Document(title, content, lang=lang, variants=variants)
+
+
+class WikingManagementInterface(Module):
+    """Wiking Management Interface.
+
+    This module handles the WMI requestes by redirecting the request to the
+    selected module.  The module name is part of the request URI.
+
+    """
+    def handle(self, req):
+        req.wmi = True
+        if len(req.path) == 1:
+            req.path += ('Pages',)
+        modname = req.path[1]
+        return self._module(modname).handle(req)
+
+    
 class Modules(WikingModule):
-    """This module allows management of available modules in WMI"""
+    """This module allows management of available modules in WMI."""
     class Spec(pp.Specification):
         class _ModNameType(pd.String):
             VM_UNKNOWN_MODULE = 'VM_UNKNOWN_MODULE'
@@ -88,81 +250,14 @@ class Modules(WikingModule):
             modules.insert(0, 'Mapping')
         return [MenuItem(prefix+'/'+m, _modtitle(m)) for m in modules]
 
-    
-class Mapping(WikingModule, Publishable):
-    class Spec(pp.Specification):
-        title = _("Mapping")
-        fields = (
-            Field('mapping_id', width=5, editable=NEVER),
-            #Field('parent', _("Parent"), codebook='Mapping'),
-            Field('identifier', _("Identifier"),
-                  filter=ALPHANUMERIC, post_process=LOWER, fixed=True,
-                  type=pd.Identifier(maxlen=32), width=20),
-            Field('mod_id', _("Module"), selection_type=CHOICE,
-                  codebook='Modules',
-                  validity_condition=pd.AND(*[pd.NE('name',
-                                                    pd.Value(pd.String(),_m))
-                                              for _m in _SYSMODULES])),
-            Field('modname', _("Module")),
-            Field('modtitle', _("Module"), virtual=True,
-                  computer=Computer(lambda r: _modtitle(r['modname'].value()),
-                                    depends=('modname',))),
-            Field('published', _("Published")),
-            Field('ord', _("Menu order"), width=5))
-        sorting = (('ord', ASC), ('identifier', ASC))
-        bindings = {'Pages': pp.BindingSpec(_("Pages"), 'mapping_id')}
-        columns = ('identifier', 'modtitle', 'published', 'ord')
-        layout = ('identifier', 'mod_id', 'published', 'ord')
-        cb = pp.CodebookSpec(display='identifier')
-    _REFERER = 'identifier'
-
-    def _link_provider(self, row, cid, wmi=False, **kwargs):
-        if wmi and cid == 'modtitle':
-            return '/_wmi/' + row['modname'].value()
-        return super(Mapping, self)._link_provider(row, cid, wmi=wmi, **kwargs)
-
-    def modname(self, identifier):
-        """Return the module name by identifier."""
-        try:
-            cache = self._modname_cache
-        except AttributeError:
-            cache = self._modname_cache = {}
-        try:
-            modname = cache[identifier]
-        except KeyError:
-            row = self._data.get_row(identifier=identifier, published=True)
-            if row is None:
-                raise NotFound()
-            cache[identifier] = modname = row['modname'].value()
-        return modname
-    
-    def get_identifier(self, modname):
-        """Return the current identifier for given module name."""
-        row = self._data.get_row(modname=modname, published=True)
-        return row and row['identifier'].value() or None
-    
-    def menu(self, lang):
-        """Return the sequence of main navigation menu items."""
-        titles = self._module('Titles').titles(lang)
-        return [MenuItem(str(row['identifier'].value()),
-                         titles.get(row['mapping_id'].value(),
-                                    row['identifier'].value()))
-                for row in self._data.get_rows(sorting=self._sorting)
-                if row['ord'].value() and row['published'].value()]
-                #and row['parent'].value() is None]
-                
-    def title(self, lang, modname):
-        """Return localized module title for given module name."""
-        row = self._data.get_row(modname=modname)
-        if row:
-            titles = self._module('Titles').titles(lang)
-            key = row['mapping_id'].value()
-            return titles.get(key, row['identifier'].value())
-        else:
-            return _modtitle(modname)
-
 
 class Config(WikingModule):
+    """Site specific configuration provider.
+
+    This implementation stores the configuration variables as one row in a
+    Pytis data object to allow their modification through WMI.
+
+    """
     class Spec(pp.Specification):
         title = _("Config")
         fields = (
@@ -196,8 +291,9 @@ class Config(WikingModule):
                 domain = domain[4:]
             return 'webmaster@' + domain
     
-    def resolve(self, req):
-        return self._record(self._data.get_row(config_id=0))
+    def _action_args(self, req):
+        # We always work with just one record.
+        return dict(record=self._record(self._data.get_row(config_id=0)))
     
     def config(self, server, lang):
         row = self._data.get_row(config_id=0)
@@ -263,6 +359,12 @@ class Panels(WikingModule, Publishable):
                 
                 
 class Languages(WikingModule):
+    """List all languages available for given site.
+
+    This implementation stores the list of available languages in a Pytis data
+    object to allow their modification through WMI.
+
+    """
     class Spec(pp.Specification):
         title = _("Languages")
         fields = (
@@ -284,6 +386,7 @@ class Languages(WikingModule):
 
     
 class Titles(WikingModule):
+    """Provide localized titles for 'Mapping' items."""
     class Spec(pp.Specification):
         title = _("Titles")
         fields = (
@@ -307,6 +410,7 @@ class Titles(WikingModule):
          WikingModule._EXCEPTION_MATCHERS
     
     def titles(self, lang):
+        """Return a dictionary of localized item titles keyed by identifier."""
         return dict([(row['mapping_id'].value(), row['title'].value())
                      for row in self._data.get_rows(lang=lang)])
 
@@ -454,9 +558,10 @@ class Pages(WikingModule): #, Publishable
                 self._data.get_rows(mapping_id=record['mapping_id'].value(),
                                     condition=self._IS_OK)]
 
-    def _redirect(self, req):
+    def handle(self, req):
         if not req.wmi and len(req.path) == 2:
-            return self._module('Attachments')
+            return self._module('Attachments').handle(req)
+        return super(Pages, self).handle(req)
 
     def _resolve(self, req):
         if len(req.path) == 1:
@@ -488,8 +593,8 @@ class Pages(WikingModule): #, Publishable
         items = [(lcg.link(a.uri(), a.title()), ' ('+ a.bytesize() +') ',
                   lcg.WikiText(a.descr() or ''))
                  for a in attachments if a.listed()]
-        attachments_section = lcg.Section(title=_("Attachments"),
-                                          content=lcg.ul(items))
+        attachments_section = items and lcg.Section(title=_("Attachments"),
+                                                    content=lcg.ul(items))
         if text:
             sections = lcg.Parser().parse(text)
             if attachments_section:
@@ -947,4 +1052,7 @@ class Users(WikingModule):
 
     def close_session(self, user):
         self._update_values(user, session_expire=None, session_key=None)
+
+
+
         
