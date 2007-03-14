@@ -166,7 +166,7 @@ class Exporter(lcg.HtmlExporter):
         elif config.doc:
             ctrl = g.link(_("Leave the Help System"), '/')
         else:
-            modname = config.module and config.module.name() or ''
+            modname = config.modname or ''
             ctrl = g.link(_("Manage this site"), '/_wmi/'+modname, hotkey="9",
                           title=_("Enter the Wiking Management Interface"))
         ctrls += (ctrl, self._hidden("]"))
