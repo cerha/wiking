@@ -20,19 +20,14 @@ from wiking import *
 _ = lcg.TranslatableTextFactory('wiking')
 
 class Module(object):
-    """Abstract base class defining the basic module interface.
-
-    The most important interface method is 'handle()', which handles all
-    requests.  This method is called by the main 'WikingHandler'.
-
-    """
+    """Abstract base class defining the basic Wiking module."""
     
     def name(cls):
         """Return the module name as a string."""
         return cls.__name__
     name = classmethod(name)
 
-    def __init__(self, get_module, resolver, identifier=None, **kwargs):
+    def __init__(self, get_module, resolver, **kwargs):
         """Initialize the instance.
 
         Arguments:
@@ -40,22 +35,15 @@ class Module(object):
           get_module -- a callable object which returns the module instance
             when called with a module name as an argument.
           resolver -- Pytis 'Resolver' instance.
-          identifier -- The current mapping identifier of the module as a
-            string.  If omitted, the identifier will be supplied by querying
-            the 'Mapping' module.
 
         """
         self._module = get_module
         self._resolver = resolver
-        if identifier is None and self.name() != 'Mapping':
-            identifier = self._module('Mapping').get_identifier(self.name())
-        self._identifier = identifier
         super(Module, self).__init__(**kwargs)
 
-    def identifier(self):
-        """Return current mapping identifier of the module as a string."""
-        return self._identifier
-
+    
+class RequestHandler(object):
+    """Mix-in class for modules capable of handling requests."""
     
     def handle(self, req):
         """Handle the request and return the result.
@@ -68,7 +56,7 @@ class Module(object):
         pass
 
 
-class ActionHandler(object):
+class ActionHandler(RequestHandler):
     """Mix-in class for modules providing ``actions'' to handle requests.
 
     The actions are handled by implementing public methods named `action_*',
@@ -105,7 +93,7 @@ class ActionHandler(object):
         return method(req, **kwargs)
 
 
-class PytisModule(ActionHandler, Module):
+class PytisModule(Module, ActionHandler):
     """Module bound to a Pytis data object.
 
     Each subclass of this module must define a pytis specification by defining
@@ -194,7 +182,7 @@ class PytisModule(ActionHandler, Module):
         self._title_column = self._TITLE_COLUMN or self._view.columns()[0]
         #log(OPR, 'New module instance: %s[%x]' % (self.name(),
         #                                          lcg.positive_id(self)))
-
+        
     def _datetime_formats(self, req):
         lang = req.prefered_language(self._module('Languages').languages())
         return lcg.datetime_formats(translator(lang))
@@ -313,13 +301,13 @@ class PytisModule(ActionHandler, Module):
                 actions = self._LIST_ACTIONS
         return ActionMenu(actions, record, args=args, uri=uri)
 
-    def _link_provider(self, row, cid, wmi=False, target=None, **kwargs):
+    def _link_provider(self, req, row, cid, target=None, **kwargs):
         if cid == self._title_column or cid == self._key:
-            if wmi:
+            if req.wmi:
                 uri = '/_wmi/'+ self.name()
                 referer = self._key
             else:
-                uri = '/'+ self._identifier
+                uri = '/'+ req.path[0]
                 referer = self._referer
             uri += '/'+ row[referer].export()
             return make_uri(uri, **kwargs)
@@ -327,7 +315,7 @@ class PytisModule(ActionHandler, Module):
 
     def _form(self, form, req, *args, **kwargs):
         kwargs['link_provider'] = lambda row, cid: \
-                         self._link_provider(row, cid, wmi=req.wmi, target=form)
+                         self._link_provider(req, row, cid, target=form)
         #if isinstance(form, pw.EditForm) and req.params.has_key('module'):
         #    kwargs['hidden'] = kwargs.get('hidden', ()) + \
         #                       (('module', req.params['module']),)
@@ -601,7 +589,7 @@ class PanelizableModule(PytisModule):
     _PANEL_DEFAULT_COUNT = 3
     _PANEL_FIELDS = None
 
-    def panelize(self, lang, count):
+    def panelize(self, req, lang, count):
         count = count or self._PANEL_DEFAULT_COUNT
         fields = [self._view.field(id)
                   for id in self._PANEL_FIELDS or self._view.columns()]
@@ -610,7 +598,8 @@ class PanelizableModule(PytisModule):
         for row in self._rows(lang=lang, limit=count-1):
             prow.set_row(row)
             item = PanelItem([(f.id(), prow[f.id()].export(),
-                               self._link_provider(prow, f.id(), target=Panel))
+                               self._link_provider(req, prow, f.id(),
+                                                   target=Panel))
                               for f in fields])
             items.append(item)
         if items:
@@ -642,7 +631,7 @@ class RssModule(PytisModule):
         for row in rows:
             prow.set_row(row)
             title = escape(tr.translate(prow[self._RSS_TITLE_COLUMN].export()))
-            uri = self._link_provider(row, link_column, **args)
+            uri = self._link_provider(req, row, link_column, **args)
             uri = uri and base_uri + uri or None
             if self._RSS_DESCR_COLUMN:
                 exported = prow[self._RSS_DESCR_COLUMN].export()

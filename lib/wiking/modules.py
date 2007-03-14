@@ -57,13 +57,14 @@ class Mapping(WikingModule, Publishable):
     module for the module which is responsible for handling the request and
     then postpones the request to this module.  The first part of the URI path
     is refered to as the ``identifier''.  For example in the URI
-    `http://www.yourdomain.com/xxx/yyy' the identifier is `xxx'.
+    `http://www.yourdomain.com/xxx/yyy' the identifier is `xxx'.  It is also
+    legal to map several URIs to the same module.  In this case it is up to the
+    module to resolve the request and handle different requests differently.
     
     This implementation uses static mapping as well as database based mapping,
     which may be modified through the Wiking Management Interface.
 
     """
-    
     class Spec(pp.Specification):
         title = _("Mapping")
         fields = (
@@ -92,10 +93,10 @@ class Mapping(WikingModule, Publishable):
     _STATIC_MAPPING = {'_doc': 'Documentation',
                        '_wmi': 'WikingManagementInterface'}
 
-    def _link_provider(self, row, cid, wmi=False, **kwargs):
-        if wmi and cid == 'modtitle':
+    def _link_provider(self, req, row, cid, **kwargs):
+        if req.wmi and cid == 'modtitle':
             return '/_wmi/' + row['modname'].value()
-        return super(Mapping, self)._link_provider(row, cid, wmi=wmi, **kwargs)
+        return super(Mapping, self)._link_provider(req, row, cid, **kwargs)
 
     def modname(self, identifier):
         """Return the name of the module for the given identifier."""
@@ -116,9 +117,15 @@ class Mapping(WikingModule, Publishable):
         return modname
     
     def get_identifier(self, modname):
-        """Return the current identifier for given module name."""
-        row = self._data.get_row(modname=modname, published=True)
-        return row and row['identifier'].value() or None
+        """Return the current identifier for given module name.
+
+        None will be returned when there is no mapping item for the module, or
+        when there is more than one item for the same module (which is also
+        legal).
+        
+        """
+        rows = self._data.get_rows(modname=modname, published=True)
+        return len(rows) == 1 and rows[0]['identifier'].value() or None
     
     def menu(self, lang):
         """Return the sequence of main navigation menu items.
@@ -340,7 +347,7 @@ class Panels(WikingModule, Publishable):
                   'content', 'published')
     _LIST_BY_LANGUAGE = True
 
-    def panels(self, lang):
+    def panels(self, req, lang):
         parser = lcg.Parser()
         panels = []
         for row in self._data.get_rows(lang=lang, published=True,
@@ -351,7 +358,7 @@ class Panels(WikingModule, Publishable):
             content = ()
             if row['modname'].value():
                 mod = self._module(row['modname'].value())
-                content = tuple(mod.panelize(lang, row['size'].value()))
+                content = tuple(mod.panelize(req, lang, row['size'].value()))
             if row['content'].value():
                 content += tuple(parser.parse(row['content'].value()))
             panels.append(Panel(panel_id, title, lcg.Container(content)))
@@ -712,13 +719,13 @@ class Attachments(StoredFileModule):
     _STORED_FIELDS = (('file', '_filename'),)
     _LIST_BY_LANGUAGE = True
         
-    def _link_provider(self, row, cid, wmi=False, **kwargs):
+    def _link_provider(self, req, row, cid, **kwargs):
         if cid == 'file':
             cid = 'filename'
             kwargs['action'] = 'view'
         if cid == 'identifier':
             return '/_wmi/Pages/' + row['page_id'].value()
-        return super(Attachments, self)._link_provider(row, cid, wmi=wmi, **kwargs)
+        return super(Attachments, self)._link_provider(req, row, cid, **kwargs)
 
 #     def _redirect_after_insert(self, req, record):
 #     def _redirect_after_update(self, req, record):
@@ -783,12 +790,12 @@ class News(WikingModule):
                                   formatted_fields=('content',),
                                   custom_list=True)
         
-    def _link_provider(self, row, cid, wmi=False, target=None, **kwargs):
-        if not wmi and cid == 'title' and self._identifier is not None:
-            return make_uri('/'+self._identifier, **kwargs) + \
+    def _link_provider(self, req, row, cid, target=None, **kwargs):
+        if not req.wmi and cid == 'title':
+            return make_uri('/'+ req.path[0], **kwargs) + \
                    '#item-'+ row[self._referer].export()
         elif not issubclass(target, Panel):
-            return super(News, self)._link_provider(row, cid, wmi=wmi,
+            return super(News, self)._link_provider(req, row, cid,
                                                     target=target, **kwargs)
 
 
@@ -919,14 +926,14 @@ class Images(StoredFileModule):
                       ('image', '_image_filename'),
                       ('thumbnail', '_thumbnail_filename'))
         
-    def _link_provider(self, row, cid, wmi=False, **kwargs):
+    def _link_provider(self, req, row, cid, **kwargs):
         if cid == 'file':
             cid = 'filename'
-            kwargs['action'] = wmi and 'orig' or 'view'
+            kwargs['action'] = req.wmi and 'orig' or 'view'
         if cid == 'thumbnail':
             cid = 'filename'
             kwargs['action'] = 'thumbnail'
-        return super(Images, self)._link_provider(row, cid, wmi=wmi, **kwargs)
+        return super(Images, self)._link_provider(req, row, cid, **kwargs)
 
     def _image(self, record, id):
         mime = "image/" + str(record['format'].value())
@@ -966,9 +973,10 @@ class Stylesheets(WikingModule):
         return value
 
     def stylesheets(self):
-        if self._identifier:
+        identifier = self._module('Mapping').get_identifier(self.name())
+        if identifier:
             return [lcg.Stylesheet(r['identifier'].value(),
-                                   uri=('/'+ self._identifier + \
+                                   uri=('/'+ identifier + \
                                         '/'+ r['identifier'].value()))
                     for r in self._data.get_rows(active=True)]
         else:
