@@ -303,10 +303,25 @@ class Config(WikingModule):
         return dict(record=self._record(self._data.get_row(config_id=0)))
     
     def config(self, server, lang):
+        """Return the site-specific configuration object.
+
+        The instance returned by this method must have the following public
+        attributes: 'site_title', 'site_subtitle', 'login_panel',
+        'webmaster_addr'.
+
+        """
         row = self._data.get_row(config_id=0)
         return self.Configuration(row, server)
 
     def theme(self):
+        """Return the current color theme as a dictionary.
+
+        The returned dictionary assigns color values (strings in the '#rrggbb'
+        format) to symbolic color names.  These colors will used for
+        stlylesheet substitution.
+
+        """
+
         theme_id = self._data.get_row(config_id=0)['theme'].value()
         return self._module('Themes').theme(theme_id)
     
