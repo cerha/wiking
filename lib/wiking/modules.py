@@ -791,9 +791,10 @@ class News(WikingModule):
                                   custom_list=True)
         
     def _link_provider(self, req, row, cid, target=None, **kwargs):
-        if not req.wmi and cid == 'title':
-            return make_uri('/'+ req.path[0], **kwargs) + \
-                   '#item-'+ row[self._referer].export()
+        identifier = self._identifier(req)
+        if not req.wmi and cid == 'title' and identifier is not None:
+            anchor = '#item-'+ row[self._referer].export()
+            return make_uri('/'+ identifier, **kwargs) + anchor
         elif not issubclass(target, Panel):
             return super(News, self)._link_provider(req, row, cid,
                                                     target=target, **kwargs)
@@ -973,6 +974,7 @@ class Stylesheets(WikingModule):
         return value
 
     def stylesheets(self):
+        # TODO: Use self._identifier() ???
         identifier = self._module('Mapping').get_identifier(self.name())
         if identifier:
             return [lcg.Stylesheet(r['identifier'].value(),
