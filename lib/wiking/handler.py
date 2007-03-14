@@ -30,9 +30,6 @@ class Handler(object):
     site.  Multiple sites can be served this way.  One site is typically one
     virtual host (depending on web server configuration).
 
-    The instance is callable so it can be named 'handler' and it will work as
-    a mod_python handler.
-
     """
     def __init__(self):
         self._site_handlers = {}
@@ -92,7 +89,9 @@ class Handler(object):
             message = ''.join(traceback.format_exception_only(*einfo[:2]))
             return req.error(message)
 
+
 handler = Handler()
+"""The instance is callable so this makes it work as a mod_python handler."""
 
 
 class SiteHandler(object):
@@ -102,6 +101,15 @@ class SiteHandler(object):
     documentation of the 'Handler' class for more information about sites,
     virtualhosts and handlers.
 
+    The main goal of the site handler is to instantiate the modules needed by
+    the application and pass the requests to the instances of the modules.
+    Module instances are cached on this level.
+
+    The other responsibility is to process the result of the module request
+    handler and handle 'HttpError' exceptions, such as 'NotFound',
+    'NotAccaeptable', etc, since these errors should be presented with all the
+    site navigation, panels etc.
+
     """
 
     def __init__(self, server, dbconnection, resolver):
@@ -109,8 +117,14 @@ class SiteHandler(object):
         self._dbconnection = dbconnection
         self._resolver = resolver
         self._module_cache = {}
+        # Initialize the system modules immediately.
         self._mapping = self._module('Mapping')
         self._panels = self._module('Panels')
+        self._stylesheets = self._module('Stylesheets')
+        self._languages = self._module('Languages')
+        self._config = self._module('Config')
+        self._modules = self._module('Modules')
+        #self._users = self._module('Users')
         self._exporter = Exporter()
         #log(OPR, 'New SiteHandler instance for %s.' % dbconnection)
 
@@ -129,24 +143,19 @@ class SiteHandler(object):
             self._module_cache[name] = module
         return module
 
-    def _stylesheets(self, req, panels):
-        with_panels = req.show_panels() and panels
-        return [sheet for sheet in self._module('Stylesheets').stylesheets()
-                if with_panels or not sheet.file() == 'panels.css']
-
     def handle(self, req):
         req.path = req.path or ('index',)
         req.wmi = False # Will be set to True by `WikingManagementInterface'.
         modname = self._mapping.modname(req.path[0])
         try:
-            #req.login(self._module('Users'))
+            #req.login(self._users)
             result = self._module(modname).handle(req)
             if not isinstance(result, Document):
                 content_type, data = result
                 return req.result(data, content_type=content_type)
         except HttpError, e:
             req.set_status(e.ERROR_CODE)
-            lang = req.prefered_language(self._module('Languages').languages(),
+            lang = req.prefered_language(self._languages.languages(),
                                          raise_error=False)
             if isinstance(e, Unauthorized):
                 content = LoginDialog(req)
@@ -155,14 +164,14 @@ class SiteHandler(object):
             else:
                 content = e.msg(req)
             result = Document(e.title(), content, lang=lang)
-        config = self._module('Config').config(self._server, result.lang())
+        config = self._config.config(self._server, result.lang())
         doc = modname == 'Documentation' and req.param('display') != 'inline'
         if req.wmi or doc:
             config.site_title = req.wmi and \
                                 _("Wiking Management Interface") or \
                                 _("Wiking Help System")
             config.site_subtitle = None
-            menu = req.wmi and self._module('Modules').menu(req.path[0]) or ()
+            menu = req.wmi and self._modules.menu(req.path[0]) or ()
             panels = ()
         else:
             menu = self._mapping.menu(result.lang())
@@ -172,8 +181,9 @@ class SiteHandler(object):
         config.doc = doc
         config.modname = modname
         config.user = req.user()
-        node = result.mknode('/'.join(req.path), config, menu, panels, 
-                             self._stylesheets(req, panels))
+        styles = [s for s in self._stylesheets.stylesheets()
+                  if s.file() != 'panels.css' or req.show_panels() and panels]
+        node = result.mknode('/'.join(req.path), config, menu, panels, styles)
         exported = self._exporter.export(node)
         data = translator(node.language()).translate(exported)
         return req.result(data)
