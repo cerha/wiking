@@ -1,3 +1,21 @@
+2007-03-14  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/modules.py: Reflect the base class refactoring.
+	Added documentation.
+	(Documentation, WikingManagementInterface): New modules.
+	(Mapping): Added static mapping for `_wmi' and `_doc'.
+
+	* lib/wiking/module.py: Refactored: Define only the most basic
+	interface in the base class, move all Pytis related functionality
+	to `PytisModule', isolate action dispatching to `ActionHandler'.
+
+	* lib/wiking/export.py: Respect the node config option change.
+
+	* lib/wiking/handler.py: Pass module constructor arguments
+	according to its type.  Don't handle documentation or WMI requests
+	here, rely on their (new) modules.  Added more documentation.
+	Cleaned up.
+
 2007-03-12  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/util.py: Support LCG resources and use don't
