@@ -120,78 +120,27 @@ class SiteHandler(object):
             if identifier is not None and module.identifier() != identifier:
                 raise KeyError(name) # Throw away...
         except KeyError:
-            module = get_module(name)(self._dbconnection, self._resolver,
-                                      self._module, identifier=identifier)
+            cls = get_module(name)
+            args = (self._module, self._resolver)
+            kwargs = dict(identifier=identifier)
+            if issubclass(cls, PytisModule):
+                args += (self._dbconnection,)
+            module = cls(*args, **kwargs)
             self._module_cache[name] = module
         return module
-
-    def _action(self, req, module, record):
-        action = req.param('action', record and (req.wmi and 'show' or 'view')
-                           or 'list')
-        method = getattr(module, 'action_' + action)
-        kwargs = record and dict(record=record) or {}
-        return method(req, **kwargs)
 
     def _stylesheets(self, req, panels):
         with_panels = req.show_panels() and panels
         return [sheet for sheet in self._module('Stylesheets').stylesheets()
                 if with_panels or not sheet.file() == 'panels.css']
 
-    def _doc(self, req, path):
-        if path and path[0] == 'lcg':
-            path = path[1:]
-            basedir = lcg.config.doc_dir
-        else:
-            basedir = os.path.join(cfg.wiking_dir, 'doc', 'src')
-        if not os.path.exists(basedir):
-            raise Exception("Directory %s does not exist" % basedir)
-        import glob, codecs
-        # TODO: the documentation should be processed by LCG first into some
-        # reasonable output format.
-        for subdir in ('', 'user', 'admin'):
-            basename = os.path.join(basedir, subdir, *path)
-            variants = [f[-6:-4] for f in glob.glob(basename+'.*.txt')]
-            if variants:
-                break
-        else:
-            raise NotFound()
-        lang = req.prefered_language(variants)
-        filename = '.'.join((basename, lang, 'txt'))
-        f = codecs.open(filename, encoding='utf-8')
-        text = "".join(f.readlines())
-        f.close()
-        content = lcg.Parser().parse(text)
-        if len(content) == 1 and isinstance(content[0], lcg.Section):
-            title = content[0].title()
-            content = lcg.SectionContainer(content[0].content(), toc_depth=0)
-        else:
-            title = ' :: '.join(path)
-        return Document(title, content, lang=lang, variants=variants)
-
     def handle(self, req):
-        req.wmi = wmi = req.path and req.path[0] == '_wmi'
-        doc = req.path and req.path[0] == '_doc'
-        module = None
+        req.path = req.path or ('index',)
+        req.wmi = False # Will be set to True by `WikingManagementInterface'.
+        modname = self._mapping.modname(req.path[0])
         try:
             #req.login(self._module('Users'))
-            if doc:
-                doc = req.param('display') != 'inline'
-                result = self._doc(req, req.path[1:])
-            else:
-                if wmi:
-                    if len(req.path) == 1:
-                        req.path += ('Pages',)
-                    #modname = req.param('module', req.path[1])
-                    modname = req.path[1]
-                else:
-                    req.path = req.path or ('index',)
-                    modname = self._mapping.modname(req.path[0])
-                module = self._module(modname)
-                redirect = module.redirect(req)
-                if redirect:
-                    module = redirect
-                record = module.resolve(req)
-                result = self._action(req, module, record)
+            result = self._module(modname).handle(req)
             if not isinstance(result, Document):
                 content_type, data = result
                 return req.result(data, content_type=content_type)
@@ -207,20 +156,21 @@ class SiteHandler(object):
                 content = e.msg(req)
             result = Document(e.title(), content, lang=lang)
         config = self._module('Config').config(self._server, result.lang())
-        if wmi or doc:
-            config.site_title = wmi and \
+        doc = modname == 'Documentation' and req.param('display') != 'inline'
+        if req.wmi or doc:
+            config.site_title = req.wmi and \
                                 _("Wiking Management Interface") or \
                                 _("Wiking Help System")
             config.site_subtitle = None
-            menu = wmi and self._module('Modules').menu(req.path[0]) or ()
+            menu = req.wmi and self._module('Modules').menu(req.path[0]) or ()
             panels = ()
         else:
             menu = self._mapping.menu(result.lang())
             panels = self._panels.panels(result.lang())
             config.show_panels = req.show_panels()
-        config.wmi = wmi
+        config.wmi = req.wmi
         config.doc = doc
-        config.module = module
+        config.modname = modname
         config.user = req.user()
         node = result.mknode('/'.join(req.path), config, menu, panels, 
                              self._stylesheets(req, panels))
