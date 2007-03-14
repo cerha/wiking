@@ -19,25 +19,101 @@ from wiking import *
 
 _ = lcg.TranslatableTextFactory('wiking')
 
-class Module(object)
+class Module(object):
+    """Abstract base class defining the basic module interface.
 
+    The most important interface method is 'handle()', which handles all
+    requests.  This method is called by the main 'WikingHandler'.
+
+    """
+    
     def name(cls):
+        """Return the module name as a string."""
         return cls.__name__
     name = classmethod(name)
 
-    def __init__(self, get_module, resolver, **kwargs):
+    def __init__(self, get_module, resolver, identifier=None, **kwargs):
+        """Initialize the instance.
+
+        Arguments:
+
+          get_module -- a callable object which returns the module instance
+            when called with a module name as an argument.
+          resolver -- Pytis 'Resolver' instance.
+          identifier -- The current mapping identifier of the module as a
+            string.  If omitted, the identifier will be supplied by querying
+            the 'Mapping' module.
+
+        """
         self._module = get_module
         self._resolver = resolver
-        super(Module, self)__init__(**kwargs)
+        if identifier is None and self.name() != 'Mapping':
+            identifier = self._module('Mapping').get_identifier(self.name())
+        self._identifier = identifier
+        super(Module, self).__init__(**kwargs)
+
+    def identifier(self):
+        """Return current mapping identifier of the module as a string."""
+        return self._identifier
+
+    
+    def handle(self, req):
+        """Handle the request and return the result.
+
+        The result may be either a 'Document' instance or a pair (MIME_TYPE,
+        DATA).  The document instance will be exported into HTML, the MIME data
+        will be served directly.
+
+        """
+        pass
+
+
+class ActionHandler(object):
+    """Mix-in class for modules providing ``actions'' to handle requests.
+
+    The actions are handled by implementing public methods named `action_*',
+    where the asterisk is replaced by the action name.  The request parameter
+    'action' denotes which action will be used to handle the request.  Each
+    action must accept the 'WikingRequest' instance as the first argument, but
+    it may also require additional arguments.  The dictionary of additional
+    arguments is constructed by the method '_action_args()' depending on the
+    request.  When the request doesn't provide the information needed to
+    construct all the arguments for the action, the action call will
+    automatically fail.  This approach may be legally used to make sure that
+    the request contains all the necessary information for calling the action.
+
+    If the request parameter 'action' is not defined, the method
+    '_default_action()' will be used to find out which action should be used.
+    
+    """
+    
+    def _action_args(self, req):
+        """Return the dictionary of additional action arguments."""
+        return {}
+    
+    def _default_action(self, req):
+        """Return the name of the default action as a string."""
+        return None
         
     def handle(self, req):
-        
+        kwargs = self._action_args(req)
+        if req.params.has_key('action'):
+            action = req.param('action')
+        else:
+            action = self._default_action(req, **kwargs)
+        method = getattr(self, 'action_' + action)
+        return method(req, **kwargs)
 
 
+class PytisModule(ActionHandler, Module):
+    """Module bound to a Pytis data object.
 
-
-
-class PytisModule(Module):
+    Each subclass of this module must define a pytis specification by defining
+    the class named 'Spec' derived from 'pytis.presentation.Specification'.
+    Each instance is then bound to a pytis data object, which is automatically
+    created on module instantiation.
+    
+    """
     _REFERER = None
     _TITLE_COLUMN = None
     _LIST_BY_LANGUAGE = False
@@ -100,12 +176,9 @@ class PytisModule(Module):
 
     # Instance methods
     
-    def __init__(self, get_module, resolver, dbconnection, identifier=None):
-        super(Module, self)__init__(get_module, resolver)
+    def __init__(self, get_module, resolver, dbconnection, **kwargs):
+        super(PytisModule, self).__init__(get_module, resolver, **kwargs)
         self._dbconnection = dbconnection
-        if identifier is None and self.name() != 'Mapping':
-            identifier = self._module('Mapping').get_identifier(self.name())
-        self._identifier = identifier
         spec = self.spec(resolver)
         self._data = spec.data_spec().create(dbconnection_spec=dbconnection)
         self._view = spec.view_spec()
@@ -260,6 +333,12 @@ class PytisModule(Module):
         #                       (('module', req.params['module']),)
         return form(self._data, self._view, self._resolver, *args, **kwargs)
     
+    def _default_action(self, req, record=None):
+        if record is None:
+            return 'list'
+        else:
+            return req.wmi and 'show' or 'view'
+        
     def _get_row_by_key(self, value):
         if isinstance(value, tuple):
             value = value[-1]
@@ -271,10 +350,27 @@ class PytisModule(Module):
         if row is None:
             raise NotFound()
         return row
-        
-    def _redirect(self, req):
-        return None
-    
+
+    def _action_args(self, req):
+        # The request path may resolve to a 'record' argument, no arguments or
+        # raise one of HttpError exceptions.
+        if req.wmi:
+            if len(req.path) == 2: # or req.params.has_key('module'):
+                key = req.param(self._key)
+                if key is None:
+                    row = None
+                else:
+                    row = self._get_row_by_key(key)
+            elif len(req.path) == 3:
+                row = self._get_row_by_key(req.path[2])
+            else:
+                raise NotFound()
+        else:
+            row = self._resolve(req)
+        if row is not None:
+            return dict(record=self._record(row))
+        return {}
+
     def _resolve(self, req):
         # Returns Row, None or raises HttpError.
         if len(req.path) <= 1:
@@ -366,33 +462,6 @@ class PytisModule(Module):
 
     # ===== Public methods which are not action handlers =====
     
-    def identifier(self):
-        """Return current mapping identifier of the module as a string."""
-        return self._identifier
-
-    def redirect(self, req):
-        """Return the module responsible for handling the request or None."""
-        return self._redirect(req)
-    
-    def resolve(self, req):
-        """Return the Record corresponding to the request or None."""
-        if req.wmi:
-            if len(req.path) == 2: # or req.params.has_key('module'):
-                key = req.param(self._key)
-                if key is None:
-                    row = None
-                else:
-                    row = self._get_row_by_key(key)
-            elif len(req.path) == 3:
-                row = self._get_row_by_key(req.path[2])
-            else:
-                raise NotFound()
-        else:
-            row = self._resolve(req)
-        if row is not None:
-            return self._record(row)
-        return None
-
     def record(self, value):
         """Return the record corresponding to given key value."""
         return self._record(self._data.row((value,)))
