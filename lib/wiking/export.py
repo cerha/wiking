@@ -116,7 +116,7 @@ class Exporter(lcg.HtmlExporter):
                   g.hr(cls="hidden")]
         if config.login_panel:
             user, ctrl = self._login_ctrl(node)
-            content = g.p(concat(user, ' ', self._hidden('['), lnk,
+            content = g.p(concat(user, ' ', self._hidden('['), ctrl,
                                  self._hidden(']')))
             panels.insert(0, Panel('login', _("Logged user"), content))
         for i, panel in enumerate(panels):
