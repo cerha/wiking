@@ -271,13 +271,13 @@ class WikingRequest(Request):
         if self._login:
             login, password = self._login
             if not login:
-                raise Unauthorized(_('Enter your login name, please!'))
+                raise AuthenticationError(_('Enter your login name, please!'))
             if not password:
-                raise Unauthorized(_('Enter your password, please!'))
+                raise AuthenticationError(_('Enter your password, please!'))
             user = users.user(login)
             if user is None or user['password'].value() != password \
                    or not user['enabled'].value():
-                raise Unauthorized(_('Invalid login!'))
+                raise AuthenticationError(_('Invalid login!'))
             # Login succesfull
             session_key = hex(random.randint(0, self._MAX_SESSION_KEY))
             users.save_session(user, session_key)
@@ -296,11 +296,4 @@ class WikingRequest(Request):
             users.close_session(self._user)
             self._user = None
         elif self.param('command') == 'login' and not self.user():
-            raise Unauthorized()
-        
-    def check_auth(self, permission):
-        user = self.user()
-        if not user:
-            raise Unauthorized()
-        
-        
+            raise AuthenticationError()
