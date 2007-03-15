@@ -67,8 +67,8 @@ def maybe_install(req, dbconnection, errstr):
             if not err:
                 return ("Database initialized. "
                         '<a href="/_wmi">Enter the management interface</a> '
-                        "Please use the default login 'admin' with password '
-                        'wiking'.  Don't forget to change your password!")
+                        "Please use the default login 'admin' with password "
+                        "'wiking'.  Do not forget to change your password!")
             else:
                 return "Unable to initialize the database: " + err
                 
