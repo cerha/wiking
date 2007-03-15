@@ -211,6 +211,7 @@ class WikingManagementInterface(Module):
 
     """
     def handle(self, req):
+        self._module('Roles').check(req.user(), Roles.ADMIN)
         req.wmi = True
         if len(req.path) == 1:
             req.path += ('Pages',)
@@ -1033,8 +1034,8 @@ class Users(WikingModule):
             Field('uid', width=8, editable=NEVER),
             Field('login', _("Login name"), width=16,
                   type=pd.Identifier(maxlen=16)),
-            Field('password', _("Password")),
-            Field('fullname', _("Full Name"), virtual=True,
+            Field('password', _("Password"), type=pd.Password(maxlen=32)),
+            Field('fullname', _("Full Name"), virtual=True, editable=NEVER,
                   computer=Computer(self._fullname,
                                     depends=('firstname','surname','login'))),
             Field('user', _("Name/Nickname"), virtual=True,
@@ -1047,8 +1048,10 @@ class Users(WikingModule):
             Field('phone', _("Phone")),
             Field('address', _("Address"), height=3),
             Field('uri', _("URI")),
-            Field('enabled', _("Enabled")),
             Field('since', _("Registered since"), type=DateTime()),
+            Field('enabled', _("Enabled")),
+            Field('author', _("Authoring privileges")),
+            Field('admin', _("Admin privileges")),
             Field('session_key'),
             Field('session_expire'),
             )
@@ -1078,6 +1081,58 @@ class Users(WikingModule):
     def close_session(self, user):
         self._update_values(user, session_expire=None, session_key=None)
 
+        
+class Rights(Users):
+    class Spec(Users.Spec):
+        title = _("Access Rights")
+        layout = ('fullname', 'enabled', 'author', 'admin')
+        columns = ('fullname', 'login', 'enabled', 'author', 'admin')
 
+        
+class Roles(Module):
+    """Define available roles.
 
+    The current implementation just defines static roles as class constants.
+    
+    """
+    ANYONE = 'ANYONE'
+    """Anyone, even a user who is not logged-in."""
+    
+    USER = 'USER'
+    """Any logged-in user who is at least enabled."""
+    
+    AUTHOR = 'AUTHOR'
+    """Any user who has the authoring privileges."""
+    
+    ADMIN = 'ADMIN'
+    """A user who has the admin privileges."""
+    
+    OWNER = 'OWNER'
+    """The owner of the item being operated."""
+    
+    def check(self, user, role, owner=None):
+        def check():
+            if role == self.ANYONE:
+                return True
+            elif user is None:
+                raise AuthenticationError()
+            if not user['enabled'].value():
+                return False
+            if role == self.USER:
+                return True
+            elif role == self.AUTHOR:
+                return user['author'].value() or user['admin'].value()
+            elif role == self.ADMIN:
+                return user['admin'].value()
+            elif role == self.OWNER:
+                if owner:
+                    return owner['uid'].value() == user['uid'].value()
+                else:
+                    return False
+            else:
+                raise Exception("Invalid role", role)
+        if not check():
+            raise AuthorizationError()
+                        
+        
         
