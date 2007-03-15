@@ -1,9 +1,27 @@
 2007-03-15  Tomas Cerha  <cerha@brailcom.org>
 
+	* translations/wiking.cs.po: New translations.
+
+	* sql/init.sql: Create initial admin account.
+
+	* lib/wiking/handler.py: Updated request error handling.
+
+	* lib/wiking/install.py: Announce the default admin username and
+	password after successful install.
+
+	* lib/wiking/modules.py: New module for rights management.  New
+	module for static user roles definition.  Require admin privileges
+	in WMI.
+
+	* lib/wiking/util.py: New and improved exception classes for
+	request errors.
+
 	* lib/wiking/module.py: Added support for password validation.
 	Fixed boolean value validation.
 
-	* lib/wiking/request.py: Fixed multivalue parameter initialization.
+	* lib/wiking/request.py: Fixed multivalue parameter
+	initialization.  Use the new exception classes for authentication
+	errors.
 
 	* lib/wiking/export.py: Login panel fix.
 

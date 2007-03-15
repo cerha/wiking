@@ -4,8 +4,6 @@ Core features:
 
  * Locking
 
- * RSS meta tags.
-
  * Indicate unpublished items in the Not Found error (or produce another error)
 
  * Browsing support for long lists (forward/backward movement)
