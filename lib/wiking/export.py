@@ -99,7 +99,7 @@ class Exporter(lcg.HtmlExporter):
         if user:
             u, l, cmd = (user['fullname'].value(), _("log out"), 'logout')
         else:
-            u, l, cmd = (_('anonymous'), _("log in"), 'login')
+            u, l, cmd = (_("not logged"), _("log in"), 'login')
         return (u, self._generator.link(l, '?command=%s' % cmd, cls='login-ctrl'))
     
     def _panels(self, node):
@@ -118,7 +118,7 @@ class Exporter(lcg.HtmlExporter):
             user, ctrl = self._login_ctrl(node)
             content = g.p(concat(user, ' ', self._hidden('['), ctrl,
                                  self._hidden(']')))
-            panels.insert(0, Panel('login', _("Logged user"), content))
+            panels.insert(0, Panel('login', _("Login"), content))
         for i, panel in enumerate(panels):
             id = panel.id()
             content = panel.content()
