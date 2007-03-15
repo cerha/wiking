@@ -25,6 +25,7 @@ if sys.modules.has_key('mod_python'):
 import random
 import Cookie
 
+_ = lcg.TranslatableTextFactory('wiking')
 
 class Request(object):
     """Generic convenience wrapper for the Apache request object."""
@@ -56,7 +57,7 @@ class Request(object):
     def _init_params(self):
         def init_value(value):
             if isinstance(value, (tuple, list)):
-                tuple([init_value(v) for v in value])
+                return tuple([init_value(v) for v in value])
             elif isinstance(value, mod_python.util.Field):
                 return self._FileUpload(value)
             else:
@@ -270,13 +271,13 @@ class WikingRequest(Request):
         if self._login:
             login, password = self._login
             if not login:
-                raise Unauthorized('Enter your login name, please!')
+                raise Unauthorized(_('Enter your login name, please!'))
             if not password:
-                raise Unauthorized('Enter your password, please!')
+                raise Unauthorized(_('Enter your password, please!'))
             user = users.user(login)
             if user is None or user['password'].value() != password \
                    or not user['enabled'].value():
-                raise Unauthorized('Invalid login!')
+                raise Unauthorized(_('Invalid login!'))
             # Login succesfull
             session_key = hex(random.randint(0, self._MAX_SESSION_KEY))
             users.save_session(user, session_key)
