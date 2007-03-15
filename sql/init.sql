@@ -28,3 +28,5 @@ INSERT INTO config (site_title) VALUES ('Wiking site');
 INSERT INTO stylesheets (identifier) VALUES ('default.css');
 INSERT INTO stylesheets (identifier) VALUES ('panels.css');
 
+INSERT INTO users (login, password, nickname, enabled, author, admin) 
+VALUES ('admin', 'wiking', 'Administrator', 't', 't', 't');
