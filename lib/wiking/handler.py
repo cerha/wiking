@@ -106,7 +106,7 @@ class SiteHandler(object):
     Module instances are cached on this level.
 
     The other responsibility is to process the result of the module request
-    handler and handle 'HttpError' exceptions, such as 'NotFound',
+    handler and handle 'RequestError' exceptions, such as 'NotFound',
     'NotAccaeptable', etc, since these errors should be presented with all the
     site navigation, panels etc.
 
@@ -124,7 +124,7 @@ class SiteHandler(object):
         self._languages = self._module('Languages')
         self._config = self._module('Config')
         self._modules = self._module('Modules')
-        #self._users = self._module('Users')
+        self._users = self._module('Users')
         self._exporter = Exporter()
         #log(OPR, 'New SiteHandler instance for %s.' % dbconnection)
 
@@ -145,21 +145,17 @@ class SiteHandler(object):
         req.wmi = False # Will be set to True by `WikingManagementInterface'.
         modname = self._mapping.modname(req.path[0])
         try:
-            #req.login(self._users)
+            req.login(self._users)
             result = self._module(modname).handle(req)
             if not isinstance(result, Document):
                 content_type, data = result
                 return req.result(data, content_type=content_type)
-        except HttpError, e:
-            req.set_status(e.ERROR_CODE)
+        except RequestError, e:
+            if isinstance(e, HttpError):
+                req.set_status(e.ERROR_CODE)
             lang = req.prefered_language(self._languages.languages(),
                                          raise_error=False)
-            if isinstance(e, Unauthorized):
-                content = LoginDialog(req)
-                if e.args:
-                    content = (ErrorMessage(e.args[0]), content)
-            else:
-                content = e.msg(req)
+            content = e.message(req)
             result = Document(e.title(), content, lang=lang)
         config = self._config.config(self._server, result.lang())
         doc = modname == 'Documentation' and req.param('display') != 'inline'
