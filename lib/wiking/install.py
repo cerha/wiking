@@ -65,8 +65,10 @@ def maybe_install(req, dbconnection, errstr):
                             cfg.config_file)
             err = _try_query(dbconnection, script)
             if not err:
-                return ("Database initialized."
-                        '<a href="/_wmi">Enter the management interface</a>')
+                return ("Database initialized. "
+                        '<a href="/_wmi">Enter the management interface</a> '
+                        "Please use the default login 'admin' with password '
+                        'wiking'.  Don't forget to change your password!")
             else:
                 return "Unable to initialize the database: " + err
                 
