@@ -212,7 +212,10 @@ class PytisModule(Module, ActionHandler):
             if req.params.has_key(id):
                 value_ = req.params[id]
                 if isinstance(value_, tuple):
-                    value_ = value_[-1]
+                    if len(value_) == 2 and isinstance(type, pd.Password):
+                        value_, kwargs['verify'] = value_
+                    else:
+                        value_ = value_[-1]
                 elif isinstance(value_, FileUpload):
                     if isinstance(type, pd.Binary):
                         if value_.filename():
@@ -223,12 +226,13 @@ class PytisModule(Module, ActionHandler):
                             value_ = None
                     else:
                         value_ = value_.filename()
-            elif isinstance(type, pd.Boolean):
-                value_ = "F"
             elif isinstance(type, pd.Binary):
                 value_ = None
             elif id in self._view.layout().order():
-                value_ = ""
+                if isinstance(type, pd.Boolean):
+                    value_ = "F"
+                else:
+                    value_ = ""
             else:
                 continue
             if isinstance(type, (Date, DateTime)):
@@ -238,10 +242,11 @@ class PytisModule(Module, ActionHandler):
                     tf = type.is_exact() and 'exact_time' or 'time'
                     format += ' ' + formats[tf]
                 kwargs['format'] = format
-            if isinstance(type, pd.Binary) and not value_ and not record.new():
+            if isinstance(type, (pd.Binary, pd.Password)) \
+                   and not value_ and not record.new():
                 continue # Keep the original file if no file is uploaded.
             value, error = type.validate(value_, **kwargs)
-            #log(OPR, "Validation:", (id, type.not_null(), value_, kwargs, error))
+            log(OPR, "Validation:", (id, type.not_null(), value_, kwargs, error))
             if error:
                 errors.append((id, error.message()))
             else:
@@ -268,7 +273,8 @@ class PytisModule(Module, ActionHandler):
         return unicode(e.exception())
 
     def _real_title(self, lang):
-        # This is quite a hack...
+        # This is quite a hack... It would not work for modules with multiple
+        # mapping entries.
         title = self._module('Mapping').title(lang, self.name())
         return title or self._view.title()
     
