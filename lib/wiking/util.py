@@ -27,38 +27,72 @@ log = pytis.util.StreamLogger(sys.stderr).log
 _ = lcg.TranslatableTextFactory('wiking')
 
 
-class HttpError(Exception):
+class RequestError(Exception):
+    """Base class for exceptions indicating an invalid request.
+
+    Exceptions of this class will be handled by displaying an error message
+    within the content part of the page.  The overall page layout, including
+    navigation and other static page content is displayed as on any other page.
+    These errors are not logged neither emailed, since they are caused by an
+    invalid request.
+
+    """
+    _TITLE = None
+    
+    def title(self):
+        """Return the error name as a string.""" 
+        return self._TITLE
+    
+    def message(self, req):
+        """Return the error message as an 'lcg.Content' element structure.""" 
+        return None
+
+
+class AuthenticationError(RequestError):
+    """Error indicating that authentication is required for the resource."""
+    
+    _TITLE = _("Authentication required")
+
+    def message(self, req):
+        content = LoginDialog(req)
+        if self.args:
+            content = (ErrorMessage(self.args[0]), content)
+        return content
+    
+
+class AuthorizationError(RequestError):
+    """Error indicating that the user doesn't have privilegs for the action."""
+    
+    _TITLE = _("Not Authorized")
+
+    def message(self, req):
+        return lcg.p(_("You don't have sufficient privilegs for this action."))
+    
+    
+class HttpError(RequestError):
     """Exception representing en HTTP error.
 
-    Raising this exception will be handled by returning the appropriate HTTP
-    error code to the user and displaying the error message within the content
-    part of the page.  The overall page layout, including navigation and other
-    static page content is displayed as on any other page.  These errors are
-    not logged neither emailed, since they are usually caused by an invalid
-    request.
+    This exception should be handled by returning the appropriate HTTP error
+    code to the client.  This code is available as the public constant
+    'ERROR_CODE' of the class.
 
     This class is abstract.  The error code and error message must be defined
     by a derived class.  The error message may also require certain constructor
     arguments passed when raising the error.
     
     """
-    
     ERROR_CODE = None
     
     def title(self):
         name = " ".join(pp.split_camel_case(self.__class__.__name__))
         return _("Error %(code)d: %(name)s", code=self.ERROR_CODE, name=name)
-    
-    def msg(self, req):
-        """Return the error message as an 'lcg.Content' element structure.""" 
-        return None
 
 
 class NotFound(HttpError):
     """Error indicating invalid request target."""
     ERROR_CODE = 404
     
-    def msg(self, req):
+    def message(self, req):
         msg = (_("The item '%s' does not exist on this server or cannot be "
                  "served.", req.uri),
                _("If you are sure the web address is correct, "
@@ -72,7 +106,7 @@ class NotAcceptable(HttpError):
     """Error indicating unavailability of the resource in requested language."""
     ERROR_CODE = 406
     
-    def msg(self, req):
+    def message(self, req):
         msg = (_("The resource '%s' is not available in either of "
                  "the requested languages.", req.uri),
                (_("Your browser is configured to accept only the "
@@ -89,13 +123,6 @@ class NotAcceptable(HttpError):
                       "or contact your system administrator."))
         return lcg.coerce([lcg.p(p) for p in msg])
 
-
-class Unauthorized(HttpError):
-    """Error indicating that authentication is required for the resource."""
-    ERROR_CODE = 401
-
-    def title(self):
-        return _("Authentication required")
 
 # ============================================================================
 
