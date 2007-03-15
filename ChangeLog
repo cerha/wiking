@@ -1,3 +1,12 @@
+2007-03-15  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/module.py: Added support for password validation.
+	Fixed boolean value validation.
+
+	* lib/wiking/request.py: Fixed multivalue parameter initialization.
+
+	* lib/wiking/export.py: Login panel fix.
+
 2007-03-14  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/modules.py: Reflect the base class refactoring.
