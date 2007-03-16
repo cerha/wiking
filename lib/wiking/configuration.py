@@ -23,8 +23,23 @@ class Configuration(pc):
     
     class _Option_config_file(pc._StringOption, pc._HiddenOption):
         _DESCR = _("Configuration file location.")
+        _DOC = _("Since this option presents the chicken/egg problem, there "
+                 "are more ways you can influence it.  Setting the "
+                 "environment variable WIKINGCONFIG to a path to your "
+                 "configuration file is the first option.  If the variable "
+                 "is not set, the module named 'wikingconfig' is searched "
+                 "in the current Python path and if no such module exists, "
+                 "the following files are searched in given order: "
+                 "/etc/wiking.py, /etc/wiking/config.py, "
+                 "/usr/local/etc/wiking.py.")
         _ENVIRONMENT = ('WIKINGCONFIG',)
         def default(self):
+            try:
+                import wikingconfig
+            except ImportError:
+                pass
+            else:
+                return wikingconfig.__file__
             for filename in ('/etc/wiking.py', '/etc/wiking/config.py',
                              '/usr/local/etc/wiking.py'):
                 if os.access(filename, os.F_OK):
