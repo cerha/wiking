@@ -475,6 +475,11 @@ def translator(lang):
 
 Field = pytis.presentation.FieldSpec
 
+class FieldSet(pp.GroupSpec):
+    def __init__(self, label, fields):
+        super(FieldSet, self).__init__(fields, label=label,
+                                       orientation=Orientation.VERTICAL)
+        
 class Action(pytis.presentation.Action):
     def __init__(self, title, name, handler=None, **kwargs):
         # name determines the Wiking's method (and the 'action' argument.
@@ -485,7 +490,7 @@ class Action(pytis.presentation.Action):
         
     def name(self):
         return self._name
-    
+
 
 class Data(pd.DBDataDefault):
 
@@ -610,9 +615,15 @@ def get_module(name):
     """
     try:
         from mod_python.apache import import_module
-        modules = import_module('wiking.modules', log=True)
+        try:
+            modules = import_module('wikingmodules', log=True)
+        except ImportError:
+            modules = import_module('wiking.modules', log=True)
     except ImportError:
-        import wiking.modules as modules
+        try:
+            import wikingmodules as modules
+        except ImportError:
+            import wiking.modules as modules
     return getattr(modules, name)
 
 def rss(title, url, items, descr, lang=None, webmaster=None):
