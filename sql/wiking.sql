@@ -396,6 +396,7 @@ CREATE TABLE users (
 	address text,
 	uri text,
 	enabled boolean NOT NULL DEFAULT 'FALSE',
+	contributor boolean NOT NULL DEFAULT 'FALSE',
 	author boolean NOT NULL DEFAULT 'FALSE',
 	admin boolean NOT NULL DEFAULT 'FALSE',
 	since timestamp NOT NULL DEFAULT current_timestamp(0),
