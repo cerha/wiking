@@ -408,7 +408,7 @@ class LoginDialog(lcg.Content):
              g.br(),
              g.hidden(name='__log_in', value='1'), 
              ) + tuple([g.hidden(name=k, value=v)
-                        for k,v in self._params.items()]) + (
+                        for k,v in self._params.items() if k != 'command']) + (
             g.submit(_("Log in"), cls='submit'),)
         return g.form(x, method='POST', action=self._uri, cls='login-form')
         
