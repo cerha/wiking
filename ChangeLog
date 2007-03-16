@@ -1,3 +1,17 @@
+2007-03-16  Tomas Cerha  <cerha@brailcom.org>
+
+	* sql/init.sql: Added the new modules into the list of available
+	modules.
+
+	* lib/wiking/modules.py: Use the new role assignment mechanism and
+	define some basic privilegs for all actions.
+
+	* lib/wiking/util.py: Avoid passing the `command' in login dialog.
+	(Roles): New class for static user role definition.
+
+	* lib/wiking/configuration.py: Search also for the module
+	`wikingconfig' as the default configuration file.
+
 2007-03-15  Tomas Cerha  <cerha@brailcom.org>
 
 	* translations/wiking.cs.po: New translations.
