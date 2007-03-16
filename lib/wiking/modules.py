@@ -211,8 +211,8 @@ class WikingManagementInterface(Module):
 
     """
     def handle(self, req):
-        self._module('Roles').check(req.user(), Roles.ADMIN)
         req.wmi = True
+        Roles.check(req.user(), (Roles.ADMIN,))
         if len(req.path) == 1:
             req.path += ('Pages',)
         modname = req.path[1]
@@ -575,7 +575,7 @@ class Pages(WikingModule): #, Publishable
                 Action(_("Translate"), 'translate',
                        enabled=lambda r: r['_content'].value() is None),
                 )
-        
+
     def _variants(self, record):
         return [str(r['lang'].value()) for r in 
                 self._data.get_rows(mapping_id=record['mapping_id'].value(),
@@ -630,6 +630,7 @@ class Pages(WikingModule): #, Publishable
 
     def action_preview(self, req, record, **kwargs):
         return self.action_view(req, record, preview=True, **kwargs)
+    _RIGHTS_preview = Roles.AUTHOR
 
     def action_translate(self, req, record):
         lang = req.param('src_lang')
@@ -657,6 +658,7 @@ class Pages(WikingModule): #, Publishable
             for k in ('_content','title'):
                 req.params[k] = row[k].value()
             return self.action_edit(req, record)
+    _RIGHTS_translate = Roles.AUTHOR
 
     def action_sync(self, req, record):
         try:
@@ -666,6 +668,7 @@ class Pages(WikingModule): #, Publishable
         else:
             kwargs = dict(msg=_("The changes were published."))
         return self.action_show(req, record, **kwargs)
+    _RIGHTS_sync = Roles.ADMIN
         
 
 class Attachments(StoredFileModule):
@@ -957,6 +960,8 @@ class Images(StoredFileModule):
         data = record[id].value().buffer()
         return (mime, data)
     
+    _RIGHTS_orig = _RIGHTS_image = _RIGHTS_thumbnail = Roles.ANYONE
+    
     def action_orig(self, req, record):
         return self._image(record, 'file')
     
@@ -1015,6 +1020,7 @@ class Stylesheets(WikingModule):
 
 
 class Users(WikingModule):
+    _RIGHTS_add = _RIGHTS_insert = Roles.ANYONE
     class Spec(pp.Specification):
         title = _("Users")
         def _fullname(self, row):
@@ -1038,7 +1044,7 @@ class Users(WikingModule):
             Field('fullname', _("Full Name"), virtual=True, editable=NEVER,
                   computer=Computer(self._fullname,
                                     depends=('firstname','surname','login'))),
-            Field('user', _("Name/Nickname"), virtual=True,
+            Field('user', _("User"), virtual=True,
                   computer=Computer(self._user,
                                     depends=('fullname', 'nickname'))),
             Field('firstname', _("First name")),
@@ -1050,12 +1056,13 @@ class Users(WikingModule):
             Field('uri', _("URI")),
             Field('since', _("Registered since"), type=DateTime()),
             Field('enabled', _("Enabled")),
+            Field('contributor', _("Contribution privileges")),
             Field('author', _("Authoring privileges")),
             Field('admin', _("Admin privileges")),
             Field('session_key'),
             Field('session_expire'),
             )
-        columns = ('fullname', 'nickname', 'email')
+        columns = ('user', 'nickname', 'email')
         layout = ('login', 'password', 'firstname', 'surname',
                   'nickname', 'email', 'phone', 'address', 'uri')
     _REFERER = 'login'
@@ -1083,56 +1090,13 @@ class Users(WikingModule):
 
         
 class Rights(Users):
+    _RIGHTS_add = _RIGHTS_insert = ()
     class Spec(Users.Spec):
         title = _("Access Rights")
-        layout = ('fullname', 'enabled', 'author', 'admin')
-        columns = ('fullname', 'login', 'enabled', 'author', 'admin')
+        layout = ('user', 'enabled', 'contributor', 'author', 'admin')
+        columns = ('user', 'login', 'enabled', 'author', 'admin')
 
         
-class Roles(Module):
-    """Define available roles.
-
-    The current implementation just defines static roles as class constants.
-    
-    """
-    ANYONE = 'ANYONE'
-    """Anyone, even a user who is not logged-in."""
-    
-    USER = 'USER'
-    """Any logged-in user who is at least enabled."""
-    
-    AUTHOR = 'AUTHOR'
-    """Any user who has the authoring privileges."""
-    
-    ADMIN = 'ADMIN'
-    """A user who has the admin privileges."""
-    
-    OWNER = 'OWNER'
-    """The owner of the item being operated."""
-    
-    def check(self, user, role, owner=None):
-        def check():
-            if role == self.ANYONE:
-                return True
-            elif user is None:
-                raise AuthenticationError()
-            if not user['enabled'].value():
-                return False
-            if role == self.USER:
-                return True
-            elif role == self.AUTHOR:
-                return user['author'].value() or user['admin'].value()
-            elif role == self.ADMIN:
-                return user['admin'].value()
-            elif role == self.OWNER:
-                if owner:
-                    return owner['uid'].value() == user['uid'].value()
-                else:
-                    return False
-            else:
-                raise Exception("Invalid role", role)
-        if not check():
-            raise AuthorizationError()
                         
         
         
