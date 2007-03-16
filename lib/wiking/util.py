@@ -126,6 +126,50 @@ class NotAcceptable(HttpError):
 
 # ============================================================================
 
+class Roles(object):
+    """Static definition of available user roles."""
+    ANYONE = 'ANYONE'
+    """Anyone, even a user who is not logged-in."""
+    USER = 'USER'
+    """Any logged-in user who is at least enabled."""
+    CONTRIBUTOR = 'CONTRIBUTOR'
+    """A user hwo has contribution privilegs for certain types of content."""
+    AUTHOR = 'AUTHOR'
+    """Any user who has the authoring privileges."""
+    ADMIN = 'ADMIN'
+    """A user who has the admin privileges."""
+    OWNER = 'OWNER'
+    """The owner of the item being operated."""
+    def check(cls, user, roles, owner_uid=None):
+        def check(user, role, owner_uid=None):
+            if role == cls.ANYONE:
+                return True
+            elif user is None:
+                raise AuthenticationError()
+            if not user['enabled'].value():
+                return False
+            if role == cls.USER:
+                return True
+            elif role == cls.CONTRIBUTOR:
+                return user['contributor'].value() or \
+                       user['author'].value() or user['admin'].value()
+            elif role == cls.AUTHOR:
+                return user['author'].value() or user['admin'].value()
+            elif role == cls.ADMIN:
+                return user['admin'].value()
+            elif role == cls.OWNER:
+                if owner_uid:
+                    return owner_uid == user['uid'].value()
+                else:
+                    return False
+            else:
+                raise Exception("Invalid role", role)
+        for role in roles:
+            if check(user, role, owner_uid=owner_uid):
+                return True
+        raise AuthorizationError()
+    check = classmethod(check)
+        
 class FileUpload(object):
     """An abstract representation of uploaded file fields."""
 
