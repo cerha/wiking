@@ -143,8 +143,9 @@ class SiteHandler(object):
     def handle(self, req):
         req.path = req.path or ('index',)
         req.wmi = False # Will be set to True by `WikingManagementInterface'.
-        modname = self._mapping.modname(req.path[0])
+        modname = None
         try:
+            modname = self._mapping.modname(req.path[0])
             req.login(self._users)
             result = self._module(modname).handle(req)
             if not isinstance(result, Document):
