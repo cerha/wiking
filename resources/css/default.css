@@ -169,6 +169,9 @@ img { position: relative; } /* MSIE float workaround */
 /* Links to unpublished pages */
 .unpublished { text-decoration: line-through; }
 
+sup.not-null { 
+    color: #f00;
+}
 form.login-form input {
     margin-bottom: 0.5em;
 }
