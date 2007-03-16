@@ -43,11 +43,8 @@ class Configuration(pc):
             for filename in ('/etc/wiking.py', '/etc/wiking/config.py',
                              '/usr/local/etc/wiking.py'):
                 if os.access(filename, os.F_OK):
-                    result = filename
-                    break
-            else:
-                result = None
-            return result
+                    return filename
+            return None
         
     class _Option_wiking_dir(pc._StringOption):
         _DESCR = _("Base directory for Wiking shared files.")
