@@ -97,7 +97,7 @@ class Exporter(lcg.HtmlExporter):
     def _login_ctrl(self, node):
         user = node.config().user
         if user:
-            u, l, cmd = (user['fullname'].value(), _("log out"), 'logout')
+            u, l, cmd = (user['user'].value(), _("log out"), 'logout')
         else:
             u, l, cmd = (_("not logged"), _("log in"), 'login')
         return (u, self._generator.link(l, '?command=%s' % cmd, cls='login-ctrl'))
