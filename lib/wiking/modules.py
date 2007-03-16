@@ -72,7 +72,7 @@ class Mapping(WikingModule, Publishable):
             #Field('parent', _("Parent"), codebook='Mapping'),
             Field('identifier', _("Identifier"),
                   filter=ALPHANUMERIC, post_process=LOWER, fixed=True,
-                  type=pd.Identifier(maxlen=32), width=20),
+                  type=pd.Identifier(maxlen=32, not_null=True), width=20),
             Field('mod_id', _("Module"), selection_type=CHOICE,
                   codebook='Modules',
                   validity_condition=pd.AND(*[pd.NE('name',
@@ -92,6 +92,7 @@ class Mapping(WikingModule, Publishable):
     _REFERER = 'identifier'
     _STATIC_MAPPING = {'_doc': 'Documentation',
                        '_wmi': 'WikingManagementInterface'}
+    _REVERSE_STATIC_MAPPING = dict([(v,k) for k,v in _STATIC_MAPPING.items()])
 
     def _link_provider(self, req, row, cid, **kwargs):
         if req.wmi and cid == 'modtitle':
@@ -125,7 +126,9 @@ class Mapping(WikingModule, Publishable):
         
         """
         rows = self._data.get_rows(modname=modname, published=True)
-        return len(rows) == 1 and rows[0]['identifier'].value() or None
+        if len(rows) == 1:
+            return rows[0]['identifier'].value()
+        return self._REVERSE_STATIC_MAPPING.get(modname)
     
     def menu(self, lang):
         """Return the sequence of main navigation menu items.
@@ -235,7 +238,7 @@ class Modules(WikingModule):
         title = _("Modules")
         fields = (
             Field('mod_id'),
-            Field('name', _("Name"), type=_ModNameType()),
+            Field('name', _("Name"), type=_ModNameType(not_null=True)),
             Field('title', _("Title"), virtual=True,
                   computer=Computer(lambda r: _modtitle(r['name'].value()),
                                     depends=('name',))),
@@ -1039,8 +1042,9 @@ class Users(WikingModule):
         def fields(self): return (
             Field('uid', width=8, editable=NEVER),
             Field('login', _("Login name"), width=16,
-                  type=pd.Identifier(maxlen=16)),
-            Field('password', _("Password"), type=pd.Password(maxlen=32)),
+                  type=pd.Identifier(maxlen=16, not_null=True)),
+            Field('password', _("Password"), width=16,
+                  type=pd.Password(maxlen=32, not_null=True)),
             Field('fullname', _("Full Name"), virtual=True, editable=NEVER,
                   computer=Computer(self._fullname,
                                     depends=('firstname','surname','login'))),
@@ -1050,7 +1054,7 @@ class Users(WikingModule):
             Field('firstname', _("First name")),
             Field('surname', _("Surname")),
             Field('nickname', _("Nickname")),
-            Field('email', _("E-mail"), width=24),
+            Field('email', _("E-mail"), width=34),
             Field('phone', _("Phone")),
             Field('address', _("Address"), height=3),
             Field('uri', _("URI")),
