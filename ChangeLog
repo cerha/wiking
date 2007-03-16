@@ -1,5 +1,12 @@
 2007-03-16  Tomas Cerha  <cerha@brailcom.org>
 
+	* resources/css/default.css: Added style for `not-null' signs.
+
+	* lib/wiking/handler.py: Catch RequestErrors also for Mapping lookup.
+
+	* lib/wiking/module.py (PytisModule._link_provider): Return 'None'
+	if the module identifier is not known.
+
 	* sql/init.sql: Added the new modules into the list of available
 	modules.
 
@@ -8,6 +15,8 @@
 
 	* lib/wiking/util.py: Avoid passing the `command' in login dialog.
 	(Roles): New class for static user role definition.
+	(get_module): Try importing `wikingmodules' first and
+	`wiking.modules' only if `wikingmodules' were not found.
 
 	* lib/wiking/configuration.py: Search also for the module
 	`wikingconfig' as the default configuration file.
@@ -834,3 +843,11 @@ Traceback (most recent call last):
   File "/home/cerha/bin/denik.py", line 30, in split
     raise Exception("Invalid syntax:", seq[0].splitlines()[0] + '...')
 Exception: ('Invalid syntax:', u'2007-02-23  Tomas Cerha  <cerha@brailcom.org>...')
+Traceback (most recent call last):
+  File "/home/cerha/bin/denik.py", line 98, in ?
+    period, n = process(projects, changelog)
+  File "/home/cerha/bin/denik.py", line 72, in process
+    for date, text in split(DAY_SPLITTER, changelog.strip(), 2):
+  File "/home/cerha/bin/denik.py", line 30, in split
+    raise Exception("Invalid syntax:", seq[0].splitlines()[0] + '...')
+Exception: ('Invalid syntax:', u'2007-03-16  Tomas Cerha  <cerha@brailcom.org>...')
