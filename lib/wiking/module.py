@@ -338,7 +338,10 @@ class PytisModule(Module, ActionHandler):
                 uri = '/_wmi/'+ self.name()
                 referer = self._key
             else:
-                uri = '/'+ self._identifier(req)
+                identifier = self._identifier(req)
+                if not identifier:
+                    return None
+                uri = '/'+ identifier
                 referer = self._referer
             uri += '/'+ row[referer].export()
             return make_uri(uri, **kwargs)
