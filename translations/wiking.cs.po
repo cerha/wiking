@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-03-15 20:20+0100\n"
-"PO-Revision-Date: 2007-03-15 20:27+0100\n"
+"POT-Creation-Date: 2007-03-16 08:35+0100\n"
+"PO-Revision-Date: 2007-03-16 08:36+0100\n"
 "Last-Translator: Tomas Cerha <cerha@brailcom.org>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -470,7 +470,7 @@ msgstr "Datum konce předchází počáteční datum"
 
 #: ../lib/wiking/modules.py:865
 msgid "Images"
-msgstr "V seznamu"
+msgstr "Obrázky"
 
 #: ../lib/wiking/modules.py:893
 msgid "Author"
@@ -517,8 +517,8 @@ msgid "Full Name"
 msgstr "Celé jméno"
 
 #: ../lib/wiking/modules.py:1041
-msgid "Name/Nickname"
-msgstr "Jméno/Přezdívka"
+msgid "User"
+msgstr "Uživatel"
 
 #: ../lib/wiking/modules.py:1044
 msgid "First name"
@@ -648,6 +648,9 @@ msgstr "Akce:"
 #: ../lib/wiking/util.py:412
 msgid "Log in"
 msgstr "přihlásit"
+
+#~ msgid "Name/Nickname"
+#~ msgstr "Jméno/Přezdívka"
 
 #~ msgid "anonymous"
 #~ msgstr "neznámý"
