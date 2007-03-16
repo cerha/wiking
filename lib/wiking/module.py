@@ -79,18 +79,21 @@ class ActionHandler(RequestHandler):
         """Return the dictionary of additional action arguments."""
         return {}
     
-    def _default_action(self, req):
+    def _default_action(self, req, **kwargs):
         """Return the name of the default action as a string."""
         return None
-        
+
+    def _action(self, req, action, **kwargs):
+        method = getattr(self, 'action_' + action)
+        return method(req, **kwargs)
+
     def handle(self, req):
         kwargs = self._action_args(req)
         if req.params.has_key('action'):
             action = req.param('action')
         else:
             action = self._default_action(req, **kwargs)
-        method = getattr(self, 'action_' + action)
-        return method(req, **kwargs)
+        return self._action(req, action, **kwargs)
 
 
 class PytisModule(Module, ActionHandler):
@@ -124,6 +127,15 @@ class PytisModule(Module, ActionHandler):
     _DELETE_MSG = _("The record was deleted.")
     _CUSTOM_VIEW = None
     
+    _RIGHTS_view = Roles.ANYONE
+    _RIGHTS_show = Roles.ANYONE
+    _RIGHTS_list = Roles.ANYONE
+    _RIGHTS_add    = _RIGHTS_insert = Roles.ADMIN
+    _RIGHTS_edit   = _RIGHTS_update = Roles.ADMIN
+    _RIGHTS_remove = _RIGHTS_delete = Roles.ADMIN
+    
+    _OWNER = None
+
     _spec_cache = {}
 
     class Record(pp.PresentedRow):
@@ -139,7 +151,7 @@ class PytisModule(Module, ActionHandler):
             rdata = [(k, v) for k, v in self.row().items()
                      if k != key or v.value() is not None]
             return pd.Row(rdata)
-        
+    
     def spec(cls, resolver):
         try:
             spec = PytisModule._spec_cache[cls]
@@ -394,6 +406,14 @@ class PytisModule(Module, ActionHandler):
         else:
             raise NotFound()
 
+    def _action(self, req, action, **kwargs):
+        roles = getattr(self, '_RIGHTS_'+action)
+        roles = isinstance(roles, (tuple, list)) and roles or (roles,)
+        #if Roles.OWNER in roles and self._OWNER is not None \
+        #       and :
+        Roles.check(req.user(), roles)
+        return super(PytisModule, self)._action(req, action, **kwargs)
+    
     def _lang(self, record):
         if self._LIST_BY_LANGUAGE:
             return str(record['lang'].value())
@@ -523,7 +543,6 @@ class PytisModule(Module, ActionHandler):
         return self._document(req, form, record, err=err, msg=msg)
     
     def action_add(self, req, errors=()):
-        #req.check_auth(pd.Permission.INSERT)
         form = self._form(pw.EditForm, req, None, handler=req.uri, new=True,
                           prefill=self._prefill(req, new=True),
                           errors=errors, action='insert')
@@ -545,8 +564,6 @@ class PytisModule(Module, ActionHandler):
     # ===== Action handlers which actually modify the database =====
 
     def action_insert(self, req):
-        if not req.wmi:
-            return
         record = self._record(None, new=True)
         errors = self._validate(req, record)
         if not errors:
@@ -559,8 +576,6 @@ class PytisModule(Module, ActionHandler):
         return self.action_add(req, errors=errors)
             
     def action_update(self, req, record):
-        if not req.wmi:
-            return
         errors = self._validate(req, record)
         if not errors:
             try:
@@ -572,8 +587,6 @@ class PytisModule(Module, ActionHandler):
         return self.action_edit(req, record, errors=errors)
 
     def action_delete(self, req, record):
-        if not req.wmi:
-            return
         try:
             self._delete(record)
         except pd.DBException, e:
@@ -634,6 +647,8 @@ class RssModule(PytisModule):
     _RSS_DESCR_COLUMN = None
     _RSS_DATE_COLUMN = None
 
+    _RIGHTS_rss = Roles.ANYONE
+    
     def action_rss(self, req):
         if not self._RSS_TITLE_COLUMN:
             raise NotFound
@@ -784,6 +799,8 @@ class Publishable(object):
     # actions in some more generic way, so that we don't need to implement an
     # action handler method for each pytis action.
     
+    _RIGHTS_publish = _RIGHTS_unpublish = Roles.ADMIN
+    
     def action_publish(self, req, record, publish=True):
         err, msg = (None, None)
         try:
@@ -808,6 +825,8 @@ class Translatable(object):
     # work in the new WMI URI schema...
     
     _ACTIONS = (Action(_("Translate"), 'translate'),)
+    
+    _RIGHTS_translate = Roles.ADMIN
     
     def action_translate(self, req, record):
         req.params.update(dict([(k, record[k].export())
