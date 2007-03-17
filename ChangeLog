@@ -1,3 +1,31 @@
+2007-03-17  Tomas Cerha  <cerha@brailcom.org>
+
+	* translations/wiking.cs.po: Updated.
+
+	* sql/wiking.sql: New theme column for `help'.  New config option
+	`allow_registration'.
+
+	* resources/css/default.css: Updated.
+
+	* lib/wiking/request.py: Perform authentication on demand.
+
+	* lib/wiking/util.py (Roles.check): Check authentication only when
+	it is really needed.  Minor improvements.
+
+	* lib/wiking/modules.py: Use the new RegexString data type for
+	certain fields.  Allow authentication on demand.  Many minor
+	improvements in field specifications.  Added a few field
+	descriptions.  Disable table layout for the `Users' module.
+	Use the new support for `FieldSet'.
+
+	* lib/wiking/module.py: Added support for disabling table layout
+	in forms on a per-module basis.  Other minor improvement.
+
+	* lib/wiking/handler.py: Enforce authentication within the
+	RequestError handling block. 
+
+	* lib/wiking/export.py: Display registration link in the login panel.
+
 2007-03-16  Tomas Cerha  <cerha@brailcom.org>
 
 	* resources/css/default.css: Added style for `not-null' signs.
