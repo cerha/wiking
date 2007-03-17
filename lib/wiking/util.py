@@ -140,11 +140,13 @@ class Roles(object):
     """A user who has the admin privileges."""
     OWNER = 'OWNER'
     """The owner of the item being operated."""
-    def check(cls, user, roles, owner_uid=None):
-        def check(user, role, owner_uid=None):
+    def check(cls, req, roles, owner_uid=None):
+        def check(req, role, owner_uid=None):
             if role == cls.ANYONE:
                 return True
-            elif user is None:
+            # We don't want to perform authentication until here!
+            user = req.user()
+            if user is None:
                 raise AuthenticationError()
             if not user['enabled'].value():
                 return False
@@ -165,7 +167,7 @@ class Roles(object):
             else:
                 raise Exception("Invalid role", role)
         for role in roles:
-            if check(user, role, owner_uid=owner_uid):
+            if check(req, role, owner_uid=owner_uid):
                 return True
         raise AuthorizationError()
     check = classmethod(check)
@@ -478,7 +480,7 @@ Field = pytis.presentation.FieldSpec
 class FieldSet(pp.GroupSpec):
     def __init__(self, label, fields):
         super(FieldSet, self).__init__(fields, label=label,
-                                       orientation=Orientation.VERTICAL)
+                                       orientation=pp.Orientation.VERTICAL)
         
 class Action(pytis.presentation.Action):
     def __init__(self, title, name, handler=None, **kwargs):
@@ -559,8 +561,9 @@ class WikingResolver(pytis.util.Resolver):
 class DateTime(pytis.data.DateTime):
     """Pytis DateTime type which exports as a 'lcg.LocalizableDateTime'."""
     
-    def __init__(self, exact=False, **kwargs):
+    def __init__(self, show_time=True, exact=False, **kwargs):
         self._is_exact = exact
+        self._show_time = show_time
         format = '%Y-%m-%d %H:%M'
         if exact:
             format += ':%S'
@@ -569,8 +572,10 @@ class DateTime(pytis.data.DateTime):
     def is_exact(self):
         return self._is_exact
         
-    def _export(self, value, show_weekday=False, show_time=True, **kwargs):
+    def _export(self, value, show_weekday=False, show_time=None, **kwargs):
         result = super(DateTime, self)._export(value, **kwargs)
+        if show_time is None:
+            show_time = self._show_time
         return lcg.LocalizableDateTime(result, show_weekday=show_weekday,
                                        show_time=show_time)
 
@@ -616,9 +621,9 @@ def get_module(name):
     try:
         from mod_python.apache import import_module
         try:
-            modules = import_module('wikingmodules', log=True)
+            modules = import_module('wikingmodules')
         except ImportError:
-            modules = import_module('wiking.modules', log=True)
+            modules = import_module('wiking.modules')
     except ImportError:
         try:
             import wikingmodules as modules
