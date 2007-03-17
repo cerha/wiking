@@ -116,8 +116,12 @@ class Exporter(lcg.HtmlExporter):
                   g.hr(cls="hidden")]
         if config.login_panel:
             user, ctrl = self._login_ctrl(node)
-            content = g.p(concat(user, ' ', self._hidden('['), ctrl,
-                                 self._hidden(']')))
+            content = (g.p(concat(user, ' ', self._hidden('['), ctrl,
+                                  self._hidden(']'))),)
+            if config.register and not config.user:
+                content += (g.div(g.link(_("New user registration"),
+                                         config.register),
+                                  cls='register'),)
             panels.insert(0, Panel('login', _("Login"), content))
         for i, panel in enumerate(panels):
             id = panel.id()
