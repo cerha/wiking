@@ -151,6 +151,7 @@ class SiteHandler(object):
             if not isinstance(result, Document):
                 content_type, data = result
                 return req.result(data, content_type=content_type)
+            user = req.user() # Handle authentication exceptions
         except RequestError, e:
             if isinstance(e, HttpError):
                 req.set_status(e.ERROR_CODE)
@@ -175,6 +176,7 @@ class SiteHandler(object):
         config.doc = doc
         config.modname = modname
         config.user = req.user()
+        config.register = self._users.registration_uri(req, config)
         styles = [s for s in self._stylesheets.stylesheets()
                   if s.file() != 'panels.css' or req.show_panels() and panels]
         node = result.mknode('/'.join(req.path), config, menu, panels, styles)
