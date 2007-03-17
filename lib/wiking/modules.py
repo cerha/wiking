@@ -1128,7 +1128,7 @@ class Rights(Users):
     class Spec(Users.Spec):
         title = _("Access Rights")
         layout = ('enabled', 'contributor', 'author', 'admin')
-        columns = ('user', 'login', 'enabled', 'author', 'admin')
+        columns = ('user', 'login', 'enabled', 'contributor', 'author','admin')
 
         
                         
