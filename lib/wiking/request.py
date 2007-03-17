@@ -263,24 +263,31 @@ class WikingRequest(Request):
 
     def user(self):
         try:
-            return self._user
+            user = self._user
         except AttributeError:
-            return None
+            self._perform_login()
+            user = self._user
+        return user
     
     def login(self, users):
+        # just remember the users module for later use in _perform_login()
+        self._users = users
+        
+    def _perform_login(self):
+        self._user = None
         if self._login:
             login, password = self._login
             if not login:
                 raise AuthenticationError(_("Enter your login name, please!"))
             if not password:
                 raise AuthenticationError(_("Enter your password, please!"))
-            user = users.user(login)
+            user = self._users.user(login)
             if user is None or user['password'].value() != password \
                    or not user['enabled'].value():
                 raise AuthenticationError(_("Invalid login!"))
             # Login succesfull
             session_key = hex(random.randint(0, self._MAX_SESSION_KEY))
-            users.save_session(user, session_key)
+            self._users.save_session(user, session_key)
             self.set_cookie(self._LOGIN_COOKIE, login, expires=63072000)
             self.set_cookie(self._SESSION_COOKIE, session_key, expires=3600)
             self._user = user
@@ -288,12 +295,12 @@ class WikingRequest(Request):
             login, key = (self.cookie(self._LOGIN_COOKIE), 
                           self.cookie(self._SESSION_COOKIE))
             if login and key:
-                user = users.check_session(login, key)
+                user = self._users.check_session(login, key)
                 if user:
                     self.set_cookie(self._SESSION_COOKIE, key, expires=3600)
                     self._user = user
-        if self.param('command') == 'logout' and self.user():
-            users.close_session(self._user)
+        if self.param('command') == 'logout' and self._user:
+            self._users.close_session(self._user)
             self._user = None
-        elif self.param('command') == 'login' and not self.user():
+        elif self.param('command') == 'login' and not self._user:
             raise AuthenticationError()
