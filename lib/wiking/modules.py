@@ -70,9 +70,15 @@ class Mapping(WikingModule, Publishable):
         fields = (
             Field('mapping_id', width=5, editable=NEVER),
             #Field('parent', _("Parent"), codebook='Mapping'),
-            Field('identifier', _("Identifier"),
+            Field('identifier', _("Identifier"), width=20,
                   filter=ALPHANUMERIC, post_process=LOWER, fixed=True,
-                  type=pd.Identifier(maxlen=32, not_null=True), width=20),
+                  type=pd.RegexString(maxlen=32, not_null=True,
+                                      regex='^[a-zA-Z][0-9a-zA-Z_-]*$'),
+                  descr=_("The identifier may be used to refer to this page "
+                          "from outside and also from other pages. "
+                          "A valid identifier can only contain letters, "
+                          "digits, dashes and underscores.  It must start "
+                          "with a letter.")),
             Field('mod_id', _("Module"), selection_type=CHOICE,
                   codebook='Modules',
                   validity_condition=pd.AND(*[pd.NE('name',
@@ -215,7 +221,7 @@ class WikingManagementInterface(Module):
     """
     def handle(self, req):
         req.wmi = True
-        Roles.check(req.user(), (Roles.ADMIN,))
+        Roles.check(req, (Roles.ADMIN,))
         if len(req.path) == 1:
             req.path += ('Pages',)
         modname = req.path[1]
@@ -276,15 +282,16 @@ class Config(WikingModule):
             Field('title', virtual=True,
                   computer=Computer(lambda r: _("Site Configuration"),
                                     depends=())),
-            Field('site_title',     _("Site title"), width=24),
-            Field('site_subtitle',  _("Site subtitle"), width=64),
-            Field('login_panel',    _("Show login panel")),
+            Field('site_title', _("Site title"), width=24),
+            Field('site_subtitle', _("Site subtitle"), width=64),
+            Field('login_panel',  _("Show login panel")),
+            Field('allow_registration', _("Allow registration"), default=True),
             Field('webmaster_addr', _("Webmaster address")),
             Field('theme', _("Theme"), codebook='Themes',
                   selection_type=CHOICE, not_null=False),
             )
         layout = ('site_title', 'site_subtitle', 'login_panel',
-                  'webmaster_addr', 'theme')
+                  'allow_registration', 'webmaster_addr', 'theme')
     _TITLE_COLUMN = 'title'
     _DEFAULT_ACTIONS = (Action(_("Edit"), 'edit'),)
 
@@ -487,6 +494,7 @@ class Themes(WikingModule):
         Color('button-inactive-fg', '#555', inherit='button-fg'),
         Color('button-inactive', '#ccc', inherit='button'),
         Color('button-inactive-border', '#999', inherit='button-border'),
+        Color('help', '#666', inherit='foreground'),
         Color('error-fg', inherit='foreground'),
         Color('error-bg', '#fdb'),
         Color('error-border', '#fba', inherit='border'),
@@ -529,9 +537,14 @@ class Pages(WikingModule): #, Publishable
         def fields(self): return (
             Field('page_id'),
             Field('mapping_id'),
+            Field('identifier', _("Identifier"), editable=ONCE, not_null=True,
+                  descr=_("The identifier may be used to refer to this page "
+                          "from outside and also from other pages. "
+                          "A valid identifier can only contain letters, "
+                          "digits, dashes and underscores.  It must start "
+                          "with a letter.")),
             Field('lang', _("Language"), codebook='Languages', editable=ONCE,
                   selection_type=CHOICE, value_column='lang'),
-            Field('identifier', _("Identifier"), editable=ONCE),
             Field('title', _("Title")),
             Field('title_', _("Title"), virtual=True,
                   computer=Computer(self._title,
@@ -702,7 +715,7 @@ class Attachments(StoredFileModule):
             Field('mime_type', _("Mime-type"), width=22,
                   computer=fcomp(lambda f: f.type())),
             Field('title', _("Title"), width=30),
-            Field('description', _("Description"), width=80, height=3),
+            Field('description', _("Description"), width=60, height=3),
             Field('ext', virtual=True,
                   computer=Computer(self._ext, ('filename',))),
             Field('bytesize', _("Byte size"),
@@ -784,8 +797,8 @@ class News(WikingModule):
         title = _("News")
         def fields(self): return (
             Field('news_id', editable=NEVER),
-            Field('timestamp', _("Date"), width=19, type=DateTime(),
-                  default=now),
+            Field('timestamp', _("Date"), width=19,
+                  type=DateTime(not_null=True), default=now),
             Field('date', _("Date"), virtual=True,
                   computer=Computer(self._date, depends=('timestamp',))),
             Field('lang', _("Language"), codebook='Languages', editable=ONCE,
@@ -841,7 +854,7 @@ class Planner(News):
                   computer=Computer(self._date_title,
                                     depends=('date', 'title'))))
         sorting = (('start_date', ASC),)
-        columns = ('date', 'title')
+        columns = ('title', 'date')
         layout = ('lang', 'start_date', 'end_date', 'title', 'content')
         def _check_date(self, date):
             if date < today():
@@ -856,8 +869,7 @@ class Planner(News):
         def check(self, row):
             end = row['end_date'].value()
             if end and end <= row['start_date'].value():
-                return ("end_date",
-                        _("End date precedes start date"))
+                return ("end_date", _("End date precedes start date"))
     _RSS_TITLE_COLUMN = 'date_title'
     _RSS_LINK_COLUMN = 'title'
     _RSS_DATE_COLUMN = None
@@ -1042,9 +1054,17 @@ class Users(WikingModule):
         def fields(self): return (
             Field('uid', width=8, editable=NEVER),
             Field('login', _("Login name"), width=16,
-                  type=pd.Identifier(maxlen=16, not_null=True)),
+                  type=pd.RegexString(maxlen=16, not_null=True,
+                                      regex='^[a-zA-Z][0-9a-zA-Z_\.-]*$'),
+                  descr=_("A valid login name can only contain letters, "
+                          "digits, underscores, dashes and dots and must "
+                          "start with a letter.")),
             Field('password', _("Password"), width=16,
-                  type=pd.Password(maxlen=32, not_null=True)),
+                  type=pd.Password(maxlen=32, not_null=True),
+                  descr=_("Please write the new password into each of the two "
+                          "fields.  Leave both fields blank if you are "
+                          "editing an existing account and don't want to "
+                          "change the password.")),
             Field('fullname', _("Full Name"), virtual=True, editable=NEVER,
                   computer=Computer(self._fullname,
                                     depends=('firstname','surname','login'))),
@@ -1054,11 +1074,12 @@ class Users(WikingModule):
             Field('firstname', _("First name")),
             Field('surname', _("Surname")),
             Field('nickname', _("Nickname")),
-            Field('email', _("E-mail"), width=34),
+            Field('email', _("E-mail"), width=36),
             Field('phone', _("Phone")),
             Field('address', _("Address"), height=3),
-            Field('uri', _("URI")),
-            Field('since', _("Registered since"), type=DateTime()),
+            Field('uri', _("URI"), width=36),
+            Field('since', _("Registered since"),
+                  type=DateTime(show_time=False), default=now),
             Field('enabled', _("Enabled")),
             Field('contributor', _("Contribution privileges")),
             Field('author', _("Authoring privileges")),
@@ -1066,11 +1087,15 @@ class Users(WikingModule):
             Field('session_key'),
             Field('session_expire'),
             )
-        columns = ('user', 'nickname', 'email')
-        layout = ('login', 'password', 'firstname', 'surname',
-                  'nickname', 'email', 'phone', 'address', 'uri')
+        columns = ('user', 'nickname', 'email', 'since')
+        layout = (FieldSet(_("Login information"), ('login', 'password')),
+                  FieldSet(_("Personal data"),
+                           ('firstname', 'surname', 'nickname')),
+                  FieldSet(_("Contact information"),
+                           ('email', 'phone', 'address', 'uri')))
     _REFERER = 'login'
     _PANEL_FIELDS = ('fullname',)
+    _ALLOW_TABLE_LAYOUT_IN_FORMS = False
 
     def user(self, login):
         return self._record(self._data.get_row(login=login))
@@ -1092,12 +1117,17 @@ class Users(WikingModule):
     def close_session(self, user):
         self._update_values(user, session_expire=None, session_key=None)
 
+    def registration_uri(self, req, config):
+        identifier = self._identifier(req)
+        if config.allow_registration and identifier:
+            return make_uri('/'+identifier, action='add')
+        
         
 class Rights(Users):
     _RIGHTS_add = _RIGHTS_insert = ()
     class Spec(Users.Spec):
         title = _("Access Rights")
-        layout = ('user', 'enabled', 'contributor', 'author', 'admin')
+        layout = ('enabled', 'contributor', 'author', 'admin')
         columns = ('user', 'login', 'enabled', 'author', 'admin')
 
         
