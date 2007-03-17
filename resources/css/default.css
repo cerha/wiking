@@ -222,23 +222,30 @@ form.show-form, form.edit-form {
     padding: 0;
 }
 
-form.show-form fieldset.body, form.edit-form fieldset.body,
-form.edit-form fieldset.submit, form.login-form fieldset.body { 
+fieldset.body, fieldset.submit { 
     background: $color.frame-bg;
     border: 1px solid $color.frame-border;
     border-width: 1px 0;
-    margin: 0;
+    margin: 0.4em 0;
 }
-form.edit-form fieldset.submit { 
+fieldset.submit { 
     margin-top: 0.5em;
     padding: 0.5em;
     text-align: center;
 }
 form.show-form label, form.edit-form label { 
     white-space: nowrap;
+    font-weight: bold;
 }
 form.show-form td.label, form.edit-form td.label { 
     padding: 0.15em 0.3em 0.15em 0;
+}
+fieldset.body div.field { 
+    margin: 0.2em 0;
+}
+fieldset.body div.help { 
+    color: $color.help;
+    margin-bottom: 0.4em;
 }
 form.show-form fieldset.body input, form.show-form textarea { 
     background: $color.frame-bg;
