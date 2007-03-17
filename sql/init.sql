@@ -7,8 +7,8 @@ INSERT INTO modules (name, active, ord) VALUES ('Attachments', 't', 20);
 INSERT INTO modules (name, active, ord) VALUES ('News',        't', 30);
 INSERT INTO modules (name, active, ord) VALUES ('Planner',     't', 40);
 INSERT INTO modules (name, active, ord) VALUES ('Panels',      't', 50);
-INSERT INTO modules (name, active, ord) VALUES ('Users',       'f', 60);
-INSERT INTO modules (name, active, ord) VALUES ('Rights',      'f', 70);
+INSERT INTO modules (name, active, ord) VALUES ('Users',       't', 60);
+INSERT INTO modules (name, active, ord) VALUES ('Rights',      't', 70);
 INSERT INTO modules (name, active, ord) VALUES ('Titles',      't', 80);
 INSERT INTO modules (name, active, ord) VALUES ('Stylesheets', 't', 90);
 INSERT INTO modules (name, active, ord) VALUES ('Themes',      't', 100);
@@ -30,5 +30,5 @@ INSERT INTO config (site_title) VALUES ('Wiking site');
 INSERT INTO stylesheets (identifier) VALUES ('default.css');
 INSERT INTO stylesheets (identifier) VALUES ('panels.css');
 
-INSERT INTO users (login, password, nickname, enabled, author, admin) 
-VALUES ('admin', 'wiking', 'Administrator', 't', 't', 't');
+INSERT INTO users (login, password, firstname, surname, email, enabled, admin)
+VALUES ('admin', 'wiking', 'Wiking', 'Admin', '-', 't', 't');
