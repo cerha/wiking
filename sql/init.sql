@@ -14,10 +14,10 @@ INSERT INTO modules (name, active, ord) VALUES ('Stylesheets', 't', 90);
 INSERT INTO modules (name, active, ord) VALUES ('Themes',      't', 100);
 INSERT INTO modules (name, active, ord) VALUES ('Languages',   't', 110);
 
-INSERT INTO _mapping (identifier, mod_id, published, ord)
-VALUES ('index', 1, 't', 1);
-INSERT INTO _mapping (identifier, mod_id, published, ord)
-VALUES ('css', 7, 't', NULL);
+INSERT INTO _mapping (identifier, mod_id, published, ord) VALUES
+ ('index', (SELECT mod_id from modules WHERE name='Pages'), 't', 1);
+INSERT INTO _mapping (identifier, mod_id, published, ord) VALUES
+ ('css', (SELECT mod_id from modules WHERE name='Stylesheets'), 't', NULL);
 
 UPDATE pages SET title='Welcome', _content=
     'Your new Wiking site has been succesfully set up.\n\n' ||
