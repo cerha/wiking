@@ -374,6 +374,7 @@ CREATE TABLE themes (
         button_inactive_fg varchar(7),
         button_inactive varchar(7),
         button_inactive_border varchar(7),
+        help varchar(7),
         error_fg varchar(7),
         error_bg varchar(7),
         error_border varchar(7),
@@ -412,6 +413,7 @@ CREATE TABLE config (
 	site_title text NOT NULL,
 	site_subtitle text,
 	login_panel boolean NOT NULL DEFAULT 'FALSE',
+	allow_registration boolean NOT NULL DEFAULT 'TRUE',
 	webmaster_addr text,
 	theme integer REFERENCES themes
 ) WITH OIDS;
