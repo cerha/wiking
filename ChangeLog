@@ -1,5 +1,8 @@
 2007-03-17  Tomas Cerha  <cerha@brailcom.org>
 
+	* sql/init.sql: Supply all mandatory fields for the default admin.
+	Assign `mod_id' into the default mapping by module name.
+	
 	* translations/wiking.cs.po: Updated.
 
 	* sql/wiking.sql: New theme column for `help'.  New config option
