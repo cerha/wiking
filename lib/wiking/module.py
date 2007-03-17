@@ -136,6 +136,8 @@ class PytisModule(Module, ActionHandler):
     
     _OWNER = None
 
+    _ALLOW_TABLE_LAYOUT_IN_FORMS = True
+    
     _spec_cache = {}
 
     class Record(pp.PresentedRow):
@@ -258,7 +260,7 @@ class PytisModule(Module, ActionHandler):
                    and not value_ and not record.new():
                 continue # Keep the original file if no file is uploaded.
             value, error = type.validate(value_, **kwargs)
-            log(OPR, "Validation:", (id, type.not_null(), value_, kwargs, error))
+            #log(OPR, "Validation:", (id, value_, kwargs, error))
             if error:
                 errors.append((id, error.message()))
             else:
@@ -293,10 +295,7 @@ class PytisModule(Module, ActionHandler):
     def _document(self, req, content, record=None, subtitle=None,
                   lang=None, variants=None, err=None, msg=None, **kwargs):
         if record:
-            if subtitle:
-                title = self._view.singular()
-            else:
-                title = record[self._title_column].export()
+            title = record[self._title_column].export()
             lang = self._lang(record)
             variants = self._variants(record)
         if not variants or req.wmi:
@@ -350,9 +349,11 @@ class PytisModule(Module, ActionHandler):
     def _form(self, form, req, *args, **kwargs):
         kwargs['link_provider'] = lambda row, cid: \
                          self._link_provider(req, row, cid, target=form)
-        #if isinstance(form, pw.EditForm) and req.params.has_key('module'):
+        #if issubclass(form, pw.EditForm) and req.params.has_key('module'):
         #    kwargs['hidden'] = kwargs.get('hidden', ()) + \
         #                       (('module', req.params['module']),)
+        if issubclass(form, pw.EditForm):
+            kwargs['allow_table_layout'] = self._ALLOW_TABLE_LAYOUT_IN_FORMS
         return form(self._data, self._view, self._resolver, *args, **kwargs)
     
     def _default_action(self, req, record=None):
@@ -411,10 +412,11 @@ class PytisModule(Module, ActionHandler):
 
     def _action(self, req, action, **kwargs):
         roles = getattr(self, '_RIGHTS_'+action)
-        roles = isinstance(roles, (tuple, list)) and roles or (roles,)
+        if not isinstance(roles, (tuple, list)):
+            roles = (roles,)
         #if Roles.OWNER in roles and self._OWNER is not None \
         #       and :
-        Roles.check(req.user(), roles)
+        Roles.check(req, roles)
         return super(PytisModule, self)._action(req, action, **kwargs)
     
     def _lang(self, record):
