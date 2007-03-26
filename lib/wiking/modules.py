@@ -286,6 +286,7 @@ class Config(WikingModule):
             Field('site_subtitle', _("Site subtitle"), width=64),
             Field('login_panel',  _("Show login panel")),
             Field('allow_registration', _("Allow registration"), default=True),
+            #Field('allow_wmi_link', _("Allow WMI link"), default=True),
             Field('webmaster_addr', _("Webmaster address")),
             Field('theme', _("Theme"), codebook='Themes',
                   selection_type=CHOICE, not_null=False),
@@ -296,6 +297,7 @@ class Config(WikingModule):
     _DEFAULT_ACTIONS = (Action(_("Edit"), 'edit'),)
 
     class Configuration(object):
+        allow_wmi_link = False
         def __init__(self, row, server):
             self._server = server
             for key in row.keys():
