@@ -37,7 +37,7 @@
 	in forms on a per-module basis.  Other minor improvement.
 
 	* lib/wiking/handler.py: Enforce authentication within the
-	RequestError handling block. 
+	RequestError handling block.
 
 	* lib/wiking/export.py: Display registration link in the login panel.
 
