@@ -1,3 +1,11 @@
+2007-03-26  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/modules.py (Config.Configuration): New option
+	`allow_wmi_link'.
+
+	* lib/wiking/export.py: Don't produce WMI link unless
+	`config.allow_wmi_link' is True.
+
 2007-03-17  Tomas Cerha  <cerha@brailcom.org>
 
 	* sql/init.sql: Supply all mandatory fields for the default admin.
