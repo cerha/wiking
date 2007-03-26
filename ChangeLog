@@ -1,5 +1,8 @@
 2007-03-26  Tomas Cerha  <cerha@brailcom.org>
 
+	* translations/Makefile: Don't assume LCG path, use it as a Python
+	library.
+
 	* lib/wiking/modules.py (Config.Configuration): New option
 	`allow_wmi_link'.
 
