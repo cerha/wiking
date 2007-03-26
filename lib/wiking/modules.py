@@ -41,8 +41,12 @@ def _modtitle(m):
     """Return a localizable module title by module name."""
     if m is None:
         return ''
-    cls = globals().get(m)
-    return cls and cls.Spec.title or concat(m,' (',_("unknown"),')')
+    try:
+        cls = get_module(m)
+    except:
+        return concat(m,' (',_("unknown"),')')
+    else:
+        return cls.Spec.title
 
 # This constant lists names of modules which don't handle requests directly and
 # thus should not appear in the module selection for the Mapping items.
@@ -297,7 +301,7 @@ class Config(WikingModule):
     _DEFAULT_ACTIONS = (Action(_("Edit"), 'edit'),)
 
     class Configuration(object):
-        allow_wmi_link = False
+        allow_wmi_link = True
         def __init__(self, row, server):
             self._server = server
             for key in row.keys():
