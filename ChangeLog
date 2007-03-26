@@ -5,6 +5,7 @@
 
 	* lib/wiking/modules.py (Config.Configuration): New option
 	`allow_wmi_link'.
+	(_modtitle): Use `get_module' to get the module class.
 
 	* lib/wiking/export.py: Don't produce WMI link unless
 	`config.allow_wmi_link' is True.
