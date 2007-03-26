@@ -159,7 +159,6 @@ class Exporter(lcg.HtmlExporter):
         g = self._generator
         config = node.config()
 	result = (g.hr(),)
-        ctrls = (self._hidden("["),)
         #if config.edit_label:
         #    ctrls += (g.link(config.edit_label, "?action=edit"), "|")
         #if not config.login_panel:
@@ -169,16 +168,19 @@ class Exporter(lcg.HtmlExporter):
             ctrl = g.link(_("Leave the Management Interface"), '/', hotkey="9")
         elif config.doc:
             ctrl = g.link(_("Leave the Help System"), '/')
-        else:
+        elif config.allow_wmi_link:
             modname = config.modname or ''
             ctrl = g.link(_("Manage this site"), '/_wmi/'+modname, hotkey="9",
                           title=_("Enter the Wiking Management Interface"))
-        ctrls += (ctrl, self._hidden("]"))
-        result += (g.span(concat(ctrls, separator="\n"), cls="controls"),
-                   g.span(_("Powered by %(wiking)s %(version)s",
+        else:
+            ctrl = None
+        if ctrl:
+            ctrls = concat(self._hidden("["), ctrl, self._hidden("]"))
+            result += (g.span(ctrls, cls="controls"),)
+        result += (g.span(_("Powered by %(wiking)s %(version)s",
                             wiking=g.link("Wiking",
                                           "http://www.freebsoft.org/wiking"),
-                            version=wiking.__version__)))
+                            version=wiking.__version__)),)
         return result
         
 
