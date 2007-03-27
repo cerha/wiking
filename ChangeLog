@@ -1,3 +1,8 @@
+2007-03-27  Milan Zamazal  <pdm@brailcom.org>
+
+	* lib/wiking/util.py (send_mail): Don't write the HTML part if
+	it is empty.
+
 2007-03-26  Tomas Cerha  <cerha@brailcom.org>
 
 	* translations/Makefile: Don't assume LCG path, use it as a Python

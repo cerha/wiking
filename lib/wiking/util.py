@@ -683,12 +683,13 @@ def send_mail(sender, addr, subject, text, html, smtp_server='localhost'):
     mimetools.encode(txtin, pout, 'quoted-printable')
     txtin.close()
     # The html section.
-    subpart = writer.nextpart()
-    subpart.addheader("Content-Transfer-Encoding", "quoted-printable")
-    # Returns a file-like object we can write to.
-    pout = subpart.startbody("text/html", [("charset", 'utf-8')])
-    mimetools.encode(htmlin, pout, 'quoted-printable')
-    htmlin.close()
+    if html:
+        subpart = writer.nextpart()
+        subpart.addheader("Content-Transfer-Encoding", "quoted-printable")
+        # Returns a file-like object we can write to.
+        pout = subpart.startbody("text/html", [("charset", 'utf-8')])
+        mimetools.encode(htmlin, pout, 'quoted-printable')
+        htmlin.close()
     # Close the writer and send the message.
     writer.lastpart()
     import smtplib
