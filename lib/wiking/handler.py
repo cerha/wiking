@@ -145,20 +145,19 @@ class SiteHandler(object):
         req.wmi = False # Will be set to True by `WikingManagementInterface'.
         modname = None
         try:
-            modname = self._mapping.modname(req.path[0])
             req.login(self._users)
+            modname = self._mapping.modname(req.path[0])
             result = self._module(modname).handle(req)
             if not isinstance(result, Document):
                 content_type, data = result
                 return req.result(data, content_type=content_type)
-            user = req.user() # Handle authentication exceptions
+            user = req.user() # Do here to handle authentication exceptions.
         except RequestError, e:
             if isinstance(e, HttpError):
                 req.set_status(e.ERROR_CODE)
             lang = req.prefered_language(self._languages.languages(),
                                          raise_error=False)
-            content = e.message(req)
-            result = Document(e.title(), content, lang=lang)
+            result = Document(e.title(), e.message(req), lang=lang)
         config = self._config.config(self._server, result.lang())
         doc = modname == 'Documentation' and req.param('display') != 'inline'
         if req.wmi or doc:
@@ -169,7 +168,7 @@ class SiteHandler(object):
             menu = req.wmi and self._modules.menu(req.path[0]) or ()
             panels = ()
         else:
-            menu = self._mapping.menu(result.lang())
+            menu = self._mapping.menu(req, result.lang())
             panels = self._panels.panels(req, result.lang())
             config.show_panels = req.show_panels()
         config.wmi = req.wmi
