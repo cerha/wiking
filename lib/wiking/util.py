@@ -102,6 +102,16 @@ class NotFound(HttpError):
         return lcg.coerce([lcg.p(p) for p in msg])
 
     
+class Forbidden(HttpError):
+    """Error indicating unavailable request target."""
+    ERROR_CODE = 403
+    
+    def message(self, req):
+        msg = (_("The item '%s' is not available.", req.uri),
+               _("The item exists on the server, but it is not published."))
+        return lcg.coerce([lcg.p(p) for p in msg])
+
+    
 class NotAcceptable(HttpError):
     """Error indicating unavailability of the resource in requested language."""
     ERROR_CODE = 406
@@ -214,9 +224,9 @@ class Document(object):
     """Independent Wiking document representation.
 
     This allows us to initialize document data without actually creating the
-    'lcg.ContentNode' instance.  The instance can be created later using the
-    'mknode()' method (passing it the remaining arguments required by
-    'lcg.ContentNone' constructor.
+    'lcg.ContentNode' instance (more precisely 'WikingNode' in our case).  The
+    instance can be created later using the 'mknode()' method (passing it the
+    remaining arguments required by node's constructor).
 
     """
     
