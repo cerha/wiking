@@ -1,3 +1,13 @@
+2007-03-29  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/modules.py: Added many field descriptions.
+	(Mapping.menu): Expect the request as first argument.
+
+	* lib/wiking/handler.py (SiteHandler.handle): Login before mapping
+	resolution.  Pass request to Mapping.menu().
+
+	* lib/wiking/util.py (Forbidden): New HTTP errror type.
+
 2007-03-27  Milan Zamazal  <pdm@brailcom.org>
 
 	* lib/wiking/util.py (send_mail): Don't write the HTML part if
