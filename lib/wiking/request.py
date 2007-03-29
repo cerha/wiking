@@ -94,6 +94,9 @@ class Request(object):
         cookie = c[name].OutputString()
         self._req.headers_out.add("Set-Cookie", cookie)
 
+    def set_header(self, name, value):
+        self._req.headers_out.add(name, value)
+        
     def set_status(self, status):
         self._req.status = status
         
