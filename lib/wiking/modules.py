@@ -53,7 +53,11 @@ def _modtitle(m):
 # It should be considered a temporary hack, but the list should be maintained.
 _SYSMODULES = ('Languages', 'Modules', 'Config', 'Mapping','Panels', 'Titles')
 
-
+_STRUCTURED_TEXT_DESCR = _("The content should be formatted as LCG "
+                           "structured text. See the %(manual)s.",
+                           manual=('<a target="_new" href="/_doc/lcg/'
+                                   'data-formats/structured-text">' + \
+                                   _("formatting manual") + "</a>"))
 class Mapping(WikingModule, Publishable):
     """Mapping available URIs to the modules which handle them.
 
@@ -91,9 +95,17 @@ class Mapping(WikingModule, Publishable):
             Field('modname', _("Module")),
             Field('modtitle', _("Module"), virtual=True,
                   computer=Computer(lambda r: _modtitle(r['modname'].value()),
-                                    depends=('modname',))),
-            Field('published', _("Published")),
-            Field('ord', _("Menu order"), width=5))
+                                    depends=('modname',)),
+                  descr=_("Select the module which handles requests for "
+                          "given identifier.  This is the way to make the "
+                          "module available from outside.")),
+            Field('published', _("Published"),
+                  descr=_("This flag allows you to make the item unavailable "
+                          "withoit actually removing it.")),
+            Field('ord', _("Menu order"), width=5,
+                  descr=_("Enter a number denoting the item order in the menu "
+                          "or leave the field blank if you don't want this "
+                          "item to appear in the menu.")))
         sorting = (('ord', ASC), ('identifier', ASC))
         bindings = {'Pages': pp.BindingSpec(_("Pages"), 'mapping_id')}
         columns = ('identifier', 'modtitle', 'published', 'ord')
@@ -121,9 +133,11 @@ class Mapping(WikingModule, Publishable):
             try:
                 modname = cache[identifier]
             except KeyError:
-                row = self._data.get_row(identifier=identifier, published=True)
+                row = self._data.get_row(identifier=identifier)
                 if row is None:
                     raise NotFound()
+                if not row['published'].value():
+                    raise Forbidden()
                 cache[identifier] = modname = row['modname'].value()
         return modname
     
@@ -140,16 +154,21 @@ class Mapping(WikingModule, Publishable):
             return rows[0]['identifier'].value()
         return self._REVERSE_STATIC_MAPPING.get(modname)
     
-    def menu(self, lang):
+    def menu(self, req, lang):
         """Return the sequence of main navigation menu items.
 
-        The argument `lang' denotes the language which should be used for
-        localizing the item titles.  It is one of the language codes as
-        returned by `Languages.languages()'.
-
+        Arguments:
+        
+          req -- the current request object.
+        
+          lang -- denotes the language which should be used for localizing the
+            item titles.  It is one of the language codes as returned by
+            `Languages.languages()'.
+            
         Returns a sequence of 'MenuItem' instances.
         
         """
+        # TODO: Show also unpublished items when authorized.
         titles = self._module('Titles').titles(lang)
         return [MenuItem(str(row['identifier'].value()),
                          titles.get(row['mapping_id'].value(),
@@ -370,7 +389,8 @@ class Panels(WikingModule, Publishable):
                   computer=Computer(lambda r: _modtitle(r['modname'].value()),
                                     depends=('modname',))),
             Field('size', _("Items count"), width=5),
-            Field('content', _("Content"), width=50, height=10),
+            Field('content', _("Content"), width=50, height=10,
+                  descr=_STRUCTURED_TEXT_DESCR),
             Field('published', _("Published"), default=True),
             )
         sorting = (('ord', ASC),)
@@ -555,8 +575,8 @@ class Pages(WikingModule): #, Publishable
             Field('title_', _("Title"), virtual=True,
                   computer=Computer(self._title,
                                     depends=('title', 'identifier'))),
-            Field('_content', _("Content"),
-                  compact=True, height=20, width=80),
+            Field('_content', _("Content"), compact=True, height=20, width=80,
+                  descr=_STRUCTURED_TEXT_DESCR),
             Field('content'),
             Field('status', _("Status"), virtual=True,
                   computer=Computer(self._status,
@@ -715,18 +735,29 @@ class Attachments(StoredFileModule):
                   type=pd.Binary(not_null=True, maxlen=3*MB),
                   computer=self._file_computer('file', '_filename',
                                                origname='filename',
-                                               mime='mime_type')),
+                                               mime='mime_type'),
+                  descr=_("Upload a file from your local system.  The file "
+                          "name will be used to refer to the attachment "
+                          "within the page content.")),
             Field('filename', _("Filename"),
                   computer=fcomp(lambda f: f.filename())),
             Field('mime_type', _("Mime-type"), width=22,
                   computer=fcomp(lambda f: f.type())),
-            Field('title', _("Title"), width=30),
-            Field('description', _("Description"), width=60, height=3),
+            Field('title', _("Title"), width=30,
+                  descr=_("The name of the attachment (e.g. the full name of "
+                          "the document). If empty, the file name will be "
+                          "used instead.")),
+            Field('description', _("Description"), width=60, height=3,
+                  descr=_("Optional description used for the listing of "
+                          "attachments (see below).")),
             Field('ext', virtual=True,
                   computer=Computer(self._ext, ('filename',))),
             Field('bytesize', _("Byte size"),
                   computer=fcomp(lambda f: pp.format_byte_size(len(f)))),
-            Field('listed', _("Listed"), default=True),
+            Field('listed', _("Listed"), default=True,
+                  descr=_("Check if you want the item to appear in the "
+                          "listing of attachments at the bottom of the "
+                          "page.")),
             #Field('timestamp', type=DateTime()), #, default=now),
             # Fields supporting file storage.
             Field('dbname'),
@@ -806,11 +837,17 @@ class News(WikingModule):
             Field('timestamp', _("Date"), width=19,
                   type=DateTime(not_null=True), default=now),
             Field('date', _("Date"), virtual=True,
-                  computer=Computer(self._date, depends=('timestamp',))),
+                  computer=Computer(self._date, depends=('timestamp',)),
+                  descr=_("Date of the news item creation.")),
             Field('lang', _("Language"), codebook='Languages', editable=ONCE,
                   selection_type=CHOICE, value_column='lang'),
-            Field('title', _("Briefly"), column_label=_("Message"), width=32),
-            Field('content', _("Text"), height=3, width=60),
+            Field('title', _("Briefly"), column_label=_("Message"), width=32,
+                  descr=_("The item summary (title of the entry).")),
+            Field('content', _("Text"), height=3, width=60,
+                  descr=_STRUCTURED_TEXT_DESCR + ' ' + \
+                  _("It is, however, recommened to use the simplest possible "
+                    "formatting, since the item may be also published through "
+                    "an RSS channel, which does not support formatting.")),
             Field('date_title', virtual=True,
                   computer=Computer(self._date_title,
                                     depends=('date', 'title'))))
@@ -847,15 +884,27 @@ class Planner(News):
         def fields(self): return (
             Field('planner_id', editable=NEVER),
             Field('start_date', _("Date"), width=10,
-                  type=Date(not_null=True, constraints=(self._check_date,))),
-            Field('end_date', _("End date"), width=10, type=Date()),
+                  type=Date(not_null=True, constraints=(self._check_date,)),
+                  descr=_("The date when the planned event begins. "
+                          "Enter the date including the year. "
+                          "Example: %(date)s",
+                          date=lcg.LocalizableDateTime((now()+7).date))),
+            Field('end_date', _("End date"), width=10, type=Date(),
+                  descr=_("The date when the event ends if it is not the "
+                          "same as the start date (for events which last "
+                          "several days.")),
             Field('date', _("Date"), virtual=True,
                   computer=Computer(self._date,
                                     depends=('start_date', 'end_date'))),
             Field('lang', _("Language"), codebook='Languages', editable=ONCE,
                   selection_type=CHOICE, value_column='lang'),
-            Field('title', _("Briefly"), column_label=_("Event"), width=32),
-            Field('content', _("Text"), height=3, width=60),
+            Field('title', _("Briefly"), column_label=_("Event"), width=32,
+                  descr=_("The event summary (title of the entry).")),
+            Field('content', _("Text"), height=3, width=60,
+                  descr=_STRUCTURED_TEXT_DESCR + ' ' + \
+                  _("It is, however, recommened to use the simplest possible "
+                    "formatting, since the item may be also published through "
+                    "an RSS channel, which does not support formatting.")),
             Field('date_title', virtual=True,
                   computer=Computer(self._date_title,
                                     depends=('date', 'title'))))
