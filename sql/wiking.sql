@@ -1,40 +1,11 @@
 -- Wiking database creation script. --
 
-CREATE TABLE _rowlocks ( 
-   id      int, 
-   row     oid,
-   usename name,
-   expires timestamp
-);
-
-CREATE TABLE _rowlocks_real (
-   id      serial    PRIMARY KEY,                     -- lock identification
-   row     oid       NOT NULL,                        -- locked row oid
-   usename name      NOT NULL default session_user,   -- locking user
-   expires timestamp NOT NULL DEFAULT now() + '00:01' -- lock expiration time
-);
-
-CREATE OR REPLACE RULE "_RET_rowlocks" AS ON SELECT to _rowlocks DO INSTEAD
-  SELECT * FROM _rowlocks_real WHERE expires > now();
-
-CREATE OR REPLACE RULE _rowlocks_insert AS ON INSERT TO _rowlocks DO INSTEAD
-  INSERT INTO _rowlocks_real (row) VALUES (new.row);
-
-CREATE OR REPLACE RULE _rowlocks_update AS ON UPDATE TO _rowlocks DO INSTEAD
-  UPDATE _rowlocks_real SET expires = now() + '00:01'
-  WHERE id = old.id AND expires > now();
-
-CREATE OR REPLACE RULE _rowlocks_delete AS ON DELETE TO _rowlocks DO INSTEAD
-  DELETE FROM _rowlocks_real WHERE id = old.id OR expires <= now();
-
--------------------------------------------------------------------------------
-
 CREATE TABLE modules (
 	mod_id serial PRIMARY KEY,
 	name varchar(32) UNIQUE,
 	ord  int,
 	active boolean NOT NULL DEFAULT 'TRUE'
-) WITH OIDS;
+);
 
 -------------------------------------------------------------------------------
 
@@ -45,7 +16,7 @@ CREATE TABLE _mapping (
 	mod_id integer NOT NULL REFERENCES modules,
 	published boolean NOT NULL DEFAULT 'FALSE',
 	ord int
-) WITH OIDS;
+);
 
 CREATE OR REPLACE VIEW mapping AS 
 SELECT _mapping.oid, _mapping.*, modules.name as modname
@@ -82,7 +53,7 @@ CREATE OR REPLACE RULE mapping_delete AS
 CREATE TABLE languages (
 	lang_id serial PRIMARY KEY,
 	lang char(2) UNIQUE NOT NULL
-) WITH OIDS;
+);
 
 -------------------------------------------------------------------------------
 
@@ -92,7 +63,7 @@ CREATE TABLE titles (
 	lang char(2) NOT NULL REFERENCES languages(lang) ON DELETE CASCADE,
 	title text NOT NULL,
 	UNIQUE (mapping_id, lang)
-) WITH OIDS;
+);
 
 -------------------------------------------------------------------------------
 
@@ -102,11 +73,11 @@ CREATE TABLE _pages (
 	_content text NOT NULL,
 	content text,
 	PRIMARY KEY (mapping_id, lang)
-) WITH OIDS;
+);
 
 CREATE OR REPLACE VIEW pages AS 
 SELECT p.oid, m.mapping_id ||'.'|| l.lang as page_id, m.mapping_id, l.lang,
-       m.identifier, t.title, p._content, p.content
+       m.identifier, m.published, t.title, p._content, p.content
 FROM _mapping m CROSS JOIN languages l JOIN modules USING (mod_id)
      LEFT OUTER JOIN _pages p USING (mapping_id, lang)
      LEFT OUTER JOIN titles t USING (mapping_id, lang)
@@ -126,6 +97,8 @@ CREATE OR REPLACE RULE pages_insert AS
 
 CREATE OR REPLACE RULE pages_update AS
   ON UPDATE TO pages DO INSTEAD (
+    UPDATE _mapping SET published = new.published
+           WHERE mapping_id = old.mapping_id;
     UPDATE _pages SET _content = new._content, content = new.content
            WHERE old._content IS NOT NULL 
 	         AND mapping_id = old.mapping_id AND lang = old.lang;
@@ -155,31 +128,32 @@ CREATE TABLE _attachments (
        listed boolean NOT NULL DEFAULT 'TRUE',
        "timestamp" timestamp NOT NULL DEFAULT now(),
        UNIQUE (mapping_id, filename)
-) WITH OIDS;
+);
 
 CREATE TABLE _attachment_descr (
        attachment_id int NOT NULL REFERENCES _attachments ON DELETE CASCADE,
        lang char(2) NOT NULL REFERENCES languages(lang),
-       title text NOT NULL,
+       title text,
        description text
-) WITH OIDS;
+);
 
 CREATE OR REPLACE VIEW attachments
 AS SELECT a.oid, a.attachment_id  ||'.'|| l.lang as page_attachment_id,
   a.attachment_id, l.lang, a.mapping_id ||'.'|| l.lang as page_id, 
-  a.mapping_id, m.identifier, a.filename, a.mime_type, a.bytesize, a.listed, a."timestamp",
-  d.title, d.description, current_database() as dbname 
+  a.mapping_id, m.identifier, a.filename, a.mime_type, a.bytesize, a.listed,
+  a."timestamp", d.title, d.description, current_database() as dbname 
 FROM _attachments a JOIN _mapping m USING (mapping_id) CROSS JOIN languages l  
 LEFT OUTER JOIN _attachment_descr d USING (attachment_id, lang);
 
 CREATE OR REPLACE RULE attachments_insert AS
  ON INSERT TO attachments DO INSTEAD (
-    INSERT INTO _attachments (mapping_id, filename, mime_type, bytesize, listed)
-    VALUES (new.mapping_id, new.filename, 
-            new.mime_type, new.bytesize, new.listed);
     INSERT INTO _attachment_descr (attachment_id, lang, title, description)
-    VALUES ((SELECT currval('_attachments_attachment_id_seq')),
-    	     new.lang, new.title, new.description)
+           SELECT new.attachment_id, new.lang, new.title, new.description
+           WHERE new.title IS NOT NULL OR new.description IS NOT NULL;
+    INSERT INTO _attachments (attachment_id, mapping_id, filename, mime_type,
+                              bytesize, listed)
+            VALUES (new.attachment_id, new.mapping_id, new.filename, 
+                    new.mime_type, new.bytesize, new.listed);
 );
 
 CREATE OR REPLACE RULE attachments_update AS
@@ -195,7 +169,8 @@ CREATE OR REPLACE RULE attachments_update AS
        	   WHERE attachment_id = old.attachment_id AND lang = old.lang;
     INSERT INTO _attachment_descr (attachment_id, lang, title, description) 
    	   SELECT new.attachment_id, new.lang, new.title, new.description
-	   WHERE old.title IS NULL;
+	   WHERE new.attachment_id NOT IN
+             (SELECT attachment_id FROM _attachment_descr WHERE lang=new.lang);
 );
 
 CREATE OR REPLACE RULE attachments_delete AS
@@ -215,7 +190,7 @@ CREATE TABLE _panels (
 	content text,
 	_content text,
 	published boolean NOT NULL DEFAULT 'FALSE'
-) WITH OIDS;
+);
 
 CREATE OR REPLACE VIEW panels AS 
 SELECT _panels.oid, _panels.*, _mapping.mod_id, _mapping.identifier,
@@ -262,7 +237,7 @@ CREATE TABLE news (
 	"timestamp" timestamp NOT NULL DEFAULT now(),
 	title text NOT NULL,
 	content text NOT NULL
-) WITH OIDS;
+);
 
 -------------------------------------------------------------------------------
 
@@ -274,7 +249,7 @@ CREATE TABLE planner (
 	title text NOT NULL,
 	content text,
 	UNIQUE (start_date, lang, title)
-) WITH OIDS;
+);
 
 -------------------------------------------------------------------------------
 
@@ -294,7 +269,7 @@ CREATE TABLE _images (
 	taken timestamp,
 	exif text,
 	"timestamp" timestamp NOT NULL DEFAULT now()
-) WITH OIDS;
+);
 
 CREATE OR REPLACE VIEW images AS 
 SELECT oid, *, current_database() as dbname FROM _images;
@@ -342,7 +317,7 @@ CREATE TABLE stylesheets (
 	active boolean NOT NULL DEFAULT 'TRUE',
 	description text,
 	content text
-) WITH OIDS;
+);
 
 -------------------------------------------------------------------------------
 
@@ -381,7 +356,7 @@ CREATE TABLE themes (
         message_fg varchar(7),
         message_bg varchar(7),
         message_border varchar(7)
-) WITH OIDS;
+);
 
 -------------------------------------------------------------------------------
 
@@ -403,7 +378,7 @@ CREATE TABLE users (
 	since timestamp NOT NULL DEFAULT current_timestamp(0),
 	session_key text,
 	session_expire timestamp
-) WITH OIDS;
+);
 
 ALTER TABLE users ALTER COLUMN since 
       SET DEFAULT current_timestamp(0) AT TIME ZONE 'GMT';
@@ -416,7 +391,7 @@ CREATE TABLE config (
 	allow_registration boolean NOT NULL DEFAULT 'TRUE',
 	webmaster_addr text,
 	theme integer REFERENCES themes
-) WITH OIDS;
+);
 
 --CREATE TABLE changes (
 --	content_id integer NOT NULL REFERENCES content ON DELETE CASCADE,
