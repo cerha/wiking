@@ -155,9 +155,7 @@ class Roles(object):
             if role == cls.ANYONE:
                 return True
             # We don't want to perform authentication until here!
-            user = req.user()
-            if user is None:
-                raise AuthenticationError()
+            user = req.user(raise_error=True)
             if not user['enabled'].value():
                 return False
             if role == cls.USER:
@@ -330,7 +328,7 @@ class ActionMenu(lcg.Content):
         else:
             target = None
             cls = 'inactive'
-        return g.link(action.title(), target, cls=cls)
+        return g.link(action.title(), target, cls=cls, title=action.descr())
         
     def export(self, exporter):
         g = exporter.generator()
@@ -733,4 +731,5 @@ def make_uri(base, *args, **kwargs):
         return base + '?' + ';'.join(["%s=%s" % item for item in args])
     else:
         return base
+
 
