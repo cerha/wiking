@@ -108,10 +108,15 @@ class PytisModule(Module, ActionHandler):
     _REFERER = None
     _TITLE_COLUMN = None
     _LIST_BY_LANGUAGE = False
-    _DEFAULT_ACTIONS_FIRST  = (Action(_("Edit"), 'edit'),)
-    _DEFAULT_ACTIONS_LAST   = (Action(_("Remove"), 'remove'),
-                               Action(_("List"), 'list', context=None),)
-    _LIST_ACTIONS = (Action(_("New record"), 'add', context=None),)
+    _DEFAULT_ACTIONS_FIRST = (Action(_("Edit"), 'edit',
+                                     descr=_("Modify the record")),)
+    _DEFAULT_ACTIONS_LAST =  (Action(_("Remove"), 'remove',
+                                     descr=_("Remove the record permanently")),
+                              Action(_("List"), 'list', context=None,
+                                     descr=_("Back to the list of all "
+                                             "records")))
+    _LIST_ACTIONS = (Action(_("New record"), 'add', context=None,
+                            descr=_("Create a new record")),)
     
     _EXCEPTION_MATCHERS = (
         ('duplicate key violates unique constraint ' + \
@@ -211,7 +216,8 @@ class PytisModule(Module, ActionHandler):
         return identifier
         
     def _datetime_formats(self, req):
-        lang = req.prefered_language(self._module('Languages').languages())
+        lang = req.prefered_language(self._module('Languages').languages(),
+                                     raise_error=False)
         return lcg.datetime_formats(translator(lang))
         
     def _validate(self, req, record):
@@ -487,9 +493,9 @@ class PytisModule(Module, ActionHandler):
         self._data.update(record.key(), self._data.make_row(**kwargs))
         self._reload(record)
     
-    def _delete(self, record):
+    def _delete(self, record, raise_error=True):
         """Delete the record from the database."""
-        if not self._data.delete(record.key()):
+        if not self._data.delete(record.key()) and raise_error:
             raise pd.DBException('???', Exception("Unable to delete record."))
 
     # ===== Public methods which are not action handlers =====
@@ -709,7 +715,8 @@ class StoredFileModule(WikingModule):
     binary field to store, and the second is the identifier of the filename
     field.  The filename field provides the absolute path for saving the
     file."""
-
+    _SEQUENCE_FIELDS = ()
+    
     class Spec(pp.Specification):
         
         def _file_computer(self, id, filename, origname=None, mime=None,
@@ -758,20 +765,24 @@ class StoredFileModule(WikingModule):
             buf.save(fname)
         
     def _insert(self, record):
+        for id, seq in self._SEQUENCE_FIELDS:
+            if record[id].value() is None:
+                value = pd.DBCounterDefault(seq, self._dbconnection).next()
+                record[id] = pd.Value(record[id].type(), value)
         super(StoredFileModule, self)._insert(record)
         try:
             self._save_files(record)
         except:
             # TODO: Rollback the transaction instead of deleting the record.
-            self._delete(record)
+            self._delete(record, raise_error=False)
             raise
         
     def _update(self, record):
         super(StoredFileModule, self)._update(record)
         self._save_files(record)
         
-    def _delete(self, record):
-        super(StoredFileModule, self)._delete(record)
+    def _delete(self, record, raise_error=True):
+        super(StoredFileModule, self)._delete(record, raise_error=raise_error)
         for id, filename_id in self._STORED_FIELDS:
             fname = record[filename_id].value()
             if os.path.exists(fname):
@@ -794,10 +805,12 @@ class Publishable(object):
     
     _ACTIONS = (Action(_("Publish"), 'publish',
                        handler=lambda r: Publishable._change_published(r),
-                       enabled=lambda r: not r['published'].value()),
+                       enabled=lambda r: not r['published'].value(),
+                       descr=_("Make the item visible to website visitors")),
                 Action(_("Unpublish"), 'unpublish',
                        handler=lambda r: Publishable._change_published(r),
-                       enabled=lambda r: r['published'].value()),
+                       enabled=lambda r: r['published'].value(),
+                       descr=_("Make the item invisible to website visitors")),
                 )
 
     # This is all quite ugly.  It would be much better to solve invoking pytis
