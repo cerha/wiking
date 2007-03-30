@@ -282,9 +282,9 @@ class WikingRequest(Request):
             self._perform_login()
             user = self._user
         if raise_error and user is None:
-            msg = self._session_timed_out and \
-                  _("Session expired. Please log in again.") or None
-            raise AuthenticationError(msg)
+            args = self._session_timed_out and \
+                  (_("Session expired. Please log in again."),) or ()
+            raise AuthenticationError(*args)
         return user
     
     def login(self, users):
