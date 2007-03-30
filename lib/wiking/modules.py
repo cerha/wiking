@@ -557,7 +557,7 @@ class Themes(WikingModule):
 # are system modules used internally by Wiking.
 # ==============================================================================
 
-class Pages(WikingModule): #, Publishable
+class Pages(WikingModule, Publishable):
     class Spec(pp.Specification):
         title = _("Pages")
         def fields(self): return (
@@ -578,6 +578,7 @@ class Pages(WikingModule): #, Publishable
             Field('_content', _("Content"), compact=True, height=20, width=80,
                   descr=_STRUCTURED_TEXT_DESCR),
             Field('content'),
+            Field('published', _("Published")),
             Field('status', _("Status"), virtual=True,
                   computer=Computer(self._status,
                                     depends=('content', '_content'))),
@@ -593,7 +594,7 @@ class Pages(WikingModule): #, Publishable
                 return _("Missing")
         sorting = (('identifier', ASC), ('lang', ASC),)
         layout = ('identifier', 'lang', 'title', '_content')
-        columns = ('title_', 'identifier', 'status')
+        columns = ('title_', 'identifier', 'published', 'status')
         cb = pp.CodebookSpec(display='identifier')
         bindings = {'Attachments': pp.BindingSpec(_("Attachments"), 'mapping_id')}
     
@@ -606,16 +607,24 @@ class Pages(WikingModule): #, Publishable
     _RELATED_MODULES = ('Attachments',)
     
     _INSERT_MSG = _("New page was successfully created. Don't forget to "
-                    "publish it and possibly also add it to the main menu. "
-                    "Please, visit the 'Mapping' module to do so.")
+                    "publish it when you are done. Please, visit the "
+                    "'Mapping' module if you want to add the page to the "
+                    "main menu.")
+    _UPDATE_MSG = _("Page content was modified, however the changes remain "
+                    "unpublished. Don't forget to publish the changes when "
+                    "you are done.")
     
     _IS_OK = pd.NE('content', pd.Value(pd.String(), None))
     _ACTIONS = (Action(_("Publish changes"), 'sync', enabled=lambda r:
-                       r['_content'].value() != r['content'].value()),
+                       r['_content'].value() != r['content'].value(),
+                       descr=_("Publish the current modified content")),
                 Action(_("Preview"), 'preview',
-                       enabled=lambda r: r['_content'].value() is not None),
+                       enabled=lambda r: r['_content'].value() is not None,
+                       descr=_("Display the current version of the page")),
                 Action(_("Translate"), 'translate',
-                       enabled=lambda r: r['_content'].value() is None),
+                       enabled=lambda r: r['_content'].value() is None,
+                       descr=_("Create the content by translating another "
+                               "language variant")),
                 )
 
     def _variants(self, record):
@@ -723,7 +732,10 @@ class Attachments(StoredFileModule):
                     return f and ffunc(f) or None
                 return pp.Computer(func, depends=('file',))
             return (
-            Field('page_attachment_id'),
+            Field('page_attachment_id', computer=\
+                  Computer(lambda r: '%d.%s' % (r['attachment_id'].value(),
+                                                r['lang'].value()),
+                           depends=('attachment_id', 'lang'))),
             Field('attachment_id'),
             Field('identifier', _("Page")),
             Field('mapping_id', _("Page"), width=5, codebook='Mapping',
@@ -743,13 +755,13 @@ class Attachments(StoredFileModule):
                   computer=fcomp(lambda f: f.filename())),
             Field('mime_type', _("Mime-type"), width=22,
                   computer=fcomp(lambda f: f.type())),
-            Field('title', _("Title"), width=30,
+            Field('title', _("Title"), width=30, maxlen=64,
                   descr=_("The name of the attachment (e.g. the full name of "
                           "the document). If empty, the file name will be "
                           "used instead.")),
             Field('description', _("Description"), width=60, height=3,
                   descr=_("Optional description used for the listing of "
-                          "attachments (see below).")),
+                          "attachments (see below)."), maxlen=240),
             Field('ext', virtual=True,
                   computer=Computer(self._ext, ('filename',))),
             Field('bytesize', _("Byte size"),
@@ -768,6 +780,8 @@ class Attachments(StoredFileModule):
         columns = ('filename', 'title', 'bytesize', 'mime_type', 'identifier')
         sorting = (('identifier', ASC), ('filename', ASC))
         def _ext(self, row):
+            if row['filename'].value() is None:
+                return ''
             ext = os.path.splitext(row['filename'].value())[1].lower()
             return len(ext) > 1 and ext[1:] or ext
     class Attachment(lcg.Resource):
@@ -790,7 +804,8 @@ class Attachments(StoredFileModule):
             
     _STORED_FIELDS = (('file', '_filename'),)
     _LIST_BY_LANGUAGE = True
-        
+    _SEQUENCE_FIELDS = (('attachment_id', '_attachments_attachment_id_seq'),)
+    
     def _link_provider(self, req, row, cid, **kwargs):
         if cid == 'file':
             cid = 'filename'
@@ -799,12 +814,19 @@ class Attachments(StoredFileModule):
             return '/_wmi/Pages/' + row['page_id'].value()
         return super(Attachments, self)._link_provider(req, row, cid, **kwargs)
 
-#     def _redirect_after_insert(self, req, record):
-#     def _redirect_after_update(self, req, record):
-#     def _redirect_after_delete(self, req, record):
-#         m = self._module('Pages')
-#         record = m.record(record['page_id'])
-#         return m.action_show(req, record, msg=self._INSERT_MSG)
+    def _redirect_to_page(self, req, record):
+        req.set_header('Location', '/_wmi/Pages/' + record['page_id'].value())
+        req.set_status(302)
+        return ('text/html', '')
+        #m = self._module('Pages')
+        #record = m.record(record['page_id'])
+        #return m.action_show(req, record, msg=self._UPDATE_MSG)
+    def _redirect_after_insert(self, req, record):
+        return self._redirect_to_page(req, record)
+    def _redirect_after_delete(self, req, record):
+        return self._redirect_to_page(req, record)
+    def _redirect_after_update(self, req, record):
+        return self._redirect_to_page(req, record)
 
     def _resolve(self, req):
         if len(req.path) == 2:
