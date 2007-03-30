@@ -148,7 +148,6 @@ class WikingRequest(Request):
     _SESSION_COOKIE = 'wiking_session_key'
     _MAX_SESSION_KEY = 0xfffffffffffffffffffffffffffff
 
-
     def _init_params(self):
         params = super(WikingRequest, self)._init_params()
         if params.has_key('setlang'):
@@ -264,12 +263,28 @@ class WikingRequest(Request):
         return self._login and self._login[0] or \
                self.cookie(self._LOGIN_COOKIE)
 
-    def user(self):
+    def user(self, raise_error=False):
+        """Return the record describing the logged-in user.
+
+        Arguments:
+
+          raise_error -- if true and no user is logged, AuthenticationError
+            will be raised.  If false, None is returned.
+
+        This method must be called after a previous call to 'login()' which
+        must supply a module providing the authentication information.  The
+        returned record is the user record obtained from this module.
+
+        """
         try:
             user = self._user
         except AttributeError:
             self._perform_login()
             user = self._user
+        if raise_error and user is None:
+            msg = self._session_timed_out and \
+                  _("Session expired. Please log in again.") or None
+            raise AuthenticationError(msg)
         return user
     
     def login(self, users):
@@ -278,6 +293,7 @@ class WikingRequest(Request):
         
     def _perform_login(self):
         self._user = None
+        self._session_timed_out = False
         if self._login:
             login, password = self._login
             if not login:
@@ -298,10 +314,11 @@ class WikingRequest(Request):
             login, key = (self.cookie(self._LOGIN_COOKIE), 
                           self.cookie(self._SESSION_COOKIE))
             if login and key:
-                user = self._users.check_session(login, key)
-                if user:
+                self._user = self._users.check_session(login, key)
+                if self._user:
                     self.set_cookie(self._SESSION_COOKIE, key, expires=3600)
-                    self._user = user
+                else:
+                    self._session_timed_out = True
         if self.param('command') == 'logout' and self._user:
             self._users.close_session(self._user)
             self._user = None
