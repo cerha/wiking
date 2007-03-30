@@ -308,6 +308,7 @@ class ActionMenu(lcg.Content):
         self._args = args or {}
 
     def _export_item(self, action, g):
+        title = action.descr()
         enabled = action.enabled()
         if callable(enabled):
             enabled = enabled(self._row)
@@ -328,7 +329,8 @@ class ActionMenu(lcg.Content):
         else:
             target = None
             cls = 'inactive'
-        return g.link(action.title(), target, cls=cls, title=action.descr())
+            title += " (" + _("not available") + ")"
+        return g.link(action.title(), target, title=title, cls=cls)
         
     def export(self, exporter):
         g = exporter.generator()
