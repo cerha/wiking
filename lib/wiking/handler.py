@@ -151,7 +151,8 @@ class SiteHandler(object):
             if not isinstance(result, Document):
                 content_type, data = result
                 return req.result(data, content_type=content_type)
-            user = req.user() # Do here to handle authentication exceptions.
+            # Perform authentication here to handle authentication exceptions.
+            user = req.user()
         except RequestError, e:
             if isinstance(e, HttpError):
                 req.set_status(e.ERROR_CODE)
