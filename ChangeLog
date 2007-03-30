@@ -1,4 +1,32 @@
+2007-03-30  Tomas Cerha  <cerha@brailcom.org>
+
+	* translations/wiking.cs.po: Updated.
+
+	* sql/wiking.sql: Removed rowlocks and oids.  Fixed rules for
+	`attachments'.  Added `published' into `pages'.
+
+	* lib/wiking/modules.py: Allow publishing/unpublishing pages
+	directly.  Added action descriptions.  Support pytis returning the
+	inserted row in the Attachments module.  Redirect after attachment
+	operations.
+
+	* lib/wiking/module.py: Added action descriptions.  Implemented
+	sequence value generation before insert to support pytis returning
+	the inserted row.
+
+	* lib/wiking/util.py (ActionMenu): Show action description as link
+	title.
+	(Roles.check): Don't raise the error here, leave it up to
+	`Request.user()'.
+	
+
+	* lib/wiking/request.py (Request.set_header): New method.
+	(WikingRequest.user): New argument `raise_error'.  Announce
+	session timeout.
+
 2007-03-29  Tomas Cerha  <cerha@brailcom.org>
+
+	* translations/wiking.cs.po: Updated.
 
 	* lib/wiking/modules.py: Added many field descriptions.
 	(Mapping.menu): Expect the request as first argument.
