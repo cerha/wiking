@@ -1,3 +1,17 @@
+2007-04-02  Tomas Cerha  <cerha@brailcom.org>
+
+	* resources/css/default.css: Minor improvement.
+
+	* lib/wiking/util.py (Roles.check): Allow privileg checking
+	without raising an error.
+
+	* lib/wiking/modules.py: Added short module descriptions.  Use
+	roles and custom actions in the modules `Users' and `Rights'.
+
+	* lib/wiking/module.py: Implemented the `OWNER' role authorization
+	check.  Show only authorized actions in the action menu.  Show
+	actions also outside WMI.  Allow easier action menu redefinition.
+
 2007-03-30  Tomas Cerha  <cerha@brailcom.org>
 
 	* translations/wiking.cs.po: Updated.
