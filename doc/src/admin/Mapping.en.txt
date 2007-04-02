@@ -13,15 +13,20 @@ requests to this URI.
 See the documentation of particular modules to learn more how they handle
 requests and how to manage the content.
 
+
 == Main menu management ==
 
-You can also manage the main navigation of the site here.  In the field
-/Menu order/, you simply assign a number to each item you want to appear in
-the main menu.  The items will appear in the navigation bar according to
-given order.  The items which have no number assigned will not appear in
-the menu, but they can be still referenced using their identifier.  You
-will probably want to link to those items from other pages to make them
-visible to website users.
+Main menu is one of the most important navigation elements of the page (see
+[navigation] for more details).
+
+The menu can be managed simply by assigning a number in the field /Menu order/,
+to each item you want to appear in the main menu.  The items will appear in the
+navigation bar according to given order.  
+
+The items which have no number assigned will not appear in the menu, but they
+can be still refered to using their identifier.  You will probably want to link
+to those items from other pages to make them visible to website users.
+
 
 == Published/Unpublished items ==
 

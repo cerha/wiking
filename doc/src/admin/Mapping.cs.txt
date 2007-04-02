@@ -19,9 +19,8 @@ slouží a jakým způsobem spravovat jeho obsah.
 
 == Správa hlavní nabídky ==
 
-Hlavní nabídka je jedním z nejdůležitějších navigačních prvků stránky.  V
-základním zobrazení je to vodorovná lišta záložek v horní části stránky,
-ale její vzhled a umístění mohou být přizpůsobeny pomocí stylů.
+Hlavní nabídka je jedním z nejdůležitějších navigačních prvků stránky (viz
+[navigation navigace]).
 
 Podobu hlavní nabídky ovlivníte jednoduše tím, že položkám, které v ní
 chcete zobrazit přiřadíte celé číslo v kolonce /Pořadí v menu/.  Tyto
@@ -31,6 +30,7 @@ pořadovým číslem.
 Položky, které nemají toto číslo vyplněno, nebudou v nabídce zobrazeny, ale
 může na ně být vytvořen odkaz pomocí jejich identifikátoru (například v
 textu jiné stránky).
+
 
 == Publikované/nepublikované položky ==
 
