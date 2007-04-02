@@ -1248,6 +1248,7 @@ class Rights(Users):
         help = _("Manage access rights of registered users.")
         layout = ('enabled', 'contributor', 'author', 'admin')
         columns = ('user', 'login', 'enabled', 'contributor', 'author','admin')
+    _ALLOW_TABLE_LAYOUT_IN_FORMS = True
     _RIGHTS_add = _RIGHTS_insert = ()
     _RIGHTS_edit = _RIGHTS_update = Roles.ADMIN
     _RIGHTS_remove = ()
