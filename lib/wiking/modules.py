@@ -75,6 +75,8 @@ class Mapping(WikingModule, Publishable):
     """
     class Spec(pp.Specification):
         title = _("Mapping")
+        help = _("Manage available URIs and Wiking modules which handle them. "
+                 "Also manage the main menu.")
         fields = (
             Field('mapping_id', width=5, editable=NEVER),
             #Field('parent', _("Parent"), codebook='Mapping'),
@@ -265,6 +267,7 @@ class Modules(WikingModule):
                        not issubclass(globals()[value], WikingModule):
                     raise self._validation_error(self.VM_UNKNOWN_MODULE)
         title = _("Modules")
+        help = _("Manage available Wiking modules.")
         fields = (
             Field('mod_id'),
             Field('name', _("Name"), type=_ModNameType(not_null=True)),
@@ -300,6 +303,7 @@ class Config(WikingModule):
     """
     class Spec(pp.Specification):
         title = _("Config")
+        help = _("Edit site configuration.")
         fields = (
             Field('config_id', ),
             Field('title', virtual=True,
@@ -369,6 +373,8 @@ class Config(WikingModule):
 class Panels(WikingModule, Publishable):
     class Spec(pp.Specification):
         title = _("Panels")
+        help = _("Manage panels - the small windows shown by the side of "
+                 "every page.")
         fields = (
             Field('panel_id', width=5, editable=NEVER),
             Field('lang', _("Language"), codebook='Languages', editable=ONCE,
@@ -426,6 +432,7 @@ class Languages(WikingModule):
     """
     class Spec(pp.Specification):
         title = _("Languages")
+        help = _("Manage available languages.")
         fields = (
             Field('lang_id'),
             Field('lang', _("Code"), width=2, column_width=6,
@@ -448,6 +455,7 @@ class Titles(WikingModule):
     """Provide localized titles for 'Mapping' items."""
     class Spec(pp.Specification):
         title = _("Titles")
+        help = _("Manage menu titles of available mapping items (temporary).")
         fields = (
             Field('title_id'),
             Field('mapping_id', _("Identifier"), width=5, codebook='Mapping',
@@ -531,6 +539,8 @@ class Themes(WikingModule):
 
     class Spec(pp.Specification):
         title = _("Themes")
+        help = _("Manage available color themes. Go to Configuration to "
+                 "change the currently used theme.")
         def fields(self):
             return (
                 Field('theme_id'),
@@ -560,6 +570,7 @@ class Themes(WikingModule):
 class Pages(WikingModule, Publishable):
     class Spec(pp.Specification):
         title = _("Pages")
+        help = _("Manage available pages of structured text content.")
         def fields(self): return (
             Field('page_id'),
             Field('mapping_id'),
@@ -657,6 +668,9 @@ class Pages(WikingModule, Publishable):
                                          for r in variants])
         raise NotFound()
 
+    #def _redirect_after_insert(self, req, record):
+        #if not req.wmi:
+        #    return self.action_view(req, record, msg=self._INSERT_MSG)
 
     def action_view(self, req, record, err=None, msg=None, preview=False):
         if req.wmi and preview:
@@ -725,6 +739,8 @@ class Pages(WikingModule, Publishable):
 class Attachments(StoredFileModule):
     class Spec(StoredFileModule.Spec):
         title = _("Attachments")
+        help = _("Manage page attachments. Go to a page to create new "
+                 "attachments.")
         def fields(self):
             def fcomp(ffunc):
                 def func(row):
@@ -854,6 +870,7 @@ class Attachments(StoredFileModule):
 class News(WikingModule):
     class Spec(pp.Specification):
         title = _("News")
+        help = _("Publish site news.")
         def fields(self): return (
             Field('news_id', editable=NEVER),
             Field('timestamp', _("Date"), width=19,
@@ -903,6 +920,7 @@ class News(WikingModule):
 class Planner(News):
     class Spec(pp.Specification):
         title = _("Planner")
+        help = _("Announce future events by date in a callendar-like listing.")
         def fields(self): return (
             Field('planner_id', editable=NEVER),
             Field('start_date', _("Date"), width=10,
@@ -958,6 +976,7 @@ class Planner(News):
 class Images(StoredFileModule):
     class Spec(StoredFileModule.Spec):
         title = _("Images")
+        help = _("Publish images.")
         def fields(self):
             def fcomp(ffunc):
                 def func(row):
@@ -1067,6 +1086,7 @@ class Images(StoredFileModule):
 class Stylesheets(WikingModule):
     class Spec(pp.Specification):
         title = _("Styles")
+        help = _("Manage available Cascading Stylesheets.")
         fields = (
             Field('stylesheet_id'),
             Field('identifier',  _("Identifier"), width=16),
@@ -1112,9 +1132,10 @@ class Stylesheets(WikingModule):
 
 
 class Users(WikingModule):
-    _RIGHTS_add = _RIGHTS_insert = Roles.ANYONE
     class Spec(pp.Specification):
         title = _("Users")
+        help = _('Manage registered users.  Use the module "Access Rights" '
+                 'to change their privileges.')
         def _fullname(self, row):
             name = row['firstname'].value()
             surname = row['surname'].value()
@@ -1164,7 +1185,8 @@ class Users(WikingModule):
             Field('session_key'),
             Field('session_expire'),
             )
-        columns = ('user', 'nickname', 'email', 'since')
+        columns = ('fullname', 'nickname', 'email', 'since')
+        sorting = (('surname', ASC), ('firstname', ASC))
         layout = (FieldSet(_("Login information"), ('login', 'password')),
                   FieldSet(_("Personal data"),
                            ('firstname', 'surname', 'nickname')),
@@ -1173,7 +1195,27 @@ class Users(WikingModule):
     _REFERER = 'login'
     _PANEL_FIELDS = ('fullname',)
     _ALLOW_TABLE_LAYOUT_IN_FORMS = False
+    _OWNER_COLUMN = 'uid'
+    _RIGHTS_add = _RIGHTS_insert = Roles.ANYONE
+    _RIGHTS_edit = _RIGHTS_update = (Roles.ADMIN, Roles.OWNER)
+    _RIGHTS_remove = _RIGHTS_delete = Roles.ADMIN #, Roles.OWNER)
 
+    def _actions(self, req, record):
+        if not req.wmi:
+            if record:
+                return (Action(_("Edit your profile"), 'edit',
+                               descr=_("Modify your record")),
+                        #Action(_("Drop registration"), 'remove',
+                        #       descr=_("Remove your record permanently")),
+                        #)
+                        Action(_("Remove"), 'remove',
+                               descr=_("Remove the user permanently")),
+                        )
+            else:
+                return (Action(_("Register"), 'add', context=None,
+                               descr=_("New user registration")),)
+        return super(Users, self)._actions(req, record)
+        
     def user(self, login):
         return self._record(self._data.get_row(login=login))
 
@@ -1201,11 +1243,14 @@ class Users(WikingModule):
         
         
 class Rights(Users):
-    _RIGHTS_add = _RIGHTS_insert = ()
     class Spec(Users.Spec):
         title = _("Access Rights")
+        help = _("Manage access rights of registered users.")
         layout = ('enabled', 'contributor', 'author', 'admin')
         columns = ('user', 'login', 'enabled', 'contributor', 'author','admin')
+    _RIGHTS_add = _RIGHTS_insert = ()
+    _RIGHTS_edit = _RIGHTS_update = Roles.ADMIN
+    _RIGHTS_remove = ()
 
         
                         
