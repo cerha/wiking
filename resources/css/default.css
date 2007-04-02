@@ -239,7 +239,8 @@ form.show-form label, form.edit-form label {
     font-weight: bold;
 }
 form.show-form td.label, form.edit-form td.label { 
-    padding: 0.15em 0.3em 0.15em 0;
+    padding-right: 0.3em;
+    line-height: 1.4em;
 }
 fieldset.body div.field { 
     margin: 0.2em 0;
