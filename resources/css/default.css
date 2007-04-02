@@ -203,6 +203,7 @@ div.item span.panel-field-date {
 
 table.browse-form {
     border-collapse: collapse;
+    margin-top: .3em;
 }
 table.browse-form td, table.browse-form th {
     padding: 2pt;
