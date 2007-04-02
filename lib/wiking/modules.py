@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Copyright (C) 2006, 2007 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
@@ -37,16 +38,24 @@ now = lambda: mx.DateTime.now().gmtime()
 
 _ = lcg.TranslatableTextFactory('wiking')
 
+def _modspec(m):
+    """Return module specification by module name."""
+    try:
+        cls = get_module(m)
+    except:
+        return None
+    else:
+        return cls.Spec
+
 def _modtitle(m):
     """Return a localizable module title by module name."""
     if m is None:
         return ''
-    try:
-        cls = get_module(m)
-    except:
-        return concat(m,' (',_("unknown"),')')
+    spec = _modspec(m)
+    if spec:
+        return spec.title
     else:
-        return cls.Spec.title
+        return concat(m,' (',_("unknown"),')')
 
 # This constant lists names of modules which don't handle requests directly and
 # thus should not appear in the module selection for the Mapping items.
@@ -291,7 +300,8 @@ class Modules(WikingModule):
                 modules.append(m)
         if 'Mapping' not in modules:
             modules.insert(0, 'Mapping')
-        return [MenuItem(prefix+'/'+m, _modtitle(m)) for m in modules]
+        return [MenuItem(prefix+'/'+m, spec.title, descr=spec.help)
+                for m, spec in [(m, _modspec(m)) for m in modules] if spec]
 
 
 class Config(WikingModule):
@@ -373,31 +383,46 @@ class Config(WikingModule):
 class Panels(WikingModule, Publishable):
     class Spec(pp.Specification):
         title = _("Panels")
-        help = _("Manage panels - the small windows shown by the side of "
+        help = _(u"Manage panels – the small windows shown by the side of "
                  "every page.")
         fields = (
             Field('panel_id', width=5, editable=NEVER),
             Field('lang', _("Language"), codebook='Languages', editable=ONCE,
                   selection_type=CHOICE, value_column='lang'),
-            Field('ptitle', _("Title"), width=30),
+            Field('ptitle', _("Title"), width=30,
+                  descr=_(u"Panel title – you may leave the field blank to "
+                          "use the menu title of the selected module.")),
             Field('mtitle'),
             Field('title', _("Title"), virtual=True, width=30,
                   computer=Computer(lambda row: row['ptitle'].value() or \
                                     row['mtitle'].value() or \
                                     _modtitle(row['modname'].value()),
                                     depends=('ptitle', 'mtitle', 'modname',))),
-            Field('ord', _("Order"), width=5),
-            Field('mapping_id', _("Overview"), width=5, codebook='Mapping',
-                  selection_type=CHOICE, not_null=False),
+            Field('ord', _("Order"), width=5,
+                  descr=_("Number denoting the order of the panel on the "
+                          "page.")),
+            Field('mapping_id', _("Module"), width=5, codebook='Mapping',
+                  selection_type=CHOICE, not_null=False, 
+                  display=(_modtitle, 'modname'), validity_condition=\
+                  pd.AND(*[pd.NE('modname', pd.Value(pd.String(),_m))
+                           for _m in _SYSMODULES+('Pages',)]),
+                  descr=_("The items of the selected module will be shown by "
+                          "the panel.  Leave blank for a text content "
+                          "panel.")),
             Field('identifier', editable=NEVER),
             Field('modname'),
             Field('modtitle', _("Module"), virtual=True,
                   computer=Computer(lambda r: _modtitle(r['modname'].value()),
                                     depends=('modname',))),
-            Field('size', _("Items count"), width=5),
+            Field('size', _("Items count"), width=5,
+                  descr=_("Number of items from the selected module, which "
+                          "will be shown by the panel.")),
             Field('content', _("Content"), width=50, height=10,
-                  descr=_STRUCTURED_TEXT_DESCR),
-            Field('published', _("Published"), default=True),
+                  descr=_("Additional text content displayed on the panel.")+\
+                  ' '+_STRUCTURED_TEXT_DESCR),
+            Field('published', _("Published"), default=True,
+                  descr=_("Controls whether the panel is actually displayed."),
+                  ),
             )
         sorting = (('ord', ASC),)
         columns = ('title', 'ord', 'modtitle', 'size', 'published')
