@@ -150,12 +150,14 @@ class Roles(object):
     """A user who has the admin privileges."""
     OWNER = 'OWNER'
     """The owner of the item being operated."""
-    def check(cls, req, roles, owner_uid=None):
+    def check(cls, req, roles, owner_uid=None, raise_error=True):
         def check(req, role, owner_uid=None):
             if role == cls.ANYONE:
                 return True
             # We don't want to perform authentication until here!
-            user = req.user(raise_error=True)
+            user = req.user(raise_error=raise_error)
+            if user is None:
+                return False
             if not user['enabled'].value():
                 return False
             if role == cls.USER:
@@ -177,7 +179,10 @@ class Roles(object):
         for role in roles:
             if check(req, role, owner_uid=owner_uid):
                 return True
-        raise AuthorizationError()
+        if raise_error:
+            raise AuthorizationError()
+        else:
+            return False
     check = classmethod(check)
         
 class FileUpload(object):
@@ -494,7 +499,7 @@ class FieldSet(pp.GroupSpec):
         
 class Action(pytis.presentation.Action):
     def __init__(self, title, name, handler=None, **kwargs):
-        # name determines the Wiking's method (and the 'action' argument.
+        # name determines the Wiking's action method.
         self._name = name
         if not handler:
             handler = lambda r: None
@@ -502,7 +507,7 @@ class Action(pytis.presentation.Action):
         
     def name(self):
         return self._name
-
+    
 
 class Data(pd.DBDataDefault):
 
