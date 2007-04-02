@@ -70,7 +70,7 @@ class Exporter(lcg.HtmlExporter):
     def _menu(self, node):
         g = self._generator
         links = [g.link(item.title() + (cur and self._hidden(' *') or ''),
-                        self._node_uri(item),
+                        self._node_uri(item), title=item.descr(),
                         hotkey=(item.id() == 'index' and "1" or None),
                         cls=("navigation-link"+(cur and " current" or "")))
                  for item, cur in [(item, self._is_current(node, item))
