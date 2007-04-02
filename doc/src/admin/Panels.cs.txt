@@ -7,14 +7,11 @@ Narozdíl od ostatního obsahu jsou panely zobrazovány na každé stránce vedl
 jejího hlavního obsahu.  Hlavní obsah se při procházení mezi různými částmi
 portálu mění, ale panely zůstávají stále na svých místech.
 
-Na každém panelu může být libovolný textový obsah, ale kromě toho mají
-panely jednu velice praktickou vlastnost -- mohou zobrazit seznam
-nejnovějších položek z určité sekce portálu (například seznam posledních
-novinek, čánků apod).  Dosáhnete toho jednoduše tak, že v políčku
-„Přehled“ vyberete určitou položku z tabulky mapování a na panelu bude
-automaticky zobrazen výpis posledních položek odpovídajícího modulu.
-Můžete také zvolit kolik položek má být zobrazeno volbou v políčku „Počet
-položek“.
+Na každém panelu může být libovolný textový obsah, ale kromě toho mají panely
+jednu velice praktickou vlastnost – mohou zobrazit seznam položek některého
+jiného modulu.  Například pro modul [News Novinky] bude zobrazen výpis
+posledních zpráv.  Můžete také zvolit kolik položek má být zobrazeno.  Výběr
+modulů obahuje pouze ty moduly, pro něž existuje položka v [Mapping mapování].
 
 Množiny panelů pro jednotlivé jazykové verze portálu jsou zcela nezávislé.
 Můžete tak mít jiné seskupení panelů pro každý jazyk.  Tabulka zobrazuje
