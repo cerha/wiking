@@ -139,7 +139,7 @@ class PytisModule(Module, ActionHandler):
     _RIGHTS_edit   = _RIGHTS_update = Roles.ADMIN
     _RIGHTS_remove = _RIGHTS_delete = Roles.ADMIN
     
-    _OWNER = None
+    _OWNER_COLUMN = None
 
     _ALLOW_TABLE_LAYOUT_IN_FORMS = True
     
@@ -325,17 +325,26 @@ class PytisModule(Module, ActionHandler):
             title = lcg.concat(title, ' :: ', subtitle)
         return Document(title, content, lang=lang, variants=variants, **kwargs)
 
-    def _actions(self, req, record=None, actions=None, args=None, uri=None):
-        if not req.wmi:
-            return None
+    def _actions(self, req, record):
+        if record is not None:
+            return self._DEFAULT_ACTIONS_FIRST + \
+                   self._view.actions() + \
+                   self._DEFAULT_ACTIONS_LAST
+        else:
+            return self._LIST_ACTIONS
+    
+    def _action_menu(self, req, record=None, actions=None, args=None,
+                     uri=None):
+        #if not req.wmi:
+        #    return None
+        actions = [action for action in actions or self._actions(req, record)
+                   if (req.wmi or not action.wmi_only()) and \
+                   self._check_action_rights(req, action.name(), record,
+                                             raise_error=False)]
         if not actions:
-            if record is not None:
-                actions = self._DEFAULT_ACTIONS_FIRST + \
-                          self._view.actions() + \
-                          self._DEFAULT_ACTIONS_LAST
-            else:
-                actions = self._LIST_ACTIONS
-        return ActionMenu(actions, record, args=args, uri=uri)
+            return None
+        else:
+            return ActionMenu(actions, record, args=args, uri=uri)
 
     def _link_provider(self, req, row, cid, target=None, **kwargs):
         if cid == self._title_column or cid == self._key:
@@ -416,13 +425,20 @@ class PytisModule(Module, ActionHandler):
         else:
             raise NotFound()
 
-    def _action(self, req, action, **kwargs):
+    def _check_action_rights(self, req, action, record, raise_error=True):
         roles = getattr(self, '_RIGHTS_'+action)
         if not isinstance(roles, (tuple, list)):
             roles = (roles,)
-        #if Roles.OWNER in roles and self._OWNER is not None \
-        #       and :
-        Roles.check(req, roles)
+        if Roles.OWNER in roles and self._OWNER_COLUMN and record is not None:
+            owner_uid = record[self._OWNER_COLUMN].value()
+        else:
+            owner_uid = None
+        log(OPR, ":::", (owner_uid, self, action, record, roles))
+        return Roles.check(req, roles, owner_uid=owner_uid, raise_error=raise_error)
+    
+        
+    def _action(self, req, action, **kwargs):
+        self._check_action_rights(req, action, kwargs.get('record'))
         return super(PytisModule, self)._action(req, action, **kwargs)
     
     def _lang(self, record):
@@ -513,7 +529,7 @@ class PytisModule(Module, ActionHandler):
         content = (
             self._form(ListView, req, self._rows(**args), custom_spec=\
                        (not req.wmi and self._CUSTOM_VIEW or None)),
-            self._actions(req, args=args, uri='/_wmi/' + self.name()))
+            self._action_menu(req, args=args, uri='/_wmi/' + self.name()))
         #lang = req.prefered_language(self._module('Languages').languages())
         #title = self._real_title(lang)
         return lcg.Section(title=self._view.title(), content=content)
@@ -522,25 +538,31 @@ class PytisModule(Module, ActionHandler):
     
     def action_list(self, req, err=None, msg=None):
         lang, variants, rows = self._list(req)
-        content = [self._form(ListView, req, rows, custom_spec=\
-                              (not req.wmi and self._CUSTOM_VIEW or None))]
-        if req.wmi:
-            content.extend((self._actions(req),
-                            lcg.link('/_doc/'+self.name(), _("Help"))))
-        elif self._RSS_TITLE_COLUMN:
+        content = req.wmi and \
+                  (lcg.p(self._view.help() or '', ' ',
+                         lcg.link('/_doc/'+self.name(), _("Help"))),) or ()
+        content += (self._form(ListView, req, rows, custom_spec=\
+                               (not req.wmi and self._CUSTOM_VIEW or None)),
+                    self._action_menu(req))
+        if not req.wmi and self._RSS_TITLE_COLUMN:
             # TODO: This belongs to RssModule.
-            content.append(lcg.p(
+            content += (lcg.p(
                 _("An RSS channel is available for this section:"), ' ',
                 lcg.link(req.uri +'.'+ lang +'.rss',
                          self._real_title(lang) + ' RSS',
                          type='application/rss+xml'), " (",
-                lcg.link('_doc/rss?display=inline', _("more about RSS")), ")"))
+                lcg.link('_doc/rss?display=inline',
+                         _("more about RSS")), ")"),)
         return self._document(req, content, lang=lang, variants=variants,
                               err=err, msg=msg)
 
-    def action_show(self, req, record, err=None, msg=None):
-        form = self._form(pw.ShowForm, req, record.row())
-        content = [form, self._actions(req, record)]
+    def action_show(self, req, record, err=None, msg=None, custom=False):
+        if not custom:
+            form = self._form(pw.ShowForm, req, record.row())
+        else:
+            form = self._form(RecordView, req, record.row(),
+                              custom_spec=self._CUSTOM_VIEW)
+        content = [form, self._action_menu(req, record)]
         for modname in self._RELATED_MODULES:
             module, binding = self._module(modname), self._bindings[modname]
             content.append(module.related(req, binding, self.name(), record))
@@ -549,9 +571,7 @@ class PytisModule(Module, ActionHandler):
     def action_view(self, req, record, err=None, msg=None):
         # `show()' always uses ShowForm, while `view()' may be overriden
         # by the module (using _CUSTOM_VIEW).
-        form = self._form(RecordView, req, record.row(),
-                          custom_spec=self._CUSTOM_VIEW)
-        return self._document(req, form, record, err=err, msg=msg)
+        return self.action_show(req, record, err=err, msg=msg, custom=True)
     
     def action_add(self, req, errors=()):
         form = self._form(pw.EditForm, req, None, handler=req.uri, new=True,
@@ -567,7 +587,8 @@ class PytisModule(Module, ActionHandler):
 
     def action_remove(self, req, record, err=None):
         form = self._form(pw.ShowForm, req, record.row())
-        actions = self._actions(req, record, (Action(_("Remove"), 'delete'),))
+        actions = self._action_menu(req, record,
+                                    (Action(_("Remove"), 'delete'),))
         msg = _("Please, confirm removing the record permanently.")
         return self._document(req, (form, actions), record,
                               err=err, subtitle=_("removing"), msg=msg)
@@ -613,10 +634,7 @@ class PytisModule(Module, ActionHandler):
         return action(req, record, msg=self._UPDATE_MSG)
         
     def _redirect_after_insert(self, req, record):
-        if req.wmi:
-            return self.action_list(req, msg=self._INSERT_MSG)
-        else:
-            return self.action_view(req, record, msg=self._INSERT_MSG)
+        return self.action_list(req, msg=self._INSERT_MSG)
         
     def _redirect_after_delete(self, req, record):
         return self.action_list(req, msg=self._DELETE_MSG)
