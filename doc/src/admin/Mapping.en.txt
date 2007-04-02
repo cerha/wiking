@@ -29,9 +29,3 @@ Mapping items, as well as many other content elements, can be
 published/unpublished.  An unpublished item exists in the database, so the
 author can work on it, but it is not publicly visible to the website users.
 
-Publishing a Mapping item makes the URI available on the server, however
-you also need to publish some content for this URI.  This must be done in
-the corresponding module.  On the other hand, by unpublishing an item here,
-all content becomes unavailable, even though this content may be published.
-This way you can for example unpublish all language variants of one page at
-one place.
