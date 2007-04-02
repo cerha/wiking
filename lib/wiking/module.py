@@ -338,9 +338,8 @@ class PytisModule(Module, ActionHandler):
         #if not req.wmi:
         #    return None
         actions = [action for action in actions or self._actions(req, record)
-                   if (req.wmi or not action.wmi_only()) and \
-                   self._check_action_rights(req, action.name(), record,
-                                             raise_error=False)]
+                   if self._check_action_rights(req, action.name(), record,
+                                                raise_error=False)]
         if not actions:
             return None
         else:
