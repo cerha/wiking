@@ -22,6 +22,8 @@ Core features:
 
  * META tags pointing to language variants
 
+ * Reencoding HTML attachments?
+
  * Print preview
 
  * Support multithreaded Apache MPM (currently broken)
