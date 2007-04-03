@@ -205,6 +205,7 @@ div.item span.panel-field-date {
 
 table.browse-form {
     border-collapse: collapse;
+    border: 1px solid $color.border;
     margin-top: .3em;
 }
 table.browse-form td, table.browse-form th {
