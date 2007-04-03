@@ -144,15 +144,22 @@ class SiteHandler(object):
         req.path = req.path or ('index',)
         req.wmi = False # Will be set to True by `WikingManagementInterface'.
         modname = None
+        user = None
         try:
-            req.login(self._users)
-            modname = self._mapping.modname(req.path[0])
-            result = self._module(modname).handle(req)
-            if not isinstance(result, Document):
-                content_type, data = result
-                return req.result(data, content_type=content_type)
-            # Perform authentication here to handle authentication exceptions.
-            user = req.user()
+            try:
+                req.login(self._users)
+                modname = self._mapping.modname(req.path[0])
+                result = self._module(modname).handle(req)
+                if not isinstance(result, Document):
+                    content_type, data = result
+                    return req.result(data, content_type=content_type)
+            # Always perform authentication at the end (if it was not
+            # performed before) to handle authentication exceptions.
+            except:
+                user = req.user()
+                raise
+            else:
+                user = req.user()
         except RequestError, e:
             if isinstance(e, HttpError):
                 req.set_status(e.ERROR_CODE)
@@ -175,7 +182,7 @@ class SiteHandler(object):
         config.wmi = req.wmi
         config.doc = doc
         config.modname = modname
-        config.user = req.user()
+        config.user = user
         config.register = self._users.registration_uri(req, config)
         styles = [s for s in self._stylesheets.stylesheets()
                   if s.file() != 'panels.css' or req.show_panels() and panels]
