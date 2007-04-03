@@ -67,6 +67,7 @@ _STRUCTURED_TEXT_DESCR = _("The content should be formatted as LCG "
                            manual=('<a target="_new" href="/_doc/lcg/'
                                    'data-formats/structured-text">' + \
                                    _("formatting manual") + "</a>"))
+
 class Mapping(WikingModule, Publishable):
     """Mapping available URIs to the modules which handle them.
 
@@ -535,31 +536,33 @@ class Themes(WikingModule):
         Color('heading-bg', '#d8e0f0'),
         Color('heading-line', '#ccc', inherit='frame-border'),
         Color('frame-fg', inherit='foreground'),
-        Color('frame-bg', '#eee'),
+        Color('frame-bg', '#eee', inherit='background'),
         Color('frame-border', '#ddd', inherit='border'),
         Color('link', '#03b'),
         Color('link-visited', inherit='link'),
         Color('link-hover', '#d60'),
-        Color('table-cell', '#f8fafb', inherit='background'),
-        Color('table-cell2', '#eaeaff', inherit='table-cell'),
-        Color('top-fg', inherit='foreground'),
-        Color('top-bg', '#efebe7', inherit='background'),
-        Color('top-border', '#9ab', inherit='border'),
-        Color('highlight-bg', '#fc8', inherit='heading-bg'), # cur. lang. bg.
-        Color('inactive-folder', '#d2d8e0'),
-        Color('button-fg', inherit='foreground'),
-        Color('button', inherit='heading-bg'),
-        Color('button-border', '#9af', inherit='border'),
-        Color('button-inactive-fg', '#555', inherit='button-fg'),
-        Color('button-inactive', '#ccc', inherit='button'),
-        Color('button-inactive-border', '#999', inherit='button-border'),
-        Color('help', '#666', inherit='foreground'),
+        Color('meta-fg', '#840', inherit='foreground'),
+        Color('meta-bg', inherit='background'),
+        Color('help', '#444', inherit='foreground'),
         Color('error-fg', inherit='foreground'),
         Color('error-bg', '#fdb'),
         Color('error-border', '#fba', inherit='border'),
         Color('message-fg', inherit='foreground'),
         Color('message-bg', '#cfc'),
         Color('message-border', '#aea', inherit='border'),
+        Color('table-cell', '#f8fafb', inherit='background'),
+        Color('table-cell2', '#eaeaff', inherit='table-cell'),
+        Color('button-fg', inherit='foreground'),
+        Color('button', inherit='heading-bg'),
+        Color('button-border', '#9af', inherit='border'),
+        Color('button-inactive-fg', '#555', inherit='button-fg'),
+        Color('button-inactive', '#ccc', inherit='button'),
+        Color('button-inactive-border', '#999', inherit='button-border'),
+        Color('top-fg', inherit='foreground'),
+        Color('top-bg', '#efebe7', inherit='background'),
+        Color('top-border', '#9ab', inherit='border'),
+        Color('highlight-bg', '#fc8', inherit='heading-bg'), # cur. lang. bg.
+        Color('inactive-folder', '#d2d8e0'),
         )
 
     class Spec(pp.Specification):
@@ -846,6 +849,7 @@ class Attachments(StoredFileModule):
     _STORED_FIELDS = (('file', '_filename'),)
     _LIST_BY_LANGUAGE = True
     _SEQUENCE_FIELDS = (('attachment_id', '_attachments_attachment_id_seq'),)
+    _NON_LAYOUT_FIELDS = ('mapping_id', 'lang')
     
     def _link_provider(self, req, row, cid, **kwargs):
         if cid == 'file':
@@ -912,11 +916,14 @@ class News(WikingModule):
                   _("It is, however, recommened to use the simplest possible "
                     "formatting, since the item may be also published through "
                     "an RSS channel, which does not support formatting.")),
+            Field('author', codebook='Users'),
+            Field('author_', _("Author"), virtual=True,
+                  computer=CbComputer('author', 'user')),
             Field('date_title', virtual=True,
                   computer=Computer(self._date_title,
                                     depends=('date', 'title'))))
         sorting = (('timestamp', DESC),)
-        columns = ('title', 'date')
+        columns = ('title', 'date', 'author_')
         layout = ('lang', 'timestamp', 'title', 'content')
         def _date(self, row):
             return row['timestamp'].export(show_time=False)
@@ -924,12 +931,17 @@ class News(WikingModule):
             return row['date'].export() +': '+ row['title'].value()
         
     _LIST_BY_LANGUAGE = True
+    _OWNER_COLUMN = 'author'
     _PANEL_FIELDS = ('date', 'title')
     _RSS_TITLE_COLUMN = 'title'
     _RSS_DESCR_COLUMN = 'content'
     _RSS_DATE_COLUMN = 'timestamp'
-    _CUSTOM_VIEW = CustomViewSpec(('date_title', 'content'), anchor="item-%s",
-                                  formatted_fields=('content',),
+    _RSS_AUTHOR_COLUMN = 'author_'
+    _RIGHTS_add = _RIGHTS_insert = Roles.CONTRIBUTOR
+    _RIGHTS_edit = _RIGHTS_update = (Roles.ADMIN, Roles.OWNER)
+    _RIGHTS_remove = _RIGHTS_delete = Roles.ADMIN
+    _CUSTOM_VIEW = CustomViewSpec('title', meta=('timestamp', 'author_'),
+                                  content='content', anchor="item-%s",
                                   custom_list=True)
         
     def _link_provider(self, req, row, cid, target=None, **kwargs):
@@ -970,11 +982,14 @@ class Planner(News):
                   _("It is, however, recommened to use the simplest possible "
                     "formatting, since the item may be also published through "
                     "an RSS channel, which does not support formatting.")),
+            Field('author', codebook='Users'),
+            Field('author_', _("Author"), virtual=True,
+                  computer=CbComputer('author', 'user')),
             Field('date_title', virtual=True,
                   computer=Computer(self._date_title,
                                     depends=('date', 'title'))))
         sorting = (('start_date', ASC),)
-        columns = ('title', 'date')
+        columns = ('title', 'date', 'author_')
         layout = ('lang', 'start_date', 'end_date', 'title', 'content')
         def _check_date(self, date):
             if date < today():
@@ -990,6 +1005,8 @@ class Planner(News):
             end = row['end_date'].value()
             if end and end <= row['start_date'].value():
                 return ("end_date", _("End date precedes start date"))
+    _CUSTOM_VIEW = CustomViewSpec('date_title', content='content',
+                                  anchor="item-%s", custom_list=True)
     _RSS_TITLE_COLUMN = 'date_title'
     _RSS_LINK_COLUMN = 'title'
     _RSS_DATE_COLUMN = None
@@ -1191,9 +1208,8 @@ class Users(WikingModule):
             Field('fullname', _("Full Name"), virtual=True, editable=NEVER,
                   computer=Computer(self._fullname,
                                     depends=('firstname','surname','login'))),
-            Field('user', _("User"), virtual=True,
-                  computer=Computer(self._user,
-                                    depends=('fullname', 'nickname'))),
+            Field('user', _("User"), dbcolumn='user_', computer=\
+                  Computer(self._user, depends=('fullname', 'nickname'))),
             Field('firstname', _("First name")),
             Field('surname', _("Surname")),
             Field('nickname', _("Nickname")),
@@ -1212,11 +1228,12 @@ class Users(WikingModule):
             )
         columns = ('fullname', 'nickname', 'email', 'since')
         sorting = (('surname', ASC), ('firstname', ASC))
-        layout = (FieldSet(_("Login information"), ('login', 'password')),
-                  FieldSet(_("Personal data"),
+        layout = (FieldSet(_("Personal data"),
                            ('firstname', 'surname', 'nickname')),
                   FieldSet(_("Contact information"),
-                           ('email', 'phone', 'address', 'uri')))
+                           ('email', 'phone', 'address', 'uri')),
+                  FieldSet(_("Login information"), ('login', 'password')))
+        cb = pp.CodebookSpec(display='login')
     _REFERER = 'login'
     _PANEL_FIELDS = ('fullname',)
     _ALLOW_TABLE_LAYOUT_IN_FORMS = False
