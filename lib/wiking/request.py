@@ -101,7 +101,8 @@ class Request(object):
         self._req.status = status
         
     def result(self, data, content_type="text/html"):
-        if content_type in ("text/html", "application/xml", "text/css"):
+        if content_type in ("text/html", "application/xml", "text/css") \
+               and isinstance(data, unicode):
             content_type += "; charset=%s" % self._encoding
             #data = self._UNIX_NEWLINE.sub("\r\n", data)
             data = data.encode(self._encoding)
