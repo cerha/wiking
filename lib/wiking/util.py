@@ -365,20 +365,23 @@ class PanelItem(lcg.Content):
 
 
 class CustomViewSpec(object):
-    def __init__(self, divs, anchor=None, labeled_fields=(),
-                 formatted_fields=(), custom_list=False, cls='view-item'):
-        self._divs = divs
+    def __init__(self, title, meta=(), content=None, anchor=None,
+                 labeled_fields=(), custom_list=False, cls='view-item'):
+        self._title = title
+        self._meta = meta
+        self._content = content
         self._anchor = anchor
         self._labeled_fields = labeled_fields
-        self._formated_fields = formatted_fields
         self._custom_list = custom_list
         self._cls = cls
-    def divs(self):
-        return self._divs
+    def title(self):
+        return self._title
+    def meta(self):
+        return self._meta
+    def content(self):
+        return self._content
     def anchor(self):
         return self._anchor
-    def formatted_fields(self):
-        return self._formated_fields
     def labeled_fields(self):
         return self._labeled_fields
     def custom_list(self):
@@ -402,23 +405,27 @@ class _CustomView(object):
     def _export_row_custom(self, exporter, row):
         g = exporter.generator()
         spec = self._custom_spec
-        parts = []
-        formatted = spec.formatted_fields()
         labeled = spec.labeled_fields()
-        for id in spec.divs():
-            content = self._row[id].export()
-            if id in formatted:
-                content = self._export_structured_text(content, exporter)
-            # We can't use join to preserve TranslatableText instances.
-            if id in labeled:
-                content = self._view.field(id).label() + ": " + content
-            if not parts and spec.anchor(): # Make the first part a link target.
-                name = spec.anchor() % row[self._data.key()[0].id()].export()
-                content = g.link(content, None, name=name)
-                cls = 'item-heading'
-            else:
-                cls = 'item-body'
-            parts.append(g.div(content, cls=cls+' '+id))
+        title = self._row[spec.title()].export()
+        if spec.anchor():
+            name = spec.anchor() % row[self._data.key()[0].id()].export()
+            title = g.link(title, None, name=name)
+        parts = [g.h(title, level=3)]
+        if spec.meta():
+            meta = ''
+            for id in spec.meta():
+                content = self._row[id].export()
+                if id in labeled:
+                    label = self._view.field(id).label()
+                    content = g.span(label, cls='label') + ": " + content
+                if meta:
+                    meta += ', '
+                meta += g.span(content, cls=id)
+            parts.append(g.div(meta, cls='meta'))
+        if spec.content():
+            src = self._row[spec.content()].export()
+            content = self._export_structured_text(src, exporter)
+            parts.append(g.div(content, cls='content'))
         return g.div(parts, cls=spec.cls())
 
     
