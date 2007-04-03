@@ -236,6 +236,7 @@ CREATE TABLE news (
 	lang char(2) NOT NULL REFERENCES languages(lang),
 	"timestamp" timestamp NOT NULL DEFAULT now(),
 	title text NOT NULL,
+	author int NOT NULL REFERENCES users,
 	content text NOT NULL
 );
 
@@ -247,7 +248,9 @@ CREATE TABLE planner (
 	start_date date NOT NULL,
 	end_date date,
 	title text NOT NULL,
-	content text,
+	author int NOT NULL REFERENCES users,
+	"timestamp" timestamp NOT NULL DEFAULT now(),
+	content text NOT NULL,
 	UNIQUE (start_date, lang, title)
 );
 
@@ -336,26 +339,28 @@ CREATE TABLE themes (
         link varchar(7),
         link_visited varchar(7),
         link_hover varchar(7),
-        table_cell varchar(7),
-        table_cell2 varchar(7),
-        top_fg varchar(7),
-        top_bg varchar(7),
-        top_border varchar(7),
-        highlight_bg varchar(7),
-        inactive_folder varchar(7),
-        button_fg varchar(7),
-        button varchar(7),
-        button_border varchar(7),
-        button_inactive_fg varchar(7),
-        button_inactive varchar(7),
-        button_inactive_border varchar(7),
+        meta_fg varchar(7),
+        meta_bg varchar(7),
         help varchar(7),
         error_fg varchar(7),
         error_bg varchar(7),
         error_border varchar(7),
         message_fg varchar(7),
         message_bg varchar(7),
-        message_border varchar(7)
+        message_border varchar(7),
+        table_cell varchar(7),
+        table_cell2 varchar(7),
+        button_fg varchar(7),
+        button varchar(7),
+        button_border varchar(7),
+        button_inactive_fg varchar(7),
+        button_inactive varchar(7),
+        button_inactive_border varchar(7),
+        top_fg varchar(7),
+        top_bg varchar(7),
+        top_border varchar(7),
+        highlight_bg varchar(7),
+        inactive_folder varchar(7)
 );
 
 -------------------------------------------------------------------------------
