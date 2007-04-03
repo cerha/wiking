@@ -6,17 +6,11 @@ Core features:
 
  * Locking
 
- * Indicate unpublished items in the Not Found error (or produce another error)
-
  * Browsing support for long lists (forward/backward movement)
 
  * Save the exported HTML for structured text content in DB
 
- * Authentication and acces rights management
-
- * Independent language and filtering in WMI?
-
- * Content management controls outside wmi (when authorized)
+ * More content management controls outside wmi (when authorized)
 
  * Change log and Last-Modified HTTP header support
 
