@@ -27,6 +27,8 @@ import Cookie
 
 _ = lcg.TranslatableTextFactory('wiking')
 
+DAY = 86400
+
 class Request(object):
     """Generic convenience wrapper for the Apache request object."""
     class _FileUpload(FileUpload):
@@ -155,14 +157,14 @@ class WikingRequest(Request):
             self._prefered_language = lang = str(params['setlang'])
             del params['setlang']
             # Expires in 2 years (in seconds)
-            self.set_cookie(self._LANG_COOKIE, lang, expires=63072000)
+            self.set_cookie(self._LANG_COOKIE, lang, expires=730*DAY)
         else:
             self._prefered_language = self.cookie(self._LANG_COOKIE)
         if params.has_key('hide_panels'):
-            self.set_cookie(self._PANELS_COOKIE, 'no', expires=63072000)
+            self.set_cookie(self._PANELS_COOKIE, 'no', expires=730*DAY)
             self._show_panels = False
         elif params.has_key('show_panels'):
-            self.set_cookie(self._PANELS_COOKIE, 'yes', expires=63072000)
+            self.set_cookie(self._PANELS_COOKIE, 'yes', expires=730*DAY)
             self._show_panels = True
         else:
             self._show_panels = self.cookie(self._PANELS_COOKIE) != 'no'
@@ -308,8 +310,8 @@ class WikingRequest(Request):
             # Login succesfull
             session_key = hex(random.randint(0, self._MAX_SESSION_KEY))
             self._users.save_session(user, session_key)
-            self.set_cookie(self._LOGIN_COOKIE, login, expires=63072000)
-            self.set_cookie(self._SESSION_COOKIE, session_key, expires=3600)
+            self.set_cookie(self._LOGIN_COOKIE, login, expires=730*DAY)
+            self.set_cookie(self._SESSION_COOKIE, session_key, expires=DAY)
             self._user = user
         else:
             login, key = (self.cookie(self._LOGIN_COOKIE), 
@@ -317,7 +319,9 @@ class WikingRequest(Request):
             if login and key:
                 self._user = self._users.check_session(login, key)
                 if self._user:
-                    self.set_cookie(self._SESSION_COOKIE, key, expires=3600)
+                    # Cookie expiration is 1 day, but session expiration is
+                    # controled within check_session independently.
+                    self.set_cookie(self._SESSION_COOKIE, key, expires=DAY)
                 else:
                     self._session_timed_out = True
         if self.param('command') == 'logout' and self._user:
