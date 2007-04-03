@@ -241,8 +241,10 @@ class PytisModule(Module, ActionHandler):
                         value_ = value_[-1]
                 elif isinstance(value_, FileUpload):
                     if isinstance(type, pd.Binary):
-                        if value_.filename():
-                            kwargs['filename'] = value_.filename()
+                        fname = value_.filename()
+                        if fname:
+                            # MSIE sends the full file path on windows...
+                            kwargs['filename'] = fname.split('\\')[-1]
                             kwargs['type'] = value_.type()
                             value_ = value_.file()
                         else:
