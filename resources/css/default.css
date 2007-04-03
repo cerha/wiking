@@ -40,11 +40,13 @@ h5,h6,h7,h8,h9 { font-size: 1.1em; }
 
 a:link    { color: $color.link; }
 a:visited { color: $color.link-visited; }
-a:link:hover   { color: $color.link-hover; }
-a:visited:hover { color: $color.link-hover; }
+a:link:hover, a:visited:hover { color: $color.link-hover; }
 
-a.backref { text-decoration: none; color: $color.foreground; }
-a:hover.backref { color: $color.foreground; }
+a.backref, a:link.backref { 
+    color: $color.foreground !important; /* important needed for MSIE */
+    text-decoration: none;
+}
+
 
 .hidden { display: none; }
 
