@@ -1,0 +1,8 @@
+# -*- coding: utf-8; mode: structured-text -*-
+
+= Přílohy =
+
+Přílohy jsou externí soubory připojené ke stránkám.  Mohou to být obrázky,
+dokumenty, zvukové nahrávky, videa apod.  Přílohy jsou spravovány
+prostřednictvím stránek, ke kterým jsou připojené, proto podrobnější nápovědu
+naleznete v nápovědě modulu [Pages Stránky].
