@@ -1,5 +1,8 @@
 2007-04-03  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/handler.py (SiteHandler.handle): Never call
+	`req.user()' outside the exception handling block.
+
 	* lib/wiking/export.py: Don't link to WMI module.
 
 	* sql/wiking.sql (themes) New colors.
@@ -25,7 +28,9 @@
 	Validate only layout fields and fields explicitly listed.  Added
 	support for codebook field links.
 	(RssModule): Use real author column.
-	
+	(PytisModule._validate): Use only the last part of an uploaded
+	file path (from MS windows).
+
 2007-04-02  Tomas Cerha  <cerha@brailcom.org>
 
 	* doc/src/admin/Mapping.cs.txt: Updated.
