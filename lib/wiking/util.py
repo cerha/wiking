@@ -414,9 +414,10 @@ class _CustomView(object):
         if spec.meta():
             meta = ''
             for id in spec.meta():
-                content = self._row[id].export()
+                f = self._view.field(id)
+                content = self._export_value(exporter, row, f)
                 if id in labeled:
-                    label = self._view.field(id).label()
+                    label = f.label()
                     content = g.span(label, cls='label') + ": " + content
                 if meta:
                     meta += ', '
