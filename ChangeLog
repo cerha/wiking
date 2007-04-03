@@ -9,6 +9,7 @@
 
 	* lib/wiking/request.py (Request.result): Encode the returned data
 	only if it is a unicode instance.
+	(WikingRequest._perform_login): Extend session cookie expiration time.
 
 	* lib/wiking/util.py: Improved custom views and thier specification.
 
