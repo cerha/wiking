@@ -1,5 +1,13 @@
 2007-04-03  Tomas Cerha  <cerha@brailcom.org>
 
+	* doc/src/admin/Attachments.cs.txt: New file.
+
+	* doc/src/admin/Attachments.en.txt: New file.
+
+	* doc/src/admin/Pages.cs.txt: New section about attachments.
+
+	* doc/src/admin/Pages.en.txt: New section about attachments.
+
 	* lib/wiking/handler.py (SiteHandler.handle): Never call
 	`req.user()' outside the exception handling block.
 
