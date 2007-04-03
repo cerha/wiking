@@ -245,7 +245,7 @@ form.show-form td.label, form.edit-form td.label {
 fieldset.body div.field { 
     margin: 0.2em 0;
 }
-fieldset.body div.help { 
+form.edit-form div.help { 
     color: $color.help;
     margin-bottom: 0.4em;
 }
@@ -298,20 +298,18 @@ p.actions a.inactive, p.actions a.inactive:hover {
 div.list-view div.view-item {
     margin: 1em 0;
 }
-div.view-item div.item-heading {
-    background: $color.heading-bg;
-    border: solid $color.heading-line;
-    border-width: 1px 0;
-    font-weight: bold;
-    margin: 0;
-    padding: 0 0.3em;
+div.view-item h3 {
+    margin-bottom: 0.2em;
+    font-size: 1.2em;
 }
-div.view-item div.item-body {
-    background: $color.frame-bg;
-    border: solid $color.frame-border;
-    border-width: 0 0 1px 0;
-    margin: 0;
-    padding: 0.1em 0.3em;
+div.view-item div.meta {
+    font-style: italic;
+    margin: 0.2em 0;
+    color: $color.meta-fg;
+    padding: 0.1em 0;
+    background: $color.meta-bg;
+}
+div.view-item div.content {
 }
 
 /* LCG Formatter styles */
