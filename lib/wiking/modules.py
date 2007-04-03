@@ -255,8 +255,8 @@ class WikingManagementInterface(Module):
 
     """
     def handle(self, req):
-        req.wmi = True
         Roles.check(req, (Roles.ADMIN,))
+        req.wmi = True # Switch to WMI only after successful authorization.
         if len(req.path) == 1:
             req.path += ('Pages',)
         modname = req.path[1]
