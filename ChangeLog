@@ -1,3 +1,30 @@
+2007-04-03  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/export.py: Don't link to WMI module.
+
+	* sql/wiking.sql (themes) New colors.
+	(news, planner): Added author references.
+
+	* resources/css/default.css: Updated.
+
+	* lib/wiking/request.py (Request.result): Encode the returned data
+	only if it is a unicode instance.
+
+	* lib/wiking/util.py: Improved custom views and thier specification.
+
+	* lib/wiking/modules.py (Attachments): List fields accepted out of
+	layout.
+	(Themes.COLORS): New symbolic colors.
+	(News, Planner): Added author information.  Allow insertion by
+	CONTRIBUTOR.  Updated for new `CustomViewSpec'.
+	(WikingManagementInterface): Switch to WMI mode only after
+	successful authorization.
+
+	* lib/wiking/module.py: Supply record owner on insertion.
+	Validate only layout fields and fields explicitly listed.  Added
+	support for codebook field links.
+	(RssModule): Use real author column.
+	
 2007-04-02  Tomas Cerha  <cerha@brailcom.org>
 
 	* doc/src/admin/Mapping.cs.txt: Updated.
