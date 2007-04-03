@@ -916,14 +916,12 @@ class News(WikingModule):
                   _("It is, however, recommened to use the simplest possible "
                     "formatting, since the item may be also published through "
                     "an RSS channel, which does not support formatting.")),
-            Field('author', codebook='Users'),
-            Field('author_', _("Author"), virtual=True,
-                  computer=CbComputer('author', 'user')),
+            Field('author', _("Author"), codebook='Users'),
             Field('date_title', virtual=True,
                   computer=Computer(self._date_title,
                                     depends=('date', 'title'))))
         sorting = (('timestamp', DESC),)
-        columns = ('title', 'date', 'author_')
+        columns = ('title', 'date', 'author')
         layout = ('lang', 'timestamp', 'title', 'content')
         def _date(self, row):
             return row['timestamp'].export(show_time=False)
@@ -936,11 +934,11 @@ class News(WikingModule):
     _RSS_TITLE_COLUMN = 'title'
     _RSS_DESCR_COLUMN = 'content'
     _RSS_DATE_COLUMN = 'timestamp'
-    _RSS_AUTHOR_COLUMN = 'author_'
+    _RSS_AUTHOR_COLUMN = 'author'
     _RIGHTS_add = _RIGHTS_insert = Roles.CONTRIBUTOR
     _RIGHTS_edit = _RIGHTS_update = (Roles.ADMIN, Roles.OWNER)
     _RIGHTS_remove = _RIGHTS_delete = Roles.ADMIN
-    _CUSTOM_VIEW = CustomViewSpec('title', meta=('timestamp', 'author_'),
+    _CUSTOM_VIEW = CustomViewSpec('title', meta=('timestamp', 'author'),
                                   content='content', anchor="item-%s",
                                   custom_list=True)
         
@@ -982,14 +980,13 @@ class Planner(News):
                   _("It is, however, recommened to use the simplest possible "
                     "formatting, since the item may be also published through "
                     "an RSS channel, which does not support formatting.")),
-            Field('author', codebook='Users'),
-            Field('author_', _("Author"), virtual=True,
-                  computer=CbComputer('author', 'user')),
+            Field('author', _("Author"), codebook='Users'),
+            Field('timestamp', type=DateTime(not_null=True), default=now),
             Field('date_title', virtual=True,
                   computer=Computer(self._date_title,
                                     depends=('date', 'title'))))
         sorting = (('start_date', ASC),)
-        columns = ('title', 'date', 'author_')
+        columns = ('title', 'date', 'author')
         layout = ('lang', 'start_date', 'end_date', 'title', 'content')
         def _check_date(self, date):
             if date < today():
@@ -1005,8 +1002,9 @@ class Planner(News):
             end = row['end_date'].value()
             if end and end <= row['start_date'].value():
                 return ("end_date", _("End date precedes start date"))
-    _CUSTOM_VIEW = CustomViewSpec('date_title', content='content',
-                                  anchor="item-%s", custom_list=True)
+    _CUSTOM_VIEW = CustomViewSpec('date_title', meta=('author', 'timestamp'),
+                                  content='content', anchor="item-%s",
+                                  custom_list=True)
     _RSS_TITLE_COLUMN = 'date_title'
     _RSS_LINK_COLUMN = 'title'
     _RSS_DATE_COLUMN = None
@@ -1233,7 +1231,7 @@ class Users(WikingModule):
                   FieldSet(_("Contact information"),
                            ('email', 'phone', 'address', 'uri')),
                   FieldSet(_("Login information"), ('login', 'password')))
-        cb = pp.CodebookSpec(display='login')
+        cb = pp.CodebookSpec(display='user')
     _REFERER = 'login'
     _PANEL_FIELDS = ('fullname',)
     _ALLOW_TABLE_LAYOUT_IN_FORMS = False
