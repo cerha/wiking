@@ -144,6 +144,7 @@ img { position: relative; } /* MSIE float workaround */
     margin: 1em 0;
 }
 #wiking-bar { 
+    text-align: left; /* needed by MSIE - why? */
     font-size: 0.9em;
     border: solid $color.top-border;
     border-width: 1px 0px;
