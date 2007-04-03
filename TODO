@@ -1,5 +1,7 @@
 Core features:
 
+ * Image allignment in the LCG formatting manual.
+
  * Default language when Accept-Language is not set at all
 
  * Locking
@@ -7,8 +9,6 @@ Core features:
  * Indicate unpublished items in the Not Found error (or produce another error)
 
  * Browsing support for long lists (forward/backward movement)
-
- * Page preview in WMI
 
  * Save the exported HTML for structured text content in DB
 
