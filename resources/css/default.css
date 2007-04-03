@@ -42,10 +42,8 @@ a.backref { text-decoration: none; color: $color.foreground; }
 
 a:link    { color: $color.link; }
 a:visited { color: $color.link-visited; }
-a:hover   { color: $color.link-hover; }
-
-a.backref { text-decoration: none; color: $color.foreground; }
-a:hover.backref { color: $color.foreground; }
+a:link:hover   { color: $color.link-hover; }
+a:visited:hover { color: $color.link-hover; }
 
 .hidden { display: none; }
 
