@@ -140,6 +140,7 @@ class PytisModule(Module, ActionHandler):
     _RIGHTS_remove = _RIGHTS_delete = Roles.ADMIN
     
     _OWNER_COLUMN = None
+    _NON_LAYOUT_FIELDS = ()
 
     _ALLOW_TABLE_LAYOUT_IN_FORMS = True
     
@@ -223,8 +224,8 @@ class PytisModule(Module, ActionHandler):
     def _validate(self, req, record):
         # TODO: This should go to pytis.web....
         errors = []
-        for f in self._view.fields():
-            id = f.id()
+        for id in self._view.layout().order() + list(self._NON_LAYOUT_FIELDS):
+            f = self._view.field(id)
             if not record.editable(id):
                 continue
             type = record[id].type()
@@ -248,13 +249,10 @@ class PytisModule(Module, ActionHandler):
                         value_ = value_.filename()
             elif isinstance(type, pd.Binary):
                 value_ = None
-            elif id in self._view.layout().order():
-                if isinstance(type, pd.Boolean):
-                    value_ = "F"
-                else:
-                    value_ = ""
+            elif isinstance(type, pd.Boolean):
+                value_ = "F"
             else:
-                continue
+                value_ = ""
             if isinstance(type, (Date, DateTime)):
                 formats = self._datetime_formats(req)
                 format = formats['date']
@@ -432,7 +430,6 @@ class PytisModule(Module, ActionHandler):
             owner_uid = record[self._OWNER_COLUMN].value()
         else:
             owner_uid = None
-        log(OPR, ":::", (owner_uid, self, action, record, roles))
         return Roles.check(req, roles, owner_uid=owner_uid, raise_error=raise_error)
     
         
@@ -482,9 +479,10 @@ class PytisModule(Module, ActionHandler):
             lang = req.prefered_language(variants)
         return lang, variants, self._rows(lang=lang)
 
-    def _record(self, row, new=False):
+    def _record(self, row, new=False, prefill=None):
         """Return the Record instance initialized by given data row."""
-        return self.Record(self._view.fields(), self._data, row, new=new)
+        return self.Record(self._view.fields(), self._data, row,
+                           prefill=prefill, new=new)
     
     def _reload(self, record):
         """Update record data from the database."""
@@ -495,6 +493,8 @@ class PytisModule(Module, ActionHandler):
     def _insert(self, record):
         """Insert a new row into the database and return a Record instance."""
         new_row, success = self._data.insert(record.rowdata())
+        #log(OPR, ":::", (new_row, [(k, record.rowdata()[k].value())
+        #                           for k in record.rowdata().keys()]))
         if success:
             record.set_row(new_row)
         
@@ -595,7 +595,11 @@ class PytisModule(Module, ActionHandler):
     # ===== Action handlers which actually modify the database =====
 
     def action_insert(self, req):
-        record = self._record(None, new=True)
+        if self._OWNER_COLUMN and req.user():
+            prefill = {self._OWNER_COLUMN: req.user()['uid']}
+        else:
+            prefill = None
+        record = self._record(None, new=True, prefill=prefill)
         errors = self._validate(req, record)
         if not errors:
             try:
@@ -674,6 +678,7 @@ class RssModule(PytisModule):
     _RSS_LINK_COLUMN = None
     _RSS_DESCR_COLUMN = None
     _RSS_DATE_COLUMN = None
+    _RSS_AUTHOR_COLUMN = None
 
     _RIGHTS_rss = Roles.ANYONE
     
@@ -705,7 +710,10 @@ class RssModule(PytisModule):
                 date = dt.ARPA.str(v.localtime())
             else:
                 date = None
-            author = config.webmaster_addr
+            if self._RSS_AUTHOR_COLUMN:
+                author = prow[self._RSS_AUTHOR_COLUMN].value()
+            else:
+                author = config.webmaster_addr
             items.append((title, uri, descr, date, author))
         title = config.site_title +' - '+ self._real_title(lang)
         result = rss(title, base_uri, items, config.site_subtitle,
