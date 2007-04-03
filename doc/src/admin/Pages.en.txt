@@ -58,6 +58,11 @@ you enter them, they are used only for the current language.  You will need to
 switch the language and enter the values again to supply their multiple
 language variants.
 
+The attachment file, on the other hand, is independent on the language, so
+uploading a new file changes the attachment for all language variants of the
+page.
+
+
 === Explicit references ===
 
 You can refer to any attachment by simply putting its filename into square
