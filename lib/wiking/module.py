@@ -201,6 +201,8 @@ class PytisModule(Module, ActionHandler):
         self._referer_type = self._data.find_column(self._referer).type()
         self._title_column = self._TITLE_COLUMN or self._view.columns()[0]
         self._cached_identifier = (None, None)
+        self._links = dict([(f.id(), f.codebook())
+                            for f in self._view.fields() if f.codebook()])
         #log(OPR, 'New module instance: %s[%x]' % (self.name(),
         #                                          lcg.positive_id(self)))
 
@@ -356,6 +358,9 @@ class PytisModule(Module, ActionHandler):
                 referer = self._referer
             uri += '/'+ row[referer].export()
             return make_uri(uri, **kwargs)
+        if self._links.has_key(cid):
+            module = self._module(self._links[cid])
+            return module.link(req, row[cid])
         return None
 
     def _form(self, form, req, *args, **kwargs):
@@ -518,6 +523,11 @@ class PytisModule(Module, ActionHandler):
     def record(self, value):
         """Return the record corresponding to given key value."""
         return self._record(self._data.row((value,)))
+        
+    def link(self, req, value):
+        """Return a uri for given key value."""
+        record = self._record(self._data.row((value,)))
+        return self._link_provider(req, record, self._key)
         
     def related(self, req, binding, modname, record):
         """Return the listing of records related to other module's record."""
@@ -695,6 +705,7 @@ class RssModule(PytisModule):
         import mx.DateTime as dt
         config = self._module('Config').config(req.server, lang)
         tr = translator(lang)
+        users = self._module('Users')
         for row in rows:
             prow.set_row(row)
             title = escape(tr.translate(prow[self._RSS_TITLE_COLUMN].export()))
@@ -711,7 +722,8 @@ class RssModule(PytisModule):
             else:
                 date = None
             if self._RSS_AUTHOR_COLUMN:
-                author = prow[self._RSS_AUTHOR_COLUMN].value()
+                uid = prow[self._RSS_AUTHOR_COLUMN]
+                author = users.record(uid)['email'].export()
             else:
                 author = config.webmaster_addr
             items.append((title, uri, descr, date, author))
