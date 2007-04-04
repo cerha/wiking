@@ -467,6 +467,8 @@ class LoginDialog(lcg.Content):
         super(LoginDialog, self).__init__()
         self._params = req.params
         self._uri = req.uri
+        self._https = req.https()
+        self._https_uri = req.abs_uri(port=443)
         self._login = req.login_name()
 
     def export(self, exporter):
@@ -482,7 +484,11 @@ class LoginDialog(lcg.Content):
              ) + tuple([g.hidden(name=k, value=v)
                         for k,v in self._params.items() if k != 'command']) + (
             g.submit(_("Log in"), cls='submit'),)
-        return g.form(x, method='POST', action=self._uri, cls='login-form')
+        if not self._https and self.parent().config().force_https_login:
+            uri = self._https_uri
+        else:
+            uri = self._uri
+        return g.form(x, method='POST', action=uri, cls='login-form')
         
         
 def translator(lang):
