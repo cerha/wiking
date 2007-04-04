@@ -30,6 +30,6 @@ INSERT INTO config (site_title) VALUES ('Wiking site');
 INSERT INTO stylesheets (identifier) VALUES ('default.css');
 INSERT INTO stylesheets (identifier) VALUES ('panels.css');
 
-INSERT INTO users (login, password, firstname, surname, nickname, email, 
-       	    	   enabled, admin)
-VALUES ('admin', 'wiking', 'Wiking', 'Admin', 'Admin', '-', 't', 't');
+INSERT INTO users (login, password, firstname, surname, nickname, user_,
+                   email, enabled, admin)
+VALUES ('admin', 'wiking', 'Wiking', 'Admin', 'Admin', 'Admin', '-', 't', 't');

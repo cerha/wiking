@@ -74,6 +74,7 @@ CREATE TABLE users (
 	firstname text NOT NULL,
 	surname text NOT NULL,
 	nickname text,
+	user_ text NOT NULL,
 	email text NOT NULL,
 	phone text,
 	address text,
