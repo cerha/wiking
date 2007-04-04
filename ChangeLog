@@ -1,19 +1,29 @@
 2007-04-04  Tomas Cerha  <cerha@brailcom.org>
 
+	* translations/wiking.cs.po: Updated.
+
+	* lib/wiking/export.py: Show login controls in wiking bar when
+	wiking panel is off.
+
 	* lib/wiking/handler.py: Handle exceptions in exception processing.
+	Handle int as a valid handler return value.
 
 	* lib/wiking/request.py: Don't prefill the login name to allow
 	browser based login/password management.  Session cookie
-	expiration further extended.
+	expiration further extended.  Added support for HTTP redirection.
+	Unset session cookie after logout.
 
 	* sql/wiking.sql: Removed oid columns.  Table users moved to the
 	beginning of the file.  Expect `image_id' in the inserted row.
-	Fixed attachment insert rule.
-
+	Fixed attachment insert rule.  New config option
+	`force_https_login'.
+	
 	* lib/wiking/__init__.py: Version number increased to 0.4.2.
 
 	* lib/wiking/modules.py (Images): Compute sequence fields.
 	(Users): Don't set current user as the record owner.
+	(Attachments): Use `Request' support for HTTP redirection.
+	(Config): New option `force_https_login'.
 
 	* lib/wiking/module.py (PytisModule._insert): Set new row only
 	when it is not None.  Allow a module to disable automatic record
