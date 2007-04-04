@@ -100,7 +100,8 @@ class Exporter(lcg.HtmlExporter):
             u, l, cmd = (user['user'].value(), _("log out"), 'logout')
         else:
             u, l, cmd = (_("not logged"), _("log in"), 'login')
-        return (u, self._generator.link(l, '?command=%s' % cmd, cls='login-ctrl'))
+        return (u, self._generator.link(l, '?command=%s' % cmd,
+                                        cls='login-ctrl'))
     
     def _panels(self, node):
         g = self._generator
@@ -159,23 +160,22 @@ class Exporter(lcg.HtmlExporter):
         g = self._generator
         config = node.config()
 	result = (g.hr(),)
+        ctrl = ''
         #if config.edit_label:
-        #    ctrls += (g.link(config.edit_label, "?action=edit"), "|")
-        #if not config.login_panel:
-        #    user, ctrl = self._login_ctrl(node)
-        #    ctrls += (concat(_("Logged user"), ': ', user, ' (', ctrl, ') |'),)
+        #    ctrl += (g.link(config.edit_label, "?action=edit"), "|")
+        if config.wmi or not config.login_panel:
+            user, lctrl = self._login_ctrl(node)
+            ctrl += concat(_("Login"), ': ', user, ' (', lctrl, ') | ')
         if config.wmi:
-            ctrl = g.link(_("Leave the Management Interface"), '/', hotkey="9")
+            ctrl += g.link(_("Leave the Management Interface"), '/', hotkey="9")
         elif config.doc:
-            ctrl = g.link(_("Leave the Help System"), '/')
+            ctrl += g.link(_("Leave the Help System"), '/')
         elif config.allow_wmi_link:
             modname = config.modname or ''
             if modname == 'WikingManagementInterface':
                 modname = ''
-            ctrl = g.link(_("Manage this site"), '/_wmi/'+modname, hotkey="9",
-                          title=_("Enter the Wiking Management Interface"))
-        else:
-            ctrl = None
+            ctrl += g.link(_("Manage this site"), '/_wmi/'+modname, hotkey="9",
+                           title=_("Enter the Wiking Management Interface"))
         if ctrl:
             ctrls = concat(self._hidden("["), ctrl, self._hidden("]"))
             result += (g.span(ctrls, cls="controls"),)
