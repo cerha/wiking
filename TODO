@@ -1,10 +1,12 @@
 Core features:
 
- * Remove the dbname column -- get the database name from somewhere else.
+ * Force HTTPS for registration form
 
- * Password reminder.
+ * Remove the dbname column -- get the database name from somewhere else
 
- * Image allignment in the LCG formatting manual.
+ * Password reminder
+
+ * Image allignment in the LCG formatting manual
 
  * More content management controls outside wmi (when authorized)
 
