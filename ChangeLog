@@ -24,6 +24,7 @@
 	(Users): Don't set current user as the record owner.
 	(Attachments): Use `Request' support for HTTP redirection.
 	(Config): New option `force_https_login'.
+	(Attachments): Added DB exception matcher.
 
 	* lib/wiking/module.py (PytisModule._insert): Set new row only
 	when it is not None.  Allow a module to disable automatic record

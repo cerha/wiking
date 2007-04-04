@@ -4,6 +4,8 @@ Core features:
 
  * Remove the dbname column -- get the database name from somewhere else
 
+ * Deleting stray files after deletion triggered in the database (cascade)
+
  * Password reminder
 
  * Image allignment in the LCG formatting manual
