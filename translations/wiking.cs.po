@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-04-04 18:28+0200\n"
-"PO-Revision-Date: 2007-04-04 18:29+0200\n"
+"POT-Creation-Date: 2007-04-04 19:50+0200\n"
+"PO-Revision-Date: 2007-04-04 19:51+0200\n"
 "Last-Translator: Tomas Cerha <cerha@brailcom.org>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -51,7 +51,7 @@ msgstr "Zobrazit panely"
 msgid "Hide panels"
 msgstr "Skrýt panely"
 
-#: ../lib/wiking/export.py:123 ../lib/wiking/modules.py:1256
+#: ../lib/wiking/export.py:123 ../lib/wiking/modules.py:1260
 msgid "New user registration"
 msgstr "Registrace nového uživatele"
 
@@ -122,7 +122,7 @@ msgid "Modify the record"
 msgstr "Změnit záznam"
 
 #: ../lib/wiking/module.py:113 ../lib/wiking/module.py:605
-#: ../lib/wiking/modules.py:1251
+#: ../lib/wiking/modules.py:1255
 msgid "Remove"
 msgstr "Smazat"
 
@@ -261,7 +261,7 @@ msgstr ""
 
 #: ../lib/wiking/modules.py:93 ../lib/wiking/modules.py:489
 #: ../lib/wiking/modules.py:491 ../lib/wiking/modules.py:607
-#: ../lib/wiking/modules.py:1131
+#: ../lib/wiking/modules.py:1135
 msgid "Identifier"
 msgstr "Identifikátor"
 
@@ -345,11 +345,11 @@ msgstr "Název"
 #: ../lib/wiking/modules.py:284 ../lib/wiking/modules.py:395
 #: ../lib/wiking/modules.py:399 ../lib/wiking/modules.py:495
 #: ../lib/wiking/modules.py:615 ../lib/wiking/modules.py:616
-#: ../lib/wiking/modules.py:803 ../lib/wiking/modules.py:1044
+#: ../lib/wiking/modules.py:803 ../lib/wiking/modules.py:1048
 msgid "Title"
 msgstr "Název"
 
-#: ../lib/wiking/modules.py:287 ../lib/wiking/modules.py:1132
+#: ../lib/wiking/modules.py:287 ../lib/wiking/modules.py:1136
 msgid "Active"
 msgstr "Aktivní"
 
@@ -403,7 +403,7 @@ msgstr "Správa panelů – malých „okének“ zobrazených na boku každé s
 
 #: ../lib/wiking/modules.py:393 ../lib/wiking/modules.py:493
 #: ../lib/wiking/modules.py:613 ../lib/wiking/modules.py:788
-#: ../lib/wiking/modules.py:908 ../lib/wiking/modules.py:972
+#: ../lib/wiking/modules.py:912 ../lib/wiking/modules.py:976
 msgid "Language"
 msgstr "Jazyk"
 
@@ -443,7 +443,7 @@ msgid ""
 msgstr "Počet položek vybraného modulu, které budou panelem zobrazeny."
 
 #: ../lib/wiking/modules.py:423 ../lib/wiking/modules.py:619
-#: ../lib/wiking/modules.py:1134
+#: ../lib/wiking/modules.py:1138
 msgid "Content"
 msgstr "Obsah"
 
@@ -589,8 +589,8 @@ msgstr ""
 msgid "Page"
 msgstr "Stránka"
 
-#: ../lib/wiking/modules.py:791 ../lib/wiking/modules.py:1029
-#: ../lib/wiking/modules.py:1042
+#: ../lib/wiking/modules.py:791 ../lib/wiking/modules.py:1033
+#: ../lib/wiking/modules.py:1046
 msgid "File"
 msgstr "Soubor"
 
@@ -619,8 +619,8 @@ msgstr ""
 "zobrazen\n"
 "přímo název souboru."
 
-#: ../lib/wiking/modules.py:807 ../lib/wiking/modules.py:1047
-#: ../lib/wiking/modules.py:1133
+#: ../lib/wiking/modules.py:807 ../lib/wiking/modules.py:1051
+#: ../lib/wiking/modules.py:1137
 msgid "Description"
 msgstr "Popis"
 
@@ -628,7 +628,7 @@ msgstr "Popis"
 msgid "Optional description used for the listing of attachments (see below)."
 msgstr "Nepovinný popis použitý pro seznam příloh (viz níže)."
 
-#: ../lib/wiking/modules.py:812 ../lib/wiking/modules.py:1054
+#: ../lib/wiking/modules.py:812 ../lib/wiking/modules.py:1058
 msgid "Byte size"
 msgstr "Velikost v bajtech"
 
@@ -645,40 +645,44 @@ msgstr ""
 "na\n"
 "konci stránky."
 
-#: ../lib/wiking/modules.py:899
+#: ../lib/wiking/modules.py:858
+msgid "Attachment of the same filename already exists for this page."
+msgstr "Příloha se stejným názvem souboru již pro tuto stránku existuje."
+
+#: ../lib/wiking/modules.py:903
 msgid "News"
 msgstr "Novinky"
 
-#: ../lib/wiking/modules.py:900
+#: ../lib/wiking/modules.py:904
 msgid "Publish site news."
 msgstr "Publikovat krátké aktuální zprávy."
 
-#: ../lib/wiking/modules.py:903 ../lib/wiking/modules.py:905
-#: ../lib/wiking/modules.py:959 ../lib/wiking/modules.py:969
+#: ../lib/wiking/modules.py:907 ../lib/wiking/modules.py:909
+#: ../lib/wiking/modules.py:963 ../lib/wiking/modules.py:973
 msgid "Date"
 msgstr "Datum"
 
-#: ../lib/wiking/modules.py:907
+#: ../lib/wiking/modules.py:911
 msgid "Date of the news item creation."
 msgstr "Datum vložení zprávy."
 
-#: ../lib/wiking/modules.py:910 ../lib/wiking/modules.py:974
+#: ../lib/wiking/modules.py:914 ../lib/wiking/modules.py:978
 msgid "Briefly"
 msgstr "Stručně"
 
-#: ../lib/wiking/modules.py:910
+#: ../lib/wiking/modules.py:914
 msgid "Message"
 msgstr "Zpráva"
 
-#: ../lib/wiking/modules.py:911
+#: ../lib/wiking/modules.py:915
 msgid "The item summary (title of the entry)."
 msgstr "Shrnutí obsahu zprávy (název položky)."
 
-#: ../lib/wiking/modules.py:912 ../lib/wiking/modules.py:976
+#: ../lib/wiking/modules.py:916 ../lib/wiking/modules.py:980
 msgid "Text"
 msgstr "Text"
 
-#: ../lib/wiking/modules.py:914 ../lib/wiking/modules.py:978
+#: ../lib/wiking/modules.py:918 ../lib/wiking/modules.py:982
 msgid ""
 "It is, however, recommened to use the simplest possible formatting, since "
 "the item may be also published through an RSS channel, which does not "
@@ -689,21 +693,21 @@ msgstr ""
 "být zveřejněna také prostřednictvím RSS kanálu, který formátování "
 "nepodporuje."
 
-#: ../lib/wiking/modules.py:917 ../lib/wiking/modules.py:981
-#: ../lib/wiking/modules.py:1045
+#: ../lib/wiking/modules.py:921 ../lib/wiking/modules.py:985
+#: ../lib/wiking/modules.py:1049
 msgid "Author"
 msgstr "Autor"
 
-#: ../lib/wiking/modules.py:955
+#: ../lib/wiking/modules.py:959
 msgid "Planner"
 msgstr "Plánovač"
 
-#: ../lib/wiking/modules.py:956
+#: ../lib/wiking/modules.py:960
 msgid "Announce future events by date in a callendar-like listing."
 msgstr ""
 "Umožňuje oznamování budoucích událostí podle data v kalendářovém výpisu."
 
-#: ../lib/wiking/modules.py:961
+#: ../lib/wiking/modules.py:965
 #, python-format
 msgid ""
 "The date when the planned event begins. Enter the date including the year. "
@@ -712,11 +716,11 @@ msgstr ""
 "Datum, kdy plánovaná událost začíná.  Datum vkládejte včetně roku.\n"
 "Např. %(date)s"
 
-#: ../lib/wiking/modules.py:965
+#: ../lib/wiking/modules.py:969
 msgid "End date"
 msgstr "Datum do"
 
-#: ../lib/wiking/modules.py:966
+#: ../lib/wiking/modules.py:970
 msgid ""
 "The date when the event ends if it is not the same as the start date (for "
 "events which last several days."
@@ -724,63 +728,63 @@ msgstr ""
 "Datum, kdy plánovaná událost končí, pokud není shodný s datem začátku (pro\n"
 "události, které trvají několik dní)."
 
-#: ../lib/wiking/modules.py:974
+#: ../lib/wiking/modules.py:978
 msgid "Event"
 msgstr "Událost"
 
-#: ../lib/wiking/modules.py:975
+#: ../lib/wiking/modules.py:979
 msgid "The event summary (title of the entry)."
 msgstr "Shrnutí události (název položky)."
 
-#: ../lib/wiking/modules.py:991
+#: ../lib/wiking/modules.py:995
 msgid "Date in the past"
 msgstr "Datum je v minulosti"
 
-#: ../lib/wiking/modules.py:1002
+#: ../lib/wiking/modules.py:1006
 msgid "End date precedes start date"
 msgstr "Datum konce předchází počáteční datum"
 
-#: ../lib/wiking/modules.py:1016
+#: ../lib/wiking/modules.py:1020
 msgid "Images"
 msgstr "Obrázky"
 
-#: ../lib/wiking/modules.py:1017
+#: ../lib/wiking/modules.py:1021
 msgid "Publish images."
 msgstr "Správa obrázků a fotografií."
 
-#: ../lib/wiking/modules.py:1046
+#: ../lib/wiking/modules.py:1050
 msgid "Location"
 msgstr "Místo"
 
-#: ../lib/wiking/modules.py:1048
+#: ../lib/wiking/modules.py:1052
 msgid "Date of creation"
 msgstr "Datum vytvoření"
 
-#: ../lib/wiking/modules.py:1050
+#: ../lib/wiking/modules.py:1054
 msgid "Width"
 msgstr "Šířka"
 
-#: ../lib/wiking/modules.py:1051
+#: ../lib/wiking/modules.py:1055
 msgid "Height"
 msgstr "Výška"
 
-#: ../lib/wiking/modules.py:1052
+#: ../lib/wiking/modules.py:1056
 msgid "Pixel size"
 msgstr "Velikost v pixelech"
 
-#: ../lib/wiking/modules.py:1127
+#: ../lib/wiking/modules.py:1131
 msgid "Styles"
 msgstr "Styly"
 
-#: ../lib/wiking/modules.py:1128
+#: ../lib/wiking/modules.py:1132
 msgid "Manage available Cascading Stylesheets."
 msgstr "Správa použitých kaskádových stylů (CSS)."
 
-#: ../lib/wiking/modules.py:1175
+#: ../lib/wiking/modules.py:1179
 msgid "Users"
 msgstr "Uživatelé"
 
-#: ../lib/wiking/modules.py:1176
+#: ../lib/wiking/modules.py:1180
 msgid ""
 "Manage registered users.  Use the module \"Access Rights\" to change their "
 "privileges."
@@ -788,11 +792,11 @@ msgstr ""
 "Správa registrovaných uživatelů.  Použijte modul „Práva“ pro správu jejich\n"
 "oprávnění."
 
-#: ../lib/wiking/modules.py:1193 ../lib/wiking/util.py:477
+#: ../lib/wiking/modules.py:1197 ../lib/wiking/util.py:477
 msgid "Login name"
 msgstr "Přihlašovací jméno"
 
-#: ../lib/wiking/modules.py:1196
+#: ../lib/wiking/modules.py:1200
 msgid ""
 "A valid login name can only contain letters, digits, underscores, dashes and "
 "dots and must start with a letter."
@@ -800,11 +804,11 @@ msgstr ""
 "Platné přihlašovací jméno obsahuje pouze písmena bez diakritiky, číslice,\n"
 "tečky, pomlčky a případně i podtržítka a musí začínat písmenem."
 
-#: ../lib/wiking/modules.py:1199 ../lib/wiking/util.py:480
+#: ../lib/wiking/modules.py:1203 ../lib/wiking/util.py:480
 msgid "Password"
 msgstr "Heslo"
 
-#: ../lib/wiking/modules.py:1201
+#: ../lib/wiking/modules.py:1205
 msgid ""
 "Please write the new password into each of the two fields.  Leave both "
 "fields blank if you are editing an existing account and don't want to change "
@@ -813,95 +817,95 @@ msgstr ""
 "Zapište nové heslo do obou políček.  Nechte obě pole volná, pokud\n"
 "upravujete existující účet a nechcete heslo změnit."
 
-#: ../lib/wiking/modules.py:1205
+#: ../lib/wiking/modules.py:1209
 msgid "Full Name"
 msgstr "Celé jméno"
 
-#: ../lib/wiking/modules.py:1208
+#: ../lib/wiking/modules.py:1212
 msgid "User"
 msgstr "Uživatel"
 
-#: ../lib/wiking/modules.py:1210
+#: ../lib/wiking/modules.py:1214
 msgid "First name"
 msgstr "Jméno"
 
-#: ../lib/wiking/modules.py:1211
+#: ../lib/wiking/modules.py:1215
 msgid "Surname"
 msgstr "Příjmení"
 
-#: ../lib/wiking/modules.py:1212
+#: ../lib/wiking/modules.py:1216
 msgid "Nickname"
 msgstr "Přezdívka"
 
-#: ../lib/wiking/modules.py:1213
+#: ../lib/wiking/modules.py:1217
 msgid "E-mail"
 msgstr "E-mail"
 
-#: ../lib/wiking/modules.py:1214
+#: ../lib/wiking/modules.py:1218
 msgid "Phone"
 msgstr "Telefon"
 
-#: ../lib/wiking/modules.py:1215
+#: ../lib/wiking/modules.py:1219
 msgid "Address"
 msgstr "Adresa"
 
-#: ../lib/wiking/modules.py:1216
+#: ../lib/wiking/modules.py:1220
 msgid "URI"
 msgstr "URI"
 
-#: ../lib/wiking/modules.py:1217
+#: ../lib/wiking/modules.py:1221
 msgid "Registered since"
 msgstr "Registrace od"
 
-#: ../lib/wiking/modules.py:1219
+#: ../lib/wiking/modules.py:1223
 msgid "Enabled"
 msgstr "Povolen"
 
-#: ../lib/wiking/modules.py:1220
+#: ../lib/wiking/modules.py:1224
 msgid "Contribution privileges"
 msgstr "Práva přispěvatele"
 
-#: ../lib/wiking/modules.py:1221
+#: ../lib/wiking/modules.py:1225
 msgid "Authoring privileges"
 msgstr "Práva tvůrce obsahu"
 
-#: ../lib/wiking/modules.py:1222
+#: ../lib/wiking/modules.py:1226
 msgid "Admin privileges"
 msgstr "Administrátorská práva"
 
-#: ../lib/wiking/modules.py:1228
+#: ../lib/wiking/modules.py:1232
 msgid "Personal data"
 msgstr "Osobní údaje"
 
-#: ../lib/wiking/modules.py:1230
+#: ../lib/wiking/modules.py:1234
 msgid "Contact information"
 msgstr "Kontantní údaje"
 
-#: ../lib/wiking/modules.py:1232
+#: ../lib/wiking/modules.py:1236
 msgid "Login information"
 msgstr "Přihlašovací údaje"
 
-#: ../lib/wiking/modules.py:1246
+#: ../lib/wiking/modules.py:1250
 msgid "Edit your profile"
 msgstr "Upravit profil"
 
-#: ../lib/wiking/modules.py:1247
+#: ../lib/wiking/modules.py:1251
 msgid "Modify your record"
 msgstr "Změnit údaje ve Vašem záznamu"
 
-#: ../lib/wiking/modules.py:1252
+#: ../lib/wiking/modules.py:1256
 msgid "Remove the user permanently"
 msgstr "Nevratně odstranit uživatele"
 
-#: ../lib/wiking/modules.py:1255
+#: ../lib/wiking/modules.py:1259
 msgid "Register"
 msgstr "Registrace"
 
-#: ../lib/wiking/modules.py:1287
+#: ../lib/wiking/modules.py:1291
 msgid "Access Rights"
 msgstr "Práva"
 
-#: ../lib/wiking/modules.py:1288
+#: ../lib/wiking/modules.py:1292
 msgid "Manage access rights of registered users."
 msgstr "Správa přístupových práv registrovaných uživatelů."
 
