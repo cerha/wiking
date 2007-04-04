@@ -325,12 +325,14 @@ class Config(WikingModule):
             Field('login_panel',  _("Show login panel")),
             Field('allow_registration', _("Allow registration"), default=True),
             #Field('allow_wmi_link', _("Allow WMI link"), default=True),
+            Field('force_https_login', _("Force HTTPS login"), default=False),
             Field('webmaster_addr', _("Webmaster address")),
             Field('theme', _("Theme"), codebook='Themes',
                   selection_type=CHOICE, not_null=False),
             )
         layout = ('site_title', 'site_subtitle', 'login_panel',
-                  'allow_registration', 'webmaster_addr', 'theme')
+                  'allow_registration', 'force_https_login', 'webmaster_addr',
+                  'theme')
     _TITLE_COLUMN = 'title'
     _DEFAULT_ACTIONS = (Action(_("Edit"), 'edit'),)
 
@@ -858,9 +860,7 @@ class Attachments(StoredFileModule):
         return super(Attachments, self)._link_provider(req, row, cid, **kwargs)
 
     def _redirect_to_page(self, req, record):
-        req.set_header('Location', '/_wmi/Pages/' + record['page_id'].value())
-        req.set_status(302)
-        return ('text/html', '')
+        return req.redirect('/_wmi/Pages/' + record['page_id'].value())
         #m = self._module('Pages')
         #record = m.record(record['page_id'])
         #return m.action_show(req, record, msg=self._UPDATE_MSG)
