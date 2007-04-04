@@ -498,11 +498,11 @@ class PytisModule(Module, ActionHandler):
     # ===== Methods which modify the database =====
     
     def _insert(self, record):
-        """Insert a new row into the database and return a Record instance."""
+        """Insert new row into the database and return a Record instance."""
         new_row, success = self._data.insert(record.rowdata())
         #log(OPR, ":::", (new_row, [(k, record.rowdata()[k].value())
         #                           for k in record.rowdata().keys()]))
-        if success:
+        if success and new_row is not None:
             record.set_row(new_row)
         
     def _update(self, record):
