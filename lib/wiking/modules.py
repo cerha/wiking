@@ -1237,6 +1237,7 @@ class Users(WikingModule):
     _PANEL_FIELDS = ('fullname',)
     _ALLOW_TABLE_LAYOUT_IN_FORMS = False
     _OWNER_COLUMN = 'uid'
+    _SUPPLY_OWNER = False
     _RIGHTS_add = _RIGHTS_insert = Roles.ANYONE
     _RIGHTS_edit = _RIGHTS_update = (Roles.ADMIN, Roles.OWNER)
     _RIGHTS_remove = _RIGHTS_delete = Roles.ADMIN #, Roles.OWNER)
@@ -1264,14 +1265,14 @@ class Users(WikingModule):
         row = self._data.get_row(login=login, session_key=session_key)
         if row and row['session_expire'].value() > now():
             user = self._record(row)
-            expire = now() + TimeDelta(hours=1)
+            expire = now() + TimeDelta(hours=2)
             self._update_values(user, session_expire=expire)
             return user
         else:
             return  None
 
     def save_session(self, user, session_key):
-        exp = now() + TimeDelta(hours=1)
+        exp = now() + TimeDelta(hours=2)
         self._update_values(user, session_expire=exp, session_key=session_key)
 
     def close_session(self, user):
