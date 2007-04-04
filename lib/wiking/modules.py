@@ -1096,6 +1096,7 @@ class Images(StoredFileModule):
     _STORED_FIELDS = (('file', '_filename'),
                       ('image', '_image_filename'),
                       ('thumbnail', '_thumbnail_filename'))
+    _SEQUENCE_FIELDS = (('image_id', '_images_image_id_seq'),)
         
     def _link_provider(self, req, row, cid, **kwargs):
         if cid == 'file':
