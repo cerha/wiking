@@ -1,6 +1,12 @@
 Core features:
 
+ * Remove the dbname column -- get the database name from somewhere else.
+
+ * Password reminder.
+
  * Image allignment in the LCG formatting manual.
+
+ * More content management controls outside wmi (when authorized)
 
  * Default language when Accept-Language is not set at all
 
@@ -9,8 +15,6 @@ Core features:
  * Browsing support for long lists (forward/backward movement)
 
  * Save the exported HTML for structured text content in DB
-
- * More content management controls outside wmi (when authorized)
 
  * Change log and Last-Modified HTTP header support
 
@@ -28,4 +32,3 @@ Extensions:
  * Articles
 
  * Image galeries
-
