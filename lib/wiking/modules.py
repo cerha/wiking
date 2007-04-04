@@ -852,6 +852,10 @@ class Attachments(StoredFileModule):
     _LIST_BY_LANGUAGE = True
     _SEQUENCE_FIELDS = (('attachment_id', '_attachments_attachment_id_seq'),)
     _NON_LAYOUT_FIELDS = ('mapping_id', 'lang')
+    _EXCEPTION_MATCHERS = (
+        ('duplicate key violates unique constraint ' + \
+         '"_attachments_mapping_id_key"',
+         _("Attachment of the same filename already exists for this page.")),)
     
     def _link_provider(self, req, row, cid, **kwargs):
         if cid == 'file':
