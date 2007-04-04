@@ -19,7 +19,7 @@ CREATE TABLE _mapping (
 );
 
 CREATE OR REPLACE VIEW mapping AS 
-SELECT _mapping.oid, _mapping.*, modules.name as modname
+SELECT _mapping.*, modules.name as modname
 FROM _mapping JOIN modules USING (mod_id);
 
 CREATE OR REPLACE RULE mapping_insert AS
@@ -67,6 +67,30 @@ CREATE TABLE titles (
 
 -------------------------------------------------------------------------------
 
+CREATE TABLE users (
+	uid serial PRIMARY KEY,
+	login varchar(32) UNIQUE NOT NULL,
+	password varchar(32) NOT NULL,
+	firstname text NOT NULL,
+	surname text NOT NULL,
+	nickname text,
+	email text NOT NULL,
+	phone text,
+	address text,
+	uri text,
+	enabled boolean NOT NULL DEFAULT 'FALSE',
+	contributor boolean NOT NULL DEFAULT 'FALSE',
+	author boolean NOT NULL DEFAULT 'FALSE',
+	admin boolean NOT NULL DEFAULT 'FALSE',
+	since timestamp NOT NULL DEFAULT current_timestamp(0),
+	session_key text,
+	session_expire timestamp
+);
+ALTER TABLE users ALTER COLUMN since 
+SET DEFAULT current_timestamp(0) AT TIME ZONE 'GMT';
+
+-------------------------------------------------------------------------------
+
 CREATE TABLE _pages (
 	mapping_id integer NOT NULL REFERENCES _mapping ON DELETE CASCADE,
 	lang char(2) NOT NULL REFERENCES languages(lang),
@@ -76,7 +100,7 @@ CREATE TABLE _pages (
 );
 
 CREATE OR REPLACE VIEW pages AS 
-SELECT p.oid, m.mapping_id ||'.'|| l.lang as page_id, m.mapping_id, l.lang,
+SELECT m.mapping_id ||'.'|| l.lang as page_id, m.mapping_id, l.lang,
        m.identifier, m.published, t.title, p._content, p.content
 FROM _mapping m CROSS JOIN languages l JOIN modules USING (mod_id)
      LEFT OUTER JOIN _pages p USING (mapping_id, lang)
@@ -138,7 +162,7 @@ CREATE TABLE _attachment_descr (
 );
 
 CREATE OR REPLACE VIEW attachments
-AS SELECT a.oid, a.attachment_id  ||'.'|| l.lang as page_attachment_id,
+AS SELECT a.attachment_id  ||'.'|| l.lang as page_attachment_id,
   a.attachment_id, l.lang, a.mapping_id ||'.'|| l.lang as page_id, 
   a.mapping_id, m.identifier, a.filename, a.mime_type, a.bytesize, a.listed,
   a."timestamp", d.title, d.description, current_database() as dbname 
@@ -193,7 +217,7 @@ CREATE TABLE _panels (
 );
 
 CREATE OR REPLACE VIEW panels AS 
-SELECT _panels.oid, _panels.*, _mapping.mod_id, _mapping.identifier,
+SELECT _panels.*, _mapping.mod_id, _mapping.identifier,
        modules.name as modname, t.title as mtitle
 FROM _panels 
      LEFT OUTER JOIN _mapping USING (mapping_id) 
@@ -275,15 +299,15 @@ CREATE TABLE _images (
 );
 
 CREATE OR REPLACE VIEW images AS 
-SELECT oid, *, current_database() as dbname FROM _images;
+SELECT *, current_database() as dbname FROM _images;
 
 CREATE OR REPLACE RULE images_insert AS
   ON INSERT TO images DO INSTEAD (
-     INSERT INTO _images (filename, format, published, width,
-	height, "size", bytesize, title, author,
+     INSERT INTO _images (image_id, filename, format, published, width,
+     	height, "size", bytesize, title, author,
 	"location", description, taken, exif, "timestamp")
-     VALUES (new.filename, new.format, new.published, new.width,
-	new.height, new."size", new.bytesize, new.title, new.author,
+     VALUES (new.image_id, new.filename, new.format, new.published, new.width,
+     	new.height, new."size", new.bytesize, new.title, new.author,
 	new."location", new.description, new.taken, new.exif, new."timestamp");
 );
 
@@ -364,29 +388,6 @@ CREATE TABLE themes (
 );
 
 -------------------------------------------------------------------------------
-
-CREATE TABLE users (
-	uid serial PRIMARY KEY,
-	login varchar(32) UNIQUE NOT NULL,
-	password varchar(32) NOT NULL,
-	firstname text NOT NULL,
-	surname text NOT NULL,
-	nickname text,
-	email text NOT NULL,
-	phone text,
-	address text,
-	uri text,
-	enabled boolean NOT NULL DEFAULT 'FALSE',
-	contributor boolean NOT NULL DEFAULT 'FALSE',
-	author boolean NOT NULL DEFAULT 'FALSE',
-	admin boolean NOT NULL DEFAULT 'FALSE',
-	since timestamp NOT NULL DEFAULT current_timestamp(0),
-	session_key text,
-	session_expire timestamp
-);
-
-ALTER TABLE users ALTER COLUMN since 
-      SET DEFAULT current_timestamp(0) AT TIME ZONE 'GMT';
 
 CREATE TABLE config (
 	config_id int PRIMARY KEY DEFAULT 0 CHECK (config_id = 0),
