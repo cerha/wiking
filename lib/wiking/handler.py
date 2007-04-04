@@ -74,17 +74,21 @@ class Handler(object):
             import traceback
             text = "\n".join(["%s: %s" % pair for pair in info]) + \
                    "\n\n" + "".join(traceback.format_exception(*einfo))
-            if cfg.bug_report_address is not None:
-                send_mail('wiking@' + req.server.server_hostname,
-                          cfg.bug_report_address,
-                          'Wiking Error: ' + req.server.server_hostname,
-                          text + "\n\n" + cgitb.text(einfo),
-                          "<html><pre>"+ text +"</pre>"+ \
-                          cgitb.html(einfo) +"</html>",
-                          smtp_server=cfg.smtp_server)
-                log(OPR, "Traceback sent to:", cfg.bug_report_address)
-            else:
-                log(OPR, "Error:", cgitb.text(einfo))
+            try:
+                if cfg.bug_report_address is not None:
+                    send_mail('wiking@' + req.server.server_hostname,
+                              cfg.bug_report_address,
+                              'Wiking Error: ' + req.server.server_hostname,
+                              text + "\n\n" + cgitb.text(einfo),
+                              "<html><pre>"+ text +"</pre>"+ \
+                              cgitb.html(einfo) +"</html>",
+                              smtp_server=cfg.smtp_server)
+                    log(OPR, "Traceback sent to:", cfg.bug_report_address)
+                else:
+                    log(OPR, "Error:", cgitb.text(einfo))
+            except Exception, e:
+                log(OPR, "Error in exception handling:", e)
+                log(OPR, "The original exception was:", text)
             import traceback
             message = ''.join(traceback.format_exception_only(*einfo[:2]))
             return req.error(message)
