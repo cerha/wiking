@@ -781,9 +781,8 @@ class Attachments(StoredFileModule):
                                                 r['lang'].value()),
                            depends=('attachment_id', 'lang'))),
             Field('attachment_id'),
-            Field('identifier', _("Page")),
-            Field('mapping_id', _("Page"), width=5, codebook='Mapping',
-                  selection_type=CHOICE, editable=ONCE),
+            Field('mapping_id', _("Page"), codebook='Mapping', editable=ONCE),
+            Field('identifier'),
             Field('lang', _("Language"), codebook='Languages', 
                   selection_type=CHOICE, editable=ONCE, value_column='lang'),
             Field('page_id'),
@@ -821,7 +820,8 @@ class Attachments(StoredFileModule):
                   self._filename_computer('dbname', 'attachment_id', 'ext')),
             )
         layout = ('file', 'title', 'description', 'listed')
-        columns = ('filename', 'title', 'bytesize', 'mime_type', 'identifier')
+        columns = ('filename', 'title', 'bytesize', 'mime_type', 'listed',
+                   'mapping_id')
         sorting = (('identifier', ASC), ('filename', ASC))
         def _ext(self, row):
             if row['filename'].value() is None:
@@ -855,8 +855,6 @@ class Attachments(StoredFileModule):
         if cid == 'file':
             cid = 'filename'
             kwargs['action'] = 'view'
-        if cid == 'identifier':
-            return '/_wmi/Pages/' + row['page_id'].value()
         return super(Attachments, self)._link_provider(req, row, cid, **kwargs)
 
     def _redirect_to_page(self, req, record):
