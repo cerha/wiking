@@ -538,9 +538,11 @@ class PytisModule(Module, ActionHandler):
         args = {sbcol: record[bcol].value()}
         if self._LIST_BY_LANGUAGE:
             args['lang'] = record['lang'].value()
+        
         content = (
             self._form(ListView, req, self._rows(**args), custom_spec=\
-                       (not req.wmi and self._CUSTOM_VIEW or None)),
+                       (not req.wmi and self._CUSTOM_VIEW or None),
+                       columns=[c for c in self._view.columns() if c!=sbcol]),
             self._action_menu(req, args=args, uri='/_wmi/' + self.name()))
         #lang = req.prefered_language(self._module('Languages').languages())
         #title = self._real_title(lang)
