@@ -140,6 +140,7 @@ class PytisModule(Module, ActionHandler):
     _RIGHTS_remove = _RIGHTS_delete = Roles.ADMIN
     
     _OWNER_COLUMN = None
+    _SUPPLY_OWNER = True
     _NON_LAYOUT_FIELDS = ()
 
     _ALLOW_TABLE_LAYOUT_IN_FORMS = True
@@ -500,8 +501,8 @@ class PytisModule(Module, ActionHandler):
     def _insert(self, record):
         """Insert new row into the database and return a Record instance."""
         new_row, success = self._data.insert(record.rowdata())
-        #log(OPR, ":::", (new_row, [(k, record.rowdata()[k].value())
-        #                           for k in record.rowdata().keys()]))
+        #log(OPR, ":::", (new_row, success, [(k, record.rowdata()[k].value())
+        #                                    for k in record.rowdata().keys()]))
         if success and new_row is not None:
             record.set_row(new_row)
         
@@ -607,7 +608,7 @@ class PytisModule(Module, ActionHandler):
     # ===== Action handlers which actually modify the database =====
 
     def action_insert(self, req):
-        if self._OWNER_COLUMN and req.user():
+        if self._OWNER_COLUMN and self._SUPPLY_OWNER and req.user():
             prefill = {self._OWNER_COLUMN: req.user()['uid']}
         else:
             prefill = None
