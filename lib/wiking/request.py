@@ -263,8 +263,7 @@ class WikingRequest(Request):
         The login name is returned even if login was not successful.
 
         """
-        return self._login and self._login[0] or \
-               self.cookie(self._LOGIN_COOKIE)
+        return self._login and self._login[0]
 
     def user(self, raise_error=False):
         """Return the record describing the logged-in user.
@@ -311,7 +310,7 @@ class WikingRequest(Request):
             session_key = hex(random.randint(0, self._MAX_SESSION_KEY))
             self._users.save_session(user, session_key)
             self.set_cookie(self._LOGIN_COOKIE, login, expires=730*DAY)
-            self.set_cookie(self._SESSION_COOKIE, session_key, expires=DAY)
+            self.set_cookie(self._SESSION_COOKIE, session_key, expires=2*DAY)
             self._user = user
         else:
             login, key = (self.cookie(self._LOGIN_COOKIE), 
@@ -319,9 +318,9 @@ class WikingRequest(Request):
             if login and key:
                 self._user = self._users.check_session(login, key)
                 if self._user:
-                    # Cookie expiration is 1 day, but session expiration is
+                    # Cookie expiration is 2 days, but session expiration is
                     # controled within check_session independently.
-                    self.set_cookie(self._SESSION_COOKIE, key, expires=DAY)
+                    self.set_cookie(self._SESSION_COOKIE, key, expires=2*DAY)
                 else:
                     self._session_timed_out = True
         if self.param('command') == 'logout' and self._user:
