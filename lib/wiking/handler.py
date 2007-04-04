@@ -154,7 +154,9 @@ class SiteHandler(object):
                 req.login(self._users)
                 modname = self._mapping.modname(req.path[0])
                 result = self._module(modname).handle(req)
-                if not isinstance(result, Document):
+                if isinstance(result, int):
+                    return result
+                elif not isinstance(result, Document):
                     content_type, data = result
                     return req.result(data, content_type=content_type)
             # Always perform authentication at the end (if it was not
