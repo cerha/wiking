@@ -172,13 +172,13 @@ LEFT OUTER JOIN _attachment_descr d USING (attachment_id, lang);
 
 CREATE OR REPLACE RULE attachments_insert AS
  ON INSERT TO attachments DO INSTEAD (
-    INSERT INTO _attachment_descr (attachment_id, lang, title, description)
-           SELECT new.attachment_id, new.lang, new.title, new.description
-           WHERE new.title IS NOT NULL OR new.description IS NOT NULL;
     INSERT INTO _attachments (attachment_id, mapping_id, filename, mime_type,
                               bytesize, listed)
             VALUES (new.attachment_id, new.mapping_id, new.filename, 
                     new.mime_type, new.bytesize, new.listed);
+    INSERT INTO _attachment_descr (attachment_id, lang, title, description)
+           SELECT new.attachment_id, new.lang, new.title, new.description
+           WHERE new.title IS NOT NULL OR new.description IS NOT NULL;
 );
 
 CREATE OR REPLACE RULE attachments_update AS
