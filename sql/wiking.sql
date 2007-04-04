@@ -396,6 +396,7 @@ CREATE TABLE config (
 	site_subtitle text,
 	login_panel boolean NOT NULL DEFAULT 'FALSE',
 	allow_registration boolean NOT NULL DEFAULT 'TRUE',
+	force_https_login NOT NULL DEFAULT 'FALSE',
 	webmaster_addr text,
 	theme integer REFERENCES themes
 );
