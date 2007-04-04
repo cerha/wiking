@@ -113,8 +113,14 @@ class Request(object):
         self._req.write(data)
         return apache.OK
 
-    def abs_uri(self):
+    def https(self):
+        """Return true if https is on."""
         port = self._req.connection.local_addr[1]
+        return port in cfg.https_ports
+    
+    def abs_uri(self, port=None):
+        if port is None:
+            port = self._req.connection.local_addr[1]
         if port in cfg.https_ports:
             protocol = 'https://'
             default_port = 443
@@ -133,13 +139,24 @@ class Request(object):
         self._req.write("<html><head>"
                         "<title>501 Internal Server Error</title>"
                         "</head>"
-                        "<h1>Internal Server Error</h1>"
+                        "<body><h1>Internal Server Error</h1>"
                         "<p>The server was unable to complete your request. "
                         "Please inform the server administrator, %s if the "
                         "problem persists.</p>"
                         "The error message was:"
-                        "<pre>" % self.server.server_admin + escape(message) +\
-                        "</pre></html>")
+                        "<pre>" % self.server.server_admin + escape(message)+\
+                        "</pre></body></html>")
+        return apache.OK
+
+    def redirect(self, uri, permanent=False):
+        self._req.content_type = "text/html"
+        self._req.send_http_header()
+        self._req.status = permanent and apache.HTTP_MOVED_PERMANENTLY or \
+                           apache.HTTP_MOVED_TEMPORARILY
+        self.set_header('Location', uri)
+        self._req.write("<html><head><title>Redirected</title></head>"
+                        "<body>Your request has been redirected to "
+                        "<a href='"+uri+"'>"+uri+"</a>.</body></html>")
         return apache.OK
 
 
@@ -322,9 +339,11 @@ class WikingRequest(Request):
                     # controled within check_session independently.
                     self.set_cookie(self._SESSION_COOKIE, key, expires=2*DAY)
                 else:
+                    # This is not true after logout
                     self._session_timed_out = True
         if self.param('command') == 'logout' and self._user:
             self._users.close_session(self._user)
             self._user = None
+            self.set_cookie(self._SESSION_COOKIE, None, expires=0)
         elif self.param('command') == 'login' and not self._user:
             raise AuthenticationError()
