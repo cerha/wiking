@@ -152,7 +152,7 @@ class SiteHandler(object):
         try:
             try:
                 req.login(self._users)
-                modname = self._mapping.modname(req.path[0])
+                modname = self._mapping.resolve(req)
                 result = self._module(modname).handle(req)
                 if isinstance(result, int):
                     return result
