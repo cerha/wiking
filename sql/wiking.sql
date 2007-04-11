@@ -15,6 +15,7 @@ CREATE TABLE _mapping (
 	identifier varchar(32) UNIQUE NOT NULL,
 	mod_id integer NOT NULL REFERENCES modules,
 	published boolean NOT NULL DEFAULT 'FALSE',
+	private boolean NOT NULL DEFAULT 'FALSE',
 	ord int
 );
 
@@ -25,10 +26,10 @@ FROM _mapping JOIN modules USING (mod_id);
 CREATE OR REPLACE RULE mapping_insert AS
   ON INSERT TO mapping DO INSTEAD (
      INSERT INTO _mapping 
-        (parent, identifier, mod_id, published, ord)
+        (parent, identifier, mod_id, published, private, ord)
      VALUES
         (new.parent, new.identifier, new.mod_id, 
-	 new.published, new.ord);
+	 new.published, new.private, new.ord);
 );
 
 CREATE OR REPLACE RULE mapping_update AS
@@ -38,6 +39,7 @@ CREATE OR REPLACE RULE mapping_update AS
 	identifier = new.identifier,
 	mod_id = new.mod_id, 
 	published = new.published,
+	private = new.private,
 	ord = new.ord
     WHERE _mapping.mapping_id = old.mapping_id;
 );
