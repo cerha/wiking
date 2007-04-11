@@ -32,9 +32,19 @@ může na ně být vytvořen odkaz pomocí jejich identifikátoru (například v
 textu jiné stránky).
 
 
-== Publikované/nepublikované položky ==
+== Zveřejnění položky ==
 
 Jednotlivé položky mapování, stejně jako mnoho jiných součástí obsahu, mohou
 být zveřejněny/zneveřejněny.  Neveřejná položka sice existuje v databázi a lze
 s ní tedy pracovat a spravovat její obsah, vnějším uživatelům však tato položka
-není dostupná.
+není dostupná.  Nepublikované položky jsou dostupné pouze v rámci Správcovského
+rozhraní.
+
+== Privátní položky ==
+
+Privátní (soukromé) položky jsou dostupné pouze přihlášeným uživatelům (pouze
+registrovaný uživatel povolený správcem se může přihlasít).  Privátní položky
+se mohou vyskytovat také v menu, takže se všichni uživatelé dozví o jejich
+existenci, ale pouze přihlášení užiatelé budou schopni zobrazit jejich obsah.
+Aby byla privátní položka dostupná, musí být stále zveřejněna (tyto dvě
+vlastnosti spolu nesouvisí).

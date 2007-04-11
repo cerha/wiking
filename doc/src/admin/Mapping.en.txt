@@ -33,4 +33,13 @@ to those items from other pages to make them visible to website users.
 Mapping items, as well as many other content elements, can be
 published/unpublished.  An unpublished item exists in the database, so the
 author can work on it, but it is not publicly visible to the website users.
+Unpublished items only appear within the WMI.
 
+
+== Private items ==
+
+Private items are only accessible to logged in users (only registered users
+enabled by the administrator are able to log in).  Private item may appear in
+the menu, so anyone can see that it exists, but only authorized users can visit
+it.  Private items must still be published to become available for the website
+visitors (these two properties are independent).
