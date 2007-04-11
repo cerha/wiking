@@ -1,3 +1,8 @@
+2007-04-11  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/modules.py (Modules): Accept also custom modules
+	defined in `wikingmodules'.
+
 2007-04-04  Tomas Cerha  <cerha@brailcom.org>
 
 	* translations/wiking.cs.po: Updated.
