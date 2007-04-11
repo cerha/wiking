@@ -273,9 +273,13 @@ class Modules(WikingModule):
                                        "is not installed properly.")
             def _check_constraints(self, value):
                 pd.String._check_constraints(self, value)
-                if not globals().has_key(value) or \
-                       not issubclass(globals()[value], WikingModule):
+                try:
+                    module = get_module(value)
+                except AttributeError:
                     raise self._validation_error(self.VM_UNKNOWN_MODULE)
+                if not issubclass(module, WikingModule):
+                    raise self._validation_error(self.VM_UNKNOWN_MODULE)
+                    
         title = _("Modules")
         help = _("Manage available Wiking modules.")
         fields = (
