@@ -99,11 +99,12 @@ img { position: relative; } /* MSIE float workaround */
 
 #panels {
     position: relative;
+    width: 100%; /* MSIE workaround */
 }
 #panels a.panel-control {
     position: absolute;
     right: 0;
-    top: -1.3em;
+    top: -1.4em;
     font-size: 0.8em;
 }
 
