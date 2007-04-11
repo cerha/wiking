@@ -1,7 +1,19 @@
 2007-04-11  Tomas Cerha  <cerha@brailcom.org>
 
+	* doc/src/admin/Mapping.en.txt: Updated.
+	
+	* doc/src/admin/Mapping.cs.txt: Updated.
+
+	* sql/wiking.sql: Added support for private items.
+
+	* resources/css/default.css: Yet another MSIE hack. 
+
 	* lib/wiking/modules.py (Modules): Accept also custom modules
 	defined in `wikingmodules'.
+	(Mapping): Added support for private items.
+
+	* lib/wiking/handler.py (Module): Use the changed `Mapping'
+	interface.
 
 2007-04-04  Tomas Cerha  <cerha@brailcom.org>
 
