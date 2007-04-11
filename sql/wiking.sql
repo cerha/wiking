@@ -220,7 +220,7 @@ CREATE TABLE _panels (
 );
 
 CREATE OR REPLACE VIEW panels AS 
-SELECT _panels.*, _mapping.mod_id, _mapping.identifier,
+SELECT _panels.*, _mapping.mod_id, _mapping.identifier, _mapping.private,
        modules.name as modname, t.title as mtitle
 FROM _panels 
      LEFT OUTER JOIN _mapping USING (mapping_id) 
