@@ -421,6 +421,7 @@ class Panels(WikingModule, Publishable):
                           "panel.")),
             Field('identifier', editable=NEVER),
             Field('modname'),
+            Field('private'),
             Field('modtitle', _("Module"), virtual=True,
                   computer=Computer(lambda r: _modtitle(r['modname'].value()),
                                     depends=('modname',))),
@@ -445,6 +446,9 @@ class Panels(WikingModule, Publishable):
         panels = []
         for row in self._data.get_rows(lang=lang, published=True,
                                        sorting=self._sorting):
+            if row['private'].value() is True and not \
+                   Roles.check(req, (Roles.USER,), raise_error=False):
+                continue
             panel_id = row['identifier'].value() or str(row['panel_id'].value())
             title = row['ptitle'].value() or row['mtitle'].value() or \
                     _modtitle(row['modname'].value())
