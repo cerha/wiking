@@ -6,6 +6,8 @@ Core features:
 
  * Deleting stray files after deletion triggered in the database (cascade)
 
+ * Serve favicon and robots.txt
+
  * Password reminder
 
  * Image allignment in the LCG formatting manual
