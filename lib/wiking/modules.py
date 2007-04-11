@@ -71,14 +71,12 @@ _STRUCTURED_TEXT_DESCR = _("The content should be formatted as LCG "
 class Mapping(WikingModule, Publishable):
     """Mapping available URIs to the modules which handle them.
 
-    The Wiking Handler always uses the first part of the URI path to query this
-    module for the module which is responsible for handling the request and
-    then postpones the request to this module.  The first part of the URI path
-    is refered to as the ``identifier''.  For example in the URI
-    `http://www.yourdomain.com/xxx/yyy' the identifier is `xxx'.  It is also
-    legal to map several URIs to the same module.  In this case it is up to the
-    module to resolve the request and handle different requests differently.
-    
+    The Wiking Handler always queries this module to resolve the request URI
+    and return the name of the module which is responsible for handling the
+    request.  Futher processing of the request is then postponed to this
+    module.  Only a part of the request uri may be used to determine the module
+    and another part may be used by the module to determine the sub-contents.
+
     This implementation uses static mapping as well as database based mapping,
     which may be modified through the Wiking Management Interface.
 
@@ -114,43 +112,48 @@ class Mapping(WikingModule, Publishable):
             Field('published', _("Published"),
                   descr=_("This flag allows you to make the item unavailable "
                           "withoit actually removing it.")),
+            Field('private', _("Private"), default=False,
+                  descr=_("Make the item available only to logged-in users.")),
             Field('ord', _("Menu order"), width=5,
                   descr=_("Enter a number denoting the item order in the menu "
                           "or leave the field blank if you don't want this "
                           "item to appear in the menu.")))
         sorting = (('ord', ASC), ('identifier', ASC))
         bindings = {'Pages': pp.BindingSpec(_("Pages"), 'mapping_id')}
-        columns = ('identifier', 'modtitle', 'published', 'ord')
-        layout = ('identifier', 'mod_id', 'published', 'ord')
+        columns = ('identifier', 'modtitle', 'published', 'private', 'ord')
+        layout = ('identifier', 'mod_id', 'published', 'private', 'ord')
         cb = pp.CodebookSpec(display='identifier')
     _REFERER = 'identifier'
     _STATIC_MAPPING = {'_doc': 'Documentation',
                        '_wmi': 'WikingManagementInterface'}
     _REVERSE_STATIC_MAPPING = dict([(v,k) for k,v in _STATIC_MAPPING.items()])
+    _mapping_cache = {}
 
     def _link_provider(self, req, row, cid, **kwargs):
         if req.wmi and cid == 'modtitle':
             return '/_wmi/' + row['modname'].value()
         return super(Mapping, self)._link_provider(req, row, cid, **kwargs)
 
-    def modname(self, identifier):
-        """Return the name of the module for the given identifier."""
+    def resolve(self, req):
+        "Return the name of the module responsible for handling the request."
+        identifier = req.path[0]
         try:
             modname = self._STATIC_MAPPING[identifier]
         except KeyError:
+            # TODO: Caching here may prevent changes in `private' flag to take
+            # effect...
             try:
-                cache = self._modname_cache
-            except AttributeError:
-                cache = self._modname_cache = {}
-            try:
-                modname = cache[identifier]
+                modname, private = self._mapping_cache[identifier]
             except KeyError:
                 row = self._data.get_row(identifier=identifier)
                 if row is None:
                     raise NotFound()
                 if not row['published'].value():
                     raise Forbidden()
-                cache[identifier] = modname = row['modname'].value()
+                self._mapping_cache[identifier] = modname, private = \
+                                 row['modname'].value(), row['private'].value()
+            if private:
+                Roles.check(req, (Roles.USER,))
         return modname
     
     def get_identifier(self, modname):
