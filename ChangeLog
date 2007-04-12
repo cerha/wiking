@@ -1,3 +1,21 @@
+2007-04-12  Tomas Cerha  <cerha@brailcom.org>
+
+	* translations/wiking.cs.po: Updated.
+
+	* lib/wiking/util.py (LoginCtrl): New class.
+
+	* lib/wiking/modules.py (Panels.panels): Add a login panel
+	automatically if it is configured.
+	(Users): Don't display user listing after registration.  Display
+	further information instead.
+	(Mapping.resolve): Allow new user registration even if the `Users'
+	module is private.
+
+	* lib/wiking/handler.py: Removed unecessary `config' settings.
+
+	* lib/wiking/export.py: Don't create the login panel here, just
+	expect it in `panels'.
+
 2007-04-11  Tomas Cerha  <cerha@brailcom.org>
 
 	* doc/src/admin/Mapping.en.txt: Updated.
