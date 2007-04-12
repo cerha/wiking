@@ -349,6 +349,26 @@ class ActionMenu(lcg.Content):
         return g.p(lcg.concat(_("Actions:"), items, separator="\n"),
                    cls="actions")
 
+class LoginCtrl(lcg.Content):
+    """Displays the logged in user and a login/logout control."""
+    
+    def __init__(self, user):
+        super(LoginCtrl, self).__init__()
+        assert user is None or isinstance(user, pp.PresentedRow), user
+        self._user = user
+
+    def export(self, exporter):
+        g = exporter.generator()
+        if self._user:
+            username = self._user['user'].value()
+            cmd, label = ('logout', _("log out"))
+        else:
+            username = _("not logged")
+            cmd, label = ('login', _("log in"))
+        ctrl = g.link(label, '?command=%s' % cmd, cls='login-ctrl')
+        return lcg.concat(username, ' ', g.span('[', cls="hidden"), ctrl,
+                          g.span(']', cls="hidden"))
+    
     
 class PanelItem(lcg.Content):
 
