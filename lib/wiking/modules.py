@@ -152,7 +152,12 @@ class Mapping(WikingModule, Publishable):
                     raise Forbidden()
                 self._mapping_cache[identifier] = modname, private = \
                                  row['modname'].value(), row['private'].value()
-            if private:
+            if private and not (modname == 'Users' and \
+                                req.param('action') in ('add', 'insert')):
+                # We want to allow new user registration even if the user
+                # listing is private.  Unfortunately there seems to be no
+                # better solution than the terrible hack above...
+                # May be we should ask the module?
                 Roles.check(req, (Roles.USER,))
         return modname
     
@@ -442,8 +447,17 @@ class Panels(WikingModule, Publishable):
     _LIST_BY_LANGUAGE = True
 
     def panels(self, req, lang):
-        parser = lcg.Parser()
         panels = []
+        parser = lcg.Parser()
+        config = self._module('Config').config(req.server, lang)
+        if config.login_panel and not req.wmi:
+            user = req.user()
+            content = lcg.p(LoginCtrl(user))
+            if config.allow_registration and not user:
+                uri = self._module('Users').registration_uri(req)
+                lnk = lcg.link(uri, _("New user registration"))
+                content = lcg.coerce((content, lnk))
+            panels.append(Panel('login', _("Login"), content))
         for row in self._data.get_rows(lang=lang, published=True,
                                        sorting=self._sorting):
             if row['private'].value() is True and not \
@@ -1271,6 +1285,11 @@ class Users(WikingModule):
                                descr=_("New user registration")),)
         return super(Users, self)._actions(req, record)
         
+    def _redirect_after_insert(self, req, record):
+        content = lcg.p(_("Registration completed successfuly. "
+                          "Your account now awaits administrator's approval."))
+        return self._document(req, content, subtitle=_("Registration"))
+    
     def user(self, login):
         return self._record(self._data.get_row(login=login))
 
@@ -1291,10 +1310,9 @@ class Users(WikingModule):
     def close_session(self, user):
         self._update_values(user, session_expire=None, session_key=None)
 
-    def registration_uri(self, req, config):
+    def registration_uri(self, req):
         identifier = self._identifier(req)
-        if config.allow_registration and identifier:
-            return make_uri('/'+identifier, action='add')
+        return identifier and make_uri('/'+identifier, action='add')
         
         
 class Rights(Users):
