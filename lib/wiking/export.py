@@ -94,36 +94,18 @@ class Exporter(lcg.HtmlExporter):
         return self._parts(node, ('menu', 'language_selection',
                                   'panels', 'content', 'clearing'))
 
-    def _login_ctrl(self, node):
-        user = node.config().user
-        if user:
-            u, l, cmd = (user['user'].value(), _("log out"), 'logout')
-        else:
-            u, l, cmd = (_("not logged"), _("log in"), 'login')
-        return (u, self._generator.link(l, '?command=%s' % cmd,
-                                        cls='login-ctrl'))
-    
     def _panels(self, node):
         g = self._generator
         panels = node.panels()
-        config = node.config()
         if not panels:
             return None
+        config = node.config()
         if not config.show_panels:
             return g.link(_("Show panels"), "?show_panels=1",
                           cls='panel-control show')
         result = [g.link(_("Hide panels"), "?hide_panels=1",
                          cls='panel-control hide'),
                   g.hr(cls="hidden")]
-        if config.login_panel:
-            user, ctrl = self._login_ctrl(node)
-            content = (g.p(concat(user, ' ', self._hidden('['), ctrl,
-                                  self._hidden(']'))),)
-            if config.register and not config.user:
-                content += (g.div(g.link(_("New user registration"),
-                                         config.register),
-                                  cls='register'),)
-            panels.insert(0, Panel('login', _("Login"), content))
         for i, panel in enumerate(panels):
             id = panel.id()
             content = panel.content()
@@ -164,8 +146,15 @@ class Exporter(lcg.HtmlExporter):
         #if config.edit_label:
         #    ctrl += (g.link(config.edit_label, "?action=edit"), "|")
         if config.wmi or not config.login_panel:
-            user, lctrl = self._login_ctrl(node)
-            ctrl += concat(_("Login"), ': ', user, ' (', lctrl, ') | ')
+            user = node.config().user
+            if user:
+                username = user['user'].value()
+                cmd, label = ('logout', _("log out"))
+            else:
+                username = _("not logged")
+                cmd, label = ('login', _("log in"))
+            lctrl = g.link(label, '?command=%s' % cmd, cls='login-ctrl')
+            ctrl += concat(_("Login"), ': ', username, ' (', lctrl, ') | ')
         if config.wmi:
             ctrl += g.link(_("Leave the Management Interface"), '/', hotkey="9")
         elif config.doc:
