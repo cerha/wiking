@@ -145,7 +145,7 @@ class Exporter(lcg.HtmlExporter):
         ctrl = ''
         #if config.edit_label:
         #    ctrl += (g.link(config.edit_label, "?action=edit"), "|")
-        if config.wmi or not config.login_panel:
+        if config.allow_login_ctrl and (config.wmi or not config.login_panel):
             user = node.config().user
             if user:
                 username = user['user'].value()
