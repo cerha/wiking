@@ -350,6 +350,7 @@ class Config(WikingModule):
 
     class Configuration(object):
         allow_wmi_link = True
+        allow_login_ctrl = True
         def __init__(self, row, server):
             self._server = server
             for key in row.keys():
@@ -455,8 +456,9 @@ class Panels(WikingModule, Publishable):
             content = lcg.p(LoginCtrl(user))
             if config.allow_registration and not user:
                 uri = self._module('Users').registration_uri(req)
-                lnk = lcg.link(uri, _("New user registration"))
-                content = lcg.coerce((content, lnk))
+                if uri:
+                    lnk = lcg.link(uri, _("New user registration"))
+                    content = lcg.coerce((content, lnk))
             panels.append(Panel('login', _("Login"), content))
         for row in self._data.get_rows(lang=lang, published=True,
                                        sorting=self._sorting):
@@ -1312,7 +1314,7 @@ class Users(WikingModule):
 
     def registration_uri(self, req):
         identifier = self._identifier(req)
-        return identifier and make_uri('/'+identifier, action='add')
+        return identifier and make_uri('/'+identifier, action='add') or None
         
         
 class Rights(Users):
