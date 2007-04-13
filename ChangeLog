@@ -1,3 +1,11 @@
+2007-04-13  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/export.py (Exporter.ctrl): Obey the new config option
+	`allow_login_ctrl'.
+
+	* lib/wiking/modules.py: Fixed a problem with unknown registration
+	URI in login panel.  Allow suppression of login ctrl through configuration.
+
 2007-04-12  Tomas Cerha  <cerha@brailcom.org>
 
 	* translations/wiking.cs.po: Updated.
