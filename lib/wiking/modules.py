@@ -1328,7 +1328,40 @@ class Rights(Users):
     _RIGHTS_edit = _RIGHTS_update = Roles.ADMIN
     _RIGHTS_remove = ()
 
-        
-                        
-        
+
+class Reload(Module):
+
+    _UNRELOADABLE_MODULES = ('sys', '__main__', '__builtin__',)
+    # NOTE: Wiking and LCG are not reloadable due to the mess in Python class
+    # instances  after reload.
+    _RELOADABLE_REGEXP = '.*/wikingmodules/.*'
+
+    def __init__(self, *args, **kwargs):
+        super(Reload, self).__init__(*args, **kwargs)
+        self._reloadable_regexp = re.compile(self._RELOADABLE_REGEXP)
+
+    def _module_reloadable(self, name, module, req):
+        return (module is not None and
+                name not in self._UNRELOADABLE_MODULES and
+                hasattr(module, '__file__') and
+                self._reloadable_regexp.match(module.__file__))
+
+    def _reload_modules(self, req):
+        import sys
+        module_names = []
+        for name, module in sys.modules.items():
+            if self._module_reloadable(name, module, req):
+                try:
+                    reload(module)
+                    module_names.append(name)
+                except:
+                    pass
+        return module_names
+    
+    def handle(self, req):
+        module_names = self._reload_modules(req)
+        import string
+        content = lcg.coerce((lcg.p(_("The following modules were successfully reloaded:")),
+                              lcg.p(string.join(module_names, ", ")),))
+        return Document(_("Reload"), lcg.coerce(content))
         
