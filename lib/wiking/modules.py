@@ -69,16 +69,15 @@ _STRUCTURED_TEXT_DESCR = _("The content should be formatted as LCG "
                                    _("formatting manual") + "</a>"))
 
 class Mapping(WikingModule, Publishable):
-    """Mapping available URIs to the modules which handle them.
+    """Map available URIs to the modules which handle them.
 
-    The Wiking Handler always queries this module to resolve the request URI
-    and return the name of the module which is responsible for handling the
-    request.  Futher processing of the request is then postponed to this
-    module.  Only a part of the request uri may be used to determine the module
-    and another part may be used by the module to determine the sub-contents.
+    The Wiking Handler always queries this module to resolve the request URI and return the name of
+    the module which is responsible for handling the request.  Futher processing of the request is
+    then postponed to this module.  Only a part of the request uri may be used to determine the
+    module and another part may be used by the module to determine the sub-contents.
 
-    This implementation uses static mapping as well as database based mapping,
-    which may be modified through the Wiking Management Interface.
+    This implementation uses static mapping as well as database based mapping, which may be
+    modified through the Wiking Management Interface.
 
     """
     class Spec(pp.Specification):
@@ -90,13 +89,10 @@ class Mapping(WikingModule, Publishable):
             #Field('parent', _("Parent"), codebook='Mapping'),
             Field('identifier', _("Identifier"), width=20,
                   filter=ALPHANUMERIC, post_process=LOWER, fixed=True,
-                  type=pd.RegexString(maxlen=32, not_null=True,
-                                      regex='^[a-zA-Z][0-9a-zA-Z_-]*$'),
-                  descr=_("The identifier may be used to refer to this page "
-                          "from outside and also from other pages. "
-                          "A valid identifier can only contain letters, "
-                          "digits, dashes and underscores.  It must start "
-                          "with a letter.")),
+                  type=pd.RegexString(maxlen=32, not_null=True, regex='^[a-zA-Z][0-9a-zA-Z_-]*$'),
+                  descr=_("The identifier may be used to refer to this page from outside and also "
+                          "from other pages. A valid identifier can only contain letters, digits, "
+                          "dashes and underscores.  It must start with a letter.")),
             Field('mod_id', _("Module"), selection_type=CHOICE,
                   codebook='Modules',
                   validity_condition=pd.AND(*[pd.NE('name',
@@ -106,18 +102,16 @@ class Mapping(WikingModule, Publishable):
             Field('modtitle', _("Module"), virtual=True,
                   computer=Computer(lambda r: _modtitle(r['modname'].value()),
                                     depends=('modname',)),
-                  descr=_("Select the module which handles requests for "
-                          "given identifier.  This is the way to make the "
-                          "module available from outside.")),
+                  descr=_("Select the module which handles requests for given identifier. "
+                          "This is the way to make the module available from outside.")),
             Field('published', _("Published"),
-                  descr=_("This flag allows you to make the item unavailable "
-                          "withoit actually removing it.")),
+                  descr=_("This flag allows you to make the item unavailable withoit actually "
+                          "removing it.")),
             Field('private', _("Private"), default=False,
                   descr=_("Make the item available only to logged-in users.")),
             Field('ord', _("Menu order"), width=5,
-                  descr=_("Enter a number denoting the item order in the menu "
-                          "or leave the field blank if you don't want this "
-                          "item to appear in the menu.")))
+                  descr=_("Enter a number denoting the item order in the menu or leave the field "
+                          "blank if you don't want this item to appear in the menu.")))
         sorting = (('ord', ASC), ('identifier', ASC))
         bindings = {'Pages': pp.BindingSpec(_("Pages"), 'mapping_id')}
         columns = ('identifier', 'modtitle', 'published', 'private', 'ord')
@@ -151,22 +145,20 @@ class Mapping(WikingModule, Publishable):
                 if not row['published'].value():
                     raise Forbidden()
                 self._mapping_cache[identifier] = modname, private = \
-                                 row['modname'].value(), row['private'].value()
+                                                  row['modname'].value(), row['private'].value()
             if private and not (modname == 'Users' and \
                                 req.param('action') in ('add', 'insert')):
-                # We want to allow new user registration even if the user
-                # listing is private.  Unfortunately there seems to be no
-                # better solution than the terrible hack above...
-                # May be we should ask the module?
+                # We want to allow new user registration even if the user listing is private.
+                # Unfortunately there seems to be no better solution than the terrible hack
+                # above...  May be we should ask the module?
                 Roles.check(req, (Roles.USER,))
         return modname
     
     def get_identifier(self, modname):
         """Return the current identifier for given module name.
 
-        None will be returned when there is no mapping item for the module, or
-        when there is more than one item for the same module (which is also
-        legal).
+        None will be returned when there is no mapping item for the module, or when there is more
+        than one item for the same module (which is also legal).
         
         """
         rows = self._data.get_rows(modname=modname, published=True)
@@ -181,9 +173,8 @@ class Mapping(WikingModule, Publishable):
         
           req -- the current request object.
         
-          lang -- denotes the language which should be used for localizing the
-            item titles.  It is one of the language codes as returned by
-            `Languages.languages()'.
+          lang -- denotes the language which should be used for localizing the item titles.  It is
+            one of the language codes as returned by `Languages.languages()'.
             
         Returns a sequence of 'MenuItem' instances.
         
@@ -200,9 +191,8 @@ class Mapping(WikingModule, Publishable):
     def title(self, lang, modname):
         """Return localized module title for given module name.
 
-        The argument `lang' denotes the language which should be used for
-        localizing the title.  It is one of the language codes as returned by
-        `Languages.languages()'.
+        The argument `lang' denotes the language which should be used for localizing the title.  It
+        is one of the language codes as returned by `Languages.languages()'.
 
         """
         row = self._data.get_row(modname=modname)
@@ -217,8 +207,8 @@ class Mapping(WikingModule, Publishable):
 class Documentation(Module):
     """Serve the on-line documentation.
 
-    This module is not bound to a data object.  It only serves the on-line
-    documentation from files on the disk.
+    This module is not bound to a data object.  It only serves the on-line documentation from files
+    on the disk.
 
     """
     def handle(self, req):
@@ -294,8 +284,7 @@ class Modules(WikingModule):
             Field('mod_id'),
             Field('name', _("Name"), type=_ModNameType(not_null=True)),
             Field('title', _("Title"), virtual=True,
-                  computer=Computer(lambda r: _modtitle(r['name'].value()),
-                                    depends=('name',))),
+                  computer=Computer(lambda r: _modtitle(r['name'].value()), depends=('name',))),
             Field('active', _("Active")),
             Field('ord', _("Menu order"), width=5),
             )
@@ -330,8 +319,7 @@ class Config(WikingModule):
         fields = (
             Field('config_id', ),
             Field('title', virtual=True,
-                  computer=Computer(lambda r: _("Site Configuration"),
-                                    depends=())),
+                  computer=Computer(lambda r: _("Site Configuration"), depends=())),
             Field('site_title', _("Site title"), width=24),
             Field('site_subtitle', _("Site subtitle"), width=64),
             Field('login_panel',  _("Show login panel")),
@@ -339,12 +327,10 @@ class Config(WikingModule):
             #Field('allow_wmi_link', _("Allow WMI link"), default=True),
             Field('force_https_login', _("Force HTTPS login"), default=False),
             Field('webmaster_addr', _("Webmaster address")),
-            Field('theme', _("Theme"), codebook='Themes',
-                  selection_type=CHOICE, not_null=False),
+            Field('theme', _("Theme"), codebook='Themes', selection_type=CHOICE, not_null=False),
             )
-        layout = ('site_title', 'site_subtitle', 'login_panel',
-                  'allow_registration', 'force_https_login', 'webmaster_addr',
-                  'theme')
+        layout = ('site_title', 'site_subtitle', 'login_panel', 'allow_registration',
+                  'force_https_login', 'webmaster_addr', 'theme')
     _TITLE_COLUMN = 'title'
     _DEFAULT_ACTIONS = (Action(_("Edit"), 'edit'),)
 
@@ -371,9 +357,8 @@ class Config(WikingModule):
     def config(self, server, lang):
         """Return the site-specific configuration object.
 
-        The instance returned by this method must have the following public
-        attributes: 'site_title', 'site_subtitle', 'login_panel',
-        'webmaster_addr'.
+        The instance returned by this method must have the following public attributes:
+        'site_title', 'site_subtitle', 'login_panel', 'webmaster_addr'.
 
         """
         row = self._data.get_row(config_id=0)
@@ -382,9 +367,8 @@ class Config(WikingModule):
     def theme(self):
         """Return the current color theme as a dictionary.
 
-        The returned dictionary assigns color values (strings in the '#rrggbb'
-        format) to symbolic color names.  These colors will used for
-        stlylesheet substitution.
+        The returned dictionary assigns color values (strings in the '#rrggbb' format) to symbolic
+        color names.  These colors will used for stlylesheet substitution.
 
         """
 
@@ -415,16 +399,13 @@ class Panels(WikingModule, Publishable):
                                     _modtitle(row['modname'].value()),
                                     depends=('ptitle', 'mtitle', 'modname',))),
             Field('ord', _("Order"), width=5,
-                  descr=_("Number denoting the order of the panel on the "
-                          "page.")),
-            Field('mapping_id', _("Module"), width=5, codebook='Mapping',
-                  selection_type=CHOICE, not_null=False, 
-                  display=(_modtitle, 'modname'), validity_condition=\
-                  pd.AND(*[pd.NE('modname', pd.Value(pd.String(),_m))
-                           for _m in _SYSMODULES+('Pages',)]),
-                  descr=_("The items of the selected module will be shown by "
-                          "the panel.  Leave blank for a text content "
-                          "panel.")),
+                  descr=_("Number denoting the order of the panel on the page.")),
+            Field('mapping_id', _("Module"), width=5, not_null=False, codebook='Mapping',
+                  display=(_modtitle, 'modname'), selection_type=CHOICE, 
+                  validity_condition=pd.AND(*[pd.NE('modname', pd.Value(pd.String(),_m))
+                                              for _m in _SYSMODULES+('Pages',)]),
+                  descr=_("The items of the selected module will be shown by the panel. "
+                          "Leave blank for a text content panel.")),
             Field('identifier', editable=NEVER),
             Field('modname'),
             Field('private'),
@@ -434,7 +415,7 @@ class Panels(WikingModule, Publishable):
             Field('size', _("Items count"), width=5,
                   descr=_("Number of items from the selected module, which "
                           "will be shown by the panel.")),
-            Field('content', _("Content"), width=50, height=10,
+            Field('content', _("Content"), width=80, height=10,
                   descr=_("Additional text content displayed on the panel.")+\
                   ' '+_STRUCTURED_TEXT_DESCR),
             Field('published', _("Published"), default=True,
@@ -460,8 +441,7 @@ class Panels(WikingModule, Publishable):
                     lnk = lcg.link(uri, _("New user registration"))
                     content = lcg.coerce((content, lnk))
             panels.append(Panel('login', _("Login"), content))
-        for row in self._data.get_rows(lang=lang, published=True,
-                                       sorting=self._sorting):
+        for row in self._data.get_rows(lang=lang, published=True, sorting=self._sorting):
             if row['private'].value() is True and not \
                    Roles.check(req, (Roles.USER,), raise_error=False):
                 continue
@@ -493,8 +473,7 @@ class Languages(WikingModule):
             Field('lang', _("Code"), width=2, column_width=6,
                   filter=ALPHANUMERIC, post_process=LOWER, fixed=True),
             Field('name', _("Name"), virtual=True,
-               computer=Computer(lambda r: lcg.language_name(r['lang'].value()),
-                                 depends=())),
+                  computer=Computer(lambda r: lcg.language_name(r['lang'].value()), depends=())),
             )
         sorting = (('lang', ASC),)
         cb = pp.CodebookSpec(display=lcg.language_name)
@@ -547,8 +526,7 @@ class Themes(WikingModule):
         def value(self, colors):
             return self._default or colors[self._inherit]
         def clone(self, value):
-            return self.__class__(self._id, value or self._default,
-                                  inherit=self._inherit)
+            return self.__class__(self._id, value or self._default, inherit=self._inherit)
 
     class Colors(object):
         def __init__(self, colors):
@@ -602,10 +580,8 @@ class Themes(WikingModule):
             return (
                 Field('theme_id'),
                 Field('name', _("Name"), width=20),
-                ) + tuple([
-                Field(c.id(), c.id(), dbcolumn=c.id().replace('-','_'),
-                      type=pd.Color())
-                for c in Themes.COLORS])
+                ) + tuple([Field(c.id(), c.id(), dbcolumn=c.id().replace('-','_'),
+                                 type=pd.Color()) for c in Themes.COLORS])
         def layout(self):
             return ('name',) + tuple([c.id() for c in Themes.COLORS])
         columns = ('name',)
@@ -620,8 +596,8 @@ class Themes(WikingModule):
         return dict(color=self.Colors(colors))
 
 # ==============================================================================
-# The modules below are able to handle requests directly.  The modules above
-# are system modules used internally by Wiking.
+# The modules below are able to handle requests directly.  
+# The modules above are system modules used internally by Wiking.
 # ==============================================================================
 
 class Pages(WikingModule, Publishable):
@@ -632,24 +608,20 @@ class Pages(WikingModule, Publishable):
             Field('page_id'),
             Field('mapping_id'),
             Field('identifier', _("Identifier"), editable=ONCE, not_null=True,
-                  descr=_("The identifier may be used to refer to this page "
-                          "from outside and also from other pages. "
-                          "A valid identifier can only contain letters, "
-                          "digits, dashes and underscores.  It must start "
-                          "with a letter.")),
+                  descr=_("The identifier may be used to refer to this page from outside and also "
+                          "from other pages. A valid identifier can only contain letters, digits, "
+                          "dashes and underscores.  It must start with a letter.")),
             Field('lang', _("Language"), codebook='Languages', editable=ONCE,
                   selection_type=CHOICE, value_column='lang'),
             Field('title', _("Title")),
             Field('title_', _("Title"), virtual=True,
-                  computer=Computer(self._title,
-                                    depends=('title', 'identifier'))),
+                  computer=Computer(self._title, depends=('title', 'identifier'))),
             Field('_content', _("Content"), compact=True, height=20, width=80,
                   descr=_STRUCTURED_TEXT_DESCR),
             Field('content'),
             Field('published', _("Published")),
             Field('status', _("Status"), virtual=True,
-                  computer=Computer(self._status,
-                                    depends=('content', '_content'))),
+                  computer=Computer(self._status, depends=('content', '_content'))),
             )
         def _title(self, row):
             return row['title'].value() or row['identifier'].value()
@@ -674,31 +646,29 @@ class Pages(WikingModule, Publishable):
     _LIST_BY_LANGUAGE = True
     _RELATED_MODULES = ('Attachments',)
     
-    _INSERT_MSG = _("New page was successfully created. Don't forget to "
-                    "publish it when you are done. Please, visit the "
-                    "'Mapping' module if you want to add the page to the "
+    _INSERT_MSG = _("New page was successfully created. Don't forget to publish it when you are "
+                    "done. Please, visit the 'Mapping' module if you want to add the page to the "
                     "main menu.")
-    _UPDATE_MSG = _("Page content was modified, however the changes remain "
-                    "unpublished. Don't forget to publish the changes when "
-                    "you are done.")
+    _UPDATE_MSG = _("Page content was modified, however the changes remain unpublished. Don't "
+                    "forget to publish the changes when you are done.")
     
     _IS_OK = pd.NE('content', pd.Value(pd.String(), None))
-    _ACTIONS = (Action(_("Publish changes"), 'sync', enabled=lambda r:
-                       r['_content'].value() != r['content'].value(),
-                       descr=_("Publish the current modified content")),
+    _ACTIONS = (Action(_("Publish changes"), 'sync',
+                       descr=_("Publish the current modified content"),
+                       enabled=lambda r: r['_content'].value() != r['content'].value()),
                 Action(_("Preview"), 'preview',
-                       enabled=lambda r: r['_content'].value() is not None,
-                       descr=_("Display the current version of the page")),
+                       descr=_("Display the current version of the page"),
+                       enabled=lambda r: r['_content'].value() is not None),
                 Action(_("Translate"), 'translate',
-                       enabled=lambda r: r['_content'].value() is None,
-                       descr=_("Create the content by translating another "
-                               "language variant")),
+                       descr=_("Create the content by translating another language variant"),
+                       enabled=lambda r: r['_content'].value() is None),
                 )
+    _RIGHTS_add = _RIGHTS_insert = Roles.AUTHOR
+    _RIGHTS_edit = _RIGHTS_update = Roles.AUTHOR
 
     def _variants(self, record):
         return [str(r['lang'].value()) for r in 
-                self._data.get_rows(mapping_id=record['mapping_id'].value(),
-                                    condition=self._IS_OK)]
+                self._data.get_rows(mapping_id=record['mapping_id'].value(), condition=self._IS_OK)]
 
     def handle(self, req):
         if not req.wmi and len(req.path) == 2:
@@ -709,20 +679,17 @@ class Pages(WikingModule, Publishable):
         if len(req.path) == 1:
             lang = req.param('lang')
             if lang is not None:
-                row = self._data.get_row(identifier=req.path[0], lang=lang,
-                                         condition=self._IS_OK)
+                row = self._data.get_row(identifier=req.path[0], lang=lang, condition=self._IS_OK)
                 if row:
                     return row
             else:
-                variants = self._data.get_rows(identifier=req.path[0],
-                                               condition=self._IS_OK)
+                variants = self._data.get_rows(identifier=req.path[0], condition=self._IS_OK)
                 if variants:
                     for lang in req.prefered_languages():
                         for row in variants:
                             if row['lang'].value() == lang:
                                 return row
-                    raise NotAcceptable([str(r['lang'].value())
-                                         for r in variants])
+                    raise NotAcceptable([str(r['lang'].value()) for r in variants])
         raise NotFound()
 
     #def _redirect_after_insert(self, req, record):
@@ -736,10 +703,8 @@ class Pages(WikingModule, Publishable):
             text = record['content'].value()
         attachments = self._module('Attachments').attachments(record)
         items = [(lcg.link(a.uri(), a.title()), ' ('+ a.bytesize() +') ',
-                  lcg.WikiText(a.descr() or ''))
-                 for a in attachments if a.listed()]
-        attachments_section = items and lcg.Section(title=_("Attachments"),
-                                                    content=lcg.ul(items))
+                  lcg.WikiText(a.descr() or '')) for a in attachments if a.listed()]
+        attachments_section = items and lcg.Section(title=_("Attachments"), content=lcg.ul(items))
         if text:
             sections = lcg.Parser().parse(text)
             if attachments_section:
@@ -747,8 +712,7 @@ class Pages(WikingModule, Publishable):
             content = lcg.SectionContainer(sections, toc_depth=0)
         else:
             content = attachments_section
-        return self._document(req, content, record, resources=attachments,
-                              err=err, msg=msg)
+        return self._document(req, content, record, resources=attachments, err=err, msg=msg)
 
     def action_preview(self, req, record, **kwargs):
         return self.action_view(req, record, preview=True, **kwargs)
@@ -762,17 +726,14 @@ class Pages(WikingModule, Publishable):
                 return self.action_show(req, record, err=e)
             cond = pd.AND(pd.NE('_content', pd.Value(pd.String(), None)),
                           pd.NE('lang', record['lang']))
-            langs = [(str(row['lang'].value()),
-                      lcg.language_name(row['lang'].value())) for row in 
-                     self._data.get_rows(mapping_id=record['mapping_id'].value(),
-                                         condition=cond)]
+            langs = [(str(row['lang'].value()), lcg.language_name(row['lang'].value())) for row in 
+                     self._data.get_rows(mapping_id=record['mapping_id'].value(), condition=cond)]
             if not langs:
                 e = _("Content for this page does not exist in any language.")
                 return self.action_show(req, record, err=e)
-            d = pw.SelectionDialog('src_lang', _("Choose source language"),
-                                   langs, action='translate',
-                                   hidden=[(id, record[id].value()) for id in
-                                           ('mapping_id', 'lang')])
+            d = pw.SelectionDialog('src_lang', _("Choose source language"), langs,
+                                   action='translate', hidden=\
+                                   [(id, record[id].value()) for id in ('mapping_id', 'lang')])
             return self._document(req, d, record, subtitle=_("translate"))
         else:
             row = self._data.get_row(mapping_id=record['mapping_id'].value(),
@@ -805,10 +766,10 @@ class Attachments(StoredFileModule):
                     return f and ffunc(f) or None
                 return pp.Computer(func, depends=('file',))
             return (
-            Field('page_attachment_id', computer=\
-                  Computer(lambda r: '%d.%s' % (r['attachment_id'].value(),
-                                                r['lang'].value()),
-                           depends=('attachment_id', 'lang'))),
+            Field('page_attachment_id',
+                  computer=Computer(lambda r: '%d.%s' % (r['attachment_id'].value(),
+                                                         r['lang'].value()),
+                                    depends=('attachment_id', 'lang'))),
             Field('attachment_id'),
             Field('mapping_id', _("Page"), codebook='Mapping', editable=ONCE),
             Field('identifier'),
@@ -817,36 +778,29 @@ class Attachments(StoredFileModule):
             Field('page_id'),
             Field('file', _("File"), virtual=True, editable=ALWAYS,
                   type=pd.Binary(not_null=True, maxlen=3*MB),
-                  computer=self._file_computer('file', '_filename',
-                                               origname='filename',
+                  computer=self._file_computer('file', '_filename', origname='filename',
                                                mime='mime_type'),
-                  descr=_("Upload a file from your local system.  The file "
-                          "name will be used to refer to the attachment "
-                          "within the page content.")),
-            Field('filename', _("Filename"),
-                  computer=fcomp(lambda f: f.filename())),
+                  descr=_("Upload a file from your local system.  The file name will be used "
+                          "to refer to the attachment within the page content.")),
+            Field('filename', _("Filename"), computer=fcomp(lambda f: f.filename())),
             Field('mime_type', _("Mime-type"), width=22,
                   computer=fcomp(lambda f: f.type())),
             Field('title', _("Title"), width=30, maxlen=64,
-                  descr=_("The name of the attachment (e.g. the full name of "
-                          "the document). If empty, the file name will be "
-                          "used instead.")),
-            Field('description', _("Description"), width=60, height=3,
-                  descr=_("Optional description used for the listing of "
-                          "attachments (see below)."), maxlen=240),
-            Field('ext', virtual=True,
-                  computer=Computer(self._ext, ('filename',))),
+                  descr=_("The name of the attachment (e.g. the full name of the document). "
+                          "If empty, the file name will be used instead.")),
+            Field('description', _("Description"), width=60, height=3, maxlen=240,
+                  descr=_("Optional description used for the listing of attachments (see below).")),
+            Field('ext', virtual=True, computer=Computer(self._ext, ('filename',))),
             Field('bytesize', _("Byte size"),
                   computer=fcomp(lambda f: pp.format_byte_size(len(f)))),
             Field('listed', _("Listed"), default=True,
-                  descr=_("Check if you want the item to appear in the "
-                          "listing of attachments at the bottom of the "
-                          "page.")),
+                  descr=_("Check if you want the item to appear in the listing of attachments at "
+                          "the bottom of the page.")),
             #Field('timestamp', type=DateTime()), #, default=now),
             # Fields supporting file storage.
             Field('dbname'),
-            Field('_filename', virtual=True, computer=\
-                  self._filename_computer('dbname', 'attachment_id', 'ext')),
+            Field('_filename', virtual=True,
+                  computer=self._filename_computer('dbname', 'attachment_id', 'ext')),
             )
         layout = ('file', 'title', 'description', 'listed')
         columns = ('filename', 'title', 'bytesize', 'mime_type', 'listed',
@@ -940,15 +894,14 @@ class News(WikingModule):
                   selection_type=CHOICE, value_column='lang'),
             Field('title', _("Briefly"), column_label=_("Message"), width=32,
                   descr=_("The item summary (title of the entry).")),
-            Field('content', _("Text"), height=3, width=60,
+            Field('content', _("Text"), height=6, width=80,
                   descr=_STRUCTURED_TEXT_DESCR + ' ' + \
-                  _("It is, however, recommened to use the simplest possible "
-                    "formatting, since the item may be also published through "
-                    "an RSS channel, which does not support formatting.")),
+                  _("It is, however, recommened to use the simplest possible formatting, since "
+                    "the item may be also published through an RSS channel, which does not "
+                    "support formatting.")),
             Field('author', _("Author"), codebook='Users'),
             Field('date_title', virtual=True,
-                  computer=Computer(self._date_title,
-                                    depends=('date', 'title'))))
+                  computer=Computer(self._date_title, depends=('date', 'title'))))
         sorting = (('timestamp', DESC),)
         columns = ('title', 'date', 'author')
         layout = ('lang', 'timestamp', 'title', 'content')
@@ -967,9 +920,8 @@ class News(WikingModule):
     _RIGHTS_add = _RIGHTS_insert = Roles.CONTRIBUTOR
     _RIGHTS_edit = _RIGHTS_update = (Roles.ADMIN, Roles.OWNER)
     _RIGHTS_remove = _RIGHTS_delete = Roles.ADMIN
-    _CUSTOM_VIEW = CustomViewSpec('title', meta=('timestamp', 'author'),
-                                  content='content', anchor="item-%s",
-                                  custom_list=True)
+    _CUSTOM_VIEW = CustomViewSpec('title', meta=('timestamp', 'author'), content='content',
+                                  anchor="item-%s", custom_list=True)
         
     def _link_provider(self, req, row, cid, target=None, **kwargs):
         identifier = self._identifier(req)
@@ -977,8 +929,7 @@ class News(WikingModule):
             anchor = '#item-'+ row[self._referer].export()
             return make_uri('/'+ identifier, **kwargs) + anchor
         elif not issubclass(target, Panel):
-            return super(News, self)._link_provider(req, row, cid,
-                                                    target=target, **kwargs)
+            return super(News, self)._link_provider(req, row, cid, target=target, **kwargs)
 
 
 class Planner(News):
@@ -989,26 +940,22 @@ class Planner(News):
             Field('planner_id', editable=NEVER),
             Field('start_date', _("Date"), width=10,
                   type=Date(not_null=True, constraints=(self._check_date,)),
-                  descr=_("The date when the planned event begins. "
-                          "Enter the date including the year. "
-                          "Example: %(date)s",
-                          date=lcg.LocalizableDateTime((now()+7).date))),
+                  descr=_("The date when the planned event begins. Enter the date including year. "
+                          "Example: %(date)s", date=lcg.LocalizableDateTime((now()+7).date))),
             Field('end_date', _("End date"), width=10, type=Date(),
-                  descr=_("The date when the event ends if it is not the "
-                          "same as the start date (for events which last "
-                          "several days.")),
+                  descr=_("The date when the event ends if it is not the same as the start date "
+                          "(for events which last several days).")),
             Field('date', _("Date"), virtual=True,
-                  computer=Computer(self._date,
-                                    depends=('start_date', 'end_date'))),
+                  computer=Computer(self._date, depends=('start_date', 'end_date'))),
             Field('lang', _("Language"), codebook='Languages', editable=ONCE,
                   selection_type=CHOICE, value_column='lang'),
             Field('title', _("Briefly"), column_label=_("Event"), width=32,
                   descr=_("The event summary (title of the entry).")),
             Field('content', _("Text"), height=3, width=60,
                   descr=_STRUCTURED_TEXT_DESCR + ' ' + \
-                  _("It is, however, recommened to use the simplest possible "
-                    "formatting, since the item may be also published through "
-                    "an RSS channel, which does not support formatting.")),
+                  _("It is, however, recommened to use the simplest possible formatting, since "
+                    "the item may be also published through an RSS channel, which does not "
+                    "support formatting.")),
             Field('author', _("Author"), codebook='Users'),
             Field('timestamp', type=DateTime(not_null=True), default=now),
             Field('date_title', virtual=True,
@@ -1031,9 +978,8 @@ class Planner(News):
             end = row['end_date'].value()
             if end and end <= row['start_date'].value():
                 return ("end_date", _("End date precedes start date"))
-    _CUSTOM_VIEW = CustomViewSpec('date_title', meta=('author', 'timestamp'),
-                                  content='content', anchor="item-%s",
-                                  custom_list=True)
+    _CUSTOM_VIEW = CustomViewSpec('date_title', meta=('author', 'timestamp'), content='content',
+                                  anchor="item-%s", custom_list=True)
     _RSS_TITLE_COLUMN = 'date_title'
     _RSS_LINK_COLUMN = 'title'
     _RSS_DATE_COLUMN = None
@@ -1063,15 +1009,13 @@ class Images(StoredFileModule):
                   computer=self._file_computer('file', '_filename',
                                                origname='filename')),
             Field('image', virtual=True, editable=ALWAYS,
-                  type=pd.Image(not_null=True, maxlen=3*MB,
-                                maxsize=(3000, 3000)), computer=
-                  self._file_computer('image', '_image_filename',
-                               compute=lambda r: self._resize(r, (800, 800)))),
-            Field('thumbnail', virtual=True, type=pd.Image(), computer=
-                  self._file_computer('thumbnail', '_thumbnail_filename',
-                               compute=lambda r: self._resize(r, (130, 130)))),
-            Field('filename', _("File"),
-                  computer=fcomp(lambda f: f.filename())),
+                  type=pd.Image(not_null=True, maxlen=3*MB, maxsize=(3000, 3000)),
+                  computer=self._file_computer('image', '_image_filename',
+                                               compute=lambda r: self._resize(r, (800, 800)))),
+            Field('thumbnail', virtual=True, type=pd.Image(),
+                  computer=self._file_computer('thumbnail', '_thumbnail_filename',
+                                               compute=lambda r: self._resize(r, (130, 130)))),
+            Field('filename', _("File"), computer=fcomp(lambda f: f.filename())),
             Field('title', _("Title"), width=30),
             Field('author', _("Author"), width=30),
             Field('location', _("Location"), width=50),
@@ -1080,20 +1024,17 @@ class Images(StoredFileModule):
             Field('format', computer=imgcomp(lambda i: i.format.lower())),
             Field('width', _("Width"), computer=imgcomp(lambda i: i.size[0])),
             Field('height', _("Height"), computer=imgcomp(lambda i: i.size[1])),
-            Field('size', _("Pixel size"),
-                  computer=imgcomp(lambda i: '%dx%d' % i.size)),
+            Field('size', _("Pixel size"), computer=imgcomp(lambda i: '%dx%d' % i.size)),
             Field('bytesize', _("Byte size"),
                   computer=fcomp(lambda f: pp.format_byte_size(len(f)))),
             Field('exif'),
             Field('timestamp', default=now),
             # Fields supporting image file storage.
             Field('dbname'),
-            Field('_filename', virtual=True,
-                  computer=self._filename_computer('-orig')),
+            Field('_filename', virtual=True, computer=self._filename_computer('-orig')),
             Field('_thumbnail_filename', virtual=True,
                   computer=self._filename_computer('-thumbnail')),
-            Field('_image_filename', virtual=True,
-                  computer=self._filename_computer()),
+            Field('_image_filename', virtual=True, computer=self._filename_computer()),
             )
         def _filename_computer(self, append=''):
             args = ('dbname', 'image_id', 'format', append)
@@ -1117,10 +1058,8 @@ class Images(StoredFileModule):
                 # The image will be loaded from file.
                 return None
 
-        layout = ('file', 'title', 'author', 'location', 'taken',
-                  'description')
-        columns = ('filename', 'title', 'author', 'location', 'taken',
-                   'description')
+        layout = ('file', 'title', 'author', 'location', 'taken', 'description')
+        columns = ('filename', 'title', 'author', 'location', 'taken', 'description')
         
     _STORED_FIELDS = (('file', '_filename'),
                       ('image', '_image_filename'),
@@ -1181,8 +1120,7 @@ class Stylesheets(WikingModule):
         identifier = self._module('Mapping').get_identifier(self.name())
         if identifier:
             return [lcg.Stylesheet(r['identifier'].value(),
-                                   uri=('/'+ identifier + \
-                                        '/'+ r['identifier'].value()))
+                                   uri=('/'+ identifier + '/'+ r['identifier'].value()))
                     for r in self._data.get_rows(active=True)]
         else:
             return []
@@ -1229,15 +1167,13 @@ class Users(WikingModule):
                           "start with a letter.")),
             Field('password', _("Password"), width=16,
                   type=pd.Password(maxlen=32, not_null=True),
-                  descr=_("Please write the new password into each of the two "
-                          "fields.  Leave both fields blank if you are "
-                          "editing an existing account and don't want to "
+                  descr=_("Please write the new password into each of the two fields.  Leave both "
+                          "fields blank if you are editing an existing account and don't want to "
                           "change the password.")),
             Field('fullname', _("Full Name"), virtual=True, editable=NEVER,
-                  computer=Computer(self._fullname,
-                                    depends=('firstname','surname','login'))),
-            Field('user', _("User"), dbcolumn='user_', computer=\
-                  Computer(self._user, depends=('fullname', 'nickname'))),
+                  computer=Computer(self._fullname, depends=('firstname','surname','login'))),
+            Field('user', _("User"), dbcolumn='user_',
+                  computer=Computer(self._user, depends=('fullname', 'nickname'))),
             Field('firstname', _("First name")),
             Field('surname', _("Surname")),
             Field('nickname', _("Nickname")),
@@ -1245,8 +1181,7 @@ class Users(WikingModule):
             Field('phone', _("Phone")),
             Field('address', _("Address"), height=3),
             Field('uri', _("URI"), width=36),
-            Field('since', _("Registered since"),
-                  type=DateTime(show_time=False), default=now),
+            Field('since', _("Registered since"), type=DateTime(show_time=False), default=now),
             Field('enabled', _("Enabled")),
             Field('contributor', _("Contribution privileges")),
             Field('author', _("Authoring privileges")),
