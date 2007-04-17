@@ -75,7 +75,7 @@ class Exporter(lcg.HtmlExporter):
                         cls=("navigation-link"+(cur and " current" or "")))
                  for item, cur in [(item, self._is_current(node, item))
                                    for item in node.menu()]]
-        if node.panels():
+        if node.panels() and node.config().show_panels:
             skip_target = '#panel-%s ' % node.panels()[0].id()
         else:
             skip_target = '#content-heading'
