@@ -39,6 +39,7 @@ class Module(object):
         """
         self._module = get_module
         self._resolver = resolver
+        #log(OPR, 'New module instance: %s[%x]' % (self.name(), lcg.positive_id(self)))
         super(Module, self).__init__(**kwargs)
 
     
@@ -202,10 +203,7 @@ class PytisModule(Module, ActionHandler):
         self._referer_type = self._data.find_column(self._referer).type()
         self._title_column = self._TITLE_COLUMN or self._view.columns()[0]
         self._cached_identifier = (None, None)
-        self._links = dict([(f.id(), f.codebook())
-                            for f in self._view.fields() if f.codebook()])
-        #log(OPR, 'New module instance: %s[%x]' % (self.name(),
-        #                                          lcg.positive_id(self)))
+        self._links = dict([(f.id(), f.codebook()) for f in self._view.fields() if f.codebook()])
 
     def _identifier(self, req):
         """Return module's current mapping identifier as a string or None."""

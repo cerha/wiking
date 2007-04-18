@@ -1,3 +1,11 @@
+2007-04-18  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/handler.py: Dispose module instances after reloading
+	a module.
+
+	* lib/wiking/module.py: Module creation logging moved to the base
+	`Module' class.
+
 2007-04-17  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/export.py: Don't skip to panels when they are hidden.
@@ -11,7 +19,8 @@
 	`allow_login_ctrl'.
 
 	* lib/wiking/modules.py: Fixed a problem with unknown registration
-	URI in login panel.  Allow suppression of login ctrl through configuration.
+	URI in login panel.  Allow suppression of login ctrl through
+	configuration.
 
 2007-04-12  Tomas Cerha  <cerha@brailcom.org>
 
