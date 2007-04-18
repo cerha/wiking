@@ -1,3 +1,10 @@
+2007-04-17  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/export.py: Don't skip to panels when they are hidden.
+
+	* lib/wiking/modules.py: Cosmetic improvements (source code wrap
+	limit extended to 100 columns).
+
 2007-04-13  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/export.py (Exporter.ctrl): Obey the new config option

@@ -133,10 +133,13 @@ class SiteHandler(object):
         #log(OPR, 'New SiteHandler instance for %s.' % dbconnection)
 
     def _module(self, name):
+        cls = get_module(name)
         try:
             module = self._module_cache[name]
+            if module.__class__ is not cls:
+                # Dispose the instance if the class definition has changed.
+                raise KeyError()
         except KeyError:
-            cls = get_module(name)
             args = (self._module, self._resolver)
             if issubclass(cls, PytisModule):
                 args += (self._dbconnection,)
