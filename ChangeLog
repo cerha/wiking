@@ -1,3 +1,7 @@
+2007-05-01  Milan Zamazal  <pdm@brailcom.org>
+
+	* lib/wiking/module.py (RssModule._descr_provider): New method.
+
 2007-04-18  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/handler.py: Dispose module instances after reloading

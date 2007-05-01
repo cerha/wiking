@@ -694,7 +694,16 @@ class RssModule(PytisModule):
     _RSS_AUTHOR_COLUMN = None
 
     _RIGHTS_rss = Roles.ANYONE
-    
+
+    def _descr_provider(self, req, row, translator):
+        from xml.sax.saxutils import escape
+        if self._RSS_DESCR_COLUMN:
+            exported = prow[self._RSS_DESCR_COLUMN].export()
+            descr = escape(translator.translate(exported))
+        else:
+            descr = None
+        return descr
+
     def action_rss(self, req):
         if not self._RSS_TITLE_COLUMN:
             raise NotFound
@@ -714,11 +723,7 @@ class RssModule(PytisModule):
             title = escape(tr.translate(prow[self._RSS_TITLE_COLUMN].export()))
             uri = self._link_provider(req, row, link_column, **args)
             uri = uri and base_uri + uri or None
-            if self._RSS_DESCR_COLUMN:
-                exported = prow[self._RSS_DESCR_COLUMN].export()
-                descr = escape(tr.translate(exported))
-            else:
-                descr = None
+            descr = self._descr_provider(req, row, tr)
             if self._RSS_DATE_COLUMN:
                 v = prow[self._RSS_DATE_COLUMN].value()
                 date = dt.ARPA.str(v.localtime())
