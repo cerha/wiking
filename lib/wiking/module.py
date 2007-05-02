@@ -722,7 +722,7 @@ class RssModule(PytisModule):
             prow.set_row(row)
             title = escape(tr.translate(prow[self._RSS_TITLE_COLUMN].export()))
             uri = self._link_provider(req, row, link_column, **args)
-            uri = uri and base_uri + uri or None
+            uri = uri and base_uri + uri or ''
             descr = self._descr_provider(req, row, tr)
             if self._RSS_DATE_COLUMN:
                 v = prow[self._RSS_DATE_COLUMN].value()

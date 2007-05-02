@@ -1,3 +1,8 @@
+2007-05-02  Milan Zamazal  <pdm@zamazal.org>
+
+	* lib/wiking/module.py (RssModule.action_rss): If uri is not
+	given, make it an empty string, not None.
+
 2007-05-01  Milan Zamazal  <pdm@brailcom.org>
 
 	* lib/wiking/module.py (RssModule._descr_provider): New method.
