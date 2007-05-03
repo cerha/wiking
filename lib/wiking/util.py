@@ -721,8 +721,7 @@ def send_mail(sender, addr, subject, text, html, smtp_server='localhost'):
     writer.addheader("From", sender)
     writer.addheader("To", addr)
     writer.addheader("Subject", subject)
-    writer.addheader("Date", time.strftime("%a, %d %b %Y %H:%M:%S",
-                                           time.localtime(time.time())))
+    writer.addheader("Date", time.strftime("%a, %d %b %Y %H:%M:%S %z"))
     writer.addheader("MIME-Version", "1.0")
     # Start the multipart section (multipart/alternative seems to work better
     # on some MUAs than multipart/mixed).

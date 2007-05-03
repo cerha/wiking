@@ -1,4 +1,8 @@
-2007-05-02  Milan Zamazal  <pdm@zamazal.org>
+2007-05-03  Milan Zamazal  <pdm@brailcom.org>
+
+	* lib/wiking/util.py (send_mail): Put timezone into date.
+
+2007-05-02  Milan Zamazal  <pdm@brailcom.org>
 
 	* lib/wiking/module.py (RssModule.action_rss): If uri is not
 	given, make it an empty string, not None.
