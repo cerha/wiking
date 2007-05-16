@@ -1,3 +1,7 @@
+2007-05-15  Milan Zamazal  <pdm@zamazal.org>
+
+	* lib/wiking/modules.py (Search): New module.
+
 2007-05-03  Milan Zamazal  <pdm@brailcom.org>
 
 	* lib/wiking/util.py (send_mail): Put timezone into date.

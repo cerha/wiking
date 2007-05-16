@@ -1300,3 +1300,88 @@ class Reload(Module):
                               lcg.p(string.join(module_names, ", ")),))
         return Document(_("Reload"), lcg.coerce(content))
         
+
+class Search(Module, ActionHandler):
+
+    _SEARCH_TITLE = _("Searching")
+    _RESULT_TITLE = _("Search results")
+    _EMPTY_SEARCH_MESSAGE = _("Given search term doesn't contain any searchable term.")
+
+    class SearchForm(lcg.Content):
+        
+        _SEARCH_FIELD_LABEL = _("Search words: ")
+        _SEARCH_BUTTON_LABEL = _("Search")
+
+        def __init__(self, req):
+            lcg.Content.__init__(self)
+            self._params = req.params
+            self._uri = req.uri
+
+        def _contents(self, generator):
+            return (generator.label(self._SEARCH_FIELD_LABEL, id='input'),
+                    generator.field(name='input', id='input', tabindex=0, size=20),
+                    generator.br(),
+                    generator.submit(self._SEARCH_BUTTON_LABEL, cls='submit'),)
+        
+        def export(self, exporter):
+            generator = exporter.generator()
+            contents = self._contents(generator)
+            contents = contents + (generator.hidden(name='action', value='search'),)
+            return generator.form(contents, method='POST', action=self._uri)
+
+    class Result:
+        def __init__ (self, uri, title, sample=None):
+            self._title = title
+            self._sample = sample
+            self._uri = uri
+        def uri(self):
+            return self._uri
+        def title(self):
+            return self._title
+        def sample(self):
+            return self._sample
+
+    def _search_form(self, req, message=None):
+        content = []
+        if message is not None:
+            content.append(lcg.p(message))
+        content = [self.SearchForm(req)]
+        return Document(self._SEARCH_TITLE, lcg.Container(content))
+
+    def _transform_input(self, input):
+        input = re.sub('[&|!()]', ' ', input)
+        input = re.sub(' +', '|', input)
+        input = input.strip()
+        return input
+
+    def _perform_search(self, expression, req):
+        return ()
+
+    def _result_item(self, item):
+        sample = item.sample()
+        link = lcg.link(item.uri(), label=item.title(), descr=sample,)
+        if sample is None:
+            result_item = lcg.Paragraph((link,))
+        else:
+            result_item = lcg.DefinitionList((lcg.Definition(link, lcg.coerce(sample)),))
+        return result_item
+
+    def _result_page(self, result):
+        content = lcg.Container([self._result_item(item) for item in result])
+        return Document(self._RESULT_TITLE, content)
+    
+    # Actions
+    
+    def _default_action(self, req, **kwargs):
+        return 'show'
+
+    def action_show(self, req, **kwargs):
+        return self._search_form(req)
+        
+    def action_search(self, req, **kwargs):
+        input = req.params.get('input', '')
+        expression = self._transform_input(input)
+        if not expression:
+            return self._search_form(req, message=self._EMPTY_SEARCH_MESSAGE)
+        result = self._perform_search(expression, req)
+        return self._result_page(result)
