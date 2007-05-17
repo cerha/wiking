@@ -16,6 +16,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 from wiking import *
+import wiking
 
 _ = lcg.TranslatableTextFactory('wiking')
 
@@ -129,7 +130,7 @@ class SiteHandler(object):
         self._config = self._module('Config')
         self._modules = self._module('Modules')
         self._users = self._module('Users')
-        self._exporter = Exporter()
+        self._exporter = wiking.Exporter()
         #log(OPR, 'New SiteHandler instance for %s.' % dbconnection)
 
     def _module(self, name):

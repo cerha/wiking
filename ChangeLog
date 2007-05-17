@@ -1,4 +1,9 @@
-2007-05-15  Milan Zamazal  <pdm@zamazal.org>
+2007-05-17  Milan Zamazal  <pdm@brailcom.org>
+
+	* lib/wiking/handler.py: Use module qualification with the
+	Exporter class.
+
+2007-05-15  Milan Zamazal  <pdm@brailcom.org>
 
 	* lib/wiking/modules.py (Search): New module.
 
