@@ -1366,8 +1366,14 @@ class Search(Module, ActionHandler):
             result_item = lcg.DefinitionList((lcg.Definition(link, lcg.coerce(sample)),))
         return result_item
 
+    def _empty_result_page(self):
+        return lcg.p(_("Nothing found."))
+
     def _result_page(self, result):
-        content = lcg.Container([self._result_item(item) for item in result])
+        if result:
+            content = lcg.Container([self._result_item(item) for item in result])
+        else:
+            content = self._empty_result_page()
         return Document(self._RESULT_TITLE, content)
     
     # Actions

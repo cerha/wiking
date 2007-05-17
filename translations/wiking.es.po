@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-05-16 09:29+0200\n"
+"POT-Creation-Date: 2007-05-17 19:23+0200\n"
 "PO-Revision-Date: 2007-03-07 14:09+0100\n"
 "Last-Translator: Tomas Cerha <cerha@brailcom.org>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -692,15 +692,19 @@ msgid "Search results"
 msgstr ""
 
 #: ../lib/wiking/modules.py:1308
+msgid "Given search term doesn't contain any searchable term."
+msgstr ""
+
+#: ../lib/wiking/modules.py:1312
 msgid "Search words: "
 msgstr ""
 
-#: ../lib/wiking/modules.py:1309
+#: ../lib/wiking/modules.py:1313
 msgid "Search"
 msgstr ""
 
-#: ../lib/wiking/modules.py:1310
-msgid "Given search term doesn't contain any searchable term."
+#: ../lib/wiking/modules.py:1370
+msgid "Nothing found."
 msgstr ""
 
 #: ../lib/wiking/export.py:26
@@ -980,11 +984,11 @@ msgstr ""
 msgid "Invalid login!"
 msgstr ""
 
-#: ../lib/wiking/handler.py:182
+#: ../lib/wiking/handler.py:183
 msgid "Wiking Management Interface"
 msgstr ""
 
-#: ../lib/wiking/handler.py:183
+#: ../lib/wiking/handler.py:184
 msgid "Wiking Help System"
 msgstr ""
 
