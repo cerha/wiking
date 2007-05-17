@@ -1350,7 +1350,7 @@ class Search(Module, ActionHandler):
 
     def _transform_input(self, input):
         input = re.sub('[&|!()]', ' ', input)
-        input = re.sub(' +', '|', input)
+        input = re.sub(' +', '&', input)
         input = input.strip()
         return input
 

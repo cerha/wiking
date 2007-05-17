@@ -1,5 +1,10 @@
 2007-05-17  Milan Zamazal  <pdm@brailcom.org>
 
+	* lib/wiking/modules.py (Search._transform_input): Use AND search
+	rather then OR search.
+
+2007-05-17  Milan Zamazal  <pdm@brailcom.org>
+
 	* lib/wiking/modules.py (Search): Print a message if nothing is
 	found.
 
