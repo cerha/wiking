@@ -337,6 +337,7 @@ class Config(WikingModule):
     class Configuration(object):
         allow_wmi_link = True
         allow_login_ctrl = True
+        exporter = None
         def __init__(self, row, server):
             self._server = server
             for key in row.keys():

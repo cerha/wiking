@@ -1,3 +1,11 @@
+2007-05-18  Milan Zamazal  <pdm@brailcom.org>
+
+	* lib/wiking/handler.py (SiteHandler.__init__): Get Exporter from
+	the Config module.
+
+	* lib/wiking/modules.py (Config.Configuration): New attribute
+	`exporter'.
+	
 2007-05-17  Milan Zamazal  <pdm@brailcom.org>
 
 	* lib/wiking/modules.py (Search._transform_input): Use AND search

@@ -16,7 +16,6 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 from wiking import *
-import wiking
 
 _ = lcg.TranslatableTextFactory('wiking')
 
@@ -130,7 +129,6 @@ class SiteHandler(object):
         self._config = self._module('Config')
         self._modules = self._module('Modules')
         self._users = self._module('Users')
-        self._exporter = wiking.Exporter()
         #log(OPR, 'New SiteHandler instance for %s.' % dbconnection)
 
     def _module(self, name):
@@ -196,7 +194,7 @@ class SiteHandler(object):
         styles = [s for s in self._stylesheets.stylesheets()
                   if s.file() != 'panels.css' or req.show_panels() and panels]
         node = result.mknode('/'.join(req.path), config, menu, panels, styles)
-        exported = self._exporter.export(node)
+        exported = (config.exporter or Exporter()).export(node)
         data = translator(node.language()).translate(exported)
         return req.result(data)
 
