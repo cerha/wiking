@@ -1350,9 +1350,9 @@ class Search(Module, ActionHandler):
         return Document(self._SEARCH_TITLE, lcg.Container(content))
 
     def _transform_input(self, input):
-        input = re.sub('[&|!()]', ' ', input)
-        input = re.sub(' +', '&', input)
+        input = re.sub('[&|!()"\'\\\\]', ' ', input)
         input = input.strip()
+        input = re.sub(' +', '&', input)
         return input
 
     def _perform_search(self, expression, req):
