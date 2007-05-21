@@ -1347,7 +1347,9 @@ class Search(Module, ActionHandler):
         if message is not None:
             content.append(lcg.p(message))
         content = [self.SearchForm(req)]
-        return Document(self._SEARCH_TITLE, lcg.Container(content))
+        variants = self._module('Languages').languages()
+        lang = req.prefered_language(variants)
+        return Document(self._SEARCH_TITLE, lcg.Container(content), lang=lang)
 
     def _transform_input(self, input):
         input = re.sub('[&|!()"\'\\\\]', ' ', input)
