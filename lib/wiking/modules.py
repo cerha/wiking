@@ -1372,12 +1372,14 @@ class Search(Module, ActionHandler):
     def _empty_result_page(self):
         return lcg.p(_("Nothing found."))
 
-    def _result_page(self, result):
+    def _result_page(self, req, result):
         if result:
             content = lcg.Container([self._result_item(item) for item in result])
         else:
             content = self._empty_result_page()
-        return Document(self._RESULT_TITLE, content)
+        variants = self._module('Languages').languages()
+        lang = req.prefered_language(variants)
+        return Document(self._RESULT_TITLE, content, lang=lang)
     
     # Actions
     
@@ -1393,4 +1395,4 @@ class Search(Module, ActionHandler):
         if not expression:
             return self._search_form(req, message=self._EMPTY_SEARCH_MESSAGE)
         result = self._perform_search(expression, req)
-        return self._result_page(result)
+        return self._result_page(req, result)
