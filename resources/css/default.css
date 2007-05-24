@@ -20,7 +20,6 @@ h1, h2, h3 {
     color: $color.heading-fg;
     font-weight: bold;
     text-align: left;
-    clear: left;
 }
 h1 { 
     background-color: $color.heading-bg;
@@ -120,7 +119,47 @@ img { position: relative; } /* MSIE float workaround */
     border: 1px solid $color.top-border;
     /* This border must be part of the navigation-bar to because of MSIE... */
     border-top-width: 0;
-    min-width: 10em;
+}
+#content .content-with-submenu #inner-content { 
+    margin-left: 10.5em;
+    min-height: 15em;
+}
+
+#submenu { 
+    position: absolute;
+    top: 0.7em;
+    left: 0.6em;
+    width: 10em;
+    padding-right: 1em;
+}
+#submenu .table-of-contents { 
+    margin: 0;
+    padding: 0;
+    background-color: $color.background;
+    border: 1px solid $color.top-border;
+}
+#submenu .table-of-contents .title { 
+    padding: 0.1em 0.2em;
+    background-color: $color.heading-bg;
+    border-bottom: 1px solid $color.top-border;
+}
+#submenu .table-of-contents ul { 
+    padding: 0.3em;
+    padding-left: 1.4em;
+    margin: 0;
+}
+#submenu .table-of-contents ul ul { 
+    padding-left: 1em;
+}
+#submenu .table-of-contents a { 
+    display: block;
+    border: solid 1px transparent;
+}
+#submenu .table-of-contents a.current { 
+    background-color: $color.heading-bg;
+}
+#submenu .table-of-contents a:hover { 
+    border: solid 1px $color.heading-line;
 }
 
 #login-controls { 
@@ -132,6 +171,10 @@ img { position: relative; } /* MSIE float workaround */
 
 #content h1 { 
     margin-top: 0;
+}
+#content-clearing { 
+    clear: left;
+    height: 1px;
 }
 
 #clearing { 
@@ -220,6 +263,9 @@ table.browse-form th {  background: $color.heading-bg; }
 table.browse-form td pre {
     background-color: transparent;
     border: none;
+}
+table.browse-form span.tree-indent {
+    padding-left: 0.3em;
 }
 
 form.show-form, form.edit-form { 
@@ -376,7 +422,6 @@ div.table-of-contents {
     background: $color.frame-bg;
     margin: 1em 0;
     padding: 3pt;
-    clear: left;
 }
 div.table-of-contents ul { 
     margin-top: 3pt;

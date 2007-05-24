@@ -199,17 +199,28 @@ class FileUpload(object):
 
 
 class MenuItem(object):
-    """Menu item representation to be passed to 'Document.mknode()'."""
-    def __init__(self, id, title, descr=None):
+    """Abstract menu item representation."""
+    def __init__(self, id, title, descr=None, hidden=False, submenu=(), order=None):
         self._id = id
         self._title = title
         self._descr = descr
+        self._hidden = hidden
+        submenu = list(submenu)
+        submenu.sort(key=lambda i: i.order())
+        self._submenu = submenu
+        self._order = order
     def id(self):
         return self._id
     def title(self):
         return self._title
     def descr(self):
         return self._descr
+    def hidden(self):
+        return self._hidden
+    def order(self):
+        return self._order
+    def submenu(self):
+        return self._submenu
 
 
 class Panel(object):
@@ -236,28 +247,60 @@ class Document(object):
 
     """
     
-    def __init__(self, title, content, descr=None, lang=None, variants=(),
+    def __init__(self, title, content, subtitle=None, lang=None, variants=(),
                  sec_lang='en', resources=()):
         self._title = title
+        self._subtitle = subtitle
         if isinstance(content, (list, tuple)):
-            content = lcg.SectionContainer([c for c in content if c],
-                                           toc_depth=0)
+            content = lcg.SectionContainer([c for c in content if c], toc_depth=0)
         self._content = content
-        self._descr = descr
         self._lang = lang
         self._variants = variants
         self._sec_lang = sec_lang
-        self._resources = resources
+        self._resources = tuple(resources)
 
     def lang(self):
         return self._lang
     
     def mknode(self, id, config, menu, panels, stylesheets):
-        return WikingNode(id, config, title=self._title, content=self._content,
-                          lang=self._lang, variants=self._variants or (),
-                          descr=self._descr, menu=menu, panels=panels,
-                          stylesheets=stylesheets, resources=self._resources,
-                          secondary_language=self._sec_lang)
+        kwargs = dict(language=self._lang, language_variants=self._variants or (),
+                      secondary_language=self._sec_lang)
+        parent_id = '/'.join(id.split('/')[:-1])
+        me = []
+        parent = []
+        def _mknode(item):
+            if item.id() == id:
+                heading = self._title or item.title()
+                if self._subtitle:
+                    heading = lcg.concat(heading, ' :: ', self._subtitle)
+                content = self._content
+                resources = resources=self._resources + tuple(stylesheets)
+                panels_ = panels
+            else:
+                heading = item.title()
+                content = lcg.Content()
+                resources = ()
+                panels_ = ()
+            resource_provider = lcg.StaticResourceProvider(resources)
+            node = WikingNode(item.id(), config, title=item.title(), heading=heading,
+                              descr=item.descr(), content=content,  hidden=item.hidden(),
+                              children=[_mknode(i) for i in item.submenu()],
+                              panels=panels_, resource_provider=resource_provider, **kwargs)
+            if item.id() == id:
+                me.append(node)
+            if item.id() == parent_id:
+                parent.append(node)
+            return node
+        nodes = [_mknode(item) for item in menu]
+        if not me:
+            node = _mknode(MenuItem(id, None, hidden=True))
+            if parent:
+                parent[0].add_child(node)
+            else:
+                nodes.append(node)
+        root = WikingNode('__wiking_root_node__', config, title='root', content=lcg.Content(),
+                          children=nodes)
+        return me[0]
 
     
 # ============================================================================
@@ -266,41 +309,39 @@ class Document(object):
 
 class WikingNode(lcg.ContentNode):
     
-    def __init__(self, id, config, menu=(), lang=None, variants=(), panels=(),
-                 stylesheets=(), resources=(), **kwargs):
+    def __init__(self, id, config, heading=None, panels=(), **kwargs):
+        super(WikingNode, self).__init__(id, **kwargs)
+        self._heading = heading
         self._config = config
-        self._menu = menu
         self._panels = panels
-        self._resources = tuple(resources) + tuple(stylesheets)
-        self._resource_dict = None
-        self._stylesheets = stylesheets
         for panel in panels:
             panel.content().set_parent(self)
-        super(WikingNode, self).__init__(None, id, language=lang,
-                                         language_variants=variants, **kwargs)
+
+    def add_child(self, node):
+        if isinstance(self._children, tuple):
+            self._children = list(self._children)
+        node._set_parent(self)
+        self._children.append(node)
         
+    def heading(self):
+        return self._heading or self._title
+    
     def config(self):
         return self._config
     
-    def menu(self):
-        return self._menu
+    def top(self):
+        parent = self._parent
+        if parent is None:
+            return None
+        elif parent.parent() is None:
+            return self
+        else:
+            return parent.top()
     
     def panels(self):
         return self._panels
 
-    def resources(self, cls=None):
-        if cls is not None:
-            return [r for r in self._resources if isinstance(r, cls)]
-        else:
-            return self._resources
-        
-    def resource(self, cls, file, **kwargs):
-        if self._resource_dict is None:
-            self._resource_dict = dict([(r.file(), r)
-                                        for r in self._resources])
-        resource = self._resource_dict.get(file)
-        return isinstance(resource, cls) and resource or None
-    
+
 class ActionMenu(lcg.Content):
     """A menu of actions related to one record or the whole module."""
     
@@ -662,6 +703,29 @@ def timeit(func, *args, **kwargs):
     result = func(*args, **kwargs)
     return result,  time.clock() - t1, time.time() - t2
 
+def get_modules():
+    """Return the currently used module containing all module definitions.
+
+    Wiking comes with a set of predefined modules.  They are all defined in the 'wiking.modules'
+    module.  These default modules can be overridden by defining custom modules in a module named
+    'wikingmodules' available in the Python path.  This allows adding extension modules to the
+    Wiking CMS (on a per site basis) or a complete redefinition of the application behavior.  The
+    modular wiking engine can be thus used as a universal web application development toolkit.
+
+    """
+    try:
+        from mod_python.apache import import_module
+        try:
+            modules = import_module('wikingmodules', log=True)
+        except ImportError:
+            modules = import_module('wiking.modules', log=True)
+    except ImportError:
+        try:
+            import wikingmodules as modules
+        except ImportError:
+            import wiking.modules as modules
+    return modules
+
 def get_module(name):
     """Get the module class by name.
     
@@ -670,18 +734,8 @@ def get_module(name):
     environment.
     
     """
-    try:
-        from mod_python.apache import import_module
-        try:
-            modules = import_module('wikingmodules')
-        except ImportError:
-            modules = import_module('wiking.modules')
-    except ImportError:
-        try:
-            import wikingmodules as modules
-        except ImportError:
-            import wiking.modules as modules
-    return getattr(modules, name)
+    return getattr(get_modules(), name)
+
 
 def rss(title, url, items, descr, lang=None, webmaster=None):
     import wiking

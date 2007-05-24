@@ -1,3 +1,27 @@
+2007-05-24  Tomas Cerha  <cerha@brailcom.org>
+
+	* resources/css/default.css: Updated.
+
+	* lib/wiking/util.py: Added support for hierarchical navigation.
+	Updated for the new LCG interface.
+
+	* translations/wiking.cs.po: Updated.
+
+	* sql/wiking.sql: Added support for hierarchical page structure.
+
+	* lib/wiking/modules.py: Added support for hierarchical navigation
+	in WMI.  Use LCG node structure directly for menus.
+	(Mapping): Added support for definition of page hierarchy.
+
+	* lib/wiking/module.py: Added support for hierarchical module
+	listings.
+
+	* lib/wiking/handler.py: Removed special handling of documentation
+	and WMI requests thanks to better modularization.
+
+	* lib/wiking/export.py: Added basic support for hierarchical
+	navigation.
+
 2007-05-23  Milan Zamazal  <pdm@brailcom.org>
 
 	* lib/wiking/modules.py (Search._result_page): Set language for

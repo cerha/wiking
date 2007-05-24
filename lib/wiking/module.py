@@ -42,6 +42,12 @@ class Module(object):
         #log(OPR, 'New module instance: %s[%x]' % (self.name(), lcg.positive_id(self)))
         super(Module, self).__init__(**kwargs)
 
+    def menu(self, req, lang):
+        return self._module('Mapping').menu(req, lang)
+        
+    def panels(self, req, lang):
+        return self._module('Panels').panels(req, lang)
+
     
 class RequestHandler(object):
     """Mix-in class for modules capable of handling requests."""
@@ -120,8 +126,7 @@ class PytisModule(Module, ActionHandler):
                             descr=_("Create a new record")),)
     
     _EXCEPTION_MATCHERS = (
-        ('duplicate key violates unique constraint ' + \
-         '"_?[a-z]+_(?P<id>[a-z_]+)_key"',
+        ('duplicate key violates unique constraint "_?[a-z]+_(?P<id>[a-z_]+)_key"',
          _("This value already exists.  Enter a unique value.")),
         ('null value in column "(?P<id>[a-z_]+)" violates not-null constraint',
          _("Empty value.  This field is mandatory.")),
@@ -145,7 +150,8 @@ class PytisModule(Module, ActionHandler):
     _NON_LAYOUT_FIELDS = ()
 
     _ALLOW_TABLE_LAYOUT_IN_FORMS = True
-    
+    _TREE_LEVEL_COLUMN = None
+
     _spec_cache = {}
 
     class Record(pp.PresentedRow):
@@ -299,12 +305,14 @@ class PytisModule(Module, ActionHandler):
         title = self._module('Mapping').title(lang, self.name())
         return title or self._view.title()
     
-    def _document(self, req, content, record=None, subtitle=None,
-                  lang=None, variants=None, err=None, msg=None, **kwargs):
+    def _document(self, req, content, record=None, lang=None, variants=None,
+                  err=None, msg=None, **kwargs):
         if record:
             title = record[self._title_column].export()
             lang = self._lang(record)
             variants = self._variants(record)
+        else:
+            title = None
         if not variants or req.wmi:
             variants = self._module('Languages').languages()
         if isinstance(content, (list, tuple)):
@@ -317,13 +325,6 @@ class PytisModule(Module, ActionHandler):
             content = (ErrorMessage(err),) + tuple(content)
         if lang is None or req.wmi:
             lang = req.prefered_language(variants)
-        if not record:
-            if req.wmi:
-                title = self._view.title()
-            else:
-                title = self._real_title(lang)
-        if subtitle:
-            title = lcg.concat(title, ' :: ', subtitle)
         return Document(title, content, lang=lang, variants=variants, **kwargs)
 
     def _actions(self, req, record):
@@ -553,8 +554,8 @@ class PytisModule(Module, ActionHandler):
         content = req.wmi and \
                   (lcg.p(self._view.help() or '', ' ',
                          lcg.link('/_doc/'+self.name(), _("Help"))),) or ()
-        content += (self._form(ListView, req, rows, custom_spec=\
-                               (not req.wmi and self._CUSTOM_VIEW or None)),
+        content += (self._form(ListView, req, rows, tree_level=self._TREE_LEVEL_COLUMN,
+                               custom_spec=(not req.wmi and self._CUSTOM_VIEW or None)),
                     self._action_menu(req))
         if not req.wmi and self._RSS_TITLE_COLUMN:
             # TODO: This belongs to RssModule.
@@ -565,8 +566,7 @@ class PytisModule(Module, ActionHandler):
                          type='application/rss+xml'), " (",
                 lcg.link('_doc/rss?display=inline',
                          _("more about RSS")), ")"),)
-        return self._document(req, content, lang=lang, variants=variants,
-                              err=err, msg=msg)
+        return self._document(req, content, lang=lang, variants=variants, err=err, msg=msg)
 
     def action_show(self, req, record, err=None, msg=None, custom=False):
         if not custom:
@@ -851,6 +851,7 @@ class Publishable(object):
     _ACTIONS = (Action(_("Publish"), 'publish',
                        handler=lambda r: Publishable._change_published(r),
                        enabled=lambda r: not r['published'].value(),
+                                         #and r['_content'].value() is not None),
                        descr=_("Make the item visible to website visitors")),
                 Action(_("Unpublish"), 'unpublish',
                        handler=lambda r: Publishable._change_published(r),

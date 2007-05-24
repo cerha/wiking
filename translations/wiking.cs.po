@@ -7,23 +7,238 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-05-17 19:23+0200\n"
-"PO-Revision-Date: 2007-05-17 19:24+0200\n"
+"POT-Creation-Date: 2007-05-24 08:37+0200\n"
+"PO-Revision-Date: 2007-05-24 09:31+0200\n"
 "Last-Translator: Tomas Cerha <cerha@brailcom.org>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+#: ../lib/wiking/export.py:26
+msgid "Language:"
+msgstr "Jazyk:"
+
+#: ../lib/wiking/export.py:37
+msgid "Wiking Management Interface"
+msgstr "Rozhraní správy obsahu Wiking"
+
+#: ../lib/wiking/export.py:39
+msgid "Wiking Help System"
+msgstr "Nápověda systému Wiking"
+
+#: ../lib/wiking/export.py:79
+msgid "Skip all repetitive content"
+msgstr "Přeskočit všechny opakující se části"
+
+#: ../lib/wiking/export.py:96 ../lib/wiking/export.py:126
+msgid "skip"
+msgstr "přeskočit"
+
+#: ../lib/wiking/export.py:97 ../lib/wiking/export.py:101
+msgid "Main navigation"
+msgstr "Hlavní navigace"
+
+#: ../lib/wiking/export.py:110
+msgid "Show panels"
+msgstr "Zobrazit panely"
+
+#: ../lib/wiking/export.py:112
+msgid "Hide panels"
+msgstr "Skrýt panely"
+
+#: ../lib/wiking/export.py:140
+msgid "Local Menu"
+msgstr "Lokální nabídka"
+
+#: ../lib/wiking/export.py:164 ../lib/wiking/util.py:400
+msgid "log out"
+msgstr "odhlásit"
+
+#: ../lib/wiking/export.py:166 ../lib/wiking/util.py:402
+msgid "not logged"
+msgstr "nepřihlášen"
+
+#: ../lib/wiking/export.py:167 ../lib/wiking/util.py:403
+msgid "log in"
+msgstr "přihlásit"
+
+#: ../lib/wiking/export.py:169 ../lib/wiking/modules.py:532
+msgid "Login"
+msgstr "Přihlášení"
+
+#: ../lib/wiking/export.py:171
+msgid "Leave the Management Interface"
+msgstr "Opustit rozhraní správy obsahu"
+
+#: ../lib/wiking/export.py:173
+msgid "Leave the Help System"
+msgstr "Opustit systém nápovědy"
+
+#: ../lib/wiking/export.py:178
+msgid "Manage this site"
+msgstr "Správa obsahu"
+
+#: ../lib/wiking/export.py:179
+msgid "Enter the Wiking Management Interface"
+msgstr "Vstoupit do rozhraní správy obsahu Wiking"
+
+#: ../lib/wiking/export.py:183
+#, python-format
+msgid "Powered by %(wiking)s %(version)s"
+msgstr "Provozováno na %(wiking)s %(version)s"
+
+#: ../lib/wiking/export.py:192
+#, python-format
+msgid "Last change: %(date)s, %(user)s"
+msgstr "Poslední změna: %(date)s, %(user)s"
+
+#: ../lib/wiking/export.py:209
+msgid "US Government Section 508 Accessibility Guidelines."
+msgstr "Sekce 508 směrnic pro zpřístupnění vydaných vládou USA"
+
+#: ../lib/wiking/export.py:212
+msgid "This site conforms to the following standards:"
+msgstr "Tento portál odpovídá následujícím standardům:"
+
+#: ../lib/wiking/export.py:214
+msgid "This site can be viewed in ANY browser."
+msgstr "Tato stránka může být používána v LIBOVOLNÉM prohlížeči."
+
+#: ../lib/wiking/export.py:215
+msgid "Accessibility Statement"
+msgstr "Prohlášení o zpřístupnění"
+
+#: ../lib/wiking/export.py:217
+msgid "Contact:"
+msgstr "Kontakt:"
+
+#: ../lib/wiking/module.py:118 ../lib/wiking/modules.py:421
+msgid "Edit"
+msgstr "Upravit"
+
+#: ../lib/wiking/module.py:119
+msgid "Modify the record"
+msgstr "Změnit záznam"
+
+#: ../lib/wiking/module.py:120 ../lib/wiking/module.py:603
+#: ../lib/wiking/modules.py:1318
+msgid "Remove"
+msgstr "Smazat"
+
+#: ../lib/wiking/module.py:121
+msgid "Remove the record permanently"
+msgstr "Nevratně odstranit záznam"
+
+#: ../lib/wiking/module.py:122
+msgid "List"
+msgstr "Seznam"
+
+#: ../lib/wiking/module.py:123
+msgid "Back to the list of all records"
+msgstr "Zpět na výpis všech záznamů"
+
+#: ../lib/wiking/module.py:125
+msgid "New record"
+msgstr "Nový záznam"
+
+#: ../lib/wiking/module.py:126
+msgid "Create a new record"
+msgstr "Vytvořit nový záznam"
+
+#: ../lib/wiking/module.py:130
+msgid "This value already exists.  Enter a unique value."
+msgstr "Taková hodnota již existuje.  Zadejte unikátní hodnotu."
+
+#: ../lib/wiking/module.py:132
+msgid "Empty value.  This field is mandatory."
+msgstr "Prázdná hodnota.  Tato položka je povinná."
+
+#: ../lib/wiking/module.py:136
+msgid "New record was successfully inserted."
+msgstr "Nový záznam byl úspěšně vložen"
+
+#: ../lib/wiking/module.py:137
+msgid "The record was successfully updated."
+msgstr "Záznam byl úspěšně aktualizován."
+
+#: ../lib/wiking/module.py:138
+msgid "The record was deleted."
+msgstr "Záznam byl odstraněn."
+
+#: ../lib/wiking/module.py:288
+msgid "Integrity check failed."
+msgstr "Kontrola integrity dat selhala."
+
+#: ../lib/wiking/module.py:556
+msgid "Help"
+msgstr "Nápověda"
+
+#: ../lib/wiking/module.py:563
+msgid "An RSS channel is available for this section:"
+msgstr "K dispozici je také RSS kanál pro tuto sekci:"
+
+#: ../lib/wiking/module.py:568
+msgid "more about RSS"
+msgstr "více o RSS"
+
+#: ../lib/wiking/module.py:592
+msgid "new record"
+msgstr "nový záznam"
+
+#: ../lib/wiking/module.py:598
+msgid "edit form"
+msgstr "úpravy"
+
+#: ../lib/wiking/module.py:604
+msgid "Please, confirm removing the record permanently."
+msgstr "Potvrďte, prosím, nevratné smazání záznamu."
+
+#: ../lib/wiking/module.py:606
+msgid "removing"
+msgstr "mazání"
+
+#: ../lib/wiking/module.py:685
+msgid "No records."
+msgstr "Žádné záznamy"
+
+#: ../lib/wiking/module.py:841
+msgid "The item was published."
+msgstr "Položka byla zveřejněna."
+
+#: ../lib/wiking/module.py:842
+msgid "The item was unpublished."
+msgstr "Zveřejnění položky bylo zrušeno."
+
+#: ../lib/wiking/module.py:851
+msgid "Publish"
+msgstr "Zveřejnit"
+
+#: ../lib/wiking/module.py:855
+msgid "Make the item visible to website visitors"
+msgstr "Zpřístupnit položku návštěvníkům stránek"
+
+#: ../lib/wiking/module.py:856
+msgid "Unpublish"
+msgstr "Zneveřejnit"
+
+#: ../lib/wiking/module.py:859
+msgid "Make the item invisible to website visitors"
+msgstr "Učinit položku nedostupnou pro návštěvníky stránek"
+
+#: ../lib/wiking/module.py:891 ../lib/wiking/modules.py:760
+msgid "Translate"
+msgstr "Přeložit"
+
 #: ../lib/wiking/modules.py:58
 msgid "unknown"
 msgstr "neznámý"
 
-#: ../lib/wiking/modules.py:69
+#: ../lib/wiking/modules.py:68
 msgid "formatting manual"
 msgstr "příručka formátování"
 
-#: ../lib/wiking/modules.py:65
+#: ../lib/wiking/modules.py:66
 #, python-format
 msgid ""
 "The content should be formatted as LCG structured text. See the %(manual)s."
@@ -31,11 +246,44 @@ msgstr ""
 "Obsah může být formátován pomocí strukturovaného textu LCG, viz\n"
 "%(manual)s."
 
+#: ../lib/wiking/modules.py:83 ../lib/wiking/modules.py:506
+#: ../lib/wiking/modules.py:713 ../lib/wiking/modules.py:1204
+msgid "Content"
+msgstr "Obsah"
+
 #: ../lib/wiking/modules.py:84
+msgid "Manage the content available on your website."
+msgstr "Spravovat obsah dostupný uživatelům portálu"
+
+#: ../lib/wiking/modules.py:85
+msgid "Look &amp; Feel"
+msgstr "Vzhled"
+
+#: ../lib/wiking/modules.py:86
+msgid "Customize the appearance of your site."
+msgstr "Přizpůsobit vzhled portálu."
+
+#: ../lib/wiking/modules.py:87
+msgid "User Management"
+msgstr "Správa uživatelů"
+
+#: ../lib/wiking/modules.py:88
+msgid "Manage registered users and their privileges."
+msgstr "Správa registrovaných uživatelů a jejich oprávnění."
+
+#: ../lib/wiking/modules.py:89
+msgid "Setup"
+msgstr "Nastavení"
+
+#: ../lib/wiking/modules.py:90
+msgid "Edit global properties of your web site."
+msgstr "Upravit globální nastavení portálu."
+
+#: ../lib/wiking/modules.py:207
 msgid "Mapping"
 msgstr "Mapování"
 
-#: ../lib/wiking/modules.py:85
+#: ../lib/wiking/modules.py:208
 msgid ""
 "Manage available URIs and Wiking modules which handle them. Also manage the "
 "main menu."
@@ -44,13 +292,18 @@ msgstr ""
 "řeší\n"
 "také správu hlavní nabídky."
 
-#: ../lib/wiking/modules.py:90 ../lib/wiking/modules.py:495
-#: ../lib/wiking/modules.py:497 ../lib/wiking/modules.py:610
-#: ../lib/wiking/modules.py:1101
+#: ../lib/wiking/modules.py:214
+msgid "Parent item"
+msgstr "Nadřízená položka"
+
+#: ../lib/wiking/modules.py:216 ../lib/wiking/modules.py:238
+#: ../lib/wiking/modules.py:585 ../lib/wiking/modules.py:587
+#: ../lib/wiking/modules.py:704 ../lib/wiking/modules.py:720
+#: ../lib/wiking/modules.py:1201
 msgid "Identifier"
 msgstr "Identifikátor"
 
-#: ../lib/wiking/modules.py:93 ../lib/wiking/modules.py:611
+#: ../lib/wiking/modules.py:218 ../lib/wiking/modules.py:705
 msgid ""
 "The identifier may be used to refer to this page from outside and also from "
 "other pages. A valid identifier can only contain letters, digits, dashes and "
@@ -61,14 +314,13 @@ msgstr ""
 "bez diakritiky, číslice, pomlčky a případně i podtržítka.  Musí však vždy\n"
 "začínat písmenem."
 
-#: ../lib/wiking/modules.py:96 ../lib/wiking/modules.py:101
-#: ../lib/wiking/modules.py:102 ../lib/wiking/modules.py:403
-#: ../lib/wiking/modules.py:412
+#: ../lib/wiking/modules.py:221 ../lib/wiking/modules.py:224
+#: ../lib/wiking/modules.py:225 ../lib/wiking/modules.py:491
+#: ../lib/wiking/modules.py:500
 msgid "Module"
 msgstr "Modul"
 
-#: ../lib/wiking/modules.py:105
-#, fuzzy
+#: ../lib/wiking/modules.py:227
 msgid ""
 "Select the module which handles requests for given identifier. This is the "
 "way to make the module available from outside."
@@ -77,33 +329,30 @@ msgstr ""
 "Tímto\n"
 "způsobem modul zpřístupníte z vnějšku."
 
-#: ../lib/wiking/modules.py:107 ../lib/wiking/modules.py:421
-#: ../lib/wiking/modules.py:622
+#: ../lib/wiking/modules.py:229 ../lib/wiking/modules.py:509
+#: ../lib/wiking/modules.py:716
 msgid "Published"
 msgstr "Zveřejněno"
 
-#: ../lib/wiking/modules.py:108
+#: ../lib/wiking/modules.py:230
 msgid ""
-"This flag allows you to make the item unavailable withoit actually removing "
+"This flag allows you to make the item unavailable without actually removing "
 "it."
-msgstr ""
-"Tento přepínač umožňuje položku znepřístupnit vnějším uživatelům bez "
-"nutnosti\n"
-"jejího odstranění."
+msgstr "Tento přepínač umožňuje položku znepřístupnit vnějším uživatelům bez nutnosti jejího odstranění."
 
-#: ../lib/wiking/modules.py:110
+#: ../lib/wiking/modules.py:232
 msgid "Private"
 msgstr "Privátní"
 
-#: ../lib/wiking/modules.py:111
+#: ../lib/wiking/modules.py:233
 msgid "Make the item available only to logged-in users."
 msgstr "Umožnit zobrazení položky pouze přihlášeným uživatelům"
 
-#: ../lib/wiking/modules.py:112 ../lib/wiking/modules.py:289
+#: ../lib/wiking/modules.py:234
 msgid "Menu order"
 msgstr "Pořadí v menu"
 
-#: ../lib/wiking/modules.py:113
+#: ../lib/wiking/modules.py:235
 msgid ""
 "Enter a number denoting the item order in the menu or leave the field blank "
 "if you don't want this item to appear in the menu."
@@ -111,11 +360,15 @@ msgstr ""
 "Zadejte číslo určující pořadí položku v menu, nebo nechte políčko prázdné,\n"
 "pokud nechcete, aby se tato položka v menu objevovala."
 
-#: ../lib/wiking/modules.py:116 ../lib/wiking/modules.py:605
+#: ../lib/wiking/modules.py:242 ../lib/wiking/modules.py:697
 msgid "Pages"
 msgstr "Stránky"
 
-#: ../lib/wiking/modules.py:269
+#: ../lib/wiking/modules.py:250
+msgid "Duplicate menu order on the this tree level."
+msgstr "Duplicitní pořadí na stejné úrovni hierarchie."
+
+#: ../lib/wiking/modules.py:354
 msgid ""
 "Unknown module.  You either misspelled the name or the module is not "
 "installed properly."
@@ -123,89 +376,85 @@ msgstr ""
 "Neznámý modul.  Název modulu je buďto chybně zapsán, nebo daný modul není\n"
 "nainstalován."
 
-#: ../lib/wiking/modules.py:281
+#: ../lib/wiking/modules.py:366
 msgid "Modules"
 msgstr "Moduly"
 
-#: ../lib/wiking/modules.py:282
+#: ../lib/wiking/modules.py:367
 msgid "Manage available Wiking modules."
 msgstr "Správa dostupných modulů systému Wiking."
 
-#: ../lib/wiking/modules.py:285 ../lib/wiking/modules.py:475
-#: ../lib/wiking/modules.py:582
+#: ../lib/wiking/modules.py:370 ../lib/wiking/modules.py:564
+#: ../lib/wiking/modules.py:617
 msgid "Name"
 msgstr "Název"
 
-#: ../lib/wiking/modules.py:286 ../lib/wiking/modules.py:392
-#: ../lib/wiking/modules.py:396 ../lib/wiking/modules.py:501
-#: ../lib/wiking/modules.py:616 ../lib/wiking/modules.py:617
-#: ../lib/wiking/modules.py:788 ../lib/wiking/modules.py:1019
+#: ../lib/wiking/modules.py:371 ../lib/wiking/modules.py:480
+#: ../lib/wiking/modules.py:484 ../lib/wiking/modules.py:591
+#: ../lib/wiking/modules.py:710 ../lib/wiking/modules.py:711
+#: ../lib/wiking/modules.py:887 ../lib/wiking/modules.py:1118
 msgid "Title"
 msgstr "Název"
 
-#: ../lib/wiking/modules.py:288 ../lib/wiking/modules.py:1102
+#: ../lib/wiking/modules.py:373 ../lib/wiking/modules.py:1202
 msgid "Active"
 msgstr "Aktivní"
 
-#: ../lib/wiking/modules.py:317
+#: ../lib/wiking/modules.py:403
 msgid "Config"
 msgstr "Nastavení"
 
-#: ../lib/wiking/modules.py:318
+#: ../lib/wiking/modules.py:404
 msgid "Edit site configuration."
 msgstr "Upravit globální nastavení portálu."
 
-#: ../lib/wiking/modules.py:322
+#: ../lib/wiking/modules.py:408
 msgid "Site Configuration"
 msgstr "Nastavení portálu"
 
-#: ../lib/wiking/modules.py:323
+#: ../lib/wiking/modules.py:409
 msgid "Site title"
 msgstr "Název porálu"
 
-#: ../lib/wiking/modules.py:324
+#: ../lib/wiking/modules.py:410
 msgid "Site subtitle"
 msgstr "Podtitul portálu"
 
-#: ../lib/wiking/modules.py:325
+#: ../lib/wiking/modules.py:411
 msgid "Show login panel"
 msgstr "Zobrazit panel přihlášení"
 
-#: ../lib/wiking/modules.py:326
+#: ../lib/wiking/modules.py:412
 msgid "Allow registration"
 msgstr "Umožnit registraci nových uživatelů"
 
-#: ../lib/wiking/modules.py:328
+#: ../lib/wiking/modules.py:414
 msgid "Force HTTPS login"
 msgstr "Vynutit HTTPS pro přihlášení"
 
-#: ../lib/wiking/modules.py:329
+#: ../lib/wiking/modules.py:415
 msgid "Webmaster address"
 msgstr "Adresa správce"
 
-#: ../lib/wiking/modules.py:330
+#: ../lib/wiking/modules.py:416
 msgid "Theme"
 msgstr "Motiv"
 
-#: ../lib/wiking/modules.py:335 ../lib/wiking/module.py:112
-msgid "Edit"
-msgstr "Upravit"
-
-#: ../lib/wiking/modules.py:385
+#: ../lib/wiking/modules.py:473
 msgid "Panels"
 msgstr "Panely"
 
-#: ../lib/wiking/modules.py:386
+#: ../lib/wiking/modules.py:474
 msgid "Manage panels – the small windows shown by the side of every page."
 msgstr "Správa panelů – malých „okének“ zobrazených na boku každé stránky."
 
-#: ../lib/wiking/modules.py:390 ../lib/wiking/modules.py:499
-#: ../lib/wiking/modules.py:614 ../lib/wiking/modules.py:776
-#: ../lib/wiking/modules.py:893 ../lib/wiking/modules.py:950
+#: ../lib/wiking/modules.py:478 ../lib/wiking/modules.py:589
+#: ../lib/wiking/modules.py:708 ../lib/wiking/modules.py:875
+#: ../lib/wiking/modules.py:991 ../lib/wiking/modules.py:1049
 msgid "Language"
 msgstr "Jazyk"
 
-#: ../lib/wiking/modules.py:393
+#: ../lib/wiking/modules.py:481
 msgid ""
 "Panel title – you may leave the field blank to use the menu title of the "
 "selected module."
@@ -214,16 +463,15 @@ msgstr ""
 "modulu\n"
 "v navigační nabídce."
 
-#: ../lib/wiking/modules.py:401
+#: ../lib/wiking/modules.py:489
 msgid "Order"
 msgstr "Pořadí"
 
-#: ../lib/wiking/modules.py:402
+#: ../lib/wiking/modules.py:490
 msgid "Number denoting the order of the panel on the page."
 msgstr "Číslo udávající pořadí panelu na stránce."
 
-#: ../lib/wiking/modules.py:407
-#, fuzzy
+#: ../lib/wiking/modules.py:495
 msgid ""
 "The items of the selected module will be shown by the panel. Leave blank for "
 "a text content panel."
@@ -232,65 +480,56 @@ msgstr ""
 "chcete\n"
 "do panelu umístit pouze vlastní textový obsah."
 
-#: ../lib/wiking/modules.py:415
+#: ../lib/wiking/modules.py:503
 msgid "Items count"
 msgstr "Počet položek"
 
-#: ../lib/wiking/modules.py:416
+#: ../lib/wiking/modules.py:504
 msgid ""
 "Number of items from the selected module, which will be shown by the panel."
 msgstr "Počet položek vybraného modulu, které budou panelem zobrazeny."
 
-#: ../lib/wiking/modules.py:418 ../lib/wiking/modules.py:619
-#: ../lib/wiking/modules.py:1104
-msgid "Content"
-msgstr "Obsah"
-
-#: ../lib/wiking/modules.py:419
+#: ../lib/wiking/modules.py:507
 msgid "Additional text content displayed on the panel."
 msgstr "Přidaný textový obsah panelu."
 
-#: ../lib/wiking/modules.py:422
+#: ../lib/wiking/modules.py:510
 msgid "Controls whether the panel is actually displayed."
 msgstr "Určuje, zda je panel skutečně zobrazen."
 
-#: ../lib/wiking/modules.py:441 ../lib/wiking/modules.py:1222
+#: ../lib/wiking/modules.py:530 ../lib/wiking/modules.py:1323
 msgid "New user registration"
 msgstr "Registrace nového uživatele"
 
-#: ../lib/wiking/modules.py:443 ../lib/wiking/export.py:157
-msgid "Login"
-msgstr "Přihlášení"
-
-#: ../lib/wiking/modules.py:469
+#: ../lib/wiking/modules.py:558
 msgid "Languages"
 msgstr "Jazyky"
 
-#: ../lib/wiking/modules.py:470
+#: ../lib/wiking/modules.py:559
 msgid "Manage available languages."
 msgstr "Správa dostupných jazyků."
 
-#: ../lib/wiking/modules.py:473
+#: ../lib/wiking/modules.py:562
 msgid "Code"
 msgstr "Kód"
 
-#: ../lib/wiking/modules.py:491
+#: ../lib/wiking/modules.py:581
 msgid "Titles"
 msgstr "Názvy"
 
-#: ../lib/wiking/modules.py:492
+#: ../lib/wiking/modules.py:582
 msgid "Manage menu titles of available mapping items (temporary)."
 msgstr "Správa názvů položek hlavního menu (dočasné)."
 
-#: ../lib/wiking/modules.py:510
+#: ../lib/wiking/modules.py:600
 msgid "The title is already defined for this page in given language."
 msgstr "Pro tuto stránku již je ve zvoleném jazyce název definován."
 
-#: ../lib/wiking/modules.py:576
+#: ../lib/wiking/modules.py:611
 msgid "Themes"
 msgstr "Motivy"
 
-#: ../lib/wiking/modules.py:577
+#: ../lib/wiking/modules.py:612
 msgid ""
 "Manage available color themes. Go to Configuration to change the currently "
 "used theme."
@@ -298,36 +537,36 @@ msgstr ""
 "Správa dostupných barevných témat.  Pro volbu použitého barevného tématu\n"
 "přejděte do „Nastavení“."
 
-#: ../lib/wiking/modules.py:606
+#: ../lib/wiking/modules.py:698
 msgid "Manage available pages of structured text content."
 msgstr "Správa stránek strukturovaného textového obsahu."
 
-#: ../lib/wiking/modules.py:623
+#: ../lib/wiking/modules.py:717
 msgid "Status"
 msgstr "Stav"
 
-#: ../lib/wiking/modules.py:632
+#: ../lib/wiking/modules.py:729
 msgid "Ok"
 msgstr "Ok"
 
-#: ../lib/wiking/modules.py:632
+#: ../lib/wiking/modules.py:729
 msgid "Changed"
 msgstr "Změněno"
 
-#: ../lib/wiking/modules.py:634
+#: ../lib/wiking/modules.py:731
 msgid "Missing"
 msgstr "Chybí"
 
-#: ../lib/wiking/modules.py:639 ../lib/wiking/modules.py:707
-#: ../lib/wiking/modules.py:759
+#: ../lib/wiking/modules.py:736 ../lib/wiking/modules.py:806
+#: ../lib/wiking/modules.py:858
 msgid "Attachments"
 msgstr "Přílohy"
 
-#: ../lib/wiking/modules.py:644
+#: ../lib/wiking/modules.py:741
 msgid "The page already exists in given language."
 msgstr "Tato stránka již existuje ve zvoleném jazyce."
 
-#: ../lib/wiking/modules.py:649
+#: ../lib/wiking/modules.py:747
 msgid ""
 "New page was successfully created. Don't forget to publish it when you are "
 "done. Please, visit the 'Mapping' module if you want to add the page to the "
@@ -337,7 +576,7 @@ msgstr ""
 "podobou\n"
 "spokojeni. Stránku můžete zařadit do hlavní nabídky pomocí modulu „Mapování“."
 
-#: ../lib/wiking/modules.py:652
+#: ../lib/wiking/modules.py:750
 msgid ""
 "Page content was modified, however the changes remain unpublished. Don't "
 "forget to publish the changes when you are done."
@@ -346,66 +585,62 @@ msgstr ""
 "změny\n"
 "zveřejnit až budete s novou podovou spokojeni."
 
-#: ../lib/wiking/modules.py:656
+#: ../lib/wiking/modules.py:754
 msgid "Publish changes"
 msgstr "Zveřejnit změny"
 
-#: ../lib/wiking/modules.py:657
+#: ../lib/wiking/modules.py:755
 msgid "Publish the current modified content"
 msgstr "Zveřejnit současnou podobu stránky po posledních úpravách"
 
-#: ../lib/wiking/modules.py:659
+#: ../lib/wiking/modules.py:757
 msgid "Preview"
 msgstr "Náhled"
 
-#: ../lib/wiking/modules.py:660
+#: ../lib/wiking/modules.py:758
 msgid "Display the current version of the page"
 msgstr "Zorazit současnou podobu stránky"
 
-#: ../lib/wiking/modules.py:662 ../lib/wiking/module.py:890
-msgid "Translate"
-msgstr "Přeložit"
-
-#: ../lib/wiking/modules.py:663
+#: ../lib/wiking/modules.py:761
 msgid "Create the content by translating another language variant"
 msgstr "Vytvořit obsah přeložením jiné jazykové verze stránky"
 
-#: ../lib/wiking/modules.py:725
+#: ../lib/wiking/modules.py:824
 msgid "Content for this page already exists!"
 msgstr "Obsah pro tuto stránku již existuje."
 
-#: ../lib/wiking/modules.py:732
+#: ../lib/wiking/modules.py:831
 msgid "Content for this page does not exist in any language."
 msgstr "Stránka není definována v žádném jazyce."
 
-#: ../lib/wiking/modules.py:734
+#: ../lib/wiking/modules.py:833
 msgid "Choose source language"
 msgstr "Zvolte zdrojový jazyk"
 
-#: ../lib/wiking/modules.py:737
+#: ../lib/wiking/modules.py:836
 msgid "translate"
 msgstr "přeložit"
 
-#: ../lib/wiking/modules.py:752
+#: ../lib/wiking/modules.py:851
 msgid "The changes were published."
 msgstr "Změny byly zveřejněny."
 
-#: ../lib/wiking/modules.py:760
+#: ../lib/wiking/modules.py:859
 msgid "Manage page attachments. Go to a page to create new attachments."
 msgstr ""
 "Správa příloh.  Nové přílohy přidávejte vždy přes stránku, ke které chcete "
 "přílohu přiřadit (přejděte do modulu „Stránky“)."
 
-#: ../lib/wiking/modules.py:774
+#: ../lib/wiking/modules.py:873
 msgid "Page"
 msgstr "Stránka"
 
-#: ../lib/wiking/modules.py:779 ../lib/wiking/modules.py:1006
-#: ../lib/wiking/modules.py:1018
+#: ../lib/wiking/modules.py:878 ../lib/wiking/modules.py:1105
+#: ../lib/wiking/modules.py:1117
 msgid "File"
 msgstr "Soubor"
 
-#: ../lib/wiking/modules.py:783
+#: ../lib/wiking/modules.py:882
 msgid ""
 "Upload a file from your local system.  The file name will be used to refer "
 "to the attachment within the page content."
@@ -413,15 +648,15 @@ msgstr ""
 "Nahrajte soubor z Vašeho disku.  Název tohoto souboru bude používán pro\n"
 "odkazování na tuto přílohu v rámci obsahu stránky."
 
-#: ../lib/wiking/modules.py:785
+#: ../lib/wiking/modules.py:884
 msgid "Filename"
 msgstr "Název souboru"
 
-#: ../lib/wiking/modules.py:786
+#: ../lib/wiking/modules.py:885
 msgid "Mime-type"
 msgstr "Typ MIME"
 
-#: ../lib/wiking/modules.py:789
+#: ../lib/wiking/modules.py:888
 msgid ""
 "The name of the attachment (e.g. the full name of the document). If empty, "
 "the file name will be used instead."
@@ -430,24 +665,24 @@ msgstr ""
 "zobrazen\n"
 "přímo název souboru."
 
-#: ../lib/wiking/modules.py:791 ../lib/wiking/modules.py:1022
-#: ../lib/wiking/modules.py:1103
+#: ../lib/wiking/modules.py:890 ../lib/wiking/modules.py:1121
+#: ../lib/wiking/modules.py:1203
 msgid "Description"
 msgstr "Popis"
 
-#: ../lib/wiking/modules.py:792
+#: ../lib/wiking/modules.py:891
 msgid "Optional description used for the listing of attachments (see below)."
 msgstr "Nepovinný popis použitý pro seznam příloh (viz níže)."
 
-#: ../lib/wiking/modules.py:794 ../lib/wiking/modules.py:1028
+#: ../lib/wiking/modules.py:893 ../lib/wiking/modules.py:1127
 msgid "Byte size"
 msgstr "Velikost v bajtech"
 
-#: ../lib/wiking/modules.py:796
+#: ../lib/wiking/modules.py:895
 msgid "Listed"
 msgstr "V seznamu"
 
-#: ../lib/wiking/modules.py:797
+#: ../lib/wiking/modules.py:896
 msgid ""
 "Check if you want the item to appear in the listing of attachments at the "
 "bottom of the page."
@@ -456,44 +691,44 @@ msgstr ""
 "na\n"
 "konci stránky."
 
-#: ../lib/wiking/modules.py:839
+#: ../lib/wiking/modules.py:937
 msgid "Attachment of the same filename already exists for this page."
 msgstr "Příloha se stejným názvem souboru již pro tuto stránku existuje."
 
-#: ../lib/wiking/modules.py:884
+#: ../lib/wiking/modules.py:982
 msgid "News"
 msgstr "Novinky"
 
-#: ../lib/wiking/modules.py:885
+#: ../lib/wiking/modules.py:983
 msgid "Publish site news."
 msgstr "Publikovat krátké aktuální zprávy."
 
-#: ../lib/wiking/modules.py:888 ../lib/wiking/modules.py:890
-#: ../lib/wiking/modules.py:941 ../lib/wiking/modules.py:948
+#: ../lib/wiking/modules.py:986 ../lib/wiking/modules.py:988
+#: ../lib/wiking/modules.py:1040 ../lib/wiking/modules.py:1047
 msgid "Date"
 msgstr "Datum"
 
-#: ../lib/wiking/modules.py:892
+#: ../lib/wiking/modules.py:990
 msgid "Date of the news item creation."
 msgstr "Datum vložení zprávy."
 
-#: ../lib/wiking/modules.py:895 ../lib/wiking/modules.py:952
+#: ../lib/wiking/modules.py:993 ../lib/wiking/modules.py:1051
 msgid "Briefly"
 msgstr "Stručně"
 
-#: ../lib/wiking/modules.py:895
+#: ../lib/wiking/modules.py:993
 msgid "Message"
 msgstr "Zpráva"
 
-#: ../lib/wiking/modules.py:896
+#: ../lib/wiking/modules.py:994
 msgid "The item summary (title of the entry)."
 msgstr "Shrnutí obsahu zprávy (název položky)."
 
-#: ../lib/wiking/modules.py:897 ../lib/wiking/modules.py:954
+#: ../lib/wiking/modules.py:995 ../lib/wiking/modules.py:1053
 msgid "Text"
 msgstr "Text"
 
-#: ../lib/wiking/modules.py:899 ../lib/wiking/modules.py:956
+#: ../lib/wiking/modules.py:997 ../lib/wiking/modules.py:1055
 msgid ""
 "It is, however, recommened to use the simplest possible formatting, since "
 "the item may be also published through an RSS channel, which does not "
@@ -504,22 +739,22 @@ msgstr ""
 "být zveřejněna také prostřednictvím RSS kanálu, který formátování "
 "nepodporuje."
 
-#: ../lib/wiking/modules.py:902 ../lib/wiking/modules.py:959
-#: ../lib/wiking/modules.py:1020
+#: ../lib/wiking/modules.py:1000 ../lib/wiking/modules.py:1058
+#: ../lib/wiking/modules.py:1119
 msgid "Author"
 msgstr "Autor"
 
-#: ../lib/wiking/modules.py:937
+#: ../lib/wiking/modules.py:1036
 msgid "Planner"
 msgstr "Plánovač"
 
-#: ../lib/wiking/modules.py:938
+#: ../lib/wiking/modules.py:1037
 msgid "Announce future events by date in a callendar-like listing."
 msgstr ""
 "Umožňuje oznamování budoucích událostí podle data v kalendářovém výpisu."
 
-#: ../lib/wiking/modules.py:943
-#, fuzzy, python-format
+#: ../lib/wiking/modules.py:1042
+#, python-format
 msgid ""
 "The date when the planned event begins. Enter the date including year. "
 "Example: %(date)s"
@@ -527,12 +762,11 @@ msgstr ""
 "Datum, kdy plánovaná událost začíná.  Datum vkládejte včetně roku.\n"
 "Např. %(date)s"
 
-#: ../lib/wiking/modules.py:945
+#: ../lib/wiking/modules.py:1044
 msgid "End date"
 msgstr "Datum do"
 
-#: ../lib/wiking/modules.py:946
-#, fuzzy
+#: ../lib/wiking/modules.py:1045
 msgid ""
 "The date when the event ends if it is not the same as the start date (for "
 "events which last several days)."
@@ -540,63 +774,63 @@ msgstr ""
 "Datum, kdy plánovaná událost končí, pokud není shodný s datem začátku (pro\n"
 "události, které trvají několik dní)."
 
-#: ../lib/wiking/modules.py:952
+#: ../lib/wiking/modules.py:1051
 msgid "Event"
 msgstr "Událost"
 
-#: ../lib/wiking/modules.py:953
+#: ../lib/wiking/modules.py:1052
 msgid "The event summary (title of the entry)."
 msgstr "Shrnutí události (název položky)."
 
-#: ../lib/wiking/modules.py:969
+#: ../lib/wiking/modules.py:1068
 msgid "Date in the past"
 msgstr "Datum je v minulosti"
 
-#: ../lib/wiking/modules.py:980
+#: ../lib/wiking/modules.py:1079
 msgid "End date precedes start date"
 msgstr "Datum konce předchází počáteční datum"
 
-#: ../lib/wiking/modules.py:993
+#: ../lib/wiking/modules.py:1092
 msgid "Images"
 msgstr "Obrázky"
 
-#: ../lib/wiking/modules.py:994
+#: ../lib/wiking/modules.py:1093
 msgid "Publish images."
 msgstr "Správa obrázků a fotografií."
 
-#: ../lib/wiking/modules.py:1021
+#: ../lib/wiking/modules.py:1120
 msgid "Location"
 msgstr "Místo"
 
-#: ../lib/wiking/modules.py:1023
+#: ../lib/wiking/modules.py:1122
 msgid "Date of creation"
 msgstr "Datum vytvoření"
 
-#: ../lib/wiking/modules.py:1025
+#: ../lib/wiking/modules.py:1124
 msgid "Width"
 msgstr "Šířka"
 
-#: ../lib/wiking/modules.py:1026
+#: ../lib/wiking/modules.py:1125
 msgid "Height"
 msgstr "Výška"
 
-#: ../lib/wiking/modules.py:1027
+#: ../lib/wiking/modules.py:1126
 msgid "Pixel size"
 msgstr "Velikost v pixelech"
 
-#: ../lib/wiking/modules.py:1097
+#: ../lib/wiking/modules.py:1197
 msgid "Styles"
 msgstr "Styly"
 
-#: ../lib/wiking/modules.py:1098
+#: ../lib/wiking/modules.py:1198
 msgid "Manage available Cascading Stylesheets."
 msgstr "Správa použitých kaskádových stylů (CSS)."
 
-#: ../lib/wiking/modules.py:1144
+#: ../lib/wiking/modules.py:1244
 msgid "Users"
 msgstr "Uživatelé"
 
-#: ../lib/wiking/modules.py:1145
+#: ../lib/wiking/modules.py:1245
 msgid ""
 "Manage registered users.  Use the module \"Access Rights\" to change their "
 "privileges."
@@ -604,11 +838,11 @@ msgstr ""
 "Správa registrovaných uživatelů.  Použijte modul „Práva“ pro správu jejich\n"
 "oprávnění."
 
-#: ../lib/wiking/modules.py:1162 ../lib/wiking/util.py:497
+#: ../lib/wiking/modules.py:1262 ../lib/wiking/util.py:533
 msgid "Login name"
 msgstr "Přihlašovací jméno"
 
-#: ../lib/wiking/modules.py:1165
+#: ../lib/wiking/modules.py:1265
 msgid ""
 "A valid login name can only contain letters, digits, underscores, dashes and "
 "dots and must start with a letter."
@@ -616,11 +850,11 @@ msgstr ""
 "Platné přihlašovací jméno obsahuje pouze písmena bez diakritiky, číslice,\n"
 "tečky, pomlčky a případně i podtržítka a musí začínat písmenem."
 
-#: ../lib/wiking/modules.py:1168 ../lib/wiking/util.py:500
+#: ../lib/wiking/modules.py:1268 ../lib/wiking/util.py:536
 msgid "Password"
 msgstr "Heslo"
 
-#: ../lib/wiking/modules.py:1170
+#: ../lib/wiking/modules.py:1270
 msgid ""
 "Please write the new password into each of the two fields.  Leave both "
 "fields blank if you are editing an existing account and don't want to change "
@@ -629,96 +863,91 @@ msgstr ""
 "Zapište nové heslo do obou políček.  Nechte obě pole volná, pokud\n"
 "upravujete existující účet a nechcete heslo změnit."
 
-#: ../lib/wiking/modules.py:1173
+#: ../lib/wiking/modules.py:1273
 msgid "Full Name"
 msgstr "Celé jméno"
 
-#: ../lib/wiking/modules.py:1175
+#: ../lib/wiking/modules.py:1275
 msgid "User"
 msgstr "Uživatel"
 
-#: ../lib/wiking/modules.py:1177
+#: ../lib/wiking/modules.py:1277
 msgid "First name"
 msgstr "Jméno"
 
-#: ../lib/wiking/modules.py:1178
+#: ../lib/wiking/modules.py:1278
 msgid "Surname"
 msgstr "Příjmení"
 
-#: ../lib/wiking/modules.py:1179
+#: ../lib/wiking/modules.py:1279
 msgid "Nickname"
 msgstr "Přezdívka"
 
-#: ../lib/wiking/modules.py:1180
+#: ../lib/wiking/modules.py:1280
 msgid "E-mail"
 msgstr "E-mail"
 
-#: ../lib/wiking/modules.py:1181
+#: ../lib/wiking/modules.py:1281
 msgid "Phone"
 msgstr "Telefon"
 
-#: ../lib/wiking/modules.py:1182
+#: ../lib/wiking/modules.py:1282
 msgid "Address"
 msgstr "Adresa"
 
-#: ../lib/wiking/modules.py:1183
+#: ../lib/wiking/modules.py:1283
 msgid "URI"
 msgstr "URI"
 
-#: ../lib/wiking/modules.py:1184
+#: ../lib/wiking/modules.py:1284
 msgid "Registered since"
 msgstr "Registrace od"
 
-#: ../lib/wiking/modules.py:1185
+#: ../lib/wiking/modules.py:1285
 msgid "Enabled"
 msgstr "Povolen"
 
-#: ../lib/wiking/modules.py:1186
+#: ../lib/wiking/modules.py:1286
 msgid "Contribution privileges"
 msgstr "Práva přispěvatele"
 
-#: ../lib/wiking/modules.py:1187
+#: ../lib/wiking/modules.py:1287
 msgid "Authoring privileges"
 msgstr "Práva tvůrce obsahu"
 
-#: ../lib/wiking/modules.py:1188
+#: ../lib/wiking/modules.py:1288
 msgid "Admin privileges"
 msgstr "Administrátorská práva"
 
-#: ../lib/wiking/modules.py:1194
+#: ../lib/wiking/modules.py:1294
 msgid "Personal data"
 msgstr "Osobní údaje"
 
-#: ../lib/wiking/modules.py:1196
+#: ../lib/wiking/modules.py:1296
 msgid "Contact information"
 msgstr "Kontantní údaje"
 
-#: ../lib/wiking/modules.py:1198
+#: ../lib/wiking/modules.py:1298
 msgid "Login information"
 msgstr "Přihlašovací údaje"
 
-#: ../lib/wiking/modules.py:1212
+#: ../lib/wiking/modules.py:1313
 msgid "Edit your profile"
 msgstr "Upravit profil"
 
-#: ../lib/wiking/modules.py:1213
+#: ../lib/wiking/modules.py:1314
 msgid "Modify your record"
 msgstr "Změnit údaje ve Vašem záznamu"
 
-#: ../lib/wiking/modules.py:1217 ../lib/wiking/module.py:114
-#: ../lib/wiking/module.py:603
-msgid "Remove"
-msgstr "Smazat"
-
-#: ../lib/wiking/modules.py:1218
+#: ../lib/wiking/modules.py:1319
 msgid "Remove the user permanently"
 msgstr "Nevratně odstranit uživatele"
 
-#: ../lib/wiking/modules.py:1221
+#: ../lib/wiking/modules.py:1322
 msgid "Register"
 msgstr "Registrace"
 
-#: ../lib/wiking/modules.py:1226
+#: ../lib/wiking/modules.py:1327
 msgid ""
 "Registration completed successfuly. Your account now awaits administrator's "
 "approval."
@@ -726,133 +955,67 @@ msgstr ""
 "Registrace proběhla úspěšně.  Váš účet nyní čeká na schválení "
 "administrátorem."
 
-#: ../lib/wiking/modules.py:1228
+#: ../lib/wiking/modules.py:1329
 msgid "Registration"
 msgstr "Registrace"
 
-#: ../lib/wiking/modules.py:1257
+#: ../lib/wiking/modules.py:1358
 msgid "Access Rights"
 msgstr "Práva"
 
-#: ../lib/wiking/modules.py:1258
+#: ../lib/wiking/modules.py:1359
 msgid "Manage access rights of registered users."
 msgstr "Správa přístupových práv registrovaných uživatelů."
 
-#: ../lib/wiking/modules.py:1299
+#: ../lib/wiking/modules.py:1400
 msgid "The following modules were successfully reloaded:"
 msgstr "Byly úspěšně přenačteny následující moduly:"
 
-#: ../lib/wiking/modules.py:1301
+#: ../lib/wiking/modules.py:1402
 msgid "Reload"
 msgstr "Přenačíst"
 
-#: ../lib/wiking/modules.py:1306
+#: ../lib/wiking/modules.py:1407
 msgid "Searching"
 msgstr "Vyhledávání"
 
-#: ../lib/wiking/modules.py:1307
+#: ../lib/wiking/modules.py:1408
 msgid "Search results"
 msgstr "Výsledky vyhledávání"
 
-#: ../lib/wiking/modules.py:1308
+#: ../lib/wiking/modules.py:1409
 msgid "Given search term doesn't contain any searchable term."
 msgstr ""
 "Zadaný vyhledávací výraz neobsahuje nic, podle čeho by bylo možno vyhledání "
 "provést."
 
-#: ../lib/wiking/modules.py:1312
+#: ../lib/wiking/modules.py:1413
 msgid "Search words: "
 msgstr "Vyhledat slova: "
 
-#: ../lib/wiking/modules.py:1313
+#: ../lib/wiking/modules.py:1414
 msgid "Search"
 msgstr "Vyhledat"
 
-#: ../lib/wiking/modules.py:1370
+#: ../lib/wiking/modules.py:1473
 msgid "Nothing found."
 msgstr "Nic nebylo nalezeno."
 
-#: ../lib/wiking/export.py:26
-msgid "Language:"
-msgstr "Jazyk:"
+#: ../lib/wiking/request.py:305
+msgid "Session expired. Please log in again."
+msgstr "Sezení vypršelo.  Přihlašte se, prosím, znovu."
 
-#: ../lib/wiking/export.py:82 ../lib/wiking/export.py:120
-msgid "skip"
-msgstr "přeskočit"
+#: ../lib/wiking/request.py:319
+msgid "Enter your login name, please!"
+msgstr "Zadejte, prosím, vaše uživatelské jméno!"
 
-#: ../lib/wiking/export.py:83 ../lib/wiking/export.py:91
-msgid "Main navigation"
-msgstr "Hlavní navigace"
+#: ../lib/wiking/request.py:321
+msgid "Enter your password, please!"
+msgstr "Zadejte, prosím, vaše heslo!"
 
-#: ../lib/wiking/export.py:87
-msgid "Skip all repetitive content"
-msgstr "Přeskočit všechny opakující se části"
-
-#: ../lib/wiking/export.py:104
-msgid "Show panels"
-msgstr "Zobrazit panely"
-
-#: ../lib/wiking/export.py:106
-msgid "Hide panels"
-msgstr "Skrýt panely"
-
-#: ../lib/wiking/export.py:152 ../lib/wiking/util.py:364
-msgid "log out"
-msgstr "odhlásit"
-
-#: ../lib/wiking/export.py:154 ../lib/wiking/util.py:366
-msgid "not logged"
-msgstr "nepřihlášen"
-
-#: ../lib/wiking/export.py:155 ../lib/wiking/util.py:367
-msgid "log in"
-msgstr "přihlásit"
-
-#: ../lib/wiking/export.py:159
-msgid "Leave the Management Interface"
-msgstr "Opustit rozhraní správy obsahu"
-
-#: ../lib/wiking/export.py:161
-msgid "Leave the Help System"
-msgstr "Opustit systém nápovědy"
-
-#: ../lib/wiking/export.py:166
-msgid "Manage this site"
-msgstr "Správa obsahu"
-
-#: ../lib/wiking/export.py:167
-msgid "Enter the Wiking Management Interface"
-msgstr "Vstoupit do rozhraní správy obsahu Wiking"
-
-#: ../lib/wiking/export.py:171
-#, python-format
-msgid "Powered by %(wiking)s %(version)s"
-msgstr "Provozováno na %(wiking)s %(version)s"
-
-#: ../lib/wiking/export.py:180
-#, python-format
-msgid "Last change: %(date)s, %(user)s"
-msgstr "Poslední změna: %(date)s, %(user)s"
-
-#: ../lib/wiking/export.py:197
-msgid "US Government Section 508 Accessibility Guidelines."
-msgstr "Sekce 508 směrnic pro zpřístupnění vydaných vládou USA"
-
-#: ../lib/wiking/export.py:200
-msgid "This site conforms to the following standards:"
-msgstr "Tento portál odpovídá následujícím standardům:"
-
-#: ../lib/wiking/export.py:202
-msgid "This site can be viewed in ANY browser."
-msgstr "Tato stránka může být používána v LIBOVOLNÉM prohlížeči."
-
-#: ../lib/wiking/export.py:203
-msgid "Accessibility Statement"
-msgstr "Prohlášení o zpřístupnění"
-
-#: ../lib/wiking/export.py:205
-msgid "Contact:"
-msgstr "Kontakt:"
+#: ../lib/wiking/request.py:325
+msgid "Invalid login!"
+msgstr "Neplatné přihlášení!"
 
 #: ../lib/wiking/util.py:54
 msgid "Authentication required"
@@ -924,145 +1087,17 @@ msgstr ""
 "Vašeho\n"
 "systému."
 
-#: ../lib/wiking/util.py:340
+#: ../lib/wiking/util.py:376
 msgid "not available"
 msgstr "nedostupné"
 
-#: ../lib/wiking/util.py:349
+#: ../lib/wiking/util.py:385
 msgid "Actions:"
 msgstr "Akce:"
 
-#: ../lib/wiking/util.py:506
+#: ../lib/wiking/util.py:542
 msgid "Log in"
 msgstr "přihlásit"
-
-#: ../lib/wiking/module.py:113
-msgid "Modify the record"
-msgstr "Změnit záznam"
-
-#: ../lib/wiking/module.py:115
-msgid "Remove the record permanently"
-msgstr "Nevratně odstranit záznam"
-
-#: ../lib/wiking/module.py:116
-msgid "List"
-msgstr "Seznam"
-
-#: ../lib/wiking/module.py:117
-msgid "Back to the list of all records"
-msgstr "Zpět na výpis všech záznamů"
-
-#: ../lib/wiking/module.py:119
-msgid "New record"
-msgstr "Nový záznam"
-
-#: ../lib/wiking/module.py:120
-msgid "Create a new record"
-msgstr "Vytvořit nový záznam"
-
-#: ../lib/wiking/module.py:125
-msgid "This value already exists.  Enter a unique value."
-msgstr "Taková hodnota již existuje.  Zadejte unikátní hodnotu."
-
-#: ../lib/wiking/module.py:127
-msgid "Empty value.  This field is mandatory."
-msgstr "Prázdná hodnota.  Tato položka je povinná."
-
-#: ../lib/wiking/module.py:131
-msgid "New record was successfully inserted."
-msgstr "Nový záznam byl úspěšně vložen"
-
-#: ../lib/wiking/module.py:132
-msgid "The record was successfully updated."
-msgstr "Záznam byl úspěšně aktualizován."
-
-#: ../lib/wiking/module.py:133
-msgid "The record was deleted."
-msgstr "Záznam byl odstraněn."
-
-#: ../lib/wiking/module.py:282
-msgid "Integrity check failed."
-msgstr "Kontrola integrity dat selhala."
-
-#: ../lib/wiking/module.py:555
-msgid "Help"
-msgstr "Nápověda"
-
-#: ../lib/wiking/module.py:562
-msgid "An RSS channel is available for this section:"
-msgstr "K dispozici je také RSS kanál pro tuto sekci:"
-
-#: ../lib/wiking/module.py:567
-msgid "more about RSS"
-msgstr "více o RSS"
-
-#: ../lib/wiking/module.py:592
-msgid "new record"
-msgstr "nový záznam"
-
-#: ../lib/wiking/module.py:598
-msgid "edit form"
-msgstr "úpravy"
-
-#: ../lib/wiking/module.py:604
-msgid "Please, confirm removing the record permanently."
-msgstr "Potvrďte, prosím, nevratné smazání záznamu."
-
-#: ../lib/wiking/module.py:606
-msgid "removing"
-msgstr "mazání"
-
-#: ../lib/wiking/module.py:685
-msgid "No records."
-msgstr "Žádné záznamy"
-
-#: ../lib/wiking/module.py:841
-msgid "The item was published."
-msgstr "Položka byla zveřejněna."
-
-#: ../lib/wiking/module.py:842
-msgid "The item was unpublished."
-msgstr "Zveřejnění položky bylo zrušeno."
-
-#: ../lib/wiking/module.py:851
-msgid "Publish"
-msgstr "Zveřejnit"
-
-#: ../lib/wiking/module.py:854
-msgid "Make the item visible to website visitors"
-msgstr "Zpřístupnit položku návštěvníkům stránek"
-
-#: ../lib/wiking/module.py:855
-msgid "Unpublish"
-msgstr "Zneveřejnit"
-
-#: ../lib/wiking/module.py:858
-msgid "Make the item invisible to website visitors"
-msgstr "Učinit položku nedostupnou pro návštěvníky stránek"
-
-#: ../lib/wiking/request.py:305
-msgid "Session expired. Please log in again."
-msgstr "Sezení vypršelo.  Přihlašte se, prosím, znovu."
-
-#: ../lib/wiking/request.py:319
-msgid "Enter your login name, please!"
-msgstr "Zadejte, prosím, vaše uživatelské jméno!"
-
-#: ../lib/wiking/request.py:321
-msgid "Enter your password, please!"
-msgstr "Zadejte, prosím, vaše heslo!"
-
-#: ../lib/wiking/request.py:325
-msgid "Invalid login!"
-msgstr "Neplatné přihlášení!"
-
-#: ../lib/wiking/handler.py:183
-msgid "Wiking Management Interface"
-msgstr "Rozhraní správy obsahu Wiking"
-
-#: ../lib/wiking/handler.py:184
-msgid "Wiking Help System"
-msgstr "Nápověda systému Wiking"
 
 #~ msgid "Overview"
 #~ msgstr "Přehled"

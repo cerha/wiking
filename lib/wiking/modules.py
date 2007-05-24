@@ -33,8 +33,8 @@ NEVER = pp.Editable.NEVER
 ALWAYS = pp.Editable.ALWAYS
 ASC = pd.ASCENDENT
 DESC = pd.DESCENDANT
-MB = 1024**2
 now = lambda: mx.DateTime.now().gmtime()
+MB = 1024**2
 
 _ = lcg.TranslatableTextFactory('wiking')
 
@@ -57,16 +57,139 @@ def _modtitle(m):
     else:
         return concat(m,' (',_("unknown"),')')
 
-# This constant lists names of modules which don't handle requests directly and
-# thus should not appear in the module selection for the Mapping items.
-# It should be considered a temporary hack, but the list should be maintained.
+# This constant lists names of modules which don't handle requests directly and thus should not
+# appear in the module selection for the Mapping items.  It should be considered a temporary hack,
+# but the list should be maintained.
 _SYSMODULES = ('Languages', 'Modules', 'Config', 'Mapping','Panels', 'Titles')
 
-_STRUCTURED_TEXT_DESCR = _("The content should be formatted as LCG "
-                           "structured text. See the %(manual)s.",
-                           manual=('<a target="_new" href="/_doc/lcg/'
-                                   'data-formats/structured-text">' + \
-                                   _("formatting manual") + "</a>"))
+_STRUCTURED_TEXT_DESCR = \
+    _("The content should be formatted as LCG structured text. See the %(manual)s.",
+      manual=('<a target="_new" href="/_doc/lcg/data-formats/structured-text">' + \
+              _("formatting manual") + "</a>"))
+
+
+class WikingManagementInterface(Module):
+    """Wiking Management Interface.
+
+    This module handles the WMI requestes by redirecting the request to the selected module.  The
+    module name is part of the request URI.
+
+    """
+    SECTION_CONTENT = 'content'
+    SECTION_USERS = 'users'
+    SECTION_STYLE = 'style'
+    SECTION_SETUP = 'setup'
+    
+    _SECTIONS = ((SECTION_CONTENT, _("Content"),
+                  _("Manage the content available on your website.")),
+                 (SECTION_STYLE,   _("Look &amp; Feel"),
+                  _("Customize the appearance of your site.")),
+                 (SECTION_USERS,   _("User Management"),
+                  _("Manage registered users and their privileges.")),
+                 (SECTION_SETUP,   _("Setup"),
+                  _("Edit global properties of your web site.")),
+                 )
+    
+    def handle(self, req):
+        Roles.check(req, (Roles.ADMIN,))
+        req.wmi = True # Switch to WMI only after successful authorization.
+        if len(req.path) == 1:
+            req.path += ('content',)
+        try:
+            module = self._module(req.path[1])
+        except AttributeError:
+            for id, title, descr in self._SECTIONS:
+                if req.path[1] == id:
+                    variants = self._module('Languages').languages()
+                    lang = req.prefered_language(variants)
+                    return Document(title, lcg.p(descr), lang=lang, variants=variants)
+            raise NotFound(req)
+        else:
+            return module.handle(req)
+
+    def menu(self, req, lang):
+        if not req.wmi:
+            return super(WikingManagementInterface, self).menu(req, lang)
+        submenu = {}
+        for module in get_modules().__dict__.values():
+            if type(module) == type(WikingModule) and issubclass(module, WikingModule) \
+                   and hasattr(module, 'WMI_POSITION'):
+                section, order = getattr(module, 'WMI_POSITION')
+                item = MenuItem(req.path[0] + '/' + module.name(), module.Spec.title,
+                                descr=module.Spec.help, order=order)
+                if submenu.has_key(section):
+                    submenu[section].append(item)
+                else:
+                    submenu[section] = [item]
+                
+        return [MenuItem(req.path[0] + '/' + id, title, descr=descr, submenu=submenu[id])
+                for id, title, descr in self._SECTIONS if submenu.has_key(id)]
+
+    def panels(self, req, lang):
+        if not req.wmi:
+            return super(WikingManagementInterface, self).panels(req, lang)
+        return ()
+
+
+class Documentation(Module):
+    """Serve the on-line documentation.
+
+    This module is not bound to a data object.  It only serves the on-line documentation from files
+    on the disk.
+
+    """
+    def handle(self, req):
+        path = req.path[1:]
+        if path and path[0] == 'lcg':
+            path = path[1:]
+            basedir = lcg.config.doc_dir
+        else:
+            basedir = os.path.join(cfg.wiking_dir, 'doc', 'src')
+        if not os.path.exists(basedir):
+            raise Exception("Directory %s does not exist" % basedir)
+        import glob, codecs
+        # TODO: the documentation should be processed by LCG first into some
+        # reasonable output format.  Now we just search the file in all the
+        # source directories and format it.  No global navigation is used.
+        for subdir in ('', 'user', 'admin'):
+            basename = os.path.join(basedir, subdir, *path)
+            variants = [f[-6:-4] for f in glob.glob(basename+'.*.txt')]
+            if variants:
+                break
+        else:
+            raise NotFound()
+        lang = req.prefered_language(variants)
+        filename = '.'.join((basename, lang, 'txt'))
+        f = codecs.open(filename, encoding='utf-8')
+        text = "".join(f.readlines())
+        f.close()
+        content = lcg.Parser().parse(text)
+        if len(content) == 1 and isinstance(content[0], lcg.Section):
+            title = content[0].title()
+            content = lcg.SectionContainer(content[0].content(), toc_depth=0)
+        else:
+            title = ' :: '.join(path)
+        return Document(title, content, lang=lang, variants=variants)
+
+    def menu(self, req, lang):
+        return ()
+
+    def panels(self, req, lang):
+        return ()
+
+
+class MappingParents(WikingModule):
+    """An auxiliary module for the codebook of mapping parent nodes."""
+    class Spec(pp.Specification):
+        table = 'mapping'
+        fields = (
+            Field('mapping_id'),
+            Field('identifier'),
+            Field('tree_order'),
+            )
+        sorting = (('tree_order', ASC), ('identifier', ASC))
+        cb = pp.CodebookSpec(display='identifier')
+
 
 class Mapping(WikingModule, Publishable):
     """Map available URIs to the modules which handle them.
@@ -84,43 +207,53 @@ class Mapping(WikingModule, Publishable):
         title = _("Mapping")
         help = _("Manage available URIs and Wiking modules which handle them. "
                  "Also manage the main menu.")
-        fields = (
+        def _level(self, row):
+            return len(row['tree_order'].value().split('.')) - 2
+        def fields(self): return (
             Field('mapping_id', width=5, editable=NEVER),
-            #Field('parent', _("Parent"), codebook='Mapping'),
-            Field('identifier', _("Identifier"), width=20,
-                  filter=ALPHANUMERIC, post_process=LOWER, fixed=True,
+            Field('parent', _("Parent item"), codebook='MappingParents', not_null=False,
+                  ), #(validity_condition=pd.NE('name', pd.Value(pd.String(), ))),
+            Field('identifier', _("Identifier"), width=20, filter=ALPHANUMERIC, fixed=True,
                   type=pd.RegexString(maxlen=32, not_null=True, regex='^[a-zA-Z][0-9a-zA-Z_-]*$'),
                   descr=_("The identifier may be used to refer to this page from outside and also "
                           "from other pages. A valid identifier can only contain letters, digits, "
                           "dashes and underscores.  It must start with a letter.")),
-            Field('mod_id', _("Module"), selection_type=CHOICE,
-                  codebook='Modules',
-                  validity_condition=pd.AND(*[pd.NE('name',
-                                                    pd.Value(pd.String(),_m))
+            Field('mod_id', _("Module"), selection_type=CHOICE, codebook='Modules',
+                  validity_condition=pd.AND(*[pd.NE('name', pd.Value(pd.String(),_m))
                                               for _m in _SYSMODULES])),
             Field('modname', _("Module")),
-            Field('modtitle', _("Module"), virtual=True,
-                  computer=Computer(lambda r: _modtitle(r['modname'].value()),
-                                    depends=('modname',)),
+            Field('modtitle', _("Module"), virtual=True, computer=\
+                  Computer(lambda r: _modtitle(r['modname'].value()), depends=('modname',)),
                   descr=_("Select the module which handles requests for given identifier. "
                           "This is the way to make the module available from outside.")),
             Field('published', _("Published"),
-                  descr=_("This flag allows you to make the item unavailable withoit actually "
+                  descr=_("This flag allows you to make the item unavailable without actually "
                           "removing it.")),
             Field('private', _("Private"), default=False,
                   descr=_("Make the item available only to logged-in users.")),
-            Field('ord', _("Menu order"), width=5,
+            Field('ord', _("Menu order"), width=6,
                   descr=_("Enter a number denoting the item order in the menu or leave the field "
-                          "blank if you don't want this item to appear in the menu.")))
-        sorting = (('ord', ASC), ('identifier', ASC))
+                          "blank if you don't want this item to appear in the menu.")),
+            Field('tree_order'),
+            Field('level', _("Identifier"), virtual=True,
+                  computer=Computer(self._level, depends=('tree_order',))),
+            )
+        sorting = (('tree_order', ASC), ('identifier', ASC))
         bindings = {'Pages': pp.BindingSpec(_("Pages"), 'mapping_id')}
         columns = ('identifier', 'modtitle', 'published', 'private', 'ord')
-        layout = ('identifier', 'mod_id', 'published', 'private', 'ord')
+        layout = ('identifier', 'parent', 'mod_id', 'published', 'private', 'ord')
         cb = pp.CodebookSpec(display='identifier')
     _REFERER = 'identifier'
+    _TREE_LEVEL_COLUMN = 'level'
+    _EXCEPTION_MATCHERS = (
+        ('duplicate key violates unique constraint "_mapping_unique_tree_(?P<id>ord)er"',
+         _("Duplicate menu order on the this tree level.")),) + \
+         WikingModule._EXCEPTION_MATCHERS
+
     _STATIC_MAPPING = {'_doc': 'Documentation',
                        '_wmi': 'WikingManagementInterface'}
     _REVERSE_STATIC_MAPPING = dict([(v,k) for k,v in _STATIC_MAPPING.items()])
+    WMI_POSITION = (WikingManagementInterface.SECTION_CONTENT, 10)
     _mapping_cache = {}
 
     def _link_provider(self, req, row, cid, **kwargs):
@@ -167,7 +300,7 @@ class Mapping(WikingModule, Publishable):
         return self._REVERSE_STATIC_MAPPING.get(modname)
     
     def menu(self, req, lang):
-        """Return the sequence of main navigation menu items.
+        """Return the menu hierarchy.
 
         Arguments:
         
@@ -179,14 +312,22 @@ class Mapping(WikingModule, Publishable):
         Returns a sequence of 'MenuItem' instances.
         
         """
-        # TODO: Show also unpublished items when authorized.
+        children = {None: []}
         titles = self._module('Titles').titles(lang)
-        return [MenuItem(str(row['identifier'].value()),
-                         titles.get(row['mapping_id'].value(),
-                                    row['identifier'].value()))
-                for row in self._data.get_rows(sorting=self._sorting)
-                if row['ord'].value() and row['published'].value()]
-                #and row['parent'].value() is None]
+        def mkitem(row):
+            mapping_id = row['mapping_id'].value()
+            identifier = str(row['identifier'].value())
+            return MenuItem(identifier, titles.get(mapping_id, identifier),
+                            hidden=row['ord'].value() is None,
+                            submenu=[mkitem(r) for r in children.get(mapping_id, ())])
+        for row in self._data.get_rows(sorting=self._sorting, published=True):
+            parent = row['parent'].value()
+            try:
+                target = children[parent]
+            except KeyError:
+                target = children[parent] = []
+            target.append(row)
+        return [mkitem(row) for row in children[None]]
                 
     def title(self, lang, modname):
         """Return localized module title for given module name.
@@ -203,64 +344,7 @@ class Mapping(WikingModule, Publishable):
         else:
             return _modtitle(modname)
 
-
-class Documentation(Module):
-    """Serve the on-line documentation.
-
-    This module is not bound to a data object.  It only serves the on-line documentation from files
-    on the disk.
-
-    """
-    def handle(self, req):
-        path = req.path[1:]
-        if path and path[0] == 'lcg':
-            path = path[1:]
-            basedir = lcg.config.doc_dir
-        else:
-            basedir = os.path.join(cfg.wiking_dir, 'doc', 'src')
-        if not os.path.exists(basedir):
-            raise Exception("Directory %s does not exist" % basedir)
-        import glob, codecs
-        # TODO: the documentation should be processed by LCG first into some
-        # reasonable output format.  Now we just search the file in all the
-        # source directories and format it.  No global navigation is used.
-        for subdir in ('', 'user', 'admin'):
-            basename = os.path.join(basedir, subdir, *path)
-            variants = [f[-6:-4] for f in glob.glob(basename+'.*.txt')]
-            if variants:
-                break
-        else:
-            raise NotFound()
-        lang = req.prefered_language(variants)
-        filename = '.'.join((basename, lang, 'txt'))
-        f = codecs.open(filename, encoding='utf-8')
-        text = "".join(f.readlines())
-        f.close()
-        content = lcg.Parser().parse(text)
-        if len(content) == 1 and isinstance(content[0], lcg.Section):
-            title = content[0].title()
-            content = lcg.SectionContainer(content[0].content(), toc_depth=0)
-        else:
-            title = ' :: '.join(path)
-        return Document(title, content, lang=lang, variants=variants)
-
-
-class WikingManagementInterface(Module):
-    """Wiking Management Interface.
-
-    This module handles the WMI requestes by redirecting the request to the
-    selected module.  The module name is part of the request URI.
-
-    """
-    def handle(self, req):
-        Roles.check(req, (Roles.ADMIN,))
-        req.wmi = True # Switch to WMI only after successful authorization.
-        if len(req.path) == 1:
-            req.path += ('Pages',)
-        modname = req.path[1]
-        return self._module(modname).handle(req)
-
-    
+        
 class Modules(WikingModule):
     """This module allows management of available modules in WMI."""
     class Spec(pp.Specification):
@@ -286,13 +370,12 @@ class Modules(WikingModule):
             Field('title', _("Title"), virtual=True,
                   computer=Computer(lambda r: _modtitle(r['name'].value()), depends=('name',))),
             Field('active', _("Active")),
-            Field('ord', _("Menu order"), width=5),
             )
-        columns = ('title', 'active', 'ord')
-        layout = ('name', 'active', 'ord')
-        sorting = (('ord', ASC),)
+        columns = ('title', 'active')
+        layout = ('name', 'active')
         cb = pp.CodebookSpec(display=(_modtitle, 'name'))
     _REFERER = 'name'
+    WMI_POSITION = (WikingManagementInterface.SECTION_SETUP, 500)
     
     def menu(self, prefix):
         modules = [str(r['name'].value()) for r in
@@ -333,6 +416,7 @@ class Config(WikingModule):
                   'force_https_login', 'webmaster_addr', 'theme')
     _TITLE_COLUMN = 'title'
     _DEFAULT_ACTIONS = (Action(_("Edit"), 'edit'),)
+    WMI_POSITION = (WikingManagementInterface.SECTION_SETUP, 100)
 
     class Configuration(object):
         allow_wmi_link = True
@@ -428,6 +512,7 @@ class Panels(WikingModule, Publishable):
         layout = ('lang', 'ptitle', 'ord',  'mapping_id', 'size',
                   'content', 'published')
     _LIST_BY_LANGUAGE = True
+    WMI_POSITION = (WikingManagementInterface.SECTION_CONTENT, 1000)
 
     def panels(self, req, lang):
         panels = []
@@ -481,6 +566,7 @@ class Languages(WikingModule):
         layout = ('lang',)
         columns = ('lang', 'name')
     _REFERER = 'lang'
+    WMI_POSITION = (WikingManagementInterface.SECTION_SETUP, 200)
 
     def languages(self):
         return [str(r['lang'].value()) for r in self._data.get_rows()]
@@ -510,6 +596,7 @@ class Titles(WikingModule):
         ('duplicate key violates unique constraint "titles_mapping_id_key"',
          _("The title is already defined for this page in given language.")),)+\
          WikingModule._EXCEPTION_MATCHERS
+    WMI_POSITION = (WikingManagementInterface.SECTION_CONTENT, 10000)
     
     def titles(self, lang):
         """Return a dictionary of localized item titles keyed by identifier."""
@@ -517,6 +604,21 @@ class Titles(WikingModule):
                      for row in self._data.get_rows(lang=lang)])
 
 class Themes(WikingModule):
+    class Spec(pp.Specification):
+        title = _("Themes")
+        help = _("Manage available color themes. Go to Configuration to "
+                 "change the currently used theme.")
+        def fields(self): return (
+            Field('theme_id'),
+            Field('name', _("Name"), width=20),
+            ) + tuple([Field(c.id(), c.id(), dbcolumn=c.id().replace('-','_'),
+                             type=pd.Color()) for c in Themes.COLORS])
+        def layout(self):
+            return ('name',) + tuple([c.id() for c in Themes.COLORS])
+        columns = ('name',)
+        cb = pp.CodebookSpec(display='name')
+    WMI_POSITION = (WikingManagementInterface.SECTION_STYLE, 100)
+
     class Color(object):
         def __init__(self, id, default=None, inherit=None):
             self._id = id
@@ -573,21 +675,6 @@ class Themes(WikingModule):
         Color('inactive-folder', '#d2d8e0'),
         )
 
-    class Spec(pp.Specification):
-        title = _("Themes")
-        help = _("Manage available color themes. Go to Configuration to "
-                 "change the currently used theme.")
-        def fields(self):
-            return (
-                Field('theme_id'),
-                Field('name', _("Name"), width=20),
-                ) + tuple([Field(c.id(), c.id(), dbcolumn=c.id().replace('-','_'),
-                                 type=pd.Color()) for c in Themes.COLORS])
-        def layout(self):
-            return ('name',) + tuple([c.id() for c in Themes.COLORS])
-        columns = ('name',)
-        cb = pp.CodebookSpec(display='name')
-        
     def theme(self, theme_id):
         if theme_id is not None:
             row = self._data.get_row(theme_id=theme_id)
@@ -605,6 +692,8 @@ class Pages(WikingModule, Publishable):
     class Spec(pp.Specification):
         title = _("Pages")
         help = _("Manage available pages of structured text content.")
+        def _level(self, row):
+            return len(row['tree_order'].value().split('.')) - 2
         def fields(self): return (
             Field('page_id'),
             Field('mapping_id'),
@@ -623,6 +712,9 @@ class Pages(WikingModule, Publishable):
             Field('published', _("Published")),
             Field('status', _("Status"), virtual=True,
                   computer=Computer(self._status, depends=('content', '_content'))),
+            Field('tree_order'),
+            Field('level', _("Identifier"), virtual=True,
+                  computer=Computer(self._level, depends=('tree_order',))),
             )
         def _title(self, row):
             return row['title'].value() or row['identifier'].value()
@@ -633,7 +725,7 @@ class Pages(WikingModule, Publishable):
                 return c == _c and _("Ok") or _("Changed")
             else:
                 return _("Missing")
-        sorting = (('identifier', ASC), ('lang', ASC),)
+        sorting = (('tree_order', ASC), ('lang', ASC),)
         layout = ('identifier', 'lang', 'title', '_content')
         columns = ('title_', 'identifier', 'published', 'status')
         cb = pp.CodebookSpec(display='identifier')
@@ -646,6 +738,7 @@ class Pages(WikingModule, Publishable):
          WikingModule._EXCEPTION_MATCHERS
     _LIST_BY_LANGUAGE = True
     _RELATED_MODULES = ('Attachments',)
+    _TREE_LEVEL_COLUMN = 'level'
     
     _INSERT_MSG = _("New page was successfully created. Don't forget to publish it when you are "
                     "done. Please, visit the 'Mapping' module if you want to add the page to the "
@@ -666,6 +759,7 @@ class Pages(WikingModule, Publishable):
                 )
     _RIGHTS_add = _RIGHTS_insert = Roles.AUTHOR
     _RIGHTS_edit = _RIGHTS_update = Roles.AUTHOR
+    WMI_POSITION = (WikingManagementInterface.SECTION_CONTENT, 200)
 
     def _variants(self, record):
         return [str(r['lang'].value()) for r in 
@@ -835,8 +929,7 @@ class Attachments(StoredFileModule):
     _SEQUENCE_FIELDS = (('attachment_id', '_attachments_attachment_id_seq'),)
     _NON_LAYOUT_FIELDS = ('mapping_id', 'lang')
     _EXCEPTION_MATCHERS = (
-        ('duplicate key violates unique constraint ' + \
-         '"_attachments_mapping_id_key"',
+        ('duplicate key violates unique constraint "_attachments_mapping_id_key"',
          _("Attachment of the same filename already exists for this page.")),)
     
     def _link_provider(self, req, row, cid, **kwargs):
@@ -923,6 +1016,7 @@ class News(WikingModule):
     _RIGHTS_remove = _RIGHTS_delete = Roles.ADMIN
     _CUSTOM_VIEW = CustomViewSpec('title', meta=('timestamp', 'author'), content='content',
                                   anchor="item-%s", custom_list=True)
+    WMI_POSITION = (WikingManagementInterface.SECTION_CONTENT, 300)
         
     def _link_provider(self, req, row, cid, target=None, **kwargs):
         identifier = self._identifier(req)
@@ -1020,7 +1114,7 @@ class Images(StoredFileModule):
             Field('title', _("Title"), width=30),
             Field('author', _("Author"), width=30),
             Field('location', _("Location"), width=50),
-            Field('description', _("Description"), width=80, height=5),
+            Field('description', _("Description"), width=60, height=5),
             Field('taken', _("Date of creation"), type=DateTime()),
             Field('format', computer=imgcomp(lambda i: i.format.lower())),
             Field('width', _("Width"), computer=imgcomp(lambda i: i.size[0])),
@@ -1066,6 +1160,7 @@ class Images(StoredFileModule):
                       ('image', '_image_filename'),
                       ('thumbnail', '_thumbnail_filename'))
     _SEQUENCE_FIELDS = (('image_id', '_images_image_id_seq'),)
+    #WMI_POSITION = (WikingManagementInterface.SECTION_CONTENT, 500)
         
     def _link_provider(self, req, row, cid, **kwargs):
         if cid == 'file':
@@ -1106,9 +1201,9 @@ class Stylesheets(WikingModule):
             )
         layout = ('identifier', 'active', 'description', 'content')
         columns = ('identifier', 'active', 'description')
-        
     _REFERER = 'identifier'
     _MATCHER = re.compile(r"\$(\w[\w-]*)(?:\.(\w[\w-]*))?")
+    WMI_POSITION = (WikingManagementInterface.SECTION_STYLE, 200)
 
     def _subst(self, theme, name, key):
         value = theme[name]
@@ -1206,6 +1301,7 @@ class Users(WikingModule):
     _RIGHTS_add = _RIGHTS_insert = Roles.ANYONE
     _RIGHTS_edit = _RIGHTS_update = (Roles.ADMIN, Roles.OWNER)
     _RIGHTS_remove = _RIGHTS_delete = Roles.ADMIN #, Roles.OWNER)
+    WMI_POSITION = (WikingManagementInterface.SECTION_USERS, 100)
 
     def _actions(self, req, record):
         if not req.wmi:
@@ -1252,7 +1348,7 @@ class Users(WikingModule):
         identifier = self._identifier(req)
         return identifier and make_uri('/'+identifier, action='add') or None
         
-        
+
 class Rights(Users):
     class Spec(Users.Spec):
         title = _("Access Rights")
@@ -1263,6 +1359,7 @@ class Rights(Users):
     _RIGHTS_add = _RIGHTS_insert = ()
     _RIGHTS_edit = _RIGHTS_update = Roles.ADMIN
     _RIGHTS_remove = ()
+    WMI_POSITION = (WikingManagementInterface.SECTION_USERS, 200)
 
 
 class Reload(Module):

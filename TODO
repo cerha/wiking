@@ -1,10 +1,8 @@
 Core features:
 
- * Force HTTPS for registration form
-
  * Remove the dbname column -- get the database name from somewhere else
 
- * Deleting stray files after deletion triggered in the database (cascade)
+ * Delete stray files after deletion triggered in the database (cascade)
 
  * Serve favicon and robots.txt
 

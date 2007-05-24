@@ -31,20 +31,30 @@ class Exporter(lcg.HtmlExporter):
             uri += '?setlang=%s' % lang
         return uri
     
-    def _title(self, node):
+    def _site_title(self, node, full=False):
         config = node.config()
-        return config.site_title + ' - ' + node.title()
-
-    def _is_current(self, node, item):
-        nid, iid = (node.id(), item.id())
-        return iid == nid or nid.startswith(iid+'/')
+        if config.wmi:
+            title = _("Wiking Management Interface")
+        elif config.modname == 'Documentation' and not config.inline:
+            title = _("Wiking Help System")
+        else:
+            title = config.site_title
+            if full and config.site_subtitle:
+                title += ' &ndash; ' + config.site_subtitle
+        return title
     
+    def _title(self, node):
+        return self._site_title(node) + ' - ' + node.heading()
+
     def _wrapper(self, node):
         return self._parts(node, ('top', 'page', 'bottom'))
     
     def _part(self, part, name):
         return self._generator.div(part, id=name)
     
+    def _hidden(self, *text):
+        return self._generator.span(text, cls="hidden")
+
     #def _head(self, node):
     #    result = super(Exporter, self)._head(node)
     #    rss = node.config().rss
@@ -56,44 +66,40 @@ class Exporter(lcg.HtmlExporter):
     
     def _top(self, node):
         g = self._generator
-        config = node.config()
-        title = config.site_title
-        if config.site_subtitle:
-            title += ' &ndash; ' + config.site_subtitle
+        title = self._site_title(node, full=True)
         return g.div(g.div(g.div(g.div(g.strong(title), id='site-title'),
-                                 id='top-layer3'), id='top-layer2'),
-                     id='top-layer1')
+                                 id='top-layer3'), id='top-layer2'), id='top-layer1')
 
-    def _hidden(self, *text):
-        return self._generator.span(text, cls="hidden")
+    def _page(self, node):
+        return self._parts(node, ('links', 'menu', 'language_selection',
+                                  'panels', 'content', 'clearing'))
 
+    def _links(self, node):
+        g = self._generator
+        return self._hidden(g.link(_("Skip all repetitive content"),
+                                   '#content-heading', hotkey="2"))
+        
     def _menu(self, node):
         g = self._generator
-        links = [g.link(item.title() + (cur and self._hidden(' *') or ''),
-                        self._node_uri(item), title=item.descr(),
-                        hotkey=(item.id() == 'index' and "1" or None),
-                        cls=("navigation-link"+(cur and " current" or "")))
-                 for item, cur in [(item, self._is_current(node, item))
-                                   for item in node.menu()]]
+        links = []
+        for item in node.root().children():
+            cur = item is node.top()
+            if not item.hidden():
+                links.append(g.link(item.title() + (cur and self._hidden(' *') or ''),
+                                    self._node_uri(item), title=item.descr(),
+                                    hotkey=(item.id() == 'index' and "1" or None),
+                                    cls=("navigation-link"+(cur and " current" or ""))))
         if node.panels() and node.config().show_panels:
             skip_target = '#panel-%s ' % node.panels()[0].id()
         else:
             skip_target = '#content-heading'
         skip_lnk = self._hidden(" (", g.link(_("skip"), skip_target),")")
-        l = g.link(_("Main navigation"), None, name='main-navigation',
-                   hotkey="3")
+        l = g.link(_("Main navigation"), None, name='main-navigation', hotkey="3")
         label = g.strong(concat(l, skip_lnk, ":"), cls='label')
         sep = " "+ self._hidden("|") +"\n"
-        skip_all = self._hidden(g.link(_("Skip all repetitive content"),
-                                 '#content-heading', hotkey="2"))
-        return (skip_all, g.map(g.div((label, concat(links, separator=sep)),
-                                      id="navigation-bar"),
-                                title=_("Main navigation")))
-
-    def _page(self, node):
-        return self._parts(node, ('menu', 'language_selection',
-                                  'panels', 'content', 'clearing'))
-
+        return g.map(g.div((label, concat(links, separator=sep)), id="navigation-bar"),
+                     title=_("Main navigation"))
+    
     def _panels(self, node):
         g = self._generator
         panels = node.panels()
@@ -126,10 +132,16 @@ class Exporter(lcg.HtmlExporter):
 
     def _content(self, node):
         g = self._generator
-        content = (
-            g.h(g.link(node.title(), None, name='content-heading'), 1),
-            super(Exporter, self)._content(node))
-        return g.div(content, cls='node-id-'+node.id())
+        top = node.top()
+        content = (g.div((g.h(g.link(node.heading(), None, name='content-heading'), 1),
+                          super(Exporter, self)._content(node)), id='inner-content'),)
+        cls = 'node-id-%s' % node.id()
+        if [n for n in top.children() if not n.hidden()]:
+            submenu = lcg.NodeIndex(_("Local Menu"), node=top, depth=99)
+            submenu.set_parent(node)
+            content += (g.div(submenu.export(self), id='submenu'),)
+            cls += ' content-with-submenu'
+        return g.div(content, cls=cls)
 
     def _clearing(self, node):
         return '&nbsp;'
@@ -157,7 +169,7 @@ class Exporter(lcg.HtmlExporter):
             ctrl += concat(_("Login"), ': ', username, ' (', lctrl, ') | ')
         if config.wmi:
             ctrl += g.link(_("Leave the Management Interface"), '/', hotkey="9")
-        elif config.doc:
+        elif config.modname == 'Documentation' and not config.inline:
             ctrl += g.link(_("Leave the Help System"), '/')
         elif config.allow_wmi_link:
             modname = config.modname or ''
@@ -205,8 +217,4 @@ class Exporter(lcg.HtmlExporter):
                 g.p(_("Contact:"), g.link(contact, "mailto:"+contact)))
     
 
-#     menu = "\r\n".join(["<ul>"] +
-#                        ["<li>%s</li>" % p['identifier'].value()
-#                         for p in self._get_rows(parent=None)] +
-#                        ["</ul>"])
 

@@ -11,37 +11,51 @@ CREATE TABLE modules (
 
 CREATE TABLE _mapping (
 	mapping_id serial PRIMARY KEY,
-	parent integer REFERENCES _mapping ON DELETE CASCADE,
+	parent integer REFERENCES _mapping,
 	identifier varchar(32) UNIQUE NOT NULL,
 	mod_id integer NOT NULL REFERENCES modules,
 	published boolean NOT NULL DEFAULT 'FALSE',
 	private boolean NOT NULL DEFAULT 'FALSE',
-	ord int
+	ord int,
+	tree_order text
 );
+CREATE UNIQUE INDEX _mapping_unique_tree_order ON _mapping (ord, coalesce(parent, 0));
+
+
+CREATE OR REPLACE FUNCTION _mapping_tree_order(mapping_id int) RETURNS text AS $$
+  SELECT
+    CASE WHEN $1 IS NULL THEN '' ELSE
+      (SELECT _mapping_tree_order(parent) || '.' || to_char(coalesce(ord, 999999), 'FM000000')
+       FROM _mapping where mapping_id=$1)
+    END
+  AS RESULT
+$$ LANGUAGE SQL;
 
 CREATE OR REPLACE VIEW mapping AS 
-SELECT _mapping.*, modules.name as modname
-FROM _mapping JOIN modules USING (mod_id);
+SELECT m.*, modules.name as modname
+FROM _mapping m JOIN modules USING (mod_id);
 
 CREATE OR REPLACE RULE mapping_insert AS
   ON INSERT TO mapping DO INSTEAD (
      INSERT INTO _mapping 
         (parent, identifier, mod_id, published, private, ord)
      VALUES
-        (new.parent, new.identifier, new.mod_id, 
-	 new.published, new.private, new.ord);
+        (new.parent, new.identifier, new.mod_id, new.published, new.private, new.ord);
+     UPDATE _mapping SET tree_order = _mapping_tree_order(mapping_id)
+     WHERE identifier = new.identifier;
 );
 
 CREATE OR REPLACE RULE mapping_update AS
   ON UPDATE TO mapping DO INSTEAD (
     UPDATE _mapping SET
-	parent = new.parent,
+       	parent = new.parent,
 	identifier = new.identifier,
-	mod_id = new.mod_id, 
+	mod_id = new.mod_id,
 	published = new.published,
 	private = new.private,
 	ord = new.ord
     WHERE _mapping.mapping_id = old.mapping_id;
+    UPDATE _mapping SET	tree_order = _mapping_tree_order(mapping_id);
 );
 
 CREATE OR REPLACE RULE mapping_delete AS
@@ -104,7 +118,7 @@ CREATE TABLE _pages (
 
 CREATE OR REPLACE VIEW pages AS 
 SELECT m.mapping_id ||'.'|| l.lang as page_id, m.mapping_id, l.lang,
-       m.identifier, m.published, t.title, p._content, p.content
+       m.identifier, m.parent, m.tree_order, m.published, t.title, p._content, p.content
 FROM _mapping m CROSS JOIN languages l JOIN modules USING (mod_id)
      LEFT OUTER JOIN _pages p USING (mapping_id, lang)
      LEFT OUTER JOIN titles t USING (mapping_id, lang)

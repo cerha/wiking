@@ -60,15 +60,13 @@ def menu(resolver):
         ),
         Menu(_("Se&tup"),
              (bf(_("&Users"), 'Users'),
+              bf(_("&Access Rights"), 'Rights'),
               ef(_("&Configuration"), 'Config',
                  select_row=(pytis.data.Value(pytis.data.Integer(), 0),)),
-              )
-        ),
-        Menu(_("Code&books"),
-             (bf(_("Languages"), 'Languages'),
+              bf(_("Languages"), 'Languages'),
               bf(_("Modules"),   'Modules'),
               )
-             )
+        ),
         )
 
 def status_fields(resolver):

@@ -123,12 +123,11 @@ class SiteHandler(object):
         self._module_cache = {}
         # Initialize the system modules immediately.
         self._mapping = self._module('Mapping')
-        self._panels = self._module('Panels')
         self._stylesheets = self._module('Stylesheets')
         self._languages = self._module('Languages')
         self._config = self._module('Config')
-        self._modules = self._module('Modules')
         self._users = self._module('Users')
+        self._exporter = Exporter() #self._config.exporter or Exporter()
         #log(OPR, 'New SiteHandler instance for %s.' % dbconnection)
 
     def _module(self, name):
@@ -149,13 +148,14 @@ class SiteHandler(object):
     def handle(self, req):
         req.path = req.path or ('index',)
         req.wmi = False # Will be set to True by `WikingManagementInterface'.
-        modname = None
+        module = None
         user = None
         try:
             try:
                 req.login(self._users)
                 modname = self._mapping.resolve(req)
-                result = self._module(modname).handle(req)
+                module = self._module(modname)
+                result = module.handle(req)
                 if isinstance(result, int):
                     return result
                 elif not isinstance(result, Document):
@@ -174,28 +174,21 @@ class SiteHandler(object):
             lang = req.prefered_language(self._languages.languages(),
                                          raise_error=False)
             result = Document(e.title(), e.message(req), lang=lang)
+        if module is None:
+            module = self._mapping
         config = self._config.config(self._server, result.lang())
-        doc = modname == 'Documentation' and req.param('display') != 'inline'
-        if req.wmi or doc:
-            config.site_title = req.wmi and \
-                                _("Wiking Management Interface") or \
-                                _("Wiking Help System")
-            config.site_subtitle = None
-            menu = req.wmi and self._modules.menu(req.path[0]) or ()
-            panels = ()
-        else:
-            menu = self._mapping.menu(req, result.lang())
-            panels = self._panels.panels(req, result.lang())
-            config.show_panels = req.show_panels()
-        config.wmi = req.wmi
-        config.doc = doc
-        config.modname = modname
+        config.modname = module.name()
         config.user = user
+        config.wmi = req.wmi
+        config.inline = req.param('display') == 'inline'
+        config.show_panels = req.show_panels()
+        menu = module.menu(req, result.lang())
+        panels = module.panels(req, result.lang())
         styles = [s for s in self._stylesheets.stylesheets()
-                  if s.file() != 'panels.css' or req.show_panels() and panels]
+                  if s.file() != 'panels.css' or config.show_panels and panels]
         node = result.mknode('/'.join(req.path), config, menu, panels, styles)
-        exported = (config.exporter or Exporter()).export(node)
-        data = translator(node.language()).translate(exported)
+        exporter = config.exporter or self._exporter
+        data = translator(node.language()).translate(exporter.export(node))
         return req.result(data)
 
 
