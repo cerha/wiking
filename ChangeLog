@@ -1,3 +1,15 @@
+2007-06-01  Tomas Cerha  <cerha@brailcom.org>
+
+	* translations/wiking.cs.po: Updated.
+
+	* sql/init.sql: Updated.
+
+	* lib/wiking/modules.py: Improved system module recognition.
+
+	* lib/wiking/module.py: Fixed incompatibility with latest Pytis version.
+
+	* lib/wiking/export.py: Local menu link added.
+
 2007-05-24  Tomas Cerha  <cerha@brailcom.org>
 
 	* resources/css/default.css: Updated.
