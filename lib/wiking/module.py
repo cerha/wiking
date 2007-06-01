@@ -503,7 +503,9 @@ class PytisModule(Module, ActionHandler):
         #log(OPR, ":::", (new_row, success, [(k, record.rowdata()[k].value())
         #                                    for k in record.rowdata().keys()]))
         if success and new_row is not None:
-            record.set_row(new_row)
+            # We can't use set_row(), since it would destroy file fields (they are virtual).
+            for key in new_row.keys():
+                record[key] = new_row[key]
         
     def _update(self, record):
         """Update the record data in the database."""
@@ -764,14 +766,12 @@ class StoredFileModule(WikingModule):
     
     class Spec(pp.Specification):
         
-        def _file_computer(self, id, filename, origname=None, mime=None,
-                           compute=None):
+        def _file_computer(self, id, filename, origname=None, mime=None, compute=None):
             """Return a computer loading the field value from a file."""
             def func(row):
                 result = row[id].value()
-                # We let the `compute' function decide whether it wants to
-                # recompute the value.  If it returns None, we will load the
-                # file.
+                # We let the `compute' function decide whether it wants to recompute the value.  If
+                # it returns None, we will load the file.
                 if result is None and compute is not None:
                     result = compute(row)
                 if result is None and not row.new():
@@ -788,7 +788,7 @@ class StoredFileModule(WikingModule):
             """Return a computer computing filename for storing the file."""
             def func(row):
                 fname = row[name].export() + append + '.' + row[ext].value()
-                path = (cfg.storage, row[subdir].value(), self.table, fname)
+                path = (cfg.storage, row[subdir].export(), self.table, fname)
                 return os.path.join(*path)
             return pp.Computer(func, depends=(subdir, name, ext))
         
@@ -796,9 +796,8 @@ class StoredFileModule(WikingModule):
         if not os.path.exists(cfg.storage) \
                or not os.access(cfg.storage, os.W_OK):
             import getpass
-            raise Exception("The configuration option 'storage' points to "
-                            "'%(dir)s', but this directory does not exist "
-                            "or is not writable by user '%(user)s'." %
+            raise Exception("The configuration option 'storage' points to '%(dir)s', but this "
+                            "directory does not exist or is not writable by user '%(user)s'." %
                             dict(dir=cfg.storage, user=getpass.getuser()))
         for id, filename_id in self._STORED_FIELDS:
             fname = record[filename_id].value()
