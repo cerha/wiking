@@ -38,6 +38,11 @@ MB = 1024**2
 
 _ = lcg.TranslatableTextFactory('wiking')
 
+_STRUCTURED_TEXT_DESCR = \
+    _("The content should be formatted as LCG structured text. See the %(manual)s.",
+      manual=('<a target="_new" href="/_doc/lcg/data-formats/structured-text">' + \
+              _("formatting manual") + "</a>"))
+
 def _modspec(m):
     """Return module specification by module name."""
     try:
@@ -57,16 +62,18 @@ def _modtitle(m):
     else:
         return concat(m,' (',_("unknown"),')')
 
-# This constant lists names of modules which don't handle requests directly and thus should not
-# appear in the module selection for the Mapping items.  It should be considered a temporary hack,
-# but the list should be maintained.
-_SYSMODULES = ('Languages', 'Modules', 'Config', 'Mapping','Panels', 'Titles')
+def _modules():
+    return [m for m in get_modules().__dict__.values()
+            if type(m) == type(WikingModule) and issubclass(m, WikingModule)]
 
-_STRUCTURED_TEXT_DESCR = \
-    _("The content should be formatted as LCG structured text. See the %(manual)s.",
-      manual=('<a target="_new" href="/_doc/lcg/data-formats/structured-text">' + \
-              _("formatting manual") + "</a>"))
+class SystemModule(object):
+    """Mix-in class for modules, which don't handle requests directly.
 
+    Modules which don't handle requests should not be available in module selection for a mapping
+    item.  Note, that these modules still may be 'RequestHandler' subclasses, since they handle
+    requests in WMI.
+
+    """
 
 class WikingManagementInterface(Module):
     """Wiking Management Interface.
@@ -111,9 +118,8 @@ class WikingManagementInterface(Module):
         if not req.wmi:
             return super(WikingManagementInterface, self).menu(req, lang)
         submenu = {}
-        for module in get_modules().__dict__.values():
-            if type(module) == type(WikingModule) and issubclass(module, WikingModule) \
-                   and hasattr(module, 'WMI_POSITION'):
+        for module in _modules():
+            if hasattr(module, 'WMI_POSITION'):
                 section, order = getattr(module, 'WMI_POSITION')
                 item = MenuItem(req.path[0] + '/' + module.name(), module.Spec.title,
                                 descr=module.Spec.help, order=order)
@@ -178,7 +184,7 @@ class Documentation(Module):
         return ()
 
 
-class MappingParents(WikingModule):
+class MappingParents(WikingModule, SystemModule):
     """An auxiliary module for the codebook of mapping parent nodes."""
     class Spec(pp.Specification):
         table = 'mapping'
@@ -219,8 +225,9 @@ class Mapping(WikingModule, Publishable):
                           "from other pages. A valid identifier can only contain letters, digits, "
                           "dashes and underscores.  It must start with a letter.")),
             Field('mod_id', _("Module"), selection_type=CHOICE, codebook='Modules',
-                  validity_condition=pd.AND(*[pd.NE('name', pd.Value(pd.String(),_m))
-                                              for _m in _SYSMODULES])),
+                  validity_condition=pd.OR(*[pd.EQ('name', pd.Value(pd.String(), _m.name()))
+                                             for _m in _modules()
+                                             if not issubclass(_m, SystemModule)])),
             Field('modname', _("Module")),
             Field('modtitle', _("Module"), virtual=True, computer=\
                   Computer(lambda r: _modtitle(r['modname'].value()), depends=('modname',)),
@@ -345,7 +352,7 @@ class Mapping(WikingModule, Publishable):
             return _modtitle(modname)
 
         
-class Modules(WikingModule):
+class Modules(WikingModule, SystemModule):
     """This module allows management of available modules in WMI."""
     class Spec(pp.Specification):
         class _ModNameType(pd.String):
@@ -353,8 +360,8 @@ class Modules(WikingModule):
             _VM_UNKNOWN_MODULE_MSG = _("Unknown module.  You either "
                                        "misspelled the name or the module "
                                        "is not installed properly.")
-            def _check_constraints(self, value):
-                pd.String._check_constraints(self, value)
+            def _check_constraints(self, value, transaction=None):
+                pd.String._check_constraints(self, value, transaction=transaction)
                 try:
                     module = get_module(value)
                 except AttributeError:
@@ -389,7 +396,7 @@ class Modules(WikingModule):
                 for m, spec in [(m, _modspec(m)) for m in modules] if spec]
 
 
-class Config(WikingModule):
+class Config(WikingModule, SystemModule):
     """Site specific configuration provider.
 
     This implementation stores the configuration variables as one row in a
@@ -465,7 +472,7 @@ class Config(WikingModule):
 
         
     
-class Panels(WikingModule, Publishable):
+class Panels(WikingModule, Publishable, SystemModule):
     class Spec(pp.Specification):
         title = _("Panels")
         help = _(u"Manage panels – the small windows shown by the side of "
@@ -487,8 +494,7 @@ class Panels(WikingModule, Publishable):
                   descr=_("Number denoting the order of the panel on the page.")),
             Field('mapping_id', _("Module"), width=5, not_null=False, codebook='Mapping',
                   display=(_modtitle, 'modname'), selection_type=CHOICE, 
-                  validity_condition=pd.AND(*[pd.NE('modname', pd.Value(pd.String(),_m))
-                                              for _m in _SYSMODULES+('Pages',)]),
+                  validity_condition=pd.NE('modname', pd.Value(pd.String(), 'Pages')),
                   descr=_("The items of the selected module will be shown by the panel. "
                           "Leave blank for a text content panel.")),
             Field('identifier', editable=NEVER),
@@ -544,7 +550,7 @@ class Panels(WikingModule, Publishable):
         return panels
                 
                 
-class Languages(WikingModule):
+class Languages(WikingModule, SystemModule):
     """List all languages available for given site.
 
     This implementation stores the list of available languages in a Pytis data
@@ -572,7 +578,7 @@ class Languages(WikingModule):
         return [str(r['lang'].value()) for r in self._data.get_rows()]
 
     
-class Titles(WikingModule):
+class Titles(WikingModule, SystemModule):
     """Provide localized titles for 'Mapping' items."""
     class Spec(pp.Specification):
         title = _("Titles")
@@ -603,7 +609,7 @@ class Titles(WikingModule):
         return dict([(row['mapping_id'].value(), row['title'].value())
                      for row in self._data.get_rows(lang=lang)])
 
-class Themes(WikingModule):
+class Themes(WikingModule, SystemModule):
     class Spec(pp.Specification):
         title = _("Themes")
         help = _("Manage available color themes. Go to Configuration to "
@@ -862,9 +868,7 @@ class Attachments(StoredFileModule):
                 return pp.Computer(func, depends=('file',))
             return (
             Field('page_attachment_id',
-                  computer=Computer(lambda r: '%d.%s' % (r['attachment_id'].value(),
-                                                         r['lang'].value()),
-                                    depends=('attachment_id', 'lang'))),
+                  computer=Computer(self._page_attachment_id, depends=('attachment_id', 'lang'))),
             Field('attachment_id'),
             Field('mapping_id', _("Page"), codebook='Mapping', editable=ONCE),
             Field('identifier'),
@@ -906,6 +910,11 @@ class Attachments(StoredFileModule):
                 return ''
             ext = os.path.splitext(row['filename'].value())[1].lower()
             return len(ext) > 1 and ext[1:] or ext
+        def _page_attachment_id(self, row):
+            id = row['attachment_id'].value()
+            if id is None:
+                return None
+            return '%d.%s' % (id, row['lang'].value())
     class Attachment(lcg.Resource):
         def __init__(self, row):
             file = row['filename'].export()
@@ -931,6 +940,7 @@ class Attachments(StoredFileModule):
     _EXCEPTION_MATCHERS = (
         ('duplicate key violates unique constraint "_attachments_mapping_id_key"',
          _("Attachment of the same filename already exists for this page.")),)
+    WMI_POSITION = (WikingManagementInterface.SECTION_CONTENT, 220)
     
     def _link_provider(self, req, row, cid, **kwargs):
         if cid == 'file':
@@ -1349,7 +1359,7 @@ class Users(WikingModule):
         return identifier and make_uri('/'+identifier, action='add') or None
         
 
-class Rights(Users):
+class Rights(Users, SystemModule):
     class Spec(Users.Spec):
         title = _("Access Rights")
         help = _("Manage access rights of registered users.")
