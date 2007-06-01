@@ -76,8 +76,12 @@ class Exporter(lcg.HtmlExporter):
 
     def _links(self, node):
         g = self._generator
-        return self._hidden(g.link(_("Skip all repetitive content"),
-                                   '#content-heading', hotkey="2"))
+        links = [g.link(_("Skip all repetitive content"), '#content-heading', hotkey="2")]
+        if [n for n in node.top().children() if not n.hidden()]:
+            links.append(g.link(_("Local menu"), '#local-menu'))
+        if len(n.language_variants()) > 1:
+            links.append(g.link(_("Language selection"), '#language-selection'))
+        return self._hidden(_("Helper links") + ": " + concat(links, separator=' | '))
         
     def _menu(self, node):
         g = self._generator
@@ -137,9 +141,10 @@ class Exporter(lcg.HtmlExporter):
                           super(Exporter, self)._content(node)), id='inner-content'),)
         cls = 'node-id-%s' % node.id()
         if [n for n in top.children() if not n.hidden()]:
-            submenu = lcg.NodeIndex(_("Local Menu"), node=top, depth=99)
+            submenu = lcg.NodeIndex(_("Local menu"), node=top, depth=99)
             submenu.set_parent(node)
-            content += (g.div(submenu.export(self), id='submenu'),)
+            content += (g.div((g.link('', None, name='local-menu'),
+                               submenu.export(self)), id='submenu'),)
             cls += ' content-with-submenu'
         return g.div(content, cls=cls)
 
