@@ -79,7 +79,7 @@ class Exporter(lcg.HtmlExporter):
         links = [g.link(_("Skip all repetitive content"), '#content-heading', hotkey="2")]
         if [n for n in node.top().children() if not n.hidden()]:
             links.append(g.link(_("Local menu"), '#local-menu'))
-        if len(n.language_variants()) > 1:
+        if len(node.language_variants()) > 1:
             links.append(g.link(_("Language selection"), '#language-selection'))
         return self._hidden(_("Helper links") + ": " + concat(links, separator=' | '))
         
