@@ -268,6 +268,12 @@ class Mapping(WikingModule, Publishable):
             return '/_wmi/' + row['modname'].value()
         return super(Mapping, self)._link_provider(req, row, cid, **kwargs)
 
+    def action_list(self, req, **kwargs):
+        if not req.wmi:
+            return self._document(req, SiteMap(depth=99))
+        else:
+            return super(Mapping, self).action_list(req, **kwargs)
+    
     def resolve(self, req):
         "Return the name of the module responsible for handling the request."
         identifier = req.path[0]
@@ -979,8 +985,7 @@ class Attachments(StoredFileModule):
                                     lang=page['lang'].value())]
                 
     def action_view(self, req, record):
-        return (str(record['mime_type'].value()),
-                record['file'].value().buffer())
+        return (str(record['mime_type'].value()), record['file'].value().buffer())
 
     
 class News(WikingModule):
