@@ -366,8 +366,8 @@ class Modules(WikingModule, SystemModule):
             _VM_UNKNOWN_MODULE_MSG = _("Unknown module.  You either "
                                        "misspelled the name or the module "
                                        "is not installed properly.")
-            def _check_constraints(self, value, transaction=None):
-                pd.String._check_constraints(self, value, transaction=transaction)
+            def _check_constraints(self, value, **kwargs):
+                pd.String._check_constraints(self, value, **kwargs)
                 try:
                     module = get_module(value)
                 except AttributeError:
