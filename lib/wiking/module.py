@@ -366,8 +366,9 @@ class PytisModule(Module, ActionHandler):
         return None
 
     def _form(self, form, req, *args, **kwargs):
-        kwargs['link_provider'] = lambda row, cid: \
-                         self._link_provider(req, row, cid, target=form)
+        def link_provider(row, cid):
+            return self._link_provider(req, row, cid, target=form)
+        kwargs['link_provider'] = link_provider
         #if issubclass(form, pw.EditForm) and req.params.has_key('module'):
         #    kwargs['hidden'] = kwargs.get('hidden', ()) + \
         #                       (('module', req.params['module']),)
@@ -700,7 +701,7 @@ class RssModule(PytisModule):
     def _descr_provider(self, req, row, translator):
         from xml.sax.saxutils import escape
         if self._RSS_DESCR_COLUMN:
-            exported = prow[self._RSS_DESCR_COLUMN].export()
+            exported = row[self._RSS_DESCR_COLUMN].export()
             descr = escape(translator.translate(exported))
         else:
             descr = None
@@ -709,30 +710,30 @@ class RssModule(PytisModule):
     def action_rss(self, req):
         if not self._RSS_TITLE_COLUMN:
             raise NotFound
-        lang, variants, rows = self._list(req, lang=req.param('lang'), limit=8)
+        lang, variants, rows = self._list(req, lang=str(req.param('lang')), limit=8)
         from xml.sax.saxutils import escape
         link_column = self._RSS_LINK_COLUMN or self._RSS_TITLE_COLUMN
         base_uri = req.abs_uri()[:-len(req.uri)]
         args = lang and dict(setlang=lang) or {}
-        prow = pp.PresentedRow(self._view.fields(), self._data, None)
+        row = pp.PresentedRow(self._view.fields(), self._data, None)
         items = []
         import mx.DateTime as dt
         config = self._module('Config').config(req.server, lang)
         tr = translator(lang)
         users = self._module('Users')
-        for row in rows:
-            prow.set_row(row)
-            title = escape(tr.translate(prow[self._RSS_TITLE_COLUMN].export()))
+        for data_row in rows:
+            row.set_row(data_row)
+            title = escape(tr.translate(row[self._RSS_TITLE_COLUMN].export()))
             uri = self._link_provider(req, row, link_column, **args)
             uri = uri and base_uri + uri or ''
             descr = self._descr_provider(req, row, tr)
             if self._RSS_DATE_COLUMN:
-                v = prow[self._RSS_DATE_COLUMN].value()
+                v = row[self._RSS_DATE_COLUMN].value()
                 date = dt.ARPA.str(v.localtime())
             else:
                 date = None
             if self._RSS_AUTHOR_COLUMN:
-                uid = prow[self._RSS_AUTHOR_COLUMN]
+                uid = row[self._RSS_AUTHOR_COLUMN]
                 author = users.record(uid)['email'].export()
             else:
                 author = config.webmaster_addr
