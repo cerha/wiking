@@ -126,8 +126,8 @@ WHERE modules.name = 'Pages';
 
 CREATE OR REPLACE RULE pages_insert AS
   ON INSERT TO pages DO INSTEAD (
-     INSERT INTO _mapping (identifier, mod_id)
-     VALUES (new.identifier, (SELECT mod_id FROM modules WHERE name='Pages'));
+     INSERT INTO mapping (identifier, mod_id, published, private)
+     VALUES (new.identifier, (SELECT mod_id FROM modules WHERE name='Pages'), 'f', 'f');
      INSERT INTO _pages (mapping_id, lang, _content, content)
      VALUES ((SELECT mapping_id FROM _mapping WHERE identifier=new.identifier),
              new.lang, new._content, new.content);
