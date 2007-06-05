@@ -550,8 +550,13 @@ class LoginDialog(lcg.Content):
         else:
             uri = self._uri
         return g.form(x, method='POST', action=uri, cls='login-form')
-        
-        
+
+    
+class SiteMap(lcg.NodeIndex):
+    def _start_item(self):
+        return self.parent().root()
+
+    
 def translator(lang):
     if lang:
         path = {
