@@ -53,6 +53,9 @@ img { position: relative; } /* MSIE float workaround */
 
 /* Page layout */
 
+#page { 
+    padding-top: 0.3em;
+}
 #top { 
 }
 #top hr { display: none; }
@@ -63,27 +66,81 @@ img { position: relative; } /* MSIE float workaround */
 }
 
 /* Menu with folders */
-#navigation-bar {
+#main-navigation {
     border-bottom: 1px solid $color.top-border;
     padding-left: 0.2em;
     /* padding-bottom: 0.1em; */
     /* leave some space for language selection and panel controls */
     padding-right: 6em; 
 }
-#navigation-bar .label {
+#main-navigation h3 {
     display: none;
 }
-
-#navigation-bar a.navigation-link {
-    background-color: $color.inactive-folder;
-    border: solid $color.top-border 1px;
+#main-navigation ul { 
+    margin: 0;
+    padding: 0;
+}
+#main-navigation li {
+    display: inline;
     white-space: nowrap;
+}
+#main-navigation a.navigation-link {
+    border: solid $color.top-border 1px;
     padding: 0 0.6em; /* 0.1em 0.6em; */
+    background-color: $color.inactive-folder;
     text-decoration: none; /* ??? */
 }
-#navigation-bar a.navigation-link.current {
+#main-navigation a.navigation-link.current {
     background-color: $color.background;
     border-bottom: solid $color.background 1px;
+}
+
+/* Hierarchical submenu */
+#page.with-submenu #content { 
+    padding-left: 12em;
+}
+#submenu { 
+    position: relative;
+    z-index: 1;
+    float: left;
+    width: 12em;
+}
+#submenu-frame { 
+    position: relative;
+    border: 1px solid $color.top-border;
+    margin: 0.8em 0.5em 0.5em 0.8em;
+    padding: 0;
+}
+#submenu h3 {
+    margin: 0;
+    font-size: 1.1em;
+    padding: 0.1em 0.2em;
+    background-color: $color.heading-bg;
+    border-bottom: 1px solid $color.top-border;
+}
+#submenu ul { 
+    display: block;
+    padding: 0.3em;
+    padding-left: 1.5em;
+    margin: 0;
+}
+#submenu ul ul { 
+    padding-left: 1em;
+}
+#submenu li { 
+    display: inline; /* MSIE has problems with block element inside a list item... */
+}
+#submenu li a { 
+    display: list-item;
+    list-style-type: disc;
+}
+#submenu li a.current { 
+    background-color: $color.heading-bg;
+    list-style-type: circle;
+    marker-offset: 0.3em;
+}
+#submenu li a:hover { 
+    outline: solid 1px $color.heading-line;
 }
 
 #language-selection { 
@@ -96,9 +153,20 @@ img { position: relative; } /* MSIE float workaround */
 }
 #language-selection a.current { background-color: $color.highlight-bg; }
 
+/* Panels */
+
+#page.with-panels #content { 
+    margin-right: 17em;
+}
+#page.with-panels #main-navigation { 
+    margin-right: 17em;
+    padding-right: 0; 
+}
 #panels {
     position: relative;
-    width: 100%; /* MSIE workaround */
+    z-index: 1;
+    float: right;
+    width: 17em;
 }
 #panels a.panel-control {
     position: absolute;
@@ -107,76 +175,56 @@ img { position: relative; } /* MSIE float workaround */
     font-size: 0.8em;
 }
 
-#page { 
-    padding-top: 0.3em;
+div.panel { 
+    margin: 0 0em 0.5em 0.5em;
+    color: $color.foreground;
+    border: 1px solid $color.top-border;
+    background-color: $color.background;
+}
+div.panel h3 { 
+    padding: 0.1em 0.2em; 
+    margin: 0; 
+    font-size: 1.1em;
+    position: relative;
+    background-color: $color.heading-bg;
+    border-bottom: 1px solid $color.top-border; 
+}
+div.panel div.panel-content { 
+    padding: 0.05em 0.2em; 
+}
+div.panel ul, div.panel ol { 
+    padding-left: 1.5em;
+    margin: 0;
+}
+div.panel hr { display: none; }
+
+
+div.panel-login a.login-ctrl { 
+    padding: 0 0.5em;
+    margin: 0 0.3em;
+    background-color: $color.heading-bg;
+    text-decoration: none;
+    background: $color.button;
+    border: 1px solid $color.button-border;
 }
 
+/* The actual page content */
+
 #content {
-    position: relative;
-    padding: 0.8em;
+    position: relative; /* fix MSIE background painting */
     color: $color.foreground;
     background-color: $color.background;
     border: 1px solid $color.top-border;
-    /* This border must be part of the navigation-bar to because of MSIE... */
-    border-top-width: 0;
+    border-top-width: 0; /* The top border must be part of the navigation bar because MSIE... */
+    padding: 0.8em;
 }
-#content .content-with-submenu #inner-content { 
-    margin-left: 10.5em;
-    min-height: 15em;
-}
-
-#submenu { 
-    position: absolute;
-    top: 0.7em;
-    left: 0.6em;
-    width: 10em;
-    padding-right: 1em;
-}
-#submenu .table-of-contents { 
-    margin: 0;
-    padding: 0;
-    background-color: $color.background;
-    border: 1px solid $color.top-border;
-}
-#submenu .table-of-contents .title { 
-    padding: 0.1em 0.2em;
-    background-color: $color.heading-bg;
-    border-bottom: 1px solid $color.top-border;
-}
-#submenu .table-of-contents ul { 
-    padding: 0.3em;
-    padding-left: 1.4em;
-    margin: 0;
-}
-#submenu .table-of-contents ul ul { 
-    padding-left: 1em;
-}
-#submenu .table-of-contents a { 
-    display: block;
-    border: solid 1px transparent;
-}
-#submenu .table-of-contents a.current { 
-    background-color: $color.heading-bg;
-}
-#submenu .table-of-contents a:hover { 
-    border: solid 1px $color.heading-line;
-}
-
-#login-controls { 
-    position: absolute;
-    top: 0.7em;
-    right: 0.9em;
-    padding: 0.2em 0 0.3em 0;
-}
-
 #content h1 { 
     margin-top: 0;
 }
 #content-clearing { 
-    clear: left;
     height: 1px;
+    clear: left;
 }
-
 #clearing { 
     height: 1px;
 }
@@ -209,6 +257,15 @@ img { position: relative; } /* MSIE float workaround */
 #footer p { margin: 1pt 0pt; }
 #footer img { margin: 5pt; }
 #footer hr { display: none; }
+
+/* Special controls */
+
+#login-controls { 
+    position: absolute;
+    top: 0.7em;
+    right: 0.9em;
+    padding: 0.2em 0 0.3em 0;
+}
 
 /* Generic Wiking styles */
 
@@ -427,4 +484,3 @@ div.table-of-contents ul {
     margin-top: 3pt;
     margin-bottom: 0;
 }
-

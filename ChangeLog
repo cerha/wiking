@@ -1,3 +1,9 @@
+2007-06-07  Tomas Cerha  <cerha@brailcom.org>
+
+	* resources/css/panels.css: File removed.
+
+	* resources/css/default.css: Improved.  Panel styles merged here.
+
 2007-06-05  Tomas Cerha  <cerha@brailcom.org>
 
 	* sql/wiking.sql: Page insert rule fixed.
@@ -7,6 +13,8 @@
 	* lib/wiking/util.py: Site map support added.
 
 	* lib/wiking/modules.py (Mapping): View as a `site map'.
+	(Modules.Spec._ModNameType._check_constraints): Pass all keyword
+	arguments to the parent method.
 
 	* lib/wiking/module.py: RSS fixed.
 
