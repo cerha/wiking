@@ -184,8 +184,7 @@ class SiteHandler(object):
         config.show_panels = req.show_panels()
         menu = module.menu(req, result.lang())
         panels = module.panels(req, result.lang())
-        styles = [s for s in self._stylesheets.stylesheets()
-                  if s.file() != 'panels.css' or config.show_panels and panels]
+        styles = self._stylesheets.stylesheets()
         node = result.mknode('/'.join(req.path), config, menu, panels, styles)
         exporter = config.exporter or self._exporter
         data = translator(node.language()).translate(exporter.export(node))
