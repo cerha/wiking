@@ -49,8 +49,16 @@ class Exporter(lcg.HtmlExporter):
     def _wrapper(self, node):
         return self._parts(node, ('top', 'page', 'bottom'))
     
-    def _part(self, part, name):
-        return self._generator.div(part, id=name)
+    def _part(self, name, node):
+        content = getattr(self, '_'+name)(node)
+        if content is not None:
+            if hasattr(self, '_'+name+'_cls'):
+                cls = getattr(self, '_'+name+'_cls')(node)
+            else:
+                cls = None
+            return self._generator.div(content, id=name.replace('_', '-'), cls=cls)
+        else:
+            return None
     
     def _hidden(self, *text):
         return self._generator.span(text, cls="hidden")
@@ -71,38 +79,60 @@ class Exporter(lcg.HtmlExporter):
                                  id='top-layer3'), id='top-layer2'), id='top-layer1')
 
     def _page(self, node):
-        return self._parts(node, ('links', 'menu', 'language_selection',
+        node.config().has_submenu = bool([n for n in node.top().children() if not n.hidden()])
+        return self._parts(node, ('links', 'language_selection', 'menu', 'submenu',
                                   'panels', 'content', 'clearing'))
+
+    def _page_cls(self, node):
+        config = node.config()
+        cls = cls='node-id-%s' % node.id()
+        if config.has_submenu:
+            cls += ' with-submenu'
+        if node.panels() and config.show_panels:
+            cls += ' with-panels'
+        return cls
 
     def _links(self, node):
         g = self._generator
-        links = [g.link(_("Skip all repetitive content"), '#content-heading', hotkey="2")]
-        if [n for n in node.top().children() if not n.hidden()]:
-            links.append(g.link(_("Local menu"), '#local-menu'))
+        config = node.config()
+        links = [g.link(_("Content"), '#content-heading', hotkey="2"),
+                 g.link(_("Main navigation"), '#main-navigation')]
+        if config.has_submenu:
+            links.append(g.link(_("Local navigation"), '#local-navigation'))
         if len(node.language_variants()) > 1:
             links.append(g.link(_("Language selection"), '#language-selection'))
-        return self._hidden(_("Helper links") + ": " + concat(links, separator=' | '))
+        if config.show_panels:
+            for panel in node.panels():
+                links.append(g.link(panel.title(), '#panel-%s ' % panel.id()))
+        return self._hidden(_("Jump in page") + ": " + concat(links, separator=' | '))
         
     def _menu(self, node):
         g = self._generator
+        config = node.config()
         links = []
         for item in node.root().children():
-            cur = item is node.top()
             if not item.hidden():
-                links.append(g.link(item.title() + (cur and self._hidden(' *') or ''),
-                                    self._node_uri(item), title=item.descr(),
-                                    hotkey=(item.id() == 'index' and "1" or None),
-                                    cls=("navigation-link"+(cur and " current" or ""))))
-        if node.panels() and node.config().show_panels:
-            skip_target = '#panel-%s ' % node.panels()[0].id()
-        else:
-            skip_target = '#content-heading'
-        skip_lnk = self._hidden(" (", g.link(_("skip"), skip_target),")")
-        l = g.link(_("Main navigation"), None, name='main-navigation', hotkey="3")
-        label = g.strong(concat(l, skip_lnk, ":"), cls='label')
-        sep = " "+ self._hidden("|") +"\n"
-        return g.map(g.div((label, concat(links, separator=sep)), id="navigation-bar"),
+                cls = "navigation-link"
+                sign = ''
+                if item is node.top():
+                    cls += " current"
+                    sign = self._hidden(' *')
+                links.append(g.link(item.title(), self._node_uri(item), title=item.descr(),
+                                    hotkey=(item.id() == 'index' and "1" or None), cls=cls) + sign)
+        title = g.h(g.link(_("Main navigation"), None, name='main-navigation', hotkey="3"), 3)
+        return g.map(g.div((title, g.list(links)), id="main-navigation"),
                      title=_("Main navigation"))
+
+    def _submenu(self, node):
+        g = self._generator
+        config = node.config()
+        if not config.has_submenu:
+            return None
+        menu = lcg.NodeIndex(node=node.top(), depth=99)
+        menu.set_parent(node)
+        title = g.h(g.link(_("In this section:"), None, name='local-navigation', hotkey="3"), 3)
+        return g.map(g.div((title, menu.export(self)), id='submenu-frame'),
+                     title=_("Local navigation"))
     
     def _panels(self, node):
         g = self._generator
@@ -111,42 +141,22 @@ class Exporter(lcg.HtmlExporter):
             return None
         config = node.config()
         if not config.show_panels:
-            return g.link(_("Show panels"), "?show_panels=1",
-                          cls='panel-control show')
-        result = [g.link(_("Hide panels"), "?hide_panels=1",
-                         cls='panel-control hide'),
-                  g.hr(cls="hidden")]
-        for i, panel in enumerate(panels):
-            id = panel.id()
+            return g.link(_("Show panels"), "?show_panels=1", cls='panel-control show')
+        result = [g.link(_("Hide panels"), "?hide_panels=1", cls='panel-control hide')]
+        for panel in panels:
             content = panel.content()
             if isinstance(content, lcg.Content):
                 content = content.export(self)
-            try:
-                next = '#panel-%s ' % panels[i+1].id()
-            except IndexError:
-                next = '#content-heading'
-            title = g.link(panel.title(), None, name="panel-%s" % id)
-            h = g.div((g.strong(title),
-                       self._hidden(" (", g.link(_("skip"), next), ")")),
-                      cls='title')
-            c = g.div(content, cls="panel-content")
-            result.append(g.div((h, c, g.hr(cls="hidden")),
-                                cls="panel panel-"+id))
+            result.append(g.div((g.h(g.link(panel.title(), None, name="panel-"+panel.id()), 3),
+                                 g.div(content, cls="panel-content")),
+                                cls="panel panel-"+panel.id()))
         return result
 
     def _content(self, node):
         g = self._generator
-        top = node.top()
-        content = (g.div((g.h(g.link(node.heading(), None, name='content-heading'), 1),
-                          super(Exporter, self)._content(node)), id='inner-content'),)
-        cls = 'node-id-%s' % node.id()
-        if [n for n in top.children() if not n.hidden()]:
-            submenu = lcg.NodeIndex(_("Local menu"), node=top, depth=99)
-            submenu.set_parent(node)
-            content += (g.div((g.link('', None, name='local-menu'),
-                               submenu.export(self)), id='submenu'),)
-            cls += ' content-with-submenu'
-        return g.div(content, cls=cls)
+        return (g.h(g.link(node.heading(), None, name='content-heading'), 1),
+                super(Exporter, self)._content(node),
+                g.div('&nbsp;', id='content-clearing'))
 
     def _clearing(self, node):
         return '&nbsp;'
