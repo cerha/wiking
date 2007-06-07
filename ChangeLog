@@ -1,5 +1,11 @@
 2007-06-07  Tomas Cerha  <cerha@brailcom.org>
 
+	* translations/wiking.cs.po: Updated.
+
+	* lib/wiking/handler.py: Don't care about the panel styles.
+
+	* lib/wiking/export.py: Accessibility improvements.
+
 	* resources/css/panels.css: File removed.
 
 	* resources/css/default.css: Improved.  Panel styles merged here.
