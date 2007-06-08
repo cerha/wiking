@@ -64,6 +64,9 @@ img { position: relative; } /* MSIE float workaround */
     font-size: 1.1em;
     max-width: 70%;
 }
+#breadcrumbs { 
+    display: none;
+}
 
 /* Menu with folders */
 #main-navigation {

@@ -22,9 +22,43 @@ _ = lcg.TranslatableTextFactory('wiking')
 
 class Exporter(lcg.HtmlExporter):
 
-    _BODY_PARTS = ('wrapper',)
+    _BODY_PARTS = ('wrap',)
+    _WRAP_PARTS = ('top', 'page', 'bottom')
+    _PAGE_PARTS = ('links', 'breadcrumbs', 'language_selection',
+                   'menu', 'submenu', 'panels', 'content', 'clearing')
+    _BOTTOM_PARTS = ('wiking_bar', 'last_change', 'footer')
     _LANGUAGE_SELECTION_LABEL = _("Language:")
 
+    def _wrap(self, node):
+        return self._parts(node, self._WRAP_PARTS)
+    
+    def _bottom(self, node):
+        return self._parts(node, self._BOTTOM_PARTS)
+                           
+    def _page(self, node):
+        node.config().has_submenu = bool([n for n in node.top().children() if not n.hidden()])
+        return self._parts(node, self._PAGE_PARTS)
+
+    def _page_cls(self, node):
+        config = node.config()
+        cls = cls='node-id-%s' % node.id()
+        if config.has_submenu:
+            cls += ' with-submenu'
+        if node.panels() and config.show_panels:
+            cls += ' with-panels'
+        return cls
+
+    def _part(self, name, node):
+        content = getattr(self, '_'+name)(node)
+        if content is not None:
+            if hasattr(self, '_'+name+'_cls'):
+                cls = getattr(self, '_'+name+'_cls')(node)
+            else:
+                cls = None
+            return self._generator.div(content, id=name.replace('_', '-'), cls=cls)
+        else:
+            return None
+    
     def _node_uri(self, node, lang=None):
         uri = '/'+ node.id()
         if lang is not None:
@@ -46,20 +80,6 @@ class Exporter(lcg.HtmlExporter):
     def _title(self, node):
         return self._site_title(node) + ' - ' + node.heading()
 
-    def _wrapper(self, node):
-        return self._parts(node, ('top', 'page', 'bottom'))
-    
-    def _part(self, name, node):
-        content = getattr(self, '_'+name)(node)
-        if content is not None:
-            if hasattr(self, '_'+name+'_cls'):
-                cls = getattr(self, '_'+name+'_cls')(node)
-            else:
-                cls = None
-            return self._generator.div(content, id=name.replace('_', '-'), cls=cls)
-        else:
-            return None
-    
     def _hidden(self, *text):
         return self._generator.span(text, cls="hidden")
 
@@ -78,20 +98,6 @@ class Exporter(lcg.HtmlExporter):
         return g.div(g.div(g.div(g.div(g.strong(title), id='site-title'),
                                  id='top-layer3'), id='top-layer2'), id='top-layer1')
 
-    def _page(self, node):
-        node.config().has_submenu = bool([n for n in node.top().children() if not n.hidden()])
-        return self._parts(node, ('links', 'language_selection', 'menu', 'submenu',
-                                  'panels', 'content', 'clearing'))
-
-    def _page_cls(self, node):
-        config = node.config()
-        cls = cls='node-id-%s' % node.id()
-        if config.has_submenu:
-            cls += ' with-submenu'
-        if node.panels() and config.show_panels:
-            cls += ' with-panels'
-        return cls
-
     def _links(self, node):
         g = self._generator
         config = node.config()
@@ -105,6 +111,11 @@ class Exporter(lcg.HtmlExporter):
             for panel in node.panels():
                 links.append(g.link(panel.title(), '#panel-%s ' % panel.id()))
         return self._hidden(_("Jump in page") + ": " + concat(links, separator=' | '))
+        
+    def _breadcrumbs(self, node):
+        g = self._generator
+        links = [lcg.link(n).export(self) for n in node.path()[1:]]
+        return _("You are here:") + ' ' + concat(links, separator=' / ')
         
     def _menu(self, node):
         g = self._generator
@@ -161,9 +172,6 @@ class Exporter(lcg.HtmlExporter):
     def _clearing(self, node):
         return '&nbsp;'
     
-    def _bottom(self, node):
-        return self._parts(node, ('wiking_bar', 'last_change', 'footer'))
-                           
     def _wiking_bar(self, node):
         import wiking
         g = self._generator
