@@ -160,6 +160,15 @@ class PytisModule(Module, ActionHandler):
         def key(self):
             """Return the value of record's key for data operations."""
             return (self[self._data.key()[0].id()],)
+
+        def reload(self):
+            """Reload record data from the database."""
+            self.set_row(self._data.row(self.key()))
+
+        def update(self, **kwargs):
+            """Update the record in the database by values of given keyword args."""
+            self._data.update(self.key(), self._data.make_row(**kwargs))
+            self.reload()
     
         def rowdata(self):
             """Return record's row data for insert/update operations."""
@@ -492,9 +501,6 @@ class PytisModule(Module, ActionHandler):
         return self.Record(self._view.fields(), self._data, row,
                            prefill=prefill, new=new)
     
-    def _reload(self, record):
-        """Update record data from the database."""
-        record.set_row(self._data.row(record.key()))
 
     # ===== Methods which modify the database =====
     
@@ -511,13 +517,7 @@ class PytisModule(Module, ActionHandler):
     def _update(self, record):
         """Update the record data in the database."""
         self._data.update(record.key(), record.rowdata())
-        self._reload(record)
 
-    def _update_values(self, record, **kwargs):
-        """Update the record in the database by values of given keyword args."""
-        self._data.update(record.key(), self._data.make_row(**kwargs))
-        self._reload(record)
-    
     def _delete(self, record, raise_error=True):
         """Delete the record from the database."""
         if not self._data.delete(record.key()) and raise_error:
@@ -631,6 +631,7 @@ class PytisModule(Module, ActionHandler):
         if not errors:
             try:
                 self._update(record)
+                record.reload()
             except pd.DBException, e:
                 errors = self._analyze_exception(e)
             else:
@@ -870,7 +871,7 @@ class Publishable(object):
         try:
             if publish != record['published'].value():
                 Publishable._change_published(record)
-            self._reload(record)
+                record.reload()
             msg = publish and self._MSG_PUBLISHED or self._MSG_UNPUBLISHED
         except pd.DBException, e:
             err = self._analyze_exception(e)

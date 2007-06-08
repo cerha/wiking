@@ -89,10 +89,10 @@ class WikingManagementInterface(Module):
     
     _SECTIONS = ((SECTION_CONTENT, _("Content"),
                   _("Manage the content available on your website.")),
-                 (SECTION_STYLE,   _("Look &amp; Feel"),
-                  _("Customize the appearance of your site.")),
                  (SECTION_USERS,   _("User Management"),
                   _("Manage registered users and their privileges.")),
+                 (SECTION_STYLE,   _("Look &amp; Feel"),
+                  _("Customize the appearance of your site.")),
                  (SECTION_SETUP,   _("Setup"),
                   _("Edit global properties of your web site.")),
                  )
@@ -852,7 +852,7 @@ class Pages(WikingModule, Publishable):
 
     def action_sync(self, req, record):
         try:
-            self._update_values(record, content=record['_content'].value())
+            record.update(content=record['_content'].value())
         except pd.DBException, e:
             kwargs = dict(err=self._module._analyze_exception(e))
         else:
@@ -886,8 +886,13 @@ class Attachments(StoredFileModule):
                   computer=self._file_computer('file', '_filename', origname='filename',
                                                mime='mime_type'),
                   descr=_("Upload a file from your local system.  The file name will be used "
-                          "to refer to the attachment within the page content.")),
-            Field('filename', _("Filename"), computer=fcomp(lambda f: f.filename())),
+                          "to refer to the attachment within the page content.  Please note, "
+                          "that the file will be served over the internet, so the filename should "
+                          "not contain any special characters.  Letters, digits, underscores, "
+                          "dashes and dots are safe.  You risk problems with most other "
+                          "characters.")),
+            Field('filename', _("Filename"), computer=fcomp(lambda f: f.filename()),
+                  type=pd.RegexString(maxlen=64, not_null=True, regex='^[0-9a-zA-Z_\.-]*$')),
             Field('mime_type', _("Mime-type"), width=22,
                   computer=fcomp(lambda f: f.type())),
             Field('title', _("Title"), width=30, maxlen=64,
@@ -1347,17 +1352,17 @@ class Users(WikingModule):
         if row and row['session_expire'].value() > now():
             user = self._record(row)
             expire = now() + TimeDelta(hours=2)
-            self._update_values(user, session_expire=expire)
+            user.update(session_expire=expire)
             return user
         else:
             return  None
 
     def save_session(self, user, session_key):
         exp = now() + TimeDelta(hours=2)
-        self._update_values(user, session_expire=exp, session_key=session_key)
+        user.update(session_expire=exp, session_key=session_key)
 
     def close_session(self, user):
-        self._update_values(user, session_expire=None, session_key=None)
+        user.update(session_expire=None, session_key=None)
 
     def registration_uri(self, req):
         identifier = self._identifier(req)

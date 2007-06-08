@@ -1,5 +1,12 @@
 2007-06-08  Tomas Cerha  <cerha@brailcom.org>
 
+	* translations/wiking.cs.po: Updated.
+
+	* lib/wiking/modules.py: Minor improvements.
+
+	* lib/wiking/module.py: Don't reload the record from the database
+	within `_update()' to allow overriding it correctly.
+
 	* doc/src/user/accessibility.en.txt: Updated.
 
 	* doc/src/user/navigation.cs.txt: Updated.
