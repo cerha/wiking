@@ -3,7 +3,7 @@
 == Accessibility Statement ==
 
 This site uses the [http://www.freebsoft.org/wiking Wiking] content management
-system.  One of the major aims of this system was providing equal access to all
+system.  One of the major aims of this system is providing equal access to all
 users, including people with handicaps and/or special needs.  Wiking also tries
 to be neutral to user's software, hardware and settings.  Thus the resulting
 pages should be usable with any browser, font type or size, screen resolution,

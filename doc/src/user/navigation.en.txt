@@ -5,16 +5,77 @@
 Table of Contents: @TOC@
 
 
-== Main Navigation Menu == menu
+== Navigation Menus == menu
 
-The main navigation menu is displayed as a row of folders at the top of the
-page by default.  In a custom style, the appearance may vary significantly, but
-the purpose always remains the same.  It is a list of links to the main
-sections of the site.  The active item is visually emphasized.  In a text
-browser (where the visual emphasis may not be supported), there is an asterisk
-appended to the active item's title.  This ensures, that the user always knows
-where he is at the moment.  Since the menu is repeated on each page, you may
-want to it while navigating the page -- see [#skip].
+A Wiking site may have two levels of navigation:
+  * Main menu
+  * Local menu of the current section
+
+The main menu contains top level sections and is displayed as a row of folders
+at the top of the page by default (the appearance may vary significantly when
+the site uses custom styles).
+
+The local menu displays a hierarchical list of all subsections of the current
+top level section.  It is by default displayed on the left side of the page as
+a separate column labeled "In this section:".  When there are no sub-ordinary
+sections within the current top level section, the local menu will not be
+displayed at all.
+
+The current menu item is visually emphasized so that the user always knows
+where he is at the moment.  If this visual information is not accessible for
+you, you may still find out where you are using the [#breadcrumbs].
+
+Users of assistive technologies may want to skip the menus, since they are
+repeated at the top of each page.  See the section [#moving-around] for more
+information.
+
+== Breadcrumb navigation == breadcrumbs
+
+The so called "breadcrumb path" displays your current position within the site
+contents hierarchy as a set of links.  The path starts with the current top
+level section and ends by the current page, allowing you to jump directly to any
+higher level in the hierarchy.  It can be found at the top of the page and it
+is labeled "You are here".
+
+See the related [http://en.wikipedia.org/wiki/Breadcrumb_(navigation) Wikipedia
+article] for more information about breadcrumb navigation techniques.
+
+The breadcrumbs in Wiking are primarily used as an aid for users of assistive
+technologies and are not displayed in visual browsers by default.
+
+
+== Moving around the current page == moving-around
+
+Apart from the actual content, web pages often contain fixed parts which repeat
+on each page throughout a website.  The typical repetitive parts of a Wiking
+page are:
+
+  * [#breadcrumbs]
+  * [#languages]
+  * [#menu]
+  * [#panels]
+
+A visually oriented user may ignore those parts, since they are visually
+distinguished from the main content.  They may, however, impose a problem for
+AT users.  Wiking tries to help by a "screen reader friendly" implementation of
+these parts and by providing additional navigation mechanisms.  These may or
+may not be suitable depending on the assistive technology being used.
+
+Screen reader driven navigation
+   Users of modern screen readers may skip the repetitive parts simply -- menus
+   and all panels are labeled by level 3 headings and precede the main content.
+   The main content starts with a top level heading.  So you can get to the
+   main content by one key-press or jump around menus and panels by repeating a
+   third level heading jump.
+
+Page navigation links
+   You will find a set of links labeled "Jump in page" at the very top of the
+   page.  The first of them will always get you to the main content, the
+   following will move your focus to the menus, panels and language selection.
+   These links are most convenient for text oriented browsers.
+
+Keyboard shortcuts
+   Some of the [#shortcuts] also allow you to jump within the page.
 
 
 == Shortcut Keys == shortcuts
@@ -47,33 +108,16 @@ For example the page content begins with a top level heading, thus it may be
 possible to get to it using the heading navigation feature of the AT.
 
 
-== Skipping Repetitive Parts == skip
-
-Certain parts of the page are repetitive -- they appear on each page and they
-usually don't change.  These repetitive parts are:
-
-  * [#menu]
-  * [#languages]
-  * [#panels]
-
-Wiking implements several features simplifying page navigation with respect to
-repetitive content.
-
-"Skip" links can be used in text browsers.  The first link at the top of the
-page allows you to skip all the repetitive content.  Then each repetitive part
-can be skipped individually.  
-
-Also [#shortcuts] allow you to skip repetitive content.
-
-
 == Tables of Contents ==
 
-More complicated pages with several sections (such as this one) usually use a
-Table of Contents.  Table of Contents shows the hierarchy of sections as a set
-of links allowing you to jump to a selected section directly.  Each section
-header also acts as a link back to the Table of Contents.  This feature may
-significantly simplify page navigation in longer texts.  Give it a try right on
-this page...
+Tables of Contents show the hierarchy of the current page content.  As opposed
+to [#menu], they don't refer to other pages, but just to subsections of the
+current page.
+
+They display a set of links allowing you to jump to a selected section
+directly.  Each section header also acts as a link back to the Table of
+Contents.  This feature may significantly simplify page navigation in longer
+texts.  Give it a try right on this page...
 
 Some pages may use multiple Tables of Contents in different levels of
 hierarchy.  In this case, the back-reference links from section headers lead
@@ -127,3 +171,6 @@ setting is sticky (panels stay hidden for the following requests) when
 "cookies" are enabled in the browser.  Panels can be unhidden again using the
 "Show panels" link.  Of course, when a page doesn't use any panels, these links
 don't appear on the page.
+
+Users of assistive technologies may want to skip panels, since they are
+repeated on each page.  See the section [#moving-around] for more information.

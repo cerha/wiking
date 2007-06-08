@@ -1,5 +1,11 @@
 2007-06-08  Tomas Cerha  <cerha@brailcom.org>
 
+	* doc/src/user/accessibility.en.txt: Updated.
+
+	* doc/src/user/navigation.cs.txt: Updated.
+
+	* doc/src/user/navigation.en.txt: Updated.
+
 	* resources/css/default.css: Hide breadcrumbs by default.
 
 	* lib/wiking/export.py: Added breadcrumb navigation.

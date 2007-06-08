@@ -5,17 +5,82 @@
 Obsah: @TOC@
 
 
-== Hlavní navigační nabídka == menu
+== Navigační menu == menu
 
-Nabídka hlavní navigace může mít různé formy, podle aktuálně zvoleného stylu.
-Ve výchozím stylu je zobrazena jako lišta záložek při horním okraji stránky.
-Důležitější než forma je však její význam.  Je to seznam odkazů na jednotlivé
-sekce portálu.  Aktivní položka nabídky je vždy vizuálně zvýrazněna.  V
-textovém prohlížeči (kde vizuální zvýraznění nemusí být podporováno) je navíc
-aktivní položka nabídky doplněna hvězdičkou na konci názvu položky.  Tím má
-uživatel vždy přehled kde se právě nachází.  Vzhledem k tomu, že se menu
-opakuje na každé stránce, je možné jej při procházení stránky přeskočit (viz
-[#skip]).
+Stránky využívající CMS Wiking mohou mít dvě úrovně navigace:
+  * Menu hlavních sekcí (hlavní menu)
+  * Hierarchické menu podsekcí aktuální hlavní sekce (lokální menu)
+
+Hlavní menu obsahuje pouze sekce nejvyšší úrovně.  Ve výchozím stylu je
+zobrazeno jako lišta záložek při horním okraji stránky, avšak jeho vzhled může
+být odlišný v závislosti na použitém stylu.
+
+Lokální menu zobrazuje hierarchický seznam všech podsekcí aktuální sekce
+nejvyšší úrovně.  Ve výchozím stylu je zobrazeno po levém boku stránky v
+samostatném sloupci označeném nadpisem „V této sekci:“.  Pokud aktuální sekce
+nejvyšší úrovně neobsahuje žádné podřízené stránky, menu není zobrazeno.
+
+Aktuální položka menu je vždy vizuálně zvýrazněna, takže uživatel má přehled
+kde se právě nachází.  Pokud tato vizuální informace není pro daného uživatele
+přístupná, je možné využít [#breadcrumbs lištu aktuální pozice].
+
+Vzhledem k tomu, že se menu opakuje na každé stránce, může uživatelům
+zpřístupňujících technologií komplikovat pohyb po stránce.  O možnostech jak
+pohyb usnadnit se dozvíte v kapitole [#moving-around].
+
+
+== Lišta aktuální pozice == breadcrumbs
+
+Aktuální pozice v rámci hierarchie stránek je zobrazena pomocí lišty označené
+nápisem "Nacházíte se zde", kterou najdete na začátku stránky.  Lišta zobrazuje
+cestu od aktuální sekce nejvyšší úrovně až po současnou stránku jako sadu
+odkazů, takže je možné jednoduše přejít na libovolnou vyšší úroveň v
+hierarchii.
+
+Tato technika bývá běžně označována jako
+[http://en.wikipedia.org/wiki/Breadcrumb_(navigation) breadcrumb navigation].
+
+Lišta aktuální pozice je systémem Wiking využívána především jako pomůcka pro
+uživatele zpřístupňujících technologií, takže ve výchozím stylu pro vizuální
+prohlížeče není zobrazena.
+
+
+== Pohyb v rámci aktuální stránky == moving-around
+
+Kromě vlastního obsahu většina webových stránek zobrazuje také neměnné části,
+které se v nezměněné podobě opakují na všech stránkách daného webu, jako
+např. různé navigační prvky apod.  V případě systému Wiking to typicky jsou:
+
+  * [#breadcrumbs]
+  * [#languages]
+  * [#menu]
+  * [#panels]
+
+Vizuálně orientovaný uživatel může tyto části snadno ignorovat, protože jsou od
+vlastního obsahu viditelně odlišeny.  Pro zrakově postižené uživatele však tyto
+opakující se části mohou znamenat zbytečné překážky.  Systém Wiking tuto
+situaci řeší pomocí takové implementace těchto částí, která je přátelská vůči
+zpřístupňujícím technologiím a také pomocí dodatečných navigačních mechanismů.
+Ty mohou nebo nemusí být vhodné v závislosti na použité zpřístupňující
+technologii.
+
+Navigace pomocí čtečky obrazovky (screen readeru)
+   Uživatelé moderních screen readerů mohou opakující se části jednoduše
+   přeskakovat pomocí příkazů pro pohyb po nadpisech.  Menu i všechny panely
+   jsou vždy uvozeny nadpisem třetí úrovně a na stránce se nachází před
+   vlastním obsahem, který je uvozen nadpisem první úrovně.  Na hlavní obsah
+   dokumentu se tedy lze dostat jedním stiskem klávesy, menu a panely lze
+   procházet postupným skákáním po nadpisech třetí úrovně.
+
+Odkazy v rámci stránky
+   Hned na začátku každé stránky najdete sadu odkazů označenou nápisem „Přejít
+   ve stránce“.  První položka vždy odkazuje na hlavní obsah dokumentu a za ní
+   následují odkazy na menu, jednotlivé panely i výběr jazyka.  Tyto odkazy
+   jsou pravděpodobně nejpohodlnější pro uživatele textových prohlížečů a ve
+   výchozím stylu jsou pro ostatní prohlížeče skryty.
+
+Klávesové zkratky
+   Některé [#shortcuts] také umožňují pohyb v rámci stránky.
 
 
 == Klávesové zkratky == shortcuts
@@ -38,44 +103,29 @@ Použití klávesových zkratek (accesskeys) v jednotlivých typech prohlížeč
   * Safari, Firefox, Mozilla, Netscape, Omniweb (vše na Mac OS X) ... Ctrl +
     číslo
 
-Klávesové zkratky by neměly být povážovány za primární způsob navigace.  Jejich
+Klávesové zkratky by neměly být považovány za primární způsob navigace.  Jejich
 použití se mezi prohlížeči různí a některé prohlížeče je nepodporují vůbec.
 Navíc jejich přiřazení není nijak standardizováno, takže chování každé stránky
 je pro uživatele jiné.
 
 Mnohé zpřístupňující technologie obsahují vlastní funkce pro pohyb po stránce,
-které mohou nahradit funkce dostupné pomocí výše zmíněných klávasových zkratek.
+které mohou nahradit funkce dostupné pomocí výše zmíněných klávesových zkratek.
 Například obsah stránky je uvozen nadpisem první úrovně, proto k přesunu na
 obsah použijte funkce navigace po nadpisech, pokud to vaše zpřístupňující
 technologie umožňuje.
-
-
-== Přeskakování opakujících se částí == skip
-
-Některé části stránky se opakují -- vyskutují se na všech stránkách ve víceméně
-nezměněné podobě.  Jsou to:
-
-  * [#menu]
-  * [#languages]
-  * [#panels]
-
-Systém Wiking disponuje vlastnostmi usnadňujícími pohyb po stránce s ohledem na
-opakující se části.
-
-V textovém prohlížeči můžete použít „předskakovací“ odkazy.  První odkaz na
-začátku stránky umožňnuje přeskočit všechny tyto části najednou.  Déle je možné
-přeskočit každou část samostatně.
-
-Také [#shortcuts klávesové zkratky] umožňují opakující se části přeskočit.
 
 
 == Rejstříky ==
 
 Obsáhlejší stránky, které se skládají z více samostatných kapitol většinou
 obsahují rejstřík.  Rejstřík zachycuje hierarchii kapitol a umožňuje přesun na
-libovolnou kapitolu formou odkazu.  Nadpis každé kapitoly zároveň funguje jako
-odkaz zpět do rejstříku, čímž je podstatně zjednodušena navigace v obsáhlejších
-dokumentech.  Vyzkoušejte si tuto funkcionalitu přímo na této stránce.
+libovolnou kapitolu formou odkazu.  Na rozdíl od [#menu navigačních menu]
+rejstřík neodkazuje na jiné stránky ale pouze na jednotlivé kapitoly v rámci
+současné stránky.
+
+Nadpis každé kapitoly zároveň funguje jako odkaz zpět do rejstříku, čímž je
+podstatně zjednodušena navigace v obsáhlejších dokumentech.  Vyzkoušejte si
+tuto funkcionalitu přímo na této stránce.
 
 Některé stránky mohou obsahovat více rejstříků v různých stupních hierarchie.
 V tom případě vede odkaz z nadpisu kapitoly vždy na nejbližší nadřazený
@@ -107,11 +157,11 @@ ihned za hlavní nabídkou.  Pokud je daná stránka dostupná pouze v jednom
 jazyce, výběr jazyků se nezobrazí.  Protože dostupné jazykové varianty jsou pro
 každou stránku nezávislé, mohou se nabízené jazyky pro různé stránky lišit.
 Aktuální jazyk, podobně jako aktuální položka menu, je vizuálně odlišen a v
-textovém prohlížěči je označen hvězdičkou.
+textovém prohlížeči je označen hvězdičkou.
 
 Pokud má uživatel v prohlížeči povolen příjem „>>cookies<<“, bude vybraný jazyk
 v příštích relacích považován za preferovaný.  Toto nastavení má vyšší prioritu
-než jazykové nastavení prohlížeče, čímž je umožňeno pohodlné přepnutí jazyka i
+než jazykové nastavení prohlížeče, čímž je umožněno pohodlné přepnutí jazyka i
 v případech, kdy uživatel nemá možnost nastavení prohlížeče změnit (např. v
 internetových kavárnách, na veřejných terminálech apod.).  Správné nastavení
 jazykových předvoleb prohlížeče by však mělo být vždy preferovaným řešením.
@@ -120,7 +170,7 @@ jazykových předvoleb prohlížeče by však mělo být vždy preferovaným ře
 == Panely == panels
 
 Panely jsou malá informační okénka, která jsou ve výchozím stylu zobrazena po
-pravém boku stránky.  Většinou slouží ke shrnutí nejdůležitějších infomrací z
+pravém boku stránky.  Většinou slouží ke shrnutí nejdůležitějších informací z
 daného portálu.  Panely jsou stejné na každé stránce portálu.  Například panel
 Novinek může zobrazovat souhrn nejčerstvějších zpráv s odkazy na kompletní
 znění každé zprávy v sekci Novinky.
@@ -130,3 +180,7 @@ který naleznete nad panely.  Pokud jsou povoleny „>>cookies<<“, je ukrytí
 panelů permanentní, to znamená že panely zůstanou skryty i pro všechny
 následující relace, dokud je opět nezobrazíme pomocí odkazu „Zobrazit panely“.
 Pokud stránka žádné panely neobsahuje, tyto odkazy nejsou dostupné.
+
+Vzhledem k tomu, že se panely opakují na každé stránce, mohou uživatelům
+zpřístupňujících technologií komplikovat pohyb po stránce.  O možnostech jak
+pohyb usnadnit se dozvíte v kapitole [#moving-around].
