@@ -293,7 +293,7 @@ class Document(object):
             return node
         nodes = [_mknode(item) for item in menu]
         if not me:
-            node = _mknode(MenuItem(id, None, hidden=True))
+            node = _mknode(MenuItem(id, self._title, hidden=True))
             if parent:
                 parent[0].add_child(node)
             else:
