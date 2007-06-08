@@ -1,5 +1,7 @@
 2007-06-08  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/util.py: Set the correct title for the current node.
+
 	* translations/wiking.cs.po: Updated.
 
 	* lib/wiking/modules.py: Minor improvements.
