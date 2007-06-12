@@ -1,3 +1,9 @@
+2007-06-12  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/handler.py: Unecessary Apache site dispatching
+	cleaned up.
+	(Handler._module): Allow passing additional module constructor arguments.
+
 2007-06-08  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/util.py: Set the correct title for the current node.

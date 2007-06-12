@@ -17,110 +17,23 @@
 
 from wiking import *
 
-_ = lcg.TranslatableTextFactory('wiking')
-
 class Handler(object):
-    """The main Apache/mod_python handler interface.
+    """Wiking handler.
 
-    There is just one instance of this class for the whole server.  Well, more
-    precisely, there is one instance of the handler per each web server
-    instance -- Apache typically runs several independent instances
-    concurrently.  Anyway, this handler redirects the requests within one
-    webserver instance to 'SiteHandler' instances, which are specific to one
-    site.  Multiple sites can be served this way.  One site is typically one
-    virtual host (depending on web server configuration).
+    The main goal of the handler is to instantiate modules needed by the application and pass the
+    requests to these instances.  Module instances are cached on this level.
 
-    """
-    def __init__(self):
-        self._site_handlers = {}
-
-    def _site_handler(self, server, dbconnection):
-        key = hash(dbconnection)
-        try:
-            site_handler = self._site_handlers[key]
-        except KeyError:
-            resolver = WikingResolver()
-            site_handler = SiteHandler(server, dbconnection, resolver)
-            self._site_handlers[key] = site_handler
-        return site_handler
-    
-    def __call__(self, request):
-        req = WikingRequest(request)
-        dbconnection = pd.DBConnection(**req.options)
-        try:
-            site_handler = self._site_handler(req.server, dbconnection)
-            #result, t1, t2 = timeit(site_handler.handle, req)
-            #log(OPR, "Request processed in %.1f ms (%.1f ms wall time):" % \
-            #    (1000*t1, 1000*t2), req.uri)
-            return site_handler.handle(req)
-        except Exception, e:
-            if isinstance(e, pd.DBException):
-                try:
-                    if e.exception() and e.exception().args:
-                        errstr = e.exception().args[0]
-                    else:
-                        errstr = e.message()
-                    result = maybe_install(req, dbconnection, errstr)
-                    if result is not None:
-                        return req.result(result)
-                except:
-                    pass
-            einfo = sys.exc_info()
-	    info = (("URI", req.uri),
-                    ("Remote host", req.get_remote_host()),
-                    ("HTTP referrer", req.header('Referer')),
-                    ("User agent", req.header('User-Agent')),
-                    )
-            import traceback
-            text = "\n".join(["%s: %s" % pair for pair in info]) + \
-                   "\n\n" + "".join(traceback.format_exception(*einfo))
-            try:
-                if cfg.bug_report_address is not None:
-                    send_mail('wiking@' + req.server.server_hostname,
-                              cfg.bug_report_address,
-                              'Wiking Error: ' + req.server.server_hostname,
-                              text + "\n\n" + cgitb.text(einfo),
-                              "<html><pre>"+ text +"</pre>"+ \
-                              cgitb.html(einfo) +"</html>",
-                              smtp_server=cfg.smtp_server)
-                    log(OPR, "Traceback sent to:", cfg.bug_report_address)
-                else:
-                    log(OPR, "Error:", cgitb.text(einfo))
-            except Exception, e:
-                log(OPR, "Error in exception handling:", e)
-                log(OPR, "The original exception was:", text)
-            import traceback
-            message = ''.join(traceback.format_exception_only(*einfo[:2]))
-            return req.error(message)
-
-
-handler = Handler()
-"""The instance is callable so this makes it work as a mod_python handler."""
-
-
-class SiteHandler(object):
-    """Wiking site handler.
-
-    There is one instance of this handler for each Wiking site.  See also the
-    documentation of the 'Handler' class for more information about sites,
-    virtualhosts and handlers.
-
-    The main goal of the site handler is to instantiate the modules needed by
-    the application and pass the requests to the instances of the modules.
-    Module instances are cached on this level.
-
-    The other responsibility is to process the result of the module request
-    handler and handle 'RequestError' exceptions, such as 'NotFound',
-    'NotAccaeptable', etc, since these errors should be presented with all the
-    site navigation, panels etc.
+    The other responsibility is to process the result of the module request handler and handle
+    'RequestError' exceptions.
 
     """
 
-    def __init__(self, server, dbconnection, resolver):
+    def __init__(self, server, dbconnection):
         self._server = server
         self._dbconnection = dbconnection
-        self._resolver = resolver
         self._module_cache = {}
+        self._resolver = WikingResolver('/home/cerha/work/pytis/demo/defs')
+        #pytis.util.set_resolver(WikingResolver('/home/cerha/work/pytis/demo/defs'))
         # Initialize the system modules immediately.
         self._mapping = self._module('Mapping')
         self._stylesheets = self._module('Stylesheets')
@@ -128,12 +41,13 @@ class SiteHandler(object):
         self._config = self._module('Config')
         self._users = self._module('Users')
         self._exporter = Exporter() #self._config.exporter or Exporter()
-        #log(OPR, 'New SiteHandler instance for %s.' % dbconnection)
+        #log(OPR, 'New Handler instance for %s.' % dbconnection)
 
-    def _module(self, name):
+    def _module(self, name, **kwargs):
         cls = get_module(name)
+        key = (name, tuple(kwargs.items()))
         try:
-            module = self._module_cache[name]
+            module = self._module_cache[key]
             if module.__class__ is not cls:
                 # Dispose the instance if the class definition has changed.
                 raise KeyError()
@@ -141,8 +55,8 @@ class SiteHandler(object):
             args = (self._module, self._resolver)
             if issubclass(cls, PytisModule):
                 args += (self._dbconnection,)
-            module = cls(*args)
-            self._module_cache[name] = module
+            module = cls(*args, **kwargs)
+            self._module_cache[key] = module
         return module
 
     def handle(self, req):
@@ -190,6 +104,74 @@ class SiteHandler(object):
         data = translator(node.language()).translate(exporter.export(node))
         return req.result(data)
 
+
+class ModPythonHandler(object):
+    """The main Apache/mod_python handler interface.
+
+    This class implements a mod_python specific wrapper.  The actual processing of requests is
+    redirected to the 'Handler' instance, which does not depend on the web server environment.
+    
+    Mod_python instances are isolated by default, so Apache will create one instance of this class
+    for each virtual host.  Moreover, there will be a separate set of mod_python instances for each
+    web server instance.
+
+    """
+    def __init__(self):
+        self._handler = None
+
+    def __call__(self, request):
+        req = WikingRequest(request)
+        dbconnection = pd.DBConnection(**req.options)
+        try:
+            if self._handler is None:
+                self._handler = Handler(req.server, dbconnection)
+            #result, t1, t2 = timeit(self._handler.handle, req)
+            #log(OPR, "Request processed in %.1f ms (%.1f ms wall time):" % \
+            #    (1000*t1, 1000*t2), req.uri)
+            return self._handler.handle(req)
+        except Exception, e:
+            if isinstance(e, pd.DBException):
+                try:
+                    if e.exception() and e.exception().args:
+                        errstr = e.exception().args[0]
+                    else:
+                        errstr = e.message()
+                    result = maybe_install(req, dbconnection, errstr)
+                    if result is not None:
+                        return req.result(result)
+                except:
+                    pass
+            einfo = sys.exc_info()
+	    info = (("URI", req.uri),
+                    ("Remote host", req.get_remote_host()),
+                    ("HTTP referrer", req.header('Referer')),
+                    ("User agent", req.header('User-Agent')),
+                    )
+            import traceback
+            text = "\n".join(["%s: %s" % pair for pair in info]) + \
+                   "\n\n" + "".join(traceback.format_exception(*einfo))
+            try:
+                if cfg.bug_report_address is not None:
+                    send_mail('wiking@' + req.server.server_hostname,
+                              cfg.bug_report_address,
+                              'Wiking Error: ' + req.server.server_hostname,
+                              text + "\n\n" + cgitb.text(einfo),
+                              "<html><pre>"+ text +"</pre>"+ \
+                              cgitb.html(einfo) +"</html>",
+                              smtp_server=cfg.smtp_server)
+                    log(OPR, "Traceback sent to:", cfg.bug_report_address)
+                else:
+                    log(OPR, "Error:", cgitb.text(einfo))
+            except Exception, e:
+                log(OPR, "Error in exception handling:", e)
+                log(OPR, "The original exception was:", text)
+            import traceback
+            message = ''.join(traceback.format_exception_only(*einfo[:2]))
+            return req.error(message)
+
+
+handler = ModPythonHandler()
+"""The instance is callable so this makes it work as a mod_python handler."""
 
 # def authenhandler(req):
 #      pw = req.get_basic_auth_pw()
