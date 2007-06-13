@@ -69,31 +69,31 @@ img { position: relative; } /* MSIE float workaround */
 }
 
 /* Menu with folders */
-#main-navigation {
+#main-menu {
     border-bottom: 1px solid $color.top-border;
     padding-left: 0.2em;
     /* padding-bottom: 0.1em; */
     /* leave some space for language selection and panel controls */
     padding-right: 6em; 
 }
-#main-navigation h3 {
+#main-menu h3 {
     display: none;
 }
-#main-navigation ul { 
+#main-menu ul { 
     margin: 0;
     padding: 0;
 }
-#main-navigation li {
+#main-menu li {
     display: inline;
     white-space: nowrap;
 }
-#main-navigation a.navigation-link {
+#main-menu a.navigation-link {
     border: solid $color.top-border 1px;
     padding: 0 0.6em; /* 0.1em 0.6em; */
     background-color: $color.inactive-folder;
     text-decoration: none; /* ??? */
 }
-#main-navigation a.navigation-link.current {
+#main-menu a.navigation-link.current {
     background-color: $color.background;
     border-bottom: solid $color.background 1px;
 }
@@ -151,17 +151,20 @@ img { position: relative; } /* MSIE float workaround */
     top: 2pt;
     right: 6pt;
     font-size: 0.9em;
-    max-width: 35%;
+    max-width: 55%;
     /*white-space: nowrap;*/
 }
 #language-selection a.current { background-color: $color.highlight-bg; }
 
 /* Panels */
 
+#page.with-panels { 
+    float: left; /* Force the main div to fit its content. */
+}
 #page.with-panels #content { 
     margin-right: 17em;
 }
-#page.with-panels #main-navigation { 
+#page.with-panels #main-menu { 
     margin-right: 17em;
     padding-right: 0; 
 }
@@ -220,16 +223,19 @@ div.panel-login a.login-ctrl {
     border: 1px solid $color.top-border;
     border-top-width: 0; /* The top border must be part of the navigation bar because MSIE... */
     padding: 0.8em;
+    margin-bottom: 0.5em;
 }
 #content h1 { 
     margin-top: 0;
 }
 #content-clearing { 
-    height: 1px;
+    height: 0;
+    font-size: 0;
     clear: left;
 }
 #clearing { 
-    height: 1px;
+    height: 0;
+    font-size: 0;
 }
 
 /* Wiking bar in page footer */

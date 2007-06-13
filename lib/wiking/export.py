@@ -131,7 +131,7 @@ class Exporter(lcg.HtmlExporter):
                 links.append(g.link(item.title(), self._node_uri(item), title=item.descr(),
                                     hotkey=(item.id() == 'index' and "1" or None), cls=cls) + sign)
         title = g.h(g.link(_("Main navigation"), None, name='main-navigation', hotkey="3"), 3)
-        return g.map(g.div((title, g.list(links)), id="main-navigation"),
+        return g.map(g.div((title, g.list(links)), id="main-menu"),
                      title=_("Main navigation"))
 
     def _submenu(self, node):
@@ -231,6 +231,11 @@ class Exporter(lcg.HtmlExporter):
                    "http://www.section508.gov",
                    _("US Government Section 508 Accessibility Guidelines.")))]
         contact = node.config().webmaster_addr
+        if contact is None:
+            domain = node.config().server_hostname
+            if domain.startswith('www.'):
+                domain = domain[4:]
+            contact = 'webmaster@' + domain
         return (g.hr(),
                 g.p(_("This site conforms to the following standards:"),
                     *links),
