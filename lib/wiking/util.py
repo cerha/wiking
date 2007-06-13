@@ -556,6 +556,7 @@ class SiteMap(lcg.NodeIndex):
     def _start_item(self):
         return self.parent().root()
 
+
     
 def translator(lang):
     if lang:
@@ -629,32 +630,50 @@ class Data(pd.DBDataDefault):
     def make_row(self, **kwargs):
         return pd.Row(self._row_data(**kwargs))
 
+
+class Specification(pp.Specification):
+    _instance_cache = {}
+    actions = []
+    data_cls = Data
+    def __new__(cls, module, resolver):
+        try:
+            instance = cls._instance_cache[module]
+        except KeyError:
+            instance = cls._instance_cache[module] = pp.Specification.__new__(cls, resolver)
+        return instance
+
+    def __init__(self, module, resolver):
+        if self.table is None:
+            self.table = pytis.util.camel_case_to_lower(module.name(), '_')
+        actions = list(self.actions)
+        for base in module.__bases__ + (module,):
+            if hasattr(base, '_ACTIONS'):
+                for action in base._ACTIONS:
+                    if action not in actions:
+                        actions.append(action)
+        self.actions = tuple(actions)
+        return super(Specification, self).__init__(resolver)
     
+        
 class WikingResolver(pytis.util.Resolver):
     """A custom resolver of Wiking modules."""
     
-    def __init__(self, assistant=None):
-        assert assistant is None or isinstance(assistant, pytis.util.Resolver)
-        self._assistant = assistant
-    
     def get(self, name, spec_name):
         try:
-            cls = get_module(name)
+            module_cls = get_module(name)
+            spec_cls = module_cls.Spec
         except AttributeError, e:
-            if self._assistant:
-                return self._assistant.get(name, spec_name)
-            else:
-                raise pytis.util.ResolverModuleError(name, str(e))
-        try:
-            spec = cls.spec(self)
-        except AttributeError:
-            return self._assistant.get(name, spec_name)
+            return super(WikingResolver, self).get(name, spec_name)
+        spec = spec_cls(module_cls, self)
         try:
             method = getattr(spec, spec_name)
         except AttributeError:
             raise pytis.util.ResolverSpecError(name, spec_name)
         return method()
-
+    
+class WikingFileResolver(WikingResolver, pytis.util.FileResolver):
+    pass
+    
         
 class DateTime(pytis.data.DateTime):
     """Pytis DateTime type which exports as a 'lcg.LocalizableDateTime'."""
@@ -708,8 +727,8 @@ def timeit(func, *args, **kwargs):
     result = func(*args, **kwargs)
     return result,  time.clock() - t1, time.time() - t2
 
-def get_modules():
-    """Return the currently used module containing all module definitions.
+def import_modules():
+    """Import module definitions and return them as a python module.
 
     Wiking comes with a set of predefined modules.  They are all defined in the 'wiking.modules'
     module.  These default modules can be overridden by defining custom modules in a module named
@@ -731,6 +750,7 @@ def get_modules():
             import wiking.modules as modules
     return modules
 
+
 def get_module(name):
     """Get the module class by name.
     
@@ -739,7 +759,7 @@ def get_module(name):
     environment.
     
     """
-    return getattr(get_modules(), name)
+    return getattr(import_modules(), name)
 
 
 def rss(title, url, items, descr, lang=None, webmaster=None):

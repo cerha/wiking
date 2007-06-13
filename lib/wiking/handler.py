@@ -32,16 +32,17 @@ class Handler(object):
         self._server = server
         self._dbconnection = dbconnection
         self._module_cache = {}
-        self._resolver = WikingResolver('/home/cerha/work/pytis/demo/defs')
-        #pytis.util.set_resolver(WikingResolver('/home/cerha/work/pytis/demo/defs'))
+        self._resolver = WikingResolver()
         # Initialize the system modules immediately.
         self._mapping = self._module('Mapping')
         self._stylesheets = self._module('Stylesheets')
-        self._languages = self._module('Languages')
-        self._config = self._module('Config')
         self._users = self._module('Users')
-        self._exporter = Exporter() #self._config.exporter or Exporter()
-        #log(OPR, 'New Handler instance for %s.' % dbconnection)
+        self._config = self._module('Config')
+        config = self._config.config()
+        self._exporter = config.exporter or Exporter()
+        if config.resolver is not None:
+            self._resolver = config.resolver
+        #log(OPR, 'New Handler instance for %s.' % server.server_hostname)
 
     def _module(self, name, **kwargs):
         cls = get_module(name)
@@ -85,22 +86,22 @@ class Handler(object):
         except RequestError, e:
             if isinstance(e, HttpError):
                 req.set_status(e.ERROR_CODE)
-            lang = req.prefered_language(self._languages.languages(),
-                                         raise_error=False)
+            lang = req.prefered_language(self._module('Languages').languages(), raise_error=False)
             result = Document(e.title(), e.message(req), lang=lang)
         if module is None:
             module = self._mapping
-        config = self._config.config(self._server, result.lang())
+        config = self._config.config()
         config.modname = module.name()
         config.user = user
         config.wmi = req.wmi
         config.inline = req.param('display') == 'inline'
         config.show_panels = req.show_panels()
-        menu = module.menu(req, result.lang())
+        config.server_hostname = self._server.server_hostname
+        menu = module.menu(req)
         panels = module.panels(req, result.lang())
         styles = self._stylesheets.stylesheets()
         node = result.mknode('/'.join(req.path), config, menu, panels, styles)
-        exporter = config.exporter or self._exporter
+        exporter = self._exporter
         data = translator(node.language()).translate(exporter.export(node))
         return req.result(data)
 

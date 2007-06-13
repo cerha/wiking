@@ -1,3 +1,20 @@
+2007-06-13  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/handler.py: Allow resolver redefinition in configuration.
+
+	* lib/wiking/module.py: Make specification creation easily overridable.
+
+	* lib/wiking/modules.py: Updated.  Make use of the new
+	`lcg.SelfTranslatableText' class.
+
+	* lib/wiking/util.py: Define a custom 'Specification' class.
+	Added support for file-based resolvers.
+
+	* resources/css/default.css: Main menu id changed.
+
+	* lib/wiking/export.py: Avoid duplicit anchor name.  Compute the
+	default value of `webmaster_address' id None.
+
 2007-06-12  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/handler.py: Unecessary Apache site dispatching

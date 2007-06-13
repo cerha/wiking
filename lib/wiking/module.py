@@ -27,6 +27,16 @@ class Module(object):
         return cls.__name__
     name = classmethod(name)
 
+    def title(cls):
+        """Return a human-friendly module name as an 'lcg.LocalizableText' instance."""
+        return cls.__name__
+    title = classmethod(title)
+
+    def descr(cls):
+        """Return brief module description as an 'lcg.LocalizableText' instance."""
+        return doc(cls)
+    descr = classmethod(descr)
+
     def __init__(self, get_module, resolver, **kwargs):
         """Initialize the instance.
 
@@ -42,8 +52,8 @@ class Module(object):
         #log(OPR, 'New module instance: %s[%x]' % (self.name(), lcg.positive_id(self)))
         super(Module, self).__init__(**kwargs)
 
-    def menu(self, req, lang):
-        return self._module('Mapping').menu(req, lang)
+    def menu(self, req):
+        return self._module('Mapping').menu(req)
         
     def panels(self, req, lang):
         return self._module('Panels').panels(req, lang)
@@ -115,6 +125,7 @@ class PytisModule(Module, ActionHandler):
     _REFERER = None
     _TITLE_COLUMN = None
     _LIST_BY_LANGUAGE = False
+    _REFERER_PATH_LEVEL = 2
     _DEFAULT_ACTIONS_FIRST = (Action(_("Edit"), 'edit',
                                      descr=_("Modify the record")),)
     _DEFAULT_ACTIONS_LAST =  (Action(_("Remove"), 'remove',
@@ -176,35 +187,21 @@ class PytisModule(Module, ActionHandler):
             rdata = [(k, v) for k, v in self.row().items()
                      if k != key or v.value() is not None]
             return pd.Row(rdata)
-    
-    def spec(cls, resolver):
-        try:
-            spec = PytisModule._spec_cache[cls]
-        except KeyError:
-            if cls.Spec.table is None:
-                table = pytis.util.camel_case_to_lower(cls.name(), '_')
-                cls.Spec.table = table
-            if hasattr(cls.Spec, 'actions'):
-                cls.Spec.actions = list(cls.Spec.actions)
-            else:
-                cls.Spec.actions = []
-            for base in cls.__bases__ + (cls,):
-                if hasattr(base, '_ACTIONS'):
-                    for action in base._ACTIONS:
-                        if action not in cls.Spec.actions:
-                            cls.Spec.actions.append(action)
-            cls.Spec.actions = tuple(cls.Spec.actions)
-            cls.Spec.data_cls = Data
-            spec = PytisModule._spec_cache[cls] = cls.Spec(resolver)
-        return spec
-    spec = classmethod(spec)
 
+    def title(cls):
+        return cls.Spec.title
+    title = classmethod(title)
+    
+    def descr(cls):
+        return cls.Spec.help
+    descr = classmethod(descr)
+    
     # Instance methods
     
     def __init__(self, get_module, resolver, dbconnection, **kwargs):
         super(PytisModule, self).__init__(get_module, resolver, **kwargs)
         self._dbconnection = dbconnection
-        spec = self.spec(resolver)
+        spec = self._spec(resolver)
         self._data = spec.data_spec().create(dbconnection_spec=dbconnection)
         self._view = spec.view_spec()
         self._bindings = spec.binding_spec()
@@ -220,6 +217,12 @@ class PytisModule(Module, ActionHandler):
         self._cached_identifier = (None, None)
         self._links = dict([(f.id(), f.codebook()) for f in self._view.fields() if f.codebook()])
 
+    def _spec(self, resolver):
+        return self.__class__.Spec(self.__class__, resolver)
+
+    def _get_identifier(self):
+        return self._module('Mapping').get_identifier(self.name())
+    
     def _identifier(self, req):
         """Return module's current mapping identifier as a string or None."""
         # Since the identifiers may be used many times, they are cached at
@@ -228,7 +231,7 @@ class PytisModule(Module, ActionHandler):
         # server invironment.
         req_, identifier = self._cached_identifier
         if req is not req_:
-            identifier = self._module('Mapping').get_identifier(self.name())
+            identifier = self._get_identifier()
             self._cached_identifier = (req, identifier)
         return identifier
         
@@ -311,7 +314,7 @@ class PytisModule(Module, ActionHandler):
     def _real_title(self, lang):
         # This is quite a hack... It would not work for modules with multiple
         # mapping entries.
-        title = self._module('Mapping').title(lang, self.name())
+        title = self._module('Mapping').modtitle(self.name())
         return title or self._view.title()
     
     def _document(self, req, content, record=None, lang=None, variants=None,
@@ -370,7 +373,10 @@ class PytisModule(Module, ActionHandler):
             uri += '/'+ row[referer].export()
             return make_uri(uri, **kwargs)
         if self._links.has_key(cid):
-            module = self._module(self._links[cid])
+            try:
+                module = self._module(self._links[cid])
+            except AttributeError:
+                return None
             return module.link(req, row[cid])
         return None
 
@@ -422,20 +428,23 @@ class PytisModule(Module, ActionHandler):
         if row is not None:
             return dict(record=self._record(row))
         return {}
-
+    
     def _resolve(self, req):
         # Returns Row, None or raises HttpError.
-        if len(req.path) <= 1:
+        if len(req.path) < self._REFERER_PATH_LEVEL:
             return None
-        elif len(req.path) == 2:
-            value = req.path[1]
+        elif len(req.path) == self._REFERER_PATH_LEVEL:
+            referer = req.path[self._REFERER_PATH_LEVEL-1]
             if not isinstance(self._referer_type, pd.String):
-                v, e = self._referer_type.validate(req.path[1])
-                if not e:
-                    value = v.value()
-                else:
+                value, error = self._referer_type.validate(referer)
+                if error is not None:
                     raise NotFound()
-            return self._data.get_row(**{self._referer: value})
+                else:
+                    referer = value.value()
+            row = self._data.get_row(**{self._referer: referer})
+            if row is None:
+                raise NotFound()
+            return row
         else:
             raise NotFound()
 
@@ -594,11 +603,11 @@ class PytisModule(Module, ActionHandler):
                           errors=errors, action='insert')
         return self._document(req, form, subtitle=_("new record"))
 
-    def action_edit(self, req, record, errors=()):
+    def action_edit(self, req, record, errors=(), msg=None):
         form = self._form(pw.EditForm, req, record.row(), handler=req.uri,
                           errors=errors, prefill=self._prefill(req),
                           action='update')
-        return self._document(req, form, record, subtitle=_("edit form"))
+        return self._document(req, form, record, subtitle=_("edit form"), msg=msg)
 
     def action_remove(self, req, record, err=None):
         form = self._form(pw.ShowForm, req, record.row())
@@ -719,7 +728,7 @@ class RssModule(PytisModule):
         row = pp.PresentedRow(self._view.fields(), self._data, None)
         items = []
         import mx.DateTime as dt
-        config = self._module('Config').config(req.server, lang)
+        config = self._module('Config').config()
         tr = translator(lang)
         users = self._module('Users')
         for data_row in rows:
@@ -766,7 +775,7 @@ class StoredFileModule(WikingModule):
     file."""
     _SEQUENCE_FIELDS = ()
     
-    class Spec(pp.Specification):
+    class Spec(Specification):
         
         def _file_computer(self, id, filename, origname=None, mime=None, compute=None):
             """Return a computer loading the field value from a file."""
