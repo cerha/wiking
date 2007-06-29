@@ -2,22 +2,10 @@
 
 INSERT INTO languages (lang) VALUES ('en');
 
-INSERT INTO modules (name, active, ord) VALUES ('Pages',       't', 10);
-INSERT INTO modules (name, active, ord) VALUES ('Attachments', 't', 20);
-INSERT INTO modules (name, active, ord) VALUES ('News',        't', 30);
-INSERT INTO modules (name, active, ord) VALUES ('Planner',     't', 40);
-INSERT INTO modules (name, active, ord) VALUES ('Panels',      't', 50);
-INSERT INTO modules (name, active, ord) VALUES ('Users',       't', 60);
-INSERT INTO modules (name, active, ord) VALUES ('Rights',      't', 70);
-INSERT INTO modules (name, active, ord) VALUES ('Titles',      't', 80);
-INSERT INTO modules (name, active, ord) VALUES ('Stylesheets', 't', 90);
-INSERT INTO modules (name, active, ord) VALUES ('Themes',      't', 100);
-INSERT INTO modules (name, active, ord) VALUES ('Languages',   't', 110);
-
-INSERT INTO mapping (identifier, mod_id, published, private, ord) VALUES
- ('index', (SELECT mod_id from modules WHERE name='Pages'), 't', 'f', 1);
-INSERT INTO mapping (identifier, mod_id, published, private, ord) VALUES
- ('css', (SELECT mod_id from modules WHERE name='Stylesheets'), 't','f', NULL);
+INSERT INTO mapping (identifier, modname, published, private, ord) VALUES
+ ('index', 'Pages', 't', 'f', 1);
+INSERT INTO mapping (identifier, modname, published, private, ord) VALUES
+ ('css', 'Stylesheets', 't','f', NULL);
 
 UPDATE pages SET title='Welcome', _content=
     'Your new Wiking site has been succesfully set up.\n\n' ||
