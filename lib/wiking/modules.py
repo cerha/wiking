@@ -54,16 +54,18 @@ def _modtitle(m):
     else:
         return cls.title()
 
-def _modules():
+def _modules(cls=None):
+    if cls is None:
+        cls = Module
     return [m for m in import_modules().__dict__.values()
-            if type(m) == type(Module) and issubclass(m, Module)]
+            if type(m) == type(Module) and issubclass(m, Module) and issubclass(m, cls)]
 
-class SystemModule(object):
-    """Mix-in class for modules, which don't handle requests directly.
+class Mappable(object):
+    """Mix-in class for modules which may be mapped through the Mapping module.
 
-    Modules which don't handle requests should not be available in module selection for a mapping
-    item.  Note, that these modules still may be 'RequestHandler' subclasses, since they handle
-    requests in WMI.
+    All modules able to handle requests should be available in module selection for a mapping item.
+    Note that not all 'RequestHandler' subclasses may be mapped, since they may be only designed to
+    handle requests in WMI.
 
     """
 
@@ -179,7 +181,7 @@ class Documentation(Module):
         return ()
 
 
-class MappingParents(WikingModule, SystemModule):
+class MappingParents(WikingModule):
     """An auxiliary module for the codebook of mapping parent nodes."""
     class Spec(Specification):
         table = 'mapping'
@@ -192,7 +194,7 @@ class MappingParents(WikingModule, SystemModule):
         cb = pp.CodebookSpec(display='identifier')
 
 
-class Mapping(WikingModule, Publishable):
+class Mapping(WikingModule, Publishable, Mappable):
     """Map available URIs to the modules which handle them.
 
     The Wiking Handler always queries this module to resolve the request URI and return the name of
@@ -219,13 +221,8 @@ class Mapping(WikingModule, Publishable):
                   descr=_("The identifier may be used to refer to this page from outside and also "
                           "from other pages. A valid identifier can only contain letters, digits, "
                           "dashes and underscores.  It must start with a letter.")),
-            Field('mod_id', _("Module"), selection_type=CHOICE, codebook='Modules',
-                  validity_condition=pd.OR(*[pd.EQ('name', pd.Value(pd.String(), _m.name()))
-                                             for _m in _modules()
-                                             if not issubclass(_m, SystemModule)])),
-            Field('modname', _("Module")),
-            Field('modtitle', _("Module"), virtual=True, computer=\
-                  Computer(lambda r: _modtitle(r['modname'].value()), depends=('modname',)),
+            Field('modname', _("Module"), display=_modtitle, selection_type=CHOICE, 
+                  enumerator=pd.FixedEnumerator([_m.name() for _m in _modules(Mappable)]),
                   descr=_("Select the module which handles requests for given identifier. "
                           "This is the way to make the module available from outside.")),
             Field('published', _("Published"),
@@ -242,8 +239,8 @@ class Mapping(WikingModule, Publishable):
             )
         sorting = (('tree_order', ASC), ('identifier', ASC))
         bindings = {'Pages': pp.BindingSpec(_("Pages"), 'mapping_id')}
-        columns = ('identifier', 'modtitle', 'published', 'private', 'ord')
-        layout = ('identifier', 'parent', 'mod_id', 'published', 'private', 'ord')
+        columns = ('identifier', 'modname', 'published', 'private', 'ord')
+        layout = ('identifier', 'parent', 'modname', 'published', 'private', 'ord')
         cb = pp.CodebookSpec(display='identifier')
     _REFERER = 'identifier'
     _TREE_LEVEL_COLUMN = 'level'
@@ -344,42 +341,8 @@ class Mapping(WikingModule, Publishable):
         else:
             return _modtitle(modname)
 
-        
-class Modules(WikingModule, SystemModule):
-    """This module allows management of available modules in WMI."""
-    class Spec(Specification):
-        class _ModNameType(pd.String):
-            VM_UNKNOWN_MODULE = 'VM_UNKNOWN_MODULE'
-            _VM_UNKNOWN_MODULE_MSG = _("Unknown module.  You either "
-                                       "misspelled the name or the module "
-                                       "is not installed properly.")
-            def _check_constraints(self, value, **kwargs):
-                pd.String._check_constraints(self, value, **kwargs)
-                try:
-                    module = get_module(value)
-                except AttributeError:
-                    raise self._validation_error(self.VM_UNKNOWN_MODULE)
-                if not issubclass(module, WikingModule):
-                    raise self._validation_error(self.VM_UNKNOWN_MODULE)
-                    
-        title = _("Modules")
-        help = _("Manage available Wiking modules.")
-        fields = (
-            Field('mod_id'),
-            Field('name', _("Name"), type=_ModNameType(not_null=True)),
-            Field('title', _("Title"), virtual=True,
-                  computer=Computer(lambda r: _modtitle(r['name'].value()), depends=('name',))),
-            Field('active', _("Active")),
-            )
-        columns = ('title', 'active')
-        layout = ('name', 'active')
-        cb = pp.CodebookSpec(display=(_modtitle, 'name'))
-    _REFERER = 'name'
-    WMI_SECTION = WikingManagementInterface.SECTION_SETUP
-    WMI_ORDER = 500
-    
 
-class Config(WikingModule, SystemModule):
+class Config(WikingModule):
     """Site specific configuration provider.
 
     This implementation stores the configuration variables as one row in a
@@ -456,7 +419,7 @@ class Config(WikingModule, SystemModule):
 
         
     
-class Panels(WikingModule, Publishable, SystemModule):
+class Panels(WikingModule, Publishable):
     class Spec(Specification):
         title = _("Panels")
         help = _(u"Manage panels – the small windows shown by the side of "
@@ -535,7 +498,7 @@ class Panels(WikingModule, Publishable, SystemModule):
         return panels
                 
                 
-class Languages(WikingModule, SystemModule):
+class Languages(WikingModule):
     """List all languages available for given site.
 
     This implementation stores the list of available languages in a Pytis data
@@ -564,7 +527,7 @@ class Languages(WikingModule, SystemModule):
         return [str(r['lang'].value()) for r in self._data.get_rows()]
 
     
-class Titles(WikingModule, SystemModule):
+class Titles(WikingModule):
     """Provide localized titles for 'Mapping' items."""
     class Spec(Specification):
         title = _("Titles")
@@ -597,7 +560,7 @@ class Titles(WikingModule, SystemModule):
                        for row in self._data.get_rows(mapping_id=mapping_id)])
         return lcg.SelfTranslatableText(default, translations=titles)
 
-class Themes(WikingModule, SystemModule):
+class Themes(WikingModule):
     class Spec(Specification):
         title = _("Themes")
         help = _("Manage available color themes. Go to Configuration to "
@@ -683,7 +646,7 @@ class Themes(WikingModule, SystemModule):
 # The modules above are system modules used internally by Wiking.
 # ==============================================================================
 
-class Pages(WikingModule, Publishable):
+class Pages(WikingModule, Publishable, Mappable):
     class Spec(Specification):
         title = _("Pages")
         help = _("Manage available pages of structured text content.")
@@ -843,8 +806,8 @@ class Pages(WikingModule, Publishable):
             kwargs = dict(msg=_("The changes were published."))
         return self.action_show(req, record, **kwargs)
     _RIGHTS_sync = Roles.ADMIN
-        
 
+    
 class Attachments(StoredFileModule):
     class Spec(StoredFileModule.Spec):
         title = _("Attachments")
@@ -977,7 +940,7 @@ class Attachments(StoredFileModule):
         return (str(record['mime_type'].value()), record['file'].value().buffer())
 
     
-class News(WikingModule):
+class News(WikingModule, Mappable):
     class Spec(Specification):
         title = _("News")
         help = _("Publish site news.")
@@ -1088,7 +1051,7 @@ class Planner(News):
                      pd.GE('end_date', pd.Value(pd.Date(), today())))
 
     
-class Images(StoredFileModule):
+class Images(StoredFileModule, Mappable):
     class Spec(StoredFileModule.Spec):
         title = _("Images")
         help = _("Publish images.")
@@ -1192,9 +1155,9 @@ class Images(StoredFileModule):
     
     def action_thumbnail(self, req, record):
         return self._image(record, 'thumbnail')
+
     
-    
-class Stylesheets(WikingModule):
+class Stylesheets(WikingModule, Mappable):
     class Spec(Specification):
         title = _("Styles")
         help = _("Manage available Cascading Stylesheets.")
@@ -1242,7 +1205,7 @@ class Stylesheets(WikingModule):
         return ('text/css', self._MATCHER.sub(f, content))
 
 
-class Users(WikingModule):
+class _Users(WikingModule):
     class Spec(Specification):
         title = _("Users")
         help = _('Manage registered users.  Use the module "Access Rights" '
@@ -1325,7 +1288,7 @@ class Users(WikingModule):
             else:
                 return (Action(_("Register"), 'add', context=None,
                                descr=_("New user registration")),)
-        return super(Users, self)._actions(req, record)
+        return super(_Users, self)._actions(req, record)
         
     def _redirect_after_insert(self, req, record):
         content = lcg.p(_("Registration completed successfuly. "
@@ -1356,9 +1319,11 @@ class Users(WikingModule):
         identifier = self._identifier(req)
         return identifier and make_uri('/'+identifier, action='add') or None
         
+class Users(_Users, Mappable):
+    pass
 
-class Rights(Users, SystemModule):
-    class Spec(Users.Spec):
+class Rights(_Users):
+    class Spec(_Users.Spec):
         title = _("Access Rights")
         help = _("Manage access rights of registered users.")
         layout = ('enabled', 'contributor', 'author', 'admin')
