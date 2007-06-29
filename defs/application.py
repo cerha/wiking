@@ -30,7 +30,8 @@ def default_font_encoding(resolver):
     return wx.FONTENCODING_ISO8859_2    
 
 def menu(resolver):
-    pytis.util.set_resolver(wiking.util.WikingResolver(resolver))
+    import config
+    pytis.util.set_resolver(wiking.util.WikingFileResolver(config.def_dir))
     __________ = MSeparator()
     return (
         Menu(_("&System"), config_menu_items() +
