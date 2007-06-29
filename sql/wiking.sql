@@ -1,26 +1,16 @@
 -- Wiking database creation script. --
 
-CREATE TABLE modules (
-	mod_id serial PRIMARY KEY,
-	name varchar(32) UNIQUE,
-	ord  int,
-	active boolean NOT NULL DEFAULT 'TRUE'
-);
-
--------------------------------------------------------------------------------
-
 CREATE TABLE _mapping (
 	mapping_id serial PRIMARY KEY,
 	parent integer REFERENCES _mapping,
 	identifier varchar(32) UNIQUE NOT NULL,
-	mod_id integer NOT NULL REFERENCES modules,
+	modname text NOT NULL,
 	published boolean NOT NULL DEFAULT 'FALSE',
 	private boolean NOT NULL DEFAULT 'FALSE',
 	ord int,
 	tree_order text
 );
 CREATE UNIQUE INDEX _mapping_unique_tree_order ON _mapping (ord, coalesce(parent, 0));
-
 
 CREATE OR REPLACE FUNCTION _mapping_tree_order(mapping_id int) RETURNS text AS $$
   SELECT
@@ -31,16 +21,14 @@ CREATE OR REPLACE FUNCTION _mapping_tree_order(mapping_id int) RETURNS text AS $
   AS RESULT
 $$ LANGUAGE SQL;
 
-CREATE OR REPLACE VIEW mapping AS 
-SELECT m.*, modules.name as modname
-FROM _mapping m JOIN modules USING (mod_id);
+CREATE OR REPLACE VIEW mapping AS SELECT * FROM _mapping;
 
 CREATE OR REPLACE RULE mapping_insert AS
   ON INSERT TO mapping DO INSTEAD (
      INSERT INTO _mapping 
-        (parent, identifier, mod_id, published, private, ord)
+        (parent, identifier, modname, published, private, ord)
      VALUES
-        (new.parent, new.identifier, new.mod_id, new.published, new.private, new.ord);
+        (new.parent, new.identifier, new.modname, new.published, new.private, new.ord);
      UPDATE _mapping SET tree_order = _mapping_tree_order(mapping_id)
      WHERE identifier = new.identifier;
 );
@@ -50,7 +38,7 @@ CREATE OR REPLACE RULE mapping_update AS
     UPDATE _mapping SET
        	parent = new.parent,
 	identifier = new.identifier,
-	mod_id = new.mod_id,
+	modname = new.modname,
 	published = new.published,
 	private = new.private,
 	ord = new.ord
@@ -119,15 +107,15 @@ CREATE TABLE _pages (
 CREATE OR REPLACE VIEW pages AS 
 SELECT m.mapping_id ||'.'|| l.lang as page_id, m.mapping_id, l.lang,
        m.identifier, m.parent, m.tree_order, m.published, t.title, p._content, p.content
-FROM _mapping m CROSS JOIN languages l JOIN modules USING (mod_id)
+FROM _mapping m CROSS JOIN languages l
      LEFT OUTER JOIN _pages p USING (mapping_id, lang)
      LEFT OUTER JOIN titles t USING (mapping_id, lang)
-WHERE modules.name = 'Pages';
+WHERE m.modname = 'Pages';
 
 CREATE OR REPLACE RULE pages_insert AS
   ON INSERT TO pages DO INSTEAD (
-     INSERT INTO mapping (identifier, mod_id, published, private)
-     VALUES (new.identifier, (SELECT mod_id FROM modules WHERE name='Pages'), 'f', 'f');
+     INSERT INTO mapping (identifier, modname, published, private)
+     VALUES (new.identifier, 'Pages', 'f', 'f');
      INSERT INTO _pages (mapping_id, lang, _content, content)
      VALUES ((SELECT mapping_id FROM _mapping WHERE identifier=new.identifier),
              new.lang, new._content, new.content);
@@ -234,11 +222,9 @@ CREATE TABLE _panels (
 );
 
 CREATE OR REPLACE VIEW panels AS 
-SELECT _panels.*, _mapping.mod_id, _mapping.identifier, _mapping.private,
-       modules.name as modname, t.title as mtitle
+SELECT _panels.*, _mapping.modname, _mapping.identifier, _mapping.private, t.title as mtitle
 FROM _panels 
      LEFT OUTER JOIN _mapping USING (mapping_id) 
-     LEFT OUTER JOIN modules  USING (mod_id)
      LEFT OUTER JOIN titles t USING (mapping_id, lang);
 
 CREATE OR REPLACE RULE panels_insert AS
