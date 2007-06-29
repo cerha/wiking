@@ -135,11 +135,11 @@ img { position: relative; } /* MSIE float workaround */
 }
 #submenu li a { 
     display: list-item;
-    list-style-type: disc;
+    list-style-type: circle;
 }
 #submenu li a.current { 
     background-color: $color.heading-bg;
-    list-style-type: circle;
+    list-style-type: disc;
     marker-offset: 0.3em;
 }
 #submenu li a:hover { 
