@@ -28,7 +28,6 @@ import pytis
 import config
 
 config.dblisten = False
-config.db_encoding = 'utf-8'
 
 import pytis.data as pd
 import pytis.presentation as pp
