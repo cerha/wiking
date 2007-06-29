@@ -10,7 +10,6 @@ log_one_line_preferred = True
 dbuser = getpass.getuser()
 dbname = 'wiking'
 dbhost = 'localhost'
-db_encoding = 'utf-8'
 cache_spec_onstart = False
 date_format = '%d.%m.%Y'
 date_time_format = '%d.%m.%Y %H:%M:%S'
