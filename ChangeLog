@@ -1,3 +1,22 @@
+2007-06-29  Tomas Cerha  <cerha@brailcom.org>
+
+	* sql/wiking.sql: Table `modules' removed.  Refer to modules by
+	name in other relations (not by mod_id).
+
+	* sql/init.sql: Don't initialize the table `modules'.
+
+	* resources/css/default.css: Minor improvement.
+
+	* lib/wiking/modules.py: Recognize installed modules
+	automatically.  
+	(Modules): Module removed.
+
+	* defs/application.py: Use `WikingFileResolver'.
+
+	* config.py: Don't set Pytis option `db_encoding'.
+
+	* lib/wiking/__init__.py: Don't set Pytis option `db_encoding'.
+
 2007-06-13  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/handler.py: Allow resolver redefinition in configuration.
