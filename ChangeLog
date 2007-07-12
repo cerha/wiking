@@ -1,3 +1,23 @@
+2007-07-12  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/module.py (PytisModule._action_menu): Only use Wiking
+	actions.
+
+	* lib/wiking/install.py: Minor improvement.
+
+	* lib/wiking/request.py: Added support for authentication modularization.
+
+	* lib/wiking/modules.py: Added support for authentication
+	modularization.  Added classes implementing basic system modules
+	independent of CMS modules.
+
+	* lib/wiking/handler.py: Added support for authentication modularization.
+
+	* lib/wiking/util.py (User): New class.
+	(Roles.check): Expect a `User' instance as argument.
+
+	* lib/wiking/export.py: Expect a `User' instance.
+
 2007-06-29  Tomas Cerha  <cerha@brailcom.org>
 
 	* sql/wiking.sql: Table `modules' removed.  Refer to modules by
