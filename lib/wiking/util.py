@@ -158,24 +158,13 @@ class Roles(object):
             user = req.user(raise_error=raise_error)
             if user is None:
                 return False
-            if not user['enabled'].value():
-                return False
-            if role == cls.USER:
-                return True
-            elif role == cls.CONTRIBUTOR:
-                return user['contributor'].value() or \
-                       user['author'].value() or user['admin'].value()
-            elif role == cls.AUTHOR:
-                return user['author'].value() or user['admin'].value()
-            elif role == cls.ADMIN:
-                return user['admin'].value()
-            elif role == cls.OWNER:
+            if role == cls.OWNER:
                 if owner_uid:
-                    return owner_uid == user['uid'].value()
+                    return owner_uid == user.uid()
                 else:
                     return False
             else:
-                raise Exception("Invalid role", role)
+                return role in user.roles()
         for role in roles:
             if check(req, role, owner_uid=owner_uid):
                 return True
@@ -184,6 +173,29 @@ class Roles(object):
         else:
             return False
     check = classmethod(check)
+
+
+class User(object):
+    def __init__(self, uid, login, password, name=None, roles=(), data=None):
+        self._uid = uid
+        self._login = login
+        self._password = password
+        self._name = name or login
+        self._roles = tuple(roles)
+        self._data = data
+    def uid(self):
+        return self._uid
+    def login(self):
+        return self._login
+    def password(self):
+        return self._password
+    def name(self):
+        return self._name
+    def roles(self):
+        return self._roles
+    def data(self):
+        return self._data
+    
         
 class FileUpload(object):
     """An abstract representation of uploaded file fields."""
@@ -395,13 +407,13 @@ class LoginCtrl(lcg.Content):
     
     def __init__(self, user):
         super(LoginCtrl, self).__init__()
-        assert user is None or isinstance(user, pp.PresentedRow), user
+        assert user is None or isinstance(user, User), user
         self._user = user
 
     def export(self, exporter):
         g = exporter.generator()
         if self._user:
-            username = self._user['user'].value()
+            username = self._user.name()
             cmd, label = ('logout', _("log out"))
         else:
             username = _("not logged")
@@ -530,7 +542,8 @@ class LoginDialog(lcg.Content):
         self._uri = req.uri
         self._https = req.https()
         self._https_uri = req.abs_uri(port=443)
-        self._login = req.login_name()
+        credentials = req.credentials()
+        self._login = credentials and credentials[0]
 
     def export(self, exporter):
         g = exporter.generator()
