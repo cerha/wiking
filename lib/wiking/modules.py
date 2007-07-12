@@ -129,25 +129,15 @@ class WikingManagementInterface(Module):
                 for section, title, descr in self._SECTIONS]
 
     def panels(self, req, lang):
-        if not req.wmi:
-            return super(WikingManagementInterface, self).panels(req, lang)
-        return ()
-
-
-class Documentation(Module):
-    """Serve the on-line documentation.
-
-    This module is not bound to a data object.  It only serves the on-line documentation from files
-    on the disk.
-
-    """
-    def handle(self, req):
-        path = req.path[1:]
-        if path and path[0] == 'lcg':
-            path = path[1:]
-            basedir = lcg.config.doc_dir
+        if req.wmi:
+            return []
         else:
-            basedir = os.path.join(cfg.wiking_dir, 'doc', 'src')
+            return super(WikingManagementInterface, self).panels(req, lang)
+
+class DocumentHandler(Module, RequestHandler):
+    _BASE_DIR = None
+    
+    def _document(self, req, basedir, path):
         if not os.path.exists(basedir):
             raise Exception("Directory %s does not exist" % basedir)
         import glob, codecs
@@ -173,12 +163,32 @@ class Documentation(Module):
         else:
             title = ' :: '.join(path)
         return Document(title, content, lang=lang, variants=variants)
+        
+    def handle(self, req):
+        return self._document(req, self._BASE_DIR, req.path)
+        
+
+class Documentation(DocumentHandler):
+    """Serve the on-line documentation.
+
+    This module is not bound to a data object.  It only serves the on-line documentation from files
+    on the disk.
+
+    """
+    def handle(self, req):
+        path = req.path[1:]
+        if path and path[0] == 'lcg':
+            path = path[1:]
+            basedir = lcg.config.doc_dir
+        else:
+            basedir = os.path.join(cfg.wiking_dir, 'doc', 'src')
+        return self._document(req, basedir, req.path[1:])
 
     def menu(self, req):
         return ()
 
     def panels(self, req, lang):
-        return ()
+        return []
 
 
 class MappingParents(WikingModule):
@@ -368,7 +378,6 @@ class Config(WikingModule):
         layout = ('site_title', 'site_subtitle', 'login_panel', 'allow_registration',
                   'force_https_login', 'webmaster_addr', 'theme')
     _TITLE_COLUMN = 'title'
-    _DEFAULT_ACTIONS = (Action(_("Edit"), 'edit'),)
     WMI_SECTION = WikingManagementInterface.SECTION_SETUP
     WMI_ORDER = 100
 
@@ -417,9 +426,23 @@ class Config(WikingModule):
     def action_view(self, *args, **kwargs):
         return self.action_show(*args, **kwargs)
 
-        
+class BasePanels(Module):
     
-class Panels(WikingModule, Publishable):
+    def panels(self, req, lang):
+        config = self._module('Config').config()
+        if config.login_panel:
+            user = req.user()
+            content = lcg.p(LoginCtrl(user))
+            if config.allow_registration and not user:
+                uri = self._module('Users').registration_uri(req)
+                if uri:
+                    lnk = lcg.link(uri, _("New user registration"))
+                    content = lcg.coerce((content, lnk))
+            return [Panel('login', _("Login"), content)]
+        else:
+            return []
+    
+class Panels(WikingModule, Publishable, BasePanels):
     class Spec(Specification):
         title = _("Panels")
         help = _(u"Manage panels – the small windows shown by the side of "
@@ -469,18 +492,8 @@ class Panels(WikingModule, Publishable):
     WMI_ORDER = 1000
 
     def panels(self, req, lang):
-        panels = []
+        panels = super(Panels, self).panels(req, lang)
         parser = lcg.Parser()
-        config = self._module('Config').config()
-        if config.login_panel and not req.wmi:
-            user = req.user()
-            content = lcg.p(LoginCtrl(user))
-            if config.allow_registration and not user:
-                uri = self._module('Users').registration_uri(req)
-                if uri:
-                    lnk = lcg.link(uri, _("New user registration"))
-                    content = lcg.coerce((content, lnk))
-            panels.append(Panel('login', _("Login"), content))
         for row in self._data.get_rows(lang=lang, published=True, sorting=self._sorting):
             if row['private'].value() is True and not \
                    Roles.check(req, (Roles.USER,), raise_error=False):
@@ -1156,8 +1169,36 @@ class Images(StoredFileModule, Mappable):
     def action_thumbnail(self, req, record):
         return self._image(record, 'thumbnail')
 
+
+class DefaultStylesheets(Module, RequestHandler):
+
+    _MATCHER = re.compile (r"\$(\w[\w-]*)(?:\.(\w[\w-]*))?")
+    _THEME = {'color': Themes.Colors(Themes.COLORS)}
+
+    def stylesheets(self):
+        return [lcg.Stylesheet('default.css', uri='/css/default.css')]
+
+    def _find_file(self, name):
+        filename = os.path.join(cfg.wiking_dir, 'resources', 'css', name)
+        if os.path.exists(filename):
+            return "".join(file(filename).readlines())
+        else:
+            raise wiking.NotFound()
+
+    def _stylesheet(self, content, theme):
+        def subst(match):
+            name, key = match.groups()
+            value = theme[name]
+            if key:
+                value = value[key]
+            return value
+        return self._MATCHER.sub(subst, content)
     
-class Stylesheets(WikingModule, Mappable):
+    def handle(self, req):
+        return ('text/css', self._stylesheet(self._find_file(req.path[1]), self._THEME))
+
+    
+class Stylesheets(DefaultStylesheets, WikingModule, Mappable):
     class Spec(Specification):
         title = _("Styles")
         help = _("Manage available Cascading Stylesheets.")
@@ -1171,15 +1212,8 @@ class Stylesheets(WikingModule, Mappable):
         layout = ('identifier', 'active', 'description', 'content')
         columns = ('identifier', 'active', 'description')
     _REFERER = 'identifier'
-    _MATCHER = re.compile(r"\$(\w[\w-]*)(?:\.(\w[\w-]*))?")
     WMI_SECTION = WikingManagementInterface.SECTION_STYLE
     WMI_ORDER = 200
-
-    def _subst(self, theme, name, key):
-        value = theme[name]
-        if key:
-            value = value[key]
-        return value
 
     def stylesheets(self):
         # TODO: Use self._identifier() ???
@@ -1192,17 +1226,9 @@ class Stylesheets(WikingModule, Mappable):
             return []
             
     def action_view(self, req, record, msg=None):
-        content = record['content'].value()
-        if content is None:
-            filename = os.path.join(cfg.wiking_dir, 'resources', 'css',
-                                    record['identifier'].value())
-            if os.path.exists(filename):
-                content = "".join(file(filename).readlines())
-            else:
-                raise NotFound
+        content = record['content'].value() or self._find_file(record['identifier'].value())
         theme = self._module('Config').theme()
-        f = lambda m: self._subst(theme, *m.groups())
-        return ('text/css', self._MATCHER.sub(f, content))
+        return ('text/css', self._stylesheet(content, theme))
 
 
 class _Users(WikingModule):
@@ -1252,8 +1278,8 @@ class _Users(WikingModule):
             Field('contributor', _("Contribution privileges")),
             Field('author', _("Authoring privileges")),
             Field('admin', _("Admin privileges")),
-            Field('session_key'),
             Field('session_expire'),
+            Field('session_key'),
             )
         columns = ('fullname', 'nickname', 'email', 'since')
         sorting = (('surname', ASC), ('firstname', ASC))
@@ -1271,8 +1297,6 @@ class _Users(WikingModule):
     _RIGHTS_add = _RIGHTS_insert = Roles.ANYONE
     _RIGHTS_edit = _RIGHTS_update = (Roles.ADMIN, Roles.OWNER)
     _RIGHTS_remove = _RIGHTS_delete = Roles.ADMIN #, Roles.OWNER)
-    WMI_SECTION = WikingManagementInterface.SECTION_USERS
-    WMI_ORDER = 100
 
     def _actions(self, req, record):
         if not req.wmi:
@@ -1295,32 +1319,123 @@ class _Users(WikingModule):
                           "Your account now awaits administrator's approval."))
         return self._document(req, content, subtitle=_("Registration"))
     
-    def user(self, login):
-        return self._record(self._data.get_row(login=login))
-
-    def check_session(self, login, session_key):
-        row = self._data.get_row(login=login, session_key=session_key)
-        if row and row['session_expire'].value() > now():
-            user = self._record(row)
-            expire = now() + TimeDelta(hours=2)
-            user.update(session_expire=expire)
-            return user
-        else:
-            return  None
-
-    def save_session(self, user, session_key):
-        exp = now() + TimeDelta(hours=2)
-        user.update(session_expire=exp, session_key=session_key)
-
-    def close_session(self, user):
-        user.update(session_expire=None, session_key=None)
-
+        
+class Users(_Users, Mappable):
+    
+    WMI_SECTION = WikingManagementInterface.SECTION_USERS
+    WMI_ORDER = 100
+    
     def registration_uri(self, req):
         identifier = self._identifier(req)
         return identifier and make_uri('/'+identifier, action='add') or None
+
+
+class BaseAuthentication(Module):
+
+    def authenticate(self, req):
+        return None
+
+    
+class CookieAuthentication(BaseAuthentication):
+    
+    _LOGIN_COOKIE = 'wiking_login'
+    _SESSION_COOKIE = 'wiking_session_key'
+
+    def _user(self, login):
+        return None
+
+    def _authenticate(self, user, password):
+        return False
+
+    def authenticate(self, req):
+        session = self._module('Session')
+        credentials = req.credentials()
+        if credentials:
+            login, password = credentials
+            if not login:
+                raise AuthenticationError(_("Enter your login name, please!"))
+            if not password:
+                raise AuthenticationError(_("Enter your password, please!"))
+            user = self._user(login)
+            if not user or not user.password() == password:
+                raise AuthenticationError(_("Invalid login!"))
+            assert isinstance(user, User)
+            # Login succesfull
+            session_key = session.init(user)
+            req.set_cookie(self._LOGIN_COOKIE, login, expires=730*DAY)
+            req.set_cookie(self._SESSION_COOKIE, session_key, expires=2*DAY)
+        else:
+            login, key = (req.cookie(self._LOGIN_COOKIE), 
+                          req.cookie(self._SESSION_COOKIE))
+            if login and key:
+                user = self._user(login)
+                if user and session.check(user, key):
+                    assert isinstance(user, User)
+                    # Cookie expiration is 2 days, but session expiration is
+                    # controled within the session module independently.
+                    req.set_cookie(self._SESSION_COOKIE, key, expires=2*DAY)
+                else:
+                    # This is not true after logout
+                    session_timed_out = True
+                    user = None
+            else:
+                user = None
+        if req.param('command') == 'logout' and user:
+            session.close(user)
+            user = None
+            req.set_cookie(self._SESSION_COOKIE, None, expires=0)
+        elif req.param('command') == 'login' and not user:
+            raise AuthenticationError()
+        return user
+
+    
+class Authentication(_Users, CookieAuthentication):
+    class Spec(_Users.Spec):
+        table = 'users'
+    
+    def _user(self, login):
+        record = self._record(self._data.get_row(login=login, enabled=True))
+        roles = [role for role, fields in ((Roles.USER, ('enabled',)),
+                                           (Roles.CONTRIBUTOR, ('contributor', 'author', 'admin')),
+                                           (Roles.AUTHOR, ('author', 'admin')),
+                                           (Roles.ADMIN, ('admin',)))
+                 if record['enabled'].value() and True in [record[id].value() for id in fields]]
+        return User(record['uid'].value(), record['login'].value(),
+                    record['password'].value(), name=record['user'].value(),
+                    roles=roles, data=record)
+
+
+class Session(_Users):
+    class Spec(_Users.Spec):
+        table = 'users'
         
-class Users(_Users, Mappable):
-    pass
+    _MAX_SESSION_KEY = 0xfffffffffffffffffffffffffffff
+
+    def _new_session_key(self):
+        return hex(random.randint(0, self._MAX_SESSION_KEY))
+    
+    def _expiration(self):
+        return now() + TimeDelta(hours=2)
+
+    def _expired(self, time):
+        return time <= now()
+    
+    def init(self, user):
+        session_key = self._new_session_key()
+        user.data().update(session_expire=self._expiration(), session_key=session_key)
+        return session_key
+        
+    def check(self, user, session_key):
+        record = user.data()
+        if not self._expired(record['session_expire'].value()):
+            record.update(session_expire=self._expiration())
+            return True
+        else:
+            return False
+
+    def close(self, user):
+        user.data().update(session_expire=None, session_key=None)
+        
 
 class Rights(_Users):
     class Spec(_Users.Spec):
@@ -1337,6 +1452,7 @@ class Rights(_Users):
     WMI_ORDER = 200
 
 
+        
 class Reload(Module):
 
     _UNRELOADABLE_MODULES = ('sys', '__main__', '__builtin__',)

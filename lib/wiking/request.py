@@ -164,9 +164,6 @@ class WikingRequest(Request):
     """Wiking specific methods for the request object."""
     _LANG_COOKIE = 'wiking_prefered_language'
     _PANELS_COOKIE = 'wiking_show_panels'
-    _LOGIN_COOKIE = 'wiking_login'
-    _SESSION_COOKIE = 'wiking_session_key'
-    _MAX_SESSION_KEY = 0xfffffffffffffffffffffffffffff
 
     def _init_params(self):
         params = super(WikingRequest, self)._init_params()
@@ -194,9 +191,9 @@ class WikingRequest(Request):
             if params.has_key('password'):
                 password = params['password']
                 del params['password']
-            self._login = (login, password)
+            self._credentials = (login, password)
         else:
-            self._login = None
+            self._credentials = None
         return params
 
     def _init_uri(self):
@@ -273,15 +270,20 @@ class WikingRequest(Request):
         else:
             return None
 
-    def login_name(self):
-        """Return the login name entered in the login form.
+    def credentials(self):
+        """Return the login name and password entered in the login form.
 
-        The returned value does not indicate anything about authentication.
-        The login name is returned even if login was not successful.
+        The returned value does not indicate anything about authentication.  The credentials are
+        returned even if login was not successful.  The returned value is a pair of strings (login,
+        password) or None if no authentication was performed for this request.
 
         """
-        return self._login and self._login[0]
+        return self._credentials
 
+    def set_auth_module(self, module):
+        """Set the module used for authentication."""
+        self._auth_module = module
+        
     def user(self, raise_error=False):
         """Return the record describing the logged-in user.
 
@@ -290,60 +292,21 @@ class WikingRequest(Request):
           raise_error -- if true and no user is logged, AuthenticationError
             will be raised.  If false, None is returned.
 
-        This method must be called after a previous call to 'login()' which
-        must supply a module providing the authentication information.  The
-        returned record is the user record obtained from this module.
+        This method may not be used without a previous call to 'set_auth_module()'.  The returned
+        record is the user record obtained from this module.
 
         """
         try:
             user = self._user
         except AttributeError:
-            self._perform_login()
-            user = self._user
+            try:
+                user = self._user = self._auth_module.authenticate(self)
+            except AuthenticationError:
+                self._user = None
+                raise
         if raise_error and user is None:
-            args = self._session_timed_out and \
-                  (_("Session expired. Please log in again."),) or ()
-            raise AuthenticationError(*args)
+            #args = self._session_timed_out and \
+            #      (_("Session expired. Please log in again."),) or ()
+            raise AuthenticationError() #(*args)
         return user
     
-    def login(self, users):
-        # just remember the users module for later use in _perform_login()
-        self._users = users
-        
-    def _perform_login(self):
-        self._user = None
-        self._session_timed_out = False
-        if self._login:
-            login, password = self._login
-            if not login:
-                raise AuthenticationError(_("Enter your login name, please!"))
-            if not password:
-                raise AuthenticationError(_("Enter your password, please!"))
-            user = self._users.user(login)
-            if user is None or user['password'].value() != password \
-                   or not user['enabled'].value():
-                raise AuthenticationError(_("Invalid login!"))
-            # Login succesfull
-            session_key = hex(random.randint(0, self._MAX_SESSION_KEY))
-            self._users.save_session(user, session_key)
-            self.set_cookie(self._LOGIN_COOKIE, login, expires=730*DAY)
-            self.set_cookie(self._SESSION_COOKIE, session_key, expires=2*DAY)
-            self._user = user
-        else:
-            login, key = (self.cookie(self._LOGIN_COOKIE), 
-                          self.cookie(self._SESSION_COOKIE))
-            if login and key:
-                self._user = self._users.check_session(login, key)
-                if self._user:
-                    # Cookie expiration is 2 days, but session expiration is
-                    # controled within check_session independently.
-                    self.set_cookie(self._SESSION_COOKIE, key, expires=2*DAY)
-                else:
-                    # This is not true after logout
-                    self._session_timed_out = True
-        if self.param('command') == 'logout' and self._user:
-            self._users.close_session(self._user)
-            self._user = None
-            self.set_cookie(self._SESSION_COOKIE, None, expires=0)
-        elif self.param('command') == 'login' and not self._user:
-            raise AuthenticationError()

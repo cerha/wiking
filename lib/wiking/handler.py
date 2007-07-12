@@ -36,7 +36,7 @@ class Handler(object):
         # Initialize the system modules immediately.
         self._mapping = self._module('Mapping')
         self._stylesheets = self._module('Stylesheets')
-        self._users = self._module('Users')
+        self._authentication = self._module('Authentication')
         self._config = self._module('Config')
         config = self._config.config()
         self._exporter = config.exporter or Exporter()
@@ -62,12 +62,12 @@ class Handler(object):
 
     def handle(self, req):
         req.path = req.path or ('index',)
+        req.set_auth_module(self._authentication)
         req.wmi = False # Will be set to True by `WikingManagementInterface'.
         module = None
         user = None
         try:
             try:
-                req.login(self._users)
                 modname = self._mapping.resolve(req)
                 module = self._module(modname)
                 result = module.handle(req)
