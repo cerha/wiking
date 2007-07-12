@@ -50,7 +50,7 @@ def maybe_install(req, dbconnection, errstr):
         if not req.param('initdb'):
             err = _try_query(dbconnection, "select * from mapping")
             if err:
-                return "Database not initialized!" + \
+                return 'Database "%s" not initialized!' % dbname + \
                        _button('initdb', "Initialize")
         else:
             script = ''
