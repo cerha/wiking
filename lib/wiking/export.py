@@ -183,7 +183,7 @@ class Exporter(lcg.HtmlExporter):
         if config.allow_login_ctrl and (config.wmi or not config.login_panel):
             user = node.config().user
             if user:
-                username = user['user'].value()
+                username = user.name()
                 cmd, label = ('logout', _("log out"))
             else:
                 username = _("not logged")
