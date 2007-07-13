@@ -21,7 +21,7 @@ pc = pytis.util.Configuration
 
 class Configuration(pc):
     
-    class _Option_config_file(pc._StringOption, pc._HiddenOption):
+    class _Option_config_file(pc.StringOption, pc.HiddenOption):
         _DESCR = _("Configuration file location.")
         _DOC = _("Since this option presents the chicken/egg problem, there "
                  "are more ways you can influence it.  Setting the "
@@ -46,22 +46,22 @@ class Configuration(pc):
                     return filename
             return None
         
-    class _Option_wiking_dir(pc._StringOption):
+    class _Option_wiking_dir(pc.StringOption):
         _DESCR = _("Base directory for Wiking shared files.")
         _DEFAULT = '/usr/local/share/wiking'
         
-    class _Option_storage(pc._StringOption):
+    class _Option_storage(pc.StringOption):
         _DESCR = _("Directory for storing uploaded files.")
         _DEFAULT = '/var/lib/wiking'
         
-    class _Option_smtp_server(pc._StringOption):
+    class _Option_smtp_server(pc.StringOption):
         _DESCR = _("Name or address of SMTP server.")
         _DOC = _("SMTP server is used for sending bug reports by e-mail. "
                  "To allow this feature, you must also supply the "
                  "'bug_report_address' option.")
         _DEFAULT = 'localhost'
         
-    class _Option_bug_report_address(pc._StringOption):
+    class _Option_bug_report_address(pc.StringOption):
         _DESCR = _("E-mail address for sending bug reports.")
         _DOC = _("Empty value (None) disables sending bug reports by e-mail.")
         _DEFAULT = None
@@ -73,3 +73,13 @@ class Configuration(pc):
                  "feeds).")
         _DEFAULT = (443,)
         
+    class _Option_translation_paths(pc.Option):
+        _DESCR = _("Dictionary of translation paths for each translation domain.")
+        def default(self):
+            import os
+            return {
+                'wiking': os.path.join(self._configuration.wiking_dir, 'translations'),
+                'lcg':  '/usr/local/share/lcg/translations',
+                'lcg-locale':  '/usr/local/share/lcg/translations',
+                'pytis': '/usr/local/share/pytis/translations',
+                }

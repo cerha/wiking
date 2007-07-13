@@ -1,3 +1,9 @@
+2007-07-13  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/configuration.py: New option `translation_paths'.
+
+	* lib/wiking/util.py: Use it.
+
 2007-07-12  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/module.py (PytisModule._action_menu): Only use Wiking

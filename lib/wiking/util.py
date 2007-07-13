@@ -573,13 +573,7 @@ class SiteMap(lcg.NodeIndex):
     
 def translator(lang):
     if lang:
-        path = {
-            'wiking': os.path.join(cfg.wiking_dir, 'translations'),
-            'lcg':  '/usr/local/share/lcg/translations',
-            'lcg-locale':  '/usr/local/share/lcg/translations',
-            'pytis': '/usr/local/share/pytis/translations',
-            }
-        return lcg.GettextTranslator(lang, path=path, fallback=True)
+        return lcg.GettextTranslator(lang, path=cfg.translation_paths, fallback=True)
     else:
         return lcg.NullTranslator()
     
