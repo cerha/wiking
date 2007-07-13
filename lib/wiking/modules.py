@@ -1331,22 +1331,64 @@ class Users(_Users, Mappable):
 
 
 class BaseAuthentication(Module):
+    """Abstract class defining the interface of the authentication module.
 
+    The implementing class must be named 'Authentication' and the interface consists of just one
+    method 'authenticate()'.  See its documentation for more information.
+
+    """
     def authenticate(self, req):
+        """Perform authentication and return a 'User' instance if successful.
+
+        This method is called when authentication is needed by the application.  A 'User' instance
+        must be returned if authentication was successful or None if not.  'AuthenticationError'
+        may be raised if authentication credentials are supplied but are not correct.  In other
+        cases, None as the returned value means, that the user is not logged or that the session
+        expired.
+
+        The only argument is the request object, which may be used to obtain authentication
+        credentials, store session data (for example as cookies) or whatever else is needed by the
+        implemented authentication mechanism.
+
+        """
         return None
 
     
 class CookieAuthentication(BaseAuthentication):
+    """Authentication class implementing cookie based authentication.
+
+    This class implements cookie based authentication, but is still neutral to authentication data
+    source.  Any possible source of authentication data may be used by implementing the methods
+    '_user()' and '_check()'.  See their documentation for more information.
+
+    """
     
     _LOGIN_COOKIE = 'wiking_login'
     _SESSION_COOKIE = 'wiking_session_key'
 
     def _user(self, login):
+        """Obtain authentication data and return a 'User' instance for given 'login'.
+
+        This method may be used to retieve authentication data from any source, such as database
+        table, file, LDAP server etc.  This should return the user corresponding to given login
+        name if it exists.  Further password checking is performed later by the '_check()' method.
+        None may be returned if no user exists for given login name.
+
+        """
         return None
 
-    def _authenticate(self, user, password):
-        return False
+    def _check(self, user, password):
+        """Check authentication password for given user.
 
+        Arguments:
+          user -- 'User' instance
+          password -- supplied password as a string
+
+        Return True if given password is the correct login password for given user.
+
+        """
+        return False
+    
     def authenticate(self, req):
         session = self._module('Session')
         credentials = req.credentials()
@@ -1357,7 +1399,7 @@ class CookieAuthentication(BaseAuthentication):
             if not password:
                 raise AuthenticationError(_("Enter your password, please!"))
             user = self._user(login)
-            if not user or not user.password() == password:
+            if not user or not self._check(user, password):
                 raise AuthenticationError(_("Invalid login!"))
             assert isinstance(user, User)
             # Login succesfull
@@ -1400,9 +1442,11 @@ class Authentication(_Users, CookieAuthentication):
                                            (Roles.AUTHOR, ('author', 'admin')),
                                            (Roles.ADMIN, ('admin',)))
                  if record['enabled'].value() and True in [record[id].value() for id in fields]]
-        return User(record['uid'].value(), record['login'].value(),
-                    record['password'].value(), name=record['user'].value(),
+        return User(login, uid=record['uid'].value(), name=record['user'].value(),
                     roles=roles, data=record)
+                    
+    def _check(self, user, password):
+        return user.data()['password'].value() == password
 
 
 class Session(_Users):

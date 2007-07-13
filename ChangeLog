@@ -1,8 +1,14 @@
 2007-07-13  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/modules.py: Authentication documentation written.
+	Make password checking extensible.
+
+	* doc/src/admin/admin.en.txt: Updated.
+
 	* lib/wiking/configuration.py: New option `translation_paths'.
 
 	* lib/wiking/util.py: Use it.
+	(User) Don't care about password.
 
 2007-07-12  Tomas Cerha  <cerha@brailcom.org>
 
