@@ -13,11 +13,12 @@ Dependencies:
   * python >= 2.3 (2.4 suggested)
   * apache >= 2.0 (prefork MPM!)
   * mod_python >= 3.2.10
-  * postgresql >= (8.1 suggested)
+  * postgresql >= (8.1 or later)
   * lcg >= 0.3.4
   * pytis >= 0.1.0
-  * pyPgSQL Python module
-  * mxDateTime Python module
+  * python-egenix-mxdatetime - Python date/time manipulation routines
+  * python-psycopg2 - Python DBAPI 2 implementation for PostgreSQL
+  * python-imaging - Python Imaging Library (needed only when using Image galeries)  
 
 Multithreaded Apache MPM is currently not supported.  Since it is the default
 in many distributions, please check and switch to prefork MPM to be able to run
@@ -65,7 +66,7 @@ Wiking.  There must be a separate database for each virtual host.
 
 == Additional options for Apache configuration ==
 
-You may wish to redirect certain uris to ordinary files and directories.  This
+You may wish to redirect certain URIs to ordinary files and directories.  This
 can be simply done within the VirtualHost section.  Example:
 
 -----
@@ -73,29 +74,7 @@ can be simply done within the VirtualHost section.  Example:
 -----
 
 If you put this line prior to the ScriptAliasMatch line, Apache will handle all
-requests within th =img= directory by serving corresponding files.
-
-Wiking currently does not support authentication (this is planned for the next
-release), so you will need to use Apache authentication to restrict access to
-your site and/or its management.
-
-You will typically want to restrict access to the Wiking Management interface.
-To do that, add the following to the end of your VirtualHost section:
-
------
-  <Location /_wmi>
-      AuthType Basic
-      AuthName "Wiking Management Interface"
-      AuthUserFile /var/www/www.yoursite.com/passwd
-      require valid-user
-  </Location>
------
-
-Of course, you need to have the corresponding authentication/authorization
-modules enabled in your Apache and you will need to create and manage the
-"passwd" file.  See Apache documentation for more information.  It is also
-recommended to use password authentication in combination with an encripted
-connection.
+requests within the =img= directory by serving the corresponding files.
 
 
 == Documentation for Wiking Modules ==
