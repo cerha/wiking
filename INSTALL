@@ -4,7 +4,7 @@ Dependencies:
 
   * apache >= 2.0 (prefork MPM!)
   * mod_python >= 3.2.10
-  * postgresql >= 8.0 (8.1 suggested)
+  * postgresql >= 8.0 (8.2 suggested)
   * python >= 2.3 (2.4 suggested)
   * lcg >= 0.3.4
   * pytis >= 0.1.0

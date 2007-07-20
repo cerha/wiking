@@ -1,5 +1,5 @@
 SHARE = /usr/local/share
-LIB = /usr/local/lib/python2.4/site-packages
+LIB = /usr/local/lib/python2.5/site-packages
 CFGFILE = /etc/wiking/config.py
 APACHECFG = /etc/apache2/conf.d/wiking
 
@@ -16,9 +16,9 @@ doc-%:
 translations:
 	make -C translations
 
-install: $(SHARE)/wiking copy_files $(APACHECFG) $(CFGFILE)
+install: $(SHARE)/wiking copy-files $(APACHECFG) $(CFGFILE)
 
-copy_files:
+copy-files:
 	cp -ruv doc resources sql translations $(SHARE)/wiking
 	cp -ruv lib/wiking $(LIB)
 
@@ -30,8 +30,12 @@ uninstall:
 purge: uninstall
 	rm -f $(CFGFILE)
 
-cvs-install: compile $(SHARE)/wiking $(APACHECFG) $(CFGFILE)
+cvs-install: compile lib-links share-links $(APACHECFG) $(CFGFILE)
+
+lib-links: $(LIB)/wiking
 	ln -s $(CURDIR)/lib/wiking $(LIB)/wiking
+
+share-links: $(SHARE)/wiking
 	ln -s $(CURDIR)/doc $(CURDIR)/translations $(CURDIR)/resources $(CURDIR)/sql $(SHARE)/wiking
 
 cvs-update: do-cvs-update compile translations
