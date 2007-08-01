@@ -379,6 +379,7 @@ CREATE TABLE themes (
         table_cell2 varchar(7),
         button_fg varchar(7),
         button varchar(7),
+        button_hover varchar(7),
         button_border varchar(7),
         button_inactive_fg varchar(7),
         button_inactive varchar(7),
@@ -408,4 +409,11 @@ CREATE TABLE config (
 --	author text NOT NULL,
 --	time timestamp NOT NULL DEFAULT now(),
 --	message text,
+--);
+
+
+--CREATE TABLE "session" (
+--	login varchar(32) PRIMARY KEY,
+--	"key" text NOT NULL,
+--	expire timestamp NOT NULL
 --);
