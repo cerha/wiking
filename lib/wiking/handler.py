@@ -27,32 +27,30 @@ class Handler(object):
     'RequestError' exceptions.
 
     """
-
+    
     def __init__(self, server, dbconnection):
         self._server = server
         self._dbconnection = dbconnection
         self._module_cache = {}
-        self._resolver = WikingResolver()
+        self._resolver = cfg.resolver
         # Initialize the system modules immediately.
         self._mapping = self._module('Mapping')
         self._stylesheets = self._module('Stylesheets')
+        self._languages = self._module('Languages')
         self._authentication = self._module('Authentication')
         self._config = self._module('Config')
-        config = self._config.config()
-        self._exporter = config.exporter or Exporter()
-        if config.resolver is not None:
-            self._resolver = config.resolver
+        self._exporter = cfg.exporter
         #log(OPR, 'New Handler instance for %s.' % server.server_hostname)
 
     def _module(self, name, **kwargs):
-        cls = get_module(name)
         key = (name, tuple(kwargs.items()))
         try:
             module = self._module_cache[key]
-            if module.__class__ is not cls:
-                # Dispose the instance if the class definition has changed.
-                raise KeyError()
+            #if module.__class__ is not cls:
+            #    # Dispose the instance if the class definition has changed.
+            #    raise KeyError()
         except KeyError:
+            cls = get_module(name)
             args = (self._module, self._resolver)
             if issubclass(cls, PytisModule):
                 args += (self._dbconnection,)
@@ -68,6 +66,7 @@ class Handler(object):
         user = None
         try:
             try:
+                self._config.configure(req)
                 modname = self._mapping.resolve(req)
                 module = self._module(modname)
                 result = module.handle(req)
@@ -86,23 +85,21 @@ class Handler(object):
         except RequestError, e:
             if isinstance(e, HttpError):
                 req.set_status(e.ERROR_CODE)
-            lang = req.prefered_language(self._module('Languages').languages(), raise_error=False)
+            lang = req.prefered_language(self._languages.languages(), raise_error=False)
             result = Document(e.title(), e.message(req), lang=lang)
         if module is None:
             module = self._mapping
-        config = self._config.config()
-        config.modname = module.name()
-        config.user = user
-        config.wmi = req.wmi
-        config.inline = req.param('display') == 'inline'
-        config.show_panels = req.show_panels()
-        config.server_hostname = self._server.server_hostname
+        state = WikingNode.State(modname=module.name(),
+                                 user=user,
+                                 wmi=req.wmi,
+                                 inline=req.param('display') == 'inline',
+                                 show_panels=req.show_panels(),
+                                 server_hostname=self._server.server_hostname)
         menu = module.menu(req)
         panels = module.panels(req, result.lang())
         styles = self._stylesheets.stylesheets()
-        node = result.mknode('/'.join(req.path), config, menu, panels, styles)
-        exporter = self._exporter
-        data = translator(node.language()).translate(exporter.export(node))
+        node = result.mknode('/'.join(req.path), state, menu, panels, styles)
+        data = translator(node.language()).translate(self._exporter.export(node))
         return req.result(data)
 
 

@@ -34,13 +34,18 @@ import pytis.presentation as pp
 import pytis.web as pw
 import pytis.util
 
+from util import *
+from modules import *
+from db import *
+from api import *
+from export import *
+from request import *
+from install import *
+
 from configuration import *
 # This is Wiking-specific configuration.  The above is Pytis config.
 cfg = Configuration()
 
-from util import *
-from module import *
-from export import *
-from request import *
-from install import *
+for _file in (util, modules, db, api, export, request, install):
+    _file.__dict__.update(globals())
 

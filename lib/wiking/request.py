@@ -17,10 +17,12 @@
 
 from wiking import *
 
-if sys.modules.has_key('mod_python'):
-    # This makes it possible to import the module if mod_python is not loaded.
+try:
+    # We need to be able to import the module if mod_python is not loaded.
     from mod_python import apache
     import mod_python.util
+except:
+    pass
     
 import random
 import Cookie

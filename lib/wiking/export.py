@@ -36,15 +36,15 @@ class Exporter(lcg.HtmlExporter):
         return self._parts(node, self._BOTTOM_PARTS)
                            
     def _page(self, node):
-        node.config().has_submenu = bool([n for n in node.top().children() if not n.hidden()])
+        node.state().has_submenu = bool([n for n in node.top().children() if not n.hidden()])
         return self._parts(node, self._PAGE_PARTS)
 
     def _page_cls(self, node):
-        config = node.config()
+        state = node.state()
         cls = cls='node-id-%s' % node.id()
-        if config.has_submenu:
+        if state.has_submenu:
             cls += ' with-submenu'
-        if node.panels() and config.show_panels:
+        if node.panels() and state.show_panels:
             cls += ' with-panels'
         return cls
 
@@ -66,15 +66,15 @@ class Exporter(lcg.HtmlExporter):
         return uri
     
     def _site_title(self, node, full=False):
-        config = node.config()
-        if config.wmi:
+        state = node.state()
+        if state.wmi:
             title = _("Wiking Management Interface")
-        elif config.modname == 'Documentation' and not config.inline:
+        elif state.modname == 'Documentation' and not state.inline:
             title = _("Wiking Help System")
         else:
-            title = config.site_title
-            if full and config.site_subtitle:
-                title += ' &ndash; ' + config.site_subtitle
+            title = cfg.site_title
+            if full and cfg.site_subtitle:
+                title += ' &ndash; ' + cfg.site_subtitle
         return title
     
     def _title(self, node):
@@ -85,7 +85,7 @@ class Exporter(lcg.HtmlExporter):
 
     #def _head(self, node):
     #    result = super(Exporter, self)._head(node)
-    #    rss = node.config().rss
+    #    rss = node.state().rss
     #    if rss:
     #        result = concat(result, '<link rel="alternate" '
     #                        'type="application/rss+xml" title="%s" href="%s"/>'
@@ -100,14 +100,14 @@ class Exporter(lcg.HtmlExporter):
 
     def _links(self, node):
         g = self._generator
-        config = node.config()
+        state = node.state()
         links = [g.link(_("Content"), '#content-heading', hotkey="2"),
                  g.link(_("Main navigation"), '#main-navigation')]
-        if config.has_submenu:
+        if state.has_submenu:
             links.append(g.link(_("Local navigation"), '#local-navigation'))
         if len(node.language_variants()) > 1:
             links.append(g.link(_("Language selection"), '#language-selection'))
-        if config.show_panels:
+        if state.show_panels:
             for panel in node.panels():
                 links.append(g.link(panel.title(), '#panel-%s ' % panel.id()))
         return self._hidden(_("Jump in page") + ": " + concat(links, separator=' | '))
@@ -119,7 +119,6 @@ class Exporter(lcg.HtmlExporter):
         
     def _menu(self, node):
         g = self._generator
-        config = node.config()
         links = []
         for item in node.root().children():
             if not item.hidden():
@@ -136,8 +135,8 @@ class Exporter(lcg.HtmlExporter):
 
     def _submenu(self, node):
         g = self._generator
-        config = node.config()
-        if not config.has_submenu:
+        state = node.state()
+        if not state.has_submenu:
             return None
         menu = lcg.NodeIndex(node=node.top(), depth=99)
         menu.set_parent(node)
@@ -150,8 +149,7 @@ class Exporter(lcg.HtmlExporter):
         panels = node.panels()
         if not panels:
             return None
-        config = node.config()
-        if not config.show_panels:
+        if not node.state().show_panels:
             return g.link(_("Show panels"), "?show_panels=1", cls='panel-control show')
         result = [g.link(_("Hide panels"), "?hide_panels=1", cls='panel-control hide')]
         for panel in panels:
@@ -175,13 +173,13 @@ class Exporter(lcg.HtmlExporter):
     def _wiking_bar(self, node):
         import wiking
         g = self._generator
-        config = node.config()
+        state = node.state()
 	result = (g.hr(),)
         ctrl = ''
-        #if config.edit_label:
-        #    ctrl += (g.link(config.edit_label, "?action=edit"), "|")
-        if config.allow_login_ctrl and (config.wmi or not config.login_panel):
-            user = node.config().user
+        #if state.edit_label:
+        #    ctrl += (g.link(state.edit_label, "?action=edit"), "|")
+        if cfg.allow_login_ctrl and (state.wmi or not cfg.login_panel):
+            user = state.user
             if user:
                 username = user.name()
                 cmd, label = ('logout', _("log out"))
@@ -190,12 +188,12 @@ class Exporter(lcg.HtmlExporter):
                 cmd, label = ('login', _("log in"))
             lctrl = g.link(label, '?command=%s' % cmd, cls='login-ctrl')
             ctrl += concat(_("Login"), ': ', username, ' (', lctrl, ') | ')
-        if config.wmi:
+        if state.wmi:
             ctrl += g.link(_("Leave the Management Interface"), '/', hotkey="9")
-        elif config.modname == 'Documentation' and not config.inline:
+        elif state.modname == 'Documentation' and not state.inline:
             ctrl += g.link(_("Leave the Help System"), '/')
-        elif config.allow_wmi_link:
-            modname = config.modname or ''
+        elif cfg.allow_wmi_link:
+            modname = state.modname or ''
             if modname == 'WikingManagementInterface':
                 modname = ''
             ctrl += g.link(_("Manage this site"), '/_wmi/'+modname, hotkey="9",
@@ -230,9 +228,9 @@ class Exporter(lcg.HtmlExporter):
                   ("Section 508",
                    "http://www.section508.gov",
                    _("US Government Section 508 Accessibility Guidelines.")))]
-        contact = node.config().webmaster_addr
+        contact = cfg.webmaster_addr
         if contact is None:
-            domain = node.config().server_hostname
+            domain = node.state().server_hostname
             if domain.startswith('www.'):
                 domain = domain[4:]
             contact = 'webmaster@' + domain

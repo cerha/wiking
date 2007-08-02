@@ -235,6 +235,105 @@ class User(object):
     def data(self):
         """Return application specific data passed to the constructor."""
         return self._data
+
+
+class Theme(object):
+
+    class Color(object):
+        def __init__(self, id, inherit=None):
+            self._id = id
+            self._inherit = inherit
+        def id(self):
+            return self._id
+        def inherit(self):
+            return self._inherit
+        
+    COLORS = (
+        Color('foreground'),
+        Color('background'),
+        Color('highlight-bg'),
+        Color('border'),
+        Color('frame-fg', inherit='foreground'),
+        Color('frame-bg', inherit='background'),
+        Color('frame-border', inherit='border'),
+        Color('heading-fg', inherit='foreground'),
+        Color('heading-bg', inherit='background'),
+        Color('heading-line', inherit='border'),
+        Color('link'),
+        Color('link-visited', inherit='link'),
+        Color('link-hover', inherit='link'),
+        Color('help', inherit='foreground'),
+        Color('error-fg'),
+        Color('error-bg'),
+        Color('error-border'),
+        Color('message-fg'),
+        Color('message-bg'),
+        Color('message-border'),
+        Color('table-cell', inherit='background'),
+        Color('table-cell2', inherit='table-cell'),
+        Color('button-fg', inherit='foreground'),
+        Color('button', inherit='heading-bg'),
+        Color('button-hover', inherit='highlight-bg'),
+        Color('button-border', inherit='border'),
+        Color('button-inactive-fg', inherit='button-fg'),
+        Color('button-inactive', inherit='button'),
+        Color('button-inactive-border', inherit='button-border'),
+        Color('top-fg', inherit='foreground'),
+        Color('top-bg', inherit='background'),
+        Color('top-border', inherit='border'),
+        Color('inactive-folder'),
+        Color('meta-fg', inherit='foreground'),
+        Color('meta-bg', inherit='background'),
+        )
+
+    _DEFAULTS = {'foreground': '#000',
+                 'background': '#fff',
+                 'border': '#bcd',
+                 'heading-bg': '#d8e0f0',
+                 'heading-line': '#ccc',
+                 'frame-bg': '#eee',
+                 'frame-border': '#ddd',
+                 'link': '#03b',
+                 'link-hover': '#d60',
+                 'meta-fg': '#840',
+                 'help': '#444',
+                 'error-bg': '#fdb',
+                 'error-border': '#fba',
+                 'message-bg': '#cfc',
+                 'message-border': '#aea',
+                 'table-cell': '#f8fafb',
+                 'table-cell2': '#eaeaff',
+                 'button-border': '#9af',
+                 'button-inactive-fg': '#555',
+                 'button-inactive': '#ccc',
+                 'button-inactive-border': '#999',
+                 'top-bg': '#efebe7',
+                 'top-border': '#9ab',
+                 'highlight-bg': '#fc8',
+                 'inactive-folder': '#d2d8e0',
+                 }
+
+    def __init__(self, colors=None):
+        if not colors:
+            colors = self._DEFAULTS
+        self._colors = dict([(c.id(), c) for c in self.COLORS])
+        self._theme = {'color': dict([(key, self._color(key, colors))
+                                      for key in self._colors.keys()])}
+        
+    def _color(self, key, colors):
+        if colors.has_key(key):
+            return colors[key]
+        else:
+            inherit = self._colors[key].inherit()
+            if inherit:
+                return self._color(inherit, colors)
+            elif colors != self._DEFAULTS:
+                return self._color(key, self._DEFAULTS)
+            else:
+                return 'inherit'
+        
+    def __getitem__(self, key):
+        return self._theme[key]
     
         
 class FileUpload(object):
@@ -314,7 +413,7 @@ class Document(object):
     def lang(self):
         return self._lang
     
-    def mknode(self, id, config, menu, panels, stylesheets):
+    def mknode(self, id, state, menu, panels, stylesheets):
         kwargs = dict(language=self._lang, language_variants=self._variants or (),
                       secondary_language=self._sec_lang)
         parent_id = '/'.join(id.split('/')[:-1])
@@ -334,7 +433,7 @@ class Document(object):
                 resources = ()
                 panels_ = ()
             resource_provider = lcg.StaticResourceProvider(resources)
-            node = WikingNode(item.id(), config, title=item.title(), heading=heading,
+            node = WikingNode(item.id(), state, title=item.title(), heading=heading,
                               descr=item.descr(), content=content,  hidden=item.hidden(),
                               children=[_mknode(i) for i in item.submenu()],
                               panels=panels_, resource_provider=resource_provider, **kwargs)
@@ -350,7 +449,7 @@ class Document(object):
                 parent[0].add_child(node)
             else:
                 nodes.append(node)
-        root = WikingNode('__wiking_root_node__', config, title='root', content=lcg.Content(),
+        root = WikingNode('__wiking_root_node__', state, title='root', content=lcg.Content(),
                           children=nodes)
         return me[0]
 
@@ -360,11 +459,20 @@ class Document(object):
 # ============================================================================
 
 class WikingNode(lcg.ContentNode):
+
+    class State(object):
+        def __init__(self, modname, user, wmi, inline, show_panels, server_hostname):
+            self.modname = modname
+            self.user = user
+            self.wmi = wmi
+            self.inline = inline
+            self.show_panels = show_panels
+            self.server_hostname = server_hostname
     
-    def __init__(self, id, config, heading=None, panels=(), **kwargs):
+    def __init__(self, id, state, heading=None, panels=(), **kwargs):
         super(WikingNode, self).__init__(id, **kwargs)
         self._heading = heading
-        self._config = config
+        self._state = state
         self._panels = panels
         for panel in panels:
             panel.content().set_parent(self)
@@ -378,8 +486,8 @@ class WikingNode(lcg.ContentNode):
     def heading(self):
         return self._heading or self._title
     
-    def config(self):
-        return self._config
+    def state(self):
+        return self._state
     
     def top(self):
         parent = self._parent
@@ -598,7 +706,7 @@ class LoginDialog(lcg.Content):
              ) + tuple([g.hidden(name=k, value=v)
                         for k,v in self._params.items() if k != 'command']) + (
             g.submit(_("Log in"), cls='submit'),)
-        if not self._https and self.parent().config().force_https_login:
+        if not self._https and cfg.force_https_login:
             uri = self._https_uri
         else:
             uri = self._uri
@@ -608,7 +716,6 @@ class LoginDialog(lcg.Content):
 class SiteMap(lcg.NodeIndex):
     def _start_item(self):
         return self.parent().root()
-
 
     
 def translator(lang):
@@ -774,31 +881,6 @@ def timeit(func, *args, **kwargs):
     result = func(*args, **kwargs)
     return result,  time.clock() - t1, time.time() - t2
 
-def import_modules():
-    """Import module definitions and return them as a python module.
-
-    Wiking comes with a set of predefined modules.  They are all defined in the 'wiking.modules'
-    module.  These default modules can be overridden by defining custom modules in a module named
-    'wikingmodules' available in the Python path.  This allows adding extension modules to the
-    Wiking CMS (on a per site basis) or a complete redefinition of the application behavior.  The
-    modular wiking engine can be thus used as a universal web application development toolkit.
-
-    """
-    try:
-        from mod_python.apache import import_module
-    except ImportError:
-        try:
-            import wikingmodules as modules
-        except ImportError:
-            import wiking.modules as modules
-    else:
-        try:
-            modules = import_module('wikingmodules', log=True)
-        except ImportError:
-            modules = import_module('wiking.modules', log=True)
-    return modules
-
-
 def get_module(name):
     """Get the module class by name.
     
@@ -807,8 +889,34 @@ def get_module(name):
     environment.
     
     """
-    return getattr(import_modules(), name)
-
+    try:
+        from mod_python.apache import import_module
+    except ImportError:
+        try:
+            import wikingmodules
+        except ImportError:
+            import wiking.cms
+            return getattr(wiking.cms, name)
+        else:
+            try:
+                return getattr(wikingmodules, name)
+            except AttributeError:
+                import wiking.modules
+                return getattr(wiking.modules, name)
+    else:
+        try:
+            modules = import_module('wikingmodules', log=True)
+        except ImportError:
+            modules = import_module('wiking.cms', log=True)
+        else:
+            try:
+                return getattr(modules, name)
+            except AttributeError:
+                # This module is imported by Python, so importing it once more through
+                # Apache would cause problems.
+                import wiking.modules
+                return getattr(wiking.modules, name)
+        return getattr(modules, name)
 
 def rss(title, url, items, descr, lang=None, webmaster=None):
     import wiking
