@@ -1,3 +1,53 @@
+2007-08-02  Tomas Cerha  <cerha@brailcom.org>
+
+	* resources/css/default.css: Updated
+
+	* lib/wiking/configuration.py: All configuration options defined here.
+
+	* lib/wiking/request.py: Handle exceptions when loading mod_python.
+
+	* lib/wiking/util.py (Theme): New class.
+	(WikingNode.State): New class.
+	(import_modules): Method removed.
+	(get_module): The algorithm changed to allow `wikingmodules'
+	override Wiking CMS modules.
+
+	* lib/wiking/__init__.py: Import the new modules and update
+	globals of all modules.
+
+	* lib/wiking/module.py: Module removed.
+
+	* lib/wiking/handler.py: Use global configuration and initialize node `state'.
+
+	* lib/wiking/export.py: Use global configuration and node `state'.
+
+	* lib/wiking/cms.py: New file - all CMS related code moved here.
+	
+	* lib/wiking/modules.py: All generic module definitions except for
+	database related modules moved here.
+
+	* lib/wiking/db.py: New file - all pytis database related module
+	definitions moved here.
+
+	* translations/wiking.cs.po: CMS translations moved to a separate file. 
+
+	* translations/wiking.es.po: CMS translations moved to a separate file. 
+
+	* translations/wiking.pl.po: CMS translations moved to a separate file. 
+
+	* translations/wiking-cms.pl.po: New file.
+
+	* translations/wiking-cms.es.po: New file.
+
+	* translations/wiking-cms.cs.po: New file.
+
+	* translations/Makefile: Generate also translations for the new
+	domain `wiking-cms'.
+
+2007-08-01  Tomas Cerha  <cerha@brailcom.org>
+
+	* sql/wiking.sql: New theme color.
+
 2007-07-13  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/modules.py: Authentication documentation written.

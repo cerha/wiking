@@ -382,12 +382,21 @@ form.edit-form fieldset.submit input {
     padding: 0.1em 0.5em;
     margin: 0 1em;
 }
+form.show-form span.color-display { 
+    padding: 0 0.5em;
+    border: 1px solid $color.border;
+}
+form.show-form span.color-value { 
+    float: left;
+    width: 4em;
+}
+
 /* Modification of button controls is arguable...
     background: $color.button;
     border: 1px solid $color.button-border;
 }
 form.edit-form fieldset.submit input:hover { 
-    background: $color.highlight-bg;
+    background: $color.button-hover;
 }
 */
 
@@ -403,7 +412,7 @@ p.actions a {
     border: 1px solid $color.button-border;
 }
 p.actions a:hover { 
-    background: $color.highlight-bg;
+    background: $color.button-hover;
 }
 p.actions a.inactive, p.actions a.inactive:hover { 
     color: $color.button-inactive-fg;
