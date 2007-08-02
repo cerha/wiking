@@ -1,4 +1,4 @@
-domains := wiking wiking-help
+domains := wiking wiking-cms
 mo_files := $(shell ls *.po | sed 's/\(.*\)\.\(.*\)\.po/\2\/LC_MESSAGES\/\1.mo/')
 src_files := python -c 'import lcg, sys; print " ".join(lcg.source_files_by_domain("../lib", domain=len(sys.argv) == 2 and sys.argv[1] or None))'
 
