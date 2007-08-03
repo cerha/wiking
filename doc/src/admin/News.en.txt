@@ -10,7 +10,6 @@ top).
 The message text can be formatted as an ``LCG structured text'' document
 (see the [/_doc/lcg/data-formats/structured-text formatting manual]).
 
-The news items for each language variant of the website are managed
-independently.  Only messages for the /currently selected language/ are
-displayed, so you need to switch the language to be able to manage news for
-a different language.
+News items for each language variant of the website are managed independently.
+Only messages for the /currently selected language/ are displayed, so you need
+to switch the language to be able to manage news for a different language.
