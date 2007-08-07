@@ -337,22 +337,28 @@ class Config(CMSModule):
 
     """
     class Spec(Specification):
+        class _Field(Field):
+            def __init__(self, id, **kwargs):
+                Field.__init__(self, id, cfg.description(id), descr=cfg.documentation(id),**kwargs)
         title = _("Configuration")
         help = _("Edit site configuration.")
         fields = (
             Field('config_id', ),
             Field('title', virtual=True,
                   computer=Computer(lambda r: _("Site Configuration"), depends=())),
-            Field('site_title', _("Site title"), width=24),
-            Field('site_subtitle', _("Site subtitle"), width=64),
-            Field('login_panel',  _("Show login panel")),
-            Field('allow_registration', _("Allow registration"), default=True),
-            #Field('allow_wmi_link', _("Allow WMI link"), default=True),
-            Field('force_https_login', _("Force HTTPS login"), default=False),
-            Field('webmaster_addr', _("Webmaster address")),
-            Field('theme', _("Theme"), codebook='Themes', selection_type=CHOICE, not_null=False),
+            _Field('site_title', width=24),
+            _Field('site_subtitle', width=64),
+            _Field('allow_login_panel'),
+            _Field('allow_registration', default=True),
+            #_Field('allow_wmi_link', _("Allow WMI link"), default=True),
+            _Field('force_https_login', default=False),
+            _Field('webmaster_addr'),
+            Field('theme', _("Color theme"),
+                  codebook='Themes', selection_type=CHOICE, not_null=False,
+                  descr=_("Select one of the available color themes.  Use the module Themes in "
+                          "the section Appearance to manage the available themes.")),
             )
-        layout = ('site_title', 'site_subtitle', 'login_panel', 'allow_registration',
+        layout = ('site_title', 'site_subtitle', 'allow_login_panel', 'allow_registration',
                   'force_https_login', 'webmaster_addr', 'theme')
     _TITLE_COLUMN = 'title'
     WMI_SECTION = WikingManagementInterface.SECTION_SETUP
@@ -373,6 +379,7 @@ class Config(CMSModule):
         return self.action_show(*args, **kwargs)
 
     def configure(self, req):
+        cfg.allow_wmi_link = True
         row = self._data.get_row(config_id=0)
         if row is not None:
             for key in row.keys():

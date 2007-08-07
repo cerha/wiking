@@ -1,3 +1,27 @@
+2007-08-07  Tomas Cerha  <cerha@brailcom.org>
+
+	* sql/wiking.sql (config): `login_panel' -> `show_login_panel'.
+
+	* translations/wiking-cms.cs.po: All translations filled.
+
+	* lib/wiking/cms.py (Config): Use description and documentation of
+	the configuration options within field specifications.
+
+	* lib/wiking/configuration.py: Documentation for most options
+	written.  `login_panel' -> `show_login_panel'.
+
+	* lib/wiking/export.py: `cfg.login_panel' -> `cfg.show_login_panel'.
+
+	* lib/wiking/api.py: `cfg.login_panel' -> `cfg.show_login_panel'.
+
+2007-08-03  Tomas Cerha  <cerha@brailcom.org>
+
+	* doc/src/admin/News.en.txt: Minor improvement.
+
+	* doc/src/admin/Modules.cs.txt: File removed.
+
+	* doc/src/admin/Modules.en.txt: File removed.
+
 2007-08-02  Tomas Cerha  <cerha@brailcom.org>
 
 	* resources/css/default.css: Updated

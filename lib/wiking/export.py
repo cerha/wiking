@@ -178,7 +178,7 @@ class Exporter(lcg.HtmlExporter):
         ctrl = ''
         #if state.edit_label:
         #    ctrl += (g.link(state.edit_label, "?action=edit"), "|")
-        if cfg.allow_login_ctrl and (state.wmi or not cfg.login_panel):
+        if cfg.allow_login_ctrl and (state.wmi or not cfg.allow_login_panel):
             user = state.user
             if user:
                 username = user.name()

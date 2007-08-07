@@ -102,7 +102,7 @@ class Config(Module):
 class Panels(Module):
     
     def panels(self, req, lang):
-        if cfg.login_panel:
+        if cfg.allow_login_panel:
             user = req.user()
             content = lcg.p(LoginCtrl(user))
             if cfg.allow_registration and not user:
