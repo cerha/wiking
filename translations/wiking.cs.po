@@ -2,12 +2,11 @@
 # Copyright (C) 2006, 2007 Brailcom, o.p.s.
 # This file is distributed under the same license as the Wiking package.
 # Tomas Cerha <cerha@brailcom.org>, 2006.
-
 msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-08-02 16:32+0200\n"
+"POT-Creation-Date: 2007-08-07 16:57+0200\n"
 "PO-Revision-Date: 2007-08-02 16:36+0200\n"
 "Last-Translator: Tomas Cerha <cerha@brailcom.org>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -19,23 +18,23 @@ msgstr ""
 msgid "Index page"
 msgstr ""
 
-#: ../lib/wiking/api.py:107
+#: ../lib/wiking/api.py:111
 msgid "New user registration"
 msgstr ""
 
-#: ../lib/wiking/api.py:109 ../lib/wiking/export.py:190
+#: ../lib/wiking/api.py:113 ../lib/wiking/export.py:190
 msgid "Login"
 msgstr "Přihlášení"
 
-#: ../lib/wiking/api.py:224
+#: ../lib/wiking/api.py:228
 msgid "Enter your login name, please!"
 msgstr "Zadejte, prosím, vaše uživatelské jméno!"
 
-#: ../lib/wiking/api.py:226
+#: ../lib/wiking/api.py:230
 msgid "Enter your password, please!"
 msgstr "Zadejte, prosím, vaše heslo!"
 
-#: ../lib/wiking/api.py:229
+#: ../lib/wiking/api.py:233
 msgid "Invalid login!"
 msgstr "Neplatné přihlášení!"
 

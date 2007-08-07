@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-08-02 16:32+0200\n"
+"POT-Creation-Date: 2007-08-07 16:57+0200\n"
 "PO-Revision-Date: 2007-08-02 16:36+0200\n"
 "Last-Translator: Pawel Loba <ploba@rogers.com>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -19,24 +19,24 @@ msgstr ""
 msgid "Index page"
 msgstr ""
 
-#: ../lib/wiking/api.py:107
+#: ../lib/wiking/api.py:111
 msgid "New user registration"
 msgstr ""
 
-#: ../lib/wiking/api.py:109 ../lib/wiking/export.py:190
+#: ../lib/wiking/api.py:113 ../lib/wiking/export.py:190
 #, fuzzy
 msgid "Login"
 msgstr "Wlogowanie"
 
-#: ../lib/wiking/api.py:224
+#: ../lib/wiking/api.py:228
 msgid "Enter your login name, please!"
 msgstr ""
 
-#: ../lib/wiking/api.py:226
+#: ../lib/wiking/api.py:230
 msgid "Enter your password, please!"
 msgstr ""
 
-#: ../lib/wiking/api.py:229
+#: ../lib/wiking/api.py:233
 msgid "Invalid login!"
 msgstr ""
 
