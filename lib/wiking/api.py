@@ -100,7 +100,15 @@ class Config(Module):
 
 
 class Panels(Module):
-    
+    """Provides a set of panels to be displayed by the side of each page.
+
+    See the Navigation section of the Wiking User's documentation to learn more about panels.  The
+    method 'panels()' of this module returns the global list of all panels as 'Panel' instances.
+    It is also possible to override the metohd 'panels()' of any single module, to override the set
+    of panels just for this module.  These panels will then only be used, when given module is used
+    to handle the current request (is mapped for the current uri).
+
+    """
     def panels(self, req, lang):
         if cfg.allow_login_panel:
             user = req.user()
