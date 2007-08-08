@@ -504,8 +504,11 @@ class PytisModule(Module, ActionHandler):
         # `show()' always uses ShowForm, while `view()' may be overriden
         # by the module (using _CUSTOM_VIEW).
         return self.action_show(req, record, err=err, msg=msg, custom=True)
-    
+
     def action_add(self, req, errors=()):
+        # TODO: Redirect handler to HTTPS if cfg.force_https_login is true?
+        # The primary motivation is to protect registration form data.  The
+        # same would apply for action_edit.
         form = self._form(pw.EditForm, req, None, handler=req.uri, new=True,
                           prefill=self._prefill(req, new=True),
                           errors=errors, action='insert')
