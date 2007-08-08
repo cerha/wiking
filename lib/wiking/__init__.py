@@ -25,9 +25,11 @@ sys.setdefaultencoding('iso-8859-2')
 
 import lcg
 import pytis
-import config
 
+# Initialize pytis configuration
+import config
 config.dblisten = False
+del config
 
 import pytis.data as pd
 import pytis.presentation as pp
@@ -43,9 +45,12 @@ from request import *
 from install import *
 
 from configuration import *
-# This is Wiking-specific configuration.  The above is Pytis config.
+# Initialize the global configuration object.
 cfg = Configuration()
 
+# We don't want to overwrite module's __doc__ and other private identifiers...
+_globals = dict([(k,v) for k,v in globals().items() if not k.startswith('_')])
 for _file in (util, modules, db, api, export, request, install):
-    _file.__dict__.update(globals())
+    _file.__dict__.update(_globals)
+del _globals
 
