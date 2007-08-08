@@ -615,7 +615,6 @@ class RssModule(object):
         row = pp.PresentedRow(self._view.fields(), self._data, None)
         items = []
         import mx.DateTime as dt
-        config = self._module('Config').config()
         tr = translator(lang)
         users = self._module('Users')
         for data_row in rows:
@@ -633,11 +632,11 @@ class RssModule(object):
                 uid = row[self._RSS_AUTHOR_COLUMN]
                 author = users.record(uid)['email'].export()
             else:
-                author = config.webmaster_addr
+                author = cfg.webmaster_addr
             items.append((title, uri, descr, date, author))
-        title = config.site_title +' - '+ self._real_title(lang)
-        result = rss(title, base_uri, items, config.site_subtitle,
-                     lang=lang, webmaster=config.webmaster_addr)
+        title = cfg.site_title +' - '+ self._real_title(lang)
+        result = rss(title, base_uri, items, cfg.site_subtitle,
+                     lang=lang, webmaster=cfg.webmaster_addr)
         return ('application/xml', result)
 
 

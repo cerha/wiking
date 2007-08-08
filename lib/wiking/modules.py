@@ -177,6 +177,106 @@ class Documentation(DocumentHandler):
         return []
 
 
+class CookieAuthentication(Module):
+    """Authentication class implementing cookie based authentication.
+
+    This class implements cookie based authentication, but is still neutral to authentication data
+    source.  Any possible source of authentication data may be used by implementing the methods
+    '_user()' and '_check()'.  See their documentation for more information.
+
+    """
+    
+    _LOGIN_COOKIE = 'wiking_login'
+    _SESSION_COOKIE = 'wiking_session_key'
+
+    def _user(self, login):
+        """Obtain authentication data and return a 'User' instance for given 'login'.
+
+        This method may be used to retieve authentication data from any source, such as database
+        table, file, LDAP server etc.  This should return the user corresponding to given login
+        name if it exists.  Further password checking is performed later by the '_check()' method.
+        None may be returned if no user exists for given login name.
+
+        """
+        return None
+
+    def _check(self, user, password):
+        """Check authentication password for given user.
+
+        Arguments:
+          user -- 'User' instance
+          password -- supplied password as a string
+
+        Return True if given password is the correct login password for given user.
+
+        """
+        return False
+    
+    def authenticate(self, req):
+        session = self._module('Session')
+        credentials = req.credentials()
+        day = 24*3600
+        if credentials:
+            login, password = credentials
+            if not login:
+                raise AuthenticationError(_("Enter your login name, please!"))
+            if not password:
+                raise AuthenticationError(_("Enter your password, please!"))
+            user = self._user(login)
+            if not user or not self._check(user, password):
+                raise AuthenticationError(_("Invalid login!"))
+            assert isinstance(user, User)
+            # Login succesfull
+            session_key = session.init(user)
+            req.set_cookie(self._LOGIN_COOKIE, login, expires=730*day)
+            req.set_cookie(self._SESSION_COOKIE, session_key, expires=2*day)
+        else:
+            login, key = (req.cookie(self._LOGIN_COOKIE), 
+                          req.cookie(self._SESSION_COOKIE))
+            if login and key:
+                user = self._user(login)
+                if user and session.check(user, key):
+                    assert isinstance(user, User)
+                    # Cookie expiration is 2 days, but session expiration is
+                    # controled within the session module independently.
+                    req.set_cookie(self._SESSION_COOKIE, key, expires=2*day)
+                else:
+                    # This is not true after logout
+                    session_timed_out = True
+                    user = None
+            else:
+                user = None
+        if req.param('command') == 'logout' and user:
+            session.close(user)
+            user = None
+            req.set_cookie(self._SESSION_COOKIE, None, expires=0)
+        elif req.param('command') == 'login' and not user:
+            raise AuthenticationError()
+        return user
+
+    
+class Session(Module):
+    _MAX_SESSION_KEY = 0xfffffffffffffffffffffffffffff
+
+    def _new_session_key(self):
+        return hex(random.randint(0, self._MAX_SESSION_KEY))
+    
+    def _expiration(self):
+        return mx.DateTime.now().gmtime() + mx.DateTime.TimeDelta(hours=2)
+
+    def _expired(self, time):
+        return time <= mx.DateTime.now().gmtime()
+    
+    def init(self, user):
+        return None
+        
+    def check(self, user, session_key):
+	return False
+
+    def close(self, user):
+        pass
+    
+
 class Search(Module, ActionHandler):
 
     _SEARCH_TITLE = _("Searching")

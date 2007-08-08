@@ -1,3 +1,23 @@
+2007-08-08  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/modules.py: Modules `CookieAuthentication' and
+	`Session' from `wiking.api' moved here.
+
+	* lib/wiking/db.py (RssModule.action_rss): Configuration usage fixed.
+
+	* lib/wiking/api.py: Some documentation added, some updated.
+	Implementing classes moved away.
+
+	* lib/wiking/__init__.py: Don't update module's private variables.
+	Remove pytis config module from globals after it's use.
+
+	* doc/src/devel/devel.en.txt: More documentation added.
+
+	* doc/src/devel/api.py: Generate lists of interface methods and
+	their documentation, as well as module's global docstring.
+
+	* TODO: Updated.
+
 2007-08-07  Tomas Cerha  <cerha@brailcom.org>
 
 	* doc/src/devel/devel.en.txt: New file.
