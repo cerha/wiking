@@ -550,26 +550,6 @@ class ActionMenu(lcg.Content):
         return g.p(lcg.concat(_("Actions:"), items, separator="\n"),
                    cls="actions")
 
-class LoginCtrl(lcg.Content):
-    """Displays the logged in user and a login/logout control."""
-    
-    def __init__(self, user):
-        super(LoginCtrl, self).__init__()
-        assert user is None or isinstance(user, User), user
-        self._user = user
-
-    def export(self, exporter):
-        g = exporter.generator()
-        if self._user:
-            username = self._user.name()
-            cmd, label = ('logout', _("log out"))
-        else:
-            username = _("not logged")
-            cmd, label = ('login', _("log in"))
-        ctrl = g.link(label, '?command=%s' % cmd, cls='login-ctrl')
-        return lcg.concat(username, ' ', g.span('[', cls="hidden"), ctrl,
-                          g.span(']', cls="hidden"))
-    
     
 class PanelItem(lcg.Content):
 
@@ -682,6 +662,27 @@ class ErrorMessage(Message):
     _CLASS = "error"
     
 
+class LoginCtrl(lcg.Content):
+    """Displays the logged in user and a login/logout control."""
+    
+    def __init__(self, user):
+        super(LoginCtrl, self).__init__()
+        assert user is None or isinstance(user, User), user
+        self._user = user
+
+    def export(self, exporter):
+        g = exporter.generator()
+        if self._user:
+            username = self._user.name()
+            cmd, label = ('logout', _("log out"))
+        else:
+            username = _("not logged")
+            cmd, label = ('login', _("log in"))
+        ctrl = g.link(label, '?command=%s' % cmd, cls='login-ctrl')
+        return lcg.concat(username, ' ', g.span('[', cls="hidden"), ctrl,
+                          g.span(']', cls="hidden"))
+
+
 class LoginDialog(lcg.Content):
     
     def __init__(self, req):
@@ -695,7 +696,6 @@ class LoginDialog(lcg.Content):
 
     def export(self, exporter):
         g = exporter.generator()
-        #TODO: labels!!!!!!!!!!!!
         x = (g.label(_("Login name")+':', id='login') + g.br(),
              g.field(name='login', value=self._login, id='login', tabindex=0,
                      size=14), g.br(), 
