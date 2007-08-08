@@ -10,6 +10,8 @@ Core features:
 
  * Image allignment in the LCG formatting manual
 
+ * Force HTTPS also for registration form (see note at PytisModule.action_add()).
+
  * More content management controls outside wmi (when authorized)
 
  * Default language when Accept-Language is not set at all
@@ -33,6 +35,9 @@ Core features:
 
 Extensions:
 
+ * Image galeries
+
+ * Blog
+
  * Articles
 
- * Image galeries
