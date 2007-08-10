@@ -2,5 +2,8 @@
 
 = Uživatelská příručka systému Wiking =
 
+Tato sekce popisuje uživatelské rozhraní aplikací používajících platformu
+Wiking z pohledu návštěvníka webových stránek.
+
 @NodeIndex(2)@
 
