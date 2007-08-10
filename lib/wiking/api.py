@@ -96,9 +96,8 @@ class Mapping(Module):
 class Config(Module):
     """Apply specific configuration.
 
-    Configuration is normally read from configuration files as described in the documentation of
-    'config_file' configuration option.  This module, however, may update the configuration object
-    dynamically at runtime for each request.
+    Configuration is normally read from configuration files as described in [config].  This module,
+    however, may update the configuration object dynamically at runtime for each request.
 
     """
     def configure(self, req):
