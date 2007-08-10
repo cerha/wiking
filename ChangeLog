@@ -1,3 +1,68 @@
+2007-08-10  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/modules.py (DocumentHandler._document): Hardcoded
+	documentation subdirectories updated.
+
+	* lib/wiking/configuration.py: Docstrings improved.
+
+	* doc/src/cms/Attachments.cs.txt: New file.
+
+	* doc/src/cms/Attachments.en.txt: New file.
+
+	* doc/src/cms/Languages.cs.txt: New file.
+
+	* doc/src/cms/Languages.en.txt: New file.
+
+	* doc/src/cms/Mapping.cs.txt: New file.
+
+	* doc/src/cms/Mapping.en.txt: New file.
+
+	* doc/src/cms/News.cs.txt: New file.
+
+	* doc/src/cms/News.en.txt: New file.
+
+	* doc/src/cms/Pages.cs.txt: New file.
+
+	* doc/src/cms/Pages.en.txt: New file.
+
+	* doc/src/cms/Panels.cs.txt: New file.
+
+	* doc/src/cms/Panels.en.txt: New file.
+
+	* doc/src/cms/Planner.cs.txt: New file.
+
+	* doc/src/cms/Planner.en.txt: New file.
+
+	* doc/src/cms/Stylesheets.en.txt: New file.
+
+	* doc/src/cms/Themes.en.txt: New file.
+
+	* doc/src/cms/Titles.cs.txt: New file.
+
+	* doc/src/cms/Titles.en.txt: New file.
+
+	* doc/src/cms/_index.txt: New file.
+
+	* doc/src/cms/cms-intro.en.txt: New file.
+
+	* doc/src/cms/cms.en.txt: New file.
+
+	* doc/src/admin/_index.txt: New file.
+
+	* doc/src/admin/apache.en.txt: New file.
+
+	* doc/src/admin/config.py: New file.
+
+	* doc/src/admin/install.en.txt: New file.
+
+	* INSTALL: Updated.
+
+	* doc/src/_index.txt: New sections added.
+
+	* doc/src/index.en.txt: Updated.
+
+	* doc/src/intro.en.txt: File removed.  Contents moved to CMS section.
+
 2007-08-08  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/modules.py: Modules `CookieAuthentication' and
@@ -367,11 +432,11 @@
 
 	* resources/css/default.css: Yet another MSIE hack. 
 
-	* lib/wiking/modules.py (Modules): Accept also custom modules
+	* lib/wiking/modules.py: Accept also custom modules
 	defined in `wikingmodules'.
 	(Mapping): Added support for private items.
 
-	* lib/wiking/handler.py (Module): Use the changed `Mapping'
+	* lib/wiking/handler.py: Use the changed `Mapping'
 	interface.
 
 2007-04-04  Tomas Cerha  <cerha@brailcom.org>
