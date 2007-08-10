@@ -130,7 +130,7 @@ class DocumentHandler(Module, RequestHandler):
         # TODO: the documentation should be processed by LCG first into some
         # reasonable output format.  Now we just search the file in all the
         # source directories and format it.  No global navigation is used.
-        for subdir in ('', 'user', 'admin'):
+        for subdir in ('', 'user', 'cms', 'admin', 'devel'):
             basename = os.path.join(basedir, subdir, *path)
             variants = [f[-6:-4] for f in glob.glob(basename+'.*.txt')]
             if variants:
