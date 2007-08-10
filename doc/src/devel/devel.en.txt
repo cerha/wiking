@@ -22,7 +22,8 @@ section below.
 
 Wiking also provides a set of predefined modules, which implement various
 common usecases for the core modules, such as a cookie based authentication
-module, session management, static uri mapping etc.
+module, session management, static uri mapping, serving formatted documents
+from structured text files etc.
 
 Documentation for these modules is not yet part of this document, so please see
 the source code and the relevant Python docstrings.
