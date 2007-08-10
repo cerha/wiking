@@ -1,0 +1,16 @@
+# -*- coding: utf-8; mode: structured-text -*-
+
+= Color Themes =
+
+Color themes allow the simplest way of appearance customisation.  The final
+appearance is determined by two things -- the active stylesheet (or a set of
+stylesheets) and the color theme.  The idea is simple -- the stylesheets should
+only use symbolic color names and these color names are always substituted by
+real colors of the current stylesheet.
+
+This module manages the set of available color themes.  Several themes are
+included in default Wiking installation.  Other themes may be created by the
+Wiking user commutnity and shared.  You can also create your own themes.
+
+/IMPORTANT/: You must go to your site configuration to activate one of the
+themes defined in this module.

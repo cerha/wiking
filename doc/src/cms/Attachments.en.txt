@@ -1,0 +1,8 @@
+# -*- coding: utf-8; mode: structured-text -*-
+
+= Attachments =
+
+Attachments are external files attached to pages.  You can attach images,
+documents, sound recordings, videos etc.  Attachments are managed through the
+page to which they are attached, thus you will find more information in the
+help for the module [Pages].

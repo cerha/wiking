@@ -1,0 +1,50 @@
+# -*- coding: utf-8; mode: structured-text -*-
+
+= Mapování =
+
+Mapování určuje přiřazení dostupných identifikátorů a modulů, které je
+obsluhují.  /Identifikátor/ určuje adresu položky -- např. položka s
+identifikátorem „=mojestranka=“ bude mít v internetu adresu
+„\http://www.jmenoserveru.cz/mojestranka“.
+
+Každému identifikátoru zde přiřadíme Modul, který jej obsluhuje.  Například
+modul /Stránky/ zobrazuje položky jako textové stránky -- každému zde
+definovanému identifikátoru potom můžeme přiřadit obsah v různých jazykových
+variantách.  Jiné moduly mohou zobrazovat seznamy novinek, uživatelů apod.
+
+Pro přiřazení vlastního obsahu dané položce se přepněte na příslušný modul.
+Zde najdete také další nápovědu, která blíže vysvětluje k čemu daný modul
+slouží a jakým způsobem spravovat jeho obsah.
+
+
+== Správa hlavní nabídky ==
+
+Hlavní nabídka je jedním z nejdůležitějších navigačních prvků stránky (viz
+[navigation navigace]).
+
+Podobu hlavní nabídky ovlivníte jednoduše tím, že položkám, které v ní
+chcete zobrazit přiřadíte celé číslo v kolonce /Pořadí v menu/.  Tyto
+položky potom budou zobrazeny v hlavní nabídce v pořadí daném tímto
+pořadovým číslem.
+
+Položky, které nemají toto číslo vyplněno, nebudou v nabídce zobrazeny, ale
+může na ně být vytvořen odkaz pomocí jejich identifikátoru (například v
+textu jiné stránky).
+
+
+== Zveřejnění položky ==
+
+Jednotlivé položky mapování, stejně jako mnoho jiných součástí obsahu, mohou
+být zveřejněny/zneveřejněny.  Neveřejná položka sice existuje v databázi a lze
+s ní tedy pracovat a spravovat její obsah, vnějším uživatelům však tato položka
+není dostupná.  Nepublikované položky jsou dostupné pouze v rámci Správcovského
+rozhraní.
+
+== Privátní položky ==
+
+Privátní (soukromé) položky jsou dostupné pouze přihlášeným uživatelům (pouze
+registrovaný uživatel povolený správcem se může přihlasít).  Privátní položky
+se mohou vyskytovat také v menu, takže se všichni uživatelé dozví o jejich
+existenci, ale pouze přihlášení užiatelé budou schopni zobrazit jejich obsah.
+Aby byla privátní položka dostupná, musí být stále zveřejněna (tyto dvě
+vlastnosti spolu nesouvisí).

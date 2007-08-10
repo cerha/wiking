@@ -1,0 +1,25 @@
+# -*- coding: utf-8; mode: structured-text -*-
+
+= Titles =
+
+This module assigns titles to particular mapping items (identifiers).
+These titles then, among others, appear in the main menu.
+
+The titles are normally assigned automatically when you create new pages,
+but you will need to assign the title here for the items which are either
+not regular pages (are handled by some other module), or which don't have a
+corresponding page in all supported language variants.
+
+When there is a title missing for an item, you will realize that easilly.
+There will be just the identifier displayed in the main menu, instead of
+the title.  This may be sufficient at some cases, but you will often want
+to supply better titles.  This can be done by adding a new title assignment
+to this table.  Please remember, that you should specify titles for all
+supported languages.  This way the main menu will be fully translated in
+all available language variants.  When there is no content for some item in
+given language, the user will be automatically redirected to a different
+language version of the document according to his language preferences.
+
+Only titles for the /currently selected language/ are displayed, so you
+need to switch the language to be able to manage titles for a different
+language.

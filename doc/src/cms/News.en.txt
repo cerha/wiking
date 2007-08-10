@@ -1,0 +1,15 @@
+# -*- coding: utf-8; mode: structured-text -*-
+
+= News =
+
+The News module is designed for short messages.  Each message has a
+brief summary, a time-stamp and a more descriptive text.  The basic view is
+handled by displaying a list of recent messages (newer messages at the
+top).
+
+The message text can be formatted as an ``LCG structured text'' document
+(see the [/_doc/lcg/data-formats/structured-text formatting manual]).
+
+News items for each language variant of the website are managed independently.
+Only messages for the /currently selected language/ are displayed, so you need
+to switch the language to be able to manage news for a different language.

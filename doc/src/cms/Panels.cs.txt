@@ -1,0 +1,22 @@
+# -*- coding: utf-8; mode: structured-text -*-
+
+= Panely =
+
+„Panely“ jsou malá okna, která jsou většinou zobrazená na boku stránky.
+Narozdíl od ostatního obsahu jsou panely zobrazovány na každé stránce vedle
+jejího hlavního obsahu.  Hlavní obsah se při procházení mezi různými částmi
+portálu mění, ale panely zůstávají stále na svých místech.
+
+Na každém panelu může být libovolný textový obsah, ale kromě toho mají panely
+jednu velice praktickou vlastnost – mohou zobrazit seznam položek některého
+jiného modulu.  Například pro modul [News Novinky] bude zobrazen výpis
+posledních zpráv.  Můžete také zvolit kolik položek má být zobrazeno.  Výběr
+modulů obahuje pouze ty moduly, pro něž existuje položka v [Mapping mapování].
+
+Množiny panelů pro jednotlivé jazykové verze portálu jsou zcela nezávislé.
+Můžete tak mít jiné seskupení panelů pro každý jazyk.  Tabulka zobrazuje
+vždy pouze panely pro /aktuální zvolený jazyk/, takže budete muset přepnout
+jazyk, pokud chcete spravovat panely jiné jazykové verze.
+
+Pořadí panelů na stránce je dáno číslem v kolonce „Pořadí“.  Také v této
+tabulce jsou panely zobrazeny v tomto pořadí.

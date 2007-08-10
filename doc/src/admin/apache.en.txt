@@ -1,0 +1,77 @@
+# -*- coding: utf-8; mode: structured-text -*-
+
+= Apache Configuration =
+
+Table Of Contents: @TOC@
+
+== Basic Setup ==
+
+When Wiking is installed succesfully, you must configure Apache to use it for
+serving your site.  This can be as simple as adding two lines into your site's
+VirtualHost section.  An example follows:
+
+-----
+<VirtualHost *>
+  ServerName www.yourdomain.com
+  ScriptAliasMatch .* /usr/local/share/wiking/wiking.py
+  PythonOption database www.yourdomain.com
+</VirtualHost>
+-----
+
+The =ScriptAliasMatch= line says Apache to handle all requests to given site by
+wiking handler.  You should change the path if you installed Wiking to a
+different location.  Please note, that the file 'wiking.py' does not actually
+exist in the named directory, but that is ok.  The request will be redirected
+to the Wiking handler.  The directory must exist, however (it is created by the
+installation script).
+
+The =PythonOption= line sets the name of the database which should be used by
+Wiking to store content for given site.  The recommended practice is to use the
+site name for the database name, but you are free choose any other convention.
+
+This basic configuration should be sufficient for running the [cms].  Just
+reload Apache and try pointing your browser to the corresponding uri.  On the
+first try, the database will not be initialized, but Wiking will detect that
+and guide you through the database initialization process.
+
+You can configure as many VirtualHosts as you want and serve them all using
+Wiking.  There must be a separate database for each virtual host.
+
+
+== Modifying Python Path ==
+
+You may need to modify the path used by Python to search for available modules.
+This may be useful in the following cases:
+
+  * You installed Wiking into a non-standard directory
+  * You want to use a site specific configuration file (see [config] for
+    more information)
+  * You want to add site specific modules
+  * You want to use Wiking API to implement your own application on top of the
+    Wiking development platform (see [devel] for more information)
+
+-----
+  PythonPath "['/usr/local/myproject/wiking']+sys.path"
+-----
+
+
+== Database Connection Options ==
+
+You can pass additional options for database connection:
+-----
+  PythonOption user www-data
+  PythonOption host 10.0.0.213
+-----
+
+== Additional options for Apache configuration ==
+
+You may wish to redirect certain URIs to ordinary files and directories.  This
+can be simply done within the VirtualHost section.  
+
+Example:
+-----
+  Alias /img/ /var/www/www.yourdomain.com/img
+-----
+
+If you put this line prior to the ScriptAliasMatch line, Apache will handle all
+requests within the =img= directory by serving the corresponding files.

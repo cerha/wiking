@@ -1,0 +1,10 @@
+cms-intro
+Mapping
+Pages
+Attachments
+Panels
+News
+Planner
+Stylesheets
+Themes
+Languages

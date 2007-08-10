@@ -3,8 +3,7 @@ import lcg
 class Reader(lcg.Reader):
     """Generate Wiking API documentation out of Python docstrings."""
     
-    def __init__(self, id, **kwargs):
-        super(Reader, self).__init__(id, title="Wiking API Modules", **kwargs)
+    _DEFAULTS = {'title': "Wiking API Modules"}
         
     def _create_content(self):
         import wiking.api

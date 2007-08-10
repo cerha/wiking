@@ -1,0 +1,27 @@
+# -*- coding: utf-8; mode: structured-text -*-
+
+= Jazyky =
+
+Tento modul slouží k správě dostupných jazyků.  Můžete přidat libovolný jazyk
+zadáním dvouznakového kódu jazyka podle ISO 639-1.
+
+Zde zkonfigurované jazyky jsou potom automaticky dostupné pro určení jazyka
+obsahu.
+
+Více informací o tom, jak systém zabezpečuje poskytování nejvhodnější jazykové
+varianty uživatelům stránek naleznate v kapitole [navigation#languages Volba
+jazyka] uživatelské příručky systému Wiking.
+
+
+== Výběr jazyka ve správcovském rozhraní systému Wiking ==
+
+Rozhraní správy obsahu systému Wiking umožňuje libovolně přepínat mezi všemi
+zkonfigurovanými jazyky (narozdíl od běžného režimu prohlížení stránek, kdy
+jsou vždy nabízeny pouze ty jazyky, pro které obsah dané stránky skutečně
+existuje).
+
+Důležité je, že změnou aktuálního jazyka měníte také množinu zobrazených
+položek.  Pro jazykově závislé moduly jsou vždy zobrazeny pouze položky
+odpovídající aktuálnímu jazyku.  U modulů na jazyce nezávislých jsou zobrazeny
+všechny položky nezávisle na aktuálním jazyce.
+

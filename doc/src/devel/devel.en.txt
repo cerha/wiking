@@ -3,7 +3,7 @@
 = Wiking Developer's Documentation =
 
 Wiking is a platform for web application development.  The content management
-system described in [intro] is just an example of an application built on top
+system described in [cms] is just an example of an application built on top
 of this platform.  This section describes Wiking from developer's point of
 view.
 

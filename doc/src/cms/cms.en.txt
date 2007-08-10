@@ -1,0 +1,35 @@
+# -*- coding: utf-8; mode: structured-text -*-
+
+= Wiking Content Management System =
+
+Wiking CMS is an application built on top of the Wiking web application
+development platform.  See [cms-intro] for a general description of Wiking CMS
+and its capabilities.
+
+== Wiking Management Interface ==
+
+Wiking Management Interface (WMI) is the central point of site administration.
+
+The interface is devided into four sections, where each of the sections
+provides a set of modules responsible for management of different aspects of
+the website:
+
+  * *Content*
+    * [Mapping] -- Manage available URIs, Wiking modules which handle them and
+      main menu layout
+    * [Pages] -- Manage available pages of structured text content
+    * [Attachments] -- Manage files attached to pages
+    * [Panels] -- Manage panels – the small windows shown by the side of every page
+    * [News] -- Publish site news
+    * [Planner] -- Publish planned actions
+  * *Look & Feel*
+    * [Stylesheets] -- Manage available Cascading Stylesheets.
+    * [Themes] -- Manage available color themes.
+  * *User Management*
+    * Users -- Manage registered users
+    * Access Rights -- Manage access rights of registered users
+  * *Setup*
+    * Configuration -- Manage site specific configuration options
+    * [Languages] -- Manage available languages
+
+

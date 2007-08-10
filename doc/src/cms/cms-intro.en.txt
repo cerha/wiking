@@ -1,0 +1,86 @@
+# -*- coding: utf-8; mode: structured-text -*-
+
+= Introduction =
+
+Table of Contents: @TOC@
+
+== Overview ==
+
+The Wiking content management system was designed to produce highly accessible
+and customizable web sites.  All aspects of your web site can be controlled
+directly from a web browser.
+
+Most important features:
+
+  * Accessibility for website visitors (more about [accessibility accessibility])
+  * Accessible content management and authoring
+  * Support for internationalization and multilingual content
+  * Conformance to W3C and other relevant standards
+  * Wiking is Free Software licensed under GPL
+  
+Wiking comes with a set of predefined style-sheets and color themes to achieve
+a configurable attractive look without disturbing the accessibility.
+
+The concept of content creation using "structured text" (generalized markup
+similar to the well-known wiki formatting) proved to be well usable for people
+without technical background.  Also, together with an accessible user
+interface, this makes Wiking a suitable content management tool for blind
+people or people with other handicaps.
+
+== Technology ==
+
+Wiking is written in Python and is based on two other important components:
+
+ * *LCG* ... provides content abstraction, internationalization support and
+   html generation (see [http://www.freebsoft.org/lcg|LCG project website] for
+   more information).
+
+ * *Pytis* ... provides data abstraction, modularization and database access.
+
+In fact, Wiking is nothing else than a web interface to the Pytis toolkit and
+an application built on top of this toolkit.  The actual CMS logic resides in
+modules and the engine itself is very tiny piece of code.  This makes the
+system easily extensible and maintainable.  Thanks to this modular design,
+Wiking can also be used as a general platform for web application development
+(see [devel] for more information).
+
+The current implementation runs on Apache web server (over mod_python) and
+stores its data in the PostgreSQL database.  Thanks to a high level of
+abstraction, these components could be replaced, however.
+
+
+== History ==
+
+The first prototype of Wiking was released sometimes in late 2003.  It was
+written in Perl and it served as a platform for experimenting with web content
+accessibility and design of a user interface which is intuitive, remains
+visually attractive and provides all the features one expects from a
+``typical'' web portal.  The CMS itself was intentionally kept very simplistic
+since it was still considered a prototype, but many important features, such as
+multilingual support or two-phase publication process were already included.
+It evolved slowly for about three years and ended up in June 2006 with the
+version number 0.3.12.  The 0.3.x version will be maintained, but no new
+features will be added.
+
+The development of a new version written in Python began in June 2006 and the
+primary reason was the challenge to use the LCG to provide an accessible web
+interface for the Pytis toolkit.
+
+
+== Multilingual support ==
+
+You can manage multiple language variants of your content and Wiking defines
+the logic needed for serving it.  See [navigation#languages] for more
+information.
+
+Wiking user interface is currently translated into the following languages:
+  * Czech
+  * English
+  * Polish
+  * Spanish (partial)
+
+The translations marked as /partial/ include all messages needed for serving
+the content, but don't include translations for the management interface.
+
+Adding support for other languages is simple (using the GNU gettext framework)
+and we welcome anyone willing to contribute translations.
