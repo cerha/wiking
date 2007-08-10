@@ -2,5 +2,8 @@
 
 = Wiking User's Guide =
 
+This section describes the Wiking user interface from the perspective of
+website visitor.
+
 @NodeIndex(2)@
 
