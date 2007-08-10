@@ -1,8 +1,3 @@
-""" Definition of core Wiking modules.
-
-The modules defined here form the Wiking web application programming interface.
-
-"""
 # -*- coding: utf-8 -*-
 # Copyright (C) 2006, 2007 Brailcom, o.p.s.
 # Author: Tomas Cerha.
@@ -21,6 +16,11 @@ The modules defined here form the Wiking web application programming interface.
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+""" Definition of core Wiking modules.
+
+The modules defined here form the Wiking API.  
+
+"""
 
 from wiking import *
 
