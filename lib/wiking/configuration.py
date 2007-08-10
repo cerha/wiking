@@ -21,14 +21,30 @@ pc = pytis.util.Configuration
 _ = lcg.TranslatableTextFactory('wiking-cms')
 
 class Configuration(pc):
+    """Wiking Configuration.
+
+    Wiking first tries to import a module named 'wikingconfig'.  If no such module exists in
+    the current Python path, the following files are searched in given order:
     
+      * /etc/wiking.py
+      * /etc/wiking/config.py
+      * /usr/local/etc/wiking.py
+      * /usr/local/etc/wiking/config.py
+
+    This allows you to use a separate configuration for each website (Python path can be set up
+    separately for each Apache virtual host) or share a common configuration file by all hosts.
+      
+    The configuration file uses Python syntax to assign values to configuration options.  The
+    supported options are described below.  Options, which are not found in the configuration file
+    will retain their default value (listed below for each option).
+
+    Please note, that Wiking CMS uses the same configuration options, but many of them are
+    controlled through the Wiking Management Interface.  These will override the options defined in
+    the configuration file.
+
+    """
     class _Option_config_file(pc.StringOption, pc.HiddenOption):
         _DESCR = "Configuration file location"
-        _DOC = ("Since this option presents the chicken/egg problem, there are more ways you "
-                "can influence it.  Wiking first tries to import a module named 'wikingconfig'. "
-                "If no such module exists in the current Python path, the following files are "
-                "searched in given order: /etc/wiking.py, /etc/wiking/config.py, "
-                "/usr/local/etc/wiking.py, /usr/local/etc/wiking/config.py.")
         def default(self):
             try:
                 import wikingconfig
@@ -73,12 +89,12 @@ class Configuration(pc):
         _DEFAULT = (443,)
         
     class _Option_translation_paths(pc.Option):
-        _DESCR = "Dictionary of translation paths for each translation domain"
-        _DOC = ("The dictionary keys are translation domain names and values are paths to the "
-                "corresponding locale data directories.  These directories depend on your "
-                "installation.  Each directory should contain a subdirectory '<lang>/LC_MESSAGES' "
-                "and a file '<domain>.mo' in it, where <lang> is the language code and <domain> "
-                "is the corresponding dictionary key.")
+        _DESCR = "Translation path for each translation domain"
+        _DOC = ("The value is a dictionary, where keys are translation domain names and values "
+                "are paths to the corresponding locale data directories.  These directories "
+                "depend on your installation.  Each directory should contain a subdirectory "
+                "'<lang>/LC_MESSAGES' and a file '<domain>.mo' in it, where <lang> is the "
+                "language code and <domain> is the corresponding dictionary key.")
         def default(self):
             import os
             dir = os.path.join(self._configuration.wiking_dir, 'translations')
@@ -151,7 +167,7 @@ class Configuration(pc):
         _DEFAULT = False
 
     class _Option_theme(pc.Option):
-        _DESCR = "Color theme to be used for stylesheet color substitutions."
+        _DESCR = "Color theme for stylesheet color substitutions."
         _DEFAULT = Theme()
 
     class _Option_exporter(pc.Option):
