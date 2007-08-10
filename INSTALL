@@ -2,14 +2,15 @@
 
 Dependencies:
 
+  * python >= 2.3 (2.4 suggested)
   * apache >= 2.0 (prefork MPM!)
   * mod_python >= 3.2.10
-  * postgresql >= 8.0 (8.2 suggested)
-  * python >= 2.3 (2.4 suggested)
+  * postgresql >= (8.1 or later)
   * lcg >= 0.3.4
   * pytis >= 0.1.0
-  * pyPgSQL
-  * mxDateTime
+  * python-egenix-mxdatetime - Python date/time manipulation routines
+  * python-psycopg2 - Python DBAPI 2 implementation for PostgreSQL
+  * python-imaging - Python Imaging Library (needed only when using Image galeries)  
 
 Multithreaded Apache MPM is currently not supported.  Since it is the default
 in many distributions, please check and switch to prefork MPM to be able to run
@@ -21,7 +22,6 @@ installation.  You may also wish to change some variables at the beginning of
 the Makefile to customize the installation.
 
 After installing Wiking, you must configure Apache to use Wiking for serving
-your site.  Please, see the included HTML documentation.  Installation
-instructions are 'in doc/html/admin.html'.  If you are installing from CVS, you
-will need to run "make doc" to generate the HTML documentation (or read the
-text source).
+your site.  Please, see the Administration section within the included HTML
+documentation.  If you are installing from CVS, you will need to run "make
+doc" to generate the HTML documentation (or read the text source).
