@@ -2,7 +2,7 @@
 
 = Wiking Documentation =
 
-Copyright (c) 2006 Brailcom, o.p.s.
+Copyright (c) 2006, 2007 Brailcom, o.p.s.
 
 Permission is granted to copy, distribute and/or modify this document under the
 terms of the GNU Free Documentation License, Version 1.2 or any later version
@@ -10,9 +10,27 @@ published by the Free Software Foundation; with no Invariant Sections, no
 Front-Cover Texts, and no Back-Cover Texts.  A copy of the license is included
 in the section [fdl].
 
+
+== Introduction ==
+
+Wiking is a web application development platform.  The most interesting part
+for end users is the content management system built on top of this platform.
+
+The following sections describe wiking from the perspective of the [user Wiking
+website visitor], [cms Wiking CMS user/administrator], [admin web server
+administrator] and [devel software developer].
+
 == Table of Contents ==
 
 @NodeIndex(1)@
+
+== Contact == contact
+
+  * Wiking project homepage: http://www.freebsoft.org/wiking
+  * Mailing-list: wiking@lists.freebsoft.org
+    (subscribe at http://lists.freebsoft.org/mailman/listinfo/wiking)
+  * Author: Tomáš Cerha <cerha@brailcom.org>
+
 
 == Appendices ==
 
