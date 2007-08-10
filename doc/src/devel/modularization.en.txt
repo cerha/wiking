@@ -1,0 +1,80 @@
+# -*- coding: utf-8; mode: structured-text -*-
+
+= Modularization =
+
+The extensibility of Wiking is based on modularization.
+
+Table Of Contents: @TOC@
+
+
+== What Is a Wiking Module ==
+
+The core functionality is implemented by the Wiking Handler.  This handler
+handles all requests and uses modules to perform different stages of request
+processing, such as authentication, uri resolution, serving the content etc.
+Thus each part of Wiking functionality can be overriden by overriding the
+module responsible for given task.
+
+The complete set of modules and their interface is described in the section
+[api].
+
+Wiking modules are implemented by Python classes.  Wiking creates instances of
+these classes and uses them for handling requests.  These instances are
+persistent, so that one instance is typically used for handling multiple
+requests, however this sharing is always limited to just one virtual host.
+
+
+== How Wiking Locates Available Modules ==
+
+/Note on terminology:/ The text below uses the term /module/ in two contexts.
+One is for Wiking module -- a Python class implementing part of Wiking
+functionality, other is for Python module -- a collection of Python definitions
+and statements typically represented by a Python source file.  If we don't say
+``Python module'' explicitely, Wiking module is meant.
+
+The technique used for locating wiking modules is simple.  Wiking always looks
+for modules by their name.  It first tries to import the Python module named
+'wikingmodules' and definition of a class with the corresponding name within
+it.  If no such class is found within 'wikingmodules', Wiking uses the default
+implementation of the module.
+
+You may easilly use custom set of modules for each virtual host by simply
+modifying the Python path for each of them (see [apache] form more
+information).
+
+When the module 'wikingmodules' doesn't exist at all (in the current Python
+path), Wiking automatically uses the modules of Wiking CMS.  This means, that
+if you don't provide your own modules, you end up running the CMS on your
+website.
+
+
+== Adding Custom Modules to Wiking CMS ==
+
+Given the information above, you can easilly add your custom modules to wiking
+CMS or modify the existing modules to suit your needs.  Let's give an example
+of `wikingmodules.py', which can be found within Python path of the
+corresponding virtual host:
+
+-----
+import wiking.cms
+
+class MyModule(wiking.cms.CMSModule, wiking.cms.Mappable):
+      """My Wiking CMS module implementing fancy things."""
+      WMI_SECTION = wiking.cms.WikingManagementInterface.SECTION_CONTENT
+      ....
+
+# Import the rest without poluting the namespace at the beginning...
+from wiking.cms import * 
+-----
+
+Such a module will automatically become available in WMI.
+
+
+== Predefined Modules ==
+
+Wiking also provides a set of predefined modules, which implement various
+common usecases for the core modules defined by the API.  For example there is
+a module implementing Cookie based authentication, which can be used by an
+application to replace the default 'Authentication' module.  Documentation for
+these modules is not yet included, so please see the source code and the
+relevant Python docstrings in files 'modules.py' and 'db.py'.

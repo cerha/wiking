@@ -63,7 +63,7 @@ You can pass additional options for database connection:
   PythonOption host 10.0.0.213
 -----
 
-== Additional options for Apache configuration ==
+== Additional options ==
 
 You may wish to redirect certain URIs to ordinary files and directories.  This
 can be simply done within the VirtualHost section.  
@@ -73,5 +73,5 @@ Example:
   Alias /img/ /var/www/www.yourdomain.com/img
 -----
 
-If you put this line prior to the ScriptAliasMatch line, Apache will handle all
+If you put this line prior to the =ScriptAliasMatch= line, Apache will handle all
 requests within the =img= directory by serving the corresponding files.

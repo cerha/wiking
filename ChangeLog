@@ -3,6 +3,10 @@
 	* lib/wiking/modules.py (DocumentHandler._document): Hardcoded
 	documentation subdirectories updated.
 
+	* doc/src/devel/_index.txt: New file.
+	
+	* doc/src/devel/modularization.en.txt: New file.
+
 	* lib/wiking/configuration.py: Docstrings improved.
 
 	* doc/src/cms/Attachments.cs.txt: New file.

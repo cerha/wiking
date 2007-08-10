@@ -7,23 +7,4 @@ system described in [cms] is just an example of an application built on top
 of this platform.  This section describes Wiking from developer's point of
 view.
 
-The extensibility of Wiking is based on modularization.  The core functionality
-is implemented by the Wiking Handler.  This handler handles all requests and
-uses modules to perform different stages of request processing, such as
-authentication, uri resolution etc.
-
-Thus it is possible to customize the bahavior by overriding the core modules.
-The core modules form the so called 'Wiking API' which is described in the
-section below.  
-
-
 @NodeIndex(1)@
-
-
-Wiking also provides a set of predefined modules, which implement various
-common usecases for the core modules, such as a cookie based authentication
-module, session management, static uri mapping, serving formatted documents
-from structured text files etc.
-
-Documentation for these modules is not yet part of this document, so please see
-the source code and the relevant Python docstrings.
