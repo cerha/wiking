@@ -1,3 +1,28 @@
+2007-08-15  Tomas Cerha  <cerha@brailcom.org>
+
+	* resources/css/default.css: New and updated styles for pytis
+	forms.
+
+	* lib/wiking/db.py: Don't pass rows to list forms directly, just
+	pass the condition and let the form do the select.  Pass paging
+	arguments to list forms.
+
+	* lib/wiking/cms.py (Config.Spec): Respect changes in pytis
+	`Configuration' interface.
+	(Planner._condition): Respect the changed interface of this method
+	in parent class.
+
+	* lib/wiking/export.py: Export menu only if there are items.
+
+	* lib/wiking/util.py (ListView._wrap_exported_rows_custom):
+	Respect the change in parent class.
+
+	* doc/src/user/navigation.cs.txt: Conflicting anchor names changed.
+
+	* doc/src/user/navigation.en.txt: Conflicting anchor names changed.
+
+	* doc/src/user/navigation.pl.txt: Conflicting anchor names changed.
+
 2007-08-10  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/modules.py (DocumentHandler._document): Hardcoded
