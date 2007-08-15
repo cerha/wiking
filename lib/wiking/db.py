@@ -390,28 +390,23 @@ class PytisModule(Module, ActionHandler):
                 prefill['lang'] = lang
         return prefill
 
-    def _condition(self):
-        # Can be used by a module to filter out invalid (ie outdated) records.
-        return None
-    
-    def _rows(self, lang=None, **kwargs):
-        if not kwargs.has_key('sorting'):
-            kwargs['sorting'] = self._sorting
-        if not kwargs.has_key('condition'):
-            kwargs['condition'] = self._condition()
+    def _condition(self, lang=None, **kwargs):
+        # Can be used by a module to filter out invalid (ie. outdated) records.
+        conds = [pd.EQ(k, pd.Value(self._data.find_column(k).type(), v))
+                 for k, v in kwargs.items()]
         if lang and self._LIST_BY_LANGUAGE:
-            kwargs['lang'] = lang
-        return self._data.get_rows(**kwargs)
-    
-    def _list(self, req, lang=None, limit=None):
-        if self._LIST_BY_LANGUAGE and not req.wmi:
-            variants = [str(v.value()) for v in
-                        self._data.distinct('lang', sort=pd.ASCENDENT)]
+            conds.append(pd.EQ('lang', pd.Value(pd.String(), lang)))
+        if conds:
+            return pd.AND(*conds)
         else:
-            variants = self._module('Languages').languages()
-        if lang is None:
-            lang = req.prefered_language(variants)
-        return lang, variants, self._rows(lang=lang)
+            return None
+    
+    def _rows(self, lang=None, limit=None):
+        return self._data.get_rows(sorting=self._sorting, limit=limit,
+                                   condition=self._condition(lang=lang))
+    
+    def _list(self, req, limit=None):
+        return variants, 
 
     def _record(self, row, new=False, prefill=None):
         """Return the Record instance initialized by given data row."""
@@ -457,9 +452,8 @@ class PytisModule(Module, ActionHandler):
         args = {sbcol: record[bcol].value()}
         if self._LIST_BY_LANGUAGE:
             args['lang'] = record['lang'].value()
-        
         content = (
-            self._form(ListView, req, self._rows(**args), custom_spec=\
+            self._form(ListView, req, condition=self._condition(**args), custom_spec=\
                        (not req.wmi and self._CUSTOM_VIEW or None),
                        columns=[c for c in self._view.columns() if c!=sbcol]),
             self._action_menu(req, args=args, uri='/_wmi/' + self.name()))
@@ -470,12 +464,20 @@ class PytisModule(Module, ActionHandler):
     # ===== Action handlers =====
     
     def action_list(self, req, err=None, msg=None):
-        lang, variants, rows = self._list(req)
+        if self._LIST_BY_LANGUAGE and not req.wmi:
+            variants = [str(v.value()) for v in self._data.distinct('lang', sort=pd.ASCENDENT)]
+        else:
+            variants = self._module('Languages').languages()
+        lang = req.prefered_language(variants)
         content = req.wmi and \
                   (lcg.p(self._view.help() or '', ' ',
                          lcg.link('/_doc/'+self.name(), _("Help"))),) or ()
-        content += (self._form(ListView, req, rows, tree_level=self._TREE_LEVEL_COLUMN,
-                               custom_spec=(not req.wmi and self._CUSTOM_VIEW or None)),
+        kwargs = dict([(arg, func(req.params[arg])) for func, arg in  
+                       ((int, 'limit'), (int, 'offset'), (bool, 'next'), (bool, 'prev'))
+                       if req.params.has_key(arg)])
+        content += (self._form(ListView, req, condition=self._condition(lang=lang),
+                               handler=req.uri, tree_level=self._TREE_LEVEL_COLUMN,
+                               custom_spec=(not req.wmi and self._CUSTOM_VIEW or None), **kwargs),
                     self._action_menu(req))
         if not req.wmi and self._RSS_TITLE_COLUMN:
             # TODO: This belongs to RssModule.
@@ -574,7 +576,8 @@ class PytisModule(Module, ActionHandler):
         return action(req, record, msg=self._UPDATE_MSG)
         
     def _redirect_after_insert(self, req, record):
-        return self.action_list(req, msg=self._INSERT_MSG)
+        action = req.wmi and self.action_show or self.action_view
+        return action(req, record, msg=self._INSERT_MSG)
         
     def _redirect_after_delete(self, req, record):
         return self.action_list(req, msg=self._DELETE_MSG)
@@ -592,6 +595,7 @@ class RssModule(object):
     _RSS_DESCR_COLUMN = None
     _RSS_DATE_COLUMN = None
     _RSS_AUTHOR_COLUMN = None
+    _RSS_LIMIT = 10
 
     _RIGHTS_rss = Roles.ANYONE
 
@@ -607,7 +611,8 @@ class RssModule(object):
     def action_rss(self, req):
         if not self._RSS_TITLE_COLUMN:
             raise NotFound
-        lang, variants, rows = self._list(req, lang=str(req.param('lang')), limit=8)
+        lang = str(req.param('lang'))
+        rows = self._rows(lang=lang, limit=self._RSS_LIMIT)
         from xml.sax.saxutils import escape
         link_column = self._RSS_LINK_COLUMN or self._RSS_TITLE_COLUMN
         base_uri = req.abs_uri()[:-len(req.uri)]
