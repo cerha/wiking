@@ -131,10 +131,10 @@ class Exporter(lcg.HtmlExporter):
                 links.append(g.link(item.title(), self._node_uri(item), title=item.descr(),
                                     hotkey=(item.id() == 'index' and "1" or None), cls=cls) + sign)
         if links:
+            title = g.h(g.link(_("Main navigation"), None, name='main-navigation', hotkey="3"), 3)
             content = (title, g.list(links))
         else:
             content = ()
-        title = g.h(g.link(_("Main navigation"), None, name='main-navigation', hotkey="3"), 3)
         return g.map(g.div(content, id="main-menu"), title=_("Main navigation"))
 
     def _submenu(self, node):
