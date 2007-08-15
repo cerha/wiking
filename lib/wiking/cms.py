@@ -338,8 +338,9 @@ class Config(CMSModule):
     """
     class Spec(Specification):
         class _Field(Field):
-            def __init__(self, id, **kwargs):
-                Field.__init__(self, id, cfg.description(id), descr=cfg.documentation(id),**kwargs)
+            def __init__(self, name, **kwargs):
+                o = cfg.option(name)
+                Field.__init__(self, name, o.description(), descr=o.documentation(), **kwargs)
         title = _("Configuration")
         help = _("Edit site configuration.")
         fields = (
@@ -1024,9 +1025,14 @@ class Planner(News):
     _RSS_TITLE_COLUMN = 'date_title'
     _RSS_LINK_COLUMN = 'title'
     _RSS_DATE_COLUMN = None
-    def _condition(self):
-        return pd.OR(pd.GE('start_date', pd.Value(pd.Date(), today())),
-                     pd.GE('end_date', pd.Value(pd.Date(), today())))
+    def _condition(self, **kwargs):
+        scondition = super(Planner, self)._condition(**kwargs)
+        condition = pd.OR(pd.GE('start_date', pd.Value(pd.Date(), today())),
+                          pd.GE('end_date', pd.Value(pd.Date(), today())))
+        if scondition:
+            return pd.AND(scondition, condition)
+        else:
+            return condition
 
     
 class Images(StoredFileModule, CMSModule, Mappable):
