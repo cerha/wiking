@@ -281,7 +281,7 @@ div.panel-login a.login-ctrl {
 /* Links to unpublished pages */
 .unpublished { text-decoration: line-through; }
 
-sup.not-null { 
+.not-null { 
     color: #f00;
 }
 form.login-form input {
@@ -313,25 +313,39 @@ div.item span.panel-field-date {
 
 /* Pytis forms styles */
 
-table.browse-form {
+form.browse-form table {
     border-collapse: collapse;
     border: 1px solid $color.border;
     margin-top: .3em;
 }
-table.browse-form td, table.browse-form th {
+form.browse-form table td, form.browse-form table th {
     padding: 2pt;
     vertical-align: top;
     white-space: nowrap;
     border: 1px solid $color.border;
 }
-table.browse-form td {  background: $color.table-cell; }
-table.browse-form th {  background: $color.heading-bg; }
-table.browse-form td pre {
+form.browse-form table td {  background: $color.table-cell; }
+form.browse-form table th {  background: $color.heading-bg; }
+form.browse-form table td pre {
     background-color: transparent;
     border: none;
 }
-table.browse-form span.tree-indent {
+form.browse-form table span.tree-indent {
     padding-left: 0.3em;
+}
+form.browse-form table tfoot td {
+    background-color: $color.frame-bg;
+    border: 1px solid $color.frame-border;
+    padding: 0;
+    text-align: right;
+}
+form.browse-form fieldset.controls {
+    margin-top: 0.8em;
+    padding: .2em;
+    text-align: left;
+}
+form.browse-form fieldset.controls span.limit {
+    margin-left: 3em;
 }
 
 form.show-form, form.edit-form { 
@@ -339,13 +353,13 @@ form.show-form, form.edit-form {
     padding: 0;
 }
 
-fieldset.body, fieldset.submit { 
+fieldset.body, fieldset.controls { 
     background: $color.frame-bg;
     border: 1px solid $color.frame-border;
     border-width: 1px 0;
     margin: 0.4em 0;
 }
-fieldset.submit { 
+fieldset.controls { 
     margin-top: 0.5em;
     padding: 0.5em;
     text-align: center;
@@ -378,7 +392,7 @@ form.edit-form table {
     border-collapse: collapse;
 }
 
-form.edit-form fieldset.submit input { 
+form.edit-form fieldset.controls input { 
     padding: 0.1em 0.5em;
     margin: 0 1em;
 }
@@ -395,7 +409,7 @@ form.show-form span.color-value {
     background: $color.button;
     border: 1px solid $color.button-border;
 }
-form.edit-form fieldset.submit input:hover { 
+form.edit-form fieldset.controls input:hover { 
     background: $color.button-hover;
 }
 */
