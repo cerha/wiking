@@ -101,12 +101,13 @@ class Exporter(lcg.HtmlExporter):
     def _links(self, node):
         g = self._generator
         state = node.state()
-        links = [g.link(_("Content"), '#content-heading', hotkey="2"),
-                 g.link(_("Main navigation"), '#main-navigation')]
+        links = [g.link(_("Content"), '#content-heading', hotkey="2")]
+        if [n for n in node.root().children() if not n.hidden()]:
+            links.append(g.link(_("Main navigation"), '#main-navigation'))
         if state.has_submenu:
             links.append(g.link(_("Local navigation"), '#local-navigation'))
         if len(node.language_variants()) > 1:
-            links.append(g.link(_("Language selection"), '#language-selection'))
+            links.append(g.link(_("Language selection"), '#language-selection-anchor'))
         if state.show_panels:
             for panel in node.panels():
                 links.append(g.link(panel.title(), '#panel-%s ' % panel.id()))
@@ -129,9 +130,12 @@ class Exporter(lcg.HtmlExporter):
                     sign = self._hidden(' *')
                 links.append(g.link(item.title(), self._node_uri(item), title=item.descr(),
                                     hotkey=(item.id() == 'index' and "1" or None), cls=cls) + sign)
+        if links:
+            content = (title, g.list(links))
+        else:
+            content = ()
         title = g.h(g.link(_("Main navigation"), None, name='main-navigation', hotkey="3"), 3)
-        return g.map(g.div((title, g.list(links)), id="main-menu"),
-                     title=_("Main navigation"))
+        return g.map(g.div(content, id="main-menu"), title=_("Main navigation"))
 
     def _submenu(self, node):
         g = self._generator
