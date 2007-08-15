@@ -646,8 +646,11 @@ class ListView(pw.BrowseForm, _CustomView):
             self._wrap_exported_rows = self._wrap_exported_rows_custom
             self._export_row = self._export_row_custom
         
-    def _wrap_exported_rows_custom(self, exporter, rows):
-        return exporter.generator().div(rows, cls="list-view")
+    def _wrap_exported_rows_custom(self, exporter, rows, summary):
+        g = exporter.generator()
+        return g.div(rows, cls="list-view") +"\n"+ \
+               g.div(summary, cls="list-summary")
+    
 
     
 class Message(lcg.TextContent):
