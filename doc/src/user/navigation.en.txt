@@ -5,7 +5,7 @@
 Table of Contents: @TOC@
 
 
-== Navigation Menus == menu
+== Navigation Menus == menus
 
 A Wiking site may have two levels of navigation:
   * Main menu
@@ -23,13 +23,13 @@ displayed at all.
 
 The current menu item is visually emphasized so that the user always knows
 where he is at the moment.  If this visual information is not accessible for
-you, you may still find out where you are using the [#breadcrumbs].
+you, you may still find out where you are using the [#breadcrumb-navigation].
 
 Users of assistive technologies may want to skip the menus, since they are
 repeated at the top of each page.  See the section [#moving-around] for more
 information.
 
-== Breadcrumb navigation == breadcrumbs
+== Breadcrumb navigation == breadcrumb-navigation
 
 The so called "breadcrumb path" displays your current position within the site
 contents hierarchy as a set of links.  The path starts with the current top
@@ -50,9 +50,9 @@ Apart from the actual content, web pages often contain fixed parts which repeat
 on each page throughout a website.  The typical repetitive parts of a Wiking
 page are:
 
-  * [#breadcrumbs]
+  * [#breadcrumb-navigation]
   * [#languages]
-  * [#menu]
+  * [#menus]
   * [#panels]
 
 A visually oriented user may ignore those parts, since they are visually
@@ -111,7 +111,7 @@ possible to get to it using the heading navigation feature of the AT.
 == Tables of Contents ==
 
 Tables of Contents show the hierarchy of the current page content.  As opposed
-to [#menu], they don't refer to other pages, but just to subsections of the
+to [#menus], they don't refer to other pages, but just to subsections of the
 current page.
 
 They display a set of links allowing you to jump to a selected section

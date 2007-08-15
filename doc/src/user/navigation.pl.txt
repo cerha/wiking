@@ -5,7 +5,7 @@
 Spis Treści: @TOC@
 
 
-== GłÂówne menu nawigacyjne == menu
+== GłÂówne menu nawigacyjne == menus
 
 GłÂówne menu nawigacyjne znajduje się na górze strony jako szereg łÂączy. W
 przypadku zmodyfikowanego stylu moze to wyglądać zupełnie inaczej, ale cel
@@ -52,7 +52,7 @@ specjalistyczna technologie winna być użyta.
 Pewne częÂści strony powtarzają się -- pojawiają sie na każdej stronie witryny
 i z reguły nie zmieniają się. Te powtarzające się częÂści to:
 
-  * [#menu]
+  * [#menus]
   * [#languages]
   * [#panels]
 

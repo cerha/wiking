@@ -5,7 +5,7 @@
 Obsah: @TOC@
 
 
-== Navigační menu == menu
+== Navigační menu == menus
 
 Stránky využívající CMS Wiking mohou mít dvě úrovně navigace:
   * Menu hlavních sekcí (hlavní menu)
@@ -22,14 +22,14 @@ nejvyšší úrovně neobsahuje žádné podřízené stránky, menu není zobra
 
 Aktuální položka menu je vždy vizuálně zvýrazněna, takže uživatel má přehled
 kde se právě nachází.  Pokud tato vizuální informace není pro daného uživatele
-přístupná, je možné využít [#breadcrumbs lištu aktuální pozice].
+přístupná, je možné využít [#breadcrumb-navigation lištu aktuální pozice].
 
 Vzhledem k tomu, že se menu opakuje na každé stránce, může uživatelům
 zpřístupňujících technologií komplikovat pohyb po stránce.  O možnostech jak
 pohyb usnadnit se dozvíte v kapitole [#moving-around].
 
 
-== Lišta aktuální pozice == breadcrumbs
+== Lišta aktuální pozice == breadcrumb-navigation
 
 Aktuální pozice v rámci hierarchie stránek je zobrazena pomocí lišty označené
 nápisem "Nacházíte se zde", kterou najdete na začátku stránky.  Lišta zobrazuje
@@ -51,9 +51,9 @@ Kromě vlastního obsahu většina webových stránek zobrazuje také neměnné 
 které se v nezměněné podobě opakují na všech stránkách daného webu, jako
 např. různé navigační prvky apod.  V případě systému Wiking to typicky jsou:
 
-  * [#breadcrumbs]
+  * [#breadcrumb-navigation]
   * [#languages]
-  * [#menu]
+  * [#menus]
   * [#panels]
 
 Vizuálně orientovaný uživatel může tyto části snadno ignorovat, protože jsou od
@@ -119,7 +119,7 @@ technologie umožňuje.
 
 Obsáhlejší stránky, které se skládají z více samostatných kapitol většinou
 obsahují rejstřík.  Rejstřík zachycuje hierarchii kapitol a umožňuje přesun na
-libovolnou kapitolu formou odkazu.  Na rozdíl od [#menu navigačních menu]
+libovolnou kapitolu formou odkazu.  Na rozdíl od [#menus navigačních menu]
 rejstřík neodkazuje na jiné stránky ale pouze na jednotlivé kapitoly v rámci
 současné stránky.
 
