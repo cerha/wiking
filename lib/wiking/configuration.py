@@ -51,7 +51,10 @@ class Configuration(pc):
             except ImportError:
                 pass
             else:
-                return wikingconfig.__file__
+                filename = wikingconfig.__file__
+                if filename.endswith('.pyc'):
+                    filename = filename[:-1]
+                return filename
             for filename in ('/etc/wiking.py', '/etc/wiking/config.py',
                              '/usr/local/etc/wiking.py', '/usr/local/etc/wiking/config.py'):
                 if os.access(filename, os.F_OK):
