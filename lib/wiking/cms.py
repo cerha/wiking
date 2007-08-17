@@ -197,8 +197,6 @@ class Mapping(CMSModule, Publishable, Mappable):
         title = _("Mapping")
         help = _("Manage available URIs and Wiking modules which handle them. "
                  "Also manage the main menu.")
-        def _level(self, row):
-            return len(row['tree_order'].value().split('.')) - 2
         def fields(self): return (
             Field('mapping_id', width=5, editable=NEVER),
             Field('parent', _("Parent item"), codebook='MappingParents', not_null=False,
@@ -220,9 +218,7 @@ class Mapping(CMSModule, Publishable, Mappable):
             Field('ord', _("Menu order"), width=6,
                   descr=_("Enter a number denoting the item order in the menu or leave the field "
                           "blank if you don't want this item to appear in the menu.")),
-            Field('tree_order'),
-            Field('level', _("Identifier"), virtual=True,
-                  computer=Computer(self._level, depends=('tree_order',))),
+            Field('tree_order', _("Tree level"), type=pd.TreeOrder()),
             )
         sorting = (('tree_order', ASC), ('identifier', ASC))
         bindings = {'Pages': pp.BindingSpec(_("Pages"), 'mapping_id')}
@@ -230,7 +226,6 @@ class Mapping(CMSModule, Publishable, Mappable):
         layout = ('identifier', 'parent', 'modname', 'published', 'private', 'ord')
         cb = pp.CodebookSpec(display='identifier')
     _REFERER = 'identifier'
-    _TREE_LEVEL_COLUMN = 'level'
     _EXCEPTION_MATCHERS = (
         ('duplicate key violates unique constraint "_mapping_unique_tree_(?P<id>ord)er"',
          _("Duplicate menu order on the this tree level.")),) + \
@@ -629,8 +624,6 @@ class Pages(CMSModule, Publishable, Mappable):
     class Spec(Specification):
         title = _("Pages")
         help = _("Manage available pages of structured text content.")
-        def _level(self, row):
-            return len(row['tree_order'].value().split('.')) - 2
         def fields(self): return (
             Field('page_id'),
             Field('mapping_id'),
@@ -649,9 +642,7 @@ class Pages(CMSModule, Publishable, Mappable):
             Field('published', _("Published")),
             Field('status', _("Status"), virtual=True,
                   computer=Computer(self._status, depends=('content', '_content'))),
-            Field('tree_order'),
-            Field('level', _("Identifier"), virtual=True,
-                  computer=Computer(self._level, depends=('tree_order',))),
+            Field('tree_order', _("Tree level"), type=pd.TreeOrder()),
             )
         def _title(self, row):
             return row['title'].value() or row['identifier'].value()
@@ -675,7 +666,6 @@ class Pages(CMSModule, Publishable, Mappable):
          CMSModule._EXCEPTION_MATCHERS
     _LIST_BY_LANGUAGE = True
     _RELATED_MODULES = ('Attachments',)
-    _TREE_LEVEL_COLUMN = 'level'
     
     _INSERT_MSG = _("New page was successfully created. Don't forget to publish it when you are "
                     "done. Please, visit the 'Mapping' module if you want to add the page to the "
@@ -1200,7 +1190,7 @@ class _Users(CMSModule):
                           "digits, underscores, dashes and dots and must "
                           "start with a letter.")),
             Field('password', _("Password"), width=16,
-                  type=pd.Password(maxlen=32, not_null=True),
+                  type=pd.Password(minlen=4, maxlen=32, not_null=True),
                   descr=_("Please write the new password into each of the two fields.  Leave both "
                           "fields blank if you are editing an existing account and don't want to "
                           "change the password.")),

@@ -69,7 +69,6 @@ class PytisModule(Module, ActionHandler):
     _NON_LAYOUT_FIELDS = ()
 
     _ALLOW_TABLE_LAYOUT_IN_FORMS = True
-    _TREE_LEVEL_COLUMN = None
 
     _spec_cache = {}
 
@@ -192,6 +191,8 @@ class PytisModule(Module, ActionHandler):
             if isinstance(type, (pd.Binary, pd.Password)) \
                    and not value_ and not record.new():
                 continue # Keep the original file if no file is uploaded.
+            if isinstance(type, pd.Password) and kwargs.get('verify') is None:
+                kwargs['verify'] = ''
             value, error = type.validate(value_, **kwargs)
             #log(OPR, "Validation:", (id, value_, kwargs, error))
             if error:
@@ -288,7 +289,7 @@ class PytisModule(Module, ActionHandler):
             return module.link(req, row[cid])
         return None
 
-    def _form(self, form, req, *args, **kwargs):
+    def _form(self, form, req, action=None, hidden=(), **kwargs):
         def link_provider(row, cid):
             return self._link_provider(req, row, cid, target=form)
         kwargs['link_provider'] = link_provider
@@ -297,7 +298,10 @@ class PytisModule(Module, ActionHandler):
         #                       (('module', req.params['module']),)
         if issubclass(form, pw.EditForm):
             kwargs['allow_table_layout'] = self._ALLOW_TABLE_LAYOUT_IN_FORMS
-        return form(self._data, self._view, self._resolver, *args, **kwargs)
+        if action is not None:
+            hidden += (('action', action),)
+        return form(self._data, self._view, self._resolver, handler=req.uri, name=self.name(),
+                    hidden=hidden, **kwargs)
     
     def _default_action(self, req, record=None):
         if record is None:
@@ -405,9 +409,6 @@ class PytisModule(Module, ActionHandler):
         return self._data.get_rows(sorting=self._sorting, limit=limit,
                                    condition=self._condition(lang=lang))
     
-    def _list(self, req, limit=None):
-        return variants, 
-
     def _record(self, row, new=False, prefill=None):
         """Return the Record instance initialized by given data row."""
         return self.Record(self._view.fields(), self._data, row,
@@ -452,10 +453,14 @@ class PytisModule(Module, ActionHandler):
         args = {sbcol: record[bcol].value()}
         if self._LIST_BY_LANGUAGE:
             args['lang'] = record['lang'].value()
+        if req.params.get('form-name') == self.name():
+            kwargs = ListView.form_args(req.params)
+        else:
+            kwargs = {}
         content = (
-            self._form(ListView, req, condition=self._condition(**args), custom_spec=\
-                       (not req.wmi and self._CUSTOM_VIEW or None),
-                       columns=[c for c in self._view.columns() if c!=sbcol]),
+            self._form(ListView, req, condition=self._condition(**args),
+                       custom_spec=(not req.wmi and self._CUSTOM_VIEW or None), 
+                       columns=[c for c in self._view.columns() if c!=sbcol], **kwargs),
             self._action_menu(req, args=args, uri='/_wmi/' + self.name()))
         #lang = req.prefered_language(self._module('Languages').languages())
         #title = self._real_title(lang)
@@ -469,15 +474,13 @@ class PytisModule(Module, ActionHandler):
         else:
             variants = self._module('Languages').languages()
         lang = req.prefered_language(variants)
-        content = req.wmi and \
-                  (lcg.p(self._view.help() or '', ' ',
-                         lcg.link('/_doc/'+self.name(), _("Help"))),) or ()
-        kwargs = dict([(arg, func(req.params[arg])) for func, arg in  
-                       ((int, 'limit'), (int, 'offset'), (bool, 'next'), (bool, 'prev'))
-                       if req.params.has_key(arg)])
+        content = ()
+        if req.wmi:
+            help = lcg.p(self._view.help() or '', ' ', lcg.link('/_doc/'+self.name(), _("Help")))
+            content += (help,)
         content += (self._form(ListView, req, condition=self._condition(lang=lang),
-                               handler=req.uri, tree_level=self._TREE_LEVEL_COLUMN,
-                               custom_spec=(not req.wmi and self._CUSTOM_VIEW or None), **kwargs),
+                               custom_spec=(not req.wmi and self._CUSTOM_VIEW or None),
+                               **ListView.form_args(req.params)),
                     self._action_menu(req))
         if not req.wmi and self._RSS_TITLE_COLUMN:
             # TODO: This belongs to RssModule.
@@ -492,10 +495,9 @@ class PytisModule(Module, ActionHandler):
 
     def action_show(self, req, record, err=None, msg=None, custom=False):
         if not custom:
-            form = self._form(pw.ShowForm, req, record.row())
+            form = self._form(pw.ShowForm, req, row=record.row())
         else:
-            form = self._form(RecordView, req, record.row(),
-                              custom_spec=self._CUSTOM_VIEW)
+            form = self._form(RecordView, req, row=record.row(), custom_spec=self._CUSTOM_VIEW)
         content = [form, self._action_menu(req, record)]
         for modname in self._RELATED_MODULES:
             module, binding = self._module(modname), self._bindings[modname]
@@ -511,19 +513,17 @@ class PytisModule(Module, ActionHandler):
         # TODO: Redirect handler to HTTPS if cfg.force_https_login is true?
         # The primary motivation is to protect registration form data.  The
         # same would apply for action_edit.
-        form = self._form(pw.EditForm, req, None, handler=req.uri, new=True,
-                          prefill=self._prefill(req, new=True),
-                          errors=errors, action='insert')
+        form = self._form(pw.EditForm, req, row=None, new=True, action='insert',
+                          prefill=self._prefill(req, new=True), errors=errors)
         return self._document(req, form, subtitle=_("new record"))
 
     def action_edit(self, req, record, errors=(), msg=None):
-        form = self._form(pw.EditForm, req, record.row(), handler=req.uri,
-                          errors=errors, prefill=self._prefill(req),
-                          action='update')
+        form = self._form(pw.EditForm, req, row=record.row(), action='update',
+                          prefill=self._prefill(req), errors=errors)
         return self._document(req, form, record, subtitle=_("edit form"), msg=msg)
 
     def action_remove(self, req, record, err=None):
-        form = self._form(pw.ShowForm, req, record.row())
+        form = self._form(pw.ShowForm, req, row=record.row())
         actions = self._action_menu(req, record,
                                     (Action(_("Remove"), 'delete'),))
         msg = _("Please, confirm removing the record permanently.")

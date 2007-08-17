@@ -1,3 +1,17 @@
+2007-08-17  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/cms.py: Make use of new method for tree emulation in
+	pytis forms.
+
+	* lib/wiking/db.py: Respect changes in pytis form classes and
+	support long list browsing and sorting.
+
+	* resources/css/default.css: Form styles modified according to
+	changes in form export.
+
+	* lib/wiking/util.py: Default color theme improved. 
+	(_CustomView._export_row_custom): Respect changes in parent class.
+
 2007-08-15  Tomas Cerha  <cerha@brailcom.org>
 
 	* resources/css/default.css: New and updated styles for pytis

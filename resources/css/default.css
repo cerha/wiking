@@ -313,6 +313,27 @@ div.item span.panel-field-date {
 
 /* Pytis forms styles */
 
+fieldset.body, fieldset.controls, fieldset.submit { 
+    background: $color.frame-bg;
+    border: 1px solid $color.frame-border;
+    border-width: 1px 0;
+    margin: 0.4em 0;
+}
+fieldset.controls {
+    margin: 0.8em 0;
+    padding: .2em;
+}
+fieldset.submit { 
+    margin-top: 0.5em;
+    padding: 0.5em;
+    text-align: center;
+}
+fieldset.submit input { 
+    padding: 0.1em 0.5em;
+    margin: 0 1em;
+}
+
+
 form.browse-form table {
     border-collapse: collapse;
     border: 1px solid $color.border;
@@ -325,24 +346,20 @@ form.browse-form table td, form.browse-form table th {
     border: 1px solid $color.border;
 }
 form.browse-form table td {  background: $color.table-cell; }
+form.browse-form table tr.even td {  background: $color.table-cell2; }
 form.browse-form table th {  background: $color.heading-bg; }
 form.browse-form table td pre {
     background-color: transparent;
     border: none;
 }
 form.browse-form table span.tree-indent {
-    padding-left: 0.3em;
+    padding-left: 0.6em;
 }
 form.browse-form table tfoot td {
     background-color: $color.frame-bg;
     border: 1px solid $color.frame-border;
     padding: 0;
     text-align: right;
-}
-form.browse-form fieldset.controls {
-    margin-top: 0.8em;
-    padding: .2em;
-    text-align: left;
 }
 form.browse-form fieldset.controls span.limit {
     margin-left: 3em;
@@ -351,18 +368,6 @@ form.browse-form fieldset.controls span.limit {
 form.show-form, form.edit-form { 
     margin: 0.4em 0;
     padding: 0;
-}
-
-fieldset.body, fieldset.controls { 
-    background: $color.frame-bg;
-    border: 1px solid $color.frame-border;
-    border-width: 1px 0;
-    margin: 0.4em 0;
-}
-fieldset.controls { 
-    margin-top: 0.5em;
-    padding: 0.5em;
-    text-align: center;
 }
 form.show-form label, form.edit-form label { 
     white-space: nowrap;
@@ -392,10 +397,6 @@ form.edit-form table {
     border-collapse: collapse;
 }
 
-form.edit-form fieldset.controls input { 
-    padding: 0.1em 0.5em;
-    margin: 0 1em;
-}
 form.show-form span.color-display { 
     padding: 0 0.5em;
     border: 1px solid $color.border;
@@ -516,3 +517,17 @@ div.table-of-contents ul {
     margin-top: 3pt;
     margin-bottom: 0;
 }
+
+
+/* Border-less table:
+form.browse-form.mapping table {
+    border-collapse: separate;
+    border-spacing: 0;
+    border-width: 0;
+}
+form.browse-form.mapping table tbody td {
+    border-width: 0;
+}
+form.browse-form.mapping table th {
+    border-width: 1px 0;
+} */

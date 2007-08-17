@@ -302,7 +302,7 @@ class Theme(object):
                  'message-bg': '#cfc',
                  'message-border': '#aea',
                  'table-cell': '#f8fafb',
-                 'table-cell2': '#eaeaff',
+                 'table-cell2': '#f1f3f2',
                  'button-border': '#9af',
                  'button-inactive-fg': '#555',
                  'button-inactive': '#ccc',
@@ -603,7 +603,7 @@ class _CustomView(object):
         content.set_parent(self.parent())
         return content.export(exporter)
     
-    def _export_row_custom(self, exporter, row):
+    def _export_row_custom(self, exporter, row, n):
         g = exporter.generator()
         spec = self._custom_spec
         labeled = spec.labeled_fields()
