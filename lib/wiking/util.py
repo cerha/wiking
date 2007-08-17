@@ -897,9 +897,12 @@ def get_module(name):
     except ImportError:
         try:
             import wikingmodules
-        except ImportError:
-            import wiking.cms
-            return getattr(wiking.cms, name)
+        except ImportError, e:
+            if str(e) == 'No module named wikingmodules':
+                import wiking.cms
+                return getattr(wiking.cms, name)
+            else:
+                raise
         else:
             try:
                 return getattr(wikingmodules, name)
@@ -909,8 +912,11 @@ def get_module(name):
     else:
         try:
             modules = import_module('wikingmodules', log=True)
-        except ImportError:
-            modules = import_module('wiking.cms', log=True)
+        except ImportError, e:
+            if str(e) == 'No module named wikingmodules':
+                modules = import_module('wiking.cms', log=True)
+            else:
+                raise
         else:
             try:
                 return getattr(modules, name)
