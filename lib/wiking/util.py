@@ -526,10 +526,11 @@ class ActionMenu(lcg.Content):
             if self._uri is not None:
                 uri = self._uri
             elif action.context() is None and self._row is not None:
-                if action.name() == 'delete':
-                    args = copy.copy(args)
-                    key = self._row.data().key()[0].id()
-                    args[key] = self._row[key].export()
+                uri = '.'
+            elif action.name() == 'delete':
+                args = copy.copy(args)
+                key = self._row.data().key()[0].id()
+                args[key] = self._row[key].export()
                 uri = '.'
             else:
                 uri = ''

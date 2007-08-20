@@ -620,7 +620,7 @@ class Themes(CMSModule):
 # The modules above are system modules used internally by Wiking.
 # ==============================================================================
 
-class Pages(CMSModule, Publishable, Mappable):
+class Pages(CMSModule, Mappable):
     class Spec(Specification):
         title = _("Pages")
         help = _("Manage available pages of structured text content.")
@@ -639,7 +639,7 @@ class Pages(CMSModule, Publishable, Mappable):
             Field('_content', _("Content"), compact=True, height=20, width=80,
                   descr=_STRUCTURED_TEXT_DESCR),
             Field('content'),
-            Field('published', _("Published")),
+            Field('published'),
             Field('status', _("Status"), virtual=True,
                   computer=Computer(self._status, depends=('content', '_content'))),
             Field('tree_order', _("Tree level"), type=pd.TreeOrder()),
@@ -647,15 +647,22 @@ class Pages(CMSModule, Publishable, Mappable):
         def _title(self, row):
             return row['title'].value() or row['identifier'].value()
         def _status(self, row):
+            if not row['published'].value():
+                return _("Not published")
             _c = row['_content'].value()
             if _c:
                 c = row['content'].value()
-                return c == _c and _("Ok") or _("Changed")
+                if c is None:
+                    return _("Not published")
+                elif c == _c:
+                    return _("Ok")
+                else:
+                    return _("Changed")
             else:
                 return _("Missing")
         sorting = (('tree_order', ASC), ('lang', ASC),)
         layout = ('identifier', 'lang', 'title', '_content')
-        columns = ('title_', 'identifier', 'published', 'status')
+        columns = ('title_', 'identifier', 'status')
         cb = pp.CodebookSpec(display='identifier')
         bindings = {'Attachments': pp.BindingSpec(_("Attachments"), 'mapping_id')}
     
@@ -667,15 +674,17 @@ class Pages(CMSModule, Publishable, Mappable):
     _LIST_BY_LANGUAGE = True
     _RELATED_MODULES = ('Attachments',)
     
+    _SUBMIT_BUTTONS = ((_("Save"), None), (_("Save and publish"), 'publish'))
     _INSERT_MSG = _("New page was successfully created. Don't forget to publish it when you are "
                     "done. Please, visit the 'Mapping' module if you want to add the page to the "
                     "main menu.")
     _UPDATE_MSG = _("Page content was modified, however the changes remain unpublished. Don't "
                     "forget to publish the changes when you are done.")
-    
-    _IS_OK = pd.NE('content', pd.Value(pd.String(), None))
-    _ACTIONS = (Action(_("Publish changes"), 'sync',
+    _ACTIONS = (Action(_("Publish"), 'commit',
                        descr=_("Publish the current modified content"),
+                       enabled=lambda r: r['_content'].value() != r['content'].value()),
+                Action(_("Revert"), 'revert',
+                       descr=_("Revert last modifications"),
                        enabled=lambda r: r['_content'].value() != r['content'].value()),
                 Action(_("Preview"), 'preview',
                        descr=_("Display the current version of the page"),
@@ -691,7 +700,8 @@ class Pages(CMSModule, Publishable, Mappable):
 
     def _variants(self, record):
         return [str(r['lang'].value()) for r in 
-                self._data.get_rows(mapping_id=record['mapping_id'].value(), condition=self._IS_OK)]
+                self._data.get_rows(mapping_id=record['mapping_id'].value(),
+                                    condition=pd.NE('content', pd.Value(pd.String(), None)))]
 
     def handle(self, req):
         if not req.wmi and len(req.path) == 2:
@@ -702,19 +712,30 @@ class Pages(CMSModule, Publishable, Mappable):
         if len(req.path) == 1:
             lang = req.param('lang')
             if lang is not None:
-                row = self._data.get_row(identifier=req.path[0], lang=lang, condition=self._IS_OK)
+                row = self._data.get_row(identifier=req.path[0], lang=lang)
                 if row:
+                    if row['content'].value() is None:
+                        raise Forbidden()
                     return row
             else:
-                variants = self._data.get_rows(identifier=req.path[0], condition=self._IS_OK)
+                variants = self._data.get_rows(identifier=req.path[0])
                 if variants:
                     for lang in req.prefered_languages():
                         for row in variants:
                             if row['lang'].value() == lang:
+                                if row['content'].value() is None:
+                                    raise Forbidden()
                                 return row
                     raise NotAcceptable([str(r['lang'].value()) for r in variants])
         raise NotFound()
 
+    def _validate(self, req, record):
+        result = super(Pages, self)._validate(req, record)
+        if result is None and req.params.has_key('publish'):
+            record['content'] = record['_content']
+            record['published'] = pytis.data.Value(pytis.data.Boolean(), True)
+        return result
+        
     #def _redirect_after_insert(self, req, record):
         #if not req.wmi:
         #    return self.action_view(req, record, msg=self._INSERT_MSG)
@@ -766,16 +787,26 @@ class Pages(CMSModule, Publishable, Mappable):
             return self.action_edit(req, record)
     _RIGHTS_translate = Roles.AUTHOR
 
-    def action_sync(self, req, record):
+    def action_commit(self, req, record):
         try:
-            record.update(content=record['_content'].value())
+            record.update(content=record['_content'].value(), published=True)
         except pd.DBException, e:
             kwargs = dict(err=self._module._analyze_exception(e))
         else:
             kwargs = dict(msg=_("The changes were published."))
         return self.action_show(req, record, **kwargs)
-    _RIGHTS_sync = Roles.ADMIN
+    _RIGHTS_commit = Roles.ADMIN
 
+    def action_revert(self, req, record):
+        try:
+            record.update(_content=record['content'].value())
+        except pd.DBException, e:
+            kwargs = dict(err=self._module._analyze_exception(e))
+        else:
+            kwargs = dict(msg=_("The page contents was reverted to its previous state."))
+        return self.action_show(req, record, **kwargs)
+    _RIGHTS_revert = Roles.ADMIN
+    
     
 class Attachments(StoredFileModule, CMSModule):
     class Spec(StoredFileModule.Spec):
@@ -965,10 +996,10 @@ class News(CMSModule, Mappable):
 
 
 class Planner(News):
-    class Spec(Specification):
+    class Spec(News.Spec):
         title = _("Planner")
         help = _("Announce future events by date in a callendar-like listing.")
-        def fields(self): return (
+        def fields(self): return [
             Field('planner_id', editable=NEVER),
             Field('start_date', _("Date"), width=10,
                   type=Date(not_null=True, constraints=(self._check_date,)),
@@ -979,20 +1010,10 @@ class Planner(News):
                           "(for events which last several days).")),
             Field('date', _("Date"), virtual=True,
                   computer=Computer(self._date, depends=('start_date', 'end_date'))),
-            Field('lang', _("Language"), codebook='Languages', editable=ONCE,
-                  selection_type=CHOICE, value_column='lang'),
             Field('title', _("Briefly"), column_label=_("Event"), width=32,
                   descr=_("The event summary (title of the entry).")),
-            Field('content', _("Text"), height=3, width=60,
-                  descr=_STRUCTURED_TEXT_DESCR + ' ' + \
-                  _("It is, however, recommened to use the simplest possible formatting, since "
-                    "the item may be also published through an RSS channel, which does not "
-                    "support formatting.")),
-            Field('author', _("Author"), codebook='Users'),
-            Field('timestamp', type=DateTime(not_null=True), default=now),
-            Field('date_title', virtual=True,
-                  computer=Computer(self._date_title,
-                                    depends=('date', 'title'))))
+            ] + [f for f in super(Planner.Spec, self).fields() if f.id() in 
+                 ('lang', 'content', 'author', 'timestamp', 'date_title')]
         sorting = (('start_date', ASC),)
         columns = ('title', 'date', 'author')
         layout = ('lang', 'start_date', 'end_date', 'title', 'content')
@@ -1004,8 +1025,6 @@ class Planner(News):
             if row['end_date'].value():
                 d += ' - ' + row['end_date'].export(show_weekday=True)
             return d
-        def _date_title(self, row):
-            return row['date'].export() +': '+ row['title'].value()
         def check(self, row):
             end = row['end_date'].value()
             if end and end <= row['start_date'].value():

@@ -22,6 +22,8 @@ ze tří hodnot:
 
    * /Chybí/ ... stránaka není v aktuálním jazyce definována.
 
+   * /Nezveřejněno/ ... obsah stránky byl definován, ale zatím nebyl zveřejněn.
+
    * /Změněno/ ... obsah stránky byl změněn, ale změny ještě nebyly
      zveřeněny, takže návštěvníkům je zobrazován předchozí obsah.
 

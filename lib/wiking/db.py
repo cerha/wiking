@@ -69,6 +69,7 @@ class PytisModule(Module, ActionHandler):
     _NON_LAYOUT_FIELDS = ()
 
     _ALLOW_TABLE_LAYOUT_IN_FORMS = True
+    _SUBMIT_BUTTONS = None
 
     _spec_cache = {}
 
@@ -256,8 +257,7 @@ class PytisModule(Module, ActionHandler):
         else:
             return self._LIST_ACTIONS
     
-    def _action_menu(self, req, record=None, actions=None, args=None,
-                     uri=None):
+    def _action_menu(self, req, record=None, actions=None, args=None, uri=None):
         #if not req.wmi:
         #    return None
         actions = [action for action in actions or self._actions(req, record)
@@ -298,6 +298,7 @@ class PytisModule(Module, ActionHandler):
         #                       (('module', req.params['module']),)
         if issubclass(form, pw.EditForm):
             kwargs['allow_table_layout'] = self._ALLOW_TABLE_LAYOUT_IN_FORMS
+            kwargs['submit'] = self._SUBMIT_BUTTONS
         if action is not None:
             hidden += (('action', action),)
         return form(self._data, self._view, self._resolver, handler=req.uri, name=self.name(),
@@ -524,8 +525,7 @@ class PytisModule(Module, ActionHandler):
 
     def action_remove(self, req, record, err=None):
         form = self._form(pw.ShowForm, req, row=record.row())
-        actions = self._action_menu(req, record,
-                                    (Action(_("Remove"), 'delete'),))
+        actions = self._action_menu(req, record, (Action(_("Remove"), 'delete'),))
         msg = _("Please, confirm removing the record permanently.")
         return self._document(req, (form, actions), record,
                               err=err, subtitle=_("removing"), msg=msg)
@@ -576,8 +576,7 @@ class PytisModule(Module, ActionHandler):
         return action(req, record, msg=self._UPDATE_MSG)
         
     def _redirect_after_insert(self, req, record):
-        action = req.wmi and self.action_show or self.action_view
-        return action(req, record, msg=self._INSERT_MSG)
+        return self.action_list(req, msg=self._INSERT_MSG)
         
     def _redirect_after_delete(self, req, record):
         return self.action_list(req, msg=self._DELETE_MSG)

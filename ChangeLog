@@ -1,3 +1,21 @@
+2007-08-20  Tomas Cerha  <cerha@brailcom.org>
+
+	* doc/src/cms/Pages.cs.txt: Updated.
+
+	* doc/src/cms/Pages.en.txt: Updated.
+
+	* lib/wiking/cms.py: Simplified page publication control.
+
+	* lib/wiking/db.py: Allow custom EditForm submit buttons per module.
+
+	* lib/wiking/util.py (ActionMenu): Delete action hack fixed.
+
+	* sql/wiking.sql: Respect `published' in page insert rule.
+
+	* translations/wiking-cms.cs.po: Updated.
+
+	* translations/wiking.cs.po: Updated.
+
 2007-08-17  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/configuration.py: Configuration file lookup fixed to

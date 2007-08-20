@@ -13,7 +13,7 @@ additional content may be included within a page using so called
 
 There can be multiple language variants of each page, but only records
 corresponding to the /currently selected language/ are displayed in the table.
-You need to switch the language to be able to manage pages of other languages.
+You need to switch the language to be able to manage pages in other languages.
 
 Use the [Mapping] module to add pages to the main menu.
 
@@ -21,6 +21,8 @@ The table shows ``state'' of each page.  This can be one of the following three
 values:
 
    * /Missing/ ... page is not defined in the current language.
+
+   * /Not published/ ... page content is defined but was not published yet.
 
    * /Changed/ ... page content was modified, but the changes were not yet
      published, so visitors still get the previous content.
