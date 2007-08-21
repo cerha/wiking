@@ -1,3 +1,12 @@
+2007-08-21  Tomas Cerha  <cerha@brailcom.org>
+
+	* translations/wiking-cms.cs.po: Updated.
+
+	* sql/wiking.sql: Added page title column defaulting to page
+	identifier.
+
+	* lib/wiking/cms.py: Use page title as database column, not virtual.
+
 2007-08-20  Tomas Cerha  <cerha@brailcom.org>
 
 	* doc/src/cms/Pages.cs.txt: Updated.
