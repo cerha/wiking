@@ -814,7 +814,7 @@ class Attachments(StoredFileModule, CMSModule):
             def fcomp(ffunc):
                 def func(row):
                     f = row['file'].value()
-                    return f and ffunc(f) or None
+                    return f is not None and ffunc(f) or None
                 return pp.Computer(func, depends=('file',))
             return (
             Field('page_attachment_id',
@@ -1049,7 +1049,7 @@ class Images(StoredFileModule, CMSModule, Mappable):
             def fcomp(ffunc):
                 def func(row):
                     f = row['file'].value()
-                    return f and ffunc(f) or None
+                    return f is not None and ffunc(f) or None
                 return pp.Computer(func, depends=('file',))
             def imgcomp(imgfunc):
                 return fcomp(lambda f: imgfunc(f.image()))
