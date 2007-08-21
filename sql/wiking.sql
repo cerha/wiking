@@ -106,7 +106,9 @@ CREATE TABLE _pages (
 
 CREATE OR REPLACE VIEW pages AS 
 SELECT m.mapping_id ||'.'|| l.lang as page_id, m.mapping_id, l.lang,
-       m.identifier, m.parent, m.tree_order, m.published, t.title, p._content, p.content
+       m.identifier, m.parent, m.tree_order, m.published, 
+       coalesce(t.title, m.identifier) as title,  t.title as title_, 
+       p._content, p.content
 FROM _mapping m CROSS JOIN languages l
      LEFT OUTER JOIN _pages p USING (mapping_id, lang)
      LEFT OUTER JOIN titles t USING (mapping_id, lang)
@@ -121,7 +123,7 @@ CREATE OR REPLACE RULE pages_insert AS
              new.lang, new._content, new.content);
      INSERT INTO titles (mapping_id, lang, title)
      VALUES ((SELECT mapping_id FROM _mapping WHERE identifier=new.identifier),
-	     new.lang, new.title)
+	     new.lang, new.title_)
 );
 
 CREATE OR REPLACE RULE pages_update AS
@@ -134,11 +136,11 @@ CREATE OR REPLACE RULE pages_update AS
     INSERT INTO _pages (mapping_id, lang, _content, content) 
 	   SELECT new.mapping_id, new.lang, new._content, new.content
 	   WHERE old._content IS NULL;
-    UPDATE titles SET title = new.title
+    UPDATE titles SET title = new.title_
            WHERE mapping_id = old.mapping_id AND lang = old.lang;
     INSERT INTO titles (mapping_id, lang, title) 
-	   SELECT new.mapping_id, new.lang, new.title
-	   WHERE old.title IS NULL AND new.title IS NOT NULL;
+	   SELECT new.mapping_id, new.lang, new.title_
+	   WHERE old.title_ IS NULL AND new.title_ IS NOT NULL;
 );
 
 CREATE OR REPLACE RULE pages_delete AS

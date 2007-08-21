@@ -634,8 +634,7 @@ class Pages(CMSModule, Mappable):
             Field('lang', _("Language"), codebook='Languages', editable=ONCE,
                   selection_type=CHOICE, value_column='lang'),
             Field('title', _("Title")),
-            Field('title_', _("Title"), virtual=True,
-                  computer=Computer(self._title, depends=('title', 'identifier'))),
+            Field('title_', _("Title")),
             Field('_content', _("Content"), compact=True, height=20, width=80,
                   descr=_STRUCTURED_TEXT_DESCR),
             Field('content'),
@@ -644,8 +643,6 @@ class Pages(CMSModule, Mappable):
                   computer=Computer(self._status, depends=('content', '_content'))),
             Field('tree_order', _("Tree level"), type=pd.TreeOrder()),
             )
-        def _title(self, row):
-            return row['title'].value() or row['identifier'].value()
         def _status(self, row):
             if not row['published'].value():
                 return _("Not published")
@@ -661,8 +658,8 @@ class Pages(CMSModule, Mappable):
             else:
                 return _("Missing")
         sorting = (('tree_order', ASC), ('lang', ASC),)
-        layout = ('identifier', 'lang', 'title', '_content')
-        columns = ('title_', 'identifier', 'status')
+        layout = ('identifier', 'lang', 'title_', '_content')
+        columns = ('title', 'identifier', 'status')
         cb = pp.CodebookSpec(display='identifier')
         bindings = {'Attachments': pp.BindingSpec(_("Attachments"), 'mapping_id')}
     
