@@ -209,7 +209,7 @@ class CookieAuthentication(Module):
         override this one instead.  The return value is the same.
 
         """
-        return self._user(req)
+        return self._user(login)
         
     def _check(self, user, password):
         """Check authentication password for given user.
