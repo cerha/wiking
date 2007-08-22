@@ -1,3 +1,13 @@
+2007-08-22  Tomas Cerha  <cerha@brailcom.org>
+
+	* resources/css/default.css: Minor improvement.
+
+	* lib/wiking/request.py (WikingRequest.user): Avoid using
+	try/except blocks.
+
+	* lib/wiking/modules.py (CookieAuthentication): Allow request
+	access in derived classes.
+
 2007-08-21  Tomas Cerha  <cerha@brailcom.org>
 
 	* translations/wiking-cms.cs.po: Updated.

@@ -18,8 +18,6 @@ Core features:
 
  * Locking
 
- * Browsing support for long lists (forward/backward movement)
-
  * Save the exported HTML for structured text content in DB
 
  * Change log and Last-Modified HTTP header support

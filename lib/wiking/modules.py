@@ -200,6 +200,17 @@ class CookieAuthentication(Module):
         """
         return None
 
+    def _get_user(self, login, req):
+        """Obtain authentication data and return a 'User' instance for given 'login' and request.
+
+        This method is a variant of the '_user()' method defined above which receives the request
+        object as second argument.  In most cases, you wan't need the request object, so you
+        probably want to override the method '_user()'.  In special cases, however, you can
+        override this one instead.  The return value is the same.
+
+        """
+        return self._user(req)
+        
     def _check(self, user, password):
         """Check authentication password for given user.
 
@@ -222,7 +233,7 @@ class CookieAuthentication(Module):
                 raise AuthenticationError(_("Enter your login name, please!"))
             if not password:
                 raise AuthenticationError(_("Enter your password, please!"))
-            user = self._user(login)
+            user = self._get_user(login, req)
             if not user or not self._check(user, password):
                 raise AuthenticationError(_("Invalid login!"))
             assert isinstance(user, User)
@@ -234,7 +245,7 @@ class CookieAuthentication(Module):
             login, key = (req.cookie(self._LOGIN_COOKIE), 
                           req.cookie(self._SESSION_COOKIE))
             if login and key:
-                user = self._user(login)
+                user = self._get_user(login, req)
                 if user and session.check(user, key):
                     assert isinstance(user, User)
                     # Cookie expiration is 2 days, but session expiration is
