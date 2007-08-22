@@ -168,7 +168,7 @@ class PytisModule(Module, ActionHandler):
                     if isinstance(type, pd.Binary):
                         fname = value_.filename()
                         if fname:
-                            # MSIE sends the full file path on windows...
+                            # MSIE sends full file path...
                             kwargs['filename'] = fname.split('\\')[-1]
                             kwargs['type'] = value_.type()
                             value_ = value_.file()
@@ -386,9 +386,9 @@ class PytisModule(Module, ActionHandler):
         return None
     
     def _prefill(self, req, new=False):
-        keys = [f.id() for f in self._view.fields()]
-        prefill = dict([(k, req.params[k]) for k in keys
-                        if req.params.has_key(k)])
+        prefill = dict([(f.id(), req.params[f.id()]) for f in self._view.fields()
+                        if req.params.has_key(f.id()) and \
+                        not isinstance(f.type(), (pd.Binary, pd.Password))])
         if new and not prefill.has_key('lang') and self._LIST_BY_LANGUAGE:
             lang = req.prefered_language(self._module('Languages').languages())
             if lang:
