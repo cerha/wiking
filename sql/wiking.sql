@@ -403,6 +403,7 @@ CREATE TABLE config (
 	allow_registration boolean NOT NULL DEFAULT 'TRUE',
 	force_https_login boolean NOT NULL DEFAULT 'FALSE',
 	webmaster_addr text,
+	upload_limit int,
 	theme integer REFERENCES themes
 );
 

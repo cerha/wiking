@@ -27,6 +27,7 @@ from wiking import *
 import mx.DateTime
 from pytis.presentation import Computer, CbComputer
 from mx.DateTime import today, TimeDelta
+from lcg import log as debug
 import re, copy
 
 CHOICE = pp.SelectionType.CHOICE
@@ -38,7 +39,6 @@ ALWAYS = pp.Editable.ALWAYS
 ASC = pd.ASCENDENT
 DESC = pd.DESCENDANT
 now = lambda: mx.DateTime.now().gmtime()
-MB = 1024**2
 
 _ = lcg.TranslatableTextFactory('wiking-cms')
 
@@ -344,18 +344,20 @@ class Config(CMSModule):
                   computer=Computer(lambda r: _("Site Configuration"), depends=())),
             _Field('site_title', width=24),
             _Field('site_subtitle', width=64),
-            _Field('allow_login_panel'),
-            _Field('allow_registration', default=True),
-            #_Field('allow_wmi_link', _("Allow WMI link"), default=True),
-            _Field('force_https_login', default=False),
             _Field('webmaster_addr'),
+            _Field('allow_login_panel'),
+            _Field('allow_registration'),
+            _Field('force_https_login'),
+            #_Field('allow_wmi_link'),
+            _Field('upload_limit'),
             Field('theme', _("Color theme"),
                   codebook='Themes', selection_type=CHOICE, not_null=False,
                   descr=_("Select one of the available color themes.  Use the module Themes in "
                           "the section Appearance to manage the available themes.")),
             )
-        layout = ('site_title', 'site_subtitle', 'allow_login_panel', 'allow_registration',
-                  'force_https_login', 'webmaster_addr', 'theme')
+        layout = ('site_title', 'site_subtitle', 'webmaster_addr', 'theme',
+                  'allow_login_panel', 'allow_registration', 'force_https_login',
+                  'upload_limit')
     _TITLE_COLUMN = 'title'
     WMI_SECTION = WikingManagementInterface.SECTION_SETUP
     WMI_ORDER = 100
@@ -388,6 +390,8 @@ class Config(CMSModule):
             else:
                 theme = self._DEFAULT_THEME
             cfg.theme = theme
+        if cfg.upload_limit is None:
+            cfg.upload_limit = cfg.option('upload_limit').default()
     
 
 class Panels(CMSModule, Publishable, Panels):
@@ -826,7 +830,7 @@ class Attachments(StoredFileModule, CMSModule):
                   selection_type=CHOICE, editable=ONCE, value_column='lang'),
             Field('page_id'),
             Field('file', _("File"), virtual=True, editable=ALWAYS,
-                  type=pd.Binary(not_null=True, maxlen=3*MB),
+                  type=pd.Binary(not_null=True, maxlen=cfg.upload_limit),
                   computer=self._file_computer('file', '_filename', origname='filename',
                                                mime='mime_type'),
                   descr=_("Upload a file from your local system.  The file name will be used "
@@ -1057,12 +1061,12 @@ class Images(StoredFileModule, CMSModule, Mappable):
             Field('image_id'),
             Field('published'),
             Field('file', _("File"), virtual=True, editable=ALWAYS,
-                  type=pd.Image(not_null=True, maxlen=3*MB,
+                  type=pd.Image(not_null=True, maxlen=cfg.upload_limit,
                                 maxsize=(3000, 3000)), thumbnail='thumbnail',
                   computer=self._file_computer('file', '_filename',
                                                origname='filename')),
             Field('image', virtual=True, editable=ALWAYS,
-                  type=pd.Image(not_null=True, maxlen=3*MB, maxsize=(3000, 3000)),
+                  type=pd.Image(not_null=True, maxlen=cfg.upload_limit, maxsize=(3000, 3000)),
                   computer=self._file_computer('image', '_image_filename',
                                                compute=lambda r: self._resize(r, (800, 800)))),
             Field('thumbnail', virtual=True, type=pd.Image(),

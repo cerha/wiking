@@ -72,6 +72,12 @@ class Configuration(pc):
                 "webserver user.")
         _DEFAULT = '/var/lib/wiking'
         
+    class _Option_upload_limit(pc.NumericOption):
+        _DESCR = _("Maximal upload size")
+        _DOC = _("The maximal size of uploaded files in bytes.  The default is 3MB.  The server "
+                 "needs to be relaoded for the changes in this option to take effect.")
+        _DEFAULT = 3*1024*1024
+        
     class _Option_smtp_server(pc.StringOption):
         _DESCR = "Name or address of SMTP server"
         _DOC = ("SMTP server is used for sending bug reports by e-mail.  To allow this feature, "

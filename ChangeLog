@@ -1,5 +1,16 @@
 2007-08-22  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/cms.py: Use `upload_limit' and allow its modification
+	in WMI.
+
+	* lib/wiking/configuration.py: New option `upload_limit'.
+
+	* sql/wiking.sql: New field for `upload_limit'.
+
+	* translations/wiking-cms.cs.po: Updated.
+
+	* translations/wiking.cs.po: Updated.
+
 	* lib/wiking/db.py: Omit binary values in form prefill.
 
 	* resources/css/default.css: Minor improvement.
