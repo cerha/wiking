@@ -363,7 +363,10 @@ form.browse-form table tfoot td {
     text-align: right;
 }
 form.browse-form fieldset.controls span.limit {
-    margin-left: 3em;
+    margin-left: 2em;
+}
+form.browse-form fieldset.controls input.prev {
+    margin-left: 1em;
 }
 
 form.show-form, form.edit-form { 
