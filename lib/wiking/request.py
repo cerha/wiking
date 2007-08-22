@@ -166,6 +166,7 @@ class WikingRequest(Request):
     """Wiking specific methods for the request object."""
     _LANG_COOKIE = 'wiking_prefered_language'
     _PANELS_COOKIE = 'wiking_show_panels'
+    _UNDEFINED = object()
 
     def _init_params(self):
         params = super(WikingRequest, self)._init_params()
@@ -196,6 +197,7 @@ class WikingRequest(Request):
             self._credentials = (login, password)
         else:
             self._credentials = None
+        self._user = self._UNDEFINED
         return params
 
     def _init_uri(self):
@@ -291,24 +293,23 @@ class WikingRequest(Request):
 
         Arguments:
 
-          raise_error -- if true and no user is logged, AuthenticationError
-            will be raised.  If false, None is returned.
+          raise_error -- boolean flag indicating that the user is required to be logged (anonymous
+            access forbidden).  If set to true and no user is logged, AuthenticationError will be
+            raised.  If false, None is returned, but AuthenticationError may still be raised when
+            login credentials are not valid.
 
         This method may not be used without a previous call to 'set_auth_module()'.  The returned
         record is the user record obtained from this module.
 
         """
-        try:
-            user = self._user
-        except AttributeError:
-            try:
-                user = self._user = self._auth_module.authenticate(self)
-            except AuthenticationError:
-                self._user = None
-                raise
-        if raise_error and user is None:
-            #args = self._session_timed_out and \
-            #      (_("Session expired. Please log in again."),) or ()
-            raise AuthenticationError() #(*args)
-        return user
+        if self._user is self._UNDEFINED:
+            # Set to None for the case that authentication raises an exception.
+            self._user = None
+            # AuthenticationError may be raised if the credentials are invalid.
+            self._user = self._auth_module.authenticate(self)
+        if raise_error and self._user is None:
+            #if session_timed_out:
+            #      raise AuthenticationError(_("Session expired. Please log in again."))
+            raise AuthenticationError()
+        return self._user
     
