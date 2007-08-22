@@ -212,6 +212,7 @@ div.panel-login a.login-ctrl {
     text-decoration: none;
     background: $color.button;
     border: 1px solid $color.button-border;
+    white-space: nowrap;
 }
 
 /* The actual page content */
