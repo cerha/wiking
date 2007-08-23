@@ -463,7 +463,7 @@ class PytisModule(Module, ActionHandler):
             self._action_menu(req, args=args, uri='/_wmi/' + self.name()))
         #lang = req.prefered_language(self._module('Languages').languages())
         #title = self._real_title(lang)
-        return lcg.Section(title=self._view.title(), content=content)
+        return lcg.Section(title=self._view.title(), content=[c for c in content if c])
 
     # ===== Action handlers =====
     

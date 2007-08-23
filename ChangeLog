@@ -2,6 +2,8 @@
 
 	* lib/wiking/cms.py: Prefer NotAcceptable error message to
 	Forbidden if there is at least one language variant published.
+	Allow 'Roles.AUTHOR' to enter WMI, but not publish changes in
+	pages.
 
 	* lib/wiking/request.py: Defive from pytis request API
 	specifications and implement their interface.

@@ -118,7 +118,7 @@ class WikingManagementInterface(Module):
             return None
     
     def handle(self, req):
-        Roles.check(req, (Roles.ADMIN,))
+        Roles.check(req, (Roles.AUTHOR,))
         req.wmi = True # Switch to WMI only after successful authorization.
         if len(req.path) == 1:
             req.path += ('Mapping',)
@@ -675,7 +675,7 @@ class Pages(CMSModule, Mappable):
     _LIST_BY_LANGUAGE = True
     _RELATED_MODULES = ('Attachments',)
     
-    _SUBMIT_BUTTONS = ((_("Save"), None), (_("Save and publish"), 'publish'))
+    _SUBMIT_BUTTONS = ((_("Save"), None), (_("Save and publish"), 'commit'))
     _INSERT_MSG = _("New page was successfully created. Don't forget to publish it when you are "
                     "done. Please, visit the 'Mapping' module if you want to add the page to the "
                     "main menu.")
@@ -734,7 +734,11 @@ class Pages(CMSModule, Mappable):
 
     def _validate(self, req, record):
         result = super(Pages, self)._validate(req, record)
-        if result is None and req.params.has_key('publish'):
+        if result is None and req.params.has_key('commit'):
+            if not Roles.check(req, (Roles.ADMIN,), raise_error=False):
+                return _("You don't have sufficient privilegs for this action.") +' '+ \
+                       _("Save the page without publishing and ask the administrator to publish "
+                         "your changes.")
             record['content'] = record['_content']
             record['published'] = pytis.data.Value(pytis.data.Boolean(), True)
         return result
