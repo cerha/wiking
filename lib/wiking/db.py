@@ -455,7 +455,7 @@ class PytisModule(Module, ActionHandler):
         if self._LIST_BY_LANGUAGE:
             args['lang'] = record['lang'].value()
         if req.params.get('form-name') == self.name():
-            kwargs = ListView.form_args(req.params)
+            kwargs = ListView.form_args(req)
         else:
             kwargs = {}
         content = (
@@ -481,17 +481,13 @@ class PytisModule(Module, ActionHandler):
             content += (help,)
         content += (self._form(ListView, req, condition=self._condition(lang=lang),
                                custom_spec=(not req.wmi and self._CUSTOM_VIEW or None),
-                               **ListView.form_args(req.params)),
+                               **ListView.form_args(req)),
                     self._action_menu(req))
-        if not req.wmi and self._RSS_TITLE_COLUMN:
-            # TODO: This belongs to RssModule.
-            content += (lcg.p(
-                _("An RSS channel is available for this section:"), ' ',
-                lcg.link(req.uri +'.'+ lang +'.rss',
-                         self._real_title(lang) + ' RSS',
-                         type='application/rss+xml'), " (",
-                lcg.link('_doc/rss?display=inline',
-                         _("more about RSS")), ")"),)
+        if isinstance(self, RssModule) and not req.wmi and self._RSS_TITLE_COLUMN:
+            content += (lcg.p(_("An RSS channel is available for this section:"), ' ',
+                              lcg.link(req.uri +'.'+ lang +'.rss', self._real_title(lang) +' RSS',
+                                       type='application/rss+xml'), " (",
+                              lcg.link('_doc/rss?display=inline', _("more about RSS")), ")"),)
         return self._document(req, content, lang=lang, variants=variants, err=err, msg=msg)
 
     def action_show(self, req, record, err=None, msg=None, custom=False):

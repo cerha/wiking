@@ -1,3 +1,14 @@
+2007-08-23  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/request.py: Defive from pytis request API
+	specifications and implement their interface.
+
+	* lib/wiking/util.py (FileUpload): Class removed.
+
+	* Makefile: Pass -dP to cvs update.
+
+	* lib/wiking/db.py: Respect changes in pytis forms.
+
 2007-08-22  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/cms.py: Use `upload_limit' and allow its modification

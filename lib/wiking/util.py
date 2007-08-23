@@ -336,19 +336,6 @@ class Theme(object):
         return self._theme[key]
     
         
-class FileUpload(object):
-    """An abstract representation of uploaded file fields."""
-
-    def file(self):
-        """Return a file-like object from which the data may be read."""
-        
-    def filename(self):
-        """Return the original filename as a string"""
-        
-    def type(self):
-        """Return the mime type provided byt he UA as a string"""
-
-
 class MenuItem(object):
     """Abstract menu item representation."""
     def __init__(self, id, title, descr=None, hidden=False, submenu=(), order=None):

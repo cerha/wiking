@@ -31,18 +31,20 @@ _ = lcg.TranslatableTextFactory('wiking')
 
 DAY = 86400
 
-class Request(object):
-    """Generic convenience wrapper for the Apache request object."""
-    class _FileUpload(FileUpload):
-        """Mod_python specific implementation of the FileUpload class."""
-        def __init__(self, field):
-            self._field = field
-        def file(self):
-            return self._field.file
-        def filename(self):
-            return self._field.filename
-        def type(self):
-            return self._field.type
+class FileUpload(pytis.web.FileUpload):
+    """Mod_python specific implementation of pytis FileUpload interface."""
+    def __init__(self, field):
+        self._field = field
+    def file(self):
+        return self._field.file
+    def filename(self):
+        return self._field.filename
+    def type(self):
+        return self._field.type
+
+
+class Request(pytis.web.Request):
+    """Mod_python request wrapper implementing the pytis request interface."""
     
     _UNIX_NEWLINE = re.compile("(?<!\r)\n")
     
@@ -63,7 +65,7 @@ class Request(object):
             if isinstance(value, (tuple, list)):
                 return tuple([init_value(v) for v in value])
             elif isinstance(value, mod_python.util.Field):
-                return self._FileUpload(value)
+                return FileUpload(value)
             else:
                 return unicode(value, self._encoding)
         fields = mod_python.util.FieldStorage(self._req)
@@ -71,16 +73,15 @@ class Request(object):
 
     def _init_uri(self):
         return self._req.uri
+
+    # Methods implementing the pytis Request interface:
     
+    def has_param(self, name):
+        return self.params.has_key(name)
+        
     def param(self, name, default=None):
         return self.params.get(name, default)
         
-    def header(self, name, default=None):
-        try:
-            return self._req.headers_in[name]
-        except KeyError:
-            return default
-
     def cookie(self, name, default=None):
         cookies = Cookie.SimpleCookie(self.header('Cookie'))
         if cookies.has_key(name):
@@ -97,6 +98,14 @@ class Request(object):
             c[name]['expires'] = expires
         cookie = c[name].OutputString()
         self._req.headers_out.add("Set-Cookie", cookie)
+
+    # Additional methods:
+
+    def header(self, name, default=None):
+        try:
+            return self._req.headers_in[name]
+        except KeyError:
+            return default
 
     def set_header(self, name, value):
         self._req.headers_out.add(name, value)
