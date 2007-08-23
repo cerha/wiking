@@ -699,10 +699,12 @@ class Pages(CMSModule, Mappable):
     WMI_SECTION = WikingManagementInterface.SECTION_CONTENT
     WMI_ORDER = 200
 
+    _CONTENT_OK = pd.NE('content', pd.Value(pd.String(), None))
+    
     def _variants(self, record):
         return [str(r['lang'].value()) for r in 
                 self._data.get_rows(mapping_id=record['mapping_id'].value(),
-                                    condition=pd.NE('content', pd.Value(pd.String(), None)))]
+                                    condition=self._CONTENT_OK)]
 
     def handle(self, req):
         if not req.wmi and len(req.path) == 2:
@@ -719,15 +721,15 @@ class Pages(CMSModule, Mappable):
                         raise Forbidden()
                     return row
             else:
-                variants = self._data.get_rows(identifier=req.path[0])
+                variants = self._data.get_rows(identifier=req.path[0], condition=self._CONTENT_OK)
                 if variants:
                     for lang in req.prefered_languages():
                         for row in variants:
                             if row['lang'].value() == lang:
-                                if row['content'].value() is None:
-                                    raise Forbidden()
                                 return row
                     raise NotAcceptable([str(r['lang'].value()) for r in variants])
+                elif self._data.get_rows(identifier=req.path[0]):
+                    raise Forbidden()
         raise NotFound()
 
     def _validate(self, req, record):
