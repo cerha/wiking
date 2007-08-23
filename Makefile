@@ -41,7 +41,7 @@ share-links: $(SHARE)/wiking
 cvs-update: do-cvs-update compile translations
 
 do-cvs-update:
-	cvs update
+	cvs update -dP
 
 config_dir = $(shell dirname $(CFGFILE))
 
