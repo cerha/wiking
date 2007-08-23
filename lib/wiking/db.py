@@ -299,6 +299,8 @@ class PytisModule(Module, ActionHandler):
         if issubclass(form, pw.EditForm):
             kwargs['allow_table_layout'] = self._ALLOW_TABLE_LAYOUT_IN_FORMS
             kwargs['submit'] = self._SUBMIT_BUTTONS
+        elif issubclass(form, pw.BrowseForm):
+            kwargs['req'] = req
         if action is not None:
             hidden += (('action', action),)
         return form(self._data, self._view, self._resolver, handler=req.uri, name=self.name(),
@@ -390,7 +392,7 @@ class PytisModule(Module, ActionHandler):
                         if req.params.has_key(f.id()) and \
                         not isinstance(f.type(), (pd.Binary, pd.Password))])
         if new and not prefill.has_key('lang') and self._LIST_BY_LANGUAGE:
-            lang = req.prefered_language(self._module('Languages').languages())
+            lang = req.prefered_language(self._module('Languages').languages(), raise_error=False)
             if lang:
                 prefill['lang'] = lang
         return prefill
@@ -454,14 +456,10 @@ class PytisModule(Module, ActionHandler):
         args = {sbcol: record[bcol].value()}
         if self._LIST_BY_LANGUAGE:
             args['lang'] = record['lang'].value()
-        if req.params.get('form-name') == self.name():
-            kwargs = ListView.form_args(req)
-        else:
-            kwargs = {}
         content = (
             self._form(ListView, req, condition=self._condition(**args),
                        custom_spec=(not req.wmi and self._CUSTOM_VIEW or None), 
-                       columns=[c for c in self._view.columns() if c!=sbcol], **kwargs),
+                       columns=[c for c in self._view.columns() if c!=sbcol]),
             self._action_menu(req, args=args, uri='/_wmi/' + self.name()))
         #lang = req.prefered_language(self._module('Languages').languages())
         #title = self._real_title(lang)
@@ -474,16 +472,15 @@ class PytisModule(Module, ActionHandler):
             variants = [str(v.value()) for v in self._data.distinct('lang', sort=pd.ASCENDENT)]
         else:
             variants = self._module('Languages').languages()
-        lang = req.prefered_language(variants)
+        lang = req.prefered_language(variants, raise_error=False)
         content = ()
         if req.wmi:
             help = lcg.p(self._view.help() or '', ' ', lcg.link('/_doc/'+self.name(), _("Help")))
             content += (help,)
         content += (self._form(ListView, req, condition=self._condition(lang=lang),
-                               custom_spec=(not req.wmi and self._CUSTOM_VIEW or None),
-                               **ListView.form_args(req)),
+                               custom_spec=(not req.wmi and self._CUSTOM_VIEW or None)),
                     self._action_menu(req))
-        if isinstance(self, RssModule) and not req.wmi and self._RSS_TITLE_COLUMN:
+        if isinstance(self, RssModule) and not req.wmi and self._RSS_TITLE_COLUMN and lang:
             content += (lcg.p(_("An RSS channel is available for this section:"), ' ',
                               lcg.link(req.uri +'.'+ lang +'.rss', self._real_title(lang) +' RSS',
                                        type='application/rss+xml'), " (",

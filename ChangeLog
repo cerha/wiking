@@ -1,13 +1,19 @@
 2007-08-23  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/cms.py: Prefer NotAcceptable error message to
+	Forbidden if there is at least one language variant published.
+
 	* lib/wiking/request.py: Defive from pytis request API
 	specifications and implement their interface.
 
 	* lib/wiking/util.py (FileUpload): Class removed.
+	(make_uri): Ignore arguments with None value.
 
 	* Makefile: Pass -dP to cvs update.
 
 	* lib/wiking/db.py: Respect changes in pytis forms.
+	(PytisModule._prefill, PytisModule.action_list): Don't raise error
+	when unable to determine prefered language.
 
 2007-08-22  Tomas Cerha  <cerha@brailcom.org>
 
