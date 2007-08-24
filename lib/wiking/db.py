@@ -527,7 +527,7 @@ class PytisModule(Module, ActionHandler):
 
     def action_insert(self, req):
         if self._OWNER_COLUMN and self._SUPPLY_OWNER and req.user():
-            prefill = {self._OWNER_COLUMN: req.user()['uid']}
+            prefill = {self._OWNER_COLUMN: req.user().uid()}
         else:
             prefill = None
         record = self._record(None, new=True, prefill=prefill)
