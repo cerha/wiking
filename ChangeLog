@@ -1,3 +1,13 @@
+2007-08-24  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/util.py: Use the 'search' argument for the "list"
+	action button.
+
+	* lib/wiking/cms.py (Planner._condition): Accept the request argument. 
+
+	* lib/wiking/db.py: Pass the request object to the module's
+	`_condition()' method.
+
 2007-08-23  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/cms.py: Prefer NotAcceptable error message to

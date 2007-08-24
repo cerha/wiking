@@ -514,13 +514,15 @@ class ActionMenu(lcg.Content):
                 uri = self._uri
             elif action.context() is None and self._row is not None:
                 uri = '.'
-            elif action.name() == 'delete':
-                args = copy.copy(args)
+            elif action.name() == 'delete' and self._row is not None:
                 key = self._row.data().key()[0].id()
-                args[key] = self._row[key].export()
+                args = dict(args, key=self._row[key].export())
                 uri = '.'
             else:
                 uri = ''
+            if action.name() == 'list' and self._row is not None:
+                key = self._row.data().key()[0].id()
+                args = dict(args, search=self._row[key].export())
             target = g.uri(uri, action=action.name(), **args)
             cls = None
         else:
