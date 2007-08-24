@@ -397,7 +397,7 @@ class PytisModule(Module, ActionHandler):
                 prefill['lang'] = lang
         return prefill
 
-    def _condition(self, lang=None, **kwargs):
+    def _condition(self, req, lang=None, **kwargs):
         # Can be used by a module to filter out invalid (ie. outdated) records.
         conds = [pd.EQ(k, pd.Value(self._data.find_column(k).type(), v))
                  for k, v in kwargs.items()]
@@ -408,9 +408,9 @@ class PytisModule(Module, ActionHandler):
         else:
             return None
     
-    def _rows(self, lang=None, limit=None):
+    def _rows(self, req, lang=None, limit=None):
         return self._data.get_rows(sorting=self._sorting, limit=limit,
-                                   condition=self._condition(lang=lang))
+                                   condition=self._condition(req, lang=lang))
     
     def _record(self, row, new=False, prefill=None):
         """Return the Record instance initialized by given data row."""
@@ -457,7 +457,7 @@ class PytisModule(Module, ActionHandler):
         if self._LIST_BY_LANGUAGE:
             args['lang'] = record['lang'].value()
         content = (
-            self._form(ListView, req, condition=self._condition(**args),
+            self._form(ListView, req, condition=self._condition(req, **args),
                        custom_spec=(not req.wmi and self._CUSTOM_VIEW or None), 
                        columns=[c for c in self._view.columns() if c!=sbcol]),
             self._action_menu(req, args=args, uri='/_wmi/' + self.name()))
@@ -477,7 +477,7 @@ class PytisModule(Module, ActionHandler):
         if req.wmi:
             help = lcg.p(self._view.help() or '', ' ', lcg.link('/_doc/'+self.name(), _("Help")))
             content += (help,)
-        content += (self._form(ListView, req, condition=self._condition(lang=lang),
+        content += (self._form(ListView, req, condition=self._condition(req, lang=lang),
                                custom_spec=(not req.wmi and self._CUSTOM_VIEW or None)),
                     self._action_menu(req))
         if isinstance(self, RssModule) and not req.wmi and self._RSS_TITLE_COLUMN and lang:
@@ -604,7 +604,7 @@ class RssModule(object):
         if not self._RSS_TITLE_COLUMN:
             raise NotFound
         lang = str(req.param('lang'))
-        rows = self._rows(lang=lang, limit=self._RSS_LIMIT)
+        rows = self._rows(req, lang=lang, limit=self._RSS_LIMIT)
         from xml.sax.saxutils import escape
         link_column = self._RSS_LINK_COLUMN or self._RSS_TITLE_COLUMN
         base_uri = req.abs_uri()[:-len(req.uri)]
@@ -736,7 +736,7 @@ class Panelizable(object):
                   for id in self._PANEL_FIELDS or self._view.columns()]
         prow = pp.PresentedRow(self._view.fields(), self._data, None)
         items = []
-        for row in self._rows(lang=lang, limit=count-1):
+        for row in self._rows(req, lang=lang, limit=count-1):
             prow.set_row(row)
             item = PanelItem([(f.id(), prow[f.id()].export(),
                                self._link_provider(req, prow, f.id(),

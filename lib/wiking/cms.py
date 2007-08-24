@@ -1041,8 +1041,8 @@ class Planner(News):
     _RSS_TITLE_COLUMN = 'date_title'
     _RSS_LINK_COLUMN = 'title'
     _RSS_DATE_COLUMN = None
-    def _condition(self, **kwargs):
-        scondition = super(Planner, self)._condition(**kwargs)
+    def _condition(self, req, **kwargs):
+        scondition = super(Planner, self)._condition(req, **kwargs)
         condition = pd.OR(pd.GE('start_date', pd.Value(pd.Date(), today())),
                           pd.GE('end_date', pd.Value(pd.Date(), today())))
         if scondition:
