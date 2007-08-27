@@ -197,6 +197,61 @@ class Stylesheets(Module, ActionHandler):
         return ('text/css', self._substitute(self._find_file(req.path[1])))
 
 
+class ErrorHandler(Module):
+    """Handle exceptions raised during request processing.
+
+    The public method 'handle_exception()' is responsible for handling exceptions raised during
+    request processing.
+    
+    The default implementation sends a complete exception information (including Python traceback)
+    by email if 'cfg.bug_report_address' has been set up.  If not, the traceback is logged to
+    server's error log.  The exception string (without traceback) is sent to the browser with a 501
+    HTTP return code (Internal Server Error).
+    
+    """
+    
+    def handle_exception(self, req, exception):
+        """Handle exceptions raised during request processing.
+
+        Arguments:
+          req -- current request object
+          exception -- exception instance
+          dbconnection -- current database connection specification as 'pd.DBConnection' instance.
+
+        """
+        import traceback
+        einfo = sys.exc_info()
+        message = ''.join(traceback.format_exception_only(*einfo[:2]))
+        req_info = (("URI", req.uri),
+                ("Remote host", req.remote_host()),
+                ("HTTP referrer", req.header('Referer')),
+                ("User agent", req.header('User-Agent')),
+                )
+        text = "\n".join(["%s: %s" % pair for pair in req_info]) + \
+               "\n\n" + "".join(traceback.format_exception(*einfo))
+        try:
+            if cfg.bug_report_address is not None:
+                hostname = req.server_hostname()
+                sender = cfg.webmaster_addr
+                if sender is None:
+                    domain = hostname.startswith('www.') and hostname[4:] or hostname
+                    sender = 'webmaster@' + domain
+                send_mail(sender, cfg.bug_report_address,
+                          'Wiking Error: ' + hostname,
+                          text + "\n\n" + cgitb.text(einfo),
+                          "<html><pre>"+ text +"</pre>"+ cgitb.html(einfo) +"</html>",
+                          smtp_server=cfg.smtp_server)
+                log(OPR, message)
+                log(OPR, "Traceback sent to:", cfg.bug_report_address)
+            else:
+                log(OPR, "Error:", cgitb.text(einfo))
+        except Exception, e:
+            log(OPR, "Error in exception handling:",
+                "".join(traceback.format_exception(*sys.exc_info())))
+            log(OPR, "The original exception was:", text)
+        return req.error(message)
+
+
 class Authentication(Module):
     """Perform remote user authentication.
 

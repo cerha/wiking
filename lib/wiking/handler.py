@@ -20,19 +20,22 @@ from wiking import *
 class Handler(object):
     """Wiking handler.
 
-    The main goal of the handler is to instantiate modules needed by the application and pass the
-    requests to these instances.  Module instances are cached on this level.
-
-    The other responsibility is to process the result of the module request handler and handle
-    'RequestError' exceptions.
+    The main goal of the handler is to instantiate modules needed by the application and pass
+    requests to these instances (module instances are cached on this level).  Results of request
+    processing by modules is then handled by the handler again, including exception processing.
 
     """
     
-    def __init__(self, server, dbconnection):
-        self._server = server
-        self._dbconnection = dbconnection
+    def __init__(self, hostname, options):
+        dboptions = {'database': hostname}
+        for name, value in options.items():
+            if hasattr(cfg, name):
+                setattr(cfg, name, value)
+            else:
+                dboptions[name] = value
+        self._hostname = hostname
+        self._dbconnection = pd.DBConnection(**dboptions)
         self._module_cache = {}
-        self._resolver = cfg.resolver
         # Initialize the system modules immediately.
         self._mapping = self._module('Mapping')
         self._stylesheets = self._module('Stylesheets')
@@ -40,7 +43,7 @@ class Handler(object):
         self._authentication = self._module('Authentication')
         self._config = self._module('Config')
         self._exporter = cfg.exporter
-        #log(OPR, 'New Handler instance for %s.' % server.server_hostname)
+        #log(OPR, 'New Handler instance for %s.' % hostname)
 
     def _module(self, name, **kwargs):
         key = (name, tuple(kwargs.items()))
@@ -51,9 +54,9 @@ class Handler(object):
             #    raise KeyError()
         except KeyError:
             cls = get_module(name)
-            args = (self._module, self._resolver)
+            args = (self._module,)
             if issubclass(cls, PytisModule):
-                args += (self._dbconnection,)
+                args += (cfg.resolver, self._dbconnection,)
             module = cls(*args, **kwargs)
             self._module_cache[key] = module
         return module
@@ -69,6 +72,7 @@ class Handler(object):
                 self._config.configure(req)
                 modname = self._mapping.resolve(req)
                 module = self._module(modname)
+                assert isinstance(module, RequestHandler)
                 result = module.handle(req)
                 if isinstance(result, int):
                     return result
@@ -94,7 +98,7 @@ class Handler(object):
                                  wmi=req.wmi,
                                  inline=req.param('display') == 'inline',
                                  show_panels=req.show_panels(),
-                                 server_hostname=self._server.server_hostname)
+                                 server_hostname=self._hostname)
         menu = module.menu(req)
         panels = module.panels(req, result.lang())
         styles = self._stylesheets.stylesheets()
@@ -118,55 +122,19 @@ class ModPythonHandler(object):
         self._handler = None
 
     def __call__(self, request):
-        req = WikingRequest(request)
-        dbconnection = pd.DBConnection(**req.options)
         try:
+            req = WikingRequest(request)
             if self._handler is None:
-                self._handler = Handler(req.server, dbconnection)
-            #result, t1, t2 = timeit(self._handler.handle, req)
-            #log(OPR, "Request processed in %.1f ms (%.1f ms wall time):" % \
-            #    (1000*t1, 1000*t2), req.uri)
+                self._handler = Handler(req.server_hostname(), req.options())
             return self._handler.handle(req)
         except Exception, e:
-            if isinstance(e, pd.DBException):
-                try:
-                    if e.exception() and e.exception().args:
-                        errstr = e.exception().args[0]
-                    else:
-                        errstr = e.message()
-                    result = maybe_install(req, dbconnection, errstr)
-                    if result is not None:
-                        return req.result(result)
-                except:
-                    pass
-            einfo = sys.exc_info()
-	    info = (("URI", req.uri),
-                    ("Remote host", req.get_remote_host()),
-                    ("HTTP referrer", req.header('Referer')),
-                    ("User agent", req.header('User-Agent')),
-                    )
-            import traceback
-            text = "\n".join(["%s: %s" % pair for pair in info]) + \
-                   "\n\n" + "".join(traceback.format_exception(*einfo))
-            try:
-                if cfg.bug_report_address is not None:
-                    send_mail('wiking@' + req.server.server_hostname,
-                              cfg.bug_report_address,
-                              'Wiking Error: ' + req.server.server_hostname,
-                              text + "\n\n" + cgitb.text(einfo),
-                              "<html><pre>"+ text +"</pre>"+ \
-                              cgitb.html(einfo) +"</html>",
-                              smtp_server=cfg.smtp_server)
-                    log(OPR, "Traceback sent to:", cfg.bug_report_address)
-                else:
-                    log(OPR, "Error:", cgitb.text(einfo))
-            except Exception, e:
-                log(OPR, "Error in exception handling:", e)
-                log(OPR, "The original exception was:", text)
-            import traceback
-            message = ''.join(traceback.format_exception_only(*einfo[:2]))
-            return req.error(message)
+            handler = get_module('ErrorHandler')(None)
+            return handler.handle_exception(req, e)
 
+        #result, t1, t2 = timeit(self._handler.handle, req)
+        #log(OPR, "Request processed in %.1f ms (%.1f ms wall time):" % \
+        #    (1000*t1, 1000*t2), req.uri)
+        #return result
 
 handler = ModPythonHandler()
 """The instance is callable so this makes it work as a mod_python handler."""

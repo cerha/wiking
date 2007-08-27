@@ -108,7 +108,8 @@ class PytisModule(Module, ActionHandler):
     # Instance methods
     
     def __init__(self, get_module, resolver, dbconnection, **kwargs):
-        super(PytisModule, self).__init__(get_module, resolver, **kwargs)
+        super(PytisModule, self).__init__(get_module, **kwargs)
+        self._resolver = resolver
         self._dbconnection = dbconnection
         spec = self._spec(resolver)
         self._data = spec.data_spec().create(dbconnection_spec=dbconnection)

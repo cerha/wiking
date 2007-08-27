@@ -28,42 +28,34 @@ _ = lcg.TranslatableTextFactory('wiking')
 
 class Module(object):
     """Abstract base class defining the basic Wiking module."""
-    
+
+    @classmethod
     def name(cls):
-        """Return the module name as a string."""
+        """Return module name as a string."""
         return cls.__name__
-    name = classmethod(name)
 
+    @classmethod
     def title(cls):
-        """Return a human-friendly module name as an 'lcg.LocalizableText' instance."""
+        """Return human-friendly module name as a string or 'lcg.LocalizableText'."""
         return cls.__name__
-    title = classmethod(title)
 
+    @classmethod
     def descr(cls):
-        """Return brief module description as an 'lcg.LocalizableText' instance."""
+        """Return brief module description as a string or 'lcg.LocalizableText'."""
         return doc(cls)
-    descr = classmethod(descr)
 
-    def __init__(self, get_module, resolver, **kwargs):
+    def __init__(self, get_module, **kwargs):
         """Initialize the instance.
 
         Arguments:
 
           get_module -- a callable object which returns the module instance
             when called with a module name as an argument.
-          resolver -- Pytis 'Resolver' instance.
 
         """
         self._module = get_module
-        self._resolver = resolver
         #log(OPR, 'New module instance: %s[%x]' % (self.name(), lcg.positive_id(self)))
         super(Module, self).__init__(**kwargs)
-
-    def menu(self, req):
-        return self._module('Mapping').menu(req)
-        
-    def panels(self, req, lang):
-        return self._module('Panels').panels(req, lang)
 
     
 class RequestHandler(object):
@@ -78,6 +70,12 @@ class RequestHandler(object):
 
         """
         pass
+
+    def menu(self, req):
+        return self._module('Mapping').menu(req)
+        
+    def panels(self, req, lang):
+        return self._module('Panels').panels(req, lang)
 
 
 class ActionHandler(RequestHandler):

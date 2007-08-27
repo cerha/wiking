@@ -1,3 +1,28 @@
+2007-08-27  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/modules.py (Module): Constructor argument 'resolver'
+	removed.  Methods `panels' and amenu' moved to `RequestHandler'.
+
+	* lib/wiking/handler.py: Added support for modularized exception
+	handling.  Minor request processing optimizations.  Allow
+	configuration options to be overriden in apache configuration
+	file.
+
+	* lib/wiking/api.py (ErrorHandler): New module.
+
+	* lib/wiking/request.py (Request): API cleaned.
+
+	* lib/wiking/install.py: File removed.
+
+	* lib/wiking/db.py: Added support for title templates.
+	(PytisModule): Process the `resolver' constructor arg in this
+	class.
+
+	* lib/wiking/cms.py: Use title templates.
+	(ErrorHandler): New module.  CMS installation moved here.
+
+	* lib/wiking/util.py: Delete action menu args fixed.
+
 2007-08-24  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/util.py: Use the 'search' argument for the "list"
@@ -7,6 +32,7 @@
 
 	* lib/wiking/db.py: Pass the request object to the module's
 	`_condition()' method.
+	(PytisModule.action_insert): Fixed a bug with uid access.
 
 2007-08-23  Tomas Cerha  <cerha@brailcom.org>
 

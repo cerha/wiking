@@ -85,7 +85,7 @@ def _modules(cls=None):
             if type(m) == type(Module) and issubclass(m, Module) and issubclass(m, cls)]
 
 
-class WikingManagementInterface(Module):
+class WikingManagementInterface(Module, RequestHandler):
     """Wiking Management Interface.
 
     This module handles the WMI requestes by redirecting the request to the selected module.  The
@@ -618,6 +618,97 @@ class Themes(CMSModule):
                   for c in Theme.COLORS if row[c.id()].value() is not None]
         return Theme(colors=dict(colors))
 
+
+class ErrorHandler(ErrorHandler):
+
+    def _maybe_install(self, req, errstr):
+        """Check a DB error string and try to set it up if it is the problem."""
+        def _button(param, label):
+            return ('<form action="/"><input type="hidden" name="%s" value="1">'
+                    '<input type="submit" value="%s"></form>') % (param, label)
+        options = req.options()
+        dboptions = dict([(k, options[k]) for k in
+                          ('user', 'password', 'host', 'port') if options.has_key(k)])
+        dboptions['database'] = dbname = options.get('database', req.server_hostname())
+        if errstr == 'FATAL:  database "%s" does not exist\n' % dbname:
+            if not req.param('createdb'):
+                return 'Database "%s" does not exist: ' % dbname + \
+                       _button('createdb', "Create")
+            else:
+                create = "CREATE DATABASE \"%s\" WITH ENCODING 'UTF8'" % dbname
+                err = self._try_query(dboptions, create, autocommit=True, database='postgres')
+                if err == 'FATAL:  database "postgres" does not exist\n':
+                    err = self._try_query(dboptions, create, database='template1')
+                if err is None:
+                    return 'Database "%s" created.' % dbname + \
+                           _button('initdb', "Initialize")
+                elif err == 'ERROR:  permission denied to create database\n':
+                    return ('The database user does not have permission to '
+                            'create databases.  You need to create the '
+                            'database "%s" manually. ' % dbname +
+                            'Login to the server as the database superuser (most '
+                            'often postgres) and run the following command:' 
+                            '<pre>createdb %s -E UTF8</pre>' % dbname)
+                else:
+                    return 'Unable to create database: %s' % err
+        elif errstr == "Není možno zjistit typ sloupce":
+            if not req.param('initdb'):
+                err = self._try_query(dboptions, "select * from mapping")
+                if err:
+                    return 'Database "%s" not initialized!' % dbname + \
+                           _button('initdb', "Initialize")
+            else:
+                script = ''
+                for f in ('wiking.sql', 'init.sql'):
+                    path = os.path.join(cfg.wiking_dir, 'sql', f)
+                    if os.path.exists(path):
+                        script += "".join(file(path).readlines())
+                    else:
+                        return ("File %s not found! " % path +
+                                "Was Wiking installed properly? "
+                                "Try setting-up wiking_dir in %s" %
+                                cfg.config_file)
+                err = self._try_query(dboptions, script)
+                if not err:
+                    return ("Database initialized. "
+                            '<a href="/_wmi">Enter the management interface</a> '
+                            "Please use the default login 'admin' with password "
+                            "'wiking'.  Do not forget to change your password!")
+                else:
+                    return "Unable to initialize the database: " + err
+                
+    def _try_query(self, dboptions, query, autocommit=False, database=None):
+        import psycopg2 as dbapi
+        try:
+            try:
+                conn = dbapi.connect(**dboptions)
+                if autocommit:
+                    from psycopg2 import extensions
+                    conn.set_isolation_level(extensions.ISOLATION_LEVEL_AUTOCOMMIT)
+                conn.cursor().execute(query)
+                conn.commit()
+            finally:
+                conn.close()
+        except dbapi.ProgrammingError, e:
+            return e.args[0]
+
+    def handle_exception(self, req, exception):
+        log(OPR, "*****:", (exception, isinstance(exception, pd.DBException)))
+        if isinstance(exception, pd.DBException):
+            try:
+                if exception.exception() and exception.exception().args:
+                    errstr = exception.exception().args[0]
+                else:
+                    errstr = exception.message()
+                result = self._maybe_install(req, errstr)
+                if result is not None:
+                    return req.result(result)
+            except:
+                pass
+        return super(ErrorHandler, self).handle_exception(req, exception)
+
+
+    
 # ==============================================================================
 # The modules below are able to handle requests directly.  
 # The modules above are system modules used internally by Wiking.

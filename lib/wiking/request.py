@@ -51,12 +51,8 @@ class Request(pytis.web.Request):
     def __init__(self, req, encoding='utf-8'):
         self._req = req
         self._encoding = encoding
-        self.get_remote_host = req.get_remote_host
-        self.server = req.server
         # Store request data in real dictionaries.
         self.params = self._init_params()
-        options = req.get_options()
-        self.options = dict([(o, options[o]) for o in options.keys()])
         self.uri = self._init_uri()
         self.path = [item for item in self.uri.split('/')[1:] if item]
 
@@ -92,7 +88,7 @@ class Request(pytis.web.Request):
     def set_cookie(self, name, value, expires=None):
         c = Cookie.SimpleCookie()
         c[name] = value
-        c[name]['domain'] = self.server.server_hostname
+        c[name]['domain'] = self._req.server.server_hostname
         c[name]['path'] = '/'
         if expires is not None:
             c[name]['expires'] = expires
@@ -100,6 +96,10 @@ class Request(pytis.web.Request):
         self._req.headers_out.add("Set-Cookie", cookie)
 
     # Additional methods:
+
+    def options(self):
+        options = self._req.get_options()
+        return dict([(o, options[o]) for o in options.keys()])
 
     def header(self, name, default=None):
         try:
@@ -109,6 +109,12 @@ class Request(pytis.web.Request):
 
     def set_header(self, name, value):
         self._req.headers_out.add(name, value)
+        
+    def remote_host(self):
+        return self._req.get_remote_host()
+
+    def server_hostname(self):
+        return self._req.server.server_hostname
         
     def set_status(self, status):
         self._req.status = status
@@ -138,7 +144,7 @@ class Request(pytis.web.Request):
         else:
             protocol = 'http://'
             default_port = 80            
-        return protocol + self.server.server_hostname + \
+        return protocol + self._req.server.server_hostname + \
                (port and port != default_port and ':'+ str(port) or '') + \
                self.uri
     
@@ -155,7 +161,7 @@ class Request(pytis.web.Request):
                         "Please inform the server administrator, %s if the "
                         "problem persists.</p>"
                         "The error message was:"
-                        "<pre>" % self.server.server_admin + escape(message)+\
+                        "<pre>" % self._req.server.server_admin + escape(message)+\
                         "</pre></body></html>")
         return apache.OK
 
