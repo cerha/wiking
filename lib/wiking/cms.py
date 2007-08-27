@@ -340,8 +340,6 @@ class Config(CMSModule):
         help = _("Edit site configuration.")
         fields = (
             Field('config_id', ),
-            Field('title', virtual=True,
-                  computer=Computer(lambda r: _("Site Configuration"), depends=())),
             _Field('site_title', width=24),
             _Field('site_subtitle', width=64),
             _Field('webmaster_addr'),
@@ -358,7 +356,7 @@ class Config(CMSModule):
         layout = ('site_title', 'site_subtitle', 'webmaster_addr', 'theme',
                   'allow_login_panel', 'allow_registration', 'force_https_login',
                   'upload_limit')
-    _TITLE_COLUMN = 'title'
+    _TITLE_TEMPLATE = _("Site Configuration")
     WMI_SECTION = WikingManagementInterface.SECTION_SETUP
     WMI_ORDER = 100
     _DEFAULT_THEME = cfg.theme
@@ -485,6 +483,7 @@ class Languages(CMSModule):
         layout = ('lang',)
         columns = ('lang', 'name')
     _REFERER = 'lang'
+    _TITLE_TEMPLATE = _('%(name)s')
     WMI_SECTION = WikingManagementInterface.SECTION_SETUP
     WMI_ORDER = 200
 

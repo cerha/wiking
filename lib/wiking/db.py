@@ -32,6 +32,7 @@ class PytisModule(Module, ActionHandler):
     """
     _REFERER = None
     _TITLE_COLUMN = None
+    _TITLE_TEMPLATE = None
     _LIST_BY_LANGUAGE = False
     _REFERER_PATH_LEVEL = 2
     _DEFAULT_ACTIONS_FIRST = (Action(_("Edit"), 'edit',
@@ -189,11 +190,10 @@ class PytisModule(Module, ActionHandler):
                     tf = type.is_exact() and 'exact_time' or 'time'
                     format += ' ' + formats[tf]
                 kwargs['format'] = format
-            if isinstance(type, (pd.Binary, pd.Password)) \
-                   and not value_ and not record.new():
+            if isinstance(type, (pd.Binary, pd.Password)) and not value_ and not record.new():
                 continue # Keep the original file if no file is uploaded.
             if isinstance(type, pd.Password) and kwargs.get('verify') is None:
-                kwargs['verify'] = ''
+                kwargs['verify'] = not type.verify() and value_ or ''
             value, error = type.validate(value_, **kwargs)
             #log(OPR, "Validation:", (id, value_, kwargs, error))
             if error:
@@ -230,7 +230,10 @@ class PytisModule(Module, ActionHandler):
     def _document(self, req, content, record=None, lang=None, variants=None,
                   err=None, msg=None, **kwargs):
         if record:
-            title = record[self._title_column].export()
+            if self._TITLE_TEMPLATE:
+                title = self._TITLE_TEMPLATE.interpolate(lambda key: record[key].export())
+            else:
+                title = record[self._title_column].export()
             lang = self._lang(record)
             variants = self._variants(record)
         else:
