@@ -516,7 +516,7 @@ class ActionMenu(lcg.Content):
                 uri = '.'
             elif action.name() == 'delete' and self._row is not None:
                 key = self._row.data().key()[0].id()
-                args = dict(args, key=self._row[key].export())
+                args = dict(args, **{key: self._row[key].export()})
                 uri = '.'
             else:
                 uri = ''
