@@ -142,9 +142,10 @@ img { position: relative; } /* MSIE float workaround */
     list-style-type: disc;
     marker-offset: 0.3em;
 }
+/* This makes panels to skip in Firefox when page content is too wide...
 #submenu li a:hover { 
     outline: solid 1px $color.heading-line;
-}
+}*/
 
 #language-selection { 
     position: absolute;
@@ -170,6 +171,7 @@ img { position: relative; } /* MSIE float workaround */
 }
 #panels {
     position: relative;
+    right: 0; /* Needed for MSIE when page is too wide */
     z-index: 1;
     float: right;
     width: 17em;
