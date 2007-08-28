@@ -60,6 +60,9 @@ class Module(object):
     
 class RequestHandler(object):
     """Mix-in class for modules capable of handling requests."""
+    def __init__(self, *args, **kwargs):
+        self._cached_uri = (None, None)
+        super(RequestHandler, self).__init__(*args, **kwargs)
     
     def handle(self, req):
         """Handle the request and return the result.
@@ -71,10 +74,42 @@ class RequestHandler(object):
         """
         pass
 
+    def _mapped_uri(self):
+        # Retrive the current mapping uri for the module.  This method is used by _base_uri() and
+        # may be overriden in derived classes.  The result may be cached for the duration of one
+        # request.
+        return self._module('Mapping').module_uri(self.name())
+
+    def _base_uri(self, req):
+        """Return module's current URI as a string or None if not mapped."""
+        # Since the identifiers may be used many times, they are cached at least for the duration
+        # of one request.  We cannot cache them over requests, sice there is no way to invalidate
+        # them if mapping changes (at least in the multiprocess server invironment).
+        if req.wmi:
+            uri = '/_wmi/'+ self.name()
+        else:
+            req_, uri = self._cached_uri
+            if req is not req_:
+                uri = self._mapped_uri()
+                self._cached_uri = (req, uri)
+        return uri
+        
     def menu(self, req):
+        """Return menu definition for this module.
+
+        The default implementation always uses the global menu defined by the 'Mapping' module, but
+        a derived module may choose to override this default behavior.
+
+        """
         return self._module('Mapping').menu(req)
         
     def panels(self, req, lang):
+        """Return panels for this module.
+
+        The default implementation always uses the global set of panels defined by the 'Panels'
+        module, but a derived module may choose to override this default behavior.
+
+        """
         return self._module('Panels').panels(req, lang)
 
 

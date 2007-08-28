@@ -278,7 +278,7 @@ class Mapping(CMSModule, Publishable, Mappable):
                 Roles.check(req, (Roles.USER,))
         return modname
     
-    def get_identifier(self, modname):
+    def module_uri(self, modname):
         """Return the current identifier for given module name.
 
         None will be returned when there is no mapping item for the module, or when there is more
@@ -287,7 +287,7 @@ class Mapping(CMSModule, Publishable, Mappable):
         """
         rows = self._data.get_rows(modname=modname, published=True)
         if len(rows) == 1:
-            return rows[0]['identifier'].value()
+            return '/'+ rows[0]['identifier'].value()
         return self._REVERSE_STATIC_MAPPING.get(modname)
     
     def menu(self, req):
@@ -1086,10 +1086,10 @@ class News(CMSModule, Mappable):
     WMI_ORDER = 300
         
     def _link_provider(self, req, row, cid, target=None, **kwargs):
-        identifier = self._identifier(req)
-        if not req.wmi and cid == 'title' and identifier is not None:
+        uri = self._base_uri(req)
+        if not req.wmi and cid == 'title' and uri:
             anchor = '#item-'+ row[self._referer].export()
-            return make_uri('/'+ identifier, **kwargs) + anchor
+            return make_uri(uri, **kwargs) + anchor
         elif not issubclass(target, Panel):
             return super(News, self)._link_provider(req, row, cid, target=target, **kwargs)
 
@@ -1267,11 +1267,9 @@ class Stylesheets(CMSModule, Stylesheets, Mappable):
     WMI_ORDER = 200
 
     def stylesheets(self):
-        # TODO: Use self._identifier() ???
-        identifier = self._module('Mapping').get_identifier(self.name())
-        if identifier:
-            return [lcg.Stylesheet(r['identifier'].value(),
-                                   uri=('/'+ identifier + '/'+ r['identifier'].value()))
+        uri = self._module('Mapping').module_uri(self.name())
+        if uri:
+            return [lcg.Stylesheet(r['identifier'].value(), uri=uri+'/'+r['identifier'].value())
                     for r in self._data.get_rows(active=True)]
         else:
             return []
@@ -1376,8 +1374,8 @@ class Users(_Users, Mappable):
     WMI_ORDER = 100
     
     def registration_uri(self, req):
-        identifier = self._identifier(req)
-        return identifier and make_uri('/'+identifier, action='add') or None
+        uri = self._base_uri(req)
+        return uri and make_uri(uri, action='add') or None
 
 
 class Rights(_Users):

@@ -68,14 +68,16 @@ class Mapping(Module):
             raise NotFound()
         return modname
     
-    def get_identifier(self, modname):
-        """Return the current identifier for given module name.
+    def module_uri(self, modname):
+        """Return the current uri for given module name.
 
         None will be returned when there is no mapping item for the module, or when there is more
-        than one item for the same module (which is also legal).
+        than one item for the same module (which is also legal).  This is in principe a reverse
+        function to 'resolve'.
         
         """
-        return self._reverse_mapping.get(modname)
+        identitier = self._reverse_mapping.get(modname)
+        return identitier and '/'+identitier or None
     
     def menu(self, req):
         """Return the menu hierarchy.
@@ -171,8 +173,8 @@ class Stylesheets(Module, ActionHandler):
         'Mapping' module to a module, which serves its contents.
 
         """
-        identifier = self._module('Mapping').get_identifier('Stylesheets')
-        return [lcg.Stylesheet('default.css', uri='/'+identifier+'/default.css')]
+        uri = self._module('Mapping').module_uri('Stylesheets')
+        return [lcg.Stylesheet('default.css', uri=uri+'/default.css')]
 
     def _default_action(self, req):
         return 'view'

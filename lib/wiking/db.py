@@ -124,27 +124,11 @@ class PytisModule(Module, ActionHandler):
         self._referer = self._REFERER or key
         self._referer_type = self._data.find_column(self._referer).type()
         self._title_column = self._TITLE_COLUMN or self._view.columns()[0]
-        self._cached_identifier = (None, None)
         self._links = dict([(f.id(), f.codebook()) for f in self._view.fields() if f.codebook()])
 
     def _spec(self, resolver):
         return self.__class__.Spec(self.__class__, resolver)
 
-    def _get_identifier(self):
-        return self._module('Mapping').get_identifier(self.name())
-    
-    def _identifier(self, req):
-        """Return module's current mapping identifier as a string or None."""
-        # Since the identifiers may be used many times, they are cached at
-        # least for the duration of one request.  We cannot cache them over
-        # requests, sice there is no way to invalidate them in the multiprocess
-        # server invironment.
-        req_, identifier = self._cached_identifier
-        if req is not req_:
-            identifier = self._get_identifier()
-            self._cached_identifier = (req, identifier)
-        return identifier
-        
     def _datetime_formats(self, req):
         lang = req.prefered_language(self._module('Languages').languages(),
                                      raise_error=False)
@@ -268,17 +252,14 @@ class PytisModule(Module, ActionHandler):
 
     def _link_provider(self, req, row, cid, target=None, **kwargs):
         if cid == self._title_column or cid == self._key:
-            if req.wmi:
-                uri = '/_wmi/'+ self.name()
+            uri = self._base_uri(req)
+            if not uri:
+                return None
+            elif req.wmi:
                 referer = self._key
             else:
-                identifier = self._identifier(req)
-                if not identifier:
-                    return None
-                uri = '/'+ identifier
                 referer = self._referer
-            uri += '/'+ row[referer].export()
-            return make_uri(uri, **kwargs)
+            return make_uri(uri +'/'+ row[referer].export(), **kwargs)
         if self._links.has_key(cid):
             try:
                 module = self._module(self._links[cid])
