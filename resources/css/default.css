@@ -171,7 +171,8 @@ img { position: relative; } /* MSIE float workaround */
 }
 #panels {
     position: relative;
-    right: 0; /* Needed for MSIE when page is too wide */
+    right: 0.1em; /* Needed for MSIE when page is too wide */
+    top: -1px;
     z-index: 1;
     float: right;
     width: 17em;
