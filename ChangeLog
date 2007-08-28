@@ -1,5 +1,7 @@
 2007-08-28  Tomas Cerha  <cerha@brailcom.org>
 
+	* resources/css/default.css: Minor fix.
+
 	* sql/init.sql: Yellow color theme added.
 
 	* lib/wiking/modules.py (RequestHandler._base_uri): New method.
