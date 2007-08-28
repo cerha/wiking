@@ -89,9 +89,6 @@ class Mapping(Module):
         """
         return (MenuItem('index', _("Index page")),)
                 
-    def modtitle(self, modname):
-        """Return localizable module title for given module name."""
-
 
 class Config(Module):
     """Apply specific configuration.
@@ -158,7 +155,7 @@ class Languages(Module):
 
 
 class Stylesheets(Module, ActionHandler):
-    """Serves available stylesheets.
+    """Manages available stylesheets and serves them to the client.
 
     The default implementation serves stylesheet files from the wiking resources directory.  You
     will just need to map this module to serve certain uri, such as 'css'.
@@ -168,7 +165,12 @@ class Stylesheets(Module, ActionHandler):
     _MATCHER = re.compile (r"\$(\w[\w-]*)(?:\.(\w[\w-]*))?")
 
     def stylesheets(self):
-        """Return the list of all available stylesheets as 'lcg.Stylesheet' instances."""
+        """Return the list of all available stylesheets as 'lcg.Stylesheet' instances.
+
+        Each of the stylesheets should have the 'uri' set to an existing uri mapped by the
+        'Mapping' module to a module, which serves its contents.
+
+        """
         identifier = self._module('Mapping').get_identifier('Stylesheets')
         return [lcg.Stylesheet('default.css', uri='/'+identifier+'/default.css')]
 

@@ -1,3 +1,11 @@
+2007-08-28  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/db.py: Do without 'Mapping.modtitle'.
+
+	* lib/wiking/cms.py: Menu creation optimized.
+
+	* lib/wiking/api.py (Mapping.modtitle): Method removed.
+
 2007-08-27  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/modules.py (Module): Constructor argument 'resolver'

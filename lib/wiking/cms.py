@@ -67,14 +67,14 @@ else:
         except ImportError:
             return import_module('wiking.cms').__dict__
 
-def _modtitle(m):
+def _modtitle(m, default=None):
     """Return a localizable module title by module name."""
     if m is None:
         return ''
     try:
         cls = _module_dict()[m]
     except:
-        return concat(m,' (',_("unknown"),')')
+        return default or concat(m,' (',_("unknown"),')')
     else:
         return cls.title()
 
@@ -243,6 +243,9 @@ class Mapping(CMSModule, Publishable, Mappable):
             return '/_wmi/' + row['modname'].value()
         return super(Mapping, self)._link_provider(req, row, cid, **kwargs)
 
+    #def _check_action_rights(req, action.name(), record, raise_error=False):
+    # TODO: disable everything except 'list' outside WMI.
+        
     def action_list(self, req, **kwargs):
         if not req.wmi:
             return self._document(req, SiteMap(depth=99))
@@ -298,31 +301,26 @@ class Mapping(CMSModule, Publishable, Mappable):
         
         """
         children = {None: []}
-        titles = self._module('Titles')
+        titles = self._module('Titles').titles()
         def mkitem(row):
             mapping_id = row['mapping_id'].value()
             identifier = str(row['identifier'].value())
-            return MenuItem(identifier, titles.menu_title(mapping_id, identifier),
-                            hidden=row['ord'].value() is None,
+            modname = row['modname'].value()
+            if modname == 'Pages':
+                default_title = identifier
+            else:
+                default_title = _modtitle(modname, default=identifier)
+            title = lcg.SelfTranslatableText(default_title,
+                                             translations=titles.get(mapping_id, {}))
+            return MenuItem(identifier, title, hidden=row['ord'].value() is None,
                             submenu=[mkitem(r) for r in children.get(mapping_id, ())])
         for row in self._data.get_rows(sorting=self._sorting, published=True):
             parent = row['parent'].value()
-            try:
-                target = children[parent]
-            except KeyError:
-                target = children[parent] = []
-            target.append(row)
+            if not children.has_key(parent):
+                children[parent] = []
+            children[parent].append(row)
         return [mkitem(row) for row in children[None]]
                 
-    def modtitle(self, modname):
-        """Return localizable module title for given module name."""
-        row = self._data.get_row(modname=modname)
-        if row:
-            return self._module('Titles').menu_title(row['mapping_id'].value(),
-                                                     _modtitle(modname))
-        else:
-            return _modtitle(modname)
-
 
 class Config(CMSModule):
     """Site specific configuration provider.
@@ -518,12 +516,16 @@ class Titles(CMSModule):
     WMI_SECTION = WikingManagementInterface.SECTION_CONTENT
     WMI_ORDER = 10000
     
-    def menu_title(self, mapping_id, default):
-        """Return localizable menu item title."""
-        titles = dict([(row['lang'].value(), row['title'].value())
-                       for row in self._data.get_rows(mapping_id=mapping_id)])
-        return lcg.SelfTranslatableText(default, translations=titles)
-
+    def titles(self):
+        """Return a dictionary of menu item titles keyed by mapping_id."""
+        titles = {}
+        for row in self._data.get_rows():
+            mapping_id = row['mapping_id'].value()
+            if not titles.has_key(mapping_id):
+                titles[mapping_id] = {}
+            titles[mapping_id][row['lang'].value()] = row['title'].value()
+        return titles
+    
 class Themes(CMSModule):
     class Spec(Specification):
         class _Field(Field):

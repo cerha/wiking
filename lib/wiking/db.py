@@ -97,13 +97,13 @@ class PytisModule(Module, ActionHandler):
                      if k != key or v.value() is not None]
             return pd.Row(rdata)
 
+    @classmethod
     def title(cls):
         return cls.Spec.title
-    title = classmethod(title)
     
+    @classmethod
     def descr(cls):
         return cls.Spec.help
-    descr = classmethod(descr)
     
     # Instance methods
     
@@ -222,12 +222,6 @@ class PytisModule(Module, ActionHandler):
                     return msg
         return unicode(e.exception())
 
-    def _real_title(self, lang):
-        # This is quite a hack... It would not work for modules with multiple
-        # mapping entries.
-        title = self._module('Mapping').modtitle(self.name())
-        return title or self._view.title()
-    
     def _document(self, req, content, record=None, lang=None, variants=None,
                   err=None, msg=None, **kwargs):
         if record:
@@ -465,8 +459,6 @@ class PytisModule(Module, ActionHandler):
                        custom_spec=(not req.wmi and self._CUSTOM_VIEW or None), 
                        columns=[c for c in self._view.columns() if c!=sbcol]),
             self._action_menu(req, args=args, uri='/_wmi/' + self.name()))
-        #lang = req.prefered_language(self._module('Languages').languages())
-        #title = self._real_title(lang)
         return lcg.Section(title=self._view.title(), content=[c for c in content if c])
 
     # ===== Action handlers =====
@@ -486,7 +478,7 @@ class PytisModule(Module, ActionHandler):
                     self._action_menu(req))
         if isinstance(self, RssModule) and not req.wmi and self._RSS_TITLE_COLUMN and lang:
             content += (lcg.p(_("An RSS channel is available for this section:"), ' ',
-                              lcg.link(req.uri +'.'+ lang +'.rss', self._real_title(lang) +' RSS',
+                              lcg.link(req.uri +'.'+ lang +'.rss', lcg.join((lcg.Title('news'), 'RSS')),
                                        type='application/rss+xml'), " (",
                               lcg.link('_doc/rss?display=inline', _("more about RSS")), ")"),)
         return self._document(req, content, lang=lang, variants=variants, err=err, msg=msg)
@@ -604,6 +596,18 @@ class RssModule(object):
             descr = None
         return descr
 
+    def _real_title(self, req):
+        def find(items):
+            for item in items:
+                if item.id == req.uri:
+                    return item.title()
+                else:
+                    title = find(item.submenu())
+                    if title:
+                        return title
+            return None
+        return find(self._module('Mapping').menu(req)) or self._view.title()
+    
     def action_rss(self, req):
         if not self._RSS_TITLE_COLUMN:
             raise NotFound
@@ -635,7 +639,7 @@ class RssModule(object):
             else:
                 author = cfg.webmaster_addr
             items.append((title, uri, descr, date, author))
-        title = cfg.site_title +' - '+ self._real_title(lang)
+        title = cfg.site_title +' - '+ tr.translate(self._real_title(req))
         result = rss(title, base_uri, items, cfg.site_subtitle,
                      lang=lang, webmaster=cfg.webmaster_addr)
         return ('application/xml', result)
