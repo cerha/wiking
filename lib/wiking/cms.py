@@ -20,7 +20,9 @@
 
 The modules defined here implement the Wiking web application interface.  The actual contents
 served by these modules, as well as its structure and configuration, is stored in database and 
-can be managed using a web browser through Wiking Management Interface."""
+can be managed using a web browser through Wiking Management Interface.
+
+"""
 
 from wiking import *
 
@@ -367,7 +369,7 @@ class Config(CMSModule):
         return 'edit'
         
     def _redirect_after_update(self, req, record):
-        return self.action_edit(req, record, msg=self._UPDATE_MSG)
+        return self.action_edit(req, record, msg=self._update_msg(record))
     
     def action_view(self, *args, **kwargs):
         return self.action_show(*args, **kwargs)
@@ -625,17 +627,20 @@ class ErrorHandler(ErrorHandler):
 
     def _maybe_install(self, req, errstr):
         """Check a DB error string and try to set it up if it is the problem."""
-        def _button(param, label):
-            return ('<form action="/"><input type="hidden" name="%s" value="1">'
-                    '<input type="submit" value="%s"></form>') % (param, label)
+        def _button(label, action='/', **params):
+            return ('<form action="%s">' % action +
+                    ''.join(['<input type="hidden" name="%s" value="%s">' % x
+                             for x in params.items()]) +
+                    '<input type="submit" value="%s">' % label +
+                    '</form>')
         options = req.options()
         dboptions = dict([(k, options[k]) for k in
                           ('user', 'password', 'host', 'port') if options.has_key(k)])
         dboptions['database'] = dbname = options.get('database', req.server_hostname())
         if errstr == 'FATAL:  database "%s" does not exist\n' % dbname:
             if not req.param('createdb'):
-                return 'Database "%s" does not exist: ' % dbname + \
-                       _button('createdb', "Create")
+                return 'Database "%s" does not exist.\n' % dbname + \
+                       _button("Create", createdb=1)
             else:
                 create = "CREATE DATABASE \"%s\" WITH ENCODING 'UTF8'" % dbname
                 err = self._try_query(dboptions, create, autocommit=True, database='postgres')
@@ -643,22 +648,25 @@ class ErrorHandler(ErrorHandler):
                     err = self._try_query(dboptions, create, database='template1')
                 if err is None:
                     return 'Database "%s" created.' % dbname + \
-                           _button('initdb', "Initialize")
-                elif err == 'ERROR:  permission denied to create database\n':
-                    return ('The database user does not have permission to '
-                            'create databases.  You need to create the '
-                            'database "%s" manually. ' % dbname +
-                            'Login to the server as the database superuser (most '
-                            'often postgres) and run the following command:' 
-                            '<pre>createdb %s -E UTF8</pre>' % dbname)
+                           _button("Initialize", initdb=1)
+                elif err == 'permission denied to create database\n':
+                    return ('The database user does not have permission to create databases. '
+                            'You need to create the database "%s" manually. ' % dbname +
+                            'Login to the server as the database superuser (most often postgres) '
+                            'and run the following command:'
+                            '<pre>createdb %s -E UTF8</pre>' % dbname +
+                            _button("Continue", initdb=1))
+                            
+                
+                
                 else:
                     return 'Unable to create database: %s' % err
-        elif errstr == "Není možno zjistit typ sloupce":
+        elif errstr == 'Nen\xed mo\xbeno zjistit typ sloupce':
             if not req.param('initdb'):
                 err = self._try_query(dboptions, "select * from mapping")
                 if err:
                     return 'Database "%s" not initialized!' % dbname + \
-                           _button('initdb', "Initialize")
+                           _button("Initialize", initdb=1)
             else:
                 script = ''
                 for f in ('wiking.sql', 'init.sql'):
@@ -672,18 +680,20 @@ class ErrorHandler(ErrorHandler):
                                 cfg.config_file)
                 err = self._try_query(dboptions, script)
                 if not err:
-                    return ("Database initialized. "
-                            '<a href="/_wmi">Enter the management interface</a> '
-                            "Please use the default login 'admin' with password "
-                            "'wiking'.  Do not forget to change your password!")
+                    return ("<p>Database initialized. " +
+                            _button("Enter Wiking Management Interface", '/_wmi') + "</p>\n"
+                            "<p>Please use the default login 'admin' with password 'wiking'.</p>"
+                            "<p><em>Do not forget to change your password!</em></p>")
                 else:
                     return "Unable to initialize the database: " + err
                 
     def _try_query(self, dboptions, query, autocommit=False, database=None):
         import psycopg2 as dbapi
         try:
+            if database is not None:
+                dboptions['database'] = database
+            conn = dbapi.connect(**dboptions)
             try:
-                conn = dbapi.connect(**dboptions)
                 if autocommit:
                     from psycopg2 import extensions
                     conn.set_isolation_level(extensions.ISOLATION_LEVEL_AUTOCOMMIT)
@@ -695,7 +705,6 @@ class ErrorHandler(ErrorHandler):
             return e.args[0]
 
     def handle_exception(self, req, exception):
-        log(OPR, "*****:", (exception, isinstance(exception, pd.DBException)))
         if isinstance(exception, pd.DBException):
             try:
                 if exception.exception() and exception.exception().args:
@@ -771,8 +780,6 @@ class Pages(CMSModule, Mappable):
     _INSERT_MSG = _("New page was successfully created. Don't forget to publish it when you are "
                     "done. Please, visit the 'Mapping' module if you want to add the page to the "
                     "main menu.")
-    _UPDATE_MSG = _("Page content was modified, however the changes remain unpublished. Don't "
-                    "forget to publish the changes when you are done.")
     _ACTIONS = (Action(_("Publish"), 'commit',
                        descr=_("Publish the current modified content"),
                        enabled=lambda r: r['_content'].value() != r['content'].value()),
@@ -835,9 +842,16 @@ class Pages(CMSModule, Mappable):
             record['published'] = pytis.data.Value(pytis.data.Boolean(), True)
         return result
         
+    def _update_msg(self, record):
+        if record['content'].value() == record['_content'].value():
+            return super(Pages, self)._update_msg(record)
+        else:
+            return _("Page content was modified, however the changes remain unpublished. Don't "
+                     "forget to publish the changes when you are done.")
+    
     #def _redirect_after_insert(self, req, record):
         #if not req.wmi:
-        #    return self.action_view(req, record, msg=self._INSERT_MSG)
+        #    return self.action_view(req, record, msg=self._insert_msg(req, record))
 
     def action_view(self, req, record, err=None, msg=None, preview=False):
         if req.wmi and preview:
@@ -1010,7 +1024,7 @@ class Attachments(StoredFileModule, CMSModule):
         return req.redirect('/_wmi/Pages/' + record['page_id'].value())
         #m = self._module('Pages')
         #record = m.record(record['page_id'])
-        #return m.action_show(req, record, msg=self._UPDATE_MSG)
+        #return m.action_show(req, record, msg=self._update_msg(record))
     def _redirect_after_insert(self, req, record):
         return self._redirect_to_page(req, record)
     def _redirect_after_delete(self, req, record):

@@ -540,16 +540,25 @@ class PytisModule(Module, ActionHandler):
             return self._redirect_after_delete(req, record)
         
     # ===== Request redirection after data operations ====-
+
+    def _update_msg(self, record):
+        return self._UPDATE_MSG
         
+    def _insert_msg(self, record):
+        return self._INSERT_MSG
+        
+    def _delete_msg(self, record):
+        return self._DELETE_MSG
+    
     def _redirect_after_update(self, req, record):
         action = req.wmi and self.action_show or self.action_view
-        return action(req, record, msg=self._UPDATE_MSG)
+        return action(req, record, msg=self._update_msg(record))
         
     def _redirect_after_insert(self, req, record):
-        return self.action_list(req, msg=self._INSERT_MSG)
+        return self.action_list(req, msg=self._insert_msg(record))
         
     def _redirect_after_delete(self, req, record):
-        return self.action_list(req, msg=self._DELETE_MSG)
+        return self.action_list(req, msg=self._delete_msg(record))
     
         
 # ==============================================================================

@@ -2,12 +2,14 @@
 
 	* lib/wiking/modules.py (RequestHandler._base_uri): New method.
 
-	* lib/wiking/db.py: Do without 'Mapping.modtitle'.
+	* lib/wiking/db.py: Do without 'Mapping.modtitle'.  Allow better message
+	customization on insert, update and delete.
 	(PytisModule._identifier): Method replaced by
 	`RequestHandler._base_uri()'.
 
 	* lib/wiking/cms.py: Menu creation optimized.  Use
-	`self._base_uri()' instead of `self._identifier()'.
+	`self._base_uri()' instead of `self._identifier()'.  Installation
+	fixed.  Use a different message when page is saved and published.
 
 	* lib/wiking/api.py (Mapping.modtitle): Method removed.
 
