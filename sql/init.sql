@@ -16,7 +16,6 @@ UPDATE pages SET content=_content;
 INSERT INTO config (site_title) VALUES ('Wiking site');
 
 INSERT INTO stylesheets (identifier) VALUES ('default.css');
-INSERT INTO stylesheets (identifier) VALUES ('panels.css');
 
 INSERT INTO users (login, password, firstname, surname, nickname, user_,
                    email, enabled, admin)
