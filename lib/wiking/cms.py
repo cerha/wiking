@@ -904,7 +904,7 @@ class Pages(CMSModule, Mappable):
         try:
             record.update(content=record['_content'].value(), published=True)
         except pd.DBException, e:
-            kwargs = dict(err=self._module._analyze_exception(e))
+            kwargs = dict(err=self._analyze_exception(e))
         else:
             kwargs = dict(msg=_("The changes were published."))
         return self.action_show(req, record, **kwargs)
@@ -914,7 +914,7 @@ class Pages(CMSModule, Mappable):
         try:
             record.update(_content=record['content'].value())
         except pd.DBException, e:
-            kwargs = dict(err=self._module._analyze_exception(e))
+            kwargs = dict(err=self._analyze_exception(e))
         else:
             kwargs = dict(msg=_("The page contents was reverted to its previous state."))
         return self.action_show(req, record, **kwargs)
