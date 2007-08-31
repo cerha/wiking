@@ -223,7 +223,7 @@ class ErrorHandler(Module):
           dbconnection -- current database connection specification as 'pd.DBConnection' instance.
 
         """
-        import traceback
+        import traceback, cgitb
         einfo = sys.exc_info()
         message = ''.join(traceback.format_exception_only(*einfo[:2]))
         req_info = (("URI", req.uri),

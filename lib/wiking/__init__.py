@@ -17,7 +17,7 @@
 
 __version__ = '0.4.3'
 
-import sys, os, cgitb
+import sys, os
 
 # TODO: this can be removed once it is solved in Pytis...
 reload(sys)
@@ -30,6 +30,8 @@ import pytis
 import config
 config.dblisten = False
 del config
+
+from lcg import log as debug 
 
 import pytis.data as pd
 import pytis.presentation as pp
