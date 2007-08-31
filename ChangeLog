@@ -1,3 +1,16 @@
+2007-08-31  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/__init__.py: Don't import `cgitb' here.
+
+	* lib/wiking/api.py: Import `cgitb' here.
+
+	* lib/wiking/modules.py: Fixed a bug in documentation path
+	handling.
+
+2007-08-29  Tomas Cerha  <cerha@brailcom.org>
+
+	* sql/init.sql: Don't insert 'panels.css' in styles.
+
 2007-08-28  Tomas Cerha  <cerha@brailcom.org>
 
 	* resources/css/default.css: Minor fix.

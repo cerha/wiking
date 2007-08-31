@@ -201,7 +201,7 @@ class Documentation(DocumentHandler):
             basedir = lcg.config.doc_dir
         else:
             basedir = os.path.join(cfg.wiking_dir, 'doc', 'src')
-        return self._document(req, basedir, req.path[1:])
+        return self._document(req, basedir, path)
 
     def menu(self, req):
         return ()
