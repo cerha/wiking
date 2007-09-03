@@ -87,6 +87,15 @@ def _modules(cls=None):
             if type(m) == type(Module) and issubclass(m, Module) and issubclass(m, cls)]
 
 
+class Roles(Roles):
+    """CMS specific user roles."""
+    
+    CONTRIBUTOR = 'CONTRIBUTOR'
+    """A user hwo has contribution privilegs for certain types of content."""
+    AUTHOR = 'AUTHOR'
+    """Any user who has the authoring privileges."""
+
+
 class WikingManagementInterface(Module, RequestHandler):
     """Wiking Management Interface.
 
@@ -120,7 +129,11 @@ class WikingManagementInterface(Module, RequestHandler):
             return None
     
     def handle(self, req):
-        Roles.check(req, (Roles.AUTHOR,))
+        if not Roles.check(req, (Roles.AUTHOR,)):
+            if req.user():
+                raise AuthorizationError()
+            else:
+                raise AuthenticationError()
         req.wmi = True # Switch to WMI only after successful authorization.
         if len(req.path) == 1:
             req.path += ('Mapping',)
@@ -245,7 +258,7 @@ class Mapping(CMSModule, Publishable, Mappable):
             return '/_wmi/' + row['modname'].value()
         return super(Mapping, self)._link_provider(req, row, cid, **kwargs)
 
-    #def _check_action_rights(req, action.name(), record, raise_error=False):
+    #def _check_action_rights(req, action.name(), record):
     # TODO: disable everything except 'list' outside WMI.
         
     def action_list(self, req, **kwargs):
@@ -272,12 +285,15 @@ class Mapping(CMSModule, Publishable, Mappable):
                     raise Forbidden()
                 self._mapping_cache[identifier] = modname, private = \
                                                   row['modname'].value(), row['private'].value()
-            if private and not (modname == 'Users' and \
-                                req.param('action') in ('add', 'insert')):
+            if private and not (modname == 'Users' and req.param('action') in ('add', 'insert')):
                 # We want to allow new user registration even if the user listing is private.
                 # Unfortunately there seems to be no better solution than the terrible hack
                 # above...  May be we should ask the module?
-                Roles.check(req, (Roles.USER,))
+                if not Roles.check(req, (Roles.USER,)):
+                    if req.user():
+                        raise AuthorizationError()
+                    else:
+                        raise AuthenticationError()
         return modname
     
     def module_uri(self, modname):
@@ -445,8 +461,7 @@ class Panels(CMSModule, Publishable, Panels):
         panels = super(Panels, self).panels(req, lang)
         parser = lcg.Parser()
         for row in self._data.get_rows(lang=lang, published=True, sorting=self._sorting):
-            if row['private'].value() is True and not \
-                   Roles.check(req, (Roles.USER,), raise_error=False):
+            if row['private'].value() is True and not Roles.check(req, (Roles.USER,)):
                 continue
             panel_id = row['identifier'].value() or str(row['panel_id'].value())
             title = row['ptitle'].value() or row['mtitle'].value() or \
@@ -834,7 +849,7 @@ class Pages(CMSModule, Mappable):
     def _validate(self, req, record):
         result = super(Pages, self)._validate(req, record)
         if result is None and req.params.has_key('commit'):
-            if not Roles.check(req, (Roles.ADMIN,), raise_error=False):
+            if not Roles.check(req, (Roles.ADMIN,)):
                 return _("You don't have sufficient privilegs for this action.") +' '+ \
                        _("Save the page without publishing and ask the administrator to publish "
                          "your changes.")

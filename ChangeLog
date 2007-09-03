@@ -1,4 +1,18 @@
+2007-09-03  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/__init__.py: Imports reordered.
+
+	* lib/wiking/cms.py: Define CMS specific roles here.
+
+	* lib/wiking/db.py: Authorization checking simplified.
+
+	* lib/wiking/request.py: Define `User' and `Roles' here.
+
+	* lib/wiking/util.py: `User' and `Roles' moved to `request'.
+
 2007-08-31  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/cms.py: Fixed exception handling.
 
 	* lib/wiking/__init__.py: Don't import `cgitb' here.
 

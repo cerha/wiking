@@ -39,11 +39,11 @@ import pytis.web as pw
 import pytis.util
 
 from util import *
+from request import *
 from modules import *
 from db import *
 from api import *
 from export import *
-from request import *
 from install import *
 
 from configuration import *

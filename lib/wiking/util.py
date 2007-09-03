@@ -136,107 +136,6 @@ class NotAcceptable(HttpError):
 
 # ============================================================================
 
-class Roles(object):
-    """Static definition of available user roles."""
-    ANYONE = 'ANYONE'
-    """Anyone, even a user who is not logged-in."""
-    USER = 'USER'
-    """Any logged-in user who is at least enabled."""
-    CONTRIBUTOR = 'CONTRIBUTOR'
-    """A user hwo has contribution privilegs for certain types of content."""
-    AUTHOR = 'AUTHOR'
-    """Any user who has the authoring privileges."""
-    ADMIN = 'ADMIN'
-    """A user who has the admin privileges."""
-    OWNER = 'OWNER'
-    """The owner of the item being operated."""
-
-    @classmethod
-    def check(cls, req, roles, owner_uid=None, raise_error=True):
-        """Check, whether the logged-in user has access to a resource restricted to given 'roles'.
-
-        Arguments:
-
-          req -- request object used for obtaining the current user (if needed)
-          roles -- sequence of allowed user roles
-          owner_uid -- the uid used for the OWNER role check; the user's uid must be the same as
-            given uid to pass the OWNER role check
-          raise_error -- if True, 'AuthorizationError' will be raised if the check fails.  False is
-            returned in the other case.
-
-        Authentication will be performed only if needed.  In other words, if 'roles' contain
-        ANYONE, True will be returned without an attempt to authenticate the user.
-
-        """
-        if cls.ANYONE in roles:
-            return True
-        user = req.user(raise_error=raise_error)
-        if user is None:
-            return False
-        for role in roles:
-            if role == cls.OWNER:
-                if owner_uid and owner_uid == user.uid():
-                    return True
-            elif role in user.roles():
-                return True
-        if raise_error:
-            raise AuthorizationError()
-        else:
-            return False
-
-
-class User(object):
-    """Representation of the logged in user.
-
-    The authentication module returns an instance of this class on successful authentication.  The
-    interface defined by this class is used within the framework, but application is allowed to
-    append any application specific data to the instance by passing the 'data' argument to the
-    constructor.
-
-    """
-    
-    def __init__(self, login, uid=None, name=None, roles=(), data=None):
-        """Initialize the instance.
-
-        Arguments:
-
-          login -- user's login name as a string
-          uid -- user identifier used for ownership determination (see role OWNER)
-          name -- visible name as a string (login is used if None)
-          roles -- sequence of user roles as 'Roles' constants
-          data -- application specific data
-
-        """
-        assert isinstance(login, (unicode, str))
-        assert name is None or isinstance(name, (unicode, str))
-        assert isinstance(roles, (tuple, list))
-        self._login = login
-        self._uid = uid or login
-        self._name = name or login
-        self._roles = tuple(roles)
-        self._data = data
-        
-    def login(self):
-        """Return user's login name as a string."""
-        return self._login
-    
-    def uid(self):
-        """Return user's identifier for ownership determination."""
-        return self._uid
-    
-    def name(self):
-        """Return user's visible name as a string."""
-        return self._name
-    
-    def roles(self):
-        """Return valid user's roles as a tuple of 'Roles' constants."""
-        return self._roles
-    
-    def data(self):
-        """Return application specific data passed to the constructor."""
-        return self._data
-
-
 class Theme(object):
 
     class Color(object):
@@ -672,8 +571,7 @@ class LoginCtrl(lcg.Content):
             username = _("not logged")
             cmd, label = ('login', _("log in"))
         ctrl = g.link(label, '?command=%s' % cmd, cls='login-ctrl')
-        return lcg.concat(username, ' ', g.span('[', cls="hidden"), ctrl,
-                          g.span(']', cls="hidden"))
+        return lcg.concat(username, ' ', g.span('[', cls="hidden"), ctrl, g.span(']',cls="hidden"))
 
 
 class LoginDialog(lcg.Content):
@@ -710,13 +608,7 @@ class SiteMap(lcg.NodeIndex):
     def _start_item(self):
         return self.parent().root()
 
-    
-def translator(lang):
-    if lang:
-        return lcg.GettextTranslator(lang, path=cfg.translation_paths, fallback=True)
-    else:
-        return lcg.NullTranslator()
-    
+
 # ============================================================================
 # Classes derived from Pytis components
 # ============================================================================
@@ -1010,3 +902,9 @@ def make_uri(base, *args, **kwargs):
         return base
 
 
+def translator(lang):
+    if lang:
+        return lcg.GettextTranslator(lang, path=cfg.translation_paths, fallback=True)
+    else:
+        return lcg.NullTranslator()
+    

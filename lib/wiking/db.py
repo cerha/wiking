@@ -130,8 +130,7 @@ class PytisModule(Module, ActionHandler):
         return self.__class__.Spec(self.__class__, resolver)
 
     def _datetime_formats(self, req):
-        lang = req.prefered_language(self._module('Languages').languages(),
-                                     raise_error=False)
+        lang = req.prefered_language(self._module('Languages').languages(), raise_error=False)
         return lcg.datetime_formats(translator(lang))
         
     def _validate(self, req, record):
@@ -244,7 +243,7 @@ class PytisModule(Module, ActionHandler):
         #    return None
         actions = [action for action in actions or self._actions(req, record)
                    if isinstance(action, Action) and \
-                   self._check_action_rights(req, action.name(), record, raise_error=False)]
+                   self._check_action_rights(req, action.name(), record)]
         if not actions:
             return None
         else:
@@ -342,19 +341,23 @@ class PytisModule(Module, ActionHandler):
         else:
             raise NotFound()
 
-    def _check_action_rights(self, req, action, record, raise_error=True):
+    def _check_action_rights(self, req, action, record):
         roles = getattr(self, '_RIGHTS_'+action)
         if not isinstance(roles, (tuple, list)):
             roles = (roles,)
         if Roles.OWNER in roles and self._OWNER_COLUMN and record is not None:
-            owner_uid = record[self._OWNER_COLUMN].value()
-        else:
-            owner_uid = None
-        return Roles.check(req, roles, owner_uid=owner_uid, raise_error=raise_error)
-    
+            user = req.user()
+            owner = record[self._OWNER_COLUMN].value()
+            if user and owner and user.uid() == owner:
+                return True
+        return Roles.check(req, roles)
         
     def _action(self, req, action, **kwargs):
-        self._check_action_rights(req, action, kwargs.get('record'))
+        if not self._check_action_rights(req, action, kwargs.get('record')):
+            if req.user():
+                raise AuthorizationError()
+            else:
+                raise AuthenticationError()
         return super(PytisModule, self)._action(req, action, **kwargs)
     
     def _lang(self, record):
