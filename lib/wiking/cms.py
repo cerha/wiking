@@ -96,6 +96,140 @@ class Roles(Roles):
     """Any user who has the authoring privileges."""
 
 
+class Application(CookieAuthentication, Application):
+    
+    _MAPPING = {'_doc': 'Documentation',
+                '_wmi': 'WikingManagementInterface'}
+
+    def resolve(self, req):
+        try:
+            return self._module('Mapping').resolve(req)
+        except NotFound:
+            return super(Application, self).resolve(req)
+    
+    def module_uri(self, modname):
+        return self._module('Mapping').module_uri(modname) \
+               or super(Application, self).module_uri(modname)
+        
+    def menu(self, req):
+        return self._module('Mapping').menu(req)
+    
+    def panels(self, req, lang):
+        return super(Application, self).panels(req, lang) + \
+               self._module('Panels').panels(req, lang)
+        
+    def configure(self, req):
+        return self._module('Config').configure(req)
+        
+    def languages(self):
+        return self._module('Languages').languages()
+        
+    def stylesheets(self):
+        uri = self.module_uri('Stylesheets')
+        if uri:
+            return [lcg.Stylesheet(name, uri=uri+'/'+name)
+                    for name in self._module('Stylesheets').stylesheets()]
+        else:
+            return []
+
+    def _auth_user(self, login):
+        return self._module('Users').user(login)
+
+    def _auth_check(self, user, password):
+        return password == user.data()['password'].value()
+    
+    def _maybe_install(self, req, errstr):
+        """Check a DB error string and try to set it up if it is the problem."""
+        def _button(label, action='/', **params):
+            return ('<form action="%s">' % action +
+                    ''.join(['<input type="hidden" name="%s" value="%s">' % x
+                             for x in params.items()]) +
+                    '<input type="submit" value="%s">' % label +
+                    '</form>')
+        options = req.options()
+        dboptions = dict([(k, options[k]) for k in
+                          ('user', 'password', 'host', 'port') if options.has_key(k)])
+        dboptions['database'] = dbname = options.get('database', req.server_hostname())
+        if errstr == 'FATAL:  database "%s" does not exist\n' % dbname:
+            if not req.param('createdb'):
+                return 'Database "%s" does not exist.\n' % dbname + \
+                       _button("Create", createdb=1)
+            else:
+                create = "CREATE DATABASE \"%s\" WITH ENCODING 'UTF8'" % dbname
+                err = self._try_query(dboptions, create, autocommit=True, database='postgres')
+                if err == 'FATAL:  database "postgres" does not exist\n':
+                    err = self._try_query(dboptions, create, database='template1')
+                if err is None:
+                    return 'Database "%s" created.' % dbname + \
+                           _button("Initialize", initdb=1)
+                elif err == 'permission denied to create database\n':
+                    return ('The database user does not have permission to create databases. '
+                            'You need to create the database "%s" manually. ' % dbname +
+                            'Login to the server as the database superuser (most often postgres) '
+                            'and run the following command:'
+                            '<pre>createdb %s -E UTF8</pre>' % dbname +
+                            _button("Continue", initdb=1))
+                else:
+                    return 'Unable to create database: %s' % err
+        elif errstr == 'Nen\xed mo\xbeno zjistit typ sloupce':
+            if not req.param('initdb'):
+                err = self._try_query(dboptions, "select * from mapping")
+                if err:
+                    return 'Database "%s" not initialized!' % dbname + \
+                           _button("Initialize", initdb=1)
+            else:
+                script = ''
+                for f in ('wiking.sql', 'init.sql'):
+                    path = os.path.join(cfg.wiking_dir, 'sql', f)
+                    if os.path.exists(path):
+                        script += "".join(file(path).readlines())
+                    else:
+                        return ("File %s not found! " % path +
+                                "Was Wiking installed properly? "
+                                "Try setting-up wiking_dir in %s" %
+                                cfg.config_file)
+                err = self._try_query(dboptions, script)
+                if not err:
+                    return ("<p>Database initialized. " +
+                            _button("Enter Wiking Management Interface", '/_wmi') + "</p>\n"
+                            "<p>Please use the default login 'admin' with password 'wiking'.</p>"
+                            "<p><em>Do not forget to change your password!</em></p>")
+                else:
+                    return "Unable to initialize the database: " + err
+                
+    def _try_query(self, dboptions, query, autocommit=False, database=None):
+        import psycopg2 as dbapi
+        try:
+            if database is not None:
+                dboptions['database'] = database
+            conn = dbapi.connect(**dboptions)
+            try:
+                if autocommit:
+                    from psycopg2 import extensions
+                    conn.set_isolation_level(extensions.ISOLATION_LEVEL_AUTOCOMMIT)
+                conn.cursor().execute(query)
+                conn.commit()
+            finally:
+                conn.close()
+        except dbapi.ProgrammingError, e:
+            return e.args[0]
+
+    def handle_exception(self, req, exception):
+        if isinstance(exception, pd.DBException):
+            try:
+                if exception.exception() and exception.exception().args:
+                    errstr = exception.exception().args[0]
+                else:
+                    errstr = exception.message()
+                result = self._maybe_install(req, errstr)
+                if result is not None:
+                    return req.result(result)
+            except:
+                pass
+        return super(Application, self).handle_exception(req, exception)
+
+
+
 class WikingManagementInterface(Module, RequestHandler):
     """Wiking Management Interface.
 
@@ -237,7 +371,7 @@ class Mapping(CMSModule, Publishable, Mappable):
             )
         sorting = (('tree_order', ASC), ('identifier', ASC))
         bindings = {'Pages': pp.BindingSpec(_("Pages"), 'mapping_id')}
-        columns = ('identifier', 'modname', 'published', 'private', 'ord')
+        columns = ('identifier', 'modname', 'published', 'private', 'parent', 'ord')
         layout = ('identifier', 'parent', 'modname', 'published', 'private', 'ord')
         cb = pp.CodebookSpec(display='identifier')
     _REFERER = 'identifier'
@@ -246,9 +380,6 @@ class Mapping(CMSModule, Publishable, Mappable):
          _("Duplicate menu order on the this tree level.")),) + \
          CMSModule._EXCEPTION_MATCHERS
 
-    _STATIC_MAPPING = {'_doc': 'Documentation',
-                       '_wmi': 'WikingManagementInterface'}
-    _REVERSE_STATIC_MAPPING = dict([(v,k) for k,v in _STATIC_MAPPING.items()])
     WMI_SECTION = WikingManagementInterface.SECTION_CONTENT
     WMI_ORDER = 10
     _mapping_cache = {}
@@ -268,56 +399,37 @@ class Mapping(CMSModule, Publishable, Mappable):
             return super(Mapping, self).action_list(req, **kwargs)
     
     def resolve(self, req):
-        "Return the name of the module responsible for handling the request."
         identifier = req.path[0]
         try:
-            modname = self._STATIC_MAPPING[identifier]
+            # TODO: Caching here may prevent changes in `private' flag to take effect...
+            modname, private = self._mapping_cache[identifier]
         except KeyError:
-            # TODO: Caching here may prevent changes in `private' flag to take
-            # effect...
-            try:
-                modname, private = self._mapping_cache[identifier]
-            except KeyError:
-                row = self._data.get_row(identifier=identifier)
-                if row is None:
-                    raise NotFound()
-                if not row['published'].value():
-                    raise Forbidden()
-                self._mapping_cache[identifier] = modname, private = \
-                                                  row['modname'].value(), row['private'].value()
-            if private and not (modname == 'Users' and req.param('action') in ('add', 'insert')):
-                # We want to allow new user registration even if the user listing is private.
-                # Unfortunately there seems to be no better solution than the terrible hack
-                # above...  May be we should ask the module?
-                if not Roles.check(req, (Roles.USER,)):
-                    if req.user():
-                        raise AuthorizationError()
-                    else:
-                        raise AuthenticationError()
+            row = self._data.get_row(identifier=identifier)
+            if row is None:
+                raise NotFound()
+            if not row['published'].value():
+                raise Forbidden()
+            self._mapping_cache[identifier] = modname, private = \
+                                              row['modname'].value(), row['private'].value()
+        if private and not (modname == 'Users' and req.param('action') in ('add', 'insert')):
+            # We want to allow new user registration even if the user listing is private.
+            # Unfortunately there seems to be no better solution than the terrible hack
+            # above...  May be we should ask the module?
+            if not Roles.check(req, (Roles.USER,)):
+                if req.user():
+                    raise AuthorizationError()
+                else:
+                    raise AuthenticationError()
         return modname
     
     def module_uri(self, modname):
-        """Return the current identifier for given module name.
-
-        None will be returned when there is no mapping item for the module, or when there is more
-        than one item for the same module (which is also legal).
-        
-        """
         rows = self._data.get_rows(modname=modname, published=True)
         if len(rows) == 1:
             return '/'+ rows[0]['identifier'].value()
-        return self._REVERSE_STATIC_MAPPING.get(modname)
+        else:
+            return None
     
     def menu(self, req):
-        """Return the menu hierarchy.
-
-        Arguments:
-        
-          req -- the current request object.
-        
-        Returns a sequence of 'MenuItem' instances.
-        
-        """
         children = {None: []}
         titles = self._module('Titles').titles()
         def mkitem(row):
@@ -408,7 +520,7 @@ class Config(CMSModule):
             cfg.upload_limit = cfg.option('upload_limit').default()
     
 
-class Panels(CMSModule, Publishable, Panels):
+class Panels(CMSModule, Publishable):
     class Spec(Specification):
         title = _("Panels")
         help = _(u"Manage panels – the small windows shown by the side of "
@@ -458,7 +570,7 @@ class Panels(CMSModule, Publishable, Panels):
     WMI_ORDER = 1000
 
     def panels(self, req, lang):
-        panels = super(Panels, self).panels(req, lang)
+        panels = []
         parser = lcg.Parser()
         for row in self._data.get_rows(lang=lang, published=True, sorting=self._sorting):
             if row['private'].value() is True and not Roles.check(req, (Roles.USER,)):
@@ -542,6 +654,7 @@ class Titles(CMSModule):
                 titles[mapping_id] = {}
             titles[mapping_id][row['lang'].value()] = row['title'].value()
         return titles
+    
     
 class Themes(CMSModule):
     class Spec(Specification):
@@ -636,102 +749,6 @@ class Themes(CMSModule):
         colors = [(c.id(), row[c.id()].value())
                   for c in Theme.COLORS if row[c.id()].value() is not None]
         return Theme(colors=dict(colors))
-
-
-class ErrorHandler(ErrorHandler):
-
-    def _maybe_install(self, req, errstr):
-        """Check a DB error string and try to set it up if it is the problem."""
-        def _button(label, action='/', **params):
-            return ('<form action="%s">' % action +
-                    ''.join(['<input type="hidden" name="%s" value="%s">' % x
-                             for x in params.items()]) +
-                    '<input type="submit" value="%s">' % label +
-                    '</form>')
-        options = req.options()
-        dboptions = dict([(k, options[k]) for k in
-                          ('user', 'password', 'host', 'port') if options.has_key(k)])
-        dboptions['database'] = dbname = options.get('database', req.server_hostname())
-        if errstr == 'FATAL:  database "%s" does not exist\n' % dbname:
-            if not req.param('createdb'):
-                return 'Database "%s" does not exist.\n' % dbname + \
-                       _button("Create", createdb=1)
-            else:
-                create = "CREATE DATABASE \"%s\" WITH ENCODING 'UTF8'" % dbname
-                err = self._try_query(dboptions, create, autocommit=True, database='postgres')
-                if err == 'FATAL:  database "postgres" does not exist\n':
-                    err = self._try_query(dboptions, create, database='template1')
-                if err is None:
-                    return 'Database "%s" created.' % dbname + \
-                           _button("Initialize", initdb=1)
-                elif err == 'permission denied to create database\n':
-                    return ('The database user does not have permission to create databases. '
-                            'You need to create the database "%s" manually. ' % dbname +
-                            'Login to the server as the database superuser (most often postgres) '
-                            'and run the following command:'
-                            '<pre>createdb %s -E UTF8</pre>' % dbname +
-                            _button("Continue", initdb=1))
-                            
-                
-                
-                else:
-                    return 'Unable to create database: %s' % err
-        elif errstr == 'Nen\xed mo\xbeno zjistit typ sloupce':
-            if not req.param('initdb'):
-                err = self._try_query(dboptions, "select * from mapping")
-                if err:
-                    return 'Database "%s" not initialized!' % dbname + \
-                           _button("Initialize", initdb=1)
-            else:
-                script = ''
-                for f in ('wiking.sql', 'init.sql'):
-                    path = os.path.join(cfg.wiking_dir, 'sql', f)
-                    if os.path.exists(path):
-                        script += "".join(file(path).readlines())
-                    else:
-                        return ("File %s not found! " % path +
-                                "Was Wiking installed properly? "
-                                "Try setting-up wiking_dir in %s" %
-                                cfg.config_file)
-                err = self._try_query(dboptions, script)
-                if not err:
-                    return ("<p>Database initialized. " +
-                            _button("Enter Wiking Management Interface", '/_wmi') + "</p>\n"
-                            "<p>Please use the default login 'admin' with password 'wiking'.</p>"
-                            "<p><em>Do not forget to change your password!</em></p>")
-                else:
-                    return "Unable to initialize the database: " + err
-                
-    def _try_query(self, dboptions, query, autocommit=False, database=None):
-        import psycopg2 as dbapi
-        try:
-            if database is not None:
-                dboptions['database'] = database
-            conn = dbapi.connect(**dboptions)
-            try:
-                if autocommit:
-                    from psycopg2 import extensions
-                    conn.set_isolation_level(extensions.ISOLATION_LEVEL_AUTOCOMMIT)
-                conn.cursor().execute(query)
-                conn.commit()
-            finally:
-                conn.close()
-        except dbapi.ProgrammingError, e:
-            return e.args[0]
-
-    def handle_exception(self, req, exception):
-        if isinstance(exception, pd.DBException):
-            try:
-                if exception.exception() and exception.exception().args:
-                    errstr = exception.exception().args[0]
-                else:
-                    errstr = exception.message()
-                result = self._maybe_install(req, errstr)
-                if result is not None:
-                    return req.result(result)
-            except:
-                pass
-        return super(ErrorHandler, self).handle_exception(req, exception)
 
 
     
@@ -1296,13 +1313,8 @@ class Stylesheets(CMSModule, Stylesheets, Mappable):
     WMI_ORDER = 200
 
     def stylesheets(self):
-        uri = self._module('Mapping').module_uri(self.name())
-        if uri:
-            return [lcg.Stylesheet(r['identifier'].value(), uri=uri+'/'+r['identifier'].value())
-                    for r in self._data.get_rows(active=True)]
-        else:
-            return []
-
+        return [r['identifier'].value() for r in self._data.get_rows(active=True)]
+        
     def action_view(self, req, record, msg=None):
         content = record['content'].value() or self._find_file(record['identifier'].value())
         return ('text/css', self._substitute(content))
@@ -1406,6 +1418,19 @@ class Users(_Users, Mappable):
         uri = self._base_uri(req)
         return uri and make_uri(uri, action='add') or None
 
+    def user(self, login):
+        record = self._record(self._data.get_row(login=login))
+        if record:
+            roles = [role for role, keys in ((Roles.USER, ('enabled',)),
+                                             (Roles.CONTRIBUTOR, ('contributor','author','admin')),
+                                             (Roles.AUTHOR, ('author','admin')),
+                                             (Roles.ADMIN, ('admin',)))
+                     if record['enabled'].value() and True in [record[k].value() for k in keys]]
+            return User(login, name=record['user'].value(), uid=record['uid'].value(),
+                        roles=roles, data=record)
+        else:
+            return None
+
 
 class Rights(_Users):
     class Spec(_Users.Spec):
@@ -1420,28 +1445,6 @@ class Rights(_Users):
     _RIGHTS_remove = ()
     WMI_SECTION = WikingManagementInterface.SECTION_USERS
     WMI_ORDER = 200
-
-
-class Authentication(CookieAuthentication, _Users):
-    class Spec(_Users.Spec):
-        table = 'users'
-    
-    def _user(self, login):
-        record = self._record(self._data.get_row(login=login))
-        if record:
-            roles = [role for role, keys in ((Roles.USER, ('enabled',)),
-                                             (Roles.CONTRIBUTOR, ('contributor','author','admin')),
-                                             (Roles.AUTHOR, ('author','admin')),
-                                             (Roles.ADMIN, ('admin',)))
-                     if record['enabled'].value() and True in [record[k].value() for k in keys]]
-            return User(login, name=record['user'].value(), uid=record['uid'].value(),
-                        roles=roles, data=record)
-        else:
-            return None
-
-    def _check(self, user, password):
-        record = user.data()
-        return password == record['password'].value()
 
     
 class Session(_Users, Session):

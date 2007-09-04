@@ -51,7 +51,7 @@ class Request(pytis.web.Request):
     def __init__(self, req, encoding='utf-8'):
         self._req = req
         self._encoding = encoding
-        # Store request data in real dictionaries.
+        # Store request params in a real dictionary.
         self.params = self._init_params()
         self.uri = self._init_uri()
         self.path = [item for item in self.uri.split('/')[1:] if item]
@@ -182,6 +182,10 @@ class WikingRequest(Request):
     _LANG_COOKIE = 'wiking_prefered_language'
     _PANELS_COOKIE = 'wiking_show_panels'
     _UNDEFINED = object()
+    
+    def __init__(self, req, application, **kwargs):
+        super(WikingRequest, self).__init__(req, **kwargs)
+        self._application = application
 
     def _init_params(self):
         params = super(WikingRequest, self)._init_params()
@@ -268,7 +272,7 @@ class WikingRequest(Request):
             self._prefered_languages = tuple(languages)
             return self._prefered_languages
 
-    def prefered_language(self, variants, raise_error=True):
+    def prefered_language(self, variants=None, raise_error=True):
         """Return the prefered variant from the list of available variants.
 
         The preference is determined by the order of acceptable languages
@@ -276,11 +280,15 @@ class WikingRequest(Request):
 
         Arguments:
 
-          variants -- list of language codes of avialable language variants
+          variants -- list of language codes of avialable language variants.  If None (default),
+            all languages defined by the current Wiking application will be considered.
+          
           raise_error -- if false, None is returned if there is no acceptable
             variant in the list.  Otherwise NotAcceptable error is raised.
 
         """
+        if variants is None:
+            variants = self._application.languages()
         for l in self.prefered_languages():
             if l in variants:
                 return l
@@ -299,10 +307,6 @@ class WikingRequest(Request):
         """
         return self._credentials
 
-    def set_auth_module(self, module):
-        """Set the module used for authentication."""
-        self._auth_module = module
-        
     def user(self, require=False):
         """Return the record describing the logged-in user.
 
@@ -321,7 +325,7 @@ class WikingRequest(Request):
             # Set to None for the case that authentication raises an exception.
             self._user = None
             # AuthenticationError may be raised if the credentials are invalid.
-            self._user = self._auth_module.authenticate(self)
+            self._user = self._application.authenticate(self)
         if require and self._user is None:
             #if session_timed_out:
             #      raise AuthenticationError(_("Session expired. Please log in again."))

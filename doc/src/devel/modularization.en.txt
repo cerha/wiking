@@ -4,24 +4,49 @@
 
 The extensibility of Wiking is based on modularization.
 
+
 Table Of Contents: @TOC@
 
 
-== What Is a Wiking Module ==
+== What is a Wiking Module ==
 
-The core functionality is implemented by the Wiking Handler.  This handler
-handles all requests and uses modules to perform different stages of request
-processing, such as authentication, uri resolution, serving the content etc.
-Thus each part of Wiking functionality can be overriden by overriding the
-module responsible for given task.
+Wiking modules are implemented as Python classes.  Particular modules are
+refered by their name and there are simple rules how their definitions are
+located (see below).
 
-The complete set of modules and their interface is described in the section
-[api].
+Wiking handler creates instances of these classes and uses them for handling
+requests.  These instances are persistent, so that one instance is typically
+used for handling multiple requests.  Sharing of module instances is always
+limited to just one virtual host.
 
-Wiking modules are implemented by Python classes.  Wiking creates instances of
-these classes and uses them for handling requests.  These instances are
-persistent, so that one instance is typically used for handling multiple
-requests, however this sharing is always limited to just one virtual host.
+
+== Request Processing Overview ==
+
+As mentioned before, all requests are processed by the Wiking Handler.  This
+handler, however, is only a very thin layer, which postpones most of the actual
+functionality to modules.  
+
+The central module, which controls the application behavior is the module named
+'Application'.  Different stages of request processing, such as authentication,
+uri resolution, handling errors etc. are controlled by different methods of the
+application module, so a derived application may override any of these phases
+by custom processing.  See [api] for details.
+
+The most important phase of request processing is serving the actual content.
+The application decides which module is responsible for handling the particular
+request and the handler postpones the request to this module.  So you will
+typically define different modules to handle different URIs.
+
+
+== Predefined Modules ==
+
+Wiking also provides a set of predefined modules, which implement various
+common usecases for typical applications.  For example there is a module
+implementing Cookie based authentication, module serving stylesheets from files
+(including color theme substitution), module serving documents from static
+files of structured text, etc.  Documentation for these modules is not yet
+included in the manual, so please see the source code and the relevant Python
+docstrings in files 'modules.py' and 'db.py'.
 
 
 == How Wiking Locates Available Modules ==
@@ -32,11 +57,11 @@ functionality, other is for Python module -- a collection of Python definitions
 and statements typically represented by a Python source file.  If we don't say
 ``Python module'' explicitely, Wiking module is meant.
 
-The technique used for locating wiking modules is simple.  Wiking always looks
-for modules by their name.  It first tries to import the Python module named
-'wikingmodules' and definition of a class with the corresponding name within
-it.  If no such class is found within 'wikingmodules', Wiking uses the default
-implementation of the module.
+The technique used for locating wiking modules is simple.  As described before,
+Wiking always looks for modules by their name.  It first tries to import the
+Python module named 'wikingmodules' and definition of a class with the
+corresponding name within it.  If no such class is found within
+'wikingmodules', Wiking uses the default implementation of the module.
 
 You may easilly use custom set of modules for each virtual host by simply
 modifying the Python path for each of them (see [apache] form more
@@ -70,11 +95,3 @@ from wiking.cms import *
 Such a module will automatically become available in WMI.
 
 
-== Predefined Modules ==
-
-Wiking also provides a set of predefined modules, which implement various
-common usecases for the core modules defined by the API.  For example there is
-a module implementing Cookie based authentication, which can be used by an
-application to replace the default 'Authentication' module.  Documentation for
-these modules is not yet included, so please see the source code and the
-relevant Python docstrings in files 'modules.py' and 'db.py'.

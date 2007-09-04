@@ -37,11 +37,7 @@ class Handler(object):
         self._dbconnection = pd.DBConnection(**dboptions)
         self._module_cache = {}
         # Initialize the system modules immediately.
-        self._mapping = self._module('Mapping')
-        self._stylesheets = self._module('Stylesheets')
-        self._languages = self._module('Languages')
-        self._authentication = self._module('Authentication')
-        self._config = self._module('Config')
+        self._application = self._module('Application')
         self._exporter = cfg.exporter
         #log(OPR, 'New Handler instance for %s.' % hostname)
 
@@ -61,50 +57,56 @@ class Handler(object):
             self._module_cache[key] = module
         return module
 
+    def application(self):
+        return self._application
+
     def handle(self, req):
-        req.path = req.path or ('index',)
-        req.set_auth_module(self._authentication)
-        req.wmi = False # Will be set to True by `WikingManagementInterface'.
-        module = None
-        user = None
+        application = self._application
         try:
+            req.path = req.path or ('index',)
+            req.wmi = False # Will be set to True by `WikingManagementInterface'.
+            module = None
+            user = None
             try:
-                self._config.configure(req)
-                modname = self._mapping.resolve(req)
-                module = self._module(modname)
-                assert isinstance(module, RequestHandler)
-                result = module.handle(req)
-                if isinstance(result, int):
-                    return result
-                elif not isinstance(result, Document):
-                    content_type, data = result
-                    return req.result(data, content_type=content_type)
-            # Always perform authentication at the end (if it was not
-            # performed before) to handle authentication exceptions.
-            except:
-                user = req.user()
-                raise
-            else:
-                user = req.user()
-        except RequestError, e:
-            if isinstance(e, HttpError):
-                req.set_status(e.ERROR_CODE)
-            lang = req.prefered_language(self._languages.languages(), raise_error=False)
-            result = Document(e.title(), e.message(req), lang=lang)
-        if module is None:
-            module = self._mapping
-        state = WikingNode.State(modname=module.name(),
-                                 user=user,
-                                 wmi=req.wmi,
-                                 inline=req.param('display') == 'inline',
-                                 show_panels=req.show_panels(),
-                                 server_hostname=self._hostname)
-        menu = module.menu(req)
-        panels = module.panels(req, result.lang())
-        styles = self._stylesheets.stylesheets()
-        node = result.mknode('/'.join(req.path), state, menu, panels, styles)
-        data = translator(node.language()).translate(self._exporter.export(node))
-        return req.result(data)
+                try:
+                    application.configure(req)
+                    modname = application.resolve(req)
+                    module = self._module(modname)
+                    assert isinstance(module, RequestHandler)
+                    result = module.handle(req)
+                    if isinstance(result, int):
+                        return result
+                    elif not isinstance(result, Document):
+                        content_type, data = result
+                        return req.result(data, content_type=content_type)
+                # Always perform authentication at the end (if it was not
+                # performed before) to handle authentication exceptions.
+                except:
+                    user = req.user()
+                    raise
+                else:
+                    user = req.user()
+            except RequestError, e:
+                if isinstance(e, HttpError):
+                    req.set_status(e.ERROR_CODE)
+                lang = req.prefered_language(raise_error=False)
+                result = Document(e.title(), e.message(req), lang=lang)
+            if module is None:
+                module = application
+            state = WikingNode.State(modname=module.name(),
+                                     user=user,
+                                     wmi=req.wmi,
+                                     inline=req.param('display') == 'inline',
+                                     show_panels=req.show_panels(),
+                                     server_hostname=self._hostname)
+            menu = module.menu(req)
+            panels = module.panels(req, result.lang())
+            styles = application.stylesheets()
+            node = result.mknode('/'.join(req.path), state, menu, panels, styles)
+            data = translator(node.language()).translate(self._exporter.export(node))
+            return req.result(data)
+        except Exception, e:
+            return application.handle_exception(req, e)
 
 
 class ModPythonHandler(object):
@@ -122,16 +124,15 @@ class ModPythonHandler(object):
         self._handler = None
 
     def __call__(self, request):
-        try:
-            req = WikingRequest(request)
-            if self._handler is None:
-                self._handler = Handler(req.server_hostname(), req.options())
-            return self._handler.handle(req)
-        except Exception, e:
-            handler = get_module('ErrorHandler')(None)
-            return handler.handle_exception(req, e)
-
-        #result, t1, t2 = timeit(self._handler.handle, req)
+        if self._handler is None:
+            opt = request.get_options()
+            options = dict([(o, opt[o]) for o in opt.keys()])
+            handler = self._handler = Handler(request.server.server_hostname, options)
+        else:
+            handler = self._handler
+        req = WikingRequest(request, handler.application())
+        return handler.handle(req)
+        #result, t1, t2 = timeit(handler.handle, req)
         #log(OPR, "Request processed in %.1f ms (%.1f ms wall time):" % \
         #    (1000*t1, 1000*t2), req.uri)
         #return result

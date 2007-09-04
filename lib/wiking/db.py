@@ -130,7 +130,7 @@ class PytisModule(Module, ActionHandler):
         return self.__class__.Spec(self.__class__, resolver)
 
     def _datetime_formats(self, req):
-        lang = req.prefered_language(self._module('Languages').languages(), raise_error=False)
+        lang = req.prefered_language(raise_error=False)
         return lcg.datetime_formats(translator(lang))
         
     def _validate(self, req, record):
@@ -217,7 +217,7 @@ class PytisModule(Module, ActionHandler):
         else:
             title = None
         if not variants or req.wmi:
-            variants = self._module('Languages').languages()
+            variants = self._application.languages()
         if isinstance(content, (list, tuple)):
             content = tuple([c for c in content if c is not None])
         else:
@@ -374,7 +374,7 @@ class PytisModule(Module, ActionHandler):
                         if req.params.has_key(f.id()) and \
                         not isinstance(f.type(), (pd.Binary, pd.Password))])
         if new and not prefill.has_key('lang') and self._LIST_BY_LANGUAGE:
-            lang = req.prefered_language(self._module('Languages').languages(), raise_error=False)
+            lang = req.prefered_language(raise_error=False)
             if lang:
                 prefill['lang'] = lang
         return prefill
@@ -451,7 +451,7 @@ class PytisModule(Module, ActionHandler):
         if self._LIST_BY_LANGUAGE and not req.wmi:
             variants = [str(v.value()) for v in self._data.distinct('lang', sort=pd.ASCENDENT)]
         else:
-            variants = self._module('Languages').languages()
+            variants = self._application.languages()
         lang = req.prefered_language(variants, raise_error=False)
         content = ()
         if req.wmi:
@@ -599,7 +599,7 @@ class RssModule(object):
                     if title:
                         return title
             return None
-        return find(self._module('Mapping').menu(req)) or self._view.title()
+        return find(self._application.menu(req)) or self._view.title()
     
     def action_rss(self, req):
         if not self._RSS_TITLE_COLUMN:

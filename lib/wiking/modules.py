@@ -17,12 +17,7 @@
 
 from wiking import *
 
-"""Basic wiking module classes.
-
-The classes defined here don't define Wiking API.  The API is defined in the module 'api'.  The
-classes defined here, however, may be used to implement the API in an application.
-
-"""
+"""Definition of the basic Wiking module classes."""
 
 _ = lcg.TranslatableTextFactory('wiking')
 
@@ -62,23 +57,14 @@ class RequestHandler(object):
     """Mix-in class for modules capable of handling requests."""
     def __init__(self, *args, **kwargs):
         self._cached_uri = (None, None)
+        self._application = self._module('Application')
         super(RequestHandler, self).__init__(*args, **kwargs)
     
-    def handle(self, req):
-        """Handle the request and return the result.
-
-        The result may be either a 'Document' instance or a pair (MIME_TYPE,
-        DATA).  The document instance will be exported into HTML, the MIME data
-        will be served directly.
-
-        """
-        pass
-
     def _mapped_uri(self):
         # Retrive the current mapping uri for the module.  This method is used by _base_uri() and
         # may be overriden in derived classes.  The result may be cached for the duration of one
         # request.
-        return self._module('Mapping').module_uri(self.name())
+        return self._application.module_uri(self.name())
 
     def _base_uri(self, req):
         """Return module's current URI as a string or None if not mapped."""
@@ -94,23 +80,33 @@ class RequestHandler(object):
                 self._cached_uri = (req, uri)
         return uri
         
+    def handle(self, req):
+        """Handle the request and return the result.
+
+        The result may be either a 'Document' instance or a pair (MIME_TYPE,
+        DATA).  The document instance will be exported into HTML, the MIME data
+        will be served directly.
+
+        """
+        pass
+
     def menu(self, req):
         """Return menu definition for this module.
 
-        The default implementation always uses the global menu defined by the 'Mapping' module, but
-        a derived module may choose to override this default behavior.
+        The default implementation always uses the global menu defined by the 'Application', but a
+        derived module may choose to override this default behavior.
 
         """
-        return self._module('Mapping').menu(req)
+        return self._application.menu(req)
         
     def panels(self, req, lang):
         """Return panels for this module.
 
-        The default implementation always uses the global set of panels defined by the 'Panels'
-        module, but a derived module may choose to override this default behavior.
+        The default implementation always uses the global set of panels defined by the
+        'Application', but a derived module may choose to override this default behavior.
 
         """
-        return self._module('Panels').panels(req, lang)
+        return self._application.panels(req, lang)
 
 
 class ActionHandler(RequestHandler):
@@ -210,41 +206,78 @@ class Documentation(DocumentHandler):
         return []
 
 
-class CookieAuthentication(Module):
-    """Authentication class implementing cookie based authentication.
+class Stylesheets(Module, ActionHandler):
+    """Manages available stylesheets and serves them to the client.
+
+    The default implementation serves stylesheet files from the wiking resources directory.  You
+    will just need to map this module to serve certain uri, such as 'css'.
+
+    """
+
+    _MATCHER = re.compile (r"\$(\w[\w-]*)(?:\.(\w[\w-]*))?")
+
+    def _default_action(self, req):
+        return 'view'
+
+    def _find_file(self, name):
+        filename = os.path.join(cfg.wiking_dir, 'resources', 'css', name)
+        if os.path.exists(filename):
+            return "".join(file(filename).readlines())
+        else:
+            raise NotFound()
+
+    def _substitute(self, data):
+        theme = cfg.theme
+        def subst(match):
+            name, key = match.groups()
+            value = theme[name]
+            if key:
+                value = value[key]
+            return value
+        return self._MATCHER.sub(subst, data)
+
+    def action_view(self, req):
+        """Serve the stylesheet from a file."""
+        return ('text/css', self._substitute(self._find_file(req.path[1])))
+
+    
+class CookieAuthentication(object):
+    """Implementation of cookie based authentication for Wiking Application.
 
     This class implements cookie based authentication, but is still neutral to authentication data
     source.  Any possible source of authentication data may be used by implementing the methods
-    '_user()' and '_check()'.  See their documentation for more information.
+    '_auth_user()' and '_auth_check()'.  See their documentation for more information.
+
+    This class may be used as a Mix-in class derived by the application which wishes to use it.
 
     """
     
     _LOGIN_COOKIE = 'wiking_login'
     _SESSION_COOKIE = 'wiking_session_key'
 
-    def _user(self, login):
+    def _auth_user(self, login):
         """Obtain authentication data and return a 'User' instance for given 'login'.
 
         This method may be used to retieve authentication data from any source, such as database
         table, file, LDAP server etc.  This should return the user corresponding to given login
-        name if it exists.  Further password checking is performed later by the '_check()' method.
-        None may be returned if no user exists for given login name.
+        name if it exists.  Further password checking is performed later by the '_auth_check()'
+        method.  None may be returned if no user exists for given login name.
 
         """
         return None
 
-    def _get_user(self, login, req):
+    def _auth_get_user(self, login, req):
         """Obtain authentication data and return a 'User' instance for given 'login' and request.
 
-        This method is a variant of the '_user()' method defined above which receives the request
-        object as second argument.  In most cases, you wan't need the request object, so you
-        probably want to override the method '_user()'.  In special cases, however, you can
-        override this one instead.  The return value is the same.
+        This method is a variant of the '_auth_user()' method defined above which receives the
+        request object as second argument.  In most cases, you wan't need the request object, so
+        you probably want to override the method '_auth_user()'.  In special cases, however, you
+        can override this one instead.  The return value is the same.
 
         """
-        return self._user(login)
+        return self._auth_user(login)
         
-    def _check(self, user, password):
+    def _auth_check(self, user, password):
         """Check authentication password for given user.
 
         Arguments:
@@ -266,8 +299,8 @@ class CookieAuthentication(Module):
                 raise AuthenticationError(_("Enter your login name, please!"))
             if not password:
                 raise AuthenticationError(_("Enter your password, please!"))
-            user = self._get_user(login, req)
-            if not user or not self._check(user, password):
+            user = self._auth_get_user(login, req)
+            if not user or not self._auth_check(user, password):
                 raise AuthenticationError(_("Invalid login!"))
             assert isinstance(user, User)
             # Login succesfull
@@ -278,7 +311,7 @@ class CookieAuthentication(Module):
             login, key = (req.cookie(self._LOGIN_COOKIE), 
                           req.cookie(self._SESSION_COOKIE))
             if login and key:
-                user = self._get_user(login, req)
+                user = self._auth_get_user(login, req)
                 if user and session.check(user, key):
                     assert isinstance(user, User)
                     # Cookie expiration is 2 days, but session expiration is
@@ -366,7 +399,7 @@ class Search(Module, ActionHandler):
         if message is not None:
             content.append(lcg.p(message))
         content = [self.SearchForm(req)]
-        variants = self._module('Languages').languages()
+        variants = self._application.languages()
         lang = req.prefered_language(variants)
         return Document(self._SEARCH_TITLE, lcg.Container(content), lang=lang)
 
@@ -396,7 +429,7 @@ class Search(Module, ActionHandler):
             content = lcg.Container([self._result_item(item) for item in result])
         else:
             content = self._empty_result_page()
-        variants = self._module('Languages').languages()
+        variants = self._application.languages()
         lang = req.prefered_language(variants)
         return Document(self._RESULT_TITLE, content, lang=lang)
     
