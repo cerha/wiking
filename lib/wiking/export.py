@@ -198,7 +198,7 @@ class Exporter(lcg.HtmlExporter):
             ctrl += g.link(_("Leave the Help System"), '/')
         elif cfg.allow_wmi_link:
             modname = state.modname or ''
-            if modname == 'WikingManagementInterface':
+            if modname in ('WikingManagementInterface', 'Documentation'):
                 modname = ''
             ctrl += g.link(_("Manage this site"), '/_wmi/'+modname, hotkey="9",
                            title=_("Enter the Wiking Management Interface"))
