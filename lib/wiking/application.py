@@ -84,6 +84,18 @@ class Application(Module):
         identitier = self._reverse_mapping.get(modname)
         return identitier and '/'+identitier or None
     
+    def menu(self, req):
+        """Return the main navigation menu hierarchy.
+
+        Arguments:
+        
+          req -- the current request object.
+        
+        Returns a sequence of 'MenuItem' instances representing the main menu hierarchy.
+        
+        """
+        return ()
+                
     def authenticate(self, req):
         """Perform authentication and return a 'User' instance if successful.
 
@@ -107,18 +119,23 @@ class Application(Module):
         """
         return None
 
-    def menu(self, req):
-        """Return the menu hierarchy.
+    def authorize(self, req, module, action=None, record=None, **kwargs):
+        """Check authorization of the current user for given action on given module.
 
         Arguments:
-        
-          req -- the current request object.
-        
-        Returns a sequence of 'MenuItem' instances representing the main menu hierarchy.
+          req -- Current request as a 'Request' instance.
+          module -- The module responsible for handling the request as a 'RequestHandler' instance.
+          action -- Action name as a string or None for global module access check (this argument
+            is only used for 'ActionHandler' modules).
+          kwargs -- Action arguments (if any).  Also relevant only for 'ActionHandler' modules.
+          
+        Returns true if the user is allowed to perform given action and false if not.
+
+        The default implementation always returns True.
         
         """
-        return (MenuItem('index', _("Index page")),)
-                
+        return True
+    
     def configure(self, req):
         """Update the configuration object if needed.
 

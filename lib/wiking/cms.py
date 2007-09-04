@@ -101,6 +101,9 @@ class Application(CookieAuthentication, Application):
     _MAPPING = {'_doc': 'Documentation',
                 '_wmi': 'WikingManagementInterface'}
 
+    _RIGHTS = {'Documentation': (Roles.ANYONE,),
+               'WikingManagementInterface': (Roles.AUTHOR,)}
+
     def resolve(self, req):
         try:
             return self._module('Mapping').resolve(req)
@@ -137,6 +140,21 @@ class Application(CookieAuthentication, Application):
 
     def _auth_check(self, user, password):
         return password == user.data()['password'].value()
+
+    def authorize(self, req, module, action=None, record=None, **kwargs):
+        if module.name() == 'Mapping' and not req.wmi and action != 'list':
+            # HACK: disable everything except 'list' for 'Mapping' outside WMI.
+            return False
+        if action and hasattr(module, 'RIGHTS_'+action):
+            roles = getattr(module, 'RIGHTS_'+action)
+        else:
+            roles = self._RIGHTS.get(module.name(), ())
+        if Roles.check(req, roles):
+            return True
+        elif Roles.OWNER in roles and isinstance(module, PytisModule) and record and req.user():
+            return module.check_owner(req.user(), record)
+        else:
+            return False
     
     def _maybe_install(self, req, errstr):
         """Check a DB error string and try to set it up if it is the problem."""
@@ -262,12 +280,7 @@ class WikingManagementInterface(Module, RequestHandler):
         else:
             return None
     
-    def handle(self, req):
-        if not Roles.check(req, (Roles.AUTHOR,)):
-            if req.user():
-                raise AuthorizationError()
-            else:
-                raise AuthenticationError()
+    def _handle(self, req):
         req.wmi = True # Switch to WMI only after successful authorization.
         if len(req.path) == 1:
             req.path += ('Mapping',)
@@ -314,7 +327,14 @@ class Mappable(object):
 
 class CMSModule(PytisModule, RssModule, Panelizable):
     "Base class for all CMS modules."""
-    pass
+    RIGHTS_view = (Roles.ANYONE,)
+    RIGHTS_show = (Roles.ANYONE,)
+    RIGHTS_list = (Roles.ANYONE,)
+    RIGHTS_add    = RIGHTS_insert = (Roles.ADMIN,)
+    RIGHTS_edit   = RIGHTS_update = (Roles.ADMIN,)
+    RIGHTS_remove = RIGHTS_delete = (Roles.ADMIN,)
+    RIGHTS_publish = RIGHTS_unpublish = (Roles.ADMIN,)
+    RIGHTS_rss = (Roles.ANYONE,)
 
 
 class MappingParents(CMSModule):
@@ -389,9 +409,6 @@ class Mapping(CMSModule, Publishable, Mappable):
             return '/_wmi/' + row['modname'].value()
         return super(Mapping, self)._link_provider(req, row, cid, **kwargs)
 
-    #def _check_action_rights(req, action.name(), record):
-    # TODO: disable everything except 'list' outside WMI.
-        
     def action_list(self, req, **kwargs):
         if not req.wmi:
             return self._document(req, SiteMap(depth=99))
@@ -825,8 +842,8 @@ class Pages(CMSModule, Mappable):
                        descr=_("Create the content by translating another language variant"),
                        enabled=lambda r: r['_content'].value() is None),
                 )
-    _RIGHTS_add = _RIGHTS_insert = Roles.AUTHOR
-    _RIGHTS_edit = _RIGHTS_update = Roles.AUTHOR
+    RIGHTS_add = RIGHTS_insert = (Roles.AUTHOR,)
+    RIGHTS_edit = RIGHTS_update = (Roles.AUTHOR,)
     WMI_SECTION = WikingManagementInterface.SECTION_CONTENT
     WMI_ORDER = 200
 
@@ -837,10 +854,10 @@ class Pages(CMSModule, Mappable):
                 self._data.get_rows(mapping_id=record['mapping_id'].value(),
                                     condition=self._CONTENT_OK)]
 
-    def handle(self, req):
+    def _handle(self, req):
         if not req.wmi and len(req.path) == 2:
             return self._module('Attachments').handle(req)
-        return super(Pages, self).handle(req)
+        return super(Pages, self)._handle(req)
 
     def _resolve(self, req):
         if len(req.path) == 1:
@@ -905,7 +922,7 @@ class Pages(CMSModule, Mappable):
 
     def action_preview(self, req, record, **kwargs):
         return self.action_view(req, record, preview=True, **kwargs)
-    _RIGHTS_preview = Roles.AUTHOR
+    RIGHTS_preview = (Roles.AUTHOR,)
 
     def action_translate(self, req, record):
         lang = req.param('src_lang')
@@ -930,7 +947,7 @@ class Pages(CMSModule, Mappable):
             for k in ('_content','title'):
                 req.params[k] = row[k].value()
             return self.action_edit(req, record)
-    _RIGHTS_translate = Roles.AUTHOR
+    RIGHTS_translate = (Roles.AUTHOR,)
 
     def action_commit(self, req, record):
         try:
@@ -940,7 +957,7 @@ class Pages(CMSModule, Mappable):
         else:
             kwargs = dict(msg=_("The changes were published."))
         return self.action_show(req, record, **kwargs)
-    _RIGHTS_commit = Roles.ADMIN
+    RIGHTS_commit = (Roles.ADMIN,)
 
     def action_revert(self, req, record):
         try:
@@ -950,7 +967,7 @@ class Pages(CMSModule, Mappable):
         else:
             kwargs = dict(msg=_("The page contents was reverted to its previous state."))
         return self.action_show(req, record, **kwargs)
-    _RIGHTS_revert = Roles.ADMIN
+    RIGHTS_revert = (Roles.ADMIN,)
     
     
 class Attachments(StoredFileModule, CMSModule):
@@ -1123,9 +1140,9 @@ class News(CMSModule, Mappable):
     _RSS_DESCR_COLUMN = 'content'
     _RSS_DATE_COLUMN = 'timestamp'
     _RSS_AUTHOR_COLUMN = 'author'
-    _RIGHTS_add = _RIGHTS_insert = Roles.CONTRIBUTOR
-    _RIGHTS_edit = _RIGHTS_update = (Roles.ADMIN, Roles.OWNER)
-    _RIGHTS_remove = _RIGHTS_delete = Roles.ADMIN
+    RIGHTS_add = RIGHTS_insert = (Roles.CONTRIBUTOR,)
+    RIGHTS_edit = RIGHTS_update = (Roles.ADMIN, Roles.OWNER)
+    RIGHTS_remove = RIGHTS_delete = (Roles.ADMIN,)
     _CUSTOM_VIEW = CustomViewSpec('title', meta=('timestamp', 'author'), content='content',
                                   anchor="item-%s", custom_list=True)
     WMI_SECTION = WikingManagementInterface.SECTION_CONTENT
@@ -1283,7 +1300,7 @@ class Images(StoredFileModule, CMSModule, Mappable):
         data = record[id].value().buffer()
         return (mime, data)
     
-    _RIGHTS_orig = _RIGHTS_image = _RIGHTS_thumbnail = Roles.ANYONE
+    RIGHTS_orig = RIGHTS_image = RIGHTS_thumbnail = (Roles.ANYONE,)
     
     def action_orig(self, req, record):
         return self._image(record, 'file')
@@ -1383,9 +1400,9 @@ class _Users(CMSModule):
     _ALLOW_TABLE_LAYOUT_IN_FORMS = False
     _OWNER_COLUMN = 'uid'
     _SUPPLY_OWNER = False
-    _RIGHTS_add = _RIGHTS_insert = Roles.ANYONE
-    _RIGHTS_edit = _RIGHTS_update = (Roles.ADMIN, Roles.OWNER)
-    _RIGHTS_remove = _RIGHTS_delete = Roles.ADMIN #, Roles.OWNER)
+    RIGHTS_add = RIGHTS_insert = (Roles.ANYONE,)
+    RIGHTS_edit = RIGHTS_update = (Roles.ADMIN, Roles.OWNER)
+    RIGHTS_remove = RIGHTS_delete = (Roles.ADMIN,) #, Roles.OWNER)
 
     def _actions(self, req, record):
         if not req.wmi:
@@ -1440,9 +1457,9 @@ class Rights(_Users):
         columns = ('user', 'login', 'enabled', 'contributor', 'author','admin')
         table = 'users'
     _ALLOW_TABLE_LAYOUT_IN_FORMS = True
-    _RIGHTS_add = _RIGHTS_insert = ()
-    _RIGHTS_edit = _RIGHTS_update = Roles.ADMIN
-    _RIGHTS_remove = ()
+    RIGHTS_add = RIGHTS_insert = ()
+    RIGHTS_edit = RIGHTS_update = (Roles.ADMIN,)
+    RIGHTS_remove = ()
     WMI_SECTION = WikingManagementInterface.SECTION_USERS
     WMI_ORDER = 200
 

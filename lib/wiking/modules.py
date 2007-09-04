@@ -55,6 +55,7 @@ class Module(object):
     
 class RequestHandler(object):
     """Mix-in class for modules capable of handling requests."""
+    
     def __init__(self, *args, **kwargs):
         self._cached_uri = (None, None)
         self._application = self._module('Application')
@@ -79,16 +80,31 @@ class RequestHandler(object):
                 uri = self._mapped_uri()
                 self._cached_uri = (req, uri)
         return uri
+
+    def _authorize(self, req, **kwargs):
+        if not self._application.authorize(req, self, **kwargs):
+            if not req.user():
+                raise AuthenticationError()
+            else:
+                raise AuthorizationError()
+
+    def _handle(self, req):
+        raise Exception("Method '_handle()' not implemented.")
         
     def handle(self, req):
         """Handle the request and return the result.
 
-        The result may be either a 'Document' instance or a pair (MIME_TYPE,
-        DATA).  The document instance will be exported into HTML, the MIME data
-        will be served directly.
+        The result may be either a 'Document' instance or a pair (MIME_TYPE, DATA).  The document
+        instance will be exported into HTML, the MIME data will be served directly.
+
+        This method only performs authorization check and postpones further processing to
+        '_handle()' method.  Please, never override this method (unless you want to bypass the
+        authorization checking).  Override '_handle()' instead.  The rules for the returned value
+        are the same.
 
         """
-        pass
+        self._authorize(req)
+        return self._handle(req)
 
     def menu(self, req):
         """Return menu definition for this module.
@@ -137,12 +153,13 @@ class ActionHandler(RequestHandler):
         return None
 
     def _action(self, req, action, **kwargs):
+        self._authorize(req, action=action, **kwargs)
         method = getattr(self, 'action_' + action)
         return method(req, **kwargs)
 
     def handle(self, req):
         kwargs = self._action_args(req)
-        if req.params.has_key('action'):
+        if req.has_param('action'):
             action = req.param('action')
         else:
             action = self._default_action(req, **kwargs)
@@ -179,7 +196,7 @@ class DocumentHandler(Module, RequestHandler):
             title = ' :: '.join(path)
         return Document(title, content, lang=lang, variants=variants)
         
-    def handle(self, req):
+    def _handle(self, req):
         return self._document(req, self._BASE_DIR, req.path)
         
 
@@ -190,7 +207,7 @@ class Documentation(DocumentHandler):
     on the disk.
 
     """
-    def handle(self, req):
+    def _handle(self, req):
         path = req.path[1:]
         if path and path[0] == 'lcg':
             path = path[1:]
@@ -479,7 +496,7 @@ class Reload(Module):
                     pass
         return module_names
     
-    def handle(self, req):
+    def _handle(self, req):
         module_names = self._reload_modules(req)
         content = lcg.coerce((lcg.p(_("The following modules were successfully reloaded:")),
                               lcg.p(", ".join(module_names)),))

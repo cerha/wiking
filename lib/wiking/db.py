@@ -58,13 +58,6 @@ class PytisModule(Module, ActionHandler):
     _DELETE_MSG = _("The record was deleted.")
     _CUSTOM_VIEW = None
     
-    _RIGHTS_view = Roles.ANYONE
-    _RIGHTS_show = Roles.ANYONE
-    _RIGHTS_list = Roles.ANYONE
-    _RIGHTS_add    = _RIGHTS_insert = Roles.ADMIN
-    _RIGHTS_edit   = _RIGHTS_update = Roles.ADMIN
-    _RIGHTS_remove = _RIGHTS_delete = Roles.ADMIN
-    
     _OWNER_COLUMN = None
     _SUPPLY_OWNER = True
     _NON_LAYOUT_FIELDS = ()
@@ -243,7 +236,7 @@ class PytisModule(Module, ActionHandler):
         #    return None
         actions = [action for action in actions or self._actions(req, record)
                    if isinstance(action, Action) and \
-                   self._check_action_rights(req, action.name(), record)]
+                   self._application.authorize(req, self, action=action.name(), record=record)]
         if not actions:
             return None
         else:
@@ -284,12 +277,6 @@ class PytisModule(Module, ActionHandler):
         return form(self._data, self._view, self._resolver, handler=req.uri, name=self.name(),
                     hidden=hidden, **kwargs)
     
-    def _default_action(self, req, record=None):
-        if record is None:
-            return 'list'
-        else:
-            return req.wmi and 'show' or 'view'
-        
     def _get_row_by_key(self, value):
         if isinstance(value, tuple):
             value = value[-1]
@@ -302,6 +289,31 @@ class PytisModule(Module, ActionHandler):
             raise NotFound()
         return row
 
+    def _resolve(self, req):
+        # Returns Row, None or raises HttpError.
+        if len(req.path) < self._REFERER_PATH_LEVEL:
+            return None
+        elif len(req.path) == self._REFERER_PATH_LEVEL:
+            referer = req.path[self._REFERER_PATH_LEVEL-1]
+            if not isinstance(self._referer_type, pd.String):
+                value, error = self._referer_type.validate(referer)
+                if error is not None:
+                    raise NotFound()
+                else:
+                    referer = value.value()
+            row = self._data.get_row(**{self._referer: referer})
+            if row is None:
+                raise NotFound()
+            return row
+        else:
+            raise NotFound()
+
+    def _default_action(self, req, record=None):
+        if record is None:
+            return 'list'
+        else:
+            return req.wmi and 'show' or 'view'
+        
     def _action_args(self, req):
         # The request path may resolve to a 'record' argument, no arguments or
         # raise one of HttpError exceptions.
@@ -322,44 +334,12 @@ class PytisModule(Module, ActionHandler):
             return dict(record=self._record(row))
         return {}
     
-    def _resolve(self, req):
-        # Returns Row, None or raises HttpError.
-        if len(req.path) < self._REFERER_PATH_LEVEL:
-            return None
-        elif len(req.path) == self._REFERER_PATH_LEVEL:
-            referer = req.path[self._REFERER_PATH_LEVEL-1]
-            if not isinstance(self._referer_type, pd.String):
-                value, error = self._referer_type.validate(referer)
-                if error is not None:
-                    raise NotFound()
-                else:
-                    referer = value.value()
-            row = self._data.get_row(**{self._referer: referer})
-            if row is None:
-                raise NotFound()
-            return row
-        else:
-            raise NotFound()
-
-    def _check_action_rights(self, req, action, record):
-        roles = getattr(self, '_RIGHTS_'+action)
-        if not isinstance(roles, (tuple, list)):
-            roles = (roles,)
-        if Roles.OWNER in roles and self._OWNER_COLUMN and record is not None:
-            user = req.user()
+    def check_owner(self, user, record):
+        if self._OWNER_COLUMN is not None:
             owner = record[self._OWNER_COLUMN].value()
-            if user and owner and user.uid() == owner:
-                return True
-        return Roles.check(req, roles)
+            return user.uid() == owner
+        return False
         
-    def _action(self, req, action, **kwargs):
-        if not self._check_action_rights(req, action, kwargs.get('record')):
-            if req.user():
-                raise AuthorizationError()
-            else:
-                raise AuthenticationError()
-        return super(PytisModule, self)._action(req, action, **kwargs)
-    
     def _lang(self, record):
         if self._LIST_BY_LANGUAGE:
             return str(record['lang'].value())
@@ -578,8 +558,6 @@ class RssModule(object):
     _RSS_AUTHOR_COLUMN = None
     _RSS_LIMIT = 10
 
-    _RIGHTS_rss = Roles.ANYONE
-
     def _descr_provider(self, req, row, translator):
         from xml.sax.saxutils import escape
         if self._RSS_DESCR_COLUMN:
@@ -778,8 +756,6 @@ class Publishable(object):
     # This is all quite ugly.  It would be much better to solve invoking pytis
     # actions in some more generic way, so that we don't need to implement an
     # action handler method for each pytis action.
-    
-    _RIGHTS_publish = _RIGHTS_unpublish = Roles.ADMIN
     
     def action_publish(self, req, record, publish=True):
         err, msg = (None, None)
