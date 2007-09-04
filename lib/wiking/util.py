@@ -524,7 +524,7 @@ class RecordView(pw.ShowForm, _CustomView):
     """Content element class showing one record of a module."""
     
     def _override(self):
-        self.export = lambda e: self._export_row_custom(e, self._row)
+        self.export = lambda e: self._export_row_custom(e, self._row, 0)
         
     
 class ListView(pw.BrowseForm, _CustomView):
