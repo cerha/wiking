@@ -1,3 +1,7 @@
+2007-09-05  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/modules.py (SubmenuRedirect): New class.
+
 2007-09-04  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/cms.py: Authorization checking implemented within the
