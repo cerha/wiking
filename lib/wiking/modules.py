@@ -258,6 +258,35 @@ class Stylesheets(Module, ActionHandler):
         return ('text/css', self._substitute(self._find_file(req.path[1])))
 
     
+class SubmenuRedirect(Module, RequestHandler):
+    """Handle all requests by redirecting to the first submenu item.
+
+    This class may become handy if you don't want the root menu items to have their own content,
+    but rather redirect the user to the first submenu item available
+
+    """
+    
+    def _handle(self, req):
+        def find(items, id):
+            for item in items:
+                if item.id() == id:
+                    return item
+                else:
+                    item = find(item.submenu(), id)
+                    if item:
+                        return item
+            return None
+        id = req.path[0]
+        item = find(self._application.menu(req), id)
+        if item:
+            if item.submenu():
+                return req.redirect(item.submenu()[0].id())
+            else:
+                raise Exception("Menu item '%s' has no childs." % id)
+        else:
+            raise Exception("Menu item for '%s' not found." % id)
+            
+
 class CookieAuthentication(object):
     """Implementation of cookie based authentication for Wiking Application.
 
