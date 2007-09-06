@@ -1,3 +1,15 @@
+2007-09-06  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/application.py (Application.panels): Display password
+	expiration date in the login panel if it was defined.
+
+	* lib/wiking/request.py: Added support for password expiration
+	date specification.
+
+	* translations/wiking-cms.cs.po: Updated.
+
+	* translations/wiking.cs.po: Updated.
+
 2007-09-05  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/modules.py (SubmenuRedirect): New class.

@@ -151,7 +151,6 @@ class Application(Module):
         pass
 
     def panels(self, req, lang):
-
         """Return a list of 'Panel' instances representing panels displayed on each page.
 
         Provides the global set of all panels.  It is also possible to override the metohd
@@ -165,7 +164,11 @@ class Application(Module):
         if cfg.allow_login_panel:
             user = req.user()
             content = lcg.p(LoginCtrl(user))
-            if cfg.allow_registration and not user:
+            if user and user.passwd_expiration():
+                date = lcg.LocalizableDateTime(str(user.passwd_expiration()))
+                content = lcg.coerce((content,
+                                      lcg.p(_("Your password expires on %(date)s.", date=date))))
+            elif cfg.allow_registration and not user:
                 uri = self._module('Users').registration_uri(req)
                 if uri:
                     lnk = lcg.link(uri, _("New user registration"))

@@ -343,7 +343,7 @@ class User(object):
 
     """
     
-    def __init__(self, login, uid=None, name=None, roles=(), data=None):
+    def __init__(self, login, uid=None, name=None, roles=(), data=None, passwd_expiration=None):
         """Initialize the instance.
 
         Arguments:
@@ -353,6 +353,10 @@ class User(object):
           name -- visible name as a string (login is used if None)
           roles -- sequence of user roles as 'Roles' constants
           data -- application specific data
+          passwd_expiration -- password expiration date as a Python 'date' instance or None
+
+        Please note, that password expiration date has currently no impact on the authentication
+        process.  It will just be displayed in the login panel, if defined.
 
         """
         assert isinstance(login, (unicode, str))
@@ -363,6 +367,7 @@ class User(object):
         self._name = name or login
         self._roles = tuple(roles)
         self._data = data
+        self._passwd_expiration = passwd_expiration
         
     def login(self):
         """Return user's login name as a string."""
@@ -383,6 +388,10 @@ class User(object):
     def data(self):
         """Return application specific data passed to the constructor."""
         return self._data
+
+    def passwd_expiration(self):
+        """Return password expiration date as a Python 'date' instance or None."""
+        return self._passwd_expiration
 
     
 class Roles(object):
