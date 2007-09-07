@@ -403,8 +403,8 @@ class Mapping(CMSModule, Publishable, Mappable):
     _mapping_cache = {}
 
     def _link_provider(self, req, row, cid, **kwargs):
-        if req.wmi and cid == 'modtitle':
-            return '/_wmi/' + row['modname'].value()
+        if cid == 'parent':
+            return None
         return super(Mapping, self)._link_provider(req, row, cid, **kwargs)
 
     def action_list(self, req, **kwargs):
