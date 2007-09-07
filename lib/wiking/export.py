@@ -133,7 +133,7 @@ class Exporter(lcg.HtmlExporter):
             content = (title, g.list(links))
         else:
             content = ()
-        return g.map(g.div(content, id="main-menu"), title=_("Main navigation"))
+        return g.map(g.div(content, id="main-menu"), name='menu-map', title=_("Main navigation"))
 
     def _submenu(self, node):
         g = self._generator
@@ -144,7 +144,7 @@ class Exporter(lcg.HtmlExporter):
         menu.set_parent(node)
         title = g.h(g.link(_("In this section:"), None, name='local-navigation', hotkey="3"), 3)
         return g.map(g.div((title, menu.export(self)), id='submenu-frame'),
-                     title=_("Local navigation"))
+                     name='submenu-map', title=_("Local navigation"))
     
     def _panels(self, node):
         g = self._generator
