@@ -317,22 +317,22 @@ div.item span.panel-field-date {
 
 /* Pytis forms styles */
 
-fieldset.body, fieldset.controls, fieldset.submit { 
+form.pytis-form fieldset.group, form.pytis-form div.submit, form.browse-form-controls { 
     background: $color.frame-bg;
     border: 1px solid $color.frame-border;
     border-width: 1px 0;
     margin: 0.4em 0;
 }
-fieldset.controls {
+form.browse-form-controls {
     margin: 0.8em 0;
     padding: .2em;
 }
-fieldset.submit { 
+form.pytis-form div.submit div.submit { 
     margin-top: 0.5em;
     padding: 0.5em;
     text-align: center;
 }
-fieldset.submit input { 
+form.pytis-form div.submit div.submit input { 
     padding: 0.1em 0.5em;
     margin: 0 1em;
 }
@@ -365,10 +365,11 @@ form.browse-form table tfoot td {
     padding: 0;
     text-align: right;
 }
-form.browse-form fieldset.controls span.limit {
+form.browse-form-controls span.limit {
+    white-space: nowrap;
     margin-left: 2em;
 }
-form.browse-form fieldset.controls input.prev {
+form.browse-form-controls input.prev {
     margin-left: 1em;
 }
 

@@ -1,9 +1,11 @@
 2007-09-07  Tomas Cerha  <cerha@brailcom.org>
 
+	* resources/css/default.css: Updated.
+	
 	* doc/src/devel/application.py: Include method arguments.
 
 	* lib/wiking/cms.py: Define the menu and panels just within the
-	application.
+	application.  Suppress parent item links in mapping table.
 
 	* lib/wiking/handler.py: Always use the application to query for
 	menu and panels.
@@ -15,6 +17,7 @@
 	nodes.  Dropped support for `inline' state.
 
 	* lib/wiking/export.py: Always show documentation "inline".
+	Validation improvements.  Minor improvements for textual browsers.
 
 	* lib/wiking/db.py: Don't pass the `inline' parameter in
 	documentation link.
