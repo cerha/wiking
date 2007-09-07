@@ -129,8 +129,8 @@ class Exporter(lcg.HtmlExporter):
                 links.append(g.link(item.title(), self._node_uri(item), title=item.descr(),
                                     hotkey=(item.id() == 'index' and "1" or None), cls=cls) + sign)
         if links:
-            title = g.h(g.link(_("Main navigation"), None, name='main-navigation', hotkey="3"), 3)
-            content = (title, g.list(links))
+            title = g.link(_("Main navigation")+':', None, name='main-navigation', hotkey="3")
+            content = (g.h(title, 3), g.list(links))
         else:
             content = ()
         return g.map(g.div(content, id="main-menu"), name='menu-map', title=_("Main navigation"))
@@ -161,11 +161,13 @@ class Exporter(lcg.HtmlExporter):
             result.append(g.div((g.h(g.link(panel.title(), None, name="panel-"+panel.id()), 3),
                                  g.div(content, cls="panel-content")),
                                 cls="panel panel-"+panel.id()))
+        result.append(g.br())
         return result
 
     def _content(self, node):
         g = self._generator
-        return (g.h(g.link(node.heading(), None, name='content-heading'), 1),
+        return (g.hr(cls='hidden'),
+                g.h(g.link(node.heading(), None, name='content-heading'), 1),
                 super(Exporter, self)._content(node),
                 g.div('&nbsp;', id='content-clearing'))
 
@@ -235,8 +237,7 @@ class Exporter(lcg.HtmlExporter):
                 domain = domain[4:]
             contact = 'webmaster@' + domain
         return (g.hr(),
-                g.p(_("This site conforms to the following standards:"),
-                    *links),
+                g.p(_("This site conforms to the following standards:"), *links),
                 g.p(_("This site can be viewed in ANY browser."),
                     g.link(_("Accessibility Statement"), '/_doc/accessibility', hotkey='0')),
                 g.p(_("Contact:"), g.link(contact, "mailto:"+contact)))
