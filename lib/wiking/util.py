@@ -237,11 +237,12 @@ class Theme(object):
         
 class MenuItem(object):
     """Abstract menu item representation."""
-    def __init__(self, id, title, descr=None, hidden=False, submenu=(), order=None):
+    def __init__(self, id, title, descr=None, hidden=False, active=True, submenu=(), order=None):
         self._id = id
         self._title = title
         self._descr = descr
         self._hidden = hidden
+        self._active = active
         submenu = list(submenu)
         submenu.sort(key=lambda i: i.order())
         self._submenu = submenu
@@ -254,6 +255,8 @@ class MenuItem(object):
         return self._descr
     def hidden(self):
         return self._hidden
+    def active(self):
+        return self._active
     def order(self):
         return self._order
     def submenu(self):
@@ -321,8 +324,9 @@ class Document(object):
             resource_provider = lcg.StaticResourceProvider(resources)
             node = WikingNode(item.id(), state, title=item.title(), heading=heading,
                               descr=item.descr(), content=content,  hidden=item.hidden(),
+                              active=item.active(), panels=panels_,
                               children=[_mknode(i) for i in item.submenu()],
-                              panels=panels_, resource_provider=resource_provider, **kwargs)
+                              resource_provider=resource_provider, **kwargs)
             if item.id() == id:
                 me.append(node)
             if item.id() == parent_id:
@@ -347,11 +351,10 @@ class Document(object):
 class WikingNode(lcg.ContentNode):
 
     class State(object):
-        def __init__(self, modname, user, wmi, inline, show_panels, server_hostname):
+        def __init__(self, modname, user, wmi, show_panels, server_hostname):
             self.modname = modname
             self.user = user
             self.wmi = wmi
-            self.inline = inline
             self.show_panels = show_panels
             self.server_hostname = server_hostname
     
@@ -525,6 +528,7 @@ class RecordView(pw.ShowForm, _CustomView):
     
     def _override(self):
         self.export = lambda e: self._export_row_custom(e, self._row, 0)
+        #self._export_value = lambda e, row, f: self._export_field(e, f)[1]
         
     
 class ListView(pw.BrowseForm, _CustomView):
