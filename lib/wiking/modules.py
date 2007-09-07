@@ -106,24 +106,6 @@ class RequestHandler(object):
         self._authorize(req)
         return self._handle(req)
 
-    def menu(self, req):
-        """Return menu definition for this module.
-
-        The default implementation always uses the global menu defined by the 'Application', but a
-        derived module may choose to override this default behavior.
-
-        """
-        return self._application.menu(req)
-        
-    def panels(self, req, lang):
-        """Return panels for this module.
-
-        The default implementation always uses the global set of panels defined by the
-        'Application', but a derived module may choose to override this default behavior.
-
-        """
-        return self._application.panels(req, lang)
-
 
 class ActionHandler(RequestHandler):
     """Mix-in class for modules providing ``actions'' to handle requests.
@@ -215,12 +197,6 @@ class Documentation(DocumentHandler):
         else:
             basedir = os.path.join(cfg.wiking_dir, 'doc', 'src')
         return self._document(req, basedir, path)
-
-    def menu(self, req):
-        return ()
-
-    def panels(self, req, lang):
-        return []
 
 
 class Stylesheets(Module, ActionHandler):

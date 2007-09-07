@@ -115,11 +115,15 @@ class Application(CookieAuthentication, Application):
                or super(Application, self).module_uri(modname)
         
     def menu(self, req):
-        return self._module('Mapping').menu(req)
+        module = req.wmi and 'WikingManagementInterface' or 'Mapping'
+        return self._module(module).menu(req)
     
     def panels(self, req, lang):
-        return super(Application, self).panels(req, lang) + \
-               self._module('Panels').panels(req, lang)
+        if req.wmi:
+            return ()
+        else:
+            return super(Application, self).panels(req, lang) + \
+                   self._module('Panels').panels(req, lang)
         
     def configure(self, req):
         return self._module('Config').configure(req)
@@ -306,12 +310,6 @@ class WikingManagementInterface(Module, RequestHandler):
                                            descr=m.descr(), order=self._wmi_order(m))
                                   for m in self._wmi_modules(modules, section)])
                 for section, title, descr in self._SECTIONS]
-
-    def panels(self, req, lang):
-        if req.wmi:
-            return []
-        else:
-            return super(WikingManagementInterface, self).panels(req, lang)
      
 
 class Mappable(object):
