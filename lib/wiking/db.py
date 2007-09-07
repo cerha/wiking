@@ -232,8 +232,6 @@ class PytisModule(Module, ActionHandler):
             return self._LIST_ACTIONS
     
     def _action_menu(self, req, record=None, actions=None, args=None, uri=None):
-        #if not req.wmi:
-        #    return None
         actions = [action for action in actions or self._actions(req, record)
                    if isinstance(action, Action) and \
                    self._application.authorize(req, self, action=action.name(), record=record)]
@@ -444,7 +442,7 @@ class PytisModule(Module, ActionHandler):
             content += (lcg.p(_("An RSS channel is available for this section:"), ' ',
                               lcg.link(req.uri +'.'+ lang +'.rss', lcg.join((lcg.Title('news'), 'RSS')),
                                        type='application/rss+xml'), " (",
-                              lcg.link('_doc/rss?display=inline', _("more about RSS")), ")"),)
+                              lcg.link('_doc/rss', _("more about RSS")), ")"),)
         return self._document(req, content, lang=lang, variants=variants, err=err, msg=msg)
 
     def action_show(self, req, record, err=None, msg=None, custom=False):

@@ -69,8 +69,6 @@ class Exporter(lcg.HtmlExporter):
         state = node.state()
         if state.wmi:
             title = _("Wiking Management Interface")
-        elif state.modname == 'Documentation' and not state.inline:
-            title = _("Wiking Help System")
         else:
             title = cfg.site_title
             if full and cfg.site_subtitle:
@@ -194,8 +192,6 @@ class Exporter(lcg.HtmlExporter):
             ctrl += concat(_("Login"), ': ', username, ' (', lctrl, ') | ')
         if state.wmi:
             ctrl += g.link(_("Leave the Management Interface"), '/', hotkey="9")
-        elif state.modname == 'Documentation' and not state.inline:
-            ctrl += g.link(_("Leave the Help System"), '/')
         elif cfg.allow_wmi_link:
             modname = state.modname or ''
             if modname in ('WikingManagementInterface', 'Documentation'):
@@ -242,8 +238,7 @@ class Exporter(lcg.HtmlExporter):
                 g.p(_("This site conforms to the following standards:"),
                     *links),
                 g.p(_("This site can be viewed in ANY browser."),
-                    g.link(_("Accessibility Statement"),
-                           '/_doc/accessibility?display=inline', hotkey='0')),
+                    g.link(_("Accessibility Statement"), '/_doc/accessibility', hotkey='0')),
                 g.p(_("Contact:"), g.link(contact, "mailto:"+contact)))
     
 
