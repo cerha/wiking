@@ -1,3 +1,24 @@
+2007-09-07  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/cms.py: Define the menu and panels just within the
+	application.
+
+	* lib/wiking/handler.py: Always use the application to query for
+	menu and panels.
+
+	* lib/wiking/modules.py: Dropped support for per-module menu and
+	panels definition.
+
+	* lib/wiking/util.py: Added support for the `active' flag on
+	nodes.  Dropped support for `inline' state.
+
+	* lib/wiking/export.py: Always show documentation "inline".
+
+	* lib/wiking/db.py: Don't pass the `inline' parameter in
+	documentation link.
+
+	* lib/wiking/application.py: Allow easy stylesheet redefinition.
+
 2007-09-06  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/application.py (Application.panels): Display password
