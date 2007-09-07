@@ -50,7 +50,9 @@ class Application(Module):
     documentation for more information.
     
     """
-
+    
+    _STYLESHEETS = ('default.css',)
+    
     def __init__(self, *args, **kwargs):
         super(Application, self).__init__(*args, **kwargs)
         self._reverse_mapping = dict([(v,k) for k,v in self._MAPPING.items()])
@@ -90,8 +92,12 @@ class Application(Module):
         Arguments:
         
           req -- the current request object.
-        
+
         Returns a sequence of 'MenuItem' instances representing the main menu hierarchy.
+        
+        The menu structure should usually remain unchanges throughout the application or at least
+        throughout its mojor states, but this is just a common practice, not a requirement.  The
+        application may decide to return a different menu for each request.
         
         """
         return ()
@@ -151,11 +157,11 @@ class Application(Module):
         pass
 
     def panels(self, req, lang):
-        """Return a list of 'Panel' instances representing panels displayed on each page.
+        """Return a list of 'Panel' instances representing panels displayed on the page.
 
-        Provides the global set of all panels.  It is also possible to override the metohd
-        'panels()' of any single module, to override the set of panels just for this module (when
-        it is used to handle the request).
+        The set of panels will usually be constant throughout the application, but this is just a
+        common practice, not a requirement.  The application may decide to return whatever is
+        reasonable for the current request.
 
         See the Navigation section of the Wiking User's documentation for general information about
         panels.
@@ -206,7 +212,7 @@ class Application(Module):
 
         """
         uri = self.module_uri('Stylesheets')
-        return [lcg.Stylesheet('default.css', uri=uri+'/default.css')]
+        return [lcg.Stylesheet(file, uri=uri+'/'+file) for file in self._STYLESHEETS]
 
     def handle_exception(self, req, exception):
         """Handle exceptions raised during request processing.
