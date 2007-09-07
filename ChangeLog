@@ -1,5 +1,7 @@
 2007-09-07  Tomas Cerha  <cerha@brailcom.org>
 
+	* doc/src/devel/application.py: Include method arguments.
+
 	* lib/wiking/cms.py: Define the menu and panels just within the
 	application.
 

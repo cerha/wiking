@@ -1,10 +1,11 @@
-import lcg, inspect
+import lcg, inspect, re
 
 class Reader(lcg.Reader):
     """Generate Wiking API documentation out of Python docstrings."""
     
     _DEFAULTS = {'title': "Wiking Application API"}
-        
+    _ARG_REGEX = re.compile("^  (?P<name>\w+) -- ", re.MULTILINE)
+
     def _create_content(self):
         from wiking import Application
         parser = lcg.Parser()
@@ -20,5 +21,7 @@ class Reader(lcg.Reader):
                 continue
             args, varargs, varkw, defaults = inspect.getargspec(method)
             title = name + inspect.formatargspec(args[1:], varargs, varkw, defaults)
-            content.append(lcg.Section(title=title, content=parser.parse(method.__doc__)))
+            doc = lcg.unindent_docstring(method.__doc__)
+            doc = self._ARG_REGEX.sub(lambda m: ":" + m.group('name') + ": ", doc)
+            content.append(lcg.Section(title=title, content=parser.parse(doc)))
         return content
