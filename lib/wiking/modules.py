@@ -459,9 +459,9 @@ class Search(Module, ActionHandler):
     # Actions
     
     def _default_action(self, req, **kwargs):
-        return 'show'
+        return 'view'
 
-    def action_show(self, req, **kwargs):
+    def action_view(self, req, **kwargs):
         return self._search_form(req)
         
     def action_search(self, req, **kwargs):

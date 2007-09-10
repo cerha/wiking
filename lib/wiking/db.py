@@ -56,12 +56,12 @@ class PytisModule(Module, ActionHandler):
     _INSERT_MSG = _("New record was successfully inserted.")
     _UPDATE_MSG = _("The record was successfully updated.")
     _DELETE_MSG = _("The record was deleted.")
-    _CUSTOM_VIEW = None
     
     _OWNER_COLUMN = None
     _SUPPLY_OWNER = True
     _NON_LAYOUT_FIELDS = ()
 
+    _LIST_LAYOUT = None
     _ALLOW_TABLE_LAYOUT_IN_FORMS = True
     _SUBMIT_BUTTONS = None
 
@@ -238,7 +238,12 @@ class PytisModule(Module, ActionHandler):
         if not actions:
             return None
         else:
-            return ActionMenu(actions, record, args=args, uri=uri)
+            if req.wmi:
+                uri = '/_wmi/' + self.name()
+            else:
+                uri = req.uri
+            return ActionMenu(uri, actions, record, args=args,
+                              referer=req.wmi and self._key or self._referer)
 
     def _link_provider(self, req, row, cid, target=None, **kwargs):
         if cid == self._title_column or cid == self._key:
@@ -270,6 +275,8 @@ class PytisModule(Module, ActionHandler):
             kwargs['submit'] = self._SUBMIT_BUTTONS
         elif issubclass(form, pw.BrowseForm):
             kwargs['req'] = req
+        if issubclass(form, pw.ListView) and not req.wmi:
+            kwargs['layout'] = self._LIST_LAYOUT
         if action is not None:
             hidden += (('action', action),)
         return form(self._data, self._view, self._resolver, handler=req.uri, name=self.name(),
@@ -287,6 +294,21 @@ class PytisModule(Module, ActionHandler):
             raise NotFound()
         return row
 
+    def _default_action(self, req, record=None):
+        if record is None:
+            return 'list'
+        else:
+            return 'view'
+        
+    def _action_args(self, req):
+        # The request path may resolve to a 'record' argument, no arguments or
+        # raise one of HttpError exceptions.
+        row = self._resolve(req)
+        if row is not None:
+            return dict(record=self._record(row))
+        else:
+            return {}
+    
     def _resolve(self, req):
         # Returns Row, None or raises HttpError.
         if len(req.path) < self._REFERER_PATH_LEVEL:
@@ -306,32 +328,6 @@ class PytisModule(Module, ActionHandler):
         else:
             raise NotFound()
 
-    def _default_action(self, req, record=None):
-        if record is None:
-            return 'list'
-        else:
-            return req.wmi and 'show' or 'view'
-        
-    def _action_args(self, req):
-        # The request path may resolve to a 'record' argument, no arguments or
-        # raise one of HttpError exceptions.
-        if req.wmi:
-            if len(req.path) == 2: # or req.params.has_key('module'):
-                key = req.param(self._key)
-                if key is None:
-                    row = None
-                else:
-                    row = self._get_row_by_key(key)
-            elif len(req.path) == 3:
-                row = self._get_row_by_key(req.path[2])
-            else:
-                raise NotFound()
-        else:
-            row = self._resolve(req)
-        if row is not None:
-            return dict(record=self._record(row))
-        return {}
-    
     def check_owner(self, user, record):
         if self._OWNER_COLUMN is not None:
             owner = record[self._OWNER_COLUMN].value()
@@ -417,10 +413,9 @@ class PytisModule(Module, ActionHandler):
         if self._LIST_BY_LANGUAGE:
             args['lang'] = record['lang'].value()
         content = (
-            self._form(ListView, req, condition=self._condition(req, **args),
-                       custom_spec=(not req.wmi and self._CUSTOM_VIEW or None), 
+            self._form(pw.ListView, req, condition=self._condition(req, **args),
                        columns=[c for c in self._view.columns() if c!=sbcol]),
-            self._action_menu(req, args=args, uri='/_wmi/' + self.name()))
+            self._action_menu(req, args=args))
         return lcg.Section(title=self._view.title(), content=[c for c in content if c])
 
     # ===== Action handlers =====
@@ -435,8 +430,8 @@ class PytisModule(Module, ActionHandler):
         if req.wmi:
             help = lcg.p(self._view.help() or '', ' ', lcg.link('/_doc/'+self.name(), _("Help")))
             content += (help,)
-        content += (self._form(ListView, req, condition=self._condition(req, lang=lang),
-                               custom_spec=(not req.wmi and self._CUSTOM_VIEW or None)),
+        content += (self._form(pw.ListView, req, condition=self._condition(req, lang=lang),
+                               layout=(not req.wmi and self._LIST_LAYOUT or None)),
                     self._action_menu(req))
         if isinstance(self, RssModule) and not req.wmi and self._RSS_TITLE_COLUMN and lang:
             content += (lcg.p(_("An RSS channel is available for this section:"), ' ',
@@ -445,21 +440,13 @@ class PytisModule(Module, ActionHandler):
                               lcg.link('_doc/rss', _("more about RSS")), ")"),)
         return self._document(req, content, lang=lang, variants=variants, err=err, msg=msg)
 
-    def action_show(self, req, record, err=None, msg=None, custom=False):
-        if not custom:
-            form = self._form(pw.ShowForm, req, row=record.row())
-        else:
-            form = self._form(RecordView, req, row=record.row(), custom_spec=self._CUSTOM_VIEW)
-        content = [form, self._action_menu(req, record)]
+    def action_view(self, req, record, err=None, msg=None):
+        content = [self._form(pw.ShowForm, req, row=record.row()),
+                   self._action_menu(req, record)]
         for modname in self._RELATED_MODULES:
             module, binding = self._module(modname), self._bindings[modname]
             content.append(module.related(req, binding, self.name(), record))
         return self._document(req, content, record, err=err, msg=msg)
-
-    def action_view(self, req, record, err=None, msg=None):
-        # `show()' always uses ShowForm, while `view()' may be overriden
-        # by the module (using _CUSTOM_VIEW).
-        return self.action_show(req, record, err=err, msg=msg, custom=True)
 
     def action_add(self, req, errors=()):
         # TODO: Redirect handler to HTTPS if cfg.force_https_login is true?
@@ -532,8 +519,7 @@ class PytisModule(Module, ActionHandler):
         return self._DELETE_MSG
     
     def _redirect_after_update(self, req, record):
-        action = req.wmi and self.action_show or self.action_view
-        return action(req, record, msg=self._update_msg(record))
+        return self.action_view(req, record, msg=self._update_msg(record))
         
     def _redirect_after_insert(self, req, record):
         return self.action_list(req, msg=self._insert_msg(record))
@@ -764,8 +750,7 @@ class Publishable(object):
             msg = publish and self._MSG_PUBLISHED or self._MSG_UNPUBLISHED
         except pd.DBException, e:
             err = self._analyze_exception(e)
-        action = req.wmi and self.action_show or self.action_view
-        return action(req, record, msg=msg, err=err)
+        return self.action_view(req, record, msg=msg, err=err)
 
     def action_unpublish(self, req, record):
         return self.action_publish(req, record, publish=False)

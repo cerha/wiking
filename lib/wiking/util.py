@@ -394,16 +394,18 @@ class WikingNode(lcg.ContentNode):
 class ActionMenu(lcg.Content):
     """A menu of actions related to one record or the whole module."""
     
-    def __init__(self, actions, row=None, args=None, uri=None):
+    def __init__(self, uri, actions, row=None, args=None, referer=None):
         super(ActionMenu, self).__init__()
+        assert isinstance(uri, str), uri
         assert isinstance(actions, (tuple, list)), actions
-        assert uri is None or isinstance(uri, str), uri
         assert row is None or isinstance(row, pp.PresentedRow), row
         assert args is None or isinstance(args, dict), args
+        assert referer is None or isinstance(referer, str), referer
         self._uri = uri
         self._row = row
         self._actions = actions
         self._args = args or {}
+        self._referer = referer
 
     def _export_item(self, action, g):
         title = action.descr()
@@ -412,19 +414,15 @@ class ActionMenu(lcg.Content):
             enabled = enabled(self._row)
         if enabled:
             args = self._args
-            if self._uri is not None:
-                uri = self._uri
-            elif action.context() is None and self._row is not None:
-                uri = '.'
-            elif action.name() == 'delete' and self._row is not None:
+            uri = self._uri
+            if action.name() in ('delete', 'list'):
                 key = self._row.data().key()[0].id()
-                args = dict(args, **{key: self._row[key].export()})
-                uri = '.'
-            else:
-                uri = ''
-            if action.name() == 'list' and self._row is not None:
-                key = self._row.data().key()[0].id()
-                args = dict(args, search=self._row[key].export())
+                if action.name() == 'delete':
+                    args = dict(args, **{key: self._row[key].export()})
+                else:
+                    args = dict(args, search=self._row[key].export())
+            elif self._referer is not None and self._row:
+                uri += '/' + self._row[self._referer].export()
             target = g.uri(uri, action=action.name(), **args)
             cls = None
         else:
@@ -455,95 +453,6 @@ class PanelItem(lcg.Content):
                             cls="panel-field-"+id)
                  for id, value, uri in self._fields]
         return g.div(items, cls="item")
-
-
-class CustomViewSpec(object):
-    def __init__(self, title, meta=(), content=None, anchor=None,
-                 labeled_fields=(), custom_list=False, cls='view-item'):
-        self._title = title
-        self._meta = meta
-        self._content = content
-        self._anchor = anchor
-        self._labeled_fields = labeled_fields
-        self._custom_list = custom_list
-        self._cls = cls
-    def title(self):
-        return self._title
-    def meta(self):
-        return self._meta
-    def content(self):
-        return self._content
-    def anchor(self):
-        return self._anchor
-    def labeled_fields(self):
-        return self._labeled_fields
-    def custom_list(self):
-        return self._custom_list
-    def cls(self):
-        return self._cls
-
-    
-class _CustomView(object):
-    """Base class for custom view classes."""
-    def __init__(self, custom_spec=None):
-        self._custom_spec = custom_spec
-        if custom_spec:
-            self._override()
-        
-    def _export_structured_text(self, text, exporter):
-        content = lcg.Container(lcg.Parser().parse(text))
-        content.set_parent(self.parent())
-        return content.export(exporter)
-    
-    def _export_row_custom(self, exporter, row, n):
-        g = exporter.generator()
-        spec = self._custom_spec
-        labeled = spec.labeled_fields()
-        title = self._row[spec.title()].export()
-        if spec.anchor():
-            name = spec.anchor() % row[self._data.key()[0].id()].export()
-            title = g.link(title, None, name=name)
-        parts = [g.h(title, level=3)]
-        if spec.meta():
-            meta = ''
-            for id in spec.meta():
-                f = self._view.field(id)
-                content = self._export_value(exporter, row, f)
-                if id in labeled:
-                    label = f.label()
-                    content = g.span(label, cls='label') + ": " + content
-                if meta:
-                    meta += ', '
-                meta += g.span(content, cls=id)
-            parts.append(g.div(meta, cls='meta'))
-        if spec.content():
-            src = self._row[spec.content()].export()
-            content = self._export_structured_text(src, exporter)
-            parts.append(g.div(content, cls='content'))
-        return g.div(parts, cls=spec.cls())
-
-    
-class RecordView(pw.ShowForm, _CustomView):
-    """Content element class showing one record of a module."""
-    
-    def _override(self):
-        self.export = lambda e: self._export_row_custom(e, self._row, 0)
-        #self._export_value = lambda e, row, f: self._export_field(e, f)[1]
-        
-    
-class ListView(pw.BrowseForm, _CustomView):
-    """Content element class showing list of records of a module."""
-
-    def _override(self):
-        if self._custom_spec.custom_list():
-            self._wrap_exported_rows = self._wrap_exported_rows_custom
-            self._export_row = self._export_row_custom
-        
-    def _wrap_exported_rows_custom(self, exporter, rows, summary):
-        g = exporter.generator()
-        return g.div(rows, cls="list-view") +"\n"+ \
-               g.div(summary, cls="list-summary")
-    
 
     
 class Message(lcg.TextContent):

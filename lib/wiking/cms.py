@@ -102,7 +102,7 @@ class Application(CookieAuthentication, Application):
                 '_wmi': 'WikingManagementInterface'}
 
     _RIGHTS = {'Documentation': (Roles.ANYONE,),
-               'WikingManagementInterface': (Roles.AUTHOR,)}
+               'WikingManagementInterface': (Roles.AUTHOR, )}
 
     def resolve(self, req):
         try:
@@ -326,7 +326,6 @@ class Mappable(object):
 class CMSModule(PytisModule, RssModule, Panelizable):
     "Base class for all CMS modules."""
     RIGHTS_view = (Roles.ANYONE,)
-    RIGHTS_show = (Roles.ANYONE,)
     RIGHTS_list = (Roles.ANYONE,)
     RIGHTS_add    = RIGHTS_insert = (Roles.ADMIN,)
     RIGHTS_edit   = RIGHTS_update = (Roles.ADMIN,)
@@ -334,6 +333,19 @@ class CMSModule(PytisModule, RssModule, Panelizable):
     RIGHTS_publish = RIGHTS_unpublish = (Roles.ADMIN,)
     RIGHTS_rss = (Roles.ANYONE,)
 
+    def _resolve(self, req):
+        if req.wmi:
+            if len(req.path) == 2: # or req.params.has_key('module'):
+                if req.has_param(self._key):
+                    return self._get_row_by_key(req.param(self._key))
+                else:
+                    return None
+            elif len(req.path) == 3:
+                return self._get_row_by_key(req.path[2])
+            else:
+                raise NotFound()
+        else:
+            return super(CMSModule, self)._resolve(req)
 
 class MappingParents(CMSModule):
     """An auxiliary module for the codebook of mapping parent nodes."""
@@ -504,9 +516,9 @@ class Config(CMSModule):
     WMI_ORDER = 100
     _DEFAULT_THEME = cfg.theme
 
-    def _action_args(self, req):
+    def _resolve(self, req):
         # We always work with just one record.
-        return dict(record=self._record(self._data.get_row(config_id=0)))
+        return self._data.get_row(config_id=0)
     
     def _default_action(self, req, **kwargs):
         return 'edit'
@@ -514,9 +526,6 @@ class Config(CMSModule):
     def _redirect_after_update(self, req, record):
         return self.action_edit(req, record, msg=self._update_msg(record))
     
-    def action_view(self, *args, **kwargs):
-        return self.action_show(*args, **kwargs)
-
     def configure(self, req):
         cfg.allow_wmi_link = True
         row = self._data.get_row(config_id=0)
@@ -813,7 +822,7 @@ class Pages(CMSModule, Mappable):
         sorting = (('tree_order', ASC), ('lang', ASC),)
         layout = ('identifier', 'lang', 'title_', '_content')
         columns = ('title', 'identifier', 'status')
-        cb = pp.CodebookSpec(display='identifier')
+        cb = pp.CodebookSpec(display='title')
         bindings = {'Attachments': pp.BindingSpec(_("Attachments"), 'mapping_id')}
     
     _REFERER = 'identifier'
@@ -855,12 +864,14 @@ class Pages(CMSModule, Mappable):
                 self._data.get_rows(mapping_id=record['mapping_id'].value(),
                                     condition=self._CONTENT_OK)]
 
-    def _handle(self, req):
+    def handle(self, req):
         if not req.wmi and len(req.path) == 2:
             return self._module('Attachments').handle(req)
-        return super(Pages, self)._handle(req)
+        return super(Pages, self).handle(req)
 
     def _resolve(self, req):
+        if req.wmi:
+            return super(Pages, self)._resolve(req)
         if len(req.path) == 1:
             lang = req.param('lang')
             if lang is not None:
@@ -904,6 +915,8 @@ class Pages(CMSModule, Mappable):
         #    return self.action_view(req, record, msg=self._insert_msg(req, record))
 
     def action_view(self, req, record, err=None, msg=None, preview=False):
+        if req.wmi and not preview:
+            return super(Pages, self).action_view(req, record, err=err, msg=msg)
         if req.wmi and preview:
             text = record['_content'].value()
         else:
@@ -930,14 +943,14 @@ class Pages(CMSModule, Mappable):
         if not lang:
             if record['_content'].value() is not None:
                 e = _("Content for this page already exists!")
-                return self.action_show(req, record, err=e)
+                return self.action_view(req, record, err=e)
             cond = pd.AND(pd.NE('_content', pd.Value(pd.String(), None)),
                           pd.NE('lang', record['lang']))
             langs = [(str(row['lang'].value()), lcg.language_name(row['lang'].value())) for row in 
                      self._data.get_rows(mapping_id=record['mapping_id'].value(), condition=cond)]
             if not langs:
                 e = _("Content for this page does not exist in any language.")
-                return self.action_show(req, record, err=e)
+                return self.action_view(req, record, err=e)
             d = pw.SelectionDialog('src_lang', _("Choose source language"), langs,
                                    action='translate', hidden=\
                                    [(id, record[id].value()) for id in ('mapping_id', 'lang')])
@@ -957,7 +970,7 @@ class Pages(CMSModule, Mappable):
             kwargs = dict(err=self._analyze_exception(e))
         else:
             kwargs = dict(msg=_("The changes were published."))
-        return self.action_show(req, record, **kwargs)
+        return self.action_view(req, record, **kwargs)
     RIGHTS_commit = (Roles.ADMIN, Roles.OWNER)
 
     def action_revert(self, req, record):
@@ -967,7 +980,7 @@ class Pages(CMSModule, Mappable):
             kwargs = dict(err=self._analyze_exception(e))
         else:
             kwargs = dict(msg=_("The page contents was reverted to its previous state."))
-        return self.action_show(req, record, **kwargs)
+        return self.action_view(req, record, **kwargs)
     RIGHTS_revert = (Roles.ADMIN, Roles.OWNER)
     
     
@@ -986,11 +999,11 @@ class Attachments(StoredFileModule, CMSModule):
             Field('page_attachment_id',
                   computer=Computer(self._page_attachment_id, depends=('attachment_id', 'lang'))),
             Field('attachment_id'),
-            Field('mapping_id', _("Page"), codebook='Mapping', editable=ONCE),
+            Field('mapping_id', codebook='Mapping', editable=ONCE),
             Field('identifier'),
             Field('lang', _("Language"), codebook='Languages', 
                   selection_type=CHOICE, editable=ONCE, value_column='lang'),
-            Field('page_id'),
+            Field('page_id', _("Page"), codebook='Pages'),
             Field('file', _("File"), virtual=True, editable=ALWAYS,
                   type=pd.Binary(not_null=True, maxlen=cfg.upload_limit),
                   computer=self._file_computer('file', '_filename', origname='filename',
@@ -1023,8 +1036,7 @@ class Attachments(StoredFileModule, CMSModule):
                   computer=self._filename_computer('dbname', 'attachment_id', 'ext')),
             )
         layout = ('file', 'title', 'description', 'listed')
-        columns = ('filename', 'title', 'bytesize', 'mime_type', 'listed',
-                   'mapping_id')
+        columns = ('filename', 'title', 'bytesize', 'mime_type', 'listed', 'page_id')
         sorting = (('identifier', ASC), ('filename', ASC))
         def _ext(self, row):
             if row['filename'].value() is None:
@@ -1069,15 +1081,15 @@ class Attachments(StoredFileModule, CMSModule):
     
     def _link_provider(self, req, row, cid, **kwargs):
         if cid == 'file':
-            cid = 'filename'
-            kwargs['action'] = 'view'
+            return make_uri(self._base_uri(req) +'/'+ row['filename'].export(),
+                            (self._key, row[self._key].export()))
         return super(Attachments, self)._link_provider(req, row, cid, **kwargs)
 
     def _redirect_to_page(self, req, record):
         return req.redirect('/_wmi/Pages/' + record['page_id'].value())
         #m = self._module('Pages')
         #record = m.record(record['page_id'])
-        #return m.action_show(req, record, msg=self._update_msg(record))
+        #return m.action_view(req, record, msg=self._update_msg(record))
     def _redirect_after_insert(self, req, record):
         return self._redirect_to_page(req, record)
     def _redirect_after_delete(self, req, record):
@@ -1086,11 +1098,18 @@ class Attachments(StoredFileModule, CMSModule):
         return self._redirect_to_page(req, record)
 
     def _resolve(self, req):
-        if len(req.path) == 2:
-            row = self._data.get_row(identifier=req.path[0], filename=req.path[1])
-            if row:
-                return row
-        raise NotFound()
+        if req.wmi:
+            if len(req.path) == 3 and req.has_param(self._key):
+                row = self._data.get_row(**{self._key: req.param(self._key)})
+                if row:
+                    return row
+            return super(Attachments, self)._resolve(req)
+        else:
+            if len(req.path) == 2:
+                row = self._data.get_row(identifier=req.path[0], filename=req.path[1])
+                if row:
+                    return row
+            raise NotFound()
 
     def attachments(self, page):
         def resource(row):
@@ -1102,8 +1121,11 @@ class Attachments(StoredFileModule, CMSModule):
                 self._data.get_rows(mapping_id=page['mapping_id'].value(),
                                     lang=page['lang'].value())]
                 
-    def action_view(self, req, record):
-        return (str(record['mime_type'].value()), record['file'].value().buffer())
+    def action_view(self, req, record, **kwargs):
+        if req.wmi and req.path[2] != record['filename'].value():
+            return super(Attachments, self).action_view(req, record, **kwargs)
+        else:
+            return (str(record['mime_type'].value()), record['file'].value().buffer())
 
     
 class News(CMSModule, Mappable):
@@ -1147,8 +1169,8 @@ class News(CMSModule, Mappable):
     RIGHTS_add = RIGHTS_insert = (Roles.CONTRIBUTOR,)
     RIGHTS_edit = RIGHTS_update = (Roles.ADMIN, Roles.OWNER)
     RIGHTS_remove = RIGHTS_delete = (Roles.ADMIN,)
-    _CUSTOM_VIEW = CustomViewSpec('title', meta=('timestamp', 'author'), content='content',
-                                  anchor="item-%s", custom_list=True)
+    _LIST_LAYOUT = pw.ListLayout('title', meta=('timestamp', 'author'),  content='content',
+                                 anchor="item-%s")
     WMI_SECTION = WikingManagementInterface.SECTION_CONTENT
     WMI_ORDER = 300
         
@@ -1195,8 +1217,8 @@ class Planner(News):
             end = row['end_date'].value()
             if end and end <= row['start_date'].value():
                 return ("end_date", _("End date precedes start date"))
-    _CUSTOM_VIEW = CustomViewSpec('date_title', meta=('author', 'timestamp'), content='content',
-                                  anchor="item-%s", custom_list=True)
+    _LIST_LAYOUT = pw.ListLayout('date_title', meta=('author', 'timestamp'), content='content',
+                                 anchor="item-%s")
     _RSS_TITLE_COLUMN = 'date_title'
     _RSS_LINK_COLUMN = 'title'
     _RSS_DATE_COLUMN = None
@@ -1336,9 +1358,12 @@ class Stylesheets(CMSModule, Stylesheets, Mappable):
     def stylesheets(self):
         return [r['identifier'].value() for r in self._data.get_rows(active=True)]
         
-    def action_view(self, req, record, msg=None):
-        content = record['content'].value() or self._find_file(record['identifier'].value())
-        return ('text/css', self._substitute(content))
+    def action_view(self, req, record, **kwargs):
+        if req.wmi:
+            return super(Stylesheets, self).action_view(req, record, **kwargs)
+        else:
+            content = record['content'].value() or self._find_file(record['identifier'].value())
+            return ('text/css', self._substitute(content))
 
 
 class _Users(CMSModule):

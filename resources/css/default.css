@@ -349,9 +349,9 @@ form.browse-form table td, form.browse-form table th {
     white-space: nowrap;
     border: 1px solid $color.border;
 }
-form.browse-form table td {  background: $color.table-cell; }
-form.browse-form table tr.even td {  background: $color.table-cell2; }
-form.browse-form table th {  background: $color.heading-bg; }
+form.browse-form table td { background: $color.table-cell; }
+form.browse-form table tr.even td { background: $color.table-cell2; }
+form.browse-form table th { background: $color.heading-bg; }
 form.browse-form table td pre {
     background-color: transparent;
     border: none;
@@ -371,6 +371,23 @@ form.browse-form-controls span.limit {
 }
 form.browse-form-controls input.prev {
     margin-left: 1em;
+}
+
+form.browse-form div.list-item {
+    margin: 1.1em 0;
+}
+form.browse-form div.list-item h3 {
+    margin-bottom: 0.2em;
+    font-size: 1.2em;
+}
+form.browse-form div.list-item div.meta {
+    font-style: italic;
+    margin: 0.2em 0;
+    color: $color.meta-fg;
+    padding: 0.1em 0;
+    background: $color.meta-bg;
+}
+form.browse-form div.list-item div.content {
 }
 
 form.show-form, form.edit-form { 
@@ -441,23 +458,6 @@ p.actions a.inactive, p.actions a.inactive:hover {
     color: $color.button-inactive-fg;
     background: $color.button-inactive;
     border-color: $color.button-inactive-border;
-}
-
-div.list-view div.view-item {
-    margin: 1em 0;
-}
-div.view-item h3 {
-    margin-bottom: 0.2em;
-    font-size: 1.2em;
-}
-div.view-item div.meta {
-    font-style: italic;
-    margin: 0.2em 0;
-    color: $color.meta-fg;
-    padding: 0.1em 0;
-    background: $color.meta-bg;
-}
-div.view-item div.content {
 }
 
 /* LCG Formatter styles */

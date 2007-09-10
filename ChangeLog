@@ -1,13 +1,30 @@
 2007-09-10  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/db.py (PytisModule._action_args): WMI resolution
+	moved to `CMSModule._resolve()'.  Use `pytis.web.ListView' instead
+	of the previous implementation from `util' and define the layout
+	by `_LIST_LAYOUT', not `_CUSTOM_VIEW'.  Always use the action
+	`view' instead of combining `view' and `show'.
+
+	* lib/wiking/util.py (ListView): Moved to `pytis.web'.  
+	(ActionMenu): Add referer to uri explicitly.
+
 	* lib/wiking/cms.py: `_auth_check()' -> `_auth_check_password()'.
 	Allow page owner assignment.  Assign all privilegs to page owner.
+	Always use the action `view' instead of combining `view' and
+	`show'.  `_CUSTOM_VIEW' replaced by `_LIST_LAYOUT'.
+	(Attachments): Link to page, not the mapping item in the table.
+	Fixed attachment download filename within WMI.
+	(CMSModule._resolve): Define the WMI specific resolution here.
 
 	* lib/wiking/modules.py: `_auth_check()' ->
-	`_auth_check_password()'.
-	
+	`_auth_check_password()'.  Always use the action `view' instead of
+	combining `view' and `show'.
+
 	* sql/wiking.sql: Added `owner' column for each mapping item.
 
+	* resources/css/default.css: Updated.
+	
 2007-09-07  Tomas Cerha  <cerha@brailcom.org>
 
 	* resources/css/default.css: Updated.
