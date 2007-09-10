@@ -142,7 +142,7 @@ class Application(CookieAuthentication, Application):
     def _auth_user(self, login):
         return self._module('Users').user(login)
 
-    def _auth_check(self, user, password):
+    def _auth_check_password(self, user, password):
         return password == user.data()['password'].value()
 
     def authorize(self, req, module, action=None, record=None, **kwargs):
@@ -386,11 +386,11 @@ class Mapping(CMSModule, Publishable, Mappable):
                   descr=_("Enter a number denoting the item order in the menu or leave the field "
                           "blank if you don't want this item to appear in the menu.")),
             Field('tree_order', _("Tree level"), type=pd.TreeOrder()),
+            Field('owner', _("Owner"), codebook='Users', not_null=False),
             )
         sorting = (('tree_order', ASC), ('identifier', ASC))
         bindings = {'Pages': pp.BindingSpec(_("Pages"), 'mapping_id')}
-        columns = ('identifier', 'modname', 'published', 'private', 'parent', 'ord')
-        layout = ('identifier', 'parent', 'modname', 'published', 'private', 'ord')
+        columns = layout = ('identifier', 'modname', 'parent','ord', 'published','private','owner')
         cb = pp.CodebookSpec(display='identifier')
     _REFERER = 'identifier'
     _EXCEPTION_MATCHERS = (
@@ -794,6 +794,7 @@ class Pages(CMSModule, Mappable):
             Field('status', _("Status"), virtual=True,
                   computer=Computer(self._status, depends=('content', '_content'))),
             Field('tree_order', _("Tree level"), type=pd.TreeOrder()),
+            Field('owner'),
             )
         def _status(self, row):
             if not row['published'].value():
@@ -822,6 +823,8 @@ class Pages(CMSModule, Mappable):
          CMSModule._EXCEPTION_MATCHERS
     _LIST_BY_LANGUAGE = True
     _RELATED_MODULES = ('Attachments',)
+    _OWNER_COLUMN = 'owner'
+    _SUPPLY_OWNER = False
     
     _SUBMIT_BUTTONS = ((_("Save"), None), (_("Save and publish"), 'commit'))
     _INSERT_MSG = _("New page was successfully created. Don't forget to publish it when you are "
@@ -841,7 +844,7 @@ class Pages(CMSModule, Mappable):
                        enabled=lambda r: r['_content'].value() is None),
                 )
     RIGHTS_add = RIGHTS_insert = (Roles.AUTHOR,)
-    RIGHTS_edit = RIGHTS_update = (Roles.AUTHOR,)
+    RIGHTS_edit = RIGHTS_update = (Roles.AUTHOR, Roles.OWNER)
     WMI_SECTION = WikingManagementInterface.SECTION_CONTENT
     WMI_ORDER = 200
 
@@ -881,7 +884,7 @@ class Pages(CMSModule, Mappable):
     def _validate(self, req, record):
         result = super(Pages, self)._validate(req, record)
         if result is None and req.params.has_key('commit'):
-            if not Roles.check(req, (Roles.ADMIN,)):
+            if not (Roles.check(req, (Roles.ADMIN,)) or self.check_owner(req.user(), record)):
                 return _("You don't have sufficient privilegs for this action.") +' '+ \
                        _("Save the page without publishing and ask the administrator to publish "
                          "your changes.")
@@ -920,7 +923,7 @@ class Pages(CMSModule, Mappable):
 
     def action_preview(self, req, record, **kwargs):
         return self.action_view(req, record, preview=True, **kwargs)
-    RIGHTS_preview = (Roles.AUTHOR,)
+    RIGHTS_preview = (Roles.AUTHOR, Roles.OWNER)
 
     def action_translate(self, req, record):
         lang = req.param('src_lang')
@@ -945,7 +948,7 @@ class Pages(CMSModule, Mappable):
             for k in ('_content','title'):
                 req.params[k] = row[k].value()
             return self.action_edit(req, record)
-    RIGHTS_translate = (Roles.AUTHOR,)
+    RIGHTS_translate = (Roles.AUTHOR, Roles.OWNER)
 
     def action_commit(self, req, record):
         try:
@@ -955,7 +958,7 @@ class Pages(CMSModule, Mappable):
         else:
             kwargs = dict(msg=_("The changes were published."))
         return self.action_show(req, record, **kwargs)
-    RIGHTS_commit = (Roles.ADMIN,)
+    RIGHTS_commit = (Roles.ADMIN, Roles.OWNER)
 
     def action_revert(self, req, record):
         try:
@@ -965,7 +968,7 @@ class Pages(CMSModule, Mappable):
         else:
             kwargs = dict(msg=_("The page contents was reverted to its previous state."))
         return self.action_show(req, record, **kwargs)
-    RIGHTS_revert = (Roles.ADMIN,)
+    RIGHTS_revert = (Roles.ADMIN, Roles.OWNER)
     
     
 class Attachments(StoredFileModule, CMSModule):
@@ -1060,6 +1063,9 @@ class Attachments(StoredFileModule, CMSModule):
          _("Attachment of the same filename already exists for this page.")),)
     WMI_SECTION = WikingManagementInterface.SECTION_CONTENT
     WMI_ORDER = 220
+    RIGHTS_add = RIGHTS_insert = (Roles.AUTHOR, Roles.OWNER)
+    RIGHTS_edit = RIGHTS_update = (Roles.AUTHOR, Roles.OWNER)
+    RIGHTS_remove = RIGHTS_delete = (Roles.AUTHOR, Roles.OWNER)
     
     def _link_provider(self, req, row, cid, **kwargs):
         if cid == 'file':

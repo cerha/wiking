@@ -1,5 +1,30 @@
 -- Wiking database creation script. --
 
+CREATE TABLE users (
+	uid serial PRIMARY KEY,
+	login varchar(32) UNIQUE NOT NULL,
+	password varchar(32) NOT NULL,
+	firstname text NOT NULL,
+	surname text NOT NULL,
+	nickname text,
+	user_ text NOT NULL,
+	email text NOT NULL,
+	phone text,
+	address text,
+	uri text,
+	enabled boolean NOT NULL DEFAULT 'FALSE',
+	contributor boolean NOT NULL DEFAULT 'FALSE',
+	author boolean NOT NULL DEFAULT 'FALSE',
+	admin boolean NOT NULL DEFAULT 'FALSE',
+	since timestamp NOT NULL DEFAULT current_timestamp(0),
+	session_key text,
+	session_expire timestamp
+);
+ALTER TABLE users ALTER COLUMN since 
+SET DEFAULT current_timestamp(0) AT TIME ZONE 'GMT';
+
+-------------------------------------------------------------------------------
+
 CREATE TABLE _mapping (
 	mapping_id serial PRIMARY KEY,
 	parent integer REFERENCES _mapping,
@@ -7,6 +32,7 @@ CREATE TABLE _mapping (
 	modname text NOT NULL,
 	published boolean NOT NULL DEFAULT 'FALSE',
 	private boolean NOT NULL DEFAULT 'FALSE',
+	owner int REFERENCES users,
 	ord int,
 	tree_order text
 );
@@ -26,9 +52,9 @@ CREATE OR REPLACE VIEW mapping AS SELECT * FROM _mapping;
 CREATE OR REPLACE RULE mapping_insert AS
   ON INSERT TO mapping DO INSTEAD (
      INSERT INTO _mapping 
-        (parent, identifier, modname, published, private, ord)
+        (parent, identifier, modname, published, private, owner, ord)
      VALUES
-        (new.parent, new.identifier, new.modname, new.published, new.private, new.ord);
+        (new.parent, new.identifier, new.modname, new.published, new.private, new.owner, new.ord);
      UPDATE _mapping SET tree_order = _mapping_tree_order(mapping_id)
      WHERE identifier = new.identifier;
 );
@@ -41,6 +67,7 @@ CREATE OR REPLACE RULE mapping_update AS
 	modname = new.modname,
 	published = new.published,
 	private = new.private,
+	owner = new.owner,
 	ord = new.ord
     WHERE _mapping.mapping_id = old.mapping_id;
     UPDATE _mapping SET	tree_order = _mapping_tree_order(mapping_id);
@@ -71,31 +98,6 @@ CREATE TABLE titles (
 
 -------------------------------------------------------------------------------
 
-CREATE TABLE users (
-	uid serial PRIMARY KEY,
-	login varchar(32) UNIQUE NOT NULL,
-	password varchar(32) NOT NULL,
-	firstname text NOT NULL,
-	surname text NOT NULL,
-	nickname text,
-	user_ text NOT NULL,
-	email text NOT NULL,
-	phone text,
-	address text,
-	uri text,
-	enabled boolean NOT NULL DEFAULT 'FALSE',
-	contributor boolean NOT NULL DEFAULT 'FALSE',
-	author boolean NOT NULL DEFAULT 'FALSE',
-	admin boolean NOT NULL DEFAULT 'FALSE',
-	since timestamp NOT NULL DEFAULT current_timestamp(0),
-	session_key text,
-	session_expire timestamp
-);
-ALTER TABLE users ALTER COLUMN since 
-SET DEFAULT current_timestamp(0) AT TIME ZONE 'GMT';
-
--------------------------------------------------------------------------------
-
 CREATE TABLE _pages (
 	mapping_id integer NOT NULL REFERENCES _mapping ON DELETE CASCADE,
 	lang char(2) NOT NULL REFERENCES languages(lang),
@@ -106,7 +108,7 @@ CREATE TABLE _pages (
 
 CREATE OR REPLACE VIEW pages AS 
 SELECT m.mapping_id ||'.'|| l.lang as page_id, m.mapping_id, l.lang,
-       m.identifier, m.parent, m.tree_order, m.published, 
+       m.identifier, m.parent, m.tree_order, m.published, m.owner,
        coalesce(t.title, m.identifier) as title,  t.title as title_, 
        p._content, p.content
 FROM _mapping m CROSS JOIN languages l
@@ -116,8 +118,8 @@ WHERE m.modname = 'Pages';
 
 CREATE OR REPLACE RULE pages_insert AS
   ON INSERT TO pages DO INSTEAD (
-     INSERT INTO mapping (identifier, modname, published, private)
-     VALUES (new.identifier, 'Pages', new.published, 'f');
+     INSERT INTO mapping (identifier, modname, published, private, owner)
+     VALUES (new.identifier, 'Pages', new.published, 'f', new.owner);
      INSERT INTO _pages (mapping_id, lang, _content, content)
      VALUES ((SELECT mapping_id FROM _mapping WHERE identifier=new.identifier),
              new.lang, new._content, new.content);

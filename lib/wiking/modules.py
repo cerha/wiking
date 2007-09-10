@@ -268,7 +268,7 @@ class CookieAuthentication(object):
 
     This class implements cookie based authentication, but is still neutral to authentication data
     source.  Any possible source of authentication data may be used by implementing the methods
-    '_auth_user()' and '_auth_check()'.  See their documentation for more information.
+    '_auth_user()' and '_auth_check_password()'.  See their documentation for more information.
 
     This class may be used as a Mix-in class derived by the application which wishes to use it.
 
@@ -282,8 +282,9 @@ class CookieAuthentication(object):
 
         This method may be used to retieve authentication data from any source, such as database
         table, file, LDAP server etc.  This should return the user corresponding to given login
-        name if it exists.  Further password checking is performed later by the '_auth_check()'
-        method.  None may be returned if no user exists for given login name.
+        name if it exists.  Further password checking is performed later by the
+        '_auth_check_password()' method.  None may be returned if no user exists for given login
+        name.
 
         """
         return None
@@ -299,7 +300,7 @@ class CookieAuthentication(object):
         """
         return self._auth_user(login)
         
-    def _auth_check(self, user, password):
+    def _auth_check_password(self, user, password):
         """Check authentication password for given user.
 
         Arguments:
@@ -322,7 +323,7 @@ class CookieAuthentication(object):
             if not password:
                 raise AuthenticationError(_("Enter your password, please!"))
             user = self._auth_get_user(login, req)
-            if not user or not self._auth_check(user, password):
+            if not user or not self._auth_check_password(user, password):
                 raise AuthenticationError(_("Invalid login!"))
             assert isinstance(user, User)
             # Login succesfull

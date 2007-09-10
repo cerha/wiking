@@ -1,3 +1,13 @@
+2007-09-10  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/cms.py: `_auth_check()' -> `_auth_check_password()'.
+	Allow page owner assignment.  Assign all privilegs to page owner.
+
+	* lib/wiking/modules.py: `_auth_check()' ->
+	`_auth_check_password()'.
+	
+	* sql/wiking.sql: Added `owner' column for each mapping item.
+
 2007-09-07  Tomas Cerha  <cerha@brailcom.org>
 
 	* resources/css/default.css: Updated.
