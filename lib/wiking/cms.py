@@ -341,12 +341,25 @@ class CMSModule(PytisModule, RssModule, Panelizable):
                 else:
                     return None
             elif len(req.path) == 3:
-                return self._get_row_by_key(req.path[2])
+                return self._get_referered_row(req, req.path[2])
             else:
                 raise NotFound()
         else:
             return super(CMSModule, self)._resolve(req)
 
+    def _get_row_by_key(self, value):
+        if isinstance(value, tuple):
+            value = value[-1]
+        type = self._data.key()[0].type()
+        v, error = type.validate(value)
+        if error:
+            raise NotFound()
+        row = self._data.row((v,))
+        if row is None:
+            raise NotFound()
+        return row
+
+        
 class MappingParents(CMSModule):
     """An auxiliary module for the codebook of mapping parent nodes."""
     class Spec(Specification):
@@ -1067,6 +1080,7 @@ class Attachments(StoredFileModule, CMSModule):
         pass
             
     _STORED_FIELDS = (('file', '_filename'),)
+    _REFERER = 'filename'
     _LIST_BY_LANGUAGE = True
     _SEQUENCE_FIELDS = (('attachment_id', '_attachments_attachment_id_seq'),)
     _NON_LAYOUT_FIELDS = ('mapping_id', 'lang')
@@ -1081,8 +1095,7 @@ class Attachments(StoredFileModule, CMSModule):
     
     def _link_provider(self, req, row, cid, **kwargs):
         if cid == 'file':
-            return make_uri(self._base_uri(req) +'/'+ row['filename'].export(),
-                            (self._key, row[self._key].export()))
+            return make_uri(self._base_uri(req) +'/'+ row['filename'].export(), download=1)
         return super(Attachments, self)._link_provider(req, row, cid, **kwargs)
 
     def _redirect_to_page(self, req, record):
@@ -1122,7 +1135,7 @@ class Attachments(StoredFileModule, CMSModule):
                                     lang=page['lang'].value())]
                 
     def action_view(self, req, record, **kwargs):
-        if req.wmi and req.path[2] != record['filename'].value():
+        if req.wmi and not req.param('download'):
             return super(Attachments, self).action_view(req, record, **kwargs)
         else:
             return (str(record['mime_type'].value()), record['file'].value().buffer())
@@ -1177,8 +1190,7 @@ class News(CMSModule, Mappable):
     def _link_provider(self, req, row, cid, target=None, **kwargs):
         uri = self._base_uri(req)
         if not req.wmi and cid == 'title' and uri:
-            anchor = '#item-'+ row[self._referer].export()
-            return make_uri(uri, **kwargs) + anchor
+            return make_uri(uri, **kwargs) + '#item-'+ row[self._referer].export()
         elif not issubclass(target, Panel):
             return super(News, self)._link_provider(req, row, cid, target=target, **kwargs)
 
@@ -1313,14 +1325,19 @@ class Images(StoredFileModule, CMSModule, Mappable):
     WMI_ORDER = 500
         
     def _link_provider(self, req, row, cid, **kwargs):
-        if cid == 'file':
-            cid = 'filename'
-            kwargs['action'] = req.wmi and 'orig' or 'view'
-        if cid == 'thumbnail':
-            cid = 'filename'
-            kwargs['action'] = 'thumbnail'
+        action_mapping = {'filename': None, 'file': 'orig', 'thumbnail': 'thumbnail'}
+        if action_mapping.has_key(cid):
+            return make_uri(self._base_uri(req) +'/'+ row['filename'].export(),
+                            action=action_mapping[cid])
         return super(Images, self)._link_provider(req, row, cid, **kwargs)
 
+    def _resolve(self, req):
+        if len(req.path) == (req.wmi and 3 or 2):
+            row = self._data.get_row(filename=req.path[-1])
+            if row:
+                return row
+        return super(Images, self)._resolve(req)
+        
     def _image(self, record, id):
         mime = "image/" + str(record['format'].value())
         data = record[id].value().buffer()

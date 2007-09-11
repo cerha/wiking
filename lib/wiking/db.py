@@ -241,20 +241,15 @@ class PytisModule(Module, ActionHandler):
             if req.wmi:
                 uri = '/_wmi/' + self.name()
             else:
-                uri = req.uri
-            return ActionMenu(uri, actions, record, args=args,
-                              referer=req.wmi and self._key or self._referer)
+                uri = '/' + req.path[0]
+            return ActionMenu(uri, actions, record, args=args, referer=self._referer)
 
     def _link_provider(self, req, row, cid, target=None, **kwargs):
         if cid == self._title_column or cid == self._key:
             uri = self._base_uri(req)
             if not uri:
                 return None
-            elif req.wmi:
-                referer = self._key
-            else:
-                referer = self._referer
-            return make_uri(uri +'/'+ row[referer].export(), **kwargs)
+            return make_uri(uri +'/'+ row[self._referer].export(), **kwargs)
         if self._links.has_key(cid):
             try:
                 module = self._module(self._links[cid])
@@ -275,25 +270,13 @@ class PytisModule(Module, ActionHandler):
             kwargs['submit'] = self._SUBMIT_BUTTONS
         elif issubclass(form, pw.BrowseForm):
             kwargs['req'] = req
-        if issubclass(form, pw.ListView) and not req.wmi:
+        if issubclass(form, pw.ListView) and not req.wmi and self._LIST_LAYOUT:
             kwargs['layout'] = self._LIST_LAYOUT
         if action is not None:
             hidden += (('action', action),)
         return form(self._data, self._view, self._resolver, handler=req.uri, name=self.name(),
                     hidden=hidden, **kwargs)
     
-    def _get_row_by_key(self, value):
-        if isinstance(value, tuple):
-            value = value[-1]
-        type = self._data.key()[0].type()
-        v, error = type.validate(value)
-        if error:
-            raise NotFound()
-        row = self._data.row((v,))
-        if row is None:
-            raise NotFound()
-        return row
-
     def _default_action(self, req, record=None):
         if record is None:
             return 'list'
@@ -314,20 +297,25 @@ class PytisModule(Module, ActionHandler):
         if len(req.path) < self._REFERER_PATH_LEVEL:
             return None
         elif len(req.path) == self._REFERER_PATH_LEVEL:
-            referer = req.path[self._REFERER_PATH_LEVEL-1]
-            if not isinstance(self._referer_type, pd.String):
-                value, error = self._referer_type.validate(referer)
-                if error is not None:
-                    raise NotFound()
-                else:
-                    referer = value.value()
-            row = self._data.get_row(**{self._referer: referer})
-            if row is None:
-                raise NotFound()
-            return row
+            return self._get_referered_row(req, req.path[self._REFERER_PATH_LEVEL-1])
         else:
             raise NotFound()
 
+    def _get_referered_row(self, req, value):
+        if not isinstance(self._referer_type, pd.String):
+            v, error = self._referer_type.validate(value)
+            if error is not None:
+                raise NotFound()
+            else:
+                value = v.value()
+        kwargs = {self._referer: value}
+        if self._LIST_BY_LANGUAGE:
+            kwargs['lang'] = req.prefered_language()
+        row = self._data.get_row(**kwargs)
+        if row is None:
+            raise NotFound()
+        return row
+        
     def check_owner(self, user, record):
         if self._OWNER_COLUMN is not None:
             owner = record[self._OWNER_COLUMN].value()
@@ -430,8 +418,7 @@ class PytisModule(Module, ActionHandler):
         if req.wmi:
             help = lcg.p(self._view.help() or '', ' ', lcg.link('/_doc/'+self.name(), _("Help")))
             content += (help,)
-        content += (self._form(pw.ListView, req, condition=self._condition(req, lang=lang),
-                               layout=(not req.wmi and self._LIST_LAYOUT or None)),
+        content += (self._form(pw.ListView, req, condition=self._condition(req, lang=lang)),
                     self._action_menu(req))
         if isinstance(self, RssModule) and not req.wmi and self._RSS_TITLE_COLUMN and lang:
             content += (lcg.p(_("An RSS channel is available for this section:"), ' ',

@@ -1,3 +1,13 @@
+2007-09-11  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/db.py: WMI dependant code reduced.
+
+	* lib/wiking/cms.py: Resolve records by referer even in WMI.
+
+	* lib/wiking/util.py (make_uri): Minor improvement.
+
+	* resources/css/default.css: Updated.
+	
 2007-09-10  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/db.py (PytisModule._action_args): WMI resolution

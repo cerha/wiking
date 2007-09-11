@@ -409,12 +409,12 @@ form.edit-form div.help {
     color: $color.help;
     margin-bottom: 0.4em;
 }
-form.show-form fieldset.body input, form.show-form textarea { 
+form.show-form fieldset.group input, form.show-form textarea { 
     background: $color.frame-bg;
     border: 0px;
     font-size: 1em;
 }
-form.edit-form fieldset.body input, form.edit-form textarea,
+form.edit-form fieldset.group input, form.edit-form textarea,
 form.edit-form select, #login, #password { 
     border: 1px solid $color.border;
 }

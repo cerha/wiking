@@ -809,8 +809,9 @@ def cmp_versions(v1, v2):
 def make_uri(base, *args, **kwargs):
     """Return a URI constructed from given base URI and args."""
     args += tuple(kwargs.items())
-    if args:
-        return base + '?' + ';'.join(["%s=%s" % (k,v) for k,v in args if v is not None])
+    argstr = ';'.join(["%s=%s" % (k,v) for k,v in args if v is not None])
+    if argstr:
+        return base + '?' + argstr
     else:
         return base
 
