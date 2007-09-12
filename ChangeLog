@@ -1,3 +1,17 @@
+2007-09-12  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/cms.py: Added support for correct link name
+	substitution in WMI page preview.  Display page management
+	controls outside WMI.
+
+	* lib/wiking/db.py: Allow resolution by key to support forms
+	outside WMI.  Improved actin menu display outside WMI.
+
+	* lib/wiking/util.py (ActionMenu): Added support for alternative
+	appearance outside WMI.
+
+	* resources/css/default.css: Updated.
+	
 2007-09-11  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/db.py: WMI dependant code reduced.

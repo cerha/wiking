@@ -231,7 +231,7 @@ class PytisModule(Module, ActionHandler):
         else:
             return self._LIST_ACTIONS
     
-    def _action_menu(self, req, record=None, actions=None, args=None, uri=None):
+    def _action_menu(self, req, record=None, actions=None, **kwargs):
         actions = [action for action in actions or self._actions(req, record)
                    if isinstance(action, Action) and \
                    self._application.authorize(req, self, action=action.name(), record=record)]
@@ -241,8 +241,9 @@ class PytisModule(Module, ActionHandler):
             if req.wmi:
                 uri = '/_wmi/' + self.name()
             else:
-                uri = '/' + req.path[0]
-            return ActionMenu(uri, actions, record, args=args, referer=self._referer)
+                uri = '/' + '/'.join(req.path[:self._REFERER_PATH_LEVEL-1])
+                kwargs['separate'] = True
+            return ActionMenu(uri, actions, self._referer, record, **kwargs)
 
     def _link_provider(self, req, row, cid, target=None, **kwargs):
         if cid == self._title_column or cid == self._key:
@@ -294,12 +295,27 @@ class PytisModule(Module, ActionHandler):
     
     def _resolve(self, req):
         # Returns Row, None or raises HttpError.
-        if len(req.path) < self._REFERER_PATH_LEVEL:
-            return None
-        elif len(req.path) == self._REFERER_PATH_LEVEL:
+        pathlen = len(req.path)
+        if pathlen == self._REFERER_PATH_LEVEL:
             return self._get_referered_row(req, req.path[self._REFERER_PATH_LEVEL-1])
+        elif pathlen == self._REFERER_PATH_LEVEL-1 and req.has_param(self._key):
+            return self._get_row_by_key(req.param(self._key))
+        elif pathlen < self._REFERER_PATH_LEVEL:
+            return None
         else:
             raise NotFound()
+
+    def _get_row_by_key(self, value):
+        if isinstance(value, tuple):
+            value = value[-1]
+        type = self._data.key()[0].type()
+        v, error = type.validate(value)
+        if error:
+            raise NotFound()
+        row = self._data.row((v,))
+        if row is None:
+            raise NotFound()
+        return row
 
     def _get_referered_row(self, req, value):
         if not isinstance(self._referer_type, pd.String):
@@ -418,13 +434,13 @@ class PytisModule(Module, ActionHandler):
         if req.wmi:
             help = lcg.p(self._view.help() or '', ' ', lcg.link('/_doc/'+self.name(), _("Help")))
             content += (help,)
-        content += (self._form(pw.ListView, req, condition=self._condition(req, lang=lang)),
-                    self._action_menu(req))
+        content += (self._form(pw.ListView, req, condition=self._condition(req, lang=lang)),)
         if isinstance(self, RssModule) and not req.wmi and self._RSS_TITLE_COLUMN and lang:
             content += (lcg.p(_("An RSS channel is available for this section:"), ' ',
                               lcg.link(req.uri +'.'+ lang +'.rss', lcg.join((lcg.Title('news'), 'RSS')),
                                        type='application/rss+xml'), " (",
                               lcg.link('_doc/rss', _("more about RSS")), ")"),)
+        content += (self._action_menu(req),)
         return self._document(req, content, lang=lang, variants=variants, err=err, msg=msg)
 
     def action_view(self, req, record, err=None, msg=None):

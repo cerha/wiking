@@ -302,14 +302,15 @@ class WikingManagementInterface(Module, RequestHandler):
             return module.handle(req)
 
     def menu(self, req):
-        if not req.wmi:
-            return super(WikingManagementInterface, self).menu(req)
         modules = _modules()
         return [MenuItem(req.path[0] + '/' + section, title, descr=descr,
                          submenu=[MenuItem(req.path[0] + '/' + m.name(), m.title(),
                                            descr=m.descr(), order=self._wmi_order(m))
                                   for m in self._wmi_modules(modules, section)])
-                for section, title, descr in self._SECTIONS]
+                for section, title, descr in self._SECTIONS] + \
+               [MenuItem('__site_menu__', '', hidden=True,
+                         submenu=self._module('Mapping').menu(req))]
+    
      
 
 class Mappable(object):
@@ -346,18 +347,6 @@ class CMSModule(PytisModule, RssModule, Panelizable):
                 raise NotFound()
         else:
             return super(CMSModule, self)._resolve(req)
-
-    def _get_row_by_key(self, value):
-        if isinstance(value, tuple):
-            value = value[-1]
-        type = self._data.key()[0].type()
-        v, error = type.validate(value)
-        if error:
-            raise NotFound()
-        row = self._data.row((v,))
-        if row is None:
-            raise NotFound()
-        return row
 
         
 class MappingParents(CMSModule):
@@ -839,6 +828,7 @@ class Pages(CMSModule, Mappable):
         bindings = {'Attachments': pp.BindingSpec(_("Attachments"), 'mapping_id')}
     
     _REFERER = 'identifier'
+    _REFERER_PATH_LEVEL = 1
     _EXCEPTION_MATCHERS = (
         ('duplicate key violates unique constraint "_pages_mapping_id_key"',
          _("The page already exists in given language.")),) + \
@@ -925,12 +915,17 @@ class Pages(CMSModule, Mappable):
     
     #def _redirect_after_insert(self, req, record):
         #if not req.wmi:
-        #    return self.action_view(req, record, msg=self._insert_msg(req, record))
+        #    return self.action_view(req, record, msg=self._insert_msg(record))
+    def _redirect_after_update(self, req, record):
+        if not req.wmi:
+            return self.action_preview(req, record, msg=self._update_msg(record))
+        else:
+            return super(Pages, self)._redirect_after_update(req, record)
 
     def action_view(self, req, record, err=None, msg=None, preview=False):
         if req.wmi and not preview:
             return super(Pages, self).action_view(req, record, err=err, msg=msg)
-        if req.wmi and preview:
+        if preview:
             text = record['_content'].value()
         else:
             text = record['content'].value()
@@ -945,6 +940,12 @@ class Pages(CMSModule, Mappable):
             content = lcg.SectionContainer(sections, toc_depth=0)
         else:
             content = attachments_section
+        actions = self._DEFAULT_ACTIONS_FIRST + self._ACTIONS[:-2]
+        if req.wmi:
+            actions += (Action(_("Back"), 'view'), self._DEFAULT_ACTIONS_LAST[1])
+        menu = self._action_menu(req, record, actions=actions, separate=True)
+        if menu:
+            content = lcg.Container((content, menu))
         return self._document(req, content, record, resources=attachments, err=err, msg=msg)
 
     def action_preview(self, req, record, **kwargs):

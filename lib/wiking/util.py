@@ -394,18 +394,20 @@ class WikingNode(lcg.ContentNode):
 class ActionMenu(lcg.Content):
     """A menu of actions related to one record or the whole module."""
     
-    def __init__(self, uri, actions, row=None, args=None, referer=None):
+    def __init__(self, uri, actions, referer, row=None, args=None, separate=False):
         super(ActionMenu, self).__init__()
         assert isinstance(uri, str), uri
         assert isinstance(actions, (tuple, list)), actions
+        assert isinstance(referer, str), referer
         assert row is None or isinstance(row, pp.PresentedRow), row
         assert args is None or isinstance(args, dict), args
-        assert referer is None or isinstance(referer, str), referer
+        assert separate is None or isinstance(separate, bool), separate
         self._uri = uri
         self._row = row
         self._actions = actions
         self._args = args or {}
         self._referer = referer
+        self._separate = separate
 
     def _export_item(self, action, g):
         title = action.descr()
@@ -422,7 +424,9 @@ class ActionMenu(lcg.Content):
                 else:
                     args = dict(args, search=self._row[key].export())
             elif self._referer is not None and self._row:
-                uri += '/' + self._row[self._referer].export()
+                if not uri.endswith('/'):
+                    uri += '/'
+                uri += self._row[self._referer].export()
             target = g.uri(uri, action=action.name(), **args)
             cls = None
         else:
@@ -435,10 +439,13 @@ class ActionMenu(lcg.Content):
         g = exporter.generator()
         # Only Wiking's Actions are considered, not `pytis.presentation.Action'.
         items = lcg.concat([self._export_item(a, g) for a in self._actions
-                        if isinstance(a, Action)],
-                       separator=g.span(" |\n", cls="hidden"))
-        return g.p(lcg.concat(_("Actions:"), items, separator="\n"),
-                   cls="actions")
+                            if isinstance(a, Action)], separator=g.span(" |\n", cls="hidden"))
+        content = (_("Actions:"), items)
+        cls = "actions"
+        if self._separate:
+            content = (g.hr(),) + content + (g.hr(),)
+            cls += " separated"
+        return g.div(lcg.concat(content, separator="\n"), cls=cls)
 
     
 class PanelItem(lcg.Content):
