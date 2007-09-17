@@ -15,8 +15,8 @@ provides a set of modules responsible for management of different aspects of
 the website:
 
   * *Content*
-    * [Mapping] -- Manage available URIs, Wiking modules which handle them and
-      main menu layout
+    * [Menu] -- Manage the structure of all available content and its
+      projection into the main menu hierarchy 
     * [Pages] -- Manage available pages of structured text content
     * [Attachments] -- Manage files attached to pages
     * [Panels] -- Manage panels – the small windows shown by the side of every page
