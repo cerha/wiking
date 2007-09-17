@@ -9,4 +9,32 @@
 	LCG.  This version is publically available on CVS, but there is
 	not yet an official release package.  Official release is planned
 	for version 4.2.
+
+
+2007-04-10  Tomas Cerha  <cerha@brailcom.org>
+
+	Version 0.4.2
+
+	 * Built-in authentication.
+ 	 * User registration and management.
+	 * Assignment of user roles and privileges.
+	 * Page attachments (external files, such as images, videos or
+  	   documents can be used within page content...).
+	 * Documentation extended.
+
+2007-09-17  Tomas Cerha  <cerha@brailcom.org>
+
+	Version 0.4.3
 	
+	 * Content management controls outside the management
+	   interface (greatly simplifies most common tasks by directly
+	   including controls within the content for authorized users).
+	 * Unified and simplified management of main menu and content
+	   hierarchy.
+	 * Owner can be assigned to grant privileges for individual pages.
+	 * Wiking API separated from the CMS and documented.  This API
+	   allows development of web applications based on the Wiking
+	   platform.
+	 * Support for browsing long lists.
+	 * Many minor improvements within the user interface.
+	 * Bugfixes
