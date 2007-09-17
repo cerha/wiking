@@ -323,10 +323,6 @@ form.pytis-form fieldset.group, form.pytis-form div.submit, form.browse-form-con
     border-width: 1px 0;
     margin: 0.4em 0;
 }
-form.browse-form-controls {
-    margin: 0.8em 0;
-    padding: .2em;
-}
 form.pytis-form div.submit { 
     margin-top: 0.5em;
     padding: 0.5em;
@@ -346,8 +342,11 @@ form.browse-form table {
 form.browse-form table td, form.browse-form table th {
     padding: 2pt;
     vertical-align: top;
-    white-space: nowrap;
+    /* white-space: nowrap; */
     border: 1px solid $color.border;
+}
+form.browse-form table td .tree-node {
+    white-space: nowrap;
 }
 form.browse-form table td { background: $color.table-cell; }
 form.browse-form table tr.even td { background: $color.table-cell2; }
@@ -365,11 +364,20 @@ form.browse-form table tfoot td {
     padding: 0;
     text-align: right;
 }
-form.browse-form-controls span.limit {
-    white-space: nowrap;
-    margin-left: 2em;
+
+form.browse-form-controls {
+    margin: 0.8em 0;
+    padding: .2em;
+    text-align: right;
 }
-form.browse-form-controls input.prev {
+form.browse-form-controls span.offset, form.browse-form-controls span.buttons,
+form.browse-form-controls span.limit { 
+    white-space: nowrap;
+}
+form.browse-form-controls span.offset, form.browse-form-controls span.buttons {
+    float: left;
+}
+form.browse-form-controls span.buttons input.prev {
     margin-left: 1em;
 }
 
@@ -418,7 +426,7 @@ form.edit-form fieldset.group input, form.edit-form textarea,
 form.edit-form select, #login, #password { 
     border: 1px solid $color.border;
 }
-form.edit-form table { 
+form.edit-form table, form.show-form table { 
     border-collapse: collapse;
 }
 

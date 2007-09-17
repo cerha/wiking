@@ -1,0 +1,52 @@
+# -*- coding: utf-8; mode: structured-text -*-
+
+= Hlavní nabídka =
+
+Modul správy hlavní nabídky poskytuje přehled veškerého dostupného obsahu, jeho
+hierarchie a zařazení do hlavní navigační nabídky (viz. [navigation navigace]).
+
+Z technického hlediska, je nejdůležitější vlastností každé položky její
+/identifikátor/.  Ten určuje vnější (internetovou) adresu, pod kterou bude tato
+položka dostupná.  Např. položka s identifikátorem „=mojestranka=“ bude mít v
+internetu adresu „\http://www.jmenoserveru.cz/mojestranka“.
+
+Každému identifikátoru je přiřazen Modul, který obsluhuje obsah zobrazený pod
+danou položkou.  Například nejběžnější modul /Stránky/ zobrazuje položky jako
+textové stránky.  Jiné moduly mohou zobrazovat seznamy novinek, uživatelů apod.
+
+Pro přiřazení vlastního obsahu dané položce se přepněte na příslušný modul.
+Zde najdete také další nápovědu, která blíže vysvětluje k čemu daný modul
+slouží a jakým způsobem obsah spravovat.
+
+== Zařazení položek do hlavní nabídky ==
+
+Podobu hlavní nabídky ovlivníte jednoduše tím, že položkám, které v ní
+chcete zobrazit přiřadíte celé číslo v kolonce /Pořadí v menu/.  Tyto
+položky potom budou zobrazeny v hlavní nabídce v pořadí daném tímto
+pořadovým číslem.
+
+Položky, které nemají toto číslo vyplněno, nebudou v nabídce zobrazeny, ale
+může na ně být vytvořen odkaz pomocí jejich identifikátoru (například v
+textu jiné stránky).
+
+== Zveřejnění položky ==
+
+Pro každou položku lze určit, zda je zveřejněna či ne.  Neveřejná položka sice
+existuje v databázi a lze s ní tedy pracovat a spravovat její obsah, vnějším
+uživatelům však není dostupná.  Nezveřejněné položky jsou dostupné pouze v
+rámci Správcovského rozhraní.
+
+Zveřejnění lze ovládat nezávisle pro každou jazykovou verzi.  Změny této
+vlastnosti jsou platné vždy pouze pro aktuální jazyk -- pro změnu zveřejnění v
+jiném jazyce je tedy nutno nejprve jazyk přepnout.  Díky tomu lze také
+dosáhnout toho, že některé položky menu jsou zobrazeny pouze v některých
+jazykových verzích stránek.
+
+== Privátní položky ==
+
+Privátní (soukromé) položky jsou dostupné pouze přihlášeným uživatelům (pouze
+registrovaný uživatel povolený správcem se může přihlasít).  Privátní položky
+se mohou vyskytovat také v menu, takže se všichni uživatelé dozví o jejich
+existenci, ale pouze přihlášení užiatelé budou schopni zobrazit jejich obsah.
+Aby byla privátní položka dostupná, musí být stále zveřejněna (tyto dvě
+vlastnosti spolu nesouvisí).

@@ -422,9 +422,7 @@ class Search(Module, ActionHandler):
         if message is not None:
             content.append(lcg.p(message))
         content = [self.SearchForm(req)]
-        variants = self._application.languages()
-        lang = req.prefered_language(variants)
-        return Document(self._SEARCH_TITLE, lcg.Container(content), lang=lang)
+        return Document(self._SEARCH_TITLE, lcg.Container(content))
 
     def _transform_input(self, input):
         input = re.sub('[&|!()"\'\\\\]', ' ', input)
@@ -452,9 +450,7 @@ class Search(Module, ActionHandler):
             content = lcg.Container([self._result_item(item) for item in result])
         else:
             content = self._empty_result_page()
-        variants = self._application.languages()
-        lang = req.prefered_language(variants)
-        return Document(self._RESULT_TITLE, content, lang=lang)
+        return Document(self._RESULT_TITLE, content)
     
     # Actions
     

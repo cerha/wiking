@@ -27,7 +27,7 @@ can be managed using a web browser through Wiking Management Interface.
 from wiking import *
 
 import mx.DateTime
-from pytis.presentation import Computer, CbComputer
+from pytis.presentation import Computer, CbComputer, Fields
 from mx.DateTime import today, TimeDelta
 from lcg import log as debug
 import re, copy
@@ -99,23 +99,25 @@ class Roles(Roles):
 class Application(CookieAuthentication, Application):
     
     _MAPPING = {'_doc': 'Documentation',
-                '_wmi': 'WikingManagementInterface'}
+                '_wmi': 'WikingManagementInterface',
+                'css':  'Stylesheets'}
 
     _RIGHTS = {'Documentation': (Roles.ANYONE,),
+               'SiteMap': (Roles.ANYONE,),
                'WikingManagementInterface': (Roles.AUTHOR, )}
 
     def resolve(self, req):
         try:
+            return self._MAPPING[req.path[0]]
+        except KeyError:
             return self._module('Mapping').resolve(req)
-        except NotFound:
-            return super(Application, self).resolve(req)
     
     def module_uri(self, modname):
         return self._module('Mapping').module_uri(modname) \
                or super(Application, self).module_uri(modname)
         
     def menu(self, req):
-        module = req.wmi and 'WikingManagementInterface' or 'Mapping'
+        module = req.wmi and 'WikingManagementInterface' or 'Menu'
         return self._module(module).menu(req)
     
     def panels(self, req, lang):
@@ -132,12 +134,8 @@ class Application(CookieAuthentication, Application):
         return self._module('Languages').languages()
         
     def stylesheets(self):
-        uri = self.module_uri('Stylesheets')
-        if uri:
-            return [lcg.Stylesheet(name, uri=uri+'/'+name)
-                    for name in self._module('Stylesheets').stylesheets()]
-        else:
-            return []
+        return [lcg.Stylesheet(name, uri='/css/'+name)
+                for name in self._module('Stylesheets').stylesheets()]
 
     def _auth_user(self, login):
         return self._module('Users').user(login)
@@ -146,9 +144,6 @@ class Application(CookieAuthentication, Application):
         return password == user.data()['password'].value()
 
     def authorize(self, req, module, action=None, record=None, **kwargs):
-        if module.name() == 'Mapping' and not req.wmi and action != 'list':
-            # HACK: disable everything except 'list' for 'Mapping' outside WMI.
-            return False
         if action and hasattr(module, 'RIGHTS_'+action):
             roles = getattr(module, 'RIGHTS_'+action)
         else:
@@ -251,7 +246,6 @@ class Application(CookieAuthentication, Application):
         return super(Application, self).handle_exception(req, exception)
 
 
-
 class WikingManagementInterface(Module, RequestHandler):
     """Wiking Management Interface.
 
@@ -287,7 +281,7 @@ class WikingManagementInterface(Module, RequestHandler):
     def _handle(self, req):
         req.wmi = True # Switch to WMI only after successful authorization.
         if len(req.path) == 1:
-            req.path += ('Mapping',)
+            req.path += ('Menu',)
         try:
             module = self._module(req.path[1])
         except AttributeError:
@@ -303,14 +297,15 @@ class WikingManagementInterface(Module, RequestHandler):
 
     def menu(self, req):
         modules = _modules()
-        return [MenuItem(req.path[0] + '/' + section, title, descr=descr,
+        variants = self._application.languages()
+        return [MenuItem(req.path[0] + '/' + section, title, descr=descr, variants=variants,
                          submenu=[MenuItem(req.path[0] + '/' + m.name(), m.title(),
-                                           descr=m.descr(), order=self._wmi_order(m))
+                                           descr=m.descr(), order=self._wmi_order(m),
+                                           variants=variants)
                                   for m in self._wmi_modules(modules, section)])
                 for section, title, descr in self._SECTIONS] + \
-               [MenuItem('__site_menu__', '', hidden=True,
-                         submenu=self._module('Mapping').menu(req))]
-    
+               [MenuItem('__site_menu__', '', hidden=True, variants=variants,
+                         submenu=self._module('Menu').menu(req))]
      
 
 class Mappable(object):
@@ -348,85 +343,19 @@ class CMSModule(PytisModule, RssModule, Panelizable):
         else:
             return super(CMSModule, self)._resolve(req)
 
-        
-class MappingParents(CMSModule):
-    """An auxiliary module for the codebook of mapping parent nodes."""
-    class Spec(Specification):
-        table = 'mapping'
-        fields = (
-            Field('mapping_id'),
-            Field('identifier'),
-            Field('tree_order'),
-            )
-        sorting = (('tree_order', ASC), ('identifier', ASC))
-        cb = pp.CodebookSpec(display='identifier')
 
-
-class Mapping(CMSModule, Publishable, Mappable):
-    """Map available URIs to the modules which handle them.
-
-    The Wiking Handler always queries this module to resolve the request URI and return the name of
-    the module which is responsible for handling the request.  Futher processing of the request is
-    then postponed to this module.  Only a part of the request uri may be used to determine the
-    module and another part may be used by the module to determine the sub-contents.
-
-    This implementation uses static mapping as well as database based mapping, which may be
-    modified through the Wiking Management Interface.
-
-    """
+class Mapping(CMSModule):
+    """Map available URIs to the modules which handle them."""
     class Spec(Specification):
         title = _("Mapping")
-        help = _("Manage available URIs and Wiking modules which handle them. "
-                 "Also manage the main menu.")
         def fields(self): return (
-            Field('mapping_id', width=5, editable=NEVER),
-            Field('parent', _("Parent item"), codebook='MappingParents', not_null=False,
-                  ), #(validity_condition=pd.NE('name', pd.Value(pd.String(), ))),
-            Field('identifier', _("Identifier"), width=20, filter=ALPHANUMERIC, fixed=True,
-                  type=pd.RegexString(maxlen=32, not_null=True, regex='^[a-zA-Z][0-9a-zA-Z_-]*$'),
-                  descr=_("The identifier may be used to refer to this page from outside and also "
-                          "from other pages. A valid identifier can only contain letters, digits, "
-                          "dashes and underscores.  It must start with a letter.")),
-            Field('modname', _("Module"), display=_modtitle, selection_type=CHOICE, 
-                  enumerator=pd.FixedEnumerator([_m.name() for _m in _modules(Mappable)]),
-                  descr=_("Select the module which handles requests for given identifier. "
-                          "This is the way to make the module available from outside.")),
-            Field('published', _("Published"),
-                  descr=_("This flag allows you to make the item unavailable without actually "
-                          "removing it.")),
-            Field('private', _("Private"), default=False,
-                  descr=_("Make the item available only to logged-in users.")),
-            Field('ord', _("Menu order"), width=6,
-                  descr=_("Enter a number denoting the item order in the menu or leave the field "
-                          "blank if you don't want this item to appear in the menu.")),
-            Field('tree_order', _("Tree level"), type=pd.TreeOrder()),
-            Field('owner', _("Owner"), codebook='Users', not_null=False),
+            Field('mapping_id', editable=NEVER),
+            Field('identifier', editable=NEVER),
+            Field('modname', editable=NEVER),
+            Field('private', editable=NEVER),
             )
-        sorting = (('tree_order', ASC), ('identifier', ASC))
-        bindings = {'Pages': pp.BindingSpec(_("Pages"), 'mapping_id')}
-        columns = layout = ('identifier', 'modname', 'parent','ord', 'published','private','owner')
-        cb = pp.CodebookSpec(display='identifier')
-    _REFERER = 'identifier'
-    _EXCEPTION_MATCHERS = (
-        ('duplicate key violates unique constraint "_mapping_unique_tree_(?P<id>ord)er"',
-         _("Duplicate menu order on the this tree level.")),) + \
-         CMSModule._EXCEPTION_MATCHERS
-
-    WMI_SECTION = WikingManagementInterface.SECTION_CONTENT
-    WMI_ORDER = 10
     _mapping_cache = {}
 
-    def _link_provider(self, req, row, cid, **kwargs):
-        if cid == 'parent':
-            return None
-        return super(Mapping, self)._link_provider(req, row, cid, **kwargs)
-
-    def action_list(self, req, **kwargs):
-        if not req.wmi:
-            return self._document(req, SiteMap(depth=99))
-        else:
-            return super(Mapping, self).action_list(req, **kwargs)
-    
     def resolve(self, req):
         identifier = req.path[0]
         try:
@@ -436,8 +365,8 @@ class Mapping(CMSModule, Publishable, Mappable):
             row = self._data.get_row(identifier=identifier)
             if row is None:
                 raise NotFound()
-            if not row['published'].value():
-                raise Forbidden()
+            #if not row['published'].value():
+            #    raise Forbidden()
             self._mapping_cache[identifier] = modname, private = \
                                               row['modname'].value(), row['private'].value()
         if private and not (modname == 'Users' and req.param('action') in ('add', 'insert')):
@@ -452,34 +381,100 @@ class Mapping(CMSModule, Publishable, Mappable):
         return modname
     
     def module_uri(self, modname):
-        rows = self._data.get_rows(modname=modname, published=True)
+        rows = self._data.get_rows(modname=modname) #, published=True)
         if len(rows) == 1:
             return '/'+ rows[0]['identifier'].value()
         else:
             return None
-    
+
+
+class Menu(Mapping, Publishable):
+    class Spec(Mapping.Spec):
+        title = _("Main menu")
+        help = _("Manage main menu, available URIs and Wiking modules which handle them.")
+        def fields(self): return (
+            Field('menu_id'),
+            Field('mapping_id'),
+            Field('lang', _("Language"), editable=ONCE, codebook='Languages', value_column='lang'),
+            Field('title_or_identifier', _("Title")),
+            Field('title', _("Title"), not_null=True,
+                  descr=_("Menu item title in the current language (switch language to supply "
+                          "titles in other languages)")),
+            Field('description', _("Description"), width=64,
+                  descr=_("Brief description of this item.  The title is often very short, so it "
+                          "might be appropriate to give additional information here.")),
+            Field('published', _("Published"), default=True,
+                  descr=_("Allows you to control the availability of this item in each of the "
+                          "supported languages (switch language to control the availability in "
+                          "other languages)")),
+            Field('identifier', _("Identifier"), width=20, filter=ALPHANUMERIC, fixed=True,
+                  type=pd.RegexString(maxlen=32, not_null=True, regex='^[a-zA-Z][0-9a-zA-Z_-]*$'),
+                  descr=_("The identifier may be used to refer to this page from outside and also "
+                          "from other pages. A valid identifier can only contain letters, digits, "
+                          "dashes and underscores.  It must start with a letter.")),
+            Field('parent', _("Parent item"), codebook='Mapping', not_null=False,
+                  display='identifier'),
+            Field('modname', _("Module"), display=_modtitle, selection_type=CHOICE, not_null=True,
+                  enumerator=pd.FixedEnumerator([_m.name() for _m in _modules(Mappable)]),
+                  descr=_("Select the module which handles requests for given identifier. "
+                          "This is the way to make the module available from outside.")),
+            Field('private', _("Private"), default=False,
+                  descr=_("Make the item available only to logged-in users.")),
+            Field('ord', _("Menu order"), width=6,
+                  descr=_("Enter a number denoting the item order in the menu or leave the field "
+                          "blank if you don't want this item to appear in the menu.")),
+            Field('tree_order', _("Tree level"), type=pd.TreeOrder()),
+            Field('owner', _("Owner"), codebook='Users', not_null=False),
+            )
+        layout = (FieldSet(_("Options for the current language"),
+                           ('title', 'description', 'published')),
+                  FieldSet(_("Global options"),
+                           ('identifier', 'modname', 'parent', 'ord', 'private', 'owner')))
+        columns = ('title_or_identifier', 'identifier', 'modname', 'parent', 'ord',
+                   'published', 'private', 'owner')
+        sorting = (('tree_order', ASC), ('identifier', ASC))
+        bindings = {'Pages': pp.BindingSpec(_("Pages"), 'mapping_id')}
+        cb = pp.CodebookSpec(display='identifier')
+    _EXCEPTION_MATCHERS = (
+        ('duplicate key violates unique constraint "_mapping_unique_tree_(?P<id>ord)er"',
+         _("Duplicate menu order on the this tree level.")),) + \
+         CMSModule._EXCEPTION_MATCHERS
+    _LIST_BY_LANGUAGE = True
+    _REFERER = 'identifier'
+
+    WMI_SECTION = WikingManagementInterface.SECTION_CONTENT
+    WMI_ORDER = 10
+
+    def _link_provider(self, req, row, cid, **kwargs):
+        if cid == 'parent':
+            return None
+        return super(Menu, self)._link_provider(req, row, cid, **kwargs)
+
     def menu(self, req):
         children = {None: []}
-        titles = self._module('Titles').titles()
+        translations = {}
         def mkitem(row):
-            mapping_id = row['mapping_id'].value()
-            identifier = str(row['identifier'].value())
-            modname = row['modname'].value()
-            if modname == 'Pages':
-                default_title = identifier
-            else:
-                default_title = _modtitle(modname, default=identifier)
-            title = lcg.SelfTranslatableText(default_title,
-                                             translations=titles.get(mapping_id, {}))
-            return MenuItem(identifier, title, hidden=row['ord'].value() is None,
+            mapping_id, identifier = row['mapping_id'].value(), str(row['identifier'].value())
+            titles, descriptions = translations[mapping_id]
+            return MenuItem(identifier,
+                            lcg.SelfTranslatableText(identifier, translations=titles),
+                            descr=lcg.SelfTranslatableText('', translations=descriptions),
+                            hidden=row['ord'].value() is None, variants=titles.keys(),
                             submenu=[mkitem(r) for r in children.get(mapping_id, ())])
         for row in self._data.get_rows(sorting=self._sorting, published=True):
-            parent = row['parent'].value()
-            if not children.has_key(parent):
-                children[parent] = []
-            children[parent].append(row)
+            mapping_id = row['mapping_id'].value()
+            if not translations.has_key(mapping_id):
+                parent = row['parent'].value()
+                if not children.has_key(parent):
+                    children[parent] = []
+                children[parent].append(row)
+                translations[mapping_id] = ({}, {})
+            titles, descriptions = translations[mapping_id]
+            lang = str(row['lang'].value())
+            titles[lang] = row['title_or_identifier'].value()
+            if row['description'].value() is not None:
+                descriptions[lang] = row['description'].value()
         return [mkitem(row) for row in children[None]]
-                
 
 class Config(CMSModule):
     """Site specific configuration provider.
@@ -589,8 +584,7 @@ class Panels(CMSModule, Publishable):
             )
         sorting = (('ord', ASC),)
         columns = ('title', 'ord', 'modtitle', 'size', 'published')
-        layout = ('lang', 'ptitle', 'ord',  'mapping_id', 'size',
-                  'content', 'published')
+        layout = ('ptitle', 'ord', 'mapping_id', 'size', 'content', 'published')
     _LIST_BY_LANGUAGE = True
     WMI_SECTION = WikingManagementInterface.SECTION_CONTENT
     WMI_ORDER = 1000
@@ -643,44 +637,6 @@ class Languages(CMSModule):
     def languages(self):
         return [str(r['lang'].value()) for r in self._data.get_rows()]
 
-    
-class Titles(CMSModule):
-    """Provide localized titles for 'Mapping' items."""
-    class Spec(Specification):
-        title = _("Titles")
-        help = _("Manage menu titles of available mapping items (temporary).")
-        fields = (
-            Field('title_id'),
-            Field('mapping_id', _("Identifier"), width=5, codebook='Mapping',
-                  selection_type=CHOICE, editable=ONCE),
-            Field('identifier', _("Identifier"), virtual=True,
-                  computer=CbComputer('mapping_id', 'identifier')),
-            Field('lang', _("Language"), codebook='Languages', editable=ONCE,
-                  selection_type=CHOICE, value_column='lang'),
-            Field('title', _("Title")),
-            )
-        columns = ('identifier', 'title')
-        layout = ('mapping_id', 'lang', 'title')
-        sorting = (('mapping_id', ASC), ('lang', ASC))
-
-    _LIST_BY_LANGUAGE = True
-    _EXCEPTION_MATCHERS = (
-        ('duplicate key violates unique constraint "titles_mapping_id_key"',
-         _("The title is already defined for this page in given language.")),)+\
-         CMSModule._EXCEPTION_MATCHERS
-    WMI_SECTION = WikingManagementInterface.SECTION_CONTENT
-    WMI_ORDER = 10000
-    
-    def titles(self):
-        """Return a dictionary of menu item titles keyed by mapping_id."""
-        titles = {}
-        for row in self._data.get_rows():
-            mapping_id = row['mapping_id'].value()
-            if not titles.has_key(mapping_id):
-                titles[mapping_id] = {}
-            titles[mapping_id][row['lang'].value()] = row['title'].value()
-        return titles
-    
     
 class Themes(CMSModule):
     class Spec(Specification):
@@ -796,8 +752,9 @@ class Pages(CMSModule, Mappable):
                           "dashes and underscores.  It must start with a letter.")),
             Field('lang', _("Language"), codebook='Languages', editable=ONCE,
                   selection_type=CHOICE, value_column='lang'),
+            Field('title_or_identifier', _("Title")),
             Field('title', _("Title")),
-            Field('title_', _("Title")),
+            Field('description', _("Description")),
             Field('_content', _("Content"), compact=True, height=20, width=80,
                   descr=_STRUCTURED_TEXT_DESCR),
             Field('content'),
@@ -810,21 +767,16 @@ class Pages(CMSModule, Mappable):
         def _status(self, row):
             if not row['published'].value():
                 return _("Not published")
-            _c = row['_content'].value()
-            if _c:
-                c = row['content'].value()
-                if c is None:
-                    return _("Not published")
-                elif c == _c:
-                    return _("Ok")
-                else:
-                    return _("Changed")
-            else:
+            if row['_content'].value() is None and row['content'].value() is None:
                 return _("Missing")
-        sorting = (('tree_order', ASC), ('lang', ASC),)
-        layout = ('identifier', 'lang', 'title_', '_content')
-        columns = ('title', 'identifier', 'status')
-        cb = pp.CodebookSpec(display='title')
+            elif row['_content'].value() == row['content'].value():
+                return _("Ok")
+            else:
+                return _("Changed")
+        sorting = (('tree_order', ASC), ('identifier', ASC),)
+        layout = ('identifier', 'title', '_content')
+        columns = ('title_or_identifier', 'identifier', 'status')
+        cb = pp.CodebookSpec(display='title_or_identifier')
         bindings = {'Attachments': pp.BindingSpec(_("Attachments"), 'mapping_id')}
     
     _REFERER = 'identifier'
@@ -840,8 +792,8 @@ class Pages(CMSModule, Mappable):
     
     _SUBMIT_BUTTONS = ((_("Save"), None), (_("Save and publish"), 'commit'))
     _INSERT_MSG = _("New page was successfully created. Don't forget to publish it when you are "
-                    "done. Please, visit the 'Mapping' module if you want to add the page to the "
-                    "main menu.")
+                    "done. Please, visit the module 'Main menu' if you want to add the page to "
+                    "the menu.")
     _ACTIONS = (Action(_("Publish"), 'commit',
                        descr=_("Publish the current modified content"),
                        enabled=lambda r: r['_content'].value() != r['content'].value()),
@@ -860,13 +812,6 @@ class Pages(CMSModule, Mappable):
     WMI_SECTION = WikingManagementInterface.SECTION_CONTENT
     WMI_ORDER = 200
 
-    _CONTENT_OK = pd.NE('content', pd.Value(pd.String(), None))
-    
-    def _variants(self, record):
-        return [str(r['lang'].value()) for r in 
-                self._data.get_rows(mapping_id=record['mapping_id'].value(),
-                                    condition=self._CONTENT_OK)]
-
     def handle(self, req):
         if not req.wmi and len(req.path) == 2:
             return self._module('Attachments').handle(req)
@@ -876,23 +821,15 @@ class Pages(CMSModule, Mappable):
         if req.wmi:
             return super(Pages, self)._resolve(req)
         if len(req.path) == 1:
-            lang = req.param('lang')
-            if lang is not None:
-                row = self._data.get_row(identifier=req.path[0], lang=lang)
-                if row:
-                    if row['content'].value() is None:
-                        raise Forbidden()
-                    return row
-            else:
-                variants = self._data.get_rows(identifier=req.path[0], condition=self._CONTENT_OK)
-                if variants:
-                    for lang in req.prefered_languages():
-                        for row in variants:
-                            if row['lang'].value() == lang:
-                                return row
-                    raise NotAcceptable([str(r['lang'].value()) for r in variants])
-                elif self._data.get_rows(identifier=req.path[0]):
-                    raise Forbidden()
+            variants = self._data.get_rows(identifier=req.path[0], published=True)
+            if variants:
+                for lang in req.prefered_languages():
+                    for row in variants:
+                        if row['lang'].value() == lang:
+                            return row
+                raise NotAcceptable([str(r['lang'].value()) for r in variants])
+            elif self._data.get_rows(identifier=req.path[0]):
+                raise Forbidden()
         raise NotFound()
 
     def _validate(self, req, record):
@@ -925,27 +862,25 @@ class Pages(CMSModule, Mappable):
     def action_view(self, req, record, err=None, msg=None, preview=False):
         if req.wmi and not preview:
             return super(Pages, self).action_view(req, record, err=err, msg=msg)
+        content = []
+        # Main content
         if preview:
             text = record['_content'].value()
         else:
             text = record['content'].value()
+        if text:
+            content.append(lcg.SectionContainer(lcg.Parser().parse(text), toc_depth=0))
+        # Attachment list
         attachments = self._module('Attachments').attachments(record)
         items = [(lcg.link(a.uri(), a.title()), ' ('+ a.bytesize() +') ',
                   lcg.WikiText(a.descr() or '')) for a in attachments if a.listed()]
-        attachments_section = items and lcg.Section(title=_("Attachments"), content=lcg.ul(items))
-        if text:
-            sections = lcg.Parser().parse(text)
-            if attachments_section:
-                sections += [attachments_section]
-            content = lcg.SectionContainer(sections, toc_depth=0)
-        else:
-            content = attachments_section
+        if items:
+            content.append(lcg.Section(title=_("Attachments"), content=lcg.ul(items)))
+        # Action menu
         actions = self._DEFAULT_ACTIONS_FIRST + self._ACTIONS[:-2]
         if req.wmi:
             actions += (Action(_("Back"), 'view'), self._DEFAULT_ACTIONS_LAST[1])
-        menu = self._action_menu(req, record, actions=actions, separate=True)
-        if menu:
-            content = lcg.Container((content, menu))
+        content.append(self._action_menu(req, record, actions=actions, separate=True))
         return self._document(req, content, record, resources=attachments, err=err, msg=msg)
 
     def action_preview(self, req, record, **kwargs):
@@ -1013,7 +948,7 @@ class Attachments(StoredFileModule, CMSModule):
             Field('page_attachment_id',
                   computer=Computer(self._page_attachment_id, depends=('attachment_id', 'lang'))),
             Field('attachment_id'),
-            Field('mapping_id', codebook='Mapping', editable=ONCE),
+            Field('mapping_id', codebook='Menu', editable=ONCE),
             Field('identifier'),
             Field('lang', _("Language"), codebook='Languages', 
                   selection_type=CHOICE, editable=ONCE, value_column='lang'),
@@ -1100,7 +1035,7 @@ class Attachments(StoredFileModule, CMSModule):
         return super(Attachments, self)._link_provider(req, row, cid, **kwargs)
 
     def _redirect_to_page(self, req, record):
-        return req.redirect('/_wmi/Pages/' + record['page_id'].value())
+        return req.redirect('/_wmi/Pages/' + record['identifier'].value())
         #m = self._module('Pages')
         #record = m.record(record['page_id'])
         #return m.action_view(req, record, msg=self._update_msg(record))
@@ -1167,7 +1102,7 @@ class News(CMSModule, Mappable):
                   computer=Computer(self._date_title, depends=('date', 'title'))))
         sorting = (('timestamp', DESC),)
         columns = ('title', 'date', 'author')
-        layout = ('lang', 'timestamp', 'title', 'content')
+        layout = ('timestamp', 'title', 'content')
         def _date(self, row):
             return row['timestamp'].export(show_time=False)
         def _date_title(self, row):
@@ -1217,7 +1152,7 @@ class Planner(News):
                  ('lang', 'content', 'author', 'timestamp', 'date_title')]
         sorting = (('start_date', ASC),)
         columns = ('title', 'date', 'author')
-        layout = ('lang', 'start_date', 'end_date', 'title', 'content')
+        layout = ('start_date', 'end_date', 'title', 'content')
         def _check_date(self, date):
             if date < today():
                 return _("Date in the past")
@@ -1355,8 +1290,18 @@ class Images(StoredFileModule, CMSModule, Mappable):
     def action_thumbnail(self, req, record):
         return self._image(record, 'thumbnail')
 
+
+class SiteMap(Module, RequestHandler, Mappable):
+
+    @classmethod
+    def title(cls):
+        return _("Site Map")
     
-class Stylesheets(CMSModule, Stylesheets, Mappable):
+    def _handle(self, req):
+        return Document(self.title(), lcg.RootIndex(depth=99))
+
+        
+class Stylesheets(CMSModule, Stylesheets):
     class Spec(Specification):
         title = _("Stylesheets")
         help = _("Manage available Cascading Stylesheets.")

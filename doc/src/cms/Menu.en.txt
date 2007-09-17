@@ -1,0 +1,53 @@
+# -*- coding: utf-8; mode: structured-text -*-
+
+= Main Menu =
+
+This module provides an overview of all available content and manages its
+hierarchy and presence in the main menu (see also [navigation]).
+
+The most important property of each item, from the technical point of view, is
+its /identifier/.  It determines the address of the item as seen from outside
+(the Internet).  The item "=mypage=", for example, will have the address (URI)
+"\http://www.yourdomain.com/mypage/".
+
+Each identifier is assigned a single /Module/, which is responsible for
+handling its content.  For example, the most common module /Pages/ displays
+ordinary pages of general (mostly) textual content.  Other modules may display
+listings of latest news, registered users or other more specific content.
+
+Switch to the corresponding module to manage the actual content available for
+given item.  See the documentation of particular modules to learn more about
+their purpose and how their content is managed.
+
+
+== Main menu management ==
+
+Positioning the item within the main menu can be done simply by assigning a
+number in the field /Menu order/.  The items will appear in the menu according
+to given order.
+
+The items which have no number assigned will not appear in the menu, but they
+can be still refered to using their identifier.  You will probably want to link
+to those items from other pages to make them visible to website users.
+
+
+== Published/Unpublished items ==
+
+It is possible to control the availability of each item through the /published/
+checkbox.  Items which are not published exist in the database, so it is
+possible to work on their content, but they are not publically visible to the
+website users.  Unpublished items only appear within the WMI.
+
+The state of publication can be controlled independently for each language
+variant.  The changes always apply just for the current language, so it is
+necessary to switch the language to be able to publish/unpublish items in other
+languages.
+
+
+== Private items ==
+
+Private items are only accessible to logged in users (only registered users
+enabled by the administrator are able to log in).  Private item may appear in
+the menu, so anyone can see that it exists, but only authorized users can visit
+it.  Private items must still be published to become available for the website
+visitors (these two properties are independent).

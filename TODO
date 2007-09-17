@@ -4,6 +4,12 @@ Core features:
 
  * Delete stray files after deletion triggered in the database (cascade)
 
+ * Decode uploaded file names.
+
+ * Hide page column in page attachment list.
+
+ * Allow attachment management to page owner.
+
  * Serve favicon and robots.txt
 
  * Password reminder
@@ -11,8 +17,6 @@ Core features:
  * Image allignment in the LCG formatting manual
 
  * Force HTTPS also for registration form (see note at PytisModule.action_add()).
-
- * More content management controls outside wmi (when authorized)
 
  * Default language when Accept-Language is not set at all
 

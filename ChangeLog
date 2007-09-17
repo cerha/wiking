@@ -1,3 +1,40 @@
+2007-09-17  Tomas Cerha  <cerha@brailcom.org>
+
+	* doc/src/cms/cms.en.txt: `Mapping' -> `Menu'
+
+	* doc/src/cms/Titles.en.txt: File removed.
+
+	* doc/src/cms/Titles.cs.txt: File removed.
+
+	* doc/src/cms/Mapping.en.txt: File removed.
+
+	* doc/src/cms/Mapping.cs.txt: File removed.
+
+	* lib/wiking/cms.py: New module `Menu' for improved main menu
+	management, replacing the `Mapping' module in WMI.  The most
+	important new features are independent publishing of menu items in
+	different languages, menu item descriptions, and combined
+	management of menu structure and menu titles.  Stylesheets now
+	mapped statically.
+
+	* lib/wiking/util.py: The support for languages and variants
+	improved and documented to simplify its usage within the
+	application.
+
+	* lib/wiking/modules.py: Don't care about language and variants
+	where not necessary.
+
+	* lib/wiking/handler.py: Authentication error handling
+	simplified.  Pass the request to `Document.build()'.
+
+	* lib/wiking/db.py: Language and variants handling simplified.
+
+	* sql/wiking.sql: New menu management support implemented.
+	
+	* sql/init.sql: Updated.
+	
+	* resources/css/default.css: Updated.
+	
 2007-09-12  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/cms.py: Added support for correct link name

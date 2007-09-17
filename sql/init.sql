@@ -2,14 +2,11 @@
 
 INSERT INTO languages (lang) VALUES ('en');
 
-INSERT INTO mapping (identifier, modname, published, private, ord) VALUES
- ('index', 'Pages', 't', 'f', 1);
-INSERT INTO mapping (identifier, modname, published, private, ord) VALUES
- ('css', 'Stylesheets', 't','f', NULL);
+INSERT INTO menu (lang, title, published, identifier, modname, private, ord) VALUES
+ ('en', 'Welcome', 't', 'index', 'Pages', 'f', 1);
 
-UPDATE pages SET title='Welcome', _content=
-    'Your new Wiking site has been succesfully set up.\n\n' ||
-    'Enter the [/_wmi Wiking Management Interface] to manage the content.'
+UPDATE pages SET _content='Your new Wiking site has been succesfully set up.\n\n' ||
+		          'Enter the [/_wmi Wiking Management Interface] to manage the content.'
 WHERE mapping_id=1 AND lang='en';
 UPDATE pages SET content=_content;
 

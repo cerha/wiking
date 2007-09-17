@@ -180,6 +180,9 @@ class PytisModule(Module, ActionHandler):
         if errors:
             return errors
         else:
+            if record.new() and self._LIST_BY_LANGUAGE and record['lang'].value() is None:
+                lang = req.prefered_language(raise_error=False)
+                record['lang'] = pd.Value(record['lang'].type(), lang)
             for check in self._view.check():
                 result = check(record)
                 if result:
@@ -198,30 +201,25 @@ class PytisModule(Module, ActionHandler):
                     return msg
         return unicode(e.exception())
 
-    def _document(self, req, content, record=None, lang=None, variants=None,
-                  err=None, msg=None, **kwargs):
+    def _document(self, req, content, record=None, lang=None, err=None, msg=None, **kwargs):
         if record:
             if self._TITLE_TEMPLATE:
                 title = self._TITLE_TEMPLATE.interpolate(lambda key: record[key].export())
             else:
                 title = record[self._title_column].export()
-            lang = self._lang(record)
-            variants = self._variants(record)
+            if lang is None and self._LIST_BY_LANGUAGE:
+                lang = str(record['lang'].value())
         else:
-            title = None
-        if not variants or req.wmi:
-            variants = self._application.languages()
+            title = None # Current menu title will be substituted.
         if isinstance(content, (list, tuple)):
-            content = tuple([c for c in content if c is not None])
+            content = tuple(content)
         else:
             content = (content,)
         if msg:
             content = (Message(msg),) + tuple(content)
         if err:
             content = (ErrorMessage(err),) + tuple(content)
-        if lang is None or req.wmi:
-            lang = req.prefered_language(variants)
-        return Document(title, content, lang=lang, variants=variants, **kwargs)
+        return Document(title, content, lang=lang, **kwargs)
 
     def _actions(self, req, record):
         if record is not None:
@@ -338,15 +336,6 @@ class PytisModule(Module, ActionHandler):
             return user.uid() == owner
         return False
         
-    def _lang(self, record):
-        if self._LIST_BY_LANGUAGE:
-            return str(record['lang'].value())
-        else:
-            return None
-        
-    def _variants(self, record):
-        return None
-    
     def _prefill(self, req, new=False):
         prefill = dict([(f.id(), req.params[f.id()]) for f in self._view.fields()
                         if req.params.has_key(f.id()) and \
@@ -425,11 +414,7 @@ class PytisModule(Module, ActionHandler):
     # ===== Action handlers =====
     
     def action_list(self, req, err=None, msg=None):
-        if self._LIST_BY_LANGUAGE and not req.wmi:
-            variants = [str(v.value()) for v in self._data.distinct('lang', sort=pd.ASCENDENT)]
-        else:
-            variants = self._application.languages()
-        lang = req.prefered_language(variants, raise_error=False)
+        lang = req.prefered_language()
         content = ()
         if req.wmi:
             help = lcg.p(self._view.help() or '', ' ', lcg.link('/_doc/'+self.name(), _("Help")))
@@ -441,7 +426,7 @@ class PytisModule(Module, ActionHandler):
                                        type='application/rss+xml'), " (",
                               lcg.link('_doc/rss', _("more about RSS")), ")"),)
         content += (self._action_menu(req),)
-        return self._document(req, content, lang=lang, variants=variants, err=err, msg=msg)
+        return self._document(req, content, lang=lang, err=err, msg=msg)
 
     def action_view(self, req, record, err=None, msg=None):
         content = [self._form(pw.ShowForm, req, row=record.row()),

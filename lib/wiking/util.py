@@ -237,7 +237,8 @@ class Theme(object):
         
 class MenuItem(object):
     """Abstract menu item representation."""
-    def __init__(self, id, title, descr=None, hidden=False, active=True, submenu=(), order=None):
+    def __init__(self, id, title, descr=None, hidden=False, active=True, submenu=(), order=None,
+                 variants=()):
         self._id = id
         self._title = title
         self._descr = descr
@@ -247,6 +248,7 @@ class MenuItem(object):
         submenu.sort(key=lambda i: i.order())
         self._submenu = submenu
         self._order = order
+        self._variants = variants
     def id(self):
         return self._id
     def title(self):
@@ -261,10 +263,12 @@ class MenuItem(object):
         return self._order
     def submenu(self):
         return self._submenu
+    def variants(self):
+        return self._variants
 
 
 class Panel(object):
-    """Panel representation to be passed to 'Document.mknode()'."""
+    """Panel representation to be passed to 'Document.build()'."""
     def __init__(self, id, title, content):
         self._id = id
         self._title = title
@@ -280,19 +284,53 @@ class Panel(object):
 class Document(object):
     """Independent Wiking document representation.
 
-    This allows us to initialize document data without actually creating the
-    'lcg.ContentNode' instance (more precisely 'WikingNode' in our case).  The
-    instance can be created later using the 'mknode()' method (passing it the
-    remaining arguments required by node's constructor).
+    The 'Document' is Wiking's abstraction of an LCG document (represented by 'lcg.ContentNode').
+    
+    This allows us to initialize document data without actually creating the whole LCG node
+    hierarchy and specifying all the required attributes at the same time.  Default attribute
+    values sensible in the Wiking environment are substituted and the whole content node hierarchy
+    is built afterwards by calling the method 'build()'.
 
     """
     
-    def __init__(self, title, content, subtitle=None, lang=None, variants=(),
-                 sec_lang='en', resources=()):
+    def __init__(self, title, content, subtitle=None, lang=None, sec_lang='en', variants=None,
+                 resources=()):
+        """Initialize the instance.
+
+        Arguments:
+
+          title -- document title as a (translatable) string.  Can be also None, in which case the
+            title will default to the title of the corresponding menu item (if found).
+
+          content -- document content as 'lcg.Content' instance or their sequence.  If a sequence
+            is passed, it is allowed to contain None values, which will be omitted.
+
+          subtitle -- document subtitle as a (translatable) string.  If not None, it will be
+            appended to the title.
+
+          lang -- language of the content as a corresponding language code (defined by the
+            'lcg.ContentNode' constructor).  Can be None if the content is not language dependent
+            -- i.e. is all composed of translatable text, so that it can be exported into any
+            target language (supported by the application and its translations).  Should always be
+            defined for language dependent content, unless the whole application is mono-lingual.
+
+          sec_lang -- secondary content language defined by the 'lcg.ContentNode' constructor.
+            Only important when using the LCG feature of quotations. 
+
+          variants -- available language variants as a sequence of language codes.  Should be
+            defined if only a limited set of target languges for the document exist.  For example
+            when the document is read form a file or a database and it is known which other
+            versions of the source exist.  If None, variants default to the variants defined by the
+            corresponding menu item (if found) or to application-wide set of all available
+            languages.
+          
+          resources -- external resources available for this document as 'lcg.Resource' instances.
+
+        """
         self._title = title
         self._subtitle = subtitle
         if isinstance(content, (list, tuple)):
-            content = lcg.SectionContainer([c for c in content if c], toc_depth=0)
+            content = lcg.SectionContainer([c for c in content if c is not None], toc_depth=0)
         self._content = content
         self._lang = lang
         self._variants = variants
@@ -302,13 +340,18 @@ class Document(object):
     def lang(self):
         return self._lang
     
-    def mknode(self, id, state, menu, panels, stylesheets):
-        kwargs = dict(language=self._lang, language_variants=self._variants or (),
-                      secondary_language=self._sec_lang)
-        parent_id = '/'.join(id.split('/')[:-1])
+    def build(self, req, modname, menu, panels, stylesheets):
+        id = '/'.join(req.path)
+        parent_id = '/'.join(req.path[:-1])
+        state = WikingNode.State(modname=modname,
+                                 user=req.user(),
+                                 wmi=req.wmi,
+                                 show_panels=req.show_panels(),
+                                 server_hostname=req.server_hostname())
+        lang = self._lang or req.prefered_language(raise_error=False) or 'en'
         me = []
         parent = []
-        def _mknode(item):
+        def mknode(item):
             if item.id() == id:
                 heading = self._title or item.title()
                 if self._subtitle:
@@ -316,25 +359,30 @@ class Document(object):
                 content = self._content
                 resources = resources=self._resources + tuple(stylesheets)
                 panels_ = panels
+                variants = self._variants or item.variants()
             else:
                 heading = item.title()
                 content = lcg.Content()
                 resources = ()
                 panels_ = ()
+                variants = item.variants()
             resource_provider = lcg.StaticResourceProvider(resources)
             node = WikingNode(item.id(), state, title=item.title(), heading=heading,
-                              descr=item.descr(), content=content,  hidden=item.hidden(),
-                              active=item.active(), panels=panels_,
-                              children=[_mknode(i) for i in item.submenu()],
-                              resource_provider=resource_provider, **kwargs)
+                              descr=item.descr(), content=content,
+                              language=lang, secondary_language=self._sec_lang,
+                              hidden=item.hidden() or lang not in variants,
+                              active=item.active(), panels=panels_, language_variants=variants,
+                              children=[mknode(i) for i in item.submenu()],
+                              resource_provider=resource_provider)
             if item.id() == id:
                 me.append(node)
             if item.id() == parent_id:
                 parent.append(node)
             return node
-        nodes = [_mknode(item) for item in menu]
+        nodes = [mknode(item) for item in menu]
         if not me:
-            node = _mknode(MenuItem(id, self._title, hidden=True))
+            variants = self._variants or parent and parent[0].language_variants() or ()
+            node = mknode(MenuItem(id, self._title, hidden=True, variants=variants))
             if parent:
                 parent[0].add_child(node)
             else:
@@ -524,11 +572,6 @@ class LoginDialog(lcg.Content):
         return g.form(x, method='POST', action=uri, cls='login-form')
 
     
-class SiteMap(lcg.NodeIndex):
-    def _start_item(self):
-        return self.parent().root()
-
-
 # ============================================================================
 # Classes derived from Pytis components
 # ============================================================================

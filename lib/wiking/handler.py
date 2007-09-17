@@ -66,42 +66,36 @@ class Handler(object):
             req.path = req.path or ('index',)
             req.wmi = False # Will be set to True by `WikingManagementInterface'.
             modname = None
-            user = None
             try:
-                try:
-                    application.configure(req)
-                    modname = application.resolve(req)
-                    module = self._module(modname)
-                    assert isinstance(module, RequestHandler)
-                    result = module.handle(req)
+                application.configure(req)
+                modname = application.resolve(req)
+                module = self._module(modname)
+                assert isinstance(module, RequestHandler)
+                result = module.handle(req)
+                if not isinstance(result, Document):
                     if isinstance(result, int):
                         return result
-                    elif not isinstance(result, Document):
+                    else:
                         content_type, data = result
                         return req.result(data, content_type=content_type)
-                # Always perform authentication at the end (if it was not
-                # performed before) to handle authentication exceptions.
-                except:
-                    user = req.user()
-                    raise
-                else:
-                    user = req.user()
+                # Always perform authentication at the end (if it was not performed before) to
+                # handle authentication exceptions here and prevent them in export time.
+                req.user()
             except RequestError, e:
-                if isinstance(e, HttpError):
-                    req.set_status(e.ERROR_CODE)
-                lang = req.prefered_language(raise_error=False)
-                result = Document(e.title(), e.message(req), lang=lang)
-            state = WikingNode.State(modname=modname,
-                                     user=user,
-                                     wmi=req.wmi,
-                                     show_panels=req.show_panels(),
-                                     server_hostname=self._hostname)
-            menu   = application.menu(req)
-            panels = application.panels(req, result.lang())
-            styles = application.stylesheets()
-            node = result.mknode('/'.join(req.path), state, menu, panels, styles)
-            data = translator(node.language()).translate(self._exporter.export(node))
-            return req.result(data)
+                try:
+                    req.user()
+                except AuthenticationError, ae:
+                    result = Document(ae.title(), ae.message(req))
+                else:
+                    if isinstance(e, HttpError):
+                        req.set_status(e.ERROR_CODE)
+                    result = Document(e.title(), e.message(req))
+            node = result.build(req, modname,
+                                application.menu(req),
+                                application.panels(req, result.lang()),
+                                application.stylesheets())
+            output = translator(node.language()).translate(self._exporter.export(node))
+            return req.result(output)
         except Exception, e:
             return application.handle_exception(req, e)
 
