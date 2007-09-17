@@ -1,27 +1,5 @@
 -*- mode: change-log -*-
 
-2006-11-13  Tomas Cerha  <cerha@brailcom.org>
-
-	Version 0.4.1
-
-	The new generation of the Wiking CMS was made available to the public.
-	New Wiking is written in Python, and is based on Pytis toolkit and
-	LCG.  This version is publically available on CVS, but there is
-	not yet an official release package.  Official release is planned
-	for version 4.2.
-
-
-2007-04-10  Tomas Cerha  <cerha@brailcom.org>
-
-	Version 0.4.2
-
-	 * Built-in authentication.
- 	 * User registration and management.
-	 * Assignment of user roles and privileges.
-	 * Page attachments (external files, such as images, videos or
-  	   documents can be used within page content...).
-	 * Documentation extended.
-
 2007-09-17  Tomas Cerha  <cerha@brailcom.org>
 
 	Version 0.4.3
@@ -38,3 +16,23 @@
 	 * Support for browsing long lists.
 	 * Many minor improvements within the user interface.
 	 * Bugfixes
+
+2007-04-10  Tomas Cerha  <cerha@brailcom.org>
+
+	Version 0.4.2
+
+	 * Built-in authentication.
+ 	 * User registration and management.
+	 * Assignment of user roles and privileges.
+	 * Page attachments (external files, such as images, videos or
+  	   documents can be used within page content...).
+	 * Documentation extended.
+
+2006-11-13  Tomas Cerha  <cerha@brailcom.org>
+
+	Version 0.4.1
+
+	This is the first functional version of the new generation of
+	Wiking CMS.  New Wiking is written in Python, and is based on
+	Pytis toolkit and LCG.  The old Perl version will be maintained,
+	but no new functionality will be added.
