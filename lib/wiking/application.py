@@ -240,7 +240,7 @@ class Application(Module):
             user = None
         req_info = (("URI", req.uri),
                     ("Remote host", req.remote_host()),
-                    ("Remote user", user and req.login() or ''),
+                    ("Remote user", user and user.login() or ''),
                     ("HTTP referrer", req.header('Referer')),
                     ("User agent", req.header('User-Agent')),
                     )
