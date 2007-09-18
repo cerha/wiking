@@ -228,11 +228,19 @@ class Application(Module):
         browser with a 501 HTTP return code (Internal Server Error).
 
         """
+        if isinstance(exception, IOError) \
+               and str(exception) == "Write failed, client closed connection.":
+            return req.OK
         import traceback, cgitb
         einfo = sys.exc_info()
         message = ''.join(traceback.format_exception_only(*einfo[:2]))
+        try:
+            user = req.user()
+        except:
+            user = None
         req_info = (("URI", req.uri),
                 ("Remote host", req.remote_host()),
+                ("Remote user", user and req.login() or 'anonymous'),
                 ("HTTP referrer", req.header('Referer')),
                 ("User agent", req.header('User-Agent')),
                 )
@@ -240,13 +248,13 @@ class Application(Module):
                "\n\n" + "".join(traceback.format_exception(*einfo))
         try:
             if cfg.bug_report_address is not None:
-                hostname = req.server_hostname()
-                sender = cfg.webmaster_addr
-                if sender is None:
-                    domain = hostname.startswith('www.') and hostname[4:] or hostname
-                    sender = 'webmaster@' + domain
-                send_mail(sender, cfg.bug_report_address,
-                          'Wiking Error: ' + hostname,
+                tb = einfo[2]
+                while tb.tb_next is not None:
+                    tb = tb.tb_next
+                filename = os.path.split(tb.tb_frame.f_code.co_filename)[-1]
+                buginfo = "%s at %s line %d" % (einfo[0].__name__, filename, tb.tb_lineno)
+                send_mail('wiking@' + req.server_hostname(), cfg.bug_report_address,
+                          'Wiking Error: ' + buginfo,
                           text + "\n\n" + cgitb.text(einfo),
                           "<html><pre>"+ text +"</pre>"+ cgitb.html(einfo) +"</html>",
                           smtp_server=cfg.smtp_server)

@@ -47,6 +47,7 @@ class Request(pytis.web.Request):
     """Mod_python request wrapper implementing the pytis request interface."""
     
     _UNIX_NEWLINE = re.compile("(?<!\r)\n")
+    OK =  apache.OK
     
     def __init__(self, req, encoding='utf-8'):
         self._req = req

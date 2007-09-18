@@ -1,3 +1,9 @@
+2007-09-18  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/application.py (Application.handle_exception): Ignore
+	IOError when client closes the connection.  Improved bugreport
+	information.
+
 2007-09-17  Tomas Cerha  <cerha@brailcom.org>
 
 	* doc/src/cms/cms.en.txt: `Mapping' -> `Menu'
