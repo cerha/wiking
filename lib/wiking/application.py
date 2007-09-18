@@ -239,11 +239,11 @@ class Application(Module):
         except:
             user = None
         req_info = (("URI", req.uri),
-                ("Remote host", req.remote_host()),
-                ("Remote user", user and req.login() or 'anonymous'),
-                ("HTTP referrer", req.header('Referer')),
-                ("User agent", req.header('User-Agent')),
-                )
+                    ("Remote host", req.remote_host()),
+                    ("Remote user", user and req.login() or ''),
+                    ("HTTP referrer", req.header('Referer')),
+                    ("User agent", req.header('User-Agent')),
+                    )
         text = "\n".join(["%s: %s" % pair for pair in req_info]) + \
                "\n\n" + "".join(traceback.format_exception(*einfo))
         try:
