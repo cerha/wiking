@@ -1,3 +1,13 @@
+2007-09-19  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/util.py: Ignore menu item `variants' if they were not
+	defined.
+
+	* lib/wiking/modules.py (CookieAuthentication): Added support for
+	loogging login attempts.
+
+	* lib/wiking/cms.py: 
+
 2007-09-18  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/application.py (Application.handle_exception): Ignore
