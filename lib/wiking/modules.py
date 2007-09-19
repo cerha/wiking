@@ -311,6 +311,20 @@ class CookieAuthentication(object):
 
         """
         return False
+
+    def _auth_log(self, req, login, user, initial, success):
+        """Hook for logging login attempts.
+
+        Arguments:
+          req -- current request object
+          login -- login name supplied by the user
+          user -- 'User' instance or None if '_auth_user()' didn't find a user matching given login
+            name
+          initial -- True if this is the initial login or False during an existing session.
+          success -- True if the authentication was successful, False otherwise
+
+        """ 
+        pass
     
     def authenticate(self, req):
         session = self._module('Session')
@@ -324,9 +338,11 @@ class CookieAuthentication(object):
                 raise AuthenticationError(_("Enter your password, please!"))
             user = self._auth_get_user(login, req)
             if not user or not self._auth_check_password(user, password):
+                self._auth_log(req, login, user, initial=True, success=False)
                 raise AuthenticationError(_("Invalid login!"))
             assert isinstance(user, User)
             # Login succesfull
+            self._auth_log(req, login, user, initial=True, success=True)
             session_key = session.init(user)
             req.set_cookie(self._LOGIN_COOKIE, login, expires=730*day)
             req.set_cookie(self._SESSION_COOKIE, session_key, expires=2*day)
@@ -340,6 +356,7 @@ class CookieAuthentication(object):
                     # Cookie expiration is 2 days, but session expiration is
                     # controled within the session module independently.
                     req.set_cookie(self._SESSION_COOKIE, key, expires=2*day)
+                    self._auth_log(req, login, user, initial=False, success=True)
                 else:
                     # This is not true after logout
                     session_timed_out = True
