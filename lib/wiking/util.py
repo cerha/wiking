@@ -238,7 +238,7 @@ class Theme(object):
 class MenuItem(object):
     """Abstract menu item representation."""
     def __init__(self, id, title, descr=None, hidden=False, active=True, submenu=(), order=None,
-                 variants=()):
+                 variants=None):
         self._id = id
         self._title = title
         self._descr = descr
@@ -357,31 +357,35 @@ class Document(object):
                 if self._subtitle:
                     heading = lcg.concat(heading, ' :: ', self._subtitle)
                 content = self._content
-                resources = resources=self._resources + tuple(stylesheets)
                 panels_ = panels
-                variants = self._variants or item.variants()
+                resources = resources=self._resources + tuple(stylesheets)
+                variants = self._variants
+                if variants is None:
+                    variants = item.variants()
             else:
                 heading = item.title()
                 content = lcg.Content()
-                resources = ()
                 panels_ = ()
+                resources = ()
                 variants = item.variants()
+            hidden = item.hidden()
+            if variants is not None and lang not in variants:
+                hidden = True
             resource_provider = lcg.StaticResourceProvider(resources)
             node = WikingNode(item.id(), state, title=item.title(), heading=heading,
-                              descr=item.descr(), content=content,
-                              language=lang, secondary_language=self._sec_lang,
-                              hidden=item.hidden() or lang not in variants,
-                              active=item.active(), panels=panels_, language_variants=variants,
+                              descr=item.descr(), content=content, hidden=hidden, language=lang,
+                              secondary_language=self._sec_lang, language_variants=variants or (),
+                              active=item.active(), panels=panels_, 
                               children=[mknode(i) for i in item.submenu()],
                               resource_provider=resource_provider)
             if item.id() == id:
                 me.append(node)
-            if item.id() == parent_id:
+            elif item.id() == parent_id:
                 parent.append(node)
             return node
         nodes = [mknode(item) for item in menu]
         if not me:
-            variants = self._variants or parent and parent[0].language_variants() or ()
+            variants = self._variants or parent and parent[0].language_variants() or None
             node = mknode(MenuItem(id, self._title, hidden=True, variants=variants))
             if parent:
                 parent[0].add_child(node)
