@@ -294,11 +294,12 @@ class PytisModule(Module, ActionHandler):
     def _resolve(self, req):
         # Returns Row, None or raises HttpError.
         pathlen = len(req.path)
-        if pathlen == self._REFERER_PATH_LEVEL:
-            return self._get_referered_row(req, req.path[self._REFERER_PATH_LEVEL-1])
-        elif pathlen == self._REFERER_PATH_LEVEL-1 and req.has_param(self._key):
+        level = self._REFERER_PATH_LEVEL
+        if pathlen in (level-1, level) and req.has_param(self._key):
             return self._get_row_by_key(req.param(self._key))
-        elif pathlen < self._REFERER_PATH_LEVEL:
+        elif pathlen == level:
+            return self._get_referered_row(req, req.path[level-1])
+        elif pathlen < level:
             return None
         else:
             raise NotFound()

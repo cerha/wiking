@@ -821,6 +821,8 @@ class Pages(CMSModule, Mappable):
         if req.wmi:
             return super(Pages, self)._resolve(req)
         if len(req.path) == 1:
+            if req.has_param(self._key):
+                return self._get_row_by_key(req.param(self._key))
             variants = self._data.get_rows(identifier=req.path[0], published=True)
             if variants:
                 for lang in req.prefered_languages():
@@ -1257,6 +1259,8 @@ class Images(StoredFileModule, CMSModule, Mappable):
                       ('image', '_image_filename'),
                       ('thumbnail', '_thumbnail_filename'))
     _SEQUENCE_FIELDS = (('image_id', '_images_image_id_seq'),)
+    _REFERER = 'filename'
+    
     #WMI_SECTION = WikingManagementInterface.SECTION_CONTENT
     WMI_ORDER = 500
         
@@ -1267,13 +1271,6 @@ class Images(StoredFileModule, CMSModule, Mappable):
                             action=action_mapping[cid])
         return super(Images, self)._link_provider(req, row, cid, **kwargs)
 
-    def _resolve(self, req):
-        if len(req.path) == (req.wmi and 3 or 2):
-            row = self._data.get_row(filename=req.path[-1])
-            if row:
-                return row
-        return super(Images, self)._resolve(req)
-        
     def _image(self, record, id):
         mime = "image/" + str(record['format'].value())
         data = record[id].value().buffer()
