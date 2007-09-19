@@ -1,12 +1,16 @@
 2007-09-19  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/db.py: Give higher precedence to resolution by key
+	than by referer.
+
 	* lib/wiking/util.py: Ignore menu item `variants' if they were not
 	defined.
 
 	* lib/wiking/modules.py (CookieAuthentication): Added support for
 	loogging login attempts.
 
-	* lib/wiking/cms.py: 
+	* lib/wiking/cms.py: Give higher precedence to resolution by key
+	than by referer.
 
 2007-09-18  Tomas Cerha  <cerha@brailcom.org>
 
