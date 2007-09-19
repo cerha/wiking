@@ -1,7 +1,7 @@
 2007-09-19  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/db.py: Give higher precedence to resolution by key
-	than by referer.
+	than by referer.  Improved support for inserting related records.
 
 	* lib/wiking/util.py: Ignore menu item `variants' if they were not
 	defined.
@@ -10,7 +10,8 @@
 	loogging login attempts.
 
 	* lib/wiking/cms.py: Give higher precedence to resolution by key
-	than by referer.
+	than by referer.  Fixed problems with page and attachment
+	relation.
 
 2007-09-18  Tomas Cerha  <cerha@brailcom.org>
 

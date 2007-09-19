@@ -59,7 +59,7 @@ class PytisModule(Module, ActionHandler):
     
     _OWNER_COLUMN = None
     _SUPPLY_OWNER = True
-    _NON_LAYOUT_FIELDS = ()
+    _RELATION_FIELDS = ()
 
     _LIST_LAYOUT = None
     _ALLOW_TABLE_LAYOUT_IN_FORMS = True
@@ -129,7 +129,13 @@ class PytisModule(Module, ActionHandler):
     def _validate(self, req, record):
         # TODO: This should go to pytis.web....
         errors = []
-        for id in self._view.layout().order() + list(self._NON_LAYOUT_FIELDS):
+        fields = self._view.layout().order()
+        if record.new():
+            for id in self._RELATION_FIELDS:
+                if req.has_param(id):
+                    fields += (id,)
+                    break
+        for id in fields:
             f = self._view.field(id)
             if not record.editable(id):
                 continue
@@ -404,12 +410,9 @@ class PytisModule(Module, ActionHandler):
         """Return the listing of records related to other module's record."""
         bcol, sbcol = binding.binding_column(), binding.side_binding_column()
         args = {sbcol: record[bcol].value()}
-        if self._LIST_BY_LANGUAGE:
-            args['lang'] = record['lang'].value()
-        content = (
-            self._form(pw.ListView, req, condition=self._condition(req, **args),
-                       columns=[c for c in self._view.columns() if c!=sbcol]),
-            self._action_menu(req, args=args))
+        content = (self._form(pw.ListView, req, condition=self._condition(req, **args),
+                              columns=[c for c in self._view.columns() if c!=sbcol]),
+                   self._action_menu(req, args=args))
         return lcg.Section(title=self._view.title(), content=[c for c in content if c])
 
     # ===== Action handlers =====

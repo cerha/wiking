@@ -777,7 +777,7 @@ class Pages(CMSModule, Mappable):
         layout = ('identifier', 'title', '_content')
         columns = ('title_or_identifier', 'identifier', 'status')
         cb = pp.CodebookSpec(display='title_or_identifier')
-        bindings = {'Attachments': pp.BindingSpec(_("Attachments"), 'mapping_id')}
+        bindings = {'Attachments': pp.BindingSpec(_("Attachments"), 'page_id')}
     
     _REFERER = 'identifier'
     _REFERER_PATH_LEVEL = 1
@@ -950,9 +950,11 @@ class Attachments(StoredFileModule, CMSModule):
             Field('page_attachment_id',
                   computer=Computer(self._page_attachment_id, depends=('attachment_id', 'lang'))),
             Field('attachment_id'),
-            Field('mapping_id', codebook='Menu', editable=ONCE),
+            Field('mapping_id', codebook='Mapping', editable=ONCE,
+                  computer=Computer(self._mapping_id, depends=('page_id',))),
             Field('identifier'),
-            Field('lang', _("Language"), codebook='Languages', 
+            Field('lang', _("Language"), codebook='Languages',
+                  computer=Computer(self._lang, depends=('page_id',)),
                   selection_type=CHOICE, editable=ONCE, value_column='lang'),
             Field('page_id', _("Page"), codebook='Pages'),
             Field('file', _("File"), virtual=True, editable=ALWAYS,
@@ -989,6 +991,10 @@ class Attachments(StoredFileModule, CMSModule):
         layout = ('file', 'title', 'description', 'listed')
         columns = ('filename', 'title', 'bytesize', 'mime_type', 'listed', 'page_id')
         sorting = (('identifier', ASC), ('filename', ASC))
+        def _mapping_id(self, row):
+            return row['page_id'].value() and int(row['page_id'].value().split('.')[0])
+        def _lang(self, row):
+            return row['page_id'].value() and str(row['page_id'].value().split('.')[1])
         def _ext(self, row):
             if row['filename'].value() is None:
                 return ''
@@ -1021,7 +1027,7 @@ class Attachments(StoredFileModule, CMSModule):
     _REFERER = 'filename'
     _LIST_BY_LANGUAGE = True
     _SEQUENCE_FIELDS = (('attachment_id', '_attachments_attachment_id_seq'),)
-    _NON_LAYOUT_FIELDS = ('mapping_id', 'lang')
+    _RELATION_FIELDS = ('page_id',)
     _EXCEPTION_MATCHERS = (
         ('duplicate key violates unique constraint "_attachments_mapping_id_key"',
          _("Attachment of the same filename already exists for this page.")),)
