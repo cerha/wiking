@@ -230,7 +230,7 @@ class Application(Module):
         """
         if isinstance(exception, IOError) \
                and str(exception) == "Write failed, client closed connection.":
-            return req.OK
+            return req.done()
         import traceback, cgitb
         einfo = sys.exc_info()
         message = ''.join(traceback.format_exception_only(*einfo[:2]))

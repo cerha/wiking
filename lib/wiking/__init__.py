@@ -51,6 +51,7 @@ from configuration import *
 cfg = Configuration()
 
 # We don't want to overwrite module's __doc__ and other private identifiers...
+import util, modules, db, application, export, request, install
 _globals = dict([(k,v) for k,v in globals().items() if not k.startswith('_')])
 for _file in (util, modules, db, application, export, request, install):
     _file.__dict__.update(_globals)

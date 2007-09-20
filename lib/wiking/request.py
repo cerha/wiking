@@ -47,7 +47,6 @@ class Request(pytis.web.Request):
     """Mod_python request wrapper implementing the pytis request interface."""
     
     _UNIX_NEWLINE = re.compile("(?<!\r)\n")
-    OK =  apache.OK
     
     def __init__(self, req, encoding='utf-8'):
         self._req = req
@@ -120,17 +119,6 @@ class Request(pytis.web.Request):
     def set_status(self, status):
         self._req.status = status
         
-    def result(self, data, content_type="text/html"):
-        if content_type in ("text/html", "application/xml", "text/css") \
-               and isinstance(data, unicode):
-            content_type += "; charset=%s" % self._encoding
-            #data = self._UNIX_NEWLINE.sub("\r\n", data)
-            data = data.encode(self._encoding)
-        self._req.content_type = content_type
-        self._req.send_http_header()
-        self._req.write(data)
-        return apache.OK
-
     def https(self):
         """Return true if https is on."""
         port = self._req.connection.local_addr[1]
@@ -148,7 +136,21 @@ class Request(pytis.web.Request):
         return protocol + self._req.server.server_hostname + \
                (port and port != default_port and ':'+ str(port) or '') + \
                self.uri
+
+    def done(self):
+        return apache.OK
     
+    def result(self, data, content_type="text/html"):
+        if content_type in ("text/html", "application/xml", "text/css") \
+               and isinstance(data, unicode):
+            content_type += "; charset=%s" % self._encoding
+            #data = self._UNIX_NEWLINE.sub("\r\n", data)
+            data = data.encode(self._encoding)
+        self._req.content_type = content_type
+        self._req.send_http_header()
+        self._req.write(data)
+        return apache.OK
+
     def error(self, message):
         self._req.content_type = "text/html; charset=UTF-8"
         self._req.send_http_header()
