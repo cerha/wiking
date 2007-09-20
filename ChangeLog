@@ -1,3 +1,11 @@
+2007-09-20  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/__init__.py: Minor import problem fixed.
+
+	* lib/wiking/application.py: Use `req.done()' instead of `req.OK'.
+
+	* lib/wiking/request.py: Unwanted dependency on apache fixed.
+
 2007-09-19  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/db.py: Give higher precedence to resolution by key
