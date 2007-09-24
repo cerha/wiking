@@ -32,11 +32,17 @@ purge: uninstall
 
 cvs-install: compile lib-links share-links $(APACHECFG) $(CFGFILE)
 
-lib-links: $(LIB)/wiking
-	ln -s $(CURDIR)/lib/wiking $(LIB)/wiking
+lib-links:
+	@if [ -d $(LIB)/wiking ]; then echo "$(LIB)/wiking already exists!"; \
+	else echo "Linking wiking libraries to $(LIB)/wiking"; \
+	ln -s $(CURDIR)/lib/wiking $(LIB)/wiking; fi
 
-share-links: $(SHARE)/wiking
-	ln -s $(CURDIR)/doc $(CURDIR)/translations $(CURDIR)/resources $(CURDIR)/sql $(SHARE)/wiking
+share-links: link-doc link-translations link-resources link-sql
+
+link-%: $(SHARE)/wiking
+	@if [ -d $(SHARE)/wiking/$* ]; then echo "$(SHARE)/wiking/$* already exists!"; \
+	else echo "Linking wiking $* to $(SHARE)/wiking"; \
+	ln -s $(CURDIR)/$* $(SHARE)/wiking; fi
 
 cvs-update: do-cvs-update compile translations
 
@@ -88,7 +94,8 @@ dir = wiking-$(version)
 file = wiking-$(version).tar.gz
 
 compile:
-	python -c "import compileall; compileall.compile_dir('lib')"
+	@echo "Compiling Python libraries from source..."
+	@python -c "import compileall; compileall.compile_dir('lib')" >/dev/null
 #python -OO -c "import compileall; compileall.compile_dir('lib')"
 
 release: doc compile translations
