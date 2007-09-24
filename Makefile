@@ -30,7 +30,7 @@ uninstall:
 purge: uninstall
 	rm -f $(CFGFILE)
 
-cvs-install: compile lib-links share-links $(APACHECFG) $(CFGFILE)
+cvs-install: compile translations lib-links share-links $(APACHECFG) $(CFGFILE)
 
 lib-links:
 	@if [ -d $(LIB)/wiking ]; then echo "$(LIB)/wiking already exists!"; \
@@ -53,8 +53,7 @@ config_dir = $(shell dirname $(CFGFILE))
 
 $(CFGFILE): $(config_dir)
 	@echo "Writing $(CFGFILE)"
-	@echo "import wiking,sys; wiking.cfg.dump_config_template(sys.stdout)"\
-	      | python >$(CFGFILE)
+	@echo "import wiking,sys; wiking.cfg.dump_config_template(sys.stdout)" | python >$(CFGFILE)
 
 $(config_dir):
 	mkdir $(config_dir)

@@ -1,6 +1,7 @@
 2007-09-24  Tomas Cerha  <cerha@brailcom.org>
 
-	* Makefile: Allow repeated cvs-install.
+	* Makefile: Allow repeated cvs-install.  Make translations for
+	cvs-install.
 
 	* lib/wiking/configuration.py
 	(Configuration._Option_config_file.default): Prevent using .pyo file.
