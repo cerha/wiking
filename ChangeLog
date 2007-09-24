@@ -1,5 +1,10 @@
 2007-09-24  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/configuration.py
+	(Configuration._Option_config_file.default): Prevent using .pyo file.
+
+	* resources/css/default.css: Minor fieldset display improvement.
+
 	* lib/wiking/modules.py (CookieAuthentication._auth_log): Renamed
 	to `_auth_hook'.
 

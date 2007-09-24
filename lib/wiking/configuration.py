@@ -52,7 +52,7 @@ class Configuration(pc):
                 pass
             else:
                 filename = wikingconfig.__file__
-                if filename.endswith('.pyc'):
+                if filename.endswith('.pyc') or filename.endswith('.pyo'):
                     filename = filename[:-1]
                 return filename
             for filename in ('/etc/wiking.py', '/etc/wiking/config.py',
