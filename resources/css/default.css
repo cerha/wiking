@@ -323,6 +323,9 @@ form.pytis-form fieldset.group, form.pytis-form div.submit, form.browse-form-con
     border-width: 1px 0;
     margin: 0.4em 0;
 }
+form.pytis-form fieldset.group fieldset.group {
+    border-width: 1px;
+}
 form.pytis-form div.submit { 
     margin-top: 0.5em;
     padding: 0.5em;
