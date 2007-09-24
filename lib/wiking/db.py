@@ -424,11 +424,8 @@ class PytisModule(Module, ActionHandler):
             help = lcg.p(self._view.help() or '', ' ', lcg.link('/_doc/'+self.name(), _("Help")))
             content += (help,)
         content += (self._form(pw.ListView, req, condition=self._condition(req, lang=lang)),)
-        if isinstance(self, RssModule) and not req.wmi and self._RSS_TITLE_COLUMN and lang:
-            content += (lcg.p(_("An RSS channel is available for this section:"), ' ',
-                              lcg.link(req.uri +'.'+ lang +'.rss', lcg.join((lcg.Title('news'), 'RSS')),
-                                       type='application/rss+xml'), " (",
-                              lcg.link('_doc/rss', _("more about RSS")), ")"),)
+        if isinstance(self, RssModule) and not req.wmi and lang:
+            content += (self._rss_info(req, lang),)
         content += (self._action_menu(req),)
         return self._document(req, content, lang=lang, err=err, msg=msg)
 
@@ -554,7 +551,16 @@ class RssModule(object):
                         return title
             return None
         return find(self._application.menu(req)) or self._view.title()
-    
+
+    def _rss_info(self, req, lang):
+        if self._RSS_TITLE_COLUMN is None:
+            return None
+        return lcg.p(_("An RSS channel is available for this section:"), ' ',
+                     lcg.link(req.uri +'.'+ lang +'.rss',
+                              lcg.join((lcg.Title('/'.join(req.path)), 'RSS')),
+                              type='application/rss+xml'), " (",
+                     lcg.link('_doc/rss', _("more about RSS")), ")")
+        
     def action_rss(self, req):
         if not self._RSS_TITLE_COLUMN:
             raise NotFound
