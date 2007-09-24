@@ -1,5 +1,8 @@
 2007-09-24  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/modules.py (CookieAuthentication._auth_log): Renamed
+	to `_auth_hook'.
+
 	* lib/wiking/db.py (RssModule._rss_info): New method.
 	(PytisModule.action_list): Use it.
 
