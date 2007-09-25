@@ -370,8 +370,7 @@ class PytisModule(Module, ActionHandler):
     
     def _record(self, row, new=False, prefill=None):
         """Return the Record instance initialized by given data row."""
-        return self.Record(self._view.fields(), self._data, row,
-                           prefill=prefill, new=new)
+        return self.Record(self._view.fields(), self._data, row, prefill=prefill, new=new)
     
 
     # ===== Methods which modify the database =====
@@ -395,7 +394,7 @@ class PytisModule(Module, ActionHandler):
         if not self._data.delete(record.key()) and raise_error:
             raise pd.DBException('???', Exception("Unable to delete record."))
 
-    # ===== Public methods which are not action handlers =====
+    # ===== Public methods =====
     
     def record(self, value):
         """Return the record corresponding to given key value."""
@@ -453,9 +452,8 @@ class PytisModule(Module, ActionHandler):
     def action_remove(self, req, record, err=None):
         form = self._form(pw.ShowForm, req, row=record.row())
         actions = self._action_menu(req, record, (Action(_("Remove"), 'delete'),))
-        msg = _("Please, confirm removing the record permanently.")
-        return self._document(req, (form, actions), record,
-                              err=err, subtitle=_("removing"), msg=msg)
+        return self._document(req, (form, actions), record, err=err, subtitle=_("removing"),
+                              msg=_("Please, confirm removing the record permanently."))
 
     # ===== Action handlers which actually modify the database =====
 
@@ -496,7 +494,7 @@ class PytisModule(Module, ActionHandler):
         else:
             return self._redirect_after_delete(req, record)
         
-    # ===== Request redirection after data operations ====-
+    # ===== Request redirection after successful data operations =====
 
     def _update_msg(self, record):
         return self._UPDATE_MSG
