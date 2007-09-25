@@ -1,5 +1,9 @@
 2007-09-25  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/cms.py: Use `prefer_display' where necessary.
+
+	* lib/wiking/db.py: Cosmetic improvements.
+
 	* Makefile: Check python path before installation.
 
 2007-09-24  Tomas Cerha  <cerha@brailcom.org>

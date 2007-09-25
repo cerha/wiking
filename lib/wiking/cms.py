@@ -100,7 +100,7 @@ class Application(CookieAuthentication, Application):
     
     _MAPPING = {'_doc': 'Documentation',
                 '_wmi': 'WikingManagementInterface',
-                'css':  'Stylesheets'}
+                '_css': 'Stylesheets'}
 
     _RIGHTS = {'Documentation': (Roles.ANYONE,),
                'SiteMap': (Roles.ANYONE,),
@@ -134,7 +134,7 @@ class Application(CookieAuthentication, Application):
         return self._module('Languages').languages()
         
     def stylesheets(self):
-        return [lcg.Stylesheet(name, uri='/css/'+name)
+        return [lcg.Stylesheet(name, uri='/_css/'+name)
                 for name in self._module('Stylesheets').stylesheets()]
 
     def _auth_user(self, login):
@@ -414,7 +414,8 @@ class Menu(Mapping, Publishable):
                           "dashes and underscores.  It must start with a letter.")),
             Field('parent', _("Parent item"), codebook='Mapping', not_null=False,
                   display='identifier'),
-            Field('modname', _("Module"), display=_modtitle, selection_type=CHOICE, not_null=True,
+            Field('modname', _("Module"), display=_modtitle, prefer_display=True,
+                  selection_type=CHOICE, not_null=True,
                   enumerator=pd.FixedEnumerator([_m.name() for _m in _modules(Mappable)]),
                   descr=_("Select the module which handles requests for given identifier. "
                           "This is the way to make the module available from outside.")),
@@ -434,7 +435,7 @@ class Menu(Mapping, Publishable):
                    'published', 'private', 'owner')
         sorting = (('tree_order', ASC), ('identifier', ASC))
         bindings = {'Pages': pp.BindingSpec(_("Pages"), 'mapping_id')}
-        cb = pp.CodebookSpec(display='identifier')
+        cb = pp.CodebookSpec(display='identifier', prefer_display=True)
     _EXCEPTION_MATCHERS = (
         ('duplicate key violates unique constraint "_mapping_unique_tree_(?P<id>ord)er"',
          _("Duplicate menu order on the this tree level.")),) + \
@@ -562,7 +563,7 @@ class Panels(CMSModule, Publishable):
             Field('ord', _("Order"), width=5,
                   descr=_("Number denoting the order of the panel on the page.")),
             Field('mapping_id', _("Module"), width=5, not_null=False, codebook='Mapping',
-                  display=(_modtitle, 'modname'), selection_type=CHOICE, 
+                  display=(_modtitle, 'modname'), prefer_display=True, selection_type=CHOICE,
                   validity_condition=pd.NE('modname', pd.Value(pd.String(), 'Pages')),
                   descr=_("The items of the selected module will be shown by the panel. "
                           "Leave blank for a text content panel.")),
@@ -626,7 +627,7 @@ class Languages(CMSModule):
                   computer=Computer(lambda r: lcg.language_name(r['lang'].value()), depends=())),
             )
         sorting = (('lang', ASC),)
-        cb = pp.CodebookSpec(display=lcg.language_name)
+        cb = pp.CodebookSpec(display=lcg.language_name, prefer_display=True)
         layout = ('lang',)
         columns = ('lang', 'name')
     _REFERER = 'lang'
@@ -722,7 +723,7 @@ class Themes(CMSModule):
             return ('name',) + tuple([FieldSet(label, [f.id() for f in fields])
                                       for label, fields in self._FIELDS])
         columns = ('name',)
-        cb = pp.CodebookSpec(display='name')
+        cb = pp.CodebookSpec(display='name', prefer_display=True)
     WMI_SECTION = WikingManagementInterface.SECTION_STYLE
     WMI_ORDER = 100
 
@@ -776,7 +777,7 @@ class Pages(CMSModule, Mappable):
         sorting = (('tree_order', ASC), ('identifier', ASC),)
         layout = ('identifier', 'title', '_content')
         columns = ('title_or_identifier', 'identifier', 'status')
-        cb = pp.CodebookSpec(display='title_or_identifier')
+        cb = pp.CodebookSpec(display='title_or_identifier', prefer_display=True)
         bindings = {'Attachments': pp.BindingSpec(_("Attachments"), 'page_id')}
     
     _REFERER = 'identifier'
@@ -1389,7 +1390,7 @@ class _Users(CMSModule):
                   FieldSet(_("Contact information"),
                            ('email', 'phone', 'address', 'uri')),
                   FieldSet(_("Login information"), ('login', 'password')))
-        cb = pp.CodebookSpec(display='user')
+        cb = pp.CodebookSpec(display='user', prefer_display=True)
     _REFERER = 'login'
     _PANEL_FIELDS = ('fullname',)
     _ALLOW_TABLE_LAYOUT_IN_FORMS = False
