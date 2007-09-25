@@ -1,11 +1,12 @@
+# Edit the paths below to suit your needs.
 SHARE = /usr/local/share
-LIB = /usr/local/lib/python2.5/site-packages
+LIB = /usr/local/lib/python%d.%d/site-packages
 CFGFILE = /etc/wiking/config.py
 APACHECFG = /etc/apache2/conf.d/wiking
 
-# TODO: Test whether $(LIB) exists and is in sys.path.  
-# Refuse to install if not?
-export PYTHONPATH=$(LIB)
+
+lib := $(shell python -c 'import sys; print "$(LIB)".find("%d") != -1 and \
+	                 "$(LIB)" % sys.version_info[:2] or "$(LIB)"')
 
 .PHONY: translations doc
 
@@ -16,30 +17,34 @@ doc-%:
 translations:
 	make -C translations
 
-install: $(SHARE)/wiking copy-files $(APACHECFG) $(CFGFILE)
+install: check-lib $(SHARE)/wiking copy-files $(APACHECFG) $(CFGFILE)
+
+check-lib:
+	@echo -e "import sys\nif '$(lib)' not in sys.path: sys.exit(1)" \
+	| python || echo 'WARNING: $(lib) not in Python path!'
 
 copy-files:
 	cp -ruv doc resources sql translations $(SHARE)/wiking
-	cp -ruv lib/wiking $(LIB)
+	cp -ruv lib/wiking $(lib)
 
 uninstall:
 	rm -rf $(SHARE)/wiking
-	rm -rf $(LIB)/wiking
+	rm -rf $(lib)/wiking
 	rm -f $(APACHECFG)
 
 purge: uninstall
 	rm -f $(CFGFILE)
 
-cvs-install: compile translations lib-links share-links $(APACHECFG) $(CFGFILE)
+cvs-install: check-lib compile translations link-lib link-share $(APACHECFG) $(CFGFILE)
 
-lib-links:
-	@if [ -d $(LIB)/wiking ]; then echo "$(LIB)/wiking already exists!"; \
-	else echo "Linking wiking libraries to $(LIB)/wiking"; \
-	ln -s $(CURDIR)/lib/wiking $(LIB)/wiking; fi
+link-lib:
+	@if [ -d $(lib)/wiking ]; then echo "$(lib)/wiking already exists!"; \
+	else echo "Linking wiking libraries to $(lib)/wiking"; \
+	ln -s $(CURDIR)/lib/wiking $(lib)/wiking; fi
 
-share-links: link-doc link-translations link-resources link-sql
+link-share: link-share-doc link-share-translations link-share-resources link-share-sql
 
-link-%: $(SHARE)/wiking
+link-share-%: $(SHARE)/wiking
 	@if [ -d $(SHARE)/wiking/$* ]; then echo "$(SHARE)/wiking/$* already exists!"; \
 	else echo "Linking wiking $* to $(SHARE)/wiking"; \
 	ln -s $(CURDIR)/$* $(SHARE)/wiking; fi
@@ -53,7 +58,8 @@ config_dir = $(shell dirname $(CFGFILE))
 
 $(CFGFILE): $(config_dir)
 	@echo "Writing $(CFGFILE)"
-	@echo "import wiking,sys; wiking.cfg.dump_config_template(sys.stdout)" | python >$(CFGFILE)
+	@echo "import wiking,sys; wiking.cfg.dump_config_template(sys.stdout)" \
+	| PYTHONPATH=$(lib) python >$(CFGFILE)
 
 $(config_dir):
 	mkdir $(config_dir)
