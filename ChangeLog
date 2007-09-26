@@ -1,3 +1,7 @@
+2007-09-26  Tomas Cerha  <cerha@brailcom.org>
+
+	* translations/Makefile: Minor improvement.
+
 2007-09-25  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/cms.py: Use `prefer_display' where necessary.
