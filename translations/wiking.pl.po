@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-09-17 18:48+0200\n"
+"POT-Creation-Date: 2007-09-26 12:00+0200\n"
 "PO-Revision-Date: 2007-09-26 11:26+0200\n"
 "Last-Translator: Pawel Loba <ploba@rogers.com>\n"
 "Language-Team: Polish <wiking@lists.freebsoft.org>\n"
@@ -69,21 +69,13 @@ msgstr "Wpis został uaktualniony."
 msgid "The record was deleted."
 msgstr "Wpis został usunięty."
 
-#: ../lib/wiking/db.py:190
+#: ../lib/wiking/db.py:196
 msgid "Integrity check failed."
 msgstr "Sprawdzian integralności nie powiódł się"
 
-#: ../lib/wiking/db.py:420
+#: ../lib/wiking/db.py:423
 msgid "Help"
 msgstr "Pomoc"
-
-#: ../lib/wiking/db.py:424
-msgid "An RSS channel is available for this section:"
-msgstr "Kanał RSS jest dostępny dla tej sekcji:"
-
-#: ../lib/wiking/db.py:427
-msgid "more about RSS"
-msgstr "Więcej o RSS"
 
 #: ../lib/wiking/db.py:445
 msgid "new record"
@@ -94,38 +86,46 @@ msgid "edit form"
 msgstr "wypelnij formę"
 
 #: ../lib/wiking/db.py:455
-msgid "Please, confirm removing the record permanently."
-msgstr "Potwierdź definitywne usunięcie wpisu."
-
-#: ../lib/wiking/db.py:457
 msgid "removing"
 msgstr "usuwanie"
 
-#: ../lib/wiking/db.py:700
+#: ../lib/wiking/db.py:456
+msgid "Please, confirm removing the record permanently."
+msgstr "Potwierdź definitywne usunięcie wpisu."
+
+#: ../lib/wiking/db.py:556
+msgid "An RSS channel is available for this section:"
+msgstr "Kanał RSS jest dostępny dla tej sekcji:"
+
+#: ../lib/wiking/db.py:560
+msgid "more about RSS"
+msgstr "Więcej o RSS"
+
+#: ../lib/wiking/db.py:708
 msgid "No records."
 msgstr "Nie ma wpisu"
 
-#: ../lib/wiking/db.py:707
+#: ../lib/wiking/db.py:715
 msgid "The item was published."
 msgstr "Pozycja została opublikowana."
 
-#: ../lib/wiking/db.py:708
+#: ../lib/wiking/db.py:716
 msgid "The item was unpublished."
 msgstr "Pozycja nie została opublikowana."
 
-#: ../lib/wiking/db.py:717
+#: ../lib/wiking/db.py:725
 msgid "Publish"
 msgstr "Opublikować"
 
-#: ../lib/wiking/db.py:721
+#: ../lib/wiking/db.py:729
 msgid "Make the item visible to website visitors"
 msgstr ""
 
-#: ../lib/wiking/db.py:722
+#: ../lib/wiking/db.py:730
 msgid "Unpublish"
 msgstr "Nie publikować"
 
-#: ../lib/wiking/db.py:725
+#: ../lib/wiking/db.py:733
 msgid "Make the item invisible to website visitors"
 msgstr ""
 
@@ -176,15 +176,15 @@ msgstr "Pokaż panele"
 msgid "Hide panels"
 msgstr "Ukryj panele"
 
-#: ../lib/wiking/export.py:189 ../lib/wiking/util.py:537
+#: ../lib/wiking/export.py:189 ../lib/wiking/util.py:540
 msgid "log out"
 msgstr "wyloguj się"
 
-#: ../lib/wiking/export.py:191 ../lib/wiking/util.py:539
+#: ../lib/wiking/export.py:191 ../lib/wiking/util.py:542
 msgid "not logged"
 msgstr ""
 
-#: ../lib/wiking/export.py:192 ../lib/wiking/util.py:540
+#: ../lib/wiking/export.py:192 ../lib/wiking/util.py:543
 msgid "log in"
 msgstr "wloguj się"
 
@@ -235,47 +235,47 @@ msgstr "Oświadczenie o Dostępności"
 msgid "Contact:"
 msgstr "Kontakt:"
 
-#: ../lib/wiking/modules.py:322
+#: ../lib/wiking/modules.py:339
 msgid "Enter your login name, please!"
 msgstr ""
 
-#: ../lib/wiking/modules.py:324
+#: ../lib/wiking/modules.py:341
 msgid "Enter your password, please!"
 msgstr ""
 
-#: ../lib/wiking/modules.py:327
+#: ../lib/wiking/modules.py:345
 msgid "Invalid login!"
 msgstr ""
 
-#: ../lib/wiking/modules.py:382
+#: ../lib/wiking/modules.py:402
 msgid "Searching"
 msgstr ""
 
-#: ../lib/wiking/modules.py:383
+#: ../lib/wiking/modules.py:403
 msgid "Search results"
 msgstr ""
 
-#: ../lib/wiking/modules.py:384
+#: ../lib/wiking/modules.py:404
 msgid "Given search term doesn't contain any searchable term."
 msgstr ""
 
-#: ../lib/wiking/modules.py:388
+#: ../lib/wiking/modules.py:408
 msgid "Search words: "
 msgstr ""
 
-#: ../lib/wiking/modules.py:389
+#: ../lib/wiking/modules.py:409
 msgid "Search"
 msgstr ""
 
-#: ../lib/wiking/modules.py:446
+#: ../lib/wiking/modules.py:466
 msgid "Nothing found."
 msgstr ""
 
-#: ../lib/wiking/modules.py:503
+#: ../lib/wiking/modules.py:523
 msgid "The following modules were successfully reloaded:"
 msgstr ""
 
-#: ../lib/wiking/modules.py:505
+#: ../lib/wiking/modules.py:525
 msgid "Reload"
 msgstr ""
 
@@ -346,23 +346,23 @@ msgstr ""
 "Dla współpracy przeglądarki z innymi językami zmień jej ustawienia bądź "
 "skontaktuj się z administratorem swojego systemu."
 
-#: ../lib/wiking/util.py:483
+#: ../lib/wiking/util.py:486
 msgid "not available"
 msgstr ""
 
-#: ../lib/wiking/util.py:491
+#: ../lib/wiking/util.py:494
 msgid "Actions:"
 msgstr "Akcje:"
 
-#: ../lib/wiking/util.py:558
+#: ../lib/wiking/util.py:561
 msgid "Login name"
 msgstr "Nazwa logująca"
 
-#: ../lib/wiking/util.py:561
+#: ../lib/wiking/util.py:564
 msgid "Password"
 msgstr "Hasło"
 
-#: ../lib/wiking/util.py:567
+#: ../lib/wiking/util.py:570
 msgid "Log in"
 msgstr "Wlogowanie"
 
