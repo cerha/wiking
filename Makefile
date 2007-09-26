@@ -52,7 +52,7 @@ link-share-%: $(SHARE)/wiking
 cvs-update: do-cvs-update compile translations
 
 do-cvs-update:
-	cvs update -dP
+	cvs update -dPC
 
 config_dir = $(shell dirname $(CFGFILE))
 
