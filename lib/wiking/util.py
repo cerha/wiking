@@ -337,10 +337,7 @@ class Document(object):
         self._sec_lang = sec_lang
         self._resources = tuple(resources)
 
-    def lang(self):
-        return self._lang
-    
-    def build(self, req, modname, menu, panels, stylesheets):
+    def build(self, req, modname, application):
         id = '/'.join(req.path)
         parent_id = '/'.join(req.path[:-1])
         state = WikingNode.State(modname=modname,
@@ -357,25 +354,27 @@ class Document(object):
                 if self._subtitle:
                     heading = lcg.concat(heading, ' :: ', self._subtitle)
                 content = self._content
-                panels_ = panels
-                resources = resources=self._resources + tuple(stylesheets)
+                panels = application.panels(req, lang)
+                resources = resources=self._resources + tuple(application.stylesheets())
                 variants = self._variants
                 if variants is None:
                     variants = item.variants()
             else:
                 heading = item.title()
                 content = lcg.Content()
-                panels_ = ()
+                panels = ()
                 resources = ()
                 variants = item.variants()
             hidden = item.hidden()
-            if variants is not None and lang not in variants:
+            if variants is None:
+                variants = application.languages()
+            elif lang not in variants:
                 hidden = True
             resource_provider = lcg.StaticResourceProvider(resources)
             node = WikingNode(item.id(), state, title=item.title(), heading=heading,
                               descr=item.descr(), content=content, hidden=hidden, language=lang,
                               secondary_language=self._sec_lang, language_variants=variants or (),
-                              active=item.active(), panels=panels_, 
+                              active=item.active(), panels=panels, 
                               children=[mknode(i) for i in item.submenu()],
                               resource_provider=resource_provider)
             if item.id() == id:
@@ -383,7 +382,7 @@ class Document(object):
             elif item.id() == parent_id:
                 parent.append(node)
             return node
-        nodes = [mknode(item) for item in menu]
+        nodes = [mknode(item) for item in application.menu(req)]
         if not me:
             variants = self._variants or parent and parent[0].language_variants() or None
             node = mknode(MenuItem(id, self._title, hidden=True, variants=variants))

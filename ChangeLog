@@ -1,5 +1,12 @@
 2007-09-26  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/handler.py (Handler.handle): Pass application to
+	`Document.build'.
+
+	* lib/wiking/util.py (Document.build): Supply application defined
+	language variants if no language variants are defined for the
+	document or its menu item.
+
 	* translations/Makefile: Minor improvement.
 
 2007-09-25  Tomas Cerha  <cerha@brailcom.org>

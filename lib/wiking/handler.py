@@ -90,10 +90,7 @@ class Handler(object):
                     if isinstance(e, HttpError):
                         req.set_status(e.ERROR_CODE)
                     result = Document(e.title(), e.message(req))
-            node = result.build(req, modname,
-                                application.menu(req),
-                                application.panels(req, result.lang()),
-                                application.stylesheets())
+            node = result.build(req, modname, application)
             output = translator(node.language()).translate(self._exporter.export(node))
             return req.result(output)
         except Exception, e:
