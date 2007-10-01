@@ -64,7 +64,7 @@ class Handler(object):
         application = self._application
         try:
             req.path = req.path or ('index',)
-            req.wmi = False # Will be set to True by `WikingManagementInterface'.
+            req.wmi = False # Temporary hack (should go to CMS).
             modname = None
             try:
                 application.configure(req)
