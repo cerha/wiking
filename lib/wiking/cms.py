@@ -128,6 +128,8 @@ class Application(CookieAuthentication, Application):
                    self._module('Panels').panels(req, lang)
         
     def configure(self, req):
+        # TODO: This should be here as soon as req.wmi doesn't appear anywhere outside CMS.
+        # req.wmi = False # Will be set to True by `WikingManagementInterface'.
         return self._module('Config').configure(req)
         
     def languages(self):
@@ -343,6 +345,11 @@ class CMSModule(PytisModule, RssModule, Panelizable):
         else:
             return super(CMSModule, self)._resolve(req)
 
+    def _base_uri(self, req):
+        if req.wmi:
+            return '/_wmi/'+ self.name()
+        else:
+            return super(CMSModule, self)._base_uri(req)
 
 class Mapping(CMSModule):
     """Map available URIs to the modules which handle them."""
@@ -413,7 +420,7 @@ class Menu(Mapping, Publishable):
                           "from other pages. A valid identifier can only contain letters, digits, "
                           "dashes and underscores.  It must start with a letter.")),
             Field('parent', _("Parent item"), codebook='Mapping', not_null=False,
-                  display='identifier'),
+                  display='identifier', prefer_display=True),
             Field('modname', _("Module"), display=_modtitle, prefer_display=True,
                   selection_type=CHOICE, not_null=True,
                   enumerator=pd.FixedEnumerator([_m.name() for _m in _modules(Mappable)]),
@@ -446,10 +453,10 @@ class Menu(Mapping, Publishable):
     WMI_SECTION = WikingManagementInterface.SECTION_CONTENT
     WMI_ORDER = 10
 
-    def _link_provider(self, req, row, cid, **kwargs):
+    def _link_provider(self, req, row, cid=None, **kwargs):
         if cid == 'parent':
             return None
-        return super(Menu, self)._link_provider(req, row, cid, **kwargs)
+        return super(Menu, self)._link_provider(req, row, cid=cid, **kwargs)
 
     def menu(self, req):
         children = {None: []}
@@ -1038,10 +1045,10 @@ class Attachments(StoredFileModule, CMSModule):
     RIGHTS_edit = RIGHTS_update = (Roles.AUTHOR, Roles.OWNER)
     RIGHTS_remove = RIGHTS_delete = (Roles.AUTHOR, Roles.OWNER)
     
-    def _link_provider(self, req, row, cid, **kwargs):
+    def _link_provider(self, req, row, cid=None, **kwargs):
         if cid == 'file':
             return make_uri(self._base_uri(req) +'/'+ row['filename'].export(), download=1)
-        return super(Attachments, self)._link_provider(req, row, cid, **kwargs)
+        return super(Attachments, self)._link_provider(req, row, cid=cid, **kwargs)
 
     def _redirect_to_page(self, req, record):
         return req.redirect('/_wmi/Pages/' + record['identifier'].value())
@@ -1132,12 +1139,14 @@ class News(CMSModule, Mappable):
     WMI_SECTION = WikingManagementInterface.SECTION_CONTENT
     WMI_ORDER = 300
         
-    def _link_provider(self, req, row, cid, target=None, **kwargs):
-        uri = self._base_uri(req)
-        if not req.wmi and cid == 'title' and uri:
-            return make_uri(uri, **kwargs) + '#item-'+ row[self._referer].export()
-        elif not issubclass(target, Panel):
-            return super(News, self)._link_provider(req, row, cid, target=target, **kwargs)
+    def _link_provider(self, req, row, cid=None, target=None):
+        if cid == 'title' and target is Panel or cid is None and target is RssModule:
+            uri = self._base_uri(req)
+            if uri:
+                return uri + '#item-'+ row[self._referer].export()
+            else:
+                return None
+        return super(News, self)._link_provider(req, row, cid=cid, target=target)
 
 
 class Planner(News):
@@ -1177,7 +1186,6 @@ class Planner(News):
     _LIST_LAYOUT = pw.ListLayout('date_title', meta=('author', 'timestamp'), content='content',
                                  anchor="item-%s")
     _RSS_TITLE_COLUMN = 'date_title'
-    _RSS_LINK_COLUMN = 'title'
     _RSS_DATE_COLUMN = None
     def _condition(self, req, **kwargs):
         scondition = super(Planner, self)._condition(req, **kwargs)
@@ -1205,10 +1213,8 @@ class Images(StoredFileModule, CMSModule, Mappable):
             Field('image_id'),
             Field('published'),
             Field('file', _("File"), virtual=True, editable=ALWAYS,
-                  type=pd.Image(not_null=True, maxlen=cfg.upload_limit,
-                                maxsize=(3000, 3000)), thumbnail='thumbnail',
-                  computer=self._file_computer('file', '_filename',
-                                               origname='filename')),
+                  type=pd.Image(not_null=True, maxlen=cfg.upload_limit, maxsize=(3000, 3000)),
+                  computer=self._file_computer('file', '_filename', origname='filename')),
             Field('image', virtual=True, editable=ALWAYS,
                   type=pd.Image(not_null=True, maxlen=cfg.upload_limit, maxsize=(3000, 3000)),
                   computer=self._file_computer('image', '_image_filename',
@@ -1271,12 +1277,15 @@ class Images(StoredFileModule, CMSModule, Mappable):
     #WMI_SECTION = WikingManagementInterface.SECTION_CONTENT
     WMI_ORDER = 500
         
-    def _link_provider(self, req, row, cid, **kwargs):
-        action_mapping = {'filename': None, 'file': 'orig', 'thumbnail': 'thumbnail'}
-        if action_mapping.has_key(cid):
-            return make_uri(self._base_uri(req) +'/'+ row['filename'].export(),
-                            action=action_mapping[cid])
-        return super(Images, self)._link_provider(req, row, cid, **kwargs)
+    def _link_provider(self, req, row, cid=None, **kwargs):
+        if cid == 'file':
+            return make_uri(self._base_uri(req) +'/'+ row['filename'].export(), action='orig')
+        return super(Images, self)._link_provider(req, row, cid=cid, **kwargs)
+    
+    def _image_provider(self, req, row, cid=None, **kwargs):
+        if cid == 'file':
+            return make_uri(self._base_uri(req) +'/'+ row['filename'].export(), action='thumbnail')
+        return super(Images, self)._link_provider(req, row, cid=cid, **kwargs)
 
     def _image(self, record, id):
         mime = "image/" + str(record['format'].value())

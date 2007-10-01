@@ -1,3 +1,13 @@
+2007-10-01  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/db.py: Distinguish image and link provider for form uris. 
+
+	* lib/wiking/cms.py: Updated link and image providers.
+
+	* lib/wiking/modules.py: Don't depend on `req.wmi'.
+
+	* lib/wiking/handler.py: Minor comment improvement.
+
 2007-09-26  Tomas Cerha  <cerha@brailcom.org>
 
 	* Makefile (cvs-update): Overwrite locally modified files.

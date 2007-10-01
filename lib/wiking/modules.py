@@ -72,13 +72,10 @@ class RequestHandler(object):
         # Since the identifiers may be used many times, they are cached at least for the duration
         # of one request.  We cannot cache them over requests, sice there is no way to invalidate
         # them if mapping changes (at least in the multiprocess server invironment).
-        if req.wmi:
-            uri = '/_wmi/'+ self.name()
-        else:
-            req_, uri = self._cached_uri
-            if req is not req_:
-                uri = self._mapped_uri()
-                self._cached_uri = (req, uri)
+        req_, uri = self._cached_uri
+        if req is not req_:
+            uri = self._mapped_uri()
+            self._cached_uri = (req, uri)
         return uri
 
     def _authorize(self, req, **kwargs):

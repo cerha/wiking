@@ -249,12 +249,15 @@ class PytisModule(Module, ActionHandler):
                 kwargs['separate'] = True
             return ActionMenu(uri, actions, self._referer, record, **kwargs)
 
-    def _link_provider(self, req, row, cid, target=None, **kwargs):
-        if cid == self._title_column or cid == self._key:
+    def _image_provider(self, req, row, cid, target=None):
+        return None
+
+    def _link_provider(self, req, row, cid=None, target=None):
+        if cid is None:
             uri = self._base_uri(req)
             if not uri:
                 return None
-            return make_uri(uri +'/'+ row[self._referer].export(), **kwargs)
+            return make_uri(uri +'/'+ row[self._referer].export())
         if self._links.has_key(cid):
             try:
                 module = self._module(self._links[cid])
@@ -264,9 +267,13 @@ class PytisModule(Module, ActionHandler):
         return None
 
     def _form(self, form, req, action=None, hidden=(), **kwargs):
-        def link_provider(row, cid):
-            return self._link_provider(req, row, cid, target=form)
-        kwargs['link_provider'] = link_provider
+        def uri_provider(row, cid=None, type=pw.UriType.LINK):
+            if type == pw.UriType.LINK:
+                method = self._link_provider
+            elif type == pw.UriType.IMAGE:
+                method = self._image_provider
+            return method(req, row, cid=cid, target=form)
+        kwargs['uri_provider'] = uri_provider
         #if issubclass(form, pw.EditForm) and req.params.has_key('module'):
         #    kwargs['hidden'] = kwargs.get('hidden', ()) + \
         #                       (('module', req.params['module']),)
@@ -403,7 +410,7 @@ class PytisModule(Module, ActionHandler):
     def link(self, req, value):
         """Return a uri for given key value."""
         record = self._record(self._data.row((value,)))
-        return self._link_provider(req, record, self._key)
+        return self._link_provider(req, record)
         
     def related(self, req, binding, modname, record):
         """Return the listing of records related to other module's record."""
@@ -523,7 +530,6 @@ class PytisModule(Module, ActionHandler):
 class RssModule(object):
     
     _RSS_TITLE_COLUMN = None
-    _RSS_LINK_COLUMN = None
     _RSS_DESCR_COLUMN = None
     _RSS_DATE_COLUMN = None
     _RSS_AUTHOR_COLUMN = None
@@ -562,22 +568,28 @@ class RssModule(object):
     def action_rss(self, req):
         if not self._RSS_TITLE_COLUMN:
             raise NotFound
-        lang = str(req.param('lang'))
-        rows = self._rows(req, lang=lang, limit=self._RSS_LIMIT)
+        lang = req.param('lang')
+        rows = self._rows(req, lang=str(lang), limit=self._RSS_LIMIT)
         from xml.sax.saxutils import escape
-        link_column = self._RSS_LINK_COLUMN or self._RSS_TITLE_COLUMN
         base_uri = req.abs_uri()[:-len(req.uri)]
-        args = lang and dict(setlang=lang) or {}
         row = pp.PresentedRow(self._view.fields(), self._data, None)
         items = []
         import mx.DateTime as dt
-        tr = translator(lang)
+        tr = translator(str(lang))
         users = self._module('Users')
         for data_row in rows:
             row.set_row(data_row)
             title = escape(tr.translate(row[self._RSS_TITLE_COLUMN].export()))
-            uri = self._link_provider(req, row, link_column, **args)
-            uri = uri and base_uri + uri or ''
+            uri = self._link_provider(req, row, target=RssModule)
+            if uri:
+                uri = base_uri + uri
+                if lang:
+                    setlang = (uri.find('?') == -1 and '?' or ';') + 'setlang=' + lang
+                    pos = uri.find('#')
+                    if pos == -1:
+                        uri += setlang
+                    else:
+                        uri = uri[:pos] + setlang + uri[pos:]
             descr = self._descr_provider(req, row, tr)
             if self._RSS_DATE_COLUMN:
                 v = row[self._RSS_DATE_COLUMN].value()
@@ -698,8 +710,7 @@ class Panelizable(object):
         for row in self._rows(req, lang=lang, limit=count-1):
             prow.set_row(row)
             item = PanelItem([(f.id(), prow[f.id()].export(),
-                               self._link_provider(req, prow, f.id(),
-                                                   target=Panel))
+                               self._link_provider(req, prow, f.id(), target=Panel))
                               for f in fields])
             items.append(item)
         if items:
