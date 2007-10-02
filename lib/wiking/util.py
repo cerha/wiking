@@ -554,7 +554,12 @@ class LoginDialog(lcg.Content):
         self._https = req.https()
         self._https_uri = req.abs_uri(port=443)
         credentials = req.credentials()
-        self._login = credentials and credentials[0]
+        if credentials:
+            self._login = credentials[0]
+            self._password = None
+        else:
+            self._login = req.param('login')
+            self._password = req.param('password')
 
     def export(self, exporter):
         g = exporter.generator()
@@ -562,11 +567,11 @@ class LoginDialog(lcg.Content):
              g.field(name='login', value=self._login, id='login', tabindex=0,
                      size=14), g.br(), 
              g.label(_("Password")+':', id='password') + g.br(),
-             g.field(name='password', id='password', size=14, password=True),
+             g.field(name='password', value=self._password, id='password', size=14, password=True),
              g.br(),
              g.hidden(name='__log_in', value='1'), 
-             ) + tuple([g.hidden(name=k, value=v)
-                        for k,v in self._params.items() if k != 'command']) + (
+             ) + tuple([g.hidden(name=k, value=v) for k,v in self._params.items() 
+                        if k not in ('command', 'login', 'password', '__log_in')]) + (
             g.submit(_("Log in"), cls='submit'),)
         if not self._https and cfg.force_https_login:
             uri = self._https_uri
