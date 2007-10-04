@@ -1,3 +1,7 @@
+2007-10-04  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/db.py: Generate automatic links also for `CbComputer' fields.
+
 2007-10-02  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/util.py: Make it possible to prefill login name and

@@ -117,7 +117,15 @@ class PytisModule(Module, ActionHandler):
         self._referer = self._REFERER or key
         self._referer_type = self._data.find_column(self._referer).type()
         self._title_column = self._TITLE_COLUMN or self._view.columns()[0]
-        self._links = dict([(f.id(), f.codebook()) for f in self._view.fields() if f.codebook()])
+        self._links = {}
+        for f in self._view.fields():
+            if f.codebook():
+                self._links[f.id()] = (f.id(), f.codebook())
+            elif isinstance(f.computer(), pp.CbComputer):
+                cid = f.computer().field()
+                cb = self._view.field(cid).codebook()
+                if cb:
+                    self._links[f.id()] = (cid, cb)
 
     def _spec(self, resolver):
         return self.__class__.Spec(self.__class__, resolver)
@@ -259,11 +267,12 @@ class PytisModule(Module, ActionHandler):
                 return None
             return make_uri(uri +'/'+ row[self._referer].export())
         if self._links.has_key(cid):
+            link_cid, modname = self._links[cid]
             try:
-                module = self._module(self._links[cid])
+                module = self._module(modname)
             except AttributeError:
                 return None
-            return module.link(req, row[cid])
+            return module.link(req, row[link_cid])
         return None
 
     def _form(self, form, req, action=None, hidden=(), **kwargs):
@@ -405,12 +414,13 @@ class PytisModule(Module, ActionHandler):
     
     def record(self, value):
         """Return the record corresponding to given key value."""
-        return self._record(self._data.row((value,)))
+        row = self._data.row((value,))
+        return row and self._record(row)
         
     def link(self, req, value):
         """Return a uri for given key value."""
-        record = self._record(self._data.row((value,)))
-        return self._link_provider(req, record)
+        record = self.record(value)
+        return record and self._link_provider(req, record)
         
     def related(self, req, binding, modname, record):
         """Return the listing of records related to other module's record."""
