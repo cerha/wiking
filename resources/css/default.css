@@ -351,8 +351,8 @@ form.browse-form table td, form.browse-form table th {
 form.browse-form table td .tree-node {
     white-space: nowrap;
 }
-form.browse-form table td { background: $color.table-cell; }
-form.browse-form table tr.even td { background: $color.table-cell2; }
+form.browse-form table tr { background: $color.table-cell; }
+form.browse-form table tr.even { background: $color.table-cell2; }
 form.browse-form table th { background: $color.heading-bg; }
 form.browse-form table td pre {
     background-color: transparent;
