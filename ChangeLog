@@ -1,3 +1,7 @@
+2007-10-05  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/cms.py: Use pytis styles to highlight unpublished menu items.
+
 2007-10-04  Tomas Cerha  <cerha@brailcom.org>
 
 	* resources/css/default.css: Allow form row style to override the
