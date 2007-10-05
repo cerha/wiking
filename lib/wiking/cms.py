@@ -422,7 +422,6 @@ class Menu(Mapping, Publishable):
             Field('parent', _("Parent item"), codebook='Mapping', not_null=False,
                   display='identifier', prefer_display=True),
             Field('modname', _("Module"), display=_modtitle, prefer_display=True,
-                  style=lambda r: r['modname'].value() != 'Pages' and pp.Style(bold=True) or None,
                   selection_type=CHOICE, not_null=True,
                   enumerator=pd.FixedEnumerator([_m.name() for _m in _modules(Mappable)]),
                   descr=_("Select the module which handles requests for given identifier. "
