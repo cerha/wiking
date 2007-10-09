@@ -1,3 +1,11 @@
+2007-10-09  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/util.py (send_mail): Make the html part optional.
+	Convert text to utf-8.
+
+	* lib/wiking/cms.py: Notify admin of new user registrations.
+	Allow one-click account confirmation.
+
 2007-10-05  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/cms.py: Use pytis styles to highlight unpublished menu items.

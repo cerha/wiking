@@ -1414,14 +1414,12 @@ class _Users(CMSModule):
     def _actions(self, req, record):
         if not req.wmi:
             if record:
-                return (Action(_("Edit your profile"), 'edit',
-                               descr=_("Modify your record")),
-                        #Action(_("Drop registration"), 'remove',
-                        #       descr=_("Remove your record permanently")),
-                        #)
-                        Action(_("Remove"), 'remove',
-                               descr=_("Remove the user permanently")),
-                        )
+                actions = (Action(_("Edit your profile"), 'edit', descr=_("Modify your record")),
+                        Action(_("Remove"), 'remove', descr=_("Remove the user permanently")))
+                if not record['enabled'].value():
+                    actions = (Action(_("Enable"), 'enable', descr=_("Enable this account")),) + \
+                              actions
+                return actions
             else:
                 return (Action(_("Register"), 'add', context=None,
                                descr=_("New user registration")),)
@@ -1430,7 +1428,29 @@ class _Users(CMSModule):
     def _redirect_after_insert(self, req, record):
         content = lcg.p(_("Registration completed successfuly. "
                           "Your account now awaits administrator's approval."))
-        return self._document(req, content, subtitle=_("Registration"))
+        msg = None
+        addr = cfg.webmaster_addr or cfg.bug_report_address
+        if addr:
+            text = _("New user %(username)s registered at %(server_hostname)s. "
+                     "Please approve the account: %(uri)s",
+                     username=record['fullname'].value(), server_hostname=req.server_hostname(),
+                     uri=req.abs_uri()+'/'+record['login'].value())
+            send_mail('wiking@' + req.server_hostname(), addr,
+                      'New user registration: ' + record['fullname'].value(),
+                      translator('en').translate(text),
+                      smtp_server=cfg.smtp_server)
+            msg = _("Message has been sent to server administrator.")
+        return self._document(req, content, subtitle=_("Registration"), msg=msg)
+
+    def action_enable(self, req, record):
+        try:
+            record.update(enabled=True)
+        except pd.DBException, e:
+            kwargs = dict(err=self._analyze_exception(e))
+        else:
+            kwargs = dict(msg=_("The account was enabled."))
+        return self.action_view(req, record, **kwargs)
+    RIGHTS_enable = (Roles.ADMIN,)
     
         
 class Users(_Users, Mappable):
