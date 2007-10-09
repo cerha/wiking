@@ -805,14 +805,12 @@ def rss(title, url, items, descr, lang=None, webmaster=None):
     </item>''' for title, url, descr, date, author in items])
     return result
 
-def send_mail(sender, addr, subject, text, html, smtp_server='localhost'):
+def send_mail(sender, addr, subject, text, html=None, smtp_server='localhost'):
     """Send a mime e-mail message with text and HTML version."""
     import MimeWriter
     import mimetools
     from cStringIO import StringIO
     out = StringIO() # output buffer for our message 
-    htmlin = StringIO(html)
-    txtin = StringIO(text)
     writer = MimeWriter.MimeWriter(out)
     # Set up message headers.
     writer.addheader("From", sender)
@@ -825,6 +823,9 @@ def send_mail(sender, addr, subject, text, html, smtp_server='localhost'):
     writer.startmultipartbody("alternative")
     writer.flushheaders()
     # The plain text section.
+    if isinstance(text, unicode):
+        text = text.encode('utf-8')
+    txtin = StringIO(text)
     subpart = writer.nextpart()
     subpart.addheader("Content-Transfer-Encoding", "quoted-printable")
     pout = subpart.startbody("text/plain", [("charset", 'utf-8')])
@@ -832,6 +833,7 @@ def send_mail(sender, addr, subject, text, html, smtp_server='localhost'):
     txtin.close()
     # The html section.
     if html:
+        htmlin = StringIO(html)
         subpart = writer.nextpart()
         subpart.addheader("Content-Transfer-Encoding", "quoted-printable")
         # Returns a file-like object we can write to.
