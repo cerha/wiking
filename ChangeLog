@@ -1,3 +1,22 @@
+2007-10-12  Tomas Cerha  <cerha@brailcom.org>
+
+	* resources/css/default.css: Updated.
+	
+	* lib/wiking/util.py (send_mail): Catch smtp errors and return the
+	error message if sending fails.
+
+	* lib/wiking/cms.py (_Users.action_enable): Send e-mail
+	notification to the enabled user.
+	(_Users._redirect_after_insert): Handle `send_mail()' errors.
+	(_Users.Spec.fields): Display overstriked registration date for
+	users hwo are not enabled.
+	(Planner, News): Use `ViewSpec.list_layout' instead of
+	`self._LIST_LAYOUT'.
+	(CMSModule._form): Disable list layout in WMI.
+
+	* lib/wiking/db.py: Don't care about list layout here.  Use
+	`lcg.LocaleData' instead of `lcg.datetime_formats()'.
+
 2007-10-09  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/util.py (send_mail): Make the html part optional.

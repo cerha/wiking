@@ -61,7 +61,6 @@ class PytisModule(Module, ActionHandler):
     _SUPPLY_OWNER = True
     _RELATION_FIELDS = ()
 
-    _LIST_LAYOUT = None
     _ALLOW_TABLE_LAYOUT_IN_FORMS = True
     _SUBMIT_BUTTONS = None
 
@@ -130,9 +129,9 @@ class PytisModule(Module, ActionHandler):
     def _spec(self, resolver):
         return self.__class__.Spec(self.__class__, resolver)
 
-    def _datetime_formats(self, req):
+    def _locale_data(self, req):
         lang = req.prefered_language(raise_error=False)
-        return lcg.datetime_formats(translator(lang))
+        return translator(lang).locale_data()
         
     def _validate(self, req, record):
         # TODO: This should go to pytis.web....
@@ -175,11 +174,11 @@ class PytisModule(Module, ActionHandler):
             else:
                 value_ = ""
             if isinstance(type, (Date, DateTime)):
-                formats = self._datetime_formats(req)
-                format = formats['date']
+                locale_data = self._locale_data(req)
+                format = locale_data.date_format
                 if isinstance(type, DateTime):
-                    tf = type.is_exact() and 'exact_time' or 'time'
-                    format += ' ' + formats[tf]
+                    format += ' '+ (type.is_exact() and
+                                    locale_data.exact_time_format or locale_data.time_format)
                 kwargs['format'] = format
             if isinstance(type, (pd.Binary, pd.Password)) and not value_ and not record.new():
                 continue # Keep the original file if no file is uploaded.
@@ -291,8 +290,6 @@ class PytisModule(Module, ActionHandler):
             kwargs['submit'] = self._SUBMIT_BUTTONS
         elif issubclass(form, pw.BrowseForm):
             kwargs['req'] = req
-        if issubclass(form, pw.ListView) and not req.wmi and self._LIST_LAYOUT:
-            kwargs['layout'] = self._LIST_LAYOUT
         if action is not None:
             hidden += (('action', action),)
         return form(self._data, self._view, self._resolver, handler=req.uri, name=self.name(),

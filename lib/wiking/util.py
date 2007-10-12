@@ -842,13 +842,17 @@ def send_mail(sender, addr, subject, text, html=None, smtp_server='localhost'):
         htmlin.close()
     # Close the writer and send the message.
     writer.lastpart()
-    import smtplib
-    server = smtplib.SMTP(smtp_server)
     try:
-        server.sendmail(sender, addr, out.getvalue())
-    finally:
-        out.close()
-        server.quit()
+        import smtplib
+        server = smtplib.SMTP(smtp_server)
+        try:
+            server.sendmail(sender, addr, out.getvalue())
+        finally:
+            out.close()
+            server.quit()
+        return None
+    except Exception, e:
+        return str(e)
 
 
 def cmp_versions(v1, v2):

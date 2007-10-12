@@ -331,6 +331,11 @@ class CMSModule(PytisModule, RssModule, Panelizable):
     RIGHTS_publish = RIGHTS_unpublish = (Roles.ADMIN,)
     RIGHTS_rss = (Roles.ANYONE,)
 
+    def _form(self, form, req, *args, **kwargs):
+        if req.wmi and form == pw.ListView:
+            form = pw.BrowseForm # Disable list layout in WMI.
+        return super(CMSModule, self)._form(form, req, *args, **kwargs)
+
     def _resolve(self, req):
         if req.wmi:
             if len(req.path) == 2: # or req.params.has_key('module'):
@@ -1121,6 +1126,8 @@ class News(CMSModule, Mappable):
         sorting = (('timestamp', DESC),)
         columns = ('title', 'date', 'author')
         layout = ('timestamp', 'title', 'content')
+        list_layout = pp.ListLayout('title', meta=('timestamp', 'author'),  content='content',
+                                    anchor="item-%s")
         def _date(self, row):
             return row['timestamp'].export(show_time=False)
         def _date_title(self, row):
@@ -1136,8 +1143,6 @@ class News(CMSModule, Mappable):
     RIGHTS_add = RIGHTS_insert = (Roles.CONTRIBUTOR,)
     RIGHTS_edit = RIGHTS_update = (Roles.ADMIN, Roles.OWNER)
     RIGHTS_remove = RIGHTS_delete = (Roles.ADMIN,)
-    _LIST_LAYOUT = pw.ListLayout('title', meta=('timestamp', 'author'),  content='content',
-                                 anchor="item-%s")
     WMI_SECTION = WikingManagementInterface.SECTION_CONTENT
     WMI_ORDER = 300
         
@@ -1173,6 +1178,9 @@ class Planner(News):
         sorting = (('start_date', ASC),)
         columns = ('title', 'date', 'author')
         layout = ('start_date', 'end_date', 'title', 'content')
+        list_layout = pp.ListLayout('date_title', meta=('author', 'timestamp'), content='content',
+                                    anchor="item-%s")
+
         def _check_date(self, date):
             if date < today():
                 return _("Date in the past")
@@ -1185,8 +1193,6 @@ class Planner(News):
             end = row['end_date'].value()
             if end and end <= row['start_date'].value():
                 return ("end_date", _("End date precedes start date"))
-    _LIST_LAYOUT = pw.ListLayout('date_title', meta=('author', 'timestamp'), content='content',
-                                 anchor="item-%s")
     _RSS_TITLE_COLUMN = 'date_title'
     _RSS_DATE_COLUMN = None
     def _condition(self, req, **kwargs):
@@ -1386,7 +1392,8 @@ class _Users(CMSModule):
             Field('phone', _("Phone")),
             Field('address', _("Address"), height=3),
             Field('uri', _("URI"), width=36),
-            Field('since', _("Registered since"), type=DateTime(show_time=False), default=now),
+            Field('since', _("Registered since"), type=DateTime(show_time=False), default=now,
+                  style=lambda r: not r['enabled'].value() and pp.Style(overstrike=True) or None),
             Field('enabled', _("Enabled")),
             Field('contributor', _("Contribution privileges")),
             Field('author', _("Authoring privileges")),
@@ -1428,28 +1435,44 @@ class _Users(CMSModule):
     def _redirect_after_insert(self, req, record):
         content = lcg.p(_("Registration completed successfuly. "
                           "Your account now awaits administrator's approval."))
-        msg = None
+        msg, err = None, None
         addr = cfg.webmaster_addr or cfg.bug_report_address
         if addr:
-            text = _("New user %(username)s registered at %(server_hostname)s. "
+            text = _("New user %(fullname)s registered at %(server_hostname)s. "
                      "Please approve the account: %(uri)s",
-                     username=record['fullname'].value(), server_hostname=req.server_hostname(),
+                     fullname=record['fullname'].value(), server_hostname=req.server_hostname(),
                      uri=req.abs_uri()+'/'+record['login'].value())
-            send_mail('wiking@' + req.server_hostname(), addr,
-                      'New user registration: ' + record['fullname'].value(),
-                      translator('en').translate(text),
-                      smtp_server=cfg.smtp_server)
-            msg = _("Message has been sent to server administrator.")
-        return self._document(req, content, subtitle=_("Registration"), msg=msg)
+            err = send_mail('wiking@' + req.server_hostname(), addr,
+                            'New user registration: ' + record['fullname'].value(),
+                            translator('en').translate(text),
+                            smtp_server=cfg.smtp_server)
+            if err:
+                err = _("Failed sending e-mail notification:") +' '+ err
+            else:
+                msg = _("E-mail notification has been sent to server administrator.")
+        return self._document(req, content, subtitle=_("Registration"), msg=msg, err=err)
 
     def action_enable(self, req, record):
+        err, msg = None, None
         try:
             record.update(enabled=True)
         except pd.DBException, e:
-            kwargs = dict(err=self._analyze_exception(e))
+            err=self._analyze_exception(e)
         else:
-            kwargs = dict(msg=_("The account was enabled."))
-        return self.action_view(req, record, **kwargs)
+            # TODO: Send notification also from the Rights module...
+            msg = _("The account was enabled.")
+            text = _("Your account at %(uri)s has been enabled. "
+                     "Please log in with username '%(login)s' and your password.",
+                     uri=req.abs_uri()[:-len(req.uri)], login=record['login'].value())
+            err = send_mail('wiking@' + req.server_hostname(), record['email'].value(),
+                            _("Your account has been ebabled."),
+                            translator('en').translate(text),
+                            smtp_server=cfg.smtp_server)
+            if err:
+                err = _("Failed sending e-mail notification:") +' '+ err
+            else:
+                msg += ' '+ _("E-mail notification has been sent to %s." % record['email'].value())
+        return self.action_view(req, record, msg=msg, err=err)
     RIGHTS_enable = (Roles.ADMIN,)
     
         

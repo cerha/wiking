@@ -384,62 +384,62 @@ form.browse-form-controls span.buttons input.prev {
     margin-left: 1em;
 }
 
-form.browse-form div.list-item {
+form.list-view div.list-item {
     margin: 1.1em 0;
 }
-form.browse-form div.list-item h3 {
+form.list-view div.list-item h3 {
     margin-bottom: 0.2em;
     font-size: 1.2em;
 }
-form.browse-form div.list-item div.meta {
+form.list-view div.list-item div.meta {
     font-style: italic;
     margin: 0.2em 0;
     color: $color.meta-fg;
     padding: 0.1em 0;
     background: $color.meta-bg;
 }
-form.browse-form div.list-item div.content {
+form.list-view div.list-item div.content {
 }
 
-form.show-form, form.edit-form { 
-    margin: 0.4em 0;
-    padding: 0;
+form.pytis-form fieldset.body div.field { 
+    margin: 0.2em 0;
 }
-form.show-form label, form.edit-form label { 
+form.pytis-form label { 
     white-space: nowrap;
     font-weight: bold;
 }
-form.show-form td.label, form.edit-form td.label { 
+form.pytis-form fieldset.group table { 
+    border-collapse: collapse;
+}
+form.pytis-form td.label { 
     padding-right: 0.3em;
     line-height: 1.4em;
 }
-fieldset.body div.field { 
-    margin: 0.2em 0;
+
+form.pytis-form fieldset.group span.color-display { 
+    padding: 0 0.5em;
+    border: 1px solid $color.border;
+}
+form.pytis-form fieldset.group span.color-value { 
+    float: left;
+    width: 4em;
+}
+form.show-form fieldset.group textarea, form.list-view fieldset.group textarea {
+    background: $color.frame-bg;
+    border: 0px;
+    font-size: 1em;
+}
+form.show-form, form.edit-form { 
+    margin: 0.4em 0;
+    padding: 0;
 }
 form.edit-form div.help { 
     color: $color.help;
     margin-bottom: 0.4em;
 }
-form.show-form fieldset.group input, form.show-form textarea { 
-    background: $color.frame-bg;
-    border: 0px;
-    font-size: 1em;
-}
 form.edit-form fieldset.group input, form.edit-form textarea,
 form.edit-form select, #login, #password { 
     border: 1px solid $color.border;
-}
-form.edit-form table, form.show-form table { 
-    border-collapse: collapse;
-}
-
-form.show-form span.color-display { 
-    padding: 0 0.5em;
-    border: 1px solid $color.border;
-}
-form.show-form span.color-value { 
-    float: left;
-    width: 4em;
 }
 
 /* Modification of button controls is arguable...
