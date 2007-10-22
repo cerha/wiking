@@ -577,7 +577,8 @@ class Panels(CMSModule, Publishable):
             Field('ord', _("Order"), width=5,
                   descr=_("Number denoting the order of the panel on the page.")),
             Field('mapping_id', _("Module"), width=5, not_null=False, codebook='Mapping',
-                  display=(_modtitle, 'modname'), prefer_display=True, selection_type=CHOICE,
+                  display=lambda row: _modtitle(row['modname'].value()),
+                  prefer_display=True, selection_type=CHOICE,
                   validity_condition=pd.NE('modname', pd.Value(pd.String(), 'Pages')),
                   descr=_("The items of the selected module will be shown by the panel. "
                           "Leave blank for a text content panel.")),
