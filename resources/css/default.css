@@ -49,7 +49,7 @@ a.backref, a:link.backref {
 
 .hidden { display: none; }
 
-img { position: relative; } /* MSIE float workaround */
+/*img { position: relative; } /* MSIE float workaround */
 
 /* Page layout */
 
@@ -140,7 +140,6 @@ img { position: relative; } /* MSIE float workaround */
 #submenu li a.current { 
     background-color: $color.heading-bg;
     list-style-type: disc;
-    marker-offset: 0.3em;
 }
 /* This makes panels to skip in Firefox when page content is too wide...
 #submenu li a:hover { 
@@ -221,7 +220,6 @@ div.panel-login a.login-ctrl {
 /* The actual page content */
 
 #content {
-    position: relative; /* fix MSIE background painting */
     color: $color.foreground;
     background-color: $color.background;
     border: 1px solid $color.top-border;
@@ -232,7 +230,10 @@ div.panel-login a.login-ctrl {
 #content h1 { 
     margin-top: 0;
 }
-#content-clearing { 
+#inner-content { 
+    position: relative; /* fix MSIE background painting */
+}
+#content-clearing {
     height: 0;
     font-size: 0;
     clear: left;
@@ -345,12 +346,15 @@ form.browse-form table {
 form.browse-form table td, form.browse-form table th {
     padding: 2pt;
     vertical-align: top;
-    /* white-space: nowrap; */
     border: 1px solid $color.border;
 }
 form.browse-form table td .tree-node {
     white-space: nowrap;
 }
+form.browse-form table td .multiline {
+    white-space: pre;
+}
+
 form.browse-form table tr { background: $color.table-cell; }
 form.browse-form table tr.even { background: $color.table-cell2; }
 form.browse-form table th { background: $color.heading-bg; }
@@ -384,11 +388,8 @@ form.browse-form-controls span.buttons input.prev {
     margin-left: 1em;
 }
 
-form.list-view {
-    float: left;
-}
 form.list-view div.list-item {
-    margin-bottom: 1.1em 0;
+    margin-bottom: 1.1em;
     clear: both;
 }
 form.list-view div.list-item h3 {
@@ -470,6 +471,7 @@ div.actions.separated {
     padding: 0.5em 0.3em;
     margin-top: 1.5em;
     margin-bottom: 0;
+    text-align: left; /* MSIE */
 }
 div.actions.separated hr { 
     display: none;
