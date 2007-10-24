@@ -460,10 +460,10 @@ class Menu(Mapping, Publishable):
     WMI_SECTION = WikingManagementInterface.SECTION_CONTENT
     WMI_ORDER = 10
 
-    def _link_provider(self, req, row, cid=None, **kwargs):
+    def _link_provider(self, req, row, cid, **kwargs):
         if cid == 'parent':
             return None
-        return super(Menu, self)._link_provider(req, row, cid=cid, **kwargs)
+        return super(Menu, self)._link_provider(req, row, cid, **kwargs)
 
     def menu(self, req):
         children = {None: []}
@@ -599,7 +599,7 @@ class Panels(CMSModule, Publishable):
                   ),
             )
         sorting = (('ord', ASC),)
-        columns = ('title', 'ord', 'modtitle', 'size', 'published')
+        columns = ('title', 'ord', 'modtitle', 'size', 'published', 'content')
         layout = ('ptitle', 'ord', 'mapping_id', 'size', 'content', 'published')
     _LIST_BY_LANGUAGE = True
     WMI_SECTION = WikingManagementInterface.SECTION_CONTENT
@@ -1053,10 +1053,10 @@ class Attachments(StoredFileModule, CMSModule):
     RIGHTS_edit = RIGHTS_update = (Roles.AUTHOR, Roles.OWNER)
     RIGHTS_remove = RIGHTS_delete = (Roles.AUTHOR, Roles.OWNER)
     
-    def _link_provider(self, req, row, cid=None, **kwargs):
+    def _link_provider(self, req, row, cid, **kwargs):
         if cid == 'file':
             return make_uri(self._base_uri(req) +'/'+ row['filename'].export(), download=1)
-        return super(Attachments, self)._link_provider(req, row, cid=cid, **kwargs)
+        return super(Attachments, self)._link_provider(req, row, cid, **kwargs)
 
     def _redirect_to_page(self, req, record):
         return req.redirect('/_wmi/Pages/' + record['identifier'].value())
@@ -1147,14 +1147,14 @@ class News(CMSModule, Mappable):
     WMI_SECTION = WikingManagementInterface.SECTION_CONTENT
     WMI_ORDER = 300
         
-    def _link_provider(self, req, row, cid=None, target=None):
+    def _link_provider(self, req, row, cid, target=None):
         if cid == 'title' and target is Panel or cid is None and target is RssModule:
             uri = self._base_uri(req)
             if uri:
                 return uri + '#item-'+ row[self._referer].export()
             else:
                 return None
-        return super(News, self)._link_provider(req, row, cid=cid, target=target)
+        return super(News, self)._link_provider(req, row, cid, target=target)
 
 
 class Planner(News):
@@ -1286,15 +1286,15 @@ class Images(StoredFileModule, CMSModule, Mappable):
     #WMI_SECTION = WikingManagementInterface.SECTION_CONTENT
     WMI_ORDER = 500
         
-    def _link_provider(self, req, row, cid=None, **kwargs):
+    def _link_provider(self, req, row, cid, **kwargs):
         if cid == 'file':
             return make_uri(self._base_uri(req) +'/'+ row['filename'].export(), action='orig')
-        return super(Images, self)._link_provider(req, row, cid=cid, **kwargs)
+        return super(Images, self)._link_provider(req, row, cid, **kwargs)
     
-    def _image_provider(self, req, row, cid=None, **kwargs):
+    def _image_provider(self, req, row, cid, **kwargs):
         if cid == 'file':
             return make_uri(self._base_uri(req) +'/'+ row['filename'].export(), action='thumbnail')
-        return super(Images, self)._link_provider(req, row, cid=cid, **kwargs)
+        return super(Images, self)._link_provider(req, row, cid, **kwargs)
 
     def _image(self, record, id):
         mime = "image/" + str(record['format'].value())

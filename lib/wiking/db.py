@@ -259,7 +259,7 @@ class PytisModule(Module, ActionHandler):
     def _image_provider(self, req, row, cid, target=None):
         return None
 
-    def _link_provider(self, req, row, cid=None, target=None):
+    def _link_provider(self, req, row, cid, target=None):
         if cid is None:
             uri = self._base_uri(req)
             if not uri:
@@ -271,16 +271,19 @@ class PytisModule(Module, ActionHandler):
                 module = self._module(modname)
             except AttributeError:
                 return None
-            return module.link(req, row[link_cid])
+            value = row[link_cid]
+            e = value.type().enumerator()
+            if e:
+                return module.link(req, **{e.value_column(): value.value()})
         return None
 
     def _form(self, form, req, action=None, hidden=(), **kwargs):
-        def uri_provider(row, cid=None, type=pw.UriType.LINK):
+        def uri_provider(row, cid, type=pw.UriType.LINK):
             if type == pw.UriType.LINK:
                 method = self._link_provider
             elif type == pw.UriType.IMAGE:
                 method = self._image_provider
-            return method(req, row, cid=cid, target=form)
+            return method(req, row, cid, target=form)
         kwargs['uri_provider'] = uri_provider
         #if issubclass(form, pw.EditForm) and req.params.has_key('module'):
         #    kwargs['hidden'] = kwargs.get('hidden', ()) + \
@@ -414,10 +417,13 @@ class PytisModule(Module, ActionHandler):
         row = self._data.row((value,))
         return row and self._record(row)
         
-    def link(self, req, value):
+    def link(self, req, **kwargs):
         """Return a uri for given key value."""
-        record = self.record(value)
-        return record and self._link_provider(req, record)
+        row = self._data.get_row(**kwargs)
+        if row:
+            return self._link_provider(req, self._record(row), None)
+        else:
+            return None
         
     def related(self, req, binding, modname, record):
         """Return the listing of records related to other module's record."""
@@ -587,7 +593,7 @@ class RssModule(object):
         for data_row in rows:
             row.set_row(data_row)
             title = escape(tr.translate(row[self._RSS_TITLE_COLUMN].export()))
-            uri = self._link_provider(req, row, target=RssModule)
+            uri = self._link_provider(req, row, None, target=RssModule)
             if uri:
                 uri = base_uri + uri
                 if lang:
