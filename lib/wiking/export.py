@@ -140,7 +140,7 @@ class Exporter(lcg.HtmlExporter):
         state = node.state()
         if not state.has_submenu:
             return None
-        menu = lcg.NodeIndex(node=node.top(), depth=99)
+        menu = lcg.NodeIndex(node=node.top())
         menu.set_parent(node)
         title = g.h(g.link(_("In this section:"), None, name='local-navigation', hotkey="3"), 3)
         return g.map(g.div((title, menu.export(self)), id='submenu-frame'),
@@ -167,8 +167,8 @@ class Exporter(lcg.HtmlExporter):
     def _content(self, node):
         g = self._generator
         return (g.hr(cls='hidden'),
-                g.h(g.link(node.heading(), None, name='content-heading'), 1),
-                super(Exporter, self)._content(node),
+                g.div((g.h(g.link(node.heading(), None, name='content-heading'), 1),
+                       super(Exporter, self)._content(node)), id='inner-content'),
                 g.div('&nbsp;', id='content-clearing'))
 
     def _clearing(self, node):

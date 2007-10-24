@@ -1,7 +1,31 @@
+2007-10-24  Tomas Cerha  <cerha@brailcom.org>
+
+	* doc/src/admin/config.py (Reader._create_content): Pass expolicit
+	`depth' to `lcg.TableOfContents'.
+
+	* doc/src/devel/application.py (Reader._create_content): Pass
+	expolicit `depth' to `lcg.TableOfContents'.
+
+	* lib/wiking/db.py (PytisModule._link_provider): Make the
+	`cid' argument positional.
+
+	* lib/wiking/cms.py: Respect the above change.
+
+	* lib/wiking/export.py: One more `div' for inner content.
+
+	* resources/css/default.css: MSIE workarounds.
+
+2007-10-22  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/cms.py (Panels): Use a display function with `row'
+	argument.
+
+	* resources/css/default.css: Form image display fixed.
+
 2007-10-12  Tomas Cerha  <cerha@brailcom.org>
 
 	* resources/css/default.css: Updated.
-	
+
 	* lib/wiking/util.py (send_mail): Catch smtp errors and return the
 	error message if sending fails.
 
