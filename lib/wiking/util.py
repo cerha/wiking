@@ -587,9 +587,9 @@ class LoginDialog(lcg.Content):
 Field = pytis.presentation.FieldSpec
 
 class FieldSet(pp.GroupSpec):
-    def __init__(self, label, fields):
-        super(FieldSet, self).__init__(fields, label=label,
-                                       orientation=pp.Orientation.VERTICAL)
+    def __init__(self, label, fields, horizontal=False):
+        orientation = horizontal and pp.Orientation.HORIZONTAL or pp.Orientation.VERTICAL
+        super(FieldSet, self).__init__(fields, label=label, orientation=orientation)
         
 class Action(pytis.presentation.Action):
     def __init__(self, title, name, handler=None, **kwargs):

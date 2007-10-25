@@ -323,10 +323,28 @@ form.pytis-form .group, form.pytis-form div.submit, form.browse-form-controls {
     border: 1px solid $color.frame-border;
     border-width: 1px 0;
     margin: 0.4em 0;
+    padding: 0.4em 0.6em;
 }
-form.pytis-form .group .group {
+form.pytis-form .group div.group {
+    border-width: 0;
+    margin: 0;
+    padding: 0;
+}
+form.pytis-form .group fieldset.group {
     border-width: 1px;
 }
+form.pytis-form .horizontal-group fieldset.group {
+    margin: 0 0 0.4em 0;
+}
+form.pytis-form .horizontal-group td {
+    padding-right: 0.6em;
+}
+/* Fix MSIE fieldset background */
+* html form.pytis-form table.horizontal-group { position: relative; }
+* html form.pytis-form fieldset.group { position: relative; margin: 1em 0; padding-top: 0.7em; }
+* html form.pytis-form .horizontal-group fieldset.group { margin: 0 0 1em 0; }
+* html form.pytis-form legend { color: $color.foreground; position: absolute; top: -0.6em; left: 0.2em; }
+
 form.pytis-form div.submit { 
     margin-top: 0.5em;
     padding: 0.5em;
@@ -336,7 +354,6 @@ form.pytis-form div.submit input {
     padding: 0.1em 0.5em;
     margin: 0 1em;
 }
-
 
 form.browse-form table {
     border-collapse: collapse;
