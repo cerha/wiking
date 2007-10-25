@@ -336,8 +336,8 @@ form.pytis-form .group fieldset.group {
 form.pytis-form .horizontal-group fieldset.group {
     margin: 0 0 0.4em 0;
 }
-form.pytis-form .horizontal-group td {
-    padding-right: 0.6em;
+form.pytis-form .horizontal-group td.spaced {
+    padding-left: 0.6em;
 }
 /* Fix MSIE fieldset background */
 * html form.pytis-form table.horizontal-group { position: relative; }
