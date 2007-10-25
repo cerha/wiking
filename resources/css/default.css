@@ -335,6 +335,7 @@ form.pytis-form .group fieldset.group {
 }
 form.pytis-form .horizontal-group fieldset.group {
     margin: 0 0 0.4em 0;
+    height: 100%;
 }
 form.pytis-form .horizontal-group td.spaced {
     padding-left: 0.6em;
@@ -438,6 +439,9 @@ form.pytis-form td.label {
     padding-right: 0.3em;
     line-height: 1.4em;
     text-align: right;
+}
+form.show-form td.ctrl, form.list-view td.ctrl { 
+    line-height: 1.4em;
 }
 
 form.pytis-form .group span.color-display { 
