@@ -206,17 +206,6 @@ div.panel ul, div.panel ol {
 }
 div.panel hr { display: none; }
 
-
-div.panel-login a.login-ctrl { 
-    padding: 0 0.5em;
-    margin: 0 0.3em;
-    background-color: $color.heading-bg;
-    text-decoration: none;
-    background: $color.button;
-    border: 1px solid $color.button-border;
-    white-space: nowrap;
-}
-
 /* The actual page content */
 
 #content {
@@ -494,21 +483,28 @@ div.actions.separated {
 div.actions.separated hr { 
     display: none;
 }
-div.actions a { 
+div.actions a, div.panel-login a.login-ctrl {
     padding: 0 0.5em;
-    margin-right: 0.8em;
     text-decoration: none;
     color: $color.button-fg;
-    background: $color.button;
+    background-color: $color.button;
     border: 1px solid $color.button-border;
+    white-space: nowrap;
 }
-div.actions a:hover { 
+div.actions a:hover, div.panel-login a.login-ctrl:hover { 
     background: $color.button-hover;
+    color: $color.button-fg;
+}
+div.actions a { 
+    margin-right: 0.8em;
 }
 div.actions a.inactive, p.actions a.inactive:hover { 
     color: $color.button-inactive-fg;
     background: $color.button-inactive;
     border-color: $color.button-inactive-border;
+}
+div.panel-login a.login-ctrl {
+    margin: 0 0.3em;
 }
 
 /* LCG Formatter styles */
