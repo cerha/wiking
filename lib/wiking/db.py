@@ -33,6 +33,7 @@ class PytisModule(Module, ActionHandler):
     _REFERER = None
     _TITLE_COLUMN = None
     _TITLE_TEMPLATE = None
+    _HONOUR_SPEC_TITLE = False
     _LIST_BY_LANGUAGE = False
     _REFERER_PATH_LEVEL = 2
     _DEFAULT_ACTIONS_FIRST = (Action(_("Edit"), 'edit',
@@ -223,7 +224,10 @@ class PytisModule(Module, ActionHandler):
             if lang is None and self._LIST_BY_LANGUAGE:
                 lang = str(record['lang'].value())
         else:
-            title = None # Current menu title will be substituted.
+            if self._HONOUR_SPEC_TITLE:
+                title = self._view.title()
+            else:
+                title = None # Current menu title will be substituted.
         if isinstance(content, (list, tuple)):
             content = tuple(content)
         else:

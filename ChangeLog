@@ -1,6 +1,8 @@
 2007-10-29  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/db.py (PytisModule): Added support for redirection.
+	Allow the derived modules to prefer specification titles over menu
+	item titles.
 
 	* lib/wiking/util.py (Document): Pass the `globals' node option.
 
