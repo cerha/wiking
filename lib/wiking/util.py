@@ -294,7 +294,7 @@ class Document(object):
     """
     
     def __init__(self, title, content, subtitle=None, lang=None, sec_lang='en', variants=None,
-                 resources=()):
+                 resources=(), globals=None):
         """Initialize the instance.
 
         Arguments:
@@ -336,6 +336,7 @@ class Document(object):
         self._variants = variants
         self._sec_lang = sec_lang
         self._resources = tuple(resources)
+        self._globals = globals
 
     def build(self, req, modname, application):
         id = '/'.join(req.path)
@@ -376,7 +377,7 @@ class Document(object):
                               secondary_language=self._sec_lang, language_variants=variants or (),
                               active=item.active(), panels=panels, 
                               children=[mknode(i) for i in item.submenu()],
-                              resource_provider=resource_provider)
+                              resource_provider=resource_provider, globals=self._globals)
             if item.id() == id:
                 me.append(node)
             elif item.id() == parent_id:
