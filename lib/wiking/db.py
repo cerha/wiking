@@ -259,12 +259,24 @@ class PytisModule(Module, ActionHandler):
     def _image_provider(self, req, row, cid, target=None):
         return None
 
+    def _record_uri(self, req, row, allow_redirect=True):
+        # Always use _link_provider.  This method only prevents recursion in `link()'.
+        if allow_redirect:
+            redirect = self._view.redirect()
+            if redirect:
+                module = redirect(row)
+                if module:
+                    result = self._module(module).link(req, row[self._key])
+                    if result:
+                        return result
+        uri = self._base_uri(req)
+        if not uri:
+            return None
+        return make_uri(uri +'/'+ row[self._referer].export())
+
     def _link_provider(self, req, row, cid, target=None):
         if cid is None:
-            uri = self._base_uri(req)
-            if not uri:
-                return None
-            return make_uri(uri +'/'+ row[self._referer].export())
+            return self._record_uri(req, row)
         if self._links.has_key(cid):
             link_cid, modname = self._links[cid]
             try:
@@ -417,11 +429,16 @@ class PytisModule(Module, ActionHandler):
         row = self._data.row((value,))
         return row and self._record(row)
         
-    def link(self, req, **kwargs):
+    def link(self, req, *args, **kwargs):
         """Return a uri for given key value."""
-        row = self._data.get_row(**kwargs)
+        if args and not kwargs:
+            row = self._data.row(args)
+        elif kwargs and not args:
+            row = self._data.get_row(**kwargs)
+        else:
+            raise Exception("Invalid link args:", args, kwargs)
         if row:
-            return self._link_provider(req, self._record(row), None)
+            return self._record_uri(req, self._record(row), allow_redirect=False)
         else:
             return None
         

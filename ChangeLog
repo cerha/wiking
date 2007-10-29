@@ -1,5 +1,7 @@
 2007-10-29  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/db.py (PytisModule): Added support for redirection.
+
 	* lib/wiking/util.py (Document): Pass the `globals' node option.
 
 2007-10-26  Tomas Cerha  <cerha@brailcom.org>
