@@ -1,3 +1,10 @@
+2007-10-31  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/util.py (Document.build.mknode): Convert identifier
+	to str.
+
+	* lib/wiking/request.py: Convert `uri' and `path' to unicode.
+
 2007-10-29  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/db.py (PytisModule): Added support for redirection.

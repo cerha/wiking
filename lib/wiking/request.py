@@ -53,7 +53,7 @@ class Request(pytis.web.Request):
         self._encoding = encoding
         # Store request params in a real dictionary.
         self.params = self._init_params()
-        self.uri = self._init_uri()
+        self.uri = unicode(req.uri)
         self.path = [item for item in self.uri.split('/')[1:] if item]
 
     def _init_params(self):
@@ -66,9 +66,6 @@ class Request(pytis.web.Request):
                 return unicode(value, self._encoding)
         fields = mod_python.util.FieldStorage(self._req)
         return dict([(k, init_value(fields[k])) for k in fields.keys()])
-
-    def _init_uri(self):
-        return self._req.uri
 
     # Methods implementing the pytis Request interface:
     
@@ -189,6 +186,12 @@ class WikingRequest(Request):
     def __init__(self, req, application, **kwargs):
         super(WikingRequest, self).__init__(req, **kwargs)
         self._application = application
+        if self.uri.endswith('.rss'):
+            self.params['action'] = 'rss'
+            self.uri = self.uri[:-4]
+            if len(self.uri) > 3 and self.uri[-3] == '.' and self.uri[-2:].isalpha():
+                self.params['lang'] = self.uri[-2:]
+                self.uri = self.uri[:-3]
 
     def _init_params(self):
         params = super(WikingRequest, self)._init_params()
@@ -222,16 +225,6 @@ class WikingRequest(Request):
         self._user = self._UNDEFINED
         return params
 
-    def _init_uri(self):
-        uri = super(WikingRequest, self)._init_uri()
-        if uri.endswith('.rss'):
-            self.params['action'] = 'rss'
-            uri = uri[:-4]
-            if len(uri) > 3 and uri[-3] == '.' and uri[-2:].isalpha():
-                self.params['lang'] = uri[-2:]
-                uri = uri[:-3]
-        return uri
-    
     def show_panels(self):
         return self._show_panels
     

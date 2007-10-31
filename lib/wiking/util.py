@@ -372,7 +372,7 @@ class Document(object):
             elif lang not in variants:
                 hidden = True
             resource_provider = lcg.StaticResourceProvider(resources)
-            node = WikingNode(item.id(), state, title=item.title(), heading=heading,
+            node = WikingNode(str(item.id()), state, title=item.title(), heading=heading,
                               descr=item.descr(), content=content, hidden=hidden, language=lang,
                               secondary_language=self._sec_lang, language_variants=variants or (),
                               active=item.active(), panels=panels, 
@@ -607,11 +607,9 @@ class Action(pytis.presentation.Action):
 class Data(pd.DBDataDefault):
 
     def _row_data(self, **kwargs):
-        return [(k, pd.Value(self.find_column(k).type(), v))
-                for k, v in kwargs.items()]
+        return [(k, pd.Value(self.find_column(k).type(), v)) for k, v in kwargs.items()]
     
-    def get_rows(self, skip=None, limit=None, sorting=(), condition=None,
-                 **kwargs):
+    def get_rows(self, skip=None, limit=None, sorting=(), condition=None, **kwargs):
         if kwargs:
             conds = [pd.EQ(k,v) for k,v in self._row_data(**kwargs)]
             if condition:
