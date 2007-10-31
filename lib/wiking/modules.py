@@ -253,7 +253,7 @@ class SubmenuRedirect(Module, RequestHandler):
         item = find(self._application.menu(req), id)
         if item:
             if item.submenu():
-                return req.redirect(item.submenu()[0].id())
+                return req.redirect('/'+item.submenu()[0].id())
             else:
                 raise Exception("Menu item '%s' has no childs." % id)
         else:

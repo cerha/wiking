@@ -1,5 +1,7 @@
 2007-10-31  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/modules.py (SubmenuRedirect): Prevent loop.
+
 	* lib/wiking/util.py (Document.build.mknode): Convert identifier
 	to str.
 
