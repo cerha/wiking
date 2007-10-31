@@ -448,7 +448,7 @@ class ActionMenu(lcg.Content):
     
     def __init__(self, uri, actions, referer, row=None, args=None, separate=False):
         super(ActionMenu, self).__init__()
-        assert isinstance(uri, str), uri
+        assert isinstance(uri, (str, unicode)), uri
         assert isinstance(actions, (tuple, list)), actions
         assert isinstance(referer, str), referer
         assert row is None or isinstance(row, pp.PresentedRow), row
