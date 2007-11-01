@@ -46,7 +46,7 @@ _ = lcg.TranslatableTextFactory('wiking-cms')
 
 _STRUCTURED_TEXT_DESCR = \
     _("The content should be formatted as LCG structured text. See the %(manual)s.",
-      manual=('<a target="_new" href="/_doc/lcg/data-formats/structured-text">' + \
+      manual=('<a target="help" href="/_doc/lcg/data-formats/structured-text">' + \
               _("formatting manual") + "</a>"))
 
 try:
@@ -692,7 +692,7 @@ class Themes(CMSModule):
              (_Field('top-fg', _("Text")),
               _Field('top-bg', _("Background")),
               _Field('top-border', _("Border"),
-                     descr=_("What is \"page surrounding\" depends from the stylesheet. "
+                     descr=_("What is 'page surrounding' depends from the stylesheet. "
                              "In general it is the part of the page, which does not include "
                              "the actual contents. Most often it is the page header and "
                              "footer which usually remain unchanged throughout the whole "
@@ -1354,8 +1354,8 @@ class Stylesheets(CMSModule, Stylesheets):
 class _Users(CMSModule):
     class Spec(Specification):
         title = _("Users")
-        help = _('Manage registered users.  Use the module "Access Rights" '
-                 'to change their privileges.')
+        help = _("Manage registered users.  Use the module 'Access Rights' "
+                 "to change their privileges.")
         def _fullname(self, row):
             name = row['firstname'].value()
             surname = row['surname'].value()

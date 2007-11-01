@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-10-29 13:01+0100\n"
+"POT-Creation-Date: 2007-11-01 08:32+0100\n"
 "PO-Revision-Date: 2007-03-07 14:09+0100\n"
 "Last-Translator: Tomas Cerha <cerha@brailcom.org>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -354,10 +354,10 @@ msgstr ""
 
 #: ../lib/wiking/cms.py:695
 msgid ""
-"What is \"page surrounding\" depends from the stylesheet. In general it is "
-"the part of the page, which does not include the actual contents. Most often "
-"it is the page header and footer which usually remain unchanged throughout "
-"the whole website."
+"What is 'page surrounding' depends from the stylesheet. In general it is the "
+"part of the page, which does not include the actual contents. Most often it "
+"is the page header and footer which usually remain unchanged throughout the "
+"whole website."
 msgstr ""
 
 #: ../lib/wiking/cms.py:700
@@ -732,7 +732,7 @@ msgstr ""
 
 #: ../lib/wiking/cms.py:1357
 msgid ""
-"Manage registered users.  Use the module \"Access Rights\" to change their "
+"Manage registered users.  Use the module 'Access Rights' to change their "
 "privileges."
 msgstr ""
 

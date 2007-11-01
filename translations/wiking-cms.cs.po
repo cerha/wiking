@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-10-29 13:01+0100\n"
-"PO-Revision-Date: 2007-10-29 12:59+0100\n"
+"POT-Creation-Date: 2007-11-01 08:32+0100\n"
+"PO-Revision-Date: 2007-11-01 09:41+0100\n"
 "Last-Translator: Tomas Cerha <cerha@brailcom.org>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -387,15 +387,11 @@ msgstr "Barvy okolí stránky"
 
 #: ../lib/wiking/cms.py:695
 msgid ""
-"What is \"page surrounding\" depends from the stylesheet. In general it is "
-"the part of the page, which does not include the actual contents. Most often "
-"it is the page header and footer which usually remain unchanged throughout "
-"the whole website."
-msgstr ""
-"Co vlastně je \"okolí stránky\" závisí na použitých stylech.  Obecně jde o "
-"tu část stránky, která neobsahuje vlastní obsah dokumentu.  Obvykle je to "
-"část obsahující záhlaví, zápatí a vše ostatní, co vlastní zobrazený dokument "
-"obklopuje."
+"What is 'page surrounding' depends from the stylesheet. In general it is the "
+"part of the page, which does not include the actual contents. Most often it "
+"is the page header and footer which usually remain unchanged throughout the "
+"whole website."
+msgstr "Co vlastně je „okolí stránky“ závisí na použitých stylech.  Obecně jde o tu část stránky, která neobsahuje vlastní obsah dokumentu.  Obvykle je to část obsahující záhlaví, zápatí a vše ostatní, co vlastní zobrazený dokument obklopuje."
 
 #: ../lib/wiking/cms.py:700
 msgid "Error messages"
@@ -800,7 +796,7 @@ msgstr "Uživatelé"
 
 #: ../lib/wiking/cms.py:1357
 msgid ""
-"Manage registered users.  Use the module \"Access Rights\" to change their "
+"Manage registered users.  Use the module 'Access Rights' to change their "
 "privileges."
 msgstr ""
 "Správa registrovaných uživatelů.  Použijte modul „Práva“ pro správu jejich "
@@ -916,13 +912,12 @@ msgid "Remove the user permanently"
 msgstr "Nevratně odstranit uživatele"
 
 #: ../lib/wiking/cms.py:1428
-#, fuzzy
 msgid "Enable"
-msgstr "Povolen"
+msgstr "Povolit"
 
 #: ../lib/wiking/cms.py:1428
 msgid "Enable this account"
-msgstr ""
+msgstr "Povolit tento účet"
 
 #: ../lib/wiking/cms.py:1432
 msgid "Register"
@@ -945,15 +940,15 @@ msgstr ""
 msgid ""
 "New user %(fullname)s registered at %(server_hostname)s. Please approve the "
 "account: %(uri)s"
-msgstr ""
+msgstr "Nový uživatel %(fullname)s se registroval na %(server_hostname)s. Proveďte prosím potvrzení registrace: %(uri)s"
 
 #: ../lib/wiking/cms.py:1451 ../lib/wiking/cms.py:1473
 msgid "Failed sending e-mail notification:"
-msgstr ""
+msgstr "Nepodařilo se odesílat e-mailové upozornění:"
 
 #: ../lib/wiking/cms.py:1453
 msgid "E-mail notification has been sent to server administrator."
-msgstr ""
+msgstr "E-mailové upozornění bylo odesláno správci serveru."
 
 #: ../lib/wiking/cms.py:1454
 msgid "Registration"
@@ -961,23 +956,23 @@ msgstr "Registrace"
 
 #: ../lib/wiking/cms.py:1464
 msgid "The account was enabled."
-msgstr ""
+msgstr "Účet byl povolen."
 
 #: ../lib/wiking/cms.py:1465
 #, python-format
 msgid ""
 "Your account at %(uri)s has been enabled. Please log in with username '%"
 "(login)s' and your password."
-msgstr ""
+msgstr "Váš účet na %(uri)s byl povolen. Přihlašte se, prosím, s Vaším uživatelským jménem „%(login)s“ a heslem zvoleným při registraci."
 
 #: ../lib/wiking/cms.py:1469
 msgid "Your account has been ebabled."
-msgstr ""
+msgstr "Váš účet byl povolen."
 
 #: ../lib/wiking/cms.py:1475
 #, python-format
 msgid "E-mail notification has been sent to %s."
-msgstr ""
+msgstr "E-mailové upozornění bylo odesláno na %s."
 
 #: ../lib/wiking/cms.py:1505
 msgid "Access Rights"
