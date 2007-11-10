@@ -11,7 +11,7 @@ WHERE mapping_id=1 AND lang='en';
 UPDATE pages SET content=_content;
 
 --INSERT INTO themes ("name") VALUES ('Default');
-INSERT INTO config (site_title, theme) VALUES ('Wiking site');
+INSERT INTO config (site_title) VALUES ('Wiking site');
 
 INSERT INTO stylesheets (identifier) VALUES ('default.css');
 
