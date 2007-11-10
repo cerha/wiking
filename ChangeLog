@@ -1,3 +1,7 @@
+2007-11-10  Tomas Cerha  <cerha@brailcom.org>
+
+	* sql/init.sql: Minor fix.
+
 2007-11-01  Tomas Cerha  <cerha@brailcom.org>
 
 	* translations/*.po: Updated.
