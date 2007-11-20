@@ -553,6 +553,7 @@ class Config(CMSModule):
                 theme = self._DEFAULT_THEME
             cfg.theme = theme
         if cfg.upload_limit is None:
+            # TODO: Use the default values from global config file (/etc/wiking/config.py)
             cfg.upload_limit = cfg.option('upload_limit').default()
     
 
@@ -1029,9 +1030,7 @@ class Attachments(StoredFileModule, CMSModule):
             descr = row['description'].value()
             self._bytesize = row['bytesize'].export()
             self._listed = row['listed'].value()
-            super(Attachments.Attachment, self).__init__(file, uri=uri,
-                                                         title=title,
-                                                         descr=descr)
+            super(Attachments.Attachment, self).__init__(file, uri=uri, title=title, descr=descr)
         def bytesize(self):
             return self._bytesize
         def listed(self):
@@ -1445,8 +1444,7 @@ class _Users(CMSModule):
                      uri=req.abs_uri()+'/'+record['login'].value())
             err = send_mail('wiking@' + req.server_hostname(), addr,
                             'New user registration: ' + record['fullname'].value(),
-                            translator('en').translate(text),
-                            smtp_server=cfg.smtp_server)
+                            translator('en').translate(text), smtp_server=cfg.smtp_server)
             if err:
                 err = _("Failed sending e-mail notification:") +' '+ err
             else:
