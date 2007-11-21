@@ -3,9 +3,10 @@ import lcg
 class Reader(lcg.Reader):
     """Generate documentation for Wiking Configuration."""
 
-    _DEFAULTS = {'title': "Wiking Configuration Options"}
+    def _title(self):
+        return "Wiking Configuration Options"
     
-    def _create_content(self):
+    def _content(self):
         from wiking import cfg
         def descr(option):
             content = []

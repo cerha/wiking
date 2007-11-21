@@ -1,3 +1,19 @@
+2007-11-21  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/cms.py: Updated for latest LCG API.
+
+	* lib/wiking/configuration.py: Updated for latest LCG API.
+
+	* lib/wiking/export.py: Updated for latest LCG API.
+
+	* lib/wiking/handler.py: Updated for latest LCG API.
+
+	* lib/wiking/util.py: Updated for latest LCG API.
+
+2007-11-20  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/cms.py: Cosmetic changes.
+
 2007-11-10  Tomas Cerha  <cerha@brailcom.org>
 
 	* sql/init.sql: Minor fix.
@@ -395,7 +411,7 @@
 
 2007-08-27  Tomas Cerha  <cerha@brailcom.org>
 
-	* lib/wiking/modules.py (Module): Constructor argument 'resolver'
+	* lib/wiking/modules.py: Constructor argument 'resolver'
 	removed.  Methods `panels' and amenu' moved to `RequestHandler'.
 
 	* lib/wiking/handler.py: Added support for modularized exception

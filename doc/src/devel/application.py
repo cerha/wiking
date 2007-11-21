@@ -3,10 +3,12 @@ import lcg, inspect, re
 class Reader(lcg.Reader):
     """Generate Wiking API documentation out of Python docstrings."""
     
-    _DEFAULTS = {'title': "Wiking Application API"}
     _ARG_REGEX = re.compile("^  (\w+) -- ", re.MULTILINE)
 
-    def _create_content(self):
+    def _title(self):
+        return "Wiking Application API"
+    
+    def _content(self):
         from wiking import Application
         parser = lcg.Parser()
         #modules = [(k, v) for k, v in wiking.application.__dict__.items()

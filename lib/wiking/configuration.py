@@ -97,23 +97,16 @@ class Configuration(pc):
                 "links may be broken (such as in RSS feeds).")
         _DEFAULT = (443,)
         
-    class _Option_translation_paths(pc.Option):
+    class _Option_translation_path(pc.Option):
         _DESCR = "Translation path for each translation domain"
-        _DOC = ("The value is a dictionary, where keys are translation domain names and values "
-                "are paths to the corresponding locale data directories.  These directories "
-                "depend on your installation.  Each directory should contain a subdirectory "
-                "'<lang>/LC_MESSAGES' and a file '<domain>.mo' in it, where <lang> is the "
-                "language code and <domain> is the corresponding dictionary key.")
+        _DOC = ("The value is a sequence of directory names (strings), where locale data are "
+                "searched.  These directories depend on your installation.  Each directory "
+                "should contain a subdirectory 'lang/LC_MESSAGES' and a file 'domain.mo' in it, "
+                "where lang is the language code and domain is the translation domain name.")
         def default(self):
-            import os
-            dir = os.path.join(self._configuration.wiking_dir, 'translations')
-            return {
-                'wiking': dir,
-                'wiking-cms': dir,
-                'lcg':  '/usr/local/share/lcg/translations',
-                'lcg-locale':  '/usr/local/share/lcg/translations',
-                'pytis': '/usr/local/share/pytis/translations',
-                }
+            return (os.path.join(self._configuration.wiking_dir, 'translations'),
+                    '/usr/local/share/lcg/translations',
+                    '/usr/local/share/pytis/translations')
 
     class _Option_site_title(pc.Option):
         _DESCR = _("Site title")
@@ -180,14 +173,14 @@ class Configuration(pc):
         _DEFAULT = Theme()
 
     class _Option_exporter(pc.Option):
-        _DESCR = "Page exporter"
+        _DESCR = "Page exporter class"
         _DOC = ("Exporter is responsible for rendering the final page.  It gets the logical "
                 "description of the page elements on input and outputs its representatio in "
                 "HTML/XHTML/XML or any other desired format.  You can make minor page display "
                 "customizations, change the layout completely or use another output format by "
-                "overriding the exporter.  See LCG documentation for more information about "
-                "the export mechanism.")
-        _DEFAULT = Exporter()
+                "overriding the defaul exporter.  See LCG documentation for more information "
+                "about the export mechanism.")
+        _DEFAULT = Exporter
         
     class _Option_resolver(pc.Option):
         _DESCR = "Module specification resolver"

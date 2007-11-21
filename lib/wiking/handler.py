@@ -38,7 +38,7 @@ class Handler(object):
         self._module_cache = {}
         # Initialize the system modules immediately.
         self._application = self._module('Application')
-        self._exporter = cfg.exporter
+        self._exporter = cfg.exporter(translations=cfg.translation_path)
         #log(OPR, 'New Handler instance for %s.' % hostname)
 
     def _module(self, name, **kwargs):
@@ -91,7 +91,8 @@ class Handler(object):
                         req.set_status(e.ERROR_CODE)
                     result = Document(e.title(), e.message(req))
             node = result.build(req, modname, application)
-            output = translator(node.language()).translate(self._exporter.export(node))
+            context = self._exporter.context(node, node.lang())
+            output = context.translate(self._exporter.export(context))
             return req.result(output)
         except Exception, e:
             return application.handle_exception(req, e)

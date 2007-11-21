@@ -10,9 +10,8 @@ lib := $(shell python -c 'import sys; print "$(LIB)".find("%d") != -1 and \
 
 .PHONY: translations doc
 
-doc: doc-en #doc-cs
-doc-%:
-	lcgmake --language=$* --stylesheet=default.css doc/src doc/html
+doc:
+	lcgmake doc/src doc/html
 
 translations:
 	make -C translations

@@ -29,37 +29,38 @@ class Exporter(lcg.HtmlExporter):
     _BOTTOM_PARTS = ('wiking_bar', 'last_change', 'footer')
     _LANGUAGE_SELECTION_LABEL = _("Language:")
 
-    def _wrap(self, node):
-        return self._parts(node, self._WRAP_PARTS)
+    def _wrap(self, context):
+        return self._parts(context, self._WRAP_PARTS)
     
-    def _bottom(self, node):
-        return self._parts(node, self._BOTTOM_PARTS)
+    def _bottom(self, context):
+        return self._parts(context, self._BOTTOM_PARTS)
                            
-    def _page(self, node):
+    def _page(self, context):
+        node = context.node()
         node.state().has_submenu = bool([n for n in node.top().children() if not n.hidden()])
-        return self._parts(node, self._PAGE_PARTS)
+        return self._parts(context, self._PAGE_PARTS)
 
-    def _page_cls(self, node):
-        state = node.state()
-        cls = cls='node-id-%s' % node.id()
+    def _page_cls(self, context):
+        state = context.node().state()
+        cls = cls='node-id-%s' % context.node().id()
         if state.has_submenu:
             cls += ' with-submenu'
-        if node.panels() and state.show_panels:
+        if context.node().panels() and state.show_panels:
             cls += ' with-panels'
         return cls
 
-    def _part(self, name, node):
-        content = getattr(self, '_'+name)(node)
+    def _part(self, name, context):
+        content = getattr(self, '_'+name)(context)
         if content is not None:
             if hasattr(self, '_'+name+'_cls'):
-                cls = getattr(self, '_'+name+'_cls')(node)
+                cls = getattr(self, '_'+name+'_cls')(context)
             else:
                 cls = None
             return self._generator.div(content, id=name.replace('_', '-'), cls=cls)
         else:
             return None
     
-    def _node_uri(self, node, lang=None):
+    def _node_uri(self, context, node, lang=None):
         uri = '/'+ node.id()
         if lang is not None:
             uri += '?setlang=%s' % lang
@@ -81,53 +82,56 @@ class Exporter(lcg.HtmlExporter):
     def _hidden(self, *text):
         return self._generator.span(text, cls="hidden")
 
-    #def _head(self, node):
-    #    result = super(Exporter, self)._head(node)
-    #    rss = node.state().rss
+    #def _head(self, context):
+    #    result = super(Exporter, self)._head(context)
+    #    rss = context.node().state().rss
     #    if rss:
     #        result = concat(result, '<link rel="alternate" '
     #                        'type="application/rss+xml" title="%s" href="%s"/>'
-    #                        % (node.title(), rss), separator='\n  ')
+    #                        % (context.node().title(), rss), separator='\n  ')
     #    return result
     
-    def _top(self, node):
+    def _top(self, context):
         g = self._generator
-        title = self._site_title(node, full=True)
+        title = self._site_title(context.node(), full=True)
         return g.div(g.div(g.div(g.div(g.strong(title), id='site-title'),
                                  id='top-layer3'), id='top-layer2'), id='top-layer1')
 
-    def _links(self, node):
+    def _links(self, context):
         g = self._generator
-        state = node.state()
+        state = context.node().state()
         links = [g.link(_("Content"), '#content-heading', hotkey="2")]
-        if [n for n in node.root().children() if not n.hidden()]:
+        if [n for n in context.node().root().children() if not n.hidden()]:
             links.append(g.link(_("Main navigation"), '#main-navigation'))
         if state.has_submenu:
             links.append(g.link(_("Local navigation"), '#local-navigation'))
-        if len(node.language_variants()) > 1:
+        if len(context.node().variants()) > 1:
             links.append(g.link(_("Language selection"), '#language-selection-anchor'))
         if state.show_panels:
-            for panel in node.panels():
+            for panel in context.node().panels():
                 links.append(g.link(panel.title(), '#panel-%s ' % panel.id()))
         return self._hidden(_("Jump in page") + ": " + concat(links, separator=' | '))
         
-    def _breadcrumbs(self, node):
+    def _breadcrumbs(self, context):
         g = self._generator
-        links = [lcg.link(n).export(self) for n in node.path()[1:]]
+        links = [lcg.link(n).export(context) for n in context.node().path()[1:]]
         return _("You are here:") + ' ' + concat(links, separator=' / ')
         
-    def _menu(self, node):
+    def _menu(self, context):
         g = self._generator
         links = []
-        for item in node.root().children():
+        for item in context.node().root().children():
             if not item.hidden():
                 cls = "navigation-link"
                 sign = ''
-                if item is node.top():
+                hotkey = None
+                if item is context.node().top():
                     cls += " current"
                     sign = self._hidden(' *')
-                links.append(g.link(item.title(), self._node_uri(item), title=item.descr(),
-                                    hotkey=(item.id() == 'index' and "1" or None), cls=cls) + sign)
+                if item.id() == 'index':
+                    hotkey = "1"
+                links.append(g.link(item.title(), self._node_uri(context, item),
+                                    title=item.descr(), hotkey=hotkey, cls=cls) + sign)
         if links:
             title = g.link(_("Main navigation")+':', None, name='main-navigation', hotkey="3")
             content = (g.h(title, 3), g.list(links))
@@ -135,49 +139,49 @@ class Exporter(lcg.HtmlExporter):
             content = ()
         return g.map(g.div(content, id="main-menu"), name='menu-map', title=_("Main navigation"))
 
-    def _submenu(self, node):
+    def _submenu(self, context):
         g = self._generator
-        state = node.state()
+        state = context.node().state()
         if not state.has_submenu:
             return None
-        menu = lcg.NodeIndex(node=node.top())
-        menu.set_parent(node)
+        menu = lcg.NodeIndex(node=context.node().top())
+        menu.set_parent(context.node())
         title = g.h(g.link(_("In this section:"), None, name='local-navigation', hotkey="3"), 3)
-        return g.map(g.div((title, menu.export(self)), id='submenu-frame'),
+        return g.map(g.div((title, menu.export(context)), id='submenu-frame'),
                      name='submenu-map', title=_("Local navigation"))
     
-    def _panels(self, node):
+    def _panels(self, context):
         g = self._generator
-        panels = node.panels()
+        panels = context.node().panels()
         if not panels:
             return None
-        if not node.state().show_panels:
+        if not context.node().state().show_panels:
             return g.link(_("Show panels"), "?show_panels=1", cls='panel-control show')
         result = [g.link(_("Hide panels"), "?hide_panels=1", cls='panel-control hide')]
         for panel in panels:
             content = panel.content()
             if isinstance(content, lcg.Content):
-                content = content.export(self)
+                content = content.export(context)
             result.append(g.div((g.h(g.link(panel.title(), None, name="panel-"+panel.id()), 3),
                                  g.div(content, cls="panel-content")),
                                 cls="panel panel-"+panel.id()))
         result.append(g.br())
         return result
 
-    def _content(self, node):
+    def _content(self, context):
         g = self._generator
         return (g.hr(cls='hidden'),
-                g.div((g.h(g.link(node.heading(), None, name='content-heading'), 1),
-                       super(Exporter, self)._content(node)), id='inner-content'),
+                g.div((g.h(g.link(context.node().heading(), None, name='content-heading'), 1),
+                       super(Exporter, self)._content(context)), id='inner-content'),
                 g.div('&nbsp;', id='content-clearing'))
 
-    def _clearing(self, node):
+    def _clearing(self, context):
         return '&nbsp;'
     
-    def _wiking_bar(self, node):
+    def _wiking_bar(self, context):
         import wiking
         g = self._generator
-        state = node.state()
+        state = context.node().state()
 	result = (g.hr(),)
         ctrl = ''
         #if state.edit_label:
@@ -210,11 +214,11 @@ class Exporter(lcg.HtmlExporter):
         return result
         
 
-    def _last_change(self, node):
+    def _last_change(self, context):
         return None
 	return _("Last change: %(date)s, %(user)s")
 
-    def _footer(self, node):
+    def _footer(self, context):
         g = self._generator
         links = [g.link(label, uri, title=title) + ','
                  for label, uri, title in
@@ -232,7 +236,7 @@ class Exporter(lcg.HtmlExporter):
                    _("US Government Section 508 Accessibility Guidelines.")))]
         contact = cfg.webmaster_addr
         if contact is None:
-            domain = node.state().server_hostname
+            domain = context.node().state().server_hostname
             if domain.startswith('www.'):
                 domain = domain[4:]
             contact = 'webmaster@' + domain

@@ -46,7 +46,7 @@ _ = lcg.TranslatableTextFactory('wiking-cms')
 
 _STRUCTURED_TEXT_DESCR = \
     _("The content should be formatted as LCG structured text. See the %(manual)s.",
-      manual=('<a target="help" href="/_doc/lcg/data-formats/structured-text">' + \
+      manual=('<a target="help" href="/_doc/lcg/structured-text">' + \
               _("formatting manual") + "</a>"))
 
 try:

@@ -293,8 +293,8 @@ class Document(object):
 
     """
     
-    def __init__(self, title, content, subtitle=None, lang=None, sec_lang='en', variants=None,
-                 resources=(), globals=None):
+    def __init__(self, title, content, subtitle=None, lang=None, variants=None, resources=(),
+                 globals=None):
         """Initialize the instance.
 
         Arguments:
@@ -308,14 +308,11 @@ class Document(object):
           subtitle -- document subtitle as a (translatable) string.  If not None, it will be
             appended to the title.
 
-          lang -- language of the content as a corresponding language code (defined by the
-            'lcg.ContentNode' constructor).  Can be None if the content is not language dependent
-            -- i.e. is all composed of translatable text, so that it can be exported into any
-            target language (supported by the application and its translations).  Should always be
-            defined for language dependent content, unless the whole application is mono-lingual.
-
-          sec_lang -- secondary content language defined by the 'lcg.ContentNode' constructor.
-            Only important when using the LCG feature of quotations. 
+          lang -- language of the content as a corresponding iso language code.  Can be None if the
+            content is not language dependent -- i.e. is all composed of translatable text, so that
+            it can be exported into any target language (supported by the application and its
+            translations).  Should always be defined for language dependent content, unless the
+            whole application is mono-lingual.
 
           variants -- available language variants as a sequence of language codes.  Should be
             defined if only a limited set of target languges for the document exist.  For example
@@ -334,7 +331,6 @@ class Document(object):
         self._content = content
         self._lang = lang
         self._variants = variants
-        self._sec_lang = sec_lang
         self._resources = tuple(resources)
         self._globals = globals
 
@@ -373,9 +369,8 @@ class Document(object):
                 hidden = True
             resource_provider = lcg.StaticResourceProvider(resources)
             node = WikingNode(str(item.id()), state, title=item.title(), heading=heading,
-                              descr=item.descr(), content=content, hidden=hidden, language=lang,
-                              secondary_language=self._sec_lang, language_variants=variants or (),
-                              active=item.active(), panels=panels, 
+                              descr=item.descr(), lang=lang, content=content, hidden=hidden,
+                              variants=variants or (), active=item.active(), panels=panels, 
                               children=[mknode(i) for i in item.submenu()],
                               resource_provider=resource_provider, globals=self._globals)
             if item.id() == id:
@@ -385,7 +380,7 @@ class Document(object):
             return node
         nodes = [mknode(item) for item in application.menu(req)]
         if not me:
-            variants = self._variants or parent and parent[0].language_variants() or None
+            variants = self._variants or parent and parent[0].variants() or None
             node = mknode(MenuItem(id, self._title, hidden=True, variants=variants))
             if parent:
                 parent[0].add_child(node)
@@ -410,11 +405,12 @@ class WikingNode(lcg.ContentNode):
             self.show_panels = show_panels
             self.server_hostname = server_hostname
     
-    def __init__(self, id, state, heading=None, panels=(), **kwargs):
+    def __init__(self, id, state, heading=None, panels=(), lang=None, **kwargs):
         super(WikingNode, self).__init__(id, **kwargs)
         self._heading = heading
         self._state = state
         self._panels = panels
+        self._lang = lang
         for panel in panels:
             panel.content().set_parent(self)
 
@@ -424,6 +420,9 @@ class WikingNode(lcg.ContentNode):
         node._set_parent(self)
         self._children.append(node)
         
+    def lang(self):
+        return self._lang
+
     def heading(self):
         return self._heading or self._title
     
@@ -881,7 +880,7 @@ def make_uri(base, *args, **kwargs):
 
 def translator(lang):
     if lang:
-        return lcg.GettextTranslator(lang, path=cfg.translation_paths, fallback=True)
+        return lcg.GettextTranslator(lang, path=cfg.translation_path, fallback=True)
     else:
         return lcg.NullTranslator()
     
