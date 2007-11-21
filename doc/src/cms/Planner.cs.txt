@@ -10,7 +10,7 @@ události jsou automaticky vyřazeny z výpisu, takže jsou zobrazeny vždy jen
 budoucí události.
 
 Ke každé události lze připojit krátký text.  Ten může být formátován jako
-„strukturovaný text LCG“ (viz [/_doc/lcg/data-formats/structured-text
+„strukturovaný text LCG“ (viz [/_doc/lcg/structured-text
 formátovací manuál]).
 
 Události pro jednotlivé jazykové verze jsou spravovány nezávisle.  Tabulka

@@ -1,5 +1,5 @@
 cms-intro
-Mapping
+Menu
 Pages
 Attachments
 Panels

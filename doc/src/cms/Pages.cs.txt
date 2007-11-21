@@ -5,7 +5,7 @@
 V tomto modulu můžete vytvářet a spravovat běžné stránky obsahující text,
 grafiku a další prvky.  Vlastní text stránek je zadáván ve formátu
 „strukturovaný text LCG“, který je popsán v
-[/_doc/lcg/data-formats/structured-text příručce formátování].
+[/_doc/lcg/structured-text příručce formátování].
 
 Obrázky, externí dokumenty, zvukové nahrávky, videa a další součásti obsahu
 jsou potom spravovány prostřednictvím tzv. příloh (viz dále).
@@ -15,7 +15,7 @@ zobrazuje pouze záznamy odpovídající /aktuálně zvolenému jazyku/.  Pokud 
 spravovat jiné jazykové verze stránek, musíte nejprve přepnout aktuální jazyk.
 
 Zařazení stránek do hlavní nabídky je stejně jako pro ostatní moduly prováděno
-v modulu [Mapping Mapování].
+v modulu [Menu Menu].
 
 Pro každou stránku je v tabulce zobrazen také „stav“.  Ten může nabývat jedné
 ze tří hodnot:
@@ -88,4 +88,4 @@ Pokud zadáte název a popis přílohy, tyto hodnoty budou vždy smysluplně vyu
 na přílohy jsou zpracovávány jako jakékoliv jiné odkazy v rámci strukturovaného
 textu LCG, takže můžete také libovolně předefinovat název odkazu nebo zvolit
 zarovnání obrázku.  Kompletní informace naleznete v
-[/_doc/lcg/data-formats/structured-text příručce formátování].
+[/_doc/lcg/structured-text příručce formátování].

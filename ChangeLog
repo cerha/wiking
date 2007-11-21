@@ -1,5 +1,25 @@
 2007-11-21  Tomas Cerha  <cerha@brailcom.org>
 
+	* doc/src/cms/_index.txt: 'Mapping' -> 'Menu'.
+
+	* doc/src/cms/Panels.en.txt: Link fixed.
+
+	* doc/src/cms/News.cs.txt: LCG documentation links updated. 
+
+	* doc/src/cms/News.en.txt: LCG documentation links updated. 
+
+	* doc/src/cms/Pages.cs.txt: LCG documentation links updated. 
+
+	* doc/src/cms/Pages.en.txt: LCG documentation links updated. 
+
+	* doc/src/cms/Planner.cs.txt: LCG documentation links updated. 
+
+	* doc/src/cms/Planner.en.txt: LCG documentation links updated. 
+
+	* doc/src/devel/application.py: Updated for latest LCG API.
+
+	* doc/src/admin/config.py: Updated for latest LCG API.
+
 	* lib/wiking/cms.py: Updated for latest LCG API.
 
 	* lib/wiking/configuration.py: Updated for latest LCG API.

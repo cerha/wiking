@@ -10,8 +10,8 @@ of the site, but the panels remain where they are.
 There may be arbitrary textual content on each panel, but probably the most
 practical feature of panels is that they can display items of some other
 module.  For example the module [News] will display recent news on the panel.
-You can also define how many items are displayed.  Only [Mapping mapped]
-modules are available for panelization.
+You can also define how many items are displayed.  Only modules present in the
+[Menu main menu] are available for panelization.
 
 There may be a different set of panels for each language variant of the
 website.  Only panels for the /currently selected language/ are displayed, so

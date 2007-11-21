@@ -30,7 +30,7 @@ The central module, which controls the application behavior is the module named
 'Application'.  Different stages of request processing, such as authentication,
 uri resolution, handling errors etc. are controlled by different methods of the
 application module, so a derived application may override any of these phases
-by custom processing.  See [api] for details.
+by custom processing.  See [application] for details.
 
 The most important phase of request processing is serving the actual content.
 The application decides which module is responsible for handling the particular

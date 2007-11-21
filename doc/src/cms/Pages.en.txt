@@ -5,7 +5,7 @@
 This module allows you to create and manage pages with generic text content
 including graphics and external media.  The content itself can be directly
 edited as an ``LCG structured text'' document.  The format is described in the
-[/_doc/lcg/data-formats/structured-text formatting manual].
+[/_doc/lcg/structured-text formatting manual].
 
 Images, external documents, sound recordings, videos and other types of
 additional content may be included within a page using so called
@@ -15,7 +15,7 @@ There can be multiple language variants of each page, but only records
 corresponding to the /currently selected language/ are displayed in the table.
 You need to switch the language to be able to manage pages in other languages.
 
-Use the [Mapping] module to add pages to the main menu.
+Use the [Menu] module to add pages to the main menu.
 
 The table shows ``state'' of each page.  This can be one of the following three
 values:
@@ -87,5 +87,5 @@ If you supply title and description, these values will always be used
 meaningfully -- as a link label/description or image ALT/LONGDESC tags.
 Attachment references are treated as any other links in an LCG structured text
 document, so you can also redefine the label or set image allignment.  See the
-[/_doc/lcg/data-formats/structured-text formatting manual] for complete
+[/_doc/lcg/structured-text formatting manual] for complete
 information.

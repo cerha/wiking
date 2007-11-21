@@ -7,7 +7,7 @@ stručný nadpis, časovou známku a podrobnější text.  V základním zobraze
 je vypsán seznam nejnovějších zpráv (nejnovější zprávy jsou nahoře).
 
 Text zprávy může být formátován jako „strukturovaný text LCG“ (viz
-[/_doc/lcg/data-formats/structured-text formátovací manuál]).
+[/_doc/lcg/structured-text formátovací manuál]).
 
 Zprávy pro jednotlivé jazykové verze jsou spravovány nezávisle.  Tabulka
 zobrazuje pouze záznamy odpovídající /aktuálně zvolenému jazyku/.  Pokud
