@@ -345,7 +345,7 @@ class CookieAuthentication(object):
             self._auth_hook(req, login, user, initial=True, success=True)
             session_key = session.init(user)
             req.set_cookie(self._LOGIN_COOKIE, login, expires=730*day)
-            req.set_cookie(self._SESSION_COOKIE, session_key, expires=2*day)
+            req.set_cookie(self._SESSION_COOKIE, session_key)
         else:
             login, key = (req.cookie(self._LOGIN_COOKIE), 
                           req.cookie(self._SESSION_COOKIE))
@@ -353,9 +353,9 @@ class CookieAuthentication(object):
                 user = self._auth_get_user(login, req)
                 if user and session.check(user, key):
                     assert isinstance(user, User)
-                    # Cookie expiration is 2 days, but session expiration is
-                    # controled within the session module independently.
-                    req.set_cookie(self._SESSION_COOKIE, key, expires=2*day)
+                    # The session cookie must not be persistent. Session expiration
+                    # is controled within the session module independently.
+                    req.set_cookie(self._SESSION_COOKIE, key)
                     self._auth_hook(req, login, user, initial=False, success=True)
                 else:
                     # This is not true after logout
@@ -366,7 +366,7 @@ class CookieAuthentication(object):
         if req.param('command') == 'logout' and user:
             session.close(user)
             user = None
-            req.set_cookie(self._SESSION_COOKIE, None, expires=0)
+            req.set_cookie(self._SESSION_COOKIE, None)
         elif req.param('command') == 'login' and not user:
             raise AuthenticationError()
         return user

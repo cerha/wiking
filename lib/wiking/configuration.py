@@ -98,7 +98,7 @@ class Configuration(pc):
         _DEFAULT = (443,)
         
     class _Option_translation_path(pc.Option):
-        _DESCR = "Translation path for each translation domain"
+        _DESCR = "Translation search path"
         _DOC = ("The value is a sequence of directory names (strings), where locale data are "
                 "searched.  These directories depend on your installation.  Each directory "
                 "should contain a subdirectory 'lang/LC_MESSAGES' and a file 'domain.mo' in it, "

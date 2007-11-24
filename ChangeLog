@@ -1,3 +1,10 @@
+2007-11-24  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/configuration.py: Minor docstring improvement.
+
+	* lib/wiking/modules.py (CookieAuthentication.authenticate):
+	Disable session cookie persistency.
+
 2007-11-21  Tomas Cerha  <cerha@brailcom.org>
 
 	* doc/src/cms/_index.txt: 'Mapping' -> 'Menu'.
