@@ -82,13 +82,15 @@ class Request(pytis.web.Request):
         else:
             return default
         
-    def set_cookie(self, name, value, expires=None):
+    def set_cookie(self, name, value, expires=None, secure=False):
         c = Cookie.SimpleCookie()
         c[name] = value
         c[name]['domain'] = self._req.server.server_hostname
         c[name]['path'] = '/'
         if expires is not None:
             c[name]['expires'] = expires
+        if secure:
+            c[name]['secure'] = True
         cookie = c[name].OutputString()
         self._req.headers_out.add("Set-Cookie", cookie)
 

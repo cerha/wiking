@@ -1398,8 +1398,6 @@ class _Users(CMSModule):
             Field('contributor', _("Contribution privileges")),
             Field('author', _("Authoring privileges")),
             Field('admin', _("Admin privileges")),
-            Field('session_expire'),
-            Field('session_key'),
             )
         columns = ('fullname', 'nickname', 'email', 'since')
         sorting = (('surname', ASC), ('firstname', ASC))
@@ -1512,24 +1510,31 @@ class Rights(_Users):
     WMI_SECTION = WikingManagementInterface.SECTION_USERS
     WMI_ORDER = 200
 
-    
-class Session(_Users, Session):
-    class Spec(_Users.Spec):
-        table = 'users'
+
+class Session(PytisModule, Session):
+    class Spec(Specification):
+        fields = [Field(_id) for _id in ('session_id', 'login', 'key', 'expire')]
 
     def init(self, user):
+        # Delete all expired records first...
+        self._data.delete_many(pd.AND(pd.EQ('login', pd.Value(pd.String(), user.login())),
+                                      pd.LT('expire', pd.Value(pd.DateTime(),
+                                                               mx.DateTime.now().gmtime()))))
         session_key = self._new_session_key()
-        user.data().update(session_expire=self._expiration(), session_key=session_key)
+        row = self._data.make_row(login=user.login(), key=session_key, expire=self._expiration())
+        self._data.insert(row)
         return session_key
         
-    def check(self, user, session_key):
-        record = user.data()
-        if not self._expired(record['session_expire'].value()):
-            record.update(session_expire=self._expiration())
+    def check(self, user, key):
+        row = self._data.get_row(login=user.login(), key=key)
+        if row and not self._expired(row['expire'].value()):
+            self._record(row).update(expire=self._expiration())
             return True
         else:
             return False
 
-    def close(self, user):
-        user.data().update(session_expire=None, session_key=None)
+    def close(self, user, key):
+        row = self._data.get_row(login=user.login(), key=key)
+        if row:
+            self._delete(self._record(row))
         

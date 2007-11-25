@@ -23,6 +23,14 @@ CREATE TABLE users (
 ALTER TABLE users ALTER COLUMN since 
 SET DEFAULT current_timestamp(0) AT TIME ZONE 'GMT';
 
+CREATE TABLE session (
+       session_id serial PRIMARY KEY,
+       login varchar(32) NOT NULL,
+       key text,
+       expire timestamp,
+       UNIQUE (login, key)
+);
+
 -------------------------------------------------------------------------------
 
 CREATE TABLE languages (

@@ -274,6 +274,7 @@ class CookieAuthentication(object):
     
     _LOGIN_COOKIE = 'wiking_login'
     _SESSION_COOKIE = 'wiking_session_key'
+    _SECURE_AUTH_COOKIES = False
 
     def _auth_user(self, login):
         """Obtain authentication data and return a 'User' instance for given 'login'.
@@ -329,6 +330,7 @@ class CookieAuthentication(object):
     def authenticate(self, req):
         session = self._module('Session')
         credentials = req.credentials()
+        secure = self._SECURE_AUTH_COOKIES
         day = 24*3600
         if credentials:
             login, password = credentials
@@ -344,29 +346,28 @@ class CookieAuthentication(object):
             # Login succesfull
             self._auth_hook(req, login, user, initial=True, success=True)
             session_key = session.init(user)
-            req.set_cookie(self._LOGIN_COOKIE, login, expires=730*day)
-            req.set_cookie(self._SESSION_COOKIE, session_key)
+            req.set_cookie(self._LOGIN_COOKIE, login, expires=730*day, secure=secure)
+            req.set_cookie(self._SESSION_COOKIE, session_key, secure=secure)
         else:
-            login, key = (req.cookie(self._LOGIN_COOKIE), 
-                          req.cookie(self._SESSION_COOKIE))
-            if login and key:
+            login, session_key = (req.cookie(self._LOGIN_COOKIE), 
+                                  req.cookie(self._SESSION_COOKIE))
+            if login and session_key:
                 user = self._auth_get_user(login, req)
-                if user and session.check(user, key):
+                if user and session.check(user, session_key):
                     assert isinstance(user, User)
-                    # The session cookie must not be persistent. Session expiration
-                    # is controled within the session module independently.
-                    req.set_cookie(self._SESSION_COOKIE, key)
+                    # Session cookie expiration is unset to prevent cookie persistency.
+                    # Session expiration is implemented internally by the session module.
+                    req.set_cookie(self._SESSION_COOKIE, session_key, secure=secure)
                     self._auth_hook(req, login, user, initial=False, success=True)
                 else:
-                    # This is not true after logout
-                    session_timed_out = True
+                    session_timed_out = True # This is not true after logout.
                     user = None
             else:
                 user = None
         if req.param('command') == 'logout' and user:
-            session.close(user)
+            session.close(user, session_key)
             user = None
-            req.set_cookie(self._SESSION_COOKIE, None)
+            req.set_cookie(self._SESSION_COOKIE, None, secure=secure)
         elif req.param('command') == 'login' and not user:
             raise AuthenticationError()
         return user
@@ -390,7 +391,7 @@ class Session(Module):
     def check(self, user, session_key):
 	return False
 
-    def close(self, user):
+    def close(self, user, session_key):
         pass
     
 
