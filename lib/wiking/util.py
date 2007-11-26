@@ -711,12 +711,14 @@ class DateTime(pytis.data.DateTime):
 class Date(pytis.data.Date):
     """Pytis Date type which exports as a 'lcg.LocalizableDateTime'."""#
 
-    def __init__(self, **kwargs):
+    def __init__(self, leading_zeros=True, **kwargs):
+        self._leading_zeros = leading_zeros
         super(Date, self).__init__(format='%Y-%m-%d', **kwargs)
         
     def _export(self, value, show_weekday=False, **kwargs):
         result = super(Date, self)._export(value, **kwargs)
-        return lcg.LocalizableDateTime(result, show_weekday=show_weekday)
+        return lcg.LocalizableDateTime(result, show_weekday=show_weekday,
+                                       leading_zeros=self._leading_zeros)
 
 
 # ============================================================================
