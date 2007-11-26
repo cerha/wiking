@@ -686,9 +686,10 @@ class WikingFileResolver(WikingResolver, pytis.util.FileResolver):
 class DateTime(pytis.data.DateTime):
     """Pytis DateTime type which exports as a 'lcg.LocalizableDateTime'."""
     
-    def __init__(self, show_time=True, exact=False, **kwargs):
+    def __init__(self, show_time=True, exact=False, leading_zeros=True, **kwargs):
         self._is_exact = exact
         self._show_time = show_time
+        self._leading_zeros = leading_zeros
         format = '%Y-%m-%d %H:%M'
         if exact:
             format += ':%S'
@@ -702,7 +703,7 @@ class DateTime(pytis.data.DateTime):
         if show_time is None:
             show_time = self._show_time
         return lcg.LocalizableDateTime(result, show_weekday=show_weekday,
-                                       show_time=show_time)
+                                       show_time=show_time, leading_zeros=self._leading_zeros)
 
         
 # We need two types, because we need to derive from two different base classes.

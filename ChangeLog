@@ -1,3 +1,8 @@
+2007-11-26  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/util.py (DateTime): Added support for suppressing
+	leading zeros in the formatted date.
+
 2007-11-25  Tomas Cerha  <cerha@brailcom.org>
 
 	* sql/wiking.sql (session): New table.
