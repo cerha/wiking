@@ -2,12 +2,12 @@
 
 == Accessibility Statement ==
 
-This site uses the [http://www.freebsoft.org/wiking Wiking] content management
-system.  One of the major aims of this system is providing equal access to all
-users, including people with handicaps and/or special needs.  Wiking also tries
-to be neutral to user's software, hardware and settings.  Thus the resulting
-pages should be usable with any browser, font type or size, screen resolution,
-assistive technologies etc.
+This site is built using the [http://www.freebsoft.org/wiking Wiking] web
+application development framework.  One of the major aims of this system is
+providing equal access to all users, including people with handicaps and/or
+special needs.  Wiking also tries to be neutral to user's software, hardware
+and settings.  Thus the resulting pages should be usable with any browser, font
+type or size, screen resolution, assistive technologies etc.
 
 The implementation respects relevant W3C standards.  From the accessibility
 point of view, this is in particular >>[http://www.w3.org/TR/WAI-WEBCONTENT/
@@ -23,12 +23,12 @@ cases.
 You will find information about navigation and accessibility related features
 in the chapter [navigation Navigation] of the Wiking user's manual.
 
-The final accessibility of a site, however, does not only depend upon the
-content management system in use.  Also the actual content matters.  Wiking
-tries to help in this respect too, but it is not possible to guarantee that the
-provided features will be used properly.  Thus, if you have problems with
-accessibility, always contact the site administrator first.  You should be able
-to find his e-mail address at the bottom of the page.  Only when you are sure
-that your problem is caused by the Wiking system itself, contact its
+The final accessibility of a site, however, does not only depend upon Wiking
+alone.  The way of its deployment as well as the actual content also matters.
+Wiking tries to help in this respect too, but it is not possible to guarantee
+that the provided features will be used properly.  Thus, if you have problems
+with accessibility, always contact the site administrator first.  You should be
+able to find his e-mail address at the bottom of the page.  Only when you are
+sure that your problem is caused by the Wiking system itself, contact its
 developers.  You will find contact information at the
 [http://www.freebsoft.org/wiking Wiking project website].

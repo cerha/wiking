@@ -1,3 +1,9 @@
+2007-11-29  Tomas Cerha  <cerha@brailcom.org>
+
+	* doc/src/user/accessibility.cs.txt: Generalized.
+
+	* doc/src/user/accessibility.en.txt: Generalized.
+
 2007-11-26  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/util.py (DateTime, Date): Added support for
