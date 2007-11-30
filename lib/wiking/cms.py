@@ -891,7 +891,7 @@ class Pages(CMSModule, Mappable):
             content.append(lcg.SectionContainer(lcg.Parser().parse(text), toc_depth=0))
         # Attachment list
         attachments = self._module('Attachments').attachments(record)
-        items = [(lcg.link(a.uri(), a.title()), ' ('+ a.bytesize() +') ',
+        items = [(lcg.link(make_uri(a.uri()), a.title()), ' ('+ a.bytesize() +') ',
                   lcg.WikiText(a.descr() or '')) for a in attachments if a.listed()]
         if items:
             content.append(lcg.Section(title=_("Attachments"), content=lcg.ul(items)))
