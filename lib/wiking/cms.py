@@ -894,7 +894,8 @@ class Pages(CMSModule, Mappable):
         items = [(lcg.link(make_uri(a.uri()), a.title()), ' ('+ a.bytesize() +') ',
                   lcg.WikiText(a.descr() or '')) for a in attachments if a.listed()]
         if items:
-            content.append(lcg.Section(title=_("Attachments"), content=lcg.ul(items)))
+            content.append(lcg.Section(title=_("Attachments"), content=lcg.ul(items),
+                                       anchor='attachment-automatic-list')) # Prevent dupl. anchor.
         # Action menu
         actions = self._DEFAULT_ACTIONS_FIRST + self._ACTIONS[:-2]
         if req.wmi:
