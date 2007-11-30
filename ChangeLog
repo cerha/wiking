@@ -1,3 +1,20 @@
+2007-11-30  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/util.py (make_uri): Escape the resulting URI.
+
+	* lib/wiking/request.py (FileUpload): Decode the uploaded file
+	name and use only the last item if full path was passed by the
+	browser.
+	(Request): Decode the request uri.
+
+	* lib/wiking/export.py (_node_uri): Use `generator.uri()' to
+	escape the URI properly.
+
+	* lib/wiking/db.py (PytisModule._validate): Expect just a relative
+	filename from `FileUpload.filename()'.
+
+	* lib/wiking/cms.py: Escape attachment URIs.
+
 2007-11-29  Tomas Cerha  <cerha@brailcom.org>
 
 	* doc/src/user/accessibility.cs.txt: Generalized.

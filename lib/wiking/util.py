@@ -17,7 +17,7 @@
 
 from wiking import *
 
-import time, re, os, copy
+import time, re, os, copy, urllib
 
 DBG = pytis.util.DEBUG
 EVT = pytis.util.EVENT
@@ -870,16 +870,17 @@ def cmp_versions(v1, v2):
             return c
     return 0
 
-
 def make_uri(base, *args, **kwargs):
     """Return a URI constructed from given base URI and args."""
-    args += tuple(kwargs.items())
-    argstr = ';'.join(["%s=%s" % (k,v) for k,v in args if v is not None])
-    if argstr:
-        return base + '?' + argstr
-    else:
-        return base
-
+    # TODO: The string passed to urllib.quote must be already encoded, but we don't know which
+    # encoding will be used in the context, where the URI is used.  We just rely on the fact, thet
+    # LCG uses UTF-8.
+    uri = urllib.quote(base.encode('utf-8'))
+    query = ';'.join([k +"="+ urllib.quote(unicode(v).encode('utf-8'))
+                      for k, v in args + tuple(kwargs.items()) if v is not None])
+    if query:
+        uri += '?'+ query
+    return uri
 
 def translator(lang):
     if lang:

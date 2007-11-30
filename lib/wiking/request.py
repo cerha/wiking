@@ -33,12 +33,13 @@ DAY = 86400
 
 class FileUpload(pytis.web.FileUpload):
     """Mod_python specific implementation of pytis FileUpload interface."""
-    def __init__(self, field):
+    def __init__(self, field, encoding):
         self._field = field
+        self._filename = re.split(r'[\\/:]', unicode(field.filename, encoding))[-1]
     def file(self):
         return self._field.file
     def filename(self):
-        return self._field.filename
+        return self._filename
     def type(self):
         return self._field.type
 
@@ -53,7 +54,7 @@ class Request(pytis.web.Request):
         self._encoding = encoding
         # Store request params in a real dictionary.
         self.params = self._init_params()
-        self.uri = unicode(req.uri)
+        self.uri = unicode(req.uri, encoding)
         self.path = [item for item in self.uri.split('/')[1:] if item]
 
     def _init_params(self):
@@ -61,7 +62,7 @@ class Request(pytis.web.Request):
             if isinstance(value, (tuple, list)):
                 return tuple([init_value(v) for v in value])
             elif isinstance(value, mod_python.util.Field):
-                return FileUpload(value)
+                return FileUpload(value, self._encoding)
             else:
                 return unicode(value, self._encoding)
         fields = mod_python.util.FieldStorage(self._req)

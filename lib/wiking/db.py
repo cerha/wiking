@@ -160,8 +160,7 @@ class PytisModule(Module, ActionHandler):
                     if isinstance(type, pd.Binary):
                         fname = value_.filename()
                         if fname:
-                            # MSIE sends full file path...
-                            kwargs['filename'] = fname.split('\\')[-1]
+                            kwargs['filename'] = fname
                             kwargs['type'] = value_.type()
                             value_ = value_.file()
                         else:
