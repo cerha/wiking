@@ -1,3 +1,12 @@
+2007-12-06  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/modules.py (Session._SESSION_KEY_LENGTH): New
+	attribute replacing `_MAX_SESSION_KEY'.
+	(Session._new_session_key): Generate cryptographically secure
+	random numbers using `os.urandom'.
+
+	* lib/wiking/request.py: Don't import `random'.
+
 2007-11-30  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/util.py (make_uri): Escape the resulting URI.
