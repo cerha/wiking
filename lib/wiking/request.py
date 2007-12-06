@@ -24,7 +24,6 @@ try:
 except:
     pass
     
-import random
 import Cookie
 
 _ = lcg.TranslatableTextFactory('wiking')
