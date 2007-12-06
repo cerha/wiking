@@ -374,10 +374,14 @@ class CookieAuthentication(object):
 
     
 class Session(Module):
-    _MAX_SESSION_KEY = 0xfffffffffffffffffffffffffffff
+    _SESSION_KEY_LENGTH = 32
+    """Size of session key in *bytes* (the length of the string representation is double)."""
 
     def _new_session_key(self):
-        return hex(random.randint(0, self._MAX_SESSION_KEY))
+        return ''.join(['%02x' % ord(c) for c in os.urandom(self._SESSION_KEY_LENGTH)])
+        #except NotImplementedError:
+        #    import random
+        #    return hex(random.randint(0, pow(256, self._SESSION_KEY_LENGTH)))[2:]
     
     def _expiration(self):
         return mx.DateTime.now().gmtime() + mx.DateTime.TimeDelta(hours=2)
