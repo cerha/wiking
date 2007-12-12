@@ -36,14 +36,12 @@ class PytisModule(Module, ActionHandler):
     _HONOUR_SPEC_TITLE = False
     _LIST_BY_LANGUAGE = False
     _REFERER_PATH_LEVEL = 2
-    _DEFAULT_ACTIONS_FIRST = (Action(_("Edit"), 'edit',
-                                     descr=_("Modify the record")),)
-    _DEFAULT_ACTIONS_LAST =  (Action(_("Remove"), 'remove',
+    _DEFAULT_ACTIONS_FIRST = (Action(_("Edit"), 'update', descr=_("Modify the record")),)
+    _DEFAULT_ACTIONS_LAST =  (Action(_("Remove"), 'delete',
                                      descr=_("Remove the record permanently")),
                               Action(_("List"), 'list', context=None,
-                                     descr=_("Back to the list of all "
-                                             "records")))
-    _LIST_ACTIONS = (Action(_("New record"), 'add', context=None,
+                                     descr=_("Back to the list of all records")))
+    _LIST_ACTIONS = (Action(_("New record"), 'insert', context=None,
                             descr=_("Create a new record")),)
     
     _EXCEPTION_MATCHERS = (
@@ -63,7 +61,8 @@ class PytisModule(Module, ActionHandler):
     _RELATION_FIELDS = ()
 
     _ALLOW_TABLE_LAYOUT_IN_FORMS = True
-    _SUBMIT_BUTTONS = None
+    _SUBMIT_BUTTONS = {}
+    _LAYOUT = {}
 
     _spec_cache = {}
 
@@ -134,10 +133,12 @@ class PytisModule(Module, ActionHandler):
         lang = req.prefered_language(raise_error=False)
         return translator(lang).locale_data()
         
-    def _validate(self, req, record):
+    def _validate(self, req, record, layout=None):
         # TODO: This should go to pytis.web....
         errors = []
-        fields = self._view.layout().order()
+        if layout is None:
+            layout = self._view.layout()
+        fields = layout.order()
         if record.new():
             for id in self._RELATION_FIELDS:
                 if req.has_param(id):
@@ -305,13 +306,19 @@ class PytisModule(Module, ActionHandler):
         #                       (('module', req.params['module']),)
         if issubclass(form, pw.EditForm):
             kwargs['allow_table_layout'] = self._ALLOW_TABLE_LAYOUT_IN_FORMS
-            kwargs['submit'] = self._SUBMIT_BUTTONS
         elif issubclass(form, pw.BrowseForm):
             kwargs['req'] = req
         if action is not None:
-            hidden += (('action', action),)
+            hidden += (('action', action),
+                       ('submit', 'submit'))
         return form(self._data, self._view, self._resolver, handler=req.uri, name=self.name(),
                     hidden=hidden, **kwargs)
+
+    def _layout(self, req, action):
+        layout = self._LAYOUT.get(action)
+        if isinstance(layout, (tuple, list)):
+            layout = pp.GroupSpec(layout, orientation=pp.Orientation.VERTICAL)
+        return layout
     
     def _default_action(self, req, record=None):
         if record is None:
@@ -449,7 +456,7 @@ class PytisModule(Module, ActionHandler):
         """Return the listing of records related to other module's record."""
         bcol, sbcol = binding.binding_column(), binding.side_binding_column()
         args = {sbcol: record[bcol].value()}
-        content = (self._form(pw.ListView, req, condition=self._condition(req, **args),
+        content = (self._form(pw.BrowseForm, req, condition=self._condition(req, **args),
                               columns=[c for c in self._view.columns() if c!=sbcol]),
                    self._action_menu(req, args=args))
         return lcg.Section(title=self._view.title(), content=[c for c in content if c])
@@ -462,60 +469,53 @@ class PytisModule(Module, ActionHandler):
         if req.wmi:
             help = lcg.p(self._view.help() or '', ' ', lcg.link('/_doc/'+self.name(), _("Help")))
             content += (help,)
-        content += (self._form(pw.ListView, req, condition=self._condition(req, lang=lang)),)
-        if isinstance(self, RssModule) and not req.wmi and lang:
-            content += (self._rss_info(req, lang),)
-        content += (self._action_menu(req),)
+        content += (self._form(pw.BrowseForm, req, condition=self._condition(req, lang=lang)),
+                    self._action_menu(req))
         return self._document(req, content, lang=lang, err=err, msg=msg)
 
     def action_view(self, req, record, err=None, msg=None):
-        content = [self._form(pw.ShowForm, req, row=record.row()),
+        content = [self._form(pw.ShowForm, req, row=record.row(),
+                              layout=self._layout(req, 'view')),
                    self._action_menu(req, record)]
         for modname in self._RELATED_MODULES:
             module, binding = self._module(modname), self._bindings[modname]
             content.append(module.related(req, binding, self.name(), record))
         return self._document(req, content, record, err=err, msg=msg)
 
-    def action_add(self, req, errors=()):
-        # TODO: Redirect handler to HTTPS if cfg.force_https_login is true?
-        # The primary motivation is to protect registration form data.  The
-        # same would apply for action_edit.
-        form = self._form(pw.EditForm, req, row=None, new=True, action='insert',
-                          prefill=self._prefill(req, new=True), errors=errors)
-        return self._document(req, form, subtitle=_("new record"))
+    # ===== Action handlers which modify the database =====
 
-    def action_edit(self, req, record, errors=(), msg=None):
-        form = self._form(pw.EditForm, req, row=record.row(), action='update',
-                          prefill=self._prefill(req), errors=errors)
-        return self._document(req, form, record, subtitle=_("edit form"), msg=msg)
-
-    def action_remove(self, req, record, err=None):
-        form = self._form(pw.ShowForm, req, row=record.row())
-        actions = self._action_menu(req, record, (Action(_("Remove"), 'delete'),))
-        return self._document(req, (form, actions), record, err=err, subtitle=_("removing"),
-                              msg=_("Please, confirm removing the record permanently."))
-
-    # ===== Action handlers which actually modify the database =====
-
-    def action_insert(self, req):
-        if self._OWNER_COLUMN and self._SUPPLY_OWNER and req.user():
-            prefill = {self._OWNER_COLUMN: req.user().uid()}
+    def action_insert(self, req, errors=()):
+        layout = self._layout(req, 'insert')
+        if req.param('submit'):
+            if self._OWNER_COLUMN and self._SUPPLY_OWNER and req.user():
+                prefill = {self._OWNER_COLUMN: req.user().uid()}
+            else:
+                prefill = None
+            record = self._record(None, new=True, prefill=prefill)
+            errors = self._validate(req, record, layout=layout)
         else:
-            prefill = None
-        record = self._record(None, new=True, prefill=prefill)
-        errors = self._validate(req, record)
-        if not errors:
+            errors = ()
+        if req.param('submit') and not errors:
             try:
                 self._insert(record)
             except pd.DBException, e:
                 errors = self._analyze_exception(e)
             else:
                 return self._redirect_after_insert(req, record)
-        return self.action_add(req, errors=errors)
+        # TODO: Redirect handler to HTTPS if cfg.force_https_login is true?
+        # The primary motivation is to protect registration form data.  The
+        # same would apply for action_edit.
+        form = self._form(pw.EditForm, req, row=None, new=True, action='insert',
+                          layout=layout, prefill=self._prefill(req, new=True), errors=errors)
+        return self._document(req, form, subtitle=_("new record"))
             
-    def action_update(self, req, record):
-        errors = self._validate(req, record)
-        if not errors:
+    def action_update(self, req, record, action='update', msg=None):
+        layout = self._layout(req, action)
+        if req.param('submit'):
+            errors = self._validate(req, record, layout=layout)
+        else:
+            errors = ()
+        if req.param('submit') and not errors:
             try:
                 self._update(record)
                 record.reload()
@@ -523,16 +523,25 @@ class PytisModule(Module, ActionHandler):
                 errors = self._analyze_exception(e)
             else:
                 return self._redirect_after_update(req, record)
-        return self.action_edit(req, record, errors=errors)
+        form = self._form(pw.EditForm, req, row=record.row(), action=action, layout=layout,
+                          submit=self._SUBMIT_BUTTONS.get(action),
+                          prefill=self._prefill(req), errors=errors)
+        return self._document(req, form, record, subtitle=_("edit form"), msg=msg)
 
     def action_delete(self, req, record):
-        try:
-            self._delete(record)
-        except pd.DBException, e:
-            err = self._analyze_exception(e)
-            return self.action_remove(req, record, err=err)
-        else:
-            return self._redirect_after_delete(req, record)
+        err = None
+        if req.param('submit'):
+            try:
+                self._delete(record)
+            except pd.DBException, e:
+                err = self._analyze_exception(e)
+            else:
+                return self._redirect_after_delete(req, record)
+        form = self._form(pw.ShowForm, req, row=record.row())
+        actions = self._action_menu(req, record, (Action(_("Remove"), 'delete'),),
+                                    args=dict(submit=1))
+        return self._document(req, (form, actions), record, err=err, subtitle=_("removing"),
+                              msg=_("Please, confirm removing the record permanently."))
         
     # ===== Request redirection after successful data operations =====
 

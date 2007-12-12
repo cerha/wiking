@@ -27,7 +27,7 @@ can be managed using a web browser through Wiking Management Interface.
 from wiking import *
 
 import mx.DateTime
-from pytis.presentation import Computer, CbComputer, Fields
+from pytis.presentation import Computer, CbComputer, Fields, HGroup
 from mx.DateTime import today, TimeDelta
 from lcg import log as debug
 import re, copy
@@ -107,17 +107,14 @@ class Application(CookieAuthentication, Application):
                'WikingManagementInterface': (Roles.AUTHOR, )}
 
     def resolve(self, req):
-        try:
-            return self._MAPPING[req.path[0]]
-        except KeyError:
-            return self._module('Mapping').resolve(req)
+        return self._MAPPING.get(req.path[0], 'Pages')
     
     def module_uri(self, modname):
-        return self._module('Mapping').module_uri(modname) \
+        return self._module('Pages').module_uri(modname) \
                or super(Application, self).module_uri(modname)
         
     def menu(self, req):
-        module = req.wmi and 'WikingManagementInterface' or 'Menu'
+        module = req.wmi and 'WikingManagementInterface' or 'Pages'
         return self._module(module).menu(req)
     
     def panels(self, req, lang):
@@ -150,13 +147,19 @@ class Application(CookieAuthentication, Application):
             roles = getattr(module, 'RIGHTS_'+action)
         else:
             roles = self._RIGHTS.get(module.name(), ())
+        if module.name() == 'Pages' and record and record['private'].value():
+            roles = tuple([r == Roles.ANYONE and Roles.USER or r for r in roles])
+            if record['modname'].value() == 'Users' and action == 'insert':
+                # TODO: This hack makes new user registration possible even if the related page is
+                # private.  A better solution might be asking the module.
+                roles = (Roles.ANYONE,)
         if Roles.check(req, roles):
             return True
         elif Roles.OWNER in roles and isinstance(module, PytisModule) and record and req.user():
             return module.check_owner(req.user(), record)
         else:
             return False
-    
+        
     def _maybe_install(self, req, errstr):
         """Check a DB error string and try to set it up if it is the problem."""
         def _button(label, action='/', **params):
@@ -283,7 +286,7 @@ class WikingManagementInterface(Module, RequestHandler):
     def _handle(self, req):
         req.wmi = True # Switch to WMI only after successful authorization.
         if len(req.path) == 1:
-            req.path += ('Menu',)
+            req.path += ('Pages',)
         try:
             module = self._module(req.path[1])
         except AttributeError:
@@ -307,38 +310,23 @@ class WikingManagementInterface(Module, RequestHandler):
                                   for m in self._wmi_modules(modules, section)])
                 for section, title, descr in self._SECTIONS] + \
                [MenuItem('__site_menu__', '', hidden=True, variants=variants,
-                         submenu=self._module('Menu').menu(req))]
-     
-
-class Mappable(object):
-    """Mix-in class for modules which may be mapped through the Mapping module.
-
-    All modules able to handle requests should be available in module selection for a mapping item.
-    Note that not all 'RequestHandler' subclasses may be mapped, since they may be only designed to
-    handle requests in WMI.
-
-    """
-    pass
+                         submenu=self._module('Pages').menu(req))]
 
 
 class CMSModule(PytisModule, RssModule, Panelizable):
     "Base class for all CMS modules."""
     RIGHTS_view = (Roles.ANYONE,)
     RIGHTS_list = (Roles.ANYONE,)
-    RIGHTS_add    = RIGHTS_insert = (Roles.ADMIN,)
-    RIGHTS_edit   = RIGHTS_update = (Roles.ADMIN,)
-    RIGHTS_remove = RIGHTS_delete = (Roles.ADMIN,)
-    RIGHTS_publish = RIGHTS_unpublish = (Roles.ADMIN,)
-    RIGHTS_rss = (Roles.ANYONE,)
-
-    def _form(self, form, req, *args, **kwargs):
-        if req.wmi and form == pw.ListView:
-            form = pw.BrowseForm # Disable list layout in WMI.
-        return super(CMSModule, self)._form(form, req, *args, **kwargs)
+    RIGHTS_rss  = (Roles.ANYONE,)
+    RIGHTS_insert    = (Roles.ADMIN,)
+    RIGHTS_update    = (Roles.ADMIN,)
+    RIGHTS_delete    = (Roles.ADMIN,)
+    RIGHTS_publish   = (Roles.ADMIN,)
+    RIGHTS_unpublish = (Roles.ADMIN,)
 
     def _resolve(self, req):
         if req.wmi:
-            if len(req.path) == 2: # or req.params.has_key('module'):
+            if len(req.path) == 2:
                 if req.has_param(self._key):
                     return self._get_row_by_key(req.param(self._key))
                 else:
@@ -356,140 +344,49 @@ class CMSModule(PytisModule, RssModule, Panelizable):
         else:
             return super(CMSModule, self)._base_uri(req)
 
-class Mapping(CMSModule):
-    """Map available URIs to the modules which handle them."""
-    class Spec(Specification):
-        title = _("Mapping")
-        def fields(self): return (
-            Field('mapping_id', editable=NEVER),
-            Field('identifier', editable=NEVER),
-            Field('modname', editable=NEVER),
-            Field('private', editable=NEVER),
-            )
-    _mapping_cache = {}
 
-    def resolve(self, req):
-        identifier = req.path[0]
-        try:
-            # TODO: Caching here may prevent changes in `private' flag to take effect...
-            modname, private = self._mapping_cache[identifier]
-        except KeyError:
-            row = self._data.get_row(identifier=identifier)
-            if row is None:
-                raise NotFound()
-            #if not row['published'].value():
-            #    raise Forbidden()
-            self._mapping_cache[identifier] = modname, private = \
-                                              row['modname'].value(), row['private'].value()
-        if private and not (modname == 'Users' and req.param('action') in ('add', 'insert')):
-            # We want to allow new user registration even if the user listing is private.
-            # Unfortunately there seems to be no better solution than the terrible hack
-            # above...  May be we should ask the module?
-            if not Roles.check(req, (Roles.USER,)):
-                if req.user():
-                    raise AuthorizationError()
-                else:
-                    raise AuthenticationError()
-        return modname
+class Embeddable(object):
+    """Mix-in class for modules which may be embedded into page content."""
+    INSERT_LABEL = _("New record")
     
-    def module_uri(self, modname):
-        rows = self._data.get_rows(modname=modname) #, published=True)
-        if len(rows) == 1:
-            return '/'+ rows[0]['identifier'].value()
+    def content(self, req, page):
+        """Return a list of content instances extending the page content."""
+        lang = page['lang'].value()
+        content = [self._form(pw.ListView, req, condition=self._condition(req, lang=lang))]
+        if isinstance(self, RssModule) and not req.wmi and lang:
+            rss_info = self._rss_info(req, lang)
+            if rss_info:
+                content.append(rss_info)
+        return content
+
+
+class Session(PytisModule, Session):
+    class Spec(Specification):
+        fields = [Field(_id) for _id in ('session_id', 'login', 'key', 'expire')]
+
+    def init(self, user):
+        # Delete all expired records first...
+        self._data.delete_many(pd.AND(pd.EQ('login', pd.Value(pd.String(), user.login())),
+                                      pd.LT('expire', pd.Value(pd.DateTime(),
+                                                               mx.DateTime.now().gmtime()))))
+        session_key = self._new_session_key()
+        row = self._data.make_row(login=user.login(), key=session_key, expire=self._expiration())
+        self._data.insert(row)
+        return session_key
+        
+    def check(self, user, key):
+        row = self._data.get_row(login=user.login(), key=key)
+        if row and not self._expired(row['expire'].value()):
+            self._record(row).update(expire=self._expiration())
+            return True
         else:
-            return None
+            return False
 
-
-class Menu(Mapping, Publishable):
-    class Spec(Mapping.Spec):
-        title = _("Main menu")
-        help = _("Manage main menu, available URIs and Wiking modules which handle them.")
-        def fields(self): return (
-            Field('menu_id'),
-            Field('mapping_id'),
-            Field('lang', _("Language"), editable=ONCE, codebook='Languages', value_column='lang'),
-            Field('title_or_identifier', _("Title")),
-            Field('title', _("Title"), not_null=True,
-                  descr=_("Menu item title in the current language (switch language to supply "
-                          "titles in other languages)")),
-            Field('description', _("Description"), width=64,
-                  descr=_("Brief description of this item.  The title is often very short, so it "
-                          "might be appropriate to give additional information here.")),
-            Field('published', _("Published"), default=True,
-                  descr=_("Allows you to control the availability of this item in each of the "
-                          "supported languages (switch language to control the availability in "
-                          "other languages)")),
-            Field('identifier', _("Identifier"), width=20, filter=ALPHANUMERIC, fixed=True,
-                  type=pd.RegexString(maxlen=32, not_null=True, regex='^[a-zA-Z][0-9a-zA-Z_-]*$'),
-                  descr=_("The identifier may be used to refer to this page from outside and also "
-                          "from other pages. A valid identifier can only contain letters, digits, "
-                          "dashes and underscores.  It must start with a letter.")),
-            Field('parent', _("Parent item"), codebook='Mapping', not_null=False,
-                  display='identifier', prefer_display=True),
-            Field('modname', _("Module"), display=_modtitle, prefer_display=True,
-                  selection_type=CHOICE, not_null=True,
-                  enumerator=pd.FixedEnumerator([_m.name() for _m in _modules(Mappable)]),
-                  descr=_("Select the module which handles requests for given identifier. "
-                          "This is the way to make the module available from outside.")),
-            Field('private', _("Private"), default=False,
-                  descr=_("Make the item available only to logged-in users.")),
-            Field('ord', _("Menu order"), width=6,
-                  descr=_("Enter a number denoting the item order in the menu or leave the field "
-                          "blank if you don't want this item to appear in the menu.")),
-            Field('tree_order', _("Tree level"), type=pd.TreeOrder()),
-            Field('owner', _("Owner"), codebook='Users', not_null=False),
-            )
-        layout = (FieldSet(_("Options for the current language"),
-                           ('title', 'description', 'published')),
-                  FieldSet(_("Global options"),
-                           ('identifier', 'modname', 'parent', 'ord', 'private', 'owner')))
-        columns = ('title_or_identifier', 'identifier', 'modname', 'parent', 'ord',
-                   'published', 'private', 'owner')
-        sorting = (('tree_order', ASC), ('identifier', ASC))
-        bindings = {'Pages': pp.BindingSpec(_("Pages"), 'mapping_id')}
-        cb = pp.CodebookSpec(display='identifier', prefer_display=True)
-        def row_style(self, row):
-            return not row['published'].value() and pp.Style(foreground='#777') or None
-    _EXCEPTION_MATCHERS = (
-        ('duplicate key violates unique constraint "_mapping_unique_tree_(?P<id>ord)er"',
-         _("Duplicate menu order on the this tree level.")),) + \
-         CMSModule._EXCEPTION_MATCHERS
-    _LIST_BY_LANGUAGE = True
-    _REFERER = 'identifier'
-
-    WMI_SECTION = WikingManagementInterface.SECTION_CONTENT
-    WMI_ORDER = 10
-
-    def _link_provider(self, req, row, cid, **kwargs):
-        if cid == 'parent':
-            return None
-        return super(Menu, self)._link_provider(req, row, cid, **kwargs)
-
-    def menu(self, req):
-        children = {None: []}
-        translations = {}
-        def mkitem(row):
-            mapping_id, identifier = row['mapping_id'].value(), str(row['identifier'].value())
-            titles, descriptions = translations[mapping_id]
-            return MenuItem(identifier,
-                            lcg.SelfTranslatableText(identifier, translations=titles),
-                            descr=lcg.SelfTranslatableText('', translations=descriptions),
-                            hidden=row['ord'].value() is None, variants=titles.keys(),
-                            submenu=[mkitem(r) for r in children.get(mapping_id, ())])
-        for row in self._data.get_rows(sorting=self._sorting, published=True):
-            mapping_id = row['mapping_id'].value()
-            if not translations.has_key(mapping_id):
-                parent = row['parent'].value()
-                if not children.has_key(parent):
-                    children[parent] = []
-                children[parent].append(row)
-                translations[mapping_id] = ({}, {})
-            titles, descriptions = translations[mapping_id]
-            lang = str(row['lang'].value())
-            titles[lang] = row['title_or_identifier'].value()
-            if row['description'].value() is not None:
-                descriptions[lang] = row['description'].value()
-        return [mkitem(row) for row in children[None]]
+    def close(self, user, key):
+        row = self._data.get_row(login=user.login(), key=key)
+        if row:
+            self._delete(self._record(row))
+            
 
 class Config(CMSModule):
     """Site specific configuration provider.
@@ -533,10 +430,11 @@ class Config(CMSModule):
         return self._data.get_row(config_id=0)
     
     def _default_action(self, req, **kwargs):
-        return 'edit'
+        return 'update'
         
     def _redirect_after_update(self, req, record):
-        return self.action_edit(req, record, msg=self._update_msg(record))
+        req.set_param('submit', None) # Avoid recursion.
+        return self.action_update(req, record, msg=self._update_msg(record))
     
     def configure(self, req):
         cfg.allow_wmi_link = True
@@ -557,6 +455,16 @@ class Config(CMSModule):
             cfg.upload_limit = cfg.option('upload_limit').default()
     
 
+class Mapping(CMSModule):
+    """Mapping contains unique record for each page identifier.
+
+    Pages than define the content for each mapping identifier in particular languages.
+    
+    """
+    class Spec(Specification):
+        fields = [Field(_id) for _id in ('mapping_id', 'identifier', 'modname', 'private')]
+
+            
 class Panels(CMSModule, Publishable):
     class Spec(Specification):
         title = _("Panels")
@@ -577,12 +485,12 @@ class Panels(CMSModule, Publishable):
                                     depends=('ptitle', 'mtitle', 'modname',))),
             Field('ord', _("Order"), width=5,
                   descr=_("Number denoting the order of the panel on the page.")),
-            Field('mapping_id', _("Module"), width=5, not_null=False, codebook='Mapping',
+            Field('mapping_id', _("Page"), width=5, not_null=False, codebook='Mapping',
                   display=lambda row: _modtitle(row['modname'].value()),
                   prefer_display=True, selection_type=CHOICE,
                   validity_condition=pd.NE('modname', pd.Value(pd.String(), 'Pages')),
-                  descr=_("The items of the selected module will be shown by the panel. "
-                          "Leave blank for a text content panel.")),
+                  descr=_("The items of the module used by the selected page will be shown "
+                          "by the panel.  Leave blank for a text content panel.")),
             Field('identifier', editable=NEVER),
             Field('modname'),
             Field('private'),
@@ -749,110 +657,152 @@ class Themes(CMSModule):
                   for c in Theme.COLORS if row[c.id()].value() is not None]
         return Theme(colors=dict(colors))
 
-
-    
 # ==============================================================================
-# The modules below are able to handle requests directly.  
+# The modules below handle the actual content.  
 # The modules above are system modules used internally by Wiking.
 # ==============================================================================
 
-class Pages(CMSModule, Mappable):
+class Pages(CMSModule):
     class Spec(Specification):
         title = _("Pages")
         help = _("Manage available pages of structured text content.")
         def fields(self): return (
             Field('page_id'),
             Field('mapping_id'),
-            Field('identifier', _("Identifier"), editable=ONCE, not_null=True,
+            Field('identifier', _("Identifier"), width=20, fixed=True, editable=ONCE,
+                  type=pd.RegexString(maxlen=32, not_null=True, regex='^[a-zA-Z][0-9a-zA-Z_-]*$'),
                   descr=_("The identifier may be used to refer to this page from outside and also "
                           "from other pages. A valid identifier can only contain letters, digits, "
                           "dashes and underscores.  It must start with a letter.")),
-            Field('lang', _("Language"), codebook='Languages', editable=ONCE,
-                  selection_type=CHOICE, value_column='lang'),
+            Field('lang', _("Language"), editable=ONCE, codebook='Languages', value_column='lang'),
             Field('title_or_identifier', _("Title")),
-            Field('title', _("Title")),
-            Field('description', _("Description")),
+            Field('title', _("Title"), not_null=True),
+            Field('description', _("Description"), width=64,
+                  descr=_("Brief page description (shown as a tooltip and in site map).")),
             Field('_content', _("Content"), compact=True, height=20, width=80,
                   descr=_STRUCTURED_TEXT_DESCR),
             Field('content'),
-            Field('published'),
+            Field('modname', _("Module"), display=_modtitle, prefer_display=True, not_null=False,
+                  enumerator=pd.FixedEnumerator([_m.name() for _m in _modules(Embeddable)]),
+                  descr=_("Select the extension module to embed into the page.  Leave blank for "
+                          "an ordinary text page.")),
+            Field('parent', _("Parent item"), codebook='Mapping', not_null=False,
+                  display='identifier', prefer_display=True,
+                  descr=_("Select the superordinate item in page hierarchy.  Leave blank for "
+                          "a top-level page.")),
+            Field('published', _("Published"), default=False,
+                  descr=_("Allows you to control the availability of this page in each of the "
+                          "supported languages (switch language to control the availability in "
+                          "other languages)")),
+            Field('private', _("Private"), default=False,
+                  descr=_("Make the item available only to logged-in users.")),
             Field('status', _("Status"), virtual=True,
                   computer=Computer(self._status, depends=('content', '_content'))),
+            Field('ord', _("Menu order"), width=6,
+                  descr=_("Enter a number denoting the order of the page in the menu.  Leave "
+                          "blank if you don't want this page to appear in the menu.")),
             Field('tree_order', _("Tree level"), type=pd.TreeOrder()),
-            Field('owner'),
+            Field('owner', _("Owner"), codebook='Users', not_null=False,
+                  descr=_("Set the ownership if you want a particular user to have full control "
+                          "of the page even if his normal privileges are lower.")),
             )
         def _status(self, row):
             if not row['published'].value():
                 return _("Not published")
-            if row['_content'].value() is None and row['content'].value() is None:
-                return _("Missing")
             elif row['_content'].value() == row['content'].value():
                 return _("Ok")
             else:
                 return _("Changed")
+        def row_style(self, row):
+            return not row['published'].value() and pp.Style(foreground='#777') or None
         sorting = (('tree_order', ASC), ('identifier', ASC),)
-        layout = ('identifier', 'title', '_content')
-        columns = ('title_or_identifier', 'identifier', 'status')
+        layout = ('identifier', 'modname', 'parent', 'ord', 'private', 'owner')
+        columns = ('title_or_identifier', 'published', 'identifier', 'status', 'ord', 'private',
+                   'owner')
         cb = pp.CodebookSpec(display='title_or_identifier', prefer_display=True)
         bindings = {'Attachments': pp.BindingSpec(_("Attachments"), 'page_id')}
-    
+
     _REFERER = 'identifier'
     _REFERER_PATH_LEVEL = 1
     _EXCEPTION_MATCHERS = (
         ('duplicate key violates unique constraint "_pages_mapping_id_key"',
-         _("The page already exists in given language.")),) + \
+         _("The page already exists in given language.")),
+        ('duplicate key violates unique constraint "_mapping_unique_tree_(?P<id>ord)er"',
+         _("Duplicate menu order on the this tree level.")),) + \
          CMSModule._EXCEPTION_MATCHERS
     _LIST_BY_LANGUAGE = True
     _RELATED_MODULES = ('Attachments',)
     _OWNER_COLUMN = 'owner'
     _SUPPLY_OWNER = False
     
-    _SUBMIT_BUTTONS = ((_("Save"), None), (_("Save and publish"), 'commit'))
-    _INSERT_MSG = _("New page was successfully created. Don't forget to publish it when you are "
-                    "done. Please, visit the module 'Main menu' if you want to add the page to "
-                    "the menu.")
-    _ACTIONS = (Action(_("Publish"), 'commit',
-                       descr=_("Publish the current modified content"),
-                       enabled=lambda r: r['_content'].value() != r['content'].value()),
-                Action(_("Revert"), 'revert',
-                       descr=_("Revert last modifications"),
-                       enabled=lambda r: r['_content'].value() != r['content'].value()),
-                Action(_("Preview"), 'preview',
-                       descr=_("Display the current version of the page"),
-                       enabled=lambda r: r['_content'].value() is not None),
-                Action(_("Translate"), 'translate',
-                       descr=_("Create the content by translating another language variant"),
-                       enabled=lambda r: r['_content'].value() is None),
-                )
-    RIGHTS_add = RIGHTS_insert = (Roles.AUTHOR,)
-    RIGHTS_edit = RIGHTS_update = (Roles.AUTHOR, Roles.OWNER)
+    _LAYOUT = {'edit': ('title', 'description', '_content'),
+               'view': (HGroup(FieldSet(_("Options for current language"),
+                                        ('title', 'description', 'published', 'status')),
+                               FieldSet(_("Global Options"),
+                                        ('identifier', 'modname', 'parent', 'ord', 'private',
+                                         'owner'))),
+                        '_content',)}
+    _SUBMIT_BUTTONS = {'edit': ((_("Save"), None), (_("Save and publish"), 'commit'))}
+    _INSERT_MSG = _("New page was successfully created. The page is currently not published. "
+                    "Edit the page text to create the actual content in the current language "
+                    "and publish the page when you are done.")
+    _DEFAULT_ACTIONS_FIRST = (
+        Action(_("Edit Text"), 'edit', descr=_("Edit page text, title and description")),
+        Action(_("Options"), 'update', descr=_("Edit global page options and menu position")),
+        )
+    _ACTIONS = (
+        Action(_("Publish"), 'commit', descr=_("Publish the page in its current state"),
+               enabled=lambda r: (r['_content'].value() != r['content'].value() \
+                                  or not r['published'].value())),
+        Action(_("Unpublish"), 'unpublish', descr=_("Make the page invisible from outside"),
+               enabled=lambda r: r['published'].value()),
+        Action(_("Revert"), 'revert',  descr=_("Revert last modifications"),
+               enabled=lambda r: r['_content'].value() != r['content'].value()),
+        Action(_("Preview"), 'preview', descr=_("Display the page in its current state"),
+               enabled=lambda r: r['_content'].value() is not None),
+        #Action(_("Translate"), 'translate',
+        #      descr=_("Create the content by translating another language variant"),
+        #       enabled=lambda r: r['_content'].value() is None),
+        )
+    _SEPARATOR = re.compile('^====+\s*$', re.MULTILINE)
+    RIGHTS_insert = (Roles.AUTHOR,)
+    RIGHTS_update = (Roles.AUTHOR, Roles.OWNER)
     WMI_SECTION = WikingManagementInterface.SECTION_CONTENT
     WMI_ORDER = 200
 
     def handle(self, req):
-        if not req.wmi and len(req.path) == 2:
+        if not req.wmi and (len(req.path) > 1 or req.param('action') in ('insert', 'delete')):
+            row = self._resolve(req)
+            if row is not None and row['modname'].value() is not None:
+                page = self._record(row)
+                self._authorize(req, action='view', record=page)
+                req.page = page # Used in Embeddable._redirect_after_*()
+                try:
+                    return self._module(row['modname'].value()).handle(req)
+                except NotFound:
+                    pass
             return self._module('Attachments').handle(req)
         return super(Pages, self).handle(req)
-
+    
     def _resolve(self, req):
         if req.wmi:
             return super(Pages, self)._resolve(req)
-        if len(req.path) == 1:
-            if req.has_param(self._key):
-                return self._get_row_by_key(req.param(self._key))
-            variants = self._data.get_rows(identifier=req.path[0], published=True)
-            if variants:
-                for lang in req.prefered_languages():
-                    for row in variants:
-                        if row['lang'].value() == lang:
-                            return row
-                raise NotAcceptable([str(r['lang'].value()) for r in variants])
-            elif self._data.get_rows(identifier=req.path[0]):
-                raise Forbidden()
-        raise NotFound()
+        if req.has_param(self._key):
+            return self._get_row_by_key(req.param(self._key))
+        variants = self._data.get_rows(identifier=req.path[0], published=True)
+        if variants:
+            for lang in req.prefered_languages():
+                for row in variants:
+                    if row['lang'].value() == lang:
+                        return row
+            raise NotAcceptable([str(r['lang'].value()) for r in variants])
+        elif self._data.get_rows(identifier=req.path[0]):
+            raise Forbidden()
+        else:
+            raise NotFound()
 
-    def _validate(self, req, record):
-        result = super(Pages, self)._validate(req, record)
+    def _validate(self, req, record, layout=None):
+        result = super(Pages, self)._validate(req, record, layout=layout)
         if result is None and req.params.has_key('commit'):
             if not (Roles.check(req, (Roles.ADMIN,)) or self.check_owner(req.user(), record)):
                 return _("You don't have sufficient privilegs for this action.") +' '+ \
@@ -869,9 +819,15 @@ class Pages(CMSModule, Mappable):
             return _("Page content was modified, however the changes remain unpublished. Don't "
                      "forget to publish the changes when you are done.")
     
+    def _link_provider(self, req, row, cid, **kwargs):
+        if cid == 'parent':
+            return None
+        return super(Pages, self)._link_provider(req, row, cid, **kwargs)
+
     #def _redirect_after_insert(self, req, record):
         #if not req.wmi:
         #    return self.action_view(req, record, msg=self._insert_msg(record))
+        
     def _redirect_after_update(self, req, record):
         if not req.wmi:
             return self.action_preview(req, record, msg=self._update_msg(record))
@@ -881,14 +837,24 @@ class Pages(CMSModule, Mappable):
     def action_view(self, req, record, err=None, msg=None, preview=False):
         if req.wmi and not preview:
             return super(Pages, self).action_view(req, record, err=err, msg=msg)
-        content = []
         # Main content
         if preview:
             text = record['_content'].value()
         else:
             text = record['content'].value()
+        module = record['modname'].value() and self._module(record['modname'].value())
+        if module:
+            content = module.content(req, record)
+        else:
+            content = []
         if text:
-            content.append(lcg.SectionContainer(lcg.Parser().parse(text), toc_depth=0))
+            if self._SEPARATOR.search(text):
+                pre, post = self._SEPARATOR.split(text, maxsplit=2)
+            else:
+                pre, post = text, ''
+            parser = lcg.Parser()
+            sections = parser.parse(pre) + content + parser.parse(post)
+            content = [lcg.SectionContainer(sections, toc_depth=0)]
         # Attachment list
         attachments = self._module('Attachments').attachments(record)
         items = [(lcg.link(make_uri(a.uri()), a.title()), ' ('+ a.bytesize() +') ',
@@ -897,7 +863,9 @@ class Pages(CMSModule, Mappable):
             content.append(lcg.Section(title=_("Attachments"), content=lcg.ul(items),
                                        anchor='attachment-automatic-list')) # Prevent dupl. anchor.
         # Action menu
-        actions = self._DEFAULT_ACTIONS_FIRST + self._ACTIONS[:-2]
+        actions = self._DEFAULT_ACTIONS_FIRST + self._ACTIONS
+        if module:
+            actions += (Action(module.INSERT_LABEL, 'insert'),)
         if req.wmi:
             actions += (Action(_("Back"), 'view'), self._DEFAULT_ACTIONS_LAST[1])
         content.append(self._action_menu(req, record, actions=actions, separate=True))
@@ -907,6 +875,10 @@ class Pages(CMSModule, Mappable):
         return self.action_view(req, record, preview=True, **kwargs)
     RIGHTS_preview = (Roles.AUTHOR, Roles.OWNER)
 
+    def action_edit(self, req, record):
+        return self.action_update(req, record, action='edit')
+    RIGHTS_edit = (Roles.ADMIN, Roles.OWNER)
+    
     def action_translate(self, req, record):
         lang = req.param('src_lang')
         if not lang:
@@ -952,7 +924,50 @@ class Pages(CMSModule, Mappable):
         return self.action_view(req, record, **kwargs)
     RIGHTS_revert = (Roles.ADMIN, Roles.OWNER)
     
+    def action_unpublish(self, req, record):
+        try:
+            record.update(published=False)
+        except pd.DBException, e:
+            kwargs = dict(err=self._analyze_exception(e))
+        else:
+            kwargs = dict(msg=_("The page was unpublished."))
+        return self.action_view(req, record, **kwargs)
+    RIGHTS_unpublish = (Roles.ADMIN, Roles.OWNER)
+
+    def menu(self, req):
+        children = {None: []}
+        translations = {}
+        def mkitem(row):
+            mapping_id, identifier = row['mapping_id'].value(), str(row['identifier'].value())
+            titles, descriptions = translations[mapping_id]
+            return MenuItem(identifier,
+                            lcg.SelfTranslatableText(identifier, translations=titles),
+                            descr=lcg.SelfTranslatableText('', translations=descriptions),
+                            hidden=row['ord'].value() is None, variants=titles.keys(),
+                            submenu=[mkitem(r) for r in children.get(mapping_id, ())])
+        for row in self._data.get_rows(sorting=self._sorting, published=True):
+            mapping_id = row['mapping_id'].value()
+            if not translations.has_key(mapping_id):
+                parent = row['parent'].value()
+                if not children.has_key(parent):
+                    children[parent] = []
+                children[parent].append(row)
+                translations[mapping_id] = ({}, {})
+            titles, descriptions = translations[mapping_id]
+            lang = str(row['lang'].value())
+            titles[lang] = row['title_or_identifier'].value()
+            if row['description'].value() is not None:
+                descriptions[lang] = row['description'].value()
+        return [mkitem(row) for row in children[None]]
     
+    def module_uri(self, modname):
+        row = self._data.get_row(modname=modname) #, published=True)
+        if row:
+            return '/'+ row['identifier'].value()
+        else:
+            return None
+        
+        
 class Attachments(StoredFileModule, CMSModule):
     class Spec(StoredFileModule.Spec):
         title = _("Attachments")
@@ -1049,15 +1064,10 @@ class Attachments(StoredFileModule, CMSModule):
          _("Attachment of the same filename already exists for this page.")),)
     WMI_SECTION = WikingManagementInterface.SECTION_CONTENT
     WMI_ORDER = 220
-    RIGHTS_add = RIGHTS_insert = (Roles.AUTHOR, Roles.OWNER)
-    RIGHTS_edit = RIGHTS_update = (Roles.AUTHOR, Roles.OWNER)
-    RIGHTS_remove = RIGHTS_delete = (Roles.AUTHOR, Roles.OWNER)
+    RIGHTS_insert = (Roles.AUTHOR, Roles.OWNER)
+    RIGHTS_update = (Roles.AUTHOR, Roles.OWNER)
+    RIGHTS_delete = (Roles.AUTHOR, Roles.OWNER)
     
-    def _link_provider(self, req, row, cid, **kwargs):
-        if cid == 'file':
-            return make_uri(self._base_uri(req) +'/'+ row['filename'].export(), download=1)
-        return super(Attachments, self)._link_provider(req, row, cid, **kwargs)
-
     def _redirect_to_page(self, req, record):
         return req.redirect('/_wmi/Pages/' + record['identifier'].value())
         #m = self._module('Pages')
@@ -1101,7 +1111,8 @@ class Attachments(StoredFileModule, CMSModule):
             return (str(record['mime_type'].value()), record['file'].value().buffer())
 
     
-class News(CMSModule, Mappable):
+class News(CMSModule, Embeddable):
+    INSERT_LABEL = _("New message")
     class Spec(Specification):
         title = _("News")
         help = _("Publish site news.")
@@ -1141,9 +1152,9 @@ class News(CMSModule, Mappable):
     _RSS_DESCR_COLUMN = 'content'
     _RSS_DATE_COLUMN = 'timestamp'
     _RSS_AUTHOR_COLUMN = 'author'
-    RIGHTS_add = RIGHTS_insert = (Roles.CONTRIBUTOR,)
-    RIGHTS_edit = RIGHTS_update = (Roles.ADMIN, Roles.OWNER)
-    RIGHTS_remove = RIGHTS_delete = (Roles.ADMIN,)
+    RIGHTS_insert = (Roles.CONTRIBUTOR,)
+    RIGHTS_update = (Roles.ADMIN, Roles.OWNER)
+    RIGHTS_delete = (Roles.ADMIN,)
     WMI_SECTION = WikingManagementInterface.SECTION_CONTENT
     WMI_ORDER = 300
         
@@ -1156,6 +1167,12 @@ class News(CMSModule, Mappable):
                 return None
         return super(News, self)._link_provider(req, row, cid, target=target)
 
+    def _redirect_after_insert(self, req, record):
+        if hasattr(req, 'page'):
+            return self._module('Pages').action_view(req, req.page, msg=self._insert_msg(record))
+        else:
+            return super(News, self)._redirect_after_insert(req, record)
+        
 
 class Planner(News):
     class Spec(News.Spec):
@@ -1206,7 +1223,8 @@ class Planner(News):
             return condition
 
     
-class Images(StoredFileModule, CMSModule, Mappable):
+class Images(StoredFileModule, CMSModule, Embeddable):
+    INSERT_LABEL = _("New image")
     class Spec(StoredFileModule.Spec):
         title = _("Images")
         help = _("Publish images.")
@@ -1313,14 +1331,14 @@ class Images(StoredFileModule, CMSModule, Mappable):
         return self._image(record, 'thumbnail')
 
 
-class SiteMap(Module, RequestHandler, Mappable):
+class SiteMap(Module, RequestHandler, Embeddable):
 
     @classmethod
     def title(cls):
         return _("Site Map")
     
-    def _handle(self, req):
-        return Document(self.title(), lcg.RootIndex(depth=99))
+    def content(self, req, page):
+        return [lcg.RootIndex()]
 
         
 class Stylesheets(CMSModule, Stylesheets):
@@ -1351,7 +1369,9 @@ class Stylesheets(CMSModule, Stylesheets):
             return ('text/css', self._substitute(content))
 
 
-class _Users(CMSModule):
+class Users(CMSModule, Embeddable):
+    INSERT_LABEL = _("New user")
+    
     class Spec(Specification):
         title = _("Users")
         help = _("Manage registered users.  Use the module 'Access Rights' "
@@ -1374,9 +1394,8 @@ class _Users(CMSModule):
             Field('login', _("Login name"), width=16,
                   type=pd.RegexString(maxlen=16, not_null=True,
                                       regex='^[a-zA-Z][0-9a-zA-Z_\.-]*$'),
-                  descr=_("A valid login name can only contain letters, "
-                          "digits, underscores, dashes and dots and must "
-                          "start with a letter.")),
+                  descr=_("A valid login name can only contain letters, digits, underscores, "
+                          "dashes and dots and must start with a letter.")),
             Field('password', _("Password"), width=16,
                   type=pd.Password(minlen=4, maxlen=32, not_null=True),
                   descr=_("Please write the new password into each of the two fields.  Leave both "
@@ -1388,7 +1407,9 @@ class _Users(CMSModule):
                   computer=Computer(self._user, depends=('fullname', 'nickname'))),
             Field('firstname', _("First name")),
             Field('surname', _("Surname")),
-            Field('nickname', _("Nickname")),
+            Field('nickname', _("Displayed name"),
+                  descr=_("Leave blank if you want to be refered by your full name or enter an "
+                          "alternate name, such as nickname or monogram.")),
             Field('email', _("E-mail"), width=36),
             Field('phone', _("Phone")),
             Field('address', _("Address"), height=3),
@@ -1413,23 +1434,27 @@ class _Users(CMSModule):
     _ALLOW_TABLE_LAYOUT_IN_FORMS = False
     _OWNER_COLUMN = 'uid'
     _SUPPLY_OWNER = False
-    RIGHTS_add = RIGHTS_insert = (Roles.ANYONE,)
-    RIGHTS_edit = RIGHTS_update = (Roles.ADMIN, Roles.OWNER)
-    RIGHTS_remove = RIGHTS_delete = (Roles.ADMIN,) #, Roles.OWNER)
+    _LAYOUT = {'rights': ('enabled', 'contributor', 'author', 'admin')}
+    _DEFAULT_ACTIONS_FIRST = CMSModule._DEFAULT_ACTIONS_FIRST + \
+                             (Action(_("Access Rights"), 'rights',
+                                     descr=_("Change access rights")),)
+    RIGHTS_insert = (Roles.ANYONE,)
+    RIGHTS_update = (Roles.ADMIN, Roles.OWNER)
+    RIGHTS_delete = (Roles.ADMIN,) #, Roles.OWNER)
+    WMI_SECTION = WikingManagementInterface.SECTION_USERS
+    WMI_ORDER = 100
 
     def _actions(self, req, record):
-        if not req.wmi:
-            if record:
-                actions = (Action(_("Edit your profile"), 'edit', descr=_("Modify your record")),
-                        Action(_("Remove"), 'remove', descr=_("Remove the user permanently")))
-                if not record['enabled'].value():
-                    actions = (Action(_("Enable"), 'enable', descr=_("Enable this account")),) + \
-                              actions
-                return actions
-            else:
-                return (Action(_("Register"), 'add', context=None,
-                               descr=_("New user registration")),)
-        return super(_Users, self)._actions(req, record)
+        if not req.wmi and record:
+            actions = (
+                Action(_("Edit profile"), 'update', descr=_("Modify user's record")),
+                Action(_("Access Rights"), 'rights', descr=_("Change access rights")),
+                Action(_("Remove"), 'delete', descr=_("Remove the user permanently")))
+            if not record['enabled'].value():
+                actions = (Action(_("Enable"), 'enable', descr=_("Enable this account")),) + \
+                          actions
+            return actions
+        return super(Users, self)._actions(req, record)
         
     def _redirect_after_insert(self, req, record):
         content = lcg.p(_("Registration completed successfuly. "
@@ -1473,15 +1498,14 @@ class _Users(CMSModule):
         return self.action_view(req, record, msg=msg, err=err)
     RIGHTS_enable = (Roles.ADMIN,)
     
-        
-class Users(_Users, Mappable):
-    
-    WMI_SECTION = WikingManagementInterface.SECTION_USERS
-    WMI_ORDER = 100
+    def action_rights(self, req, record):
+        # TODO: Enable table layout for this form.
+        return self.action_update(req, record, action='rights')
+    RIGHTS_rights = (Roles.ADMIN,)
     
     def registration_uri(self, req):
         uri = self._base_uri(req)
-        return uri and make_uri(uri, action='add') or None
+        return uri and make_uri(uri, action='insert') or None
 
     def user(self, login):
         record = self._record(self._data.get_row(login=login))
@@ -1497,45 +1521,4 @@ class Users(_Users, Mappable):
             return None
 
 
-class Rights(_Users):
-    class Spec(_Users.Spec):
-        title = _("Access Rights")
-        help = _("Manage access rights of registered users.")
-        layout = ('enabled', 'contributor', 'author', 'admin')
-        columns = ('user', 'login', 'enabled', 'contributor', 'author','admin')
-        table = 'users'
-    _ALLOW_TABLE_LAYOUT_IN_FORMS = True
-    RIGHTS_add = RIGHTS_insert = ()
-    RIGHTS_edit = RIGHTS_update = (Roles.ADMIN,)
-    RIGHTS_remove = ()
-    WMI_SECTION = WikingManagementInterface.SECTION_USERS
-    WMI_ORDER = 200
-
-
-class Session(PytisModule, Session):
-    class Spec(Specification):
-        fields = [Field(_id) for _id in ('session_id', 'login', 'key', 'expire')]
-
-    def init(self, user):
-        # Delete all expired records first...
-        self._data.delete_many(pd.AND(pd.EQ('login', pd.Value(pd.String(), user.login())),
-                                      pd.LT('expire', pd.Value(pd.DateTime(),
-                                                               mx.DateTime.now().gmtime()))))
-        session_key = self._new_session_key()
-        row = self._data.make_row(login=user.login(), key=session_key, expire=self._expiration())
-        self._data.insert(row)
-        return session_key
-        
-    def check(self, user, key):
-        row = self._data.get_row(login=user.login(), key=key)
-        if row and not self._expired(row['expire'].value()):
-            self._record(row).update(expire=self._expiration())
-            return True
-        else:
-            return False
-
-    def close(self, user, key):
-        row = self._data.get_row(login=user.login(), key=key)
-        if row:
-            self._delete(self._record(row))
         

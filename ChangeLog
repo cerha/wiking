@@ -1,3 +1,30 @@
+2007-12-12  Tomas Cerha  <cerha@brailcom.org>
+
+	* sql/wiking.sql: The table and view for main menu management
+	merged into the table and view for pages.
+
+	* translations/wiking-cms.cs.po: Updated.
+
+	* lib/wiking/cms.py (Menu): Removed.
+	(Pages): Manage also menu position and global options.
+	(Embeddable): New class for embedding module content in a page.
+	(Rights): Removed.
+	(Users): Manage also access rights.
+
+	* lib/wiking/export.py: Don't use `modname' in node state.
+
+	* lib/wiking/util.py (WikingNode.State): `modname' removed.
+
+	* lib/wiking/handler.py: Don't pass `modname' to node state.
+
+	* lib/wiking/__init__.py (Module): Version changes to `0.4.4pre'.
+
+	* lib/wiking/db.py: Added support for multiple layouts.  Actions
+	`add', `edit' and `delete' implemented within `insert', `update'
+	and `delete'.
+
+	* lib/wiking/request.py (Request.set_param): New method.
+
 2007-12-06  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/modules.py (Session._SESSION_KEY_LENGTH): New

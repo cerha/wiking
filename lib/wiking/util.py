@@ -334,11 +334,10 @@ class Document(object):
         self._resources = tuple(resources)
         self._globals = globals
 
-    def build(self, req, modname, application):
+    def build(self, req, application):
         id = '/'.join(req.path)
         parent_id = '/'.join(req.path[:-1])
-        state = WikingNode.State(modname=modname,
-                                 user=req.user(),
+        state = WikingNode.State(user=req.user(),
                                  wmi=req.wmi,
                                  show_panels=req.show_panels(),
                                  server_hostname=req.server_hostname())
@@ -398,8 +397,7 @@ class Document(object):
 class WikingNode(lcg.ContentNode):
 
     class State(object):
-        def __init__(self, modname, user, wmi, show_panels, server_hostname):
-            self.modname = modname
+        def __init__(self, user, wmi, show_panels, server_hostname):
             self.user = user
             self.wmi = wmi
             self.show_panels = show_panels
@@ -488,7 +486,7 @@ class ActionMenu(lcg.Content):
         
     def export(self, exporter):
         g = exporter.generator()
-        # Only Wiking's Actions are considered, not `pytis.presentation.Action'.
+        # Only Wiking's actions are considered, not all `pytis.presentation.Action'.
         items = lcg.concat([self._export_item(a, g) for a in self._actions
                             if isinstance(a, Action)], separator=g.span(" |\n", cls="hidden"))
         content = (_("Actions:"), items)

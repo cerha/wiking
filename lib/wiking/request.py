@@ -75,6 +75,9 @@ class Request(pytis.web.Request):
     def param(self, name, default=None):
         return self.params.get(name, default)
         
+    def set_param(self, name, value):
+        self.params[name] = value
+        
     def cookie(self, name, default=None):
         cookies = Cookie.SimpleCookie(self.header('Cookie'))
         if cookies.has_key(name):

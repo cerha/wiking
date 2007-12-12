@@ -65,7 +65,6 @@ class Handler(object):
         try:
             req.path = req.path or ('index',)
             req.wmi = False # Temporary hack (should go to CMS).
-            modname = None
             try:
                 application.configure(req)
                 modname = application.resolve(req)
@@ -90,7 +89,7 @@ class Handler(object):
                     if isinstance(e, HttpError):
                         req.set_status(e.ERROR_CODE)
                     result = Document(e.title(), e.message(req))
-            node = result.build(req, modname, application)
+            node = result.build(req, application)
             context = self._exporter.context(node, node.lang())
             output = context.translate(self._exporter.export(context))
             return req.result(output)
