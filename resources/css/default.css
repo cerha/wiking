@@ -324,7 +324,7 @@ form.pytis-form .group fieldset.group {
 }
 form.pytis-form .horizontal-group fieldset.group {
     margin: 0 0 0.4em 0;
-    height: 100%;
+    /* margin-bottom: 100%; ** this breaks fieldset border. */
 }
 form.pytis-form .horizontal-group td.spaced {
     padding-left: 0.6em;
