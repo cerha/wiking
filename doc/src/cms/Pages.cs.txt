@@ -2,40 +2,123 @@
 
 = Stránky =
 
-V tomto modulu můžete vytvářet a spravovat běžné stránky obsahující text,
-grafiku a další prvky.  Vlastní text stránek je zadáván ve formátu
-„strukturovaný text LCG“, který je popsán v
-[/_doc/lcg/structured-text příručce formátování].
+Toto je nejdůležitější bod správy obsahu.  Stránky mohou být uspořádány do
+hierarchie, která je potom automaticky respektována navigačními nabídkami.
+Vlastní text stránek je zadáván ve formátu „strukturovaný text LCG“, který je
+popsán v [/_doc/lcg/structured-text příručce formátování].
 
 Obrázky, externí dokumenty, zvukové nahrávky, videa a další součásti obsahu
-jsou potom spravovány prostřednictvím tzv. příloh (viz dále).
+jsou potom spravovány prostřednictvím tzv. [#attachments příloh].
 
-Každá stránka může existovat v několika jazykových verzích, ale tabulka
-zobrazuje pouze záznamy odpovídající /aktuálně zvolenému jazyku/.  Pokud chcete
-spravovat jiné jazykové verze stránek, musíte nejprve přepnout aktuální jazyk.
+Pro zobrazení dodatečného „inteligentního“ obsahu v rámci stránek je možno
+použít [#modules].
 
-Zařazení stránek do hlavní nabídky je stejně jako pro ostatní moduly prováděno
-v modulu [Menu Menu].
+Každá stránka může existovat v několika jazykových verzích.  Tabulka stránek v
+rozhraní správy obsahu zobrazuje vždy pouze záznamy odpovídající /aktuálně
+zvolenému jazyku/.  Pokud chcete spravovat jiné jazykové verze stránek, musíte
+nejprve přepnout aktuální jazyk.
 
-Pro každou stránku je v tabulce zobrazen také „stav“.  Ten může nabývat jedné
-ze tří hodnot:
-
-   * /Chybí/ ... stránaka není v aktuálním jazyce definována.
-
-   * /Nezveřejněno/ ... obsah stránky byl definován, ale zatím nebyl zveřejněn.
-
-   * /Změněno/ ... obsah stránky byl změněn, ale změny ještě nebyly
-     zveřeněny, takže návštěvníkům je zobrazován předchozí obsah.
-
-   * /Ok/ ... stránka existuje a její obsah je aktuální.
-
-Pokud stránka v daném jazyce „chybí“, lze ji vytvořit buďto přímo doplněním
-textu volbou „upravit“, nebo může být praktičtější využít volby „přeložit“.  Ta
-umožní obsah předvyplnit obsahem jiné jazykové verze, takže potom vlastní text
-vytváříme postupným přepisováním původního textu jeho překladem.
+Obsah: @TOC@
 
 
-== Přílohy ==
+== Správa hlavní nabídky ==
+
+Hlavní nabídka je vytvářena systémem automaticky na základě hierarchie a pořadí
+stránek.  V sekci [navigation Navigace] se dozvíte více o navigačních
+možnostech z pohledu návštěvníka stránek.
+
+Zařazení stránky do hlavní nabídky je řízeno dvěma hodnotami z „Globálního
+nastavení“ stránky (nastavení platné pro všechny jazykové verze stránky).
+Globální nastavení můžete měnit pomocí tlačítka „Vlastnosti“ v nabídce akcí
+stránky.
+
+Kolonka /Nadřízená položka/ určuje umístění v hierarchii.  Pokud kolonku
+vyplníte, znamená to, že aktuální stránka bude v hierarchii o jednu úroveň
+níže, než stránka, kterou zvolíte.  Pokud ponecháte prázdné, aktuální stránka
+bude na nejvyšší úrovni hierarchie.
+
+Kolonka /Pořadí v menu/ určuje pořadí stránek na stejné úrovni hierarchie.
+Můžete nastavit číslo a stránky budou seřazeny podle tohoto pořadového čísla.
+Pokud číslo nevyplníte, stránka nebude v hlavním menu přítomna vůbec.  Taková
+stránka může být zobrazena, pokud uživatel zná její adresu (viz [#uris]).
+Většinou bude vhodné vytvořit odkaz z jiné stránky.
+
+
+== Vnější adresy stránek (URI) == uris
+
+Vnější adresa každé stránky (URI) je jednoznačně určena jejím
+/identifikátorem/.  Např. položka s identifikátorem „=mojestranka=“ bude
+mít internetovou adresu „\http://www.jmenoserveru.cz/mojestranka“.
+
+Identifikátor musíte zvolit při zakládání každé nové stránky.  Není možné jej
+později měnit, protože by tím byly narušeny všechny stávající vnější odkazy na
+tuto stránku, včetně odkazů v internetových vyhledávačích.  Proto, prosím,
+volbu identifikátoru dobře zvažte.  Také berte v potaz fakt, že stejný
+identifikátor je platný pro všechny jazykové verze stránky.  Vhodná praxe
+například je volit všechny identifikátory v angličtině (alespoň pro vícejazyčné
+stránky, které mají anglickou verzi).
+
+Adresy záměrně nerespektují hierarchii stránek -- stránka „=podstranka=“, která
+je podřízenou stránkou stránky „=stranka=“ bude adresu
+„\http://www.jmenoserveru.cz/podstranka“, nikoliv
+„\http://www.jmenoserveru.cz/stranka/podstranka“.  Díky tomu je možné snadno
+měnit hierarchické uspořádání stránek bez narušení platnosti externích odkazů.
+
+
+== Stav stránky ==
+
+Stav stránky může nabývat jedné ze tří hodnot:
+
+   * /Nezveřejněno/ ... Stránka není v aktuálním jazyce zveřejněna.
+     Návštěvníkům je zcela nepřístupná.
+
+   * /Změněno/ ... Stránka je v aktuálním jazyce zveřejněna, ale její obsah byl
+     od posledního zveřejnění změněn, takže návštěvníkům je zobrazován
+     předchozí obsah.
+
+   * /Ok/ ... Stránka zveřejněna a její obsah je aktuální.
+
+== Rozšiřující moduly == modules
+
+Rozšiřující moduly mohou být použity pro vložení „inteligentního“ obsahu do
+stránek.  Wiking je distribuován včetně několika vestavěných modulů, ale další
+moduly mohou být instalovány dodatečně.
+
+Vestavěné moduly jsou:
+
+ * /Novinky/ -- výpis/správa krátkých zpráv (s podporou RSS)
+
+ * /Planner/ -- kalendářový výpis a správa plánovaných akcí (s podporou RSS)
+
+ * /Users/ -- výpis/správa registrovaných uživatelů
+
+
+
+== Zveřejnění/zneveřejnění stránky  ==
+
+Dostupnost každé stránky lze určit zveřejněním či zneveřejněním pomocí
+odpovídajících tlačítek v nabídce akcí stránky.  Neveřejná položka sice
+existuje v databázi a lze s ní tedy pracovat a spravovat její obsah, ale
+vnějším uživatelům není dostupná.  Neveřejné stránky jsou dostupné pouze v
+rámci Správcovského rozhraní.
+
+Zveřejnění lze ovládat nezávisle pro každou jazykovou verzi.  Změny se vždy
+vztahují pouze k aktuální jazykové verzi stránky -- pro změnu zveřejnění v
+jiném jazyce je tedy nutno nejprve jazyk přepnout.  Díky tomu lze dosáhnout
+toho, že v různých jazykových verzích webu je dostupná jiná množina stránek.
+
+
+== Řízení přístupu (privátní stránky) ==
+
+Privátní (soukromé) stránky jsou dostupné pouze přihlášeným uživatelům (pouze
+registrovaný uživatel povolený správcem se může přihlasít).  Privátní stránky
+se mohou vyskytovat také v menu, takže se všichni uživatelé dozví o jejich
+existenci, ale pouze přihlášení užiatelé budou schopni zobrazit jejich obsah.
+Aby byla privátní stránka dostupná, musí být zveřejněna (tyto dvě vlastnosti se
+neovlivňují).
+
+
+== Přílohy == attachments
 
 Přílohy jsou externí soubory připojené ke stránce.  Takto je možné připojit
 obrázky, dokumenty, zvukové nahrávky nebo videa.  V zobrazení detailu stránky

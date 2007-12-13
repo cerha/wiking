@@ -1,5 +1,17 @@
 2007-12-13  Tomas Cerha  <cerha@brailcom.org>
 
+	* doc/src/cms/Pages.cs.txt: Updated.
+
+	* doc/src/cms/Pages.en.txt: Updated.
+
+	* doc/src/cms/cms-intro.en.txt: Updated.
+
+	* doc/src/cms/cms.en.txt: Updated.
+
+	* doc/src/cms/Menu.cs.txt: File removed.
+
+	* doc/src/cms/Menu.en.txt: File removed.
+
 	* NEWS: Updated.
 	
 	* translations/wiking-cms.cs.po: Updated.

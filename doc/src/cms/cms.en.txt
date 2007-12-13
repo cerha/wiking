@@ -10,26 +10,24 @@ and its capabilities.
 
 Wiking Management Interface (WMI) is the central point of site administration.
 
-The interface is devided into four sections, where each of the sections
-provides a set of modules responsible for management of different aspects of
-the website:
+The interface is devided into four main sections, where each of the sections
+provides a set of subsections for management of different aspects of the
+website:
 
   * *Content*
-    * [Menu] -- Manage the structure of all available content and its
-      projection into the main menu hierarchy 
-    * [Pages] -- Manage available pages of structured text content
-    * [Attachments] -- Manage files attached to pages
-    * [Panels] -- Manage panels – the small windows shown by the side of every page
-    * [News] -- Publish site news
-    * [Planner] -- Publish planned actions
+    * [Pages] -- Manage available pages, their visibility, hierarchy and content.
+    * [Attachments] -- Provides an overview of all attachments (external files)
+      used within pages, but you most often manage them through pages.
+    * [Panels] -- Manage panels – the small windows shown by the side of every page.
+    * [News] -- Publish site news.
+    * [Planner] -- Publish planned actions.
   * *Look & Feel*
     * [Stylesheets] -- Manage available Cascading Stylesheets.
     * [Themes] -- Manage available color themes.
   * *User Management*
-    * Users -- Manage registered users
-    * Access Rights -- Manage access rights of registered users
+    * Users -- Manage registered users and their privileges.
   * *Setup*
-    * Configuration -- Manage site specific configuration options
-    * [Languages] -- Manage available languages
+    * Configuration -- Manage site specific configuration options.
+    * [Languages] -- Manage available languages.
 
 

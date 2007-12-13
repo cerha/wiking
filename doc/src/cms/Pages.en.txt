@@ -2,39 +2,124 @@
 
 = Pages =
 
-This module allows you to create and manage pages with generic text content
-including graphics and external media.  The content itself can be directly
-edited as an ``LCG structured text'' document.  The format is described in the
+This is the main point for managing the content privided by your site.  Pages
+can be arranged into a hierarchy, which is automatically respected by site
+navigation menus.  The content itself can be directly edited as an ``LCG
+structured text'' document.  The format is described in the
 [/_doc/lcg/structured-text formatting manual].
 
 Images, external documents, sound recordings, videos and other types of
-additional content may be included within a page using so called
-``Attachments'' (see below).
+additional content may be included within a page using [#attachments] (see
+below).
 
-There can be multiple language variants of each page, but only records
-corresponding to the /currently selected language/ are displayed in the table.
-You need to switch the language to be able to manage pages in other languages.
+Extension modules can be used for embedding ``smart'' content within a page.
+See [#modules] for more information.
 
-Use the [Menu] module to add pages to the main menu.
+The content for each page can be defined in multiple language variants.  The
+page listing in WMI always shows only the records corresponding to the
+/currently selected language/.  You need to switch the language to be able to
+manage pages in other languages.
 
-The table shows ``state'' of each page.  This can be one of the following three
-values:
+Table of Contents: @TOC@
 
-   * /Missing/ ... page is not defined in the current language.
 
-   * /Not published/ ... page content is defined but was not published yet.
+== Main menu management ==
 
-   * /Changed/ ... page content was modified, but the changes were not yet
-     published, so visitors still get the previous content.
+The main menu is generated automatically by the system according to page
+hierarchy and order.  See also [navigation] for more information about menus
+from the point of view of a website visitor.
 
-   * /Ok/ ... the page exists and is up to date.
+Positioning a page within the main menu is controlled by two values within page
+``Global options'' (these settings apply to all language variants of given
+page).  Use the button ``Options'' in page actions menu to change these values.
 
-A ``missing'', page can be created either directly by editing it, or it may be
-more convenient to use the ``translate'' action, which lets you choose the
-source language.  The content is then prefilled and you create the page text by
-overwriting the original text by its translation.
+The field /Parent/ defines the immediately upper page in the hierarchy.  You
+can leave it blank to put the page to the top level.
 
-== Attachments ==
+The field /Menu order/ defines the order of pages in the same level of the
+hierarchy.  If you assign a number, the pages will be ordered according to
+their numbers.  You can also leave this field blank to hide the page from the
+main menu.  Such a page can be still displayed if the user knows its address
+(see [#uris]).  You probably want to create links to such pages from other
+pages.
+
+
+== Page URIs == uris
+
+Page URI (address of the page as seen from outside) is determined by the
+/identifier/.  The page with an identifier set to "mypage", for example, will
+have the followin address (URI): "\http://www.yourdomain.com/mypage"
+
+You need to fill in a valid identifier for each new page.  It is not possible
+to change the identifier later, since this would break all links to this page
+from the internet (including search engines), so please think twice before
+choosing an identifier.  You should also remember, that the identifier is the
+same for all language variants of the page, so it is a good practise to use
+English names for them (at least for multilingual sites which have an English
+version).
+
+The URIs intentionaly ignore the page hierarchy -- the page "subpage", which is
+a subpage of "page" will still have the URI
+"\http://www.yourdomain.com/subpage", not
+"\http://www.yourdomain.com/page/subpage".  This approach allows you to make
+changes in page hierarchy without breaking external links.
+
+
+== Page states ==
+
+The page state can have one of the following values:
+
+   * /Not published/ ... The page is not published in the current language so
+     the visitors can not access it.
+
+   * /Changed/ ... The page is published in the current language, but the
+     content was modified since last publication, so visitors still get the
+     previous content.
+
+   * /Ok/ ... The page is published and up to date.
+
+
+== Extension modules == modules
+
+Extension modules can be used for embedding "smart" content within a page.
+Wiking comes with several built in modules, but additional modules can be
+installed independently for each site.
+
+The built in modules are:
+
+  * /News/ -- list/manage short messages (supports RSS).
+
+  * /Planner/ -- calendar-like listing and management of planned events
+    (supports RSS).
+
+  * /Users/ -- list/manage registered users
+
+
+== Published/unpublished pages ==
+
+It is possible to control the availability of each page by
+publishing/unpublishing it using the corresponding action buttons.  An
+unpublished page exist in the database, so it is possible to work on its
+content, but it is not visible to website visitors.  Unpublished pages only
+appear in the WMI.
+
+The state of publication can be controlled independently for each language
+variant.  The changes always apply just for the current language, so it is
+necessary to switch the language to be able to publish/unpublish items in other
+languages.  This feature in fact allows you to have a different set of pages
+available in each language variant of the website.
+
+
+== Access control (private pages) ==
+
+Private pages are only accessible to logged in users (only registered users
+enabled by the administrator are able to log in).  A private page may appear in
+the menu, so anyone can see that it exists, but only authorized users will be
+able display it.  Private items must still be published to become available for
+the website visitors (these two properties are independent).
+
+
+== Attachments == attachments
 
 Attachments are external files attached to pages.  You can attach images,
 documents, sound recordings, videos etc.  If you display page details (clicking
@@ -48,7 +133,8 @@ Attachments can be used within the page content in the following two ways:
 
   * Explicit reference in the page content.
 
-=== Automatic list of attachments ===
+
+=== Automatic attachment lists ===
 
 If you leave the field ``Listed'' checked in the attachment properties, the
 attachment will be listed automatically.  If you provide a title, this title

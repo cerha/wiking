@@ -76,11 +76,8 @@ information.
 Wiking user interface is currently translated into the following languages:
   * Czech
   * English
-  * Polish
-  * Spanish (partial)
-
-The translations marked as /partial/ include all messages needed for serving
-the content, but don't include translations for the management interface.
+  * Polish (incomplete)
+  * Spanish (incomplete)
 
 Adding support for other languages is simple (using the GNU gettext framework)
-and we welcome anyone willing to contribute translations.
+and anyone willing to contribute translations is welcome.
