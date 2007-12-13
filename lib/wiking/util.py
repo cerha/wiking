@@ -833,7 +833,9 @@ def send_mail(sender, addr, subject, text, html=None, smtp_server=None, lang=Non
     txtin.close()
     # The html section.
     if html:
-        htmlin = StringIO(tr.translate(html))
+        if isinstance(html, unicode):
+            html = tr.translate(html).encode('utf-8')
+        htmlin = StringIO(html)
         subpart = writer.nextpart()
         subpart.addheader("Content-Transfer-Encoding", "quoted-printable")
         # Returns a file-like object we can write to.
