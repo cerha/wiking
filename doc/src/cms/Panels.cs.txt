@@ -10,8 +10,7 @@ portálu mění, ale panely zůstávají stále na svých místech.
 Na každém panelu může být libovolný textový obsah, ale kromě toho mají panely
 jednu velice praktickou vlastnost – mohou zobrazit seznam položek některého
 jiného modulu.  Například pro modul [News Novinky] bude zobrazen výpis
-posledních zpráv.  Můžete také zvolit kolik položek má být zobrazeno.  Výběr
-modulů obahuje pouze ty moduly, pro něž existuje položka v [Mapping mapování].
+posledních zpráv.  Můžete také zvolit kolik položek má být zobrazeno.
 
 Množiny panelů pro jednotlivé jazykové verze portálu jsou zcela nezávislé.
 Můžete tak mít jiné seskupení panelů pro každý jazyk.  Tabulka zobrazuje

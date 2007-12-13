@@ -1,5 +1,4 @@
 cms-intro
-Menu
 Pages
 Attachments
 Panels
