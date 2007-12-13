@@ -27,9 +27,9 @@ Hlavní nabídka je vytvářena systémem automaticky na základě hierarchie a 
 stránek.  V sekci [navigation Navigace] se dozvíte více o navigačních
 možnostech z pohledu návštěvníka stránek.
 
-Zařazení stránky do hlavní nabídky je řízeno dvěma hodnotami z „Globálního
-nastavení“ stránky (nastavení platné pro všechny jazykové verze stránky).
-Globální nastavení můžete měnit pomocí tlačítka „Vlastnosti“ v nabídce akcí
+Zařazení stránky do hlavní nabídky je řízeno dvěma hodnotami z „Globálních
+vlastností“ stránky (vlastnosti platné pro všechny jazykové verze stránky).
+Globální vlastnosti můžete měnit pomocí tlačítka „Vlastnosti“ v nabídce akcí
 stránky.
 
 Kolonka /Nadřízená položka/ určuje umístění v hierarchii.  Pokud kolonku
