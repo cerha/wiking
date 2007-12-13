@@ -1,3 +1,22 @@
+2007-12-13  Tomas Cerha  <cerha@brailcom.org>
+
+	* NEWS: Updated.
+	
+	* translations/wiking-cms.cs.po: Updated.
+
+	* sql/wiking.sql (users): Support the new role management model.
+
+	* lib/wiking/cms.py (Users): Improved access rights management.
+	Change password in a separate dialog (require the old password).
+	Translate registration notifications to users language.  
+
+	* lib/wiking/util.py (send_mail): Added support for automatic
+	message translation when the new argument `lang' is passed.
+	Automatically set the smtp_server according to configuration.
+
+	* lib/wiking/application.py (Application.handle_exception): Don't
+	pass `smtp_server' to `send_mail()'.
+
 2007-12-12  Tomas Cerha  <cerha@brailcom.org>
 
 	* sql/wiking.sql: The table and view for main menu management

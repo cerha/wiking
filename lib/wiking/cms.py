@@ -149,10 +149,6 @@ class Application(CookieAuthentication, Application):
             roles = self._RIGHTS.get(module.name(), ())
         if module.name() == 'Pages' and record and record['private'].value():
             roles = tuple([r == Roles.ANYONE and Roles.USER or r for r in roles])
-            if record['modname'].value() == 'Users' and action == 'insert':
-                # TODO: This hack makes new user registration possible even if the related page is
-                # private.  A better solution might be asking the module.
-                roles = (Roles.ANYONE,)
         if Roles.check(req, roles):
             return True
         elif Roles.OWNER in roles and isinstance(module, PytisModule) and record and req.user():
@@ -773,12 +769,16 @@ class Pages(CMSModule):
     def handle(self, req):
         if not req.wmi and (len(req.path) > 1 or req.param('action') in ('insert', 'delete')):
             row = self._resolve(req)
-            if row is not None and row['modname'].value() is not None:
+            modname = row['modname'].value()
+            if row is not None and modname is not None:
                 page = self._record(row)
-                self._authorize(req, action='view', record=page)
+                if not (modname == 'Users' and req.param('action') == 'insert'):
+                    # TODO: This hack makes new user registration possible even if the related page
+                    # is private.  A better solution might be asking the module.
+                    self._authorize(req, action='view', record=page)
                 req.page = page # Used in Embeddable._redirect_after_*()
                 try:
-                    return self._module(row['modname'].value()).handle(req)
+                    return self._module(modname).handle(req)
                 except NotFound:
                     pass
             return self._module('Attachments').handle(req)
@@ -1370,12 +1370,17 @@ class Stylesheets(CMSModule, Stylesheets):
 
 
 class Users(CMSModule, Embeddable):
-    INSERT_LABEL = _("New user")
-    
     class Spec(Specification):
         title = _("Users")
         help = _("Manage registered users.  Use the module 'Access Rights' "
                  "to change their privileges.")
+        _ROLES = (('none', _("Account disabled"), ()),
+                  ('user', _("User"),         (Roles.USER,)),
+                  ('cont', _("Contributor"),  (Roles.USER, Roles.CONTRIBUTOR)),
+                  ('auth', _("Author"),       (Roles.USER, Roles.CONTRIBUTOR, Roles.AUTHOR)),
+                  ('admn', _("Admnistrator"), (Roles.USER, Roles.CONTRIBUTOR, Roles.AUTHOR,
+                                               Roles.ADMIN)))
+        _ROLE_DICT = dict([(_code, (_title, _roles)) for _code, _title, _roles in _ROLES])
         def _fullname(self, row):
             name = row['firstname'].value()
             surname = row['surname'].value()
@@ -1391,16 +1396,22 @@ class Users(CMSModule, Embeddable):
                 return row['fullname'].value()
         def fields(self): return (
             Field('uid', width=8, editable=NEVER),
-            Field('login', _("Login name"), width=16,
+            Field('login', _("Login name"), width=16, editable=ONCE,
                   type=pd.RegexString(maxlen=16, not_null=True,
                                       regex='^[a-zA-Z][0-9a-zA-Z_\.-]*$'),
                   descr=_("A valid login name can only contain letters, digits, underscores, "
                           "dashes and dots and must start with a letter.")),
             Field('password', _("Password"), width=16,
                   type=pd.Password(minlen=4, maxlen=32, not_null=True),
-                  descr=_("Please write the new password into each of the two fields.  Leave both "
-                          "fields blank if you are editing an existing account and don't want to "
-                          "change the password.")),
+                  descr=_("Please, write the password into each of the two fields to eliminate "
+                          "typos.")),
+            Field('old_password', _(u"Old password"), virtual=True, width=16,
+                  type=pd.Password(verify=False, not_null=True),
+                  descr=_(u"Verify your identity by entering your original (current) password.")),
+            Field('new_password', _("New password"), virtual=True, width=16,
+                  type=pd.Password(minlen=4, maxlen=32, not_null=True),
+                  descr=_("Please, write the password into each of the two fields to eliminate "
+                          "typos.")),
             Field('fullname', _("Full Name"), virtual=True, editable=NEVER,
                   computer=Computer(self._fullname, depends=('firstname','surname','login'))),
             Field('user', _("User"), dbcolumn='user_',
@@ -1414,47 +1425,77 @@ class Users(CMSModule, Embeddable):
             Field('phone', _("Phone")),
             Field('address', _("Address"), height=3),
             Field('uri', _("URI"), width=36),
-            Field('since', _("Registered since"), type=DateTime(show_time=False), default=now,
-                  style=lambda r: not r['enabled'].value() and pp.Style(overstrike=True) or None),
-            Field('enabled', _("Enabled")),
-            Field('contributor', _("Contribution privileges")),
-            Field('author', _("Authoring privileges")),
-            Field('admin', _("Admin privileges")),
+            Field('since', _("Registered since"), type=DateTime(show_time=False), default=now),
+            Field('role', _("Role"), display=self._rolename, prefer_display=True, default='none',
+                  enumerator=pd.FixedEnumerator([code for code, title, roles in self._ROLES]),
+                  style=lambda r: r['role'].value() == 'none' and pp.Style(foreground='#a20') \
+                        or None,
+                  descr=_("Select one of the predefined roles to grant the user "
+                          "the corresponding privilegs.")),
+            Field('lang'),
             )
-        columns = ('fullname', 'nickname', 'email', 'since')
+        def _rolename(self, code):
+            return self._ROLE_DICT[code][0]
+        columns = ('fullname', 'nickname', 'email', 'role', 'since')
         sorting = (('surname', ASC), ('firstname', ASC))
-        layout = (FieldSet(_("Personal data"),
-                           ('firstname', 'surname', 'nickname')),
-                  FieldSet(_("Contact information"),
-                           ('email', 'phone', 'address', 'uri')),
-                  FieldSet(_("Login information"), ('login', 'password')))
+        layout = (FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname')),
+                  FieldSet(_("Contact information"), ('email', 'phone', 'address', 'uri')))
         cb = pp.CodebookSpec(display='user', prefer_display=True)
     _REFERER = 'login'
     _PANEL_FIELDS = ('fullname',)
     _ALLOW_TABLE_LAYOUT_IN_FORMS = False
     _OWNER_COLUMN = 'uid'
     _SUPPLY_OWNER = False
-    _LAYOUT = {'rights': ('enabled', 'contributor', 'author', 'admin')}
-    _DEFAULT_ACTIONS_FIRST = CMSModule._DEFAULT_ACTIONS_FIRST + \
-                             (Action(_("Access Rights"), 'rights',
-                                     descr=_("Change access rights")),)
+    _LAYOUT = {'rights': ('role',),
+               'passwd': ('login', 'old_password', 'new_password'),
+               'insert': (FieldSet(_("Login information"), ('login', 'password')),
+                          FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname')),
+                          FieldSet(_("Contact information"), ('email', 'phone', 'address','uri'))),
+               'view':   (FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname')),
+                          FieldSet(_("Contact information"), ('email', 'phone', 'address','uri')),
+                          FieldSet(_("Access rights"), ('role',)))}
+    _DEFAULT_ACTIONS_FIRST = (
+        Action(_("Edit profile"), 'update', descr=_("Modify user's record")),
+        Action(_("Access rights"), 'rights', descr=_("Change access rights")),
+        Action(_("Change password"), 'passwd', descr=_("Change user's password")),
+        )
     RIGHTS_insert = (Roles.ANYONE,)
     RIGHTS_update = (Roles.ADMIN, Roles.OWNER)
     RIGHTS_delete = (Roles.ADMIN,) #, Roles.OWNER)
     WMI_SECTION = WikingManagementInterface.SECTION_USERS
     WMI_ORDER = 100
+    INSERT_LABEL = _("New user")
 
+    def _validate(self, req, record, layout=None):
+        if record.new():
+            record['lang'] = pd.Value(record['lang'].type(), req.prefered_language())
+        if layout and 'old_password' in layout.order():
+            # import md5
+            errors = []
+            old_password = req.param('old_password')
+            if not old_password:
+                errors.append(('old_password', _(u"Enter your current password.")))
+            elif old_password != record['password'].value(): #md5.new(old_password).hexdigest()
+                errors.append(('old_password', _(u"Invalid password.")))
+            new_password = req.param('new_password')
+            if not new_password:
+                errors.append(('new_password', _(u"Enter the new password.")))
+            elif new_password[0] == record['password'].value():
+                #md5.new(new_password[0]).hexdigest()
+                errors.append(('new_password', _(u"The new password is the same as the old one.")))
+            if errors:
+                return errors
+            else:
+                record['password'] = pd.Value(record['password'].type(), new_password[0])
+        return super(Users, self)._validate(req, record, layout=layout)
+        
     def _actions(self, req, record):
-        if not req.wmi and record:
-            actions = (
-                Action(_("Edit profile"), 'update', descr=_("Modify user's record")),
-                Action(_("Access Rights"), 'rights', descr=_("Change access rights")),
-                Action(_("Remove"), 'delete', descr=_("Remove the user permanently")))
-            if not record['enabled'].value():
-                actions = (Action(_("Enable"), 'enable', descr=_("Enable this account")),) + \
-                          actions
-            return actions
-        return super(Users, self)._actions(req, record)
+        actions = list(super(Users, self)._actions(req, record))
+        if not req.wmi:
+            actions = [a for a in actions if a.name() != 'list']
+        if record and record['role'].value() == 'none':
+            actions.insert(0, Action(_("Enable"), 'enable', descr=_("Enable this account")))
+        return actions
         
     def _redirect_after_insert(self, req, record):
         content = lcg.p(_("Registration completed successfuly. "
@@ -1466,42 +1507,49 @@ class Users(CMSModule, Embeddable):
                      "Please approve the account: %(uri)s",
                      fullname=record['fullname'].value(), server_hostname=req.server_hostname(),
                      uri=req.abs_uri()+'/'+record['login'].value())
+            # TODO: The admin email is translated to users language.  It would be more approppriate
+            # to subscribe admin messages from admin accounts and set the language for each admin.
             err = send_mail('wiking@' + req.server_hostname(), addr,
-                            'New user registration: ' + record['fullname'].value(),
-                            translator('en').translate(text), smtp_server=cfg.smtp_server)
+                            _("New user registration:") +' '+ record['fullname'].value(),
+                            text, lang=record['lang'].value())
             if err:
                 err = _("Failed sending e-mail notification:") +' '+ err
             else:
                 msg = _("E-mail notification has been sent to server administrator.")
         return self._document(req, content, subtitle=_("Registration"), msg=msg, err=err)
 
-    def action_enable(self, req, record):
-        err, msg = None, None
-        try:
-            record.update(enabled=True)
-        except pd.DBException, e:
-            err=self._analyze_exception(e)
-        else:
-            # TODO: Send notification also from the Rights module...
+    def _redirect_after_update(self, req, record):
+        if record.original_row()['role'].value() == 'none' and record['role'].value() != 'none':
             msg = _("The account was enabled.")
             text = _("Your account at %(uri)s has been enabled. "
                      "Please log in with username '%(login)s' and your password.",
                      uri=req.abs_uri()[:-len(req.uri)], login=record['login'].value())
             err = send_mail('wiking@' + req.server_hostname(), record['email'].value(),
                             _("Your account has been ebabled."),
-                            translator('en').translate(text),
-                            smtp_server=cfg.smtp_server)
+                            text, lang=record['lang'].value())
             if err:
                 err = _("Failed sending e-mail notification:") +' '+ err
             else:
                 msg += ' '+ _("E-mail notification has been sent to %s." % record['email'].value())
-        return self.action_view(req, record, msg=msg, err=err)
+            return self.action_view(req, record, msg=msg, err=err)
+        else:
+            return super(Users, self)._redirect_after_update(req, record)
+            
+
+    def action_enable(self, req, record):
+        req.set_param('submit', '1')
+        req.set_param('role', 'user')
+        return self.action_update(req, record, action='rights')
     RIGHTS_enable = (Roles.ADMIN,)
     
     def action_rights(self, req, record):
         # TODO: Enable table layout for this form.
         return self.action_update(req, record, action='rights')
     RIGHTS_rights = (Roles.ADMIN,)
+    
+    def action_passwd(self, req, record):
+        return self.action_update(req, record, action='passwd')
+    RIGHTS_passwd = (Roles.ADMIN, Roles.OWNER)
     
     def registration_uri(self, req):
         uri = self._base_uri(req)
@@ -1510,15 +1558,25 @@ class Users(CMSModule, Embeddable):
     def user(self, login):
         record = self._record(self._data.get_row(login=login))
         if record:
-            roles = [role for role, keys in ((Roles.USER, ('enabled',)),
-                                             (Roles.CONTRIBUTOR, ('contributor','author','admin')),
-                                             (Roles.AUTHOR, ('author','admin')),
-                                             (Roles.ADMIN, ('admin',)))
-                     if record['enabled'].value() and True in [record[k].value() for k in keys]]
             return User(login, name=record['user'].value(), uid=record['uid'].value(),
-                        roles=roles, data=record)
+                        roles=self.Spec._ROLE_DICT[record['role'].value()][1], data=record)
         else:
             return None
 
 
         
+# class ActiveUsers(Users):
+#     class Spec(Users.Spec):
+#         table = 'users'
+#         title = _("Active users")
+#         condition = pd.NE('role', pd.Value(pd.String(), 'none'))
+#     WMI_SECTION = WikingManagementInterface.SECTION_USERS
+#     WMI_ORDER = 100
+    
+# class InactiveUsers(Users):
+#     class Spec(Users.Spec):
+#         table = 'users'
+#         title = _("Inactive users")
+#         condition = pd.EQ('role', pd.Value(pd.String(), 'none'))
+#     WMI_SECTION = WikingManagementInterface.SECTION_USERS
+#     WMI_ORDER = 200

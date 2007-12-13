@@ -256,8 +256,7 @@ class Application(Module):
                 send_mail('wiking@' + req.server_hostname(), cfg.bug_report_address,
                           'Wiking Error: ' + buginfo,
                           text + "\n\n" + cgitb.text(einfo),
-                          "<html><pre>"+ text +"</pre>"+ cgitb.html(einfo) +"</html>",
-                          smtp_server=cfg.smtp_server)
+                          "<html><pre>"+ text +"</pre>"+ cgitb.html(einfo) +"</html>")
                 log(OPR, message)
                 log(OPR, "Traceback sent to:", cfg.bug_report_address)
             else:

@@ -804,17 +804,18 @@ def rss(title, url, items, descr, lang=None, webmaster=None):
     </item>''' for title, url, descr, date, author in items])
     return result
 
-def send_mail(sender, addr, subject, text, html=None, smtp_server='localhost'):
+def send_mail(sender, addr, subject, text, html=None, smtp_server=None, lang=None):
     """Send a mime e-mail message with text and HTML version."""
     import MimeWriter
     import mimetools
     from cStringIO import StringIO
     out = StringIO() # output buffer for our message 
     writer = MimeWriter.MimeWriter(out)
+    tr = translator(lang)
     # Set up message headers.
     writer.addheader("From", sender)
     writer.addheader("To", addr)
-    writer.addheader("Subject", subject)
+    writer.addheader("Subject", tr.translate(subject))
     writer.addheader("Date", time.strftime("%a, %d %b %Y %H:%M:%S %z"))
     writer.addheader("MIME-Version", "1.0")
     # Start the multipart section (multipart/alternative seems to work better
@@ -823,7 +824,7 @@ def send_mail(sender, addr, subject, text, html=None, smtp_server='localhost'):
     writer.flushheaders()
     # The plain text section.
     if isinstance(text, unicode):
-        text = text.encode('utf-8')
+        text = tr.translate(text).encode('utf-8')
     txtin = StringIO(text)
     subpart = writer.nextpart()
     subpart.addheader("Content-Transfer-Encoding", "quoted-printable")
@@ -832,7 +833,7 @@ def send_mail(sender, addr, subject, text, html=None, smtp_server='localhost'):
     txtin.close()
     # The html section.
     if html:
-        htmlin = StringIO(html)
+        htmlin = StringIO(tr.translate(html))
         subpart = writer.nextpart()
         subpart.addheader("Content-Transfer-Encoding", "quoted-printable")
         # Returns a file-like object we can write to.
@@ -841,6 +842,8 @@ def send_mail(sender, addr, subject, text, html=None, smtp_server='localhost'):
         htmlin.close()
     # Close the writer and send the message.
     writer.lastpart()
+    if not smtp_server:
+        smtp_server = cfg.smtp_server or 'localhost'
     try:
         import smtplib
         server = smtplib.SMTP(smtp_server)
@@ -882,7 +885,6 @@ def make_uri(base, *args, **kwargs):
 
 def translator(lang):
     if lang:
-        return lcg.GettextTranslator(lang, path=cfg.translation_path, fallback=True)
+        return lcg.GettextTranslator(str(lang), path=cfg.translation_path, fallback=True)
     else:
         return lcg.NullTranslator()
-    

@@ -12,13 +12,9 @@ CREATE TABLE users (
 	phone text,
 	address text,
 	uri text,
-	enabled boolean NOT NULL DEFAULT 'FALSE',
-	contributor boolean NOT NULL DEFAULT 'FALSE',
-	author boolean NOT NULL DEFAULT 'FALSE',
-	admin boolean NOT NULL DEFAULT 'FALSE',
+	role char(4) NOT NULL DEFAULT 'none',
 	since timestamp NOT NULL DEFAULT current_timestamp(0),
-	session_key text,
-	session_expire timestamp
+	lang char(2) REFERENCES languages(lang)
 );
 ALTER TABLE users ALTER COLUMN since 
 SET DEFAULT current_timestamp(0) AT TIME ZONE 'GMT';
