@@ -1,34 +1,30 @@
 Core features:
 
+ * Password reminder
+
+ * Force HTTPS also for registration form (see note at PytisModule.action_add()).
+
+ * Allow attachment and extension module management to page owner
+
  * Remove the dbname column -- get the database name from somewhere else
 
  * Delete stray files after deletion triggered in the database (cascade)
 
- * Decode uploaded file names.
-
- * Hide page column in page attachment list.
-
- * Allow attachment management to page owner.
-
  * Serve favicon and robots.txt
 
- * Password reminder
+ * RSS links in page header and panels
 
- * Image allignment in the LCG formatting manual
-
- * Force HTTPS also for registration form (see note at PytisModule.action_add()).
+ * Image allignment and link title in the LCG formatting manual
 
  * Default language when Accept-Language is not set at all
 
  * Locking
 
- * Save the exported HTML for structured text content in DB
-
  * Change log and Last-Modified HTTP header support
 
- * META tags pointing to language variants
-
  * Reencoding HTML attachments?
+
+ * Cache exported HTML for structured text content in DB?
 
  * Print preview
 
