@@ -613,7 +613,7 @@ class RssModule(object):
         lang = req.param('lang')
         rows = self._rows(req, lang=str(lang), limit=self._RSS_LIMIT)
         from xml.sax.saxutils import escape
-        base_uri = req.abs_uri()[:-len(req.uri)]
+        base_uri = req.server_uri()
         row = pp.PresentedRow(self._view.fields(), self._data, None)
         items = []
         import mx.DateTime as dt

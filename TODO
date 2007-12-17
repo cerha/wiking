@@ -10,6 +10,8 @@ Core features:
 
  * Delete stray files after deletion triggered in the database (cascade)
 
+ * Extension module listing commands don't work in the preview mode within WMI
+
  * Serve favicon and robots.txt
 
  * RSS links in page header and panels

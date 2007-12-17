@@ -13,7 +13,11 @@ Version 0.4.4 (not released yet)
  * Email notifications after user registration and account approval.
 
  * Major improvements in users and access rights management.
+
+ * Password reminder.
 	
+ * Bug fixes
+
 
 Version 0.4.3 (2007-09-17)
 	

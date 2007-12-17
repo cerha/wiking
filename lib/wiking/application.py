@@ -174,15 +174,23 @@ class Application(Module):
                 date = lcg.LocalizableDateTime(str(user.passwd_expiration()))
                 content = lcg.coerce((content,
                                       lcg.p(_("Your password expires on %(date)s.", date=date))))
-            elif cfg.allow_registration and not user:
-                uri = self._module('Users').registration_uri(req)
+            elif not user:
+                uri = self.registration_uri()
                 if uri:
                     lnk = lcg.link(uri, _("New user registration"))
                     content = lcg.coerce((content, lnk))
             return [Panel('login', _("Login"), content)]
         else:
             return []
-    
+        
+    def registration_uri(self):
+        """Return the URI for new user registration or None if registration is not allowed."""
+        return None
+        
+    def password_reminder_uri(self):
+        """Return the forgotten password link URI or None if password reminder not implemented."""
+        return None
+        
     def languages(self):
         """Return the list of available languages as the corresponding alpha-2 language codes.
         

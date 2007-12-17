@@ -1,3 +1,41 @@
+2007-12-17  Tomas Cerha  <cerha@brailcom.org>
+
+	* translations/wiking-cms.cs.po: Updated.
+
+	* resources/css/default.css: Login form display improved.
+
+	* lib/wiking/util.py (LoginCtrl.export): Use `user.uri()'.
+	(LoginDialog): Display registration and password reminder links if
+	defined.
+
+	* lib/wiking/request.py (https): Use `cfg.https_port' instead of
+	`cfg.https_ports'.
+	(Request.server_uri): New method.
+	(Request.abs_uri): Method removed.
+	(WikingRequest.registration_uri)
+	(WikingRequest.password_reminder_uri): New methods.
+	(User): New attribute `uri'.
+
+	* lib/wiking/export.py: Cosmetic change.
+
+	* lib/wiking/db.py: Use `Request.server_uri()' instead of `Request.abs_uri()'.
+
+	* lib/wiking/configuration.py: config option `https_ports'
+	transformed into `https_port'.
+
+	* lib/wiking/cms.py (Application._MAPPING): New item
+	`_registration'.
+	(Application.registration_uri)
+	(Application.password_reminder_uri): New methods.
+	(Registration): New module.
+	(Pages.handle): New user registration hack removed.
+	(Pages.action_view): It a top level page is empty, redirect to its
+	first submenu item.
+	(Users): Added support for the new `Registration' module.
+
+	* lib/wiking/application.py (Application.registration_uri)
+	(Application.password_reminder_uri): New methods.
+
 2007-12-13  Tomas Cerha  <cerha@brailcom.org>
 
 	* doc/src/cms/Panels.cs.txt: Updated.
@@ -27,10 +65,12 @@
 	* lib/wiking/cms.py (Users): Improved access rights management.
 	Change password in a separate dialog (require the old password).
 	Translate registration notifications to users language.  
+	(Users.user): Ugly bug fixed.
 
 	* lib/wiking/util.py (send_mail): Added support for automatic
 	message translation when the new argument `lang' is passed.
 	Automatically set the smtp_server according to configuration.
+	(send_mail): Encode the HTML part to UTF-8 if necessary.
 
 	* lib/wiking/application.py (Application.handle_exception): Don't
 	pass `smtp_server' to `send_mail()'.

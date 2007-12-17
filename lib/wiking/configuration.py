@@ -91,11 +91,11 @@ class Configuration(pc):
                  "are logged on the server in any case.")
         _DEFAULT = None
 
-    class _Option_https_ports(pc.Option):
-        _DESCR = "Sequence of port numbers using HTTPS"
-        _DOC = ("If you use HTTPS on some other ports, add them to this list, otherwise some "
-                "links may be broken (such as in RSS feeds).")
-        _DEFAULT = (443,)
+    class _Option_https_port(pc.Option):
+        _DESCR = "HTTPS port"
+        _DOC = ("The default HTTPS port is 443 but certain server configurations may require "
+                "using a different port.  Set this option if this is your case.")
+        _DEFAULT = 443
         
     class _Option_translation_path(pc.Option):
         _DESCR = "Translation search path"

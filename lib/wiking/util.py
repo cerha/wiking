@@ -535,6 +535,9 @@ class LoginCtrl(lcg.Content):
         g = exporter.generator()
         if self._user:
             username = self._user.name()
+            uri = self._user.uri()
+            if uri:
+                username = g.link(username, uri, title=_("Go to your profile"))
             cmd, label = ('logout', _("log out"))
         else:
             username = _("not logged")
@@ -547,35 +550,46 @@ class LoginDialog(lcg.Content):
     
     def __init__(self, req):
         super(LoginDialog, self).__init__()
-        self._params = req.params
-        self._uri = req.uri
-        self._https = req.https()
-        self._https_uri = req.abs_uri(port=443)
+        if not req.https() and cfg.force_https_login:
+            self._uri = req.server_uri(force_https=True) + req.uri
+        else:
+            self._uri = req.uri
+        self._registration_uri = req.registration_uri()
+        self._reminder_uri = req.password_reminder_uri()
+        self._hidden = [(k,v) for k,v in req.params.items() 
+                        if k not in ('command', 'login', 'password', '__log_in')]
         credentials = req.credentials()
         if credentials:
             self._login = credentials[0]
             self._password = None
         else:
             self._login = req.param('login')
-            self._password = req.param('password')
+            password = req.param('password')
+            if isinstance(password, (str, unicode)):
+                self._password = password
+            else:
+                self._password = None
 
     def export(self, exporter):
         g = exporter.generator()
-        x = (g.label(_("Login name")+':', id='login') + g.br(),
-             g.field(name='login', value=self._login, id='login', tabindex=0,
-                     size=14), g.br(), 
-             g.label(_("Password")+':', id='password') + g.br(),
-             g.field(name='password', value=self._password, id='password', size=14, password=True),
-             g.br(),
-             g.hidden(name='__log_in', value='1'), 
-             ) + tuple([g.hidden(name=k, value=v) for k,v in self._params.items() 
-                        if k not in ('command', 'login', 'password', '__log_in')]) + (
+        controls = (
+            g.label(_("Login name")+':', id='login') + g.br(),
+            g.field(name='login', value=self._login, id='login', tabindex=0, size=14),
+            g.br(), 
+            g.label(_("Password")+':', id='password') + g.br(),
+            g.field(name='password', value=self._password, id='password', size=14, password=True),
+            g.br(),
+            g.hidden(name='__log_in', value='1'), 
+            ) + tuple([g.hidden(name=name, value=value) for name, value in self._hidden]) + (
             g.submit(_("Log in"), cls='submit'),)
-        if not self._https and cfg.force_https_login:
-            uri = self._https_uri
-        else:
-            uri = self._uri
-        return g.form(x, method='POST', action=uri, cls='login-form')
+        links = [g.link(label, uri) for label, uri in
+                 ((_("New user registration"), self._registration_uri),
+                  (_("Forgot your password?"), self._reminder_uri)) if uri]
+        result = g.form(controls, method='POST', action=self._uri, cls='login-form')
+        if links:
+            result += g.list(links)
+        return result
+    
 
     
 # ============================================================================

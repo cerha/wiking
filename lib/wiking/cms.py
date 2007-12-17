@@ -100,7 +100,8 @@ class Application(CookieAuthentication, Application):
     
     _MAPPING = {'_doc': 'Documentation',
                 '_wmi': 'WikingManagementInterface',
-                '_css': 'Stylesheets'}
+                '_css': 'Stylesheets',
+                '_registration': 'Registration'}
 
     _RIGHTS = {'Documentation': (Roles.ANYONE,),
                'SiteMap': (Roles.ANYONE,),
@@ -143,6 +144,9 @@ class Application(CookieAuthentication, Application):
         return password == user.data()['password'].value()
 
     def authorize(self, req, module, action=None, record=None, **kwargs):
+        if req.uri.startswith('/_registration'):
+            # This hack redirects action authorization back to Registration after redirection to Users.
+            module = Registration
         if action and hasattr(module, 'RIGHTS_'+action):
             roles = getattr(module, 'RIGHTS_'+action)
         else:
@@ -155,6 +159,14 @@ class Application(CookieAuthentication, Application):
             return module.check_owner(req.user(), record)
         else:
             return False
+        
+    def registration_uri(self):
+        if cfg.allow_registration:
+            return make_uri(self.module_uri('Registration'), action='insert')
+        return None
+        
+    def password_reminder_uri(self):
+        return make_uri(self.module_uri('Registration'), action='remind')
         
     def _maybe_install(self, req, errstr):
         """Check a DB error string and try to set it up if it is the problem."""
@@ -308,7 +320,75 @@ class WikingManagementInterface(Module, RequestHandler):
                [MenuItem('__site_menu__', '', hidden=True, variants=variants,
                          submenu=self._module('Pages').menu(req))]
 
+    
+class Registration(Module, ActionHandler):
+    class ReminderForm(lcg.Content):
+        def export(self, exporter):
+            g = exporter.generator()
+            controls = (
+                g.label(_("Enter your login name or e-mail address")+':', id='login'),
+                g.field(name='login', value='', id='login', tabindex=0, size=14),
+                g.submit(_("Submit"), cls='submit'),)
+            return g.form(controls, method='POST', cls='password-reminder-form') #+ \
+                   #g.p(_(""))
+    
+    def _default_action(self, req, **kwargs):
+        return 'view'
 
+    def action_view(self, req):
+        if req.user():
+            return self._module('Users').action_view(req, req.user().data())
+        elif req.param('command') == 'logout':
+            return Document("Good Bye", lcg.p(_("You have been logged out.")))
+        else:
+            raise AuthenticationError()
+    RIGHTS_view = (Roles.ANYONE,)
+    
+    def action_insert(self, req):
+        return self._module('Users').action_insert(req)
+    RIGHTS_insert = (Roles.ANYONE,)
+    
+    def action_remind(self, req):
+        title = _("Password reminder")
+        error = None
+        if req.param('login'):
+            record = self._module('Users').find_user(req.param('login'))
+            if record:
+                text = concat(
+                    _("A password reminder request has been made at %(server_uri)s.",
+                      server_uri=req.server_uri()), '',
+                    _("Your credentials are:"),
+                    '   '+_("Login name") +': '+ record['login'].value(),
+                    '   '+_("Password") +': '+ record['password'].value(), '',
+                    _("We strongly recommend you change your password at nearest occassion, "
+                      "since it has been exposed to an unsecure channel."), separator='\n')
+                err = send_mail('wiking@' + req.server_hostname(), record['email'].value(),
+                                title, text, lang=req.prefered_language())
+                if err:
+                    error = _("Failed sending e-mail notification:") +' '+ err
+                    msg = _("Please try repeating your request later or contact the administrator!")
+                else:
+                    msg = _("E-mail reminder has been sent to your email address.")
+                content = lcg.p(msg)
+            else:
+                error = _("No user account for your query.")
+                content = self.ReminderForm()
+        else:
+            content = self.ReminderForm()
+        if error:
+            content = (ErrorMessage(error), content)
+        return Document(title, content)
+    RIGHTS_remind = (Roles.ANYONE,)
+
+    def action_update(self, req):
+        return self._module('Users').action_update(req, req.user().data())
+    RIGHTS_update = (Roles.USER,)
+    
+    def action_passwd(self, req):
+        return self._module('Users').action_passwd(req, req.user().data())
+    RIGHTS_passwd = (Roles.USER,)
+
+    
 class CMSModule(PytisModule, RssModule, Panelizable):
     "Base class for all CMS modules."""
     RIGHTS_view = (Roles.ANYONE,)
@@ -713,8 +793,7 @@ class Pages(CMSModule):
             return not row['published'].value() and pp.Style(foreground='#777') or None
         sorting = (('tree_order', ASC), ('identifier', ASC),)
         layout = ('identifier', 'modname', 'parent', 'ord', 'private', 'owner')
-        columns = ('title_or_identifier', 'published', 'identifier', 'status', 'ord', 'private',
-                   'owner')
+        columns = ('title_or_identifier', 'identifier', 'status', 'ord', 'private', 'owner')
         cb = pp.CodebookSpec(display='title_or_identifier', prefer_display=True)
         bindings = {'Attachments': pp.BindingSpec(_("Attachments"), 'page_id')}
 
@@ -772,10 +851,7 @@ class Pages(CMSModule):
             modname = row['modname'].value()
             if row is not None and modname is not None:
                 page = self._record(row)
-                if not (modname == 'Users' and req.param('action') == 'insert'):
-                    # TODO: This hack makes new user registration possible even if the related page
-                    # is private.  A better solution might be asking the module.
-                    self._authorize(req, action='view', record=page)
+                self._authorize(req, action='view', record=page)
                 req.page = page # Used in Embeddable._redirect_after_*()
                 try:
                     return self._module(modname).handle(req)
@@ -862,6 +938,11 @@ class Pages(CMSModule):
         if items:
             content.append(lcg.Section(title=_("Attachments"), content=lcg.ul(items),
                                        anchor='attachment-automatic-list')) # Prevent dupl. anchor.
+        if not content and record['parent'].value() is None:
+            rows = self._data.get_rows(parent=record['mapping_id'].value(),
+                                       condition=pd.NE('ord', pd.Value(pd.Integer(), None)))
+            if rows:
+                return req.redirect('/'+rows[0]['identifier'].value())
         # Action menu
         actions = self._DEFAULT_ACTIONS_FIRST + self._ACTIONS
         if module:
@@ -958,7 +1039,8 @@ class Pages(CMSModule):
             titles[lang] = row['title_or_identifier'].value()
             if row['description'].value() is not None:
                 descriptions[lang] = row['description'].value()
-        return [mkitem(row) for row in children[None]]
+        return [mkitem(row) for row in children[None]] + \
+               [MenuItem('_registration', _("Registration"), hidden=True)]
     
     def module_uri(self, modname):
         row = self._data.get_row(modname=modname) #, published=True)
@@ -1503,10 +1585,11 @@ class Users(CMSModule, Embeddable):
         msg, err = None, None
         addr = cfg.webmaster_addr or cfg.bug_report_address
         if addr:
+            base_uri = self._application.module_uri(self.name()) or '/_wmi/'+ self.name()
             text = _("New user %(fullname)s registered at %(server_hostname)s. "
                      "Please approve the account: %(uri)s",
                      fullname=record['fullname'].value(), server_hostname=req.server_hostname(),
-                     uri=req.abs_uri()+'/'+record['login'].value())
+                     uri=req.server_uri() + base_uri +'/'+ record['login'].value())
             # TODO: The admin email is translated to users language.  It would be more approppriate
             # to subscribe admin messages from admin accounts and set the language for each admin.
             err = send_mail('wiking@' + req.server_hostname(), addr,
@@ -1523,14 +1606,14 @@ class Users(CMSModule, Embeddable):
             msg = _("The account was enabled.")
             text = _("Your account at %(uri)s has been enabled. "
                      "Please log in with username '%(login)s' and your password.",
-                     uri=req.abs_uri()[:-len(req.uri)], login=record['login'].value())
+                     uri=req.server_uri(), login=record['login'].value())
             err = send_mail('wiking@' + req.server_hostname(), record['email'].value(),
                             _("Your account has been ebabled."),
                             text, lang=record['lang'].value())
             if err:
                 err = _("Failed sending e-mail notification:") +' '+ err
             else:
-                msg += ' '+ _("E-mail notification has been sent to %s." % record['email'].value())
+                msg += ' '+_("E-mail notification has been sent to:") +' '+ record['email'].value()
             return self.action_view(req, record, msg=msg, err=err)
         else:
             return super(Users, self)._redirect_after_update(req, record)
@@ -1550,20 +1633,32 @@ class Users(CMSModule, Embeddable):
     def action_passwd(self, req, record):
         return self.action_update(req, record, action='passwd')
     RIGHTS_passwd = (Roles.ADMIN, Roles.OWNER)
-    
-    def registration_uri(self, req):
-        uri = self._base_uri(req)
-        return uri and make_uri(uri, action='insert') or None
 
     def user(self, login):
-        record = self._record(self._data.get_row(login=login))
-        if record:
-            return User(login, name=record['user'].value(), uid=record['uid'].value(),
+        row = self._data.get_row(login=login)
+        if row:
+            record = self._record(row)
+            base_uri = self._application.module_uri(self.name())
+            if base_uri:
+                uri = base_uri +'/'+ login
+            else:
+                uri = self._application.module_uri('Registration')
+            return User(login, name=record['user'].value(), uid=record['uid'].value(), uri=uri,
                         roles=self.Spec._ROLE_DICT[record['role'].value()][1], data=record)
         else:
             return None
 
-
+    def find_user(self, query):
+        """Return the user record for given login or email address (for password reminder)."""
+        if query.find('@') == -1:
+            row = self._data.get_row(login=query)
+        else:
+            row = self._data.get_row(email=query)
+        if row:
+            return self._record(row)
+        else:
+            return None
+    
         
 # class ActiveUsers(Users):
 #     class Spec(Users.Spec):

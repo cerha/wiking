@@ -202,8 +202,7 @@ class Exporter(lcg.HtmlExporter):
             ctrls = concat(self._hidden("["), ctrl, self._hidden("]"))
             result += (g.span(ctrls, cls="controls"),)
         result += (g.span(_("Powered by %(wiking)s %(version)s",
-                            wiking=g.link("Wiking",
-                                          "http://www.freebsoft.org/wiking"),
+                            wiking=g.link("Wiking", "http://www.freebsoft.org/wiking"),
                             version=wiking.__version__)),)
         return result
         

@@ -278,8 +278,19 @@ div.panel hr { display: none; }
 .not-null { 
     color: #f00;
 }
+form.login-form {
+    background: $color.frame-bg;
+    border: 1px solid $color.frame-border;
+    border-width: 1px 0;
+    padding: .8em 2em;
+    margin: 0 2.5em 1em 0;
+    float: left;
+}
 form.login-form input {
     margin-bottom: 0.5em;
+}
+form.login-form label {
+    font-weight: bold;
 }
 
 div.errors, p.error, p.message { 

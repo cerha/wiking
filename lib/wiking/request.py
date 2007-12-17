@@ -112,32 +112,34 @@ class Request(pytis.web.Request):
     def set_header(self, name, value):
         self._req.headers_out.add(name, value)
         
+    def https(self):
+        """Return true if https is on."""
+        return self._req.connection.local_addr[1] == cfg.https_port
+    
     def remote_host(self):
         return self._req.get_remote_host()
 
     def server_hostname(self):
         return self._req.server.server_hostname
-        
-    def set_status(self, status):
-        self._req.status = status
-        
-    def https(self):
-        """Return true if https is on."""
-        port = self._req.connection.local_addr[1]
-        return port in cfg.https_ports
-    
-    def abs_uri(self, port=None):
-        if port is None:
+
+    def server_uri(self, force_https=False):
+        if force_https:
+            port = cfg.https_port
+        else:
             port = self._req.connection.local_addr[1]
-        if port in cfg.https_ports:
-            protocol = 'https://'
+        if port == cfg.https_port:
+            protocol = 'https'
             default_port = 443
         else:
-            protocol = 'http://'
-            default_port = 80            
-        return protocol + self._req.server.server_hostname + \
-               (port and port != default_port and ':'+ str(port) or '') + \
-               self.uri
+            protocol = 'http'
+            default_port = 80
+        result = protocol + '://'+ self._req.server.server_hostname
+        if port != default_port:
+            result += ':'+ str(port)
+        return result
+
+    def set_status(self, status):
+        self._req.status = status
 
     def done(self):
         return apache.OK
@@ -273,6 +275,14 @@ class WikingRequest(Request):
             self._prefered_languages = tuple(languages)
             return self._prefered_languages
 
+    def registration_uri(self):
+        """See 'Application.registration_uri()'."""
+        return self._application.registration_uri()
+
+    def password_reminder_uri(self):
+        """See 'Application.password_reminder_uri()'."""
+        return self._application.password_reminder_uri()
+        
     def prefered_language(self, variants=None, raise_error=True):
         """Return the prefered variant from the list of available variants.
 
@@ -344,7 +354,8 @@ class User(object):
 
     """
     
-    def __init__(self, login, uid=None, name=None, roles=(), data=None, passwd_expiration=None):
+    def __init__(self, login, uid=None, name=None, roles=(), data=None, passwd_expiration=None,
+                 uri=None):
         """Initialize the instance.
 
         Arguments:
@@ -355,6 +366,7 @@ class User(object):
           roles -- sequence of user roles as 'Roles' constants
           data -- application specific data
           passwd_expiration -- password expiration date as a Python 'date' instance or None
+          uri -- user's profile URI or None
 
         Please note, that password expiration date has currently no impact on the authentication
         process.  It will just be displayed in the login panel, if defined.
@@ -369,6 +381,7 @@ class User(object):
         self._roles = tuple(roles)
         self._data = data
         self._passwd_expiration = passwd_expiration
+        self._uri = uri
         
     def login(self):
         """Return user's login name as a string."""
@@ -394,6 +407,10 @@ class User(object):
         """Return password expiration date as a Python 'date' instance or None."""
         return self._passwd_expiration
 
+    def uri(self):
+        """Return the URI of user's profile."""
+        return self._uri
+    
     
 class Roles(object):
     """Static definition of available user roles."""
