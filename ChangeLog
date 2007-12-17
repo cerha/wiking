@@ -1,5 +1,8 @@
 2007-12-17  Tomas Cerha  <cerha@brailcom.org>
 
+	* sql/wiking.sql (config.allow_login_panel): Default value set to
+	TRUE.
+
 	* lib/wiking/modules.py (CookieAuthentication.authenticate): Raise
 	`AuthenticationRedirect' on login command.
 
