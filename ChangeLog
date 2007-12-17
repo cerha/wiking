@@ -1,5 +1,15 @@
 2007-12-17  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/__init__.py: Cosmetic change.
+
+	* lib/wiking/cms/__init__.py: New file.
+
+	* lib/wiking/cms/appl.py: New file.
+
+	* lib/wiking/cms/cms.py: New file.
+	
+	* lib/wiking/cms.py: File removed.
+
 	* translations/wiking-cms.cs.po: Updated.
 
 	* resources/css/default.css: Login form display improved.
@@ -32,6 +42,7 @@
 	(Pages.action_view): It a top level page is empty, redirect to its
 	first submenu item.
 	(Users): Added support for the new `Registration' module.
+	(Module): 
 
 	* lib/wiking/application.py (Application.registration_uri)
 	(Application.password_reminder_uri): New methods.

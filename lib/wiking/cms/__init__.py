@@ -1,5 +1,6 @@
+# -*- coding: utf-8 -*-
 # Copyright (C) 2006, 2007 Brailcom, o.p.s.
-# Author: Tomas Cerha <cerha@brailcom.org>
+# Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,44 +16,15 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-__version__ = '0.4.4pre'
+"""Wiking Content Management System implemented as a Wiking application."""
 
-import sys, os
+from wiking import *
 
-# TODO: this can be removed once it is solved in Pytis...
-reload(sys)
-sys.setdefaultencoding('iso-8859-2')
+#from config import *
+from appl import *
+from cms import *
 
-import lcg
-import pytis
-
-# Initialize pytis configuration
-import config
-config.dblisten = False
-del config
-
-from lcg import log as debug 
-
-import pytis.data as pd
-import pytis.presentation as pp
-import pytis.web as pw
-import pytis.util
-
-from util import *
-from request import *
-from modules import *
-from db import *
-from application import *
-from export import *
-
-from configuration import *
-# Initialize the global configuration object.
-cfg = Configuration()
-
-# We don't want to overwrite module's __doc__ and other private identifiers...
 _globals = dict([(k,v) for k,v in globals().items() if not k.startswith('_')])
-import util, modules, db, application, export, request
-for _file in (util, modules, db, application, export, request):
+import appl, cms
+for _file in (appl, cms):
     _file.__dict__.update(_globals)
-del _globals
-
