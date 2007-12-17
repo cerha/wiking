@@ -61,8 +61,11 @@ class Application(CookieAuthentication, Application):
         if req.wmi:
             return ()
         else:
-            return super(Application, self).panels(req, lang) + \
-                   self._module('Panels').panels(req, lang)
+            if cfg.appl.allow_login_panel:
+                panels = [LoginPanel(req)]
+            else:
+                panels = []
+            return panels + self._module('Panels').panels(req, lang)
         
     def configure(self, req):
         # TODO: This should be here as soon as req.wmi doesn't appear anywhere outside CMS.
@@ -100,7 +103,7 @@ class Application(CookieAuthentication, Application):
             return False
         
     def registration_uri(self):
-        if cfg.allow_registration:
+        if cfg.appl.allow_registration:
             return make_uri(self.module_uri('Registration'), action='insert')
         return None
         

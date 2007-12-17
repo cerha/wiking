@@ -20,7 +20,9 @@
 
 from wiking import *
 
-#from config import *
+from config import *
+cfg.appl = CMSConfig()
+
 from appl import *
 from cms import *
 

@@ -58,6 +58,12 @@ class AuthenticationError(RequestError):
         if self.args:
             content = (ErrorMessage(self.args[0]), content)
         return content
+
+    
+class AuthenticationRedirect(AuthenticationError):
+    """Has the same effect as AuthenticationError, but is just not an error."""
+    
+    _TITLE = _("Login")
     
 
 class AuthorizationError(RequestError):
@@ -279,6 +285,43 @@ class Panel(object):
         return self._title
     def content(self):
         return self._content
+
+
+class LoginPanel(Panel):
+    """Displays login/logout controls and other relevant information."""
+    
+    class PanelContent(lcg.Content):
+        def __init__(self, req):
+            self._req = req
+            super(LoginPanel.PanelContent, self).__init__()
+            
+        def export(self, exporter):
+            g = exporter.generator()
+            user = self._req.user()
+            if user:
+                username = user.name()
+                uri = user.uri()
+                if uri:
+                    username = g.link(username, uri, title=_("Go to your profile"))
+                cmd, label = ('logout', _("log out"))
+            else:
+                username = _("not logged")
+                cmd, label = ('login', _("log in"))
+            content = lcg.concat(username, ' ',
+                                 g.span('[', cls="hidden"),
+                                 g.link(label, '?command=%s' % cmd, cls='login-ctrl'),
+                                 g.span(']',cls="hidden"))
+            if not user:
+                uri = self._req.registration_uri()
+                if uri:
+                    content += g.br() +'\n'+ g.link(_("New user registration"), uri)
+            elif user.passwd_expiration():
+                date = lcg.LocalizableDateTime(str(user.passwd_expiration()))
+                content += g.br() +'\n'+ _("Your password expires on %(date)s.", date=date)
+            return content
+        
+    def __init__(self, req):
+        super(LoginPanel, self).__init__('login', _("Login"), self.PanelContent(req))
 
 
 class Document(object):
@@ -522,29 +565,6 @@ class Message(lcg.TextContent):
 class ErrorMessage(Message):
     _CLASS = "error"
     
-
-class LoginCtrl(lcg.Content):
-    """Displays the logged in user and a login/logout control."""
-    
-    def __init__(self, user):
-        super(LoginCtrl, self).__init__()
-        assert user is None or isinstance(user, User), user
-        self._user = user
-
-    def export(self, exporter):
-        g = exporter.generator()
-        if self._user:
-            username = self._user.name()
-            uri = self._user.uri()
-            if uri:
-                username = g.link(username, uri, title=_("Go to your profile"))
-            cmd, label = ('logout', _("log out"))
-        else:
-            username = _("not logged")
-            cmd, label = ('login', _("log in"))
-        ctrl = g.link(label, '?command=%s' % cmd, cls='login-ctrl')
-        return lcg.concat(username, ' ', g.span('[', cls="hidden"), ctrl, g.span(']',cls="hidden"))
-
 
 class LoginDialog(lcg.Content):
     

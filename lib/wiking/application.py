@@ -160,28 +160,17 @@ class Application(Module):
         """Return a list of 'Panel' instances representing panels displayed on the page.
 
         The set of panels will usually be constant throughout the application, but this is just a
-        common practice, not a requirement.  The application may decide to return whatever is
-        reasonable for the current request.
+        common practice, not a requirement.  The application may decide to return a different set
+        of panels for each request.
+
+        Note, that except for the generic `Panel' class, there are also predefined single purpose
+        classes, such as `LoginPanel'.
 
         See the Navigation section of the Wiking User's documentation for general information about
         panels.
         
         """
-        if cfg.allow_login_panel:
-            user = req.user()
-            content = lcg.p(LoginCtrl(user))
-            if user and user.passwd_expiration():
-                date = lcg.LocalizableDateTime(str(user.passwd_expiration()))
-                content = lcg.coerce((content,
-                                      lcg.p(_("Your password expires on %(date)s.", date=date))))
-            elif not user:
-                uri = self.registration_uri()
-                if uri:
-                    lnk = lcg.link(uri, _("New user registration"))
-                    content = lcg.coerce((content, lnk))
-            return [Panel('login', _("Login"), content)]
-        else:
-            return []
+        return []
         
     def registration_uri(self):
         """Return the URI for new user registration or None if registration is not allowed."""

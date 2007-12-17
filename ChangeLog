@@ -1,5 +1,8 @@
 2007-12-17  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/modules.py (CookieAuthentication.authenticate): Raise
+	`AuthenticationRedirect' on login command.
+
 	* lib/wiking/__init__.py: Cosmetic change.
 
 	* lib/wiking/cms/__init__.py: New file.
@@ -17,6 +20,9 @@
 	* lib/wiking/util.py (LoginCtrl.export): Use `user.uri()'.
 	(LoginDialog): Display registration and password reminder links if
 	defined.
+	(AuthenticationRedirect): New class.
+	(LoginPanel): New class.
+	(LoginCtrl): Class removed.
 
 	* lib/wiking/request.py (https): Use `cfg.https_port' instead of
 	`cfg.https_ports'.
@@ -26,12 +32,19 @@
 	(WikingRequest.password_reminder_uri): New methods.
 	(User): New attribute `uri'.
 
-	* lib/wiking/export.py: Cosmetic change.
+	* lib/wiking/export.py: Respect the new definition of
+	configuration options.
 
 	* lib/wiking/db.py: Use `Request.server_uri()' instead of `Request.abs_uri()'.
 
 	* lib/wiking/configuration.py: config option `https_ports'
 	transformed into `https_port'.
+	(Configuration._Option_bug_report_address): Documentation
+	improved.
+	(_Option_allow_wmi_link, _Option_upload_limit)
+	(_Option_allow_login_panel, _Option_allow_login_ctrl)
+	(_Option_allow_registration): Options removed.
+	(Configuration._Option_appl): New option.
 
 	* lib/wiking/cms.py (Application._MAPPING): New item
 	`_registration'.
@@ -46,6 +59,7 @@
 
 	* lib/wiking/application.py (Application.registration_uri)
 	(Application.password_reminder_uri): New methods.
+	(Application.panels): Don't create the login panel.
 
 2007-12-13  Tomas Cerha  <cerha@brailcom.org>
 

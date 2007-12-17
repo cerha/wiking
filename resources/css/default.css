@@ -517,6 +517,10 @@ div.actions a.inactive, p.actions a.inactive:hover {
 div.panel-login a.login-ctrl {
     margin: 0 0.3em;
 }
+div.panel-login div.panel-content {
+    padding: 0.3em;
+    line-height: 1.3em;
+}
 
 /* LCG Formatter styles */
 

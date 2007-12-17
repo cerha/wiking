@@ -172,6 +172,8 @@ class Registration(Module, ActionHandler):
     RIGHTS_view = (Roles.ANYONE,)
     
     def action_insert(self, req):
+        if not cfg.appl.allow_registration:
+            raise Forbidden()
         return self._module('Users').action_insert(req)
     RIGHTS_insert = (Roles.ANYONE,)
     
@@ -301,7 +303,7 @@ class Config(CMSModule):
     class Spec(Specification):
         class _Field(Field):
             def __init__(self, name, **kwargs):
-                o = cfg.option(name)
+                o = hasattr(cfg, name) and cfg.option(name) or cfg.appl.option(name)
                 Field.__init__(self, name, o.description(), descr=o.documentation(), **kwargs)
         title = _("Configuration")
         help = _("Edit site configuration.")
@@ -312,8 +314,8 @@ class Config(CMSModule):
             _Field('webmaster_addr'),
             _Field('allow_login_panel'),
             _Field('allow_registration'),
-            _Field('force_https_login'),
             #_Field('allow_wmi_link'),
+            _Field('force_https_login'),
             _Field('upload_limit'),
             Field('theme', _("Color theme"),
                   codebook='Themes', selection_type=CHOICE, not_null=False,
@@ -321,8 +323,8 @@ class Config(CMSModule):
                           "the section Appearance to manage the available themes.")),
             )
         layout = ('site_title', 'site_subtitle', 'webmaster_addr', 'theme',
-                  'allow_login_panel', 'allow_registration', 'force_https_login',
-                  'upload_limit')
+                  'allow_login_panel', 'allow_registration', #'allow_wmi_link',
+                  'force_https_login', 'upload_limit')
     _TITLE_TEMPLATE = _("Site Configuration")
     WMI_SECTION = WikingManagementInterface.SECTION_SETUP
     WMI_ORDER = 100
@@ -340,12 +342,13 @@ class Config(CMSModule):
         return self.action_update(req, record, msg=self._update_msg(record))
     
     def configure(self, req):
-        cfg.allow_wmi_link = True
         row = self._data.get_row(config_id=0)
         if row is not None:
             for key in row.keys():
                 if hasattr(cfg, key) and not key == 'theme':
                     setattr(cfg, key, row[key].value())
+                elif hasattr(cfg.appl, key):
+                    setattr(cfg.appl, key, row[key].value())
             # TODO: Don't recreate the theme if it has not changed...
             theme_id = row['theme'].value()
             if theme_id is not None:
@@ -353,9 +356,9 @@ class Config(CMSModule):
             else:
                 theme = self._DEFAULT_THEME
             cfg.theme = theme
-        if cfg.upload_limit is None:
+        if cfg.appl.upload_limit is None:
             # TODO: Use the default values from global config file (/etc/wiking/config.py)
-            cfg.upload_limit = cfg.option('upload_limit').default()
+            cfg.appl.upload_limit = cfg.appl.option('upload_limit').default()
     
 
 class Mapping(CMSModule):
@@ -900,7 +903,7 @@ class Attachments(StoredFileModule, CMSModule):
                   selection_type=CHOICE, editable=ONCE, value_column='lang'),
             Field('page_id', _("Page"), codebook='Pages'),
             Field('file', _("File"), virtual=True, editable=ALWAYS,
-                  type=pd.Binary(not_null=True, maxlen=cfg.upload_limit),
+                  type=pd.Binary(not_null=True, maxlen=cfg.appl.upload_limit),
                   computer=self._file_computer('file', '_filename', origname='filename',
                                                mime='mime_type'),
                   descr=_("Upload a file from your local system.  The file name will be used "
@@ -1149,10 +1152,10 @@ class Images(StoredFileModule, CMSModule, Embeddable):
             Field('image_id'),
             Field('published'),
             Field('file', _("File"), virtual=True, editable=ALWAYS,
-                  type=pd.Image(not_null=True, maxlen=cfg.upload_limit, maxsize=(3000, 3000)),
+                  type=pd.Image(not_null=True, maxlen=cfg.appl.upload_limit, maxsize=(3000, 3000)),
                   computer=self._file_computer('file', '_filename', origname='filename')),
             Field('image', virtual=True, editable=ALWAYS,
-                  type=pd.Image(not_null=True, maxlen=cfg.upload_limit, maxsize=(3000, 3000)),
+                  type=pd.Image(not_null=True, maxlen=cfg.appl.upload_limit, maxsize=(3000, 3000)),
                   computer=self._file_computer('image', '_image_filename',
                                                compute=lambda r: self._resize(r, (800, 800)))),
             Field('thumbnail', virtual=True, type=pd.Image(),

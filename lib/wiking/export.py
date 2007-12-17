@@ -180,27 +180,16 @@ class Exporter(lcg.HtmlExporter):
         g = self._generator
         state = context.node().state()
 	result = (g.hr(),)
-        ctrl = ''
-        #if state.edit_label:
-        #    ctrl += (g.link(state.edit_label, "?action=edit"), "|")
-        if cfg.allow_login_ctrl and (state.wmi or not cfg.allow_login_panel):
-            user = state.user
-            if user:
-                username = user.name()
-                cmd, label = ('logout', _("log out"))
-            else:
-                username = _("not logged")
-                cmd, label = ('login', _("log in"))
-            lctrl = g.link(label, '?command=%s' % cmd, cls='login-ctrl')
-            ctrl += concat(_("Login"), ': ', username, ' (', lctrl, ') | ')
+        ctrl = None
         if state.wmi:
-            ctrl += g.link(_("Leave the Management Interface"), '/', hotkey="9")
-        elif cfg.allow_wmi_link:
-            ctrl += g.link(_("Manage this site"), '/_wmi/', hotkey="9",
-                           title=_("Enter the Wiking Management Interface"))
+            ctrl = concat(_("Login"), ': ', state.user.name(), ' (',
+                          g.link(_("log out"), '?command=logout', cls='login-ctrl'), ') | ',
+                          g.link(_("Leave the Management Interface"), '/', hotkey="9"))
+        elif hasattr(cfg.appl, 'allow_wmi_link') and cfg.appl.allow_wmi_link:
+            ctrl = g.link(_("Manage this site"), '/_wmi/', hotkey="9",
+                          title=_("Enter the Wiking Management Interface"))
         if ctrl:
-            ctrls = concat(self._hidden("["), ctrl, self._hidden("]"))
-            result += (g.span(ctrls, cls="controls"),)
+            result += (g.span(concat(ctrl, self._hidden(" | ")), cls="controls"),)
         result += (g.span(_("Powered by %(wiking)s %(version)s",
                             wiking=g.link("Wiking", "http://www.freebsoft.org/wiking"),
                             version=wiking.__version__)),)

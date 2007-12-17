@@ -55,8 +55,8 @@ class Configuration(pc):
                 if filename.endswith('.pyc') or filename.endswith('.pyo'):
                     filename = filename[:-1]
                 return filename
-            for filename in ('/etc/wiking.py', '/etc/wiking/config.py',
-                             '/usr/local/etc/wiking.py', '/usr/local/etc/wiking/config.py'):
+            for filename in ('/etc/wiking/config.py', '/etc/wiking.py',
+                             '/usr/local/etc/wiking/config.py', '/usr/local/etc/wiking.py'):
                 if os.access(filename, os.F_OK):
                     return filename
             return None
@@ -67,16 +67,9 @@ class Configuration(pc):
         
     class _Option_storage(pc.StringOption):
         _DESCR = "Directory for storing uploaded files"
-        _DOC = ("You only need this directory if you want to use modules which require file "
-                "upload, such as Attachments or Images.  The directory must be writable by the "
-                "webserver user.")
+        _DOC = ("You only need this directory if your application(s) use the `StoredFileModule' "
+                "(Wiking CMS does that).  The directory must be writable by the webserver user.")
         _DEFAULT = '/var/lib/wiking'
-        
-    class _Option_upload_limit(pc.NumericOption):
-        _DESCR = _("Maximal upload size")
-        _DOC = _("The maximal size of uploaded files in bytes.  The default is 3MB.  The server "
-                 "needs to be relaoded for the changes in this option to take effect.")
-        _DEFAULT = 3*1024*1024
         
     class _Option_smtp_server(pc.StringOption):
         _DESCR = "Name or address of SMTP server"
@@ -85,14 +78,14 @@ class Configuration(pc):
         _DEFAULT = 'localhost'
         
     class _Option_bug_report_address(pc.StringOption):
-        _DESCR = _("E-mail address for sending bug reports")
-        _DOC = _("Tracebacks of uncaught exceptions may be sent automatically to the site "
-                 "maintainer by e-mail.  Empty value disables this feature.  The tracebacks "
-                 "are logged on the server in any case.")
+        _DESCR = "E-mail address for sending bug reports"
+        _DOC = ("Tracebacks of uncaught exceptions may be sent automatically to the site "
+                "maintainer by e-mail.  Empty value disables this feature.  The tracebacks "
+                "are logged on the server in this case.")
         _DEFAULT = None
 
     class _Option_https_port(pc.Option):
-        _DESCR = "HTTPS port"
+        _DESCR = "HTTPS port number"
         _DOC = ("The default HTTPS port is 443 but certain server configurations may require "
                 "using a different port.  Set this option if this is your case.")
         _DEFAULT = 443
@@ -128,38 +121,6 @@ class Configuration(pc):
                  "yourdomain.com is replaced by the real name of the server's domain.")
         _DEFAULT = None
         
-    class _Option_allow_wmi_link(pc.Option):
-        _DESCR = "Allow WMI link in page footer"
-        _DOC = ("Set to true to disable the link to the Wiking Management Interface in page "
-                "footer.  This is only useful for the Wiking CMS installations.")
-        _DEFAULT = False
-
-    class _Option_allow_login_panel(pc.Option):
-        _DESCR = _("Allow login panel")
-        _DOC = _("If enabled, the information about the currently logged user and login/logout "
-                 "controls will appear as a separate panel.  This panel will always be the first "
-                 "panel on the page.  If disabled, displaying login controls depends on the "
-                 "exporter (the default exporter shows the controls in page footer, which is less "
-                 "intrusive, but also harder to find for a new user).")
-        _DEFAULT = False
-        
-    class _Option_allow_login_ctrl(pc.Option):
-        _DESCR = "Allow login control"
-        _DOC = ("If enabled, and login panel is disabled, the exporter is responsible for "
-                "displaying login controls on the page.  The default exporter shows them at "
-                "page footer.  This is less intrusive than the login panel, but may be harder "
-                "to find for a new user.")
-        _DEFAULT = True
-
-    class _Option_allow_registration(pc.Option):
-        _DESCR = _("Allow new user registration")
-        _DOC = _("If enabled, all visitors are allowed to create a user account.  If disabled, "
-                 "new user accounts must be created by administrator.  Note, that the newly "
-                 "created accounts are inactive (at least with the default implementation of the "
-                 "user management module), so the creation of the account doesn't give the user "
-                 "any actual privileges.")
-        _DEFAULT = True
-        
     class _Option_force_https_login(pc.Option):
         _DESCR = _("Force HTTPS login")
         _DOC = _("If enabled, the login form will always be redirected to an HTTPS address "
@@ -186,4 +147,12 @@ class Configuration(pc):
         _DESCR = "Module specification resolver"
         _DEFAULT = WikingResolver()
 
+        
+    class _Option_appl(pc.Option):
+        _DESCR = "Application specific configuration"
+        _DOC = ("This option makes it possible to define an application specific set of "
+                "configuration options for each Wiking application and make these options "
+                "available throught the main configuration instance.  Type of the value is "
+                "optional, but an instance of class derived from 'pytis.util.Configuration' is "
+                "recommended.")
         

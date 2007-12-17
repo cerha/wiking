@@ -369,7 +369,7 @@ class CookieAuthentication(object):
             user = None
             req.set_cookie(self._SESSION_COOKIE, None, secure=secure)
         elif req.param('command') == 'login' and not user:
-            raise AuthenticationError()
+            raise AuthenticationRedirect()
         return user
 
     
