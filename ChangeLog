@@ -1,5 +1,9 @@
 2007-12-20  Tomas Cerha  <cerha@brailcom.org>
 
+	* translations/wiking.de.po (Module): Updated.
+
+	* translations/wiking.sk.po (Module): Updated.
+
 	* lib/wiking/cms/appl.py (Application): Refer to parent class as
 	`wiking.Application'.
 
