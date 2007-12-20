@@ -412,7 +412,6 @@ class Search(Module, ActionHandler):
 
         def __init__(self, req):
             lcg.Content.__init__(self)
-            self._params = req.params
             self._uri = req.uri
 
         def _contents(self, generator):
@@ -483,7 +482,7 @@ class Search(Module, ActionHandler):
         return self._search_form(req)
         
     def action_search(self, req, **kwargs):
-        input = req.params.get('input', '')
+        input = req.param('input', '')
         expression = self._transform_input(input)
         if not expression:
             return self._search_form(req, message=self._EMPTY_SEARCH_MESSAGE)

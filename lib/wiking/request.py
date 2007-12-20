@@ -51,11 +51,16 @@ class Request(pytis.web.Request):
     def __init__(self, req, encoding='utf-8'):
         self._req = req
         self._encoding = encoding
-        # Store request params in a real dictionary.
-        self.params = self._init_params()
-        self.uri = unicode(req.uri, encoding)
-        self.path = [item for item in self.uri.split('/')[1:] if item]
+        # Store params and options in real dictionaries (not mod_python's mp_table).
+        self._options = self._init_options() 
+        self._params = self._init_params()
+        self.uri = uri = self._init_uri()
+        self.path = [item for item in uri.split('/')[1:] if item]
 
+    def _init_options(self):
+        options = self._req.get_options()
+        return dict([(o, options[o]) for o in options.keys()])
+        
     def _init_params(self):
         def init_value(value):
             if isinstance(value, (tuple, list)):
@@ -67,16 +72,16 @@ class Request(pytis.web.Request):
         fields = mod_python.util.FieldStorage(self._req)
         return dict([(k, init_value(fields[k])) for k in fields.keys()])
 
+    def _init_uri(self):
+        return unicode(self._req.uri, self._encoding)
+        
     # Methods implementing the pytis Request interface:
     
     def has_param(self, name):
-        return self.params.has_key(name)
+        return self._params.has_key(name)
         
     def param(self, name, default=None):
-        return self.params.get(name, default)
-        
-    def set_param(self, name, value):
-        self.params[name] = value
+        return self._params.get(name, default)
         
     def cookie(self, name, default=None):
         cookies = Cookie.SimpleCookie(self.header('Cookie'))
@@ -99,9 +104,14 @@ class Request(pytis.web.Request):
 
     # Additional methods:
 
+    def set_param(self, name, value):
+        self._params[name] = value
+        
+    def params(self):
+        return self._params.keys()
+    
     def options(self):
-        options = self._req.get_options()
-        return dict([(o, options[o]) for o in options.keys()])
+        return self._options
 
     def header(self, name, default=None):
         try:
@@ -185,7 +195,7 @@ class Request(pytis.web.Request):
 
 
 class WikingRequest(Request):
-    """Wiking specific methods for the request object."""
+    """Wiking application specific request object."""
     _LANG_COOKIE = 'wiking_prefered_language'
     _PANELS_COOKIE = 'wiking_show_panels'
     _UNDEFINED = object()
@@ -193,12 +203,6 @@ class WikingRequest(Request):
     def __init__(self, req, application, **kwargs):
         super(WikingRequest, self).__init__(req, **kwargs)
         self._application = application
-        if self.uri.endswith('.rss'):
-            self.params['action'] = 'rss'
-            self.uri = self.uri[:-4]
-            if len(self.uri) > 3 and self.uri[-3] == '.' and self.uri[-2:].isalpha():
-                self.params['lang'] = self.uri[-2:]
-                self.uri = self.uri[:-3]
 
     def _init_params(self):
         params = super(WikingRequest, self)._init_params()
@@ -232,6 +236,20 @@ class WikingRequest(Request):
         self._user = self._UNDEFINED
         return params
 
+    def _init_uri(self):
+        uri = super(WikingRequest, self)._init_uri()
+        if uri.endswith('.rss'):
+            self._params['action'] = 'rss'
+            uri = uri[:-4]
+            if len(uri) > 3 and uri[-3] == '.' and uri[-2:].isalpha():
+                self._params['lang'] = uri[-2:]
+                uri = uri[:-3]
+        if self._options.has_key('StripRequestPath'):
+            path = self._options['StripRequestPath']
+            if uri.startswith(path):
+                uri = uri[len(path):]
+        return uri
+        
     def show_panels(self):
         return self._show_panels
     
@@ -275,14 +293,6 @@ class WikingRequest(Request):
             self._prefered_languages = tuple(languages)
             return self._prefered_languages
 
-    def registration_uri(self):
-        """See 'Application.registration_uri()'."""
-        return self._application.registration_uri()
-
-    def password_reminder_uri(self):
-        """See 'Application.password_reminder_uri()'."""
-        return self._application.password_reminder_uri()
-        
     def prefered_language(self, variants=None, raise_error=True):
         """Return the prefered variant from the list of available variants.
 
@@ -343,6 +353,10 @@ class WikingRequest(Request):
             raise AuthenticationError()
         return self._user
     
+    def application(self):
+        """Return the current `Application' instance."""
+        return self._application
+        
 
 class User(object):
     """Representation of the logged in user.

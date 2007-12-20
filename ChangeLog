@@ -1,3 +1,31 @@
+2007-12-20  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/cms/cms.py (Pages._validate)
+	(Pages.action_translate): Use access methods to get request
+	params.
+
+	* lib/wiking/handler.py (Handler.__init__): Only use named options
+	as DB connection options.
+
+	* lib/wiking/modules.py (Search): Use access methods to get
+	request params.
+
+	* lib/wiking/util.py (LoginPanel.PanelContent.export): Use
+	`req.application().registration_uri()' instead of
+	`req.registration_uri()'.
+	
+
+	* lib/wiking/request.py (WikingRequest.registration_uri)
+	(WikingRequest.password_reminder_uri): Methods removed.
+	(WikingRequest.application): New method.
+	(WikingRequest): Added support for new apache config option
+	`StripRequestPath'
+	(Request.params): Public attributte removed.
+
+	* lib/wiking/db.py:
+	(PytisModule._validate, PytisModule._form, PytisModule._prefill):
+	Use access methods to get request params.
+
 2007-12-17  Tomas Cerha  <cerha@brailcom.org>
 
 	* sql/wiking.sql (config.allow_login_panel): Default value set to

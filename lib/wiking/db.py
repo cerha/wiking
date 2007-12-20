@@ -150,8 +150,8 @@ class PytisModule(Module, ActionHandler):
                 continue
             type = record[id].type()
             kwargs = {}
-            if req.params.has_key(id):
-                value_ = req.params[id]
+            if req.has_param(id):
+                value_ = req.param(id)
                 if isinstance(value_, tuple):
                     if len(value_) == 2 and isinstance(type, pd.Password):
                         value_, kwargs['verify'] = value_
@@ -301,9 +301,9 @@ class PytisModule(Module, ActionHandler):
                 method = self._image_provider
             return method(req, row, cid, target=form)
         kwargs['uri_provider'] = uri_provider
-        #if issubclass(form, pw.EditForm) and req.params.has_key('module'):
+        #if issubclass(form, pw.EditForm) and req.has_param('module'):
         #    kwargs['hidden'] = kwargs.get('hidden', ()) + \
-        #                       (('module', req.params['module']),)
+        #                       (('module', req.param('module')),)
         if issubclass(form, pw.EditForm):
             kwargs['allow_table_layout'] = self._ALLOW_TABLE_LAYOUT_IN_FORMS
         elif issubclass(form, pw.BrowseForm):
@@ -382,8 +382,8 @@ class PytisModule(Module, ActionHandler):
         return False
         
     def _prefill(self, req, new=False):
-        prefill = dict([(f.id(), req.params[f.id()]) for f in self._view.fields()
-                        if req.params.has_key(f.id()) and \
+        prefill = dict([(f.id(), req.param(f.id())) for f in self._view.fields()
+                        if req.has_param(f.id()) and \
                         not isinstance(f.type(), (pd.Binary, pd.Password))])
         if new and not prefill.has_key('lang') and self._LIST_BY_LANGUAGE:
             lang = req.prefered_language(raise_error=False)

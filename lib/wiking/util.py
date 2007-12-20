@@ -312,7 +312,7 @@ class LoginPanel(Panel):
                                  g.link(label, '?command=%s' % cmd, cls='login-ctrl'),
                                  g.span(']',cls="hidden"))
             if not user:
-                uri = self._req.registration_uri()
+                uri = self._req.application().registration_uri()
                 if uri:
                     content += g.br() +'\n'+ g.link(_("New user registration"), uri)
             elif user.passwd_expiration():
@@ -574,9 +574,9 @@ class LoginDialog(lcg.Content):
             self._uri = req.server_uri(force_https=True) + req.uri
         else:
             self._uri = req.uri
-        self._registration_uri = req.registration_uri()
-        self._reminder_uri = req.password_reminder_uri()
-        self._hidden = [(k,v) for k,v in req.params.items() 
+        self._registration_uri = req.application().registration_uri()
+        self._reminder_uri = req.application().password_reminder_uri()
+        self._hidden = [(k, req.params(k)) for k in req.params() 
                         if k not in ('command', 'login', 'password', '__log_in')]
         credentials = req.credentials()
         if credentials:

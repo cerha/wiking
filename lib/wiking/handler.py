@@ -31,7 +31,7 @@ class Handler(object):
         for name, value in options.items():
             if hasattr(cfg, name):
                 setattr(cfg, name, value)
-            else:
+            elif name in ('database', 'user', 'password', 'host', 'port'):
                 dboptions[name] = value
         self._hostname = hostname
         self._dbconnection = pd.DBConnection(**dboptions)

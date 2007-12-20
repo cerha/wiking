@@ -709,7 +709,7 @@ class Pages(CMSModule):
 
     def _validate(self, req, record, layout=None):
         result = super(Pages, self)._validate(req, record, layout=layout)
-        if result is None and req.params.has_key('commit'):
+        if result is None and req.has_param('commit'):
             if not (Roles.check(req, (Roles.ADMIN,)) or self.check_owner(req.user(), record)):
                 return _("You don't have sufficient privilegs for this action.") +' '+ \
                        _("Save the page without publishing and ask the administrator to publish "
@@ -809,9 +809,9 @@ class Pages(CMSModule):
             return self._document(req, d, record, subtitle=_("translate"))
         else:
             row = self._data.get_row(mapping_id=record['mapping_id'].value(),
-                                     lang=str(req.params['src_lang']))
+                                     lang=str(req.param('src_lang')))
             for k in ('_content','title'):
-                req.params[k] = row[k].value()
+                req.set_param(k, row[k].value())
             return self.action_edit(req, record)
     RIGHTS_translate = (Roles.AUTHOR, Roles.OWNER)
 
