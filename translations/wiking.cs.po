@@ -4,56 +4,65 @@
 # Tomas Cerha <cerha@brailcom.org>, 2006.
 msgid ""
 msgstr ""
+"Project-Id-Version: 0.4\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2007-11-01 08:32+0100\n"
+"PO-Revision-Date: 2007-09-26 11:27+0200\n"
+"Last-Translator: Tomas Cerha <cerha@brailcom.org>\n"
+"Language-Team: Czech <wiking@lists.freebsoft.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
 
 #: ../lib/wiking/db.py:39
 msgid "Edit"
 msgstr "Upravit"
 
-#: ../lib/wiking/db.py:39
+#: ../lib/wiking/db.py:40
 msgid "Modify the record"
 msgstr "Změnit záznam"
 
-#: ../lib/wiking/db.py:40 ../lib/wiking/db.py:541
+#: ../lib/wiking/db.py:41 ../lib/wiking/db.py:495
 msgid "Remove"
 msgstr "Smazat"
 
-#: ../lib/wiking/db.py:41
+#: ../lib/wiking/db.py:42
 msgid "Remove the record permanently"
 msgstr "Nevratně odstranit záznam"
 
-#: ../lib/wiking/db.py:42
+#: ../lib/wiking/db.py:43
 msgid "List"
 msgstr "Seznam"
 
-#: ../lib/wiking/db.py:43
+#: ../lib/wiking/db.py:44
 msgid "Back to the list of all records"
 msgstr "Zpět na výpis všech záznamů"
 
-#: ../lib/wiking/db.py:44
+#: ../lib/wiking/db.py:46
 msgid "New record"
 msgstr "Nový záznam"
 
-#: ../lib/wiking/db.py:45
+#: ../lib/wiking/db.py:47
 msgid "Create a new record"
 msgstr "Vytvořit nový záznam"
 
-#: ../lib/wiking/db.py:49
+#: ../lib/wiking/db.py:51
 msgid "This value already exists.  Enter a unique value."
 msgstr "Taková hodnota již existuje.  Zadejte unikátní hodnotu."
 
-#: ../lib/wiking/db.py:51
+#: ../lib/wiking/db.py:53
 msgid "Empty value.  This field is mandatory."
 msgstr "Prázdná hodnota.  Tato položka je povinná."
 
-#: ../lib/wiking/db.py:55
+#: ../lib/wiking/db.py:57
 msgid "New record was successfully inserted."
 msgstr "Nový záznam byl úspěšně vložen"
 
-#: ../lib/wiking/db.py:56
+#: ../lib/wiking/db.py:58
 msgid "The record was successfully updated."
 msgstr "Záznam byl úspěšně aktualizován."
 
-#: ../lib/wiking/db.py:57
+#: ../lib/wiking/db.py:59
 msgid "The record was deleted."
 msgstr "Záznam byl odstraněn."
 
@@ -61,59 +70,59 @@ msgstr "Záznam byl odstraněn."
 msgid "Integrity check failed."
 msgstr "Kontrola integrity dat selhala."
 
-#: ../lib/wiking/db.py:470
+#: ../lib/wiking/db.py:464
 msgid "Help"
 msgstr "Nápověda"
 
-#: ../lib/wiking/db.py:510
+#: ../lib/wiking/db.py:486
 msgid "new record"
 msgstr "nový záznam"
 
-#: ../lib/wiking/db.py:529
+#: ../lib/wiking/db.py:491
 msgid "edit form"
 msgstr "úpravy"
 
-#: ../lib/wiking/db.py:543
+#: ../lib/wiking/db.py:496
 msgid "removing"
 msgstr "mazání"
 
-#: ../lib/wiking/db.py:544
+#: ../lib/wiking/db.py:497
 msgid "Please, confirm removing the record permanently."
 msgstr "Potvrďte, prosím, nevratné smazání záznamu."
 
-#: ../lib/wiking/db.py:604
+#: ../lib/wiking/db.py:596
 msgid "An RSS channel is available for this section:"
 msgstr "K dispozici je také RSS kanál pro tuto sekci:"
 
-#: ../lib/wiking/db.py:608
+#: ../lib/wiking/db.py:600
 msgid "more about RSS"
 msgstr "více o RSS"
 
-#: ../lib/wiking/db.py:761
+#: ../lib/wiking/db.py:753
 msgid "No records."
 msgstr "Žádné záznamy"
 
-#: ../lib/wiking/db.py:768
+#: ../lib/wiking/db.py:760
 msgid "The item was published."
 msgstr "Položka byla zveřejněna."
 
-#: ../lib/wiking/db.py:769
+#: ../lib/wiking/db.py:761
 msgid "The item was unpublished."
 msgstr "Zveřejnění položky bylo zrušeno."
 
-#: ../lib/wiking/db.py:778
+#: ../lib/wiking/db.py:770
 msgid "Publish"
 msgstr "Zveřejnit"
 
-#: ../lib/wiking/db.py:782
+#: ../lib/wiking/db.py:774
 msgid "Make the item visible to website visitors"
 msgstr "Zpřístupnit položku návštěvníkům stránek"
 
-#: ../lib/wiking/db.py:783
+#: ../lib/wiking/db.py:775
 msgid "Unpublish"
 msgstr "Zneveřejnit"
 
-#: ../lib/wiking/db.py:786
+#: ../lib/wiking/db.py:778
 msgid "Make the item invisible to website visitors"
 msgstr "Učinit položku nedostupnou pro návštěvníky stránek"
 
@@ -121,123 +130,176 @@ msgstr "Učinit položku nedostupnou pro návštěvníky stránek"
 msgid "Language:"
 msgstr "Jazyk:"
 
-#: ../lib/wiking/export.py:69
+#: ../lib/wiking/export.py:71
 msgid "Wiking Management Interface"
 msgstr "Rozhraní správy obsahu Wiking"
 
-#: ../lib/wiking/export.py:100
+#: ../lib/wiking/export.py:102
 msgid "Content"
 msgstr "Obsah"
 
-#: ../lib/wiking/export.py:102 ../lib/wiking/export.py:133
-#: ../lib/wiking/export.py:137
+#: ../lib/wiking/export.py:104 ../lib/wiking/export.py:132
+#: ../lib/wiking/export.py:136
 msgid "Main navigation"
 msgstr "Hlavní navigace"
 
-#: ../lib/wiking/export.py:104 ../lib/wiking/export.py:148
+#: ../lib/wiking/export.py:106 ../lib/wiking/export.py:147
 msgid "Local navigation"
 msgstr "Navigace této sekce"
 
-#: ../lib/wiking/export.py:106
+#: ../lib/wiking/export.py:108
 msgid "Language selection"
 msgstr "Výběr jazyka"
 
-#: ../lib/wiking/export.py:110
+#: ../lib/wiking/export.py:112
 msgid "Jump in page"
 msgstr "Přejít ve stránce"
 
-#: ../lib/wiking/export.py:115
+#: ../lib/wiking/export.py:117
 msgid "You are here:"
 msgstr "Nacházíte se zde:"
 
-#: ../lib/wiking/export.py:146
+#: ../lib/wiking/export.py:145
 msgid "In this section:"
 msgstr "V této sekci:"
 
-#: ../lib/wiking/export.py:156
+#: ../lib/wiking/export.py:155
 msgid "Show panels"
 msgstr "Zobrazit panely"
 
-#: ../lib/wiking/export.py:157
+#: ../lib/wiking/export.py:156
 msgid "Hide panels"
 msgstr "Skrýt panely"
 
-#: ../lib/wiking/export.py:185 ../lib/wiking/util.py:66
-#: ../lib/wiking/util.py:324
-msgid "Login"
-msgstr "Přihlášení"
-
-#: ../lib/wiking/export.py:186 ../lib/wiking/util.py:306
+#: ../lib/wiking/export.py:189 ../lib/wiking/util.py:541
 msgid "log out"
 msgstr "odhlásit"
 
-#: ../lib/wiking/export.py:187
+#: ../lib/wiking/export.py:191 ../lib/wiking/util.py:543
+msgid "not logged"
+msgstr "nepřihlášen"
+
+#: ../lib/wiking/export.py:192 ../lib/wiking/util.py:544
+msgid "log in"
+msgstr "přihlásit"
+
+#: ../lib/wiking/export.py:194 ../lib/wiking/application.py:182
+msgid "Login"
+msgstr "Přihlášení"
+
+#: ../lib/wiking/export.py:196
 msgid "Leave the Management Interface"
 msgstr "Opustit rozhraní správy obsahu"
 
-#: ../lib/wiking/export.py:189
+#: ../lib/wiking/export.py:201
 msgid "Manage this site"
 msgstr "Správa obsahu"
 
-#: ../lib/wiking/export.py:190
+#: ../lib/wiking/export.py:202
 msgid "Enter the Wiking Management Interface"
 msgstr "Vstoupit do rozhraní správy obsahu Wiking"
 
-#: ../lib/wiking/export.py:193
+#: ../lib/wiking/export.py:206
 #, python-format
 msgid "Powered by %(wiking)s %(version)s"
 msgstr "Provozováno na %(wiking)s %(version)s"
 
-#: ../lib/wiking/export.py:201
+#: ../lib/wiking/export.py:215
 #, python-format
 msgid "Last change: %(date)s, %(user)s"
 msgstr "Poslední změna: %(date)s, %(user)s"
 
-#: ../lib/wiking/export.py:218
+#: ../lib/wiking/export.py:232
 msgid "US Government Section 508 Accessibility Guidelines."
 msgstr "Sekce 508 směrnic pro zpřístupnění vydaných vládou USA"
 
-#: ../lib/wiking/export.py:226
+#: ../lib/wiking/export.py:240
 msgid "This site conforms to the following standards:"
 msgstr "Tento portál odpovídá následujícím standardům:"
 
-#: ../lib/wiking/export.py:227
+#: ../lib/wiking/export.py:241
 msgid "This site can be viewed in ANY browser."
 msgstr "Tato stránka může být používána v LIBOVOLNÉM prohlížeči."
 
-#: ../lib/wiking/export.py:228
+#: ../lib/wiking/export.py:242
 msgid "Accessibility Statement"
 msgstr "Prohlášení o zpřístupnění"
 
-#: ../lib/wiking/export.py:229
+#: ../lib/wiking/export.py:243
 msgid "Contact:"
 msgstr "Kontakt:"
+
+#: ../lib/wiking/modules.py:336
+msgid "Enter your login name, please!"
+msgstr "Zadejte, prosím, vaše uživatelské jméno!"
+
+#: ../lib/wiking/modules.py:338
+msgid "Enter your password, please!"
+msgstr "Zadejte, prosím, vaše heslo!"
+
+#: ../lib/wiking/modules.py:342
+msgid "Invalid login!"
+msgstr "Neplatné přihlášení!"
+
+#: ../lib/wiking/modules.py:399
+msgid "Searching"
+msgstr "Vyhledávání"
+
+#: ../lib/wiking/modules.py:400
+msgid "Search results"
+msgstr "Výsledky vyhledávání"
+
+#: ../lib/wiking/modules.py:401
+msgid "Given search term doesn't contain any searchable term."
+msgstr ""
+"Zadaný vyhledávací výraz neobsahuje nic, podle čeho by bylo možno vyhledání "
+"provést."
+
+#: ../lib/wiking/modules.py:405
+msgid "Search words: "
+msgstr "Vyhledat slova: "
+
+#: ../lib/wiking/modules.py:406
+msgid "Search"
+msgstr "Vyhledat"
+
+#: ../lib/wiking/modules.py:463
+msgid "Nothing found."
+msgstr "Nic nebylo nalezeno."
+
+#: ../lib/wiking/modules.py:520
+msgid "The following modules were successfully reloaded:"
+msgstr "Byly úspěšně přenačteny následující moduly:"
+
+#: ../lib/wiking/modules.py:522
+msgid "Reload"
+msgstr "Přenačíst"
 
 #: ../lib/wiking/util.py:54
 msgid "Authentication required"
 msgstr "Akce vyžaduje přihlášení"
 
-#: ../lib/wiking/util.py:72
+#: ../lib/wiking/util.py:66
 msgid "Not Authorized"
 msgstr "Chyba autorizace"
 
-#: ../lib/wiking/util.py:75
+#: ../lib/wiking/util.py:69
 msgid "You don't have sufficient privilegs for this action."
 msgstr "Nemáte dostatečná práva pro provedení této akce."
 
-#: ../lib/wiking/util.py:94
+#: ../lib/wiking/util.py:88
 #, python-format
 msgid "Error %(code)d: %(name)s"
 msgstr "Chyba %(code)d: %(name)s"
 
-#: ../lib/wiking/util.py:102
+#: ../lib/wiking/util.py:96
 #, python-format
 msgid "The item '%s' does not exist on this server or cannot be served."
 msgstr ""
 "Požadovaná položka '%s' neexistuje na tomto serveru nebo nemůže být "
 "obsloužena."
 
-#: ../lib/wiking/util.py:104
+#: ../lib/wiking/util.py:98
 msgid ""
 "If you are sure the web address is correct, but are encountering this error, "
 "please send an e-mail to the webmaster."
@@ -245,34 +307,34 @@ msgstr ""
 "Pokud jste si jisti, že je zadaná adresa správná, a přesto dochází k této\n"
 "chybě, pošlete prosím e-mail správci těchto stránek."
 
-#: ../lib/wiking/util.py:107
+#: ../lib/wiking/util.py:101
 msgid "Thank you"
 msgstr "Děkujeme"
 
-#: ../lib/wiking/util.py:116
+#: ../lib/wiking/util.py:110
 #, python-format
 msgid "The item '%s' is not available."
 msgstr "Položka '%s' není dostupná."
 
-#: ../lib/wiking/util.py:117
+#: ../lib/wiking/util.py:111
 msgid "The item exists on the server, but it is not published."
 msgstr "Požadovaná položka na serveru existuje, ale není zveřejněna."
 
-#: ../lib/wiking/util.py:126
+#: ../lib/wiking/util.py:120
 #, python-format
 msgid ""
 "The resource '%s' is not available in either of the requested languages."
 msgstr "Požadovaná položka '%s' není dostupná v žádném z požadovaných jazyků."
 
-#: ../lib/wiking/util.py:128
+#: ../lib/wiking/util.py:122
 msgid "Your browser is configured to accept only the following languages:"
 msgstr "Váš prohlížeč je nastaven aby akceptoval následující jazyky:"
 
-#: ../lib/wiking/util.py:133
+#: ../lib/wiking/util.py:127
 msgid "The available variants are:"
 msgstr "Dostupné varianty jsou:"
 
-#: ../lib/wiking/util.py:137
+#: ../lib/wiking/util.py:131
 msgid ""
 "If you want to accept other languages permanently, setup the language "
 "preferences in your browser or contact your system administrator."
@@ -283,96 +345,34 @@ msgstr ""
 "Vašeho\n"
 "systému."
 
-#: ../lib/wiking/util.py:305
-msgid "Go to your profile"
-msgstr "Zobrazit uživatelský profil"
+#: ../lib/wiking/util.py:487
+msgid "not available"
+msgstr "nedostupné"
 
-#: ../lib/wiking/util.py:308
-msgid "not logged"
-msgstr "nepřihlášen"
+#: ../lib/wiking/util.py:495
+msgid "Actions:"
+msgstr "Akce:"
 
-#: ../lib/wiking/util.py:309
-msgid "log in"
+#: ../lib/wiking/util.py:567
+msgid "Login name"
+msgstr "Přihlašovací jméno"
+
+#: ../lib/wiking/util.py:570
+msgid "Password"
+msgstr "Heslo"
+
+#: ../lib/wiking/util.py:576
+msgid "Log in"
 msgstr "přihlásit"
 
-#: ../lib/wiking/util.py:317 ../lib/wiking/util.py:606
-msgid "New user registration"
-msgstr "Registrace nového uživatele"
-
-#: ../lib/wiking/util.py:320
+#: ../lib/wiking/application.py:176
 #, python-format
 msgid "Your password expires on %(date)s."
 msgstr "Platnost hesla vyprší %(date)s."
 
-#: ../lib/wiking/util.py:527
-msgid "not available"
-msgstr "nedostupné"
-
-#: ../lib/wiking/util.py:535
-msgid "Actions:"
-msgstr "Akce:"
-
-#: ../lib/wiking/util.py:596
-msgid "Login name"
-msgstr "Přihlašovací jméno"
-
-#: ../lib/wiking/util.py:599
-msgid "Password"
-msgstr "Heslo"
-
-#: ../lib/wiking/util.py:604
-msgid "Log in"
-msgstr "přihlásit"
-
-#: ../lib/wiking/util.py:607
-msgid "Forgot your password?"
-msgstr "Zapomenuté heslo?"
-
-#: ../lib/wiking/modules.py:338
-msgid "Enter your login name, please!"
-msgstr "Zadejte, prosím, vaše uživatelské jméno!"
-
-#: ../lib/wiking/modules.py:340
-msgid "Enter your password, please!"
-msgstr "Zadejte, prosím, vaše heslo!"
-
-#: ../lib/wiking/modules.py:344
-msgid "Invalid login!"
-msgstr "Neplatné přihlášení!"
-
-#: ../lib/wiking/modules.py:404
-msgid "Searching"
-msgstr "Vyhledávání"
-
-#: ../lib/wiking/modules.py:405
-msgid "Search results"
-msgstr "Výsledky vyhledávání"
-
-#: ../lib/wiking/modules.py:406
-msgid "Given search term doesn't contain any searchable term."
-msgstr ""
-"Zadaný vyhledávací výraz neobsahuje nic, podle čeho by bylo možno vyhledání "
-"provést."
-
-#: ../lib/wiking/modules.py:410
-msgid "Search words: "
-msgstr "Vyhledat slova: "
-
-#: ../lib/wiking/modules.py:411
-msgid "Search"
-msgstr "Vyhledat"
-
-#: ../lib/wiking/modules.py:467
-msgid "Nothing found."
-msgstr "Nic nebylo nalezeno."
-
-#: ../lib/wiking/modules.py:524
-msgid "The following modules were successfully reloaded:"
-msgstr "Byly úspěšně přenačteny následující moduly:"
-
-#: ../lib/wiking/modules.py:526
-msgid "Reload"
-msgstr "Přenačíst"
+#: ../lib/wiking/application.py:180
+msgid "New user registration"
+msgstr "Registrace nového uživatele"
 
 #~ msgid "Wiking Help System"
 #~ msgstr "Nápověda systému Wiking"
