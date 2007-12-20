@@ -84,9 +84,11 @@ CREATE OR REPLACE RULE pages_insert AS
   ON INSERT TO pages DO INSTEAD (
      INSERT INTO _mapping (identifier, parent, modname, private, owner, ord)
      VALUES (new.identifier, new.parent, new.modname, new.private, new.owner, new.ord);
+     UPDATE _mapping SET tree_order = _mapping_tree_order(mapping_id);
      INSERT INTO _pages (mapping_id, lang, title, description, published, _content, content)
-     VALUES ((SELECT mapping_id FROM _mapping WHERE identifier=new.identifier),
-             new.lang, new.title, new.description, new.published, new._content, new.content);
+     SELECT (SELECT mapping_id FROM _mapping WHERE identifier=new.identifier),
+             new.lang, new.title, new.description, new.published, new._content, new.content
+     WHERE new.title IS NOT NULL;
 );
 
 CREATE OR REPLACE RULE pages_update AS
@@ -110,7 +112,9 @@ CREATE OR REPLACE RULE pages_update AS
     INSERT INTO _pages (mapping_id, lang, title, description, published, _content, content) 
 	   SELECT old.mapping_id, new.lang, new.title, new.description, new.published,
 		  new._content, new.content
-           WHERE new.lang NOT IN (SELECT lang FROM _pages WHERE mapping_id=old.mapping_id);
+           WHERE new.lang NOT IN (SELECT lang FROM _pages WHERE mapping_id=old.mapping_id)
+	   	 AND (new.title IS NOT NULL OR new.description IS NOT NULL 
+                      OR new._content IS NOT NULL OR new.content IS NOT NULL);
 );
 
 CREATE OR REPLACE RULE pages_delete AS

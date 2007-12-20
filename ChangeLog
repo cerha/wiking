@@ -1,5 +1,7 @@
 2007-12-20  Tomas Cerha  <cerha@brailcom.org>
 
+	* sql/wiking.sql (pages_insert, pages_update): Rules fixed.
+
 	* translations/wiking.de.po (Module): Updated.
 
 	* translations/wiking.sk.po (Module): Updated.
