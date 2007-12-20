@@ -265,7 +265,7 @@ class Embeddable(object):
         return content
 
 
-class Session(PytisModule, Session):
+class Session(PytisModule, wiking.Session):
     class Spec(Specification):
         fields = [Field(_id) for _id in ('session_id', 'login', 'key', 'expire')]
 

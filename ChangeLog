@@ -1,8 +1,15 @@
 2007-12-20  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/cms/appl.py (Application): Refer to parent class as
+	`wiking.Application'.
+
+	* lib/wiking/cms/__init__.py: Import `configuration' instead of
+	`config'.
+
 	* lib/wiking/cms/cms.py (Pages._validate)
 	(Pages.action_translate): Use access methods to get request
 	params.
+	(Session): Refer to parent class as `wiking.Session'.
 
 	* lib/wiking/handler.py (Handler.__init__): Only use named options
 	as DB connection options.

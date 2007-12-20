@@ -28,7 +28,7 @@ import lcg
 
 _ = lcg.TranslatableTextFactory('wiking-cms')
 
-class CMSConfig(pc):
+class CMSConfiguration(pc):
     """CMS Specific Configuration."""
         
     class _Option_allow_login_panel(pc.Option):

@@ -35,7 +35,7 @@ class Roles(Roles):
     """Any user who has the authoring privileges."""
 
 
-class Application(CookieAuthentication, Application):
+class Application(CookieAuthentication, wiking.Application):
     
     _MAPPING = {'_doc': 'Documentation',
                 '_wmi': 'WikingManagementInterface',

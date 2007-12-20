@@ -18,10 +18,11 @@
 
 """Wiking Content Management System implemented as a Wiking application."""
 
+import wiking # Full references to wiking identifiers are sometimes necessary
 from wiking import *
 
-from config import *
-cfg.appl = CMSConfig()
+from configuration import *
+cfg.appl = CMSConfiguration()
 
 from appl import *
 from cms import *
