@@ -75,6 +75,8 @@ class RequestHandler(object):
         req_, uri = self._cached_uri
         if req is not req_:
             uri = self._mapped_uri()
+            if uri:
+                uri = req.uri_prefix() + uri
             self._cached_uri = (req, uri)
         return uri
 
@@ -407,15 +409,15 @@ class Search(Module, ActionHandler):
 
     class SearchForm(lcg.Content):
         
-        _SEARCH_FIELD_LABEL = _("Search words: ")
+        _SEARCH_FIELD_LABEL = _("Search words:")
         _SEARCH_BUTTON_LABEL = _("Search")
 
         def __init__(self, req):
             lcg.Content.__init__(self)
-            self._uri = req.uri
+            self._uri = req.uri()
 
         def _contents(self, generator):
-            return (generator.label(self._SEARCH_FIELD_LABEL, id='input'),
+            return (generator.label(self._SEARCH_FIELD_LABEL, id='input'), ' ',
                     generator.field(name='input', id='input', tabindex=0, size=20),
                     generator.br(),
                     generator.submit(self._SEARCH_BUTTON_LABEL, cls='submit'),)
