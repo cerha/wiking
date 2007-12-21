@@ -173,16 +173,19 @@ class Request(pytis.web.Request):
         self._req.send_http_header()
         self._req.status = apache.HTTP_INTERNAL_SERVER_ERROR
         from xml.sax.saxutils import escape
-        self._req.write("<html><head>"
-                        "<title>501 Internal Server Error</title>"
-                        "</head>"
-                        "<body><h1>Internal Server Error</h1>"
-                        "<p>The server was unable to complete your request. "
-                        "Please inform the server administrator, %s if the "
-                        "problem persists.</p>"
-                        "The error message was:"
-                        "<pre>" % self._req.server.server_admin + escape(message)+\
-                        "</pre></body></html>")
+        admin = cfg.webmaster_addr or self._req.server.server_admin
+        self._req.write('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">\n' 
+                        "<html>\n"
+                        "<head>\n"
+                        "<title>501 Internal Server Error</title>\n"
+                        "</head>\n"
+                        "<body>\n"
+                        "<h1>Internal Server Error</h1>\n"
+                        "<p>The server was unable to complete your request. Please inform the "
+                        "server administrator, "+ admin +" if the problem persists.</p>\n"
+                        "<p>The error message was:</p>\n<pre>\n"+ escape(message) +"</pre>\n"
+                        "</body>\n"
+                        "</html>\n")
         return apache.OK
 
     def redirect(self, uri, permanent=False):

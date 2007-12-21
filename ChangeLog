@@ -1,10 +1,12 @@
 2007-12-21  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/util.py (LoginDialog): Minor fix.
+
 	* lib/wiking/cms/cms.py: RSS support fixed.
 
 	* lib/wiking/cms/appl.py: `Request' API cleaning.
 
-	* lib/wiking/request.py: `Request' API cleaning.
+	* lib/wiking/request.py: `Request' API cleaning.  Error page improved.
 
 	* lib/wiking/handler.py: `Request' API cleaning.
 
