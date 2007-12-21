@@ -579,7 +579,7 @@ class LoginDialog(lcg.Content):
             self._uri = req.uri()
         self._registration_uri = req.application().registration_uri()
         self._reminder_uri = req.application().password_reminder_uri()
-        self._hidden = [(k, req.params(k)) for k in req.params() 
+        self._hidden = [(k, req.param(k)) for k in req.params() 
                         if k not in ('command', 'login', 'password', '__log_in')]
         credentials = req.credentials()
         if credentials:
