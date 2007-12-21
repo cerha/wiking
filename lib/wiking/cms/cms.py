@@ -258,7 +258,7 @@ class Embeddable(object):
         """Return a list of content instances extending the page content."""
         lang = page['lang'].value()
         content = [self._form(pw.ListView, req, condition=self._condition(req, lang=lang))]
-        if isinstance(self, RssModule) and not req.wmi and lang:
+        if not req.wmi and lang:
             rss_info = self._rss_info(req, lang)
             if rss_info:
                 content.append(rss_info)
@@ -782,6 +782,13 @@ class Pages(CMSModule):
         content.append(self._action_menu(req, record, actions=actions, separate=True))
         return self._document(req, content, record, resources=attachments, err=err, msg=msg)
 
+    def action_rss(self, req, record):
+        module = record['modname'].value() and self._module(record['modname'].value())
+        if module:
+            return module.action_rss(req)
+        else:
+            raise NotFound()
+    
     def action_preview(self, req, record, **kwargs):
         return self.action_view(req, record, preview=True, **kwargs)
     RIGHTS_preview = (Roles.AUTHOR, Roles.OWNER)
