@@ -254,9 +254,9 @@ class PytisModule(Module, ActionHandler):
             return None
         else:
             if req.wmi:
-                uri = '/_wmi/' + self.name()
+                uri = req.uri_prefix() + '/_wmi/' + self.name()
             else:
-                uri = '/' + '/'.join(req.path[:self._REFERER_PATH_LEVEL-1])
+                uri = req.uri_prefix() + '/' + '/'.join(req.path[:self._REFERER_PATH_LEVEL-1])
                 kwargs['separate'] = True
             return ActionMenu(uri, actions, self._referer, record, **kwargs)
 
@@ -311,8 +311,8 @@ class PytisModule(Module, ActionHandler):
         if action is not None:
             hidden += (('action', action),
                        ('submit', 'submit'))
-        return form(self._data, self._view, self._resolver, handler=req.uri, name=self.name(),
-                    hidden=hidden, **kwargs)
+        return form(self._data, self._view, self._resolver, handler=req.uri(),
+                    name=self.name(), hidden=hidden, **kwargs)
 
     def _layout(self, req, action):
         layout = self._LAYOUT.get(action)
@@ -589,7 +589,7 @@ class RssModule(object):
     def _real_title(self, req):
         def find(items):
             for item in items:
-                if item.id == req.uri:
+                if item.id() == req.path[0]:
                     return item.title()
                 else:
                     title = find(item.submenu())
@@ -602,7 +602,7 @@ class RssModule(object):
         if self._RSS_TITLE_COLUMN is None:
             return None
         return lcg.p(_("An RSS channel is available for this section:"), ' ',
-                     lcg.link(req.uri +'.'+ lang +'.rss',
+                     lcg.link(req.uri() +'.'+ lang +'.rss',
                               lcg.join((lcg.Title('/'.join(req.path)), 'RSS')),
                               type='application/rss+xml'), " (",
                      lcg.link('_doc/rss', _("more about RSS")), ")")

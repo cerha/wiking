@@ -1,3 +1,21 @@
+2007-12-21  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/cms/cms.py: RSS support fixed.
+
+	* lib/wiking/cms/appl.py: `Request' API cleaning.
+
+	* lib/wiking/request.py: `Request' API cleaning.
+
+	* lib/wiking/handler.py: `Request' API cleaning.
+
+	* lib/wiking/modules.py: `Request' API cleaning. 
+
+	* lib/wiking/export.py: Use URI prefix where needed.
+
+	* lib/wiking/db.py: `Request' API cleaning.
+
+	* lib/wiking/application.py: `Request' API cleaning.
+
 2007-12-20  Tomas Cerha  <cerha@brailcom.org>
 
 	* sql/wiking.sql (pages_insert, pages_update): Rules fixed.

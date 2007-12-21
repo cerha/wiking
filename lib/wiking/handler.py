@@ -128,7 +128,7 @@ class ModPythonHandler(object):
                         filename)
             stats = pstats.Stats(filename)
             stats.sort_stats('cumulative')
-            debug("Profile statistics for:", req.uri)
+            debug("Profile statistics for:", req.uri())
             stdout = sys.stdout
             sys.stdout = sys.stderr
             try:
@@ -142,7 +142,7 @@ class ModPythonHandler(object):
             return handler.handle(req)
         #result, t1, t2 = timeit(handler.handle, req)
         #log(OPR, "Request processed in %.1f ms (%.1f ms wall time):" % \
-        #    (1000*t1, 1000*t2), req.uri)
+        #    (1000*t1, 1000*t2), req.uri())
         #return result
 
 handler = ModPythonHandler()

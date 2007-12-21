@@ -54,8 +54,8 @@ class Request(pytis.web.Request):
         # Store params and options in real dictionaries (not mod_python's mp_table).
         self._options = self._init_options() 
         self._params = self._init_params()
-        self.uri = uri = self._init_uri()
-        self.path = [item for item in uri.split('/')[1:] if item]
+        self._uri = uri = unicode(req.uri, encoding)
+        self.path = self._init_path(uri)
 
     def _init_options(self):
         options = self._req.get_options()
@@ -72,8 +72,8 @@ class Request(pytis.web.Request):
         fields = mod_python.util.FieldStorage(self._req)
         return dict([(k, init_value(fields[k])) for k in fields.keys()])
 
-    def _init_uri(self):
-        return unicode(self._req.uri, self._encoding)
+    def _init_path(self, uri):
+        return [item for item in uri.split('/')[1:] if item]
         
     # Methods implementing the pytis Request interface:
     
@@ -104,6 +104,9 @@ class Request(pytis.web.Request):
 
     # Additional methods:
 
+    def uri(self):
+        return self._uri
+        
     def set_param(self, name, value):
         self._params[name] = value
         
@@ -236,19 +239,22 @@ class WikingRequest(Request):
         self._user = self._UNDEFINED
         return params
 
-    def _init_uri(self):
-        uri = super(WikingRequest, self)._init_uri()
+    def _init_path(self, uri):
         if uri.endswith('.rss'):
             self._params['action'] = 'rss'
             uri = uri[:-4]
             if len(uri) > 3 and uri[-3] == '.' and uri[-2:].isalpha():
                 self._params['lang'] = uri[-2:]
                 uri = uri[:-3]
-        if self._options.has_key('StripRequestPath'):
-            path = self._options['StripRequestPath']
+        if self._options.has_key('PrefixPath'):
+            path = self._options['PrefixPath']
+            x = uri
             if uri.startswith(path):
                 uri = uri[len(path):]
-        return uri
+        return super(WikingRequest, self)._init_path(uri)
+
+    def uri_prefix(self):
+        return self._options.get('PrefixPath', '')
         
     def show_panels(self):
         return self._show_panels

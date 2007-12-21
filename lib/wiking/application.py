@@ -235,7 +235,7 @@ class Application(Module):
             user = req.user()
         except:
             user = None
-        req_info = (("URI", req.uri),
+        req_info = (("URI", req.uri()),
                     ("Remote host", req.remote_host()),
                     ("Remote user", user and user.login() or ''),
                     ("HTTP referrer", req.header('Referer')),

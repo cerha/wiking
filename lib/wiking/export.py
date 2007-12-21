@@ -61,7 +61,7 @@ class Exporter(lcg.HtmlExporter):
             return None
     
     def _node_uri(self, context, node, lang=None):
-        return context.generator().uri('/'+ node.id(), setlang=lang)
+        return context.generator().uri(node.state().prefix +'/'+ node.id(), setlang=lang)
     
     def _site_title(self, node, full=False):
         state = node.state()

@@ -86,7 +86,7 @@ class Application(CookieAuthentication, wiking.Application):
         return password == user.data()['password'].value()
 
     def authorize(self, req, module, action=None, record=None, **kwargs):
-        if req.uri.startswith('/_registration'):
+        if req.path[0] == '_registration':
             # This hack redirects action authorization back to Registration after redirection to Users.
             module = Registration
         if action and hasattr(module, 'RIGHTS_'+action):

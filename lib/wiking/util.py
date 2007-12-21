@@ -100,7 +100,7 @@ class NotFound(HttpError):
     
     def message(self, req):
         msg = (_("The item '%s' does not exist on this server or cannot be "
-                 "served.", req.uri),
+                 "served.", req.uri()),
                _("If you are sure the web address is correct, "
                  "but are encountering this error, please send "
                  "an e-mail to the webmaster."),
@@ -113,7 +113,7 @@ class Forbidden(HttpError):
     ERROR_CODE = 403
     
     def message(self, req):
-        msg = (_("The item '%s' is not available.", req.uri),
+        msg = (_("The item '%s' is not available.", req.uri()),
                _("The item exists on the server, but it is not published."))
         return lcg.coerce([lcg.p(p) for p in msg])
 
@@ -124,14 +124,14 @@ class NotAcceptable(HttpError):
     
     def message(self, req):
         msg = (_("The resource '%s' is not available in either of "
-                 "the requested languages.", req.uri),
+                 "the requested languages.", req.uri()),
                (_("Your browser is configured to accept only the "
                   "following languages:"), ' ',
                 lcg.concat([lcg.language_name(l) for l in
                             req.prefered_languages()], separator=', ')))
         if self.args:
             msg += ((_("The available variants are:"), ' ',
-                     lcg.join([lcg.link("%s?setlang=%s" % (req.uri, l),
+                     lcg.join([lcg.link("%s?setlang=%s" % (req.uri(), l),
                                         label=lcg.language_name(l),)
                                for l in self.args[0]], separator=', ')),
                     _("If you want to accept other languages permanently, "
@@ -382,6 +382,7 @@ class Document(object):
         parent_id = '/'.join(req.path[:-1])
         state = WikingNode.State(user=req.user(),
                                  wmi=req.wmi,
+                                 prefix=req.uri_prefix(),
                                  show_panels=req.show_panels(),
                                  server_hostname=req.server_hostname())
         lang = self._lang or req.prefered_language(raise_error=False) or 'en'
@@ -440,9 +441,11 @@ class Document(object):
 class WikingNode(lcg.ContentNode):
 
     class State(object):
-        def __init__(self, user, wmi, show_panels, server_hostname):
+        # TODO: Remove this and pass request to exporter context.
+        def __init__(self, user, wmi, prefix, show_panels, server_hostname):
             self.user = user
             self.wmi = wmi
+            self.prefix = prefix
             self.show_panels = show_panels
             self.server_hostname = server_hostname
     
@@ -571,9 +574,9 @@ class LoginDialog(lcg.Content):
     def __init__(self, req):
         super(LoginDialog, self).__init__()
         if not req.https() and cfg.force_https_login:
-            self._uri = req.server_uri(force_https=True) + req.uri
+            self._uri = req.server_uri(force_https=True) + req.uri()
         else:
-            self._uri = req.uri
+            self._uri = req.uri()
         self._registration_uri = req.application().registration_uri()
         self._reminder_uri = req.application().password_reminder_uri()
         self._hidden = [(k, req.params(k)) for k in req.params() 
