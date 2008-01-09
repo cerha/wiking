@@ -1,4 +1,4 @@
-# Copyright (C) 2006, 2007 Brailcom, o.p.s.
+# Copyright (C) 2006, 2007, 2008 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -321,7 +321,7 @@ class LoginPanel(Panel):
             return content
         
     def __init__(self, req):
-        super(LoginPanel, self).__init__('login', _("Login"), self.PanelContent(req))
+        super(LoginPanel, self).__init__('login', _("Login Panel"), self.PanelContent(req))
 
 
 class Document(object):
