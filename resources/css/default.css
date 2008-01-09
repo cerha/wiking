@@ -284,10 +284,12 @@ form.login-form {
     border-width: 1px 0;
     padding: .8em 2em;
     margin: 0 2.5em 1em 0;
-    float: left;
 }
 form.login-form input {
     margin-bottom: 0.5em;
+}
+form.login-form ul {
+    margin-top: 1em;
 }
 form.login-form label {
     font-weight: bold;
