@@ -595,7 +595,7 @@ class LoginDialog(lcg.Content):
 
     def export(self, exporter):
         g = exporter.generator()
-        controls = (
+        content = (
             g.label(_("Login name")+':', id='login') + g.br(),
             g.field(name='login', value=self._login, id='login', tabindex=0, size=14),
             g.br(), 
@@ -608,10 +608,9 @@ class LoginDialog(lcg.Content):
         links = [g.link(label, uri) for label, uri in
                  ((_("New user registration"), self._registration_uri),
                   (_("Forgot your password?"), self._reminder_uri)) if uri]
-        result = g.form(controls, method='POST', action=self._uri, cls='login-form')
         if links:
-            result += g.list(links)
-        return result
+            content += (g.list(links),)
+        return g.form(content, method='POST', action=self._uri, cls='login-form')
     
 
     
