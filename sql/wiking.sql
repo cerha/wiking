@@ -1,5 +1,12 @@
 -- Wiking database creation script. --
 
+CREATE TABLE languages (
+	lang_id serial PRIMARY KEY,
+	lang char(2) UNIQUE NOT NULL
+);
+
+-------------------------------------------------------------------------------
+
 CREATE TABLE users (
 	uid serial PRIMARY KEY,
 	login varchar(32) UNIQUE NOT NULL,
@@ -25,13 +32,6 @@ CREATE TABLE session (
        key text,
        expire timestamp,
        UNIQUE (login, key)
-);
-
--------------------------------------------------------------------------------
-
-CREATE TABLE languages (
-	lang_id serial PRIMARY KEY,
-	lang char(2) UNIQUE NOT NULL
 );
 
 -------------------------------------------------------------------------------
@@ -199,10 +199,10 @@ CREATE TABLE _panels (
 );
 
 CREATE OR REPLACE VIEW panels AS 
-SELECT _panels.*, _mapping.modname, _mapping.identifier, _mapping.private, _menu.title as mtitle
+SELECT _panels.*, _mapping.modname, _mapping.identifier, _mapping.private, _pages.title as mtitle
 FROM _panels 
      LEFT OUTER JOIN _mapping USING (mapping_id) 
-     LEFT OUTER JOIN _menu USING (mapping_id, lang);
+     LEFT OUTER JOIN _pages USING (mapping_id, lang);
 
 CREATE OR REPLACE RULE panels_insert AS
   ON INSERT TO panels DO INSTEAD (
