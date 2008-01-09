@@ -2,12 +2,10 @@
 
 INSERT INTO languages (lang) VALUES ('en');
 
-INSERT INTO menu (lang, title, published, identifier, modname, private, ord) VALUES
- ('en', 'Welcome', 't', 'index', 'Pages', 'f', 1);
-
-UPDATE pages SET _content='Your new Wiking site has been succesfully set up.\n\n' ||
-		          'Enter the [/_wmi Wiking Management Interface] to manage the content.'
-WHERE mapping_id=1 AND lang='en';
+INSERT INTO pages (lang, title, published, identifier, private, ord, _content) VALUES
+ ('en', 'Welcome', 't', 'index', 'f', 1,
+  'Your new Wiking site has been succesfully set up.\n\n' ||
+  'Enter the [/_wmi Wiking Management Interface] to manage the content.');
 UPDATE pages SET content=_content;
 
 --INSERT INTO themes ("name") VALUES ('Default');
@@ -15,9 +13,8 @@ INSERT INTO config (site_title) VALUES ('Wiking site');
 
 INSERT INTO stylesheets (identifier) VALUES ('default.css');
 
-INSERT INTO users (login, password, firstname, surname, nickname, user_,
-                   email, enabled, admin)
-VALUES ('admin', 'wiking', 'Wiking', 'Admin', 'Admin', 'Admin', '-', 't', 't');
+INSERT INTO users (login, password, firstname, surname, nickname, user_, email, role)
+VALUES ('admin', 'wiking', 'Wiking', 'Admin', 'Admin', 'Admin', '-', 'admn');
 
 INSERT INTO themes ("name", foreground, background, border, heading_fg, heading_bg, heading_line,
     frame_fg, frame_bg, frame_border, link, link_visited, link_hover, meta_fg, meta_bg, help,
