@@ -1,12 +1,12 @@
 # Wiking translations.
-# Copyright (C) 2007 Brailcom, o.p.s.
+# Copyright (C) 2007, 2008 Brailcom, o.p.s.
 # This file is distributed under the same license as the Wiking package.
 msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-12-20 09:31+0100\n"
-"PO-Revision-Date: 2007-12-20 09:52+0100\n"
+"POT-Creation-Date: 2008-01-09 13:25+0100\n"
+"PO-Revision-Date: 2008-01-09 13:28+0100\n"
 "Last-Translator: Pavel Vohnout <vohnout@officehouse.cz>\n"
 "Language-Team: German <wiking@lists.freebsoft.org>\n"
 "MIME-Version: 1.0\n"
@@ -21,7 +21,7 @@ msgstr "Korrektur "
 msgid "Modify the record"
 msgstr "Eintrag ändern"
 
-#: ../lib/wiking/db.py:40 ../lib/wiking/db.py:541
+#: ../lib/wiking/db.py:40 ../lib/wiking/db.py:552
 msgid "Remove"
 msgstr "Löschen"
 
@@ -70,59 +70,59 @@ msgstr "Eintrag wurde gelöscht."
 msgid "Integrity check failed."
 msgstr "Kotrolle der Datenintegrität fehlgeschlagen."
 
-#: ../lib/wiking/db.py:470
+#: ../lib/wiking/db.py:481
 msgid "Help"
 msgstr "Hilfe"
 
-#: ../lib/wiking/db.py:510
+#: ../lib/wiking/db.py:521
 msgid "new record"
 msgstr "Neuer Eintrag"
 
-#: ../lib/wiking/db.py:529
+#: ../lib/wiking/db.py:540
 msgid "edit form"
 msgstr "Korrektur "
 
-#: ../lib/wiking/db.py:543
+#: ../lib/wiking/db.py:554
 msgid "removing"
 msgstr "Löschen"
 
-#: ../lib/wiking/db.py:544
+#: ../lib/wiking/db.py:555
 msgid "Please, confirm removing the record permanently."
 msgstr "Bestätigen Sie bitte, dass der Eintrag endgültig gelöscht werden soll."
 
-#: ../lib/wiking/db.py:604
+#: ../lib/wiking/db.py:615
 msgid "An RSS channel is available for this section:"
 msgstr "Für diese Sektion steht auch der RSS-Kanal zur Verfügung:"
 
-#: ../lib/wiking/db.py:608
+#: ../lib/wiking/db.py:619
 msgid "more about RSS"
 msgstr "Mehr über RSS"
 
-#: ../lib/wiking/db.py:761
+#: ../lib/wiking/db.py:772
 msgid "No records."
 msgstr "Kein Eintrag"
 
-#: ../lib/wiking/db.py:768
+#: ../lib/wiking/db.py:779
 msgid "The item was published."
 msgstr "Posten wurde veröffentlicht."
 
-#: ../lib/wiking/db.py:769
+#: ../lib/wiking/db.py:780
 msgid "The item was unpublished."
 msgstr "Veröffentlichung des Postens wurde storniert."
 
-#: ../lib/wiking/db.py:778
+#: ../lib/wiking/db.py:789
 msgid "Publish"
 msgstr "Veröffentlichen"
 
-#: ../lib/wiking/db.py:782
+#: ../lib/wiking/db.py:793
 msgid "Make the item visible to website visitors"
 msgstr "Diesen Posten für Besucher der Seite freigeben."
 
-#: ../lib/wiking/db.py:783
+#: ../lib/wiking/db.py:794
 msgid "Unpublish"
 msgstr "Veröffentlichen"
 
-#: ../lib/wiking/db.py:786
+#: ../lib/wiking/db.py:797
 msgid "Make the item invisible to website visitors"
 msgstr "Posten für Besucher der Seite sperren."
 
@@ -172,7 +172,6 @@ msgid "Hide panels"
 msgstr "Fenster ausblenden"
 
 #: ../lib/wiking/export.py:185 ../lib/wiking/util.py:66
-#: ../lib/wiking/util.py:324
 msgid "Login"
 msgstr "Anmeldung"
 
@@ -309,7 +308,7 @@ msgstr "abgemeldet"
 msgid "log in"
 msgstr "Anmelden"
 
-#: ../lib/wiking/util.py:317 ../lib/wiking/util.py:606
+#: ../lib/wiking/util.py:317 ../lib/wiking/util.py:609
 msgid "New user registration"
 msgstr "Registrierung eines neuen Benutzers"
 
@@ -318,73 +317,78 @@ msgstr "Registrierung eines neuen Benutzers"
 msgid "Your password expires on %(date)s."
 msgstr "Gültigkeit des Passworts läuft ab %(date)s."
 
-#: ../lib/wiking/util.py:527
+#: ../lib/wiking/util.py:324
+#, fuzzy
+msgid "Login Panel"
+msgstr "Kennwort"
+
+#: ../lib/wiking/util.py:530
 msgid "not available"
 msgstr "nicht verfügbar"
 
-#: ../lib/wiking/util.py:535
+#: ../lib/wiking/util.py:538
 msgid "Actions:"
 msgstr "Aktion:"
 
-#: ../lib/wiking/util.py:596
+#: ../lib/wiking/util.py:599
 msgid "Login name"
 msgstr "Kennwort"
 
-#: ../lib/wiking/util.py:599
+#: ../lib/wiking/util.py:602
 msgid "Password"
 msgstr "Passwort"
 
-#: ../lib/wiking/util.py:604
+#: ../lib/wiking/util.py:607
 msgid "Log in"
 msgstr "Anmelden"
 
-#: ../lib/wiking/util.py:607
+#: ../lib/wiking/util.py:610
 #, fuzzy
 msgid "Forgot your password?"
 msgstr "Geben Sie bitte Ihr Passwort ein!"
 
-#: ../lib/wiking/modules.py:338
+#: ../lib/wiking/modules.py:340
 msgid "Enter your login name, please!"
 msgstr "Geben Sie bitte Ihren Benutzernamen ein!"
 
-#: ../lib/wiking/modules.py:340
+#: ../lib/wiking/modules.py:342
 msgid "Enter your password, please!"
 msgstr "Geben Sie bitte Ihr Passwort ein!"
 
-#: ../lib/wiking/modules.py:344
+#: ../lib/wiking/modules.py:346
 msgid "Invalid login!"
 msgstr ""
 "Der eingegebene Suchbegriff enthält nichts, wonach die Suche möglich ist. "
 
-#: ../lib/wiking/modules.py:404
+#: ../lib/wiking/modules.py:406
 msgid "Searching"
 msgstr "Suche"
 
-#: ../lib/wiking/modules.py:405
+#: ../lib/wiking/modules.py:407
 msgid "Search results"
 msgstr "Suchergebnis"
 
-#: ../lib/wiking/modules.py:406
+#: ../lib/wiking/modules.py:408
 msgid "Given search term doesn't contain any searchable term."
 msgstr ""
 "Der eingegebene Suchbegriff enthält nichts, wonach die Suche möglich ist. "
 
-#: ../lib/wiking/modules.py:410
-msgid "Search words: "
-msgstr "Wörter suchen"
+#: ../lib/wiking/modules.py:412
+msgid "Search words:"
+msgstr "Wörter suchen:"
 
-#: ../lib/wiking/modules.py:411
+#: ../lib/wiking/modules.py:413
 msgid "Search"
 msgstr "Wörter suchen"
 
-#: ../lib/wiking/modules.py:467
+#: ../lib/wiking/modules.py:469
 msgid "Nothing found."
-msgstr "Kein Ergebnis"
+msgstr "Kein Ergebnis."
 
-#: ../lib/wiking/modules.py:524
+#: ../lib/wiking/modules.py:526
 msgid "The following modules were successfully reloaded:"
 msgstr "Folgende Module wurden erfolgreich eingelesen:"
 
-#: ../lib/wiking/modules.py:526
+#: ../lib/wiking/modules.py:528
 msgid "Reload"
 msgstr "Einlesen"
