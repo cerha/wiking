@@ -1,3 +1,23 @@
+2008-01-09  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/util.py (LoginDialog.export): Display links within
+	the dialog.
+
+	* lib/wiking/cms/cms.py (Pages.action_list): New method to emulate
+	list action on the included extension module records.
+	(Attachments._link_provider): Allow viewing the attachment file in
+	WMI.
+
+	* resources/css/default.css: Login dialog MSIE fixes.
+
+	* sql/init.sql: Respect the new schema.
+
+	* sql/wiking.sql: Order fixed.  References to inexisting tables fixed.
+
+2008-01-07  Tomas Cerha  <cerha@brailcom.org>
+
+	* resources/css/default.css: Don't float the login panel.
+
 2007-12-21  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/util.py (LoginDialog): Minor fix.
