@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2006, 2007 Brailcom, o.p.s.
+# Copyright (C) 2006, 2007, 2008 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -788,7 +788,15 @@ class Pages(CMSModule):
             return module.action_rss(req)
         else:
             raise NotFound()
-    
+        
+    def action_list(self, req, record=None, msg=None):
+        if record is None:
+            return super(Pages, self).action_list(req, msg=msg)
+        elif record['modname'].value():
+            return self.action_view(req, record, msg=msg)
+        else:
+            raise NotFound()
+        
     def action_preview(self, req, record, **kwargs):
         return self.action_view(req, record, preview=True, **kwargs)
     RIGHTS_preview = (Roles.AUTHOR, Roles.OWNER)
@@ -987,6 +995,11 @@ class Attachments(StoredFileModule, CMSModule):
     RIGHTS_update = (Roles.AUTHOR, Roles.OWNER)
     RIGHTS_delete = (Roles.AUTHOR, Roles.OWNER)
     
+    def _link_provider(self, req, row, cid, **kwargs):
+        if cid == 'file':
+            return make_uri(self._base_uri(req) +'/'+ row['filename'].export(), download=1)
+        return super(Attachments, self)._link_provider(req, row, cid, **kwargs)
+
     def _redirect_to_page(self, req, record):
         return req.redirect('/_wmi/Pages/' + record['identifier'].value())
         #m = self._module('Pages')
