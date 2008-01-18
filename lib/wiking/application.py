@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2006, 2007 Brailcom, o.p.s.
+# Copyright (C) 2006-2008 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -179,7 +179,12 @@ class Application(Module):
     def password_reminder_uri(self):
         """Return the forgotten password link URI or None if password reminder not implemented."""
         return None
-        
+
+    def password_change_uri(self):
+        """Return the change password URI or None if the link should not appear in login panel."""
+        return None
+
+    
     def languages(self):
         """Return the list of available languages as the corresponding alpha-2 language codes.
         

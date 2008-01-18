@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-01-09 13:25+0100\n"
-"PO-Revision-Date: 2008-01-09 13:28+0100\n"
+"POT-Creation-Date: 2008-01-18 12:46+0100\n"
+"PO-Revision-Date: 2008-01-18 12:48+0100\n"
 "Last-Translator: Pavel Vohnout <vohnout@officehouse.cz>\n"
 "Language-Team: German <wiking@lists.freebsoft.org>\n"
 "MIME-Version: 1.0\n"
@@ -21,7 +21,7 @@ msgstr "Korrektur "
 msgid "Modify the record"
 msgstr "Eintrag ändern"
 
-#: ../lib/wiking/db.py:40 ../lib/wiking/db.py:552
+#: ../lib/wiking/db.py:40 ../lib/wiking/db.py:555
 msgid "Remove"
 msgstr "Löschen"
 
@@ -70,59 +70,59 @@ msgstr "Eintrag wurde gelöscht."
 msgid "Integrity check failed."
 msgstr "Kotrolle der Datenintegrität fehlgeschlagen."
 
-#: ../lib/wiking/db.py:481
+#: ../lib/wiking/db.py:484 ../lib/wiking/util.py:549
 msgid "Help"
 msgstr "Hilfe"
 
-#: ../lib/wiking/db.py:521
+#: ../lib/wiking/db.py:524
 msgid "new record"
 msgstr "Neuer Eintrag"
 
-#: ../lib/wiking/db.py:540
+#: ../lib/wiking/db.py:543
 msgid "edit form"
 msgstr "Korrektur "
 
-#: ../lib/wiking/db.py:554
+#: ../lib/wiking/db.py:556
 msgid "removing"
 msgstr "Löschen"
 
-#: ../lib/wiking/db.py:555
+#: ../lib/wiking/db.py:557
 msgid "Please, confirm removing the record permanently."
 msgstr "Bestätigen Sie bitte, dass der Eintrag endgültig gelöscht werden soll."
 
-#: ../lib/wiking/db.py:615
+#: ../lib/wiking/db.py:617
 msgid "An RSS channel is available for this section:"
 msgstr "Für diese Sektion steht auch der RSS-Kanal zur Verfügung:"
 
-#: ../lib/wiking/db.py:619
+#: ../lib/wiking/db.py:621
 msgid "more about RSS"
 msgstr "Mehr über RSS"
 
-#: ../lib/wiking/db.py:772
+#: ../lib/wiking/db.py:774
 msgid "No records."
 msgstr "Kein Eintrag"
 
-#: ../lib/wiking/db.py:779
+#: ../lib/wiking/db.py:781
 msgid "The item was published."
 msgstr "Posten wurde veröffentlicht."
 
-#: ../lib/wiking/db.py:780
+#: ../lib/wiking/db.py:782
 msgid "The item was unpublished."
 msgstr "Veröffentlichung des Postens wurde storniert."
 
-#: ../lib/wiking/db.py:789
+#: ../lib/wiking/db.py:791
 msgid "Publish"
 msgstr "Veröffentlichen"
 
-#: ../lib/wiking/db.py:793
+#: ../lib/wiking/db.py:795
 msgid "Make the item visible to website visitors"
 msgstr "Diesen Posten für Besucher der Seite freigeben."
 
-#: ../lib/wiking/db.py:794
+#: ../lib/wiking/db.py:796
 msgid "Unpublish"
 msgstr "Veröffentlichen"
 
-#: ../lib/wiking/db.py:797
+#: ../lib/wiking/db.py:799
 msgid "Make the item invisible to website visitors"
 msgstr "Posten für Besucher der Seite sperren."
 
@@ -308,41 +308,45 @@ msgstr "abgemeldet"
 msgid "log in"
 msgstr "Anmelden"
 
-#: ../lib/wiking/util.py:317 ../lib/wiking/util.py:609
+#: ../lib/wiking/util.py:317 ../lib/wiking/util.py:621
 msgid "New user registration"
 msgstr "Registrierung eines neuen Benutzers"
 
-#: ../lib/wiking/util.py:320
+#: ../lib/wiking/util.py:321
 #, python-format
 msgid "Your password expires on %(date)s."
 msgstr "Gültigkeit des Passworts läuft ab %(date)s."
 
 #: ../lib/wiking/util.py:324
+msgid "Change your password"
+msgstr "Änderung des Passworts"
+
+#: ../lib/wiking/util.py:328
 #, fuzzy
 msgid "Login Panel"
 msgstr "Kennwort"
 
-#: ../lib/wiking/util.py:530
+#: ../lib/wiking/util.py:541
 msgid "not available"
 msgstr "nicht verfügbar"
 
-#: ../lib/wiking/util.py:538
+#: ../lib/wiking/util.py:550
 msgid "Actions:"
 msgstr "Aktion:"
 
-#: ../lib/wiking/util.py:599
+#: ../lib/wiking/util.py:611
 msgid "Login name"
 msgstr "Kennwort"
 
-#: ../lib/wiking/util.py:602
+#: ../lib/wiking/util.py:614
 msgid "Password"
 msgstr "Passwort"
 
-#: ../lib/wiking/util.py:607
+#: ../lib/wiking/util.py:619
 msgid "Log in"
 msgstr "Anmelden"
 
-#: ../lib/wiking/util.py:610
+#: ../lib/wiking/util.py:622
 #, fuzzy
 msgid "Forgot your password?"
 msgstr "Geben Sie bitte Ihr Passwort ein!"

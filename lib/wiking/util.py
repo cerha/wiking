@@ -315,9 +315,13 @@ class LoginPanel(Panel):
                 uri = self._req.application().registration_uri()
                 if uri:
                     content += g.br() +'\n'+ g.link(_("New user registration"), uri)
-            elif user.passwd_expiration():
-                date = lcg.LocalizableDateTime(str(user.passwd_expiration()))
-                content += g.br() +'\n'+ _("Your password expires on %(date)s.", date=date)
+            else:
+                if user.passwd_expiration():
+                    date = lcg.LocalizableDateTime(str(user.passwd_expiration()))
+                    content += g.br() +'\n'+ _("Your password expires on %(date)s.", date=date)
+                uri = self._req.application().password_change_uri()
+                if uri:
+                    content += g.br() +'\n'+ g.link(_("Change your password"), uri)
             return content
         
     def __init__(self, req):

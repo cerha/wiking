@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-01-09 13:25+0100\n"
-"PO-Revision-Date: 2008-01-09 13:30+0100\n"
+"POT-Creation-Date: 2008-01-18 12:46+0100\n"
+"PO-Revision-Date: 2008-01-18 12:55+0100\n"
 "Last-Translator: kuklincova <kuklincova@officehouse.cz>\n"
 "Language-Team: Slovak <wiking@lists.freebsoft.org>\n"
 "MIME-Version: 1.0\n"
@@ -21,7 +21,7 @@ msgstr "Upraviť"
 msgid "Modify the record"
 msgstr "Zmeniť záznam"
 
-#: ../lib/wiking/db.py:40 ../lib/wiking/db.py:552
+#: ../lib/wiking/db.py:40 ../lib/wiking/db.py:555
 msgid "Remove"
 msgstr "Zmazať"
 
@@ -69,59 +69,59 @@ msgstr "Záznam bol odstránený."
 msgid "Integrity check failed."
 msgstr "Kontrola integrity dát zlyhala."
 
-#: ../lib/wiking/db.py:481
+#: ../lib/wiking/db.py:484 ../lib/wiking/util.py:549
 msgid "Help"
 msgstr "Nápoveda"
 
-#: ../lib/wiking/db.py:521
+#: ../lib/wiking/db.py:524
 msgid "new record"
 msgstr "nový záznam"
 
-#: ../lib/wiking/db.py:540
+#: ../lib/wiking/db.py:543
 msgid "edit form"
 msgstr "úpravy"
 
-#: ../lib/wiking/db.py:554
+#: ../lib/wiking/db.py:556
 msgid "removing"
 msgstr "mazanie"
 
-#: ../lib/wiking/db.py:555
+#: ../lib/wiking/db.py:557
 msgid "Please, confirm removing the record permanently."
 msgstr "Potvrďte, prosím, nenávratné zmazanie záznamu."
 
-#: ../lib/wiking/db.py:615
+#: ../lib/wiking/db.py:617
 msgid "An RSS channel is available for this section:"
 msgstr "K dispozícii je tiež RSS kanál pre túto sekciu:"
 
-#: ../lib/wiking/db.py:619
+#: ../lib/wiking/db.py:621
 msgid "more about RSS"
 msgstr "viac o RSS"
 
-#: ../lib/wiking/db.py:772
+#: ../lib/wiking/db.py:774
 msgid "No records."
 msgstr "Žiadne záznamy"
 
-#: ../lib/wiking/db.py:779
+#: ../lib/wiking/db.py:781
 msgid "The item was published."
 msgstr "Položka bola zverejnená."
 
-#: ../lib/wiking/db.py:780
+#: ../lib/wiking/db.py:782
 msgid "The item was unpublished."
 msgstr "Zverejnenie položky bolo zrušené."
 
-#: ../lib/wiking/db.py:789
+#: ../lib/wiking/db.py:791
 msgid "Publish"
 msgstr "Zverejniť"
 
-#: ../lib/wiking/db.py:793
+#: ../lib/wiking/db.py:795
 msgid "Make the item visible to website visitors"
 msgstr "Sprístupniť "
 
-#: ../lib/wiking/db.py:794
+#: ../lib/wiking/db.py:796
 msgid "Unpublish"
 msgstr "Nezverejniť"
 
-#: ../lib/wiking/db.py:797
+#: ../lib/wiking/db.py:799
 msgid "Make the item invisible to website visitors"
 msgstr "Učiniť položku nedostupnú pre návštevníkov stránok"
 
@@ -301,41 +301,45 @@ msgstr "neprihlásený"
 msgid "log in"
 msgstr "prihlásiť"
 
-#: ../lib/wiking/util.py:317 ../lib/wiking/util.py:609
+#: ../lib/wiking/util.py:317 ../lib/wiking/util.py:621
 msgid "New user registration"
 msgstr "Registrácia nového užívateľa"
 
-#: ../lib/wiking/util.py:320
+#: ../lib/wiking/util.py:321
 #, python-format
 msgid "Your password expires on %(date)s."
 msgstr "Platnosť hesla vyprší %(date)s."
 
 #: ../lib/wiking/util.py:324
+msgid "Change your password"
+msgstr "Zmena hesla"
+
+#: ../lib/wiking/util.py:328
 #, fuzzy
 msgid "Login Panel"
 msgstr "Prihlasovacie meno"
 
-#: ../lib/wiking/util.py:530
+#: ../lib/wiking/util.py:541
 msgid "not available"
 msgstr "nedostupné"
 
-#: ../lib/wiking/util.py:538
+#: ../lib/wiking/util.py:550
 msgid "Actions:"
 msgstr "Akcie:"
 
-#: ../lib/wiking/util.py:599
+#: ../lib/wiking/util.py:611
 msgid "Login name"
 msgstr "Prihlasovacie meno"
 
-#: ../lib/wiking/util.py:602
+#: ../lib/wiking/util.py:614
 msgid "Password"
 msgstr "Heslo"
 
-#: ../lib/wiking/util.py:607
+#: ../lib/wiking/util.py:619
 msgid "Log in"
 msgstr "prihlásiť"
 
-#: ../lib/wiking/util.py:610
+#: ../lib/wiking/util.py:622
 #, fuzzy
 msgid "Forgot your password?"
 msgstr "Zadajte, prosím, vaše heslo!"

@@ -1,5 +1,8 @@
 2008-01-18  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/application.py (Application.password_change_uri): New
+	method.
+
 	* Makefile: Perform more checks before installation.
 	(all): Perform checks and compile.
 	(install, cvs-install): Don't check or compile, just install.
@@ -15,6 +18,7 @@
 	* lib/wiking/util.py (Action): Pass `name' to parent constructor.
 	(Action.name): Method removed.
 	(ActionMenu): Added support for help links and relation arguments.
+	(LoginPanel): Added support for "Change password" link.
 
 	* lib/wiking/db.py (PytisModule.action_list): Use `ListView', not
 	`BrowseForm'.
