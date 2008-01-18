@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2006, 2007 Brailcom, o.p.s.
+# Copyright (C) 2006, 2007, 2008 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -87,7 +87,8 @@ class Application(CookieAuthentication, wiking.Application):
 
     def authorize(self, req, module, action=None, record=None, **kwargs):
         if req.path[0] == '_registration':
-            # This hack redirects action authorization back to Registration after redirection to Users.
+            # This hack redirects action authorization back to Registration after redirection to
+            # Users.
             module = Registration
         if action and hasattr(module, 'RIGHTS_'+action):
             roles = getattr(module, 'RIGHTS_'+action)
@@ -95,8 +96,12 @@ class Application(CookieAuthentication, wiking.Application):
             roles = self._RIGHTS.get(module.name(), ())
         if module.name() == 'Pages' and record and record['private'].value():
             roles = tuple([r == Roles.ANYONE and Roles.USER or r for r in roles])
+        #debug("***:", module.name(), action, record.__class__, roles, hasattr(req, 'page'))
         if Roles.check(req, roles):
             return True
+        elif Roles.OWNER in roles and module.name() == 'Attachments' and hasattr(req, 'page') \
+                 and req.user():
+            return self._module('Pages').check_owner(req.user(), req.page)
         elif Roles.OWNER in roles and isinstance(module, PytisModule) and record and req.user():
             return module.check_owner(req.user(), record)
         else:

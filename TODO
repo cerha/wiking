@@ -1,10 +1,10 @@
 Core features:
 
- * Password reminder
-
  * Force HTTPS also for registration form (see note at PytisModule.action_add()).
 
- * Allow attachment and extension module management to page owner
+ * Allow extension module management to page owner
+
+ * Allow multiple instances of News and Planner modules
 
  * Remove the dbname column -- get the database name from somewhere else
 

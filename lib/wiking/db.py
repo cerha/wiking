@@ -1,4 +1,4 @@
-# Copyright (C) 2005, 2006, 2007 Brailcom, o.p.s.
+# Copyright (C) 2005-2008 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -245,10 +245,13 @@ class PytisModule(Module, ActionHandler):
                    self._DEFAULT_ACTIONS_LAST
         else:
             return self._LIST_ACTIONS
+
+    def _help_target(self, req, record):
+        return None
     
     def _action_menu(self, req, record=None, actions=None, **kwargs):
         actions = [action for action in actions or self._actions(req, record)
-                   if isinstance(action, Action) and \
+                   if action.name() is not None and \
                    self._application.authorize(req, self, action=action.name(), record=record)]
         if not actions:
             return None
@@ -258,7 +261,8 @@ class PytisModule(Module, ActionHandler):
             else:
                 uri = req.uri_prefix() + '/' + '/'.join(req.path[:self._REFERER_PATH_LEVEL-1])
                 kwargs['separate'] = True
-            return ActionMenu(uri, actions, self._referer, record, **kwargs)
+            help = self._help_target(req, record)
+            return ActionMenu(uri, actions, self._referer, self.name(), record, help=help, **kwargs)
 
     def _image_provider(self, req, row, cid, target=None):
         return None
@@ -391,12 +395,17 @@ class PytisModule(Module, ActionHandler):
                 prefill['lang'] = lang
         return prefill
 
-    def _condition(self, req, lang=None, **kwargs):
+    def _condition(self, req, lang=None, condition=None, values=None):
         # Can be used by a module to filter out invalid (ie. outdated) records.
-        conds = [pd.EQ(k, pd.Value(self._data.find_column(k).type(), v))
-                 for k, v in kwargs.items()]
+        if values:
+            conds = [pd.EQ(k, pd.Value(self._data.find_column(k).type(), v))
+                     for k, v in values.items()]
+        else:
+            conds = []
         if lang and self._LIST_BY_LANGUAGE:
             conds.append(pd.EQ('lang', pd.Value(pd.String(), lang)))
+        if condition:
+            conds.append(condition)
         if conds:
             return pd.AND(*conds)
         else:
@@ -455,11 +464,16 @@ class PytisModule(Module, ActionHandler):
     def related(self, req, binding, modname, record):
         """Return the listing of records related to other module's record."""
         bcol, sbcol = binding.binding_column(), binding.side_binding_column()
-        args = {sbcol: record[bcol].value()}
-        content = (self._form(pw.BrowseForm, req, condition=self._condition(req, **args),
+        kwargs = dict(values={sbcol: record[bcol].value()})
+        if binding.condition():
+            kwargs['condition'] = binding.condition()(record)
+        content = (self._form(pw.BrowseForm, req,
+                              condition=self._condition(req, **kwargs),
                               columns=[c for c in self._view.columns() if c!=sbcol]),
-                   self._action_menu(req, args=args))
-        return lcg.Section(title=self._view.title(), content=[c for c in content if c])
+                   self._action_menu(req, relation={sbcol: record[bcol].value()}))
+        #TODO: Use binding.side_title() instead of binding.title()?
+        return lcg.Section(title=binding.title() or self._view.title(),
+                           content=[c for c in content if c])
 
     # ===== Action handlers =====
     
@@ -469,7 +483,7 @@ class PytisModule(Module, ActionHandler):
         if req.wmi:
             help = lcg.p(self._view.help() or '', ' ', lcg.link('/_doc/'+self.name(), _("Help")))
             content += (help,)
-        content += (self._form(pw.BrowseForm, req, condition=self._condition(req, lang=lang)),
+        content += (self._form(pw.ListView, req, condition=self._condition(req, lang=lang)),
                     self._action_menu(req))
         return self._document(req, content, lang=lang, err=err, msg=msg)
 
@@ -538,8 +552,7 @@ class PytisModule(Module, ActionHandler):
             else:
                 return self._redirect_after_delete(req, record)
         form = self._form(pw.ShowForm, req, row=record.row())
-        actions = self._action_menu(req, record, (Action(_("Remove"), 'delete'),),
-                                    args=dict(submit=1))
+        actions = self._action_menu(req, record, (Action(_("Remove"), 'delete', submit=1),))
         return self._document(req, (form, actions), record, err=err, subtitle=_("removing"),
                               msg=_("Please, confirm removing the record permanently."))
         

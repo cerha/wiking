@@ -1,7 +1,42 @@
+2008-01-18  Tomas Cerha  <cerha@brailcom.org>
+
+	* Makefile: Perform more checks before installation.
+	(all): Perform checks and compile.
+	(install, cvs-install): Don't check or compile, just install.
+
+	* resources/css/default.css: Minor improvement.
+
+	* lib/wiking/cms/cms.py: Allow attachments management outside WMI.
+	(CMSModule._form): Use `BrowseForm' instead of `ListView' in WMI.
+
+	* lib/wiking/cms/appl.py (Application.authorize): Allow
+	attachments management to Page owner.
+
+	* lib/wiking/util.py (Action): Pass `name' to parent constructor.
+	(Action.name): Method removed.
+	(ActionMenu): Added support for help links and relation arguments.
+
+	* lib/wiking/db.py (PytisModule.action_list): Use `ListView', not
+	`BrowseForm'.
+	(PytisModule.related, PytisModule.action_delete)
+	(PytisModule._action_menu): Respect changes in `ActionMenu'
+	constructor args.
+	(PytisModule.related): Use binding title if defined.
+	(PytisModule._condition): Accept `condition' and `values' instead
+	of `**kwargs'.
+	(PytisModule._action_menu): Pass help link to `ActionMenu'.
+	(PytisModule._help_target): New method.
+
+	* translations/wiking-cms.cs.po: Updated.
+
+	* translations/wiking.cs.po: Updated.
+
 2008-01-09  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/util.py (LoginDialog.export): Display links within
 	the dialog.
+	(LoginPanel): Title changed to `Login Panel' instead of just
+	`Login'.
 
 	* lib/wiking/cms/cms.py (Pages.action_list): New method to emulate
 	list action on the included extension module records.

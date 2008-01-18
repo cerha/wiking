@@ -483,6 +483,7 @@ form.edit-form fieldset.controls input:hover {
 
 div.actions { 
     margin: 1em 0;
+    line-height: 1.5em;
 }
 div.actions.separated { 
     background: $color.frame-bg;

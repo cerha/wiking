@@ -489,20 +489,25 @@ class WikingNode(lcg.ContentNode):
 class ActionMenu(lcg.Content):
     """A menu of actions related to one record or the whole module."""
     
-    def __init__(self, uri, actions, referer, row=None, args=None, separate=False):
+    def __init__(self, uri, actions, referer, name, row=None, relation=None, separate=False,
+                 help=None):
         super(ActionMenu, self).__init__()
         assert isinstance(uri, (str, unicode)), uri
         assert isinstance(actions, (tuple, list)), actions
         assert isinstance(referer, str), referer
+        assert isinstance(name, str), name
         assert row is None or isinstance(row, pp.PresentedRow), row
-        assert args is None or isinstance(args, dict), args
+        assert relation is None or isinstance(relation, dict), relation
         assert separate is None or isinstance(separate, bool), separate
+        assert help is None or isinstance(help, str), help
         self._uri = uri
-        self._row = row
         self._actions = actions
-        self._args = args or {}
         self._referer = referer
+        self._name = name
+        self._row = row
+        self._relation = relation or {}
         self._separate = separate
+        self._help = help
 
     def _export_item(self, action, g):
         title = action.descr()
@@ -510,14 +515,16 @@ class ActionMenu(lcg.Content):
         if callable(enabled):
             enabled = enabled(self._row)
         if enabled:
-            args = self._args
+            args = action.kwargs() or {}
             uri = self._uri
             if action.name() in ('delete', 'list'):
                 key = self._row.data().key()[0].id()
                 if action.name() == 'delete':
                     args = dict(args, **{key: self._row[key].export()})
                 else:
-                    args = dict(args, search=self._row[key].export())
+                    args = dict(args, search=self._row[key].export(), module=self._name)
+            elif action.name() == 'insert':
+                args = dict(args, module=self._name, **self._relation)
             elif self._referer is not None and self._row:
                 if not uri.endswith('/'):
                     uri += '/'
@@ -533,9 +540,10 @@ class ActionMenu(lcg.Content):
     def export(self, exporter):
         g = exporter.generator()
         # Only Wiking's actions are considered, not all `pytis.presentation.Action'.
-        items = lcg.concat([self._export_item(a, g) for a in self._actions
-                            if isinstance(a, Action)], separator=g.span(" |\n", cls="hidden"))
-        content = (_("Actions:"), items)
+        items = [self._export_item(a, g) for a in self._actions if isinstance(a, Action)]
+        if self._help:
+            items.append(g.link(_("Help"), self._help))
+        content = (_("Actions:"), lcg.concat(items, separator=g.span(" |", cls="hidden")+'\n'))
         cls = "actions"
         if self._separate:
             content = (g.hr(),) + content + (g.hr(),)
@@ -628,13 +636,9 @@ class FieldSet(pp.GroupSpec):
 class Action(pytis.presentation.Action):
     def __init__(self, title, name, handler=None, **kwargs):
         # name determines the Wiking's action method.
-        self._name = name
         if not handler:
             handler = lambda r: None
-        super(Action, self).__init__(title, handler, **kwargs)
-        
-    def name(self):
-        return self._name
+        super(Action, self).__init__(title, handler, name=name, **kwargs)
     
 
 class Data(pd.DBDataDefault):
