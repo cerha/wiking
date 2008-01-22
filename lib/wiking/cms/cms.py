@@ -686,7 +686,7 @@ class Pages(CMSModule):
             if row is not None:
                 page = req.page = self._record(row)
                 # req.page used in (Embeddable|Attachments)._redirect_after_*()
-                self._authorize(req, action='view', record=req.page)
+                self._authorize(req, action='view', record=page)
                 modname = row['modname'].value()
                 if modname is not None and req.param('module') != 'Attachments':
                     try:
@@ -723,7 +723,7 @@ class Pages(CMSModule):
             record['content'] = record['_content']
             record['published'] = pytis.data.Value(pytis.data.Boolean(), True)
         return result
-        
+
     def _update_msg(self, record):
         if record['content'].value() == record['_content'].value():
             return super(Pages, self)._update_msg(record)
@@ -1065,6 +1065,11 @@ class Attachments(StoredFileModule, CMSModule):
             else:
                 raise NotFound()
 
+    def _form(self, form, req, action=None, hidden=(), **kwargs):
+        if action == 'insert' and req.param('module') == 'Attachments':
+            hidden += (('module', 'Attachments'),)
+        return super(Attachments, self)._form(form, req, action=action, hidden=hidden, **kwargs)
+            
     def _actions(self, req, record):
         if record is None and not req.wmi:
             return self._LIST_ACTIONS + (Action(_("Back"), 'view', descr=_("Display the page")),)
