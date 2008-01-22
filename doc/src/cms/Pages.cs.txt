@@ -2,8 +2,6 @@
 
 = Stránky =
 
-Toto je nejdůležitější bod správy obsahu.  Stránky mohou být uspořádány do
-hierarchie, která je potom automaticky respektována navigačními nabídkami.
 Vlastní text stránek je zadáván ve formátu „strukturovaný text LCG“, který je
 popsán v [/_doc/lcg/structured-text příručce formátování].
 
@@ -12,6 +10,9 @@ jsou potom spravovány prostřednictvím tzv. [#attachments příloh].
 
 Pro zobrazení dodatečného „inteligentního“ obsahu v rámci stránek je možno
 použít [#modules].
+
+Stránky mohou být uspořádány do hierarchie, která je potom automaticky
+respektována navigačními nabídkami.
 
 Každá stránka může existovat v několika jazykových verzích.  Tabulka stránek v
 rozhraní správy obsahu zobrazuje vždy pouze záznamy odpovídající /aktuálně
@@ -67,7 +68,8 @@ měnit hierarchické uspořádání stránek bez narušení platnosti externích
 
 == Stav stránky ==
 
-Stav stránky může nabývat jedné ze tří hodnot:
+Stav stránky, zobrazený v náhledu stránky ve správcovském rozhraní, může
+nabývat jedné ze tří hodnot:
 
    * /Nezveřejněno/ ... Stránka není v aktuálním jazyce zveřejněna.
      Návštěvníkům je zcela nepřístupná.
@@ -121,16 +123,21 @@ neovlivňují).
 == Přílohy == attachments
 
 Přílohy jsou externí soubory připojené ke stránce.  Takto je možné připojit
-obrázky, dokumenty, zvukové nahrávky nebo videa.  V zobrazení detailu stránky
-(kliknutím na názav stránky v seznamu) je zobrazen také seznam všech
-stávajících příloh dané stránky.  Zde můžete přidávat nové přílohy a měnit
+obrázky, dokumenty, zvukové nahrávky nebo videa.
+
+Správa příloh je dostupná přes položku „Přílohy“ v menu akcí na konci stránky.
+Toto menu je zobrazeno pouze pokud je uživatel přihlášen a má dostatečná práva
+pro správu obsahu dané stránky.  Zde můžete přidávat nové přílohy a měnit
 vlastnosti stávajících příloh.
 
-Přílohy mohou být v rámci obsahu stránky využity dvěma způsoby:
+U každé přílohy kromě vlastního souboru určujete také název a popis.  Obě
+položky jsou nepovinné.  Pokud nevyplníte nic, je příloha identifikována pouze
+názvem souboru.  Pokud vyplníte název, bude tento název použit při zobrazení
+přílohy namísto názvu souboru.  Popis (pokud jej vyplníte) bude zobrazen v
+tooltipu odkazu, nebo jako doplňující text v seznamu příloh.  V případě obrázků
+je název a popis zobrazen jako ALT/LONGDESC atribut obrázku.
 
-  * Automatický seznam příloh na konci stránky.
-
-  * Explicitní odkaz kdekoliv v rámci textu stránky.
+Přílohy mohou být v rámci obsahu stránky využity dvěma způsoby: @TOC@
 
 === Automatický seznam příloh ===
 
@@ -153,9 +160,9 @@ takže pokud nahrajete jiný soubor, změníte jej pro všechny jazyky.
 Na libovolnou přílohu se také můžete přímo odkazovat v rámci textu stránky tím,
 že název souboru uzavřete do hranatých závorek.  Obrázky budou vloženy přímo do
 stránky a pro ostatní typy příloh bude vytvořen odkaz na příslušný soubor.
-Např. odkaz na PDF dokument tak po kliknutí uživatelem zobrazí přímo tento
+Např. odkaz na PDF dokument po kliknutí uživatelem zobrazí přímo tento
 dokument, odkaz na MP3 nahrávku spustí její přehrávání apod. (vše v závislosti
-na nastavení uživatelova prohlížeče).  
+na nastavení uživatelova prohlížeče).
 
 /Příklad:/
 
@@ -166,9 +173,7 @@ vložit do stránky pomocí následujícího zápisu:
 [image.jpg]
 -----
 
-Pokud zadáte název a popis přílohy, tyto hodnoty budou vždy smysluplně využity
--- např. jako název/popis odkazu, nebo jako ALT/LONGDESC tag u obrázku.  Odkazy
-na přílohy jsou zpracovávány jako jakékoliv jiné odkazy v rámci strukturovaného
-textu LCG, takže můžete také libovolně předefinovat název odkazu nebo zvolit
-zarovnání obrázku.  Kompletní informace naleznete v
+Odkazy na přílohy jsou zpracovávány jako jakékoliv jiné odkazy v rámci
+strukturovaného textu LCG, takže můžete také libovolně předefinovat název
+odkazu nebo zvolit zarovnání obrázku.  Kompletní informace naleznete v
 [/_doc/lcg/structured-text příručce formátování].
