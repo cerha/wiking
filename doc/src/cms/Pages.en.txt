@@ -2,11 +2,8 @@
 
 = Pages =
 
-This is the main point for managing the content privided by your site.  Pages
-can be arranged into a hierarchy, which is automatically respected by site
-navigation menus.  The content itself can be directly edited as an ``LCG
-structured text'' document.  The format is described in the
-[/_doc/lcg/structured-text formatting manual].
+Page content can be directly edited as an ``LCG structured text'' document.
+The format is described in the [/_doc/lcg/structured-text formatting manual].
 
 Images, external documents, sound recordings, videos and other types of
 additional content may be included within a page using [#attachments] (see
@@ -14,6 +11,9 @@ below).
 
 Extension modules can be used for embedding ``smart'' content within a page.
 See [#modules] for more information.
+
+Pages can be arranged into a hierarchy, which is automatically respected by
+site navigation menus.
 
 The content for each page can be defined in multiple language variants.  The
 page listing in WMI always shows only the records corresponding to the
@@ -67,7 +67,7 @@ changes in page hierarchy without breaking external links.
 
 == Page states ==
 
-The page state can have one of the following values:
+The page state (displayed in WMI) can have one of the following values:
 
    * /Not published/ ... The page is not published in the current language so
      the visitors can not access it.
@@ -122,17 +122,23 @@ the website visitors (these two properties are independent).
 == Attachments == attachments
 
 Attachments are external files attached to pages.  You can attach images,
-documents, sound recordings, videos etc.  If you display page details (clicking
-on page title in the list), you will also see the list of all existing
-attachments for this page.  There you can add new attachments or edit the
-existing ones.
+documents, sound recordings, videos etc.
 
-Attachments can be used within the page content in the following two ways:
 
-  * Automatic list at the bottom of the page.
+You can manage page attachments through the item "Attachments" in the menu of
+actions at the bottom of each page (this menu appears only when you are logged
+in and you have the privilegs for given page).  Here you can add new
+attachments or edit the existing ones.
 
-  * Explicit reference in the page content.
+You can supply a title and description for each attachment apart from the
+actual file.  Title and description are not mandatory, but it is recommended to
+fill them out.  Title, if supplied, will be automatically used instead of the
+filename when the attachment link is displayed on the page.  The description is
+used in the automatic attchements list (see below) and as link tooltip.  Images
+are displayed inline and the title and description are used as its ALT/LONGDESC
+attributes.
 
+There are two ways to use the attachments within the page content: @TOC@
 
 === Automatic attachment lists ===
 
@@ -157,7 +163,7 @@ You can refer to any attachment by simply putting its filename into square
 brackets anywhere within the page text.  Images will be automatically displayed
 inline, for other file types a link will be created.  Thus a reference to a PDF
 document will automatically open the document in user's browser (or PDF viewer)
-and a reference to an MP3 file will start playback when the user clicks on the
+and a reference to an MP3 file will start playback when the user clicks the
 link.
 
 /Example:/
@@ -169,9 +175,7 @@ include this file within the page by the following reference:
 [image.jpg]
 -----
 
-If you supply title and description, these values will always be used
-meaningfully -- as a link label/description or image ALT/LONGDESC tags.
-Attachment references are treated as any other links in an LCG structured text
-document, so you can also redefine the label or set image allignment.  See the
-[/_doc/lcg/structured-text formatting manual] for complete
-information.
+Attachment links are treated as any other links within the LCG structured text
+document.  You can specify an explicit title, enforce image alignment etc.  See
+the [/_doc/lcg/structured-text formatting manual] for more information.
+
