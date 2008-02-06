@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-01-09 13:25+0100\n"
+"POT-Creation-Date: 2008-02-06 14:28+0100\n"
 "PO-Revision-Date: 2007-09-26 11:26+0200\n"
 "Last-Translator: Tomas Cerha <cerha@brailcom.org>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
@@ -23,7 +23,7 @@ msgstr ""
 msgid "Modify the record"
 msgstr ""
 
-#: ../lib/wiking/db.py:40 ../lib/wiking/db.py:552
+#: ../lib/wiking/db.py:40 ../lib/wiking/db.py:555
 msgid "Remove"
 msgstr ""
 
@@ -71,59 +71,59 @@ msgstr ""
 msgid "Integrity check failed."
 msgstr ""
 
-#: ../lib/wiking/db.py:481
+#: ../lib/wiking/db.py:484 ../lib/wiking/util.py:548
 msgid "Help"
 msgstr ""
 
-#: ../lib/wiking/db.py:521
+#: ../lib/wiking/db.py:524
 msgid "new record"
 msgstr ""
 
-#: ../lib/wiking/db.py:540
+#: ../lib/wiking/db.py:543
 msgid "edit form"
 msgstr ""
 
-#: ../lib/wiking/db.py:554
+#: ../lib/wiking/db.py:556
 msgid "removing"
 msgstr ""
 
-#: ../lib/wiking/db.py:555
+#: ../lib/wiking/db.py:557
 msgid "Please, confirm removing the record permanently."
 msgstr ""
 
-#: ../lib/wiking/db.py:615
+#: ../lib/wiking/db.py:617
 msgid "An RSS channel is available for this section:"
 msgstr ""
 
-#: ../lib/wiking/db.py:619
+#: ../lib/wiking/db.py:621
 msgid "more about RSS"
 msgstr ""
 
-#: ../lib/wiking/db.py:772
+#: ../lib/wiking/db.py:774
 msgid "No records."
 msgstr ""
 
-#: ../lib/wiking/db.py:779
+#: ../lib/wiking/db.py:781
 msgid "The item was published."
 msgstr ""
 
-#: ../lib/wiking/db.py:780
+#: ../lib/wiking/db.py:782
 msgid "The item was unpublished."
 msgstr ""
 
-#: ../lib/wiking/db.py:789
+#: ../lib/wiking/db.py:791
 msgid "Publish"
 msgstr ""
 
-#: ../lib/wiking/db.py:793
+#: ../lib/wiking/db.py:795
 msgid "Make the item visible to website visitors"
 msgstr ""
 
-#: ../lib/wiking/db.py:794
+#: ../lib/wiking/db.py:796
 msgid "Unpublish"
 msgstr ""
 
-#: ../lib/wiking/db.py:797
+#: ../lib/wiking/db.py:799
 msgid "Make the item invisible to website visitors"
 msgstr ""
 
@@ -139,12 +139,12 @@ msgstr ""
 msgid "Content"
 msgstr ""
 
-#: ../lib/wiking/export.py:102 ../lib/wiking/export.py:133
-#: ../lib/wiking/export.py:137
+#: ../lib/wiking/export.py:102 ../lib/wiking/export.py:132
+#: ../lib/wiking/export.py:136
 msgid "Main navigation"
 msgstr "Navegación Principal"
 
-#: ../lib/wiking/export.py:104 ../lib/wiking/export.py:148
+#: ../lib/wiking/export.py:104 ../lib/wiking/export.py:147
 #, fuzzy
 msgid "Local navigation"
 msgstr "Navegación Principal"
@@ -158,69 +158,69 @@ msgstr "Idioma"
 msgid "Jump in page"
 msgstr ""
 
-#: ../lib/wiking/export.py:115
+#: ../lib/wiking/export.py:114
 msgid "You are here:"
 msgstr ""
 
-#: ../lib/wiking/export.py:146
+#: ../lib/wiking/export.py:145
 msgid "In this section:"
 msgstr ""
 
-#: ../lib/wiking/export.py:156
+#: ../lib/wiking/export.py:155
 msgid "Show panels"
 msgstr ""
 
-#: ../lib/wiking/export.py:157
+#: ../lib/wiking/export.py:156
 msgid "Hide panels"
 msgstr ""
 
-#: ../lib/wiking/export.py:185 ../lib/wiking/util.py:66
+#: ../lib/wiking/export.py:184 ../lib/wiking/util.py:66
 msgid "Login"
 msgstr ""
 
-#: ../lib/wiking/export.py:186 ../lib/wiking/util.py:306
+#: ../lib/wiking/export.py:185 ../lib/wiking/util.py:306
 msgid "log out"
 msgstr ""
 
-#: ../lib/wiking/export.py:187
+#: ../lib/wiking/export.py:186
 msgid "Leave the Management Interface"
 msgstr ""
 
-#: ../lib/wiking/export.py:189
+#: ../lib/wiking/export.py:188
 msgid "Manage this site"
 msgstr "Gestione el sitio entero"
 
-#: ../lib/wiking/export.py:190
+#: ../lib/wiking/export.py:189
 msgid "Enter the Wiking Management Interface"
 msgstr ""
 
-#: ../lib/wiking/export.py:193
+#: ../lib/wiking/export.py:192
 #, python-format
 msgid "Powered by %(wiking)s %(version)s"
 msgstr "Hecho con %(wiking)s %(version)s"
 
-#: ../lib/wiking/export.py:201
+#: ../lib/wiking/export.py:200
 #, python-format
 msgid "Last change: %(date)s, %(user)s"
 msgstr "Último cambio: %(date)s, %(user)s"
 
-#: ../lib/wiking/export.py:218
+#: ../lib/wiking/export.py:217
 msgid "US Government Section 508 Accessibility Guidelines."
 msgstr ""
 
-#: ../lib/wiking/export.py:226
+#: ../lib/wiking/export.py:225
 msgid "This site conforms to the following standards:"
 msgstr "Este sitio ese conforme con los estándares siguientes:"
 
-#: ../lib/wiking/export.py:227
+#: ../lib/wiking/export.py:226
 msgid "This site can be viewed in ANY browser."
 msgstr "Este sitio se puede ver en CUALQUIER navegador."
 
-#: ../lib/wiking/export.py:228
+#: ../lib/wiking/export.py:227
 msgid "Accessibility Statement"
 msgstr "Declaración de accesibilidad"
 
-#: ../lib/wiking/export.py:229
+#: ../lib/wiking/export.py:228
 msgid "Contact:"
 msgstr "Contacto:"
 
@@ -299,40 +299,44 @@ msgstr ""
 msgid "log in"
 msgstr ""
 
-#: ../lib/wiking/util.py:317 ../lib/wiking/util.py:609
+#: ../lib/wiking/util.py:317 ../lib/wiking/util.py:615
 msgid "New user registration"
 msgstr ""
 
-#: ../lib/wiking/util.py:320
+#: ../lib/wiking/util.py:321
 #, python-format
 msgid "Your password expires on %(date)s."
 msgstr ""
 
 #: ../lib/wiking/util.py:324
+msgid "Change your password"
+msgstr ""
+
+#: ../lib/wiking/util.py:328
 msgid "Login Panel"
 msgstr ""
 
-#: ../lib/wiking/util.py:530
-msgid "not available"
-msgstr ""
-
-#: ../lib/wiking/util.py:538
+#: ../lib/wiking/util.py:496
 msgid "Actions:"
 msgstr ""
 
-#: ../lib/wiking/util.py:599
+#: ../lib/wiking/util.py:540
+msgid "not available"
+msgstr ""
+
+#: ../lib/wiking/util.py:605
 msgid "Login name"
 msgstr ""
 
-#: ../lib/wiking/util.py:602
+#: ../lib/wiking/util.py:608
 msgid "Password"
 msgstr ""
 
-#: ../lib/wiking/util.py:607
+#: ../lib/wiking/util.py:613
 msgid "Log in"
 msgstr ""
 
-#: ../lib/wiking/util.py:610
+#: ../lib/wiking/util.py:616
 msgid "Forgot your password?"
 msgstr ""
 
