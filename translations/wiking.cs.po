@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-02-06 14:28+0100\n"
+"POT-Creation-Date: 2008-02-06 15:14+0100\n"
 "PO-Revision-Date: 2008-02-06 14:30+0100\n"
 "Last-Translator: Tomas Cerha <cerha@brailcom.org>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
@@ -32,8 +32,8 @@ msgid "Remove the record permanently"
 msgstr "Nevratně odstranit záznam"
 
 #: ../lib/wiking/db.py:42
-msgid "List"
-msgstr "Seznam"
+msgid "Back"
+msgstr "Zpět"
 
 #: ../lib/wiking/db.py:43
 msgid "Back to the list of all records"
@@ -391,8 +391,8 @@ msgstr "Následující moduly byly úspěšně načteny znovu:"
 msgid "Reload"
 msgstr "Načíst znovu"
 
-#~ msgid "Back"
-#~ msgstr "Zpět"
+#~ msgid "List"
+#~ msgstr "Seznam"
 
 #~ msgid "Wiking Help System"
 #~ msgstr "Nápověda systému Wiking"

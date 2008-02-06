@@ -39,7 +39,7 @@ class PytisModule(Module, ActionHandler):
     _DEFAULT_ACTIONS_FIRST = (Action(_("Edit"), 'update', descr=_("Modify the record")),)
     _DEFAULT_ACTIONS_LAST =  (Action(_("Remove"), 'delete',
                                      descr=_("Remove the record permanently")),
-                              Action(_("List"), 'list', context=None,
+                              Action(_("Back"), 'list', context=None,
                                      descr=_("Back to the list of all records")))
     _LIST_ACTIONS = (Action(_("New record"), 'insert', context=None,
                             descr=_("Create a new record")),)
