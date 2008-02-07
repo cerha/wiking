@@ -1,4 +1,4 @@
-# Copyright (C) 2006, 2007 Brailcom, o.p.s.
+# Copyright (C) 2006, 2007, 2008 Brailcom, o.p.s.
 # Author: Tomas Cerha <cerha@brailcom.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -154,6 +154,13 @@ class Request(pytis.web.Request):
     def set_status(self, status):
         self._req.status = status
 
+    def send_http_header(self, content_type):
+        self._req.content_type = content_type
+        self._req.send_http_header()
+
+    def write(self, data):
+        self._req.write(data)
+        
     def done(self):
         return apache.OK
     
@@ -163,9 +170,8 @@ class Request(pytis.web.Request):
             content_type += "; charset=%s" % self._encoding
             #data = self._UNIX_NEWLINE.sub("\r\n", data)
             data = data.encode(self._encoding)
-        self._req.content_type = content_type
-        self._req.send_http_header()
-        self._req.write(data)
+        self.send_http_header(content_type)
+        self.write(data)
         return apache.OK
 
     def error(self, message):
