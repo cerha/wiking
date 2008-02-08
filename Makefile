@@ -1,6 +1,6 @@
 # Edit the paths below to suit your needs.
 SHARE = /usr/local/share
-LIB = /usr/local/lib/python%d.%d/site-package
+LIB = /usr/local/lib/python%d.%d/site-packages
 CFGFILE = /etc/wiking/config.py
 APACHECFG = /etc/apache2/conf.d/wiking
 STORAGE = /var/lib/wiking/
