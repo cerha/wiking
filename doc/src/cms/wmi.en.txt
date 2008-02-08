@@ -33,20 +33,22 @@ WMI sections and their modules: @TOC@
 
 === Content ===
 
-Manage available pages, their visibility, hierarchy and content.
+==== Pages ====
+
+Manage available pages, their visibility, hierarchy and content.  The rules are
+the same as when modifying a page outside WMI (see [pages]).
 
 ==== Attachments ====
 
-Provides an overview of all attachments (external files) used within the pages.
+Provides an overview of all attachments (external files) used within pages.
 You will, however, most often manage atachments through the [pages pages] to
 which they belong.
 
 ==== Panels ====
 
-``Panels'' are small boxes which are usually displayed sidewise.
-Unlike other content, panels appear on every page of the website beside its
-main content.  The main content changes while browsing different sections
-of the site, but the panels remain where they are.
+"Panels" are small boxes with additional information which are usually
+displayed by the side of the main page content.  The main content changes for
+different pages, but the panels remain unchanged.
 
 There may be arbitrary textual content on each panel, but probably the most
 practical feature of panels is that they can display items of an extension
@@ -59,6 +61,14 @@ you need to switch the language to be able to manage panels for a different
 language.
 
 The order of panels on the page is determined by the ``Order'' number.
+
+==== News ====
+
+See [modules].
+
+==== Planner ====
+
+See [modules].
 
 
 === Look & Feel ===
@@ -100,8 +110,16 @@ and the selected color theme.
 
 === User Management ===
 
+==== Users ====
+
+Manage registered users and their access rights.
 
 === Setup ===
+
+==== Configuration ====
+
+Modify the global site configuration, such as site title and other information,
+security options, current color theme etc.
 
 ==== Languages ==== languages
 

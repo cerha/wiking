@@ -35,11 +35,8 @@ Sekce a jejich moduly: @TOC@
 ==== Stránky ====
 
 Tento modul poskytuje přehled všech dostupných stránek a jejich hierarchie.
-Stránky je možné upravovat podobně jako je to umožněno přihlášenému uživateli
-přímo v režimu zobrazení stránky (mimo správcovské rozhraní).  Princip úprav
-zůstává stejný, jak je popsán v [pages], pouze uživatelské rozhraní je poněkud
-odlišné -- se stránkami se zde pracuje jako se všemi ostatními položkami, které
-lze pomocí správcovského rozhraní spravovat.
+Princip úprav stránek zůstává stejný jako při jejich správě mimo WMI (viz
+[pages]).
 
 ==== Přílohy ====
 
@@ -50,10 +47,9 @@ naleznete v nápovědě [pages].
 
 ==== Panely ====
 
-„Panely“ jsou malá okna, která jsou většinou zobrazená na boku stránky.
-Narozdíl od ostatního obsahu jsou panely zobrazovány na každé stránce vedle
-jejího hlavního obsahu.  Hlavní obsah se při procházení mezi různými částmi
-portálu mění, ale panely zůstávají stále na svých místech.
+„Panely“ jsou malé rámečky s doplňujícími informacemi, které jsou většinou
+zobrazeny na boku stránky vedle hlavního obsahu.  Hlavní obsah se na různých
+stránkách mění, ale panely zůstávají na svých místech.
 
 Na každém panelu může být libovolný textový obsah, ale kromě toho mají panely
 jednu velice praktickou vlastnost – mohou zobrazit seznam položek rozšiřujícího
@@ -69,6 +65,13 @@ jazyk, pokud chcete spravovat panely jiné jazykové verze.
 Pořadí panelů na stránce je dáno číslem v kolonce „Pořadí“.  Také v této
 tabulce jsou panely zobrazeny v tomto pořadí.
 
+==== Novinky ====
+
+Viz sekce [modules].
+
+==== Plánovač ====
+
+Viz sekce [modules].
 
 === Vzhled ===
 
@@ -97,8 +100,8 @@ obsah ve skutečnosti není skrze databázi přístupný (jeví se jako prázdn�
 ==== Barevné motivy ====
 
 Barevné motivy umožňují jednoduše přizpůsobit barevné ladění stránek.  Pro
-aktivaci jednoho z definovaných motivů musíte tento motiv zvolit v sekci
-[config].
+aktivaci jednoho z definovaných motivů musíte tento motiv zvolit v konfiguraci
+(sekce Nastavení).
 
 Několik barevných motivů je předinstalováno, další mohou být vytvářeny a
 sdíleny v rámci komunity uživatelů systému Wiking.
@@ -109,9 +112,16 @@ Výsledný vzhled je určen kombinací zvoleného barevného motivu a aktivních
 
 === Správa uživatelů ===
 
+==== Uživatelé ====
+
+Umožňuje správu registrovaných uživatelů a jejich přístupových práv.
+
 === Nastavení ===
 
-==== Konfigurace ==== config
+==== Konfigurace ====
+
+Upravit globální nastavení portálu jako např. název a další informace, volby
+zapezpečení, aktivní barevné téma apod.
 
 ==== Jazyky ==== languages
 
