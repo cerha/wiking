@@ -2,8 +2,8 @@
 
 = Introduction =
 
-The Wiking Content Management System allows you to run a website highly
-accessible, which is fully controlled directly from a web browser.
+The Wiking Content Management System allows you to run a website which is
+highly accessible and fully controlled directly from a web browser.
 
 Key features: @TOC@
 
