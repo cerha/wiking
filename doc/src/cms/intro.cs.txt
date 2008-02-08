@@ -1,0 +1,71 @@
+# -*- coding: utf-8; mode: structured-text -*-
+
+= Úvod =
+				       
+Systém správy obsahu Wiking umožňuje provozovat internetový portál s vysokým
+stupněm zpřístupnění, který je plně ovládán pomocí internetového prohlížeče.
+
+Klíčové vlastnosti: @TOC@
+  
+
+== Zpřístupnění ==
+
+Systém nabízí vysoký stupeň zpřístupnění jak pro návštěvníky portálu, tak pro
+tvůrce obsahu a administrátory.
+
+Důležitou zásadou návrhu systému je maximální podpora standardů
+[http://www.w3.org W3C].  Více také viz. [accessibility].
+
+Koncepce tvorby obsahu pomocí tzv. „strukturovaného textu“ se osvědčila jako
+snadno zvládnutelná i pro uživatele netechnického zaměření.  Ve spojení s
+přístupným uživatelským rozhraním tak Wiking může být vhodnou volbou i pro
+nevidící nebo jinak handicapované uživatele.
+
+== Snadné přizpůsobení vzhledu ==
+
+Díky předdefinovaným stylům a barevným motivům lze snadno dosáhnout
+atraktivního vzhledu bez „poškození“ zpřístupnění.
+
+  * Obsah je uložen ve formátu nezávislém na výsledné prezentaci.
+  * Nezávislé styly definují rozvržení stránky a výsledný vzhled.
+  * Sada předdefinovaných stylů umožňuje snadné přizpůsobení vzhledu bez
+    technických znalostí.
+  * Při znalosti CSS je možné vytvářet vlastní styly.
+  * Univerzální styly a barevné motivy lze sdílet s ostatními uživateli systému.
+
+== Lokalizace ==
+
+Uživatelské rozhraní systému Wiking je lokalizováno do následujících jazyků:
+  * Angličtina (kompletní)
+  * čeština (kompletní)
+  * Němčina (téměř kompletní)
+  * Polština (částečné)
+  * Slovenština (téměř kompletní)
+  * Španělština (částečné)
+
+Lokalizace pro další jazyky pokračuje.  Díky technologii založené na GNU
+gettext je další rozšiřování snadné.
+
+== Vícejazyčný obsah ==
+
+Systém byl od počítku navržen tak, aby bylo možné veškerý obsah přehledně
+definovat zároveň v několika jazykových variantách.
+
+Důležité rysy:
+  * Výběr nejvhodnější varianty pomocí technologie „Content Negotiation“.
+  * Možnost explicitní volby jazyka.
+  * Jazyk uživatelského rozhraní je vždy odvozen od jazyka poskytovaného
+    obsahu.
+
+Více viz [navigation#languages].
+
+== Technologie ==
+
+Systém správy obsahu Wiking je napsán v programovacím jazyce /Python/ jako
+aplikace nad platformou pro vývoj webových aplikací Wiking (více viz [devel]).
+Modulární návrh této platformy dovoluje snadné rozšiřování funkcionality a
+jednoduchou integraci nových prvků do stávajícího systému.
+
+== Licence ==
+
+Systém správy obsahu Wiking je svobodný software s licencí GPL.

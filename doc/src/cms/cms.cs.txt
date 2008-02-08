@@ -1,0 +1,8 @@
+# -*- coding: utf-8; mode: structured-text -*-
+
+= Systém správy obsahu =
+
+Systém správy obsahu (Wiking CMS) je aplikace vystavěná nad platformou Wiking
+pro vývoj webových aplikací.  
+
+Obsah: @NodeIndex@

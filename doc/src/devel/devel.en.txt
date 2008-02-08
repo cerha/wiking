@@ -8,3 +8,21 @@ of this platform.  This section describes Wiking from developer's point of
 view.
 
 @NodeIndex(1)@
+
+== Technology ==
+
+Wiking is written in Python and is based on two other important components:
+
+ * *Pytis* ... provides data abstraction, modularization and database access.
+
+ * *LCG* ... provides content abstraction, internationalization support and
+   html generation (see [http://www.freebsoft.org/lcg|LCG project website] for
+   more information).
+
+Wiking can be also considered a web interface to the Pytis toolkit.
+
+The current implementation runs on Apache web server (over mod_python) and
+stores its data in the PostgreSQL database.  Thanks to a high level of
+abstraction, these components could be replaced, however.
+
+

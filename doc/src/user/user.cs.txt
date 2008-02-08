@@ -1,9 +1,9 @@
 # -*- coding: utf-8; mode: structured-text -*-
 
-= Uživatelská příručka systému Wiking =
+= Příručka návštěvníka portálu =
 
 Tato sekce popisuje uživatelské rozhraní aplikací používajících platformu
 Wiking z pohledu návštěvníka webových stránek.
 
-@NodeIndex(2)@
+Obsah: @NodeIndex(2)@
 

@@ -1,0 +1,75 @@
+# -*- coding: utf-8; mode: structured-text -*-
+
+= Introduction =
+
+The Wiking Content Management System allows you to run a website highly
+accessible, which is fully controlled directly from a web browser.
+
+Key features: @TOC@
+
+  
+== Accessibility ==
+
+The Wiking CMS provides a high level of accessibility for the visitors as well
+as for content creators.
+
+An important design goal was the maximal support for available
+[http://www.w3.org W3C] standards.  See also the [accessibility] for more
+information.
+
+The concept of content creation using the "structured text" format proved to be
+well usable for people without technical background.  Moreover, together with
+an accessible user interface, this makes Wiking a suitable content management
+tool for blind people or people with other handicaps.
+
+== Customizable look & feel ==
+
+An attractive look can be easilly achieved using the predefined styles and
+color themes without disturbing the accessibility.
+
+  * The content is stored in a presentation neutral format.
+  * Independent styles define the final layout and presentation.
+  * Predefined styles allow easy customization without technical knowledge.
+  * Custom styles may be created with CSS knowledge.
+  * Color themes can be simply modified.
+  * Reusable styles and color themes can be shared with other Wiking users.
+
+== Localization ==
+
+Wiking user interface is currently translated into the following languages:
+  * Czech (complete)
+  * English (complete)
+  * German (mostly complete)
+  * Polish (incomplete)
+  * Slovak (mostly complete)
+  * Spanish (incomplete)
+
+Adding support for other languages is in progress.  Thanks to the GNU gettext
+framework it is relatively simple.  
+
+== Support for Multilingual Content ==
+
+The system was designed to serve multilingual content from the very beginning.
+You can manage multiple language variants of your content and Wiking defines
+the logic needed for serving it.
+
+Most important features:
+  * The most appropriate language variant is selected automatically based on
+    „Content Negotiation“.
+  * User can choose the language explicitly from the list of available language
+    variants.
+  * The language of the user interface is automatically translated to the
+    language of the current content.
+
+See [navigation#languages] for more information.
+
+== Technology ==
+
+Wiking CMS is written in Python as an application built on the top the Wiking
+web application development platform (see [devel] for more information).  The
+modular design of this platform allows additional functionality to be easilly
+implemented and integrated within the system.
+
+== Licence ==
+
+The Wiking CMS is Free Software licensed under GPL.

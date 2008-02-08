@@ -1,24 +1,22 @@
 # -*- coding: utf-8; mode: structured-text -*-
 
-= Pages =
+= Page Management =
 
-Page content can be directly edited as an ``LCG structured text'' document.
-The format is described in the [/_doc/lcg/structured-text formatting manual].
+Overview:
 
-Images, external documents, sound recordings, videos and other types of
-additional content may be included within a page using [#attachments] (see
-below).
+  * Page content can be directly edited as an ``LCG structured text'' document.
+    The format is described in the [/_doc/lcg/structured-text formatting
+    manual].
 
-Extension modules can be used for embedding ``smart'' content within a page.
-See [#modules] for more information.
+  * Images, external documents, sound recordings, videos and other types of
+    additional content may be included within a page using [#attachments].
 
-Pages can be arranged into a hierarchy, which is automatically respected by
-site navigation menus.
+  * [modules] can be used for embedding ``smart'' content within a page.
 
-The content for each page can be defined in multiple language variants.  The
-page listing in WMI always shows only the records corresponding to the
-/currently selected language/.  You need to switch the language to be able to
-manage pages in other languages.
+  * Pages can be arranged into a hierarchy, which is automatically respected by
+    site navigation menus.
+
+  * The content of each page can be defined in multiple language variants.
 
 Table of Contents: @TOC@
 
@@ -77,22 +75,6 @@ The page state (displayed in WMI) can have one of the following values:
      previous content.
 
    * /Ok/ ... The page is published and up to date.
-
-
-== Extension modules == modules
-
-Extension modules can be used for embedding "smart" content within a page.
-Wiking comes with several built in modules, but additional modules can be
-installed independently for each site.
-
-The built in modules are:
-
-  * /News/ -- list/manage short messages (supports RSS).
-
-  * /Planner/ -- calendar-like listing and management of planned events
-    (supports RSS).
-
-  * /Users/ -- list/manage registered users
 
 
 == Published/unpublished pages ==

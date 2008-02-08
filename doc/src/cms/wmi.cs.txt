@@ -1,0 +1,127 @@
+# -*- coding: utf-8; mode: structured-text -*-
+
+= Rozhraní správy obsahu =
+
+Rozhraní správy obsahu si můžeme představit jako jakousi zadní bránu, která
+umožňuje správci pracovat s veškerými daty ovlivňujícími výsledný vzhled, obsah
+a logiku fungování portálu.  Mnohé zásahy (např. úpravy textu stránek) lze
+provádět pohodlně i mimo toto správcovské rozhraní, ale další aspekty lze měnit
+pouze zde.
+
+Správcovské rozhraní poskytuje jednotný přístup ke všem datům ovlivňujícím
+fungování portálu prostřednictvím „databázových“ náhledů.  Data jsou
+prezentována v tabulkách jako záznamy, které mohou být vytvářeny, modifikovány
+i mazány.  Tento přístup se někdy může zdát poněkud rigidní, ale výhodou je
+jednotný způsob práce se všemi daty a výsledná konzistence uživatelského
+rozhraní.
+
+/Důležité:/ Ve správcovském rozhraní je možné přepínat mezi všemi
+zkonfigurovanými jazyky (viz [#languages]), narozdíl od běžného režimu
+prohlížení stránek, kdy jsou vždy nabízeny pouze ty jazyky, pro které obsah
+dané stránky skutečně existuje.  Důležité je, že změnou aktuálního jazyka
+měníte také množinu zobrazených položek.  Pro jazykově závislé moduly jsou vždy
+zobrazeny pouze položky odpovídající aktuálnímu jazyku.  U modulů na jazyce
+nezávislých jsou zobrazeny všechny položky nezávisle na aktuálním jazyce.
+
+== Moduly správcovského rozhraní ==
+
+Rozhraní je rozděleno do čtyř hlavních sekcí, z nichž každá obsahuje podsekce
+(moduly) umožňující správu různých aspektů webového portálu.
+
+Sekce a jejich moduly: @TOC@
+
+=== Obsah ===
+
+==== Stránky ====
+
+Tento modul poskytuje přehled všech dostupných stránek a jejich hierarchie.
+Stránky je možné upravovat podobně jako je to umožněno přihlášenému uživateli
+přímo v režimu zobrazení stránky (mimo správcovské rozhraní).  Princip úprav
+zůstává stejný, jak je popsán v [pages], pouze uživatelské rozhraní je poněkud
+odlišné -- se stránkami se zde pracuje jako se všemi ostatními položkami, které
+lze pomocí správcovského rozhraní spravovat.
+
+==== Přílohy ====
+
+Přílohy jsou externí soubory připojené ke stránkám.  Tento modul zobrazuje
+všechny existující přílohy všech stránek.  Běžně jsou ovšem přílohy spravovány
+prostřednictvím stránek, ke kterým jsou připojené, proto podrobnější nápovědu
+naleznete v nápovědě [pages].
+
+==== Panely ====
+
+„Panely“ jsou malá okna, která jsou většinou zobrazená na boku stránky.
+Narozdíl od ostatního obsahu jsou panely zobrazovány na každé stránce vedle
+jejího hlavního obsahu.  Hlavní obsah se při procházení mezi různými částmi
+portálu mění, ale panely zůstávají stále na svých místech.
+
+Na každém panelu může být libovolný textový obsah, ale kromě toho mají panely
+jednu velice praktickou vlastnost – mohou zobrazit seznam položek rozšiřujícího
+modulu použitého v některé stránce.  Například pro modul [News Novinky] bude
+zobrazen výpis posledních zpráv.  Můžete také zvolit kolik položek má být
+zobrazeno.
+
+Množiny panelů pro jednotlivé jazykové verze portálu jsou zcela nezávislé.
+Můžete tak mít jiné seskupení panelů pro každý jazyk.  Tabulka zobrazuje
+vždy pouze panely pro /aktuální zvolený jazyk/, takže budete muset přepnout
+jazyk, pokud chcete spravovat panely jiné jazykové verze.
+
+Pořadí panelů na stránce je dáno číslem v kolonce „Pořadí“.  Také v této
+tabulce jsou panely zobrazeny v tomto pořadí.
+
+
+=== Vzhled ===
+
+==== Styly ====
+
+Zde je možné spravovat dostupné kaskádové styly používané portálem.  Styly,
+společně s barevnými motivy (viz níže) umožňují přizpůsobit vzhled Vašeho
+portálu.
+
+Každý styl je možné přímo upravovat, pokud znáte CSS a pravidla, podle kterých
+systém Wiking styly využívá.  Hlavním záměrem je však umožnit především snadnou
+aktivaci předem definovaných stylů správcům, kteří se potom detaily tvorby
+stylů nemusí zabývat.  Některé styly mohou být předinstalovány, jiné mohou být
+sdíleny v rámci komunity uživatelů systému Wiking.
+
+Můžete zde definovat větší množství stylů a každý z nich samostatně aktivovat
+či deaktivovat.  Výsledky aplikace stylů se projeví okamžitě.  Můžete také
+přidat vlastní styl a v něm pouze předefinovat určité vlastnosti definované
+systémovými styly.  Aby styly respektovaly barevné motivy, je nutné, aby styl
+nedefinoval vlastní barvy přímo, ale pomocí symbolických identifikátorů
+definovaných barevným motivem.
+
+Výchozí styl pojmenovaný 'default.css' by neměl být upravován, protože jeho
+obsah ve skutečnosti není skrze databázi přístupný (jeví se jako prázdný).
+
+==== Barevné motivy ====
+
+Barevné motivy umožňují jednoduše přizpůsobit barevné ladění stránek.  Pro
+aktivaci jednoho z definovaných motivů musíte tento motiv zvolit v sekci
+[config].
+
+Několik barevných motivů je předinstalováno, další mohou být vytvářeny a
+sdíleny v rámci komunity uživatelů systému Wiking.
+
+Výsledný vzhled je určen kombinací zvoleného barevného motivu a aktivních stylů
+(viz výše).
+
+
+=== Správa uživatelů ===
+
+=== Nastavení ===
+
+==== Konfigurace ==== config
+
+==== Jazyky ==== languages
+
+Tento modul slouží k správě dostupných jazyků.  Můžete přidat libovolný jazyk
+zadáním dvouznakového kódu jazyka podle ISO 639-1.
+
+Zde zkonfigurované jazyky jsou potom automaticky dostupné pro určení jazyka
+obsahu.
+
+Více informací o tom, jak systém zabezpečuje poskytování nejvhodnější jazykové
+varianty uživatelům stránek naleznate v kapitole [navigation#languages Volba
+jazyka] uživatelské příručky systému Wiking.
+

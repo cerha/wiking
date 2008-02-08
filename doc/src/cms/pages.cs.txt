@@ -1,23 +1,23 @@
 # -*- coding: utf-8; mode: structured-text -*-
 
-= Stránky =
+= Správa stránek =
 
-Vlastní text stránek je zadáván ve formátu „strukturovaný text LCG“, který je
-popsán v [/_doc/lcg/structured-text příručce formátování].
+Přehled:
 
-Obrázky, externí dokumenty, zvukové nahrávky, videa a další součásti obsahu
-jsou potom spravovány prostřednictvím tzv. [#attachments příloh].
+  * Vlastní text stránek je zadáván ve formátu „strukturovaný text LCG“, který
+    je popsán v [/_doc/lcg/structured-text příručce formátování].
 
-Pro zobrazení dodatečného „inteligentního“ obsahu v rámci stránek je možno
-použít [#modules].
+  * Obrázky, externí dokumenty, zvukové nahrávky, videa a další součásti obsahu
+    jsou potom spravovány prostřednictvím tzv. [#attachments příloh].
 
-Stránky mohou být uspořádány do hierarchie, která je potom automaticky
-respektována navigačními nabídkami.
+  * [modules] mohou být použity pro zobrazení dodatečného „inteligentního“
+    obsahu uvnitř stránek.
 
-Každá stránka může existovat v několika jazykových verzích.  Tabulka stránek v
-rozhraní správy obsahu zobrazuje vždy pouze záznamy odpovídající /aktuálně
-zvolenému jazyku/.  Pokud chcete spravovat jiné jazykové verze stránek, musíte
-nejprve přepnout aktuální jazyk.
+  * Stránky mohou být uspořádány do hierarchie, která je potom automaticky
+    respektována navigačními nabídkami.
+
+  * Každá stránka může existovat v několika jazykových verzích.  
+
 
 Obsah: @TOC@
 
@@ -79,21 +79,6 @@ nabývat jedné ze tří hodnot:
      předchozí obsah.
 
    * /Ok/ ... Stránka zveřejněna a její obsah je aktuální.
-
-== Rozšiřující moduly == modules
-
-Rozšiřující moduly mohou být použity pro vložení „inteligentního“ obsahu do
-stránek.  Wiking je distribuován včetně několika vestavěných modulů, ale další
-moduly mohou být instalovány dodatečně.
-
-Vestavěné moduly jsou:
-
- * /Novinky/ -- výpis/správa krátkých zpráv (s podporou RSS)
-
- * /Planner/ -- kalendářový výpis a správa plánovaných akcí (s podporou RSS)
-
- * /Users/ -- výpis/správa registrovaných uživatelů
-
 
 
 == Zveřejnění/zneveřejnění stránky  ==

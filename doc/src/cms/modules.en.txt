@@ -1,0 +1,51 @@
+# -*- coding: utf-8; mode: structured-text -*-
+
+= Extension Modules =
+
+Extension modules provide a simple means for embedding "smart" content within a
+page.  Wiking comes with several built in modules, but additional modules can
+be installed independently for each site.
+
+The built in modules are:
+
+  * [#news] -- list/manage short messages (supports RSS).
+  * [#planner] -- calendar-like listing and management of planned events
+    (supports RSS).
+  * [#users] -- list/manage registered users
+
+== News == news
+
+The News module is designed for short messages.  Each message has a
+brief summary, a time-stamp and a more descriptive text.  The basic view is
+handled by displaying a list of recent messages (newer messages at the
+top).
+
+The message text can be formatted as an ``LCG structured text'' document
+(see the [/_doc/lcg/structured-text formatting manual]).
+
+News items for each language variant of the website are managed independently.
+Only messages for the /currently selected language/ are displayed, so you need
+to switch the language to be able to manage news for a different language.
+
+== Planner == planner
+
+This module allows you to publish a callendar of planned events.  Each event
+has a date when it takes place.  Optionally you can also define en end date --
+this is useful when an event takes more than one day.  Events are sorted by
+date -- the nearest at the top.  Expired events are automatically omitted, so
+the list only contains future events.
+
+You can attach a bief text to each event.  This text can be formatted as an
+``LCG structured text'' document (see the
+[/_doc/lcg/structured-text formatting manual]).
+
+Planner events for each language variant of the website are managed
+independently.  Only events for the /currently selected language/ are
+displayed, so you need to switch the language to be able to manage news for a
+different language.
+
+== Users == users
+
+This module allows you to embed the list of registered users into any page.
+This is mostly practical to allow the users to view each others profile,
+contact infomation etc.

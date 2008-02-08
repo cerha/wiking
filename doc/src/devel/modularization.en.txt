@@ -28,17 +28,19 @@ functionality to modules.
 
 The central module, which controls the application behavior is the module named
 'Application'.  Different stages of request processing, such as authentication,
-uri resolution, handling errors etc. are controlled by different methods of the
-application module, so a derived application may override any of these phases
-by custom processing.  See [application] for details.
-
-The most important phase of request processing is serving the actual content.
-The application decides which module is responsible for handling the particular
-request and the handler postpones the request to this module.  So you will
-typically define different modules to handle different URIs.
+content generation, error handling etc. are controlled by different methods of
+the application instance.  Thus a custom Wiking application is implemented by
+deriving a new 'Application' module from the default class.  All the phases of
+request processing can be overridden by overriding its methods.  See
+[application] for details.
 
 
 == Predefined Modules ==
+
+A typical application will use other modules and postpone the processing of
+certain phases of the request to them.  The default implementation of the
+Application module is no exception (see [application] for more information
+about the default implementation of application methods).
 
 Wiking also provides a set of predefined modules, which implement various
 common usecases for typical applications.  For example there is a module

@@ -1,3 +1,47 @@
+2008-02-08  Tomas Cerha  <cerha@brailcom.org>
+
+	* doc/src/cms/Attachments.cs.txt: File removed.
+	* doc/src/cms/Attachments.en.txt: File removed.
+	* doc/src/cms/Languages.cs.txt: File removed.
+	* doc/src/cms/Languages.en.txt: File removed.
+	* doc/src/cms/News.cs.txt: File removed.
+	* doc/src/cms/News.en.txt: File removed.
+	* doc/src/cms/Pages.cs.txt: File removed.
+	* doc/src/cms/Pages.en.txt: File removed.
+	* doc/src/cms/Panels.cs.txt: File removed.
+	* doc/src/cms/Panels.en.txt: File removed.
+	* doc/src/cms/Planner.cs.txt: File removed.
+	* doc/src/cms/Planner.en.txt: File removed.
+	* doc/src/cms/Stylesheets.en.txt: File removed.
+	* doc/src/cms/Themes.en.txt: File removed.
+	* doc/src/cms/cms-intro.en.txt: File removed.
+	* doc/src/cms/cms.cs.txt: New file.
+	* doc/src/cms/intro.cs.txt: New file.
+	* doc/src/cms/intro.en.txt: New file.
+	* doc/src/cms/modules.cs.txt: New file.
+	* doc/src/cms/modules.en.txt: New file.
+	* doc/src/cms/pages.cs.txt: New file.
+	* doc/src/cms/pages.en.txt: New file.
+	* doc/src/cms/wmi.cs.txt: New file.
+	* doc/src/cms/wmi.en.txt: New file.
+	* doc/src/cms/_index.txt: Updated.
+	* doc/src/cms/cms.en.txt: Updated.
+	* doc/src/devel/devel.en.txt: Updated.
+        * doc/src/devel/modularization.en.txt: Updated.
+        * doc/src/user/user.cs.txt: Updated.
+        * doc/src/user/user.en.txt: Updated.
+
+
+2008-02-07  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/request.py (Request.send_http_header)
+	(Request.write): New methods.
+
+2008-01-22  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/cms/cms.py (Attachments._form): Add a hidden form
+	value to ensure proper redirection outside WMI.
+
 2008-01-18  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/application.py (Application.password_change_uri): New

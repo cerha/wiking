@@ -1,9 +1,4 @@
-cms-intro
-Pages
-Attachments
-Panels
-News
-Planner
-Stylesheets
-Themes
-Languages
+intro
+pages
+modules
+wmi

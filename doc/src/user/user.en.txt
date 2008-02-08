@@ -1,9 +1,9 @@
 # -*- coding: utf-8; mode: structured-text -*-
 
-= Wiking User's Guide =
+= Wiking Website Visitor's Guide =
 
 This section describes the Wiking user interface from the perspective of
 website visitor.
 
-@NodeIndex(2)@
+Table of Contents: @NodeIndex(2)@
 

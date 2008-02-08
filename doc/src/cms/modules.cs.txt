@@ -1,0 +1,54 @@
+# -*- coding: utf-8; mode: structured-text -*-
+
+== Rozšiřující moduly ==
+
+Rozšiřující moduly mohou být použity pro vložení „inteligentního“ obsahu do
+stránek.  Wiking je distribuován včetně několika vestavěných modulů, ale další
+moduly mohou být instalovány dodatečně.
+
+Vestavěné moduly jsou:
+
+ * [#news] -- výpis/správa krátkých zpráv (s podporou RSS)
+ * [#planner] -- kalendářový výpis a správa plánovaných akcí (s podporou RSS)
+ * [#users] -- výpis/správa registrovaných uživatelů
+
+
+== Novinky == news
+
+Modul Novinky umožňuje publikovat krátké aktuální zprávy.  Každá zpráva má
+stručný nadpis, časovou známku a podrobnější text.  V základním zobrazení
+je vypsán seznam nejnovějších zpráv (nejnovější zprávy jsou nahoře).
+
+Text zprávy může být formátován jako „strukturovaný text LCG“ (viz
+[/_doc/lcg/structured-text formátovací manuál]).
+
+Zprávy pro jednotlivé jazykové verze jsou spravovány nezávisle.  Tabulka
+zobrazuje pouze záznamy odpovídající /aktuálně zvolenému jazyku/.  Pokud
+chcete spravovat novinky v jiném jazyce, musíte nejprve přepnout aktuální
+jazyk.
+
+
+= Plánovač = planner
+
+Modul plánovač slouží ke zveřejnění plánovaných akcí či událostí.  U každé
+události je určeno datum konání a volitelně může být určeno také datum ukončení
+-- to může být vhodné pro události, které trvají několik dní.  Události jsou ve
+výpisu řazeny podle tohoto data -- časově nebližší události nahoře.  Prošlé
+události jsou automaticky vyřazeny z výpisu, takže jsou zobrazeny vždy jen
+budoucí události.
+
+Ke každé události lze připojit krátký text.  Ten může být formátován jako
+„strukturovaný text LCG“ (viz [/_doc/lcg/structured-text
+formátovací manuál]).
+
+Události pro jednotlivé jazykové verze jsou spravovány nezávisle.  Tabulka
+správcovského rozhraní zobrazuje pouze záznamy odpovídající /aktuálně zvolenému
+jazyku/.  Pokud chcete spravovat události v jiném jazyce, musíte nejprve
+přepnout aktuální jazyk.
+
+
+= Uživatelé = users
+
+Tento modul umožňuje do libovolné stránky vložit výpis registrovaných uživatelů
+a jejich správu.  To může být zejména praktické, pokud chcete návštěvníkům
+umožnit zobrazení profilu uživatelů s kontaktními informacemi atd.

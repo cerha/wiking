@@ -1,0 +1,116 @@
+# -*- coding: utf-8; mode: structured-text -*-
+
+= Wiking Management Interface =
+
+You can imagine the Wiking Management Interface (WMI) as a back door to the
+system, which allows the administrator to see and modify all the data which
+influence the final content, look and logic of the website.  Many management
+tasks (such as text modifications) can be done directly from the website
+without entering the WMI, but many other aspects can only be changed here.
+
+The management interface provides uniform access to all portal data through
+"database" views.  These data are presented as table records, which can be
+created, modified and deleted by the administrator.  This approach may seem a
+little rigid, but the great advantage is the resulting consistence of the user
+interface.
+
+/Important:/ The Wiking Management Interface allows you to switch to any of the
+configured languages at any time, as oposed to the normal website view, where
+only languages, for which the content actually exists, are available.  See
+[#languages] to learn how to configure the available languages.  When you view
+a content listing of a particular module in WMI, only items corresponding to
+the current language are shown, if the items are language dependent.  For
+language independent content, all items are shown, regardless the current
+language.
+
+== WMI Modules ==
+
+The interface is devided into four main sections, where each of the sections
+provides a set of so called "modules" for management of different aspects of
+the website:
+
+WMI sections and their modules: @TOC@
+
+=== Content ===
+
+Manage available pages, their visibility, hierarchy and content.
+
+==== Attachments ====
+
+Provides an overview of all attachments (external files) used within the pages.
+You will, however, most often manage atachments through the [pages pages] to
+which they belong.
+
+==== Panels ====
+
+``Panels'' are small boxes which are usually displayed sidewise.
+Unlike other content, panels appear on every page of the website beside its
+main content.  The main content changes while browsing different sections
+of the site, but the panels remain where they are.
+
+There may be arbitrary textual content on each panel, but probably the most
+practical feature of panels is that they can display items of an extension
+module used in some page.  For example the module [modules#news] will display
+recent news on the panel.  You can also define how many items are displayed.
+
+There may be a different set of panels for each language variant of the
+website.  Only panels for the /currently selected language/ are displayed, so
+you need to switch the language to be able to manage panels for a different
+language.
+
+The order of panels on the page is determined by the ``Order'' number.
+
+
+=== Look & Feel ===
+
+==== Stylesheets ====
+
+This module allows you to manage the cascading stylesheets used for your Wiking
+site.  Stylesheets, together with Color Themes (see below) allow you to customize
+the appearance of your Wiking site.
+
+It is possible to edit the stylesheets directly, however this is only
+encouraged if you know CSS and Wiking stylesheet handling details.  The primary
+intended use of this module for most website administrators is management of
+predefined Wiking stylesheets.  There are several stylesheets preinstalled with
+the system.  Other may be created and shared by the Wiking user community.
+
+Management is quite simple -- you can activate or deactivate any stylesheet.
+You will immediately see the results.  You can add your own stylesheets and
+override certain settings of other stylesheets.  The stylesheets should only
+use symbolic color names defined by color themes to provide full color theming
+support.
+
+The stylesheet named 'default.css' should not be edited, since its contents is
+actually not accessible through the database.
+
+==== Color Themes ====
+
+Color themes allow the simplest way of appearance customisation.  You must go
+to your site configuration to activate one of the themes defined in this
+module.
+
+This module manages the set of available color themes.  Several themes are
+included in the default installation.  Other themes may be created by the
+Wiking user commutnity and shared.  You can also create your own themes.
+
+The final appearance is determined by the combination of active stylesheet(s)
+and the selected color theme.
+
+
+=== User Management ===
+
+
+=== Setup ===
+
+==== Languages ==== languages
+
+This module allows you to manage the set of available languages.  You can add
+any language as it's lowercase ISO 639-1 Alpha-2 language code.
+
+The configured languages become automatically available for content creation.
+
+See the chapter [navigation#languages Language selection] of Wiking Users Guide
+for more information how multiple language variants are served to website
+visitors.
+
