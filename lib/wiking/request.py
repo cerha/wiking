@@ -93,8 +93,8 @@ class Request(pytis.web.Request):
     def set_cookie(self, name, value, expires=None, secure=False):
         c = Cookie.SimpleCookie()
         c[name] = value
-        c[name]['domain'] = self._req.server.server_hostname
-        c[name]['path'] = '/'
+        #c[name]['domain'] = self._req.connection.local_host
+        c[name]['path'] = self.uri_prefix() or '/'
         if expires is not None:
             c[name]['expires'] = expires
         if secure:
