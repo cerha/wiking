@@ -1,4 +1,4 @@
-# Copyright (C) 2006, 2007 Brailcom, o.p.s.
+# Copyright (C) 2006, 2007, 2008 Brailcom, o.p.s.
 # Author: Tomas Cerha <cerha@brailcom.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -110,7 +110,6 @@ class Exporter(lcg.HtmlExporter):
         return self._hidden(_("Jump in page") + ": " + concat(links, separator=' | '))
         
     def _breadcrumbs(self, context):
-        g = self._generator
         links = [lcg.link(n).export(context) for n in context.node().path()[1:]]
         return _("You are here:") + ' ' + concat(links, separator=' / ')
         
