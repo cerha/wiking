@@ -38,7 +38,6 @@ class Application(Module):
     _MAPPING = {'_doc': 'Documentation',
                 'css': 'Stylesheets',
                 }
-    
     """Defines static assignment of modules responsible for handling distinct URI paths. 
 
     The value is a dictionary, where keys are uri's and values are the names of the responsible
@@ -46,7 +45,7 @@ class Application(Module):
     Other parts (after the first slash) may be used by the module for further resolution of the
     request.
 
-    This constant is used by the default implementation of the method 'resolve()'.  See its
+    This constant is used by the default implementation of 'Application.handle()'.  See its
     documentation for more information.
     
     """
@@ -57,15 +56,25 @@ class Application(Module):
         super(Application, self).__init__(*args, **kwargs)
         self._reverse_mapping = dict([(v,k) for k,v in self._MAPPING.items()])
     
-    def resolve(self, req):
-        """Return the name of the module responsible for handling the request.
+    def handle(self, req):
+        """Handle the request.
 
-        The Wiking Handler uses this method to determine which module is responsible for processing
-        the request (to be able to postpone it to this module).
+        The Wiking Handler passes the request to the current application for further processing.
+        The 'configure()' method is called before the request is passed.  Request errors are
+        handled at the calling level.
 
-        The default implementation uses static mapping defined by the class constant '\_MAPPING'.
-        You will need to re-implement this method if you want to replace the static mapping by a
-        more complicated logic.
+        The return value may be one of three types:
+           * 'Document' instance.
+           * The result of `Request.done()' to indicate that the request was already handled.
+           * A sequence of two values (MIME_TYPE, CONTENT), where MIME_TYPE is a string determining
+             the mime type of the content and CONTENT is the actual output data as an 8-bit string
+             or buffer.
+
+        The default implementation uses static mapping defined by the class constant '\_MAPPING' to
+        determine which module is responsible for processing the request and passes the request
+        along to an instance of this module.  'NotFound' is raised if the mapping doesn't define an
+        item for the current request URI.  You may re-implement this method if a different logic is
+        more suitable for your application.
 
         """
         identifier = req.path[0]
@@ -73,7 +82,9 @@ class Application(Module):
             modname = self._MAPPING[identifier]
         except KeyError:
             raise NotFound()
-        return modname
+        module = self._module(modname)
+        assert isinstance(module, RequestHandler)
+        return module.handle(req)
     
     def module_uri(self, modname):
         """Return the current uri for given module name.

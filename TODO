@@ -1,6 +1,12 @@
 Core features:
 
- * Force HTTPS also for registration form (see note at PytisModule.action_add()).
+ * Force HTTPS also for registration form (see note at PytisModule.action_add())
+
+ * Create an admin account during site installation
+
+ * Use real users for admin email notifications and bug reports (not config.webmaster_addr)
+
+ * Automatically determine the default page (instead of defaulting to 'index')
 
  * Allow extension module management to page owner
 

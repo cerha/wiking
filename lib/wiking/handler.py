@@ -1,4 +1,4 @@
-# Copyright (C) 2006, 2007 Brailcom, o.p.s.
+# Copyright (C) 2006, 2007, 2008 Brailcom, o.p.s.
 # Author: Tomas Cerha <cerha@brailcom.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -67,10 +67,7 @@ class Handler(object):
             req.wmi = False # Temporary hack (should go to CMS).
             try:
                 application.configure(req)
-                modname = application.resolve(req)
-                module = self._module(modname)
-                assert isinstance(module, RequestHandler)
-                result = module.handle(req)
+                result = application.handle(req)
                 if not isinstance(result, Document):
                     if isinstance(result, int):
                         return result

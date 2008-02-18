@@ -133,9 +133,10 @@ class ActionHandler(RequestHandler):
         """Return the name of the default action as a string."""
         return None
 
-    def _action(self, req, action, **kwargs):
+    def _handle(self, req, action, **kwargs):
+        """Perform action authorization and call the action method."""
         self._authorize(req, action=action, **kwargs)
-        method = getattr(self, 'action_' + action)
+        method = getattr(self, 'action_'+ action)
         return method(req, **kwargs)
 
     def handle(self, req):
@@ -144,7 +145,7 @@ class ActionHandler(RequestHandler):
             action = req.param('action')
         else:
             action = self._default_action(req, **kwargs)
-        return self._action(req, action, **kwargs)
+        return self._handle(req, action, **kwargs)
 
 
 class DocumentHandler(Module, RequestHandler):

@@ -1,3 +1,13 @@
+2008-02-18  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/modules.py (ActionHandler._action): Method renamed to
+	`_handle()'.
+
+	* lib/wiking/handler.py: Pass request handling to the application.
+
+	* lib/wiking/application.py: Request processing generalized and
+	documented.
+
 2008-02-08  Tomas Cerha  <cerha@brailcom.org>
 
 	* doc/src/cms/Attachments.cs.txt: File removed.
