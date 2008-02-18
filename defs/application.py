@@ -1,5 +1,5 @@
 # -*- coding: iso-8859-2 -*-
-# Copyright (C) 2006, 2007 Brailcom, o.p.s.
+# Copyright (C) 2006, 2007, 2008 Brailcom, o.p.s.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -48,8 +48,7 @@ def menu(resolver):
               )
         ),
         Menu(_("&Content"),
-             (bf(_("&Mapping"), 'Mapping'),
-              df(_("&Pages"),   'Mapping::Pages'),
+             (bf(_("&Pages"),   'Pages'),
               bf(_("&Panels"),  'Panels'),
               bf(_("&News"),    'News'),
               )
@@ -61,11 +60,9 @@ def menu(resolver):
         ),
         Menu(_("Se&tup"),
              (bf(_("&Users"), 'Users'),
-              bf(_("&Access Rights"), 'Rights'),
               ef(_("&Configuration"), 'Config',
                  select_row=(pytis.data.Value(pytis.data.Integer(), 0),)),
               bf(_("Languages"), 'Languages'),
-              bf(_("Modules"),   'Modules'),
               )
         ),
         )
