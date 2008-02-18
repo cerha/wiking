@@ -10,8 +10,8 @@ Přehled:
   * Obrázky, externí dokumenty, zvukové nahrávky, videa a další součásti obsahu
     jsou potom spravovány prostřednictvím tzv. [#attachments příloh].
 
-  * [modules] mohou být použity pro zobrazení dodatečného „inteligentního“
-    obsahu uvnitř stránek.
+  * [modules Rozšiřující moduly] mohou být použity pro zobrazení dodatečného
+    „inteligentního“ obsahu uvnitř stránek.
 
   * Stránky mohou být uspořádány do hierarchie, která je potom automaticky
     respektována navigačními nabídkami.

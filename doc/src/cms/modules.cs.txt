@@ -1,6 +1,6 @@
 # -*- coding: utf-8; mode: structured-text -*-
 
-== Rozšiřující moduly ==
+= Rozšiřující moduly =
 
 Rozšiřující moduly mohou být použity pro vložení „inteligentního“ obsahu do
 stránek.  Wiking je distribuován včetně několika vestavěných modulů, ale další
@@ -28,7 +28,7 @@ chcete spravovat novinky v jiném jazyce, musíte nejprve přepnout aktuální
 jazyk.
 
 
-= Plánovač = planner
+== Plánovač == planner
 
 Modul plánovač slouží ke zveřejnění plánovaných akcí či událostí.  U každé
 události je určeno datum konání a volitelně může být určeno také datum ukončení
@@ -47,7 +47,7 @@ jazyku/.  Pokud chcete spravovat události v jiném jazyce, musíte nejprve
 přepnout aktuální jazyk.
 
 
-= Uživatelé = users
+== Uživatelé == users
 
 Tento modul umožňuje do libovolné stránky vložit výpis registrovaných uživatelů
 a jejich správu.  To může být zejména praktické, pokud chcete návštěvníkům

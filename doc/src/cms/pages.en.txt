@@ -11,7 +11,8 @@ Overview:
   * Images, external documents, sound recordings, videos and other types of
     additional content may be included within a page using [#attachments].
 
-  * [modules] can be used for embedding ``smart'' content within a page.
+  * [modules Extension modules] can be used for embedding ``smart'' content
+    within a page.
 
   * Pages can be arranged into a hierarchy, which is automatically respected by
     site navigation menus.
