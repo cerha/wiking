@@ -246,23 +246,14 @@ class PytisModule(Module, ActionHandler):
         else:
             return self._LIST_ACTIONS
 
-    def _help_target(self, req, record):
-        return None
-    
     def _action_menu(self, req, record=None, actions=None, **kwargs):
         actions = [action for action in actions or self._actions(req, record)
-                   if action.name() is not None and \
+                   if isinstance(action, Action) and action.name() is not None and \
                    self._application.authorize(req, self, action=action.name(), record=record)]
-        if not actions:
+        uri = self._base_uri(req)
+        if not actions or not uri:
             return None
-        else:
-            if req.wmi:
-                uri = req.uri_prefix() + '/_wmi/' + self.name()
-            else:
-                uri = req.uri_prefix() + '/' + '/'.join(req.path[:self._REFERER_PATH_LEVEL-1])
-                kwargs['separate'] = True
-            help = self._help_target(req, record)
-            return ActionMenu(uri, actions, self._referer, self.name(), record, help=help, **kwargs)
+        return ActionMenu(uri, actions, self._referer, self.name(), record, **kwargs)
 
     def _image_provider(self, req, row, cid, target=None):
         return None
@@ -467,24 +458,20 @@ class PytisModule(Module, ActionHandler):
         kwargs = dict(values={sbcol: record[bcol].value()})
         if binding.condition():
             kwargs['condition'] = binding.condition()(record)
-        content = (self._form(pw.BrowseForm, req,
-                              condition=self._condition(req, **kwargs),
-                              columns=[c for c in self._view.columns() if c!=sbcol]),
-                   self._action_menu(req, relation={sbcol: record[bcol].value()}))
-        #TODO: Use binding.side_title() instead of binding.title()?
-        return lcg.Section(title=binding.title() or self._view.title(),
-                           content=[c for c in content if c])
+        content = self._form(pw.BrowseForm, req,
+                             condition=self._condition(req, **kwargs),
+                             columns=[c for c in self._view.columns() if c!=sbcol])
+        menu = self._action_menu(req, relation={sbcol: record[bcol].value()})
+        if menu:
+            content = lcg.Container((content, menu))
+        return content
 
     # ===== Action handlers =====
     
     def action_list(self, req, err=None, msg=None):
         lang = req.prefered_language()
-        content = ()
-        if req.wmi:
-            help = lcg.p(self._view.help() or '', ' ', lcg.link('/_doc/'+self.name(), _("Help")))
-            content += (help,)
-        content += (self._form(pw.ListView, req, condition=self._condition(req, lang=lang)),
-                    self._action_menu(req))
+        content = (self._form(pw.ListView, req, condition=self._condition(req, lang=lang)),
+                   self._action_menu(req))
         return self._document(req, content, lang=lang, err=err, msg=msg)
 
     def action_view(self, req, record, err=None, msg=None):
@@ -493,7 +480,9 @@ class PytisModule(Module, ActionHandler):
                    self._action_menu(req, record)]
         for modname in self._RELATED_MODULES:
             module, binding = self._module(modname), self._bindings[modname]
-            content.append(module.related(req, binding, self.name(), record))
+            #TODO: Use binding.side_title() instead of binding.title()?
+            content.append(lcg.Section(title=binding.title() or self._view.title(),
+                                       content=module.related(req, binding, self.name(), record)))
         return self._document(req, content, record, err=err, msg=msg)
 
     # ===== Action handlers which modify the database =====
@@ -521,7 +510,7 @@ class PytisModule(Module, ActionHandler):
         # same would apply for action_edit.
         form = self._form(pw.EditForm, req, row=None, new=True, action='insert',
                           layout=layout, prefill=self._prefill(req, new=True), errors=errors)
-        return self._document(req, form, subtitle=_("new record"))
+        return self._document(req, form, subtitle=_("New record"))
             
     def action_update(self, req, record, action='update', msg=None):
         layout = self._layout(req, action)
@@ -540,7 +529,9 @@ class PytisModule(Module, ActionHandler):
         form = self._form(pw.EditForm, req, row=record.row(), action=action, layout=layout,
                           submit=self._SUBMIT_BUTTONS.get(action),
                           prefill=self._prefill(req), errors=errors)
-        return self._document(req, form, record, subtitle=_("edit form"), msg=msg)
+        a = [a for a in self._actions(req, record) if a.name() == action]
+        subtitle = a and a[0].title() or _("edit form")
+        return self._document(req, form, record, subtitle=subtitle, msg=msg)
 
     def action_delete(self, req, record):
         err = None
@@ -553,7 +544,7 @@ class PytisModule(Module, ActionHandler):
                 return self._redirect_after_delete(req, record)
         form = self._form(pw.ShowForm, req, row=record.row())
         actions = self._action_menu(req, record, (Action(_("Remove"), 'delete', submit=1),))
-        return self._document(req, (form, actions), record, err=err, subtitle=_("removing"),
+        return self._document(req, (form, actions), record, err=err, subtitle=_("Remove"),
                               msg=_("Please, confirm removing the record permanently."))
         
     # ===== Request redirection after successful data operations =====

@@ -1,12 +1,49 @@
 2008-02-18  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/cms/cms.py (CMSModule._form): Show module help in WMI.
+	(Pages.handle): Method transformed into `_handle()'.
+	(Pages._handle): Store the current page in `req.page'.
+	(Pages._mapped_uri): New method.
+	(Pages._actions): Distinguish also actions outside WMI.
+	(Pages.content_management_panel): New method.
+	(Pages.action_view): Don't create the explicit list of actions here.
+	(Users._actions): Only exclude 'list' when needed.
+
+	* lib/wiking/cms/appl.py (Application.resolve): Method removed.
+	(Application.handle): New method.
+
+	* lib/wiking/util.py (ActionCtrl): New class.
+	(ActionMenu): Be just an `ActionCtrl' container.
+
+	* lib/wiking/db.py (PytisModule._action_menu): Use `_base_uri()'.
+	(PytisModule.related): Don't wrap the form within a `Section'.
+	(PytisModule.action_list): WMI handling removed.
+	(PytisModule.action_view): Wrap related module listings into
+	sections.
+	(PytisModule.action_insert, PytisModule.action_update)
+	(PytisModule.action_delete): Set the `subtitle' according to the
+	current action title.
+
+	* doc/src/cms/modules.cs.txt: Heading structure fixed.
+
+	* doc/src/cms/pages.cs.txt: Minor workaround.
+
+	* doc/src/cms/pages.en.txt: Minor workaround.
+
+	* lib/wiking/request.py (Request.set_cookie): Don't set domain.
+	Set path to `self.uri_prefix()' if defined.
+
 	* lib/wiking/modules.py (ActionHandler._action): Method renamed to
 	`_handle()'.
 
-	* lib/wiking/handler.py: Pass request handling to the application.
+	* lib/wiking/handler.py (Handler.handle): Pass request handling to
+	the application.  Don't set `req.wmi' here.
 
 	* lib/wiking/application.py: Request processing generalized and
 	documented.
+
+	* resources/css/default.css: Updated.
+	
 
 2008-02-08  Tomas Cerha  <cerha@brailcom.org>
 

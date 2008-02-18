@@ -245,15 +245,26 @@ class CMSModule(PytisModule, RssModule, Panelizable):
 
     def _base_uri(self, req):
         if req.wmi:
-            return '/_wmi/'+ self.name()
+            uri = req.uri_prefix() + '/_wmi/'+ self.name()
         else:
-            return super(CMSModule, self)._base_uri(req)
+            uri = super(CMSModule, self)._base_uri(req)
+            if uri is None:
+                # TODO: This a quick hack. Generic solution would be desirable...
+                uri = '/' + req.path[0]
+        return uri
 
     def _form(self, form, req, *args, **kwargs):
         if req.wmi and form == pw.ListView:
             form = pw.BrowseForm
-        return super(CMSModule, self)._form(form, req, *args, **kwargs)
-        
+            help = self._view.help()
+        else:
+            help = None
+        result = super(CMSModule, self)._form(form, req, *args, **kwargs)
+        if help:
+            result = lcg.Container((lcg.p(help), result))
+        return result
+
+    
 
 class Embeddable(object):
     """Mix-in class for modules which may be embedded into page content."""
@@ -411,7 +422,7 @@ class Panels(CMSModule, Publishable):
             Field('size', _("Items count"), width=5,
                   descr=_("Number of items from the selected module, which "
                           "will be shown by the panel.")),
-            Field('content', _("Content"), width=80, height=10,
+            Field('content', _("Content"), height=10,
                   descr=_("Additional text content displayed on the panel.")+\
                   ' '+_STRUCTURED_TEXT_DESCR),
             Field('published', _("Published"), default=True,
@@ -590,7 +601,7 @@ class Pages(CMSModule):
             Field('title', _("Title"), not_null=True),
             Field('description', _("Description"), width=64,
                   descr=_("Brief page description (shown as a tooltip and in site map).")),
-            Field('_content', _("Content"), compact=True, height=20, width=80,
+            Field('_content', _("Content"), compact=True, height=20,
                   descr=_STRUCTURED_TEXT_DESCR),
             Field('content'),
             Field('modname', _("Module"), display=_modtitle, prefer_display=True, not_null=False,
@@ -670,6 +681,7 @@ class Pages(CMSModule):
                enabled=lambda r: r['_content'].value() != r['content'].value()),
         Action(_("Preview"), 'preview', descr=_("Display the page in its current state"),
                enabled=lambda r: r['_content'].value() is not None),
+        Action(_("Attachments"), 'attachments', descr=_("Manage this page's attachments")),
         #Action(_("Translate"), 'translate',
         #      descr=_("Create the content by translating another language variant"),
         #       enabled=lambda r: r['_content'].value() is None),
@@ -680,21 +692,19 @@ class Pages(CMSModule):
     WMI_SECTION = WikingManagementInterface.SECTION_CONTENT
     WMI_ORDER = 200
 
-    def handle(self, req):
-        if not req.wmi and (len(req.path) > 1 or req.param('action') in ('insert', 'delete')):
-            row = self._resolve(req)
-            if row is not None:
-                page = req.page = self._record(row)
-                # req.page used in (Embeddable|Attachments)._redirect_after_*()
+    def _handle(self, req, action, **kwargs):
+        if not req.wmi:
+            page = req.page = kwargs['record']
+            if len(req.path) > 1 or action in ('insert', 'delete'):
                 self._authorize(req, action='view', record=page)
-                modname = row['modname'].value()
+                modname = page['modname'].value()
                 if modname is not None and req.param('module') != 'Attachments':
                     try:
                         return self._module(modname).handle(req)
                     except NotFound:
                         pass
                 return self._module('Attachments').handle(req)
-        return super(Pages, self).handle(req)
+        return super(Pages, self)._handle(req, action, **kwargs)
     
     def _resolve(self, req):
         if req.wmi:
@@ -731,16 +741,14 @@ class Pages(CMSModule):
             return _("Page content was modified, however the changes remain unpublished. Don't "
                      "forget to publish the changes when you are done.")
     
+    def _mapped_uri(self):
+        return '/'
+        
     def _link_provider(self, req, row, cid, **kwargs):
         if cid == 'parent':
             return None
         return super(Pages, self)._link_provider(req, row, cid, **kwargs)
 
-    def _help_target(self, req, record):
-        if not req.wmi:
-            return '/_doc/Pages'
-        return super(Pages, self)._help_target(req, record)
-    
     #def _redirect_after_insert(self, req, record):
         #if not req.wmi:
         #    return self.action_view(req, record, msg=self._insert_msg(record))
@@ -751,6 +759,74 @@ class Pages(CMSModule):
         else:
             return super(Pages, self)._redirect_after_update(req, record)
 
+    def _actions(self, req, record):
+        actions = super(Pages, self)._actions(req, record)
+        if record is not None:
+            if record['modname'].value() is not None:
+                module = self._module(record['modname'].value())
+                actions += (Action(module.INSERT_LABEL, 'insert'),)
+            if req.wmi and req.param('action') == 'preview':
+                actions = (Action(_("Back"), 'view'),)
+            #(Action(_("View"), 'view'),)
+            if req.wmi:
+                exclude = ('attachments',)
+            else:
+                # TODO: Unpublish doesn't work outside WMI.
+                exclude = ('unpublish', 'preview', 'delete', 'list')
+            actions = tuple([a for a in actions if a.name() not in exclude])
+        return actions
+
+    # Public methods
+    
+    def content_management_panel(self, req, record):
+        menu = self._action_menu(req, record, title=None)
+        if not menu:
+            return None
+        links = (#(_("List all pages"), '/?action=list'),
+                 ('/_doc/pages', _("Help"),      _("Show on-line help")),
+                 ('/_wmi',       _("Enter WMI"), _("Enter the Wiking Management Interface")))
+        content = lcg.ul(((_("Current page:"), menu),
+                          (_(""), lcg.ul([lcg.link(target, label, descr=descr)
+                                          for target, label, descr in links]))))
+        return Panel('content-management-panel', _("Content management"), content)
+
+    def menu(self, req):
+        children = {None: []}
+        translations = {}
+        def mkitem(row):
+            mapping_id, identifier = row['mapping_id'].value(), str(row['identifier'].value())
+            titles, descriptions = translations[mapping_id]
+            return MenuItem(identifier,
+                            lcg.SelfTranslatableText(identifier, translations=titles),
+                            descr=lcg.SelfTranslatableText('', translations=descriptions),
+                            hidden=row['ord'].value() is None, variants=titles.keys(),
+                            submenu=[mkitem(r) for r in children.get(mapping_id, ())])
+        for row in self._data.get_rows(sorting=self._sorting, published=True):
+            mapping_id = row['mapping_id'].value()
+            if not translations.has_key(mapping_id):
+                parent = row['parent'].value()
+                if not children.has_key(parent):
+                    children[parent] = []
+                children[parent].append(row)
+                translations[mapping_id] = ({}, {})
+            titles, descriptions = translations[mapping_id]
+            lang = str(row['lang'].value())
+            titles[lang] = row['title_or_identifier'].value()
+            if row['description'].value() is not None:
+                descriptions[lang] = row['description'].value()
+        return [mkitem(row) for row in children[None]] + \
+               [MenuItem('_registration', _("Registration"), hidden=True),
+                MenuItem('_doc', _("Wiking Documentation"), hidden=True)]
+    
+    def module_uri(self, modname):
+        row = self._data.get_row(modname=modname) #, published=True)
+        if row:
+            return '/'+ row['identifier'].value()
+        else:
+            return None
+
+    # Action handlers.
+        
     def action_view(self, req, record, err=None, msg=None, preview=False):
         if req.wmi and not preview:
             return super(Pages, self).action_view(req, record, err=err, msg=msg)
@@ -785,13 +861,7 @@ class Pages(CMSModule):
             if rows:
                 return req.redirect('/'+rows[0]['identifier'].value())
         # Action menu
-        actions = self._DEFAULT_ACTIONS_FIRST + self._ACTIONS + \
-               (Action(_("Attachments"), 'attachments',descr=_("Manage this page's attachments")),)
-        if module:
-            actions += (Action(module.INSERT_LABEL, 'insert'),)
-        if req.wmi:
-            actions += (Action(_("Back"), 'view'), self._DEFAULT_ACTIONS_LAST[1])
-        content.append(self._action_menu(req, record, actions=actions, separate=True))
+        content.append(self._action_menu(req, record, help='/_doc/pages')) # separate=True))
         return self._document(req, content, record, resources=attachments, err=err, msg=msg)
 
     def action_rss(self, req, record):
@@ -802,7 +872,8 @@ class Pages(CMSModule):
             raise NotFound()
         
     def action_list(self, req, record=None, msg=None):
-        if record is None:
+        if req.param('module') is None:
+            Roles.check(req, (Roles.AUTHOR,))
             return super(Pages, self).action_list(req, msg=msg)
         elif req.param('module') == record['modname'].value():
             return self.action_view(req, record, msg=msg)
@@ -813,10 +884,9 @@ class Pages(CMSModule):
             raise NotFound()
         
     def action_attachments(self, req, record, err=None, msg=None):
-        req.page = record
         binding = self._bindings['Attachments']
         content = self._module('Attachments').related(req, binding, self.name(), record)
-        return self._document(req, content, record, err=err, msg=msg)
+        return self._document(req, content, record, subtitle=_("Attachments"), err=err, msg=msg)
     RIGHTS_attachments = (Roles.AUTHOR, Roles.OWNER)
         
     def action_preview(self, req, record, **kwargs):
@@ -843,7 +913,7 @@ class Pages(CMSModule):
             d = pw.SelectionDialog('src_lang', _("Choose source language"), langs,
                                    action='translate', hidden=\
                                    [(id, record[id].value()) for id in ('mapping_id', 'lang')])
-            return self._document(req, d, record, subtitle=_("translate"))
+            return self._document(req, d, record, subtitle=_("Translate"))
         else:
             row = self._data.get_row(mapping_id=record['mapping_id'].value(),
                                      lang=str(req.param('src_lang')))
@@ -882,41 +952,7 @@ class Pages(CMSModule):
         return self.action_view(req, record, **kwargs)
     RIGHTS_unpublish = (Roles.ADMIN, Roles.OWNER)
 
-    def menu(self, req):
-        children = {None: []}
-        translations = {}
-        def mkitem(row):
-            mapping_id, identifier = row['mapping_id'].value(), str(row['identifier'].value())
-            titles, descriptions = translations[mapping_id]
-            return MenuItem(identifier,
-                            lcg.SelfTranslatableText(identifier, translations=titles),
-                            descr=lcg.SelfTranslatableText('', translations=descriptions),
-                            hidden=row['ord'].value() is None, variants=titles.keys(),
-                            submenu=[mkitem(r) for r in children.get(mapping_id, ())])
-        for row in self._data.get_rows(sorting=self._sorting, published=True):
-            mapping_id = row['mapping_id'].value()
-            if not translations.has_key(mapping_id):
-                parent = row['parent'].value()
-                if not children.has_key(parent):
-                    children[parent] = []
-                children[parent].append(row)
-                translations[mapping_id] = ({}, {})
-            titles, descriptions = translations[mapping_id]
-            lang = str(row['lang'].value())
-            titles[lang] = row['title_or_identifier'].value()
-            if row['description'].value() is not None:
-                descriptions[lang] = row['description'].value()
-        return [mkitem(row) for row in children[None]] + \
-               [MenuItem('_registration', _("Registration"), hidden=True)]
-    
-    def module_uri(self, modname):
-        row = self._data.get_row(modname=modname) #, published=True)
-        if row:
-            return '/'+ row['identifier'].value()
-        else:
-            return None
-        
-        
+
 class Attachments(StoredFileModule, CMSModule):
     class Spec(StoredFileModule.Spec):
         title = _("Attachments")
@@ -955,7 +991,7 @@ class Attachments(StoredFileModule, CMSModule):
             Field('title', _("Title"), width=30, maxlen=64,
                   descr=_("The name of the attachment (e.g. the full name of the document). "
                           "If empty, the file name will be used instead.")),
-            Field('description', _("Description"), width=60, height=3, maxlen=240,
+            Field('description', _("Description"), height=3, maxlen=240,
                   descr=_("Optional description used for the listing of attachments (see below).")),
             Field('ext', virtual=True, computer=Computer(self._ext, ('filename',))),
             Field('bytesize', _("Byte size"),
@@ -1076,11 +1112,6 @@ class Attachments(StoredFileModule, CMSModule):
         else:
             return super(Attachments, self)._actions(req, record)
 
-    def _help_target(self, req, record):
-        if not req.wmi:
-            return '/_doc/Pages#attachments'
-        return super(Attachments, self)._help_target(req, record)
-        
     def attachments(self, page):
         def resource(row):
             if row['mime_type'].value().startswith('image/'):
@@ -1112,8 +1143,7 @@ class News(CMSModule, Embeddable):
                   selection_type=CHOICE, value_column='lang'),
             Field('title', _("Briefly"), column_label=_("Message"), width=32,
                   descr=_("The item summary (title of the entry).")),
-            Field('content', _("Text"), height=6, width=80,
-                  descr=_STRUCTURED_TEXT_DESCR + ' ' + \
+            Field('content', _("Text"), height=6, descr=_STRUCTURED_TEXT_DESCR + ' ' + \
                   _("It is, however, recommened to use the simplest possible formatting, since "
                     "the item may be also published through an RSS channel, which does not "
                     "support formatting.")),
@@ -1153,10 +1183,10 @@ class News(CMSModule, Embeddable):
         return super(News, self)._link_provider(req, row, cid, target=target)
 
     def _redirect_after_insert(self, req, record):
-        if hasattr(req, 'page'):
-            return self._module('Pages').action_view(req, req.page, msg=self._insert_msg(record))
-        else:
+        if req.wmi:
             return super(News, self)._redirect_after_insert(req, record)
+        else:
+            return self._module('Pages').action_view(req, req.page, msg=self._insert_msg(record))
         
 
 class Planner(News):
@@ -1238,7 +1268,7 @@ class Images(StoredFileModule, CMSModule, Embeddable):
             Field('title', _("Title"), width=30),
             Field('author', _("Author"), width=30),
             Field('location', _("Location"), width=50),
-            Field('description', _("Description"), width=60, height=5),
+            Field('description', _("Description"), height=5),
             Field('taken', _("Date of creation"), type=DateTime()),
             Field('format', computer=imgcomp(lambda i: i.format.lower())),
             Field('width', _("Width"), computer=imgcomp(lambda i: i.size[0])),
@@ -1335,7 +1365,7 @@ class Stylesheets(CMSModule, Stylesheets):
             Field('identifier',  _("Identifier"), width=16),
             Field('active',      _("Active")),
             Field('description', _("Description"), width=40),
-            Field('content',     _("Content"), height=20, width=80),
+            Field('content',     _("Content"), height=20),
             )
         layout = ('identifier', 'active', 'description', 'content')
         columns = ('identifier', 'active', 'description')
@@ -1408,7 +1438,7 @@ class Users(CMSModule, Embeddable):
                           "alternate name, such as nickname or monogram.")),
             Field('email', _("E-mail"), width=36),
             Field('phone', _("Phone")),
-            Field('address', _("Address"), height=3),
+            Field('address', _("Address"), width=20, height=3),
             Field('uri', _("URI"), width=36),
             Field('since', _("Registered since"), type=DateTime(show_time=False), default=now),
             Field('role', _("Role"), display=self._rolename, prefer_display=True, default='none',
@@ -1476,7 +1506,7 @@ class Users(CMSModule, Embeddable):
         
     def _actions(self, req, record):
         actions = list(super(Users, self)._actions(req, record))
-        if not req.wmi:
+        if not req.wmi and req.path[0] == '_registration':
             actions = [a for a in actions if a.name() != 'list']
         if record and record['role'].value() == 'none':
             actions.insert(0, Action(_("Enable"), 'enable', descr=_("Enable this account")))

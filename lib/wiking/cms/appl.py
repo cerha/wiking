@@ -46,9 +46,11 @@ class Application(CookieAuthentication, wiking.Application):
                'SiteMap': (Roles.ANYONE,),
                'WikingManagementInterface': (Roles.AUTHOR, )}
 
-    def resolve(self, req):
-        return self._MAPPING.get(req.path[0], 'Pages')
-    
+    def handle(self, req):
+        req.wmi = False # Will be set to True by `WikingManagementInterface' if needed.
+        modname = self._MAPPING.get(req.path[0], 'Pages')
+        return self._module(modname).handle(req)
+
     def module_uri(self, modname):
         return self._module('Pages').module_uri(modname) \
                or super(Application, self).module_uri(modname)
@@ -65,11 +67,13 @@ class Application(CookieAuthentication, wiking.Application):
                 panels = [LoginPanel(req)]
             else:
                 panels = []
+            #if Roles.check(req, (Roles.AUTHOR,)) and hasattr(req, 'page'):
+            #    panel = self._module('Pages').content_management_panel(req, req.page)
+            #    if panel:
+            #        panels.append(panel)
             return panels + self._module('Panels').panels(req, lang)
         
     def configure(self, req):
-        # TODO: This should be here as soon as req.wmi doesn't appear anywhere outside CMS.
-        # req.wmi = False # Will be set to True by `WikingManagementInterface'.
         return self._module('Config').configure(req)
         
     def languages(self):

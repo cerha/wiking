@@ -1,5 +1,5 @@
 # Wiking translations.
-# Copyright (C) 2006, 2007 Brailcom, o.p.s.
+# Copyright (C) 2006-2008 Brailcom, o.p.s.
 # This file is distributed under the same license as the Wiking package.
 # Tomas Cerha <cerha@brailcom.org>, 2006.
 #
@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-02-06 15:14+0100\n"
-"PO-Revision-Date: 2007-09-26 11:26+0200\n"
+"POT-Creation-Date: 2008-02-18 19:58+0100\n"
+"PO-Revision-Date: 2008-02-18 20:20+0100\n"
 "Last-Translator: Tomas Cerha <cerha@brailcom.org>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
 "MIME-Version: 1.0\n"
@@ -23,7 +23,7 @@ msgstr ""
 msgid "Modify the record"
 msgstr ""
 
-#: ../lib/wiking/db.py:40 ../lib/wiking/db.py:555
+#: ../lib/wiking/db.py:40 ../lib/wiking/db.py:546 ../lib/wiking/db.py:547
 msgid "Remove"
 msgstr ""
 
@@ -39,7 +39,7 @@ msgstr ""
 msgid "Back to the list of all records"
 msgstr ""
 
-#: ../lib/wiking/db.py:44
+#: ../lib/wiking/db.py:44 ../lib/wiking/db.py:513
 msgid "New record"
 msgstr ""
 
@@ -71,59 +71,47 @@ msgstr ""
 msgid "Integrity check failed."
 msgstr ""
 
-#: ../lib/wiking/db.py:484 ../lib/wiking/util.py:548
-msgid "Help"
-msgstr ""
-
-#: ../lib/wiking/db.py:524
-msgid "new record"
-msgstr ""
-
-#: ../lib/wiking/db.py:543
+#: ../lib/wiking/db.py:533
 msgid "edit form"
 msgstr ""
 
-#: ../lib/wiking/db.py:556
-msgid "removing"
-msgstr ""
-
-#: ../lib/wiking/db.py:557
+#: ../lib/wiking/db.py:548
 msgid "Please, confirm removing the record permanently."
 msgstr ""
 
-#: ../lib/wiking/db.py:617
+#: ../lib/wiking/db.py:608
 msgid "An RSS channel is available for this section:"
 msgstr ""
 
-#: ../lib/wiking/db.py:621
+#: ../lib/wiking/db.py:612
 msgid "more about RSS"
 msgstr ""
 
-#: ../lib/wiking/db.py:774
+#: ../lib/wiking/db.py:765
 msgid "No records."
 msgstr ""
 
-#: ../lib/wiking/db.py:781
+#: ../lib/wiking/db.py:772
 msgid "The item was published."
 msgstr ""
 
-#: ../lib/wiking/db.py:782
+#: ../lib/wiking/db.py:773
 msgid "The item was unpublished."
 msgstr ""
 
-#: ../lib/wiking/db.py:791
+#: ../lib/wiking/db.py:782
 msgid "Publish"
 msgstr ""
 
-#: ../lib/wiking/db.py:795
+#: ../lib/wiking/db.py:786
 msgid "Make the item visible to website visitors"
 msgstr ""
 
-#: ../lib/wiking/db.py:796
+#: ../lib/wiking/db.py:787
 msgid "Unpublish"
 msgstr ""
 
-#: ../lib/wiking/db.py:799
+#: ../lib/wiking/db.py:790
 msgid "Make the item invisible to website visitors"
 msgstr ""
 
@@ -299,7 +287,7 @@ msgstr ""
 msgid "log in"
 msgstr ""
 
-#: ../lib/wiking/util.py:317 ../lib/wiking/util.py:615
+#: ../lib/wiking/util.py:317 ../lib/wiking/util.py:624
 msgid "New user registration"
 msgstr ""
 
@@ -316,70 +304,74 @@ msgstr ""
 msgid "Login Panel"
 msgstr ""
 
-#: ../lib/wiking/util.py:496
-msgid "Actions:"
-msgstr ""
-
-#: ../lib/wiking/util.py:540
+#: ../lib/wiking/util.py:538
 msgid "not available"
 msgstr ""
 
-#: ../lib/wiking/util.py:605
+#: ../lib/wiking/util.py:545
+msgid "Actions:"
+msgstr ""
+
+#: ../lib/wiking/util.py:550
+msgid "Help"
+msgstr ""
+
+#: ../lib/wiking/util.py:614
 msgid "Login name"
 msgstr ""
 
-#: ../lib/wiking/util.py:608
+#: ../lib/wiking/util.py:617
 msgid "Password"
 msgstr ""
 
-#: ../lib/wiking/util.py:613
+#: ../lib/wiking/util.py:622
 msgid "Log in"
 msgstr ""
 
-#: ../lib/wiking/util.py:616
+#: ../lib/wiking/util.py:625
 msgid "Forgot your password?"
 msgstr ""
 
-#: ../lib/wiking/modules.py:340
+#: ../lib/wiking/modules.py:341
 msgid "Enter your login name, please!"
 msgstr ""
 
-#: ../lib/wiking/modules.py:342
+#: ../lib/wiking/modules.py:343
 msgid "Enter your password, please!"
 msgstr ""
 
-#: ../lib/wiking/modules.py:346
+#: ../lib/wiking/modules.py:347
 msgid "Invalid login!"
 msgstr ""
 
-#: ../lib/wiking/modules.py:406
+#: ../lib/wiking/modules.py:407
 msgid "Searching"
 msgstr ""
 
-#: ../lib/wiking/modules.py:407
+#: ../lib/wiking/modules.py:408
 msgid "Search results"
 msgstr ""
 
-#: ../lib/wiking/modules.py:408
+#: ../lib/wiking/modules.py:409
 msgid "Given search term doesn't contain any searchable term."
 msgstr ""
 
-#: ../lib/wiking/modules.py:412
+#: ../lib/wiking/modules.py:413
 msgid "Search words:"
 msgstr ""
 
-#: ../lib/wiking/modules.py:413
+#: ../lib/wiking/modules.py:414
 msgid "Search"
 msgstr ""
 
-#: ../lib/wiking/modules.py:469
+#: ../lib/wiking/modules.py:470
 msgid "Nothing found."
 msgstr ""
 
-#: ../lib/wiking/modules.py:526
+#: ../lib/wiking/modules.py:527
 msgid "The following modules were successfully reloaded:"
 msgstr ""
 
-#: ../lib/wiking/modules.py:528
+#: ../lib/wiking/modules.py:529
 msgid "Reload"
 msgstr ""

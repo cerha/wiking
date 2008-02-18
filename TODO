@@ -10,6 +10,8 @@ Core features:
 
  * Allow extension module management to page owner
 
+ * Disable table layout per layout spec, not per module.
+
  * Allow multiple instances of News and Planner modules
 
  * Remove the dbname column -- get the database name from somewhere else

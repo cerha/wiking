@@ -385,7 +385,7 @@ class Document(object):
         id = '/'.join(req.path)
         parent_id = '/'.join(req.path[:-1])
         state = WikingNode.State(user=req.user(),
-                                 wmi=req.wmi,
+                                 wmi=hasattr(req, 'wmi') and req.wmi or False,
                                  prefix=req.uri_prefix(),
                                  show_panels=req.show_panels(),
                                  server_hostname=req.server_hostname())
@@ -490,30 +490,27 @@ class WikingNode(lcg.ContentNode):
         return self._panels
 
 
-class ActionMenu(lcg.Content):
-    """A menu of actions related to one record or the whole module."""
+class ActionCtrl(lcg.Content):
+    """Context action invocation control."""
     
-    def __init__(self, uri, actions, referer, name, row=None, relation=None, separate=False,
-                 help=None):
-        super(ActionMenu, self).__init__()
+    def __init__(self, uri, action, referer, name, row=None, relation=None):
+        super(ActionCtrl, self).__init__()
         assert isinstance(uri, (str, unicode)), uri
-        assert isinstance(actions, (tuple, list)), actions
+        assert isinstance(action, Action), action
         assert isinstance(referer, str), referer
         assert isinstance(name, str), name
         assert row is None or isinstance(row, pp.PresentedRow), row
         assert relation is None or isinstance(relation, dict), relation
-        assert separate is None or isinstance(separate, bool), separate
-        assert help is None or isinstance(help, str), help
         self._uri = uri
-        self._actions = actions
+        self._action = action
         self._referer = referer
         self._name = name
         self._row = row
         self._relation = relation or {}
-        self._separate = separate
-        self._help = help
 
-    def _export_item(self, action, g):
+    def export(self, context):
+        g = context.generator()
+        action = self._action
         title = action.descr()
         enabled = action.enabled()
         if callable(enabled):
@@ -540,19 +537,25 @@ class ActionMenu(lcg.Content):
             cls = 'inactive'
             title += " (" + _("not available") + ")"
         return g.link(action.title(), target, title=title, cls=cls)
-        
-    def export(self, exporter):
-        g = exporter.generator()
+
+
+class ActionMenu(lcg.Container):
+    """A set of action controls."""
+    
+    def __init__(self, uri, actions, referer, name, row=None, relation=None, title=_("Actions:"),
+                 help=None):
+        ctrls = [ActionCtrl(uri, a, referer, name, row, relation=relation)
+                 for a in actions]
+        if help:
+            ctrls.append(lcg.link(help, _("Help")))
+        super(ActionMenu, self).__init__(ctrls)
+        self._title = title
+
+    def export(self, context):
+        g = context.generator()
         # Only Wiking's actions are considered, not all `pytis.presentation.Action'.
-        items = [self._export_item(a, g) for a in self._actions if isinstance(a, Action)]
-        if self._help:
-            items.append(g.link(_("Help"), self._help))
-        content = (_("Actions:"), lcg.concat(items, separator=g.span(" |", cls="hidden")+'\n'))
-        cls = "actions"
-        if self._separate:
-            content = (g.hr(),) + content + (g.hr(),)
-            cls += " separated"
-        return g.div(lcg.concat(content, separator="\n"), cls=cls)
+        return g.div((self._title and self._title +"\n" or '') +
+                     g.list([ctrl.export(context) for ctrl in self._content]), cls='actions')
 
     
 class PanelItem(lcg.Content):
