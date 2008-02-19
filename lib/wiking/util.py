@@ -543,19 +543,20 @@ class ActionMenu(lcg.Container):
     """A set of action controls."""
     
     def __init__(self, uri, actions, referer, name, row=None, relation=None, title=_("Actions:"),
-                 help=None):
+                 help=None, cls='actions'):
         ctrls = [ActionCtrl(uri, a, referer, name, row, relation=relation)
                  for a in actions]
         if help:
             ctrls.append(lcg.link(help, _("Help")))
         super(ActionMenu, self).__init__(ctrls)
         self._title = title
+        self._cls = cls
 
     def export(self, context):
         g = context.generator()
         # Only Wiking's actions are considered, not all `pytis.presentation.Action'.
         return g.div((self._title and self._title +"\n" or '') +
-                     g.list([ctrl.export(context) for ctrl in self._content]), cls='actions')
+                     g.list([ctrl.export(context) for ctrl in self._content]), cls=self._cls)
 
     
 class PanelItem(lcg.Content):

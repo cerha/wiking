@@ -1,3 +1,15 @@
+2008-02-19  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/util.py (ActionMenu): New argument 'cls'. 
+
+	* lib/wiking/cms/cms.py (Pages.content_management_panel)
+	(Pages.action_view): Set `ActionMenu' `cls'.
+
+	* resources/css/default.css: ActionMenu styles improved.
+
+	* lib/wiking/modules.py (SubmenuRedirect._handle): Respect current
+	uri prefix.
+
 2008-02-18  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/cms/cms.py (CMSModule._form): Show module help in WMI.

@@ -493,19 +493,27 @@ form.edit-form fieldset.controls input:hover {
 }
 */
 
-#content .actions { 
+.actions { 
     margin: 1em 0;
     line-height: 1.5em;
 }
-#content .actions ul, #content .actions li { 
+.actions.separate { 
+    margin: 1em 0 0 0;
+    position: relative;
+    top: 0.2em;
+    padding-top: 0.2em;
+    border-top: 1px solid $color.border;
+}
+.actions ul, #content .actions li { 
     display: inline;
     margin: 0;
     padding: 0;
 }
-#content .actions li { 
+.actions li { 
     margin: 0 0.15em;
 }
-#content .actions a, #content .actions a:visited, div.panel-login a.login-ctrl {
+
+.actions a, .actions a:visited, div.panel-login a.login-ctrl {
     padding: 0 0.5em;
     text-decoration: none;
     color: $color.button-fg;
@@ -513,11 +521,11 @@ form.edit-form fieldset.controls input:hover {
     border: 1px solid $color.button-border;
     white-space: nowrap;
 }
-#content .actions a:hover, div.panel-login a.login-ctrl:hover { 
+.actions a:hover, div.panel-login a.login-ctrl:hover { 
     background: $color.button-hover;
     color: $color.button-fg;
 }
-#content .actions a.inactive, #content .actions a.inactive:hover { 
+.actions a.inactive, .actions a.inactive:hover { 
     color: $color.button-inactive-fg;
     background: $color.button-inactive;
     border-color: $color.button-inactive-border;

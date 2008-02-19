@@ -779,7 +779,7 @@ class Pages(CMSModule):
     # Public methods
     
     def content_management_panel(self, req, record):
-        menu = self._action_menu(req, record, title=None)
+        menu = self._action_menu(req, record, title=None, cls=None)
         if not menu:
             return None
         links = (#(_("List all pages"), '/?action=list'),
@@ -861,7 +861,7 @@ class Pages(CMSModule):
             if rows:
                 return req.redirect('/'+rows[0]['identifier'].value())
         # Action menu
-        content.append(self._action_menu(req, record, help='/_doc/pages')) # separate=True))
+        content.append(self._action_menu(req, record, help='/_doc/pages', cls='actions separate'))
         return self._document(req, content, record, resources=attachments, err=err, msg=msg)
 
     def action_rss(self, req, record):
