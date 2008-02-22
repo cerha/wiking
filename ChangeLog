@@ -1,6 +1,16 @@
 2008-02-22  Tomas Cerha  <cerha@brailcom.org>
 
-	* lib/wiking/cms/cms.py: Embeddable module support cleaned.
+	* lib/wiking/cms/appl.py (Application._auth_user): Pass on the
+	request object.
+
+	* lib/wiking/modules.py: Pass the request to all methods where
+	a record is constructed.
+
+	* lib/wiking/db.py: Store the current request within the record
+	data.
+
+	* lib/wiking/cms/cms.py: Embeddable module support cleaned.  Pass
+	the request to all methods where a record is constructed.
 
 	* lib/wiking/util.py: Node state support removed.
 

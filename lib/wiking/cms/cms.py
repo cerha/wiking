@@ -181,7 +181,7 @@ class Registration(Module, ActionHandler):
         title = _("Password reminder")
         error = None
         if req.param('login'):
-            record = self._module('Users').find_user(req.param('login'))
+            record = self._module('Users').find_user(req, req.param('login'))
             if record:
                 text = concat(
                     _("A password reminder request has been made at %(server_uri)s.",
@@ -299,18 +299,18 @@ class Session(PytisModule, wiking.Session):
         self._data.insert(row)
         return session_key
         
-    def check(self, user, key):
+    def check(self, req, user, key):
         row = self._data.get_row(login=user.login(), key=key)
         if row and not self._expired(row['expire'].value()):
-            self._record(row).update(expire=self._expiration())
+            self._record(req, row).update(expire=self._expiration())
             return True
         else:
             return False
 
-    def close(self, user, key):
+    def close(self, req, user, key):
         row = self._data.get_row(login=user.login(), key=key)
         if row:
-            self._delete(self._record(row))
+            self._delete(self._record(req, row))
             
 
 class Config(CMSModule):
@@ -1572,10 +1572,10 @@ class Users(EmbeddableCMSModule):
         return self.action_update(req, record, action='passwd')
     RIGHTS_passwd = (Roles.ADMIN, Roles.OWNER)
 
-    def user(self, login):
+    def user(self, req, login):
         row = self._data.get_row(login=login)
         if row:
-            record = self._record(row)
+            record = self._record(req, row)
             base_uri = self._application.module_uri(self.name())
             if base_uri:
                 uri = base_uri +'/'+ login
@@ -1586,14 +1586,14 @@ class Users(EmbeddableCMSModule):
         else:
             return None
 
-    def find_user(self, query):
+    def find_user(self, req, query):
         """Return the user record for given login or email address (for password reminder)."""
         if query.find('@') == -1:
             row = self._data.get_row(login=query)
         else:
             row = self._data.get_row(email=query)
         if row:
-            return self._record(row)
+            return self._record(req, row)
         else:
             return None
     

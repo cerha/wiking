@@ -83,8 +83,8 @@ class Application(CookieAuthentication, wiking.Application):
         return [lcg.Stylesheet(name, uri='/_css/'+name)
                 for name in self._module('Stylesheets').stylesheets()]
 
-    def _auth_user(self, login):
-        return self._module('Users').user(login)
+    def _auth_user(self, req, login):
+        return self._module('Users').user(req, login)
 
     def _auth_check_password(self, user, password):
         return password == user.data()['password'].value()

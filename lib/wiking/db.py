@@ -67,8 +67,21 @@ class PytisModule(Module, ActionHandler):
     _spec_cache = {}
 
     class Record(pp.PresentedRow):
-        """An abstraction of one record within the module's data object."""
+        """An abstraction of one record within the module's data object.
 
+        The current request is stored within the record data to make it available within computer
+        functions.
+
+        Warning: Instances of this class should not persist across multiple requests!
+        
+        """
+        def __init__(self, req, *args, **kwargs):
+            super(PytisModule.Record, self).__init__(*args, **kwargs)
+            self._req = req
+
+        def req(self):
+            return self._req
+            
         def key(self):
             """Return the value of record's key for data operations."""
             return (self[self._data.key()[0].id()],)
@@ -326,7 +339,7 @@ class PytisModule(Module, ActionHandler):
         # raise one of HttpError exceptions.
         row = self._resolve(req)
         if row is not None:
-            return dict(record=self._record(row))
+            return dict(record=self._record(req, row))
         else:
             return {}
     
@@ -406,9 +419,9 @@ class PytisModule(Module, ActionHandler):
         return self._data.get_rows(sorting=self._sorting, limit=limit,
                                    condition=self._condition(req, lang=lang))
     
-    def _record(self, row, new=False, prefill=None):
+    def _record(self, req, row, new=False, prefill=None):
         """Return the Record instance initialized by given data row."""
-        return self.Record(self._view.fields(), self._data, row, prefill=prefill, new=new)
+        return self.Record(req, self._view.fields(), self._data, row, prefill=prefill, new=new)
     
 
     # ===== Methods which modify the database =====
@@ -434,10 +447,10 @@ class PytisModule(Module, ActionHandler):
 
     # ===== Public methods =====
     
-    def record(self, value):
+    def record(self, req, value):
         """Return the record corresponding to given key value."""
         row = self._data.row((value,))
-        return row and self._record(row)
+        return row and self._record(req, row)
         
     def link(self, req, *args, **kwargs):
         """Return a uri for given key value."""
@@ -448,7 +461,7 @@ class PytisModule(Module, ActionHandler):
         else:
             raise Exception("Invalid link args:", args, kwargs)
         if row:
-            return self._record_uri(req, self._record(row), allow_redirect=False)
+            return self._record_uri(req, self._record(req, row), allow_redirect=False)
         else:
             return None
         
@@ -494,7 +507,7 @@ class PytisModule(Module, ActionHandler):
                 prefill = {self._OWNER_COLUMN: req.user().uid()}
             else:
                 prefill = None
-            record = self._record(None, new=True, prefill=prefill)
+            record = self._record(req, None, new=True, prefill=prefill, req=req)
             errors = self._validate(req, record, layout=layout)
         else:
             errors = ()
@@ -644,7 +657,7 @@ class RssModule(object):
                 date = None
             if self._RSS_AUTHOR_COLUMN:
                 uid = row[self._RSS_AUTHOR_COLUMN]
-                author = users.record(uid)['email'].export()
+                author = users.record(req, uid)['email'].export()
             else:
                 author = cfg.webmaster_addr
             items.append((title, uri, descr, date, author))

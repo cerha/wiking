@@ -1,4 +1,4 @@
-# Copyright (C) 2005, 2006, 2007 Brailcom, o.p.s.
+# Copyright (C) 2005, 2006, 2007, 2008 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -279,7 +279,7 @@ class CookieAuthentication(object):
     _SESSION_COOKIE = 'wiking_session_key'
     _SECURE_AUTH_COOKIES = False
 
-    def _auth_user(self, login):
+    def _auth_user(self, req, login):
         """Obtain authentication data and return a 'User' instance for given 'login'.
 
         This method may be used to retieve authentication data from any source, such as database
@@ -291,17 +291,6 @@ class CookieAuthentication(object):
         """
         return None
 
-    def _auth_get_user(self, login, req):
-        """Obtain authentication data and return a 'User' instance for given 'login' and request.
-
-        This method is a variant of the '_auth_user()' method defined above which receives the
-        request object as second argument.  In most cases, you wan't need the request object, so
-        you probably want to override the method '_auth_user()'.  In special cases, however, you
-        can override this one instead.  The return value is the same.
-
-        """
-        return self._auth_user(login)
-        
     def _auth_check_password(self, user, password):
         """Check authentication password for given user.
 
@@ -341,7 +330,7 @@ class CookieAuthentication(object):
                 raise AuthenticationError(_("Enter your login name, please!"))
             if not password:
                 raise AuthenticationError(_("Enter your password, please!"))
-            user = self._auth_get_user(login, req)
+            user = self._auth_user(req, login)
             if not user or not self._auth_check_password(user, password):
                 self._auth_hook(req, login, user, initial=True, success=False)
                 raise AuthenticationError(_("Invalid login!"))
@@ -355,8 +344,8 @@ class CookieAuthentication(object):
             login, session_key = (req.cookie(self._LOGIN_COOKIE), 
                                   req.cookie(self._SESSION_COOKIE))
             if login and session_key:
-                user = self._auth_get_user(login, req)
-                if user and session.check(user, session_key):
+                user = self._auth_user(req, login)
+                if user and session.check(req, user, session_key):
                     assert isinstance(user, User)
                     # Session cookie expiration is unset to prevent cookie persistency.
                     # Session expiration is implemented internally by the session module.
@@ -368,7 +357,7 @@ class CookieAuthentication(object):
             else:
                 user = None
         if req.param('command') == 'logout' and user:
-            session.close(user, session_key)
+            session.close(req, user, session_key)
             user = None
             req.set_cookie(self._SESSION_COOKIE, None, secure=secure)
         elif req.param('command') == 'login' and not user:
@@ -395,10 +384,10 @@ class Session(Module):
     def init(self, user):
         return None
         
-    def check(self, user, session_key):
+    def check(self, req, user, session_key):
 	return False
 
-    def close(self, user, session_key):
+    def close(self, req, user, session_key):
         pass
     
 
