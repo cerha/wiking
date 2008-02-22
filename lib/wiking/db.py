@@ -301,7 +301,12 @@ class PytisModule(Module, ActionHandler):
                 return module.link(req, **{e.value_column(): value.value()})
         return None
 
-    def _form(self, form, req, action=None, hidden=(), **kwargs):
+    def _record(self, req, row, new=False, prefill=None):
+        """Return the Record instance initialized by given data row."""
+        return self.Record(req, self._view.fields(), self._data, row, prefill=prefill,
+                           resolver=self._resolver, new=new)
+
+    def _form(self, form, req, action=None, row=None, hidden=(), new=False, prefill=None, **kwargs):
         def uri_provider(row, cid, type=pw.UriType.LINK):
             if type == pw.UriType.LINK:
                 method = self._link_provider
@@ -319,8 +324,16 @@ class PytisModule(Module, ActionHandler):
         if action is not None:
             hidden += (('action', action),
                        ('submit', 'submit'))
-        return form(self._data, self._view, self._resolver, handler=req.uri(),
-                    name=self.name(), hidden=hidden, **kwargs)
+        valid_prefill = {}
+        if prefill:
+            for key, value in prefill.items():
+                type = self._view.field(key).type(self._data)
+                value, error = type.validate(value, strict=False)
+                if not error:
+                    valid_prefill[key] = value
+        row = self._record(req, row, prefill=valid_prefill, new=new)
+        return form(self._view, row, handler=req.uri(), name=self.name(), hidden=hidden,
+                    prefill=prefill, **kwargs)
 
     def _layout(self, req, action):
         layout = self._LAYOUT.get(action)
@@ -419,11 +432,6 @@ class PytisModule(Module, ActionHandler):
         return self._data.get_rows(sorting=self._sorting, limit=limit,
                                    condition=self._condition(req, lang=lang))
     
-    def _record(self, req, row, new=False, prefill=None):
-        """Return the Record instance initialized by given data row."""
-        return self.Record(req, self._view.fields(), self._data, row, prefill=prefill, new=new)
-    
-
     # ===== Methods which modify the database =====
     
     def _insert(self, record):
