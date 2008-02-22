@@ -1,3 +1,15 @@
+2008-02-22  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/cms/cms.py: Embeddable module support cleaned.
+
+	* lib/wiking/util.py: Node state support removed.
+
+	* lib/wiking/export.py (Exporter): Use export context instead of
+	node state.
+
+	* lib/wiking/handler.py (Handler.handle): Pass `req' to exporter
+	context.
+
 2008-02-19  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/util.py (ActionMenu): New argument 'cls'. 
