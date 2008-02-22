@@ -272,6 +272,7 @@ class Embeddable(object):
         """Return a list of content instances extending the page content."""
         pass
 
+    
 class EmbeddableCMSModule(CMSModule, Embeddable):
     INSERT_LABEL = _("New record")
     
@@ -609,7 +610,8 @@ class Pages(CMSModule):
                   descr=_STRUCTURED_TEXT_DESCR),
             Field('content'),
             Field('modname', _("Module"), display=_modtitle, prefer_display=True, not_null=False,
-                  enumerator=pd.FixedEnumerator([_m.name() for _m in _modules(Embeddable)]),
+                  enumerator=pd.FixedEnumerator([_m.name() for _m in _modules(Embeddable)
+                                                 if _m != EmbeddableCMSModule]),
                   descr=_("Select the extension module to embed into the page.  Leave blank for "
                           "an ordinary text page.")),
             Field('parent', _("Parent item"), codebook='Mapping', not_null=False,
