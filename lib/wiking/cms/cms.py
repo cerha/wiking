@@ -265,14 +265,18 @@ class CMSModule(PytisModule, RssModule, Panelizable):
         return result
 
     
-
 class Embeddable(object):
     """Mix-in class for modules which may be embedded into page content."""
+    
+    def embed(self, req):
+        """Return a list of content instances extending the page content."""
+        pass
+
+class EmbeddableCMSModule(CMSModule, Embeddable):
     INSERT_LABEL = _("New record")
     
-    def content(self, req, page):
-        """Return a list of content instances extending the page content."""
-        lang = page['lang'].value()
+    def embed(self, req):
+        lang = req.page['lang'].value()
         content = [self._form(pw.ListView, req, condition=self._condition(req, lang=lang))]
         if not req.wmi and lang:
             rss_info = self._rss_info(req, lang)
@@ -764,7 +768,8 @@ class Pages(CMSModule):
         if record is not None:
             if record['modname'].value() is not None:
                 module = self._module(record['modname'].value())
-                actions += (Action(module.INSERT_LABEL, 'insert'),)
+                if isinstance(module, EmbeddableCMSModule):
+                    actions += (Action(module.INSERT_LABEL, 'insert'),)
             if req.wmi and req.param('action') == 'preview':
                 actions = (Action(_("Back"), 'view'),)
             #(Action(_("View"), 'view'),)
@@ -837,7 +842,7 @@ class Pages(CMSModule):
             text = record['content'].value()
         module = record['modname'].value() and self._module(record['modname'].value())
         if module:
-            content = module.content(req, record)
+            content = module.embed(req)
         else:
             content = []
         if text:
@@ -1127,7 +1132,7 @@ class Attachments(StoredFileModule, CMSModule):
     RIGHTS_download = (Roles.ANYONE)
 
     
-class News(CMSModule, Embeddable):
+class News(EmbeddableCMSModule):
     INSERT_LABEL = _("New message")
     class Spec(Specification):
         title = _("News")
@@ -1225,7 +1230,7 @@ class Planner(News):
         def check(self, row):
             end = row['end_date'].value()
             if end and end <= row['start_date'].value():
-                return ("end_date", _("End date precedes start date"))
+                return ('end_date', _("End date precedes start date"))
     _RSS_TITLE_COLUMN = 'date_title'
     _RSS_DATE_COLUMN = None
     def _condition(self, req, **kwargs):
@@ -1238,7 +1243,7 @@ class Planner(News):
             return condition
 
     
-class Images(StoredFileModule, CMSModule, Embeddable):
+class Images(StoredFileModule, EmbeddableCMSModule):
     INSERT_LABEL = _("New image")
     class Spec(StoredFileModule.Spec):
         title = _("Images")
@@ -1346,13 +1351,13 @@ class Images(StoredFileModule, CMSModule, Embeddable):
         return self._image(record, 'thumbnail')
 
 
-class SiteMap(Module, RequestHandler, Embeddable):
+class SiteMap(Module, Embeddable):
 
     @classmethod
     def title(cls):
         return _("Site Map")
     
-    def content(self, req, page):
+    def embed(self, req):
         return [lcg.RootIndex()]
 
         
@@ -1384,7 +1389,7 @@ class Stylesheets(CMSModule, Stylesheets):
             return ('text/css', self._substitute(content))
 
 
-class Users(CMSModule, Embeddable):
+class Users(EmbeddableCMSModule):
     class Spec(Specification):
         title = _("Users")
         help = _("Manage registered users.  Use the module 'Access Rights' "
