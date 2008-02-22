@@ -76,8 +76,8 @@ class PytisModule(Module, ActionHandler):
         
         """
         def __init__(self, req, *args, **kwargs):
-            super(PytisModule.Record, self).__init__(*args, **kwargs)
             self._req = req
+            super(PytisModule.Record, self).__init__(*args, **kwargs)
 
         def req(self):
             return self._req
@@ -306,7 +306,8 @@ class PytisModule(Module, ActionHandler):
         return self.Record(req, self._view.fields(), self._data, row, prefill=prefill,
                            resolver=self._resolver, new=new)
 
-    def _form(self, form, req, action=None, row=None, hidden=(), new=False, prefill=None, **kwargs):
+    def _form(self, form, req, action=None, row=None, hidden=(), new=False, prefill=None,
+              handler=None, **kwargs):
         def uri_provider(row, cid, type=pw.UriType.LINK):
             if type == pw.UriType.LINK:
                 method = self._link_provider
@@ -332,7 +333,7 @@ class PytisModule(Module, ActionHandler):
                 if not error:
                     valid_prefill[key] = value
         row = self._record(req, row, prefill=valid_prefill, new=new)
-        return form(self._view, row, handler=req.uri(), name=self.name(), hidden=hidden,
+        return form(self._view, row, handler=handler or req.uri(), name=self.name(), hidden=hidden,
                     prefill=prefill, **kwargs)
 
     def _layout(self, req, action):
@@ -515,7 +516,7 @@ class PytisModule(Module, ActionHandler):
                 prefill = {self._OWNER_COLUMN: req.user().uid()}
             else:
                 prefill = None
-            record = self._record(req, None, new=True, prefill=prefill, req=req)
+            record = self._record(req, None, new=True, prefill=prefill)
             errors = self._validate(req, record, layout=layout)
         else:
             errors = ()
