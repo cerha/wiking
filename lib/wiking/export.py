@@ -22,6 +22,16 @@ _ = lcg.TranslatableTextFactory('wiking')
 
 class Exporter(lcg.HtmlExporter):
 
+    class Context(lcg.HtmlExporter.Context):
+        def _init_kwargs(self, req=None):
+            self._req = req
+            # Some tiny hacks...
+            self.has_submenu = bool([n for n in self.node().top().children() if not n.hidden()])
+            self.wmi = hasattr(req, 'wmi') and req.wmi or False 
+
+        def req(self):
+            return self._req
+
     _BODY_PARTS = ('wrap',)
     _WRAP_PARTS = ('top', 'page', 'bottom')
     _PAGE_PARTS = ('links', 'breadcrumbs', 'language_selection',
@@ -36,16 +46,13 @@ class Exporter(lcg.HtmlExporter):
         return self._parts(context, self._BOTTOM_PARTS)
                            
     def _page(self, context):
-        node = context.node()
-        node.state().has_submenu = bool([n for n in node.top().children() if not n.hidden()])
         return self._parts(context, self._PAGE_PARTS)
 
     def _page_cls(self, context):
-        state = context.node().state()
         cls = cls='node-id-%s' % context.node().id()
-        if state.has_submenu:
+        if context.has_submenu:
             cls += ' with-submenu'
-        if context.node().panels() and state.show_panels:
+        if context.node().panels() and context.req().show_panels():
             cls += ' with-panels'
         return cls
 
@@ -61,11 +68,10 @@ class Exporter(lcg.HtmlExporter):
             return None
     
     def _node_uri(self, context, node, lang=None):
-        return context.generator().uri(node.state().prefix +'/'+ node.id(), setlang=lang)
+        return context.generator().uri(context.req().uri_prefix() +'/'+ node.id(), setlang=lang)
     
-    def _site_title(self, node, full=False):
-        state = node.state()
-        if state.wmi:
+    def _site_title(self, context, full=False):
+        if context.wmi:
             title = _("Wiking Management Interface")
         else:
             title = cfg.site_title
@@ -73,15 +79,15 @@ class Exporter(lcg.HtmlExporter):
                 title += ' &ndash; ' + cfg.site_subtitle
         return title
     
-    def _title(self, node):
-        return self._site_title(node) + ' - ' + node.heading()
+    def _title(self, context):
+        return self._site_title(context) + ' - ' + context.node().heading()
 
     def _hidden(self, *text):
         return self._generator.span(text, cls="hidden")
 
     #def _head(self, context):
     #    result = super(Exporter, self)._head(context)
-    #    rss = context.node().state().rss
+    #    rss = context.rss()
     #    if rss:
     #        result = concat(result, '<link rel="alternate" '
     #                        'type="application/rss+xml" title="%s" href="%s"/>'
@@ -90,21 +96,20 @@ class Exporter(lcg.HtmlExporter):
     
     def _top(self, context):
         g = self._generator
-        title = self._site_title(context.node(), full=True)
+        title = self._site_title(context, full=True)
         return g.div(g.div(g.div(g.div(g.strong(title), id='site-title'),
                                  id='top-layer3'), id='top-layer2'), id='top-layer1')
 
     def _links(self, context):
         g = self._generator
-        state = context.node().state()
         links = [g.link(_("Content"), '#content-heading', hotkey="2")]
         if [n for n in context.node().root().children() if not n.hidden()]:
             links.append(g.link(_("Main navigation"), '#main-navigation'))
-        if state.has_submenu:
+        if context.has_submenu:
             links.append(g.link(_("Local navigation"), '#local-navigation'))
         if len(context.node().variants()) > 1:
             links.append(g.link(_("Language selection"), '#language-selection-anchor'))
-        if state.show_panels:
+        if context.req().show_panels():
             for panel in context.node().panels():
                 links.append(g.link(panel.title(), '#panel-%s ' % panel.id()))
         return self._hidden(_("Jump in page") + ": " + concat(links, separator=' | '))
@@ -137,8 +142,7 @@ class Exporter(lcg.HtmlExporter):
 
     def _submenu(self, context):
         g = self._generator
-        state = context.node().state()
-        if not state.has_submenu:
+        if not context.has_submenu:
             return None
         menu = lcg.NodeIndex(node=context.node().top())
         menu.set_parent(context.node())
@@ -151,7 +155,7 @@ class Exporter(lcg.HtmlExporter):
         panels = context.node().panels()
         if not panels:
             return None
-        if not context.node().state().show_panels:
+        if not context.req().show_panels():
             return g.link(_("Show panels"), "?show_panels=1", cls='panel-control show')
         result = [g.link(_("Hide panels"), "?hide_panels=1", cls='panel-control hide')]
         for panel in panels:
@@ -177,11 +181,10 @@ class Exporter(lcg.HtmlExporter):
     def _wiking_bar(self, context):
         import wiking
         g = self._generator
-        state = context.node().state()
 	result = (g.hr(),)
         ctrl = None
-        if state.wmi:
-            ctrl = concat(_("Login"), ': ', state.user.name(), ' (',
+        if context.wmi:
+            ctrl = concat(_("Login"), ': ', context.req().user().name(), ' (',
                           g.link(_("log out"), '?command=logout', cls='login-ctrl'), ') | ',
                           g.link(_("Leave the Management Interface"), '/', hotkey="9"))
         elif hasattr(cfg.appl, 'allow_wmi_link') and cfg.appl.allow_wmi_link:
@@ -217,7 +220,7 @@ class Exporter(lcg.HtmlExporter):
                    _("US Government Section 508 Accessibility Guidelines.")))]
         contact = cfg.webmaster_addr
         if contact is None:
-            domain = context.node().state().server_hostname
+            domain = context.req().server_hostname()
             if domain.startswith('www.'):
                 domain = domain[4:]
             contact = 'webmaster@' + domain

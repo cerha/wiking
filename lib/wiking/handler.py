@@ -86,7 +86,7 @@ class Handler(object):
                         req.set_status(e.ERROR_CODE)
                     result = Document(e.title(), e.message(req))
             node = result.build(req, application)
-            context = self._exporter.context(node, node.lang())
+            context = self._exporter.context(node, node.lang(), req=req)
             output = context.translate(self._exporter.export(context))
             return req.result(output)
         except Exception, e:

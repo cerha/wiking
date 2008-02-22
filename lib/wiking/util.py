@@ -384,11 +384,6 @@ class Document(object):
     def build(self, req, application):
         id = '/'.join(req.path)
         parent_id = '/'.join(req.path[:-1])
-        state = WikingNode.State(user=req.user(),
-                                 wmi=hasattr(req, 'wmi') and req.wmi or False,
-                                 prefix=req.uri_prefix(),
-                                 show_panels=req.show_panels(),
-                                 server_hostname=req.server_hostname())
         lang = self._lang or req.prefered_language(raise_error=False) or 'en'
         me = []
         parent = []
@@ -415,7 +410,7 @@ class Document(object):
             elif lang not in variants:
                 hidden = True
             resource_provider = lcg.StaticResourceProvider(resources)
-            node = WikingNode(str(item.id()), state, title=item.title(), heading=heading,
+            node = WikingNode(str(item.id()), title=item.title(), heading=heading,
                               descr=item.descr(), lang=lang, content=content, hidden=hidden,
                               variants=variants or (), active=item.active(), panels=panels, 
                               children=[mknode(i) for i in item.submenu()],
@@ -433,7 +428,7 @@ class Document(object):
                 parent[0].add_child(node)
             else:
                 nodes.append(node)
-        root = WikingNode('__wiking_root_node__', state, title='root', content=lcg.Content(),
+        root = WikingNode('__wiking_root_node__', title='root', content=lcg.Content(),
                           children=nodes)
         return me[0]
 
@@ -444,19 +439,9 @@ class Document(object):
 
 class WikingNode(lcg.ContentNode):
 
-    class State(object):
-        # TODO: Remove this and pass request to exporter context.
-        def __init__(self, user, wmi, prefix, show_panels, server_hostname):
-            self.user = user
-            self.wmi = wmi
-            self.prefix = prefix
-            self.show_panels = show_panels
-            self.server_hostname = server_hostname
-    
-    def __init__(self, id, state, heading=None, panels=(), lang=None, **kwargs):
+    def __init__(self, id, heading=None, panels=(), lang=None, **kwargs):
         super(WikingNode, self).__init__(id, **kwargs)
         self._heading = heading
-        self._state = state
         self._panels = panels
         self._lang = lang
         for panel in panels:
@@ -473,9 +458,6 @@ class WikingNode(lcg.ContentNode):
 
     def heading(self):
         return self._heading or self._title
-    
-    def state(self):
-        return self._state
     
     def top(self):
         parent = self._parent
