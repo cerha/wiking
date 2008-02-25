@@ -129,6 +129,7 @@ class PytisModule(Module, ActionHandler):
         self._referer = self._REFERER or key
         self._referer_type = self._data.find_column(self._referer).type()
         self._title_column = self._TITLE_COLUMN or self._view.columns()[0]
+        self._dbfunctions = {}
         self._links = {}
         for f in self._view.fields():
             if f.codebook():
@@ -432,6 +433,16 @@ class PytisModule(Module, ActionHandler):
     def _rows(self, req, lang=None, limit=None):
         return self._data.get_rows(sorting=self._sorting, limit=limit,
                                    condition=self._condition(req, lang=lang))
+
+    def _dbfunction(self, name, *args):
+        """Call the database function 'name' and return the returned value."""
+        try:
+            function = self._dbfunctions[name]
+        except KeyError:
+            function = self._dbfunctions[name] = \
+                       pytis.data.DBFunctionDefault(name, self._dbconnection)
+        result = function.call(pytis.data.Row(args))
+        return result[0][0].value()
     
     # ===== Methods which modify the database =====
     
