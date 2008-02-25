@@ -680,7 +680,7 @@ class Data(pd.DBDataDefault):
         try:
             function = self.__class__._dbfunction[name]
         except KeyError:
-            function = self.__class__._dbfunctions[name] = \
+            function = self.__class__._dbfunction[name] = \
                        pytis.data.DBFunctionDefault(name, self._dbconnection)
         result = function.call(pytis.data.Row(args))
         return result[0][0].value()

@@ -1,5 +1,7 @@
 2008-02-25  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/util.py (Data): Added support for database functions.
+
 	* lib/wiking/db.py: Added support for database functions.
 
 2008-02-22  Tomas Cerha  <cerha@brailcom.org>
