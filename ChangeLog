@@ -1,3 +1,7 @@
+2008-02-25  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/db.py: Added support for database functions.
+
 2008-02-22  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/cms/appl.py (Application._auth_user): Pass on the
