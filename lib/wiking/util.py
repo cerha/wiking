@@ -633,6 +633,14 @@ class Action(pytis.presentation.Action):
 
 class Data(pd.DBDataDefault):
 
+    _dbfunction = {} # DBFunftion* instance cache
+
+    def __init__(self, *args, **kwargs):
+        super(Data, self).__init__(*args, **kwargs)
+        # We don't want to care how `connection_data' is stored in the parent class...
+        # We surely pass the
+        self._dbconnection = kwargs['connection_data']
+
     def _row_data(self, **kwargs):
         return [(k, pd.Value(self.find_column(k).type(), v)) for k, v in kwargs.items()]
     
@@ -665,6 +673,17 @@ class Data(pd.DBDataDefault):
 
     def make_row(self, **kwargs):
         return pd.Row(self._row_data(**kwargs))
+
+
+    def dbfunction(self, name, *args):
+        """Call the database function 'name' and return the returned value."""
+        try:
+            function = self.__class__._dbfunction[name]
+        except KeyError:
+            function = self.__class__._dbfunctions[name] = \
+                       pytis.data.DBFunctionDefault(name, self._dbconnection)
+        result = function.call(pytis.data.Row(args))
+        return result[0][0].value()
 
 
 class Specification(pp.Specification):
