@@ -272,7 +272,7 @@ class WikingRequest(Request):
         The list of used handlers can be retrieved using the 'handlers()' method.
 
         """
-        self._handlers.append(module)
+        self._handlers.append(handler)
         return handler.handle(self)
 
     def handlers(self):
