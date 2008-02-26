@@ -75,7 +75,12 @@ class RequestHandler(object):
         req_, uri = self._cached_uri
         if req is not req_:
             uri = self._mapped_uri()
-            if uri:
+            if uri is None:
+                for module in reversed(req.handlers()):
+                    uri = module._mapped_uri()
+                    if uri is not None:
+                        break
+            if uri is not None:
                 uri = req.uri_prefix() + uri
             self._cached_uri = (req, uri)
         return uri

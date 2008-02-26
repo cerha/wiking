@@ -1,7 +1,22 @@
 2008-02-26  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/cms/appl.py (Application.handle): Use `req.forward()'
+	to pass on the request.
+
+	* lib/wiking/modules.py (RequestHandler._base_uri): Use the base
+	uri of the previous request handler if module's own base uri is
+	not defined.
+
+	* lib/wiking/request.py (WikingRequest.forward)
+	(WikingRequest.handlers): New methods.
+
+	* lib/wiking/application.py (Application.handle): Use
+	`req.forward()' to pass on the request.
+
 	* lib/wiking/db.py (PytisModule._insert): Added support for
 	automatic prefill of sequence fields.
+	(PytisModule._handle): Perform redirection here instead of
+	redirecting links.
 
 2008-02-25  Tomas Cerha  <cerha@brailcom.org>
 

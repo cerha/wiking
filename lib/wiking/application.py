@@ -84,7 +84,7 @@ class Application(Module):
             raise NotFound()
         module = self._module(modname)
         assert isinstance(module, RequestHandler)
-        return module.handle(req)
+        return req.forward(module)
     
     def module_uri(self, modname):
         """Return the current uri for given module name.

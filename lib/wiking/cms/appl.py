@@ -49,7 +49,7 @@ class Application(CookieAuthentication, wiking.Application):
     def handle(self, req):
         req.wmi = False # Will be set to True by `WikingManagementInterface' if needed.
         modname = self._MAPPING.get(req.path[0], 'Pages')
-        return self._module(modname).handle(req)
+        return req.forward(self._module(modname))
 
     def module_uri(self, modname):
         return self._module('Pages').module_uri(modname) \

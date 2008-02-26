@@ -273,16 +273,8 @@ class PytisModule(Module, ActionHandler):
     def _image_provider(self, req, row, cid, target=None):
         return None
 
-    def _record_uri(self, req, row, allow_redirect=True):
+    def _record_uri(self, req, row):
         # Always use _link_provider.  This method only prevents recursion in `link()'.
-        if allow_redirect:
-            redirect = self._view.redirect()
-            if redirect:
-                module = redirect(row)
-                if module:
-                    result = self._module(module).link(req, row[self._key])
-                    if result:
-                        return result
         uri = self._base_uri(req)
         if not uri:
             return None
@@ -435,6 +427,17 @@ class PytisModule(Module, ActionHandler):
         return self._data.get_rows(sorting=self._sorting, limit=limit,
                                    condition=self._condition(req, lang=lang))
 
+    def _handle(self, req, action, **kwargs):
+        record = kwargs.get('record')
+        if record is not None:
+            redirect = self._view.redirect()
+            if redirect:
+                module = redirect(record)
+                if module is not None and module != self.name():
+                    return req.forward(self._module(module))
+        return super(PytisModule, self)._handle(req, action, **kwargs)
+        
+
     # ===== Methods which modify the database =====
     
     def _insert(self, record):
@@ -476,7 +479,7 @@ class PytisModule(Module, ActionHandler):
         else:
             raise Exception("Invalid link args:", args, kwargs)
         if row:
-            return self._record_uri(req, self._record(req, row), allow_redirect=False)
+            return self._record_uri(req, self._record(req, row))
         else:
             return None
         

@@ -215,6 +215,7 @@ class WikingRequest(Request):
     def __init__(self, req, application, **kwargs):
         super(WikingRequest, self).__init__(req, **kwargs)
         self._application = application
+        self._handlers = []
 
     def _init_params(self):
         params = super(WikingRequest, self)._init_params()
@@ -261,6 +262,28 @@ class WikingRequest(Request):
             if uri.startswith(path):
                 uri = uri[len(path):]
         return super(WikingRequest, self)._init_path(uri)
+
+    def forward(self, handler):
+        """Pass the request on to another handler keeping track of the handlers.
+
+        Adds the module to the list of used handlers and returns the result of calling
+        'handler.handle(req)'.  The 'handler' must be a 'RequestHandler' instance.
+
+        The list of used handlers can be retrieved using the 'handlers()' method.
+
+        """
+        self._handlers.append(module)
+        return handler.handle(self)
+
+    def handlers(self):
+        """Return the list of handlers involved in handling the request.
+
+        The handlers are returned in the order in which the corresponding 'forward()' calls were
+        made.  The 'Application' handles the request first, but it is not a regular
+        'RequestHandler' instance, so it does not appear in the list.
+
+        """
+        return self._handlers
 
     def uri_prefix(self):
         return self._options.get('PrefixPath', '')
