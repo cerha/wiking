@@ -50,6 +50,7 @@ class PytisModule(Module, ActionHandler):
         ('null value in column "(?P<id>[a-z_]+)" violates not-null constraint',
          _("Empty value.  This field is mandatory.")),
         )
+    
     _RELATED_MODULES = ()
     
     _INSERT_MSG = _("New record was successfully inserted.")
@@ -59,6 +60,7 @@ class PytisModule(Module, ActionHandler):
     _OWNER_COLUMN = None
     _SUPPLY_OWNER = True
     _RELATION_FIELDS = ()
+    _SEQUENCE_FIELDS = ()
 
     _ALLOW_TABLE_LAYOUT_IN_FORMS = True
     _SUBMIT_BUTTONS = {}
@@ -437,6 +439,10 @@ class PytisModule(Module, ActionHandler):
     
     def _insert(self, record):
         """Insert new row into the database and return a Record instance."""
+        for key, seq in self._SEQUENCE_FIELDS:
+            if record[key].value() is None:
+                value = pd.DBCounterDefault(seq, self._dbconnection).next()
+                record[key] = pd.Value(record[key].type(), value)
         new_row, success = self._data.insert(record.rowdata())
         #log(OPR, ":::", (new_row, success, [(k, record.rowdata()[k].value())
         #                                    for k in record.rowdata().keys()]))
@@ -692,7 +698,6 @@ class StoredFileModule(PytisModule):
     binary field to store, and the second is the identifier of the filename
     field.  The filename field provides the absolute path for saving the
     file."""
-    _SEQUENCE_FIELDS = ()
     
     class Spec(Specification):
         
@@ -739,10 +744,6 @@ class StoredFileModule(PytisModule):
             buf.save(fname)
         
     def _insert(self, record):
-        for id, seq in self._SEQUENCE_FIELDS:
-            if record[id].value() is None:
-                value = pd.DBCounterDefault(seq, self._dbconnection).next()
-                record[id] = pd.Value(record[id].type(), value)
         super(StoredFileModule, self)._insert(record)
         try:
             self._save_files(record)
