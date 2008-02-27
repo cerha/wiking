@@ -23,11 +23,12 @@ _ = lcg.TranslatableTextFactory('wiking')
 class Exporter(lcg.HtmlExporter):
 
     class Context(lcg.HtmlExporter.Context):
-        def _init_kwargs(self, req=None):
+        def _init_kwargs(self, req=None, **kwargs):
             self._req = req
             # Some tiny hacks...
             self.has_submenu = bool([n for n in self.node().top().children() if not n.hidden()])
-            self.wmi = hasattr(req, 'wmi') and req.wmi or False 
+            self.wmi = hasattr(req, 'wmi') and req.wmi or False
+            super(Exporter.Context, self)._init_kwargs(**kwargs)
 
         def req(self):
             return self._req
