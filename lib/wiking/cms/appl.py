@@ -111,13 +111,13 @@ class Application(CookieAuthentication, wiking.Application):
         else:
             return False
         
-    def registration_uri(self):
+    def registration_uri(self, req):
         if cfg.appl.allow_registration:
-            return make_uri(self.module_uri('Registration'), action='insert')
+            return make_uri(req.uri_prefix() + self.module_uri('Registration'), action='insert')
         return None
         
-    def password_reminder_uri(self):
-        return make_uri(self.module_uri('Registration'), action='remind')
+    def password_reminder_uri(self, req):
+        return make_uri(req.uri_prefix() + self.module_uri('Registration'), action='remind')
         
     def _maybe_install(self, req, errstr):
         """Check a DB error string and try to set it up if it is the problem."""

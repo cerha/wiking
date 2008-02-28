@@ -1,3 +1,16 @@
+2008-02-28  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/cms/appl.py (registration_uri): Respect the change
+	in the `Application' method.
+
+	* lib/wiking/util.py (LoginPanel.PanelContent.export)
+	(LoginDialog.__init__): Respect the changes in `Application' methods.
+
+	* lib/wiking/application.py (Application.registration_uri)
+	(Application.password_reminder_uri)
+	(Application.password_change_uri): Pass the request instance as
+	the first argument.
+
 2008-02-27  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/export.py (Exporter.Context._init_kwargs): Call
