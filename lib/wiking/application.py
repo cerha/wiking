@@ -183,15 +183,15 @@ class Application(Module):
         """
         return []
         
-    def registration_uri(self):
+    def registration_uri(self, req):
         """Return the URI for new user registration or None if registration is not allowed."""
         return None
         
-    def password_reminder_uri(self):
+    def password_reminder_uri(self, req):
         """Return the forgotten password link URI or None if password reminder not implemented."""
         return None
 
-    def password_change_uri(self):
+    def password_change_uri(self, req):
         """Return the change password URI or None if the link should not appear in login panel."""
         return None
 
