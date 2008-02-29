@@ -1,3 +1,7 @@
+2008-02-29  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/export.py: Allow more precise heading styling.
+
 2008-02-28  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/cms/appl.py (registration_uri): Respect the change
