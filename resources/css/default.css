@@ -344,6 +344,7 @@ form.pytis-form .group div.group {
 form.pytis-form .group fieldset.group {
     border-width: 1px;
 }
+form.pytis-form table.horizontal-group { width: 100%; }
 form.pytis-form .horizontal-group fieldset.group {
     margin: 0 0 0.4em 0;
     /* margin-bottom: 100%; ** this breaks fieldset border. */
@@ -356,6 +357,9 @@ form.pytis-form .horizontal-group td.spaced {
 * html form.pytis-form fieldset.group { position: relative; margin: 1em 0; padding-top: 0.7em; }
 * html form.pytis-form .horizontal-group fieldset.group { margin: 0 0 1em 0; }
 * html form.pytis-form legend { color: $color.foreground; position: absolute; top: -0.6em; left: 0.2em; }
+
+/* 100% width on horizontal groups braks MSIE layout.  Any better way to fix it? */
+* html form.list-view table.horizontal-group { width: auto; }
 
 form.pytis-form div.submit {
     margin-top: 0.5em;
@@ -416,7 +420,7 @@ form.browse-form-controls span.offset, form.browse-form-controls span.buttons {
 form.browse-form-controls span.buttons input.prev {
     margin-left: 1em;
 }
-
+s
 form.list-view div.list-item {
     margin-bottom: 1.1em;
 }
