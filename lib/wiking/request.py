@@ -113,8 +113,8 @@ class Request(pytis.web.Request):
     def params(self):
         return self._params.keys()
     
-    def options(self):
-        return self._options
+    def option(self, name, default=None):
+        return self._options.get(name, default)
 
     def header(self, name, default=None):
         try:

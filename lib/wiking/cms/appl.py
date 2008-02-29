@@ -127,10 +127,10 @@ class Application(CookieAuthentication, wiking.Application):
                              for x in params.items()]) +
                     '<input type="submit" value="%s">' % label +
                     '</form>')
-        options = req.options()
-        dboptions = dict([(k, options[k]) for k in
-                          ('user', 'password', 'host', 'port') if options.has_key(k)])
-        dboptions['database'] = dbname = options.get('database', req.server_hostname())
+        
+        dboptions = dict([(opt, req.option(opt)) for opt in ('user', 'password', 'host', 'port')
+                          if req.option(opt) is not None])
+        dboptions['database'] = dbname = req.option('database', req.server_hostname())
         if errstr == 'FATAL:  database "%s" does not exist\n' % dbname:
             if not req.param('createdb'):
                 return 'Database "%s" does not exist.\n' % dbname + \
