@@ -68,24 +68,12 @@ class Exporter(lcg.HtmlExporter):
         else:
             return None
     
-    def _node_uri(self, context, node, lang=None):
-        return context.generator().uri(context.req().uri_prefix() +'/'+ node.id(), setlang=lang)
-    
-    def _site_title(self, context, full=False):
-        if context.wmi:
-            title = _("Wiking Management Interface")
-        else:
-            title = cfg.site_title
-            if full and cfg.site_subtitle:
-                title += ' &ndash; ' + cfg.site_subtitle
-        return title
-    
-    def _title(self, context):
-        return self._site_title(context) + ' - ' + context.node().heading()
-
     def _hidden(self, *text):
         return self._generator.span(text, cls="hidden")
 
+    def _node_uri(self, context, node, lang=None):
+        return context.generator().uri(context.req().uri_prefix() +'/'+ node.id(), setlang=lang)
+    
     #def _head(self, context):
     #    result = super(Exporter, self)._head(context)
     #    rss = context.rss()
@@ -95,11 +83,27 @@ class Exporter(lcg.HtmlExporter):
     #                        % (context.node().title(), rss), separator='\n  ')
     #    return result
     
+    def _site_title(self, context):
+        if context.wmi:
+            return _("Wiking Management Interface")
+        else:
+            return cfg.site_title
+
+    def _site_subtitle(self, context):
+        return cfg.site_subtitle
+    
+    def _title(self, context):
+        return self._site_title(context) + ' - ' + context.node().heading()
+
     def _top(self, context):
         g = self._generator
-        title = self._site_title(context, full=True)
-        return g.div(g.div(g.div(g.div(g.strong(title), id='site-title'),
+        title, subtitle = self._site_title(context), self._site_subtitle(context)
+        heading = concat(g.strong(title, cls='title'),
+                         g.strong(' &ndash; ', cls='separator'),
+                         g.strong(subtitle, cls='subtitle'))
+        return g.div(g.div(g.div(g.div(heading, id='site-title'),
                                  id='top-layer3'), id='top-layer2'), id='top-layer1')
+    
 
     def _links(self, context):
         g = self._generator
