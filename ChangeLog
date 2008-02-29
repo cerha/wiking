@@ -1,5 +1,7 @@
 2008-02-29  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/cms/cms.py: Field widths set explicitly.
+
 	* lib/wiking/cms/appl.py (Application._maybe_install): Use
 	`req.option()' instead of `req.options()'.
 

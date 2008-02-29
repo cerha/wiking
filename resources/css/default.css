@@ -490,7 +490,7 @@ form.edit-form .group input, form.edit-form textarea,
 form.edit-form select, #login, #password { 
     border: 1px solid $color.border;
 }
-form.edit-form textarea.fullsize {
+form.pytis-form textarea.fullsize {
     width: 100%;
 }
 
