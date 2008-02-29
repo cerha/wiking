@@ -344,6 +344,15 @@ form.pytis-form .group div.group {
 form.pytis-form .group fieldset.group {
     border-width: 1px;
 }
+
+form.pytis-form fieldset.outer {
+    border: none;
+    margin: 0;
+    padding: 0;
+    position: relative;
+}
+form.pytis-form legend.empty { display: none; }
+
 form.pytis-form table.horizontal-group { width: 100%; }
 form.pytis-form .horizontal-group fieldset.group {
     margin: 0 0 0.4em 0;
@@ -356,10 +365,7 @@ form.pytis-form .horizontal-group td.spaced {
 * html form.pytis-form table.horizontal-group { position: relative; }
 * html form.pytis-form fieldset.group { position: relative; margin: 1em 0; padding-top: 0.7em; }
 * html form.pytis-form .horizontal-group fieldset.group { margin: 0 0 1em 0; }
-* html form.pytis-form legend { color: $color.foreground; position: absolute; top: -0.6em; left: 0.2em; }
-
-/* 100% width on horizontal groups braks MSIE layout.  Any better way to fix it? */
-* html form.list-view table.horizontal-group { width: auto; }
+* html form.pytis-form fieldset.group legend { color: $color.foreground; position: absolute; top: -0.6em; left: 0.2em; }
 
 form.pytis-form div.submit {
     margin-top: 0.5em;
@@ -473,7 +479,7 @@ form.show-form .group textarea, form.list-view .group textarea {
     font-size: 1em;
 }
 form.show-form, form.edit-form { 
-    margin: 0.4em 0;
+    margin: 0;
     padding: 0;
 }
 form.edit-form div.help { 
