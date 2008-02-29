@@ -427,7 +427,7 @@ class Panels(CMSModule, Publishable):
             Field('size', _("Items count"), width=5,
                   descr=_("Number of items from the selected module, which "
                           "will be shown by the panel.")),
-            Field('content', _("Content"), height=10,
+            Field('content', _("Content"), height=10, width=80,
                   descr=_("Additional text content displayed on the panel.")+\
                   ' '+_STRUCTURED_TEXT_DESCR),
             Field('published', _("Published"), default=True,
@@ -606,7 +606,7 @@ class Pages(CMSModule):
             Field('title', _("Title"), not_null=True),
             Field('description', _("Description"), width=64,
                   descr=_("Brief page description (shown as a tooltip and in site map).")),
-            Field('_content', _("Content"), compact=True, height=20,
+            Field('_content', _("Content"), compact=True, height=20, width=80,
                   descr=_STRUCTURED_TEXT_DESCR),
             Field('content'),
             Field('modname', _("Module"), display=_modtitle, prefer_display=True, not_null=False,
@@ -998,7 +998,7 @@ class Attachments(StoredFileModule, CMSModule):
             Field('title', _("Title"), width=30, maxlen=64,
                   descr=_("The name of the attachment (e.g. the full name of the document). "
                           "If empty, the file name will be used instead.")),
-            Field('description', _("Description"), height=3, maxlen=240,
+            Field('description', _("Description"), height=3, width=60, maxlen=240,
                   descr=_("Optional description used for the listing of attachments (see below).")),
             Field('ext', virtual=True, computer=Computer(self._ext, ('filename',))),
             Field('bytesize', _("Byte size"),
@@ -1150,7 +1150,7 @@ class News(EmbeddableCMSModule):
                   selection_type=CHOICE, value_column='lang'),
             Field('title', _("Briefly"), column_label=_("Message"), width=32,
                   descr=_("The item summary (title of the entry).")),
-            Field('content', _("Text"), height=6, descr=_STRUCTURED_TEXT_DESCR + ' ' + \
+            Field('content', _("Text"), height=6, width=80, descr=_STRUCTURED_TEXT_DESCR + ' ' + \
                   _("It is, however, recommened to use the simplest possible formatting, since "
                     "the item may be also published through an RSS channel, which does not "
                     "support formatting.")),
@@ -1275,7 +1275,7 @@ class Images(StoredFileModule, EmbeddableCMSModule):
             Field('title', _("Title"), width=30),
             Field('author', _("Author"), width=30),
             Field('location', _("Location"), width=50),
-            Field('description', _("Description"), height=5),
+            Field('description', _("Description"), height=5, width=60),
             Field('taken', _("Date of creation"), type=DateTime()),
             Field('format', computer=imgcomp(lambda i: i.format.lower())),
             Field('width', _("Width"), computer=imgcomp(lambda i: i.size[0])),
@@ -1371,8 +1371,8 @@ class Stylesheets(CMSModule, Stylesheets):
             Field('stylesheet_id'),
             Field('identifier',  _("Identifier"), width=16),
             Field('active',      _("Active")),
-            Field('description', _("Description"), width=40),
-            Field('content',     _("Content"), height=20),
+            Field('description', _("Description"), width=50),
+            Field('content',     _("Content"), height=20, width=80),
             )
         layout = ('identifier', 'active', 'description', 'content')
         columns = ('identifier', 'active', 'description')
