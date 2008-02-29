@@ -90,18 +90,21 @@ class Exporter(lcg.HtmlExporter):
             return cfg.site_title
 
     def _site_subtitle(self, context):
-        return cfg.site_subtitle
+        if context.wmi:
+            return None
+        else:
+            return cfg.site_subtitle
     
     def _title(self, context):
         return self._site_title(context) + ' - ' + context.node().heading()
 
     def _top(self, context):
         g = self._generator
-        title, subtitle = self._site_title(context), self._site_subtitle(context)
-        heading = concat(g.strong(title, cls='title'),
-                         g.strong(' &ndash; ', cls='separator'),
-                         g.strong(subtitle, cls='subtitle'))
-        return g.div(g.div(g.div(g.div(heading, id='site-title'),
+        title = g.strong(self._site_title(context), cls='title')
+        subtitle = self._site_subtitle(context)
+        if subtitle:
+            title += g.strong(' &ndash; ', cls='separator') + g.strong(subtitle, cls='subtitle')
+        return g.div(g.div(g.div(g.div(title, id='site-title'),
                                  id='top-layer3'), id='top-layer2'), id='top-layer1')
     
 
