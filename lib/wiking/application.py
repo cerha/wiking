@@ -90,7 +90,7 @@ class Application(Module):
         """Return the current uri for given module name.
 
         None will be returned when there is no mapping item for the module, or when there is more
-        than one item for the same module (which is also legal).  This is in principe a reverse
+        than one item for the same module (which is also legal).  This is in principle a reverse
         function to 'resolve'.
         
         """
@@ -106,8 +106,8 @@ class Application(Module):
 
         Returns a sequence of 'MenuItem' instances representing the main menu hierarchy.
         
-        The menu structure should usually remain unchanges throughout the application or at least
-        throughout its mojor states, but this is just a common practice, not a requirement.  The
+        The menu structure should usually remains unchanged throughout the application or at least
+        throughout its major states, but this is just a common practice, not a requirement.  The
         application may decide to return a different menu for each request.
         
         """

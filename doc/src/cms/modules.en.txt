@@ -35,7 +35,7 @@ this is useful when an event takes more than one day.  Events are sorted by
 date -- the nearest at the top.  Expired events are automatically omitted, so
 the list only contains future events.
 
-You can attach a bief text to each event.  This text can be formatted as an
+You can attach a brief text to each event.  This text can be formatted as an
 ``LCG structured text'' document (see the
 [/_doc/lcg/structured-text formatting manual]).
 
