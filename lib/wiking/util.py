@@ -383,10 +383,8 @@ class Document(object):
 
     def build(self, req, application):
         id = '/'.join(req.path)
-        parent_id = '/'.join(req.path[:-1])
         lang = self._lang or req.prefered_language(raise_error=False) or 'en'
-        me = []
-        parent = []
+        nodes = {}
         def mknode(item):
             if item.id() == id:
                 heading = self._title or item.title()
@@ -415,22 +413,29 @@ class Document(object):
                               variants=variants or (), active=item.active(), panels=panels, 
                               children=[mknode(i) for i in item.submenu()],
                               resource_provider=resource_provider, globals=self._globals)
-            if item.id() == id:
-                me.append(node)
-            elif item.id() == parent_id:
-                parent.append(node)
+            nodes[item.id()] = node
             return node
-        nodes = [mknode(item) for item in application.menu(req)]
-        if not me:
-            variants = self._variants or parent and parent[0].variants() or None
+        top_level_nodes = [mknode(item) for item in application.menu(req)]
+        # Find the parent node by the identifier prefix.
+        parent = None
+        for i in range(len(req.path)-1):
+            key = '/'.join(req.path[:len(req.path)-i-1])
+            if nodes.has_key(key):
+                parent = nodes[key]
+                break
+        if nodes.has_key(id):
+            node = nodes[id]
+        else: 
+            # Create the current document's node if it was not created with the menu.
+            variants = self._variants or parent and parent.variants() or None
             node = mknode(MenuItem(id, self._title, hidden=True, variants=variants))
             if parent:
-                parent[0].add_child(node)
+                parent.add_child(node)
             else:
-                nodes.append(node)
+                top_level_nodes.append(node)
         root = WikingNode('__wiking_root_node__', title='root', content=lcg.Content(),
-                          children=nodes)
-        return me[0]
+                          children=top_level_nodes)
+        return node
 
     
 # ============================================================================
