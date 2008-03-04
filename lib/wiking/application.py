@@ -89,9 +89,9 @@ class Application(Module):
     def module_uri(self, modname):
         """Return the current uri for given module name.
 
-        None will be returned when there is no mapping item for the module, or when there is more
-        than one item for the same module (which is also legal).  This is in principle a reverse
-        function to 'resolve'.
+        The default implementation performes a reverse lookup in the '\_MAPPING' dictionary.  None
+        is returned when there is no mapping item for the module, or when there is more than one
+        item for the same module (which is also legal).
         
         """
         identitier = self._reverse_mapping.get(modname)
