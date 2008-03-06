@@ -794,7 +794,7 @@ class Time(pytis.data.Time):
     """Pytis Time type which exports as a 'lcg.LocalizableTime'."""
 
     def _export(self, value, **kwargs):
-        return lcg.LocalizableTime(super(Date, self)._export(value, **kwargs))
+        return lcg.LocalizableTime(super(Time, self)._export(value, **kwargs))
 
 
 # ============================================================================
