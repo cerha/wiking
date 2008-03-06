@@ -14,6 +14,7 @@
 
 	* lib/wiking/util.py (MaintananceModeError): New class.
 	(MaintananceModeError): Return a 503 HTTP status code.
+	(Time): New class.
 
 	* lib/wiking/modules.py (Stylesheets): Defive from
 	`RequestHandler', not `ActionHandler'.

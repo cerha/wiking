@@ -779,7 +779,7 @@ class DateTime(pytis.data.DateTime):
 # We need two types, because we need to derive from two different base classes.
 
 class Date(pytis.data.Date):
-    """Pytis Date type which exports as a 'lcg.LocalizableDateTime'."""#
+    """Pytis Date type which exports as a 'lcg.LocalizableDateTime'."""
 
     def __init__(self, leading_zeros=True, **kwargs):
         self._leading_zeros = leading_zeros
@@ -789,6 +789,12 @@ class Date(pytis.data.Date):
         result = super(Date, self)._export(value, **kwargs)
         return lcg.LocalizableDateTime(result, show_weekday=show_weekday,
                                        leading_zeros=self._leading_zeros)
+
+class Time(pytis.data.Time):
+    """Pytis Time type which exports as a 'lcg.LocalizableTime'."""
+
+    def _export(self, value, **kwargs):
+        return lcg.LocalizableTime(super(Date, self)._export(value, **kwargs))
 
 
 # ============================================================================
