@@ -1,3 +1,24 @@
+2008-03-06  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/cms/cms.py (Styles): New class.
+	(Stylesheets): Use `Styles' for database access.
+
+	* lib/wiking/cms/appl.py (Application): Handle all
+	`MaintananceModeError' situations correctly.
+
+	* lib/wiking/export.py: Make sure the `Documentation' is available
+	before including the accessibility statement link.
+
+	* lib/wiking/application.py: Default `Documentation' uri changed
+	to `doc'.
+
+	* lib/wiking/util.py (MaintananceModeError): New class.
+
+	* lib/wiking/modules.py (Stylesheets): Defive from
+	`RequestHandler', not `ActionHandler'.
+	(CookieAuthentication.authenticate): Added mainenance mode
+	support.
+
 2008-03-04  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/util.py (Document.build): Improved recognition of

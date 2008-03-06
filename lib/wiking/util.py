@@ -73,6 +73,23 @@ class AuthorizationError(RequestError):
 
     def message(self, req):
         return lcg.p(_("You don't have sufficient privilegs for this action."))
+
+
+class MaintananceModeError(RequestError):
+    """Error indicating an invalid action in mainenance mode.
+
+    The maintenance mode can be turned on by the 'maintenance' option in apache configuration.  If
+    this option is set to 'true', no database access will be allowed and any attempt to do so will
+    raise this error.  The application should handle all these errors gracefully to support the
+    mainenance mode.
+    
+    """
+
+    def title(self):
+        return _("Maintenance mode")
+
+    def message(self, req):
+        return lcg.p(_("The system is currently down for maintenance."))
     
     
 class HttpError(RequestError):

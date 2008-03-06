@@ -43,6 +43,7 @@ class Application(CookieAuthentication, wiking.Application):
                 '_registration': 'Registration'}
 
     _RIGHTS = {'Documentation': (Roles.ANYONE,),
+               'Stylesheets': (Roles.ANYONE,),
                'SiteMap': (Roles.ANYONE,),
                'WikingManagementInterface': (Roles.AUTHOR, )}
 
@@ -52,12 +53,18 @@ class Application(CookieAuthentication, wiking.Application):
         return req.forward(self._module(modname))
 
     def module_uri(self, modname):
-        return self._module('Pages').module_uri(modname) \
-               or super(Application, self).module_uri(modname)
+        try:
+            uri = self._module('Pages').module_uri(modname)
+        except MaintananceModeError:
+            uri = None
+        return uri or super(Application, self).module_uri(modname)
         
     def menu(self, req):
         module = req.wmi and 'WikingManagementInterface' or 'Pages'
-        return self._module(module).menu(req)
+        try:
+            return self._module(module).menu(req)
+        except MaintananceModeError:
+            return ()
     
     def panels(self, req, lang):
         if req.wmi:
@@ -71,21 +78,36 @@ class Application(CookieAuthentication, wiking.Application):
             #    panel = self._module('Pages').content_management_panel(req, req.page)
             #    if panel:
             #        panels.append(panel)
-            return panels + self._module('Panels').panels(req, lang)
+            try:
+                return panels + self._module('Panels').panels(req, lang)
+            except MaintananceModeError:
+                return ()
         
     def configure(self, req):
-        return self._module('Config').configure(req)
+        try:
+            self._module('Config').configure(req)
+        except MaintananceModeError:
+            pass
         
     def languages(self):
-        return self._module('Languages').languages()
+        try:
+            return self._module('Languages').languages()
+        except MaintananceModeError:
+            return ('en', 'cs')
         
     def stylesheets(self):
-        return [lcg.Stylesheet(name, uri='/_css/'+name)
-                for name in self._module('Stylesheets').stylesheets()]
+        try:
+            styles = self._module('Styles').stylesheets()
+        except MaintananceModeError:
+            styles = ('default.css',)
+        return [lcg.Stylesheet(name, uri='/_css/'+name) for name in styles]
 
     def _auth_user(self, req, login):
-        return self._module('Users').user(req, login)
-
+        try:
+            return self._module('Users').user(req, login)
+        except MaintananceModeError:
+            return None
+    
     def _auth_check_password(self, user, password):
         return password == user.data()['password'].value()
 

@@ -207,7 +207,7 @@ class Documentation(DocumentHandler):
         return self._document(req, basedir, path)
 
 
-class Stylesheets(Module, ActionHandler):
+class Stylesheets(Module, RequestHandler):
     """Manages available stylesheets and serves them to the client.
 
     The default implementation serves stylesheet files from the wiking resources directory.  You
@@ -217,10 +217,7 @@ class Stylesheets(Module, ActionHandler):
 
     _MATCHER = re.compile (r"\$(\w[\w-]*)(?:\.(\w[\w-]*))?")
 
-    def _default_action(self, req):
-        return 'view'
-
-    def _find_file(self, name):
+    def _stylesheet(self, name):
         filename = os.path.join(cfg.wiking_dir, 'resources', 'css', name)
         if os.path.exists(filename):
             return "".join(file(filename).readlines())
@@ -237,9 +234,9 @@ class Stylesheets(Module, ActionHandler):
             return value
         return self._MATCHER.sub(subst, data)
 
-    def action_view(self, req):
+    def _handle(self, req):
         """Serve the stylesheet from a file."""
-        return ('text/css', self._substitute(self._find_file(req.path[1])))
+        return ('text/css', self._substitute(self._stylesheet(req.path[1])))
 
     
 class SubmenuRedirect(Module, RequestHandler):
@@ -328,7 +325,10 @@ class CookieAuthentication(object):
         pass
     
     def authenticate(self, req):
-        session = self._module('Session')
+        try:
+            session = self._module('Session')
+        except MaintananceModeError:
+            return None
         credentials = req.credentials()
         secure = self._SECURE_AUTH_COOKIES
         day = 24*3600

@@ -33,6 +33,7 @@ class Handler(object):
                 setattr(cfg, name, value)
             elif name in ('database', 'user', 'password', 'host', 'port'):
                 dboptions[name] = value
+        self._maintenance = options.get('maintenance') in ('true', 'yes')
         self._hostname = hostname
         self._dbconnection = pd.DBConnection(**dboptions)
         self._module_cache = {}
@@ -52,6 +53,8 @@ class Handler(object):
             cls = get_module(name)
             args = (self._module,)
             if issubclass(cls, PytisModule):
+                if self._maintenance:
+                    raise MaintananceModeError()
                 args += (cfg.resolver, self._dbconnection,)
             module = cls(*args, **kwargs)
             self._module_cache[key] = module

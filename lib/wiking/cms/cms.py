@@ -1362,10 +1362,24 @@ class SiteMap(Module, Embeddable):
     def embed(self, req):
         return [lcg.RootIndex()]
 
-        
-class Stylesheets(CMSModule, Stylesheets):
+
+class Stylesheets(Stylesheets):
+
+    def _stylesheet(self, name):
+        try:
+            content = self._module('Styles').stylesheet(name)
+        except MaintananceModeError:
+            content = None
+        if content:
+            return content
+        else:
+            return super(Stylesheets, self)._stylesheet(name)
+
+   
+class Styles(CMSModule):
     class Spec(Specification):
         title = _("Stylesheets")
+        table = 'stylesheets'
         help = _("Manage available Cascading Stylesheets.")
         fields = (
             Field('stylesheet_id'),
@@ -1383,12 +1397,12 @@ class Stylesheets(CMSModule, Stylesheets):
     def stylesheets(self):
         return [r['identifier'].value() for r in self._data.get_rows(active=True)]
         
-    def action_view(self, req, record, **kwargs):
-        if req.wmi:
-            return super(Stylesheets, self).action_view(req, record, **kwargs)
+    def stylesheet(self, name):
+        row = self._data.get_row(identifier=name, active=True)
+        if row:
+            return row['content'].value()
         else:
-            content = record['content'].value() or self._find_file(record['identifier'].value())
-            return ('text/css', self._substitute(content))
+            return None
 
 
 class Users(EmbeddableCMSModule):
