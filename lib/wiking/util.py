@@ -805,7 +805,7 @@ class Time(pytis.data.Time):
         format = '%H:%M'
         if exact:
             format += ':%S'
-        super(DateTime, self).__init__(format=format, **kwargs)
+        super(Time, self).__init__(format=format, **kwargs)
     
     def locale_format(self, locale_data):
         if self._exact:
