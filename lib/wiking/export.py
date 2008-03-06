@@ -232,11 +232,15 @@ class Exporter(lcg.HtmlExporter):
             if domain.startswith('www.'):
                 domain = domain[4:]
             contact = 'webmaster@' + domain
+        doc = context.req().application().module_uri('Documentation')
+        if doc:
+            a11y = ' '+ g.link(_("Accessibility Statement"), doc+'/accessibility', hotkey='0')
+        else:
+            a11y = ''
         return (g.hr(),
                 g.p(_("This site conforms to the following standards:"), *links),
-                g.p(_("This site can be viewed in ANY browser."),
-                    g.link(_("Accessibility Statement"), '/_doc/accessibility', hotkey='0')),
+                g.p(_("This site can be viewed in ANY browser.") + a11y),
                 g.p(_("Contact:"), g.link(contact, "mailto:"+contact)))
-    
+
 
 
