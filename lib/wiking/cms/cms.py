@@ -789,13 +789,13 @@ class Pages(CMSModule):
         menu = self._action_menu(req, record, title=None, cls=None)
         if not menu:
             return None
-        links = (#(_("List all pages"), '/?action=list'),
-                 ('/_doc/pages', _("Help"),      _("Show on-line help")),
-                 ('/_wmi',       _("Enter WMI"), _("Enter the Wiking Management Interface")))
-        content = lcg.ul(((_("Current page:"), menu),
-                          (_(""), lcg.ul([lcg.link(target, label, descr=descr)
-                                          for target, label, descr in links]))))
-        return Panel('content-management-panel', _("Content management"), content)
+        #links = (#(_("List all pages"), '/?action=list'),
+        #         ('/_doc/pages', _("Help"),      _("Show on-line help")),
+        #         ('/_wmi',       _("Enter WMI"), _("Enter the Wiking Management Interface")))
+        #content = lcg.ul(((_("Current page:"), menu),
+        #                  (_(""), lcg.ul([lcg.link(target, label, descr=descr)
+        #                                  for target, label, descr in links]))))
+        #return Panel('content-management-panel', _("Content management"), content)
 
     def menu(self, req):
         children = {None: []}
