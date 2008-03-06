@@ -189,13 +189,8 @@ class PytisModule(Module, ActionHandler):
                 value_ = "F"
             else:
                 value_ = ""
-            if isinstance(type, (Date, DateTime)):
-                locale_data = self._locale_data(req)
-                format = locale_data.date_format
-                if isinstance(type, DateTime):
-                    format += ' '+ (type.is_exact() and
-                                    locale_data.exact_time_format or locale_data.time_format)
-                kwargs['format'] = format
+            if isinstance(type, (Date, Time, DateTime)):
+                kwargs['format'] = type.locale_format(self._locale_data(req))
             if isinstance(type, (pd.Binary, pd.Password)) and not value_ and not record.new():
                 continue # Keep the original file if no file is uploaded.
             if isinstance(type, pd.Password) and kwargs.get('verify') is None:
