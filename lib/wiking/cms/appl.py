@@ -71,7 +71,7 @@ class Application(CookieAuthentication, wiking.Application):
             return ()
         else:
             if cfg.appl.allow_login_panel:
-                panels = [LoginPanel(req)]
+                panels = [LoginPanel()]
             else:
                 panels = []
             #if Roles.check(req, (Roles.AUTHOR,)) and hasattr(req, 'page'):

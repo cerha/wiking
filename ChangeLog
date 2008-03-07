@@ -1,3 +1,11 @@
+2008-03-07  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/util.py: Don't pass the request to `LoginPanel' and
+	`LoginDialog' constructors.
+
+	* lib/wiking/cms/appl.py: Don't pass the request to `LoginPanel'
+	constructor.
+
 2008-03-06  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/cms/cms.py (Styles): New class.

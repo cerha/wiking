@@ -54,7 +54,7 @@ class AuthenticationError(RequestError):
     _TITLE = _("Authentication required")
 
     def message(self, req):
-        content = LoginDialog(req)
+        content = LoginDialog()
         if self.args:
             content = (ErrorMessage(self.args[0]), content)
         return content
@@ -309,13 +309,10 @@ class LoginPanel(Panel):
     """Displays login/logout controls and other relevant information."""
     
     class PanelContent(lcg.Content):
-        def __init__(self, req):
-            self._req = req
-            super(LoginPanel.PanelContent, self).__init__()
-            
-        def export(self, exporter):
-            g = exporter.generator()
-            user = self._req.user()
+        def export(self, context):
+            g = context.generator()
+            req = context.req()
+            user = req.user()
             if user:
                 username = user.name()
                 uri = user.uri()
@@ -330,20 +327,20 @@ class LoginPanel(Panel):
                                  g.link(label, '?command=%s' % cmd, cls='login-ctrl'),
                                  g.span(']',cls="hidden"))
             if not user:
-                uri = self._req.application().registration_uri(self._req)
+                uri = req.application().registration_uri(req)
                 if uri:
                     content += g.br() +'\n'+ g.link(_("New user registration"), uri)
             else:
                 if user.passwd_expiration():
                     date = lcg.LocalizableDateTime(str(user.passwd_expiration()))
                     content += g.br() +'\n'+ _("Your password expires on %(date)s.", date=date)
-                uri = self._req.application().password_change_uri(self._req)
+                uri = req.application().password_change_uri(req)
                 if uri:
                     content += g.br() +'\n'+ g.link(_("Change your password"), uri)
             return content
         
-    def __init__(self, req):
-        super(LoginPanel, self).__init__('login', _("Login Panel"), self.PanelContent(req))
+    def __init__(self):
+        super(LoginPanel, self).__init__('login', _("Login Panel"), self.PanelContent())
 
 
 class Document(object):
@@ -570,8 +567,8 @@ class PanelItem(lcg.Content):
         super(PanelItem, self).__init__()
         self._fields = fields
         
-    def export(self, exporter):
-        g = exporter.generator()
+    def export(self, context):
+        g = context.generator()
         items = [g.span(uri and g.link(value, uri) or value,
                             cls="panel-field-"+id)
                  for id, value, uri in self._fields]
@@ -581,8 +578,8 @@ class PanelItem(lcg.Content):
 class Message(lcg.TextContent):
     _CLASS = "message"
     
-    def export(self, exporter):
-        g = exporter.generator()
+    def export(self, context):
+        g = context.generator()
         return g.p(g.escape(self._text), cls=self._CLASS) + "\n"
 
   
@@ -592,46 +589,41 @@ class ErrorMessage(Message):
 
 class LoginDialog(lcg.Content):
     
-    def __init__(self, req):
-        super(LoginDialog, self).__init__()
-        if not req.https() and cfg.force_https_login:
-            self._uri = req.server_uri(force_https=True) + req.uri()
-        else:
-            self._uri = req.uri()
-        self._registration_uri = req.application().registration_uri(req)
-        self._reminder_uri = req.application().password_reminder_uri(req)
-        self._hidden = [(k, req.param(k)) for k in req.params() 
-                        if k not in ('command', 'login', 'password', '__log_in')]
+    def export(self, context):
+        g = context.generator()
+        req = context.req()
         credentials = req.credentials()
         if credentials:
-            self._login = credentials[0]
-            self._password = None
+            login = credentials[0]
+            password = None
         else:
-            self._login = req.param('login')
-            password = req.param('password')
-            if isinstance(password, (str, unicode)):
-                self._password = password
-            else:
-                self._password = None
-
-    def export(self, exporter):
-        g = exporter.generator()
+            login = req.param('login')
+            password = req.param('password') or None
+        hidden = [g.hidden(name=k, value=req.param(k)) for k in req.params() 
+                  if k not in ('command', 'login', 'password', '__log_in')]
         content = (
             g.label(_("Login name")+':', id='login') + g.br(),
-            g.field(name='login', value=self._login, id='login', tabindex=0, size=14),
+            g.field(name='login', value=login, id='login', tabindex=1, size=14),
             g.br(), 
             g.label(_("Password")+':', id='password') + g.br(),
-            g.field(name='password', value=self._password, id='password', size=14, password=True),
+            g.field(name='password', value=password, id='password', size=14,
+                    tabindex=2, password=True),
             g.br(),
-            g.hidden(name='__log_in', value='1'), 
-            ) + tuple([g.hidden(name=name, value=value) for name, value in self._hidden]) + (
+            g.hidden(name='__log_in', value='1'),
+            ) + tuple(hidden) + (
             g.submit(_("Log in"), cls='submit'),)
         links = [g.link(label, uri) for label, uri in
-                 ((_("New user registration"), self._registration_uri),
-                  (_("Forgot your password?"), self._reminder_uri)) if uri]
+                 ((_("New user registration"),
+                   req.application().registration_uri(req)),
+                  (_("Forgot your password?"),
+                   req.application().password_reminder_uri(req))) if uri]
         if links:
             content += (g.list(links),)
-        return g.form(content, method='POST', action=self._uri, cls='login-form')
+        if not req.https() and cfg.force_https_login:
+            uri = req.server_uri(force_https=True) + req.uri()
+        else:
+            uri = req.uri()
+        return g.form(content, method='POST', action=uri, cls='login-form')
     
 
     
