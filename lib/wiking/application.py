@@ -174,8 +174,8 @@ class Application(Module):
         common practice, not a requirement.  The application may decide to return a different set
         of panels for each request.
 
-        Note, that except for the generic `Panel' class, there are also predefined single purpose
-        classes, such as `LoginPanel'.
+        Note, that except for the generic 'Panel' class, there are also predefined single purpose
+        classes, such as 'LoginPanel'.
 
         See the Navigation section of the Wiking User's documentation for general information about
         panels.
