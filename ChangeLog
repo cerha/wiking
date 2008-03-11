@@ -1,3 +1,9 @@
+2008-03-11  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/request.py (Request.send_http_header): New argument
+	to pass HTTP `Content-Length'.
+	(Request.result): Set HTTP `Content-Length' appropriately.
+
 2008-03-07  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/util.py: Don't pass the request to `LoginPanel' and
