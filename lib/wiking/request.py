@@ -154,8 +154,10 @@ class Request(pytis.web.Request):
     def set_status(self, status):
         self._req.status = status
 
-    def send_http_header(self, content_type):
+    def send_http_header(self, content_type, lenght=None):
         self._req.content_type = content_type
+        if lenght is not None:
+            self._req.set_content_length(lenght)
         self._req.send_http_header()
 
     def write(self, data):
@@ -170,7 +172,7 @@ class Request(pytis.web.Request):
             content_type += "; charset=%s" % self._encoding
             #data = self._UNIX_NEWLINE.sub("\r\n", data)
             data = data.encode(self._encoding)
-        self.send_http_header(content_type)
+        self.send_http_header(content_type, len(data))
         self.write(data)
         return apache.OK
 
