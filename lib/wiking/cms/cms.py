@@ -879,7 +879,9 @@ class Pages(CMSModule):
             raise NotFound()
         
     def action_list(self, req, record=None, msg=None):
-        if req.param('module') is None:
+        if req.wmi:
+            return super(Pages, self).action_list(req, msg=msg)
+        elif req.param('module') is None:
             Roles.check(req, (Roles.AUTHOR,))
             return super(Pages, self).action_list(req, msg=msg)
         elif req.param('module') == record['modname'].value():
