@@ -1,3 +1,8 @@
+2008-03-14  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/cms/cms.py (Pages.action_list): Avoid special
+	handling in WMI.
+
 2008-03-11  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/request.py (Request.send_http_header): New argument
