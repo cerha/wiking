@@ -446,6 +446,15 @@ form.list-view div.list-item div.meta {
     padding: 0.1em 0;
     background: $color.meta-bg;
 }
+form.list-view table.grid {
+    border-collapse: separate;
+    border-spacing: 0.6em;
+}
+form.list-view table.grid td {
+}
+form.list-view table.grid h3 {
+    margin-top: 0;
+}
 form.pytis-form fieldset.body div.field { 
     margin: 0.2em 0;
 }
@@ -493,6 +502,9 @@ form.edit-form select, #login, #password {
 form.pytis-form textarea.fullsize {
     width: 100%;
 }
+/*form.pytis-form .invalid {
+    background: $color.error-bg;
+}*/
 
 /* Modification of button controls is arguable...
     background: $color.button;
