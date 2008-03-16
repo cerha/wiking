@@ -1,3 +1,7 @@
+2008-03-16  Tomas Cerha  <cerha@brailcom.org>
+
+	* resources/css/default.css: Added styles for ListView grid.
+
 2008-03-14  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/cms/cms.py (Pages.action_list): Avoid special
