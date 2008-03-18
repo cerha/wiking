@@ -1,3 +1,7 @@
+2008-03-18  Tomas Cerha  <cerha@brailcom.org>
+
+	* resources/css/default.css: Added style for grouping support.
+
 2008-03-16  Tomas Cerha  <cerha@brailcom.org>
 
 	* resources/css/default.css: Added styles for ListView grid.

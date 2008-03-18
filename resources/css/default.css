@@ -396,6 +396,7 @@ form.browse-form table td .multiline {
 
 form.browse-form table tr { background: $color.table-cell; }
 form.browse-form table tr.even { background: $color.table-cell2; }
+/* form.browse-form table tr.group-change td { border-top-width: 2px; } */
 form.browse-form table th { background: $color.heading-bg; }
 form.browse-form table td pre {
     background-color: transparent;
