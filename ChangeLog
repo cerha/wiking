@@ -1,5 +1,8 @@
 2008-03-18  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/handler.py (Handler.__init__): Handle the
+	`translation_path' configuration option differently.
+
 	* resources/css/default.css: Added style for grouping support.
 
 2008-03-16  Tomas Cerha  <cerha@brailcom.org>
