@@ -29,7 +29,9 @@ class Handler(object):
     def __init__(self, hostname, options):
         dboptions = {'database': hostname}
         for name, value in options.items():
-            if hasattr(cfg, name):
+            if name == 'translation_path':
+                cfg.translation_path = tuple(cfg.translation_path) + tuple(value.split(':'))
+            elif hasattr(cfg, name):
                 setattr(cfg, name, value)
             elif name in ('database', 'user', 'password', 'host', 'port'):
                 dboptions[name] = value
