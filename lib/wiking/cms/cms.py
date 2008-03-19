@@ -272,6 +272,13 @@ class Embeddable(object):
         """Return a list of content instances extending the page content."""
         pass
 
+    def submenu(self, req):
+        """Return a list of 'MenuItem' instances to insert into the main menu.
+        
+        The submenu will appear in the main menu under the item of a page which embeds the module.
+
+        """
+        return []
     
 class EmbeddableCMSModule(CMSModule, Embeddable):
     INSERT_LABEL = _("New record")
@@ -630,6 +637,9 @@ class Pages(CMSModule):
                   descr=_("Enter a number denoting the order of the page in the menu.  Leave "
                           "blank if you don't want this page to appear in the menu.")),
             Field('tree_order', _("Tree level"), type=pd.TreeOrder()),
+            #Field('group', virtual=True,
+            #      computer=Computer(lambda r: r['tree_order'].value().split('.')[1],
+            #                        depends=('tree_order',))),
             Field('owner', _("Owner"), codebook='Users', not_null=False,
                   descr=_("Set the ownership if you want a particular user to have full control "
                           "of the page even if his normal privileges are lower.")),
@@ -644,6 +654,7 @@ class Pages(CMSModule):
         def row_style(self, row):
             return not row['published'].value() and pp.Style(foreground='#777') or None
         sorting = (('tree_order', ASC), ('identifier', ASC),)
+        #grouping = ('group',)
         layout = ('identifier', 'modname', 'parent', 'ord', 'private', 'owner')
         columns = ('title_or_identifier', 'identifier', 'status', 'ord', 'private', 'owner')
         cb = pp.CodebookSpec(display='title_or_identifier', prefer_display=True)
@@ -803,11 +814,15 @@ class Pages(CMSModule):
         def mkitem(row):
             mapping_id, identifier = row['mapping_id'].value(), str(row['identifier'].value())
             titles, descriptions = translations[mapping_id]
+            if row['modname'].value():
+                submenu = list(self._module(row['modname'].value()).submenu(req))
+            else:
+                submenu = []
             return MenuItem(identifier,
                             lcg.SelfTranslatableText(identifier, translations=titles),
                             descr=lcg.SelfTranslatableText('', translations=descriptions),
                             hidden=row['ord'].value() is None, variants=titles.keys(),
-                            submenu=[mkitem(r) for r in children.get(mapping_id, ())])
+                            submenu=submenu + [mkitem(r) for r in children.get(mapping_id, ())])
         for row in self._data.get_rows(sorting=self._sorting, published=True):
             mapping_id = row['mapping_id'].value()
             if not translations.has_key(mapping_id):

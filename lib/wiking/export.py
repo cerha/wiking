@@ -72,7 +72,10 @@ class Exporter(lcg.HtmlExporter):
         return self._generator.span(text, cls="hidden")
 
     def _node_uri(self, context, node, lang=None):
-        return context.generator().uri(context.req().uri_prefix() +'/'+ node.id(), setlang=lang)
+        uri = node.id()
+        if not uri.startswith('/'):
+            uri = context.req().uri_prefix() + '/'+ uri
+        return context.generator().uri(uri, setlang=lang)
     
     #def _head(self, context):
     #    result = super(Exporter, self)._head(context)
