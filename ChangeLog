@@ -3,6 +3,8 @@
 	* lib/wiking/cms/cms.py (Embeddable.submenu): New method.
 	(Pages.menu.mkitem): Append also the submenu of an embedded
 	module.
+	(Embeddable.embed): Allow int in the returned value.
+	(Pages.action_view): Handle int in `Embeddable.embed()' result.
 
 	* lib/wiking/export.py (Exporter._node_uri): Preserver absolute
 	uri's in node id.
