@@ -208,7 +208,7 @@ class Documentation(DocumentHandler):
 
 
 class Stylesheets(Module, RequestHandler):
-    """Manages available stylesheets and serves them to the client.
+    """Serve installed stylesheets.
 
     The default implementation serves stylesheet files from the wiking resources directory.  You
     will just need to map this module to serve certain uri, such as 'css'.

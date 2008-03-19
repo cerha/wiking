@@ -1,6 +1,9 @@
 2008-03-19  Tomas Cerha  <cerha@brailcom.org>
 
-	* lib/wiking/cms/cms.py (Embeddable.submenu): New method.
+	* lib/wiking/modules.py: Docstring improvements.
+
+	* lib/wiking/cms/cms.py: Docstring improvements.
+	(Embeddable.submenu): New method.
 	(Pages.menu.mkitem): Append also the submenu of an embedded
 	module.
 	(Embeddable.embed): Allow int in the returned value.

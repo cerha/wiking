@@ -149,6 +149,18 @@ class WikingManagementInterface(Module, RequestHandler):
 
     
 class Registration(Module, ActionHandler):
+    """User registration and account management.
+
+    This module is statically mapped by Wiking CMS to the reserved `_registration' URI to always
+    provide an interface for new user registration, password reminder, password change and other
+    user account related operations.
+    
+    All these operations are in fact provided by the 'Users' module.  The 'Users' module, however,
+    may not be reachable from outside unless used as an extension module for an existing page.  If
+    that's not the case, the 'Registration' module provides the needed operations (by proxying the
+    requests to the 'Users' module).
+    
+    """
     class ReminderForm(lcg.Content):
         def export(self, exporter):
             g = exporter.generator()
@@ -299,6 +311,11 @@ class EmbeddableCMSModule(CMSModule, Embeddable):
 
 
 class Session(PytisModule, wiking.Session):
+    """Implement Wiking session management by storing session ids in database.
+
+    This module is required by the 'CookieAuthentication' Wiking module.
+    
+    """
     class Spec(Specification):
         fields = [Field(_id) for _id in ('session_id', 'login', 'key', 'expire')]
 
@@ -395,9 +412,12 @@ class Config(CMSModule):
     
 
 class Mapping(CMSModule):
-    """Mapping contains unique record for each page identifier.
+    """Provide a set of available URIs -- page identifiers bound to particular pages.
 
-    Pages than define the content for each mapping identifier in particular languages.
+    This mapping contains unique record for each page identifier.  Pages define the content for
+    each mapping identifier in one particular languages.  This module is needed for the reference
+    integrity specification in 'Pages', 'Attachments' and other modules, where records are related
+    to (language independent) mapping items.
     
     """
     class Spec(Specification):
@@ -405,6 +425,11 @@ class Mapping(CMSModule):
 
             
 class Panels(CMSModule, Publishable):
+    """Provide a set of side panels.
+
+    The panels are stored in a Pytis data object to allow their management through WMI.
+
+    """
     class Spec(Specification):
         title = _("Panels")
         help = _(u"Manage panels – the small windows shown by the side of "
@@ -602,6 +627,12 @@ class Themes(CMSModule):
 # ==============================================================================
 
 class Pages(CMSModule):
+    """Define available pages and their content and allow their management.
+
+    This module implements the key CMS functionality.  Pages, their hierarchy, content and other
+    properties are managed throug a Pytis data object.
+    
+    """
     class Spec(Specification):
         title = _("Pages")
         help = _("Manage available pages of structured text content.")
@@ -1379,6 +1410,7 @@ class Images(StoredFileModule, EmbeddableCMSModule):
 
 
 class SiteMap(Module, Embeddable):
+    """Extend page content by including a hierarchical listing of the main menu."""
 
     @classmethod
     def title(cls):
@@ -1389,7 +1421,13 @@ class SiteMap(Module, Embeddable):
 
 
 class Stylesheets(Stylesheets):
+    """Serve the available stylesheets.
 
+    The Wiking base stylesheet class is extended to retrieve the stylesheet contents from the
+    database driven 'Styles' module (in addition to serving the default styles installed on the
+    filesystem).
+
+    """
     def _stylesheet(self, name):
         try:
             content = self._module('Styles').stylesheet(name)
@@ -1402,6 +1440,7 @@ class Stylesheets(Stylesheets):
 
    
 class Styles(CMSModule):
+    """Manage available Cascading Stylesheets through a Pytis data object."""
     class Spec(Specification):
         title = _("Stylesheets")
         table = 'stylesheets'
@@ -1431,6 +1470,11 @@ class Styles(CMSModule):
 
 
 class Users(EmbeddableCMSModule):
+    """Manage user accounts through a Pytis data object.
+
+    This module is used by the Wiking CMS application to retrieve the login information
+    
+    """
     class Spec(Specification):
         title = _("Users")
         help = _("Manage registered users.  Use the module 'Access Rights' "
