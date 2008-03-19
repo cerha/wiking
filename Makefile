@@ -1,9 +1,12 @@
 # Edit the paths below to suit your needs.
-SHARE = /usr/local/share
-LIB = /usr/local/lib/python%d.%d/site-packages
-CFGFILE = /etc/wiking/config.py
-APACHECFG = /etc/apache2/conf.d/wiking
-STORAGE = /var/lib/wiking/
+prefix = /usr/local
+sysconfdir = /etc
+datadir = /var/lib
+SHARE = $(prefix)/share
+LIB = $(prefix)/lib/python%d.%d/site-packages
+CFGFILE = $(sysconfdir)/wiking/config.py
+APACHECFG = $(sysconfdir)/apache2/conf.d/wiking
+STORAGE = $(datadir)/wiking/
 APACHE_USER = www-data
 
 lib := $(shell python -c 'import sys; print "$(LIB)".find("%d") != -1 and \
