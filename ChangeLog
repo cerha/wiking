@@ -1,3 +1,12 @@
+2008-03-19  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/cms/cms.py (Embeddable.submenu): New method.
+	(Pages.menu.mkitem): Append also the submenu of an embedded
+	module.
+
+	* lib/wiking/export.py (Exporter._node_uri): Preserver absolute
+	uri's in node id.
+
 2008-03-18  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/handler.py (Handler.__init__): Handle the
