@@ -97,7 +97,7 @@ config_dir = $(shell dirname $(CFGFILE))
 $(CFGFILE): $(config_dir)
 	@echo "Writing $(CFGFILE)"
 	@echo "import wiking,sys; wiking.cfg.dump_config_template(sys.stdout)" \
-	| PYTHONPATH=$(lib) python >$(CFGFILE)
+	| PYTHONPATH=$(lib):$$PYTHONPATH python >$(CFGFILE)
 
 $(config_dir):
 	mkdir $(config_dir)
