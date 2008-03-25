@@ -1,3 +1,11 @@
+2008-03-25  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/db.py (PytisModule.__init__): Avoid multiple links to
+	the same target.
+	(PytisModule._layout): New argument `record'.
+	(PytisModule.action_view, PytisModule.action_update): Pass the
+	record to `self._layout()' call.
+
 2008-03-19  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/modules.py: Docstring improvements.
