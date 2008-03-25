@@ -138,7 +138,7 @@ class PytisModule(Module, ActionHandler):
             elif isinstance(f.computer(), pp.CbComputer):
                 cid = f.computer().field()
                 cb = self._view.field(cid).codebook()
-                if cb:
+                if cb and cb not in [x[1] for x in self._links.values()]:
                     self._links[f.id()] = (cid, cb)
 
     def _spec(self, resolver):
@@ -325,7 +325,7 @@ class PytisModule(Module, ActionHandler):
         return form(self._view, row, handler=handler or req.uri(), name=self.name(), hidden=hidden,
                     prefill=prefill, **kwargs)
 
-    def _layout(self, req, action):
+    def _layout(self, req, action, record=None):
         layout = self._LAYOUT.get(action)
         if isinstance(layout, (tuple, list)):
             layout = pp.GroupSpec(layout, orientation=pp.Orientation.VERTICAL)
@@ -502,7 +502,7 @@ class PytisModule(Module, ActionHandler):
 
     def action_view(self, req, record, err=None, msg=None):
         content = [self._form(pw.ShowForm, req, row=record.row(),
-                              layout=self._layout(req, 'view')),
+                              layout=self._layout(req, 'view', record)),
                    self._action_menu(req, record)]
         for modname in self._RELATED_MODULES:
             module, binding = self._module(modname), self._bindings[modname]
@@ -539,7 +539,7 @@ class PytisModule(Module, ActionHandler):
         return self._document(req, form, subtitle=_("New record"))
             
     def action_update(self, req, record, action='update', msg=None):
-        layout = self._layout(req, action)
+        layout = self._layout(req, action, record)
         if req.param('submit'):
             errors = self._validate(req, record, layout=layout)
         else:
