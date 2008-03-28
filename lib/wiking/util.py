@@ -17,7 +17,7 @@
 
 from wiking import *
 
-import time, re, os, copy, urllib
+import time, string, re, os, copy, urllib
 
 DBG = pytis.util.DEBUG
 EVT = pytis.util.EVENT
@@ -894,8 +894,41 @@ def rss(title, url, items, descr, lang=None, webmaster=None):
     </item>''' for title, url, descr, date, author in items])
     return result
 
-def send_mail(sender, addr, subject, text, html=None, smtp_server=None, lang=None):
-    """Send a mime e-mail message with text and HTML version."""
+def send_mail(sender, addr, subject, text, html=None, smtp_server=None, lang=None,
+              attachment=None, attachment_stream=None, attachment_type='application/octet-stream',
+              cc=()):
+    """Send a MIME e-mail message.
+
+    Arguments:
+
+      sender -- sender address as a string
+      addr -- recipient address as a string
+      subject -- message subject as a string or unicode
+      text -- message text as a string or unicode
+      html -- HTML part of the message as string or unicode
+      smtp_server -- SMTP server name to use for sending the message as a
+        string; if 'None', server given in configuration is used
+      lang -- ISO language code as a string
+      attachment -- name of the file to attach; if it is 'None', there is no
+        attachment
+      attachment_stream -- if not 'None' and 'attachment' is not 'None', read
+        attachment data from the given stream
+      attachment_type -- attachment MIME type as a string
+      cc -- sequence of other recipient string addresses
+      
+    """
+    string_class = type('')
+    assert isinstance(sender, basestring)
+    assert isinstance(addr, basestring)
+    assert isinstance(subject, basestring)
+    assert isinstance(text, basestring)
+    assert html is None or isinstance(html, basestring)
+    assert smtp_server is None or isinstance(smtp_server, string_class)
+    assert lang is None or isinstance(lang, string_class)
+    assert attachment is None or isinstance(attachment, basestring)
+    assert attachment_stream is None or isinstance(attachment_stream, file)
+    assert isinstance(attachment_type, string_class)
+    assert isinstance(cc, (tuple, list,))
     import MimeWriter
     import mimetools
     from cStringIO import StringIO
@@ -905,12 +938,18 @@ def send_mail(sender, addr, subject, text, html=None, smtp_server=None, lang=Non
     # Set up message headers.
     writer.addheader("From", sender)
     writer.addheader("To", addr)
+    if cc:
+        writer.addheader("Cc", string.join(cc, ', '))
     writer.addheader("Subject", tr.translate(subject))
     writer.addheader("Date", time.strftime("%a, %d %b %Y %H:%M:%S %z"))
     writer.addheader("MIME-Version", "1.0")
     # Start the multipart section (multipart/alternative seems to work better
     # on some MUAs than multipart/mixed).
-    writer.startmultipartbody("alternative")
+    if attachment is None:
+        multipart_type = 'alternative'
+    else:
+        multipart_type = 'mixed'
+    writer.startmultipartbody(multipart_type)
     writer.flushheaders()
     # The plain text section.
     if isinstance(text, unicode):
@@ -932,15 +971,30 @@ def send_mail(sender, addr, subject, text, html=None, smtp_server=None, lang=Non
         pout = subpart.startbody("text/html", [("charset", 'utf-8')])
         mimetools.encode(htmlin, pout, 'quoted-printable')
         htmlin.close()
+    # The attachment section.
+    if attachment is not None:
+        subpart = writer.nextpart()
+        subpart.addheader('Content-Transfer-Encoding', 'base64')
+        subpart.addheader('Content-Disposition', 'attachment; filename=%s' % os.path.basename(attachment))
+        if attachment_stream is None:
+            attin = file(attachment)
+        else:
+            attin = attachment_stream
+        pout = subpart.startbody(attachment_type)
+        mimetools.encode(attin, pout, 'base64')
+        attin.close()
     # Close the writer and send the message.
     writer.lastpart()
+    addr_list = [addr]
+    if cc:
+        addr_list += cc
     if not smtp_server:
         smtp_server = cfg.smtp_server or 'localhost'
     try:
         import smtplib
         server = smtplib.SMTP(smtp_server)
         try:
-            server.sendmail(sender, addr, out.getvalue())
+            server.sendmail(sender, addr_list, out.getvalue())
         finally:
             out.close()
             server.quit()
