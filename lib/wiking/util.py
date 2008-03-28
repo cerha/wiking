@@ -1003,6 +1003,70 @@ def send_mail(sender, addr, subject, text, html=None, smtp_server=None, lang=Non
     except Exception, e:
         return str(e)
 
+def validate_email_address(address, helo=None):
+    """Validate given e-mail 'address'.
+
+    The function performs some basic checks of the e-mail address validity,
+    especially whether the given address is able to accept e-mail.  The check
+    is not completely reliable, it may report the address as valid when it is
+    not and under some uncommon conditions it may report a valid address as
+    invalid.
+
+    If the address is valid, the pair '(True, None,)' is returned.  If the
+    address is invalid, the pair '(False, REASON,)' is returned, where 'REASON'
+    is a string describing less or more accurately the reason why the address
+    was not validated.
+
+    If the 'hello' argument is not 'None', it is used as the identification of
+    the connecting machine in the HELO SMTP command when checking availability
+    of the address on remote sites.
+
+    """
+    import dns.resolver
+    import smtplib
+    try:
+        # We validate only common addresses, not pathological cases
+        __, domain = address.split('@')
+    except Exception, e:
+        return False, str(e)
+    try:
+        mxhosts = dns.resolver.query(domain, 'MX')
+    except dns.resolver.NoAnswer:
+        mxhosts = None
+    except Exception, e:
+        return False, str(e)
+    if mxhosts is None:
+        try:
+            ahosts = dns.resolver.query(domain, 'A')
+        except dns.resolver.NoAnswer:
+            return False, "Address domain not found"
+        except Exception, e:
+            return False, str(e)
+        hosts = [h.to_text() for h in ahosts]
+    else:
+        hosts = [h.exchange.to_text() for h in mxhosts]
+    for i in range(len(hosts)):
+        if hosts[i][-1] == '.':
+            hosts[i] = hosts[i][:-1]
+    reasons = ''
+    for host in hosts:
+        try:
+            smtp = smtplib.SMTP(host, local_hostname=helo)
+            smtp.helo()
+            code, message = smtp.mail('')
+            if code >= 500:
+                raise Exception('SMTP command MAIL failed', code, message)
+            code, message = smtp.rcpt(address)
+            if code >= 500:
+                raise Exception('SMTP command RCPT failed', code, message)
+            smtp.quit()
+            break
+        except Exception, e:
+            reasons += ('%s: %s; ' % (host, e,))
+    else:
+        return False, reasons
+    return True, None
+
 
 def cmp_versions(v1, v2):
     """Compare version strings, such as '0.3.1' and return the result.
