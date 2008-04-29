@@ -221,9 +221,20 @@ class PytisModule(Module, ActionHandler):
                 match = matcher.match(str(e.exception()).strip())
                 if match:
                     if match.groupdict().has_key('id'):
-                        return ((match.group('id'), msg),)
-                    return msg
-        return unicode(e.exception())
+                        return (match.group('id'), msg)
+                    return (None, msg)
+        return (None, unicode(e.exception()))
+
+    def _error_message(self, fid, error):
+        # Return an error message string out of _analyze_exception() result.
+        if fid is not None:
+            f = self._view.field(fid)
+            if f:
+                label = f.label()
+            else:
+                label = fid
+            error = label + ": " + error
+        return error
 
     def _document(self, req, content, record=None, lang=None, err=None, msg=None, **kwargs):
         if record:
@@ -238,14 +249,14 @@ class PytisModule(Module, ActionHandler):
                 title = self._view.title()
             else:
                 title = None # Current menu title will be substituted.
-        if isinstance(content, (list, tuple)):
+        if isinstance(content, list):
             content = tuple(content)
-        else:
+        elif not isinstance(content, tuple):
             content = (content,)
         if msg:
-            content = (Message(msg),) + tuple(content)
+            content = (Message(msg),) + content
         if err:
-            content = (ErrorMessage(err),) + tuple(content)
+            content = (ErrorMessage(err),) + content
         return Document(title, content, lang=lang, **kwargs)
 
     def _actions(self, req, record):
@@ -528,7 +539,7 @@ class PytisModule(Module, ActionHandler):
             try:
                 self._insert(record)
             except pd.DBException, e:
-                errors = self._analyze_exception(e)
+                errors = (self._analyze_exception(e),)
             else:
                 return self._redirect_after_insert(req, record)
         # TODO: Redirect handler to HTTPS if cfg.force_https_login is true?
@@ -549,7 +560,7 @@ class PytisModule(Module, ActionHandler):
                 self._update(record)
                 record.reload()
             except pd.DBException, e:
-                errors = self._analyze_exception(e)
+                errors = (self._analyze_exception(e),)
             else:
                 return self._redirect_after_update(req, record)
         form = self._form(pw.EditForm, req, row=record.row(), action=action, layout=layout,
@@ -565,7 +576,7 @@ class PytisModule(Module, ActionHandler):
             try:
                 self._delete(record)
             except pd.DBException, e:
-                err = self._analyze_exception(e)
+                err = self._error_message(*self._analyze_exception(e))
             else:
                 return self._redirect_after_delete(req, record)
         form = self._form(pw.ShowForm, req, row=record.row())
@@ -823,7 +834,7 @@ class Publishable(object):
                 record.reload()
             msg = publish and self._MSG_PUBLISHED or self._MSG_UNPUBLISHED
         except pd.DBException, e:
-            err = self._analyze_exception(e)
+            err = self._error_message(*self._analyze_exception(e))
         return self.action_view(req, record, msg=msg, err=err)
 
     def action_unpublish(self, req, record):
