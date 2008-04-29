@@ -1,3 +1,17 @@
+2008-04-29  Tomas Cerha  <cerha@brailcom.org>
+
+	* resources/css/default.css: LCG fieldset style improved.
+
+	* lib/wiking/util.py (Document.build.mknode): Allow unicode
+	characters within node id.
+
+	* lib/wiking/modules.py (Search._result_item): Use LCG helper
+	functions for LCG content construction.
+
+2008-03-28  Tomas Cerha  <cerha@brailcom.org>
+
+	* resources/css/default.css: Added style for group headings.
+
 2008-03-25  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/db.py (PytisModule.__init__): Avoid multiple links to

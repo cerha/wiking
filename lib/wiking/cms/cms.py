@@ -690,7 +690,8 @@ class Pages(CMSModule):
         def row_style(self, row):
             return not row['published'].value() and pp.Style(foreground='#777') or None
         sorting = (('tree_order', ASC), ('identifier', ASC),)
-        #grouping = ('group',)
+        #grouping = 'group'
+        #group_heading = 'title'
         layout = ('identifier', 'modname', 'parent', 'ord', 'private', 'owner')
         columns = ('title_or_identifier', 'identifier', 'status', 'ord', 'private', 'owner')
         cb = pp.CodebookSpec(display='title_or_identifier', prefer_display=True)
