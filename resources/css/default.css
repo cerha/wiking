@@ -606,7 +606,7 @@ table.lcg-table caption, table.lcg-fieldset caption {
     font-size: 1.1em;
     text-align: left;
 }
-table.lcg-fieldset th { white-space: nowrap; }
+table.lcg-fieldset th { white-space: nowrap; text-align: left; padding-right: 0.5em; }
 
 pre.lcg-preformatted-text {
     background: $color.frame-bg;
