@@ -423,12 +423,14 @@ class Document(object):
                 variants = application.languages()
             elif lang not in variants:
                 hidden = True
-            resource_provider = lcg.StaticResourceProvider(resources)
-            node = WikingNode(str(item.id()), title=item.title(), heading=heading,
+            # The identifier is encoded to allow unicode characters within it.  The encoding
+            # actually doesnt't matter, we just need any unique 8-bit string.
+            node = WikingNode(item.id().encode('utf-8'), title=item.title(), heading=heading,
                               descr=item.descr(), lang=lang, content=content, hidden=hidden,
                               variants=variants or (), active=item.active(), panels=panels, 
                               children=[mknode(i) for i in item.submenu()],
-                              resource_provider=resource_provider, globals=self._globals)
+                              resource_provider=lcg.StaticResourceProvider(resources),
+                              globals=self._globals)
             nodes[item.id()] = node
             return node
         top_level_nodes = [mknode(item) for item in application.menu(req)]
