@@ -458,9 +458,9 @@ class Search(Module, ActionHandler):
         sample = item.sample()
         link = lcg.link(item.uri(), label=item.title(), descr=sample,)
         if sample is None:
-            result_item = lcg.Paragraph((link,))
+            result_item = lcg.p((link,))
         else:
-            result_item = lcg.DefinitionList((lcg.Definition(link, lcg.coerce(sample)),))
+            result_item = lcg.dl(((link, sample),))
         return result_item
 
     def _empty_result_page(self):
