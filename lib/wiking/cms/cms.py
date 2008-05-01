@@ -1484,8 +1484,8 @@ class Users(EmbeddableCMSModule):
                   ('user', _("User"),         (Roles.USER,)),
                   ('cont', _("Contributor"),  (Roles.USER, Roles.CONTRIBUTOR)),
                   ('auth', _("Author"),       (Roles.USER, Roles.CONTRIBUTOR, Roles.AUTHOR)),
-                  ('admn', _("Admnistrator"), (Roles.USER, Roles.CONTRIBUTOR, Roles.AUTHOR,
-                                               Roles.ADMIN)))
+                  ('admn', _("Administrator"), (Roles.USER, Roles.CONTRIBUTOR, Roles.AUTHOR,
+                                                Roles.ADMIN)))
         _ROLE_DICT = dict([(_code, (_title, _roles)) for _code, _title, _roles in _ROLES])
         def _fullname(self, row):
             name = row['firstname'].value()
@@ -1525,7 +1525,7 @@ class Users(EmbeddableCMSModule):
             Field('firstname', _("First name")),
             Field('surname', _("Surname")),
             Field('nickname', _("Displayed name"),
-                  descr=_("Leave blank if you want to be refered by your full name or enter an "
+                  descr=_("Leave blank if you want to be referred by your full name or enter an "
                           "alternate name, such as nickname or monogram.")),
             Field('email', _("E-mail"), width=36),
             Field('phone', _("Phone")),
@@ -1537,7 +1537,7 @@ class Users(EmbeddableCMSModule):
                   style=lambda r: r['role'].value() == 'none' and pp.Style(foreground='#a20') \
                         or None,
                   descr=_("Select one of the predefined roles to grant the user "
-                          "the corresponding privilegs.")),
+                          "the corresponding privileges.")),
             Field('lang'),
             )
         def _rolename(self, code):
