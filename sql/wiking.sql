@@ -401,6 +401,8 @@ CREATE TABLE config (
 CREATE TABLE cacertificates (
        cacertificates_id serial PRIMARY KEY,
        certificate text NOT NULL,
+       serial_number int NOT NULL,
+       text text NOT NULL,  -- human readable form of the certificate
        issuer text NOT NULL,  -- CN, i.e. the authority
        valid_from timestamp NOT NULL,
        valid_until timestamp NOT NULL,
@@ -410,10 +412,13 @@ CREATE TABLE cacertificates (
 CREATE TABLE certificates (
        certificates_id serial PRIMARY KEY,
        certificate text NOT NULL,
+       serial_number int NOT NULL,
+       text text NOT NULL,  -- human readable form of the certificate
        common_name text NOT NULL,
        email text,
-       issuer int REFERENCES cacertificates,  -- NULL == self-signed
+       issuer text NOT NULL,
        valid_from timestamp NOT NULL,
        valid_until timestamp NOT NULL,
+       trusted boolean DEFAULT 'FALSE',
        user_ int REFERENCES users
 );

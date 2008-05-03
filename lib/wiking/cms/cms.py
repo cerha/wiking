@@ -1709,38 +1709,16 @@ class Users(EmbeddableCMSModule):
 class Certificates(CMSModule):
     """Base class of classes handling various kinds of certificates."""
     
-    RIGHTS_view = (Roles.ADMIN,)
-    RIGHTS_list = (Roles.ADMIN,)
-    RIGHTS_rss  = (Roles.ADMIN,)
-    RIGHTS_insert = (Roles.ADMIN,)
-    RIGHTS_update = (Roles.ADMIN,)
-    RIGHTS_delete = (Roles.ADMIN,)
-
-    # Spec is unused here, but it must be present
-    class Spec(Specification):
-        title = _("Certificates")
-        def fields(self):
-            return ()
-        columns = ()
-
-    def _convert_x509_timestamp(self, timestamp):
-        time_tuple = time.strptime(str(timestamp), '%b %d %H:%M:%S %Y %Z')
-        mx_time = mx.DateTime.DateTime(*time_tuple[:6])
-        return mx_time
-
-class CACertificates(Certificates):
-    """Management of root certificates."""
-    
     class Spec(StoredFileModule.Spec):
-        table = 'cacertificates'
-        title = _("CA Certificates")
-        help = _("Manage trusted root certificates.")
+        _ID_COLUMN = 'certificates_id'
         def fields(self): return (
-            Field('cacertificates_id', width=8, editable=NEVER),
+            Field(self._ID_COLUMN, width=8, editable=NEVER),
             Field('file', _("PEM file"), virtual=True, editable=ALWAYS,
                   type=pd.Binary(not_null=True, maxlen=10000),
                   descr=_("Upload a PEM file containing the certificate")),
-            Field('certificate', _("Certificate"), width=60),
+            Field('certificate', _("Certificate"), width=60, height=20, editable=NEVER),
+            Field('serial_number', _("Serial number"), editable=NEVER),
+            Field('text', _("Certificate"), width=60, height=20, editable=NEVER),
             Field('issuer', _("Certification Authority"), width=32, editable=NEVER),
             Field('valid_from', _("Valid from"), editable=NEVER),
             Field('valid_until', _("Valid until"), editable=NEVER),
@@ -1749,17 +1727,19 @@ class CACertificates(Certificates):
             )
         columns = ('issuer', 'valid_from', 'valid_until', 'trusted',)
         sorting = (('issuer', ASC), ('valid_until', ASC))
-        layout = ('trusted', 'issuer', 'valid_from', 'valid_until',)
+        layout = ('trusted', 'issuer', 'valid_from', 'valid_until', 'text',)
+    
+    RIGHTS_view = (Roles.ADMIN,)
+    RIGHTS_list = (Roles.ADMIN,)
+    RIGHTS_rss  = (Roles.ADMIN,)
+    RIGHTS_insert = (Roles.ADMIN,)
+    RIGHTS_update = (Roles.ADMIN,)
+    RIGHTS_delete = (Roles.ADMIN,)
         
     _LAYOUT = {'insert': ('file',)}
-    
-    INSERT_LABEL = _("New CA certificate")
-    
-    WMI_SECTION = WikingManagementInterface.SECTION_CERTIFICATES
-    WMI_ORDER = 100
 
     def _validate(self, req, record, layout=None):
-        result = super(CACertificates, self)._validate(req, record, layout=layout)
+        result = super(Certificates, self)._validate(req, record, layout=layout)
         if result:
             return result
         import M2Crypto.X509
@@ -1774,34 +1754,79 @@ class CACertificates(Certificates):
                 x509 = M2Crypto.X509.load_cert(certificate_file.name)
             except Exception, e:
                 return [(None, _("System error while processing certificate"),)]
-            if not x509.check_ca():
-                return [(None, _("This is not a CA certificate."),)]
-            if not x509.verify():
-                return [(None, _("The certificate is not correctly signed"),)]
-            issuer = unicode(x509.get_issuer())
-            record['issuer'] = pd.Value(record['issuer'].type(), issuer)
-            valid_from = self._convert_x509_timestamp(x509.get_not_before())
-            record['valid_from'] = pd.Value(record['valid_from'].type(), valid_from)
-            valid_until = self._convert_x509_timestamp(x509.get_not_after())
-            record['valid_until'] = pd.Value(record['valid_until'].type(), valid_until)
+            result = self._validate_x509(req, record, x509)
+            if result:
+                return result
+        return None
+
+    def _validate_x509(self, req, record, x509):
+        if not x509.verify():
+            return [(None, _("The certificate is not valid"),)]
+        def set_value(column, value):
+            record[column] = pd.Value(record[column].type(), value)
+        set_value('serial_number', x509.get_serial_number())
+        set_value('issuer', unicode(x509.get_issuer()))
+        set_value('valid_from', self._convert_x509_timestamp(x509.get_not_before()))
+        set_value('valid_until', self._convert_x509_timestamp(x509.get_not_after()))
+        set_value('text', x509.as_text())
+
+    def _convert_x509_timestamp(self, timestamp):
+        time_tuple = time.strptime(str(timestamp), '%b %d %H:%M:%S %Y %Z')
+        mx_time = mx.DateTime.DateTime(*time_tuple[:6])
+        return mx_time
+
+class CACertificates(Certificates):
+    """Management of root certificates."""
+    
+    class Spec(Certificates.Spec):
+        table = 'cacertificates'
+        title = _("CA Certificates")
+        help = _("Manage trusted root certificates.")
+        _ID_COLUMN = 'cacertificates_id'
+        
+    _LAYOUT = {'insert': ('file',)}
+    
+    WMI_SECTION = WikingManagementInterface.SECTION_CERTIFICATES
+    WMI_ORDER = 100
+    
+    def _validate_x509(self, req, record, x509):
+        result = super(CACertificates, self)._validate_x509(req, record, x509)
+        if result:
+            return result
+        if x509.check_ca() != 1:
+            return [(None, _("This is not a CA certificate."),)]
         return None
 
 class UserCertificates(Certificates):
     """Management of user certificates, especially for the purpose of authentication."""
-    class Spec(Specification):
+    
+    class Spec(Certificates.Spec):
         title = _("User Certificates")
         help = _("Manage user and other kinds of certificates.")
         table = 'certificates'
-        def fields(self): return (
-            Field('certificates_id', width=8, editable=NEVER),
-            Field('certificate', _("Certificate"), width=60),
-            Field('issuer', _("Certification Authority"), width=32, editable=NEVER),
-            Field('valid_from', _("Valid from"), editable=NEVER),
-            Field('valid_until', _("Valid until"), editable=NEVER),
-            )
-        columns = ('issuer', 'valid_from', 'valid_until',)
-        sorting = (('issuer', ASC), ('valid_until', ASC))
-        layout = (FieldSet(_("Certificate"), ('certificate',)),
-                  FieldSet(_("Properties"), ('issuer', 'valid_from', 'valid_until',)))        
+        def fields(self):
+            fields = Certificates.Spec.fields(self)
+            fields = fields + (Field('common_name', _("Name"), editable=NEVER),
+                               Field('email', _("E-mail"), editable=NEVER),)
+            return fields
+        columns = ('common_name', 'valid_from', 'valid_until', 'trusted',)
+        layout = ('trusted', 'common_name', 'email', 'issuer', 'valid_from', 'valid_until', 'text',)
+        
+    def _validate_x509(self, req, record, x509):
+        result = super(UserCertificates, self)._validate_x509(req, record, x509)
+        if result:
+            return result
+        subject = unicode(x509.get_subject())
+        subject_items = {}
+        for item in subject.split('/'):
+            try:
+                key, value = item.split('=', 1)
+                subject_items[key.lower()] = value
+            except:
+                pass
+        record['common_name'] = pd.Value(record['common_name'].type(), subject_items.get('cn', '?'))
+        if subject_items.has_key('emailaddress'):
+            record['email'] = pd.Value(record['email'].type(), subject_items['emailaddress'])
+            
     WMI_SECTION = WikingManagementInterface.SECTION_CERTIFICATES
     WMI_ORDER = 200
