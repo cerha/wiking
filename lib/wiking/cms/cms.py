@@ -25,6 +25,8 @@ is stored in database and can be managed using a web browser.
 
 from wiking.cms import *
 
+import tempfile
+
 import mx.DateTime
 from pytis.presentation import Computer, CbComputer, Fields, HGroup
 from mx.DateTime import today, TimeDelta
@@ -97,6 +99,7 @@ class WikingManagementInterface(Module, RequestHandler):
     SECTION_USERS = 'users'
     SECTION_STYLE = 'style'
     SECTION_SETUP = 'setup'
+    SECTION_CERTIFICATES = 'certificates'
     
     _SECTIONS = ((SECTION_CONTENT, _("Content"),
                   _("Manage the content available on your website.")),
@@ -104,6 +107,8 @@ class WikingManagementInterface(Module, RequestHandler):
                   _("Customize the appearance of your site.")),
                  (SECTION_USERS,   _("User Management"),
                   _("Manage registered users and their privileges.")),
+                 (SECTION_CERTIFICATES, _("Certificate Management"),
+                  _("Manage trusted certificates of your site.")),
                  (SECTION_SETUP,   _("Setup"),
                   _("Edit global properties of your web site.")),
                  )
@@ -1699,3 +1704,104 @@ class Users(EmbeddableCMSModule):
 #         condition = pd.EQ('role', pd.Value(pd.String(), 'none'))
 #     WMI_SECTION = WikingManagementInterface.SECTION_USERS
 #     WMI_ORDER = 200
+        
+
+class Certificates(CMSModule):
+    """Base class of classes handling various kinds of certificates."""
+    
+    RIGHTS_view = (Roles.ADMIN,)
+    RIGHTS_list = (Roles.ADMIN,)
+    RIGHTS_rss  = (Roles.ADMIN,)
+    RIGHTS_insert = (Roles.ADMIN,)
+    RIGHTS_update = (Roles.ADMIN,)
+    RIGHTS_delete = (Roles.ADMIN,)
+
+    # Spec is unused here, but it must be present
+    class Spec(Specification):
+        title = _("Certificates")
+        def fields(self):
+            return ()
+        columns = ()
+
+    def _convert_x509_timestamp(self, timestamp):
+        time_tuple = time.strptime(str(timestamp), '%b %d %H:%M:%S %Y %Z')
+        mx_time = mx.DateTime.DateTime(*time_tuple[:6])
+        return mx_time
+
+class CACertificates(Certificates):
+    """Management of root certificates."""
+    
+    class Spec(StoredFileModule.Spec):
+        table = 'cacertificates'
+        title = _("CA Certificates")
+        help = _("Manage trusted root certificates.")
+        def fields(self): return (
+            Field('cacertificates_id', width=8, editable=NEVER),
+            Field('file', _("PEM file"), virtual=True, editable=ALWAYS,
+                  type=pd.Binary(not_null=True, maxlen=10000),
+                  descr=_("Upload a PEM file containing the certificate")),
+            Field('certificate', _("Certificate"), width=60),
+            Field('issuer', _("Certification Authority"), width=32, editable=NEVER),
+            Field('valid_from', _("Valid from"), editable=NEVER),
+            Field('valid_until', _("Valid until"), editable=NEVER),
+            Field('trusted', _("Trusted"), default=False,
+                  descr=_("When this is checked, certificates signed by this root certificate are considered valid.")),
+            )
+        columns = ('issuer', 'valid_from', 'valid_until', 'trusted',)
+        sorting = (('issuer', ASC), ('valid_until', ASC))
+        layout = ('trusted', 'issuer', 'valid_from', 'valid_until',)
+        
+    _LAYOUT = {'insert': ('file',)}
+    
+    INSERT_LABEL = _("New CA certificate")
+    
+    WMI_SECTION = WikingManagementInterface.SECTION_CERTIFICATES
+    WMI_ORDER = 100
+
+    def _validate(self, req, record, layout=None):
+        result = super(CACertificates, self)._validate(req, record, layout=layout)
+        if result:
+            return result
+        import M2Crypto.X509
+        if record.new() or record['file'].value() is not None:
+            file_value = record['file']
+            certificate = str(file_value.value().buffer())
+            record['certificate'] = pd.Value(record['certificate'].type(), certificate)
+            try:
+                certificate_file = tempfile.NamedTemporaryFile()
+                certificate_file.write(certificate)
+                certificate_file.flush()
+                x509 = M2Crypto.X509.load_cert(certificate_file.name)
+            except Exception, e:
+                return [(None, _("System error while processing certificate"),)]
+            if not x509.check_ca():
+                return [(None, _("This is not a CA certificate."),)]
+            if not x509.verify():
+                return [(None, _("The certificate is not correctly signed"),)]
+            issuer = unicode(x509.get_issuer())
+            record['issuer'] = pd.Value(record['issuer'].type(), issuer)
+            valid_from = self._convert_x509_timestamp(x509.get_not_before())
+            record['valid_from'] = pd.Value(record['valid_from'].type(), valid_from)
+            valid_until = self._convert_x509_timestamp(x509.get_not_after())
+            record['valid_until'] = pd.Value(record['valid_until'].type(), valid_until)
+        return None
+
+class UserCertificates(Certificates):
+    """Management of user certificates, especially for the purpose of authentication."""
+    class Spec(Specification):
+        title = _("User Certificates")
+        help = _("Manage user and other kinds of certificates.")
+        table = 'certificates'
+        def fields(self): return (
+            Field('certificates_id', width=8, editable=NEVER),
+            Field('certificate', _("Certificate"), width=60),
+            Field('issuer', _("Certification Authority"), width=32, editable=NEVER),
+            Field('valid_from', _("Valid from"), editable=NEVER),
+            Field('valid_until', _("Valid until"), editable=NEVER),
+            )
+        columns = ('issuer', 'valid_from', 'valid_until',)
+        sorting = (('issuer', ASC), ('valid_until', ASC))
+        layout = (FieldSet(_("Certificate"), ('certificate',)),
+                  FieldSet(_("Properties"), ('issuer', 'valid_from', 'valid_until',)))        
+    WMI_SECTION = WikingManagementInterface.SECTION_CERTIFICATES
+    WMI_ORDER = 200

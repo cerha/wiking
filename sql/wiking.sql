@@ -395,3 +395,25 @@ CREATE TABLE config (
 --	"key" text NOT NULL,
 --	expire timestamp NOT NULL
 --);
+
+-------------------------------------------------------------------------------
+
+CREATE TABLE cacertificates (
+       cacertificates_id serial PRIMARY KEY,
+       certificate text NOT NULL,
+       issuer text NOT NULL,  -- CN, i.e. the authority
+       valid_from timestamp NOT NULL,
+       valid_until timestamp NOT NULL,
+       trusted boolean DEFAULT 'FALSE'
+);
+
+CREATE TABLE certificates (
+       certificates_id serial PRIMARY KEY,
+       certificate text NOT NULL,
+       common_name text NOT NULL,
+       email text,
+       issuer int REFERENCES cacertificates,  -- NULL == self-signed
+       valid_from timestamp NOT NULL,
+       valid_until timestamp NOT NULL,
+       user_ int REFERENCES users
+);
