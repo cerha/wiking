@@ -921,17 +921,17 @@ def send_mail(sender, addr, subject, text, html=None, smtp_server=None, lang=Non
       
     """
     string_class = type('')
-    assert isinstance(sender, basestring)
-    assert isinstance(addr, basestring)
-    assert isinstance(subject, basestring)
-    assert isinstance(text, basestring)
-    assert html is None or isinstance(html, basestring)
-    assert smtp_server is None or isinstance(smtp_server, string_class)
-    assert lang is None or isinstance(lang, string_class)
-    assert attachment is None or isinstance(attachment, basestring)
-    assert attachment_stream is None or isinstance(attachment_stream, file)
-    assert isinstance(attachment_type, string_class)
-    assert isinstance(cc, (tuple, list,))
+    assert isinstance(sender, basestring), ('type error', sender,)
+    assert isinstance(addr, basestring), ('type error', addr,)
+    assert isinstance(subject, basestring), ('type error', subject,)
+    assert isinstance(text, basestring), ('type error', text,)
+    assert html is None or isinstance(html, basestring), ('type error', html,)
+    assert smtp_server is None or isinstance(smtp_server, basestring), ('type error', smtp_server,)
+    assert lang is None or isinstance(lang, basestring), ('type error', lang,)
+    assert attachment is None or isinstance(attachment, basestring), ('type error', attachment,)
+    assert attachment_stream is None or isinstance(attachment_stream, file), ('type error', attachment_stream,)
+    assert isinstance(attachment_type, basestring), ('type error', attachment_type,)
+    assert isinstance(cc, (tuple, list,)), ('type error', cc,)
     import MimeWriter
     import mimetools
     from cStringIO import StringIO
