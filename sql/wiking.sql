@@ -389,13 +389,6 @@ CREATE TABLE config (
 --	message text,
 --);
 
-
---CREATE TABLE "session" (
---	login varchar(32) PRIMARY KEY,
---	"key" text NOT NULL,
---	expire timestamp NOT NULL
---);
-
 -------------------------------------------------------------------------------
 
 CREATE TABLE cacertificates (
