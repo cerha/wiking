@@ -20,7 +20,7 @@ from lcg import concat
 
 _ = lcg.TranslatableTextFactory('wiking')
 
-class Exporter(lcg.HtmlExporter):
+class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
 
     class Context(lcg.HtmlExporter.Context):
         def _init_kwargs(self, req=None, **kwargs):

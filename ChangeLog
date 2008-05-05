@@ -1,3 +1,11 @@
+2008-05-05  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/export.py (Exporter): Derive also from
+	`lcg.StyledHtmlExporter' mix-in.
+
+	* lib/wiking/db.py: Validation result assertions moved to better
+	places.
+
 2008-04-29  Tomas Cerha  <cerha@brailcom.org>
 
 	* resources/css/default.css: LCG fieldset style improved.
