@@ -210,8 +210,11 @@ class PytisModule(Module, ActionHandler):
             for check in self._view.check():
                 result = check(record)
                 if result:
-                    if not isinstance(result, (list, tuple)):
+                    if isinstance(result, (str, unicode)):
                         result = (result, _("Integrity check failed."))
+                    else:
+                        assert isinstance(result, tuple) and len(result) == 2, \
+                               ('Invalid check() result:', e, result)
                     return (result,)
             return None
 
@@ -535,9 +538,6 @@ class PytisModule(Module, ActionHandler):
             errors = self._validate(req, record, layout=layout)
         else:
             errors = ()
-        if __debug__ and errors:
-            for e in errors:
-                assert isinstance(e, tuple), ('type error', e, errors, self, self._validate)
         if req.param('submit') and not errors:
             try:
                 self._insert(record)
@@ -545,9 +545,6 @@ class PytisModule(Module, ActionHandler):
                 errors = (self._analyze_exception(e),)
             else:
                 return self._redirect_after_insert(req, record)
-        if __debug__ and errors:
-            for e in errors:
-                assert isinstance(e, tuple), ('type error', e, errors,)
         # TODO: Redirect handler to HTTPS if cfg.force_https_login is true?
         # The primary motivation is to protect registration form data.  The
         # same would apply for action_edit.
