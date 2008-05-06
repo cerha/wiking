@@ -1,4 +1,4 @@
-# Copyright (C) 2006, 2007 Brailcom, o.p.s.
+# Copyright (C) 2006, 2007, 2008 Brailcom, o.p.s.
 # Author: Tomas Cerha <cerha@brailcom.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -144,9 +144,17 @@ class Configuration(pc):
         _DEFAULT = Exporter
         
     class _Option_resolver(pc.Option):
-        _DESCR = "Module specification resolver"
-        _DEFAULT = WikingResolver()
-
+        _DESCR = "Wiking module resolver"
+        _DOC = ("Module resolver is used to locate available Wiking modules.  The value must be "
+                "a 'WikingResolver' instance.  If not set, the default instance will be created "
+                "by Wiking handler in the initialization phase.  The Apache handler will "
+                "automatically pass the list of Python modules to search for Wiking module "
+                "classes.  This list may be specified in Apache configuration file through the "
+                "PythonOption directive, such as: PythonOption modules 'mymodules, wiking.cms'.  "
+                "In this case the Wiking module classes are first searched in the Python module "
+                "'mymodules' and then in 'wiking.cms'.  All the named modules must be available "
+                "through Python path (use the PythonPath Apache directive to modify the Python "
+                "path).")
         
     class _Option_appl(pc.Option):
         _DESCR = "Application specific configuration"

@@ -25,45 +25,11 @@ class Handler(object):
     processing by modules is then handled by the handler again, including exception processing.
 
     """
-    
-    def __init__(self, hostname, options):
-        dboptions = {'database': hostname}
-        for name, value in options.items():
-            if name == 'translation_path':
-                cfg.translation_path = tuple(cfg.translation_path) + tuple(value.split(':'))
-            elif hasattr(cfg, name):
-                setattr(cfg, name, value)
-            elif name in ('database', 'user', 'password', 'host', 'port'):
-                dboptions[name] = value
-        self._maintenance = options.get('maintenance') in ('true', 'yes')
+    def __init__(self, hostname):
         self._hostname = hostname
-        self._dbconnection = pd.DBConnection(**dboptions)
-        self._module_cache = {}
-        # Initialize the system modules immediately.
-        self._application = self._module('Application')
+        self._application = cfg.resolver.wiking_module('Application')
         self._exporter = cfg.exporter(translations=cfg.translation_path)
         #log(OPR, 'New Handler instance for %s.' % hostname)
-
-    def _module(self, name, **kwargs):
-        key = (name, tuple(kwargs.items()))
-        try:
-            module = self._module_cache[key]
-            #if module.__class__ is not cls:
-            #    # Dispose the instance if the class definition has changed.
-            #    raise KeyError()
-        except KeyError:
-            cls = get_module(name)
-            args = (self._module,)
-            if issubclass(cls, PytisModule):
-                if self._maintenance:
-                    raise MaintananceModeError()
-                args += (cfg.resolver, self._dbconnection,)
-            module = cls(*args, **kwargs)
-            self._module_cache[key] = module
-        return module
-
-    def application(self):
-        return self._application
 
     def handle(self, req):
         application = self._application
@@ -110,16 +76,39 @@ class ModPythonHandler(object):
 
     """
     def __init__(self):
+        self._application = None
         self._handler = None
+        self._initialized = False
 
+    def _init(self, hostname, options):
+        # The initialization is postponed until the first request, since we need the information
+        # from the request instance to initialize the configuration and the handler instance.
+        if cfg.resolver is None:
+            dboptions = {'database': hostname}
+            search_modules = ('wikingmodules', 'wiking.cms')
+            for name, value in options.items():
+                if name == 'translation_path':
+                    separator = value.find(':') != -1 and ':' or ','
+                    path = [d.strip() for d in value.split(separator)]
+                    cfg.translation_path = tuple(cfg.translation_path) + tuple(path)
+                elif name == 'modules':
+                    search_modules = tuple([m.strip() for m in value.split(',')])
+                elif name in ('database', 'user', 'password', 'host', 'port'):
+                    dboptions[name] = value
+                elif hasattr(cfg, name):
+                    setattr(cfg, name, value)
+            dbconnection = pd.DBConnection(**dboptions)
+            maintenance = options.get('maintenance') in ('true', 'yes')
+            cfg.resolver = WikingResolver(dbconnection, search_modules, maintenance=maintenance)
+        self._application = cfg.resolver.wiking_module('Application')
+        self._handler = Handler(hostname)
+        self._initialized = True
+        
     def __call__(self, request):
-        if self._handler is None:
+        if not self._initialized:
             opt = request.get_options()
-            options = dict([(o, opt[o]) for o in opt.keys()])
-            handler = self._handler = Handler(request.server.server_hostname, options)
-        else:
-            handler = self._handler
-        req = WikingRequest(request, handler.application())
+            self._init(request.server.server_hostname, dict([(o, opt[o]) for o in opt.keys()]))
+        req = WikingRequest(request, self._application)
         if False:
             import profile, pstats, tempfile
             self._profile_req = req
@@ -140,8 +129,8 @@ class ModPythonHandler(object):
             sys.stderr.flush()
             return self._profile_result
         else:
-            return handler.handle(req)
-        #result, t1, t2 = timeit(handler.handle, req)
+            return self._handler.handle(req)
+        #result, t1, t2 = timeit(self._handler.handle, req)
         #log(OPR, "Request processed in %.1f ms (%.1f ms wall time):" % \
         #    (1000*t1, 1000*t2), req.uri())
         #return result

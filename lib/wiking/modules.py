@@ -39,18 +39,20 @@ class Module(object):
         """Return brief module description as a string or 'lcg.LocalizableText'."""
         return doc(cls)
 
-    def __init__(self, get_module, **kwargs):
+    def __init__(self, resolver, **kwargs):
         """Initialize the instance.
 
         Arguments:
 
-          get_module -- a callable object which returns the module instance
-            when called with a module name as an argument.
+          resolver -- a 'WikingResolver' instance.
 
         """
-        self._module = get_module
+        self._resolver = resolver
         #log(OPR, 'New module instance: %s[%x]' % (self.name(), lcg.positive_id(self)))
         super(Module, self).__init__(**kwargs)
+
+    def _module(self, name, **kwargs):
+        return self._resolver.wiking_module(name, **kwargs)
 
     
 class RequestHandler(object):

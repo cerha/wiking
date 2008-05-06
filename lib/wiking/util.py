@@ -529,7 +529,7 @@ class ActionCtrl(lcg.Content):
                     args = dict(args, **{key: self._row[key].export()})
                 else:
                     args = dict(args, search=self._row[key].export(), module=self._name)
-            elif action.name() == 'insert':
+            elif action.name() == 'insert' and self._row is None:
                 args = dict(args, module=self._name, **self._relation)
             elif self._referer is not None and self._row:
                 if not uri.endswith('/'):
@@ -730,19 +730,81 @@ class Specification(pp.Specification):
         
 class WikingResolver(pytis.util.Resolver):
     """A custom resolver of Wiking modules."""
+
+    def __init__(self, dbconnection, search_modules, maintenance=False, **kwargs):
+        self._dbconnection = dbconnection
+        self._search_modules = search_modules
+        self._maintenance = maintenance
+        self._wiking_module_cache = {}
+        super(WikingResolver, self).__init__(**kwargs)
+        
+    def _import_python_module(self, name):
+        mod = __import__(name)
+        components = name.split('.')
+        for comp in components[1:]:
+            mod = getattr(mod, comp)
+        return mod
+
+    def available_modules(self):
+        """Return a tuple of classes of all available Wiking modules."""
+        modules = {}
+        for python_module_name in self._search_modules:
+            python_module = self._import_python_module(python_module_name)
+            for name, mod in python_module.__dict__.items():
+                if not modules.has_key(name) and type(mod) == type(Module) \
+                       and issubclass(mod, Module):
+                    modules[name] = mod
+        return tuple(modules.values())
+    
+    def wiking_module_cls(self, name):
+        """Return the Wiking module class of given 'name'."""
+        for python_module_name in self._search_modules:
+            python_module = self._import_python_module(python_module_name)
+            try:
+                return getattr(python_module, name)
+            except AttributeError:
+                continue
+        raise AttributeError("Wiking module not found!", name, self._search_modules)
+
+    def wiking_module(self, name, **kwargs):
+        """Return the instance of a Wiking module given by 'name'.
+
+        All keyword arguments will be passed to the module constructor.  The instances are cached
+        (for the same constructor arguments).  The constructor argument 'resolver' is supplied
+        automatically, as well as the 'dbconnection' for 'PytisModule' subclasses. 
+        
+        """
+        key = (name, tuple(kwargs.items()))
+        try:
+            module = self._wiking_module_cache[key]
+            # TODO: Check the class definition for changes and reload in runtime?
+            #if module.__class__ is not cls:
+            #    # Dispose the instance if the class definition has changed.
+            #    raise KeyError()
+        except KeyError:
+            cls = self.wiking_module_cls(name)
+            args = (self,)
+            if issubclass(cls, PytisModule):
+                if self._maintenance:
+                    raise MaintananceModeError()
+                args += (self._dbconnection,)
+            module = cls(*args, **kwargs)
+            self._wiking_module_cache[key] = module
+        return module
     
     def get(self, name, spec_name):
         try:
-            module_cls = get_module(name)
-            spec_cls = module_cls.Spec
-        except AttributeError, e:
-            return super(WikingResolver, self).get(name, spec_name)
-        spec = spec_cls(module_cls, self)
-        try:
-            method = getattr(spec, spec_name)
+            module_cls = self.wiking_module_cls(name)
         except AttributeError:
-            raise pytis.util.ResolverSpecError(name, spec_name)
-        return method()
+            return super(WikingResolver, self).get(name, spec_name)
+        else:
+            spec = module_cls.Spec(module_cls, self)
+            try:
+                method = getattr(spec, spec_name)
+            except AttributeError:
+                raise pytis.util.ResolverSpecError(name, spec_name)
+            return method()
+
     
 class WikingFileResolver(WikingResolver, pytis.util.FileResolver):
     pass
@@ -828,49 +890,6 @@ def timeit(func, *args, **kwargs):
     t1, t2 = time.clock(), time.time()
     result = func(*args, **kwargs)
     return result,  time.clock() - t1, time.time() - t2
-
-def get_module(name):
-    """Get the module class by name.
-    
-    This function replaces Pytis resolver in the web environment and is also
-    used by the Pytis resolver in the stand-alone pytis application
-    environment.
-    
-    """
-    try:
-        from mod_python.apache import import_module
-    except ImportError:
-        try:
-            import wikingmodules
-        except ImportError, e:
-            if str(e) == 'No module named wikingmodules':
-                import wiking.cms
-                return getattr(wiking.cms, name)
-            else:
-                raise
-        else:
-            try:
-                return getattr(wikingmodules, name)
-            except AttributeError:
-                import wiking.modules
-                return getattr(wiking.modules, name)
-    else:
-        try:
-            modules = import_module('wikingmodules', log=True)
-        except ImportError, e:
-            if str(e) == 'No module named wikingmodules':
-                modules = import_module('wiking.cms', log=True)
-            else:
-                raise
-        else:
-            try:
-                return getattr(modules, name)
-            except AttributeError:
-                # This module is imported by Python, so importing it once more through
-                # Apache would cause problems.
-                import wiking.modules
-                return getattr(wiking.modules, name)
-        return getattr(modules, name)
 
 def rss(title, url, items, descr, lang=None, webmaster=None):
     import wiking

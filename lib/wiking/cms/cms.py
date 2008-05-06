@@ -28,7 +28,7 @@ from wiking.cms import *
 import tempfile
 
 import mx.DateTime
-from pytis.presentation import Computer, CbComputer, Fields, HGroup
+from pytis.presentation import Computer, CbComputer, Fields, HGroup, CodebookSpec
 from mx.DateTime import today, TimeDelta
 from lcg import log as debug
 import re, copy
@@ -42,6 +42,7 @@ ALWAYS = pp.Editable.ALWAYS
 ASC = pd.ASCENDENT
 DESC = pd.DESCENDANT
 now = lambda: mx.DateTime.now().gmtime()
+enum = lambda seq: pd.FixedEnumerator(seq)
 
 _ = lcg.TranslatableTextFactory('wiking-cms')
 
@@ -50,43 +51,21 @@ _STRUCTURED_TEXT_DESCR = \
       manual=('<a target="help" href="/_doc/lcg/structured-text">' + \
               _("formatting manual") + "</a>"))
 
-try:
-    from mod_python.apache import import_module
-except ImportError:
-    # Make it work also for a standalone application.
-    try:
-        import wikingmodules
-    except ImportError:
-        def _module_dict():
-            return globals()
-    else:
-        def _module_dict():
-            return wikingmodules.__dict__
-else:
-    # Modules will be always reloaded in runtime when we are running a web application.
-    def _module_dict():
-        try:
-            return import_module('wikingmodules').__dict__
-        except ImportError:
-            return import_module('wiking.cms').__dict__
 
-def _modtitle(m, default=None):
+def _modtitle(name, default=None):
     """Return a localizable module title by module name."""
-    if m is None:
+    if name is None:
         return ''
     try:
-        cls = _module_dict()[m]
+        cls = cfg.resolver.wiking_module_cls(name)
     except:
-        return default or concat(m,' (',_("unknown"),')')
+        return default or concat(name,' (',_("unknown"),')')
     else:
         return cls.title()
 
-def _modules(cls=None):
-    if cls is None:
-        cls = Module
-    return [m for m in _module_dict().values()
-            if type(m) == type(Module) and issubclass(m, Module) and issubclass(m, cls)]
-
+def _modules():
+    return cfg.resolver.available_modules()
+    
 
 class WikingManagementInterface(Module, RequestHandler):
     """Wiking Management Interface.
@@ -520,7 +499,7 @@ class Languages(CMSModule):
                   computer=Computer(lambda r: lcg.language_name(r['lang'].value()), depends=())),
             )
         sorting = (('lang', ASC),)
-        cb = pp.CodebookSpec(display=lcg.language_name, prefer_display=True)
+        cb = CodebookSpec(display=lcg.language_name, prefer_display=True)
         layout = ('lang',)
         columns = ('lang', 'name')
     _REFERER = 'lang'
@@ -616,7 +595,7 @@ class Themes(CMSModule):
             return ('name',) + tuple([FieldSet(label, [f.id() for f in fields])
                                       for label, fields in self._FIELDS])
         columns = ('name',)
-        cb = pp.CodebookSpec(display='name', prefer_display=True)
+        cb = CodebookSpec(display='name', prefer_display=True)
     WMI_SECTION = WikingManagementInterface.SECTION_STYLE
     WMI_ORDER = 100
 
@@ -658,8 +637,8 @@ class Pages(CMSModule):
                   descr=_STRUCTURED_TEXT_DESCR),
             Field('content'),
             Field('modname', _("Module"), display=_modtitle, prefer_display=True, not_null=False,
-                  enumerator=pd.FixedEnumerator([_m.name() for _m in _modules(Embeddable)
-                                                 if _m != EmbeddableCMSModule]),
+                  enumerator=enum([_m.name() for _m in _modules()
+                                   if _m != EmbeddableCMSModule and issubclass(_m, Embeddable)]),
                   descr=_("Select the extension module to embed into the page.  Leave blank for "
                           "an ordinary text page.")),
             Field('parent', _("Parent item"), codebook='Mapping', not_null=False,
@@ -699,7 +678,7 @@ class Pages(CMSModule):
         #group_heading = 'title'
         layout = ('identifier', 'modname', 'parent', 'ord', 'private', 'owner')
         columns = ('title_or_identifier', 'identifier', 'status', 'ord', 'private', 'owner')
-        cb = pp.CodebookSpec(display='title_or_identifier', prefer_display=True)
+        cb = CodebookSpec(display='title_or_identifier', prefer_display=True)
         bindings = {'Attachments': pp.BindingSpec(_("Attachments"), 'page_id')}
 
     _REFERER = 'identifier'
@@ -1538,7 +1517,7 @@ class Users(EmbeddableCMSModule):
             Field('uri', _("URI"), width=36),
             Field('since', _("Registered since"), type=DateTime(show_time=False), default=now),
             Field('role', _("Role"), display=self._rolename, prefer_display=True, default='none',
-                  enumerator=pd.FixedEnumerator([code for code, title, roles in self._ROLES]),
+                  enumerator=enum([code for code, title, roles in self._ROLES]),
                   style=lambda r: r['role'].value() == 'none' and pp.Style(foreground='#a20') \
                         or None,
                   descr=_("Select one of the predefined roles to grant the user "
@@ -1551,7 +1530,7 @@ class Users(EmbeddableCMSModule):
         sorting = (('surname', ASC), ('firstname', ASC))
         layout = (FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname')),
                   FieldSet(_("Contact information"), ('email', 'phone', 'address', 'uri')))
-        cb = pp.CodebookSpec(display='user', prefer_display=True)
+        cb = CodebookSpec(display='user', prefer_display=True)
     _REFERER = 'login'
     _PANEL_FIELDS = ('fullname',)
     _ALLOW_TABLE_LAYOUT_IN_FORMS = False

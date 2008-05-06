@@ -1,3 +1,25 @@
+2008-05-06  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/cms/cms.py: Always locate Wiking modules through
+	resolver.
+
+	* lib/wiking/util.py (WikingResolver.available_modules)
+	(WikingResolver.wiking_module_cls, WikingResolver.wiking_module):
+	New methods.
+	(get_module): Function removed.
+
+	* lib/wiking/handler.py: Always locate Wiking modules through resolver.
+
+	* lib/wiking/modules.py (Module.__init__): The argument
+	`get_module' replaced by `resolver'.
+	(Module._module): New method.
+
+	* lib/wiking/db.py (PytisModule.__init__): Argument `get_module'
+	removed.  Pass `resolver' to parent constructor.
+
+	* lib/wiking/configuration.py (_Option_resolver): Default value
+	set to None and documentation added.
+
 2008-05-05  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/export.py (Exporter): Derive also from
