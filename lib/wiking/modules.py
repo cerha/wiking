@@ -23,6 +23,8 @@ _ = lcg.TranslatableTextFactory('wiking')
 
 class Module(object):
     """Abstract base class defining the basic Wiking module."""
+    _TITLE = None
+    _DESCR = None
 
     @classmethod
     def name(cls):
@@ -32,12 +34,12 @@ class Module(object):
     @classmethod
     def title(cls):
         """Return human-friendly module name as a string or 'lcg.LocalizableText'."""
-        return cls.__name__
+        return cls._TITLE or cls.__name__
 
     @classmethod
     def descr(cls):
         """Return brief module description as a string or 'lcg.LocalizableText'."""
-        return doc(cls)
+        return cls._DESCR or doc(cls)
 
     def __init__(self, resolver, **kwargs):
         """Initialize the instance.
