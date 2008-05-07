@@ -1,3 +1,11 @@
+2008-05-07  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/cms/cms.py (Embeddable): Docstring extended.
+	(CMSExtension, CMSExtensionModule): New classes.
+
+	* lib/wiking/modules.py (Module.title, Module.descr): Use the
+	constants `_TITLE' and `_DESCR' if defined.
+
 2008-05-06  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/cms/cms.py: Always locate Wiking modules through

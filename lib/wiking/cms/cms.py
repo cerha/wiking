@@ -262,7 +262,20 @@ class CMSModule(PytisModule, RssModule, Panelizable):
 
     
 class Embeddable(object):
-    """Mix-in class for modules which may be embedded into page content."""
+    """Mix-in class for modules which may be embedded into page content.
+
+    Wiking CMS allows setting an extension module for each page in its global options.  The list of
+    available modules always consists of all available modules derived from this class.  The
+    derived classes must implement the 'embed()' method to produce content, which is then embedded
+    into the page content together with the page text.  This content normally appears below the
+    page text, but if the page text contains the delimitter consisting of four or more equation
+    signs on a separate line, the embedded content will be placed within the text in the place of
+    this delimetter.
+
+    Except for the actual embedded content, the derived classes may also define menu items to be
+    automatically added into the main menu.  See the method 'submenu()'.
+
+    """
     
     def embed(self, req):
         """Return a list of content instances extending the page content.
@@ -277,6 +290,8 @@ class Embeddable(object):
         """Return a list of 'MenuItem' instances to insert into the main menu.
         
         The submenu will appear in the main menu under the item of a page which embeds the module.
+        The items returned by this method will always be placed above any items defined within the
+        CMS (items for descendant pages).
 
         """
         return []
@@ -294,6 +309,95 @@ class EmbeddableCMSModule(CMSModule, Embeddable):
         return content
 
 
+class CMSExtension(Module, Embeddable, RequestHandler):
+    """Generic base class for CMS extensions which consist of multiple modules.
+
+    Many CMS extensions will use multiple modules to implement their functionality.  This class
+    serves as a collection of a set of modules which is easilly embeddable into an existing site
+    based on Wiking CMS.  A module derived from this class will serve as a front page for such an
+    extension.  A page, which is set to use this module, will automatically have a submenu pointing
+    to different submodules of the extension and the module will automatically redirect requests to
+    them.
+
+    To implement an extension, just derive a module from this class and define the '_MENU'
+    attribute (and usually also '_TITLE' and '_DESCR').  Take care to only include modules derived
+    from 'CMSExtensionModule' in the menu.
+
+    """
+    class MenuItem(object):
+        """Specification of a menu item bound to a submodule of an extension."""
+        def __init__(self, modname, submenu=(), **kwargs):
+            """Arguments:
+            
+               modname -- string name of the submodule derived from 'CMSExtensionModule'
+               submenu -- sequence of subordinate 'CMSExtension.MenuItem' instances.
+
+            All other keyword arguments will be passed to 'MenuItem' constructor when converting
+            the menu definition into a Wiking menu.
+
+            """
+            if __debug__:
+                assert isinstance(modname, (str, unicode)), modname
+                for item in submenu:
+                    assert isinstance(WikingExtension.MenuItem, item), item
+            self.modname = modname
+            self.submenu = submenu
+            self.kwargs = kwargs
+    
+    _MENU = ()
+    """Define the menu as a sequence of 'CMSExtension.MenuItem' instances."""
+
+    def __init__(self, *args, **kwargs):
+        super(CMSExtension, self).__init__(*args, **kwargs)
+        for item in self._MENU:
+            self._set_parent(item)
+        self._submenu = None
+        
+    def _set_parent(self, item):
+        self._module(item.modname).set_parent(self)
+        for i in item.submenu:
+            self._set_parent(i)
+    
+    def _init_submenu(self, req):
+        def menu_item(item):
+            module = self._module(item.modname)
+            identifier = self.module_uri(req, item.modname)[1:]
+            return MenuItem(identifier, module.title(), descr=module.descr(),
+                            submenu=[menu_item(i) for i in item.submenu], **item.kwargs)
+        self._submenu = [menu_item(item) for item in self._MENU]
+
+    def embed(self, req):
+        return req.redirect(self.module_uri(req, self._MENU[0].modname))
+
+    def submenu(self, req):
+        if self._submenu is None:
+            self._init_submenu(req)
+        return self._submenu
+
+    def handle(self, req):
+        modname = req.path[1]
+        return self._module(modname).handle(req)
+
+    def module_uri(self, req, name):
+        return self._base_uri(req) +'/'+ name
+    
+
+class CMSExtensionModule(CMSModule):
+    """CMS module to be used within a 'CMSExtension'."""
+    _REFERER_PATH_LEVEL = 3
+    _HONOUR_SPEC_TITLE = True
+
+    def set_parent(self, parent):
+        self._parent = parent
+    
+    def _base_uri(self, req):
+        try:
+            parent = self._parent
+        except AttributeError:
+            return None
+        return parent.module_uri(req, self.name())
+
+    
 class Session(PytisModule, wiking.Session):
     """Implement Wiking session management by storing session ids in database.
 
@@ -637,8 +741,8 @@ class Pages(CMSModule):
                   descr=_STRUCTURED_TEXT_DESCR),
             Field('content'),
             Field('modname', _("Module"), display=_modtitle, prefer_display=True, not_null=False,
-                  enumerator=enum([_m.name() for _m in _modules()
-                                   if _m != EmbeddableCMSModule and issubclass(_m, Embeddable)]),
+                  enumerator=enum([_m.name() for _m in _modules() if issubclass(_m, Embeddable) \
+                                   and _m not in (EmbeddableCMSModule, CMSExtension)]),
                   descr=_("Select the extension module to embed into the page.  Leave blank for "
                           "an ordinary text page.")),
             Field('parent', _("Parent item"), codebook='Mapping', not_null=False,
@@ -1397,9 +1501,7 @@ class Images(StoredFileModule, EmbeddableCMSModule):
 class SiteMap(Module, Embeddable):
     """Extend page content by including a hierarchical listing of the main menu."""
 
-    @classmethod
-    def title(cls):
-        return _("Site Map")
+    _TITLE = _("Site Map")
     
     def embed(self, req):
         return [lcg.RootIndex()]
