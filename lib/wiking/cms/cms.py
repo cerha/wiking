@@ -869,9 +869,9 @@ class Pages(CMSModule):
         result = super(Pages, self)._validate(req, record, layout=layout)
         if result is None and req.has_param('commit'):
             if not (Roles.check(req, (Roles.ADMIN,)) or self.check_owner(req.user(), record)):
-                return _("You don't have sufficient privilegs for this action.") +' '+ \
-                       _("Save the page without publishing and ask the administrator to publish "
-                         "your changes.")
+                return [(None, _("You don't have sufficient privilegs for this action.") +' '+ \
+                         _("Save the page without publishing and ask the administrator to publish "
+                           "your changes."))]
             record['content'] = record['_content']
             record['published'] = pytis.data.Value(pytis.data.Boolean(), True)
         return result
@@ -891,9 +891,8 @@ class Pages(CMSModule):
             return None
         return super(Pages, self)._link_provider(req, row, cid, **kwargs)
 
-    #def _redirect_after_insert(self, req, record):
-        #if not req.wmi:
-        #    return self.action_view(req, record, msg=self._insert_msg(record))
+    def _redirect_after_insert(self, req, record):
+        return self.action_view(req, record, msg=self._insert_msg(record))
         
     def _redirect_after_update(self, req, record):
         if not req.wmi:
@@ -1047,7 +1046,7 @@ class Pages(CMSModule):
 
     def action_edit(self, req, record):
         return self.action_update(req, record, action='edit')
-    RIGHTS_edit = (Roles.ADMIN, Roles.OWNER)
+    RIGHTS_edit = (Roles.AUTHOR, Roles.OWNER)
     
     def action_translate(self, req, record):
         lang = req.param('src_lang')
@@ -1075,10 +1074,19 @@ class Pages(CMSModule):
     RIGHTS_translate = (Roles.AUTHOR, Roles.OWNER)
 
     def action_commit(self, req, record):
+        values = dict(content=record['_content'].value(), published=True)
+        if record['title'].value() is None:
+            if record['modname'].value() is not None:
+                # Supply the module's title and description.
+                module = self._module(record['modname'].value())
+                tr = translator(record['lang'].value())
+                values['title'] = tr.translate(module.title())
+            else:
+                return self.action_view(req, record, err=_("Can't publish untitled page."))
         try:
-            record.update(content=record['_content'].value(), published=True)
+            record.update(**values)
         except pd.DBException, e:
-            kwargs = dict(err=self._analyze_exception(e))
+            kwargs = dict(err=self._error_message(*self._analyze_exception(e)))
         else:
             kwargs = dict(msg=_("The changes were published."))
         return self.action_view(req, record, **kwargs)
@@ -1088,7 +1096,7 @@ class Pages(CMSModule):
         try:
             record.update(_content=record['content'].value())
         except pd.DBException, e:
-            kwargs = dict(err=self._analyze_exception(e))
+            kwargs = dict(err=self._error_message(*self._analyze_exception(e)))
         else:
             kwargs = dict(msg=_("The page contents was reverted to its previous state."))
         return self.action_view(req, record, **kwargs)
@@ -1098,7 +1106,7 @@ class Pages(CMSModule):
         try:
             record.update(published=False)
         except pd.DBException, e:
-            kwargs = dict(err=self._analyze_exception(e))
+            kwargs = dict(err=self._error_message(*self._analyze_exception(e)))
         else:
             kwargs = dict(msg=_("The page was unpublished."))
         return self.action_view(req, record, **kwargs)
@@ -1664,6 +1672,7 @@ class Users(EmbeddableCMSModule):
         if layout and 'old_password' in layout.order():
             # import md5
             errors = []
+            #if not Roles.check(req, (Roles.ADMIN,)): Too dangerous?
             old_password = req.param('old_password')
             if not old_password:
                 errors.append(('old_password', _(u"Enter your current password.")))
