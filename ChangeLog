@@ -1,5 +1,8 @@
 2008-05-07  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/util.py (Specification): Define `help' to satisfy
+	`CMSModule.descr()'.
+
 	* lib/wiking/cms/cms.py (Embeddable): Docstring extended.
 	(CMSExtension, CMSExtensionModule): New classes.
 
