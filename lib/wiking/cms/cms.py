@@ -1798,27 +1798,89 @@ class Users(EmbeddableCMSModule):
 
 class Certificates(CMSModule):
     """Base class of classes handling various kinds of certificates."""
-    
+
+    class UniType(pytis.data.Type):
+        """Universal type able to contain any value.
+
+        This is just a utility type for internal use within 'Certificates'
+        class, without implementing any of the 'Type' methods.
+
+        """
+
     class Spec(StoredFileModule.Spec):
+        
         _ID_COLUMN = 'certificates_id'
+        
         def fields(self): return (
             Field(self._ID_COLUMN, width=8, editable=NEVER),
             Field('file', _("PEM file"), virtual=True, editable=ALWAYS,
-                  type=pd.Binary(not_null=True, maxlen=10000),
+                  type=pytis.data.Binary(not_null=True, maxlen=10000),
                   descr=_("Upload a PEM file containing the certificate")),
-            Field('certificate', _("Certificate"), width=60, height=20, editable=NEVER),
-            Field('serial_number', _("Serial number"), editable=NEVER),
-            Field('text', _("Certificate"), width=60, height=20, editable=NEVER),
-            Field('issuer', _("Certification Authority"), width=32, editable=NEVER),
-            Field('valid_from', _("Valid from"), editable=NEVER),
-            Field('valid_until', _("Valid until"), editable=NEVER),
+            Field('certificate', _("Certificate"), width=60, height=20, editable=NEVER,
+                  computer=Computer(self._certificate_computer, depends=('file',))),
+            Field('x509', _("X509 structure"), virtual=True, editable=NEVER, type=Certificates.UniType(),
+                  computer=Computer(self._x509_computer, depends=('certificate',))),
+            Field('serial_number', _("Serial number"), editable=NEVER,
+                  computer=self._make_x509_computer(self._serial_number_computer)),
+            Field('text', _("Certificate"), width=60, height=20, editable=NEVER,
+                  computer=self._make_x509_computer(self._text_computer)),
+            Field('issuer', _("Certification Authority"), width=32, editable=NEVER,
+                  computer=self._make_x509_computer(self._issuer_computer)),
+            Field('valid_from', _("Valid from"), editable=NEVER,
+                  computer=self._make_x509_computer(self._valid_from_computer)),
+            Field('valid_until', _("Valid until"), editable=NEVER,
+                  computer=self._make_x509_computer(self._valid_until_computer)),
             Field('trusted', _("Trusted"), default=False,
                   descr=_("When this is checked, certificates signed by this root certificate are considered valid.")),
             )
+        
         columns = ('issuer', 'valid_from', 'valid_until', 'trusted',)
-        sorting = (('issuer', ASC), ('valid_until', ASC))
+        sorting = (('issuer', ASC,), ('valid_until', ASC,))
         layout = ('trusted', 'issuer', 'valid_from', 'valid_until', 'text',)
-    
+
+        def _certificate_computer(self, row):
+            file_value = row['file'].value()
+            if file_value is None: # new record form
+                return None
+            certificate = str(file_value.buffer())
+            return certificate
+        def _x509_computer(self, row):
+            import M2Crypto.X509
+            certificate = row['certificate'].value()
+            if certificate is None: # new record form
+                return None
+            try:
+                certificate_file = tempfile.NamedTemporaryFile()
+                certificate_file.write(certificate)
+                certificate_file.flush()
+                x509 = M2Crypto.X509.load_cert(certificate_file.name)
+            except Exception, e:
+                raise Exception(_("System error while processing certificate"), e)
+            if not x509.verify():
+                raise Exception(_("The certificate is not valid"))
+            return x509
+        def _make_x509_computer(self, function):
+            def computer(row):
+                x509 = row['x509'].value()
+                if x509 is None:
+                    return None
+                return function(x509)
+            return Computer(computer, depends=('x509',))
+        def _serial_number_computer(self, x509):
+            return x509.get_serial_number()
+        def _issuer_computer(self, x509):
+            return unicode(x509.get_issuer())
+        def _valid_from_computer(self, x509):
+            return self._convert_x509_timestamp(x509.get_not_before())
+        def _valid_until_computer(self, x509):
+            return self._convert_x509_timestamp(x509.get_not_after())
+        def _text_computer(self, x509):
+            return x509.as_text()
+        def _convert_x509_timestamp(self, timestamp):
+            time_tuple = time.strptime(str(timestamp), '%b %d %H:%M:%S %Y %Z')
+            mx_time = mx.DateTime.DateTime(*time_tuple[:6])
+            return mx_time
+
     RIGHTS_view = (Roles.ADMIN,)
     RIGHTS_list = (Roles.ADMIN,)
     RIGHTS_rss  = (Roles.ADMIN,)
@@ -1828,95 +1890,70 @@ class Certificates(CMSModule):
         
     _LAYOUT = {'insert': ('file',)}
 
-    def _validate(self, req, record, layout=None):
-        result = super(Certificates, self)._validate(req, record, layout=layout)
-        if result:
-            return result
-        import M2Crypto.X509
-        if record.new() or record['file'].value() is not None:
-            file_value = record['file']
-            certificate = str(file_value.value().buffer())
-            record['certificate'] = pd.Value(record['certificate'].type(), certificate)
-            try:
-                certificate_file = tempfile.NamedTemporaryFile()
-                certificate_file.write(certificate)
-                certificate_file.flush()
-                x509 = M2Crypto.X509.load_cert(certificate_file.name)
-            except Exception, e:
-                return [(None, _("System error while processing certificate"),)]
-            result = self._validate_x509(req, record, x509)
-            if result:
-                return result
-        return None
-
-    def _validate_x509(self, req, record, x509):
-        if not x509.verify():
-            return [(None, _("The certificate is not valid"),)]
-        def set_value(column, value):
-            record[column] = pd.Value(record[column].type(), value)
-        set_value('serial_number', x509.get_serial_number())
-        set_value('issuer', unicode(x509.get_issuer()))
-        set_value('valid_from', self._convert_x509_timestamp(x509.get_not_before()))
-        set_value('valid_until', self._convert_x509_timestamp(x509.get_not_after()))
-        set_value('text', x509.as_text())
-
-    def _convert_x509_timestamp(self, timestamp):
-        time_tuple = time.strptime(str(timestamp), '%b %d %H:%M:%S %Y %Z')
-        mx_time = mx.DateTime.DateTime(*time_tuple[:6])
-        return mx_time
-
 class CACertificates(Certificates):
     """Management of root certificates."""
     
     class Spec(Certificates.Spec):
+        
         table = 'cacertificates'
         title = _("CA Certificates")
         help = _("Manage trusted root certificates.")
         _ID_COLUMN = 'cacertificates_id'
         
+        def _x509_computer(self, row):
+            x509 = Certificates.Spec._x509_computer(self, row)
+            if x509 is not None and x509.check_ca() != 1:
+                raise Exception(_("This is not a CA certificate."))
+            return x509
+        
     _LAYOUT = {'insert': ('file',)}
     
     WMI_SECTION = WikingManagementInterface.SECTION_CERTIFICATES
     WMI_ORDER = 100
-    
-    def _validate_x509(self, req, record, x509):
-        result = super(CACertificates, self)._validate_x509(req, record, x509)
-        if result:
-            return result
-        if x509.check_ca() != 1:
-            return [(None, _("This is not a CA certificate."),)]
-        return None
 
 class UserCertificates(Certificates):
     """Management of user certificates, especially for the purpose of authentication."""
     
     class Spec(Certificates.Spec):
+        
         title = _("User Certificates")
         help = _("Manage user and other kinds of certificates.")
         table = 'certificates'
+        
         def fields(self):
             fields = Certificates.Spec.fields(self)
-            fields = fields + (Field('common_name', _("Name"), editable=NEVER),
-                               Field('email', _("E-mail"), editable=NEVER),)
+            fields = fields + (Field('subject', _("Subject"), virtual=True, editable=NEVER, type=Certificates.UniType(),
+                                     computer=self._make_x509_computer(self._subject_computer)),
+                               Field('common_name', _("Name"), editable=NEVER,
+                                     computer=Computer(self._common_name_computer, depends=('subject',))),
+                               Field('email', _("E-mail"), editable=NEVER,
+                                     computer=Computer(self._email_computer, depends=('subject',))),
+                               )
             return fields
+        
         columns = ('common_name', 'valid_from', 'valid_until', 'trusted',)
         layout = ('trusted', 'common_name', 'email', 'issuer', 'valid_from', 'valid_until', 'text',)
-        
-    def _validate_x509(self, req, record, x509):
-        result = super(UserCertificates, self)._validate_x509(req, record, x509)
-        if result:
-            return result
-        subject = unicode(x509.get_subject())
-        subject_items = {}
-        for item in subject.split('/'):
-            try:
-                key, value = item.split('=', 1)
-                subject_items[key.lower()] = value
-            except:
-                pass
-        record['common_name'] = pd.Value(record['common_name'].type(), subject_items.get('cn', '?'))
-        if subject_items.has_key('emailaddress'):
-            record['email'] = pd.Value(record['email'].type(), subject_items['emailaddress'])
+
+        def _subject_computer(self, x509):
+            subject = unicode(x509.get_subject())
+            subject_items = {}
+            for item in subject.split('/'):
+                try:
+                    key, value = item.split('=', 1)
+                    subject_items[key.lower()] = value
+                except:
+                    pass
+            return subject_items
+        def _common_name_computer(self, row):
+            subject = row['subject'].value()
+            if subject is None:
+                return ''
+            return subject.get('cn', '?')
+        def _email_computer(self, row):
+            subject = row['subject'].value()
+            if subject is None:
+                return ''
+            return subject.get('emailaddress', '')
             
     WMI_SECTION = WikingManagementInterface.SECTION_CERTIFICATES
     WMI_ORDER = 200
