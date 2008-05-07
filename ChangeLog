@@ -5,6 +5,14 @@
 
 	* lib/wiking/cms/cms.py (Embeddable): Docstring extended.
 	(CMSExtension, CMSExtensionModule): New classes.
+	(Pages._validate): Return validation error in proper format.
+	(Pages._redirect_after_insert): View the new page after creation.
+	(Pages.RIGHTS_edit): Allow `AUTHOR's to edit pages.
+	(Pages.action_commit): Don't allow publication of untitled pages.
+	Supply module title automatically if extension module is defined.
+	(Pages.action_commit, Pages.action_revert)
+	(Pages.action_unpublish): Convert the result of
+	`self._analyze_exception()' to an error message.
 
 	* lib/wiking/modules.py (Module.title, Module.descr): Use the
 	constants `_TITLE' and `_DESCR' if defined.
