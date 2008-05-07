@@ -339,7 +339,7 @@ class CMSExtension(Module, Embeddable, RequestHandler):
             if __debug__:
                 assert isinstance(modname, (str, unicode)), modname
                 for item in submenu:
-                    assert isinstance(WikingExtension.MenuItem, item), item
+                    assert isinstance(item, CMSExtension.MenuItem), item
             self.modname = modname
             self.submenu = submenu
             self.kwargs = kwargs
