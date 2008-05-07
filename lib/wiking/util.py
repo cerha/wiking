@@ -706,6 +706,7 @@ class Data(pd.DBDataDefault):
 
 class Specification(pp.Specification):
     _instance_cache = {}
+    help = None # Default value needed by CMSModule.descr()
     actions = []
     data_cls = Data
     def __new__(cls, module, resolver):
