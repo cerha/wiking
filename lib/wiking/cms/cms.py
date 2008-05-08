@@ -1856,8 +1856,8 @@ class Certificates(CMSModule):
                 x509 = M2Crypto.X509.load_cert(certificate_file.name)
             except Exception, e:
                 raise Exception(_("System error while processing certificate"), e)
-            if not x509.verify():
-                raise Exception(_("The certificate is not valid"))
+            if x509.verify() != 1:
+                x509 = None
             return x509
         def _make_x509_computer(self, function):
             def computer(row):
@@ -1880,7 +1880,12 @@ class Certificates(CMSModule):
             time_tuple = time.strptime(str(timestamp), '%b %d %H:%M:%S %Y %Z')
             mx_time = mx.DateTime.DateTime(*time_tuple[:6])
             return mx_time
-
+            
+        def check(self, row):
+            x509 = row['x509'].value()
+            if x509 is None:
+                return ('file', _("The certificate is not valid"),)
+                
     RIGHTS_view = (Roles.ADMIN,)
     RIGHTS_list = (Roles.ADMIN,)
     RIGHTS_rss  = (Roles.ADMIN,)
@@ -1895,16 +1900,19 @@ class CACertificates(Certificates):
     
     class Spec(Certificates.Spec):
         
+        _ID_COLUMN = 'cacertificates_id'
+
         table = 'cacertificates'
         title = _("CA Certificates")
         help = _("Manage trusted root certificates.")
-        _ID_COLUMN = 'cacertificates_id'
         
-        def _x509_computer(self, row):
-            x509 = Certificates.Spec._x509_computer(self, row)
-            if x509 is not None and x509.check_ca() != 1:
-                raise Exception(_("This is not a CA certificate."))
-            return x509
+        def check(self, row):
+            error = Certificates.Spec.check(self, row)
+            if error is not None:
+                return error
+            x509 = row['x509'].value()
+            if x509.check_ca() != 1:
+                return ('file', _("This is not a CA certificate."))
         
     _LAYOUT = {'insert': ('file',)}
     
