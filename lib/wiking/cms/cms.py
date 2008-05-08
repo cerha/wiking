@@ -1882,6 +1882,10 @@ class Certificates(CMSModule):
             return mx_time
             
         def check(self, row):
+            if hasattr(StoredFileModule.Spec, 'check'):
+                error = StoredFileModule.Spec.check(self, row)
+                if error is not None:
+                    return error
             x509 = row['x509'].value()
             if x509 is None:
                 return ('file', _("The certificate is not valid"),)
