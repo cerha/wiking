@@ -33,7 +33,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         def req(self):
             return self._req
 
-    _BODY_PARTS = ('wrap',)
+    _BODY_PARTS = ('wrap', 'media_player')
     _WRAP_PARTS = ('top', 'page', 'bottom')
     _PAGE_PARTS = ('links', 'breadcrumbs', 'language_selection',
                    'menu', 'submenu', 'panels', 'content', 'clearing')
@@ -71,7 +71,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
     def _hidden(self, *text):
         return self._generator.span(text, cls="hidden")
 
-    def _node_uri(self, context, node, lang=None):
+    def _uri_node(self, context, node, lang=None):
         uri = node.id()
         if not uri.startswith('/'):
             uri = context.req().uri_prefix() + '/'+ uri
@@ -142,7 +142,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
                     sign = self._hidden(' *')
                 if item.id() == 'index':
                     hotkey = "1"
-                links.append(g.link(item.title(), self._node_uri(context, item),
+                links.append(g.link(item.title(), self._uri_node(context, item),
                                     title=item.descr(), hotkey=hotkey, cls=cls) + sign)
         if links:
             title = g.link(_("Main navigation")+':', None, name='main-navigation', hotkey="3")
