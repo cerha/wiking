@@ -263,6 +263,18 @@ div.panel hr { display: none; }
     font-size: 0.75em;
 }
 
+#media-player { 
+    margin: 0.5em 0;
+}
+#media-player-container { 
+    margin-top: 1.2em;
+}
+#mediaplayer { 
+    position: fixed;
+    bottom: 0;
+    right: 0;
+}
+
 /* Page footer */
 
 #footer { font-size: 0.9em; text-align: center; margin: 0pt; }
