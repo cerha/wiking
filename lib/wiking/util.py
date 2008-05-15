@@ -344,6 +344,23 @@ class LoginPanel(Panel):
         super(LoginPanel, self).__init__('login', _("Login Panel"), self.PanelContent())
 
 
+class Resource(object):
+    """LCG Resource encapsulation.
+
+    Allows to store the 'lcg.Resource' class and constructor arguments without actually creating
+    the instance.  The instance may be created later by calling the 'create()' method.
+    
+    """
+    def __init__(self, cls, *args, **kwargs):
+        self._cls = cls
+        self._args = args
+        self._kwargs = kwargs
+        
+    def create(self, provider):
+        """Create and return the resource instance using given 'lcg.ResourceProvider' instance."""
+        return provider.resource(self._cls, *self._args, **self._kwargs)
+        
+
 class Document(object):
     """Independent Wiking document representation.
 
@@ -384,7 +401,7 @@ class Document(object):
             corresponding menu item (if found) or to application-wide set of all available
             languages.
           
-          resources -- external resources available for this document as 'lcg.Resource' instances.
+          resources -- external resources available for this document as 'Resource' instances.
 
         """
         self._title = title
@@ -401,6 +418,11 @@ class Document(object):
         id = '/'.join(req.path)
         lang = self._lang or req.prefered_language(raise_error=False) or 'en'
         nodes = {}
+        resource_provider = lcg.DummyResourceProvider()
+        for uri in application.stylesheets():
+            resource_provider.resource(lcg.Stylesheet, uri, uri=uri)
+        for resource in self._resources:
+            resource.create(resource_provider)
         def mknode(item):
             if item.id() == id:
                 heading = self._title or item.title()
@@ -408,7 +430,6 @@ class Document(object):
                     heading = lcg.concat(heading, ' :: ', self._subtitle)
                 content = self._content
                 panels = application.panels(req, lang)
-                resources = resources=self._resources + tuple(application.stylesheets())
                 variants = self._variants
                 if variants is None:
                     variants = item.variants()
@@ -416,7 +437,6 @@ class Document(object):
                 heading = item.title()
                 content = lcg.Content()
                 panels = ()
-                resources = ()
                 variants = item.variants()
             hidden = item.hidden()
             if variants is None:
@@ -429,8 +449,7 @@ class Document(object):
                               descr=item.descr(), lang=lang, content=content, hidden=hidden,
                               variants=variants or (), active=item.active(), panels=panels, 
                               children=[mknode(i) for i in item.submenu()],
-                              resource_provider=lcg.StaticResourceProvider(resources),
-                              globals=self._globals)
+                              resource_provider=resource_provider, globals=self._globals)
             nodes[item.id()] = node
             return node
         top_level_nodes = [mknode(item) for item in application.menu(req)]

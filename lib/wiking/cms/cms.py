@@ -999,8 +999,8 @@ class Pages(CMSModule):
             content = [lcg.SectionContainer(sections, toc_depth=0)]
         # Attachment list
         attachments = self._module('Attachments').attachments(record)
-        items = [(lcg.link(make_uri(a.uri()), a.title()), ' ('+ a.bytesize() +') ',
-                  lcg.WikiText(a.descr() or '')) for a in attachments if a.listed()]
+        items = [(lcg.link(make_uri(a.uri), a.title), ' ('+ a.bytesize +') ',
+                  lcg.WikiText(a.descr or '')) for a in attachments if a.listed]
         if items:
             content.append(lcg.Section(title=_("Attachments"), content=lcg.ul(items),
                                        anchor='attachment-automatic-list')) # Prevent dupl. anchor.
@@ -1182,21 +1182,19 @@ class Attachments(StoredFileModule, CMSModule):
             if id is None:
                 return None
             return '%d.%s' % (id, row['lang'].value())
-    class Attachment(lcg.Resource):
+    class Attachment(Resource):
         def __init__(self, row):
-            file = row['filename'].export()
-            uri = '/'+ row['identifier'].export() + '/'+ file
-            title = row['title'].export() or file
-            descr = row['description'].value()
-            self._bytesize = row['bytesize'].export()
-            self._listed = row['listed'].value()
-            super(Attachments.Attachment, self).__init__(file, uri=uri, title=title, descr=descr)
-        def bytesize(self):
-            return self._bytesize
-        def listed(self):
-            return self._listed
-    class Image(Attachment, lcg.Image):
-        pass
+            filename = row['filename'].export()
+            self.uri = '/'+ row['identifier'].export() + '/'+ filename
+            self.title = row['title'].export() or filename
+            self.descr = row['description'].value()
+            self.bytesize = row['bytesize'].export()
+            self.listed = row['listed'].value()
+            if row['mime_type'].value().startswith('image/'):
+                cls = lcg.Image
+            else:
+                cls = lcg.Resource
+            super(Attachments.Attachment, self).__init__(cls, filename, uri=self.uri, title=self.title, descr=self.descr)
             
     _STORED_FIELDS = (('file', '_filename'),)
     _REFERER = 'filename'
@@ -1273,12 +1271,7 @@ class Attachments(StoredFileModule, CMSModule):
             return super(Attachments, self)._actions(req, record)
 
     def attachments(self, page):
-        def resource(row):
-            if row['mime_type'].value().startswith('image/'):
-                return self.Image(row)
-            else:
-                return self.Attachment(row)
-        return [resource(row) for row in
+        return [self.Attachment(row) for row in
                 self._data.get_rows(mapping_id=page['mapping_id'].value(),
                                     lang=page['lang'].value())]
                 

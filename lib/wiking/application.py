@@ -215,17 +215,21 @@ class Application(Module):
         return ['en']
 
     def stylesheets(self):
-        """Return the list of all available stylesheets as 'lcg.Stylesheet' instances.
+        """Return the list of URIs of all available stylesheets.
 
-        Each of the stylesheets should have the 'uri' set to an existing uri mapped to a module,
-        which serves its contents.  Wiking provides a basic 'Stylesheets' module for this purpose.
+        The application is responsible for handling the returned URIs correctly.  Wiking provides a
+        generic 'Stylesheets' module for this purpose.
 
-        The default implementation returns the list of default Wiking stylesheets if the
-        'Stylesheets' module is mapped.
+        The default implementation returns the list of stylesheets defined by the '_STYLESHEETS'
+        constant of the class.  The filenames defined in this list are automatically prefixed by
+        the current mapped uri of the 'Stylesheets' module (if the module is mapped).
 
         """
         uri = self.module_uri('Stylesheets')
-        return [lcg.Stylesheet(file, uri=uri+'/'+file) for file in self._STYLESHEETS]
+        if uri is not None:
+            return [uri +'/'+ file for file in self._STYLESHEETS]
+        else:
+            return []
 
     def handle_exception(self, req, exception):
         """Handle exceptions raised during request processing.
