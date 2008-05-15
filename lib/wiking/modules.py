@@ -214,8 +214,9 @@ class Documentation(DocumentHandler):
 class Stylesheets(Module, RequestHandler):
     """Serve installed stylesheets.
 
-    The default implementation serves stylesheet files from the wiking resources directory.  You
-    will just need to map this module to serve certain uri, such as 'css'.
+    The default implementation serves stylesheet files from the wiking resources directory.
+
+    Map the module to a particular URI within your application to use it.
 
     """
 
@@ -241,6 +242,45 @@ class Stylesheets(Module, RequestHandler):
     def _handle(self, req):
         """Serve the stylesheet from a file."""
         return ('text/css', self._substitute(self._stylesheet(req.path[1])))
+
+
+class Resources(Module, RequestHandler):
+    """Serve the resource files as provided by the LCG's 'ResourceProvider'.
+
+    This module will automatically serve all resources found within the directories configured
+    through the 'resource_path' option.  Use with caution, since this module will expose all files
+    located within configured directories to the internet!  Note that the LCG's default resource
+    directory (as configured within the LCG package) is always automatically added to the search
+    path.
+
+    Map the module to a particular URI within your application to use it.
+
+    """
+    _RESOURCES = {'css':     (lcg.XStylesheet, 'text/css'),
+                  'media':   (lcg.XMedia, 'audio/mpeg'),
+                  'images':  (lcg.XImage, 'image/gif'),
+                  'scripts': (lcg.XScript, 'application/x-javascript'),
+                  'flash':   (lcg.XFlash, 'application/x-shockwave-flash')}
+
+    def __init__(self, *args, **kwargs):
+        super(Resources, self).__init__(*args, **kwargs)
+        self._provider = lcg.ResourceProvider(dirs=cfg.resource_path)
+
+    def _handle(self, req):
+        """Serve the resource from a file."""
+        if '..' in req.path or len(req.path) < 3:
+            raise NotFound
+        subdir = req.path[1]
+        filename = os.path.join(*req.path[2:])
+        try:
+            cls, type = self._RESOURCES[subdir]
+        except KeyError:
+            raise NotFound
+        resource = self._provider.resource(cls, filename, fallback=False)
+        if resource is not None:
+            return (type, resource.get())
+        else:
+            raise NotFound()
 
     
 class SubmenuRedirect(Module, RequestHandler):

@@ -83,20 +83,23 @@ class ModPythonHandler(object):
     def _init(self, hostname, options):
         # The initialization is postponed until the first request, since we need the information
         # from the request instance to initialize the configuration and the handler instance.
+        def split(value):
+            separator = value.find(':') != -1 and ':' or ','
+            return tuple([d.strip() for d in value.split(separator)])
+        dboptions = {'database': hostname}
+        search_modules = ('wiking.cms',)
+        for name, value in options.items():
+            if name == 'translation_path':
+                cfg.translation_path = tuple(cfg.translation_path) + split(value)
+            elif name == 'resource_path':
+                cfg.resource_path = split(value) + tuple(cfg.resource_path)
+            elif name == 'modules':
+                search_modules = split(value)
+            elif name in ('database', 'user', 'password', 'host', 'port'):
+                dboptions[name] = value
+            elif hasattr(cfg, name):
+                setattr(cfg, name, value)
         if cfg.resolver is None:
-            dboptions = {'database': hostname}
-            search_modules = ('wikingmodules', 'wiking.cms')
-            for name, value in options.items():
-                if name == 'translation_path':
-                    separator = value.find(':') != -1 and ':' or ','
-                    path = [d.strip() for d in value.split(separator)]
-                    cfg.translation_path = tuple(cfg.translation_path) + tuple(path)
-                elif name == 'modules':
-                    search_modules = tuple([m.strip() for m in value.split(',')])
-                elif name in ('database', 'user', 'password', 'host', 'port'):
-                    dboptions[name] = value
-                elif hasattr(cfg, name):
-                    setattr(cfg, name, value)
             dbconnection = pd.DBConnection(**dboptions)
             maintenance = options.get('maintenance') in ('true', 'yes')
             cfg.resolver = WikingResolver(dbconnection, search_modules, maintenance=maintenance)

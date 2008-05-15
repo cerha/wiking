@@ -1,3 +1,30 @@
+2008-05-15  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/export.py: Prefix resource URIs by the `Resources'
+	module URI.
+
+	* lib/wiking/modules.py (Resources): New module.
+
+	* resources/css/default.css: Added syles for media player.
+
+	* lib/wiking/util.py Added support for dynamic resource allocation
+	in export time.
+
+	* lib/wiking/application.py (Application.stylesheets): Return the
+	list of URIs, not `lcg.Stylesheet' instances.
+
+	* lib/wiking/cms/appl.py (Application.stylesheets): Return the
+	list of URIs, not `lcg.Stylesheet' instances.  
+	(Application): Map the `Resources' module to `_resources'.
+
+	* lib/wiking/cms/cms.py: Create attachments as `Resource'
+	instances, not `lcg.Resource'.
+
+	* lib/wiking/configuration.py: New option `resource_path'.
+
+	* lib/wiking/handler.py: Set `cfg.resource_path' from apache
+	configuration.
+
 2008-05-14  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/export.py: Sync with the latest LCG version.

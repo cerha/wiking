@@ -40,10 +40,12 @@ class Application(CookieAuthentication, wiking.Application):
     _MAPPING = {'_doc': 'Documentation',
                 '_wmi': 'WikingManagementInterface',
                 '_css': 'Stylesheets',
+                '_resources': 'Resources',
                 '_registration': 'Registration'}
 
     _RIGHTS = {'Documentation': (Roles.ANYONE,),
                'Stylesheets': (Roles.ANYONE,),
+               'Resources': (Roles.ANYONE,),
                'SiteMap': (Roles.ANYONE,),
                'WikingManagementInterface': (Roles.AUTHOR, )}
 

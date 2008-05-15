@@ -76,6 +76,9 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         if not uri.startswith('/'):
             uri = context.req().uri_prefix() + '/'+ uri
         return context.generator().uri(uri, setlang=lang)
+
+    def _resource_uri_prefix(self, context, resource):
+        return context.req().application().module_uri('Resources')
     
     #def _head(self, context):
     #    result = super(Exporter, self)._head(context)

@@ -164,3 +164,15 @@ class Configuration(pc):
                 "optional, but an instance of class derived from 'pytis.util.Configuration' is "
                 "recommended.")
         
+    class _Option_resource_path(pc.Option):
+        _DESCR = "Resource search path"
+        _DOC = ("The value is a sequence of directory names (strings), where resouce files, "
+                "such as images, media or scripts are searched.  Each resource type is searched "
+                "within the resource specific subdirectory so you should only specify the list "
+                "of the base directories.  The directories are searched in given order and "
+                "the LCG resource directory (as set in LCG package configuration) is always "
+                "used automatically as the last resort.  Setting this option only makes sense "
+                "if you are using the 'Resources' module.  Beware that all files located within "
+                "the named directories will be directly exposed to the internet!")
+        def default(self):
+            return (os.path.join(self._configuration.wiking_dir, 'resources'),)
