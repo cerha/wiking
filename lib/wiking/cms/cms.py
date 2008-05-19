@@ -1561,7 +1561,7 @@ class Styles(CMSModule):
 class Users(EmbeddableCMSModule):
     """Manage user accounts through a Pytis data object.
 
-    This module is used by the Wiking CMS application to retrieve the login information
+    This module is used by the Wiking CMS application to retrieve the login information.
     
     """
     class Spec(Specification):
