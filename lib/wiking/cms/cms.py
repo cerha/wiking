@@ -28,6 +28,7 @@ from wiking.cms import *
 import tempfile
 
 import mx.DateTime
+import pytis.data
 from pytis.presentation import Computer, CbComputer, Fields, HGroup, CodebookSpec
 from mx.DateTime import today, TimeDelta
 from lcg import log as debug
@@ -41,7 +42,7 @@ NEVER = pp.Editable.NEVER
 ALWAYS = pp.Editable.ALWAYS
 ASC = pd.ASCENDENT
 DESC = pd.DESCENDANT
-now = lambda: mx.DateTime.now().gmtime()
+now = pytis.data.DateTime.current_gmtime
 enum = lambda seq: pd.FixedEnumerator(seq)
 
 _ = lcg.TranslatableTextFactory('wiking-cms')
