@@ -176,6 +176,37 @@ class Request(pytis.web.Request):
         self.write(data)
         return apache.OK
 
+    def serve_file(self, filename, content_type):
+        """Send the contents of given file to the remote host.
+
+        Arguments:
+          filename -- full path to the file
+          content_type -- Content-Type header as a string
+
+        'NotFound' exception will be raised if the file does not exist.
+
+        Important note: The file size is read in advance to determine the Content-Lenght header.
+        If the file is changed before it gets sent, the result may be incorrect.
+        
+        """
+        try:
+            size = os.stat(filename).st_size
+        except OSError:
+            raise NotFound
+        self.send_http_header(content_type, size)
+        f = file(filename)
+        try:
+            while True:
+                # Read the file in 0.5MB chunks.
+                data = f.read(524288)
+                if not data:
+                    break
+                self.write(data)
+        finally:
+            f.close()
+        return apache.OK
+        
+
     def error(self, message):
         self._req.content_type = "text/html; charset=UTF-8"
         self._req.send_http_header()
