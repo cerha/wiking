@@ -400,7 +400,7 @@ class WikingRequest(Request):
         return self._credentials
 
     def user(self, require=False):
-        """Return the record describing the logged-in user.
+        """Return 'User' instance describing the logged-in user.
 
         Arguments:
 
