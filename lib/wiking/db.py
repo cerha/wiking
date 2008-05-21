@@ -344,20 +344,25 @@ class PytisModule(Module, ActionHandler):
             layout = pp.GroupSpec(layout, orientation=pp.Orientation.VERTICAL)
         return layout
     
-    def _default_action(self, req, record=None):
+    def _default_action(self, req, record=None, subpath=None):
         if record is None:
             return 'list'
+        elif subpath is not None:
+            return 'subitem'
         else:
             return 'view'
-        
+
     def _action_args(self, req):
         # The request path may resolve to a 'record' argument, no arguments or
         # raise one of HttpError exceptions.
+        args = {}
         row = self._resolve(req)
         if row is not None:
-            return dict(record=self._record(req, row))
-        else:
-            return {}
+            args['record'] = self._record(req, row)
+            subpath = self._subpath(req)
+            if subpath:
+                args['subpath'] = subpath
+        return args
     
     def _resolve(self, req):
         # Returns Row, None or raises HttpError.
@@ -365,13 +370,17 @@ class PytisModule(Module, ActionHandler):
         level = self._REFERER_PATH_LEVEL
         if pathlen in (level-1, level) and req.has_param(self._key):
             return self._get_row_by_key(req.param(self._key))
-        elif pathlen == level:
+        elif pathlen >= level:
             return self._get_referered_row(req, req.path[level-1])
-        elif pathlen < level:
-            return None
         else:
-            raise NotFound()
+            return None
 
+    def _subpath(self, req):
+        if len(req.path) > self._REFERER_PATH_LEVEL:
+            return req.path[self._REFERER_PATH_LEVEL:]
+        else:
+            return None
+        
     def _get_row_by_key(self, value):
         if isinstance(value, tuple):
             value = value[-1]
@@ -523,6 +532,9 @@ class PytisModule(Module, ActionHandler):
             content.append(lcg.Section(title=binding.title() or self._view.title(),
                                        content=module.related(req, binding, self.name(), record)))
         return self._document(req, content, record, err=err, msg=msg)
+
+    def action_subitem(self, req, record, subpath):
+        raise NotFound()
 
     # ===== Action handlers which modify the database =====
 
