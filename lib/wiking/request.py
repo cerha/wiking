@@ -406,11 +406,8 @@ class WikingRequest(Request):
 
           require -- boolean flag indicating that the user is required to be logged (anonymous
             access not allowed).  If set to true and no user is logged, AuthenticationError will be
-            raised.  If false, None is returned, but AuthenticationError may still be raised when
-            login credentials are not valid.
-
-        This method may not be used without a previous call to 'set_auth_module()'.  The returned
-        record is the user record obtained from this module.
+            raised (just as a convenience extension).  If false, None is returned, but
+            AuthenticationError may still be raised when login credentials are not valid.
 
         """
         if self._user is self._UNDEFINED:

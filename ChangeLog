@@ -1,3 +1,8 @@
+2008-05-22  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/request.py (WikingRequest.user): Docstring further
+	clarified and outdated note removed.
+
 2008-05-21  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/cms/cms.py: Added support for  handling URI
