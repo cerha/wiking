@@ -403,7 +403,8 @@ class Document(object):
         lang = self._lang or req.prefered_language(raise_error=False) or 'en'
         nodes = {}
         styles = [lcg.Stylesheet(uri, uri=uri) for uri in application.stylesheets()]
-        resource_provider = lcg.ResourceProvider(resources=tuple(styles)+self._resources)
+        resource_provider = lcg.ResourceProvider(resources=tuple(styles)+self._resources,
+                                                 dirs=cfg.resource_path)
         def mknode(item):
             if item.id() == id:
                 heading = self._title or item.title()
