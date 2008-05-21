@@ -342,23 +342,6 @@ class LoginPanel(Panel):
         
     def __init__(self):
         super(LoginPanel, self).__init__('login', _("Login Panel"), self.PanelContent())
-
-
-class Resource(object):
-    """LCG Resource encapsulation.
-
-    Allows to store the 'lcg.Resource' class and constructor arguments without actually creating
-    the instance.  The instance may be created later by calling the 'create()' method.
-    
-    """
-    def __init__(self, cls, *args, **kwargs):
-        self._cls = cls
-        self._args = args
-        self._kwargs = kwargs
-        
-    def create(self, provider):
-        """Create and return the resource instance using given 'lcg.ResourceProvider' instance."""
-        return provider.resource(self._cls, *self._args, **self._kwargs)
         
 
 class Document(object):
@@ -401,7 +384,8 @@ class Document(object):
             corresponding menu item (if found) or to application-wide set of all available
             languages.
           
-          resources -- external resources available for this document as 'Resource' instances.
+          resources -- external resources available for this document as a sequence of
+            'lcg.Resource' instances.
 
         """
         self._title = title
@@ -418,11 +402,8 @@ class Document(object):
         id = '/'.join(req.path)
         lang = self._lang or req.prefered_language(raise_error=False) or 'en'
         nodes = {}
-        resource_provider = lcg.DummyResourceProvider()
-        for uri in application.stylesheets():
-            resource_provider.resource(lcg.Stylesheet, uri, uri=uri)
-        for resource in self._resources:
-            resource.create(resource_provider)
+        styles = [lcg.Stylesheet(uri, uri=uri) for uri in application.stylesheets()]
+        resource_provider = lcg.ResourceProvider(resources=tuple(styles)+self._resources)
         def mknode(item):
             if item.id() == id:
                 heading = self._title or item.title()
