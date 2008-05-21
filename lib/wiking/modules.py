@@ -256,11 +256,6 @@ class Resources(Module, RequestHandler):
     Map the module to a particular URI within your application to use it.
 
     """
-    _RESOURCES = {'css':     (lcg.XStylesheet, 'text/css'),
-                  'media':   (lcg.XMedia, 'audio/mpeg'),
-                  'images':  (lcg.XImage, 'image/gif'),
-                  'scripts': (lcg.XScript, 'application/x-javascript'),
-                  'flash':   (lcg.XFlash, 'application/x-shockwave-flash')}
 
     def __init__(self, *args, **kwargs):
         super(Resources, self).__init__(*args, **kwargs)
@@ -270,17 +265,15 @@ class Resources(Module, RequestHandler):
         """Serve the resource from a file."""
         if '..' in req.path or len(req.path) < 3:
             raise NotFound
-        subdir = req.path[1]
         filename = os.path.join(*req.path[2:])
-        try:
-            cls, type = self._RESOURCES[subdir]
-        except KeyError:
-            raise NotFound
-        resource = self._provider.resource(cls, filename, fallback=False)
-        if resource is not None:
-            return (type, resource.get())
-        else:
-            raise NotFound()
+        resource = self._provider.resource(filename)
+        if resource is not None and resource.SUBDIR == req.path[1]:
+            src_file = resource.src_file()
+            if src_file:
+                import mimetypes
+                mime_type, encoding = mimetypes.guess_type(src_file)
+                return req.serve_file(src_file, mime_type or 'application/octet-stream')
+        raise NotFound()
 
     
 class SubmenuRedirect(Module, RequestHandler):
