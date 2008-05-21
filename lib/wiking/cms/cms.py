@@ -220,6 +220,7 @@ class CMSModule(PytisModule, RssModule, Panelizable):
     RIGHTS_view = (Roles.ANYONE,)
     RIGHTS_list = (Roles.ANYONE,)
     RIGHTS_rss  = (Roles.ANYONE,)
+    RIGHTS_subitem = (Roles.ANYONE,)
     RIGHTS_insert    = (Roles.ADMIN,)
     RIGHTS_update    = (Roles.ADMIN,)
     RIGHTS_delete    = (Roles.ADMIN,)
@@ -240,6 +241,12 @@ class CMSModule(PytisModule, RssModule, Panelizable):
         else:
             return super(CMSModule, self)._resolve(req)
 
+    def _subpath(self, req):
+        if req.wmi:
+            return None
+        else:
+            return super(CMSModule, self)._subpath(req)
+        
     def _base_uri(self, req):
         if req.wmi:
             uri = req.uri_prefix() + '/_wmi/'+ self.name()
@@ -327,7 +334,7 @@ class CMSExtension(Module, Embeddable, RequestHandler):
     """
     class MenuItem(object):
         """Specification of a menu item bound to a submodule of an extension."""
-        def __init__(self, modname, submenu=(), **kwargs):
+        def __init__(self, modname, id=None, submenu=(), **kwargs):
             """Arguments:
             
                modname -- string name of the submodule derived from 'CMSExtensionModule'
@@ -342,6 +349,7 @@ class CMSExtension(Module, Embeddable, RequestHandler):
                 for item in submenu:
                     assert isinstance(item, CMSExtension.MenuItem), item
             self.modname = modname
+            self.id = id or pytis.util.camel_case_to_lower(modname, '-')
             self.submenu = submenu
             self.kwargs = kwargs
     
@@ -353,6 +361,8 @@ class CMSExtension(Module, Embeddable, RequestHandler):
         for item in self._MENU:
             self._set_parent(item)
         self._submenu = None
+        self._mapping = {}
+        self._rmapping = {}
         
     def _set_parent(self, item):
         self._module(item.modname).set_parent(self)
@@ -361,14 +371,18 @@ class CMSExtension(Module, Embeddable, RequestHandler):
     
     def _init_submenu(self, req):
         def menu_item(item):
+            self._mapping[item.id] = item.modname
+            self._rmapping[item.modname] = item.id
             module = self._module(item.modname)
-            identifier = self.module_uri(req, item.modname)[1:]
+            identifier = self.submodule_uri(req, item.modname)[1:]
             return MenuItem(identifier, module.title(), descr=module.descr(),
                             submenu=[menu_item(i) for i in item.submenu], **item.kwargs)
         self._submenu = [menu_item(item) for item in self._MENU]
 
     def embed(self, req):
-        return req.redirect(self.module_uri(req, self._MENU[0].modname))
+        if self._submenu is None:
+            self._init_submenu(req)
+        return req.redirect(self.submodule_uri(req, self._MENU[0].modname))
 
     def submenu(self, req):
         if self._submenu is None:
@@ -376,11 +390,16 @@ class CMSExtension(Module, Embeddable, RequestHandler):
         return self._submenu
 
     def handle(self, req):
-        modname = req.path[1]
+        if self._submenu is None:
+            self._init_submenu(req)
+        try:
+            modname = self._mapping[req.path[1]]
+        except KeyError:
+            raise NotFound
         return self._module(modname).handle(req)
 
-    def module_uri(self, req, name):
-        return self._base_uri(req) +'/'+ name
+    def submodule_uri(self, req, modname):
+        return self._base_uri(req) +'/'+ self._rmapping[modname]
     
 
 class CMSExtensionModule(CMSModule):
@@ -396,7 +415,7 @@ class CMSExtensionModule(CMSModule):
             parent = self._parent
         except AttributeError:
             return None
-        return parent.module_uri(req, self.name())
+        return parent.submodule_uri(req, self.name())
 
     
 class Session(PytisModule, wiking.Session):
@@ -1012,7 +1031,8 @@ class Pages(CMSModule):
                 return req.redirect('/'+rows[0]['identifier'].value())
         # Action menu
         content.append(self._action_menu(req, record, help='/_doc/pages', cls='actions separate'))
-        return self._document(req, content, record, resources=attachments, err=err, msg=msg)
+        return self._document(req, content, record, resources=[a.resource() for a in attachments],
+                              err=err, msg=msg)
 
     def action_rss(self, req, record):
         module = record['modname'].value() and self._module(record['modname'].value())
@@ -1183,19 +1203,22 @@ class Attachments(StoredFileModule, CMSModule):
             if id is None:
                 return None
             return '%d.%s' % (id, row['lang'].value())
-    class Attachment(Resource):
+    class Attachment(object):
         def __init__(self, row):
-            filename = row['filename'].export()
+            self.filename = filename = row['filename'].export()
             self.uri = '/'+ row['identifier'].export() + '/'+ filename
             self.title = row['title'].export() or filename
             self.descr = row['description'].value()
             self.bytesize = row['bytesize'].export()
             self.listed = row['listed'].value()
-            if row['mime_type'].value().startswith('image/'):
+            self.mime_type = row['mime_type'].value()
+        def resource(self):
+            """Create and return 'lcg.Resource' instance using given 'lcg.ResourceProvider'."""
+            if self.mime_type.startswith('image/'):
                 cls = lcg.Image
             else:
                 cls = lcg.Resource
-            super(Attachments.Attachment, self).__init__(cls, filename, uri=self.uri, title=self.title, descr=self.descr)
+            return cls(self.filename, uri=self.uri, title=self.title, descr=self.descr)
             
     _STORED_FIELDS = (('file', '_filename'),)
     _REFERER = 'filename'
@@ -1479,9 +1502,9 @@ class Images(StoredFileModule, EmbeddableCMSModule):
         return super(Images, self)._link_provider(req, row, cid, **kwargs)
     
     def _image_provider(self, req, row, cid, **kwargs):
-        if cid == 'file':
+        if cid == 'filename':
             return make_uri(self._base_uri(req) +'/'+ row['filename'].export(), action='thumbnail')
-        return super(Images, self)._link_provider(req, row, cid, **kwargs)
+        return super(Images, self)._image_provider(req, row, cid, **kwargs)
 
     def _image(self, record, id):
         mime = "image/" + str(record['format'].value())

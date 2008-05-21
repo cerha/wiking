@@ -1,5 +1,9 @@
 2008-05-21  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/cms/cms.py: Added support for  handling URI
+	subpath for pytis module records.  Synced with the current
+	resource handling mechanism.
+
 	* lib/wiking/util.py: Updated for new LCG resource handling.
 
 	* lib/wiking/request.py (Request.serve_file): Added support for
