@@ -42,7 +42,7 @@ class Configuration(pc):
     directive:
 
     -----
-      PythonOption config_file /etc/wiking/sites/mysite.conf
+      PythonOption config_file /etc/wiking/sites/mysite.py
     -----
 
     See [apache] for more details.

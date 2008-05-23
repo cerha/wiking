@@ -51,11 +51,11 @@ the =PythonOption= directive.
 The option =config_file= will set the name of the site specific configuration
 file:
 -----
-  PythonOption config_file /etc/wiking/sites/yourdomain.conf
+  PythonOption config_file /etc/wiking/sites/yourdomain.py
 -----
 
 This way you can set all options specific for given site in the file
-=\/etc/wiking/sites/yourdomain.conf=.  They will take precedence over the values
+=\/etc/wiking/sites/yourdomain.py=.  They will take precedence over the values
 defined in the global configuration file (such as =\/etc/wiking/config.py=) or
 over the default values for options not set in the global file.
 
