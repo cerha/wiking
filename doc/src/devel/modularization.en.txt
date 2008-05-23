@@ -56,44 +56,46 @@ docstrings in files 'modules.py' and 'db.py'.
 /Note on terminology:/ The text below uses the term /module/ in two contexts.
 One is for Wiking module -- a Python class implementing part of Wiking
 functionality, other is for Python module -- a collection of Python definitions
-and statements typically represented by a Python source file.  If we don't say
-``Python module'' explicitely, Wiking module is meant.
+and statements typically represented by a Python source file.  Wiking module
+classes are defined within Python modules.
 
-The technique used for locating wiking modules is simple.  As described before,
-Wiking always looks for modules by their name.  It first tries to import the
-Python module named 'wikingmodules' and definition of a class with the
-corresponding name within it.  If no such class is found within
-'wikingmodules', Wiking uses the default implementation of the module.
+Wiking always looks for its modules by their name.  To locate the module
+'Application' Wiking searches for the definition of a class named 'Application'
+in the "search path".  This search path consists of a list of Python modules
+which are searched in the defined order.  The search path is defined by the
+configuration option '=modules='.
 
-You may easilly use custom set of modules for each virtual host by simply
-modifying the Python path for each of them (see [apache] form more
-information).
+This technique makes it possible to configure each virtual host to use custom
+set of modules (see [config] for more information).
 
-When the module 'wikingmodules' doesn't exist at all (in the current Python
-path), Wiking automatically uses the modules of Wiking CMS.  This means, that
-if you don't provide your own modules, you end up running the CMS on your
-website.
+The default search path consist of just one module -- =wiking.cms=.  So if you
+don't override '=modules=' in your configuration, the site will run the Wiking
+CMS application.
 
 
 == Adding Custom Modules to Wiking CMS ==
 
-Given the information above, you can easilly add your custom modules to wiking
-CMS or modify the existing modules to suit your needs.  Let's give an example
-of `wikingmodules.py', which can be found within Python path of the
-corresponding virtual host:
-
+Example definition of a new embeddable module:
 -----
-import wiking.cms
+import wiking, wiking.cms
 
-class MyModule(wiking.cms.CMSModule, wiking.cms.Mappable):
-      """My Wiking CMS module implementing fancy things."""
-      WMI_SECTION = wiking.cms.WikingManagementInterface.SECTION_CONTENT
-      ....
-
-# Import the rest without poluting the namespace at the beginning...
-from wiking.cms import * 
+class UserAgentInfo(wiking.Module, wiking.cms.Embeddable):
+    """Extend page content by including the information about the user's browser."""
+    _TITLE = _("User Agent Info")
+    
+    def embed(self, req):
+    	agent = req.header('User-Agent', _("unknown"))
+        return [lcg.TextContent(_("Your browser is:") +' '+ agent)]
 -----
 
-Such a module will automatically become available in WMI.
+Install this module within your Python path as 'uainfo' and set '=modules=' as
+follows:
+
+-----
+modules = ('wiking.cms', 'uainfo')
+-----
+
+The module "User Agent Info" should now automatically become available in Wiking
+CMS for embedding within page content.
 
 

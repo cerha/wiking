@@ -6,15 +6,15 @@ Table Of Contents: @TOC@
 
 == Basic Setup ==
 
-When Wiking is installed succesfully, you must configure Apache to use it for
+When Wiking is installed successfully, you must configure Apache to use it for
 serving your site.  This can be as simple as adding two lines into your site's
-VirtualHost section.  An example follows:
+=VirtualHost= section.  An example follows:
 
 -----
 <VirtualHost *>
   ServerName www.yourdomain.com
   ScriptAliasMatch .* /usr/local/share/wiking/wiking.py
-  PythonOption database www.yourdomain.com
+  PythonOption dbname yourdbname
 </VirtualHost>
 -----
 
@@ -25,53 +25,87 @@ exist in the named directory, but that is ok.  The request will be redirected
 to the Wiking handler.  The directory must exist, however (it is created by the
 installation script).
 
-The =PythonOption= line sets the name of the database which should be used by
-Wiking to store content for given site.  The recommended practice is to use the
-site name for the database name, but you are free choose any other convention.
+The =PythonOption= line sets the Wiking configuration option =dbname= to the
+name of the database used for www.yourdomain.com (you will normally want to
+have a separate database for each Wiking site).  See below for more details
+about setting Wiking configuration options.
 
-This basic configuration should be sufficient for running the [cms].  Just
-reload Apache and try pointing your browser to the corresponding uri.  On the
-first try, the database will not be initialized, but Wiking will detect that
-and guide you through the database initialization process.
+This basic setup should be sufficient for running the [cms].  Just reload
+Apache and try pointing your browser to the corresponding URI.  On the first
+try, the database will not be initialized, but Wiking will detect that and
+guide you through the database initialization process.  This way you can
+configure as many VirtualHosts as you wish.
 
-You can configure as many VirtualHosts as you want and serve them all using
-Wiking.  There must be a separate database for each virtual host.
+If you want to run a different Wiking application instead of Wiking CMS or want
+to customize Wiking CMS, you will also need to set the =modules= configuration
+option (see below).
+
+
+== Wiking Configuration Options ==
+
+The chapter [config] describes the available options.  You can set each option
+globally, you can use a site specific configuration file or you can pass the
+values directly from the =VirtualHost= section of your Apache configuration using
+the =PythonOption= directive.
+
+The option =config_file= will set the name of the site specific configuration
+file:
+-----
+  PythonOption config_file /etc/wiking/sites/yourdomain.conf
+-----
+
+This way you can set all options specific for given site in the file
+=\/etc/wiking/sites/yourdomain.conf=.  They will take precedence over the values
+defined in the global configuration file (such as =\/etc/wiking/config.py=) or
+over the default values for options not set in the global file.
+
+You may also override most options directly from the Apache configuration file
+using the =PythonOption= directive.  These options will take the /highest
+precedence/.  You can't, however, pass Python objects that way, so only
+primitive types, such as strings, numbers, boolean values and sequences of
+these types are supported.  
+
+See the examples:
+-----
+  PythonOption dbhost 10.0.0.122
+  PythonOption dbport 5433
+  PythonOption maintenance False
+  PythonOption modules "wiking.biblio, wiking.cms, wiking.bts"
+  PythonOption translation_path /usr/local/wiking-biblio/translations:/usr/local/wiking-bts/translations
+  PythonOption resource_path /usr/local/wiking-biblio/resources
+-----
+
+/Important notes/:
+  * The allowed values for boolean options are 'Yes', 'No', 'True', 'False',
+    'On', 'Off' and are case insensitive.
+  * String values must be enclosed in double quotes if they contain a space.
+  * Sequence values may use a comma or colon to separate the items. Spaces
+    betwen items are allowed, but remember to put quotes around.
+  * =translation_path= defined in Apache config is /appended/ to the path defined
+    by Wiking configuration files (or the default path).
+  * =resource_path= defined in Apache config is /prepended/ to the path defined
+    by Wiking configuration files (or the default path).
+
+
+== Non-Wiking URIs ==
+
+You may wish to redirect certain URIs to ordinary files and directories.
+
+-----
+  Alias /img/ /var/www/mysite/img
+-----
+
+If you put this line prior to the =ScriptAliasMatch= line, all requests
+beginning with =\/img\/= will be served by Apache directly and the request will
+not be passed to Wiking.
 
 
 == Modifying Python Path ==
 
-You may need to modify the path used by Python to search for available modules.
-This may be useful in the following cases:
-
-  * You installed Wiking into a non-standard directory
-  * You want to use a site specific configuration file (see [config] for
-    more information)
-  * You want to add site specific modules
-  * You want to use Wiking API to implement your own application on top of the
-    Wiking development platform (see [devel] for more information)
+You may need to modify the path used by Python to search for available modules
+if your modules are in non-standard directories.  Python path may be specified
+specifically for each virtual host:
 
 -----
-  PythonPath "['/usr/local/myproject/wiking']+sys.path"
+  PythonPath "['/usr/local/myproject/lib] + sys.path"
 -----
-
-
-== Database Connection Options ==
-
-You can pass additional options for database connection:
------
-  PythonOption user www-data
-  PythonOption host 10.0.0.213
------
-
-== Additional options ==
-
-You may wish to redirect certain URIs to ordinary files and directories.  This
-can be simply done within the VirtualHost section.  
-
-Example:
------
-  Alias /img/ /var/www/www.yourdomain.com/img
------
-
-If you put this line prior to the =ScriptAliasMatch= line, Apache will handle all
-requests within the =img= directory by serving the corresponding files.

@@ -86,23 +86,39 @@ class ModPythonHandler(object):
         def split(value):
             separator = value.find(':') != -1 and ':' or ','
             return tuple([d.strip() for d in value.split(separator)])
-        dboptions = {'database': hostname}
-        search_modules = ('wiking.cms',)
+        # Read the configuration file first, so that the Apache options have a higher priority.
+        if options.has_key('config_file'):
+            cfg.user_config_file = options.pop('config_file')
         for name, value in options.items():
             if name == 'translation_path':
                 cfg.translation_path = tuple(cfg.translation_path) + split(value)
             elif name == 'resource_path':
                 cfg.resource_path = split(value) + tuple(cfg.resource_path)
             elif name == 'modules':
-                search_modules = split(value)
-            elif name in ('database', 'user', 'password', 'host', 'port'):
-                dboptions[name] = value
+                cfg.modules = split(value)
+            elif name == 'database':
+                cfg.dbname = value # For backwards compatibility...
             elif hasattr(cfg, name):
-                setattr(cfg, name, value)
+                option = cfg.option(name)
+                if isinstance(option, cfg.StringOption):
+                    setattr(cfg, name, value)
+                elif isinstance(option, cfg.NumericOption):
+                    if value.isdigit():
+                        setattr(cfg, name, value)
+                    else:
+                        log(OPR, "Invalid numeric value for '%s':" % name, value)
+                elif isinstance(option, cfg.BooleanOption):
+                    if value.lower() in ('yes', 'no', 'true', 'false', 'on', 'off'):
+                        setattr(cfg, name, value.lower() in ('yes', 'true', 'on'))
+                    else:
+                        log(OPR, "Invalid boolean value for '%s':" % name, value)
+                else:
+                    log(OPR, "Unable to set '%s' through Apache configuration. "
+                        "PythonOption ignored." % name)
         if cfg.resolver is None:
-            dbconnection = pd.DBConnection(**dboptions)
-            maintenance = options.get('maintenance') in ('true', 'yes')
-            cfg.resolver = WikingResolver(dbconnection, search_modules, maintenance=maintenance)
+            dbconnection = pd.DBConnection(database=cfg.dbname or hostname,
+                                           user=cfg.dbuser, host=cfg.dbhost, port=cfg.dbport)
+            cfg.resolver = WikingResolver(dbconnection, cfg.modules, cfg.maintenance)
         self._application = cfg.resolver.wiking_module('Application')
         self._handler = Handler(hostname)
         self._initialized = True
