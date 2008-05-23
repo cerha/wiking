@@ -65,7 +65,7 @@ precedence/.  You can't, however, pass Python objects that way, so only
 primitive types, such as strings, numbers, boolean values and sequences of
 these types are supported.  
 
-See the examples:
+Examples:
 -----
   PythonOption dbhost 10.0.0.122
   PythonOption dbport 5433
