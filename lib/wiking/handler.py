@@ -20,9 +20,9 @@ from wiking import *
 class Handler(object):
     """Wiking handler.
 
-    The main goal of the handler is to instantiate modules needed by the application and pass
-    requests to these instances (module instances are cached on this level).  Results of request
-    processing by modules is then handled by the handler again, including exception processing.
+    The handler passes the actual request processing to the current application.  Its main job is
+    handling errors during this processing and dealing with its result (typically exporting the
+    document into HTML and sending it to the client).
 
     """
     def __init__(self, hostname):
