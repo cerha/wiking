@@ -506,7 +506,7 @@ class PytisModule(Module, ActionHandler):
         kwargs = dict(values={sbcol: record[bcol].value()})
         if binding.condition():
             kwargs['condition'] = binding.condition()(record)
-        content = self._form(pw.BrowseForm, req,
+        content = self._form(pw.ListView, req,
                              condition=self._condition(req, **kwargs),
                              columns=[c for c in self._view.columns() if c!=sbcol])
         menu = self._action_menu(req, relation={sbcol: record[bcol].value()})

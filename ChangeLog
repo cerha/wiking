@@ -1,5 +1,8 @@
 2008-05-26  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/db.py (PytisModule.related): Allow ListView in
+	related records list.
+
 	* lib/wiking/cms/appl.py (Application._maybe_install): Gather
 	database connection options from configuration.
 
