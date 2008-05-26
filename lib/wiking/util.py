@@ -728,8 +728,52 @@ class Specification(pp.Specification):
                         actions.append(action)
         self.actions = tuple(actions)
         return super(Specification, self).__init__(resolver)
-    
+
+class Binding(object):
+    """Specification of a binding to another module used in module's '_BINDINGS'.
+
+    This class currently replaces the pytis `BindingSpec' since it is not generic enough for usage
+    in the web context.  The module constant '_BINDINGS' defines a sequence of 'Binding' instances.
+    Each of these instances defines a relation to other module's records.  The related records are
+    normally shown in a one record view (below the ShowForm).
+
+    """
+    def __init__(self, title, modname, colname, condition=None):
+        """Arguments:
+
+          title -- title used for the list of related records
+          modname -- name of the related module
+          colname -- the string identifier of the binding column in the related module.  This
+            column must have a codebook specification pointing to the module for which the binding
+            is used.  The related records will be filtered by this column automatically.
+          condition -- function of one argument returning additional condition
+            ('pytis.data.Operator' instance) to filter the list of related records.  The argument
+            will be a 'PresentedRow' instance representing the current row of the module for which
+            the binding is used.
+            
+        """
+        assert isinstance(modname, (str, unicode)), modname
+        assert isinstance(title, (str, unicode)), title
+        assert isinstance(colname, (str, unicode)), colname
+        assert condition is None or callable(condition), condition
+        self._modname = modname
+        self._title = title
+        self._colname = colname
+        self._condition = condition
+
+    def modname(self):
+        return self._modname
         
+    def title(self):
+        return self._title
+        
+    def colname(self):
+        return self._colname
+    
+    def condition(self):
+        return self._condition
+        
+
 class WikingResolver(pytis.util.Resolver):
     """A custom resolver of Wiking modules."""
 

@@ -1,7 +1,14 @@
 2008-05-26  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/util.py (Binding): New class.
+
+	* lib/wiking/cms/cms.py: Use the new support for binding specification.
+
+	* lib/wiking/handler.py (Handler): Docstring updated.
+
 	* lib/wiking/db.py (PytisModule.related): Allow ListView in
 	related records list.
+	(PytisModule): Improved support for binding specification.
 
 	* lib/wiking/cms/appl.py (Application._maybe_install): Gather
 	database connection options from configuration.

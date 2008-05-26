@@ -252,9 +252,11 @@ class CMSModule(PytisModule, RssModule, Panelizable):
             uri = req.uri_prefix() + '/_wmi/'+ self.name()
         else:
             uri = super(CMSModule, self)._base_uri(req)
-            if uri is None:
-                # TODO: This a quick hack. Generic solution would be desirable...
-                uri = '/' + req.path[0]
+            # TODO: The following hack causes unmapped modules to appear as mapped, but what was
+            # the reason for the hack?
+            #if uri is None:
+            #    # TODO: This a quick hack. Generic solution would be desirable...
+            #    uri = '/' + req.path[0]
         return uri
 
     def _form(self, form, req, *args, **kwargs):
@@ -803,7 +805,6 @@ class Pages(CMSModule):
         layout = ('identifier', 'modname', 'parent', 'ord', 'private', 'owner')
         columns = ('title_or_identifier', 'identifier', 'status', 'ord', 'private', 'owner')
         cb = CodebookSpec(display='title_or_identifier', prefer_display=True)
-        bindings = {'Attachments': pp.BindingSpec(_("Attachments"), 'page_id')}
 
     _REFERER = 'identifier'
     _REFERER_PATH_LEVEL = 1
@@ -814,7 +815,7 @@ class Pages(CMSModule):
          _("Duplicate menu order on the this tree level.")),) + \
          CMSModule._EXCEPTION_MATCHERS
     _LIST_BY_LANGUAGE = True
-    _RELATED_MODULES = ('Attachments',)
+    _BINDINGS = (Binding(_("Attachments"), 'Attachments', 'page_id'),)
     _OWNER_COLUMN = 'owner'
     _SUPPLY_OWNER = False
     

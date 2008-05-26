@@ -51,7 +51,7 @@ class PytisModule(Module, ActionHandler):
          _("Empty value.  This field is mandatory.")),
         )
     
-    _RELATED_MODULES = ()
+    _BINDINGS = ()
     
     _INSERT_MSG = _("New record was successfully inserted.")
     _UPDATE_MSG = _("The record was successfully updated.")
@@ -500,16 +500,15 @@ class PytisModule(Module, ActionHandler):
         else:
             return None
         
-    def related(self, req, binding, modname, record):
-        """Return the listing of records related to other module's record."""
-        bcol, sbcol = binding.binding_column(), binding.side_binding_column()
-        kwargs = dict(values={sbcol: record[bcol].value()})
-        if binding.condition():
-            kwargs['condition'] = binding.condition()(record)
+    def related(self, req, modname, colname, record, condition=None):
+        """Return the listing of records related to other module's record by given column."""
+        bcol = self._data.find_column(colname).type().enumerator().value_column()
+        value = record[bcol].value()
         content = self._form(pw.ListView, req,
-                             condition=self._condition(req, **kwargs),
-                             columns=[c for c in self._view.columns() if c!=sbcol])
-        menu = self._action_menu(req, relation={sbcol: record[bcol].value()})
+                             condition=self._condition(req, values={colname: value},
+                                                       condition=condition),
+                             columns=[c for c in self._view.columns() if c!=colname])
+        menu = self._action_menu(req, relation={colname: value})
         if menu:
             content = lcg.Container((content, menu))
         return content
@@ -526,11 +525,16 @@ class PytisModule(Module, ActionHandler):
         content = [self._form(pw.ShowForm, req, row=record.row(),
                               layout=self._layout(req, 'view', record)),
                    self._action_menu(req, record)]
-        for modname in self._RELATED_MODULES:
-            module, binding = self._module(modname), self._bindings[modname]
-            #TODO: Use binding.side_title() instead of binding.title()?
-            content.append(lcg.Section(title=binding.title() or self._view.title(),
-                                       content=module.related(req, binding, self.name(), record)))
+        for binding in self._BINDINGS:
+            module = self._module(binding.modname())
+            fspec = self._view.field(binding.modname())
+            if binding.condition():
+                condition = binding.condition()(record)
+            else:
+                condition = None
+            related = module.related(req, self.name(), binding.colname(), record,
+                                     condition=condition)
+            content.append(lcg.Section(title=binding.title(), content=related))
         return self._document(req, content, record, err=err, msg=msg)
 
     def action_subitem(self, req, record, subpath):
