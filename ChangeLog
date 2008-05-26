@@ -1,3 +1,8 @@
+2008-05-26  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/cms/appl.py (Application._maybe_install): Gather
+	database connection options from configuration.
+
 2008-05-23  Tomas Cerha  <cerha@brailcom.org>
 
 	* doc/src/admin/apache.en.txt: Updated.
