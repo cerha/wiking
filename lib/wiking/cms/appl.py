@@ -151,19 +151,16 @@ class Application(CookieAuthentication, wiking.Application):
                              for x in params.items()]) +
                     '<input type="submit" value="%s">' % label +
                     '</form>')
-        
-        dboptions = dict([(opt, req.option(opt)) for opt in ('user', 'password', 'host', 'port')
-                          if req.option(opt) is not None])
-        dboptions['database'] = dbname = req.option('database', req.server_hostname())
+        dbname = cfg.dbname or req.server_hostname()
         if errstr == 'FATAL:  database "%s" does not exist\n' % dbname:
             if not req.param('createdb'):
                 return 'Database "%s" does not exist.\n' % dbname + \
                        _button("Create", createdb=1)
             else:
                 create = "CREATE DATABASE \"%s\" WITH ENCODING 'UTF8'" % dbname
-                err = self._try_query(dboptions, create, autocommit=True, database='postgres')
+                err = self._try_query('postgres', create, autocommit=True)
                 if err == 'FATAL:  database "postgres" does not exist\n':
-                    err = self._try_query(dboptions, create, database='template1')
+                    err = self._try_query('template1', create)
                 if err is None:
                     return 'Database "%s" created.' % dbname + \
                            _button("Initialize", initdb=1)
@@ -178,7 +175,7 @@ class Application(CookieAuthentication, wiking.Application):
                     return 'Unable to create database: %s' % err
         elif errstr == 'Nen\xed mo\xbeno zjistit typ sloupce':
             if not req.param('initdb'):
-                err = self._try_query(dboptions, "select * from mapping")
+                err = self._try_query(dbname, "select * from mapping")
                 if err:
                     return 'Database "%s" not initialized!' % dbname + \
                            _button("Initialize", initdb=1)
@@ -193,7 +190,7 @@ class Application(CookieAuthentication, wiking.Application):
                                 "Was Wiking installed properly? "
                                 "Try setting-up wiking_dir in %s" %
                                 cfg.config_file)
-                err = self._try_query(dboptions, script)
+                err = self._try_query(dbname, script)
                 if not err:
                     return ("<p>Database initialized. " +
                             _button("Enter Wiking Management Interface", '/_wmi') + "</p>\n"
@@ -202,11 +199,14 @@ class Application(CookieAuthentication, wiking.Application):
                 else:
                     return "Unable to initialize the database: " + err
                 
-    def _try_query(self, dboptions, query, autocommit=False, database=None):
+    def _try_query(self, dbname, query, autocommit=False):
         import psycopg2 as dbapi
         try:
-            if database is not None:
-                dboptions['database'] = database
+            dboptions = dict([(key, value) for key, value in (('database', dbname),
+                                                              ('user', cfg.dbuser),
+                                                              ('host', cfg.dbhost),
+                                                              ('port', cfg.dbport))
+                              if value is not None])
             conn = dbapi.connect(**dboptions)
             try:
                 if autocommit:
