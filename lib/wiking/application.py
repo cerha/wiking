@@ -237,7 +237,6 @@ class Application(Module):
         Arguments:
           req -- current request object
           exception -- exception instance
-          dbconnection -- current database connection specification as 'pd.DBConnection' instance.
 
         The default implementation sends a complete exception information (including Python
         traceback) by email if 'cfg.bug_report_address' has been set up.  If not, the traceback is
