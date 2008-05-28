@@ -436,8 +436,8 @@ class User(object):
 
     """
     
-    def __init__(self, login, uid=None, name=None, roles=(), data=None, passwd_expiration=None,
-                 uri=None):
+    def __init__(self, login, uid=None, name=None, roles=(), email=None, data=None,
+                 passwd_expiration=None, uri=None):
         """Initialize the instance.
 
         Arguments:
@@ -446,6 +446,7 @@ class User(object):
           uid -- user identifier used for ownership determination (see role OWNER)
           name -- visible name as a string (login is used if None)
           roles -- sequence of user roles as 'Roles' constants
+          email -- e-mail address as a string
           data -- application specific data
           passwd_expiration -- password expiration date as a Python 'date' instance or None
           uri -- user's profile URI or None
@@ -461,6 +462,7 @@ class User(object):
         self._uid = uid or login
         self._name = name or login
         self._roles = tuple(roles)
+        self._email = email
         self._data = data
         self._passwd_expiration = passwd_expiration
         self._uri = uri
@@ -480,6 +482,10 @@ class User(object):
     def roles(self):
         """Return valid user's roles as a tuple of 'Roles' constants."""
         return self._roles
+    
+    def email(self):
+        """Return user's e-mail address as a string or None if not defined."""
+        return self._email
     
     def data(self):
         """Return application specific data passed to the constructor."""
