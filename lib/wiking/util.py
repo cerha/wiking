@@ -964,7 +964,7 @@ def rss(title, url, items, descr, lang=None, webmaster=None):
 
 def send_mail(sender, addr, subject, text, html=None, smtp_server=None, lang=None,
               attachment=None, attachment_stream=None, attachment_type='application/octet-stream',
-              cc=()):
+              cc=(), headers=()):
     """Send a MIME e-mail message.
 
     Arguments:
@@ -983,6 +983,10 @@ def send_mail(sender, addr, subject, text, html=None, smtp_server=None, lang=Non
         attachment data from the given stream
       attachment_type -- attachment MIME type as a string
       cc -- sequence of other recipient string addresses
+      headers -- additional headers to insert into the mail; it must be a tuple
+        of pairs (HEADER, VALUE) where HEADER is an ASCII string containing
+        the header name (without the final colon) and value is an ASCII string
+        containing the header value
       
     """
     string_class = type('')
@@ -1010,6 +1014,8 @@ def send_mail(sender, addr, subject, text, html=None, smtp_server=None, lang=Non
         writer.addheader("Cc", string.join(cc, ', '))
     writer.addheader("Subject", email.Header.Header (tr.translate(subject), 'utf-8').encode())
     writer.addheader("Date", time.strftime("%a, %d %b %Y %H:%M:%S %z"))
+    for header, value in headers:
+        writer.addheader(header, value)
     writer.addheader("MIME-Version", "1.0")
     # Start the multipart section (multipart/alternative seems to work better
     # on some MUAs than multipart/mixed).
