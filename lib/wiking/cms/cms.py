@@ -1780,8 +1780,9 @@ class Users(EmbeddableCMSModule):
                 uri = base_uri +'/'+ login
             else:
                 uri = self._application.module_uri('Registration')
-            return User(login, name=record['user'].value(), uid=record['uid'].value(), uri=uri,
-                        roles=self.Spec._ROLE_DICT[record['role'].value()][1], data=record)
+            return User(login, name=record['user'].value(), uid=record['uid'].value(),
+                        uri=uri, email=record['email'].value(), data=record,
+                        roles=self.Spec._ROLE_DICT[record['role'].value()][1])
         else:
             return None
 
