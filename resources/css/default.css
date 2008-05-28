@@ -515,6 +515,10 @@ form.edit-form select, #login, #password {
 form.pytis-form textarea.fullsize {
     width: 100%;
 }
+form.pytis-form.list-view div.summary {
+    margin-top: 1.2em;
+    border-top: 1px solid $color.frame-border;
+}
 /*form.pytis-form .invalid {
     background: $color.error-bg;
 }*/
