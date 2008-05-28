@@ -1,3 +1,8 @@
+2008-05-28  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/request.py (User): New constructor argument and
+	method `email'.
+	
 2008-05-26  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/util.py (Binding): New class.
