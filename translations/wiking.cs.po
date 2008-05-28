@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-03-06 10:10+0100\n"
-"PO-Revision-Date: 2008-03-06 10:12+0100\n"
+"PO-Revision-Date: 2008-05-28 08:38+0200\n"
 "Last-Translator: Tomas Cerha <cerha@brailcom.org>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
 "MIME-Version: 1.0\n"
@@ -57,7 +57,7 @@ msgstr "Prázdná hodnota.  Tato položka je povinná."
 
 #: ../lib/wiking/db.py:56
 msgid "New record was successfully inserted."
-msgstr "Nový záznam byl úspěšně vložen"
+msgstr "Nový záznam byl úspěšně vložen."
 
 #: ../lib/wiking/db.py:57
 msgid "The record was successfully updated."
