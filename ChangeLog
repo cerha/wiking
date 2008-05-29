@@ -1,5 +1,8 @@
 2008-05-29  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/cms/cms.py: Allow content management even if an
+	uninstalled or renamed module is used in page content.
+
 	* lib/wiking/util.py (send_mail): Only encode subject in UTF-8 if it can
 	not be encoded in ASCII.
 

@@ -925,9 +925,14 @@ class Pages(CMSModule):
         actions = super(Pages, self)._actions(req, record)
         if record is not None:
             if record['modname'].value() is not None:
-                module = self._module(record['modname'].value())
-                if isinstance(module, EmbeddableCMSModule):
-                    actions += (Action(module.INSERT_LABEL, 'insert'),)
+                try:
+                    module = self._module(record['modname'].value())
+                except AttributeError:
+                    # We want the CMS to work even if the module was uninstalled or renamed. 
+                    pass
+                else:
+                    if isinstance(module, EmbeddableCMSModule):
+                        actions += (Action(module.INSERT_LABEL, 'insert'),)
             if req.wmi and req.param('action') == 'preview':
                 actions = (Action(_("Back"), 'view'),)
             #(Action(_("View"), 'view'),)
@@ -960,7 +965,13 @@ class Pages(CMSModule):
             mapping_id, identifier = row['mapping_id'].value(), str(row['identifier'].value())
             titles, descriptions = translations[mapping_id]
             if row['modname'].value():
-                submenu = list(self._module(row['modname'].value()).submenu(req))
+                try:
+                    module = self._module(row['modname'].value())
+                except AttributeError:
+                    # We want the CMS to work even if the module was uninstalled or renamed. 
+                    submenu = []
+                else:
+                    submenu = list(module.submenu(req))
             else:
                 submenu = []
             return MenuItem(identifier,
