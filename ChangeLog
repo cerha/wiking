@@ -1,4 +1,14 @@
+2008-05-29  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/util.py (send_mail): Only encode subject in UTF-8 if it can
+	not be encoded in ASCII.
+
+	* lib/wiking/application.py (Application.handle_exception): Log
+	the traceback if sending bug-report by e-mail fails.
+
 2008-05-28  Tomas Cerha  <cerha@brailcom.org>
+
+	* resources/css/default.css: Minor improvement.
 
 	* lib/wiking/request.py (User): New constructor argument and
 	method `email'.

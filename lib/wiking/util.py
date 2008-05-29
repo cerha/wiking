@@ -962,9 +962,9 @@ def rss(title, url, items, descr, lang=None, webmaster=None):
     </item>''' for title, url, descr, date, author in items])
     return result
 
-def send_mail(sender, addr, subject, text, html=None, smtp_server=None, lang=None,
+def send_mail(sender, addr, subject, text, html=None, smtp_server=None, lang=None, cc=(),
               attachment=None, attachment_stream=None, attachment_type='application/octet-stream',
-              cc=(), headers=()):
+              headers=()):
     """Send a MIME e-mail message.
 
     Arguments:
@@ -976,13 +976,14 @@ def send_mail(sender, addr, subject, text, html=None, smtp_server=None, lang=Non
       html -- HTML part of the message as string or unicode
       smtp_server -- SMTP server name to use for sending the message as a
         string; if 'None', server given in configuration is used
-      lang -- ISO language code as a string
+      lang -- ISO language code as a string; if not None, message 'subject', 'text' and 'html' will
+         be translated into given language (if they are LCG translatable strings)
+      cc -- sequence of other recipient string addresses
       attachment -- name of the file to attach; if it is 'None', there is no
         attachment
       attachment_stream -- if not 'None' and 'attachment' is not 'None', read
         attachment data from the given stream
       attachment_type -- attachment MIME type as a string
-      cc -- sequence of other recipient string addresses
       headers -- additional headers to insert into the mail; it must be a tuple
         of pairs (HEADER, VALUE) where HEADER is an ASCII string containing
         the header name (without the final colon) and value is an ASCII string
@@ -997,10 +998,10 @@ def send_mail(sender, addr, subject, text, html=None, smtp_server=None, lang=Non
     assert html is None or isinstance(html, basestring), ('type error', html,)
     assert smtp_server is None or isinstance(smtp_server, basestring), ('type error', smtp_server,)
     assert lang is None or isinstance(lang, basestring), ('type error', lang,)
+    assert isinstance(cc, (tuple, list,)), ('type error', cc,)
     assert attachment is None or isinstance(attachment, basestring), ('type error', attachment,)
     assert attachment_stream is None or isinstance(attachment_stream, file), ('type error', attachment_stream,)
     assert isinstance(attachment_type, basestring), ('type error', attachment_type,)
-    assert isinstance(cc, (tuple, list,)), ('type error', cc,)
     import MimeWriter
     import mimetools
     from cStringIO import StringIO
@@ -1012,7 +1013,12 @@ def send_mail(sender, addr, subject, text, html=None, smtp_server=None, lang=Non
     writer.addheader("To", addr)
     if cc:
         writer.addheader("Cc", string.join(cc, ', '))
-    writer.addheader("Subject", email.Header.Header (tr.translate(subject), 'utf-8').encode())
+    translated_subject = tr.translate(subject)
+    try:
+        encoded_subject = translated_subject.encode('ascii')
+    except UnicodeEncodeError:
+        encoded_subject = email.Header.Header(translated_subject, 'utf-8').encode()
+    writer.addheader("Subject", encoded_subject)
     writer.addheader("Date", time.strftime("%a, %d %b %Y %H:%M:%S %z"))
     for header, value in headers:
         writer.addheader(header, value)
