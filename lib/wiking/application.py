@@ -269,12 +269,16 @@ class Application(Module):
                     tb = tb.tb_next
                 filename = os.path.split(tb.tb_frame.f_code.co_filename)[-1]
                 buginfo = "%s at %s line %d" % (einfo[0].__name__, filename, tb.tb_lineno)
-                send_mail('wiking@' + req.server_hostname(), cfg.bug_report_address,
-                          'Wiking Error: ' + buginfo,
-                          text + "\n\n" + cgitb.text(einfo),
-                          "<html><pre>"+ text +"</pre>"+ cgitb.html(einfo) +"</html>")
-                log(OPR, message)
-                log(OPR, "Traceback sent to:", cfg.bug_report_address)
+                err = send_mail('wiking@' + req.server_hostname(), cfg.bug_report_address,
+                                'Wiking Error: ' + buginfo,
+                                text + "\n\n" + cgitb.text(einfo),
+                                "<html><pre>"+ text +"</pre>"+ cgitb.html(einfo) +"</html>")
+                if err:
+                    log(OPR, "Failed sending traceback by email:", (cfg.bug_report_address, err))
+                    log(OPR, "Error:", cgitb.text(einfo))
+                else:
+                    log(OPR, message)
+                    log(OPR, "Traceback sent to:", cfg.bug_report_address)
             else:
                 log(OPR, "Error:", cgitb.text(einfo))
         except Exception, e:
