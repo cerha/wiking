@@ -53,6 +53,9 @@ class PytisModule(Module, ActionHandler):
     
     _BINDINGS = ()
     
+    _INSERT_SUBTITLE = _("New Record")
+    _UPDATE_SUBTITLE = _("Edit Form")
+    _DELETE_SUBTITLE = _("Remove")
     _INSERT_MSG = _("New record was successfully inserted.")
     _UPDATE_MSG = _("The record was successfully updated.")
     _DELETE_MSG = _("The record was deleted.")
@@ -120,7 +123,6 @@ class PytisModule(Module, ActionHandler):
         spec = self._spec(resolver)
         self._data = spec.data_spec().create(connection_data=dbconnection)
         self._view = spec.view_spec()
-        self._bindings = spec.binding_spec()
         self._key = key = self._data.key()[0].id()
         self._sorting = self._view.sorting()
         if self._sorting is None:
@@ -565,7 +567,7 @@ class PytisModule(Module, ActionHandler):
         # same would apply for action_edit.
         form = self._form(pw.EditForm, req, row=None, new=True, action='insert',
                           layout=layout, prefill=self._prefill(req, new=True), errors=errors)
-        return self._document(req, form, subtitle=_("New record"))
+        return self._document(req, form, subtitle=self._insert_subtitle(req))
             
     def action_update(self, req, record, action='update', msg=None):
         layout = self._layout(req, action, record)
@@ -584,8 +586,7 @@ class PytisModule(Module, ActionHandler):
         form = self._form(pw.EditForm, req, row=record.row(), action=action, layout=layout,
                           submit=self._SUBMIT_BUTTONS.get(action),
                           prefill=self._prefill(req), errors=errors)
-        a = [a for a in self._actions(req, record) if a.name() == action]
-        subtitle = a and a[0].title() or _("edit form")
+        subtitle = self._update_subtitle(req, record, action)
         return self._document(req, form, record, subtitle=subtitle, msg=msg)
 
     def action_delete(self, req, record):
@@ -599,25 +600,40 @@ class PytisModule(Module, ActionHandler):
                 return self._redirect_after_delete(req, record)
         form = self._form(pw.ShowForm, req, row=record.row())
         actions = self._action_menu(req, record, (Action(_("Remove"), 'delete', submit=1),))
-        return self._document(req, (form, actions), record, err=err, subtitle=_("Remove"),
+        subtitle = self._delete_subtitle(req, record)
+        return self._document(req, (form, actions), record, err=err, subtitle=subtitle,
                               msg=_("Please, confirm removing the record permanently."))
         
+    def _insert_subtitle(self, req):
+        return self._INSERT_SUBTITLE
+        
+    def _update_subtitle(self, req, record, action):
+        for a in self._actions(req, record):
+            if a.name() == action:
+                return a.title()
+        return self._UPDATE_SUBTITLE
+        
+    def _delete_subtitle(self, req, record):
+        return self._DELETE_SUBTITLE
+    
     # ===== Request redirection after successful data operations =====
 
-    def _update_msg(self, record):
-        return self._UPDATE_MSG
-        
     def _insert_msg(self, record):
         return self._INSERT_MSG
+        
+    def _update_msg(self, record):
+        return self._UPDATE_MSG
         
     def _delete_msg(self, record):
         return self._DELETE_MSG
     
-    def _redirect_after_update(self, req, record):
-        return self.action_view(req, record, msg=self._update_msg(record))
-        
+    # ===== Request redirection after successful data operations =====
+
     def _redirect_after_insert(self, req, record):
         return self.action_list(req, msg=self._insert_msg(record))
+        
+    def _redirect_after_update(self, req, record):
+        return self.action_view(req, record, msg=self._update_msg(record))
         
     def _redirect_after_delete(self, req, record):
         return self.action_list(req, msg=self._delete_msg(record))

@@ -1,3 +1,8 @@
+2008-05-30  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/db.py: Allow overriding default subtitles for
+	insert/update/delete operations.
+
 2008-05-29  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/cms/cms.py: Allow content management even if an
