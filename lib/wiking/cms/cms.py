@@ -1832,6 +1832,157 @@ class Users(EmbeddableCMSModule):
 #     WMI_ORDER = 200
         
 
+class TextLabels(PytisModule):
+    """Internal module for managing identifiers of the texts accessed through the 'Text' module.
+    """
+    
+    class Spec(Specification):
+        
+        _ID_COLUMN = 'label'
+
+        table = 'text_labels'
+        
+        def fields(self): return (
+            Field(self._ID_COLUMN),
+            )
+
+    def register_label(self, label):
+        """Register text identified by 'label'.
+
+        This ensures 'label' is present in the database and thus it can be
+        accessed and managed in CMS.
+
+        Arguments:
+
+          label -- text identifier as a string
+
+        """
+        data = self._data
+        if not data.get_row(label=label):
+            label_value = pytis.data.Value(pytis.data.String(), label)
+            row = pytis.data.Row((('label', label_value,),))
+            data.insert(row)
+
+    
+class Texts(CMSModule):
+    """Storage of various texts editable by administrators.
+
+    The texts are LCG structured texts.  These texts are language dependent.
+
+    Each of the texts is identified by a unique identifier.  To avoid naming
+    conflicts between various Wiking extensions the identifiers are of the form
+    NAMESPACE.ID where NAMESPACE is an identifier of the extension name space
+    and ID is the particular text id within the name space.  It is recommended
+    to limit both NAMESPACE and ID characters to English letters, digits and
+    dashes.
+
+    Particular texts are defined by applications through the 'register_text'
+    method.  Unregistered texts cannot be used and accessed.  Administrators
+    may change registered texts in CMS, but they can't delete them nor to
+    insert new texts (except for translations of existing texts).
+
+    Wiking modules can access the texts by using the 'text' method.
+
+    """
+
+    class Spec(Specification):
+
+        _texts = {}
+
+        # This must be a private method, otherwise Wiking handles it in a special way
+        @classmethod
+        def _register_text(class_, label, description, module):
+            texts = class_._texts
+            if not texts.has_key(label):
+                texts[label] = description
+                module._module('TextLabels').register_label(label)
+        
+        _ID_COLUMN = 'text_id'
+
+        table = 'texts'
+        title = _("Texts")
+        help = _("Edit miscellaneous texts used in pages.")
+        
+        def fields(self): return (
+            Field(self._ID_COLUMN, editable=NEVER),
+            Field('label', _("Label"), width=32, editable=NEVER),
+            Field('lang', editable=NEVER),
+            Field('descr', _("Purpose"), type=pytis.data.String(), width=64, editable=NEVER, virtual=True,
+                  computer=Computer(self._description, depends=('label',))),
+            Field('content', _("Text"), width=80, height=10,
+                  descr=_("Edit the given text as needed, in accordance with structured text rules.")),
+            )
+        
+        columns = ('text_id', 'descr',)
+        sorting = (('text_id', ASC,),)
+        layout = ('text_id', 'descr', 'content',)
+
+        def _description(self, row):
+            return self._texts[row['label'].value()]
+            
+    _LIST_BY_LANGUAGE = True
+    RIGHTS_insert = ()
+    RIGHTS_update = (Roles.ADMIN,)
+    RIGHTS_delete = ()
+    WMI_SECTION = WikingManagementInterface.SECTION_CONTENT
+    WMI_ORDER = 900
+
+    def _text_identifier(self, namespace, label, lang=None):
+        identifier = '%s.%s' % (namespace, label,)
+        if lang is not None:
+            identifier = '%s@%s' % (identifier, lang,)
+        return identifier
+    
+    def text(self, namespace, label, lang='en'):
+        """Return text identified by 'namespace' and 'label'.
+
+        If there is no such text, return 'None'.
+
+        Arguments:
+
+          namespace -- string identifying Wiking extension name space
+          label -- string identifying the text within the name space
+          lang -- two-character string identifying the language of the text
+
+        If there is no text available for the given 'lang', the same text is
+        search for language 'en'.  If no text is available even for 'en'
+        language, 'None' is returned.
+          
+        """
+        assert isinstance(namespace, str)
+        assert isinstance(label, str)
+        assert isinstance(lang, str)
+        identifier = self._text_identifier(namespace, label, lang=lang)
+        row = self._data.get_row(text_id=identifier)
+        if row is None and lang != 'en':
+            identifier = self._text_identifier(namespace, label, lang='en')
+            row = self._data.get_row(text_id=identifier)
+        if row is None:
+            return None
+        text = row['content'].value()
+        return text
+
+    def register_text(self, namespace, label, description):
+        """Register text with given 'label'.
+
+        All texts must be registered using this module method before their
+        first use.
+
+        Arguments:
+
+          namespace -- string identifying Wiking extension name space
+          label -- identifier of the text as a string
+          description -- human description of the purpose of the text as a
+            string or unicode
+          
+        """
+        assert isinstance(namespace, str)
+        assert isinstance(label, str)
+        assert isinstance(description, basestring)
+        identifier = self._text_identifier(namespace, label)
+        self.Spec._register_text(identifier, description, self)
+    
+    
 class Certificates(CMSModule):
     """Base class of classes handling various kinds of certificates."""
 
