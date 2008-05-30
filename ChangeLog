@@ -1,5 +1,9 @@
 2008-05-30  Tomas Cerha  <cerha@brailcom.org>
 
+	* translations/wiking-cms.cs.po: Updated.
+
+	* translations/wiking.cs.po: Updated.
+
 	* lib/wiking/db.py: Allow overriding default subtitles for
 	insert/update/delete operations.
 
