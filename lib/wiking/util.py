@@ -738,7 +738,7 @@ class Binding(object):
     normally shown in a one record view (below the ShowForm).
 
     """
-    def __init__(self, title, modname, colname, condition=None):
+    def __init__(self, title, modname, colname, condition=None, form=None):
         """Arguments:
 
           title -- title used for the list of related records
@@ -750,16 +750,20 @@ class Binding(object):
             ('pytis.data.Operator' instance) to filter the list of related records.  The argument
             will be a 'PresentedRow' instance representing the current row of the module for which
             the binding is used.
+          form -- the form class or none for the default form.  If used, must be a class derived
+            from 'pytis.web.BrowseForm'.
             
         """
         assert isinstance(modname, (str, unicode)), modname
         assert isinstance(title, (str, unicode)), title
         assert isinstance(colname, (str, unicode)), colname
         assert condition is None or callable(condition), condition
+        assert form is None or issubclass(form, pytis.web.BrowseForm), form
         self._modname = modname
         self._title = title
         self._colname = colname
         self._condition = condition
+        self._form = form
 
     def modname(self):
         return self._modname
@@ -772,6 +776,9 @@ class Binding(object):
     
     def condition(self):
         return self._condition
+        
+    def form(self):
+        return self._form
         
 
 class WikingResolver(pytis.util.Resolver):

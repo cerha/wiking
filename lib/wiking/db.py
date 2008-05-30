@@ -502,13 +502,18 @@ class PytisModule(Module, ActionHandler):
         else:
             return None
         
-    def related(self, req, modname, colname, record, condition=None):
+    def related(self, req, modname, binding, record):
         """Return the listing of records related to other module's record by given column."""
+        colname = binding.colname()
+        if binding.condition():
+            condition = binding.condition()(record)
+        else:
+            condition = None
         bcol = self._data.find_column(colname).type().enumerator().value_column()
         value = record[bcol].value()
-        content = self._form(pw.ListView, req,
-                             condition=self._condition(req, values={colname: value},
-                                                       condition=condition),
+        form = binding.form() or pw.ListView
+        content = self._form(form, req, condition=self._condition(req, values={colname: value},
+                                                                  condition=condition),
                              columns=[c for c in self._view.columns() if c!=colname])
         menu = self._action_menu(req, relation={colname: value})
         if menu:
@@ -529,13 +534,7 @@ class PytisModule(Module, ActionHandler):
                    self._action_menu(req, record)]
         for binding in self._BINDINGS:
             module = self._module(binding.modname())
-            fspec = self._view.field(binding.modname())
-            if binding.condition():
-                condition = binding.condition()(record)
-            else:
-                condition = None
-            related = module.related(req, self.name(), binding.colname(), record,
-                                     condition=condition)
+            related = module.related(req, self.name(), binding, record)
             content.append(lcg.Section(title=binding.title(), content=related))
         return self._document(req, content, record, err=err, msg=msg)
 

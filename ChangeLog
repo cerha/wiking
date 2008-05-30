@@ -1,5 +1,7 @@
 2008-05-30  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/util.py: Allow form type specification in bindings.
+
 	* lib/wiking/cms/cms.py: Attachment management outside WMI fixed.
 	Improved page show layout and labels.
 
@@ -8,7 +10,8 @@
 	* translations/wiking.cs.po: Updated.
 
 	* lib/wiking/db.py: Allow overriding default subtitles for
-	insert/update/delete operations.
+	insert/update/delete operations.  Respect binding form
+	specification.
 
 2008-05-29  Tomas Cerha  <cerha@brailcom.org>
 
