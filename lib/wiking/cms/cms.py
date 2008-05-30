@@ -820,12 +820,14 @@ class Pages(CMSModule):
     _SUPPLY_OWNER = False
     
     _LAYOUT = {'edit': ('title', 'description', '_content'),
-               'view': (HGroup(FieldSet(_("Options for current language"),
-                                        ('title', 'description', 'published', 'status')),
-                               FieldSet(_("Global Options"),
-                                        ('identifier', 'modname', 'parent', 'ord', 'private',
-                                         'owner'))),
-                        '_content',)}
+               'view': (FieldSet(_("Page Text (for the current language)"),
+                                 ('title', 'description', 'status', '_content')),
+                        FieldSet(_("Global Options"), (('identifier', 'modname'),
+                                                       ('parent', 'ord'),
+                                                       ('private', 'owner')),
+                                 horizontal=True)),
+               }
+    
     _SUBMIT_BUTTONS = {'edit': ((_("Save"), None), (_("Save and publish"), 'commit'))}
     _INSERT_MSG = _("New page was successfully created. The page is currently not published. "
                     "Edit the page text to create the actual content in the current language "
