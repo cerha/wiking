@@ -1,5 +1,8 @@
 2008-05-30  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/cms/cms.py: Attachment management outside WMI fixed.
+	Improved page show layout and labels.
+
 	* translations/wiking-cms.cs.po: Updated.
 
 	* translations/wiking.cs.po: Updated.

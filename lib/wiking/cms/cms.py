@@ -187,7 +187,7 @@ class Registration(Module, ActionHandler):
                     '   '+_("Login name") +': '+ record['login'].value(),
                     '   '+_("Password") +': '+ record['password'].value(), '',
                     _("We strongly recommend you change your password at nearest occassion, "
-                      "since it has been exposed to an unsecure channel."), separator='\n')
+                      "since it has been exposed to an unsecure channel."), separator='\n') +"\n"
                 err = send_mail('wiking@' + req.server_hostname(), record['email'].value(),
                                 title, text, lang=req.prefered_language())
                 if err:
@@ -252,11 +252,6 @@ class CMSModule(PytisModule, RssModule, Panelizable):
             uri = req.uri_prefix() + '/_wmi/'+ self.name()
         else:
             uri = super(CMSModule, self)._base_uri(req)
-            # TODO: The following hack causes unmapped modules to appear as mapped, but what was
-            # the reason for the hack?
-            #if uri is None:
-            #    # TODO: This a quick hack. Generic solution would be desirable...
-            #    uri = '/' + req.path[0]
         return uri
 
     def _form(self, form, req, *args, **kwargs):
@@ -833,8 +828,10 @@ class Pages(CMSModule):
                     "Edit the page text to create the actual content in the current language "
                     "and publish the page when you are done.")
     _DEFAULT_ACTIONS_FIRST = (
-        Action(_("Edit Text"), 'edit', descr=_("Edit page text, title and description")),
-        Action(_("Options"), 'update', descr=_("Edit global page options and menu position")),
+        Action(_("Edit Text"), 'edit',
+               descr=_("Edit title, description and content for the current language")),
+        Action(_("Options"), 'update',
+               descr=_("Edit global (language independent) page options and menu position")),
         )
     _ACTIONS = (
         Action(_("Publish"), 'commit', descr=_("Publish the page in its current state"),
@@ -1070,8 +1067,7 @@ class Pages(CMSModule):
             raise NotFound()
         
     def action_attachments(self, req, record, err=None, msg=None):
-        binding = self._bindings['Attachments']
-        content = self._module('Attachments').related(req, binding, self.name(), record)
+        content = self._module('Attachments').related(req, self.name(), self._BINDINGS[0], record)
         return self._document(req, content, record, subtitle=_("Attachments"), err=err, msg=msg)
     RIGHTS_attachments = (Roles.AUTHOR, Roles.OWNER)
         
@@ -1254,6 +1250,14 @@ class Attachments(StoredFileModule, CMSModule):
             return 'list'
         else:
             return 'download'
+        
+    def _base_uri(self, req):
+        uri = super(Attachments, self)._base_uri(req)
+        if uri is None and not req.wmi:
+            # This hack makes the action menu work when displayed within the page 'attachments'
+            # action or within any action invoked from within this action.
+            uri = '/' + req.path[0]
+        return uri
         
     def _link_provider(self, req, row, cid, **kwargs):
         if cid is None or cid == 'file':
@@ -1739,7 +1743,7 @@ class Users(EmbeddableCMSModule):
             text = _("New user %(fullname)s registered at %(server_hostname)s. "
                      "Please approve the account: %(uri)s",
                      fullname=record['fullname'].value(), server_hostname=req.server_hostname(),
-                     uri=req.server_uri() + base_uri +'/'+ record['login'].value())
+                     uri=req.server_uri() + base_uri +'/'+ record['login'].value()) + "\n"
             # TODO: The admin email is translated to users language.  It would be more approppriate
             # to subscribe admin messages from admin accounts and set the language for each admin.
             err = send_mail('wiking@' + req.server_hostname(), addr,
@@ -1756,7 +1760,7 @@ class Users(EmbeddableCMSModule):
             msg = _("The account was enabled.")
             text = _("Your account at %(uri)s has been enabled. "
                      "Please log in with username '%(login)s' and your password.",
-                     uri=req.server_uri(), login=record['login'].value())
+                     uri=req.server_uri(), login=record['login'].value()) + "\n"
             err = send_mail('wiking@' + req.server_hostname(), record['email'].value(),
                             _("Your account has been ebabled."),
                             text, lang=record['lang'].value())
