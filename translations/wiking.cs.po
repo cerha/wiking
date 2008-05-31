@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-05-30 16:06+0200\n"
+"POT-Creation-Date: 2008-05-31 10:15+0200\n"
 "PO-Revision-Date: 2008-05-30 16:14+0200\n"
 "Last-Translator: Tomas Cerha <cerha@brailcom.org>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
@@ -214,6 +214,52 @@ msgstr "Tato stránka může být používána v LIBOVOLNÉM prohlížeči."
 msgid "Contact:"
 msgstr "Kontakt:"
 
+#: ../lib/wiking/modules.py:375
+msgid "Enter your login name, please!"
+msgstr "Zadejte, prosím, vaše uživatelské jméno!"
+
+#: ../lib/wiking/modules.py:377
+msgid "Enter your password, please!"
+msgstr "Zadejte, prosím, vaše heslo!"
+
+#: ../lib/wiking/modules.py:381
+msgid "Invalid login!"
+msgstr "Neplatné přihlášení!"
+
+#: ../lib/wiking/modules.py:441
+msgid "Searching"
+msgstr "Vyhledávání"
+
+#: ../lib/wiking/modules.py:442
+msgid "Search results"
+msgstr "Výsledky vyhledávání"
+
+#: ../lib/wiking/modules.py:443
+msgid "Given search term doesn't contain any searchable term."
+msgstr ""
+"Zadaný vyhledávací výraz neobsahuje nic, podle čeho by bylo možno vyhledání "
+"provést."
+
+#: ../lib/wiking/modules.py:447
+msgid "Search words:"
+msgstr "Vyhledat slova:"
+
+#: ../lib/wiking/modules.py:448
+msgid "Search"
+msgstr "Vyhledat"
+
+#: ../lib/wiking/modules.py:504
+msgid "Nothing found."
+msgstr "Nic nebylo nalezeno."
+
+#: ../lib/wiking/modules.py:561
+msgid "The following modules were successfully reloaded:"
+msgstr "Následující moduly byly úspěšně načteny znovu:"
+
+#: ../lib/wiking/modules.py:563
+msgid "Reload"
+msgstr "Načíst znovu"
+
 #: ../lib/wiking/util.py:55
 msgid "Authentication required"
 msgstr "Akce vyžaduje přihlášení"
@@ -348,52 +394,6 @@ msgstr "přihlásit"
 #: ../lib/wiking/util.py:622
 msgid "Forgot your password?"
 msgstr "Zapomenuté heslo?"
-
-#: ../lib/wiking/modules.py:375
-msgid "Enter your login name, please!"
-msgstr "Zadejte, prosím, vaše uživatelské jméno!"
-
-#: ../lib/wiking/modules.py:377
-msgid "Enter your password, please!"
-msgstr "Zadejte, prosím, vaše heslo!"
-
-#: ../lib/wiking/modules.py:381
-msgid "Invalid login!"
-msgstr "Neplatné přihlášení!"
-
-#: ../lib/wiking/modules.py:441
-msgid "Searching"
-msgstr "Vyhledávání"
-
-#: ../lib/wiking/modules.py:442
-msgid "Search results"
-msgstr "Výsledky vyhledávání"
-
-#: ../lib/wiking/modules.py:443
-msgid "Given search term doesn't contain any searchable term."
-msgstr ""
-"Zadaný vyhledávací výraz neobsahuje nic, podle čeho by bylo možno vyhledání "
-"provést."
-
-#: ../lib/wiking/modules.py:447
-msgid "Search words:"
-msgstr "Vyhledat slova:"
-
-#: ../lib/wiking/modules.py:448
-msgid "Search"
-msgstr "Vyhledat"
-
-#: ../lib/wiking/modules.py:504
-msgid "Nothing found."
-msgstr "Nic nebylo nalezeno."
-
-#: ../lib/wiking/modules.py:561
-msgid "The following modules were successfully reloaded:"
-msgstr "Následující moduly byly úspěšně načteny znovu:"
-
-#: ../lib/wiking/modules.py:563
-msgid "Reload"
-msgstr "Načíst znovu"
 
 #~ msgid "List"
 #~ msgstr "Seznam"
