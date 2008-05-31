@@ -23,3 +23,8 @@ include $(domains:%=%.d)
 
 %.pot:
 	xgettext $^ -o $@
+
+clean:
+	rm -f *.d *.pot
+
+.PHONY: all clean
