@@ -1918,7 +1918,7 @@ class Texts(CMSModule):
         layout = ('text_id', 'descr', 'content',)
 
         def _description(self, row):
-            return self._texts[row['label'].value()]
+            return self._texts.get(row['label'].value(), "")
             
     _LIST_BY_LANGUAGE = True
     RIGHTS_insert = ()
