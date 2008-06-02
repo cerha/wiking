@@ -1963,7 +1963,7 @@ class Texts(CMSModule):
         return text
 
     def parsed_text(self, namespace, label, lang='en'):
-        """Return parsed text identified by 'namespace' and label.
+        """Return parsed text identified by 'namespace' and 'label'.
 
         This method is the same as 'text' but instead of returning LCG
         structured text, it returns its parsed form, as a sequence of
@@ -1997,8 +1997,87 @@ class Texts(CMSModule):
         assert isinstance(description, basestring)
         identifier = self._text_identifier(namespace, label)
         self.Spec._register_text(identifier, description, self)
+
+
+class TextReferrer(object):
+    """Class of modules using 'Text' module.
+
+    This class simplifies registration and retrieval of texts stored in 'Text'
+    module.  It is intended to be inherited as an additional class into Wiking
+    modules using multiple inheritance.
+
+    In order to perform automatic registration, you must do the following:
+
+      - Define text namespace in '_TEXTS_NAMESPACE' attribute, as a string.
+
+      - Define texts to register in '_TEXTS' attribute.  It is a tuple
+        containing entries of the form (LABEL, DESCRIPTION,) where LABEL is a
+        string label of the text (without the name space identifier) and
+        DESCRIPTION is a unicode describing the purpose of the text.
+
+    Additionaly the class defines convenience methods 'text' and 'parsed_text'
+    to simplify retrieving registered texts.
+
+    """
     
-    
+    _TEXTS_NAMESPACE = ''
+    _TEXTS = ()
+
+    def __init__(self, *args, **kwargs):
+        super(TextReferrer, self).__init__(*args, **kwargs)
+        self._register_texts()
+
+    def _register_texts(self):
+        # Check text specification
+        assert isinstance(self._TEXTS_NAMESPACE, str)
+        assert self._TEXTS_NAMESPACE, "Name space of registered texts may not be empty"
+        assert isinstance(self._TEXTS, tuple)
+        if __debug__:
+            for definition in self._TEXTS:
+                assert isinstance(definition, tuple)
+                try:
+                    label, description = definition
+                except ValueError:
+                    raise AssertionError("Invalid _TEXTS entry", definition)
+                assert isinstance(label, str), ("Invalid text label in _TEXTS", label,)
+                assert isinstance(description, basestring), ("Invalid text description in _TEXTS", description,)
+        # Perform registration
+        text_module = self._module('Texts')
+        namespace = self._TEXTS_NAMESPACE
+        for label, description in self._TEXTS:
+            text_module.register_text(namespace, label, description)
+
+    def text(self, label, lang='en', _method=Texts.text):
+        """Return text identified by 'label'.
+
+        If there is no such text, return 'None'.
+
+        Arguments:
+
+          label -- string identifying the text within the name space defined in
+            the class
+          lang -- two-character string identifying the language of the text
+
+        Looking texts for a particular language is performed according the
+        rules documented in 'Text.text'.
+          
+        """
+        assert label in [t[0] for t in self._TEXTS], ("Unregistered text referred", label,)
+        assert isinstance(lang, str)
+        return _method(self._module('Texts'), self._TEXTS_NAMESPACE, label, lang=lang)
+
+    def parsed_text(self, label, lang='en'):
+        """Return parsed text identified by 'label'.
+
+        This method is the same as 'text' but instead of returning LCG
+        structured text, it returns its parsed form, as a sequence of
+        'lcg.Content' instances.  If the given text doesn't exist, an empty
+        sequence is returned.
+        
+        """
+        return self.text(label, lang=lang, _method=Texts.parsed_text)
+
+        
 class Certificates(CMSModule):
     """Base class of classes handling various kinds of certificates."""
 
