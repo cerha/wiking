@@ -1753,7 +1753,7 @@ class Users(EmbeddableCMSModule):
                 err = _("Failed sending e-mail notification:") +' '+ err
             else:
                 msg = _("E-mail notification has been sent to server administrator.")
-        return self._document(req, content, subtitle=_("Registration"), msg=msg, err=err)
+        return self._document(req, content, subtitle=None, msg=msg, err=err)
 
     def _redirect_after_update(self, req, record):
         if record.original_row()['role'].value() == 'none' and record['role'].value() != 'none':
