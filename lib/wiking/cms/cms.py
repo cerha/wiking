@@ -1962,6 +1962,22 @@ class Texts(CMSModule):
         text = row['content'].value()
         return text
 
+    def parsed_text(self, namespace, label, lang='en'):
+        """Return parsed text identified by 'namespace' and label.
+
+        This method is the same as 'text' but instead of returning LCG
+        structured text, it returns its parsed form, as a sequence of
+        'lcg.Content' instances.  If the given text doesn't exist, an empty
+        sequence is returned.
+        
+        """
+        text = self.text(namespace, label, lang=lang)
+        if text:
+            sections = lcg.Parser().parse(text)
+        else:
+            sections = ()
+        return sections
+
     def register_text(self, namespace, label, description):
         """Register text with given 'label'.
 
