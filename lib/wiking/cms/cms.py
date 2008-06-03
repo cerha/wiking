@@ -1732,10 +1732,14 @@ class Users(EmbeddableCMSModule):
         if record and record['role'].value() == 'none':
             actions.insert(0, Action(_("Enable"), 'enable', descr=_("Enable this account")))
         return actions
-        
-    def _redirect_after_insert(self, req, record):
+
+    def _registration_success_content(self, req, record):
         content = lcg.p(_("Registration completed successfuly. "
                           "Your account now awaits administrator's approval."))
+        return content
+    
+    def _redirect_after_insert(self, req, record):
+        content = self._registration_success_content(req, record)
         msg, err = None, None
         addr = cfg.webmaster_addr or cfg.bug_report_address
         if addr:
