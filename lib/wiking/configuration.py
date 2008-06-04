@@ -132,11 +132,22 @@ class Configuration(pc):
         _DOC = ("Webmaster's address is used as public contact address for the site. It is "
                 "displayed at the bottom of each page, in error messages, RSS feeds and so on. "
                 "If no address is given, it will be automatically set to 'webmaster@DOMAIN', "
-                "where DOMAIN the domain part of the server hostname if the hostname starts "
+                "where DOMAIN is the domain part of the server hostname if the hostname starts "
                 "with 'www.' or the whole server hostname in other cases.  Please make sure "
                 "that this address is valid (e-mail sent to it is delivered to a responsible "
                 "person).")
         _DEFAULT = None
+
+    class _Option_default_sender_address(pc.StringOption):
+        _DESCR = "Default sender address"
+        _DOC = ("Wiking will use given e-mail addres in the From field of e-mail messages "
+                "it sends (such as automatic notifications, bug-reports etc). "
+                "If no address is given, it will be automatically set to 'wiking@DOMAIN', "
+                "where DOMAIN is the domain part of the server hostname if the hostname starts "
+                "with 'www.' or the whole server hostname in other cases.  Please make sure "
+                "that this address is valid (e-mail sent to it is delivered to a responsible "
+                "person).")
+        _DEFAULT = None        
         
     class _Option_https_port(pc.NumericOption):
         _DESCR = "HTTPS port number"

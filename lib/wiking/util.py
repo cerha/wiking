@@ -969,52 +969,55 @@ def rss(title, url, items, descr, lang=None, webmaster=None):
     </item>''' for title, url, descr, date, author in items])
     return result
 
-def send_mail(sender, addr, subject, text, html=None, smtp_server=None, lang=None, cc=(),
+def send_mail(sender, addr, subject, text, sender=None, html=None, lang=None, cc=(), headers=(),
               attachment=None, attachment_stream=None, attachment_type='application/octet-stream',
-              headers=()):
+              smtp_server=None):
     """Send a MIME e-mail message.
 
     Arguments:
 
-      sender -- sender address as a string
       addr -- recipient address as a string
       subject -- message subject as a string or unicode
       text -- message text as a string or unicode
+      sender -- sender address as a string; if None, the address specified by the configuration
+        option `default_sender_address' is used.
       html -- HTML part of the message as string or unicode
-      smtp_server -- SMTP server name to use for sending the message as a
-        string; if 'None', server given in configuration is used
       lang -- ISO language code as a string; if not None, message 'subject', 'text' and 'html' will
          be translated into given language (if they are LCG translatable strings)
       cc -- sequence of other recipient string addresses
+      headers -- additional headers to insert into the mail; it must be a tuple
+        of pairs (HEADER, VALUE) where HEADER is an ASCII string containing
+        the header name (without the final colon) and value is an ASCII string
+        containing the header value
       attachment -- name of the file to attach; if it is 'None', there is no
         attachment
       attachment_stream -- if not 'None' and 'attachment' is not 'None', read
         attachment data from the given stream
       attachment_type -- attachment MIME type as a string
-      headers -- additional headers to insert into the mail; it must be a tuple
-        of pairs (HEADER, VALUE) where HEADER is an ASCII string containing
-        the header name (without the final colon) and value is an ASCII string
-        containing the header value
+      smtp_server -- SMTP server name to use for sending the message as a
+        string; if 'None', server given in configuration is used
       
     """
     string_class = type('')
-    assert isinstance(sender, basestring), ('type error', sender,)
     assert isinstance(addr, basestring), ('type error', addr,)
     assert isinstance(subject, basestring), ('type error', subject,)
     assert isinstance(text, basestring), ('type error', text,)
+    assert sender is None or isinstance(sender, basestring), ('type error', sender,)
     assert html is None or isinstance(html, basestring), ('type error', html,)
-    assert smtp_server is None or isinstance(smtp_server, basestring), ('type error', smtp_server,)
     assert lang is None or isinstance(lang, basestring), ('type error', lang,)
     assert isinstance(cc, (tuple, list,)), ('type error', cc,)
     assert attachment is None or isinstance(attachment, basestring), ('type error', attachment,)
     assert attachment_stream is None or isinstance(attachment_stream, file), ('type error', attachment_stream,)
     assert isinstance(attachment_type, basestring), ('type error', attachment_type,)
+    assert smtp_server is None or isinstance(smtp_server, basestring), ('type error', smtp_server,)
     import MimeWriter
     import mimetools
     from cStringIO import StringIO
     out = StringIO() # output buffer for our message 
     writer = MimeWriter.MimeWriter(out)
     tr = translator(lang)
+    if not sender or sender == '-': # Hack: '-' is the Wiking CMS Admin default value...
+        sender = cfg.default_sender_address
     # Set up message headers.
     writer.addheader("From", sender)
     writer.addheader("To", addr)

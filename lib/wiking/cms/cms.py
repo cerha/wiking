@@ -188,8 +188,7 @@ class Registration(Module, ActionHandler):
                     '   '+_("Password") +': '+ record['password'].value(), '',
                     _("We strongly recommend you change your password at nearest occassion, "
                       "since it has been exposed to an unsecure channel."), separator='\n') +"\n"
-                err = send_mail('wiking@' + req.server_hostname(), record['email'].value(),
-                                title, text, lang=req.prefered_language())
+                err = send_mail(record['email'].value(), title, text, lang=req.prefered_language())
                 if err:
                     error = _("Failed sending e-mail notification:") +' '+ err
                     msg = _("Please try repeating your request later or contact the administrator!")
@@ -1773,8 +1772,7 @@ class Users(EmbeddableCMSModule):
                      uri=req.server_uri() + base_uri +'/'+ record['login'].value()) + "\n"
             # TODO: The admin email is translated to users language.  It would be more approppriate
             # to subscribe admin messages from admin accounts and set the language for each admin.
-            err = send_mail('wiking@' + req.server_hostname(), addr,
-                            _("New user registration:") +' '+ record['fullname'].value(),
+            err = send_mail(addr, _("New user registration:") +' '+ record['fullname'].value(),
                             text, lang=record['lang'].value())
             if err:
                 err = _("Failed sending e-mail notification:") +' '+ err
@@ -1788,8 +1786,7 @@ class Users(EmbeddableCMSModule):
             text = _("Your account at %(uri)s has been enabled. "
                      "Please log in with username '%(login)s' and your password.",
                      uri=req.server_uri(), login=record['login'].value()) + "\n"
-            err = send_mail('wiking@' + req.server_hostname(), record['email'].value(),
-                            _("Your account has been ebabled."),
+            err = send_mail(record['email'].value(), _("Your account has been ebabled."),
                             text, lang=record['lang'].value())
             if err:
                 err = _("Failed sending e-mail notification:") +' '+ err

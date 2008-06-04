@@ -269,8 +269,7 @@ class Application(Module):
                     tb = tb.tb_next
                 filename = os.path.split(tb.tb_frame.f_code.co_filename)[-1]
                 buginfo = "%s at %s line %d" % (einfo[0].__name__, filename, tb.tb_lineno)
-                err = send_mail('wiking@' + req.server_hostname(), cfg.bug_report_address,
-                                'Wiking Error: ' + buginfo,
+                err = send_mail(cfg.bug_report_address, 'Wiking Error: ' + buginfo,
                                 text + "\n\n" + cgitb.text(einfo),
                                 "<html><pre>"+ text +"</pre>"+ cgitb.html(einfo) +"</html>")
                 if err:

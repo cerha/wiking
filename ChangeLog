@@ -1,11 +1,20 @@
 2008-06-04  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/util.py (send_mail): Make the `sender' argument
+	optional.  Supply the value of configuration option
+	`default_sender_address' if `sender' not defined.
+
+	* lib/wiking/application.py (Application.handle_exception):
+	`send_mail()' arguments updated.
+
 	* lib/wiking/cms/configuration.py: Derive boolean options from
 	`BooleanOption'.
 
-	* lib/wiking/cms/cms.py (Config): `cfg.webmaster_addr' ->
-	`cfg.webmaster_address'.  Automatically fallback to configured
-	default values when the database value is None.
+	* lib/wiking/cms/cms.py: `send_mail()' arguments updated.
+	(Config): `cfg.webmaster_addr' -> `cfg.webmaster_address'.
+	Automatically fallback to configured default values when the
+	database value is None.
+
 
 	* lib/wiking/request.py (Request.error): `cfg.webmaster_addr' ->
 	`cfg.webmaster_address'.  Don't supply the default value for
