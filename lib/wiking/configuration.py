@@ -121,17 +121,21 @@ class Configuration(pc):
         _DEFAULT = 'localhost'
         
     class _Option_bug_report_address(pc.StringOption):
-        _DESCR = "E-mail address for sending bug reports"
-        _DOC = ("Tracebacks of uncaught exceptions may be sent automatically to the site "
-                "maintainer by e-mail.  Empty value disables this feature.  The tracebacks "
-                "are logged on the server in this case.")
+        _DESCR = "E-mail address where bug reports will be sent"
+        _DOC = ("Tracebacks of uncaught exceptions are sent automatically by e-mail to the "
+                "specified address.  If None, bug reports are not sent by e-mail, but logged to "
+                "server's error log.")
         _DEFAULT = None
 
-    class _Option_webmaster_addr(pc.StringOption):
+    class _Option_webmaster_address(pc.StringOption):
         _DESCR = _("Webmaster's e-mail address")
-        _DOC = _("Webmaster's address will appear at the bottom of each page.  If no address is "
-                 "given, it will be automatically set to 'webmaster@yourdomain.com', where "
-                 "yourdomain.com is replaced by the real name of the server's domain.")
+        _DOC = ("Webmaster's address is used as public contact address for the site. It is "
+                "displayed at the bottom of each page, in error messages, RSS feeds and so on. "
+                "If no address is given, it will be automatically set to 'webmaster@DOMAIN', "
+                "where DOMAIN the domain part of the server hostname if the hostname starts "
+                "with 'www.' or the whole server hostname in other cases.  Please make sure "
+                "that this address is valid (e-mail sent to it is delivered to a responsible "
+                "person).")
         _DEFAULT = None
         
     class _Option_https_port(pc.NumericOption):

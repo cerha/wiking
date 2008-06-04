@@ -716,11 +716,11 @@ class RssModule(object):
                 uid = row[self._RSS_AUTHOR_COLUMN]
                 author = users.record(req, uid)['email'].export()
             else:
-                author = cfg.webmaster_addr
+                author = cfg.webmaster_address
             items.append((title, uri, descr, date, author))
         title = cfg.site_title +' - '+ tr.translate(self._real_title(req))
         result = rss(title, base_uri, items, cfg.site_subtitle,
-                     lang=lang, webmaster=cfg.webmaster_addr)
+                     lang=lang, webmaster=cfg.webmaster_address)
         return ('application/xml', result)
 
 

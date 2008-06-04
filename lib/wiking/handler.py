@@ -80,7 +80,7 @@ class ModPythonHandler(object):
         self._handler = None
         self._initialized = False
 
-    def _init(self, hostname, options):
+    def _init(self, hostname, options, webmaster_address):
         # The initialization is postponed until the first request, since we need the information
         # from the request instance to initialize the configuration and the handler instance.
         def split(value):
@@ -115,6 +115,13 @@ class ModPythonHandler(object):
                 else:
                     log(OPR, "Unable to set '%s' through Apache configuration. "
                         "PythonOption ignored." % name)
+        if cfg.webmaster_address is None:
+            if webmaster_address is None or webmaster_address == '[no address given]':
+                domain = hostname
+                if domain.startswith('www.'):
+                    domain = domain[4:]
+                webmaster_address = 'webmaster@' + domain
+            cfg.webmaster_address = webmaster_address
         if cfg.resolver is None:
             dbconnection = pd.DBConnection(database=cfg.dbname or hostname,
                                            user=cfg.dbuser, host=cfg.dbhost, port=cfg.dbport)
@@ -126,7 +133,9 @@ class ModPythonHandler(object):
     def __call__(self, request):
         if not self._initialized:
             opt = request.get_options()
-            self._init(request.server.server_hostname, dict([(o, opt[o]) for o in opt.keys()]))
+            self._init(request.server.server_hostname,
+                       dict([(o, opt[o]) for o in opt.keys()]),
+                       request.server.server_admin)
         req = WikingRequest(request, self._application)
         if False:
             import profile, pstats, tempfile

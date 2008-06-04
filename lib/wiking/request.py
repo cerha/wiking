@@ -212,7 +212,7 @@ class Request(pytis.web.Request):
         self._req.send_http_header()
         self._req.status = apache.HTTP_INTERNAL_SERVER_ERROR
         from xml.sax.saxutils import escape
-        admin = cfg.webmaster_addr or self._req.server.server_admin
+        admin = cfg.webmaster_address
         self._req.write('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">\n' 
                         "<html>\n"
                         "<head>\n"

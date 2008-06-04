@@ -1,3 +1,35 @@
+2008-06-04  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/cms/configuration.py: Derive boolean options from
+	`BooleanOption'.
+
+	* lib/wiking/cms/cms.py (Config): `cfg.webmaster_addr' ->
+	`cfg.webmaster_address'.  Automatically fallback to configured
+	default values when the database value is None.
+
+	* lib/wiking/request.py (Request.error): `cfg.webmaster_addr' ->
+	`cfg.webmaster_address'.  Don't supply the default value for
+	`cfg.webmaster_address' here.
+
+	* lib/wiking/handler.py (ModPythonHandler._init): Initialize
+	default values of `cfg.webmaster_address' and
+	`cfg.default_sender_address'.
+
+	* translations/wiking-cms.cs.po: Updated.
+
+	* lib/wiking/db.py (RssModule.action_rss): `cfg.webmaster_addr' ->
+	`cfg.webmaster_address'.
+
+	* lib/wiking/export.py (Exporter._footer): `cfg.webmaster_addr' ->
+	`cfg.webmaster_address'.  Don't supply the default value for
+	`cfg.webmaster_address' here.
+
+	* lib/wiking/configuration.py (webmaster_addr): Renamed to
+	`webmaster_address' for consistency.
+	(default_sender_address): New option.
+
+	* sql/wiking.sql: `pages_update' -> `texts_update'.
+
 2008-05-30  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/util.py: Allow form type specification in bindings.

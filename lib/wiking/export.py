@@ -232,21 +232,16 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
                   ("Section 508",
                    "http://www.section508.gov",
                    _("US Government Section 508 Accessibility Guidelines.")))]
-        contact = cfg.webmaster_addr
-        if contact is None:
-            domain = context.req().server_hostname()
-            if domain.startswith('www.'):
-                domain = domain[4:]
-            contact = 'webmaster@' + domain
         doc = context.req().application().module_uri('Documentation')
         if doc:
             a11y = ' '+ g.link(_("Accessibility Statement"), doc+'/accessibility', hotkey='0')
         else:
             a11y = ''
+        contact = cfg.webmaster_address
         return (g.hr(),
                 g.p(_("This site conforms to the following standards:"), *links),
                 g.p(_("This site can be viewed in ANY browser.") + a11y),
-                g.p(_("Contact:"), g.link(contact, "mailto:"+contact)))
+                g.p(_("Contact:"), g.link(contact, "mailto:"+ contact)))
 
 
 

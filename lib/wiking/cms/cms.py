@@ -457,7 +457,7 @@ class Config(CMSModule):
     """
     class Spec(Specification):
         class _Field(Field):
-            def __init__(self, name, label=None, descr=None, format=repr, **kwargs):
+            def __init__(self, name, label=None, descr=None, transform_default=repr, **kwargs):
                 if hasattr(cfg, name):
                     option = cfg.option(name)
                 elif hasattr(cfg.appl, name):
@@ -470,10 +470,11 @@ class Config(CMSModule):
                     if label is None:
                         label = option.description()
                     if descr is None:
-                        if isinstance(option, cfg.BooleanOption) and format == repr:
-                            format = lambda x: x and _("enabled") or _("disabled")
-                        descr = option.documentation() +' '+ \
-                                _("The default value is %s.", format(default))
+                        descr = option.documentation()
+                    if transform_default is not None:
+                        if isinstance(option, cfg.BooleanOption) and transform_default == repr:
+                            transform_default = lambda x: x and _("enabled") or _("disabled")
+                        descr += ' '+ _("The default value is %s.", transform_default(default))
                 self._cfg_option = option
                 self._cfg_default_value = default
                 Field.__init__(self, name, label, descr=descr, **kwargs)
@@ -490,18 +491,23 @@ class Config(CMSModule):
             _Field('config_id', ),
             _Field('site_title', width=24),
             _Field('site_subtitle', width=64),
-            _Field('webmaster_addr'),
+            _Field('webmaster_address', dbcolumn='webmaster_addr',
+                   descr=_("This address is used as public contact address for your site. "
+                           "It is displayed at the bottom of each page, in error messages, RSS "
+                           "feeds and so on.  Please make sure that this address is valid "
+                           "(e-mail sent to it is delivered to a responsible person).")),
             _Field('allow_login_panel'),
             _Field('allow_registration'),
             #_Field('allow_wmi_link'),
             _Field('force_https_login'),
-            _Field('upload_limit', format=lambda n: repr(n) +' ('+ pp.format_byte_size(n)+')'),
+            _Field('upload_limit',
+                   transform_default=lambda n: repr(n) +' ('+ pp.format_byte_size(n)+')'),
             _Field('theme', _("Color theme"),
-                   codebook='Themes', selection_type=CHOICE, not_null=False,
+                   codebook='Themes', selection_type=CHOICE, not_null=False, transform_default=None,
                    descr=_("Select one of the available color themes.  Use the module Themes in "
                            "the section Appearance to manage the available themes.")),
             )
-        layout = ('site_title', 'site_subtitle', 'webmaster_addr', 'theme',
+        layout = ('site_title', 'site_subtitle', 'webmaster_address', 'theme',
                   'allow_login_panel', 'allow_registration', #'allow_wmi_link',
                   'force_https_login', 'upload_limit')
     _TITLE_TEMPLATE = _("Site Configuration")
@@ -1758,7 +1764,7 @@ class Users(EmbeddableCMSModule):
     def _redirect_after_insert(self, req, record):
         content = self._registration_success_content(req, record)
         msg, err = None, None
-        addr = cfg.webmaster_addr or cfg.bug_report_address
+        addr = cfg.webmaster_address
         if addr:
             base_uri = self._application.module_uri(self.name()) or '/_wmi/'+ self.name()
             text = _("New user %(fullname)s registered at %(server_hostname)s. "
