@@ -385,7 +385,7 @@ CREATE OR REPLACE VIEW texts AS
 SELECT label || '@' || lang as text_id, label, lang, coalesce(content, '') as content
 FROM text_labels CROSS JOIN languages LEFT OUTER JOIN _texts USING (label, lang);
 
-CREATE OR REPLACE RULE pages_update AS
+CREATE OR REPLACE RULE texts_update AS
   ON UPDATE TO texts DO INSTEAD (
     DELETE FROM _texts WHERE label = new.label AND lang = new.lang;
     INSERT INTO _texts VALUES (new.label, new.lang, new.content);
