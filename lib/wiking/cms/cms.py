@@ -457,13 +457,37 @@ class Config(CMSModule):
     """
     class Spec(Specification):
         class _Field(Field):
-            def __init__(self, name, **kwargs):
-                o = hasattr(cfg, name) and cfg.option(name) or cfg.appl.option(name)
-                Field.__init__(self, name, o.description(), descr=o.documentation(), **kwargs)
+            def __init__(self, name, label=None, descr=None, format=repr, **kwargs):
+                if hasattr(cfg, name):
+                    option = cfg.option(name)
+                elif hasattr(cfg.appl, name):
+                    option = cfg.appl.option(name)
+                else:
+                    option = None
+                    default = None
+                if option:
+                    default = option.value()
+                    if label is None:
+                        label = option.description()
+                    if descr is None:
+                        if isinstance(option, cfg.BooleanOption) and format == repr:
+                            format = lambda x: x and _("enabled") or _("disabled")
+                        descr = option.documentation() +' '+ \
+                                _("The default value is %s.", format(default))
+                self._cfg_option = option
+                self._cfg_default_value = default
+                Field.__init__(self, name, label, descr=descr, **kwargs)
+            def configure(self, value):
+                option = self._cfg_option
+                if option is not None:
+                    if value is None:
+                        value = self._cfg_default_value
+                    option.set_value(value)
+                
         title = _("Configuration")
         help = _("Edit site configuration.")
         fields = (
-            Field('config_id', ),
+            _Field('config_id', ),
             _Field('site_title', width=24),
             _Field('site_subtitle', width=64),
             _Field('webmaster_addr'),
@@ -471,11 +495,11 @@ class Config(CMSModule):
             _Field('allow_registration'),
             #_Field('allow_wmi_link'),
             _Field('force_https_login'),
-            _Field('upload_limit'),
-            Field('theme', _("Color theme"),
-                  codebook='Themes', selection_type=CHOICE, not_null=False,
-                  descr=_("Select one of the available color themes.  Use the module Themes in "
-                          "the section Appearance to manage the available themes.")),
+            _Field('upload_limit', format=lambda n: repr(n) +' ('+ pp.format_byte_size(n)+')'),
+            _Field('theme', _("Color theme"),
+                   codebook='Themes', selection_type=CHOICE, not_null=False,
+                   descr=_("Select one of the available color themes.  Use the module Themes in "
+                           "the section Appearance to manage the available themes.")),
             )
         layout = ('site_title', 'site_subtitle', 'webmaster_addr', 'theme',
                   'allow_login_panel', 'allow_registration', #'allow_wmi_link',
@@ -483,7 +507,6 @@ class Config(CMSModule):
     _TITLE_TEMPLATE = _("Site Configuration")
     WMI_SECTION = WikingManagementInterface.SECTION_SETUP
     WMI_ORDER = 100
-    _DEFAULT_THEME = cfg.theme
 
     def _resolve(self, req):
         # We always work with just one record.
@@ -493,27 +516,21 @@ class Config(CMSModule):
         return 'update'
         
     def _redirect_after_update(self, req, record):
+        self._configure(record.row())
         req.set_param('submit', None) # Avoid recursion.
         return self.action_update(req, record, msg=self._update_msg(record))
     
-    def configure(self, req):
-        row = self._data.get_row(config_id=0)
-        if row is not None:
-            for key in row.keys():
-                if hasattr(cfg, key) and not key == 'theme':
-                    setattr(cfg, key, row[key].value())
-                elif hasattr(cfg.appl, key):
-                    setattr(cfg.appl, key, row[key].value())
-            # TODO: Don't recreate the theme if it has not changed...
-            theme_id = row['theme'].value()
-            if theme_id is not None:
-                theme = self._module('Themes').theme(theme_id)
-            else:
-                theme = self._DEFAULT_THEME
-            cfg.theme = theme
-        if cfg.appl.upload_limit is None:
-            # TODO: Use the default values from global config file (/etc/wiking/config.py)
-            cfg.appl.upload_limit = cfg.appl.option('upload_limit').default()
+    def _configure(self, row):
+        for f in self._view.fields():
+            value = row[f.id()].value()
+            if f.id() == 'theme' and value is not None:
+                # TODO: Don't recreate the theme if it has not changed...
+                value = self._module('Themes').theme(value)
+            f.configure(value)
+    
+    def configure(self, req, _row=None):
+        # Called by the application prior to handling any request.
+        self._configure(self._data.get_row(config_id=0))
     
 
 class Mapping(CMSModule):
