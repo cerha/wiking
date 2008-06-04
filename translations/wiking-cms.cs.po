@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-05-31 10:15+0200\n"
-"PO-Revision-Date: 2008-05-31 10:35+0200\n"
+"PO-Revision-Date: 2008-06-04 11:02+0200\n"
 "Last-Translator: Tomas Cerha <cerha@brailcom.org>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -59,7 +59,6 @@ msgid "Certificate Management"
 msgstr "Správa certifikátů"
 
 #: ../lib/wiking/cms/cms.py:91
-#, fuzzy
 msgid "Manage trusted certificates of your site."
 msgstr "Správa důvěryhodných certifikátů portálu."
 
@@ -1141,7 +1140,6 @@ msgid "E-mail notification has been sent to:"
 msgstr "E-mailové upozornění bylo odesláno na:"
 
 #: ../lib/wiking/cms/cms.py:1903
-#, fuzzy
 msgid "Texts"
 msgstr "Texty"
 
@@ -1163,7 +1161,6 @@ msgid ""
 msgstr "Zeditujte text dle potřeby, formátovaný dle pravidel pro strukturovaný text."
 
 #: ../lib/wiking/cms/cms.py:2003
-#, fuzzy
 msgid "PEM file"
 msgstr "PEM soubor"
 
@@ -1196,7 +1193,6 @@ msgid "Valid until"
 msgstr "Platný do"
 
 #: ../lib/wiking/cms/cms.py:2020
-#, fuzzy
 msgid "Trusted"
 msgstr "Důvěryhodný"
 
@@ -1231,7 +1227,6 @@ msgid "User Certificates"
 msgstr "Uživatelské certifikáty"
 
 #: ../lib/wiking/cms/cms.py:2119
-#, fuzzy
 msgid "Manage user and other kinds of certificates."
 msgstr "Správa uživatelských a ostatních certifikátů."
 
