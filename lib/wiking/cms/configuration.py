@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2006, 2007 Brailcom, o.p.s.
+# Copyright (C) 2006, 2007, 2008 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -31,20 +31,20 @@ _ = lcg.TranslatableTextFactory('wiking-cms')
 class CMSConfiguration(pc):
     """CMS Specific Configuration."""
         
-    class _Option_allow_login_panel(pc.Option):
+    class _Option_allow_login_panel(pc.BooleanOption):
         _DESCR = _("Allow login panel")
         _DOC = _("If enabled, the information about the currently logged user and login/logout "
                  "controls will be present on each page as a separate panel.  This panel will "
                  "always be the first panel on the page.")
         _DEFAULT = True
 
-    class _Option_allow_wmi_link(pc.Option):
+    class _Option_allow_wmi_link(pc.BooleanOption):
         _DESCR = _("Allow WMI link")
         _DOC = ("Set to true to disable the link to the Wiking Management Interface in page "
                 "footer.")
         _DEFAULT = True
 
-    class _Option_allow_registration(pc.Option):
+    class _Option_allow_registration(pc.BooleanOption):
         _DESCR = _("Allow new user registration")
         _DOC = _("If enabled, all visitors are allowed to create a user account.  If disabled, "
                  "new user accounts must be created by administrator.  Note, that the newly "
@@ -56,6 +56,6 @@ class CMSConfiguration(pc):
 
     class _Option_upload_limit(pc.NumericOption):
         _DESCR = _("Maximal upload size")
-        _DOC = _("The maximal size of uploaded files in bytes.  The default is 3MB.  The server "
+        _DOC = _("The maximal size of uploaded files in bytes.  The server "
                  "needs to be relaoded for the changes in this option to take effect.")
         _DEFAULT = 3*1024*1024
