@@ -1786,7 +1786,7 @@ class Users(EmbeddableCMSModule):
             text = _("Your account at %(uri)s has been enabled. "
                      "Please log in with username '%(login)s' and your password.",
                      uri=req.server_uri(), login=record['login'].value()) + "\n"
-            err = send_mail(record['email'].value(), _("Your account has been ebabled."),
+            err = send_mail(record['email'].value(), _("Your account has been enabled."),
                             text, lang=record['lang'].value())
             if err:
                 err = _("Failed sending e-mail notification:") +' '+ err
