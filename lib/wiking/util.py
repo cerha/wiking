@@ -969,7 +969,7 @@ def rss(title, url, items, descr, lang=None, webmaster=None):
     </item>''' for title, url, descr, date, author in items])
     return result
 
-def send_mail(sender, addr, subject, text, sender=None, html=None, lang=None, cc=(), headers=(),
+def send_mail(addr, subject, text, sender=None, html=None, lang=None, cc=(), headers=(),
               attachment=None, attachment_stream=None, attachment_type='application/octet-stream',
               smtp_server=None):
     """Send a MIME e-mail message.
