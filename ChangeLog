@@ -1,3 +1,8 @@
+2008-06-09  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/handler.py (ModPythonHandler._init): Initialize the
+	default value of `cfg.default_sender_address'.
+
 2008-06-04  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/util.py (send_mail): Make the `sender' argument

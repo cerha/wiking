@@ -115,13 +115,15 @@ class ModPythonHandler(object):
                 else:
                     log(OPR, "Unable to set '%s' through Apache configuration. "
                         "PythonOption ignored." % name)
+        domain = hostname
+        if domain.startswith('www.'):
+            domain = domain[4:]
         if cfg.webmaster_address is None:
             if webmaster_address is None or webmaster_address == '[no address given]':
-                domain = hostname
-                if domain.startswith('www.'):
-                    domain = domain[4:]
                 webmaster_address = 'webmaster@' + domain
             cfg.webmaster_address = webmaster_address
+        if cfg.default_sender_address is None:
+            cfg.default_sender_address = 'wiking@' + domain
         if cfg.resolver is None:
             dbconnection = pd.DBConnection(database=cfg.dbname or hostname,
                                            user=cfg.dbuser, host=cfg.dbhost, port=cfg.dbport)
