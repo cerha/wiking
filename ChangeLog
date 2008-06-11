@@ -1,3 +1,9 @@
+2008-06-11  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/cms/cms.py (Mapping): Display page titles and their
+	hierarchy within codebook selections.
+	(Attachments): New action for moving the attachment to another page.
+
 2008-06-09  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/handler.py (ModPythonHandler._init): Initialize the

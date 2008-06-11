@@ -538,6 +538,17 @@ class Config(CMSModule):
         self._configure(self._data.get_row(config_id=0))
     
 
+class PageTitles(CMSModule):
+    """Simplified version of the 'Pages' module for 'Mapping' enumerator.
+
+    This module is needed to prevent recursive enumerator definition in 'Mapping'.
+    
+    """
+    class Spec(Specification):
+        table = 'pages'
+        fields = [Field(_f) for _f in ('page_id', 'mapping_id', 'lang', 'title')]
+
+        
 class Mapping(CMSModule):
     """Provide a set of available URIs -- page identifiers bound to particular pages.
 
@@ -548,7 +559,27 @@ class Mapping(CMSModule):
     
     """
     class Spec(Specification):
-        fields = [Field(_id) for _id in ('mapping_id', 'identifier', 'modname', 'private')]
+        fields = (Field('mapping_id', enumerator='PageTitles'),
+                  Field('identifier'),
+                  Field('modname'),
+                  Field('private'),
+                  Field('tree_order'),
+                  )
+        sorting = (('tree_order', ASC), ('identifier', ASC),)
+        def _translate(self, row):
+            enumerator = row['mapping_id'].type().enumerator()
+            condition = pd.AND(pd.EQ('mapping_id', row['mapping_id']),
+                               pd.NE('title', pd.Value(pd.String(), None)))
+            indent = '   ' * (len(row['tree_order'].value().split('.')) - 2)
+            translations = dict([(r['lang'].value().lower(), indent + r['title'].value())
+                                 for r in enumerator.rows(condition=condition)])
+            return lcg.SelfTranslatableText(indent + row['identifier'].value(),
+                                            translations=translations)
+        def cb(self):
+            return pp.CodebookSpec(display=self._translate, prefer_display=True)
+
+
+        
 
             
 class Panels(CMSModule, Publishable):
@@ -785,7 +816,6 @@ class Pages(CMSModule):
                   descr=_("Select the extension module to embed into the page.  Leave blank for "
                           "an ordinary text page.")),
             Field('parent', _("Parent item"), codebook='Mapping', not_null=False,
-                  display='identifier', prefer_display=True,
                   descr=_("Select the superordinate item in page hierarchy.  Leave blank for "
                           "a top-level page.")),
             Field('published', _("Published"), default=False,
@@ -1180,8 +1210,10 @@ class Attachments(StoredFileModule, CMSModule):
             Field('page_attachment_id',
                   computer=Computer(self._page_attachment_id, depends=('attachment_id', 'lang'))),
             Field('attachment_id'),
-            Field('mapping_id', codebook='Mapping', editable=ONCE,
-                  computer=Computer(self._mapping_id, depends=('page_id',))),
+            Field('mapping_id', _("Page"), codebook='Mapping', editable=ALWAYS,
+                  computer=Computer(self._mapping_id, depends=('page_id',)),
+                  descr=_("Select the page where you want to move this attachment.  Don't forget "
+                          "to update all explicit links to this attachment within page text(s).")),
             Field('identifier'),
             Field('lang', _("Language"), codebook='Languages',
                   computer=Computer(self._lang, depends=('page_id',)),
@@ -1252,8 +1284,10 @@ class Attachments(StoredFileModule, CMSModule):
                 cls = lcg.Resource
             return cls(self.filename, uri=self.uri, title=self.title, descr=self.descr)
             
+    _ACTIONS = (Action(_("Move"), 'move', descr=_("Move the attachment to another page.")),)
     _STORED_FIELDS = (('file', '_filename'),)
     _REFERER = 'filename'
+    _LAYOUT = {'move': ('mapping_id',)}
     _LIST_BY_LANGUAGE = True
     _SEQUENCE_FIELDS = (('attachment_id', '_attachments_attachment_id_seq'),)
     _RELATION_FIELDS = ('page_id',)
@@ -1343,6 +1377,9 @@ class Attachments(StoredFileModule, CMSModule):
         return (str(record['mime_type'].value()), record['file'].value().buffer())
     RIGHTS_download = (Roles.ANYONE)
 
+    def action_move(self, req, record):
+        return self.action_update(req, record, action='move')
+    RIGHTS_move = (Roles.AUTHOR,)
     
 class News(EmbeddableCMSModule):
     INSERT_LABEL = _("New message")
