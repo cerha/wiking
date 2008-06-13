@@ -55,6 +55,7 @@ a.backref, a:link.backref {
 
 #page { 
     padding-top: 0.3em;
+    width: 100%;
 }
 #top { 
 }
@@ -482,6 +483,7 @@ form.pytis-form td.label {
     padding-right: 0.3em;
     line-height: 1.4em;
     text-align: right;
+    white-space: nowrap;
 }
 form.show-form td.ctrl, form.list-view td.ctrl { 
     line-height: 1.4em;
