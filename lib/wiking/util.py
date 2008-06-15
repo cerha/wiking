@@ -1007,7 +1007,7 @@ def send_mail(addr, subject, text, sender=None, html=None, lang=None, cc=(), hea
     assert lang is None or isinstance(lang, basestring), ('type error', lang,)
     assert isinstance(cc, (tuple, list,)), ('type error', cc,)
     assert attachment is None or isinstance(attachment, basestring), ('type error', attachment,)
-    assert attachment_stream is None or isinstance(attachment_stream, file), ('type error', attachment_stream,)
+    assert attachment_stream is None or hasattr(attachment_stream, 'read'), ('type error', attachment_stream,)
     assert isinstance(attachment_type, basestring), ('type error', attachment_type,)
     assert smtp_server is None or isinstance(smtp_server, basestring), ('type error', smtp_server,)
     import MimeWriter
