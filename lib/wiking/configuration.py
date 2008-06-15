@@ -239,6 +239,22 @@ class Configuration(pc):
                 "to answer the registration e-mail within the limit given here.")
         _DEFAULT = 2
 
+    class _Option_certificate_expiration_days(pc.Option):
+        _DESCR = "Number of days to make signed certificates valid."
+        _DOC = ("User authentication certificates signed by our local certificate authority "
+                "will be made valid for that number of days.")
+        _DEFAULT = 5*365
+
+    class _Option_ca_certificate_file(pc.Option):
+        _DESCR = "Name of the file containing the local certification authority certificate."
+        _DOC = ("This certificate is used to sign users' certificates used for authentication to the application.")
+        _DEFAULT = '/etc/wiking/ca-cert.pem'
+
+    class _Option_ca_key_file(pc.Option):
+        _DESCR = "Name of the file containing the key corresponding to the local certification authority certificate."
+        _DOC = ("This is the secret certificate private key.")
+        _DEFAULT = '/etc/wiking/ca-key.pem'
+
     class _Option_appl(pc.Option):
         _DESCR = "Application specific configuration"
         _DOC = ("This option makes it possible to define an application specific set of "

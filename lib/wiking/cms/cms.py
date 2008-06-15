@@ -25,14 +25,19 @@ is stored in database and can be managed using a web browser.
 
 from wiking.cms import *
 
+import cStringIO
+import os
+import re
+import subprocess
 import tempfile
 
+import gnutls.crypto
 import mx.DateTime
+from mx.DateTime import today, TimeDelta
+
 import pytis.data
 from pytis.presentation import Computer, CbComputer, Fields, HGroup, CodebookSpec
-from mx.DateTime import today, TimeDelta
 from lcg import log as debug
-import re, copy
 
 CHOICE = pp.SelectionType.CHOICE
 ALPHANUMERIC = pp.TextFilter.ALPHANUMERIC
@@ -171,7 +176,12 @@ class Registration(Module, ActionHandler):
     def action_insert(self, req):
         if not cfg.appl.allow_registration:
             raise Forbidden()
-        return self._module('Users').action_insert(req)
+        if req.param('form-name') == 'CertificateRequest':
+            module = 'CertificateRequest'
+        else:
+            module = 'Users'
+        result = self._module(module).action_insert(req)
+        return result
     RIGHTS_insert = (Roles.ANYONE,)
     
     def action_remind(self, req):
@@ -216,6 +226,13 @@ class Registration(Module, ActionHandler):
     def action_confirm(self, req):
         return self._module('Users').action_confirm(req)
     RIGHTS_confirm = (Roles.ANYONE,)
+
+    def action_certload(self, req):
+        record, error = self._module('Users').check_registration_code(req)
+        if error:
+            return Document(_("Invalid authorization"), ErrorMessage(error))
+        return self._module('CertificateRequest').action_insert(req)
+    RIGHTS_certload = (Roles.ANYONE,)
 
 
 class CMSModule(PytisModule, RssModule, Panelizable):
@@ -1684,6 +1701,8 @@ class Users(EmbeddableCMSModule):
                                                 Roles.ADMIN)))
         _ROLE_DICT = dict([(_code, (_title, _roles)) for _code, _title, _roles in _ROLES])
         _LOGIN_IS_EMAIL = False
+        _CERTIFICATE_AUTHENTICATION = None # must be one of: None, 'optional'
+
         def _fullname(self, row):
             name = row['firstname'].value()
             surname = row['surname'].value()
@@ -1717,14 +1736,14 @@ class Users(EmbeddableCMSModule):
             else:
                 login_computer = None
             fields = (Field('uid', width=8, editable=NEVER),
-                      Field('login', (self._LOGIN_IS_EMAIL and _("Your e-mail") or _("Login name")), width=16, editable=ONCE,
+                      Field('login', _("Login name"), width=16, editable=ONCE,
                             type=pd.RegexString(maxlen=16, not_null=True,
                                                 regex='^[a-zA-Z][0-9a-zA-Z_\.-]*$'),
                             computer=login_computer,
                             descr=_("A valid login name can only contain letters, digits, underscores, "
                                     "dashes and dots and must start with a letter.")),
                       Field('password', _("Password"), width=16,
-                            type=pd.Password(minlen=4, maxlen=32, not_null=True),
+                            type=pd.Password(minlen=4, maxlen=32, not_null=(not self._CERTIFICATE_AUTHENTICATION)),
                             descr=_("Please, write the password into each of the two fields to eliminate "
                                     "typos.")),
                       Field('old_password', _(u"Old password"), virtual=True, width=16,
@@ -1743,7 +1762,7 @@ class Users(EmbeddableCMSModule):
                       Field('nickname', _("Displayed name"),
                             descr=_("Leave blank if you want to be referred by your full name or enter an "
                                     "alternate name, such as nickname or monogram.")),
-                      Field('email', _("E-mail"), width=36),
+                      Field('email', _("E-mail"), not_null=self._LOGIN_IS_EMAIL, width=36),
                       Field('phone', _("Phone")),
                       Field('address', _("Address"), width=20, height=3),
                       Field('uri', _("URI"), width=36),
@@ -1757,8 +1776,13 @@ class Users(EmbeddableCMSModule):
                       Field('lang'),
                       Field('regexpire', computer=Computer(self._registration_expiry, depends=())),
                       Field('regcode', computer=Computer(self._registration_code, depends=())),
+                      Field('certauth', _("Certificate authentication"), type=pd.Boolean(), virtual=True,
+                            descr=_("Check this field to authenticate by a certificate rather than by a password."), ),
                       )
             return fields
+        def check(self, row):
+            if not row['password'].value() and not row['certauth'].value():
+                return 'password', _("No password given")
         def _rolename(self, code):
             return self._ROLE_DICT[code][0]
         columns = ('fullname', 'nickname', 'email', 'role', 'since')
@@ -1771,20 +1795,7 @@ class Users(EmbeddableCMSModule):
     _ALLOW_TABLE_LAYOUT_IN_FORMS = False
     _OWNER_COLUMN = 'uid'
     _SUPPLY_OWNER = False
-    _LAYOUT = {'rights': ('role',),
-               'passwd': (Spec._LOGIN_IS_EMAIL
-                          and ('login', 'old_password', 'new_password')
-                          or ('email', 'old_password', 'new_password')),
-               'insert': (Spec._LOGIN_IS_EMAIL
-                          and (FieldSet(_("Login information"), ('login', 'password')),
-                               FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname')),
-                               FieldSet(_("Contact information"), ('email', 'phone', 'address','uri')))
-                          or (FieldSet(_("Login information"), ('email', 'password')),
-                              FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname')),
-                              FieldSet(_("Contact information"), ('phone', 'address','uri')))),
-               'view':   (FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname')),
-                          FieldSet(_("Contact information"), ('email', 'phone', 'address','uri')),
-                          FieldSet(_("Access rights"), ('role',)))}
+    _LAYOUT = {} # to be initialized in the constructor and/or redefined in a subclass
     _DEFAULT_ACTIONS_FIRST = (
         Action(_("Edit profile"), 'update', descr=_("Modify user's record")),
         Action(_("Access rights"), 'rights', descr=_("Change access rights")),
@@ -1797,6 +1808,24 @@ class Users(EmbeddableCMSModule):
     WMI_ORDER = 100
     INSERT_LABEL = _("New user")
 
+    def __init__(self, *args, **kwargs):
+        super(Users, self).__init__(*args, **kwargs)
+        if not self._LAYOUT:
+            self._LAYOUT = {'rights': ('role',),
+                            'passwd': ((self.Spec._LOGIN_IS_EMAIL and 'email' or 'login'), 'old_password', 'new_password',),
+                            'insert': ((FieldSet(_("Login information"),
+                                                 ((self.Spec._LOGIN_IS_EMAIL and ('email',) or ('login',)) +
+                                                  ('password',) +
+                                                  (self.Spec._CERTIFICATE_AUTHENTICATION and ('certauth',) or ())
+                                                  )),) +
+                                       (FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname')),) +
+                                       (FieldSet(_("Contact information"),
+                                                 (((not self.Spec._LOGIN_IS_EMAIL) and ('email',) or ()) +
+                                                  ('phone', 'address', 'uri',))),)),
+                            'view':   (FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname')),
+                                       FieldSet(_("Contact information"), ('email', 'phone', 'address','uri')),
+                                       FieldSet(_("Access rights"), ('role',)))}
+        
     def _send_admin_confirmation_mail(self, req, record):
         self._module('Users').send_admin_approval_mail(req, record)
     
@@ -1804,6 +1833,15 @@ class Users(EmbeddableCMSModule):
         self._send_admin_confirmation_mail(req, record)
         content = lcg.p(_("Registration completed successfuly. "
                           "Your account now awaits administrator's approval."))
+        if self.Spec._CERTIFICATE_AUTHENTICATION:
+            uid = record['uid'].value()
+            certificate_row = self._module('UserCertificates').authentication_certificate(uid)
+            if certificate_row is not None:
+                certificate = certificate_row['certificate'].value()
+                text = _("Here is your certifiate to authenticate to the application")
+                send_mail(record['email'].value(), _("Your certificate for %s", req.server_hostname()), text, lang=record['lang'].value(),
+                          attachment='cert.pem', attachment_stream=cStringIO.StringIO(str(certificate)))
+                content = lcg.Container((content, lcg.p(_("The signed certificate has been sent to you by e-mail."))))
         return Document(_("Registration confirmed"), content)
     
     def _confirmation_failure(self, req, error_message):
@@ -1817,7 +1855,16 @@ class Users(EmbeddableCMSModule):
             result = self._confirmation_failure(req, error_message)
         return result
     RIGHTS_confirm = (Roles.ANYONE,)
-
+    
+    def action_certload(self, req):
+        record, error_message = self._authorize_registration(req)
+        if error_message is None:
+            result = self._confirmation_success(req, record)
+        else:
+            result = self._confirmation_failure(req, error_message)
+        return result
+    RIGHTS_certload = (Roles.ANYONE,)
+    
     def _validate(self, req, record, layout=None):
         if record.new():
             record['lang'] = pd.Value(record['lang'].type(), req.prefered_language())
@@ -1861,12 +1908,20 @@ class Users(EmbeddableCMSModule):
             msg, err = None, None
             base_uri = self._application.module_uri('Registration') or '/_wmi/'+ self.name()
             server_hostname = req.server_hostname()
-            uri = '%s%s?action=confirm&login=%s&regcode=%s' % (req.server_uri(), base_uri, record['login'].value(), record['regcode'].value())
+            certificate_authentication = (self.Spec._CERTIFICATE_AUTHENTICATION and req.param('certauth'))
+            if certificate_authentication:
+                action = 'certload'
+            else:
+                action = 'confirm'
+            uri = '%s%s?action=%s&uid=%s&regcode=%s' % (req.server_uri(), base_uri, action, record['uid'].value(), record['regcode'].value())
             text = _("You have been successfully registered at %(server_hostname)s. "
                      "To complete your registration visit the URL %(uri)s and follow "
                      "the instructions there.\n",
                      server_hostname=server_hostname,
                      uri=uri)
+            if certificate_authentication:
+                text += _("\nYou will be asked to upload certificate request.\n"
+                          "To generate the request, you can use the attached GnuTLS or OpenSSL configuration files.\n")
             user_email = record['email'].value()
             err = send_mail(user_email, _("Your registration at %s" % (server_hostname,)), text, lang=record['lang'].value())
             if err:
@@ -1955,6 +2010,33 @@ class Users(EmbeddableCMSModule):
         else:
             return None
 
+    def check_registration_code(self, req):
+        """Check whether given request contains valid login and registration code.
+
+        Return pair (RECORD, MESSAGE) where RECORD is a 'Record' corresponding
+        to the user id given in the request (if the record is available) and
+        MESSAGE is either 'None' in case the login and registration code are
+        valid, or a unicode describing the error.
+
+        """
+        uid = req.param('uid')
+        registration_code = req.param('regcode')
+        if not uid:
+            return None, _("Missing form parameters")
+        # This doesn't prevent double registration confirmation, but how to
+        # avoid it?
+        row = self._data.get_row(uid=uid)
+        if row is None:
+            record is None
+        else:
+            record = self._record(req, row)
+        if record is None or not record['regexpire'].value():
+            # Let's be careful not to depict whether given login name is registered
+            return None, _("Invalid login or user registration already confirmed")
+        elif record['regcode'].value() != registration_code:
+            return record, _("Invalid registration code")
+        return record, None
+        
     def _authorize_registration(self, req):
         """Make user registration defined by 'Request' 'req' valid.
 
@@ -1962,16 +2044,9 @@ class Users(EmbeddableCMSModule):
         notification to the administrator.
         
         """
-        login = req.param('login')
-        registration_code = req.param('regcode')
-        # This doesn't prevent double registration confirmation, but how to
-        # prevent it?
-        record = self.find_user(req, login)
-        if record is None or not record['regexpire'].value():
-            # Let's be careful not to depict whether given e-mail is registered
-            return None, _("Invalid login or user registration already confirmed")
-        elif record['regcode'].value() != registration_code:
-            return record, _("Invalid registration code")
+        record, error = self.check_registration_code(req)
+        if error:
+            return record, error
         record.update(regexpire=None)
         return record, None
 
@@ -2251,7 +2326,11 @@ class Certificates(CMSModule):
         """
 
     class Spec(StoredFileModule.Spec):
-        
+
+        def __init__(self, *args, **kwargs):
+            StoredFileModule.Spec.__init__(self, *args, **kwargs)
+            self._ca_x509 = gnutls.crypto.X509Certificate(open(cfg.ca_certificate_file).read())
+
         _ID_COLUMN = 'certificates_id'
         
         def fields(self): return (
@@ -2281,25 +2360,23 @@ class Certificates(CMSModule):
         sorting = (('issuer', ASC,), ('valid_until', ASC,))
         layout = ('trusted', 'issuer', 'valid_from', 'valid_until', 'text',)
 
+        def _certificate_computation(self, buffer):
+            return str(buffer)
         def _certificate_computer(self, row):
             file_value = row['file'].value()
             if file_value is None: # new record form
                 return None
-            certificate = str(file_value.buffer())
+            certificate = self._certificate_computation(file_value.buffer())
             return certificate
         def _x509_computer(self, row):
-            import M2Crypto.X509
             certificate = row['certificate'].value()
             if certificate is None: # new record form
                 return None
             try:
-                certificate_file = tempfile.NamedTemporaryFile()
-                certificate_file.write(certificate)
-                certificate_file.flush()
-                x509 = M2Crypto.X509.load_cert(certificate_file.name)
+                x509 = gnutls.crypto.X509Certificate(certificate)
             except Exception, e:
-                raise Exception(_("System error while processing certificate"), e)
-            if x509.verify() != 1:
+                raise Exception(_("Invalid certificate"), e)
+            if not x509.has_issuer(x509) and not x509.has_issuer(self._ca_x509):
                 x509 = None
             return x509
         def _make_x509_computer(self, function):
@@ -2310,17 +2387,21 @@ class Certificates(CMSModule):
                 return function(x509)
             return Computer(computer, depends=('x509',))
         def _serial_number_computer(self, x509):
-            return x509.get_serial_number()
+            number = int(x509.serial_number)
+            if not isinstance(number, int): # it may be long
+                raise Exception(_("Unprocessable serial number"))
+            return number
         def _issuer_computer(self, x509):
-            return unicode(x509.get_issuer())
+            return unicode(x509.issuer)
         def _valid_from_computer(self, x509):
-            return self._convert_x509_timestamp(x509.get_not_before())
+            return self._convert_x509_timestamp(x509.activation_time)
         def _valid_until_computer(self, x509):
-            return self._convert_x509_timestamp(x509.get_not_after())
+            return self._convert_x509_timestamp(x509.expiration_time)
         def _text_computer(self, x509):
-            return x509.as_text()
+            return ('Subject: %s\nIssuer: %s\nSerial number: %s\nVersion: %s\nValid from: %s\nValid until: %s\n' %
+                    (x509.subject, x509.issuer, x509.serial_number, x509.version, time.ctime(x509.activation_time), time.ctime(x509.expiration_time),))
         def _convert_x509_timestamp(self, timestamp):
-            time_tuple = time.strptime(str(timestamp), '%b %d %H:%M:%S %Y %Z')
+            time_tuple = time.gmtime(timestamp)
             mx_time = mx.DateTime.DateTime(*time_tuple[:6])
             return mx_time
             
@@ -2368,13 +2449,15 @@ class CACertificates(Certificates):
 
 class UserCertificates(Certificates):
     """Management of user certificates, especially for the purpose of authentication."""
-    
+
     class Spec(Certificates.Spec):
         
         title = _("User Certificates")
         help = _("Manage user and other kinds of certificates.")
         table = 'certificates'
         
+        _PURPOSE_AUTHENTICATION = 1
+
         def fields(self):
             fields = Certificates.Spec.fields(self)
             fields = fields + (Field('subject', _("Subject"), virtual=True, editable=NEVER, type=Certificates.UniType(),
@@ -2383,32 +2466,113 @@ class UserCertificates(Certificates):
                                      computer=Computer(self._common_name_computer, depends=('subject',))),
                                Field('email', _("E-mail"), editable=NEVER,
                                      computer=Computer(self._email_computer, depends=('subject',))),
+                               Field('uid', not_null=True),
+                               Field('purpose', not_null=True),
                                )
             return fields
-        
+
+        _OWNER_COLUMN = 'uid'
         columns = ('common_name', 'valid_from', 'valid_until', 'trusted',)
         layout = ('trusted', 'common_name', 'email', 'issuer', 'valid_from', 'valid_until', 'text',)
 
         def _subject_computer(self, x509):
-            subject = unicode(x509.get_subject())
-            subject_items = {}
-            for item in subject.split('/'):
-                try:
-                    key, value = item.split('=', 1)
-                    subject_items[key.lower()] = value
-                except:
-                    pass
-            return subject_items
+            return x509.subject
         def _common_name_computer(self, row):
             subject = row['subject'].value()
             if subject is None:
                 return ''
-            return subject.get('cn', '?')
+            return subject.common_name
         def _email_computer(self, row):
             subject = row['subject'].value()
             if subject is None:
                 return ''
-            return subject.get('emailaddress', '')
+            return subject.email
             
     WMI_SECTION = WikingManagementInterface.SECTION_CERTIFICATES
     WMI_ORDER = 200
+
+    def authentication_certificate(self, uid):
+        """Return authentication certificate row of the given user.
+
+        The return value is the corresponding 'pytis.data.Row' instance.  If
+        the user doesn't have authentication certificate assigned, return
+        'None'.
+
+        This method considers only authentication certificates.  Certificates
+        present for other purposes are ignored.
+
+        Arguments:
+
+          uid -- user id as an integer
+
+        """
+        data = self._data
+        uid_value = pd.Value(data.find_column('uid').type(), uid)
+        purpose_value = pd.Value(data.find_column('purpose').type(), self.Spec._PURPOSE_AUTHENTICATION)
+        self._data.select(pd.AND(pd.EQ('uid', uid_value), pd.EQ('purpose', purpose_value)))
+        row = self._data.fetchone()
+        self._data.close()
+        return row
+
+class CertificateRequest(UserCertificates):
+
+    class Spec(UserCertificates.Spec):
+
+        # This is a *public* method.  But it has to begin with underscore
+        # otherwise it would be handled in a special way by Wiking, causing
+        # failure.
+        def _set_dbconnection(self, dbconnection):
+            self._serial_number_counter = pd.DBCounterDefault('certificate_serial_number', dbconnection)
+            
+        def fields(self):
+            fields = pp.Fields(UserCertificates.Spec.fields(self))
+            overridden = [Field(inherit=fields['file'], descr=_("Upload a PEM file containing the certificate request")),
+                          Field(inherit=fields['purpose'], default=self._PURPOSE_AUTHENTICATION)]
+            # We add some fields to propagate last form values to the new request
+            extra = [Field('regcode', type=pytis.data.String(), virtual=True)]
+            return fields.fields(override=overridden) + extra            
+
+        def _certificate_computation(self, buffer):
+            serial_number = self._serial_number_counter.next()
+            working_dir = os.path.join(cfg.storage, 'certificate-%d' % (serial_number,))
+            request_file = os.path.join(working_dir, 'request')
+            certificate_file = os.path.join(working_dir, 'certificate.pem')
+            log_file = os.path.join(working_dir, 'log')
+            template_file = os.path.join(working_dir, 'certtool.cfg')
+            os.mkdir(working_dir)
+            try:
+                stdout = open(log_file, 'w')
+                open(request_file, 'w').write(str(buffer))
+                open(template_file, 'w').write('serial = %s\nexpiration_days = %s\ntls_www_client\n' %
+                                               (serial_number, cfg.certificate_expiration_days,))
+                return_code = subprocess.call(('/usr/bin/certtool', '--generate-certificate',
+                                               '--load-request', request_file,
+                                               '--outfile', certificate_file,
+                                               '--load-ca-certificate', cfg.ca_certificate_file, '--load-ca-privkey', cfg.ca_key_file,
+                                               '--template', template_file,),
+                                              stdout=stdout, stderr=stdout)
+                if return_code != 0:
+                    raise Exception(_("Certificate request could not be processed"), open(log_file).read())
+                certificate = open(certificate_file).read()
+            finally:
+                for file_name in os.listdir(working_dir):
+                    os.remove(os.path.join(working_dir, file_name))
+                os.rmdir(working_dir)
+            return certificate
+    
+    def _spec(self, resolver):
+        spec = super(CertificateRequest, self)._spec(resolver)
+        spec._set_dbconnection(self._dbconnection)
+        return spec
+
+    def _redirect_after_insert(self, req, record):
+        return self._module('Registration').action_confirm(req)
+
+    def _layout(self, req, action, record=None):
+        # This is necessary to propagate `uid' given in the form to the actual
+        # data row
+        if action == 'insert' and req.param('submit'):
+            result = pp.GroupSpec(('uid', 'file',), orientation=pp.Orientation.VERTICAL)
+        else:
+            result = super(CertificateRequest, self)._layout(req, action, record)
+        return result

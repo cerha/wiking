@@ -438,5 +438,13 @@ CREATE TABLE certificates (
        valid_from timestamp NOT NULL,
        valid_until timestamp NOT NULL,
        trusted boolean DEFAULT 'FALSE',
-       user_ int REFERENCES users
+       uid int REFERENCES users NOT NULL,
+       purpose int NOT NULL -- 0=none, 1=authentication, 2=signing, 3=1+2
 );
+CREATE INDEX certificates_serial_number ON certificates (serial_number);
+CREATE INDEX certificates_uid ON certificates (uid);
+CREATE OR REPLACE RULE certificates_insert AS
+  ON INSERT TO certificates DO
+  DELETE FROM certificates WHERE uid = new.uid AND purpose = 1 AND purpose = new.purpose AND serial_number != new.serial_number;
+
+CREATE SEQUENCE certificate_serial_number;
