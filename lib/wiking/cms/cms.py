@@ -212,8 +212,12 @@ class Registration(Module, ActionHandler):
     def action_passwd(self, req):
         return self._module('Users').action_passwd(req, req.user().data())
     RIGHTS_passwd = (Roles.USER,)
-
     
+    def action_confirm(self, req):
+        return self._module('Users').action_confirm(req)
+    RIGHTS_confirm = (Roles.ANYONE,)
+
+
 class CMSModule(PytisModule, RssModule, Panelizable):
     "Base class for all CMS modules."""
     RIGHTS_view = (Roles.ANYONE,)
@@ -1661,7 +1665,11 @@ class Styles(CMSModule):
 class Users(EmbeddableCMSModule):
     """Manage user accounts through a Pytis data object.
 
-    This module is used by the Wiking CMS application to retrieve the login information.
+    This module is used by the Wiking CMS application to retrieve the login
+    information.
+
+    If the 'Spec._LOGIN_IS_EMAIL' attribute is set by a customized subclass to
+    'True', user's e-mail address is used as his login name.
     
     """
     class Spec(Specification):
@@ -1675,6 +1683,7 @@ class Users(EmbeddableCMSModule):
                   ('admn', _("Administrator"), (Roles.USER, Roles.CONTRIBUTOR, Roles.AUTHOR,
                                                 Roles.ADMIN)))
         _ROLE_DICT = dict([(_code, (_title, _roles)) for _code, _title, _roles in _ROLES])
+        _LOGIN_IS_EMAIL = False
         def _fullname(self, row):
             name = row['firstname'].value()
             surname = row['surname'].value()
@@ -1688,46 +1697,68 @@ class Users(EmbeddableCMSModule):
                 return nickname
             else:
                 return row['fullname'].value()
-        def fields(self): return (
-            Field('uid', width=8, editable=NEVER),
-            Field('login', _("Login name"), width=16, editable=ONCE,
-                  type=pd.RegexString(maxlen=16, not_null=True,
-                                      regex='^[a-zA-Z][0-9a-zA-Z_\.-]*$'),
-                  descr=_("A valid login name can only contain letters, digits, underscores, "
-                          "dashes and dots and must start with a letter.")),
-            Field('password', _("Password"), width=16,
-                  type=pd.Password(minlen=4, maxlen=32, not_null=True),
-                  descr=_("Please, write the password into each of the two fields to eliminate "
-                          "typos.")),
-            Field('old_password', _(u"Old password"), virtual=True, width=16,
-                  type=pd.Password(verify=False, not_null=True),
-                  descr=_(u"Verify your identity by entering your original (current) password.")),
-            Field('new_password', _("New password"), virtual=True, width=16,
-                  type=pd.Password(minlen=4, maxlen=32, not_null=True),
-                  descr=_("Please, write the password into each of the two fields to eliminate "
-                          "typos.")),
-            Field('fullname', _("Full Name"), virtual=True, editable=NEVER,
-                  computer=Computer(self._fullname, depends=('firstname','surname','login'))),
-            Field('user', _("User"), dbcolumn='user_',
-                  computer=Computer(self._user, depends=('fullname', 'nickname'))),
-            Field('firstname', _("First name")),
-            Field('surname', _("Surname")),
-            Field('nickname', _("Displayed name"),
-                  descr=_("Leave blank if you want to be referred by your full name or enter an "
-                          "alternate name, such as nickname or monogram.")),
-            Field('email', _("E-mail"), width=36),
-            Field('phone', _("Phone")),
-            Field('address', _("Address"), width=20, height=3),
-            Field('uri', _("URI"), width=36),
-            Field('since', _("Registered since"), type=DateTime(show_time=False), default=now),
-            Field('role', _("Role"), display=self._rolename, prefer_display=True, default='none',
-                  enumerator=enum([code for code, title, roles in self._ROLES]),
-                  style=lambda r: r['role'].value() == 'none' and pp.Style(foreground='#a20') \
-                        or None,
-                  descr=_("Select one of the predefined roles to grant the user "
-                          "the corresponding privileges.")),
-            Field('lang'),
-            )
+        def _login(self, row):
+            return row['email'].value()
+        def _registration_expiry(self, row):
+            if not self._LOGIN_IS_EMAIL:
+                return None
+            expiry_days = cfg.registration_expiry_days
+            return mx.DateTime.now().gmtime() + mx.DateTime.TimeDelta(hours=expiry_days*24)
+        def _registration_code(self, row):
+            if not self._LOGIN_IS_EMAIL:
+                return None
+            import random
+            import string
+            random.seed()
+            return string.join(['%d' % (random.randint(0, 9),) for i in range(16)], '')
+        def fields(self):
+            if self._LOGIN_IS_EMAIL:
+                login_computer = Computer(self._login, depends=('email',))
+            else:
+                login_computer = None
+            fields = (Field('uid', width=8, editable=NEVER),
+                      Field('login', (self._LOGIN_IS_EMAIL and _("Your e-mail") or _("Login name")), width=16, editable=ONCE,
+                            type=pd.RegexString(maxlen=16, not_null=True,
+                                                regex='^[a-zA-Z][0-9a-zA-Z_\.-]*$'),
+                            computer=login_computer,
+                            descr=_("A valid login name can only contain letters, digits, underscores, "
+                                    "dashes and dots and must start with a letter.")),
+                      Field('password', _("Password"), width=16,
+                            type=pd.Password(minlen=4, maxlen=32, not_null=True),
+                            descr=_("Please, write the password into each of the two fields to eliminate "
+                                    "typos.")),
+                      Field('old_password', _(u"Old password"), virtual=True, width=16,
+                            type=pd.Password(verify=False, not_null=True),
+                            descr=_(u"Verify your identity by entering your original (current) password.")),
+                      Field('new_password', _("New password"), virtual=True, width=16,
+                            type=pd.Password(minlen=4, maxlen=32, not_null=True),
+                            descr=_("Please, write the password into each of the two fields to eliminate "
+                                    "typos.")),
+                      Field('fullname', _("Full Name"), virtual=True, editable=NEVER,
+                            computer=Computer(self._fullname, depends=('firstname','surname','login'))),
+                      Field('user', _("User"), dbcolumn='user_',
+                            computer=Computer(self._user, depends=('fullname', 'nickname'))),
+                      Field('firstname', _("First name")),
+                      Field('surname', _("Surname")),
+                      Field('nickname', _("Displayed name"),
+                            descr=_("Leave blank if you want to be referred by your full name or enter an "
+                                    "alternate name, such as nickname or monogram.")),
+                      Field('email', _("E-mail"), width=36),
+                      Field('phone', _("Phone")),
+                      Field('address', _("Address"), width=20, height=3),
+                      Field('uri', _("URI"), width=36),
+                      Field('since', _("Registered since"), type=DateTime(show_time=False), default=now),
+                      Field('role', _("Role"), display=self._rolename, prefer_display=True, default='none',
+                            enumerator=enum([code for code, title, roles in self._ROLES]),
+                            style=lambda r: r['role'].value() == 'none' and pp.Style(foreground='#a20') \
+                                or None,
+                            descr=_("Select one of the predefined roles to grant the user "
+                                    "the corresponding privileges.")),
+                      Field('lang'),
+                      Field('regexpire', computer=Computer(self._registration_expiry, depends=())),
+                      Field('regcode', computer=Computer(self._registration_code, depends=())),
+                      )
+            return fields
         def _rolename(self, code):
             return self._ROLE_DICT[code][0]
         columns = ('fullname', 'nickname', 'email', 'role', 'since')
@@ -1741,10 +1772,16 @@ class Users(EmbeddableCMSModule):
     _OWNER_COLUMN = 'uid'
     _SUPPLY_OWNER = False
     _LAYOUT = {'rights': ('role',),
-               'passwd': ('login', 'old_password', 'new_password'),
-               'insert': (FieldSet(_("Login information"), ('login', 'password')),
-                          FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname')),
-                          FieldSet(_("Contact information"), ('email', 'phone', 'address','uri'))),
+               'passwd': (Spec._LOGIN_IS_EMAIL
+                          and ('login', 'old_password', 'new_password')
+                          or ('email', 'old_password', 'new_password')),
+               'insert': (Spec._LOGIN_IS_EMAIL
+                          and (FieldSet(_("Login information"), ('login', 'password')),
+                               FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname')),
+                               FieldSet(_("Contact information"), ('email', 'phone', 'address','uri')))
+                          or (FieldSet(_("Login information"), ('email', 'password')),
+                              FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname')),
+                              FieldSet(_("Contact information"), ('phone', 'address','uri')))),
                'view':   (FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname')),
                           FieldSet(_("Contact information"), ('email', 'phone', 'address','uri')),
                           FieldSet(_("Access rights"), ('role',)))}
@@ -1759,6 +1796,27 @@ class Users(EmbeddableCMSModule):
     WMI_SECTION = WikingManagementInterface.SECTION_USERS
     WMI_ORDER = 100
     INSERT_LABEL = _("New user")
+
+    def _send_admin_confirmation_mail(self, req, record):
+        self._module('Users').send_admin_approval_mail(req, record)
+    
+    def _confirmation_success(self, req, record):
+        self._send_admin_confirmation_mail(req, record)
+        content = lcg.p(_("Registration completed successfuly. "
+                          "Your account now awaits administrator's approval."))
+        return Document(_("Registration confirmed"), content)
+    
+    def _confirmation_failure(self, req, error_message):
+        return Document(_("Registration confirmation failed"), lcg.p(error_message))
+    
+    def action_confirm(self, req):
+        record, error_message = self._authorize_registration(req)
+        if error_message is None:
+            result = self._confirmation_success(req, record)
+        else:
+            result = self._confirmation_failure(req, error_message)
+        return result
+    RIGHTS_confirm = (Roles.ANYONE,)
 
     def _validate(self, req, record, layout=None):
         if record.new():
@@ -1798,7 +1856,30 @@ class Users(EmbeddableCMSModule):
         return content
     
     def _redirect_after_insert(self, req, record):
-        content = self._registration_success_content(req, record)
+        if self.Spec._LOGIN_IS_EMAIL:
+            content = lcg.p('')
+            msg, err = None, None
+            base_uri = self._application.module_uri('Registration') or '/_wmi/'+ self.name()
+            server_hostname = req.server_hostname()
+            uri = '%s%s?action=confirm&login=%s&regcode=%s' % (req.server_uri(), base_uri, record['login'].value(), record['regcode'].value())
+            text = _("You have been successfully registered at %(server_hostname)s. "
+                     "To complete your registration visit the URL %(uri)s and follow "
+                     "the instructions there.\n",
+                     server_hostname=server_hostname,
+                     uri=uri)
+            user_email = record['email'].value()
+            err = send_mail(user_email, _("Your registration at %s" % (server_hostname,)), text, lang=record['lang'].value())
+            if err:
+                self._data.delete(record['uid'])
+                err = _("Failed sending e-mail notification:") +' '+ err + '\n' + _("Registration cancelled.")
+            else:
+                msg = _("E-mail was sent to you with instructions how to complete the registration process.")
+        else:
+            content = self._registration_success_content(req, record)
+            msg, err = self.send_admin_approval_mail(req, record)
+        return self._document(req, content, subtitle=None, msg=msg, err=err)
+
+    def send_admin_approval_mail(self, req, record):
         msg, err = None, None
         addr = cfg.webmaster_address
         if addr:
@@ -1810,12 +1891,12 @@ class Users(EmbeddableCMSModule):
             # TODO: The admin email is translated to users language.  It would be more approppriate
             # to subscribe admin messages from admin accounts and set the language for each admin.
             err = send_mail(addr, _("New user registration:") +' '+ record['fullname'].value(),
-                            text, lang=record['lang'].value())
+                            text, lang=record['lang'].value(), sender=cfg.default_sender_address)
             if err:
                 err = _("Failed sending e-mail notification:") +' '+ err
             else:
                 msg = _("E-mail notification has been sent to server administrator.")
-        return self._document(req, content, subtitle=None, msg=msg, err=err)
+        return msg, err
 
     def _redirect_after_update(self, req, record):
         if record.original_row()['role'].value() == 'none' and record['role'].value() != 'none':
@@ -1832,8 +1913,7 @@ class Users(EmbeddableCMSModule):
             return self.action_view(req, record, msg=msg, err=err)
         else:
             return super(Users, self)._redirect_after_update(req, record)
-            
-
+    
     def action_enable(self, req, record):
         req.set_param('submit', '1')
         req.set_param('role', 'user')
@@ -1874,7 +1954,27 @@ class Users(EmbeddableCMSModule):
             return self._record(req, row)
         else:
             return None
-    
+
+    def _authorize_registration(self, req):
+        """Make user registration defined by 'Request' 'req' valid.
+
+        Additionally perform all related actions such as sending an e-mail
+        notification to the administrator.
+        
+        """
+        login = req.param('login')
+        registration_code = req.param('regcode')
+        # This doesn't prevent double registration confirmation, but how to
+        # prevent it?
+        record = self.find_user(req, login)
+        if record is None or not record['regexpire'].value():
+            # Let's be careful not to depict whether given e-mail is registered
+            return None, _("Invalid login or user registration already confirmed")
+        elif record['regcode'].value() != registration_code:
+            return record, _("Invalid registration code")
+        record.update(regexpire=None)
+        return record, None
+
         
 # class ActiveUsers(Users):
 #     class Spec(Users.Spec):

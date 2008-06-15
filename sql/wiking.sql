@@ -21,7 +21,9 @@ CREATE TABLE users (
 	uri text,
 	role char(4) NOT NULL DEFAULT 'none',
 	since timestamp NOT NULL DEFAULT current_timestamp(0),
-	lang char(2) REFERENCES languages(lang)
+	lang char(2) REFERENCES languages(lang),
+        regexpire timestamp,
+        regcode char(16)
 );
 ALTER TABLE users ALTER COLUMN since 
 SET DEFAULT current_timestamp(0) AT TIME ZONE 'GMT';

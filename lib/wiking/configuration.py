@@ -233,6 +233,12 @@ class Configuration(pc):
                 "about the export mechanism.")
         _DEFAULT = Exporter
 
+    class _Option_registration_expiry_days(pc.Option):
+        _DESCR = "Number of days after unanswered user registration expires"
+        _DOC = ("When registration by e-mail is enabled, each newly registered user is required "
+                "to answer the registration e-mail within the limit given here.")
+        _DEFAULT = 2
+
     class _Option_appl(pc.Option):
         _DESCR = "Application specific configuration"
         _DOC = ("This option makes it possible to define an application specific set of "
