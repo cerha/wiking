@@ -10,7 +10,7 @@ CREATE TABLE languages (
 CREATE TABLE users (
 	uid serial PRIMARY KEY,
 	login varchar(32) UNIQUE NOT NULL,
-	password varchar(32) NOT NULL,
+	password varchar(32),
 	firstname text NOT NULL,
 	surname text NOT NULL,
 	nickname text,
