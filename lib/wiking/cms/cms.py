@@ -31,7 +31,6 @@ import re
 import subprocess
 import tempfile
 
-import gnutls.crypto
 import mx.DateTime
 from mx.DateTime import today, TimeDelta
 
@@ -2329,7 +2328,7 @@ class Certificates(CMSModule):
 
         def __init__(self, *args, **kwargs):
             StoredFileModule.Spec.__init__(self, *args, **kwargs)
-            self._ca_x509 = gnutls.crypto.X509Certificate(open(cfg.ca_certificate_file).read())
+            self._ca_x509 = None
 
         _ID_COLUMN = 'certificates_id'
         
@@ -2369,6 +2368,9 @@ class Certificates(CMSModule):
             certificate = self._certificate_computation(file_value.buffer())
             return certificate
         def _x509_computer(self, row):
+            import gnutls.crypto
+            if self._ca_x509 is None:
+                self._ca_x509 = gnutls.crypto.X509Certificate(open(cfg.ca_certificate_file).read())
             certificate = row['certificate'].value()
             if certificate is None: # new record form
                 return None
