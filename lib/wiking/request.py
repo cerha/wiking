@@ -151,6 +151,17 @@ class Request(pytis.web.Request):
             result += ':'+ str(port)
         return result
 
+    def certificate(self):
+        """Return verified client TLS/SSL certificate.
+
+        If no client certificate was provided or it wasn't verified by the web
+        server, return 'None'."""
+        if self._req.ssl_var_lookup('SSL_CLIENT_VERIFY') == 'SUCCESS':
+            certificate = self._req.ssl_var_lookup('SSL_CLIENT_CERT')
+        else:
+            certificate = None
+        return certificate
+
     def set_status(self, status):
         self._req.status = status
 
@@ -204,8 +215,7 @@ class Request(pytis.web.Request):
                 self.write(data)
         finally:
             f.close()
-        return apache.OK
-        
+        return apache.OK        
 
     def error(self, message):
         self._req.content_type = "text/html; charset=UTF-8"

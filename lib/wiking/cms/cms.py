@@ -1999,8 +1999,11 @@ class Users(EmbeddableCMSModule):
             return None
 
     def find_user(self, req, query):
-        """Return the user record for given login or email address (for password reminder)."""
-        if query.find('@') == -1:
+        """Return the user record for given uid, login or email address (for password reminder).
+        """
+        if isinstance(query, int):
+            row = self._data.get_row(uid=query)
+        elif query.find('@') == -1:
             row = self._data.get_row(login=query)
         else:
             row = self._data.get_row(email=query)
@@ -2515,6 +2518,32 @@ class UserCertificates(Certificates):
         row = self._data.fetchone()
         self._data.close()
         return row
+
+    def certificate_user(self, req, certificate):
+        """Return user corresponding to 'certificate'.
+
+        If there is no such user, return 'None'.
+
+        The method assumes the certificate has already been verified by site CA
+        certificate, so no verification is performed.
+
+        Arguments:
+
+          req -- 'Request' instance to provide for construction of the user object
+          certificate -- encoded certificate as given by Apache, a string
+        
+        """
+        user = None
+        import gnutls.crypto
+        x509 = gnutls.crypto.X509Certificate(certificate)
+        serial_number = int(x509.serial_number)
+        row = self._data.get_row(serial_number=serial_number)
+        if row is not None:
+            uid = row['uid'].value()
+            user_module = self._module('Users')
+            user_record = user_module.find_user(req, uid)
+            user = user_module.user(req, user_record['login'].value())
+        return user
 
 class CertificateRequest(UserCertificates):
 

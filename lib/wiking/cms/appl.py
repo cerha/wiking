@@ -113,6 +113,16 @@ class Application(CookieAuthentication, wiking.Application):
     def _auth_check_password(self, user, password):
         return password == user.data()['password'].value()
 
+    def authenticate(self, req):
+        user = None
+        if self._module('Users').Spec._CERTIFICATE_AUTHENTICATION:
+            certificate = req.certificate()
+            if certificate is not None:
+                user = self._module('UserCertificates').certificate_user(req, certificate)
+        if user is None:
+            super(Application, self).authenticate(req)
+        return user
+
     def authorize(self, req, module, action=None, record=None, **kwargs):
         if req.path[0] == '_registration':
             # This hack redirects action authorization back to Registration after redirection to
