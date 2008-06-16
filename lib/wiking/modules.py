@@ -324,10 +324,10 @@ class CookieAuthentication(object):
     def _auth_user(self, req, login):
         """Obtain authentication data and return a 'User' instance for given 'login'.
 
-        This method may be used to retieve authentication data from any source, such as database
+        This method may be used to retrieve authentication data from any source, such as database
         table, file, LDAP server etc.  This should return the user corresponding to given login
         name if it exists.  Further password checking is performed later by the
-        '_auth_check_password()' method.  None may be returned if no user exists for given login
+        '_auth_check_password()' method.  'None' may be returned if no user exists for given login
         name.
 
         """
@@ -337,6 +337,7 @@ class CookieAuthentication(object):
         """Check authentication password for given user.
 
         Arguments:
+        
           user -- 'User' instance
           password -- supplied password as a string
 
@@ -349,6 +350,7 @@ class CookieAuthentication(object):
         """Hook executed on each authentication attempt.
 
         Arguments:
+        
           req -- current request object
           login -- login name supplied by the user
           user -- 'User' instance or None if '_auth_user()' didn't find a user matching given login
