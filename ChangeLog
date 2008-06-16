@@ -1,3 +1,8 @@
+2008-06-16  Milan Zamazal  <pdm@brailcom.org>
+
+	* lib/wiking/modules.py:
+	Typo fixes in docstrings.
+
 2008-06-11  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/cms/cms.py (Mapping): Display page titles and their
