@@ -1,5 +1,12 @@
 2008-06-16  Milan Zamazal  <pdm@brailcom.org>
 
+	* lib/wiking/cms/appl.py:
+	* lib/wiking/cms/cms.py:
+	* lib/wiking/request.py:
+	Certificate authentication implemented.
+
+2008-06-16  Milan Zamazal  <pdm@brailcom.org>
+
 	* lib/wiking/modules.py:
 	Typo fixes in docstrings.
 
