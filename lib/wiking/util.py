@@ -144,9 +144,9 @@ class NotAcceptable(HttpError):
 class MaintananceModeError(HttpError):
     """Error indicating an invalid action in mainenance mode.
 
-    The maintenance mode can be turned on by the 'maintenance' option in apache configuration.  If
-    this option is set to 'true', no database access will be allowed and any attempt to do so will
-    raise this error.  The application should handle all these errors gracefully to support the
+    The maintenance mode can be turned on by the 'maintenance' configuration option.  If this
+    option is set to 'true', no database access will be allowed and any attempt to do so will raise
+    this error.  The application should handle all these errors gracefully to support the
     mainenance mode.
     
     """
