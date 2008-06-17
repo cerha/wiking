@@ -2520,7 +2520,7 @@ class UserCertificates(Certificates):
         return row
 
     def certificate_user(self, req, certificate):
-        """Return user corresponding to 'certificate'.
+        """Return user corresponding to 'certificate' and request 'req'.
 
         If there is no such user, return 'None'.
 
@@ -2530,7 +2530,8 @@ class UserCertificates(Certificates):
         Arguments:
 
           req -- 'Request' instance to provide for construction of the user object
-          certificate -- encoded certificate as given by Apache, a string
+          certificate -- PEM encoded certificate verified against the site's CA
+            certificate, a string
         
         """
         user = None
