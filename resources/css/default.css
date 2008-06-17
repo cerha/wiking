@@ -55,7 +55,7 @@ a.backref, a:link.backref {
 
 #page { 
     padding-top: 0.3em;
-    width: 100%;
+    min-width: 100%;
 }
 #top { 
 }
