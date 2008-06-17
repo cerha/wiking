@@ -122,7 +122,7 @@ class Application(CookieAuthentication, wiking.Application):
                 if user is not None:
                     user.set_auto_auth()
         if user is None:
-            super(Application, self).authenticate(req)
+            user = super(Application, self).authenticate(req)
         return user
 
     def authorize(self, req, module, action=None, record=None, **kwargs):
