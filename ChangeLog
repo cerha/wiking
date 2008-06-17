@@ -1,5 +1,10 @@
 2008-06-17  Milan Zamazal  <pdm@brailcom.org>
 
+	* lib/wiking/cms/cms.py:
+	Docstring adjustments in cms.py, especially no explicit reference to Apache.
+
+2008-06-17  Milan Zamazal  <pdm@brailcom.org>
+
 	* lib/wiking/cms/appl.py:
 	Fix call of superclass method in cms.Application.authenticate.
 
