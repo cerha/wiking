@@ -511,7 +511,7 @@ class User(object):
         return self._uri
 
     def auto_auth(self):
-        """Return true iff the user was authenticate automatically."""
+        """Return true iff the user was authenticated automatically."""
         return self._auto_auth
     
     def set_auto_auth(self):
