@@ -1715,8 +1715,6 @@ class Users(EmbeddableCMSModule):
                 return nickname
             else:
                 return row['fullname'].value()
-        def _login(self, row):
-            return row['email'].value()
         def _registration_expiry(self, row):
             if not self._LOGIN_IS_EMAIL:
                 return None
@@ -1729,56 +1727,53 @@ class Users(EmbeddableCMSModule):
             import string
             random.seed()
             return string.join(['%d' % (random.randint(0, 9),) for i in range(16)], '')
-        def fields(self):
-            if self._LOGIN_IS_EMAIL:
-                login_computer = Computer(self._login, depends=('email',))
-            else:
-                login_computer = None
-            fields = (Field('uid', width=8, editable=NEVER),
-                      Field('login', _("Login name"), width=16, editable=ONCE,
-                            type=pd.RegexString(maxlen=16, not_null=True,
-                                                regex='^[a-zA-Z][0-9a-zA-Z_\.-]*$'),
-                            computer=login_computer,
-                            descr=_("A valid login name can only contain letters, digits, underscores, "
-                                    "dashes and dots and must start with a letter.")),
-                      Field('password', _("Password"), width=16,
-                            type=pd.Password(minlen=4, maxlen=32, not_null=(not self._CERTIFICATE_AUTHENTICATION)),
-                            descr=_("Please, write the password into each of the two fields to eliminate "
-                                    "typos.")),
-                      Field('old_password', _(u"Old password"), virtual=True, width=16,
-                            type=pd.Password(verify=False, not_null=True),
-                            descr=_(u"Verify your identity by entering your original (current) password.")),
-                      Field('new_password', _("New password"), virtual=True, width=16,
-                            type=pd.Password(minlen=4, maxlen=32, not_null=True),
-                            descr=_("Please, write the password into each of the two fields to eliminate "
-                                    "typos.")),
-                      Field('fullname', _("Full Name"), virtual=True, editable=NEVER,
-                            computer=Computer(self._fullname, depends=('firstname','surname','login'))),
-                      Field('user', _("User"), dbcolumn='user_',
-                            computer=Computer(self._user, depends=('fullname', 'nickname'))),
-                      Field('firstname', _("First name")),
-                      Field('surname', _("Surname")),
-                      Field('nickname', _("Displayed name"),
-                            descr=_("Leave blank if you want to be referred by your full name or enter an "
-                                    "alternate name, such as nickname or monogram.")),
-                      Field('email', _("E-mail"), not_null=self._LOGIN_IS_EMAIL, width=36),
-                      Field('phone', _("Phone")),
-                      Field('address', _("Address"), width=20, height=3),
-                      Field('uri', _("URI"), width=36),
-                      Field('since', _("Registered since"), type=DateTime(show_time=False), default=now),
-                      Field('role', _("Role"), display=self._rolename, prefer_display=True, default='none',
-                            enumerator=enum([code for code, title, roles in self._ROLES]),
-                            style=lambda r: r['role'].value() == 'none' and pp.Style(foreground='#a20') \
-                                or None,
-                            descr=_("Select one of the predefined roles to grant the user "
-                                    "the corresponding privileges.")),
-                      Field('lang'),
-                      Field('regexpire', computer=Computer(self._registration_expiry, depends=())),
-                      Field('regcode', computer=Computer(self._registration_code, depends=())),
-                      Field('certauth', _("Certificate authentication"), type=pd.Boolean(), virtual=True,
-                            descr=_("Check this field to authenticate by a certificate rather than by a password."), ),
-                      )
-            return fields
+        def fields(self): return (
+            Field('uid', width=8, editable=NEVER),
+            Field('login', _("Login name"), width=16, editable=ONCE,
+                  type=pd.RegexString(maxlen=16, not_null=True, regex='^[a-zA-Z][0-9a-zA-Z_\.-]*$'),
+                  computer=(self._LOGIN_IS_EMAIL and 
+                            Computer(lambda r: r['email'].value(), depends=('email',)) or None),
+                  descr=_("A valid login name can only contain letters, digits, underscores, "
+                          "dashes and dots and must start with a letter.")),
+            Field('password', _("Password"), width=16,
+                  type=pd.Password(minlen=4, maxlen=32,
+                                   not_null=(not self._CERTIFICATE_AUTHENTICATION)),
+                  descr=_("Please, write the password into each of the two fields to eliminate "
+                          "typos.")),
+            Field('old_password', _(u"Old password"), virtual=True, width=16,
+                  type=pd.Password(verify=False, not_null=True),
+                  descr=_(u"Verify your identity by entering your original (current) password.")),
+            Field('new_password', _("New password"), virtual=True, width=16,
+                  type=pd.Password(minlen=4, maxlen=32, not_null=True),
+                  descr=_("Please, write the password into each of the two fields to eliminate "
+                          "typos.")),
+            Field('fullname', _("Full Name"), virtual=True, editable=NEVER,
+                  computer=Computer(self._fullname, depends=('firstname','surname','login'))),
+            Field('user', _("User"), dbcolumn='user_',
+                  computer=Computer(self._user, depends=('fullname', 'nickname'))),
+            Field('firstname', _("First name")),
+            Field('surname', _("Surname")),
+            Field('nickname', _("Displayed name"),
+                  descr=_("Leave blank if you want to be referred by your full name or enter an "
+                          "alternate name, such as nickname or monogram.")),
+            Field('email', _("E-mail"), not_null=self._LOGIN_IS_EMAIL, width=36),
+            Field('phone', _("Phone")),
+            Field('address', _("Address"), width=20, height=3),
+            Field('uri', _("URI"), width=36),
+            Field('since', _("Registered since"), type=DateTime(show_time=False), default=now),
+            Field('role', _("Role"), display=self._rolename, prefer_display=True, default='none',
+                  enumerator=enum([code for code, title, roles in self._ROLES]),
+                  style=lambda r: r['role'].value() == 'none' and pp.Style(foreground='#a20') \
+                        or None,
+                  descr=_("Select one of the predefined roles to grant the user "
+                          "the corresponding privileges.")),
+            Field('lang'),
+            Field('regexpire', computer=Computer(self._registration_expiry, depends=())),
+            Field('regcode', computer=Computer(self._registration_code, depends=())),
+            Field('certauth', _("Certificate authentication"), type=pd.Boolean(), virtual=True,
+                  descr=_("Check this field to authenticate by a certificate rather than by "
+                          "a password."), ),
+            )
         def check(self, row):
             if not row['password'].value() and not row['certauth'].value():
                 return 'password', _("No password given")
