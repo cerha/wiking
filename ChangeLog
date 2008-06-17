@@ -1,3 +1,10 @@
+2008-06-17  Milan Zamazal  <pdm@brailcom.org>
+
+	* lib/wiking/cms/appl.py:
+	* lib/wiking/request.py:
+	* lib/wiking/util.py:
+	Don't display "log out" link when the user is authenticated by a certificate.
+
 2008-06-16  Milan Zamazal  <pdm@brailcom.org>
 
 	* lib/wiking/cms/appl.py:
