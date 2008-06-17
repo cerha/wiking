@@ -319,14 +319,20 @@ class LoginPanel(Panel):
                 uri = user.uri()
                 if uri:
                     username = g.link(username, uri, title=_("Go to your profile"))
-                cmd, label = ('logout', _("log out"))
+                if user.auto_auth():
+                    cmd = label = None
+                else:
+                    cmd, label = ('logout', _("log out"))
             else:
                 username = _("not logged")
                 cmd, label = ('login', _("log in"))
-            content = lcg.concat(username, ' ',
-                                 g.span('[', cls="hidden"),
-                                 g.link(label, '?command=%s' % cmd, cls='login-ctrl'),
-                                 g.span(']',cls="hidden"))
+            if cmd is None:
+                content = lcg.concat(username)
+            else:
+                content = lcg.concat(username, ' ',
+                                     g.span('[', cls="hidden"),
+                                     g.link(label, '?command=%s' % cmd, cls='login-ctrl'),
+                                     g.span(']',cls="hidden"))
             if not user:
                 uri = req.application().registration_uri(req)
                 if uri:

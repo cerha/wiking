@@ -119,6 +119,8 @@ class Application(CookieAuthentication, wiking.Application):
             certificate = req.certificate()
             if certificate is not None:
                 user = self._module('UserCertificates').certificate_user(req, certificate)
+                if user is not None:
+                    user.set_auto_auth()
         if user is None:
             super(Application, self).authenticate(req)
         return user

@@ -476,6 +476,7 @@ class User(object):
         self._data = data
         self._passwd_expiration = passwd_expiration
         self._uri = uri
+        self._auto_auth = False
         
     def login(self):
         """Return user's login name as a string."""
@@ -508,7 +509,15 @@ class User(object):
     def uri(self):
         """Return the URI of user's profile."""
         return self._uri
+
+    def auto_auth(self):
+        """Return true iff the user was authenticate automatically."""
+        return self._auto_auth
     
+    def set_auto_auth(self):
+        """Set value provided by `auto_auth()' to true."""
+        self._auto_auth = True
+
     
 class Roles(object):
     """Static definition of available user roles."""
