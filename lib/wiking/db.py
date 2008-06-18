@@ -263,11 +263,17 @@ class PytisModule(Module, ActionHandler):
             content = (ErrorMessage(err),) + content
         return Document(title, content, lang=lang, **kwargs)
 
+    def _default_actions_first(self, req, record):
+        return self._DEFAULT_ACTIONS_FIRST
+
+    def _default_actions_last(self, req, record):
+        return self._DEFAULT_ACTIONS_LAST
+
     def _actions(self, req, record):
         if record is not None:
-            return self._DEFAULT_ACTIONS_FIRST + \
+            return self._default_actions_first(req, record) + \
                    self._view.actions() + \
-                   self._DEFAULT_ACTIONS_LAST
+                   self._default_actions_last(req, record)
         else:
             return self._LIST_ACTIONS
 
