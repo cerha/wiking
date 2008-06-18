@@ -1,3 +1,8 @@
+2008-06-18  Milan Zamazal  <pdm@brailcom.org>
+
+	* lib/wiking/db.py:
+	New PytisModule actions _default_actions_first and _default_actions_last.
+
 2008-06-17  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/cms/cms.py: Cosmetic changes.
