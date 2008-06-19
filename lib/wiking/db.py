@@ -556,6 +556,11 @@ class PytisModule(Module, ActionHandler):
             prefill = None
         record = self._record(req, None, new=True, prefill=prefill)
         errors = self._validate(req, record, layout=layout)
+        if not errors:
+            try:
+                self._insert(record)
+            except pd.DBException, e:
+                errors = (self._analyze_exception(e),)
         return record, errors
 
     def _action_insert_success(self, req, layout, record):
