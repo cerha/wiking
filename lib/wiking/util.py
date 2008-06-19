@@ -414,7 +414,7 @@ class Document(object):
         def mknode(item):
             if item.id() == id:
                 heading = self._title or item.title()
-                if self._subtitle:
+                if heading and self._subtitle:
                     heading = lcg.concat(heading, ' :: ', self._subtitle)
                 content = self._content
                 panels = application.panels(req, lang)
