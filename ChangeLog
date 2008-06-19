@@ -1,5 +1,10 @@
 2008-06-19  Milan Zamazal  <pdm@brailcom.org>
 
+	* lib/wiking/db.py:
+	PytisModule.action_insert cleanup and split to allow customizations.
+
+2008-06-19  Milan Zamazal  <pdm@brailcom.org>
+
 	* lib/wiking/util.py:
 	Don't crash in util.Document.build when no title is available.
 
