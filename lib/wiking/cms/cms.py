@@ -1770,7 +1770,7 @@ class Users(EmbeddableCMSModule):
             Field('lang'),
             Field('regexpire', computer=Computer(self._registration_expiry, depends=())),
             Field('regcode', computer=Computer(self._registration_code, depends=())),
-            Field('certauth', _("Certificate authentication"), type=pd.Boolean(), virtual=True,
+            Field('certauth', _("Certificate authentication"), type=pd.Boolean(),
                   descr=_("Check this field to authenticate by a certificate rather than by "
                           "a password."), ),
             )
