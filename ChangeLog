@@ -1,3 +1,19 @@
+2008-06-19  Milan Zamazal  <pdm@brailcom.org>
+
+	* lib/wiking/cms/appl.py:
+	* lib/wiking/modules.py:
+	* lib/wiking/request.py:
+	* lib/wiking/util.py:
+	Setting authentication parameters of User instances improved
+	
+2008-06-19  Milan Zamazal  <pdm@brailcom.org>
+	
+	* lib/wiking/cms/cms.py:
+	* sql/wiking.sql:
+	Make the users.certauth field non-virtual, add it to the database schema
+	This is necessary to make the Users.Spec.check work properly in
+	all situations.
+
 2008-06-18  Milan Zamazal  <pdm@brailcom.org>
 
 	* lib/wiking/db.py:
