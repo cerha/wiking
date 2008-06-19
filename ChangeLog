@@ -1,5 +1,10 @@
 2008-06-19  Milan Zamazal  <pdm@brailcom.org>
 
+	* lib/wiking/util.py:
+	Don't crash in util.Document.build when no title is available.
+
+2008-06-19  Milan Zamazal  <pdm@brailcom.org>
+
 	* lib/wiking/cms/appl.py:
 	* lib/wiking/modules.py:
 	* lib/wiking/request.py:
