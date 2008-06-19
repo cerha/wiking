@@ -409,6 +409,8 @@ class CookieAuthentication(object):
             req.set_cookie(self._SESSION_COOKIE, None, secure=secure)
         elif req.param('command') == 'login' and not user:
             raise AuthenticationRedirect()
+        if user is not None:
+            user.set_authentication_parameters(method='password', auto=False)
         return user
 
     

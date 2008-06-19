@@ -476,7 +476,8 @@ class User(object):
         self._data = data
         self._passwd_expiration = passwd_expiration
         self._uri = uri
-        self._auto_auth = False
+        self._auto_authentication = False
+        self._authentication_method = None
         
     def login(self):
         """Return user's login name as a string."""
@@ -510,14 +511,40 @@ class User(object):
         """Return the URI of user's profile."""
         return self._uri
 
-    def auto_auth(self):
+    def auto_authentication(self):
         """Return true iff the user was authenticated automatically."""
-        return self._auto_auth
-    
-    def set_auto_auth(self):
-        """Set value provided by `auto_auth()' to true."""
-        self._auto_auth = True
+        return self._auto_authentication
 
+    def authentication_method(self):
+        """Return authentication method of the user.
+
+        It may be one of the string 'password' and 'certificate'.  If the user
+        wasn't authenticated, return 'None'.
+
+        """
+        return self._authentication_method
+    
+    def set_authentication_parameters(self, method=None, auto=None):
+        """Set authentication parameters of the user instance.
+
+        Arguments:
+
+          method -- authentication method used in the current request, one of
+            the strings 'password', 'certificate'
+          auto -- whether the user was initially authenticated
+            non-interactively, e.g. by using a certificate; boolean
+
+        If any of the arguments is unspecified, the corresponding parameter
+        retains its value.
+        
+        """
+        if method is not None:
+            assert method in ('password', 'certificate')
+            self._authentication_method = method
+        if auto is not None:
+            assert isinstance(auto, bool)
+            self._auto_authentication = auto
+        
     
 class Roles(object):
     """Static definition of available user roles."""

@@ -319,7 +319,7 @@ class LoginPanel(Panel):
                 uri = user.uri()
                 if uri:
                     username = g.link(username, uri, title=_("Go to your profile"))
-                if user.auto_auth():
+                if user.auto_authentication():
                     cmd = label = None
                 else:
                     cmd, label = ('logout', _("log out"))
