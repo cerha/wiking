@@ -1,3 +1,8 @@
+2008-06-20  Milan Zamazal  <pdm@brailcom.org>
+
+	* lib/wiking/cms/cms.py:
+	Send certtool template in the certificate request info mail.
+
 2008-06-20  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/handler.py: Handle Internal Server errors here.
