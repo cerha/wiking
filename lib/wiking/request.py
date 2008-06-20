@@ -43,6 +43,9 @@ class FileUpload(pytis.web.FileUpload):
         return self._field.type
 
 
+class ClosedConnection(Exception):
+    """Exception raised when the client closes the connection during communication."""
+    
 class Request(pytis.web.Request):
     """Mod_python request wrapper implementing the pytis request interface."""
     
@@ -169,10 +172,16 @@ class Request(pytis.web.Request):
         self._req.content_type = content_type
         if lenght is not None:
             self._req.set_content_length(lenght)
-        self._req.send_http_header()
+        try:
+            self._req.send_http_header()
+        except IOError, e:
+            raise ClosedConnection(str(e))
 
     def write(self, data):
-        self._req.write(data)
+        try:
+            self._req.write(data)
+        except IOError, e:
+            raise ClosedConnection(str(e))
         
     def done(self):
         return apache.OK
@@ -217,35 +226,18 @@ class Request(pytis.web.Request):
             f.close()
         return apache.OK        
 
-    def error(self, message):
-        self._req.content_type = "text/html; charset=UTF-8"
-        self._req.send_http_header()
-        self._req.status = apache.HTTP_INTERNAL_SERVER_ERROR
-        from xml.sax.saxutils import escape
-        admin = cfg.webmaster_address
-        self._req.write('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">\n' 
-                        "<html>\n"
-                        "<head>\n"
-                        "<title>501 Internal Server Error</title>\n"
-                        "</head>\n"
-                        "<body>\n"
-                        "<h1>Internal Server Error</h1>\n"
-                        "<p>The server was unable to complete your request. Please inform the "
-                        "server administrator, "+ admin +" if the problem persists.</p>\n"
-                        "<p>The error message was:</p>\n<pre>\n"+ escape(message) +"</pre>\n"
-                        "</body>\n"
-                        "</html>\n")
-        return apache.OK
-
     def redirect(self, uri, permanent=False):
         self._req.content_type = "text/html"
-        self._req.send_http_header()
+        try:
+            self._req.send_http_header()
+        except IOError, e:
+            raise ClosedConnection(str(e))
         self._req.status = permanent and apache.HTTP_MOVED_PERMANENTLY or \
                            apache.HTTP_MOVED_TEMPORARILY
         self.set_header('Location', uri)
-        self._req.write("<html><head><title>Redirected</title></head>"
-                        "<body>Your request has been redirected to "
-                        "<a href='"+uri+"'>"+uri+"</a>.</body></html>")
+        self.write("<html><head><title>Redirected</title></head>"
+                   "<body>Your request has been redirected to "
+                   "<a href='"+uri+"'>"+uri+"</a>.</body></html>")
         return apache.OK
 
 
