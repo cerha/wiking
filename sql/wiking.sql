@@ -24,7 +24,7 @@ CREATE TABLE users (
 	lang char(2) REFERENCES languages(lang),
         regexpire timestamp,
         regcode char(16),
-        certauth boolean DEFAULT 'FALSE'
+        certauth boolean NOT NULL DEFAULT 'FALSE'
 );
 ALTER TABLE users ALTER COLUMN since 
 SET DEFAULT current_timestamp(0) AT TIME ZONE 'GMT';
