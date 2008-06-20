@@ -1,7 +1,7 @@
 2008-06-20  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/configuration.py: Added docmentation.  Typos fixed.
-	CMS specific options marked as hidden.
+	CMS specific options marked as hidden.  Set correct option types.
 
 2008-06-20  Milan Zamazal  <pdm@brailcom.org>
 
