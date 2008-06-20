@@ -29,13 +29,15 @@ _ = lcg.TranslatableTextFactory('wiking')
 
 
 class RequestError(Exception):
-    """Base class for exceptions indicating an invalid request.
+    """Base class for predefined error states within request handling.
 
-    Exceptions of this class will be handled by displaying an error message
-    within the content part of the page.  The overall page layout, including
-    navigation and other static page content is displayed as on any other page.
-    These errors are not logged neither emailed, since they are caused by an
-    invalid request.
+    Exceptions of this class represent typical situations in request handling.  In most situations
+    they don't represent an error in the application, but rater an invalid state in request
+    processing, such as unauthorized access, request for an invalid URI etc.  Such errors are
+    normally handled by displaying an error message within the content part of the page.  The
+    overall page layout, including navigation and other static page content is displayed as on any
+    other page.  Most error types are not logged neither emailed, since they are caused by an
+    invalid request, not a bug in the application.
 
     """
     _TITLE = None
@@ -141,6 +143,21 @@ class NotAcceptable(HttpError):
         return lcg.coerce([lcg.p(p) for p in msg])
 
 
+class InternalServerError(HttpError):
+    """General error in application -- error message is required as an argument."""
+    ERROR_CODE = 500
+    
+    def title(self):
+        return _("Internal Server Error")
+
+    def message(self, req):
+        msg = (_("The server was unable to complete your request."),
+               _("Please inform the server administrator, %(admin)s if the problem persists.",
+                 admin=cfg.webmaster_address),
+               _("The error message was:"))
+        return lcg.coerce([lcg.p(p) for p in msg] + [lcg.PreformattedText(self.args[0])])
+
+    
 class MaintananceModeError(HttpError):
     """Error indicating an invalid action in mainenance mode.
 

@@ -238,15 +238,17 @@ class Application(Module):
           req -- current request object
           exception -- exception instance
 
+        The application can do any custom error processing within this method, but finally it must
+        either handle the request and return a request result or raise an 'InternalServerError'
+        exception to signal, that the handler should display an Internal Server Error page with an
+        error message.  The error message must be passed to the 'InternalServerError' constructor
+        as an argument.
+
         The default implementation sends a complete exception information (including Python
         traceback) by email if 'cfg.bug_report_address' has been set up.  If not, the traceback is
-        logged to server's error log.  The exception string (without traceback) is sent to the
-        browser with a 501 HTTP return code (Internal Server Error).
+        logged to server's error log.  'InternalServerError' is then raised.
 
         """
-        if isinstance(exception, IOError) \
-               and str(exception) == "Write failed, client closed connection.":
-            return req.done()
         import traceback, cgitb
         einfo = sys.exc_info()
         message = ''.join(traceback.format_exception_only(*einfo[:2]))
@@ -284,5 +286,5 @@ class Application(Module):
             log(OPR, "Error in exception handling:",
                 "".join(traceback.format_exception(*sys.exc_info())))
             log(OPR, "The original exception was:", text)
-        return req.error(message)
+        raise InternalServerError(message)
     

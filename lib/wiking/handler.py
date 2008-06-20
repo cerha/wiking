@@ -17,6 +17,8 @@
 
 from wiking import *
 
+_ = lcg.TranslatableTextFactory('wiking')
+
 class Handler(object):
     """Wiking handler.
 
@@ -31,37 +33,101 @@ class Handler(object):
         self._exporter = cfg.exporter(translations=cfg.translation_path)
         #log(OPR, 'New Handler instance for %s.' % hostname)
 
+    def _serve_error_document(self, req, error):
+        if isinstance(error, HttpError):
+            req.set_status(error.ERROR_CODE)
+        document = Document(error.title(), error.message(req))
+        return self._serve_document(req, document)
+
+    def _serve_document(self, req, document):
+        node = document.build(req, self._application)
+        context = self._exporter.context(node, node.lang(), req=req)
+        exported = self._exporter.export(context)
+        return req.result(context.translate(exported))
+
     def handle(self, req):
         application = self._application
+        req.path = req.path or ('index',)
         try:
-            req.path = req.path or ('index',)
             try:
                 application.configure(req)
                 result = application.handle(req)
-                if not isinstance(result, Document):
-                    if isinstance(result, int):
-                        return result
-                    else:
-                        content_type, data = result
-                        return req.result(data, content_type=content_type)
-                # Always perform authentication at the end (if it was not performed before) to
-                # handle authentication exceptions here and prevent them in export time.
-                req.user()
+                if isinstance(result, Document):
+                    # Always perform authentication (if it was not performed before) to handle
+                    # authentication exceptions here and prevent them in export time.
+                    req.user()
+                    return self._serve_document(req, result)
+                elif isinstance(result, int):
+                    return result
+                else:
+                    content_type, data = result
+                    return req.result(data, content_type=content_type)
             except RequestError, e:
                 try:
                     req.user()
                 except AuthenticationError, ae:
-                    result = Document(ae.title(), ae.message(req))
-                else:
-                    if isinstance(e, HttpError):
-                        req.set_status(e.ERROR_CODE)
-                    result = Document(e.title(), e.message(req))
-            node = result.build(req, application)
-            context = self._exporter.context(node, node.lang(), req=req)
-            output = context.translate(self._exporter.export(context))
-            return req.result(output)
+                    return self._serve_error_document(req, ae)
+                return self._serve_error_document(req, e)
+            except ClosedConnection:
+                return req.done()
+            except Exception, e:
+                # Try to return a nice error document produced by the exporter.
+                try:
+                    return application.handle_exception(req, e)
+                except InternalServerError, ie:
+                    return self._serve_error_document(req, ie)
+        except ClosedConnection:
+            return req.done()
         except Exception, e:
-            return application.handle_exception(req, e)
+            # If error document export fails, return an ugly error message.  It is reasonable to
+            # assume, that if RequestError handling fails, somethong is wrong with the exporter and
+            # nice error document export will fail too, so it is ok, to have them handled both at
+            # the same level above.
+            try:
+                return application.handle_exception(req, e)
+            except InternalServerError, error:
+                req.set_status(error.ERROR_CODE)
+
+                admin = cfg.webmaster_address
+                from xml.sax.saxutils import escape
+                from wiking import __version__
+                texts = (
+                    error.ERROR_CODE, error.title(),
+                    error.title(),
+                    _("The server was unable to complete your request."),
+                    _("Please inform the server administrator, %(admin)s if the problem persists.",
+                      admin=cfg.webmaster_address),
+                    _("The error message was:"),
+                    escape(error.args[0]),
+                    __version__)
+                try:
+                    tr = translator(req.prefered_language())
+                    texts = tuple([tr.translate(t) for t in texts])
+                except:
+                    pass
+                result = (
+                    '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">\n' 
+                    '<html>\n'
+                    '<head>\n'
+                    ' <title>%d %s</title>\n'
+                    ' <link rel="stylesheet" type="text/css" href="/_css/default.css" />\n'
+                    '</head>\n'
+                    '<body>\n'
+                    ' <div id="main-menu"></div>\n'
+                    ' <div id="content">\n'
+                    '  <h1>%s</h1>\n'
+                    '  <p>%s</p>\n'
+                    '  <p>%s</p>\n'
+                    '  <p>%s</p>\n'
+                    '  <pre class="lcg-preformatted-text">%s</pre>\n'
+                    ' </div>\n'
+                    ' <div id="wiking-bar">\n'
+                    '  <hr/>\n'
+                    '  <span><a href="http://www.freebsoft.org/wiking">Wiking</a> %s</span>\n'
+                    ' </div>\n'
+                    '</body>\n'
+                    '</html>\n') 
+                return req.result(result % texts)
 
 
 class ModPythonHandler(object):

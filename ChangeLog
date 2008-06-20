@@ -1,3 +1,20 @@
+2008-06-20  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/handler.py: Handle Internal Server errors here.
+	Print the error page translated and attempt use the Exporter.
+
+	* sql/wiking.sql (users): Set `certauth' as NOT NULL.
+
+	* lib/wiking/application.py (Application.handle_exception): Let
+	the handler handle Internal Server Errors.
+
+	* translations/wiking.cs.po: Updated translations.
+
+	* lib/wiking/request.py: Raise `ClosedConnection' exception on an
+	error during writing the data to the client.
+
+	* lib/wiking/util.py (InternalServerError): New class.
+
 2008-06-20  Milan Zamazal  <pdm@brailcom.org>
 
 	* lib/wiking/cms/cms.py:
