@@ -267,30 +267,29 @@ class Configuration(pc):
     # configuration files is ready, the options should be moved to CMS configuration.  The options
     # are currently marked as hidden to prevent them in the automatically generated documentation.
 
-    class _Option_registration_expiry_days(pc.Option, pc.HiddenOption):
+    class _Option_registration_expiry_days(pc.NumericOption, pc.HiddenOption):
         _DESCR = "Number of days after unanswered user registration expires"
         _DOC = ("When registration by e-mail is enabled, each newly registered user is required "
                 "to answer the registration e-mail within the limit given here.")
         _DEFAULT = 2
 
-    class _Option_certificate_expiration_days(pc.Option, pc.HiddenOption):
+    class _Option_certificate_expiration_days(pc.NumericOption, pc.HiddenOption):
         _DESCR = "Number of days to make signed certificates valid."
         _DOC = ("User authentication certificates signed by our local certificate authority "
                 "will be made valid for that number of days.")
         _DEFAULT = 5*365
 
-    class _Option_ca_certificate_file(pc.Option, pc.HiddenOption):
+    class _Option_ca_certificate_file(pc.StringOption, pc.HiddenOption):
         _DESCR = "Name of the file containing the local certification authority certificate."
         _DOC = ("This certificate is used to sign users' certificates used for authentication to the application.")
         _DEFAULT = '/etc/wiking/ca-cert.pem'
 
-    class _Option_ca_key_file(pc.Option, pc.HiddenOption):
+    class _Option_ca_key_file(pc.StringOption, pc.HiddenOption):
         _DESCR = "Name of the file containing the key corresponding to the local certification authority certificate."
         _DOC = ("This is the secret certificate private key.")
         _DEFAULT = '/etc/wiking/ca-key.pem'
 
-    class _Option_certificate_authentication(pc.Option, pc.HiddenOption):
-        _VISIBLE = False
+    class _Option_certificate_authentication(pc.BooleanOption, pc.HiddenOption):
         _DESCR = "Whether certificate authentication is enabled."
         def default(self):
             ca_certificate_file = self._configuration.ca_certificate_file
