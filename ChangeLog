@@ -1,6 +1,14 @@
 2008-06-20  Milan Zamazal  <pdm@brailcom.org>
 
 	* lib/wiking/cms/cms.py:
+	* lib/wiking/db.py:
+	* lib/wiking/export.py:
+	* lib/wiking/util.py:
+	Excessive newlines removed in a few places.
+
+2008-06-20  Milan Zamazal  <pdm@brailcom.org>
+
+	* lib/wiking/cms/cms.py:
 	Send certtool template in the certificate request info mail.
 
 2008-06-20  Tomas Cerha  <cerha@brailcom.org>
