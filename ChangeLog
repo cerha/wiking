@@ -1,4 +1,12 @@
 2008-06-20  Milan Zamazal  <pdm@brailcom.org>
+
+	* lib/wiking/cms/cms.py:
+	cms.Users.action_insert arguments made less wrong.
+	.
+	Note I don't understand action_* arguments at all, so there can still be.
+	something wrong there..
+
+2008-06-20  Milan Zamazal  <pdm@brailcom.org>
 	
 	* lib/wiking/cms/cms.py:
 	Support for generating new authentication certificate.
