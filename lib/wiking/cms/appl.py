@@ -115,7 +115,7 @@ class Application(CookieAuthentication, wiking.Application):
 
     def authenticate(self, req):
         user = None
-        if self._module('Users').Spec._CERTIFICATE_AUTHENTICATION:
+        if cfg.certificate_authentication:
             certificate = req.certificate()
             if certificate is not None:
                 user = self._module('UserCertificates').certificate_user(req, certificate)

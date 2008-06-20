@@ -255,6 +255,13 @@ class Configuration(pc):
         _DOC = ("This is the secret certificate private key.")
         _DEFAULT = '/etc/wiking/ca-key.pem'
 
+    class _Option_certificate_authentication(pc.Option):
+        _VISIBLE = False
+        _DESCR = "Whether certificate authentication is enabled."
+        def default(self):
+            ca_certificate_file = self._configuration.ca_certificate_file
+            return ca_certificate_file and os.path.exists(ca_certificate_file)
+
     class _Option_appl(pc.Option):
         _DESCR = "Application specific configuration"
         _DOC = ("This option makes it possible to define an application specific set of "

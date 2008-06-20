@@ -1702,7 +1702,6 @@ class Users(EmbeddableCMSModule):
                                                 Roles.ADMIN)))
         _ROLE_DICT = dict([(_code, (_title, _roles)) for _code, _title, _roles in _ROLES])
         _LOGIN_IS_EMAIL = False
-        _CERTIFICATE_AUTHENTICATION = None # must be one of: None, 'optional'
 
         def _fullname(self, row):
             name = row['firstname'].value()
@@ -1739,7 +1738,7 @@ class Users(EmbeddableCMSModule):
                           "dashes and dots and must start with a letter.")),
             Field('password', _("Password"), width=16,
                   type=pd.Password(minlen=4, maxlen=32,
-                                   not_null=(not self._CERTIFICATE_AUTHENTICATION)),
+                                   not_null=(not cfg.certificate_authentication)),
                   descr=_("Please, write the password into each of the two fields to eliminate "
                           "typos.")),
             Field('old_password', _(u"Old password"), virtual=True, width=16,
@@ -1819,7 +1818,7 @@ class Users(EmbeddableCMSModule):
                             'insert': ((FieldSet(_("Login information"),
                                                  ((self.Spec._LOGIN_IS_EMAIL and ('email',) or ('login',)) +
                                                   ('password',) +
-                                                  (self.Spec._CERTIFICATE_AUTHENTICATION and ('certauth',) or ())
+                                                  (cfg.certificate_authentication and ('certauth',) or ())
                                                   )),) +
                                        (FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname')),) +
                                        (FieldSet(_("Contact information"),
@@ -1855,7 +1854,7 @@ class Users(EmbeddableCMSModule):
         self._send_admin_confirmation_mail(req, record)
         content = lcg.p(_("Registration completed successfuly. "
                           "Your account now awaits administrator's approval."))
-        if self.Spec._CERTIFICATE_AUTHENTICATION:
+        if cfg.certificate_authentication:
             self._certificate_confirmation(req, record)
             content = lcg.Container((content, lcg.p(_("The signed certificate has been sent to you by e-mail."))))
         return Document(_("Registration confirmed"), content)
@@ -1947,7 +1946,7 @@ class Users(EmbeddableCMSModule):
             msg, err = None, None
             base_uri = self._application.module_uri('Registration') or '/_wmi/'+ self.name()
             server_hostname = req.server_hostname()
-            certificate_authentication = (self.Spec._CERTIFICATE_AUTHENTICATION and req.param('certauth'))
+            certificate_authentication = (cfg.certificate_authentication and req.param('certauth'))
             if certificate_authentication:
                 action = 'certload'
             else:
