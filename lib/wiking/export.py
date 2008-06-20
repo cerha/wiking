@@ -242,6 +242,3 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
                 g.p(_("This site conforms to the following standards:"), *links),
                 g.p(_("This site can be viewed in ANY browser.") + a11y),
                 g.p(_("Contact:"), g.link(contact, "mailto:"+ contact)))
-
-
-

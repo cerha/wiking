@@ -20,7 +20,6 @@ from wiking import *
 _ = lcg.TranslatableTextFactory('wiking')
 
 
-
 class PytisModule(Module, ActionHandler):
     """Module bound to a Pytis data object.
 

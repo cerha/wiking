@@ -604,9 +604,6 @@ class Mapping(CMSModule):
             return pp.CodebookSpec(display=self._translate, prefer_display=True)
 
 
-        
-
-            
 class Panels(CMSModule, Publishable):
     """Provide a set of side panels.
 

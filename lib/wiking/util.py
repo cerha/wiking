@@ -955,7 +955,6 @@ class Time(pytis.data.Time):
 # ============================================================================
 
 
-
 def timeit(func, *args, **kwargs):
     """Measure the function execution time.
 
