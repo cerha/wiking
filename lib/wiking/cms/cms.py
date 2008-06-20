@@ -176,10 +176,15 @@ class Registration(Module, ActionHandler):
         if not cfg.appl.allow_registration:
             raise Forbidden()
         if req.param('form-name') == 'CertificateRequest':
-            module = 'CertificateRequest'
+            certificate_request_module = self._module('CertificateRequest')
+            record, errors, layout = certificate_request_module.action_insert_perform(req)
+            if errors:
+                result = certificate_request_module.action_insert_document(req, layout, errors,
+                                                                           record)
+            else:
+                result = self.action_confirm(req)
         else:
-            module = 'Users'
-        result = self._module(module).action_insert(req)
+            result = self._module('Users').action_insert(req)
         return result
     RIGHTS_insert = (Roles.ANYONE,)
     
@@ -229,7 +234,7 @@ class Registration(Module, ActionHandler):
     def action_certload(self, req):
         record, error = self._module('Users').check_registration_code(req)
         if error:
-            return Document(_("Invalid authorization"), ErrorMessage(error))
+            raise AuthorizationError()
         return self._module('CertificateRequest').action_insert(req)
     RIGHTS_certload = (Roles.ANYONE,)
 
@@ -1790,11 +1795,18 @@ class Users(EmbeddableCMSModule):
     _OWNER_COLUMN = 'uid'
     _SUPPLY_OWNER = False
     _LAYOUT = {} # to be initialized in the constructor and/or redefined in a subclass
-    _DEFAULT_ACTIONS_FIRST = (
-        Action(_("Edit profile"), 'update', descr=_("Modify user's record")),
-        Action(_("Access rights"), 'rights', descr=_("Change access rights")),
-        Action(_("Change password"), 'passwd', descr=_("Change user's password")),
-        )
+    def _default_actions_first(self, req, record):
+        actions = (Action(_("Edit profile"), 'update', descr=_("Modify user's record")),
+                   Action(_("Access rights"), 'rights', descr=_("Change access rights")),)
+        authentication_method = req.user().authentication_method()
+        if authentication_method == 'password':
+            actions += (Action(_("Change password"), 'passwd',
+                               descr=_("Change user's password")),)
+        elif authentication_method == 'certificate':
+            actions += (Action(_("Change certificate"), 'newcert',
+                               descr=_("Generate new certificate"),
+                               uid=req.user().uid()),)
+        return actions
     RIGHTS_insert = (Roles.ANYONE,)
     RIGHTS_update = (Roles.ADMIN, Roles.OWNER)
     RIGHTS_delete = (Roles.ADMIN,) #, Roles.OWNER)
@@ -1822,20 +1834,33 @@ class Users(EmbeddableCMSModule):
         
     def _send_admin_confirmation_mail(self, req, record):
         self._module('Users').send_admin_approval_mail(req, record)
-    
+
+    def _certificate_confirmation(self, req, record, email=None):
+        uid = record['uid'].value()
+        certificate_row = self._module('UserCertificates').authentication_certificate(uid)
+        if certificate_row is not None:
+            certificate = certificate_row['certificate'].value()
+            text = _("Here is your certifiate to authenticate to the application")
+            try:
+                language = record['lang'].value()
+            except KeyError:
+                language = req.prefered_language()
+            if email is None:
+                email = record['email'].value()
+            send_mail(email,
+                      _("Your certificate for %s", req.server_hostname()),
+                      text,
+                      lang=language,
+                      attachment='cert.pem',
+                      attachment_stream=cStringIO.StringIO(str(certificate)))
+        
     def _confirmation_success(self, req, record):
         self._send_admin_confirmation_mail(req, record)
         content = lcg.p(_("Registration completed successfuly. "
                           "Your account now awaits administrator's approval."))
         if self.Spec._CERTIFICATE_AUTHENTICATION:
-            uid = record['uid'].value()
-            certificate_row = self._module('UserCertificates').authentication_certificate(uid)
-            if certificate_row is not None:
-                certificate = certificate_row['certificate'].value()
-                text = _("Here is your certifiate to authenticate to the application")
-                send_mail(record['email'].value(), _("Your certificate for %s", req.server_hostname()), text, lang=record['lang'].value(),
-                          attachment='cert.pem', attachment_stream=cStringIO.StringIO(str(certificate)))
-                content = lcg.Container((content, lcg.p(_("The signed certificate has been sent to you by e-mail."))))
+            self._certificate_confirmation(req, record)
+            content = lcg.Container((content, lcg.p(_("The signed certificate has been sent to you by e-mail."))))
         return Document(_("Registration confirmed"), content)
     
     def _confirmation_failure(self, req, error_message):
@@ -1858,6 +1883,29 @@ class Users(EmbeddableCMSModule):
             result = self._confirmation_failure(req, error_message)
         return result
     RIGHTS_certload = (Roles.ANYONE,)
+
+    def action_insert(self, req, record):
+        if req.param('form-name') == 'CertificateRequest':
+            result = self.action_newcert(req, record)
+        else:
+            result = super(Users, self).action_insert(req, record)
+        return result
+    
+    def action_newcert(self, req, record):
+        certificate_request_module = self._module('CertificateRequest')
+        if req.param('submit'):
+            record, errors, layout = certificate_request_module.action_insert_perform(req)
+            if errors:
+                result = certificate_request_module.action_insert_document(req, layout, errors,
+                                                                           record)
+            else:
+                email = req.user().email()
+                self._certificate_confirmation(req, record, email=email)
+                result = Document(_("Certificate updated"), lcg.p(_("New certificate installed.")))
+        else:
+            result = certificate_request_module.action_insert(req)
+        return result
+    RIGHTS_newcert = (Roles.OWNER,)
     
     def _validate(self, req, record, layout=None):
         if record.new():
@@ -2591,9 +2639,6 @@ class CertificateRequest(UserCertificates):
         spec = super(CertificateRequest, self)._spec(resolver)
         spec._set_dbconnection(self._dbconnection)
         return spec
-
-    def _redirect_after_insert(self, req, record):
-        return self._module('Registration').action_confirm(req)
 
     def _layout(self, req, action, record=None):
         # This is necessary to propagate `uid' given in the form to the actual
