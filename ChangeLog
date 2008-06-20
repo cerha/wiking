@@ -1,5 +1,11 @@
 2008-06-20  Milan Zamazal  <pdm@brailcom.org>
 
+	* lib/wiking/cms/cms.py:
+	* lib/wiking/configuration.py:
+	cms.Users.Spec._LOGIN_IS_EMAIL replaced by a configuration option.
+
+2008-06-20  Milan Zamazal  <pdm@brailcom.org>
+
 	* lib/wiking/cms/appl.py:
 	* lib/wiking/cms/cms.py:
 	* lib/wiking/configuration.py:
