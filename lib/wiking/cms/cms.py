@@ -1955,17 +1955,35 @@ class Users(EmbeddableCMSModule):
                 action = 'certload'
             else:
                 action = 'confirm'
-            uri = '%s%s?action=%s&uid=%s&regcode=%s' % (req.server_uri(), base_uri, action, record['uid'].value(), record['regcode'].value())
+            user_email = record['email'].value()
+            uri = '%s%s?action=%s&uid=%s&regcode=%s' % (req.server_uri(), base_uri, action,
+                                                        record['uid'].value(),
+                                                        record['regcode'].value())
             text = _("You have been successfully registered at %(server_hostname)s. "
                      "To complete your registration visit the URL %(uri)s and follow "
                      "the instructions there.\n",
                      server_hostname=server_hostname,
                      uri=uri)
             if certificate_authentication:
-                text += _("\nYou will be asked to upload certificate request.\n"
-                          "To generate the request, you can use the attached GnuTLS or OpenSSL configuration files.\n")
-            user_email = record['email'].value()
-            err = send_mail(user_email, _("Your registration at %s" % (server_hostname,)), text, lang=record['lang'].value())
+                text += _("\nYou will be asked to upload your certificate request.\n"
+                          "To generate the request, you can use the certtool utility from the "
+                          "GnuTLS suite and the attached certtool configuration file.\n"
+                          "In such a case use the following command to generate the certificate "
+                          "request, assuming your private key is stored in a file named `key.pem':"
+                          "\n\n"
+                          "  certtool --generate-request --template certtool.cfg --load-privkey "
+                          "key.pem --outfile request.pem\n\n")
+                attachment = "certtool.cfg"
+                user_name = '%s %s' % (record['firstname'].value(), record['surname'].value(),)
+                attachment_stream = cStringIO.StringIO(str (('cn = "%s"\nemail = "%s"\n'
+                                                            'tls_www_client\nencryption_key\n') %
+                                                           (user_name, user_email,)))
+            else:
+                attachment = None
+                attachment_stream = None
+            err = send_mail(user_email, _("Your registration at %s" % (server_hostname,)), text,
+                            lang=record['lang'].value(),
+                            attachment=attachment, attachment_stream=attachment_stream)
             if err:
                 self._data.delete(record['uid'])
                 err = _("Failed sending e-mail notification:") +' '+ err + '\n' + _("Registration cancelled.")
