@@ -1884,11 +1884,11 @@ class Users(EmbeddableCMSModule):
         return result
     RIGHTS_certload = (Roles.ANYONE,)
 
-    def action_insert(self, req, record):
+    def action_insert(self, req, record=None):
         if req.param('form-name') == 'CertificateRequest':
             result = self.action_newcert(req, record)
         else:
-            result = super(Users, self).action_insert(req, record)
+            result = super(Users, self).action_insert(req)
         return result
     
     def action_newcert(self, req, record):
