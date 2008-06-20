@@ -1,3 +1,8 @@
+2008-06-20  Milan Zamazal  <pdm@brailcom.org>
+	
+	* lib/wiking/cms/cms.py:
+	Support for generating new authentication certificate.
+
 2008-06-19  Milan Zamazal  <pdm@brailcom.org>
 
 	* lib/wiking/db.py:
