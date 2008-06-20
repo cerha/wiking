@@ -1685,9 +1685,6 @@ class Users(EmbeddableCMSModule):
 
     This module is used by the Wiking CMS application to retrieve the login
     information.
-
-    If the 'Spec._LOGIN_IS_EMAIL' attribute is set by a customized subclass to
-    'True', user's e-mail address is used as his login name.
     
     """
     class Spec(Specification):
@@ -1701,7 +1698,6 @@ class Users(EmbeddableCMSModule):
                   ('admn', _("Administrator"), (Roles.USER, Roles.CONTRIBUTOR, Roles.AUTHOR,
                                                 Roles.ADMIN)))
         _ROLE_DICT = dict([(_code, (_title, _roles)) for _code, _title, _roles in _ROLES])
-        _LOGIN_IS_EMAIL = False
 
         def _fullname(self, row):
             name = row['firstname'].value()
@@ -1717,12 +1713,12 @@ class Users(EmbeddableCMSModule):
             else:
                 return row['fullname'].value()
         def _registration_expiry(self, row):
-            if not self._LOGIN_IS_EMAIL:
+            if cfg.login_is_email:
                 return None
             expiry_days = cfg.registration_expiry_days
             return mx.DateTime.now().gmtime() + mx.DateTime.TimeDelta(hours=expiry_days*24)
         def _registration_code(self, row):
-            if not self._LOGIN_IS_EMAIL:
+            if not cfg.login_is_email:
                 return None
             import random
             import string
@@ -1732,7 +1728,7 @@ class Users(EmbeddableCMSModule):
             Field('uid', width=8, editable=NEVER),
             Field('login', _("Login name"), width=16, editable=ONCE,
                   type=pd.RegexString(maxlen=16, not_null=True, regex='^[a-zA-Z][0-9a-zA-Z_\.-]*$'),
-                  computer=(self._LOGIN_IS_EMAIL and 
+                  computer=(cfg.login_is_email and 
                             Computer(lambda r: r['email'].value(), depends=('email',)) or None),
                   descr=_("A valid login name can only contain letters, digits, underscores, "
                           "dashes and dots and must start with a letter.")),
@@ -1757,7 +1753,7 @@ class Users(EmbeddableCMSModule):
             Field('nickname', _("Displayed name"),
                   descr=_("Leave blank if you want to be referred by your full name or enter an "
                           "alternate name, such as nickname or monogram.")),
-            Field('email', _("E-mail"), not_null=self._LOGIN_IS_EMAIL, width=36),
+            Field('email', _("E-mail"), not_null=cfg.login_is_email, width=36),
             Field('phone', _("Phone")),
             Field('address', _("Address"), width=20, height=3),
             Field('uri', _("URI"), width=36),
@@ -1814,15 +1810,15 @@ class Users(EmbeddableCMSModule):
         super(Users, self).__init__(*args, **kwargs)
         if not self._LAYOUT:
             self._LAYOUT = {'rights': ('role',),
-                            'passwd': ((self.Spec._LOGIN_IS_EMAIL and 'email' or 'login'), 'old_password', 'new_password',),
+                            'passwd': ((cfg.login_is_email and 'email' or 'login'), 'old_password', 'new_password',),
                             'insert': ((FieldSet(_("Login information"),
-                                                 ((self.Spec._LOGIN_IS_EMAIL and ('email',) or ('login',)) +
+                                                 ((cfg.login_is_email and ('email',) or ('login',)) +
                                                   ('password',) +
                                                   (cfg.certificate_authentication and ('certauth',) or ())
                                                   )),) +
                                        (FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname')),) +
                                        (FieldSet(_("Contact information"),
-                                                 (((not self.Spec._LOGIN_IS_EMAIL) and ('email',) or ()) +
+                                                 (((not cfg.login_is_email) and ('email',) or ()) +
                                                   ('phone', 'address', 'uri',))),)),
                             'view':   (FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname')),
                                        FieldSet(_("Contact information"), ('email', 'phone', 'address','uri')),
@@ -1941,7 +1937,7 @@ class Users(EmbeddableCMSModule):
         return content
     
     def _redirect_after_insert(self, req, record):
-        if self.Spec._LOGIN_IS_EMAIL:
+        if cfg.login_is_email:
             content = lcg.p('')
             msg, err = None, None
             base_uri = self._application.module_uri('Registration') or '/_wmi/'+ self.name()

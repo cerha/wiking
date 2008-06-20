@@ -262,6 +262,11 @@ class Configuration(pc):
             ca_certificate_file = self._configuration.ca_certificate_file
             return ca_certificate_file and os.path.exists(ca_certificate_file)
 
+    class _Option_login_is_email(pc.BooleanOption):
+        _DESCR = _("Whether to use e-mails as login names")
+        _DOC = _("Iff true, users must use e-mails as their login names.")
+        _DEFAULT = False
+
     class _Option_appl(pc.Option):
         _DESCR = "Application specific configuration"
         _DOC = ("This option makes it possible to define an application specific set of "
