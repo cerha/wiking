@@ -1,3 +1,8 @@
+2008-06-23  Milan Zamazal  <pdm@brailcom.org>
+
+	* lib/wiking/cms/cms.py:
+	Validate users' e-mail addresses.
+
 2008-06-20  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/configuration.py: Added docmentation.  Typos fixed.
