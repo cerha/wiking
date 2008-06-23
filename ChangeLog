@@ -1,4 +1,3 @@
-<<<<<<< ChangeLog
 2008-06-23  Tomas Cerha  <cerha@brailcom.org>
 
 	* resources/css/default.css: Added styles for index search
@@ -7,7 +6,6 @@
 	* lib/wiking/util.py (ActionCtrl.export): Jump to the corresponding
 	record in the 'list' action URI.
 
-=======
 2008-06-23  Milan Zamazal  <pdm@brailcom.org>
 
 	* lib/wiking/util.py:
@@ -18,7 +16,6 @@
 	* lib/wiking/cms/cms.py:
 	Validate users' e-mail addresses.
 
->>>>>>> 1.274
 2008-06-20  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/configuration.py: Added docmentation.  Typos fixed.
