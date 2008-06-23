@@ -1940,47 +1940,50 @@ class Users(EmbeddableCMSModule):
         content = lcg.p(_("Registration completed successfuly. "
                           "Your account now awaits administrator's approval."))
         return content
-    
+
+    def _make_registration_email(self, req, record):
+        msg, err = None, None
+        base_uri = self._application.module_uri('Registration') or '/_wmi/'+ self.name()
+        server_hostname = req.server_hostname()
+        certificate_authentication = (cfg.certificate_authentication and req.param('certauth'))
+        if certificate_authentication:
+            action = 'certload'
+        else:
+            action = 'confirm'
+        user_email = record['email'].value()
+        uri = '%s%s?action=%s&uid=%s&regcode=%s' % (req.server_uri(), base_uri, action,
+                                                    record['uid'].value(),
+                                                    record['regcode'].value())
+        text = _("You have been successfully registered at %(server_hostname)s. "
+                 "To complete your registration visit the URL %(uri)s and follow "
+                 "the instructions there.\n",
+                 server_hostname=server_hostname,
+                 uri=uri)
+        attachments = ()
+        if certificate_authentication:
+            text += _("\nYou will be asked to upload your certificate request.\n"
+                      "To generate the request, you can use the certtool utility from the "
+                      "GnuTLS suite and the attached certtool configuration file.\n"
+                      "In such a case use the following command to generate the certificate "
+                      "request, assuming your private key is stored in a file named `key.pem':"
+                      "\n\n"
+                      "  certtool --generate-request --template certtool.cfg --load-privkey "
+                      "key.pem --outfile request.pem\n\n")
+            attachment = "certtool.cfg"
+            user_name = '%s %s' % (record['firstname'].value(), record['surname'].value(),)
+            attachment_stream = cStringIO.StringIO(str (('cn = "%s"\nemail = "%s"\n'
+                                                        'tls_www_client\nencryption_key\n') %
+                                                       (user_name, user_email,)))
+            attachments += (MailAttachment(attachment, stream=attachment_stream),)
+        return text, attachments
+
     def _redirect_after_insert(self, req, record):
+        content = lcg.p('')
         if cfg.login_is_email:
-            content = lcg.p('')
-            msg, err = None, None
-            base_uri = self._application.module_uri('Registration') or '/_wmi/'+ self.name()
-            server_hostname = req.server_hostname()
-            certificate_authentication = (cfg.certificate_authentication and req.param('certauth'))
-            if certificate_authentication:
-                action = 'certload'
-            else:
-                action = 'confirm'
+            text, attachments = self._make_registration_email(req, record)
             user_email = record['email'].value()
-            uri = '%s%s?action=%s&uid=%s&regcode=%s' % (req.server_uri(), base_uri, action,
-                                                        record['uid'].value(),
-                                                        record['regcode'].value())
-            text = _("You have been successfully registered at %(server_hostname)s. "
-                     "To complete your registration visit the URL %(uri)s and follow "
-                     "the instructions there.\n",
-                     server_hostname=server_hostname,
-                     uri=uri)
-            if certificate_authentication:
-                text += _("\nYou will be asked to upload your certificate request.\n"
-                          "To generate the request, you can use the certtool utility from the "
-                          "GnuTLS suite and the attached certtool configuration file.\n"
-                          "In such a case use the following command to generate the certificate "
-                          "request, assuming your private key is stored in a file named `key.pem':"
-                          "\n\n"
-                          "  certtool --generate-request --template certtool.cfg --load-privkey "
-                          "key.pem --outfile request.pem\n\n")
-                attachment = "certtool.cfg"
-                user_name = '%s %s' % (record['firstname'].value(), record['surname'].value(),)
-                attachment_stream = cStringIO.StringIO(str (('cn = "%s"\nemail = "%s"\n'
-                                                            'tls_www_client\nencryption_key\n') %
-                                                           (user_name, user_email,)))
-            else:
-                attachment = None
-                attachment_stream = None
-            err = send_mail(user_email, _("Your registration at %s" % (server_hostname,)), text,
-                            lang=record['lang'].value(),
-                            attachments=(MailAttachment(attachment, stream=attachment_stream),))
+            err = send_mail(user_email, _("Your registration at %s" % (req.server_hostname(),)), text,
+                            lang=record['lang'].value(), attachments=attachments)
             if err:
                 self._data.delete(record['uid'])
                 err = _("Failed sending e-mail notification:") +' '+ err + '\n' + _("Registration cancelled.")
