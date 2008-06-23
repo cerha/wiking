@@ -1,6 +1,11 @@
 2008-06-23  Milan Zamazal  <pdm@brailcom.org>
 
 	* lib/wiking/cms/cms.py:
+	Create registration e-mail in a separate method.
+
+2008-06-23  Milan Zamazal  <pdm@brailcom.org>
+
+	* lib/wiking/cms/cms.py:
 	* lib/wiking/util.py:
 	Allow multiple attachments in e-mails.
 	.
