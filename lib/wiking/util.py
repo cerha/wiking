@@ -1133,6 +1133,8 @@ def validate_email_address(address, helo=None):
     of the address on remote sites.
 
     """
+    assert isinstance(address, basestring)
+    address = str(address)      # DNS query doesn't work with unicode
     import dns.resolver
     import smtplib
     try:
