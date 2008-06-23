@@ -995,9 +995,41 @@ def rss(title, url, items, descr, lang=None, webmaster=None):
     </item>''' for title, url, descr, date, author in items])
     return result
 
+class MailAttachment(object):
+    """Definition of a mail attachment.
+
+    Mail attachment is defined by the following attributes, given in the class
+    instance constructor:
+
+      type -- MIME type of the attachment, as a string
+      file_name -- file name of the attachment as a string, this argument must
+        be always provided
+      stream -- stream to read the given attachment from; if it is unspecified
+        the contents file specified by 'file_name' is used
+
+    """
+    def __init__(self, file_name, stream=None, type='application/octet-stream'):
+        assert file_name is None or isinstance(file_name, basestring), ('type error', file_name,)
+        assert stream is None or hasattr(stream, 'read'), ('type error', stream,)
+        assert isinstance(type, basestring), ('type error', type,)
+        self._file_name = file_name
+        if stream is None:
+            self._stream = open(file_name)
+        else:
+            self._stream = stream
+        self._type = type
+    def file_name(self):
+        """Return relative or full name of the attachment."""
+        return self._file_name
+    def stream(self):
+        """Return the attachment data source as a file-like object."""
+        return self._stream
+    def type(self):
+        """Return MIME type of the attachment."""
+        return self._type
+    
 def send_mail(addr, subject, text, sender=None, html=None, lang=None, cc=(), headers=(),
-              attachment=None, attachment_stream=None, attachment_type='application/octet-stream',
-              smtp_server=None):
+              attachments=(), smtp_server=None):
     """Send a MIME e-mail message.
 
     Arguments:
@@ -1015,11 +1047,8 @@ def send_mail(addr, subject, text, sender=None, html=None, lang=None, cc=(), hea
         of pairs (HEADER, VALUE) where HEADER is an ASCII string containing
         the header name (without the final colon) and value is an ASCII string
         containing the header value
-      attachment -- name of the file to attach; if it is 'None', there is no
-        attachment
-      attachment_stream -- if not 'None' and 'attachment' is not 'None', read
-        attachment data from the given stream
-      attachment_type -- attachment MIME type as a string
+      attachments -- sequence of 'MailAttachment' instances describing the objects to attach
+        to the mail
       smtp_server -- SMTP server name to use for sending the message as a
         string; if 'None', server given in configuration is used
       
@@ -1032,10 +1061,10 @@ def send_mail(addr, subject, text, sender=None, html=None, lang=None, cc=(), hea
     assert html is None or isinstance(html, basestring), ('type error', html,)
     assert lang is None or isinstance(lang, basestring), ('type error', lang,)
     assert isinstance(cc, (tuple, list,)), ('type error', cc,)
-    assert attachment is None or isinstance(attachment, basestring), ('type error', attachment,)
-    assert attachment_stream is None or hasattr(attachment_stream, 'read'), ('type error', attachment_stream,)
-    assert isinstance(attachment_type, basestring), ('type error', attachment_type,)
     assert smtp_server is None or isinstance(smtp_server, basestring), ('type error', smtp_server,)
+    if __debug__:
+        for a in attachments:
+            assert isinstance(a, MailAttachment), ('type error', attachments, a,)
     import MimeWriter
     import mimetools
     from cStringIO import StringIO
@@ -1061,10 +1090,10 @@ def send_mail(addr, subject, text, sender=None, html=None, lang=None, cc=(), hea
     writer.addheader("MIME-Version", "1.0")
     # Start the multipart section (multipart/alternative seems to work better
     # on some MUAs than multipart/mixed).
-    if attachment is None:
-        multipart_type = 'alternative'
-    else:
+    if attachments:
         multipart_type = 'mixed'
+    else:
+        multipart_type = 'alternative'
     writer.startmultipartbody(multipart_type)
     writer.flushheaders()
     # The plain text section.
@@ -1088,15 +1117,13 @@ def send_mail(addr, subject, text, sender=None, html=None, lang=None, cc=(), hea
         mimetools.encode(htmlin, pout, 'quoted-printable')
         htmlin.close()
     # The attachment section.
-    if attachment is not None:
+    for a in attachments:
         subpart = writer.nextpart()
         subpart.addheader('Content-Transfer-Encoding', 'base64')
-        subpart.addheader('Content-Disposition', 'attachment; filename=%s' % os.path.basename(attachment))
-        if attachment_stream is None:
-            attin = file(attachment)
-        else:
-            attin = attachment_stream
-        pout = subpart.startbody(attachment_type)
+        subpart.addheader('Content-Disposition', ('attachment; filename=%s' %
+                                                  (os.path.basename(a.file_name()),)))
+        attin = a.stream()
+        pout = subpart.startbody(a.type())
         mimetools.encode(attin, pout, 'base64')
         attin.close()
     # Close the writer and send the message.

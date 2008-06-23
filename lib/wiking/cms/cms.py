@@ -1848,8 +1848,8 @@ class Users(EmbeddableCMSModule):
                       _("Your certificate for %s", req.server_hostname()),
                       text,
                       lang=language,
-                      attachment='cert.pem',
-                      attachment_stream=cStringIO.StringIO(str(certificate)))
+                      attachments=(MailAttachment('cert.pem',
+                                                  stream=cStringIO.StringIO(str(certificate))),))
         
     def _confirmation_success(self, req, record):
         self._send_admin_confirmation_mail(req, record)
@@ -1980,7 +1980,7 @@ class Users(EmbeddableCMSModule):
                 attachment_stream = None
             err = send_mail(user_email, _("Your registration at %s" % (server_hostname,)), text,
                             lang=record['lang'].value(),
-                            attachment=attachment, attachment_stream=attachment_stream)
+                            attachments=(MailAttachment(attachment, stream=attachment_stream),))
             if err:
                 self._data.delete(record['uid'])
                 err = _("Failed sending e-mail notification:") +' '+ err + '\n' + _("Registration cancelled.")
