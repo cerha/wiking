@@ -1,3 +1,11 @@
+2008-06-23  Milan Zamazal  <pdm@brailcom.org>
+
+	* lib/wiking/cms/cms.py:
+	* lib/wiking/util.py:
+	Allow multiple attachments in e-mails.
+	.
+	Attachment arguments in `send_mail' reworked..
+
 2008-06-23  Tomas Cerha  <cerha@brailcom.org>
 
 	* resources/css/default.css: Added styles for index search
