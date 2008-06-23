@@ -1753,7 +1753,7 @@ class Users(EmbeddableCMSModule):
             Field('nickname', _("Displayed name"),
                   descr=_("Leave blank if you want to be referred by your full name or enter an "
                           "alternate name, such as nickname or monogram.")),
-            Field('email', _("E-mail"), not_null=cfg.login_is_email, width=36),
+            Field('email', _("E-mail"), not_null=cfg.login_is_email, width=36, constraints=(self._check_email,)),
             Field('phone', _("Phone")),
             Field('address', _("Address"), width=20, height=3),
             Field('uri', _("URI"), width=36),
@@ -1772,8 +1772,13 @@ class Users(EmbeddableCMSModule):
                           "a password."), ),
             )
         def check(self, row):
-            if not row['password'].value() and not row['certauth'].value():
-                return 'password', _("No password given")
+            if cfg.certificate_authentication:
+                if not row['password'].value() and not row['certauth'].value():
+                    return 'password', _("No password given")
+        def _check_email(self, email):
+            result = wiking.validate_email_address(email)
+            if not result[0]:
+                return _("Invalid e-mail address: %s", result[1])
         def _rolename(self, code):
             return self._ROLE_DICT[code][0]
         columns = ('fullname', 'nickname', 'email', 'role', 'since')
