@@ -1,5 +1,10 @@
 2008-06-23  Milan Zamazal  <pdm@brailcom.org>
 
+	* lib/wiking/util.py:
+	Convert e-mail address to `str' before checking it for validity.
+
+2008-06-23  Milan Zamazal  <pdm@brailcom.org>
+
 	* lib/wiking/cms/cms.py:
 	Validate users' e-mail addresses.
 
