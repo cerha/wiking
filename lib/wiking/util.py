@@ -547,12 +547,14 @@ class ActionCtrl(lcg.Content):
         if enabled:
             args = action.kwargs() or {}
             uri = self._uri
-            if action.name() in ('delete', 'list'):
+            anchor = None
+            if action.name() == 'list':
                 key = self._row.data().key()[0].id()
-                if action.name() == 'delete':
-                    args = dict(args, **{key: self._row[key].export()})
-                else:
-                    args = dict(args, search=self._row[key].export(), module=self._name)
+                args = dict(args, search=self._row[key].export(), module=self._name)
+                anchor = 'found-record'
+            elif action.name() == 'delete':
+                key = self._row.data().key()[0].id()
+                args = dict(args, **{key: self._row[key].export()})
             elif action.name() == 'insert' and self._row is None:
                 args = dict(args, module=self._name, **self._relation)
             elif self._referer is not None and self._row:
@@ -560,6 +562,8 @@ class ActionCtrl(lcg.Content):
                     uri += '/'
                 uri += self._row[self._referer].export()
             target = g.uri(uri, action=action.name(), **args)
+            if anchor:
+                target += '#'+anchor
             cls = None
         else:
             target = None
