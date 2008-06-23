@@ -437,10 +437,17 @@ form.browse-form-controls span.limit {
 form.browse-form-controls span.offset, form.browse-form-controls span.buttons {
     float: left;
 }
+form.browse-form-controls div.index-search-controls {
+    text-align: left;
+    padding-bottom: 0.3em;
+}
 form.browse-form-controls span.buttons input.prev {
     margin-left: 1em;
 }
-s
+form.browse-form #found-record {
+    background: $color.highlight-bg;
+}
+
 form.list-view div.list-item {
     margin-bottom: 1.1em;
 }
