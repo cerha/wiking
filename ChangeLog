@@ -1,6 +1,12 @@
 2008-06-24  Milan Zamazal  <pdm@brailcom.org>
 
 	* lib/wiking/cms/cms.py:
+	* sql/wiking.sql:
+	New module cms.Organizations.
+
+2008-06-24  Milan Zamazal  <pdm@brailcom.org>
+
+	* lib/wiking/cms/cms.py:
 	Mistake in setting user registration expiry fixed.
 
 2008-06-23  Milan Zamazal  <pdm@brailcom.org>
