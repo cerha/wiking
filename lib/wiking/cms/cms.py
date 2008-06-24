@@ -1713,7 +1713,7 @@ class Users(EmbeddableCMSModule):
             else:
                 return row['fullname'].value()
         def _registration_expiry(self, row):
-            if cfg.login_is_email:
+            if not cfg.login_is_email:
                 return None
             expiry_days = cfg.registration_expiry_days
             return mx.DateTime.now().gmtime() + mx.DateTime.TimeDelta(hours=expiry_days*24)
