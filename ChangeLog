@@ -1,3 +1,8 @@
+2008-06-24  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/util.py: Don't jump to the record in the 'list'
+	action URI.
+
 2008-06-24  Milan Zamazal  <pdm@brailcom.org>
 
 	* lib/wiking/cms/cms.py:
