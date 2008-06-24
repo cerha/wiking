@@ -551,7 +551,7 @@ class ActionCtrl(lcg.Content):
             if action.name() == 'list':
                 key = self._row.data().key()[0].id()
                 args = dict(args, search=self._row[key].export(), module=self._name)
-                anchor = 'found-record'
+                #anchor = 'found-record'
             elif action.name() == 'delete':
                 key = self._row.data().key()[0].id()
                 args = dict(args, **{key: self._row[key].export()})
