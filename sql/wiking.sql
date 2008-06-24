@@ -7,6 +7,19 @@ CREATE TABLE languages (
 
 -------------------------------------------------------------------------------
 
+CREATE TABLE organizations (
+       organization_id serial PRIMARY KEY,
+       name varchar(128) NOT NULL UNIQUE,
+       ico char(8) NOT NULL UNIQUE,
+       dic varchar(16),
+       phone text,
+       email text,
+       address text,
+       notes text
+);
+
+-------------------------------------------------------------------------------
+
 CREATE TABLE users (
 	uid serial PRIMARY KEY,
 	login varchar(32) UNIQUE NOT NULL,
@@ -24,7 +37,9 @@ CREATE TABLE users (
 	lang char(2) REFERENCES languages(lang),
         regexpire timestamp,
         regcode char(16),
-        certauth boolean NOT NULL DEFAULT 'FALSE'
+        certauth boolean NOT NULL DEFAULT 'FALSE',
+        organization text, -- free form field just for registration
+        organization_id int REFERENCES organizations
 );
 ALTER TABLE users ALTER COLUMN since 
 SET DEFAULT current_timestamp(0) AT TIME ZONE 'GMT';

@@ -1770,6 +1770,11 @@ class Users(EmbeddableCMSModule):
             Field('certauth', _("Certificate authentication"), type=pd.Boolean(),
                   descr=_("Check this field to authenticate by a certificate rather than by "
                           "a password."), ),
+            Field('organization', _("Organization"),
+                  descr=_(("If you are a member of an organization registered in the application "
+                           "write the name of the organization here. "
+                           "Otherwise leave the field empty."))),
+            Field('organization_id', _("Organization"), codebook='Organizations'),
             )
         def check(self, row):
             if cfg.certificate_authentication:
@@ -1821,11 +1826,11 @@ class Users(EmbeddableCMSModule):
                                                   ('password',) +
                                                   (cfg.certificate_authentication and ('certauth',) or ())
                                                   )),) +
-                                       (FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname')),) +
+                                       (FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname',)),) +
                                        (FieldSet(_("Contact information"),
                                                  (((not cfg.login_is_email) and ('email',) or ()) +
                                                   ('phone', 'address', 'uri',))),)),
-                            'view':   (FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname')),
+                            'view':   (FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname',)),
                                        FieldSet(_("Contact information"), ('email', 'phone', 'address','uri')),
                                        FieldSet(_("Access rights"), ('role',)))}
         
@@ -2129,7 +2134,49 @@ class Users(EmbeddableCMSModule):
 #         condition = pd.EQ('role', pd.Value(pd.String(), 'none'))
 #     WMI_SECTION = WikingManagementInterface.SECTION_USERS
 #     WMI_ORDER = 200
+
+
+class Organizations(CMSModule):
+    """Codebook of organization users can belong to.
+
+    This module/table may play important role in determining user actions as it
+    can define common users groups sharing the same data.
+
+    """
+    class Spec(Specification):
         
+        title = _("Organizations")
+        help = _("Manage institutions and other organizations.")
+
+        def fields(self): return (
+            Field('organization_id', width=8, editable=NEVER),
+            Field('name', _("Name"), width=32),
+            Field('ico', _("IČO"), width=8,
+                  type=pd.RegexString(minlen=8, maxlen=8, not_null=True, regex='^[0-9]+$')),
+            Field('dic', _("DIČ"), width=16,
+                  type=pd.RegexString(regex='^[0-9]*$')),
+            Field('email', _("E-mail"), width=36, constraints=(self._check_email,)),
+            Field('phone', _("Phone")),
+            Field('address', _("Address"), width=20, height=3),
+            Field('notes', _("Notes"), width=20, height=3),
+            )
+        def _check_email(self, email):
+            result = wiking.validate_email_address(email)
+            if not result[0]:
+                return _("Invalid e-mail address: %s", result[1])
+        cb = CodebookSpec(display='name', prefer_display=True)
+
+        columns = ('ico', 'name',)
+        sorting = (('name', ASC,),)
+        layout = ('name', 'ico', 'dic', 'email', 'phone', 'address', 'notes',)
+    
+    RIGHTS_insert = (Roles.ADMIN,)
+    RIGHTS_update = (Roles.ADMIN)
+    RIGHTS_delete = (Roles.ADMIN,) #, Roles.OWNER)
+
+    WMI_SECTION = WikingManagementInterface.SECTION_USERS
+    WMI_ORDER = 500
+
 
 class TextLabels(PytisModule):
     """Internal module for managing identifiers of the texts accessed through the 'Text' module.
