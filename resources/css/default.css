@@ -439,7 +439,10 @@ form.browse-form-controls span.offset, form.browse-form-controls span.buttons {
 }
 form.browse-form-controls div.index-search-controls {
     text-align: left;
-    padding-bottom: 0.3em;
+    padding-bottom: 0.4em;
+}
+form.browse-form-controls div.index-search-controls div {
+    padding-bottom: 0.2em;
 }
 form.browse-form-controls span.buttons input.prev {
     margin-left: 1em;
