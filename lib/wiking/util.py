@@ -401,7 +401,7 @@ class Document(object):
             whole application is mono-lingual.
 
           variants -- available language variants as a sequence of language codes.  Should be
-            defined if only a limited set of target languges for the document exist.  For example
+            defined if only a limited set of target languages for the document exist.  For example
             when the document is read form a file or a database and it is known which other
             versions of the source exist.  If None, variants default to the variants defined by the
             corresponding menu item (if found) or to application-wide set of all available
@@ -756,57 +756,35 @@ class Specification(pp.Specification):
         self.actions = tuple(actions)
         return super(Specification, self).__init__(resolver)
 
-class Binding(object):
-    """Specification of a binding to another module used in module's '_BINDINGS'.
 
-    This class currently replaces the pytis `BindingSpec' since it is not generic enough for usage
-    in the web context.  The module constant '_BINDINGS' defines a sequence of 'Binding' instances.
-    Each of these instances defines a relation to other module's records.  The related records are
-    normally shown in a one record view (below the ShowForm).
-
-    """
-    def __init__(self, title, modname, colname, condition=None, form=None):
+class Binding(pp.Binding):
+    """Extension of Pytis 'Binding' with web specific parameters.""" 
+    def __init__(self, *args, **kwargs):
         """Arguments:
 
-          title -- title used for the list of related records
-          modname -- name of the related module
-          colname -- the string identifier of the binding column in the related module.  This
-            column must have a codebook specification pointing to the module for which the binding
-            is used.  The related records will be filtered by this column automatically.
-          condition -- function of one argument returning additional condition
-            ('pytis.data.Operator' instance) to filter the list of related records.  The argument
-            will be a 'PresentedRow' instance representing the current row of the module for which
-            the binding is used.
           form -- the form class or none for the default form.  If used, must be a class derived
             from 'pytis.web.BrowseForm'.
+          enabled -- function of one argument ('pp.PresentedRow' instance) determining whether this
+            binding is relevant for given row of the related main form.  If the function returns
+            'True', the binding is used, otherwise it is omitted.
+
+        Other arguments are same as in the parent class.
             
         """
-        assert isinstance(modname, (str, unicode)), modname
-        assert isinstance(title, (str, unicode)), title
-        assert isinstance(colname, (str, unicode)), colname
-        assert condition is None or callable(condition), condition
+        form = kwargs.pop('form', None)
+        enabled = kwargs.pop('enabled', None)
+        super(Binding, self).__init__(*args, **kwargs)
         assert form is None or issubclass(form, pytis.web.BrowseForm), form
-        self._modname = modname
-        self._title = title
-        self._colname = colname
-        self._condition = condition
+        assert enabled is None or callable(enabled), enabled
         self._form = form
+        self._enabled = enabled
 
-    def modname(self):
-        return self._modname
-        
-    def title(self):
-        return self._title
-        
-    def colname(self):
-        return self._colname
-    
-    def condition(self):
-        return self._condition
-        
     def form(self):
         return self._form
-        
+
+    def enabled(self):
+        return self._enabled
+    
 
 class WikingResolver(pytis.util.Resolver):
     """A custom resolver of Wiking modules."""

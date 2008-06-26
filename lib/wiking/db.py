@@ -50,7 +50,6 @@ class PytisModule(Module, ActionHandler):
          _("Empty value.  This field is mandatory.")),
         )
     
-    _BINDINGS = ()
     
     _INSERT_SUBTITLE = _("New Record")
     _UPDATE_SUBTITLE = _("Edit Form")
@@ -509,16 +508,23 @@ class PytisModule(Module, ActionHandler):
         
     def related(self, req, modname, binding, record):
         """Return the listing of records related to other module's record by given column."""
-        colname = binding.colname()
         if binding.condition():
             condition = binding.condition()(record)
         else:
             condition = None
-        bcol = self._data.find_column(colname).type().enumerator().value_column()
-        value = record[bcol].value()
-        form = binding.form() or pw.ListView
-        content = self._form(form, req, condition=self._condition(req, values={colname: value},
-                                                                  condition=condition),
+        colname = binding.binding_column()
+        if colname:
+            bcol = self._data.find_column(colname).type().enumerator().value_column()
+            value = record[bcol].value()
+            kwargs = {'values': {colname: value}}
+        else:
+            kwargs = {}
+        if isinstance(binding, Binding) and binding.form() is not None:
+            form = binding.form()
+        else:
+            form = pw.ListView
+        condition = self._condition(req, condition=condition, **kwargs)
+        content = self._form(form, req, condition=condition,
                              columns=[c for c in self._view.columns() if c!=colname])
         menu = self._action_menu(req, relation={colname: value})
         if menu:
@@ -537,10 +543,12 @@ class PytisModule(Module, ActionHandler):
         content = [self._form(pw.ShowForm, req, row=record.row(),
                               layout=self._layout(req, 'view', record)),
                    self._action_menu(req, record)]
-        for binding in self._BINDINGS:
-            module = self._module(binding.modname())
-            related = module.related(req, self.name(), binding, record)
-            content.append(lcg.Section(title=binding.title(), content=related))
+        for binding in self._view.bindings():
+            if not isinstance(binding, Binding) or binding.enabled() is None \
+                   or binding.enabled()(record):
+                module = self._module(binding.name())
+                related = module.related(req, self.name(), binding, record)
+                content.append(lcg.Section(title=binding.title(), content=related))
         return self._document(req, content, record, err=err, msg=msg)
 
     def action_subitem(self, req, record, subpath):

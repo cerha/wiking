@@ -1,3 +1,11 @@
+2008-06-26  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/cms/cms.py: Use pytis based binding specifications.
+
+	* lib/wiking/db.py: Use pytis based binding specifications.
+
+	* lib/wiking/util.py (Binding): Derive from pytis `Binding' class.
+
 2008-06-24  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/util.py: Don't jump to the record in the 'list'

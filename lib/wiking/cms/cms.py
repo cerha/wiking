@@ -874,6 +874,7 @@ class Pages(CMSModule):
         layout = ('identifier', 'modname', 'parent', 'ord', 'private', 'owner')
         columns = ('title_or_identifier', 'identifier', 'status', 'ord', 'private', 'owner')
         cb = CodebookSpec(display='title_or_identifier', prefer_display=True)
+        bindings = (Binding(_("Attachments"), 'Attachments', 'page_id'),)
 
     _REFERER = 'identifier'
     _REFERER_PATH_LEVEL = 1
@@ -884,7 +885,6 @@ class Pages(CMSModule):
          _("Duplicate menu order on the this tree level.")),) + \
          CMSModule._EXCEPTION_MATCHERS
     _LIST_BY_LANGUAGE = True
-    _BINDINGS = (Binding(_("Attachments"), 'Attachments', 'page_id'),)
     _OWNER_COLUMN = 'owner'
     _SUPPLY_OWNER = False
     
@@ -1141,7 +1141,8 @@ class Pages(CMSModule):
             raise NotFound()
         
     def action_attachments(self, req, record, err=None, msg=None):
-        content = self._module('Attachments').related(req, self.name(), self._BINDINGS[0], record)
+        binding = self._view.bindings()[0]
+        content = self._module('Attachments').related(req, self.name(), binding, record)
         return self._document(req, content, record, subtitle=_("Attachments"), err=err, msg=msg)
     RIGHTS_attachments = (Roles.AUTHOR, Roles.OWNER)
         
