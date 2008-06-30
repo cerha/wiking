@@ -1,3 +1,9 @@
+2008-06-30  Milan Zamazal  <pdm@brailcom.org>
+
+	* lib/wiking/cms/cms.py:
+	* sql/wiking.sql:
+	Use `vatid' instead of `ico' and `dic' in organizations.
+
 2008-06-26  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/cms/cms.py: Use pytis based binding specifications.
