@@ -1,6 +1,11 @@
 2008-06-30  Milan Zamazal  <pdm@brailcom.org>
 
 	* lib/wiking/cms/cms.py:
+	Typo in Organizations access rights fixed.
+
+2008-06-30  Milan Zamazal  <pdm@brailcom.org>
+
+	* lib/wiking/cms/cms.py:
 	Don't display users without self-confirmed registrations.
 
 2008-06-30  Milan Zamazal  <pdm@brailcom.org>
