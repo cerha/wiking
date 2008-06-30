@@ -2170,8 +2170,8 @@ class Organizations(CMSModule):
         layout = ('name', 'vatid', 'email', 'phone', 'address', 'notes',)
     
     RIGHTS_insert = (Roles.ADMIN,)
-    RIGHTS_update = (Roles.ADMIN)
-    RIGHTS_delete = (Roles.ADMIN,) #, Roles.OWNER)
+    RIGHTS_update = (Roles.ADMIN,)
+    RIGHTS_delete = (Roles.ADMIN,)
 
     WMI_SECTION = WikingManagementInterface.SECTION_USERS
     WMI_ORDER = 500
