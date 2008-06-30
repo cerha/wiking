@@ -1,6 +1,11 @@
 2008-06-30  Milan Zamazal  <pdm@brailcom.org>
 
 	* lib/wiking/cms/cms.py:
+	Don't display users without self-confirmed registrations.
+
+2008-06-30  Milan Zamazal  <pdm@brailcom.org>
+
+	* lib/wiking/cms/cms.py:
 	* sql/wiking.sql:
 	Use `vatid' instead of `ico' and `dic' in organizations.
 
