@@ -1792,6 +1792,7 @@ class Users(EmbeddableCMSModule):
         layout = (FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname')),
                   FieldSet(_("Contact information"), ('email', 'phone', 'address', 'uri')))
         cb = CodebookSpec(display='user', prefer_display=True)
+        condition = pd.EQ('regexpire', pd.Value(pd.DateTime(), None))
     _REFERER = 'login'
     _PANEL_FIELDS = ('fullname',)
     _ALLOW_TABLE_LAYOUT_IN_FORMS = False
