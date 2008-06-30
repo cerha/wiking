@@ -10,8 +10,7 @@ CREATE TABLE languages (
 CREATE TABLE organizations (
        organization_id serial PRIMARY KEY,
        name varchar(128) NOT NULL UNIQUE,
-       ico char(8) NOT NULL UNIQUE,
-       dic varchar(16),
+       vatid varchar(16) NOT NULL UNIQUE,
        phone text,
        email text,
        address text,

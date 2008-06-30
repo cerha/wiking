@@ -2152,10 +2152,7 @@ class Organizations(CMSModule):
         def fields(self): return (
             Field('organization_id', width=8, editable=NEVER),
             Field('name', _("Name"), width=32),
-            Field('ico', _("IČO"), width=8,
-                  type=pd.RegexString(minlen=8, maxlen=8, not_null=True, regex='^[0-9]+$')),
-            Field('dic', _("DIČ"), width=16,
-                  type=pd.RegexString(regex='^[0-9]*$')),
+            Field('vatid', _("VAT id")),
             Field('email', _("E-mail"), width=36, constraints=(self._check_email,)),
             Field('phone', _("Phone")),
             Field('address', _("Address"), width=20, height=3),
@@ -2167,9 +2164,9 @@ class Organizations(CMSModule):
                 return _("Invalid e-mail address: %s", result[1])
         cb = CodebookSpec(display='name', prefer_display=True)
 
-        columns = ('ico', 'name',)
+        columns = ('vatid', 'name',)
         sorting = (('name', ASC,),)
-        layout = ('name', 'ico', 'dic', 'email', 'phone', 'address', 'notes',)
+        layout = ('name', 'vatid', 'email', 'phone', 'address', 'notes',)
     
     RIGHTS_insert = (Roles.ADMIN,)
     RIGHTS_update = (Roles.ADMIN)
