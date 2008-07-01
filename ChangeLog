@@ -1,6 +1,11 @@
 2008-07-01  Milan Zamazal  <pdm@brailcom.org>
 
 	* lib/wiking/cms/cms.py:
+	Make cms.Users field `organization' editable only once.
+
+2008-07-01  Milan Zamazal  <pdm@brailcom.org>
+
+	* lib/wiking/cms/cms.py:
 	Allow `organization_id' of cms.Users to be null.
 
 2008-07-01  Milan Zamazal  <pdm@brailcom.org>
