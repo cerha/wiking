@@ -1860,14 +1860,15 @@ class Users(EmbeddableCMSModule):
                       lang=language,
                       attachments=(MailAttachment('cert.pem',
                                                   stream=cStringIO.StringIO(str(certificate))),))
+        return certificate_row
         
     def _confirmation_success(self, req, record):
         self._send_admin_confirmation_mail(req, record)
         content = lcg.p(_("Registration completed successfuly. "
                           "Your account now awaits administrator's approval."))
-        if cfg.certificate_authentication:
-            self._certificate_confirmation(req, record)
-            content = lcg.Container((content, lcg.p(_("The signed certificate has been sent to you by e-mail."))))
+        if cfg.certificate_authentication and self._certificate_confirmation(req, record):
+            content = lcg.Container((content, lcg.p(_("The signed certificate has been sent to "
+                                                      "you by e-mail."))))
         return Document(_("Registration confirmed"), content)
     
     def _confirmation_failure(self, req, error_message):
