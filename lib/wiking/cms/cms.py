@@ -1787,6 +1787,9 @@ class Users(EmbeddableCMSModule):
                 return _("Invalid e-mail address: %s", result[1])
         def _rolename(self, code):
             return self._ROLE_DICT[code][0]
+        @classmethod
+        def _roles(cls, row):
+            return cls._ROLE_DICT[row['role'].value()][1]
         columns = ('fullname', 'nickname', 'email', 'role', 'since')
         sorting = (('surname', ASC), ('firstname', ASC))
         layout = (FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname')),
@@ -2062,7 +2065,7 @@ class Users(EmbeddableCMSModule):
                 uri = self._application.module_uri('Registration')
             return User(login, name=record['user'].value(), uid=record['uid'].value(),
                         uri=uri, email=record['email'].value(), data=record,
-                        roles=self.Spec._ROLE_DICT[record['role'].value()][1])
+                        roles=self.Spec._roles(record))
         else:
             return None
 
