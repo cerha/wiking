@@ -1962,9 +1962,9 @@ class Users(EmbeddableCMSModule):
         else:
             action = 'confirm'
         user_email = record['email'].value()
-        uri = '%s%s?action=%s&uid=%s&regcode=%s&all=yes' % (req.server_uri(), base_uri, action,
-                                                            record['uid'].value(),
-                                                            record['regcode'].value())
+        uri = '%s%s?action=%s&uid=%s&regcode=%s' % (req.server_uri(), base_uri, action,
+                                                    record['uid'].value(),
+                                                    record['regcode'].value())
         text = _("You have been successfully registered at %(server_hostname)s. "
                  "To complete your registration visit the URL %(uri)s and follow "
                  "the instructions there.\n",
@@ -2125,14 +2125,16 @@ class Users(EmbeddableCMSModule):
         return record, None
 
     def _condition(self, req, lang=None, condition=None, values=None):
-        if req.param('all'):
-            condition = condition
+        # Don't display random unconfirmed registrations at all
+        filter_conditon = pd.EQ('regexpire', pd.Value(pd.DateTime(), None))
+        if condition:
+            condition = pd.AND(condition, filter_conditon)
         else:
-            filter_conditon = pd.EQ('regexpire', pd.Value(pd.DateTime(), None))
-            if condition:
-                condition = pd.AND(condition, filter_conditon)
-            else:
-                condition = filter_conditon
+            condition = filter_conditon
+        # Don't display users not yet approved by the administrator publicly
+        if not req.wmi:
+            condition = pd.AND(condition,
+                               pd.NE('role', pd.Value(pd.String(), 'none')))
         return condition
 
 # class ActiveUsers(Users):
