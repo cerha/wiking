@@ -1804,14 +1804,15 @@ class Users(EmbeddableCMSModule):
     def _default_actions_first(self, req, record):
         actions = (Action(_("Edit profile"), 'update', descr=_("Modify user's record")),
                    Action(_("Access rights"), 'rights', descr=_("Change access rights")),)
-        authentication_method = req.user().authentication_method()
-        if authentication_method == 'password':
-            actions += (Action(_("Change password"), 'passwd',
-                               descr=_("Change user's password")),)
-        elif authentication_method == 'certificate':
-            actions += (Action(_("Change certificate"), 'newcert',
-                               descr=_("Generate new certificate"),
-                               uid=req.user().uid()),)
+        if req.user():
+            authentication_method = req.user().authentication_method()
+            if authentication_method == 'password':
+                actions += (Action(_("Change password"), 'passwd',
+                                   descr=_("Change user's password")),)
+            elif authentication_method == 'certificate':
+                actions += (Action(_("Change certificate"), 'newcert',
+                                   descr=_("Generate new certificate"),
+                                   uid=req.user().uid()),)
         return actions
     RIGHTS_insert = (Roles.ANYONE,)
     RIGHTS_update = (Roles.ADMIN, Roles.OWNER)

@@ -1,3 +1,9 @@
+2008-07-01  Tomas Cerha  <cerha@brailcom.org>
+
+	(Users._default_actions_first): Add authentication method
+	dependent actions only if the user is logged.
+
+
 2008-07-01  Milan Zamazal  <pdm@brailcom.org>
 
 	* lib/wiking/cms/cms.py:
@@ -15,7 +21,6 @@
 
 	* lib/wiking/cms/cms.py (Users): Access role definitions through a
 	class method.
-
 	* lib/wiking/handler.py: Profiling support updated for Python 2.5.
 
 2008-06-30  Milan Zamazal  <pdm@brailcom.org>
