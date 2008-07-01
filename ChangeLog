@@ -1,6 +1,11 @@
 2008-07-01  Milan Zamazal  <pdm@brailcom.org>
 
 	* lib/wiking/cms/cms.py:
+	Allow `organization_id' of cms.Users to be null.
+
+2008-07-01  Milan Zamazal  <pdm@brailcom.org>
+
+	* lib/wiking/cms/cms.py:
 	Filtering in Users improved.
 	.
 	Use of `all' request argument removed..
