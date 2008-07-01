@@ -1771,7 +1771,7 @@ class Users(EmbeddableCMSModule):
             Field('certauth', _("Certificate authentication"), type=pd.Boolean(),
                   descr=_("Check this field to authenticate by a certificate rather than by "
                           "a password."), ),
-            Field('organization', _("Organization"),
+            Field('organization', _("Organization"), editable=ONCE,
                   descr=_(("If you are a member of an organization registered in the application "
                            "write the name of the organization here. "
                            "Otherwise leave the field empty."))),
