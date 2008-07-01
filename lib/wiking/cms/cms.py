@@ -1775,7 +1775,7 @@ class Users(EmbeddableCMSModule):
                   descr=_(("If you are a member of an organization registered in the application "
                            "write the name of the organization here. "
                            "Otherwise leave the field empty."))),
-            Field('organization_id', _("Organization"), codebook='Organizations'),
+            Field('organization_id', _("Organization"), codebook='Organizations', not_null=False),
             )
         def check(self, row):
             if cfg.certificate_authentication:
