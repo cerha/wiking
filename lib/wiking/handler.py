@@ -206,23 +206,22 @@ class ModPythonHandler(object):
                        request.server.server_admin)
         req = WikingRequest(request, self._application)
         if False:
-            import profile, pstats, tempfile
+            import cProfile as profile, pstats, tempfile
             self._profile_req = req
-            filename = tempfile.NamedTemporaryFile().name
+            tmpfile = tempfile.NamedTemporaryFile().name
             profile.run('from wiking.handler import handler as h; '
                         'h._profile_result = h._handler.handle(h._profile_req)',
-                        filename)
-            stats = pstats.Stats(filename)
-            stats.sort_stats('cumulative')
-            debug("Profile statistics for:", req.uri())
-            stdout = sys.stdout
-            sys.stdout = sys.stderr
+                        tmpfile)
             try:
+                stats = pstats.Stats(tmpfile)
+                stats.strip_dirs()
+                stats.sort_stats('cumulative')
+                debug("Profile statistics for %s:" % req.uri())
+                stats.stream = sys.stderr
                 stats.print_stats()
+                sys.stderr.flush()
             finally:
-                sys.stdout = stdout
-                os.remove(filename)
-            sys.stderr.flush()
+                os.remove(tmpfile)
             return self._profile_result
         else:
             return self._handler.handle(req)
