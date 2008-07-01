@@ -1,3 +1,11 @@
+2008-07-01  Milan Zamazal  <pdm@brailcom.org>
+
+	* lib/wiking/cms/cms.py:
+	Make the Users filtering conditional.
+	.
+	Sometimes it is necessary to access all users, typically during registration..
+	So don't filter Users if `all' request parameter is present..
+
 2008-07-01  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/cms/cms.py (Users): Access role definitions through a
