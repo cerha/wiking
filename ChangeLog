@@ -1,6 +1,14 @@
 2008-07-01  Milan Zamazal  <pdm@brailcom.org>
 
 	* lib/wiking/cms/cms.py:
+	Filtering in Users improved.
+	.
+	Use of `all' request argument removed..
+	Filter out non-approved users in public lists..
+
+2008-07-01  Milan Zamazal  <pdm@brailcom.org>
+
+	* lib/wiking/cms/cms.py:
 	Don't display registration message about a sent certificate when there is none.
 
 2008-07-01  Tomas Cerha  <cerha@brailcom.org>
