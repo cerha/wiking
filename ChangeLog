@@ -1,3 +1,10 @@
+2008-07-01  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/cms/cms.py (Users): Access role definitions through a
+	class method.
+
+	* lib/wiking/handler.py: Profiling support updated for Python 2.5.
+
 2008-06-30  Milan Zamazal  <pdm@brailcom.org>
 
 	* lib/wiking/cms/cms.py:
