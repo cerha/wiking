@@ -2188,6 +2188,8 @@ class Organizations(CMSModule):
     WMI_SECTION = WikingManagementInterface.SECTION_USERS
     WMI_ORDER = 500
 
+    _TITLE_COLUMN = 'name'
+
 
 class TextLabels(PytisModule):
     """Internal module for managing identifiers of the texts accessed through the 'Text' module.
