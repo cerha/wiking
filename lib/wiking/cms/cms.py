@@ -1795,7 +1795,6 @@ class Users(EmbeddableCMSModule):
         layout = (FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname')),
                   FieldSet(_("Contact information"), ('email', 'phone', 'address', 'uri')))
         cb = CodebookSpec(display='user', prefer_display=True)
-        condition = pd.EQ('regexpire', pd.Value(pd.DateTime(), None))
     _REFERER = 'login'
     _PANEL_FIELDS = ('fullname',)
     _ALLOW_TABLE_LAYOUT_IN_FORMS = False
@@ -1961,9 +1960,9 @@ class Users(EmbeddableCMSModule):
         else:
             action = 'confirm'
         user_email = record['email'].value()
-        uri = '%s%s?action=%s&uid=%s&regcode=%s' % (req.server_uri(), base_uri, action,
-                                                    record['uid'].value(),
-                                                    record['regcode'].value())
+        uri = '%s%s?action=%s&uid=%s&regcode=%s&all=yes' % (req.server_uri(), base_uri, action,
+                                                            record['uid'].value(),
+                                                            record['regcode'].value())
         text = _("You have been successfully registered at %(server_hostname)s. "
                  "To complete your registration visit the URL %(uri)s and follow "
                  "the instructions there.\n",
@@ -2123,7 +2122,17 @@ class Users(EmbeddableCMSModule):
         record.update(regexpire=None)
         return record, None
 
-        
+    def _condition(self, req, lang=None, condition=None, values=None):
+        if req.param('all'):
+            condition = condition
+        else:
+            filter_conditon = pd.EQ('regexpire', pd.Value(pd.DateTime(), None))
+            if condition:
+                condition = pd.AND(condition, filter_conditon)
+            else:
+                condition = filter_conditon
+        return condition
+
 # class ActiveUsers(Users):
 #     class Spec(Users.Spec):
 #         table = 'users'
