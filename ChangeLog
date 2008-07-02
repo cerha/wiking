@@ -1,6 +1,11 @@
 2008-07-02  Milan Zamazal  <pdm@brailcom.org>
 
 	* lib/wiking/cms/cms.py:
+	Don't display confusing subtitle in the user registration form.
+
+2008-07-02  Milan Zamazal  <pdm@brailcom.org>
+
+	* lib/wiking/cms/cms.py:
 	Move organization name to the first column in Organizations listings.
 
 2008-07-02  Milan Zamazal  <pdm@brailcom.org>
