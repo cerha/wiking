@@ -2181,7 +2181,7 @@ class Organizations(CMSModule):
                 return _("Invalid e-mail address: %s", result[1])
         cb = CodebookSpec(display='name', prefer_display=True)
 
-        columns = ('vatid', 'name',)
+        columns = ('name', 'vatid',)
         sorting = (('name', ASC,),)
         layout = ('name', 'vatid', 'email', 'phone', 'address', 'notes',)
     
