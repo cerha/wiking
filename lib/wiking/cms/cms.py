@@ -2137,21 +2137,21 @@ class Users(EmbeddableCMSModule):
                                pd.NE('role', pd.Value(pd.String(), 'none')))
         return condition
 
-# class ActiveUsers(Users):
-#     class Spec(Users.Spec):
-#         table = 'users'
-#         title = _("Active users")
-#         condition = pd.NE('role', pd.Value(pd.String(), 'none'))
-#     WMI_SECTION = WikingManagementInterface.SECTION_USERS
-#     WMI_ORDER = 100
+class ActiveUsers(Users):
+    class Spec(Users.Spec):
+        table = 'users'
+        title = _("Active users")
+        condition = pd.NE('role', pd.Value(pd.String(), 'none'))
+    WMI_SECTION = WikingManagementInterface.SECTION_USERS
+    WMI_ORDER = 200
     
-# class InactiveUsers(Users):
-#     class Spec(Users.Spec):
-#         table = 'users'
-#         title = _("Inactive users")
-#         condition = pd.EQ('role', pd.Value(pd.String(), 'none'))
-#     WMI_SECTION = WikingManagementInterface.SECTION_USERS
-#     WMI_ORDER = 200
+class InactiveUsers(Users):
+    class Spec(Users.Spec):
+        table = 'users'
+        title = _("Inactive users")
+        condition = pd.EQ('role', pd.Value(pd.String(), 'none'))
+    WMI_SECTION = WikingManagementInterface.SECTION_USERS
+    WMI_ORDER = 300
 
 
 class Organizations(CMSModule):
