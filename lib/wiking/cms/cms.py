@@ -2136,6 +2136,13 @@ class Users(EmbeddableCMSModule):
             condition = pd.AND(condition,
                                pd.NE('role', pd.Value(pd.String(), 'none')))
         return condition
+    
+    def _insert_subtitle(self, req):
+        if req.wmi:
+            subtitle = super(Users, self)._insert_subtitle(req)
+        else:
+            subtitle = None
+        return subtitle
 
 class ActiveUsers(Users):
     class Spec(Users.Spec):
