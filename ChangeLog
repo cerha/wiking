@@ -1,6 +1,11 @@
 2008-07-02  Milan Zamazal  <pdm@brailcom.org>
 
 	* lib/wiking/cms/cms.py:
+	Move organization name to the first column in Organizations listings.
+
+2008-07-02  Milan Zamazal  <pdm@brailcom.org>
+
+	* lib/wiking/cms/cms.py:
 	ActiveUsers and InactiveUsers CMS modules uncommented.
 
 2008-07-01  Milan Zamazal  <pdm@brailcom.org>
