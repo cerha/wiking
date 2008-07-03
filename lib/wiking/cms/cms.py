@@ -1690,8 +1690,7 @@ class Users(EmbeddableCMSModule):
     """
     class Spec(Specification):
         title = _("Users")
-        help = _("Manage registered users.  Use the module 'Access Rights' "
-                 "to change their privileges.")
+        help = _("Manage registered users and their privileges.")
         _ROLES = (('none', _("Account disabled"), ()),
                   ('user', _("User"),         (Roles.USER,)),
                   ('cont', _("Contributor"),  (Roles.USER, Roles.CONTRIBUTOR)),
@@ -2148,6 +2147,7 @@ class ActiveUsers(Users):
     class Spec(Users.Spec):
         table = 'users'
         title = _("Active users")
+        help = _("Listing of all active user accounts.")
         condition = pd.NE('role', pd.Value(pd.String(), 'none'))
     WMI_SECTION = WikingManagementInterface.SECTION_USERS
     WMI_ORDER = 200
@@ -2156,6 +2156,7 @@ class InactiveUsers(Users):
     class Spec(Users.Spec):
         table = 'users'
         title = _("Inactive users")
+        help = _("Listing of inactive user accounts waiting for administrator approval.")
         condition = pd.EQ('role', pd.Value(pd.String(), 'none'))
     WMI_SECTION = WikingManagementInterface.SECTION_USERS
     WMI_ORDER = 300
