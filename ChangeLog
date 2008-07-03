@@ -1,3 +1,9 @@
+2008-07-03  Tomas Cerha  <cerha@brailcom.org>
+
+	* translations/wiking-cms.cs.po: Partially updated.
+
+	* lib/wiking/cms/cms.py: User module help strings adjusted.
+
 2008-07-02  Milan Zamazal  <pdm@brailcom.org>
 
 	* lib/wiking/cms/cms.py:
