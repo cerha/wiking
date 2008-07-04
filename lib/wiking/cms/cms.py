@@ -379,40 +379,29 @@ class CMSExtension(Module, Embeddable, RequestHandler):
 
     def __init__(self, *args, **kwargs):
         super(CMSExtension, self).__init__(*args, **kwargs)
-        for item in self._MENU:
-            self._set_parent(item)
-        self._submenu = None
         self._mapping = {}
         self._rmapping = {}
-        
-    def _set_parent(self, item):
-        self._module(item.modname).set_parent(self)
-        for i in item.submenu:
-            self._set_parent(i)
+        def init(items):
+            for item in items:
+                self._mapping[item.id] = item.modname
+                self._rmapping[item.modname] = item.id
+                self._module(item.modname).set_parent(self)
+                init(item.submenu)
+        init(self._MENU)
     
-    def _init_submenu(self, req):
-        def menu_item(item):
-            self._mapping[item.id] = item.modname
-            self._rmapping[item.modname] = item.id
-            module = self._module(item.modname)
-            identifier = self.submodule_uri(req, item.modname)[1:]
-            return MenuItem(identifier, module.title(), descr=module.descr(),
-                            submenu=[menu_item(i) for i in item.submenu], **item.kwargs)
-        self._submenu = [menu_item(item) for item in self._MENU]
-
     def embed(self, req):
-        if self._submenu is None:
-            self._init_submenu(req)
         return req.redirect(self.submodule_uri(req, self._MENU[0].modname))
 
     def submenu(self, req):
-        if self._submenu is None:
-            self._init_submenu(req)
-        return self._submenu
+        def menu_item(item):
+            module = self._module(item.modname)
+            identifier = self.submodule_uri(req, item.modname)[1:]
+            submenu = [menu_item(i) for i in item.submenu] + module.submenu(req)
+            return MenuItem(identifier, module.title(), descr=module.descr(),
+                            submenu=submenu, **item.kwargs)
+        return [menu_item(item) for item in self._MENU]
 
     def handle(self, req):
-        if self._submenu is None:
-            self._init_submenu(req)
         try:
             modname = self._mapping[req.path[1]]
         except KeyError:
@@ -431,6 +420,9 @@ class CMSExtensionModule(CMSModule):
     def set_parent(self, parent):
         self._parent = parent
     
+    def submenu(self, req):
+        return []
+        
     def _base_uri(self, req):
         try:
             parent = self._parent
