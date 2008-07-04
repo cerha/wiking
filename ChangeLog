@@ -1,3 +1,11 @@
+2008-07-04  Milan Zamazal  <pdm@brailcom.org>
+
+	* lib/wiking/db.py:
+	Don't set NULL columns for new rows in PytisModule.Record.rowdata.
+	.
+	This avoids problems when inserting records to tables with columns declared NOT.
+	NULL while defining default values..
+
 2008-07-03  Tomas Cerha  <cerha@brailcom.org>
 
 	* translations/wiking-cms.cs.po: Partially updated.
