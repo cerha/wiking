@@ -101,9 +101,7 @@ class PytisModule(Module, ActionHandler):
         def rowdata(self):
             """Return record's row data for insert/update operations."""
             update = not self.new()
-            key = self._data.key()[0].id()
-            rdata = [(k, v) for k, v in self.row().items()
-                     if update or v.value() is not None]
+            rdata = [(k, v) for k, v in self.row().items() if update or v.value() is not None]
             return pd.Row(rdata)
 
     @classmethod
