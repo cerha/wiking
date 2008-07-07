@@ -1829,7 +1829,7 @@ class Users(EmbeddableCMSModule):
                             'view':   (FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname',)),
                                        FieldSet(_("Contact information"), ('email', 'phone', 'address','uri')),
                                        FieldSet(_("Access rights"), ('role',)))}
-        
+
     def _send_admin_confirmation_mail(self, req, record):
         self._module('Users').send_admin_approval_mail(req, record)
 
@@ -1929,6 +1929,11 @@ class Users(EmbeddableCMSModule):
             else:
                 record['password'] = pd.Value(record['password'].type(), new_password[0])
         return super(Users, self)._validate(req, record, layout=layout)
+        
+    def _base_uri(self, req):
+        if req.path[0] == '_registration':
+            return '_registration'
+        return super(Users, self)._base_uri(req)
         
     def _actions(self, req, record):
         actions = list(super(Users, self)._actions(req, record))
