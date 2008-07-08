@@ -349,11 +349,16 @@ class PytisModule(Module, ActionHandler):
             layout = pp.GroupSpec(layout, orientation=pp.Orientation.VERTICAL)
         return layout
     
+
+    def _action(self, req, record=None, subpath=None):
+        if record is not None and subpath is not None:
+            return 'subitem'
+        else:
+            return super(PytisModule, self)._action(req, record=record, subpath=subpath)
+
     def _default_action(self, req, record=None, subpath=None):
         if record is None:
             return 'list'
-        elif subpath is not None:
-            return 'subitem'
         else:
             return 'view'
 

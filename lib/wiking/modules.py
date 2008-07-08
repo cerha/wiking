@@ -145,6 +145,12 @@ class ActionHandler(RequestHandler):
         """Return the name of the default action as a string."""
         return None
 
+    def _action(self, req, **kwargs):
+        if req.has_param('action'):
+            return req.param('action')
+        else:
+            return self._default_action(req, **kwargs)
+
     def _handle(self, req, action, **kwargs):
         """Perform action authorization and call the action method."""
         self._authorize(req, action=action, **kwargs)
@@ -153,10 +159,7 @@ class ActionHandler(RequestHandler):
 
     def handle(self, req):
         kwargs = self._action_args(req)
-        if req.has_param('action'):
-            action = req.param('action')
-        else:
-            action = self._default_action(req, **kwargs)
+        action = self._action(req, **kwargs)
         return self._handle(req, action, **kwargs)
 
 

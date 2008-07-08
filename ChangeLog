@@ -1,3 +1,15 @@
+2008-07-08  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/db.py: Allow action handling in subitem requests.
+
+	* lib/wiking/modules.py: Allow action handling in subitem requests.
+
+2008-07-07  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/cms/cms.py
+	(Users._base_uri): Use the 'Registration' module uri for
+	registration actions.
+
 2008-07-04  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/cms/cms.py (CMSExtension): Allow dynamic menu
