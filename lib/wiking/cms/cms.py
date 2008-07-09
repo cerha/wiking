@@ -189,20 +189,64 @@ class Registration(Module, ActionHandler):
     RIGHTS_insert = (Roles.ANYONE,)
     
     def action_remind(self, req):
-        title = _("Password reminder")
+        certificate_authentication = cfg.certificate_authentication
+        if certificate_authentication:
+            title = _("Password reminder and certificate change")
+        else:
+            title = _("Password reminder")
         error = None
-        if req.param('login'):
-            record = self._module('Users').find_user(req, req.param('login'))
+        if req.param('login') or req.user():
+            users = self._module('Users')
+            record = users.find_user(req, req.param('login') or req.user().login())
             if record:
                 text = concat(
                     _("A password reminder request has been made at %(server_uri)s.",
                       server_uri=req.server_uri()), '',
-                    _("Your credentials are:"),
-                    '   '+_("Login name") +': '+ record['login'].value(),
-                    '   '+_("Password") +': '+ record['password'].value(), '',
-                    _("We strongly recommend you change your password at nearest occassion, "
-                      "since it has been exposed to an unsecure channel."), separator='\n') +"\n"
-                err = send_mail(record['email'].value(), title, text, lang=req.prefered_language())
+                    separator='\n')
+                attachments = []
+                uid = record['uid'].value()
+                login = record['login'].value()
+                password = record['password'].value()
+                if password:
+                    text = concat(
+                        text,
+                        _("Your credentials are:"),
+                        '   '+_("Login name") +': '+ login,
+                        '   '+_("Password") +': '+ record['password'].value(), '',
+                        _("We strongly recommend you change your password at nearest occassion, "
+                          "since it has been exposed to an unsecure channel."),
+                        separator='\n')
+                else:
+                    text = concat(
+                        text,
+                        _("No password authentication for your account"))
+                text += "\n"
+                if certificate_authentication:
+                    code = users.set_registration_code(uid)
+                    attachments = ()
+                    attachment = "certtool.cfg"
+                    user_name = '%s %s' % (record['firstname'].value(), record['surname'].value(),)
+                    user_email = record['email'].value()
+                    attachment_stream = cStringIO.StringIO(str (('cn = "%s"\nemail = "%s"\n'
+                                                                'tls_www_client\nencryption_key\n') %
+                                                               (user_name, user_email,)))
+                    attachments += (MailAttachment(attachment, stream=attachment_stream),)
+                    base_uri = self._base_uri(req)
+                    uri = ('%s%s?action=certload&uid=%s&regcode=%s&reset=1' %
+                           (req.server_uri(), base_uri, uid, code,))
+                    text = concat (
+                        text,
+                        _("Visit %(uri)s to upload your certificate request.", uri=uri),
+                        _("To generate the request, you can use the certtool utility from the "
+                          "GnuTLS suite and the attached certtool configuration file.\n"
+                          "In such a case use the following command to generate the certificate "
+                          "request, assuming your private key is stored in a file named `key.pem':"
+                          "\n\n"
+                          "  certtool --generate-request --template certtool.cfg --load-privkey "
+                          "key.pem --outfile request.pem\n\n"),
+                        separator='\n') + "\n"
+                err = send_mail(record['email'].value(), title, text, lang=req.prefered_language(),
+                                attachments=attachments)
                 if err:
                     error = _("Failed sending e-mail notification:") +' '+ err
                     msg = _("Please try repeating your request later or contact the administrator!")
@@ -232,11 +276,19 @@ class Registration(Module, ActionHandler):
     RIGHTS_confirm = (Roles.ANYONE,)
 
     def action_certload(self, req):
-        record, error = self._module('Users').check_registration_code(req)
+        users = self._module('Users')
+        record, error = users.check_registration_code(req)
         if error:
             raise AuthorizationError()
-        return self._module('CertificateRequest').action_insert(req)
+        result = self._module('CertificateRequest').action_insert(req)
+        if req.param('submit'):
+            users.delete_registration_code(req)
+        return result
     RIGHTS_certload = (Roles.ANYONE,)
+
+    def action_certrequest(self, req):
+        return self.action_remind(req)
+    RIGHTS_certrequest = (Roles.ANYONE,)
 
 
 class CMSModule(PytisModule, RssModule, Panelizable):
@@ -1712,10 +1764,13 @@ class Users(EmbeddableCMSModule):
         def _registration_code(self, row):
             if not cfg.login_is_email:
                 return None
+            return self._generate_registration_code()
+        @staticmethod
+        def _generate_registration_code():
             import random
             import string
             random.seed()
-            return string.join(['%d' % (random.randint(0, 9),) for i in range(16)], '')
+            return string.join(['%d' % (random.randint(0, 9),) for i in range(16)], '')            
         def fields(self): return (
             Field('uid', width=8, editable=NEVER),
             Field('login', _("Login name"), width=16, editable=ONCE,
@@ -1767,6 +1822,9 @@ class Users(EmbeddableCMSModule):
                            "write the name of the organization here. "
                            "Otherwise leave the field empty."))),
             Field('organization_id', _("Organization"), codebook='Organizations', not_null=False),
+            Field('certfile', _("Certificat request file"), virtual=True, editable=ALWAYS,
+                  type=pytis.data.Binary(not_null=True, maxlen=10000),
+                  descr=_("Upload a PEM file containing the certificate")),
             )
         def check(self, row):
             if cfg.certificate_authentication:
@@ -2100,12 +2158,42 @@ class Users(EmbeddableCMSModule):
             record is None
         else:
             record = self._record(req, row)
-        if record is None or not record['regexpire'].value():
+        if record is None or (not record['regexpire'].value() and record['role'] == 'none'):
             # Let's be careful not to depict whether given login name is registered
             return None, _("Invalid login or user registration already confirmed")
-        elif record['regcode'].value() != registration_code:
-            return record, _("Invalid registration code")
+        else:
+            code = record['regcode'].value()
+            if not code or code != registration_code:
+                return record, _("Invalid registration code")
         return record, None
+
+    def set_registration_code(self, uid):
+        """Generate and set new registration code for given user 'uid'.
+
+        Return the generated code.
+
+        This method can be used in registration or in password and certificate
+        reminders.
+        
+        """
+        code = self.Spec._generate_registration_code()
+        code_value = pytis.data.String().validate(code)[0]
+        uid_value = pytis.data.Integer().validate(str(uid))[0]
+        row = pytis.data.Row((('regcode', code_value,),))
+        new_row, result = self._data.update(uid_value, row)
+        if not result:
+            raise Exception(_("Database operation failed"))
+        return code
+
+    def delete_registration_code(self, req):
+        """Remove registration code for user identified by 'req'."""
+        uid = req.param('uid')
+        uid_value = pytis.data.Integer().validate(str(uid))[0]
+        code_value = pytis.data.String().validate('')[0]
+        row = pytis.data.Row((('regcode', code_value,),))
+        new_row, result = self._data.update(uid_value, row)
+        if not result:
+            raise Exception(_("Database operation failed"))
         
     def _authorize_registration(self, req):
         """Make user registration defined by 'Request' 'req' valid.
