@@ -136,6 +136,21 @@ class WikingManagementInterface(Module, RequestHandler):
                [MenuItem('__site_menu__', '', hidden=True, variants=variants,
                          submenu=self._module('Pages').menu(req))]
 
+def _certificate_mail_info(record):
+    text = _("To generate the request, you can use the certtool utility from the "
+             "GnuTLS suite and the attached certtool configuration file.\n"
+             "In such a case use the following command to generate the certificate "
+             "request, assuming your private key is stored in a file named `key.pem':"
+             "\n\n"
+             "  certtool --generate-request --template certtool.cfg --load-privkey "
+             "key.pem --outfile request.pem\n\n")
+    attachment = "certtool.cfg"
+    user_name = '%s %s' % (record['firstname'].value(), record['surname'].value(),)
+    user_email = record['email'].value()
+    attachment_stream = cStringIO.StringIO(str (('cn = "%s"\nemail = "%s"\n'
+                                                'tls_www_client\nencryption_key\n') %
+                                               (user_name, user_email,)))
+    return text, attachment, attachment_stream
     
 class Registration(Module, ActionHandler):
     """User registration and account management.
@@ -190,24 +205,32 @@ class Registration(Module, ActionHandler):
     
     def action_remind(self, req):
         certificate_authentication = cfg.certificate_authentication
-        if certificate_authentication:
+        req_user = req.user()
+        if req_user is not None:
+            title = req_user.name() + " :: " + _("Certificate renewal")
+        elif certificate_authentication:
             title = _("Password reminder and certificate change")
         else:
             title = _("Password reminder")
         error = None
-        if req.param('login') or req.user():
+        if req.param('login') or req_user:
             users = self._module('Users')
-            record = users.find_user(req, req.param('login') or req.user().login())
+            record = users.find_user(req, req.param('login') or req_user.login())
             if record:
-                text = concat(
-                    _("A password reminder request has been made at %(server_uri)s.",
-                      server_uri=req.server_uri()), '',
-                    separator='\n')
+                if req_user is not None:
+                    text = ""
+                else:
+                    text = concat(
+                        _("A password reminder request has been made at %(server_uri)s.",
+                          server_uri=req.server_uri()), '',
+                        separator='\n')
                 attachments = []
                 uid = record['uid'].value()
                 login = record['login'].value()
                 password = record['password'].value()
-                if password:
+                if req_user is not None:
+                    pass
+                elif password:
                     text = concat(
                         text,
                         _("Your credentials are:"),
@@ -224,12 +247,7 @@ class Registration(Module, ActionHandler):
                 if certificate_authentication:
                     code = users.set_registration_code(uid)
                     attachments = ()
-                    attachment = "certtool.cfg"
-                    user_name = '%s %s' % (record['firstname'].value(), record['surname'].value(),)
-                    user_email = record['email'].value()
-                    attachment_stream = cStringIO.StringIO(str (('cn = "%s"\nemail = "%s"\n'
-                                                                'tls_www_client\nencryption_key\n') %
-                                                               (user_name, user_email,)))
+                    cert_text, attachment, attachment_stream = _certificate_mail_info(record)
                     attachments += (MailAttachment(attachment, stream=attachment_stream),)
                     base_uri = self._base_uri(req)
                     uri = ('%s%s?action=certload&uid=%s&regcode=%s&reset=1' %
@@ -237,21 +255,17 @@ class Registration(Module, ActionHandler):
                     text = concat (
                         text,
                         _("Visit %(uri)s to upload your certificate request.", uri=uri),
-                        _("To generate the request, you can use the certtool utility from the "
-                          "GnuTLS suite and the attached certtool configuration file.\n"
-                          "In such a case use the following command to generate the certificate "
-                          "request, assuming your private key is stored in a file named `key.pem':"
-                          "\n\n"
-                          "  certtool --generate-request --template certtool.cfg --load-privkey "
-                          "key.pem --outfile request.pem\n\n"),
+                        cert_text,
                         separator='\n') + "\n"
+                elif req_user is None:
+                    return Document(title, ErrorMessage(_("Invalid request.")))
                 err = send_mail(record['email'].value(), title, text, lang=req.prefered_language(),
                                 attachments=attachments)
                 if err:
                     error = _("Failed sending e-mail notification:") +' '+ err
                     msg = _("Please try repeating your request later or contact the administrator!")
                 else:
-                    msg = _("E-mail reminder has been sent to your email address.")
+                    msg = _("E-mail information has been sent to your email address.")
                 content = lcg.p(msg)
             else:
                 error = _("No user account for your query.")
@@ -1732,6 +1746,7 @@ class Users(EmbeddableCMSModule):
     information.
     
     """
+
     class Spec(Specification):
         title = _("Users")
         help = _("Manage registered users and their privileges.")
@@ -1921,7 +1936,11 @@ class Users(EmbeddableCMSModule):
         return Document(_("Registration confirmed"), content)
     
     def _confirmation_failure(self, req, error_message):
-        return Document(_("Registration confirmation failed"), lcg.p(error_message))
+        if req.param('action') == 'certload':
+            title = _("Certificate renewal failure")
+        else:
+            title = _("Registration confirmation failed")
+        return Document(title, lcg.p(error_message))
     
     def action_confirm(self, req):
         record, error_message = self._authorize_registration(req)
@@ -2015,7 +2034,6 @@ class Users(EmbeddableCMSModule):
             action = 'certload'
         else:
             action = 'confirm'
-        user_email = record['email'].value()
         uri = '%s%s?action=%s&uid=%s&regcode=%s' % (req.server_uri(), base_uri, action,
                                                     record['uid'].value(),
                                                     record['regcode'].value())
@@ -2026,19 +2044,9 @@ class Users(EmbeddableCMSModule):
                  uri=uri)
         attachments = ()
         if certificate_authentication:
-            text += _("\nYou will be asked to upload your certificate request.\n"
-                      "To generate the request, you can use the certtool utility from the "
-                      "GnuTLS suite and the attached certtool configuration file.\n"
-                      "In such a case use the following command to generate the certificate "
-                      "request, assuming your private key is stored in a file named `key.pem':"
-                      "\n\n"
-                      "  certtool --generate-request --template certtool.cfg --load-privkey "
-                      "key.pem --outfile request.pem\n\n")
-            attachment = "certtool.cfg"
-            user_name = '%s %s' % (record['firstname'].value(), record['surname'].value(),)
-            attachment_stream = cStringIO.StringIO(str (('cn = "%s"\nemail = "%s"\n'
-                                                        'tls_www_client\nencryption_key\n') %
-                                                       (user_name, user_email,)))
+            cert_text, attachment, attachment_stream = _certificate_mail_info(record)
+            text += _("\nYou will be asked to upload your certificate request.\n")
+            text += cert_text
             attachments += (MailAttachment(attachment, stream=attachment_stream),)
         return text, attachments
 
@@ -2164,7 +2172,7 @@ class Users(EmbeddableCMSModule):
         else:
             code = record['regcode'].value()
             if not code or code != registration_code:
-                return record, _("Invalid registration code")
+                return record, _("Invalid access code")
         return record, None
 
     def set_registration_code(self, uid):
@@ -2823,3 +2831,6 @@ class CertificateRequest(UserCertificates):
         else:
             result = super(CertificateRequest, self)._layout(req, action, record)
         return result
+
+    def _document_title(self, req, record, lang):
+        return _("Certificate upload"), lang
