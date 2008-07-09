@@ -1,5 +1,10 @@
 2008-07-09  Milan Zamazal  <pdm@brailcom.org>
 
+	* lib/wiking/cms/cms.py:
+	Cleanup of new certificate renewal functions.
+
+2008-07-09  Milan Zamazal  <pdm@brailcom.org>
+
 	* lib/wiking/db.py:
 	Generate document title in a separate method of PytisModule.
 
