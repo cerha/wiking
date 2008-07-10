@@ -1382,7 +1382,7 @@ class Attachments(StoredFileModule, CMSModule):
     RIGHTS_update = (Roles.AUTHOR, Roles.OWNER)
     RIGHTS_delete = (Roles.AUTHOR, Roles.OWNER)
     
-    def _default_action(self, req, record=None):
+    def _default_action(self, req, record=None, subpath=None):
         if record is None:
             return 'list'
         else:
