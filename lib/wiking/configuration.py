@@ -297,7 +297,7 @@ class Configuration(pc):
 
     class _Option_login_is_email(pc.BooleanOption, pc.HiddenOption):
         _DESCR = _("Whether to use e-mails as login names")
-        _DOC = _("Iff true, users must use e-mails as their login names.")
+        _DOC = _("Iff true, users must use e-mail addresses as their login names.")
         _DEFAULT = False
 
         

@@ -140,8 +140,8 @@ def _certificate_mail_info(record):
     text = _("To generate the request, you can use the certtool utility from the "
              "GnuTLS suite and the attached certtool configuration file.\n"
              "In such a case use the following command to generate the certificate "
-             "request, assuming your private key is stored in a file named `key.pem':"
-             "\n\n"
+             "request, assuming your private key is stored in a file named `key.pem':")
+    text += ("\n\n"
              "  certtool --generate-request --template certtool.cfg --load-privkey "
              "key.pem --outfile request.pem\n\n")
     attachment = "certtool.cfg"
@@ -1911,7 +1911,7 @@ class Users(EmbeddableCMSModule):
         certificate_row = self._module('UserCertificates').authentication_certificate(uid)
         if certificate_row is not None:
             certificate = certificate_row['certificate'].value()
-            text = _("Here is your certifiate to authenticate to the application")
+            text = _("Here is your certificate to authenticate to the application")
             try:
                 language = record['lang'].value()
             except KeyError:
