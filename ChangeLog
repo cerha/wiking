@@ -1,6 +1,13 @@
 2008-07-10  Milan Zamazal  <pdm@brailcom.org>
 
 	* lib/wiking/cms/cms.py:
+	* lib/wiking/request.py:
+	* lib/wiking/util.py:
+	Display organization next to user's name in the login panel.
+
+2008-07-10  Milan Zamazal  <pdm@brailcom.org>
+
+	* lib/wiking/cms/cms.py:
 	* lib/wiking/configuration.py:
 	* translations/wiking-cms.cs.po:
 	Czech translations updated.
