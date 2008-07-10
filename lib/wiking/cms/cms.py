@@ -2832,5 +2832,5 @@ class CertificateRequest(UserCertificates):
             result = super(CertificateRequest, self)._layout(req, action, record)
         return result
 
-    def _document_title(self, req, record, lang):
-        return _("Certificate upload"), lang
+    def _document_title(self, req, record):
+        return _("Certificate upload")
