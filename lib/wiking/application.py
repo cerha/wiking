@@ -256,14 +256,15 @@ class Application(Module):
             user = req.user()
         except:
             user = None
-        req_info = (("URI", req.uri()),
-                    ("Remote host", req.remote_host()),
-                    ("Remote user", user and user.login() or ''),
-                    ("HTTP referrer", req.header('Referer')),
-                    ("User agent", req.header('User-Agent')),
-                    )
-        text = "\n".join(["%s: %s" % pair for pair in req_info]) + \
-               "\n\n" + "".join(traceback.format_exception(*einfo))
+        req_info = "\n".join(["%s: %s" % pair for pair in
+                              (("Server", req.server_hostname()),
+                               ("URI", req.uri()),
+                               ("Remote host", req.remote_host()),
+                               ("Remote user", user and user.login() or ''),
+                               ("HTTP referrer", req.header('Referer')),
+                               ("User agent", req.header('User-Agent')),
+                               )])
+        text = req_info + "\n\n" + cgitb.text(einfo)
         try:
             if cfg.bug_report_address is not None:
                 tb = einfo[2]
@@ -271,20 +272,20 @@ class Application(Module):
                     tb = tb.tb_next
                 filename = os.path.split(tb.tb_frame.f_code.co_filename)[-1]
                 buginfo = "%s at %s line %d" % (einfo[0].__name__, filename, tb.tb_lineno)
-                err = send_mail(cfg.bug_report_address, 'Wiking Error: ' + buginfo,
-                                text + "\n\n" + cgitb.text(einfo),
-                                "<html><pre>"+ text +"</pre>"+ cgitb.html(einfo) +"</html>")
+                pre = req_info + "\n\n" + "".join(traceback.format_exception(*einfo))
+                err = send_mail(cfg.bug_report_address, 'Wiking Error: ' + buginfo, text,
+                                html="<html><pre>"+ pre +"</pre>"+ cgitb.html(einfo) +"</html>")
                 if err:
+                    log(OPR, "\n"+ text)
                     log(OPR, "Failed sending traceback by email:", (cfg.bug_report_address, err))
-                    log(OPR, "Error:", cgitb.text(einfo))
                 else:
-                    log(OPR, message)
+                    log(OPR, "Exception:", message.strip())
                     log(OPR, "Traceback sent to:", cfg.bug_report_address)
             else:
-                log(OPR, "Error:", cgitb.text(einfo))
+                log(OPR, "\n"+ text)
         except Exception, e:
             log(OPR, "Error in exception handling:",
                 "".join(traceback.format_exception(*sys.exc_info())))
-            log(OPR, "The original exception was:", text)
+            log(OPR, "The original exception was", text)
         raise InternalServerError(message)
     

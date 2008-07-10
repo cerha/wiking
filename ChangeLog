@@ -1,5 +1,8 @@
 2008-07-10  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/application.py: `send_mail()' arguments fixed.
+	Logging improved.
+
 	* lib/wiking/db.py: Don't care about language in
 	`_document_title()'.
 
