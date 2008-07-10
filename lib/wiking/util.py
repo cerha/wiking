@@ -333,6 +333,9 @@ class LoginPanel(Panel):
             user = req.user()
             if user:
                 username = user.name()
+                organization = user.organization()
+                if organization:
+                    username = u'%s (%s)' % (username, organization,)
                 uri = user.uri()
                 if uri:
                     username = g.link(username, uri, title=_("Go to your profile"))

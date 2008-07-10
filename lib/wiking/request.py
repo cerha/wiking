@@ -439,7 +439,7 @@ class User(object):
     """
     
     def __init__(self, login, uid=None, name=None, roles=(), email=None, data=None,
-                 passwd_expiration=None, uri=None):
+                 passwd_expiration=None, uri=None, organization=None):
         """Initialize the instance.
 
         Arguments:
@@ -452,6 +452,8 @@ class User(object):
           data -- application specific data
           passwd_expiration -- password expiration date as a Python 'date' instance or None
           uri -- user's profile URI or None
+          organization -- name of the user's organization as a string or
+            unicode; or 'None' if the user doesn't belong to any organization
 
         Please note, that password expiration date has currently no impact on the authentication
         process.  It will just be displayed in the login panel, if defined.
@@ -468,6 +470,9 @@ class User(object):
         self._data = data
         self._passwd_expiration = passwd_expiration
         self._uri = uri
+        if organization is not None:
+            organization = unicode(organization)
+        self._organization = organization
         self._auto_authentication = False
         self._authentication_method = None
         
@@ -502,6 +507,14 @@ class User(object):
     def uri(self):
         """Return the URI of user's profile."""
         return self._uri
+
+    def organization(self):
+        """Return user's organization as a unicode.
+
+        If the user doesn't belong to any organization, return 'None'.
+
+        """
+        return self._organization
 
     def auto_authentication(self):
         """Return true iff the user was authenticated automatically."""
