@@ -237,23 +237,23 @@ class PytisModule(Module, ActionHandler):
             error = label + ": " + error
         return error
 
-    def _document_title(self, req, record, lang):
+    def _document_title(self, req, record):
         if record:
             if self._TITLE_TEMPLATE:
                 title = self._TITLE_TEMPLATE.interpolate(lambda key: record[key].export())
             else:
                 title = record[self._title_column].export()
-            if lang is None and self._LIST_BY_LANGUAGE:
-                lang = str(record['lang'].value())
         else:
             if self._HONOUR_SPEC_TITLE:
                 title = self._view.title()
             else:
                 title = None # Current menu title will be substituted.
-        return title, lang
+        return title
         
     def _document(self, req, content, record=None, lang=None, err=None, msg=None, **kwargs):
-        title, lang = self._document_title(req, record, lang)
+        title = self._document_title(req, record)
+        if record and lang is None and self._LIST_BY_LANGUAGE:
+            lang = str(record['lang'].value())
         if isinstance(content, list):
             content = tuple(content)
         elif not isinstance(content, tuple):

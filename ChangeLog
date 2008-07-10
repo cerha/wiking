@@ -1,3 +1,11 @@
+2008-07-10  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/db.py: Don't care about language in
+	`_document_title()'.
+
+	* lib/wiking/cms/cms.py (Attachments._default_action): Accept the
+	`subpath' argument.
+
 2008-07-09  Milan Zamazal  <pdm@brailcom.org>
 
 	* lib/wiking/cms/cms.py:
