@@ -333,12 +333,12 @@ class LoginPanel(Panel):
             user = req.user()
             if user:
                 username = user.name()
-                organization = user.organization()
-                if organization:
-                    username = u'%s (%s)' % (username, organization,)
                 uri = user.uri()
                 if uri:
                     username = g.link(username, uri, title=_("Go to your profile"))
+                organization = user.organization()
+                if organization:
+                    username = lcg.concat(username, g.br(), organization)
                 if user.auto_authentication():
                     cmd = label = None
                 else:
@@ -349,7 +349,7 @@ class LoginPanel(Panel):
             if cmd is None:
                 content = lcg.concat(username)
             else:
-                content = lcg.concat(username, ' ',
+                content = lcg.concat(username, g.br(),
                                      g.span('[', cls="hidden"),
                                      g.link(label, '?command=%s' % cmd, cls='login-ctrl'),
                                      g.span(']',cls="hidden"))
