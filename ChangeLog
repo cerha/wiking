@@ -1,5 +1,11 @@
 2008-07-11  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/cms/cms.py (News.Spec._date_title): Handle None
+	values correctly.
+
+	* lib/wiking/db.py (PytisModule._record_uri): Accept arguments and
+	use them as uri parameters.
+
 	* lib/wiking/util.py: Display logout button next to user's name in
 	the login panel.
 
