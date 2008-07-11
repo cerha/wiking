@@ -350,14 +350,14 @@ class LoginPanel(Panel):
                                      g.span('[', cls="hidden"),
                                      g.link(label, g.uri(req.uri(), command=cmd), cls='login-ctrl'),
                                      g.span(']',cls="hidden"))
-            organization = user.organization()
-            if organization:
-                content += g.br()+'\n' + organization
             if not user:
                 uri = req.application().registration_uri(req)
                 if uri:
                     content += g.br() +'\n'+ g.link(_("New user registration"), uri)
             else:
+                organization = user.organization()
+                if organization:
+                    content += g.br()+'\n' + organization
                 if user.passwd_expiration():
                     date = lcg.LocalizableDateTime(str(user.passwd_expiration()))
                     content += g.br() +'\n'+ _("Your password expires on %(date)s.", date=date)
