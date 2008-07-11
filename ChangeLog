@@ -1,3 +1,8 @@
+2008-07-11  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/util.py: Display logout button next to user's name in
+	the login panel.
+
 2008-07-11  Milan Zamazal  <pdm@brailcom.org>
 
 	* lib/wiking/util.py:
