@@ -1,3 +1,8 @@
+2008-07-11  Milan Zamazal  <pdm@brailcom.org>
+
+	* lib/wiking/util.py:
+	Organize login panel vertically.
+
 2008-07-10  Milan Zamazal  <pdm@brailcom.org>
 
 	* lib/wiking/cms/cms.py:
