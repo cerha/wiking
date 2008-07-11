@@ -290,12 +290,12 @@ class PytisModule(Module, ActionHandler):
     def _image_provider(self, req, row, cid, target=None):
         return None
 
-    def _record_uri(self, req, row):
+    def _record_uri(self, req, row, *args, **kwargs):
         # Always use _link_provider.  This method only prevents recursion in `link()'.
         uri = self._base_uri(req)
         if not uri:
             return None
-        return make_uri(uri +'/'+ row[self._referer].export())
+        return make_uri(uri +'/'+ row[self._referer].export(), *args, **kwargs)
 
     def _link_provider(self, req, row, cid, target=None):
         if cid is None:
