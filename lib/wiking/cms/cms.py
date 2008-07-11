@@ -1493,7 +1493,8 @@ class News(EmbeddableCMSModule):
         def _date(self, row):
             return row['timestamp'].export(show_time=False)
         def _date_title(self, row):
-            return row['date'].export() +': '+ row['title'].value()
+            if row['title'].value():
+                return row['date'].export() +': '+ row['title'].value()
         
     _LIST_BY_LANGUAGE = True
     _OWNER_COLUMN = 'author'
