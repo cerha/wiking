@@ -191,8 +191,8 @@ class ModPythonHandler(object):
         if cfg.default_sender_address is None:
             cfg.default_sender_address = 'wiking@' + domain
         if cfg.resolver is None:
-            dbconnection = pd.DBConnection(database=cfg.dbname or hostname,
-                                           user=cfg.dbuser, host=cfg.dbhost, port=cfg.dbport)
+            dbconnection = pd.DBConnection(database=cfg.dbname or hostname, host=cfg.dbhost,
+                                           port=cfg.dbport, user=cfg.dbuser, password=cfg.dbpass)
             cfg.resolver = WikingResolver(dbconnection, cfg.modules, cfg.maintenance)
         self._application = cfg.resolver.wiking_module('Application')
         self._handler = Handler(hostname)

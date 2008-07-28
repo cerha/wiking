@@ -1,3 +1,9 @@
+2008-07-28  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/handler.py: Respect configuration option `dbpass'.
+
+	* lib/wiking/configuration.py: New option `dbpass'.
+
 2008-07-11  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/cms/cms.py (News.Spec._date_title): Handle None

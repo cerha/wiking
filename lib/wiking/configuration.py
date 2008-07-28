@@ -126,6 +126,9 @@ class Configuration(pc):
     class _Option_dbuser(pc.StringOption):
         _DESCR = "Database user"
         
+    class _Option_dbpass(pc.StringOption):
+        _DESCR = "Database password"
+        
     class _Option_maintenance(pc.BooleanOption):
         _DESCR = "Maintenance mode flag"
         _DOC = ("Setting this value to True will tell Wiking to run in the maintenance mode. "
