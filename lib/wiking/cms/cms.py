@@ -681,15 +681,11 @@ class Panels(CMSModule, Publishable):
                           "use the menu title of the selected module.")),
             Field('mtitle'),
             Field('title', _("Title"), virtual=True, width=30,
-                  computer=Computer(lambda row: row['ptitle'].value() or \
-                                    row['mtitle'].value() or \
-                                    _modtitle(row['modname'].value()),
-                                    depends=('ptitle', 'mtitle', 'modname',))),
+                  computer=lambda ptitle, mtitle, modname: ptitle or mtitle or _modtitle(modname)),
             Field('ord', _("Order"), width=5,
                   descr=_("Number denoting the order of the panel on the page.")),
             Field('mapping_id', _("List items"), width=5, not_null=False, codebook='Mapping',
-                  display=lambda row: _modtitle(row['modname'].value()),
-                  prefer_display=True, selection_type=CHOICE,
+                  display=lambda row: _modtitle(row['modname'].value()), selection_type=CHOICE,
                   validity_condition=pd.NE('modname', pd.Value(pd.String(), 'Pages')),
                   descr=_("The items of the extension module used by the selected page will be "
                           "shown by the panel.  Leave blank for a text content panel.")),
@@ -1889,20 +1885,21 @@ class Users(EmbeddableCMSModule):
     def __init__(self, *args, **kwargs):
         super(Users, self).__init__(*args, **kwargs)
         if not self._LAYOUT:
-            self._LAYOUT = {'rights': ('role',),
-                            'passwd': ((cfg.login_is_email and 'email' or 'login'), 'old_password', 'new_password',),
-                            'insert': ((FieldSet(_("Login information"),
-                                                 ((cfg.login_is_email and ('email',) or ('login',)) +
-                                                  ('password',) +
-                                                  (cfg.certificate_authentication and ('certauth',) or ())
-                                                  )),) +
-                                       (FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname',)),) +
-                                       (FieldSet(_("Contact information"),
-                                                 (((not cfg.login_is_email) and ('email',) or ()) +
-                                                  ('phone', 'address', 'uri',))),)),
-                            'view':   (FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname',)),
-                                       FieldSet(_("Contact information"), ('email', 'phone', 'address','uri')),
-                                       FieldSet(_("Access rights"), ('role',)))}
+            self._LAYOUT = {
+                'insert': (FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname',)),
+                           FieldSet(_("Contact information"),
+                                    (((not cfg.login_is_email) and ('email',) or ()) +
+                                     ('phone', 'address', 'uri',))),
+                           FieldSet(_("Login information"),
+                                    ((cfg.login_is_email and ('email',) or ('login',)) +
+                                     ('password',) +
+                                     (cfg.certificate_authentication and ('certauth',) or ())))),
+                'view':   (FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname',)),
+                           FieldSet(_("Contact information"), ('email', 'phone', 'address','uri')),
+                           FieldSet(_("Access rights"), ('role',))),
+                'rights': ('role',),
+                'passwd': ((cfg.login_is_email and 'email' or 'login'),
+                           'old_password', 'new_password',),
 
     def _send_admin_confirmation_mail(self, req, record):
         self._module('Users').send_admin_approval_mail(req, record)
