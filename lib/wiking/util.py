@@ -637,11 +637,11 @@ class LoginDialog(lcg.Content):
                   if k not in ('command', 'login', 'password', '__log_in')]
         content = (
             g.label(_("Login name")+':', id='login') + g.br(),
-            g.field(name='login', value=login, id='login', tabindex=1, size=14),
+            g.field(name='login', value=login, id='login', size=14),
             g.br(), 
             g.label(_("Password")+':', id='password') + g.br(),
             g.field(name='password', value=password, id='password', size=14,
-                    tabindex=2, password=True),
+                    password=True),
             g.br(),
             g.hidden(name='__log_in', value='1'),
             ) + tuple(hidden) + (
@@ -657,7 +657,8 @@ class LoginDialog(lcg.Content):
             uri = req.server_uri(force_https=True) + req.uri()
         else:
             uri = req.uri()
-        return g.form(content, method='POST', action=uri, cls='login-form')
+        return g.form(content, method='POST', action=uri, name='login_form', cls='login-form') + \
+               g.script('document.login_form.login.focus()')
     
 
     

@@ -1,5 +1,10 @@
 2008-07-31  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/util.py: Use javascript to focus the login name field
+	in login form.
+
+	* lib/wiking/cms/cms.py: Cosmetic changes.
+
 	* lib/wiking/__init__.py: Suppress pytis logging data operations.
 
 2008-07-28  Tomas Cerha  <cerha@brailcom.org>
