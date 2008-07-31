@@ -1899,7 +1899,7 @@ class Users(EmbeddableCMSModule):
                            FieldSet(_("Access rights"), ('role',))),
                 'rights': ('role',),
                 'passwd': ((cfg.login_is_email and 'email' or 'login'),
-                           'old_password', 'new_password',),
+                           'old_password', 'new_password',)}
 
     def _send_admin_confirmation_mail(self, req, record):
         self._module('Users').send_admin_approval_mail(req, record)
