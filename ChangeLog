@@ -1,3 +1,7 @@
+2008-07-31  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/__init__.py: Suppress pytis logging data operations.
+
 2008-07-28  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/handler.py: Respect configuration option `dbpass'.
