@@ -1,5 +1,10 @@
 2008-08-05  Milan Zamazal  <pdm@brailcom.org>
 
+	* ev/null:
+	Initial Wiking Q&A document created.
+
+2008-08-05  Milan Zamazal  <pdm@brailcom.org>
+
 	* lib/wiking/cms/cms.py:
 	* lib/wiking/request.py:
 	Allow access to organization_id in wiking.Users.
