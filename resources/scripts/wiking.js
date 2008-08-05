@@ -15,25 +15,32 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */ 
+ */
 
-var _first_menu_item = null;
+/* Menu navigation keyboard shortcuts */
+MENU_KEY       = 'Ctrl-Alt-m';
+MENU_KEY_UP    = 'Shift-Up';
+MENU_KEY_DOWN  = 'Shift-Down';
+MENU_KEY_LEFT  = 'Shift-Left';
+MENU_KEY_RIGHT = 'Shift-Right';
+
+var _current_main_menu_item = null;
 
 function wiking_init() {
    // Not all browsers invoke onkeypress for arrow keys, so keys must be handled in onkeydown.
-   _first_menu_item = init_menu('main-menu', true, null);
+   init_menu('main-menu', true, null);
    if (document.all)
       document.body.onkeydown = wiking_onkeydown;
    else
       window.onkeydown = wiking_onkeydown;
+   set_focus(document.getElementById('content-heading'));
 }
 
 function wiking_onkeydown(event) {
    // Handle global Wiking keyboard shortcuts.
-   //alert(event_key(event));
    switch (event_key(event)) {
-   case 'Ctrl-Shift-m': // Set focus to the first menu item.
-      set_focus(_first_menu_item); return false;
+   case MENU_KEY: // Set focus to the first menu item.
+      set_focus(_current_main_menu_item); return false;
    }
    return true;
 }
@@ -68,8 +75,10 @@ function init_menu_items(ul, horizontal, parent) {
 	 var child = null;
 	 if (horizontal) {
 	    var cls = link.getAttribute(document.all?'className':'class');
-	    if (cls && cls.match('(\^\|\\s)current(\\s\|\$)') != null)
+	    if (cls && cls.match('(\^\|\\s)current(\\s\|\$)') != null) {
+	       _current_main_menu_item = link;
 	       child = init_menu('submenu-frame', false, link);
+	    }
 	 } else {
 	    var submenu = node.getElementsByTagName('ul')[0];
 	    if (submenu != null && submenu.parentNode == node)
@@ -79,16 +88,16 @@ function init_menu_items(ul, horizontal, parent) {
 	 var parent_key, child_key, prev_key, next_key;
 	 if (horizontal) {
 	    // This is the main menubar.
-	    parent_key = 'Up';
-	    child_key  = 'Down';
-	    prev_key   = 'Left';
-	    next_key   = 'Right';
+	    parent_key = MENU_KEY_UP;
+	    child_key  = MENU_KEY_DOWN;
+	    prev_key   = MENU_KEY_LEFT;
+	    next_key   = MENU_KEY_RIGHT;
 	 } else {
 	    // This is the local (sub)menu.
-	    parent_key = 'Left';
-	    child_key  = 'Right';
-	    prev_key   = 'Up';
-	    next_key   = 'Down';
+	    parent_key = MENU_KEY_LEFT;
+	    child_key  = MENU_KEY_RIGHT;
+	    prev_key   = MENU_KEY_UP;
+	    next_key   = MENU_KEY_DOWN;
 	 }
 	 var map = {};
 	 map[parent_key] = parent;
@@ -106,7 +115,7 @@ function init_menu_items(ul, horizontal, parent) {
 
 function on_menu_keydown(event, link) {
    var key = event_key(event);
-   if (key == 'Up' || key == 'Down' || key == 'Right' || key == 'Left') {
+   if (key==MENU_KEY_UP || key==MENU_KEY_DOWN || key==MENU_KEY_RIGHT || key==MENU_KEY_LEFT) {
       var target = link._menu_navigation_target[key];
       if (target != null)
 	 set_focus(target);
@@ -138,3 +147,17 @@ function set_focus(element) {
       setTimeout(function () { try { element.focus(); } catch (e) {} }, 0);
 }
 
+function debug(message) {
+   if (!debug.window_ || debug.window_.closed) {
+      var win = window.open("", null, "width=400, height=200, scrollbars=yes, resizable=yes, " +
+			    "status=no, location=no, menubar=no, toolbar=no");
+      if (!win) return;
+      var doc = win.document;
+      doc.write("<html><head><title>Debug Log</title></head><body></body></html>");
+      doc.close();
+      debug.window_ = win;
+   }
+   var line = debug.window_.document.createElement("div");
+   line.appendChild(debug.window_.document.createTextNode(message));
+   debug.window_.document.body.appendChild(line);
+}

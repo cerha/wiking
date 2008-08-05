@@ -191,7 +191,8 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
     def _content(self, context):
         g = self._generator
         return (g.hr(cls='hidden'),
-                g.div((g.h(g.link(context.node().heading(), None, name='content-heading'), 1),
+                g.div((g.h(g.link(context.node().heading(), None, tabindex=0,
+                                  name='content-heading', id='content-heading'), 1),
                        super(Exporter, self)._content(context)), id='inner-content'),
                 g.div('&nbsp;', id='content-clearing'))
 
