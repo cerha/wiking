@@ -40,6 +40,9 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
     _BOTTOM_PARTS = ('wiking_bar', 'last_change', 'footer')
     _LANGUAGE_SELECTION_LABEL = _("Language:")
 
+    def _body_attr(self, context):
+        return super(Exporter, self)._body_attr(context, onload='wiking_init();')
+
     def _wrap(self, context):
         return self._parts(context, self._WRAP_PARTS)
     
@@ -80,14 +83,15 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
     def _resource_uri_prefix(self, context, resource):
         return context.req().application().module_uri('Resources')
     
-    #def _head(self, context):
-    #    result = super(Exporter, self)._head(context)
-    #    rss = context.rss()
-    #    if rss:
-    #        result = concat(result, '<link rel="alternate" '
-    #                        'type="application/rss+xml" title="%s" href="%s"/>'
-    #                        % (context.node().title(), rss), separator='\n  ')
-    #    return result
+    def _head(self, context):
+        context.node().resource('wiking.js')
+        result = super(Exporter, self)._head(context)
+        #rss = context.rss()
+        #if rss:
+        #    result = concat(result, '<link rel="alternate" '
+        #                    'type="application/rss+xml" title="%s" href="%s"/>'
+        #                    % (context.node().title(), rss), separator='\n  ')
+        return result
     
     def _site_title(self, context):
         if context.wmi:
@@ -135,6 +139,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
     def _menu(self, context):
         g = self._generator
         links = []
+        first = True
         for item in context.node().root().children():
             if not item.hidden():
                 cls = "navigation-link"
@@ -143,7 +148,8 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
                 if item is context.node().top():
                     cls += " current"
                     sign = self._hidden(' *')
-                if item.id() == 'index':
+                if first:
+                    first = False
                     hotkey = "1"
                 links.append(g.link(item.title(), self._uri_node(context, item),
                                     title=item.descr(), hotkey=hotkey, cls=cls) + sign)
@@ -152,7 +158,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             content = (g.h(title, 3), g.list(links))
         else:
             content = ()
-        return g.map(g.div(content, id="main-menu"), name='menu-map', title=_("Main navigation"))
+        return g.map(g.div(content, id='main-menu'), name='menu-map', title=_("Main navigation"))
 
     def _submenu(self, context):
         g = self._generator

@@ -1,3 +1,19 @@
+2008-08-05  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/util.py: Focus the login name field on page `onload'.
+
+	* lib/wiking/cms/cms.py: Allow AUTHOR to commit a changed page
+	text.
+
+	* resources/css/default.css: Updated for new pytis ShowForm
+	layout.
+
+	* resources/scripts/wiking.js: New file.
+
+	* lib/wiking/export.py: Include Wiking script and call
+	`wiking_init()' on page load to add support for ARIA markup and
+	keyboard menu navigation.
+
 2008-07-31  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/util.py: Use javascript to focus the login name field
