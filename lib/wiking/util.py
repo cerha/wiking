@@ -658,7 +658,9 @@ class LoginDialog(lcg.Content):
         else:
             uri = req.uri()
         return g.form(content, method='POST', action=uri, name='login_form', cls='login-form') + \
-               g.script('document.login_form.login.focus()')
+               g.script("onload_ = window.onload; window.onload = function() { "
+                        "if (onload_) onload_(); "
+                        "setTimeout(function () { document.login_form.login.focus() }, 0); };")
     
 
     
