@@ -489,7 +489,7 @@ form.pytis-form label {
 form.pytis-form .group table { 
     border-collapse: collapse;
 }
-form.pytis-form td.label { 
+form.pytis-form th.label { 
     padding-right: 0.3em;
     line-height: 1.4em;
     text-align: right;
