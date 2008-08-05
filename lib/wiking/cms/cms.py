@@ -1250,7 +1250,7 @@ class Pages(CMSModule):
         else:
             kwargs = dict(msg=_("The changes were published."))
         return self.action_view(req, record, **kwargs)
-    RIGHTS_commit = (Roles.ADMIN, Roles.OWNER)
+    RIGHTS_commit = (Roles.AUTHOR, Roles.OWNER)
 
     def action_revert(self, req, record):
         try:
