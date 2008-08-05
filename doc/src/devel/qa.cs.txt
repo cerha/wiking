@@ -1,0 +1,215 @@
+= Rukověť wikingového programátora =
+
+== O tomto dokumentu ==
+
+=== K čemu slouží Rukověť wikingového programátora? ===
+
+Tento dokument se snaží vyhmátnout nejběžnější nejasnosti, se kterými se může
+wikingový programátor setkat.  Nejedná se (navzdory názvu) o skutečný manuál,
+referenční příručku ani jinou formu řádné dokumentace, ale pouze o pomůcku,
+která může vznikat s malým vynaloženým úsilím a přitom pomoci chabé lidské
+paměti vracet se k již zodpovězeným dotazům.  Rukověť má tedy formu otázek a
+odpovědí.  Přitom má dva základní cíle:
+
+  1. Shrnovat odpovědi na již někdy zodpovězené otázky.
+
+  2. V rámci možností usnadnit základní orientaci ve Wikingu.
+
+
+=== Jak Rukověť vzniká? ===
+
+Tvorba dokumentu se řídí následujícím pravidlem: Položí-li někdo dotaz ohledně
+systému Wiking a tento je řádně zodpovězen, je následně otázka s odpovědí
+zanesena do tohoto dokumentu, samozřejmě v již účesané podobě.  Preferuje se,
+aby kvůli srozumitelnosti záznam provedl dotazující se (který ví, co mu bylo
+nejasného a jak nejsrozumitelněji zformulovat odpověď) a dotazovaný ji
+příležitostně zkontroloval.  Jedná se ale pouze o postup doporučený a nikoliv
+závazný.  V každém případě platí, že je lepší slabší dokumentace než žádná
+dokumentace.
+
+
+== Koncepce ==
+
+=== Proč byl Wiking vytvořen? ===
+
+???
+
+=== Proč nepoužíváme pro vývoj aplikací jiný, již hotový a prověřený toolkit? ===
+
+???
+
+=== Z jakých komponent se Wiking skládá? ===
+
+Wiking se skládá z několika více či méně samostatných částí:
+
+  Pytis
+    Knihovna pro práci s databází a tvorbu tabulkových formulářů a aplikací.
+
+  LCG
+    Knihovna pro generování HTML kódu, případně i jiných výstupních dokumentů.
+
+  Wiking
+    Knihovna pro tvorbu webových aplikací, založená na knihovnách Pytis a LCG.
+
+  Wiking CMS
+    Rozšiřující wikingová knihovna pro správu obsahu wikingových stránek a
+    v podstatě nezbytná součást všech naši
+
+=== Má některá z těchto komponent zásadní koncepční omezení? ===
+
+Ano.  Knihovna Pytis je stavěna na prostou tabulkovou databázi a nemá
+(rozumnou) podporu pro relační databázový model, o jiných koncepcích nemluvě.
+Wiking je s touto knihovnou úzce spjat a tudíž celý systém dokáže pracovat
+pouze s prostými tabulkovými daty.  Jakékoliv složitější datové modely lze
+vytvářet pouze uvnitř databázového stroje.
+
+Jedním z toho vyplývajících efektů je, že typické wikingové moduly jsou
+tabulkově orientované, nikoliv funkčně orientované.  Namísto aby každý modul
+odpovídal specifické funkci aplikace, odpovídá specifické databázové tabulce.
+Přestože nezřídka dochází k praktickému překrytí databázové tabulky a funkce,
+v jiných případech tomu tak není a realizace ve Wikingu se pak komplikuje a
+vznikají ošklivé obezličky.  V ještě horším případě se (zcela zákonitě)
+objevuje tendence ke znásilňování datového modelu, aby vznikla (jediná) tabulka
+odpovídající požadované funkcionalitě modulu bez ohledu na čistotu návrhu
+datového modelu.
+
+=== Je možné doplňovat další rozšiřující wikingové knihovny? ===
+
+Ano, podobně jako je Wiking rozšířen knihovnou Wiking CMS, je možné jej
+rozšiřovat dalšími knihovnami.  Příkladem mohou být moduly v aplikacích
+Eurochance, Wiking BTS a Wiking Biblio.
+
+=== Co je to WMI? ===
+
+Jedná se o systém správy obsahu webové aplikace (/Wiking Management Interface/)
+dostupný administrátorovi aplikace.
+
+=== Na jakém softwaru Wiking běží? ===
+
+Teoreticky může fungovat skoro s čímkoliv, ale ve skutečnosti existuje podpora
+pouze pro tyto systémy:
+
+ - Web server apache2-mpm-prefork.
+
+ - Databázový stroj PostgreSQL.
+
+ - Formát stránek HTML (+ CSS atd.).
+
+Při vývoji Wikingu a souvisejících knihoven je však dobré mít na paměti onen
+teoretický předpoklad a nezavádět závislosti na konkrétních systémech nikde,
+kde to není vyloženě nutné.
+
+
+== Programování ve Wikingu ==
+
+=== Existuje programátorská dokumentace k Wikingu? ===
+
+Ne.  Nejúplnějším zdrojem informací je zdrojový kód, což pochopitelně není
+zrovna přehledný studijní materiál.  Hodí se ovšem často jako vzor jak některé
+věci dělat, zejména zdrojové kódy rozšiřujících wikingových knihoven a
+aplikací.
+
+Dalším zdrojem informací jsou dokumentační řetězce v kódu.  Ty jsou ovšem
+mnohdy neúplné nebo zcela chybějící a neposkytují celkový obrázek o systému.
+Slouží tedy vesměs jen jako částečná reference k voláním metod, apod.
+
+Nějaké soubory jsou v tomto adresáři, mnoho informací v nich ale nenajdete.
+
+Výborným a kvalitním zdrojem informací o Wikingu je TC, což je jediný člověk na
+světě, který Wikingu rozumí a vyzná se v něm.  Bohužel není dost dobře
+použitelný jako příručka povalující se na stole vedle počítače nebo jako
+hypertextová dokumentace, která je kdykoliv k dispozici v jakémkoliv počítači.
+
+Snahou o zaflákání chybějící dokumentace je tedy zejména tento dokument.
+
+=== Co je to modul? ===
+
+Modul je základní stavební jednotka poskytující určitou množinu funkcí.
+V nejobecnějším pohledu se jedná o jakoukoliv třídu, která je potomkem třídy
+`wiking.Module'.  Wikingová aplikace vlastně nesestává z ničeho jiného než
+z množiny modulů.  Existují různé druhy modulů, od prostých tříd poskytujících
+jednoduché funkce, přes moduly zpřístupňující databázové tabulky a automaticky
+generující jim odpovídající webové stránky a formuláře (potomci třídy
+`wiking.PytisModule') až po moduly doplňující přístup k datům všemožnými
+dalšími funkcemi (např. `wiking.cms.Users').
+
+=== Proč místo wikingových modulů nepoužívat obyčejné pythonové třídy? ===
+
+Krom toho, že wikingové moduly samozřejmě obsahují různé funkce, je důležité
+to, že Wiking při svém startu automaticky vytváří instance svých modulů,
+eviduje je, spravuje je, poskytuje přístup k nim a v podstatě s ničím jiným než
+s moduly nepracuje.
+
+=== Jak postupovat při vytváření nové wikingové aplikace? ===
+
+Wikingová aplikace v zásadě sestává z následujících částí:
+
+ - Datový model.
+
+ - Přizpůsobení existujících wikingových modulů.
+
+ - Nové wikingové moduly.
+
+Protože víceméně každá wikingová aplikace přebírá funkcionalitu Wiking CMS, je
+i její datový model přebrán z Wiking CMS.  Dle potřeby lze doplňovat další
+tabulky a rozšiřovat tabulky stávající (pomocí SQL příkazů =ALTER=).
+
+Přizpůsobení wikingových modulů je možné standardně prostřednictvím
+dědičnosti.  Tam, kde je požadována zcela nová funkcionalita, se vytváří nové
+wikingové moduly.
+
+
+== Tvorba uživatelského rozhraní ==
+
+=== Jak předefinovat stávající modul? ===
+
+Často je potřeba upravit stávající wikingový modul (něco změnit, přidat další
+funkci, apod.) beze změny jeho názvu.  To se provede poděděním tohoto modulu
+pod stejným názvem, exportem modifikovaného modulu (v `__init__.py') a
+zajištěním, že *pythonový* modul s upravenou definicí wikingového modulu je
+do Pythonu importován až po pythonovém modulu s původní definicí wikingového
+modulu.  Tím dojde k přeplácnutí, protože Wiking rozlišuje moduly pouze podle
+jejich názvů, nikoliv podle pythonových modulů, ve kterých jsou definovány.
+
+=== Jak přidat položku do menu WMI? ===
+
+Do hlavního menu nahoře ve stránce lze vložit novou položku předefinováním
+atributu `WikingManagementInterface._SECTIONS'.
+
+Do vedlejšího menu konkrétní sekce lze přidat odkaz na konkrétní modul, a sice
+tak, že se v onom modulu definují atributy `WMI_SECTION' a `WMI_ORDER'.
+
+=== Jak vytvořit položku v hlavním menu nahoře ve stránce mimo WMI? ===
+
+Definuje se modul, který je potomkem třídy `wiking.cms.CMSExtension',
+a vyexportuje se (v `__init__.py').
+
+=== Jak vytvořit vedlejší menu vlevo ve stránce mimo WMI? ===
+
+Definuje se v modulu, který je přítomen v hlavním menu (viz předchozí otázka).
+
+Pokud je toto menu statické, stačí předefinovat atribut `CMSExtension._MENU'.
+Tento atribut obsahuje instance třídy `CMSExtension.MenuItem'.
+
+Univerzální je předefinování metody `Embeddable.submenu'.  Ta vrací instance
+třídy `wiking.MenuItem'.  Její implementace je ovšem komplikovanější, vzor lze
+najít ve Wiking Biblio, modul `WikingBiblio'.
+
+
+== Práce s databází ==
+
+=== Je možné provést několikakrokovou databázovou operaci atomicky? ===
+
+Částečně ano.  Lze využít třídy `pytis.data.DBTransactionDefault' a předávat ji
+jako argument databázovým operacím.  S touto třídou však nepracují standardní
+formulářové funkce Wikingu, je tedy v případě takového požadavku nutné
+postupovat ve smyslu ,,udělej si sám``.  Použití těchto uživatelských transakcí
+také není nijak elegantní a pohodlné, jedná se však o zásadní omezení Pytisu,
+se kterým se nedá nic dělat, viz výše.
+
+
+== Různé ==
+
+=== Po upgradu z CVS se v aplikaci objevují nepochopitelné chyby, co to? ===
+
+Zkontrolujte přístupová práva web serveru ke všem použitým knihovnám.
