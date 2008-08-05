@@ -1,3 +1,9 @@
+2008-08-05  Milan Zamazal  <pdm@brailcom.org>
+
+	* lib/wiking/cms/cms.py:
+	* lib/wiking/request.py:
+	Allow access to organization_id in wiking.Users.
+
 2008-08-05  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/util.py: Focus the login name field on page `onload'.
