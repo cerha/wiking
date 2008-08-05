@@ -2124,15 +2124,18 @@ class Users(EmbeddableCMSModule):
                 uri = base_uri +'/'+ login
             else:
                 uri = self._application.module_uri('Registration')
-            organization_id = record['organization_id']
-            if organization_id.value():
-                organization_record = self._module('Organizations').record(req,organization_id)
+            organization_id_value = record['organization_id']
+            organization_id = organization_id_value.value()
+            if organization_id:
+                organizations = self._module('Organizations')
+                organization_record = organizations.record(req, organization_id_value)
                 organization = organization_record['name'].value()
             else:
                 organization = None
             return User(login, name=record['user'].value(), uid=record['uid'].value(),
                         uri=uri, email=record['email'].value(), data=record,
-                        roles=self.Spec._roles(record), organization=organization)
+                        roles=self.Spec._roles(record),
+                        organization_id=organization_id, organization=organization)
         else:
             return None
 

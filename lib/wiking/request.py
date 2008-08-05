@@ -439,7 +439,7 @@ class User(object):
     """
     
     def __init__(self, login, uid=None, name=None, roles=(), email=None, data=None,
-                 passwd_expiration=None, uri=None, organization=None):
+                 passwd_expiration=None, uri=None, organization_id=None, organization=None):
         """Initialize the instance.
 
         Arguments:
@@ -452,6 +452,7 @@ class User(object):
           data -- application specific data
           passwd_expiration -- password expiration date as a Python 'date' instance or None
           uri -- user's profile URI or None
+          organization_id -- id of the user's organization as an Integer
           organization -- name of the user's organization as a string or
             unicode; or 'None' if the user doesn't belong to any organization
 
@@ -470,6 +471,7 @@ class User(object):
         self._data = data
         self._passwd_expiration = passwd_expiration
         self._uri = uri
+        self._organization_id = organization_id
         if organization is not None:
             organization = unicode(organization)
         self._organization = organization
@@ -507,6 +509,14 @@ class User(object):
     def uri(self):
         """Return the URI of user's profile."""
         return self._uri
+
+    def organization_id(self):
+        """Return user's organization id as an integer.
+
+        If the user doesn't belong to any organization, return 'None'.
+
+        """
+        return self._organization_id
 
     def organization(self):
         """Return user's organization as a unicode.
