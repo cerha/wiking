@@ -1,5 +1,10 @@
 2008-08-06  Milan Zamazal  <pdm@brailcom.org>
 
+	* doc/src/devel/qa.cs.txt:
+	Q&A update.
+
+2008-08-06  Milan Zamazal  <pdm@brailcom.org>
+
 	* lib/wiking/cms/cms.py:
 	Take initial redirection module from submenu(), not _MENU.
 
