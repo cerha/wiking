@@ -32,7 +32,10 @@ dokumentace.
 
 === Proč byl Wiking vytvořen? ===
 
-???
+Wiking byl vytvořen jako nástroj pro tvorbu webových aplikací, zohledňující
+přitom osobní preference jeho vývojářů.  Je zamýšlen jako nadstavba nad
+knihovnou Pytis, takže je částí frameworku, který umožňuje rychlý vývoj
+aplikací přístupných prostředníctvím Xového klienta i přes webové rozhraní.
 
 === Proč nepoužíváme pro vývoj aplikací jiný, již hotový a prověřený toolkit? ===
 
@@ -58,7 +61,8 @@ Wiking se skládá z několika více či méně samostatných částí:
 === Má některá z těchto komponent zásadní koncepční omezení? ===
 
 Ano.  Knihovna Pytis je stavěna na prostou tabulkovou databázi a nemá
-(rozumnou) podporu pro relační databázový model, o jiných koncepcích nemluvě.
+(rozumnou) podporu pro relační databázový model, budování vztahů mezi
+tabulkovými daty a atomické provádění složitějších databázových operací.
 Wiking je s touto knihovnou úzce spjat a tudíž celý systém dokáže pracovat
 pouze s prostými tabulkovými daty.  Jakékoliv složitější datové modely lze
 vytvářet pouze uvnitř databázového stroje.
@@ -196,7 +200,14 @@ třídy `wiking.MenuItem'.  Její implementace je ovšem komplikovanější, vzo
 najít ve Wiking Biblio, modul `WikingBiblio'.
 
 
-== Práce s databází ==
+== Práce s daty ==
+
+=== Jak v počítaném políčku zjistit přihlášeného uživatele? ===
+
+Computer políčka dostává ve Wikingu jako argument `row' instanci
+`PytisModule.record'.  Tato třída má metodu `req()', skrze kterou se lze dostat
+k aktuálnímu requestu a v něm, prostřednictvím metody `user()' i k informacím
+o přihlášeném uživateli: `row.req().user()'.
 
 === Je možné provést několikakrokovou databázovou operaci atomicky? ===
 
@@ -212,4 +223,7 @@ se kterým se nedá nic dělat, viz výše.
 
 === Po upgradu z CVS se v aplikaci objevují nepochopitelné chyby, co to? ===
 
-Zkontrolujte přístupová práva web serveru ke všem použitým knihovnám.
+ 1. Zkontrolujte, že máte nejnovější verze všech knihoven Wikingu, tj. pytis,
+    lcg, wiking.
+
+ 2. Zkontrolujte přístupová práva web serveru ke všem použitým knihovnám.
