@@ -456,7 +456,8 @@ class CMSExtension(Module, Embeddable, RequestHandler):
         init(self._MENU)
     
     def embed(self, req):
-        return req.redirect(self.submodule_uri(req, self._MENU[0].modname))
+        uri = self.submenu(req)[0].id()
+        return req.redirect(uri)
 
     def submenu(self, req):
         def menu_item(item):
