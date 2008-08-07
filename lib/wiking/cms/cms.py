@@ -456,6 +456,8 @@ class CMSExtension(Module, Embeddable, RequestHandler):
         init(self._MENU)
     
     def embed(self, req):
+        # TODO: This causes the `submenu()' to be called twice.  It would be better to cache the
+        # result for the duration of one request.
         uri = self.submenu(req)[0].id()
         return req.redirect(uri)
 
