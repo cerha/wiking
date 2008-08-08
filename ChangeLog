@@ -1,7 +1,8 @@
 2008-08-08  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/application.py: Allow definition of login panel and
-	login dialog texts.
+	login dialog texts.  Improved handling of exceptions during
+	exception handling...
 
 	* lib/wiking/util.py: Display login panel and login dialog texts.
 
