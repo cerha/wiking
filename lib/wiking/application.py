@@ -270,18 +270,18 @@ class Application(Module):
         einfo = sys.exc_info()
         message = ''.join(traceback.format_exception_only(*einfo[:2]))
         try:
-            user = req.user()
-        except:
-            user = None
-        req_info = "\n".join(["%s: %s" % pair for pair in
-                              (("Server", req.server_hostname()),
-                               ("URI", req.uri()),
-                               ("Remote host", req.remote_host()),
-                               ("Remote user", user and user.login() or ''),
-                               ("HTTP referrer", req.header('Referer')),
-                               ("User agent", req.header('User-Agent')),
-                               )])
-        try:
+            try:
+                user = req.user()
+            except:
+                user = None
+            req_info = "\n".join(["%s: %s" % pair for pair in
+                                  (("Server", req.server_hostname()),
+                                   ("URI", req.uri()),
+                                   ("Remote host", req.remote_host()),
+                                   ("Remote user", user and user.login() or ''),
+                                   ("HTTP referrer", req.header('Referer')),
+                                   ("User agent", req.header('User-Agent')),
+                                   )])
             text = req_info + "\n\n" + cgitb.text(einfo)
             if cfg.bug_report_address is not None:
                 tb = einfo[2]
@@ -303,6 +303,6 @@ class Application(Module):
         except:
             log(OPR, "Error in exception handling:",
                 "".join(traceback.format_exception(*sys.exc_info())))
-            log(OPR, "The original exception was", traceback.format_exception(*einfo))
+            log(OPR, "The original exception was", ''.join(traceback.format_exception(*einfo)))
         raise InternalServerError(message)
     
