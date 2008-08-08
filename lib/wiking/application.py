@@ -194,7 +194,7 @@ class Application(Module):
         in the login panel.  The text may be formatted as LCG structured text.
 
         """
-        return _("Panels")
+        return None
     
     def login_dialog_text(self, req):
         """Return the text displayed under the login dialog.
@@ -202,7 +202,7 @@ class Application(Module):
         The text may be formatted as LCG structured text.
 
         """
-        return "Pokus"
+        return None
         
     def password_reminder_uri(self, req):
         """Return the forgotten password link URI or None if password reminder not implemented."""
