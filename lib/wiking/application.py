@@ -186,6 +186,28 @@ class Application(Module):
     def registration_uri(self, req):
         """Return the URI for new user registration or None if registration is not allowed."""
         return None
+
+    def registration_text(self, req):
+        """Return the text displayed in the login panel when the user is not logged in.
+
+        The text will be displayed under the registration link (if 'registration_uri()' is defined)
+        in the login panel.  The text may be formatted as LCG structured text.
+
+        """
+        return None
+    
+    def login_dialog_text(self, req):
+        """Return the text displayed under the login dialog.
+
+        The text may be formatted as LCG structured text.
+
+        """
+        return """Return the text displayed under the login dialog.
+
+        The text may be formatted as LCG structured text.
+
+        """
+        return None
         
     def password_reminder_uri(self, req):
         """Return the forgotten password link URI or None if password reminder not implemented."""

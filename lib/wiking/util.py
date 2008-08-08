@@ -350,10 +350,15 @@ class LoginPanel(Panel):
                                      g.span('[', cls="hidden"),
                                      g.link(label, g.uri(req.uri(), command=cmd), cls='login-ctrl'),
                                      g.span(']',cls="hidden"))
+            appl = req.application()
             if not user:
-                uri = req.application().registration_uri(req)
+                uri = appl.registration_uri(req)
                 if uri:
                     content += g.br() +'\n'+ g.link(_("New user registration"), uri)
+                text = appl.registration_text(req)
+                if text:
+                    container = lcg.Container(lcg.Parser().parse(text))
+                    content += '\n'+ g.div(container.export(context), cls='registration-text')
             else:
                 organization = user.organization()
                 if organization:
@@ -361,7 +366,7 @@ class LoginPanel(Panel):
                 if user.passwd_expiration():
                     date = lcg.LocalizableDateTime(str(user.passwd_expiration()))
                     content += g.br() +'\n'+ _("Your password expires on %(date)s.", date=date)
-                uri = req.application().password_change_uri(req)
+                uri = appl.password_change_uri(req)
                 if uri:
                     content += g.br() +'\n'+ g.link(_("Change your password"), uri)
             return content
@@ -646,21 +651,25 @@ class LoginDialog(lcg.Content):
             g.hidden(name='__log_in', value='1'),
             ) + tuple(hidden) + (
             g.submit(_("Log in"), cls='submit'),)
+        appl = req.application()
         links = [g.link(label, uri) for label, uri in
-                 ((_("New user registration"),
-                   req.application().registration_uri(req)),
-                  (_("Forgot your password?"),
-                   req.application().password_reminder_uri(req))) if uri]
+                 ((_("New user registration"), appl.registration_uri(req)),
+                  (_("Forgot your password?"), appl.password_reminder_uri(req))) if uri]
         if links:
             content += (g.list(links),)
         if not req.https() and cfg.force_https_login:
             uri = req.server_uri(force_https=True) + req.uri()
         else:
             uri = req.uri()
-        return g.form(content, method='POST', action=uri, name='login_form', cls='login-form') + \
-               g.script("onload_ = window.onload; window.onload = function() { "
-                        "if (onload_) onload_(); "
-                        "setTimeout(function () { document.login_form.login.focus() }, 0); };")
+        result = g.form(content, method='POST', action=uri, name='login_form', cls='login-form') +\
+                 g.script("onload_ = window.onload; window.onload = function() { "
+                          "if (onload_) onload_(); "
+                          "setTimeout(function () { document.login_form.login.focus() }, 0); };")
+        text = appl.login_dialog_text(req)
+        if text:
+            container = lcg.Container(lcg.Parser().parse(text))
+            result += "\n" + g.div(container.export(context), cls='registration-text')
+        return result
     
 
     
