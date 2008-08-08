@@ -194,7 +194,7 @@ class Application(Module):
         in the login panel.  The text may be formatted as LCG structured text.
 
         """
-        return None
+        return _("Panels")
     
     def login_dialog_text(self, req):
         """Return the text displayed under the login dialog.
@@ -202,7 +202,7 @@ class Application(Module):
         The text may be formatted as LCG structured text.
 
         """
-        return None
+        return "Pokus"
         
     def password_reminder_uri(self, req):
         """Return the forgotten password link URI or None if password reminder not implemented."""
@@ -281,8 +281,8 @@ class Application(Module):
                                ("HTTP referrer", req.header('Referer')),
                                ("User agent", req.header('User-Agent')),
                                )])
-        text = req_info + "\n\n" + cgitb.text(einfo)
         try:
+            text = req_info + "\n\n" + cgitb.text(einfo)
             if cfg.bug_report_address is not None:
                 tb = einfo[2]
                 while tb.tb_next is not None:
@@ -300,9 +300,9 @@ class Application(Module):
                     log(OPR, "Traceback sent to:", cfg.bug_report_address)
             else:
                 log(OPR, "\n"+ text)
-        except Exception, e:
+        except:
             log(OPR, "Error in exception handling:",
                 "".join(traceback.format_exception(*sys.exc_info())))
-            log(OPR, "The original exception was", text)
+            log(OPR, "The original exception was", traceback.format_exception(*einfo))
         raise InternalServerError(message)
     
