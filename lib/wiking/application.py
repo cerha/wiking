@@ -202,11 +202,6 @@ class Application(Module):
         The text may be formatted as LCG structured text.
 
         """
-        return """Return the text displayed under the login dialog.
-
-        The text may be formatted as LCG structured text.
-
-        """
         return None
         
     def password_reminder_uri(self, req):
