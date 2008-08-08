@@ -52,22 +52,22 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
     def _page(self, context):
         return self._parts(context, self._PAGE_PARTS)
 
-    def _page_cls(self, context):
+    def _page_attr(self, context):
         cls = cls='node-id-%s' % context.node().id()
         if context.has_submenu:
             cls += ' with-submenu'
         if context.node().panels() and context.req().show_panels():
             cls += ' with-panels'
-        return cls
+        return dict(cls=cls)
 
     def _part(self, name, context):
         content = getattr(self, '_'+name)(context)
         if content is not None:
-            if hasattr(self, '_'+name+'_cls'):
-                cls = getattr(self, '_'+name+'_cls')(context)
+            if hasattr(self, '_'+name+'_attr'):
+                attr = getattr(self, '_'+name+'_attr')(context)
             else:
-                cls = None
-            return self._generator.div(content, id=name.replace('_', '-'), cls=cls)
+                attr = {}
+            return self._generator.div(content, id=name.replace('_', '-'), **attr)
         else:
             return None
     
@@ -175,14 +175,20 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         panels = context.node().panels()
         if not panels:
             return None
+        # TODO: It would be more elagant to make the whole #panels div a keyboard navigable menubar
+        # item, but in this case the navigation between panels (inside this div) as its submenu
+        # items stops working...
         if not context.req().show_panels():
-            return g.link(_("Show panels"), "?show_panels=1", cls='panel-control show')
-        result = [g.link(_("Hide panels"), "?hide_panels=1", cls='panel-control hide')]
+            return g.link(_("Show panels"), "?show_panels=1", cls='panel-control show',
+                          id='panels-menu-item')
+        result = [g.link(_("Hide panels"), "?hide_panels=1", cls='panel-control hide'),
+                  g.div('', tabindex=-1, title=_("Panels"), id='panels-menu-item')]
         for panel in panels:
             content = panel.content()
             if isinstance(content, lcg.Content):
                 content = content.export(context)
-            result.append(g.div((g.h(g.link(panel.title(), None, name="panel-"+panel.id()), 3),
+            result.append(g.div((g.h(g.link(panel.title(), None, name="panel-"+panel.id(),
+                                            tabindex=0), 3),
                                  g.div(content, cls="panel-content")),
                                 cls="panel panel-"+panel.id()))
         result.append(g.br())
@@ -207,9 +213,10 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         if context.wmi:
             ctrl = concat(_("Login"), ': ', context.req().user().name(), ' (',
                           g.link(_("log out"), '?command=logout', cls='login-ctrl'), ') | ',
-                          g.link(_("Leave the Management Interface"), '/', hotkey="9"))
+                          g.link(_("Leave the Management Interface"), '/', hotkey="9",
+                                 id='wmi-link'))
         elif hasattr(cfg.appl, 'allow_wmi_link') and cfg.appl.allow_wmi_link:
-            ctrl = g.link(_("Manage this site"), '/_wmi/', hotkey="9",
+            ctrl = g.link(_("Manage this site"), '/_wmi/', hotkey="9", id='wmi-link',
                           title=_("Enter the Wiking Management Interface"))
         if ctrl:
             result += (g.span(concat(ctrl, self._hidden(" | ")), cls="controls"),)

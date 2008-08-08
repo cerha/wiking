@@ -1,5 +1,13 @@
 2008-08-08  Tomas Cerha  <cerha@brailcom.org>
 
+	* resources/css/default.css: Added style for panels menu top item.
+
+	* resources/scripts/wiking.js: Added support for keyboard
+	navigation within panels, language selection and WMI links.
+
+	* lib/wiking/export.py: Added support for extended keyboard
+	navigation.
+
 	* lib/wiking/application.py: Allow definition of login panel and
 	login dialog texts.  Improved handling of exceptions during
 	exception handling...

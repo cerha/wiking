@@ -176,9 +176,12 @@ a.backref, a:link.backref {
 }
 #panels a.panel-control {
     position: absolute;
-    right: 0;
     top: -1.4em;
     font-size: 0.8em;
+    right: 0;
+}
+div#panels-menu-item { 
+    margin-left: 0.5em;
 }
 
 div.panel { 
