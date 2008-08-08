@@ -357,7 +357,7 @@ class LoginPanel(Panel):
                     content += g.br() +'\n'+ g.link(_("New user registration"), uri)
                 text = appl.registration_text(req)
                 if text:
-                    container = lcg.Container(lcg.Parser().parse(text))
+                    container = lcg.Container(lcg.Parser().parse(context.translate(text)))
                     content += '\n'+ g.div(container.export(context), cls='registration-text')
             else:
                 organization = user.organization()
@@ -667,7 +667,7 @@ class LoginDialog(lcg.Content):
                           "setTimeout(function () { document.login_form.login.focus() }, 0); };")
         text = appl.login_dialog_text(req)
         if text:
-            container = lcg.Container(lcg.Parser().parse(text))
+            container = lcg.Container(lcg.Parser().parse(context.translate(text)))
             result += "\n" + g.div(container.export(context), cls='registration-text')
         return result
     
