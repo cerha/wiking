@@ -33,7 +33,8 @@ function wiking_init() {
       document.body.onkeydown = wiking_onkeydown;
    else
       window.onkeydown = wiking_onkeydown;
-   set_focus(document.getElementById('content-heading'));
+   if (window.location.href.match("#") == null)
+      set_focus(document.getElementById('content-heading'));
 }
 
 function wiking_onkeydown(event) {

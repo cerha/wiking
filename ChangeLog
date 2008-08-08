@@ -3,7 +3,8 @@
 	* resources/css/default.css: Added style for panels menu top item.
 
 	* resources/scripts/wiking.js: Added support for keyboard
-	navigation within panels, language selection and WMI links.
+	navigation within panels, language selection and WMI links.  Don't
+	set focus when the current location includes an anchor.
 
 	* lib/wiking/export.py: Added support for extended keyboard
 	navigation.
