@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-08-07 17:27+0200\n"
+"POT-Creation-Date: 2008-08-12 11:12+0200\n"
 "PO-Revision-Date: 2008-03-14 11:23+0100\n"
 "Last-Translator: Pavel Vohnout <vohnout@officehouse.cz>\n"
 "Language-Team: German <wiking@lists.freebsoft.org>\n"
@@ -19,7 +19,7 @@ msgstr ""
 msgid "Authentication required"
 msgstr "Aktion erfordert Anmeldung"
 
-#: ../lib/wiking/util.py:69 ../lib/wiking/export.py:212
+#: ../lib/wiking/util.py:69 ../lib/wiking/export.py:214
 msgid "Login"
 msgstr "Anmeldung"
 
@@ -122,7 +122,7 @@ msgstr "Es verläuft die Systemwartung"
 msgid "Go to your profile"
 msgstr "Gehe zu Ihrem Profil"
 
-#: ../lib/wiking/util.py:342 ../lib/wiking/export.py:213
+#: ../lib/wiking/util.py:342 ../lib/wiking/export.py:215
 msgid "log out"
 msgstr "Abmelden"
 
@@ -134,48 +134,48 @@ msgstr "abgemeldet"
 msgid "log in"
 msgstr "Anmelden"
 
-#: ../lib/wiking/util.py:356 ../lib/wiking/util.py:650
+#: ../lib/wiking/util.py:357 ../lib/wiking/util.py:656
 msgid "New user registration"
 msgstr "Registrierung eines neuen Benutzers"
 
-#: ../lib/wiking/util.py:363
+#: ../lib/wiking/util.py:364
 #, python-format
 msgid "Your password expires on %(date)s."
 msgstr "Gültigkeit des Passworts läuft ab %(date)s."
 
-#: ../lib/wiking/util.py:366
+#: ../lib/wiking/util.py:367
 msgid "Change your password"
 msgstr "Änderung des Passworts"
 
-#: ../lib/wiking/util.py:370
+#: ../lib/wiking/util.py:375
 msgid "Login Panel"
 msgstr "Login Panel"
 
-#: ../lib/wiking/util.py:574
+#: ../lib/wiking/util.py:579
 msgid "not available"
 msgstr "nicht verfügbar"
 
-#: ../lib/wiking/util.py:581
+#: ../lib/wiking/util.py:586
 msgid "Actions:"
 msgstr "Aktion:"
 
-#: ../lib/wiking/util.py:586
+#: ../lib/wiking/util.py:591
 msgid "Help"
 msgstr "Hilfe"
 
-#: ../lib/wiking/util.py:639
+#: ../lib/wiking/util.py:644
 msgid "Login name"
 msgstr "Kennwort"
 
-#: ../lib/wiking/util.py:642
+#: ../lib/wiking/util.py:647
 msgid "Password"
 msgstr "Passwort"
 
-#: ../lib/wiking/util.py:648
+#: ../lib/wiking/util.py:653
 msgid "Log in"
 msgstr "Anmelden"
 
-#: ../lib/wiking/util.py:652
+#: ../lib/wiking/util.py:657
 msgid "Forgot your password?"
 msgstr "Haben sie Ihr paswswort vergessen?"
 
@@ -323,59 +323,59 @@ msgstr "Sie befinden sich hier:"
 msgid "In this section:"
 msgstr "In dieser Sektion:"
 
-#: ../lib/wiking/export.py:179
+#: ../lib/wiking/export.py:182
 msgid "Show panels"
 msgstr "Fenster abbilden "
 
-#: ../lib/wiking/export.py:180
+#: ../lib/wiking/export.py:184
 msgid "Hide panels"
 msgstr "Fenster ausblenden"
 
-#: ../lib/wiking/export.py:193
+#: ../lib/wiking/export.py:185
 msgid "Panels"
 msgstr ""
 
-#: ../lib/wiking/export.py:214
+#: ../lib/wiking/export.py:216
 msgid "Leave the Management Interface"
 msgstr "Regimeschnittstelle des Inhalts verlassen."
 
-#: ../lib/wiking/export.py:216
+#: ../lib/wiking/export.py:219
 msgid "Manage this site"
 msgstr "Inhaltsregime"
 
-#: ../lib/wiking/export.py:217
+#: ../lib/wiking/export.py:220
 msgid "Enter the Wiking Management Interface"
 msgstr "Zugang zur Regimeschnittstelle des Inhalts Wiking"
 
-#: ../lib/wiking/export.py:220
+#: ../lib/wiking/export.py:223
 #, python-format
 msgid "Powered by %(wiking)s %(version)s"
 msgstr "Betrieben in %(wiking)s %(version)s"
 
-#: ../lib/wiking/export.py:228
+#: ../lib/wiking/export.py:231
 #, python-format
 msgid "Last change: %(date)s, %(user)s"
 msgstr "Letze Änderung: %(date)s, %(user)s"
 
-#: ../lib/wiking/export.py:245
+#: ../lib/wiking/export.py:248
 msgid "US Government Section 508 Accessibility Guidelines."
 msgstr ""
 "Abschnitt 508 der Richtlinie für Zugriffe, die von der Regierung der USA "
 "erteilt wurden"
 
-#: ../lib/wiking/export.py:248
+#: ../lib/wiking/export.py:251
 msgid "Accessibility Statement"
 msgstr "Zugriffserklärung "
 
-#: ../lib/wiking/export.py:253
+#: ../lib/wiking/export.py:256
 msgid "This site conforms to the following standards:"
 msgstr "Dieses Portal entspricht folgenden Standards:"
 
-#: ../lib/wiking/export.py:254
+#: ../lib/wiking/export.py:257
 msgid "This site can be viewed in ANY browser."
 msgstr "Diese Seite kann in einem BELIEBIGEN Browser aufgerufen werden."
 
-#: ../lib/wiking/export.py:255
+#: ../lib/wiking/export.py:258
 msgid "Contact:"
 msgstr "Kontakt:"
 
