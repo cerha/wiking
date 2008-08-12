@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-08-07 17:27+0200\n"
+"POT-Creation-Date: 2008-08-12 11:12+0200\n"
 "PO-Revision-Date: 2008-03-12 08:26+0100\n"
 "Last-Translator: Pavel Vohnout <vohnout@officehouse.cz>\n"
 "Language-Team: Slovak <wiking@lists.freebsoft.org>\n"
@@ -19,7 +19,7 @@ msgstr ""
 msgid "Authentication required"
 msgstr "Akcia vyžaduje prihlásenie"
 
-#: ../lib/wiking/util.py:69 ../lib/wiking/export.py:212
+#: ../lib/wiking/util.py:69 ../lib/wiking/export.py:214
 msgid "Login"
 msgstr "Prihlásenie"
 
@@ -118,7 +118,7 @@ msgstr "Systém je dočasne neprístupný z dôvodu údržby"
 msgid "Go to your profile"
 msgstr "Prejísť na váš profil"
 
-#: ../lib/wiking/util.py:342 ../lib/wiking/export.py:213
+#: ../lib/wiking/util.py:342 ../lib/wiking/export.py:215
 msgid "log out"
 msgstr "odhlásiť"
 
@@ -130,48 +130,48 @@ msgstr "neprihlásený"
 msgid "log in"
 msgstr "prihlásiť"
 
-#: ../lib/wiking/util.py:356 ../lib/wiking/util.py:650
+#: ../lib/wiking/util.py:357 ../lib/wiking/util.py:656
 msgid "New user registration"
 msgstr "Registrácia nového užívateľa"
 
-#: ../lib/wiking/util.py:363
+#: ../lib/wiking/util.py:364
 #, python-format
 msgid "Your password expires on %(date)s."
 msgstr "Platnosť hesla vyprší %(date)s."
 
-#: ../lib/wiking/util.py:366
+#: ../lib/wiking/util.py:367
 msgid "Change your password"
 msgstr "Zmena hesla"
 
-#: ../lib/wiking/util.py:370
+#: ../lib/wiking/util.py:375
 msgid "Login Panel"
 msgstr "Panel prihlásenia"
 
-#: ../lib/wiking/util.py:574
+#: ../lib/wiking/util.py:579
 msgid "not available"
 msgstr "nedostupné"
 
-#: ../lib/wiking/util.py:581
+#: ../lib/wiking/util.py:586
 msgid "Actions:"
 msgstr "Akcie:"
 
-#: ../lib/wiking/util.py:586
+#: ../lib/wiking/util.py:591
 msgid "Help"
 msgstr "Nápoveda"
 
-#: ../lib/wiking/util.py:639
+#: ../lib/wiking/util.py:644
 msgid "Login name"
 msgstr "Prihlasovacie meno"
 
-#: ../lib/wiking/util.py:642
+#: ../lib/wiking/util.py:647
 msgid "Password"
 msgstr "Heslo"
 
-#: ../lib/wiking/util.py:648
+#: ../lib/wiking/util.py:653
 msgid "Log in"
 msgstr "prihlásiť"
 
-#: ../lib/wiking/util.py:652
+#: ../lib/wiking/util.py:657
 msgid "Forgot your password?"
 msgstr "Zabudli ste heslo?"
 
@@ -318,57 +318,57 @@ msgstr "Nachádzate sa tu:"
 msgid "In this section:"
 msgstr "V tejto sekcii:"
 
-#: ../lib/wiking/export.py:179
+#: ../lib/wiking/export.py:182
 msgid "Show panels"
 msgstr "Zobraziť panely"
 
-#: ../lib/wiking/export.py:180
+#: ../lib/wiking/export.py:184
 msgid "Hide panels"
 msgstr "Skryť panely"
 
-#: ../lib/wiking/export.py:193
+#: ../lib/wiking/export.py:185
 msgid "Panels"
 msgstr ""
 
-#: ../lib/wiking/export.py:214
+#: ../lib/wiking/export.py:216
 msgid "Leave the Management Interface"
 msgstr "Opustiť rozhranie správy obsahu"
 
-#: ../lib/wiking/export.py:216
+#: ../lib/wiking/export.py:219
 msgid "Manage this site"
 msgstr "Správa obsahu"
 
-#: ../lib/wiking/export.py:217
+#: ../lib/wiking/export.py:220
 msgid "Enter the Wiking Management Interface"
 msgstr "Vstúpiť do rozhrania správy obsahu Wiking"
 
-#: ../lib/wiking/export.py:220
+#: ../lib/wiking/export.py:223
 #, python-format
 msgid "Powered by %(wiking)s %(version)s"
 msgstr "Uskutočňované na %(wiking)s %(version)s"
 
-#: ../lib/wiking/export.py:228
+#: ../lib/wiking/export.py:231
 #, python-format
 msgid "Last change: %(date)s, %(user)s"
 msgstr "Posledná zmena: %(date)s, %(user)s"
 
-#: ../lib/wiking/export.py:245
+#: ../lib/wiking/export.py:248
 msgid "US Government Section 508 Accessibility Guidelines."
 msgstr "Sekcia 508 smerníc pre sprístupnenie vydaných vládou USA"
 
-#: ../lib/wiking/export.py:248
+#: ../lib/wiking/export.py:251
 msgid "Accessibility Statement"
 msgstr "Prehlásenie o sprístupnení"
 
-#: ../lib/wiking/export.py:253
+#: ../lib/wiking/export.py:256
 msgid "This site conforms to the following standards:"
 msgstr "Tento portál zodpovedá nasledujúcim štandardom:"
 
-#: ../lib/wiking/export.py:254
+#: ../lib/wiking/export.py:257
 msgid "This site can be viewed in ANY browser."
 msgstr "Táto stránka môže byť používaná v ĽUBOVOĽNOM prehliadači."
 
-#: ../lib/wiking/export.py:255
+#: ../lib/wiking/export.py:258
 msgid "Contact:"
 msgstr "Kontakt:"
 
