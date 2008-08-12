@@ -355,10 +355,6 @@ class LoginPanel(Panel):
                 uri = appl.registration_uri(req)
                 if uri:
                     content += g.br() +'\n'+ g.link(_("New user registration"), uri)
-                text = appl.registration_text(req)
-                if text:
-                    container = lcg.Container(lcg.Parser().parse(context.translate(text)))
-                    content += '\n'+ g.div(container.export(context), cls='registration-text')
             else:
                 organization = user.organization()
                 if organization:
@@ -369,6 +365,10 @@ class LoginPanel(Panel):
                 uri = appl.password_change_uri(req)
                 if uri:
                     content += g.br() +'\n'+ g.link(_("Change your password"), uri)
+            added_content = appl.login_panel_content(req)
+            if added_content:
+                exported = lcg.coerce(added_content).export(context)
+                content += '\n'+ g.div(exported, cls='login-panel-content')
             return content
         
     def __init__(self):
@@ -665,10 +665,10 @@ class LoginDialog(lcg.Content):
                  g.script("onload_ = window.onload; window.onload = function() { "
                           "if (onload_) onload_(); "
                           "setTimeout(function () { document.login_form.login.focus() }, 0); };")
-        text = appl.login_dialog_text(req)
-        if text:
-            container = lcg.Container(lcg.Parser().parse(context.translate(text)))
-            result += "\n" + g.div(container.export(context), cls='registration-text')
+        added_content = appl.login_dialog_content(req)
+        if added_content:
+            exported = lcg.coerce(added_content).export(context)
+            result += "\n" + g.div(exported, cls='login-dialog-content')
         return result
     
 

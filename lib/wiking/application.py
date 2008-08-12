@@ -187,23 +187,6 @@ class Application(Module):
         """Return the URI for new user registration or None if registration is not allowed."""
         return None
 
-    def registration_text(self, req):
-        """Return the text displayed in the login panel when the user is not logged in.
-
-        The text will be displayed under the registration link (if 'registration_uri()' is defined)
-        in the login panel.  The text may be formatted as LCG structured text.
-
-        """
-        return None
-    
-    def login_dialog_text(self, req):
-        """Return the text displayed under the login dialog.
-
-        The text may be formatted as LCG structured text.
-
-        """
-        return None
-        
     def password_reminder_uri(self, req):
         """Return the forgotten password link URI or None if password reminder not implemented."""
         return None
@@ -212,7 +195,22 @@ class Application(Module):
         """Return the change password URI or None if the link should not appear in login panel."""
         return None
 
+    def login_panel_content(self, req):
+        """Return the content displayed in the login panel below the automatically generated part.
+
+        A single 'lcg.Content' element or a sequence of such elements may be returned.
+
+        """
+        return None
     
+    def login_dialog_content(self, req):
+        """Return the content displayed below the login dialog as 'lcg.Content' element(s).
+
+        A single element or a sequence of elements may be returned.
+
+        """
+        return None
+        
     def languages(self):
         """Return the list of available languages as the corresponding alpha-2 language codes.
         
