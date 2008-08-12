@@ -1,5 +1,8 @@
 2008-08-12  Tomas Cerha  <cerha@brailcom.org>
 
+	* resources/scripts/wiking.js:
+	Menu navigation hotkeys changed.
+
 	* lib/wiking/application.py:
 	* lib/wiking/util.py: 
 	Support for inclusion of arbitrary login dialog and login panel

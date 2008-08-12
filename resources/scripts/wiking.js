@@ -18,23 +18,26 @@
  */
 
 /* Menu navigation keyboard shortcuts */
-MENU_KEY       = 'Ctrl-Alt-m';
-MENU_KEY_UP    = 'Shift-Up';
-MENU_KEY_DOWN  = 'Shift-Down';
-MENU_KEY_LEFT  = 'Shift-Left';
-MENU_KEY_RIGHT = 'Shift-Right';
+MENU_KEY        = 'Ctrl-Shift-Up'; //Ctrl-Alt-m';
+MENU_KEY_ESCAPE = 'Escape';
+MENU_KEY_UP     = 'Ctrl-Shift-Up';
+MENU_KEY_DOWN   = 'Ctrl-Shift-Down';
+MENU_KEY_LEFT   = 'Ctrl-Shift-Left';
+MENU_KEY_RIGHT  = 'Ctrl-Shift-Right';
 
 var _current_main_menu_item = null;
+var _content_heading = null;
 
 function wiking_init() {
    // Not all browsers invoke onkeypress for arrow keys, so keys must be handled in onkeydown.
+   _content_heading = document.getElementById('content-heading')
    init_menu('main-menu', null);
    if (document.all)
       document.body.onkeydown = wiking_onkeydown;
    else
       window.onkeydown = wiking_onkeydown;
    if (window.location.href.match("#") == null)
-      set_focus(document.getElementById('content-heading'));
+      set_focus(_content_heading);
 }
 
 function wiking_onkeydown(event) {
@@ -150,6 +153,7 @@ function append_menu_item(items, node, parent, child) {
    map[child_key]  = child;
    map[prev_key]   = prev;
    map[next_key]   = null;
+   map[MENU_KEY_ESCAPE] = _content_heading;
    node._menu_navigation_target = map;
    if (prev != null)
       prev._menu_navigation_target[next_key] = node;
@@ -159,7 +163,8 @@ function append_menu_item(items, node, parent, child) {
 
 function on_menu_keydown(event, link) {
    var key = event_key(event);
-   if (key==MENU_KEY_UP || key==MENU_KEY_DOWN || key==MENU_KEY_RIGHT || key==MENU_KEY_LEFT) {
+   if (key==MENU_KEY_UP || key==MENU_KEY_DOWN || key==MENU_KEY_RIGHT || key==MENU_KEY_LEFT ||
+       key==MENU_KEY_ESCAPE) {
       var target = link._menu_navigation_target[key];
       if (target != null)
 	 set_focus(target);
@@ -176,6 +181,7 @@ function event_key(event) {
 	      39: 'Right', // right arrow
 	      38: 'Up',    // up arrow
 	      40: 'Down',  // down arrow
+	      27: 'Escape',
 	      77: 'm'}
    var key = map[code];
    if (key != null) {
