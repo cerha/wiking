@@ -1,5 +1,10 @@
 2008-08-12  Tomas Cerha  <cerha@brailcom.org>
 
+	* translations/wiking.cs.po: 
+	* translations/wiking.de.po: 
+	* translations/wiking.sk.po: 
+	Updated.
+
 	* resources/scripts/wiking.js:
 	Menu navigation hotkeys changed.
 
