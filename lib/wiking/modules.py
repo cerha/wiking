@@ -428,7 +428,7 @@ class Session(Module):
         #    return hex(random.randint(0, pow(256, self._SESSION_KEY_LENGTH)))[2:]
     
     def _expiration(self):
-        return mx.DateTime.now().gmtime() + mx.DateTime.TimeDelta(hours=2)
+        return mx.DateTime.now().gmtime() + mx.DateTime.TimeDelta(hours=cfg.session_expiration)
 
     def _expired(self, time):
         return time <= mx.DateTime.now().gmtime()

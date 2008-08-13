@@ -1,3 +1,9 @@
+2008-08-13  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/modules.py (Session): Make expiration configurable.
+
+	* lib/wiking/configuration.py: New option `session_expiration'.
+
 2008-08-12  Tomas Cerha  <cerha@brailcom.org>
 
 	* translations/wiking.cs.po: 

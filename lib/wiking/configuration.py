@@ -237,6 +237,12 @@ class Configuration(pc):
     class _Option_theme(pc.Option):
         _DESCR = "Color theme for stylesheet color substitutions."
         _DEFAULT = Theme()
+
+    class _Option_session_expiration(pc.NumericOption):
+        _DESCR = "Session expiration"
+        _DOC = ("A number of hours to keep the login session alive.  The session is automatically "
+                "terminated when the user has no activity for given time interval.")
+        _DEFAULT = 2
       
     class _Option_resolver(pc.Option):
         _DESCR = "Wiking module resolver"
