@@ -41,7 +41,7 @@ class Handler(object):
 
     def _serve_document(self, req, document):
         node = document.build(req, self._application)
-        context = self._exporter.context(node, node.lang(), req=req)
+        context = self._exporter.context(node, node.lang(), sec_lang=node.sec_lang(), req=req)
         exported = self._exporter.export(context)
         return req.result(context.translate(exported))
 

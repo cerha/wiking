@@ -387,8 +387,8 @@ class Document(object):
 
     """
     
-    def __init__(self, title, content, subtitle=None, lang=None, variants=None, resources=(),
-                 globals=None):
+    def __init__(self, title, content, subtitle=None, lang=None, sec_lang=None, variants=None,
+                 resources=(), globals=None):
         """Initialize the instance.
 
         Arguments:
@@ -425,6 +425,7 @@ class Document(object):
             content = lcg.SectionContainer([c for c in content if c is not None], toc_depth=0)
         self._content = content
         self._lang = lang
+        self._sec_lang = sec_lang
         self._variants = variants
         self._resources = tuple(resources)
         self._globals = globals
@@ -459,8 +460,9 @@ class Document(object):
             # The identifier is encoded to allow unicode characters within it.  The encoding
             # actually doesnt't matter, we just need any unique 8-bit string.
             node = WikingNode(item.id().encode('utf-8'), title=item.title(), heading=heading,
-                              descr=item.descr(), lang=lang, content=content, hidden=hidden,
-                              variants=variants or (), active=item.active(), panels=panels, 
+                              descr=item.descr(), content=content,
+                              lang=lang, sec_lang=self._sec_lang, variants=variants or (),
+                              active=item.active(), hidden=hidden, panels=panels,
                               children=[mknode(i) for i in item.submenu()],
                               resource_provider=resource_provider, globals=self._globals)
             nodes[item.id()] = node
@@ -494,11 +496,12 @@ class Document(object):
 
 class WikingNode(lcg.ContentNode):
 
-    def __init__(self, id, heading=None, panels=(), lang=None, **kwargs):
+    def __init__(self, id, heading=None, panels=(), lang=None, sec_lang=None, **kwargs):
         super(WikingNode, self).__init__(id, **kwargs)
         self._heading = heading
         self._panels = panels
         self._lang = lang
+        self._sec_lang = sec_lang
         for panel in panels:
             panel.content().set_parent(self)
 
@@ -510,6 +513,9 @@ class WikingNode(lcg.ContentNode):
         
     def lang(self):
         return self._lang
+
+    def sec_lang(self):
+        return self._sec_lang
 
     def heading(self):
         return self._heading or self._title
