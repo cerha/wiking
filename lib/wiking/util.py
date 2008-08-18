@@ -212,13 +212,6 @@ class Theme(object):
         Color('message-border'),
         Color('table-cell', inherit='background'),
         Color('table-cell2', inherit='table-cell'),
-        Color('button-fg', inherit='foreground'),
-        Color('button', inherit='heading-bg'),
-        Color('button-hover', inherit='highlight-bg'),
-        Color('button-border', inherit='border'),
-        Color('button-inactive-fg', inherit='button-fg'),
-        Color('button-inactive', inherit='button'),
-        Color('button-inactive-border', inherit='button-border'),
         Color('top-fg', inherit='foreground'),
         Color('top-bg', inherit='background'),
         Color('top-border', inherit='border'),
@@ -244,10 +237,6 @@ class Theme(object):
                  'message-border': '#aea',
                  'table-cell': '#f8fafb',
                  'table-cell2': '#f1f3f2',
-                 'button-border': '#9af',
-                 'button-inactive-fg': '#555',
-                 'button-inactive': '#ccc',
-                 'button-inactive-border': '#999',
                  'top-bg': '#efebe7',
                  'top-border': '#9ab',
                  'highlight-bg': '#fc8',
@@ -554,36 +543,26 @@ class ActionCtrl(lcg.Content):
     def export(self, context):
         g = context.generator()
         action = self._action
-        title = action.descr()
         enabled = action.enabled()
         if callable(enabled):
             enabled = enabled(self._row)
-        if enabled:
-            args = action.kwargs() or {}
-            uri = self._uri
-            anchor = None
-            if action.name() == 'list':
-                key = self._row.data().key()[0].id()
-                args = dict(args, search=self._row[key].export(), module=self._name)
-                #anchor = 'found-record'
-            elif action.name() == 'delete':
-                key = self._row.data().key()[0].id()
-                args = dict(args, **{key: self._row[key].export()})
-            elif action.name() == 'insert' and self._row is None:
-                args = dict(args, module=self._name, **self._relation)
-            elif self._referer is not None and self._row:
-                if not uri.endswith('/'):
-                    uri += '/'
-                uri += self._row[self._referer].export()
-            target = g.uri(uri, action=action.name(), **args)
-            if anchor:
-                target += '#'+anchor
-            cls = None
-        else:
-            target = None
-            cls = 'inactive'
-            title += " (" + _("not available") + ")"
-        return g.link(action.title(), target, title=title, cls=cls)
+        uri = self._uri
+        args = dict(action=action.name(), **action.kwargs())
+        if action.name() == 'list':
+            key = self._row.data().key()[0].id()
+            args = dict(args, search=self._row[key].export(), module=self._name)
+        elif action.name() == 'delete':
+            key = self._row.data().key()[0].id()
+            args = dict(args, **{key: self._row[key].export()})
+        elif action.name() == 'insert' and self._row is None:
+            args = dict(args, module=self._name, **self._relation)
+        elif self._referer is not None and self._row:
+            if not uri.endswith('/'):
+                uri += '/'
+            uri += self._row[self._referer].export()
+        content = [g.hidden(name, value) for name, value in args.items()] + \
+                  [g.submit(action.title(), title=action.descr(), disabled=not enabled)]
+        return g.form(['  '+x for x in content], action=uri)
 
 
 class ActionMenu(lcg.Container):
@@ -591,6 +570,7 @@ class ActionMenu(lcg.Container):
     
     def __init__(self, uri, actions, referer, name, row=None, relation=None, title=_("Actions:"),
                  help=None, cls='actions'):
+        # Only Wiking's actions are considered, not all `pytis.presentation.Action'.
         ctrls = [ActionCtrl(uri, a, referer, name, row, relation=relation)
                  for a in actions]
         if help:
@@ -601,9 +581,7 @@ class ActionMenu(lcg.Container):
 
     def export(self, context):
         g = context.generator()
-        # Only Wiking's actions are considered, not all `pytis.presentation.Action'.
-        return g.div((self._title and self._title +"\n" or '') +
-                     g.list([ctrl.export(context) for ctrl in self._content]), cls=self._cls)
+        return g.div(concat([ctrl.export(context) for ctrl in self._content]), cls=self._cls)
 
     
 class PanelItem(lcg.Content):

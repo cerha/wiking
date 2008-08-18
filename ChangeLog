@@ -1,5 +1,12 @@
 2008-08-18  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/util.py: 
+	* lib/wiking/cms/cms.py: 
+	* resources/css/default.css: 
+	* sql/wiking.sql: 
+	Use real buttons for action buttons and avoid button styles and
+	theme colors.
+
 	* lib/wiking/export.py: Omit the 'main-menu' div.
 
 	* resources/scripts/wiking.js: Allow multiple keyboard shortcuts

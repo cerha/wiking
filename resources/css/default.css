@@ -538,15 +538,6 @@ form.pytis-form.list-view div.summary {
     background: $color.error-bg;
 }*/
 
-/* Modification of button controls is arguable...
-    background: $color.button;
-    border: 1px solid $color.button-border;
-}
-form.edit-form fieldset.controls input:hover { 
-    background: $color.button-hover;
-}
-*/
-
 .actions { 
     margin: 1em 0;
     line-height: 1.5em;
@@ -558,36 +549,29 @@ form.edit-form fieldset.controls input:hover {
     padding-top: 0.2em;
     border-top: 1px solid $color.border;
 }
-.actions ul, #content .actions li { 
+.actions form { 
     display: inline;
     margin: 0;
     padding: 0;
 }
-.actions li { 
-    margin: 0 0.15em;
-}
-
-.actions a, .actions a:visited, div.panel-login a.login-ctrl {
-    padding: 0 0.5em;
-    text-decoration: none;
-    color: $color.button-fg;
-    background-color: $color.button;
-    border: 1px solid $color.button-border;
-    white-space: nowrap;
-}
-.actions a:hover, div.panel-login a.login-ctrl:hover { 
-    background: $color.button-hover;
-    color: $color.button-fg;
-}
-.actions a.inactive, .actions a.inactive:hover { 
-    color: $color.button-inactive-fg;
-    background: $color.button-inactive;
-    border-color: $color.button-inactive-border;
+.actions a { 
+    vertical-align: top;
+    padding-left: 0.5em;
 }
 
 div.panel-login a.login-ctrl {
+    color: $color.foreground;
+    border: 1px solid $color.top-border;
+    background-color: $color.heading-bg;
+    padding: 0 0.5em;
+    text-decoration: none;
+    white-space: nowrap;
     margin: 0 0.3em;
 }
+div.panel-login a.login-ctrl:hover { 
+    background: $color.highlight-bg;
+}
+
 div.panel-login div.panel-content {
     padding: 0.3em;
     line-height: 1.3em;
