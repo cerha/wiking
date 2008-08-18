@@ -1,3 +1,10 @@
+2008-08-18  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/export.py: Omit the 'main-menu' div.
+
+	* resources/scripts/wiking.js: Allow multiple keyboard shortcuts
+	for one command.  Defined new shortcuts for MSIE/JAWS.
+
 2008-08-15  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/handler.py:
