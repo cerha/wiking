@@ -17,13 +17,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* Definition of available commands */
+var CMD_PARENT = 'parent'; // Go up in the hierarchy.
+var CMD_CHILD  = 'child';  // Go down in the hierarchy.
+var CMD_PREV = 'prev'; // Go to the next item at the same level.
+var CMD_NEXT = 'next'; // Go to the previous item at the same level.
+var CMD_MENU = 'menu'; 
+var CMD_QUIT = 'quit';
+
 /* Menu navigation keyboard shortcuts */
-MENU_KEY        = 'Ctrl-Shift-Up'; //Ctrl-Alt-m';
-MENU_KEY_ESCAPE = 'Escape';
-MENU_KEY_UP     = 'Ctrl-Shift-Up';
-MENU_KEY_DOWN   = 'Ctrl-Shift-Down';
-MENU_KEY_LEFT   = 'Ctrl-Shift-Left';
-MENU_KEY_RIGHT  = 'Ctrl-Shift-Right';
+var WIKING_KEYMAP = {'Ctrl-Alt-i': CMD_PREV,
+		     'Ctrl-Alt-k': CMD_NEXT,
+		     'Ctrl-Alt-j': CMD_PARENT,
+		     'Ctrl-Alt-l': CMD_CHILD,
+		     'Ctrl-Shift-Up':    CMD_PREV,
+		     'Ctrl-Shift-Down':  CMD_NEXT,
+		     'Ctrl-Shift-Left':  CMD_PARENT,
+		     'Ctrl-Shift-Right': CMD_CHILD,
+		     'Ctrl-Shift-m': CMD_MENU,
+		     'Ctrl-Alt-m':   CMD_MENU,
+		     'Escape': CMD_QUIT};
 
 var _current_main_menu_item = null;
 var _content_heading = null;
@@ -31,7 +44,7 @@ var _content_heading = null;
 function wiking_init() {
    // Not all browsers invoke onkeypress for arrow keys, so keys must be handled in onkeydown.
    _content_heading = document.getElementById('content-heading')
-   init_menu('main-menu', null);
+   init_menu('menu', null);
    if (document.all)
       document.body.onkeydown = wiking_onkeydown;
    else
@@ -42,8 +55,8 @@ function wiking_init() {
 
 function wiking_onkeydown(event) {
    // Handle global Wiking keyboard shortcuts.
-   switch (event_key(event)) {
-   case MENU_KEY: // Set focus to the first menu item.
+   switch (WIKING_KEYMAP[event_key(event)]) {
+   case CMD_MENU: // Set focus to the first menu item.
       set_focus(_current_main_menu_item); return false;
    }
    return true;
@@ -57,36 +70,41 @@ function init_menu(menu_id, parent) {
    // keyboard menu traversal.
    //
    var menu = document.getElementById(menu_id);
-   if (menu != null) {
-      if (parent == null)
-	 menu.setAttribute('role', 'menubar');
+   if (menu != null)
       return init_menu_items(menu.getElementsByTagName('ul')[0], parent);
-   } else {
+   else
       return null;
-   }
 }
 
 function init_menu_items(ul, parent) {
-   ul.setAttribute('role', 'menu');
+   if (parent == null)
+      ul.setAttribute('role', 'menubar');
+   else
+      ul.setAttribute('role', 'menu');
    var items = [];
    for (var i = 0; i < ul.childNodes.length; i++) {
       var node = ul.childNodes[i];
       if (node.nodeName =='LI') {
-	 node.setAttribute('role', 'menuitem');
-	 var link = node.getElementsByTagName('a')[0];
 	 var child = null;
+	 var link = node.getElementsByTagName('a')[0];
+	 var item = link;
+	 item.setAttribute('role', 'menuitem');
+	 //item.setAttribute('tabindex', '-1');
+	 //item.setAttribute('title', link.innerHTML);
 	 if (parent == null) {
 	    var cls = link.getAttribute(document.all?'className':'class');
 	    if (cls && cls.match('(\^\|\\s)current(\\s\|\$)') != null) {
-	       _current_main_menu_item = link;
-	       child = init_menu('submenu-frame', link);
+	       _current_main_menu_item = item;
+	       child = init_menu('submenu', item);
 	    }
 	 } else {
 	    var submenu = node.getElementsByTagName('ul')[0];
-	    if (submenu != null && submenu.parentNode == node)
-	       child = init_menu_items(submenu, link);
+	    if (submenu != null && submenu.parentNode == node) {
+	       child = init_menu_items(submenu, item);
+	       //item.setAttribute('aria-haspopup', 'true');
+	    }
 	 }
-	 append_menu_item(items, link, parent, child);
+	 append_menu_item(items, item, parent, child);
       }
    }
    if (parent == null) {
@@ -101,6 +119,7 @@ function append_panels_menu(items) {
    var panels = [];
    var node = document.getElementById('panels');
    var item = document.getElementById('panels-menu-item');
+   //var item = node;
    if (node != null && item != null) {
       var headings = node.getElementsByTagName('h3');
       for (var i = 0; i < headings.length; i++) {
@@ -130,42 +149,27 @@ function append_wmi_menu(items) {
       append_menu_item(items, item, null, null);
 }
 
-function append_menu_item(items, node, parent, child) {
-   var parent_key, child_key, prev_key, next_key;
-   if (parent == null) {
-      // This is the main menubar.
-      parent_key = MENU_KEY_UP;
-      child_key  = MENU_KEY_DOWN;
-      prev_key   = MENU_KEY_LEFT;
-      next_key   = MENU_KEY_RIGHT;
-   } else {
-      // This is the local (sub)menu.
-      parent_key = MENU_KEY_LEFT;
-      child_key  = MENU_KEY_RIGHT;
-      prev_key   = MENU_KEY_UP;
-      next_key   = MENU_KEY_DOWN;
-   }
+function append_menu_item(items, item, parent, child) {
    var prev = null;
    if (items.length > 0)
       prev = items[items.length-1];
    var map = {};
-   map[parent_key] = parent;
-   map[child_key]  = child;
-   map[prev_key]   = prev;
-   map[next_key]   = null;
-   map[MENU_KEY_ESCAPE] = _content_heading;
-   node._menu_navigation_target = map;
+   map[CMD_PARENT] = parent;
+   map[CMD_CHILD] = child;
+   map[CMD_PREV] = prev;
+   map[CMD_NEXT] = null;
+   map[CMD_QUIT] = _content_heading;
+   item._menu_navigation_target = map;
    if (prev != null)
-      prev._menu_navigation_target[next_key] = node;
-   node.onkeydown = function(event) { return on_menu_keydown(event, this); };
-   items[items.length] = node;
+      prev._menu_navigation_target[CMD_NEXT] = item;
+   item.onkeydown = function(event) { return on_menu_keydown(event, this); };
+   items[items.length] = item;
 }
 
 function on_menu_keydown(event, link) {
-   var key = event_key(event);
-   if (key==MENU_KEY_UP || key==MENU_KEY_DOWN || key==MENU_KEY_RIGHT || key==MENU_KEY_LEFT ||
-       key==MENU_KEY_ESCAPE) {
-      var target = link._menu_navigation_target[key];
+   var cmd = WIKING_KEYMAP[event_key(event)];
+   if (cmd != null) {
+      var target = link._menu_navigation_target[cmd];
       if (target != null)
 	 set_focus(target);
       return false;
@@ -177,17 +181,35 @@ function on_menu_keydown(event, link) {
 function event_key(event) {
    if (document.all) event = window.event;
    var code = document.all ? event.keyCode : event.which;
-   var map = {37: 'Left',  // left arrow
-	      39: 'Right', // right arrow
-	      38: 'Up',    // up arrow
-	      40: 'Down',  // down arrow
+   var map = {8:  'Backspace',
+	      10: 'Enter',
+	      13: 'Enter',
 	      27: 'Escape',
-	      77: 'm'}
-   var key = map[code];
+	      32: 'Space',
+	      33: 'PageUp',
+	      34: 'PageDown',
+	      35: 'End',
+	      36: 'Home',
+	      37: 'Left',
+	      39: 'Right',
+	      38: 'Up',
+	      40: 'Down'};
+   var key = null;
+   if (code >= 65 && code <= 90) key = String.fromCharCode(code).toLowerCase();
+   else key = map[code];
    if (key != null) {
-      if (event.shiftKey) key = 'Shift-'+key;
-      if (event.altKey) key = 'Alt-'+key;
-      if (event.ctrlKey) key = 'Ctrl-'+key;
+      var modifiers = '';
+      if (document.all || document.getElementById) {
+	 if (event.ctrlKey) modifiers += 'Ctrl-';
+	 if (event.altKey) modifiers += 'Alt-';
+	 if (event.shiftKey) modifiers += 'Shift-';
+      } else if (document.layers) {
+	 if (event.modifiers & Event.CONTROL_MASK) modifiers += 'Ctrl-';
+	 if (event.modifiers & Event.ALT_MASK) modifiers += 'Alt-';
+	 if (event.modifiers & Event.SHIFT_MASK) modifiers += 'Shift-';
+      }
+      key = modifiers+key;
+      //alert(code+': '+key);
    }
    return key;
 }
