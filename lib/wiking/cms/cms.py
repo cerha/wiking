@@ -619,7 +619,6 @@ class Config(CMSModule):
         theme_id = row['theme_id'].value()
         if theme_id is None:
             if isinstance(cfg.theme, Themes.Theme):
-                debug("***")
                 cfg.theme = Theme()
         elif not isinstance(cfg.theme, Themes.Theme) or cfg.theme.theme_id() != theme_id:
             cfg.theme = self._module('Themes').theme(theme_id)
