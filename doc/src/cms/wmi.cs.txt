@@ -105,9 +105,9 @@ vzhled stránek je určen kombinací zvoleného barevného motivu a aktivních s
 (viz výše).
 
 Několik barevných motivů je předinstalováno ve výchozí instalaci.  Můžete
-vytvářet vlastní témata, nebo jednoduše upravovat stávající témata pomocí
-formuláře, který obsahuje další informace.  Barevná témata mohou být také
-sdílena v rámci komunity uživatelů CMS Wiking.
+vytvářet vlastní motivy, nebo jednoduše upravovat stávající motivy pomocí
+formuláře, který obsahuje další informace.  Barevné motivy mohou být
+také sdíleny v rámci komunity uživatelů CMS Wiking.
 
 
 === Správa uživatelů ===
@@ -121,7 +121,7 @@ Umožňuje správu registrovaných uživatelů a jejich přístupových práv.
 ==== Konfigurace ====
 
 Upravit globální nastavení portálu jako např. název a další informace, volby
-zapezpečení, aktivní barevné téma apod.
+zapezpečení, aktivní barevný motiv apod.
 
 ==== Jazyky ==== languages
 

@@ -3,8 +3,8 @@
 	* doc/src/cms/wmi.cs.txt: 
 	* doc/src/cms/wmi.en.txt: 
 	* lib/wiking/cms/cms.py: 
+	* translations/wiking-cms.cs.po: 
 	Set the current color theme within the Themes module, not in configuration.
-	
 
 2008-08-18  Tomas Cerha  <cerha@brailcom.org>
 

@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-08-19 16:34+0200\n"
-"PO-Revision-Date: 2008-08-19 16:37+0200\n"
+"PO-Revision-Date: 2008-08-19 16:40+0200\n"
 "Last-Translator: Tomas Cerha <cerha@brailcom.org>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -508,7 +508,7 @@ msgstr "Barevné motivy"
 
 #: ../lib/wiking/cms/cms.py:838
 msgid "Manage available color themes."
-msgstr "Správa dostupných barevnáých témat."
+msgstr "Správa dostupných barevných motivů."
 
 #: ../lib/wiking/cms/cms.py:842 ../lib/wiking/cms/cms.py:1756
 msgid "Active"
@@ -524,7 +524,7 @@ msgstr "Aktivovat"
 
 #: ../lib/wiking/cms/cms.py:858
 msgid "Activate this color theme"
-msgstr "Aktivovat toto barevné téma"
+msgstr "Aktivovat tento barevný motiv"
 
 #: ../lib/wiking/cms/cms.py:861
 msgid "Activate default"
@@ -532,7 +532,7 @@ msgstr "Aktivivat výchozí"
 
 #: ../lib/wiking/cms/cms.py:861
 msgid "Activate the default color theme"
-msgstr "Aktivovat výchozí barevné téma"
+msgstr "Aktivovat výchozí barevný motiv"
 
 #: ../lib/wiking/cms/cms.py:884
 msgid "Default"
@@ -541,7 +541,7 @@ msgstr "Výchozí"
 #: ../lib/wiking/cms/cms.py:888
 #, python-format
 msgid "The color theme \"%s\" has been activated."
-msgstr "Barevné téma „%s“ bylo aktivováno."
+msgstr "Barevný motiv „%s“ byl aktivován."
 
 #: ../lib/wiking/cms/cms.py:909
 msgid "Pages"
