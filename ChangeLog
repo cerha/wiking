@@ -1,5 +1,8 @@
 2008-08-19  Tomas Cerha  <cerha@brailcom.org>
 
+	* resources/scripts/wiking.js: Start on the first menu item if
+	there is no active menu item.
+
 	* doc/src/cms/wmi.cs.txt: 
 	* doc/src/cms/wmi.en.txt: 
 	* lib/wiking/cms/cms.py: 

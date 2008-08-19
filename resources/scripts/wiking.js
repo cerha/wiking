@@ -39,6 +39,7 @@ var WIKING_KEYMAP = {'Ctrl-Alt-i': CMD_PREV,
 		     'Escape': CMD_QUIT};
 
 var _current_main_menu_item = null;
+var _first_menu_item = null;
 var _content_heading = null;
 
 function wiking_init() {
@@ -57,7 +58,11 @@ function wiking_onkeydown(event) {
    // Handle global Wiking keyboard shortcuts.
    switch (WIKING_KEYMAP[event_key(event)]) {
    case CMD_MENU: // Set focus to the first menu item.
-      set_focus(_current_main_menu_item); return false;
+      if (_current_main_menu_item != null)
+	 set_focus(_current_main_menu_item);
+      else
+	 set_focus(_first_menu_item);
+      return false;
    }
    return true;
 }
@@ -112,6 +117,7 @@ function init_menu_items(ul, parent) {
       append_language_selection_menu(items);
       append_wmi_menu(items);
    }
+   _first_menu_item = items[0];
    return items[0];
 }
 
