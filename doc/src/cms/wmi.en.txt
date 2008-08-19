@@ -96,16 +96,15 @@ actually not accessible through the database.
 
 ==== Color Themes ====
 
-Color themes allow the simplest way of appearance customisation.  You must go
-to your site configuration to activate one of the themes defined in this
-module.
+Color themes allow the simplest way of appearance customisation.  There is
+always just one active color theme which is selected from the list of available
+color themes.  The final appearance is determined by the combination of active
+stylesheet(s) and the selected color theme.
 
-This module manages the set of available color themes.  Several themes are
-included in the default installation.  Other themes may be created by the
-Wiking user commutnity and shared.  You can also create your own themes.
-
-The final appearance is determined by the combination of active stylesheet(s)
-and the selected color theme.
+Several themes are included in the default installation.  You can also create
+your own themes or customize the existing themes through a simple form, which
+includes further explanation.  Themes can be also shared within the commutnity
+of Wiking CMS users.
 
 
 === User Management ===

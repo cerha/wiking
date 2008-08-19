@@ -573,7 +573,8 @@ class Config(CMSModule):
         title = _("Configuration")
         help = _("Edit site configuration.")
         fields = (
-            _Field('config_id', ),
+            _Field('config_id'),
+            _Field('theme_id', dbcolumn='theme', codebook='Themes'),
             _Field('site_title', width=24),
             _Field('site_subtitle', width=64),
             _Field('webmaster_address', dbcolumn='webmaster_addr',
@@ -587,12 +588,8 @@ class Config(CMSModule):
             _Field('force_https_login'),
             _Field('upload_limit',
                    transform_default=lambda n: repr(n) +' ('+ pp.format_byte_size(n)+')'),
-            _Field('theme', _("Color theme"),
-                   codebook='Themes', selection_type=CHOICE, not_null=False, transform_default=None,
-                   descr=_("Select one of the available color themes.  Use the module Themes in "
-                           "the section Appearance to manage the available themes.")),
             )
-        layout = ('site_title', 'site_subtitle', 'webmaster_address', 'theme',
+        layout = ('site_title', 'site_subtitle', 'webmaster_address',
                   'allow_login_panel', 'allow_registration', #'allow_wmi_link',
                   'force_https_login', 'upload_limit')
     _TITLE_TEMPLATE = _("Site Configuration")
@@ -613,15 +610,27 @@ class Config(CMSModule):
     
     def _configure(self, row):
         for f in self._view.fields():
-            value = row[f.id()].value()
-            if f.id() == 'theme' and value is not None:
-                # TODO: Don't recreate the theme if it has not changed...
-                value = self._module('Themes').theme(value)
-            f.configure(value)
+            f.configure(row[f.id()].value())
     
-    def configure(self, req, _row=None):
+    def configure(self, req):
         # Called by the application prior to handling any request.
-        self._configure(self._data.get_row(config_id=0))
+        row = self._data.get_row(config_id=0)
+        self._configure(row)
+        theme_id = row['theme_id'].value()
+        if theme_id is None:
+            if isinstance(cfg.theme, Themes.Theme):
+                debug("***")
+                cfg.theme = Theme()
+        elif not isinstance(cfg.theme, Themes.Theme) or cfg.theme.theme_id() != theme_id:
+            cfg.theme = self._module('Themes').theme(theme_id)
+
+    def set_theme(self, req, theme_id):
+        row = self._data.get_row(config_id=0)
+        record = self._record(req, row)
+        try:
+            record.update(theme_id=theme_id)
+        except pd.DBException, e:
+            return self._error_message(*self._analyze_exception(e))
     
 
 class PageTitles(CMSModule):
@@ -827,27 +836,63 @@ class Themes(CMSModule):
               _Field('inactive-folder', _("Inactive folder")))),
             )
         title = _("Color Themes")
-        help = _("Manage available color themes. Go to Configuration to "
-                 "change the currently used theme.")
+        help = _("Manage available color themes.")
         def fields(self):
             fields = [Field('theme_id'),
-                      Field('name', _("Name"))]
+                      Field('name', _("Name")),
+                      Field('active', _("Active"), virtual=True, computer=self._is_active)]
             for label, group in self._FIELDS:
                 fields.extend(group)
             return fields
+        def _is_active(self, theme_id):
+            if isinstance(cfg.theme, Themes.Theme) and cfg.theme.theme_id() == theme_id:
+                return _("Yes")
+            else:
+                return None
         def layout(self):
             return ('name',) + tuple([FieldSet(label, [f.id() for f in fields])
                                       for label, fields in self._FIELDS])
-        columns = ('name',)
+        columns = ('name', 'active')
         cb = CodebookSpec(display='name', prefer_display=True)
     WMI_SECTION = WikingManagementInterface.SECTION_STYLE
     WMI_ORDER = 100
+    _ACTIONS = (Action(_("Activate"), 'activate', descr=_("Activate this color theme"),
+                       enabled=lambda r: r['active'].value() is None),)
+    _LIST_ACTIONS = CMSModule._LIST_ACTIONS + (
+        Action(_("Activate default"), 'activate', descr=_("Activate the default color theme"),
+               enabled=lambda r: isinstance(cfg.theme, Themes.Theme), context=None),)
+    
+    class Theme(Theme):
+        def __init__(self, row):
+            self._theme_id = row['theme_id'].value()
+            colors = [(c.id(), row[c.id()].value())
+                      for c in self.COLORS if row[c.id()].value() is not None]
+            super(Themes.Theme, self).__init__(colors=dict(colors))
+        def theme_id(self):
+            return self._theme_id
 
     def theme(self, theme_id):
         row = self._data.get_row(theme_id=theme_id)
-        colors = [(c.id(), row[c.id()].value())
-                  for c in Theme.COLORS if row[c.id()].value() is not None]
-        return Theme(colors=dict(colors))
+        return self.Theme(row)
+        
+    def action_activate(self, req, record=None):
+        if record:
+            theme_id = record['theme_id'].value()
+            name = record['name'].value()
+            cfg.theme = self.Theme(record.row())
+        else:
+            theme_id = None
+            name = _("Default")
+            cfg.theme = Theme()
+        err = self._module('Config').set_theme(req, theme_id)
+        if err is None:
+            msg = _("The color theme \"%s\" has been activated.", name)
+        else:
+            msg = None
+        req.set_param('search', theme_id)
+        return self.action_list(req, msg=msg, err=err)
+    RIGHTS_activate = (Roles.ADMIN,)
+    
 
 # ==============================================================================
 # The modules below handle the actual content.  

@@ -99,15 +99,15 @@ obsah ve skutečnosti není skrze databázi přístupný (jeví se jako prázdn�
 
 ==== Barevné motivy ====
 
-Barevné motivy umožňují jednoduše přizpůsobit barevné ladění stránek.  Pro
-aktivaci jednoho z definovaných motivů musíte tento motiv zvolit v konfiguraci
-(sekce Nastavení).
-
-Několik barevných motivů je předinstalováno, další mohou být vytvářeny a
-sdíleny v rámci komunity uživatelů systému Wiking.
-
-Výsledný vzhled je určen kombinací zvoleného barevného motivu a aktivních stylů
+Barevné motivy umožňují jednoduše přizpůsobit barevné ladění stránek.  V daný
+moment je aktivní vždy právě jeden z dostupných barevných motivů.  Výsledný
+vzhled stránek je určen kombinací zvoleného barevného motivu a aktivních stylů
 (viz výše).
+
+Několik barevných motivů je předinstalováno ve výchozí instalaci.  Můžete
+vytvářet vlastní témata, nebo jednoduše upravovat stávající témata pomocí
+formuláře, který obsahuje další informace.  Barevná témata mohou být také
+sdílena v rámci komunity uživatelů CMS Wiking.
 
 
 === Správa uživatelů ===

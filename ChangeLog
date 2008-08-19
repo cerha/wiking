@@ -1,3 +1,11 @@
+2008-08-19  Tomas Cerha  <cerha@brailcom.org>
+
+	* doc/src/cms/wmi.cs.txt: 
+	* doc/src/cms/wmi.en.txt: 
+	* lib/wiking/cms/cms.py: 
+	Set the current color theme within the Themes module, not in configuration.
+	
+
 2008-08-18  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/util.py: 
