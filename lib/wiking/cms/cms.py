@@ -250,9 +250,8 @@ class Registration(Module, ActionHandler):
                     attachments = ()
                     cert_text, attachment, attachment_stream = _certificate_mail_info(record)
                     attachments += (MailAttachment(attachment, stream=attachment_stream),)
-                    base_uri = self._base_uri(req)
-                    uri = ('%s%s?action=certload&uid=%s&regcode=%s&reset=1' %
-                           (req.server_uri(), base_uri, uid, code,))
+                    uri = req.server_uri() + make_uri(self._base_uri(req), action='certload',
+                                                      uid=uid, regcode=code, reset=1)
                     text = concat (
                         text,
                         _("Visit %(uri)s to upload your certificate request.", uri=uri),
@@ -1773,8 +1772,7 @@ class Users(EmbeddableCMSModule):
             Field('uid', width=8, editable=NEVER),
             Field('login', _("Login name"), width=16, editable=ONCE,
                   type=pd.RegexString(maxlen=16, not_null=True, regex='^[a-zA-Z][0-9a-zA-Z_\.-]*$'),
-                  computer=(cfg.login_is_email and 
-                            Computer(lambda r: r['email'].value(), depends=('email',)) or None),
+                  computer=(cfg.login_is_email and (lambda email: email) or None),
                   descr=_("A valid login name can only contain letters, digits, underscores, "
                           "dashes and dots and must start with a letter.")),
             Field('password', _("Password"), width=16,
@@ -2018,9 +2016,8 @@ class Users(EmbeddableCMSModule):
             action = 'certload'
         else:
             action = 'confirm'
-        uri = '%s%s?action=%s&uid=%s&regcode=%s' % (req.server_uri(), base_uri, action,
-                                                    record['uid'].value(),
-                                                    record['regcode'].value())
+        uri = req.server_uri() + make_uri(base_uri, action=action, uid=record['uid'].value(),
+                                          regcode=record['regcode'].value())
         text = _("You have been successfully registered at %(server_hostname)s. "
                  "To complete your registration visit the URL %(uri)s and follow "
                  "the instructions there.\n",
