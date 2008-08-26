@@ -47,7 +47,6 @@ class Handler(object):
 
     def handle(self, req):
         application = self._application
-        req.path = req.path or ('index',)
         try:
             try:
                 application.configure(req)

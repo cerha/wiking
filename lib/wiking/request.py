@@ -77,6 +77,9 @@ class Request(pytis.web.Request):
 
     def _init_path(self, uri):
         return [item for item in uri.split('/')[1:] if item]
+
+    def _cookie_path(self):
+        return '/'
         
     # Methods implementing the pytis Request interface:
     
@@ -97,7 +100,7 @@ class Request(pytis.web.Request):
         c = Cookie.SimpleCookie()
         c[name] = value
         #c[name]['domain'] = self._req.connection.local_host
-        c[name]['path'] = self.uri_prefix() or '/'
+        c[name]['path'] = self._cookie_path()
         if expires is not None:
             c[name]['expires'] = expires
         if secure:
@@ -243,6 +246,43 @@ class Request(pytis.web.Request):
 
 class WikingRequest(Request):
     """Wiking application specific request object."""
+    
+    class ForwardInfo(object):
+        """Request forwarding information.
+
+        The method 'WikingRequest.forward()' automatically adds forward information to the stack,
+        which may be later inspected through the method 'WikingRequest.forwards()'.  Each item on
+        this stack is an instance of this class.  The constructor arguments are supplied as
+        follows:
+
+          module -- the handler instance to which the request was forwarded
+          uri -- uri corresponding to the resolved portion of the path (at the time of the forward)
+          kwargs -- any keyword arguments passed to the forward method call.  These arguments may
+            be later inspected through the 'args()' method and make it possible to pass any
+            application defined data for later inspection.
+
+        """
+        
+        def __init__(self, module, uri, **kwargs):
+            self._module = module
+            self._uri = uri
+            self._data = kwargs
+            
+        def module(self):
+            """Return the 'module' passed to the constructor."""
+            return self._module
+        
+        def uri(self):
+            """Return the 'uri' passed to the constructor."""
+            return self._uri
+        
+        def arg(self, name):
+            """Return the value of keyword argument 'name' passed to the constructor or None."""
+            try:
+                return self._data[name]
+            except KeyError:
+                return None
+            
     _LANG_COOKIE = 'wiking_prefered_language'
     _PANELS_COOKIE = 'wiking_show_panels'
     _UNDEFINED = object()
@@ -250,7 +290,8 @@ class WikingRequest(Request):
     def __init__(self, req, application, **kwargs):
         super(WikingRequest, self).__init__(req, **kwargs)
         self._application = application
-        self._handlers = []
+        self._forwards = []
+        self.unresolved_path = list(self.path)
 
     def _init_params(self):
         params = super(WikingRequest, self)._init_params()
@@ -292,13 +333,18 @@ class WikingRequest(Request):
                 self._params['lang'] = uri[-2:]
                 uri = uri[:-3]
         if self._options.has_key('PrefixPath'):
-            path = self._options['PrefixPath']
+            self._uri_prefix = prefix = self._options['PrefixPath']
             x = uri
-            if uri.startswith(path):
-                uri = uri[len(path):]
+            if uri.startswith(prefix):
+                uri = uri[len(prefix):]
+        else:
+            self._uri_prefix = None
         return super(WikingRequest, self)._init_path(uri)
 
-    def forward(self, handler):
+    def _cookie_path(self):
+        return self._uri_prefix or '/'
+
+    def forward(self, handler, **kwargs):
         """Pass the request on to another handler keeping track of the handlers.
 
         Adds the module to the list of used handlers and returns the result of calling
@@ -307,21 +353,29 @@ class WikingRequest(Request):
         The list of used handlers can be retrieved using the 'handlers()' method.
 
         """
-        self._handlers.append(handler)
-        return handler.handle(self)
+        if self.unresolved_path:
+            path = self.path[:-len(self.unresolved_path)]
+        else:
+            path = self.path
+        uri = '/' + '/'.join(path)
+        self._forwards.append(self.ForwardInfo(handler, uri, **kwargs))
+        try:
+            return handler.handle(self)
+        finally:
+            self._forwards.pop()
 
-    def handlers(self):
-        """Return the list of handlers involved in handling the request.
+    def forwards(self):
+        """Return the tuple of `ForwardInfo' instances representing the current forwarding stack.
 
-        The handlers are returned in the order in which the corresponding 'forward()' calls were
-        made.  The 'Application' handles the request first, but it is not a regular
-        'RequestHandler' instance, so it does not appear in the list.
+        The items are returned in the order in which the corresponding 'forward()' calls were
+        made.  The current 'Application', which normally starts the request handling, is not
+        included in this list.
 
         """
-        return self._handlers
+        return tuple(self._forwards)
 
     def uri_prefix(self):
-        return self._options.get('PrefixPath', '')
+        return self._uri_prefix or ''
         
     def show_panels(self):
         return self._show_panels

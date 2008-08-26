@@ -117,7 +117,7 @@ class Forbidden(HttpError):
     
     def message(self, req):
         msg = (_("The item '%s' is not available.", req.uri()),
-               _("The item exists on the server, but it is not published."))
+               _("The item exists on the server, but can not be accessed."))
         return lcg.coerce([lcg.p(p) for p in msg])
 
     
@@ -525,20 +525,18 @@ class WikingNode(lcg.ContentNode):
 class ActionCtrl(lcg.Content):
     """Context action invocation control."""
     
-    def __init__(self, uri, action, referer, name, row=None, relation=None):
+    def __init__(self, uri, action, referer, name, row=None):
         super(ActionCtrl, self).__init__()
         assert isinstance(uri, (str, unicode)), uri
         assert isinstance(action, Action), action
         assert isinstance(referer, str), referer
         assert isinstance(name, str), name
         assert row is None or isinstance(row, pp.PresentedRow), row
-        assert relation is None or isinstance(relation, dict), relation
         self._uri = uri
         self._action = action
         self._referer = referer
         self._name = name
         self._row = row
-        self._relation = relation or {}
 
     def export(self, context):
         g = context.generator()
@@ -549,13 +547,12 @@ class ActionCtrl(lcg.Content):
         uri = self._uri
         args = dict(action=action.name(), **action.kwargs())
         if action.name() == 'list':
-            key = self._row.data().key()[0].id()
-            args = dict(args, search=self._row[key].export(), module=self._name)
+            if self._row:
+                key = self._row.data().key()[0].id()
+                args = dict(args, search=self._row[key].export(), module=self._name)
         elif action.name() == 'delete':
             key = self._row.data().key()[0].id()
             args = dict(args, **{key: self._row[key].export()})
-        elif action.name() == 'insert' and self._row is None:
-            args = dict(args, module=self._name, **self._relation)
         elif self._referer is not None and self._row:
             if not uri.endswith('/'):
                 uri += '/'
@@ -568,10 +565,10 @@ class ActionCtrl(lcg.Content):
 class ActionMenu(lcg.Container):
     """A set of action controls."""
     
-    def __init__(self, uri, actions, referer, name, row=None, relation=None, title=_("Actions:"),
-                 help=None, cls='actions'):
+    def __init__(self, uri, actions, referer, name, row=None,
+                 title=_("Actions:"), help=None, cls='actions'):
         # Only Wiking's actions are considered, not all `pytis.presentation.Action'.
-        ctrls = [ActionCtrl(uri, a, referer, name, row, relation=relation)
+        ctrls = [ActionCtrl(uri, a, referer, name, row)
                  for a in actions]
         if help:
             ctrls.append(lcg.link(help, _("Help")))
@@ -1209,7 +1206,10 @@ def make_uri(base, *args, **kwargs):
     # encoding will be used in the context, where the URI is used.  We just rely on the fact, thet
     # LCG uses UTF-8.
     uri = urllib.quote(base.encode('utf-8'))
-    query = ';'.join([k +"="+ urllib.quote(unicode(v).encode('utf-8'))
+    if args and isinstance(args[0], basestring):
+        uri += '#'+ urllib.quote(unicode(args[0]).encode('utf-8'))
+        args = args[1:]
+    query = ';'.join([k +"="+ urllib.quote_plus(unicode(v).encode('utf-8'))
                       for k, v in args + tuple(kwargs.items()) if v is not None])
     if query:
         uri += '?'+ query

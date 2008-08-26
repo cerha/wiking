@@ -51,8 +51,16 @@ class Application(CookieAuthentication, wiking.Application):
 
     def handle(self, req):
         req.wmi = False # Will be set to True by `WikingManagementInterface' if needed.
-        modname = self._MAPPING.get(req.path[0], 'Pages')
-        return req.forward(self._module(modname))
+        if req.unresolved_path:
+            try:
+                modname = self._MAPPING[req.unresolved_path[0]]
+            except KeyError:
+                modname = 'Pages'
+            else:            
+                del req.unresolved_path[0]
+            return req.forward(self._module(modname))
+        else:
+            return super(Application, self).handle(req)
 
     def module_uri(self, modname):
         try:

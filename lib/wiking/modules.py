@@ -79,14 +79,14 @@ class RequestHandler(object):
         req_, uri = self._cached_uri
         if req is not req_:
             uri = self._mapped_uri()
-            if uri is None:
-                handlers = req.handlers()
-                try:
-                    module = handlers[handlers.index(self) - 1]
-                except (IndexError, ValueError):
-                    pass
-                else:
-                    uri = module._mapped_uri()
+            #if uri is None:
+            #    handlers = req.handlers()
+            #    try:
+            #        module = handlers[handlers.index(self) - 1]
+            #    except (IndexError, ValueError):
+            #        pass
+            #    else:
+            #        uri = module._mapped_uri()
             if uri is not None:
                 uri = req.uri_prefix() + uri
             self._cached_uri = (req, uri)
@@ -205,7 +205,7 @@ class Documentation(DocumentHandler):
 
     """
     def _handle(self, req):
-        path = req.path[1:]
+        path = req.unresolved_path
         if path and path[0] == 'lcg':
             path = path[1:]
             basedir = lcg.config.doc_dir
@@ -244,8 +244,13 @@ class Stylesheets(Module, RequestHandler):
 
     def _handle(self, req):
         """Serve the stylesheet from a file."""
-        return ('text/css', self._substitute(self._stylesheet(req.path[1])))
-
+        if len(req.unresolved_path) == 1:
+            return ('text/css', self._substitute(self._stylesheet(req.unresolved_path[0])))
+        elif not req.unresolved_path:
+            raise Forbidden()
+        else:
+            raise NotFound()
+        
 
 class Resources(Module, RequestHandler):
     """Serve the resource files as provided by the LCG's 'ResourceProvider'.
@@ -266,16 +271,16 @@ class Resources(Module, RequestHandler):
 
     def _handle(self, req):
         """Serve the resource from a file."""
-        if '..' in req.path or len(req.path) < 3:
-            raise NotFound
-        filename = os.path.join(*req.path[2:])
-        resource = self._provider.resource(filename)
-        if resource is not None and resource.SUBDIR == req.path[1]:
-            src_file = resource.src_file()
-            if src_file:
-                import mimetypes
-                mime_type, encoding = mimetypes.guess_type(src_file)
-                return req.serve_file(src_file, mime_type or 'application/octet-stream')
+        if len(req.unresolved_path) > 1 and '..' not in req.unresolved_path:
+            subdir = req.unresolved_path[0]
+            filename = os.path.join(*req.unresolved_path[1:])
+            resource = self._provider.resource(filename)
+            if resource is not None and resource.SUBDIR == subdir:
+                src_file = resource.src_file()
+                if src_file:
+                    import mimetypes
+                    mime_type, encoding = mimetypes.guess_type(src_file)
+                    return req.serve_file(src_file, mime_type or 'application/octet-stream')
         raise NotFound()
 
     

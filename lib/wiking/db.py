@@ -34,7 +34,6 @@ class PytisModule(Module, ActionHandler):
     _TITLE_TEMPLATE = None
     _HONOUR_SPEC_TITLE = False
     _LIST_BY_LANGUAGE = False
-    _REFERER_PATH_LEVEL = 2
     _DEFAULT_ACTIONS_FIRST = (Action(_("Edit"), 'update', descr=_("Modify the record")),)
     _DEFAULT_ACTIONS_LAST =  (Action(_("Remove"), 'delete',
                                      descr=_("Remove the record permanently")),
@@ -60,7 +59,6 @@ class PytisModule(Module, ActionHandler):
     
     _OWNER_COLUMN = None
     _SUPPLY_OWNER = True
-    _RELATION_FIELDS = ()
     _SEQUENCE_FIELDS = ()
 
     _ALLOW_TABLE_LAYOUT_IN_FORMS = True
@@ -142,22 +140,50 @@ class PytisModule(Module, ActionHandler):
     def _spec(self, resolver):
         return self.__class__.Spec(self.__class__, resolver)
 
+    def _record(self, req, row, new=False, prefill=None):
+        """Return the Record instance initialized by given data row."""
+        return self.Record(req, self._view.fields(), self._data, row, prefill=prefill,
+                           resolver=self._resolver, new=new)
+
     def _locale_data(self, req):
         lang = req.prefered_language(raise_error=False)
         return translator(lang).locale_data()
+
+    def _binding_forward(self, req):
+        # Return the ForwardInfo instance for the last forward made because of the binding
+        # dependency (this module is in bindings of the forwarding module).
+        for fw in reversed(req.forwards()):
+            if fw.arg('binding') is not None:
+                if self.name() == fw.module().name():
+                    return fw
+                else:
+                    return None
+        return None
+
+    def _binding_column(self, req):
+        # Return the current binding column id and its binding value as a tuple.
+        fw = self._binding_forward(req)
+        if fw:
+            binding_column = fw.arg('binding').binding_column()
+            if binding_column:
+                col = self._data.find_column(binding_column).type().enumerator().value_column()
+                return (binding_column, fw.arg('record')[col].value())
+        return None, None
         
     def _validate(self, req, record, layout=None):
         # TODO: This should go to pytis.web....
         errors = []
         if layout is None:
             layout = self._view.layout()
-        fields = layout.order()
         if record.new():
-            for id in self._RELATION_FIELDS:
-                if req.has_param(id):
-                    fields += (id,)
-                    break
-        for id in fields:
+            # Suppply the value of the binding column (if this is a binding forwarded request).
+            binding_column, value = self._binding_column(req)
+            if binding_column:
+                if req.param(binding_column) == record[binding_column].type().export(value):
+                    record[binding_column] = pd.Value(record[binding_column].type(), value)
+                else:
+                    errors.append((binding_column, _("Invalid binding column value.")))
+        for id in layout.order():
             f = self._view.field(id)
             if not record.editable(id):
                 continue
@@ -258,6 +284,11 @@ class PytisModule(Module, ActionHandler):
             content = tuple(content)
         elif not isinstance(content, tuple):
             content = (content,)
+        # msg and err may be passed as request params on redirection (see action_list()).
+        if not msg and req.has_param('msg'):
+            msg = req.param('msg')
+        if not err and req.has_param('err'):
+            err = req.param('err')
         if msg:
             content = (Message(msg),) + content
         if err:
@@ -278,28 +309,37 @@ class PytisModule(Module, ActionHandler):
         else:
             return self._LIST_ACTIONS
 
-    def _action_menu(self, req, record=None, actions=None, **kwargs):
+    def _action_menu(self, req, record=None, actions=None, binding=None, **kwargs):
         actions = [action for action in actions or self._actions(req, record)
                    if isinstance(action, Action) and action.name() is not None and \
                    self._application.authorize(req, self, action=action.name(), record=record)]
-        uri = self._base_uri(req)
-        if not actions or not uri:
+        if not actions:
             return None
+        #uri = self._base_uri(req)
+        uri = req.uri()
+        if binding:
+            uri += '/'+ binding.id()
+        elif record:
+            referer = record[self._referer].export()
+            if uri.endswith(referer):
+                uri = uri[:-(len(referer)+1)]
         return ActionMenu(uri, actions, self._referer, self.name(), record, **kwargs)
 
-    def _image_provider(self, req, row, cid, target=None):
+    def _image_provider(self, req, row, cid, binding=None):
         return None
 
-    def _record_uri(self, req, row, *args, **kwargs):
-        # Always use _link_provider.  This method only prevents recursion in `link()'.
-        uri = self._base_uri(req)
-        if not uri:
-            return None
-        return make_uri(uri +'/'+ row[self._referer].export(), *args, **kwargs)
-
-    def _link_provider(self, req, row, cid, target=None):
+    def _link_provider(self, req, row, cid, binding=None, **kwargs):
         if cid is None:
-            return self._record_uri(req, row)
+            uri = req.uri().rstrip('/')
+            if binding:
+                if binding.id() is None:
+                    #return self._record_uri(req, row)
+                    return None
+                uri += '/'+ binding.id()
+            referer = row[self._referer].export()
+            if not uri.endswith(referer):
+                uri += '/'+ row[self._referer].export()
+            return make_uri(uri, **kwargs)
         if self._links.has_key(cid):
             link_cid, modname = self._links[cid]
             try:
@@ -312,19 +352,23 @@ class PytisModule(Module, ActionHandler):
                 return module.link(req, **{e.value_column(): value.value()})
         return None
 
-    def _record(self, req, row, new=False, prefill=None):
-        """Return the Record instance initialized by given data row."""
-        return self.Record(req, self._view.fields(), self._data, row, prefill=prefill,
-                           resolver=self._resolver, new=new)
+    def _record_uri(self, req, record, *args, **kwargs):
+        # Return the absolute uri of module's record if a direct mapping of the module exists.  
+        # The metohd '_link_provider()' should be prefered when relative URIs are prefered.
+        uri = self._base_uri(req)
+        if uri:
+            return make_uri(uri +'/'+ record[self._referer].export(), *args, **kwargs)
+        else:
+            return None
 
     def _form(self, form, req, action=None, row=None, hidden=(), new=False, prefill=None,
-              handler=None, **kwargs):
+              handler=None, binding=None, **kwargs):
         def uri_provider(row, cid, type=pw.UriType.LINK):
             if type == pw.UriType.LINK:
                 method = self._link_provider
             elif type == pw.UriType.IMAGE:
                 method = self._image_provider
-            return method(req, row, cid, target=form)
+            return method(req, row, cid, binding=binding)
         kwargs['uri_provider'] = uri_provider
         #if issubclass(form, pw.EditForm) and req.has_param('module'):
         #    kwargs['hidden'] = kwargs.get('hidden', ()) + \
@@ -354,13 +398,13 @@ class PytisModule(Module, ActionHandler):
         return layout
     
 
-    def _action(self, req, record=None, subpath=None):
-        if record is not None and subpath is not None:
-            return 'subitem'
+    def _action(self, req, record=None):
+        if record is not None and req.unresolved_path:
+            return 'subpath'
         else:
-            return super(PytisModule, self)._action(req, record=record, subpath=subpath)
+            return super(PytisModule, self)._action(req, record=record)
 
-    def _default_action(self, req, record=None, subpath=None):
+    def _default_action(self, req, record=None):
         if record is None:
             return 'list'
         else:
@@ -369,33 +413,26 @@ class PytisModule(Module, ActionHandler):
     def _action_args(self, req):
         # The request path may resolve to a 'record' argument, no arguments or
         # raise one of HttpError exceptions.
-        args = {}
         row = self._resolve(req)
         if row is not None:
-            args['record'] = self._record(req, row)
-            subpath = self._subpath(req)
-            if subpath:
-                args['subpath'] = subpath
+            args = dict(record=self._record(req, row))
+        else:
+            args = dict()
         return args
     
     def _resolve(self, req):
         # Returns Row, None or raises HttpError.
-        pathlen = len(req.path)
-        level = self._REFERER_PATH_LEVEL
-        if pathlen in (level-1, level) and req.has_param(self._key):
-            return self._get_row_by_key(req.param(self._key))
-        elif pathlen >= level:
-            return self._get_referered_row(req, req.path[level-1])
+        if req.unresolved_path:
+            row = self._get_referered_row(req, req.unresolved_path[0])
+            # If no error was raised, the path was resolved.
+            del req.unresolved_path[0]
+            return row
+        elif req.has_param(self._key):
+            return self._get_row_by_key(req, req.param(self._key))
         else:
             return None
 
-    def _subpath(self, req):
-        if len(req.path) > self._REFERER_PATH_LEVEL:
-            return req.path[self._REFERER_PATH_LEVEL:]
-        else:
-            return None
-        
-    def _get_row_by_key(self, value):
+    def _get_row_by_key(self, req, value):
         if isinstance(value, tuple):
             value = value[-1]
         type = self._data.key()[0].type()
@@ -404,6 +441,9 @@ class PytisModule(Module, ActionHandler):
             raise NotFound()
         row = self._data.row((v,))
         if row is None:
+            raise NotFound()
+        binding_column, value = self._binding_column(req)
+        if binding_column and row[binding_column].value() != value:
             raise NotFound()
         return row
 
@@ -415,6 +455,9 @@ class PytisModule(Module, ActionHandler):
             else:
                 value = v.value()
         kwargs = {self._referer: value}
+        binding_column, value = self._binding_column(req)
+        if binding_column:
+            kwargs[binding_column] = value
         if self._LIST_BY_LANGUAGE:
             kwargs['lang'] = req.prefered_language()
         row = self._data.get_row(**kwargs)
@@ -431,24 +474,43 @@ class PytisModule(Module, ActionHandler):
     def _prefill(self, req, new=False):
         prefill = dict([(f.id(), req.param(f.id())) for f in self._view.fields()
                         if req.has_param(f.id()) and \
-                        not isinstance(f.type(), (pd.Binary, pd.Password))])
+                        not isinstance(f.type(self._data), (pd.Binary, pd.Password))])
+        binding_column, value = self._binding_column(req)
+        if binding_column:
+            type = self._view.field(binding_column).type(self._data)
+            prefill[binding_column] = type.export(value)
         if new and not prefill.has_key('lang') and self._LIST_BY_LANGUAGE:
             lang = req.prefered_language(raise_error=False)
             if lang:
                 prefill['lang'] = lang
         return prefill
 
-    def _condition(self, req, lang=None, condition=None, values=None):
-        # Can be used by a module to filter out invalid (ie. outdated) records.
-        if values:
-            conds = [pd.EQ(k, pd.Value(self._data.find_column(k).type(), v))
-                     for k, v in values.items()]
+    def _binding_condition(self, binding, record):
+        if binding.condition():
+            condition = binding.condition()(record)
         else:
-            conds = []
-        if lang and self._LIST_BY_LANGUAGE:
-            conds.append(pd.EQ('lang', pd.Value(pd.String(), lang)))
+            condition = None
+        binding_column = binding.binding_column()
+        if binding_column:
+            type = self._data.find_column(binding_column).type()
+            value = record[type.enumerator().value_column()].value()
+            bcond = pd.EQ(binding_column, pd.Value(type, value))
+            if condition: 
+                condition = pd.AND(condition, bcond)
+            else:
+                condition = bcond
+        return condition
+        
+    def _condition(self, req, lang=None, condition=None, values=None):
+        # Can be used by a module to further restrict the listed records.
+        conds = []
         if condition:
             conds.append(condition)
+        if values:
+            for k, v in values.items():
+                conds.append(pd.EQ(k, pd.Value(self._data.find_column(k).type(), v)))
+        if lang and self._LIST_BY_LANGUAGE:
+            conds.append(pd.EQ('lang', pd.Value(pd.String(), lang)))
         if conds:
             return pd.AND(*conds)
         else:
@@ -467,7 +529,10 @@ class PytisModule(Module, ActionHandler):
                 if module is not None and module != self.name():
                     return req.forward(self._module(module))
         return super(PytisModule, self)._handle(req, action, **kwargs)
-        
+
+    def _binding_enabled(self, binding, record):
+        return not isinstance(binding, Binding) or binding.enabled() is None \
+               or binding.enabled()(record)
 
     # ===== Methods which modify the database =====
     
@@ -493,7 +558,7 @@ class PytisModule(Module, ActionHandler):
         """Delete the record from the database."""
         if not self._data.delete(record.key()) and raise_error:
             raise pd.DBException('???', Exception("Unable to delete record."))
-
+        
     # ===== Public methods =====
     
     def record(self, req, value):
@@ -514,27 +579,17 @@ class PytisModule(Module, ActionHandler):
         else:
             return None
         
-    def related(self, req, modname, binding, record):
-        """Return the listing of records related to other module's record by given column."""
-        if binding.condition():
-            condition = binding.condition()(record)
-        else:
-            condition = None
-        colname = binding.binding_column()
-        if colname:
-            bcol = self._data.find_column(colname).type().enumerator().value_column()
-            value = record[bcol].value()
-            kwargs = {'values': {colname: value}}
-        else:
-            kwargs = {}
+    def related(self, req, binding, record):
+        """Return the listing of records related to other module's record by given binding."""
         if isinstance(binding, Binding) and binding.form() is not None:
             form = binding.form()
         else:
             form = pw.ListView
-        condition = self._condition(req, condition=condition, **kwargs)
-        content = self._form(form, req, condition=condition,
-                             columns=[c for c in self._view.columns() if c!=colname])
-        menu = self._action_menu(req, relation={colname: value})
+        condition = condition=self._binding_condition(binding, record)
+        columns = [c for c in self._view.columns() if c != binding.binding_column()]
+        content = self._form(form, req, binding=binding, columns=columns,
+                             condition=self._condition(req, condition=condition))
+        menu = self._action_menu(req, binding=binding)
         if menu:
             content = lcg.Container((content, menu))
         return content
@@ -542,24 +597,51 @@ class PytisModule(Module, ActionHandler):
     # ===== Action handlers =====
     
     def action_list(self, req, err=None, msg=None):
+        fw = self._binding_forward(req)
+        if fw:
+            binding_id = fw.arg('binding').id()
+            if binding_id and fw.uri().endswith(binding_id):
+                # Don't display the listing alone, but display the original form with bindings,
+                # when this list is accessed through a related form.
+                # The messages are passed to support redirection after update/insert/delete, but it
+                # might be better to make a redirect directly in the _redirect_after_* methods.
+                t = translator(req.prefered_language()).translate
+                return self._binding_parent_redirect(req, fw.uri()[:-(len(binding_id)+1)],
+                                                     search=req.param('search'),
+                                                     module=req.param('module'),
+                                                     err=t(err), msg=t(msg))
+            #condition = self._binding_condition(binding, fw.arg('record'))
+            #columns = [c for c in self._view.columns() if c != fw.arg('binding').binding_column()]
         lang = req.prefered_language()
         content = (self._form(pw.ListView, req, condition=self._condition(req, lang=lang)),
                    self._action_menu(req))
         return self._document(req, content, lang=lang, err=err, msg=msg)
+
+    def _binding_parent_redirect(self, req, uri, **kwargs):
+        # May be overriden in derived classes.
+        return req.redirect(make_uri(uri, **kwargs))
 
     def action_view(self, req, record, err=None, msg=None):
         content = [self._form(pw.ShowForm, req, row=record.row(),
                               layout=self._layout(req, 'view', record)),
                    self._action_menu(req, record)]
         for binding in self._view.bindings():
-            if not isinstance(binding, Binding) or binding.enabled() is None \
-                   or binding.enabled()(record):
+            if self._binding_enabled(binding, record):
                 module = self._module(binding.name())
-                related = module.related(req, self.name(), binding, record)
+                related = module.related(req, binding, record)
                 content.append(lcg.Section(title=binding.title(), content=related))
         return self._document(req, content, record, err=err, msg=msg)
 
-    def action_subitem(self, req, record, subpath):
+    def action_subpath(self, req, record):
+        for binding in self._view.bindings():
+            if req.unresolved_path[0] == binding.id():
+                del req.unresolved_path[0]
+                if self._binding_enabled(binding, record):
+                    # TODO: respect the binding condition in the forwarded module.
+                    module = self._module(binding.name())
+                    return req.forward(module, binding=binding, record=record)
+                else:
+                    raise Forbidden()
         raise NotFound()
 
     # ===== Action handlers which modify the database =====
@@ -743,15 +825,15 @@ class RssModule(object):
         rows = self._rows(req, lang=str(lang), limit=self._RSS_LIMIT)
         from xml.sax.saxutils import escape
         base_uri = req.server_uri()
-        row = pp.PresentedRow(self._view.fields(), self._data, None)
+        record = self._record(req, None)
         items = []
         import mx.DateTime as dt
         tr = translator(str(lang))
         users = self._module('Users')
-        for data_row in rows:
-            row.set_row(data_row)
-            title = escape(tr.translate(row[self._RSS_TITLE_COLUMN].export()))
-            uri = self._link_provider(req, row, None, target=RssModule)
+        for row in rows:
+            record.set_row(row)
+            title = escape(tr.translate(record[self._RSS_TITLE_COLUMN].export()))
+            uri = self._record_uri(req, record)
             if uri:
                 uri = base_uri + uri
                 if lang:
@@ -761,14 +843,14 @@ class RssModule(object):
                         uri += setlang
                     else:
                         uri = uri[:pos] + setlang + uri[pos:]
-            descr = self._descr_provider(req, row, tr)
+            descr = self._descr_provider(req, record, tr)
             if self._RSS_DATE_COLUMN:
-                v = row[self._RSS_DATE_COLUMN].value()
+                v = record[self._RSS_DATE_COLUMN].value()
                 date = dt.ARPA.str(v.localtime())
             else:
                 date = None
             if self._RSS_AUTHOR_COLUMN:
-                uid = row[self._RSS_AUTHOR_COLUMN]
+                uid = record[self._RSS_AUTHOR_COLUMN]
                 author = users.record(req, uid)['email'].export()
             else:
                 author = cfg.webmaster_address
@@ -871,12 +953,13 @@ class Panelizable(object):
         count = count or self._PANEL_DEFAULT_COUNT
         fields = [self._view.field(id)
                   for id in self._PANEL_FIELDS or self._view.columns()]
-        prow = pp.PresentedRow(self._view.fields(), self._data, None)
+        record = self._record(req, None)
         items = []
         for row in self._rows(req, lang=lang, limit=count-1):
-            prow.set_row(row)
-            item = PanelItem([(f.id(), prow[f.id()].export(),
-                               self._link_provider(req, prow, f.id(), target=Panel))
+            record.set_row(row)
+            item = PanelItem([(f.id(), record[f.id()].export(),
+                               f.id() == self._title_column and \
+                               self._record_uri(req, record)) or None
                               for f in fields])
             items.append(item)
         if items:

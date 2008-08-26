@@ -1,51 +1,39 @@
 Core features:
-
- * Force HTTPS also for registration form (see note at PytisModule.action_add())
-
+ * Handle Computer exceptions
+ * Calling 'constraints' of a virtual field
+ * The default check() method in base Specification class
+ * Force HTTPS also for registration form (see note at PytisModule.action_insert())
  * Create an admin account during site installation
-
- * Use real users for admin email notifications and bug reports (not config.webmaster_addr)
-
- * Automatically determine the default page (instead of defaulting to 'index')
-
  * Allow extension module management to page owner
-
  * Disable table layout per layout spec, not per module.
-
- * Allow multiple instances of News and Planner modules
-
+ * Refer to the page in News and Planner items to allow a separate set for each page.
  * Remove the dbname column -- get the database name from somewhere else
-
  * Delete stray files after deletion triggered in the database (cascade)
-
  * Extension module listing commands don't work in the preview mode within WMI
-
  * Serve favicon and robots.txt
-
  * RSS links in page header and panels
-
  * Image allignment and link title in the LCG formatting manual
-
  * Default language when Accept-Language is not set at all
-
  * Locking
-
  * Change log and Last-Modified HTTP header support
-
- * Reencoding HTML attachments?
-
+ * Recode HTML attachments
  * Cache exported HTML for structured text content in DB?
-
  * Print preview
-
  * Support multithreaded Apache MPM (currently broken)
 
+Cleaning:
+ * Move RssModule and Panelizable from CMSModule to EmbeddableCMSModule
+ * Remove `req.page' hack in CMS
+
+Minor:
+ * Show original page in attachment move form.
+ * Allow attachment creation in WMI Attachments module (add page selection to the insert form).
+ * Include page texts in page insert form and allow also 'Save and publish' directly.
+ * Make Active/Inactive users a submenu in WMI.
 
 Extensions:
 
  * Image galeries
-
  * Blog
-
  * Articles
 

@@ -77,13 +77,20 @@ class Application(Module):
         more suitable for your application.
 
         """
-        identifier = req.path[0]
+        if not req.unresolved_path:
+            menu = self.menu(req)
+            if menu:
+                return req.redirect(menu[0].id())
+            else:
+                raise Forbidden()
+        identifier = req.unresolved_path[0]
         try:
             modname = self._MAPPING[identifier]
         except KeyError:
             raise NotFound()
         module = self._module(modname)
         assert isinstance(module, RequestHandler)
+        req.unresolved_path.pop(0)
         return req.forward(module)
     
     def module_uri(self, modname):

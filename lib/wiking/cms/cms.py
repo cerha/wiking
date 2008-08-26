@@ -109,20 +109,21 @@ class WikingManagementInterface(Module, RequestHandler):
     
     def _handle(self, req):
         req.wmi = True # Switch to WMI only after successful authorization.
-        if len(req.path) == 1:
-            req.path += ('Pages',)
+        if not req.unresolved_path:
+            return req.redirect('/'+req.path[0]+'/Pages')
         try:
-            module = self._module(req.path[1])
+            module = self._module(req.unresolved_path[0])
         except AttributeError:
             for section, title, descr in self._SECTIONS:
-                if req.path[1] == section:
+                if req.unresolved_path[0] == section:
                     modules = self._wmi_modules(_modules(), section)
                     if modules:
                         modules.sort(lambda a, b: cmp(self._wmi_order(a), self._wmi_order(b)))
                         return req.redirect('/'+req.path[0]+'/'+modules[0].name())
             raise NotFound(req)
         else:
-            return module.handle(req)
+            del req.unresolved_path[0]
+            return req.forward(module)
 
     def menu(self, req):
         modules = _modules()
@@ -310,33 +311,13 @@ class CMSModule(PytisModule, RssModule, Panelizable):
     RIGHTS_view = (Roles.ANYONE,)
     RIGHTS_list = (Roles.ANYONE,)
     RIGHTS_rss  = (Roles.ANYONE,)
-    RIGHTS_subitem = (Roles.ANYONE,)
+    RIGHTS_subpath = (Roles.ANYONE,)
     RIGHTS_insert    = (Roles.ADMIN,)
     RIGHTS_update    = (Roles.ADMIN,)
     RIGHTS_delete    = (Roles.ADMIN,)
     RIGHTS_publish   = (Roles.ADMIN,)
     RIGHTS_unpublish = (Roles.ADMIN,)
 
-    def _resolve(self, req):
-        if req.wmi:
-            if len(req.path) == 2:
-                if req.has_param(self._key):
-                    return self._get_row_by_key(req.param(self._key))
-                else:
-                    return None
-            elif len(req.path) == 3:
-                return self._get_referered_row(req, req.path[2])
-            else:
-                raise NotFound()
-        else:
-            return super(CMSModule, self)._resolve(req)
-
-    def _subpath(self, req):
-        if req.wmi:
-            return None
-        else:
-            return super(CMSModule, self)._subpath(req)
-        
     def _base_uri(self, req):
         if req.wmi:
             uri = req.uri_prefix() + '/_wmi/'+ self.name()
@@ -345,11 +326,11 @@ class CMSModule(PytisModule, RssModule, Panelizable):
         return uri
 
     def _form(self, form, req, *args, **kwargs):
+        help = None
         if req.wmi and form == pw.ListView:
             form = pw.BrowseForm
-            help = self._view.help()
-        else:
-            help = None
+            if not kwargs.has_key('binding'): # Disable help for related forms (binding side forms).
+                help = self._view.help()
         result = super(CMSModule, self)._form(form, req, *args, **kwargs)
         if help:
             result = lcg.Container((lcg.p(help), result))
@@ -405,7 +386,7 @@ class EmbeddableCMSModule(CMSModule, Embeddable):
 
 
 class CMSExtension(Module, Embeddable, RequestHandler):
-    """Generic base class for CMS extensions which consist of multiple modules.
+    """Generic base class for CMS extensions which consist of multiple (sub)modules.
 
     Many CMS extensions will use multiple modules to implement their functionality.  This class
     serves as a collection of a set of modules which is easilly embeddable into an existing site
@@ -472,10 +453,11 @@ class CMSExtension(Module, Embeddable, RequestHandler):
 
     def handle(self, req):
         try:
-            modname = self._mapping[req.path[1]]
+            modname = self._mapping[req.unresolved_path[0]]
         except KeyError:
             raise NotFound
-        return self._module(modname).handle(req)
+        del req.unresolved_path[0]
+        return req.forward(self._module(modname))
 
     def submodule_uri(self, req, modname):
         return self._base_uri(req) +'/'+ self._rmapping[modname]
@@ -483,7 +465,6 @@ class CMSExtension(Module, Embeddable, RequestHandler):
 
 class CMSExtensionModule(CMSModule):
     """CMS module to be used within a 'CMSExtension'."""
-    _REFERER_PATH_LEVEL = 3
     _HONOUR_SPEC_TITLE = True
 
     def set_parent(self, parent):
@@ -966,10 +947,9 @@ class Pages(CMSModule):
         layout = ('identifier', 'modname', 'parent', 'ord', 'private', 'owner')
         columns = ('title_or_identifier', 'identifier', 'status', 'ord', 'private', 'owner')
         cb = CodebookSpec(display='title_or_identifier', prefer_display=True)
-        bindings = (Binding(_("Attachments"), 'Attachments', 'page_id'),)
+        bindings = (Binding(_("Attachments"), 'Attachments', 'page_id', id='attachments'),)
 
     _REFERER = 'identifier'
-    _REFERER_PATH_LEVEL = 1
     _EXCEPTION_MATCHERS = (
         ('duplicate key violates unique constraint "_pages_mapping_id_key"',
          _("The page already exists in given language.")),
@@ -1021,32 +1001,27 @@ class Pages(CMSModule):
     WMI_ORDER = 200
 
     def _handle(self, req, action, **kwargs):
-        if not req.wmi:
-            page = req.page = kwargs['record']
-            if len(req.path) > 1 or action in ('insert', 'delete'):
-                self._authorize(req, action='view', record=page)
-                modname = page['modname'].value()
-                if modname is not None and req.param('module') != 'Attachments':
-                    try:
-                        return self._module(modname).handle(req)
-                    except NotFound:
-                        pass
-                return self._module('Attachments').handle(req)
+        req.page = kwargs.get('record')
         return super(Pages, self)._handle(req, action, **kwargs)
-    
+        
     def _resolve(self, req):
         if req.wmi:
             return super(Pages, self)._resolve(req)
         if req.has_param(self._key):
-            return self._get_row_by_key(req.param(self._key))
-        variants = self._data.get_rows(identifier=req.path[0], published=True)
+            row = self._get_row_by_key(req, req.param(self._key))
+            if req.unresolved_path:
+                del req.unresolved_path[0]
+            return row
+        identifier = req.unresolved_path[0]
+        variants = self._data.get_rows(identifier=identifier, published=True)
         if variants:
             for lang in req.prefered_languages():
                 for row in variants:
                     if row['lang'].value() == lang:
+                        del req.unresolved_path[0]
                         return row
             raise NotAcceptable([str(r['lang'].value()) for r in variants])
-        elif self._data.get_rows(identifier=req.path[0]):
+        elif self._data.get_rows(identifier=identifier):
             raise Forbidden()
         else:
             raise NotFound()
@@ -1102,7 +1077,7 @@ class Pages(CMSModule):
                 actions = (Action(_("Back"), 'view'),)
             #(Action(_("View"), 'view'),)
             if req.wmi:
-                exclude = ('attachments',)
+                exclude = ('attachments', 'insert')
             else:
                 # TODO: Unpublish doesn't work outside WMI.
                 exclude = ('unpublish', 'preview', 'delete', 'list')
@@ -1211,6 +1186,17 @@ class Pages(CMSModule):
         return self._document(req, content, record, resources=[a.resource() for a in attachments],
                               err=err, msg=msg)
 
+    def action_subpath(self, req, record):
+        modname = record['modname'].value()
+        if modname is not None:
+            try:
+                return req.forward(self._module(modname))
+            except NotFound:
+                if not req.unresolved_path:
+                    # Don't allow further processing if unresolved_path was already consumed. 
+                    raise
+        return super(Pages, self).action_subpath(req, record)
+
     def action_rss(self, req, record):
         module = record['modname'].value() and self._module(record['modname'].value())
         if module:
@@ -1218,23 +1204,23 @@ class Pages(CMSModule):
         else:
             raise NotFound()
         
-    def action_list(self, req, record=None, msg=None):
-        if req.wmi:
-            return super(Pages, self).action_list(req, msg=msg)
-        elif req.param('module') is None:
-            Roles.check(req, (Roles.AUTHOR,))
-            return super(Pages, self).action_list(req, msg=msg)
-        elif req.param('module') == record['modname'].value():
-            return self.action_view(req, record, msg=msg)
-        elif req.param('module') == 'Attachments':
-            self._authorize(req, action='attachments', record=record)
-            return self.action_attachments(req, record, msg=msg)
+    def action_list(self, req, record=None, **kwargs):
+        if record is not None:
+            # Simulate the list action for the embedded module.
+            return self.action_view(req, record, **kwargs)
         else:
-            raise NotFound()
+            return super(Pages, self).action_list(req, **kwargs)
         
+    def action_insert(self, req, record=None, **kwargs):
+        if record is not None:
+            # Insert into the embedded module.
+            module = self._module(record['modname'].value())
+            return module.action_insert(req, **kwargs)
+        return super(Pages, self).action_insert(req, **kwargs)
+    
     def action_attachments(self, req, record, err=None, msg=None):
         binding = self._view.bindings()[0]
-        content = self._module('Attachments').related(req, self.name(), binding, record)
+        content = self._module('Attachments').related(req, binding, record)
         return self._document(req, content, record, subtitle=_("Attachments"), err=err, msg=msg)
     RIGHTS_attachments = (Roles.AUTHOR, Roles.OWNER)
         
@@ -1385,7 +1371,7 @@ class Attachments(StoredFileModule, CMSModule):
     class Attachment(object):
         def __init__(self, row):
             self.filename = filename = row['filename'].export()
-            self.uri = '/'+ row['identifier'].export() + '/'+ filename
+            self.uri = '/'+ row['identifier'].export() + '/attachments/'+ filename
             self.title = row['title'].export() or filename
             self.descr = row['description'].value()
             self.bytesize = row['bytesize'].export()
@@ -1405,7 +1391,6 @@ class Attachments(StoredFileModule, CMSModule):
     _LAYOUT = {'move': ('mapping_id',)}
     _LIST_BY_LANGUAGE = True
     _SEQUENCE_FIELDS = (('attachment_id', '_attachments_attachment_id_seq'),)
-    _RELATION_FIELDS = ('page_id',)
     _EXCEPTION_MATCHERS = (
         ('duplicate key violates unique constraint "_attachments_mapping_id_key"',
          _("Attachment of the same filename already exists for this page.")),)
@@ -1416,78 +1401,40 @@ class Attachments(StoredFileModule, CMSModule):
     RIGHTS_update = (Roles.AUTHOR, Roles.OWNER)
     RIGHTS_delete = (Roles.AUTHOR, Roles.OWNER)
     
-    def _default_action(self, req, record=None, subpath=None):
+    def _default_action(self, req, record=None):
         if record is None:
             return 'list'
         else:
             return 'download'
         
-    def _base_uri(self, req):
-        uri = super(Attachments, self)._base_uri(req)
-        if uri is None and not req.wmi:
-            # This hack makes the action menu work when displayed within the page 'attachments'
-            # action or within any action invoked from within this action.
-            uri = '/' + req.path[0]
-        return uri
-        
     def _link_provider(self, req, row, cid, **kwargs):
-        if cid is None or cid == 'file':
-            base = req.wmi and self._base_uri(req) or '/'+ req.path[0]
-            action = cid is None and 'view' or 'download'
-            return make_uri(base +'/'+ row['filename'].export(), action=action)
+        if cid is None:
+            kwargs['action'] = 'view'
+        elif cid == 'file':
+            cid = None
+            kwargs['action'] = 'download'
         return super(Attachments, self)._link_provider(req, row, cid, **kwargs)
 
-    def _redirect_to_page(self, req, record, msg):
-        if req.wmi:
-            return req.redirect('/_wmi/Pages/' + record['identifier'].value())
-        else:
-            return self._module('Pages').action_attachments(req, req.page, msg=msg)
-    def _redirect_after_insert(self, req, record):
-        return self._redirect_to_page(req, record, msg=self._insert_msg(record))
-    def _redirect_after_delete(self, req, record):
-        return self._redirect_to_page(req, record, msg=self._delete_msg(record))
-    def _redirect_after_update(self, req, record):
-        return self._redirect_to_page(req, record, msg=self._update_msg(record))
-
-    def _resolve(self, req):
-        if req.wmi:
-            if len(req.path) == 3 and req.has_param(self._key):
-                row = self._data.get_row(**{self._key: req.param(self._key)})
-                if row:
-                    return row
-            return super(Attachments, self)._resolve(req)
-        else:
-            if len(req.path) == 1:
-                if req.has_param(self._key):
-                    cond = {self._key: req.param(self._key)}
-                else:
-                    return None
-            elif len(req.path) == 2:
-                cond = dict(identifier=req.path[0], filename=req.path[1])
-            else:
-                raise NotFound()
-            row = self._data.get_row(**cond)
-            if row:
-                return row
-            else:
-                raise NotFound()
-
-    def _form(self, form, req, action=None, hidden=(), **kwargs):
-        if action == 'insert' and req.param('module') == 'Attachments':
-            hidden += (('module', 'Attachments'),)
-        return super(Attachments, self)._form(form, req, action=action, hidden=hidden, **kwargs)
-            
     def _actions(self, req, record):
         if record is None and not req.wmi:
-            return self._LIST_ACTIONS + (Action(_("Back"), 'view', descr=_("Display the page")),)
+            return self._LIST_ACTIONS + (Action(_("Back"), 'list', context=None,
+                                                descr=_("Display the page")),)
         else:
             return super(Attachments, self)._actions(req, record)
+
+    def _binding_parent_redirect(self, req, uri, **kwargs):
+        if not req.wmi and (req.param('action') != 'list' or req.param('module') == 'Attachments'):
+            # We normally want to redirect to the 'attachments' action in all cases (outside WMI),
+            # but we want the default page action (view) when the _("Back") button defined above is
+            # used.
+            kwargs['action'] = 'attachments'
+        return super(Attachments, self)._binding_parent_redirect(req, uri, **kwargs)
 
     def attachments(self, page):
         return [self.Attachment(row) for row in
                 self._data.get_rows(mapping_id=page['mapping_id'].value(),
                                     lang=page['lang'].value())]
-                
+    
     def action_download(self, req, record, **kwargs):
         return (str(record['mime_type'].value()), record['file'].value().buffer())
     RIGHTS_download = (Roles.ANYONE)
@@ -1543,14 +1490,14 @@ class News(EmbeddableCMSModule):
     WMI_SECTION = WikingManagementInterface.SECTION_CONTENT
     WMI_ORDER = 300
         
-    def _link_provider(self, req, row, cid, target=None):
-        if cid == 'title' and target is Panel or cid is None and target is RssModule:
+    def _record_uri(self, req, row, *args, **kwargs):
+        if not req.wmi:
             uri = self._base_uri(req)
             if uri:
-                return uri + '#item-'+ row[self._referer].export()
+                return make_uri(uri, 'item-'+ row[self._referer].export(), *args, **kwargs)
             else:
                 return None
-        return super(News, self)._link_provider(req, row, cid, target=target)
+        return super(News, self)._record_uri(req, row, *args, **kwargs)
 
     def _redirect_after_insert(self, req, record):
         if req.wmi:
@@ -1691,7 +1638,8 @@ class Images(StoredFileModule, EmbeddableCMSModule):
         
     def _link_provider(self, req, row, cid, **kwargs):
         if cid == 'file':
-            return make_uri(self._base_uri(req) +'/'+ row['filename'].export(), action='orig')
+            cid = None
+            kwargs['action'] = 'orig'
         return super(Images, self)._link_provider(req, row, cid, **kwargs)
     
     def _image_provider(self, req, row, cid, **kwargs):

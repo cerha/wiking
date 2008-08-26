@@ -1,7 +1,29 @@
+2008-08-26  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/application.py: 
+	* lib/wiking/db.py: 
+	* lib/wiking/handler.py: 
+	* lib/wiking/modules.py: 
+	* lib/wiking/request.py: 
+	* lib/wiking/util.py: 
+	* lib/wiking/cms/appl.py: 
+	* lib/wiking/cms/cms.py: 
+	* translations/wiking-cms.cs.po: 
+	Handle all aspects of `bindings' dependency automatically.
+	.
+	This is a major rewrite of the request handling process.  Wiking
+	should now automatically generate and handle uri's for modules
+	related through pytis `bindings' specification and take care of
+	other aspects, such as automatically prefill the value of the
+	`binding_column' for new records, check it for existing records,
+	etc.
+	.
+	Changes in most applications are required.
+	
 2008-08-19  Tomas Cerha  <cerha@brailcom.org>
 
-	* resources/scripts/wiking.js: Start on the first menu item if
-	there is no active menu item.
+	* resources/scripts/wiking.js: 
+	Start on the first menu item if there is no active menu item.
 
 	* doc/src/cms/wmi.cs.txt: 
 	* doc/src/cms/wmi.en.txt: 
@@ -1055,9 +1077,9 @@
 
 	* sql/wiking.sql (pages_insert, pages_update): Rules fixed.
 
-	* translations/wiking.de.po (Module): Updated.
+	* translations/wiking.de.po: Updated.
 
-	* translations/wiking.sk.po (Module): Updated.
+	* translations/wiking.sk.po: Updated.
 
 	* lib/wiking/cms/appl.py (Application): Refer to parent class as
 	`wiking.Application'.
