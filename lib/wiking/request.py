@@ -256,25 +256,37 @@ class WikingRequest(Request):
         follows:
 
           module -- the handler instance to which the request was forwarded
-          uri -- uri corresponding to the resolved portion of the path (at the time of the forward)
+          resolved_path -- sequence of request path items (strings) corresponding to the resolved
+            portion of the path at the time of the forward
+          unresolved_path -- sequence of request path items (strings) corresponding to the
+            unresolved portion of the path at the time of the forward
           kwargs -- any keyword arguments passed to the forward method call.  These arguments may
             be later inspected through the 'args()' method and make it possible to pass any
             application defined data for later inspection.
 
         """
         
-        def __init__(self, module, uri, **kwargs):
+        def __init__(self, module, resolved_path, unresolved_path, **kwargs):
             self._module = module
-            self._uri = uri
+            self._resolved_path = tuple(resolved_path)
+            self._unresolved_path = tuple(unresolved_path)
             self._data = kwargs
             
         def module(self):
-            """Return the 'module' passed to the constructor."""
+            """Return the 'module' to which this forward was passed."""
             return self._module
         
+        def resolved_path(self):
+            """Return resolved portion of the path as a tuple."""
+            return self._resolved_path
+        
+        def unresolved_path(self):
+            """Return unresolved portion of the path as a tuple."""
+            return self._unresolved_path
+        
         def uri(self):
-            """Return the 'uri' passed to the constructor."""
-            return self._uri
+            """Return the string URI corresponding to 'resolved_path'."""
+            return '/' + '/'.join(self._resolved_path)
         
         def arg(self, name):
             """Return the value of keyword argument 'name' passed to the constructor or None."""
@@ -353,12 +365,12 @@ class WikingRequest(Request):
         The list of used handlers can be retrieved using the 'handlers()' method.
 
         """
-        if self.unresolved_path:
-            path = self.path[:-len(self.unresolved_path)]
+        unresolved_path = self.unresolved_path
+        if unresolved_path:
+            resolved_path = self.path[:-len(unresolved_path)]
         else:
-            path = self.path
-        uri = '/' + '/'.join(path)
-        self._forwards.append(self.ForwardInfo(handler, uri, **kwargs))
+            resolved_path = self.path
+        self._forwards.append(self.ForwardInfo(handler, resolved_path, unresolved_path, **kwargs))
         try:
             return handler.handle(self)
         finally:
