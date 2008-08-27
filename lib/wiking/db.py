@@ -528,6 +528,12 @@ class PytisModule(Module, ActionHandler):
             if redirect:
                 module = redirect(record)
                 if module is not None and module != self.name():
+                    for fw in reverse(req.forwards()):
+                        if fw.module().name() == self.name():
+                            req.unresolved_path = forwards[-1].unresolved_path()
+                            break
+                    else:
+                        req.unresolved_path = req.path
                     return req.forward(self._module(module))
         return super(PytisModule, self)._handle(req, action, **kwargs)
 

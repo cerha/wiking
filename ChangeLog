@@ -1,3 +1,13 @@
+2008-08-27  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/request.py: 
+	* lib/wiking/db.py: 
+	Pytis redirection support fixed for the new URI resolution mechanism.
+	
+	* lib/wiking/db.py: 
+	Allow customizations of record deletion messages.
+
+
 2008-08-26  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/application.py: 
