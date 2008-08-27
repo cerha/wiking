@@ -35,7 +35,7 @@ class PytisModule(Module, ActionHandler):
     _HONOUR_SPEC_TITLE = False
     _LIST_BY_LANGUAGE = False
     _DEFAULT_ACTIONS_FIRST = (Action(_("Edit"), 'update', descr=_("Modify the record")),)
-    _DEFAULT_ACTIONS_LAST =  (Action(_("Remove"), 'delete',
+    _DEFAULT_ACTIONS_LAST =  (Action(_("Remove"), 'delete', allow_referer=False,
                                      descr=_("Remove the record permanently")),
                               Action(_("Back"), 'list', context=None,
                                      descr=_("Back to the list of all records")))
@@ -53,6 +53,7 @@ class PytisModule(Module, ActionHandler):
     _INSERT_SUBTITLE = _("New Record")
     _UPDATE_SUBTITLE = _("Edit Form")
     _DELETE_SUBTITLE = _("Remove")
+    _DELETE_PROMPT = _("Please, confirm removing the record permanently.")
     _INSERT_MSG = _("New record was successfully inserted.")
     _UPDATE_MSG = _("The record was successfully updated.")
     _DELETE_MSG = _("The record was deleted.")
@@ -325,9 +326,6 @@ class PytisModule(Module, ActionHandler):
                 uri = uri[:-(len(referer)+1)]
         return ActionMenu(uri, actions, self._referer, self.name(), record, **kwargs)
 
-    def _image_provider(self, req, row, cid, binding=None):
-        return None
-
     def _link_provider(self, req, row, cid, binding=None, **kwargs):
         if cid is None:
             uri = req.uri().rstrip('/')
@@ -350,6 +348,9 @@ class PytisModule(Module, ActionHandler):
             e = value.type().enumerator()
             if e:
                 return module.link(req, **{e.value_column(): value.value()})
+        return None
+
+    def _image_provider(self, req, row, cid, binding=None):
         return None
 
     def _record_uri(self, req, record, *args, **kwargs):
@@ -735,10 +736,11 @@ class PytisModule(Module, ActionHandler):
             else:
                 return self._redirect_after_delete(req, record)
         form = self._form(pw.ShowForm, req, row=record.row())
-        actions = self._action_menu(req, record, (Action(_("Remove"), 'delete', submit=1),))
-        subtitle = self._delete_subtitle(req, record)
-        return self._document(req, (form, actions), record, err=err, subtitle=subtitle,
-                              msg=_("Please, confirm removing the record permanently."))
+        actions = self._action_menu(req, record, (Action(_("Remove"), 'delete',
+                                                         allow_referer=False, submit=1),))
+        return self._document(req, (form, actions), record, err=err,
+                              subtitle=self._delete_subtitle(req, record),
+                              msg=self._delete_prompt(req, record))
         
     def _insert_subtitle(self, req):
         return self._INSERT_SUBTITLE
@@ -751,6 +753,9 @@ class PytisModule(Module, ActionHandler):
         
     def _delete_subtitle(self, req, record):
         return self._DELETE_SUBTITLE
+    
+    def _delete_prompt(self, req, record):
+        return self._DELETE_PROMPT
     
     # ===== Request redirection after successful data operations =====
 
@@ -985,7 +990,6 @@ class Publishable(object):
     _ACTIONS = (Action(_("Publish"), 'publish',
                        handler=lambda r: Publishable._change_published(r),
                        enabled=lambda r: not r['published'].value(),
-                                         #and r['_content'].value() is not None),
                        descr=_("Make the item visible to website visitors")),
                 Action(_("Unpublish"), 'unpublish',
                        handler=lambda r: Publishable._change_published(r),
