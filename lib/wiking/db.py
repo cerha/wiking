@@ -530,7 +530,7 @@ class PytisModule(Module, ActionHandler):
                 if module is not None and module != self.name():
                     for fw in reversed(req.forwards()):
                         if fw.module().name() == self.name():
-                            req.unresolved_path = list(forwards[-1].unresolved_path())
+                            req.unresolved_path = list(fw.unresolved_path())
                             break
                     else:
                         req.unresolved_path = list(req.path)
