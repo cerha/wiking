@@ -305,6 +305,11 @@ class WikingRequest(Request):
         self._forwards = []
         self.unresolved_path = list(self.path)
 
+    def _init_options(self):
+        options = super(WikingRequest, self)._init_options()
+        self._uri_prefix = options.pop('PrefixPath', None)
+        return options
+    
     def _init_params(self):
         params = super(WikingRequest, self)._init_params()
         if params.has_key('setlang'):
@@ -344,13 +349,9 @@ class WikingRequest(Request):
             if len(uri) > 3 and uri[-3] == '.' and uri[-2:].isalpha():
                 self._params['lang'] = uri[-2:]
                 uri = uri[:-3]
-        if self._options.has_key('PrefixPath'):
-            self._uri_prefix = prefix = self._options['PrefixPath']
-            x = uri
-            if uri.startswith(prefix):
-                uri = uri[len(prefix):]
-        else:
-            self._uri_prefix = None
+        prefix = self._uri_prefix
+        if prefix and uri.startswith(prefix):
+            uri = uri[len(prefix):]
         return super(WikingRequest, self)._init_path(uri)
 
     def _cookie_path(self):
