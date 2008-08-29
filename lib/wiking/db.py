@@ -129,14 +129,22 @@ class PytisModule(Module, ActionHandler):
         self._referer_type = self._data.find_column(self._referer).type()
         self._title_column = self._TITLE_COLUMN or self._view.columns()[0]
         self._links = {}
+        def cb_link(field):
+            e = field.type(self._data).enumerator()
+            return e and pp.Link(field.codebook(), e.value_column())
         for f in self._view.fields():
-            if f.codebook():
-                self._links[f.id()] = (f.id(), f.codebook())
+            if f.links():
+                self._links[f.id()] = (f.id(), f.links()[0])
+            elif f.codebook():
+                link = cb_link(f)
+                if link:
+                    self._links[f.id()] = (f.id(), link)
             elif isinstance(f.computer(), pp.CbComputer):
-                cid = f.computer().field()
-                cb = self._view.field(cid).codebook()
-                if cb and cb not in [x[1] for x in self._links.values()]:
-                    self._links[f.id()] = (cid, cb)
+                cb_field = f.computer().field()
+                link = cb_link(self._view.field(cb_field))
+                if link: # and link.name() not in [x[1].name() for x in self._links.values()]:
+                    self._links[f.id()] = (cb_field, link)
+            
 
     def _spec(self, resolver):
         return self.__class__.Spec(self.__class__, resolver)
@@ -339,15 +347,16 @@ class PytisModule(Module, ActionHandler):
                 uri += '/'+ row[self._referer].export()
             return make_uri(uri, **kwargs)
         if self._links.has_key(cid):
-            link_cid, modname = self._links[cid]
+            value_column, link = self._links[cid]
             try:
-                module = self._module(modname)
+                module = self._module(link.name())
             except AttributeError:
                 return None
-            value = row[link_cid]
-            e = value.type().enumerator()
-            if e:
-                return module.link(req, **{e.value_column(): value.value()})
+            uri = module.link(req, **{link.column(): row[value_column].value()})
+            if link.label():
+                return pw.Link(uri, title=link.label())
+            else:
+                return uri
         return None
 
     def _image_provider(self, req, row, cid, binding=None):
