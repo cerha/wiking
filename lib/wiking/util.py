@@ -550,7 +550,7 @@ class ActionCtrl(lcg.Content):
             key = self._row.data().key()[0].id()
             args = dict(args, search=self._row[key].export(), module=self._name)
         if self._row and action.context() == pp.ActionContext.CURRENT_ROW:
-            if self._referer is not None and action.allow_referer:
+            if self._referer is not None and action.allow_referer():
                 if not uri.endswith('/'):
                     uri += '/'
                 uri += self._row[self._referer].export()
