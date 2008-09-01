@@ -751,9 +751,10 @@ class PytisModule(Module, ActionHandler):
             else:
                 return self._redirect_after_delete(req, record)
         form = self._form(pw.ShowForm, req, row=record.row())
-        actions = self._action_menu(req, record, (Action(_("Remove"), 'delete',
-                                                         allow_referer=False, submit=1),))
-        return self._document(req, (form, actions), record, err=err,
+        actions = (Action(_("Remove"), 'delete', allow_referer=False, submit=1),
+                   Action(_("Back"), 'view'))
+        action_menu = self._action_menu(req, record, actions)
+        return self._document(req, (form, action_menu), record, err=err,
                               subtitle=self._delete_subtitle(req, record),
                               msg=self._delete_prompt(req, record))
         
