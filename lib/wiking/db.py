@@ -687,7 +687,9 @@ class PytisModule(Module, ActionHandler):
         # The primary motivation is to protect registration form data.  The
         # same would apply for action_edit.
         form = self._form(pw.EditForm, req, row=None, new=True, action='insert',
-                          layout=layout, prefill=self._prefill(req, new=True), errors=errors)
+                          prefill=self._prefill(req, new=True), layout=layout, 
+                          submit=self._SUBMIT_BUTTONS.get('insert'),
+                          errors=errors)
         return self._document(req, form, subtitle=self._insert_subtitle(req))
 
     def action_insert_perform(self, req):
