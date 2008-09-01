@@ -1028,7 +1028,7 @@ class Pages(CMSModule):
     def _validate(self, req, record, layout=None):
         result = super(Pages, self)._validate(req, record, layout=layout)
         if result is None and req.has_param('commit'):
-            if not (Roles.check(req, (Roles.ADMIN,)) or self.check_owner(req.user(), record)):
+            if not (Roles.check(req, self.RIGHTS_commit) or self.check_owner(req.user(), record)):
                 return [(None, _("You don't have sufficient privilegs for this action.") +' '+ \
                          _("Save the page without publishing and ask the administrator to publish "
                            "your changes."))]
