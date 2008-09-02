@@ -559,8 +559,7 @@ class PytisModule(Module, ActionHandler):
                 value = pd.DBCounterDefault(seq, self._dbconnection).next()
                 record[key] = pd.Value(record[key].type(), value)
         new_row, success = self._data.insert(record.rowdata())
-        #log(OPR, ":::", (new_row, success, [(k, record.rowdata()[k].value())
-        #                                    for k in record.rowdata().keys()]))
+        #debug(":::", success, new_row and [(k, new_row[k].value()) for k in new_row.keys()])
         if success and new_row is not None:
             # We can't use set_row(), since it would destroy file fields (they are virtual).
             for key in new_row.keys():
