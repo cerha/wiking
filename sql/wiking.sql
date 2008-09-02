@@ -60,7 +60,8 @@ CREATE TABLE _mapping (
 	modname text,
 	private boolean NOT NULL DEFAULT 'FALSE',
 	owner int REFERENCES users,
-	ord int,
+	hidden boolean NOT NULL,
+	ord int NOT NULL,
 	tree_order text
 );
 CREATE UNIQUE INDEX _mapping_unique_tree_order ON _mapping (ord, coalesce(parent, 0));
@@ -81,57 +82,83 @@ CREATE OR REPLACE VIEW mapping AS SELECT * FROM _mapping;
 CREATE TABLE _pages (
        mapping_id integer NOT NULL REFERENCES _mapping ON DELETE CASCADE,
        lang char(2) NOT NULL REFERENCES languages(lang),
+       published boolean NOT NULL DEFAULT 'TRUE',
        title text NOT NULL,
        description text,
-       published boolean NOT NULL DEFAULT 'TRUE',
-       _content text,
        content text,
+       _title text,
+       _description text,
+       _content text,
        PRIMARY KEY (mapping_id, lang)
 );
 
 CREATE OR REPLACE VIEW pages AS 
-SELECT m.mapping_id ||'.'|| l.lang as page_id, l.lang, m.*,
-       p.title, p.description, coalesce(p.published, 'FALSE') as published,
+SELECT m.mapping_id ||'.'|| l.lang as page_id, l.lang, 
+       m.mapping_id, m.identifier, m.parent, m.modname, 
+       m.private, m.owner, m.hidden, m.ord, m.tree_order,
+       coalesce(p.published, 'FALSE') as published,
        coalesce(p.title, m.identifier) as title_or_identifier, 
-       p._content, p.content
+       p.title, p.description, p.content, p._title, p._description, p._content
 FROM _mapping m CROSS JOIN languages l
      LEFT OUTER JOIN _pages p USING (mapping_id, lang);
 
 CREATE OR REPLACE RULE pages_insert AS
   ON INSERT TO pages DO INSTEAD (
-     INSERT INTO _mapping (identifier, parent, modname, private, owner, ord)
-     VALUES (new.identifier, new.parent, new.modname, new.private, new.owner, new.ord);
+     INSERT INTO _mapping (identifier, parent, modname, private, owner, hidden, ord)
+     VALUES (new.identifier, new.parent, new.modname, new.private, new.owner, new.hidden, 
+             coalesce(new.ord, (SELECT max(ord)+100 FROM _mapping 
+                                WHERE coalesce(parent, 0)=coalesce(new.parent, 0)), 100));
      UPDATE _mapping SET tree_order = _mapping_tree_order(mapping_id);
-     INSERT INTO _pages (mapping_id, lang, title, description, published, _content, content)
+     INSERT INTO _pages (mapping_id, lang, published, 
+                         title, description, content, _title, _description, _content)
      SELECT (SELECT mapping_id FROM _mapping WHERE identifier=new.identifier),
-             new.lang, new.title, new.description, new.published, new._content, new.content
-     WHERE new.title IS NOT NULL;
+            new.lang, new.published, 
+            new.title, new.description, new.content, new._title, new._description, new._content
+     RETURNING mapping_id ||'.'|| lang, lang, mapping_id,
+       (SELECT identifier FROM _mapping WHERE mapping_id=mapping_id),
+       (SELECT parent FROM _mapping WHERE mapping_id=mapping_id),
+       (SELECT modname FROM _mapping WHERE mapping_id=mapping_id),
+       (SELECT private FROM _mapping WHERE mapping_id=mapping_id),
+       (SELECT owner FROM _mapping WHERE mapping_id=mapping_id),
+       (SELECT hidden FROM _mapping WHERE mapping_id=mapping_id),
+       (SELECT ord FROM _mapping WHERE mapping_id=mapping_id),
+       (SELECT tree_order FROM _mapping WHERE mapping_id=mapping_id),
+       published, title, 
+       title, description, content,
+       _title, _description, _content 
 );
 
 CREATE OR REPLACE RULE pages_update AS
   ON UPDATE TO pages DO INSTEAD (
     UPDATE _mapping SET
         identifier = new.identifier,
-     	parent = new.parent,
+        parent = new.parent,
         modname = new.modname,
         private = new.private,
         owner = new.owner,
+        hidden = new.hidden,
         ord = new.ord
     WHERE _mapping.mapping_id = old.mapping_id;
-    UPDATE _mapping SET	tree_order = _mapping_tree_order(mapping_id);
+    UPDATE _mapping SET tree_order = _mapping_tree_order(mapping_id);
     UPDATE _pages SET
-    	title = new.title,
-	description = new.description,
-	published = new.published,
-        _content = new._content,
-	content = new.content
+        published = new.published,
+        title = new.title,
+        description = new.description,
+        content = new.content,
+        _title = new._title,
+        _description = new._description,
+        _content = new._content
     WHERE mapping_id = old.mapping_id AND lang = new.lang;
-    INSERT INTO _pages (mapping_id, lang, title, description, published, _content, content) 
-	   SELECT old.mapping_id, new.lang, new.title, new.description, new.published,
-		  new._content, new.content
+    INSERT INTO _pages (mapping_id, lang, published, 
+                        title, description, content, _title, _description, _content) 
+           SELECT old.mapping_id, new.lang, new.published, 
+                  new.title, new.description, new.content, 
+                  new._title, new._description, new._content
            WHERE new.lang NOT IN (SELECT lang FROM _pages WHERE mapping_id=old.mapping_id)
-	   	 AND (new.title IS NOT NULL OR new.description IS NOT NULL 
-                      OR new._content IS NOT NULL OR new.content IS NOT NULL);
+                 AND (new.title IS NOT NULL OR new.description IS NOT NULL 
+                      OR new.content IS NOT NULL 
+                      OR new._title IS NOT NULL OR new._description IS NOT NULL 
+                      OR new._content IS NOT NULL);
 );
 
 CREATE OR REPLACE RULE pages_delete AS

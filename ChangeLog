@@ -1,3 +1,22 @@
+2008-09-02  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/cms/cms.py: 
+	* sql/wiking.sql: 
+	* translations/wiking-cms.cs.po: 
+	Added a checkbox to control the presence of a page in the menu
+	independently, rather than through the empty order field.
+
+2008-09-01  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/db.py: Include a `Back' button in record deletion
+	confirmation page.
+	Respect `_SUBMIT_BUTTONS' also for the `insert' action.
+
+2008-08-29  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/request.py:
+	Init `self._uri_prefix' sooner to avoid	crash on "Hide panels".
+
 2008-08-27  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/request.py: 

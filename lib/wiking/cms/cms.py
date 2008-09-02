@@ -918,11 +918,12 @@ class Pages(CMSModule):
                           "other languages)")),
             Field('private', _("Private"), default=False,
                   descr=_("Make the item available only to logged-in users.")),
-            Field('status', _("Status"), virtual=True,
-                  computer=Computer(self._status, depends=('content', '_content'))),
-            Field('ord', _("Menu order"), width=6,
+            Field('status', _("Status"), virtual=True, computer=self._status),
+            Field('hidden', _("Hidden"),
+                  descr=_("Check if you don't want this page to appear in the menu.")),
+            Field('ord', _("Menu order"), width=6, editable=ALWAYS,
                   descr=_("Enter a number denoting the order of the page in the menu.  Leave "
-                          "blank if you don't want this page to appear in the menu.")),
+                          "blank if you want to put the page automatically to the end.")),
             Field('tree_order', _("Tree level"), type=pd.TreeOrder()),
             #Field('group', virtual=True,
             #      computer=Computer(lambda r: r['tree_order'].value().split('.')[1],
@@ -931,10 +932,10 @@ class Pages(CMSModule):
                   descr=_("Set the ownership if you want a particular user to have full control "
                           "of the page even if his normal privileges are lower.")),
             )
-        def _status(self, row):
-            if not row['published'].value():
+        def _status(self, published, _content, content):
+            if not published:
                 return _("Not published")
-            elif row['_content'].value() == row['content'].value():
+            elif _content == content:
                 return _("Ok")
             else:
                 return _("Changed")
@@ -943,7 +944,13 @@ class Pages(CMSModule):
         sorting = (('tree_order', ASC), ('identifier', ASC),)
         #grouping = 'group'
         #group_heading = 'title'
-        layout = ('identifier', 'modname', 'parent', 'ord', 'private', 'owner')
+        layout = (FieldSet(_("Page Text (for the current language)"),
+                           ('title', 'description', 'status', '_content')),
+                  FieldSet(_("Global Options (for all languages)"),
+                           (('identifier', 'modname'),
+                            ('parent', 'hidden', 'ord'),
+                            ('private', 'owner')),
+                           horizontal=True))
         columns = ('title_or_identifier', 'identifier', 'status', 'ord', 'private', 'owner')
         cb = CodebookSpec(display='title_or_identifier', prefer_display=True)
         bindings = (Binding(_("Attachments"), 'Attachments', 'page_id', id='attachments'),)
@@ -953,25 +960,23 @@ class Pages(CMSModule):
         ('duplicate key violates unique constraint "_pages_mapping_id_key"',
          _("The page already exists in given language.")),
         ('duplicate key violates unique constraint "_mapping_unique_tree_(?P<id>ord)er"',
-         _("Duplicate menu order on the this tree level.")),) + \
+         _("Duplicate menu order at this level of hierarchy.")),) + \
          CMSModule._EXCEPTION_MATCHERS
     _LIST_BY_LANGUAGE = True
     _OWNER_COLUMN = 'owner'
     _SUPPLY_OWNER = False
-    
-    _LAYOUT = {'edit': ('title', 'description', '_content'),
-               'view': (FieldSet(_("Page Text (for the current language)"),
-                                 ('title', 'description', 'status', '_content')),
-                        FieldSet(_("Global Options"), (('identifier', 'modname'),
-                                                       ('parent', 'ord'),
-                                                       ('private', 'owner')),
-                                 horizontal=True)),
+    _LAYOUT = {'insert': (FieldSet(_("Page Text (for the current language)"),
+                                   ('title', 'description', '_content')),
+                          FieldSet(_("Global Options (for all languages)"),
+                                   ('identifier', 'modname', 'parent', 'hidden', 'ord',
+                                    'private', 'owner'),
+                                   horizontal=True)),
+               'edit': ('title', 'description', '_content'),
+               'update': ('identifier', 'modname', 'parent', 'hidden', 'ord', 'private', 'owner'),
                }
-    
-    _SUBMIT_BUTTONS = {'edit': ((_("Save"), None), (_("Save and publish"), 'commit'))}
-    _INSERT_MSG = _("New page was successfully created. The page is currently not published. "
-                    "Edit the page text to create the actual content in the current language "
-                    "and publish the page when you are done.")
+    _SUBMIT_BUTTONS_ = ((_("Save"), None), (_("Save and publish"), 'commit'))
+    _SUBMIT_BUTTONS = {'edit':   _SUBMIT_BUTTONS_,
+                       'insert': _SUBMIT_BUTTONS_}
     _DEFAULT_ACTIONS_FIRST = (
         Action(_("Edit Text"), 'edit',
                descr=_("Edit title, description and content for the current language")),
@@ -1042,7 +1047,14 @@ class Pages(CMSModule):
         else:
             return _("Page content was modified, however the changes remain unpublished. Don't "
                      "forget to publish the changes when you are done.")
-    
+
+    def _insert_msg(self, record):
+        if record['published'].value():
+            return _("New page was successfully created and published.")
+        else:
+            return _("New page was successfully created, but was not published yet. "
+                     "Publish it when you are done.")
+        
     def _mapped_uri(self):
         return '/'
         
@@ -1116,7 +1128,7 @@ class Pages(CMSModule):
             return MenuItem(identifier,
                             lcg.SelfTranslatableText(identifier, translations=titles),
                             descr=lcg.SelfTranslatableText('', translations=descriptions),
-                            hidden=row['ord'].value() is None, variants=titles.keys(),
+                            hidden=row['hidden'].value(), variants=titles.keys(),
                             submenu=submenu + [mkitem(r) for r in children.get(mapping_id, ())])
         for row in self._data.get_rows(sorting=self._sorting, published=True):
             mapping_id = row['mapping_id'].value()
@@ -1177,7 +1189,7 @@ class Pages(CMSModule):
                                        anchor='attachment-automatic-list')) # Prevent dupl. anchor.
         if not content and record['parent'].value() is None:
             rows = self._data.get_rows(parent=record['mapping_id'].value(),
-                                       condition=pd.NE('ord', pd.Value(pd.Integer(), None)))
+                                       condition=pd.EQ('hidden', pd.Value(pd.Bool(), False)))
             if rows:
                 return req.redirect('/'+rows[0]['identifier'].value())
         # Action menu
