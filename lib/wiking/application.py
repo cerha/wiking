@@ -60,8 +60,7 @@ class Application(Module):
         """Handle the request.
 
         The Wiking Handler passes the request to the current application for further processing.
-        The 'configure()' method is called before the request is passed.  Request errors are
-        handled at the calling level.
+        All errors are handled by the handler.
 
         The return value may be one of three types:
            * 'Document' instance.
@@ -160,20 +159,6 @@ class Application(Module):
         """
         return True
     
-    def configure(self, req):
-        """Update the configuration object if needed.
-
-        Configuration is normally read from configuration files as described in [config].  This
-        module, however, may update the configuration object dynamically at runtime for each
-        request.
-
-        
-        This method is called at an early stage of request processing, so all configuration changes
-        made here will influence the rest of the process.
-
-        """
-        pass
-
     def panels(self, req, lang):
         """Return a list of 'Panel' instances representing panels displayed on the page.
 

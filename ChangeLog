@@ -1,3 +1,16 @@
+2008-09-04  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/application.py: 
+	* lib/wiking/handler.py: 
+	* lib/wiking/cms/appl.py: 
+	The `configure' method removed from `Application' API and
+	reimplemented within the CMS application internally.
+	
+	* lib/wiking/db.py:
+	Automatically prefix document title by the current binding
+	relation.  Fix URIs for related actions.
+	
+
 2008-09-02  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/cms/cms.py: 

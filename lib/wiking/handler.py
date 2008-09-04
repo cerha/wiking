@@ -49,7 +49,6 @@ class Handler(object):
         application = self._application
         try:
             try:
-                application.configure(req)
                 result = application.handle(req)
                 if isinstance(result, Document):
                     # Always perform authentication (if it was not performed before) to handle

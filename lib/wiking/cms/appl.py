@@ -51,6 +51,10 @@ class Application(CookieAuthentication, wiking.Application):
 
     def handle(self, req):
         req.wmi = False # Will be set to True by `WikingManagementInterface' if needed.
+        try:
+            self._module('Config').configure(req)
+        except MaintananceModeError:
+            pass
         if req.unresolved_path:
             try:
                 modname = self._MAPPING[req.unresolved_path[0]]
@@ -92,12 +96,6 @@ class Application(CookieAuthentication, wiking.Application):
                 return panels + self._module('Panels').panels(req, lang)
             except MaintananceModeError:
                 return ()
-        
-    def configure(self, req):
-        try:
-            self._module('Config').configure(req)
-        except MaintananceModeError:
-            pass
         
     def languages(self):
         try:
