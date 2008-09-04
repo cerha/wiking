@@ -1231,7 +1231,8 @@ class Pages(CMSModule):
     
     def action_attachments(self, req, record, err=None, msg=None):
         binding = self._view.bindings()[0]
-        content = self._module('Attachments').related(req, binding, record)
+        uri = self._link_provider(req, record, None)
+        content = self._module('Attachments').related(req, binding, record, uri)
         return self._document(req, content, record, subtitle=_("Attachments"), err=err, msg=msg)
     RIGHTS_attachments = (Roles.AUTHOR, Roles.OWNER)
         

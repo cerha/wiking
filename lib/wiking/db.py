@@ -273,14 +273,21 @@ class PytisModule(Module, ActionHandler):
         return error
 
     def _document_title(self, req, record):
+        fw = self._binding_forward(req)
+        if fw and fw.arg('title'):
+            title = fw.arg('title') +' :: '
+        else:
+            title = ''
         if record:
             if self._TITLE_TEMPLATE:
-                title = self._TITLE_TEMPLATE.interpolate(lambda key: record[key].export())
+                title += self._TITLE_TEMPLATE.interpolate(lambda key: record[key].export())
             else:
-                title = record[self._title_column].export()
+                title += record[self._title_column].export()
         else:
             if self._HONOUR_SPEC_TITLE:
-                title = self._view.title()
+                title += self._view.title()
+            elif fw:
+                title += fw.arg('binding').title()
             else:
                 title = None # Current menu title will be substituted.
         return title
@@ -318,20 +325,18 @@ class PytisModule(Module, ActionHandler):
         else:
             return self._LIST_ACTIONS
 
-    def _action_menu(self, req, record=None, actions=None, binding=None, **kwargs):
+    def _action_menu(self, req, record=None, actions=None, uri=None, **kwargs):
         actions = [action for action in actions or self._actions(req, record)
                    if isinstance(action, Action) and action.name() is not None and \
                    self._application.authorize(req, self, action=action.name(), record=record)]
         if not actions:
             return None
-        #uri = self._base_uri(req)
-        uri = req.uri()
-        if binding:
-            uri += '/'+ binding.id()
-        elif record:
-            referer = record[self._referer].export()
-            if uri.endswith(referer):
-                uri = uri[:-(len(referer)+1)]
+        if uri is None:
+            uri = req.uri().rstrip('/')
+            if record:
+                referer = record[self._referer].export()
+                if uri.endswith(referer):
+                    uri = uri[:-(len(referer)+1)]
         return ActionMenu(uri, actions, self._referer, self.name(), record, **kwargs)
 
     def _link_provider(self, req, row, cid, binding=None, **kwargs):
@@ -594,7 +599,7 @@ class PytisModule(Module, ActionHandler):
         else:
             return None
         
-    def related(self, req, binding, record):
+    def related(self, req, binding, record, uri):
         """Return the listing of records related to other module's record by given binding."""
         if isinstance(binding, Binding) and binding.form() is not None:
             form = binding.form()
@@ -604,7 +609,7 @@ class PytisModule(Module, ActionHandler):
         columns = [c for c in self._view.columns() if c != binding.binding_column()]
         content = self._form(form, req, binding=binding, columns=columns,
                              condition=self._condition(req, condition=condition))
-        menu = self._action_menu(req, binding=binding)
+        menu = self._action_menu(req, uri=uri +'/'+ binding.id())
         if menu:
             content = lcg.Container((content, menu))
         return content
@@ -643,7 +648,8 @@ class PytisModule(Module, ActionHandler):
         for binding in self._view.bindings():
             if self._binding_enabled(binding, record):
                 module = self._module(binding.name())
-                related = module.related(req, binding, record)
+                uri = self._link_provider(req, record, None)
+                related = module.related(req, binding, record, uri)
                 content.append(lcg.Section(title=binding.title(), content=related))
         return self._document(req, content, record, err=err, msg=msg)
 
@@ -654,7 +660,8 @@ class PytisModule(Module, ActionHandler):
                 if self._binding_enabled(binding, record):
                     # TODO: respect the binding condition in the forwarded module.
                     module = self._module(binding.name())
-                    return req.forward(module, binding=binding, record=record)
+                    return req.forward(module, binding=binding, record=record,
+                                       title=self._document_title(req, record))
                 else:
                     raise Forbidden()
         raise NotFound()
