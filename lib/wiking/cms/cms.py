@@ -35,7 +35,7 @@ import mx.DateTime
 from mx.DateTime import today, TimeDelta
 
 import pytis.data
-from pytis.presentation import Computer, CbComputer, Fields, HGroup, CodebookSpec
+from pytis.presentation import computer, Computer, CbComputer, Fields, HGroup, CodebookSpec
 from lcg import log as debug
 
 CHOICE = pp.SelectionType.CHOICE
@@ -671,8 +671,9 @@ class Panels(CMSModule, Publishable):
                   descr=_(u"Panel title – you may leave the field blank to "
                           "use the menu title of the selected module.")),
             Field('mtitle'),
-            Field('title', _("Title"), virtual=True, width=30,
-                  computer=lambda ptitle, mtitle, modname: ptitle or mtitle or _modtitle(modname)),
+            Field('title', _("Title"), virtual=True, width=30, 
+                  computer=computer(lambda r, ptitle, mtitle, modname:
+                                    ptitle or mtitle or _modtitle(modname))),
             Field('ord', _("Order"), width=5,
                   descr=_("Number denoting the order of the panel on the page.")),
             Field('mapping_id', _("List items"), width=5, not_null=False, codebook='Mapping',
@@ -684,8 +685,7 @@ class Panels(CMSModule, Publishable):
             Field('modname'),
             Field('private'),
             Field('modtitle', _("Module"), virtual=True,
-                  computer=Computer(lambda r: _modtitle(r['modname'].value()),
-                                    depends=('modname',))),
+                  computer=computer(lambda r, modname: _modtitle(modname))),
             Field('size', _("Items count"), width=5,
                   descr=_("Number of items from the selected module, which "
                           "will be shown by the panel.")),
@@ -737,7 +737,7 @@ class Languages(CMSModule):
             Field('lang', _("Code"), width=2, column_width=6,
                   filter=ALPHANUMERIC, post_process=LOWER, fixed=True),
             Field('name', _("Name"), virtual=True,
-                  computer=Computer(lambda r: lcg.language_name(r['lang'].value()), depends=())),
+                  computer=computer(lambda r, lang: lcg.language_name(lang))),
             )
         sorting = (('lang', ASC),)
         cb = CodebookSpec(display=lcg.language_name, prefer_display=True)
@@ -819,11 +819,12 @@ class Themes(CMSModule):
         def fields(self):
             fields = [Field('theme_id'),
                       Field('name', _("Name")),
-                      Field('active', _("Active"), virtual=True, computer=self._is_active)]
+                      Field('active', _("Active"), virtual=True,
+                            computer=computer(self._is_active))]
             for label, group in self._FIELDS:
                 fields.extend(group)
             return fields
-        def _is_active(self, theme_id):
+        def _is_active(self, row, theme_id):
             if isinstance(cfg.theme, Themes.Theme) and cfg.theme.theme_id() == theme_id:
                 return _("Yes")
             else:
@@ -918,7 +919,7 @@ class Pages(CMSModule):
                           "other languages)")),
             Field('private', _("Private"), default=False,
                   descr=_("Make the item available only to logged-in users.")),
-            Field('status', _("Status"), virtual=True, computer=self._status),
+            Field('status', _("Status"), virtual=True, computer=computer(self._status)),
             Field('hidden', _("Hidden"),
                   descr=_("Check if you don't want this page to appear in the menu.")),
             Field('ord', _("Menu order"), width=6, editable=ALWAYS,
@@ -926,13 +927,12 @@ class Pages(CMSModule):
                           "blank if you want to put the page automatically to the end.")),
             Field('tree_order', _("Tree level"), type=pd.TreeOrder()),
             #Field('group', virtual=True,
-            #      computer=Computer(lambda r: r['tree_order'].value().split('.')[1],
-            #                        depends=('tree_order',))),
+            #      computer=computer(lambda r, tree_order: tree_order.split('.')[1])),
             Field('owner', _("Owner"), codebook='Users', not_null=False,
                   descr=_("Set the ownership if you want a particular user to have full control "
                           "of the page even if his normal privileges are lower.")),
             )
-        def _status(self, published, _content, content):
+        def _status(self, row, published, _content, content):
             if not published:
                 return _("Not published")
             elif _content == content:
@@ -1189,7 +1189,7 @@ class Pages(CMSModule):
                                        anchor='attachment-automatic-list')) # Prevent dupl. anchor.
         if not content and record['parent'].value() is None:
             rows = self._data.get_rows(parent=record['mapping_id'].value(),
-                                       condition=pd.EQ('hidden', pd.Value(pd.Bool(), False)))
+                                       condition=pd.EQ('hidden', pd.Value(pd.Boolean(), False)))
             if rows:
                 return req.redirect('/'+rows[0]['identifier'].value())
         # Action menu
@@ -1481,7 +1481,7 @@ class News(EmbeddableCMSModule):
         columns = ('title', 'date', 'author')
         layout = ('timestamp', 'title', 'content')
         list_layout = pp.ListLayout('title', meta=('timestamp', 'author'),  content='content',
-                                    anchor="item-%s")
+                                    anchor="item-%s", allow_index=True)
         def _date(self, row):
             return row['timestamp'].export(show_time=False)
         def _date_title(self, row):
@@ -1752,19 +1752,11 @@ class Users(EmbeddableCMSModule):
                                                 Roles.ADMIN)))
         _ROLE_DICT = dict([(_code, (_title, _roles)) for _code, _title, _roles in _ROLES])
 
-        def _fullname(self, row):
-            name = row['firstname'].value()
-            surname = row['surname'].value()
-            if name and surname:
-                return name + " " + surname
+        def _fullname(self, row, firstname, surname, login):
+            if firstname and surname:
+                return firstname + " " + surname
             else:
-                return name or surname or row['login'].value()
-        def _user(self, row):
-            nickname = row['nickname'].value()
-            if nickname:
-                return nickname
-            else:
-                return row['fullname'].value()
+                return name or surname or login
         def _registration_expiry(self, row):
             if not cfg.login_is_email:
                 return None
@@ -1784,7 +1776,7 @@ class Users(EmbeddableCMSModule):
             Field('uid', width=8, editable=NEVER),
             Field('login', _("Login name"), width=16, editable=ONCE,
                   type=pd.RegexString(maxlen=16, not_null=True, regex='^[a-zA-Z][0-9a-zA-Z_\.-]*$'),
-                  computer=(cfg.login_is_email and (lambda email: email) or None),
+                  computer=(cfg.login_is_email and computer(lambda r, email: email) or None),
                   descr=_("A valid login name can only contain letters, digits, underscores, "
                           "dashes and dots and must start with a letter.")),
             Field('password', _("Password"), width=16,
@@ -1800,9 +1792,9 @@ class Users(EmbeddableCMSModule):
                   descr=_("Please, write the password into each of the two fields to eliminate "
                           "typos.")),
             Field('fullname', _("Full Name"), virtual=True, editable=NEVER,
-                  computer=Computer(self._fullname, depends=('firstname','surname','login'))),
+                  computer=computer(self._fullname)),
             Field('user', _("User"), dbcolumn='user_',
-                  computer=Computer(self._user, depends=('fullname', 'nickname'))),
+                  computer=computer(lambda r, nickname, fullname: nickname or fullname)),
             Field('firstname', _("First name")),
             Field('surname', _("Surname")),
             Field('nickname', _("Displayed name"),
@@ -2613,12 +2605,12 @@ class Certificates(CMSModule):
                 x509 = None
             return x509
         def _make_x509_computer(self, function):
-            def computer(row):
+            def func(row):
                 x509 = row['x509'].value()
                 if x509 is None:
                     return None
                 return function(x509)
-            return Computer(computer, depends=('x509',))
+            return Computer(func, depends=('x509',))
         def _serial_number_computer(self, x509):
             number = int(x509.serial_number)
             if not isinstance(number, int): # it may be long
