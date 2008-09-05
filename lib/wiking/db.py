@@ -332,62 +332,57 @@ class PytisModule(Module, ActionHandler):
         if not actions:
             return None
         if uri is None:
-            uri = req.uri().rstrip('/')
-            if record:
-                referer = record[self._referer].export()
-                if uri.endswith(referer):
-                    uri = uri[:-(len(referer)+1)]
+            uri = self._current_base_uri(req, record)
         return ActionMenu(uri, actions, self._referer, self.name(), record, **kwargs)
 
-    def _link_provider(self, req, row, cid, binding=None, **kwargs):
+    def _link_provider(self, req, uri, record, cid, **kwargs):
         if cid is None:
-            uri = req.uri().rstrip('/')
-            if binding:
-                if binding.id() is None:
-                    #return self._record_uri(req, row)
-                    return None
-                uri += '/'+ binding.id()
-            referer = row[self._referer].export()
-            if not uri.endswith(referer):
-                uri += '/'+ row[self._referer].export()
-            return make_uri(uri, **kwargs)
+            return make_uri(uri +'/'+ record[self._referer].export(), **kwargs)
         if self._links.has_key(cid):
             value_column, link = self._links[cid]
             try:
                 module = self._module(link.name())
             except AttributeError:
                 return None
-            uri = module.link(req, **{link.column(): row[value_column].value()})
+            uri = module.link(req, **{link.column(): record[value_column].value()})
             if link.label():
                 return pw.Link(uri, title=link.label())
             else:
                 return uri
         return None
 
-    def _image_provider(self, req, row, cid, binding=None):
+    def _image_provider(self, req, record, cid, uri):
         return None
 
     def _record_uri(self, req, record, *args, **kwargs):
         # Return the absolute uri of module's record if a direct mapping of the module exists.  
-        # The metohd '_link_provider()' should be prefered when relative URIs are prefered.
+        # The metohd '_link_provider()' when URIs from the context of the current request are
+        # prefered.
         uri = self._base_uri(req)
         if uri:
             return make_uri(uri +'/'+ record[self._referer].export(), *args, **kwargs)
         else:
             return None
 
-    def _form(self, form, req, action=None, row=None, hidden=(), new=False, prefill=None,
-              handler=None, binding=None, **kwargs):
-        def uri_provider(row, cid, type=pw.UriType.LINK):
+    def _current_base_uri(self, req, record=None):
+        uri = req.uri().rstrip('/')
+        if record:
+            # If the referer value is changed, the URI still contains the original value.
+            referer = record.original_row()[self._referer].export()
+            if uri.endswith(referer):
+                uri = uri[:-(len(referer)+1)]
+        return uri
+
+    def _form(self, form, req, record=None, uri=None, action=None, hidden=(),
+              new=False, prefill=None, **kwargs):
+        if uri is None:
+            uri = self._current_base_uri(req, record)
+        def uri_provider(record_, cid, type=pw.UriType.LINK):
             if type == pw.UriType.LINK:
                 method = self._link_provider
             elif type == pw.UriType.IMAGE:
                 method = self._image_provider
-            return method(req, row, cid, binding=binding)
-        kwargs['uri_provider'] = uri_provider
-        #if issubclass(form, pw.EditForm) and req.has_param('module'):
-        #    kwargs['hidden'] = kwargs.get('hidden', ()) + \
-        #                       (('module', req.param('module')),)
+            return method(req, uri, record_, cid)
         if issubclass(form, pw.EditForm):
             kwargs['allow_table_layout'] = self._ALLOW_TABLE_LAYOUT_IN_FORMS
         elif issubclass(form, pw.BrowseForm):
@@ -402,9 +397,9 @@ class PytisModule(Module, ActionHandler):
                 value, error = type.validate(value, strict=False)
                 if not error:
                     valid_prefill[key] = value
-        row = self._record(req, row, prefill=valid_prefill, new=new)
-        return form(self._view, row, handler=handler or req.uri(), name=self.name(), hidden=hidden,
-                    prefill=prefill, **kwargs)
+        form_record = self._record(req, record and record.row(), prefill=valid_prefill, new=new)
+        return form(self._view, form_record, handler=req.uri(), name=self.name(),
+                    hidden=hidden, prefill=prefill, uri_provider=uri_provider, **kwargs)
 
     def _layout(self, req, action, record=None):
         layout = self._LAYOUT.get(action)
@@ -474,7 +469,7 @@ class PytisModule(Module, ActionHandler):
         if binding_column:
             kwargs[binding_column] = value
         if self._LIST_BY_LANGUAGE:
-            kwargs['lang'] = req.prefered_language()
+            kwargs['lang'] = req.prefered_language(raise_error=False)
         row = self._data.get_row(**kwargs)
         if row is None:
             raise NotFound()
@@ -607,9 +602,10 @@ class PytisModule(Module, ActionHandler):
             form = pw.ListView
         condition = condition=self._binding_condition(binding, record)
         columns = [c for c in self._view.columns() if c != binding.binding_column()]
-        content = self._form(form, req, binding=binding, columns=columns,
-                             condition=self._condition(req, condition=condition))
-        menu = self._action_menu(req, uri=uri +'/'+ binding.id())
+        lang = req.prefered_language(raise_error=False)
+        content = self._form(form, req, uri=uri, columns=columns,
+                             condition=self._condition(req, condition=condition, lang=lang))
+        menu = self._action_menu(req, uri=uri)
         if menu:
             content = lcg.Container((content, menu))
         return content
@@ -642,13 +638,14 @@ class PytisModule(Module, ActionHandler):
         return req.redirect(make_uri(uri, **kwargs))
 
     def action_view(self, req, record, err=None, msg=None):
-        content = [self._form(pw.ShowForm, req, row=record.row(),
+        content = [self._form(pw.ShowForm, req, record=record,
                               layout=self._layout(req, 'view', record)),
                    self._action_menu(req, record)]
         for binding in self._view.bindings():
             if self._binding_enabled(binding, record):
                 module = self._module(binding.name())
-                uri = self._link_provider(req, record, None)
+                uri = self._current_base_uri(req, record) +\
+                      '/'+ record[self._referer].export() +'/'+ binding.id()
                 related = module.related(req, binding, record, uri)
                 content.append(lcg.Section(title=binding.title(), content=related))
         return self._document(req, content, record, err=err, msg=msg)
@@ -692,7 +689,7 @@ class PytisModule(Module, ActionHandler):
         # TODO: Redirect handler to HTTPS if cfg.force_https_login is true?
         # The primary motivation is to protect registration form data.  The
         # same would apply for action_edit.
-        form = self._form(pw.EditForm, req, row=None, new=True, action='insert',
+        form = self._form(pw.EditForm, req, new=True, action='insert',
                           prefill=self._prefill(req, new=True), layout=layout, 
                           submit=self._SUBMIT_BUTTONS.get('insert'),
                           errors=errors)
@@ -743,7 +740,7 @@ class PytisModule(Module, ActionHandler):
                 errors = (self._analyze_exception(e),)
             else:
                 return self._redirect_after_update(req, record)
-        form = self._form(pw.EditForm, req, row=record.row(), action=action, layout=layout,
+        form = self._form(pw.EditForm, req, record=record, action=action, layout=layout,
                           submit=self._SUBMIT_BUTTONS.get(action),
                           prefill=self._prefill(req), errors=errors)
         subtitle = self._update_subtitle(req, record, action)
@@ -758,7 +755,7 @@ class PytisModule(Module, ActionHandler):
                 err = self._error_message(*self._analyze_exception(e))
             else:
                 return self._redirect_after_delete(req, record)
-        form = self._form(pw.ShowForm, req, row=record.row())
+        form = self._form(pw.ShowForm, req, record)
         actions = (Action(_("Remove"), 'delete', allow_referer=False, submit=1),
                    Action(_("Back"), 'view'))
         action_menu = self._action_menu(req, record, actions)

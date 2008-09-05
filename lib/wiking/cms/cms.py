@@ -328,7 +328,8 @@ class CMSModule(PytisModule, RssModule, Panelizable):
         help = None
         if req.wmi and form == pw.ListView:
             form = pw.BrowseForm
-            if not kwargs.has_key('binding'): # Disable help for related forms (binding side forms).
+            # HACK: Disable help for related forms (binding side forms).
+            if not kwargs.has_key('uri'): 
                 help = self._view.help()
         result = super(CMSModule, self)._form(form, req, *args, **kwargs)
         if help:
@@ -370,6 +371,7 @@ class Embeddable(object):
 
         """
         return []
+
     
 class EmbeddableCMSModule(CMSModule, Embeddable):
     INSERT_LABEL = _("New record")
@@ -953,7 +955,7 @@ class Pages(CMSModule):
                            horizontal=True))
         columns = ('title_or_identifier', 'identifier', 'status', 'ord', 'private', 'owner')
         cb = CodebookSpec(display='title_or_identifier', prefer_display=True)
-        bindings = (Binding(_("Attachments"), 'Attachments', 'page_id', id='attachments'),)
+        bindings = (Binding(_("Attachments"), 'Attachments', 'mapping_id', id='attachments'),)
 
     _REFERER = 'identifier'
     _EXCEPTION_MATCHERS = (
@@ -1058,10 +1060,10 @@ class Pages(CMSModule):
     def _mapped_uri(self):
         return '/'
         
-    def _link_provider(self, req, row, cid, **kwargs):
+    def _link_provider(self, req, uri, record, cid, **kwargs):
         if cid == 'parent':
             return None
-        return super(Pages, self)._link_provider(req, row, cid, **kwargs)
+        return super(Pages, self)._link_provider(req, uri, record, cid, **kwargs)
 
     def _redirect_after_insert(self, req, record):
         return self.action_view(req, record, msg=self._insert_msg(record))
@@ -1231,7 +1233,8 @@ class Pages(CMSModule):
     
     def action_attachments(self, req, record, err=None, msg=None):
         binding = self._view.bindings()[0]
-        uri = self._link_provider(req, record, None)
+        uri = self._current_base_uri(req, record) +\
+              '/'+ record[self._referer].export() +'/'+ binding.id()
         content = self._module('Attachments').related(req, binding, record, uri)
         return self._document(req, content, record, subtitle=_("Attachments"), err=err, msg=msg)
     RIGHTS_attachments = (Roles.AUTHOR, Roles.OWNER)
@@ -1320,18 +1323,13 @@ class Attachments(StoredFileModule, CMSModule):
                     return f is not None and ffunc(f) or None
                 return pp.Computer(func, depends=('file',))
             return (
-            Field('page_attachment_id',
-                  computer=Computer(self._page_attachment_id, depends=('attachment_id', 'lang'))),
+            Field('attachment_variant_id', computer=computer(self._attachment_variant_id)),
             Field('attachment_id'),
             Field('mapping_id', _("Page"), codebook='Mapping', editable=ALWAYS,
-                  computer=Computer(self._mapping_id, depends=('page_id',)),
                   descr=_("Select the page where you want to move this attachment.  Don't forget "
                           "to update all explicit links to this attachment within page text(s).")),
             Field('identifier'),
-            Field('lang', _("Language"), codebook='Languages',
-                  computer=Computer(self._lang, depends=('page_id',)),
-                  selection_type=CHOICE, editable=ONCE, value_column='lang'),
-            Field('page_id', _("Page"), codebook='Pages'),
+            Field('lang', _("Language"), codebook='Languages', editable=ONCE, value_column='lang'),
             Field('file', _("File"), virtual=True, editable=ALWAYS,
                   type=pd.Binary(not_null=True, maxlen=cfg.appl.upload_limit),
                   computer=self._file_computer('file', '_filename', origname='filename',
@@ -1364,22 +1362,15 @@ class Attachments(StoredFileModule, CMSModule):
                   computer=self._filename_computer('dbname', 'attachment_id', 'ext')),
             )
         layout = ('file', 'title', 'description', 'listed')
-        columns = ('filename', 'title', 'bytesize', 'mime_type', 'listed', 'page_id')
-        sorting = (('identifier', ASC), ('filename', ASC))
-        def _mapping_id(self, row):
-            return row['page_id'].value() and int(row['page_id'].value().split('.')[0])
-        def _lang(self, row):
-            return row['page_id'].value() and str(row['page_id'].value().split('.')[1])
+        columns = ('filename', 'title', 'bytesize', 'mime_type', 'listed', 'mapping_id')
+        sorting = (('filename', ASC),)
         def _ext(self, row):
             if row['filename'].value() is None:
                 return ''
             ext = os.path.splitext(row['filename'].value())[1].lower()
             return len(ext) > 1 and ext[1:] or ext
-        def _page_attachment_id(self, row):
-            id = row['attachment_id'].value()
-            if id is None:
-                return None
-            return '%d.%s' % (id, row['lang'].value())
+        def _attachment_variant_id(self, row, attachment_id, lang):
+            return attachment_id and '%d.%s' % (attachment_id, lang)
     class Attachment(object):
         def __init__(self, row):
             self.filename = filename = row['filename'].export()
@@ -1419,13 +1410,13 @@ class Attachments(StoredFileModule, CMSModule):
         else:
             return 'download'
         
-    def _link_provider(self, req, row, cid, **kwargs):
+    def _link_provider(self, req, uri, record, cid, **kwargs):
         if cid is None:
             kwargs['action'] = 'view'
         elif cid == 'file':
             cid = None
             kwargs['action'] = 'download'
-        return super(Attachments, self)._link_provider(req, row, cid, **kwargs)
+        return super(Attachments, self)._link_provider(req, uri, record, cid, **kwargs)
 
     def _actions(self, req, record):
         if record is None and not req.wmi:
@@ -1454,6 +1445,117 @@ class Attachments(StoredFileModule, CMSModule):
     def action_move(self, req, record):
         return self.action_update(req, record, action='move')
     RIGHTS_move = (Roles.AUTHOR,)
+
+
+class _Images(StoredFileModule, EmbeddableCMSModule):
+    INSERT_LABEL = _("New image")
+    class Spec(StoredFileModule.Spec):
+        title = _("Images")
+        help = _("Publish images.")
+        def fields(self):
+            def fcomp(ffunc):
+                def func(row):
+                    f = row['file'].value()
+                    return f is not None and ffunc(f) or None
+                return pp.Computer(func, depends=('file',))
+            def imgcomp(imgfunc):
+                return fcomp(lambda f: imgfunc(f.image()))
+            return (
+            Field('image_id'),
+            Field('published'),
+            Field('file', _("File"), virtual=True, editable=ALWAYS,
+                  type=pd.Image(not_null=True, maxlen=cfg.appl.upload_limit, maxsize=(3000, 3000)),
+                  computer=self._file_computer('file', '_filename', origname='filename')),
+            Field('image', virtual=True, editable=ALWAYS,
+                  type=pd.Image(not_null=True, maxlen=cfg.appl.upload_limit, maxsize=(3000, 3000)),
+                  computer=self._file_computer('image', '_image_filename',
+                                               compute=lambda r: self._resize(r, (800, 800)))),
+            Field('thumbnail', virtual=True, type=pd.Image(),
+                  computer=self._file_computer('thumbnail', '_thumbnail_filename',
+                                               compute=lambda r: self._resize(r, (130, 130)))),
+            Field('filename', _("File"), computer=fcomp(lambda f: f.filename())),
+            Field('title', _("Title"), width=30),
+            Field('author', _("Author"), width=30),
+            Field('location', _("Location"), width=50),
+            Field('description', _("Description"), height=5, width=60),
+            Field('taken', _("Date of creation"), type=DateTime()),
+            Field('format', computer=imgcomp(lambda i: i.format.lower())),
+            Field('width', _("Width"), computer=imgcomp(lambda i: i.size[0])),
+            Field('height', _("Height"), computer=imgcomp(lambda i: i.size[1])),
+            Field('size', _("Pixel size"), computer=imgcomp(lambda i: '%dx%d' % i.size)),
+            Field('bytesize', _("Byte size"),
+                  computer=fcomp(lambda f: pp.format_byte_size(len(f)))),
+            Field('exif'),
+            Field('timestamp', default=now),
+            # Fields supporting image file storage.
+            Field('dbname'),
+            Field('_filename', virtual=True, computer=self._filename_computer('-orig')),
+            Field('_thumbnail_filename', virtual=True,
+                  computer=self._filename_computer('-thumbnail')),
+            Field('_image_filename', virtual=True, computer=self._filename_computer()),
+            )
+        def _filename_computer(self, append=''):
+            args = ('dbname', 'image_id', 'format', append)
+            return super(Images.Spec, self)._filename_computer(*args)
+        def _resize(self, row, size):
+            # We use the lazy get to prevent running the computer.  This allows
+            # us to find out, whether a new file was uploaded and prevents
+            # loading the value from file.
+            file = row.get('file', lazy=True).value()
+            if file is not None and file.path() is None:
+                # Recompute the value by resizing the original image.
+                from PIL.Image import ANTIALIAS
+                from cStringIO import StringIO
+                img = copy.copy(file.image())
+                log(OPR, "Generating a thumbnail:", (img.size, size))
+                img.thumbnail(size, ANTIALIAS)
+                stream = StringIO()
+                img.save(stream, img.format)
+                return pd.Image.Buffer(buffer(stream.getvalue()))
+            else:
+                # The image will be loaded from file.
+                return None
+
+        layout = ('file', 'title', 'author', 'location', 'taken', 'description')
+        columns = ('filename', 'title', 'author', 'location', 'taken', 'description')
+        
+    _STORED_FIELDS = (('file', '_filename'),
+                      ('image', '_image_filename'),
+                      ('thumbnail', '_thumbnail_filename'))
+    _SEQUENCE_FIELDS = (('image_id', '_images_image_id_seq'),)
+    _REFERER = 'filename'
+    
+    #WMI_SECTION = WikingManagementInterface.SECTION_CONTENT
+    WMI_ORDER = 500
+        
+    def _link_provider(self, req, uri, record, cid, **kwargs):
+        if cid == 'file':
+            cid = None
+            kwargs['action'] = 'orig'
+        return super(Images, self)._link_provider(req, uri, record, cid, **kwargs)
+    
+    def _image_provider(self, req, uri, record, cid, **kwargs):
+        if cid == 'filename':
+            return make_uri(self._base_uri(req) +'/'+ record['filename'].export(), action='thumbnail')
+        return super(Images, self)._image_provider(req, uri, record, cid, **kwargs)
+
+    def _image(self, record, id):
+        mime = "image/" + str(record['format'].value())
+        data = record[id].value().buffer()
+        return (mime, data)
+    
+    RIGHTS_orig = RIGHTS_image = RIGHTS_thumbnail = (Roles.ANYONE,)
+    
+    def action_orig(self, req, record):
+        return self._image(record, 'file')
+    
+    def action_image(self, req, record):
+        return self._image(record, 'image')
+    
+    def action_thumbnail(self, req, record):
+        return self._image(record, 'thumbnail')
+
+    
     
 class News(EmbeddableCMSModule):
     INSERT_LABEL = _("New message")
@@ -1565,115 +1667,6 @@ class Planner(News):
             return pd.AND(scondition, condition)
         else:
             return condition
-
-    
-class Images(StoredFileModule, EmbeddableCMSModule):
-    INSERT_LABEL = _("New image")
-    class Spec(StoredFileModule.Spec):
-        title = _("Images")
-        help = _("Publish images.")
-        def fields(self):
-            def fcomp(ffunc):
-                def func(row):
-                    f = row['file'].value()
-                    return f is not None and ffunc(f) or None
-                return pp.Computer(func, depends=('file',))
-            def imgcomp(imgfunc):
-                return fcomp(lambda f: imgfunc(f.image()))
-            return (
-            Field('image_id'),
-            Field('published'),
-            Field('file', _("File"), virtual=True, editable=ALWAYS,
-                  type=pd.Image(not_null=True, maxlen=cfg.appl.upload_limit, maxsize=(3000, 3000)),
-                  computer=self._file_computer('file', '_filename', origname='filename')),
-            Field('image', virtual=True, editable=ALWAYS,
-                  type=pd.Image(not_null=True, maxlen=cfg.appl.upload_limit, maxsize=(3000, 3000)),
-                  computer=self._file_computer('image', '_image_filename',
-                                               compute=lambda r: self._resize(r, (800, 800)))),
-            Field('thumbnail', virtual=True, type=pd.Image(),
-                  computer=self._file_computer('thumbnail', '_thumbnail_filename',
-                                               compute=lambda r: self._resize(r, (130, 130)))),
-            Field('filename', _("File"), computer=fcomp(lambda f: f.filename())),
-            Field('title', _("Title"), width=30),
-            Field('author', _("Author"), width=30),
-            Field('location', _("Location"), width=50),
-            Field('description', _("Description"), height=5, width=60),
-            Field('taken', _("Date of creation"), type=DateTime()),
-            Field('format', computer=imgcomp(lambda i: i.format.lower())),
-            Field('width', _("Width"), computer=imgcomp(lambda i: i.size[0])),
-            Field('height', _("Height"), computer=imgcomp(lambda i: i.size[1])),
-            Field('size', _("Pixel size"), computer=imgcomp(lambda i: '%dx%d' % i.size)),
-            Field('bytesize', _("Byte size"),
-                  computer=fcomp(lambda f: pp.format_byte_size(len(f)))),
-            Field('exif'),
-            Field('timestamp', default=now),
-            # Fields supporting image file storage.
-            Field('dbname'),
-            Field('_filename', virtual=True, computer=self._filename_computer('-orig')),
-            Field('_thumbnail_filename', virtual=True,
-                  computer=self._filename_computer('-thumbnail')),
-            Field('_image_filename', virtual=True, computer=self._filename_computer()),
-            )
-        def _filename_computer(self, append=''):
-            args = ('dbname', 'image_id', 'format', append)
-            return super(Images.Spec, self)._filename_computer(*args)
-        def _resize(self, row, size):
-            # We use the lazy get to prevent running the computer.  This allows
-            # us to find out, whether a new file was uploaded and prevents
-            # loading the value from file.
-            file = row.get('file', lazy=True).value()
-            if file is not None and file.path() is None:
-                # Recompute the value by resizing the original image.
-                from PIL.Image import ANTIALIAS
-                from cStringIO import StringIO
-                img = copy.copy(file.image())
-                log(OPR, "Generating a thumbnail:", (img.size, size))
-                img.thumbnail(size, ANTIALIAS)
-                stream = StringIO()
-                img.save(stream, img.format)
-                return pd.Image.Buffer(buffer(stream.getvalue()))
-            else:
-                # The image will be loaded from file.
-                return None
-
-        layout = ('file', 'title', 'author', 'location', 'taken', 'description')
-        columns = ('filename', 'title', 'author', 'location', 'taken', 'description')
-        
-    _STORED_FIELDS = (('file', '_filename'),
-                      ('image', '_image_filename'),
-                      ('thumbnail', '_thumbnail_filename'))
-    _SEQUENCE_FIELDS = (('image_id', '_images_image_id_seq'),)
-    _REFERER = 'filename'
-    
-    #WMI_SECTION = WikingManagementInterface.SECTION_CONTENT
-    WMI_ORDER = 500
-        
-    def _link_provider(self, req, row, cid, **kwargs):
-        if cid == 'file':
-            cid = None
-            kwargs['action'] = 'orig'
-        return super(Images, self)._link_provider(req, row, cid, **kwargs)
-    
-    def _image_provider(self, req, row, cid, **kwargs):
-        if cid == 'filename':
-            return make_uri(self._base_uri(req) +'/'+ row['filename'].export(), action='thumbnail')
-        return super(Images, self)._image_provider(req, row, cid, **kwargs)
-
-    def _image(self, record, id):
-        mime = "image/" + str(record['format'].value())
-        data = record[id].value().buffer()
-        return (mime, data)
-    
-    RIGHTS_orig = RIGHTS_image = RIGHTS_thumbnail = (Roles.ANYONE,)
-    
-    def action_orig(self, req, record):
-        return self._image(record, 'file')
-    
-    def action_image(self, req, record):
-        return self._image(record, 'image')
-    
-    def action_thumbnail(self, req, record):
-        return self._image(record, 'thumbnail')
 
 
 class SiteMap(Module, Embeddable):
