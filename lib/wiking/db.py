@@ -337,7 +337,7 @@ class PytisModule(Module, ActionHandler):
 
     def _link_provider(self, req, uri, record, cid, **kwargs):
         if cid is None:
-            return make_uri(uri +'/'+ record[self._referer].export(), **kwargs)
+            return uri and make_uri(uri +'/'+ record[self._referer].export(), **kwargs)
         if self._links.has_key(cid):
             value_column, link = self._links[cid]
             try:
@@ -373,9 +373,14 @@ class PytisModule(Module, ActionHandler):
                 uri = uri[:-(len(referer)+1)]
         return uri
 
-    def _form(self, form, req, record=None, uri=None, action=None, hidden=(),
-              new=False, prefill=None, handler=None, **kwargs):
-        if uri is None:
+    def _current_record_uri(self, req, record):
+        return self._current_base_uri(req, record) +'/'+ record[self._referer].export()
+
+    def _form(self, form, req, record=None, action=None, hidden=(), new=False, prefill=None,
+              handler=None, binding_uri=None, **kwargs):
+        if binding_uri is not None:
+            uri = binding_uri or None
+        else:
             uri = self._current_base_uri(req, record)
         def uri_provider(record_, cid, type=pw.UriType.LINK):
             if type == pw.UriType.LINK:
@@ -603,7 +608,12 @@ class PytisModule(Module, ActionHandler):
         condition = condition=self._binding_condition(binding, record)
         columns = [c for c in self._view.columns() if c != binding.binding_column()]
         lang = req.prefered_language(raise_error=False)
-        content = self._form(form, req, uri=uri, columns=columns,
+        if binding.id():
+            binding_uri = uri +'/'+ binding.id()
+        else:
+            # Special value indicating that this is a related form, but uri is not available.
+            binding_uri = ''
+        content = self._form(form, req, uri=uri, columns=columns, binding_uri=binding_uri,
                              condition=self._condition(req, condition=condition, lang=lang))
         menu = self._action_menu(req, uri=uri)
         if menu:
@@ -644,9 +654,8 @@ class PytisModule(Module, ActionHandler):
         for binding in self._view.bindings():
             if self._binding_enabled(binding, record):
                 module = self._module(binding.name())
-                uri = self._current_base_uri(req, record) +\
-                      '/'+ record[self._referer].export() +'/'+ binding.id()
-                related = module.related(req, binding, record, uri)
+                related = module.related(req, binding, record,
+                                         uri=self._current_record_uri(req, record))
                 content.append(lcg.Section(title=binding.title(), content=related))
         return self._document(req, content, record, err=err, msg=msg)
 
