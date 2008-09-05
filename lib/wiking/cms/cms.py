@@ -1360,65 +1360,6 @@ class Attachments(StoredFileModule, CMSModule):
             Field('_filename', virtual=True,
                   computer=self._filename_computer('dbname', 'attachment_id', 'ext')),
             )
-
-
-
-
-
-            Field('image', virtual=True, editable=ALWAYS,
-                  type=pd.Image(not_null=True, maxlen=cfg.appl.upload_limit, maxsize=(3000, 3000)),
-                  computer=self._file_computer('image', '_image_filename',
-                                               compute=lambda r: self._resize(r, (800, 800)))),
-            Field('thumbnail', virtual=True, type=pd.Image(),
-                  computer=self._file_computer('thumbnail', '_thumbnail_filename',
-                                               compute=lambda r: self._resize(r, (130, 130)))),
-            Field('author', _("Author"), width=30),
-            Field('location', _("Location"), width=50),
-            Field('taken', _("Date of creation"), type=DateTime()),
-            Field('format', computer=imgcomp(lambda i: i.format.lower())),
-            Field('width', _("Width"), computer=imgcomp(lambda i: i.size[0])),
-            Field('height', _("Height"), computer=imgcomp(lambda i: i.size[1])),
-            Field('size', _("Pixel size"), computer=imgcomp(lambda i: '%dx%d' % i.size)),
-            Field('bytesize', _("Byte size"),
-                  computer=fcomp(lambda f: pp.format_byte_size(len(f)))),
-            Field('exif'),
-            Field('timestamp', default=now),
-            # Fields supporting image file storage.
-            Field('dbname'),
-            Field('_filename', virtual=True, computer=self._filename_computer('-orig')),
-            Field('_thumbnail_filename', virtual=True,
-                  computer=self._filename_computer('-thumbnail')),
-            Field('_image_filename', virtual=True, computer=self._filename_computer()),
-            )
-        def _filename_computer(self, append=''):
-            args = ('dbname', 'image_id', 'format', append)
-            return super(Images.Spec, self)._filename_computer(*args)
-        def _resize(self, row, size):
-            # We use the lazy get to prevent running the computer.  This allows
-            # us to find out, whether a new file was uploaded and prevents
-            # loading the value from file.
-            file = row.get('file', lazy=True).value()
-            if file is not None and file.path() is None:
-                # Recompute the value by resizing the original image.
-                from PIL.Image import ANTIALIAS
-                from cStringIO import StringIO
-                img = copy.copy(file.image())
-                log(OPR, "Generating a thumbnail:", (img.size, size))
-                img.thumbnail(size, ANTIALIAS)
-                stream = StringIO()
-                img.save(stream, img.format)
-                return pd.Image.Buffer(buffer(stream.getvalue()))
-            else:
-                # The image will be loaded from file.
-                return None
-
-
-
-
-
-
-
-        
         layout = ('file', 'title', 'description', 'listed')
         columns = ('filename', 'title', 'bytesize', 'mime_type', 'listed', 'mapping_id')
         sorting = (('filename', ASC),)
