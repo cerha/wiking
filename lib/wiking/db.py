@@ -355,9 +355,8 @@ class PytisModule(Module, ActionHandler):
         return None
 
     def _record_uri(self, req, record, *args, **kwargs):
-        # Return the absolute uri of module's record if a direct mapping of the module exists.  
-        # The metohd '_link_provider()' when URIs from the context of the current request are
-        # prefered.
+        # Return the absolute URI of module's record if a direct mapping of the module exists.  
+        # Use the method '_current_record_uri()' to get URI in the context of the current request.
         uri = self._base_uri(req)
         if uri:
             return make_uri(uri +'/'+ record[self._referer].export(), *args, **kwargs)
@@ -365,6 +364,7 @@ class PytisModule(Module, ActionHandler):
             return None
 
     def _current_base_uri(self, req, record=None):
+        # Return the module base URI in the context of the current request.
         uri = req.uri().rstrip('/')
         if record:
             # If the referer value is changed, the URI still contains the original value.
@@ -374,6 +374,7 @@ class PytisModule(Module, ActionHandler):
         return uri
 
     def _current_record_uri(self, req, record):
+        # Return the URI of given record in the context of the current request.
         return self._current_base_uri(req, record) +'/'+ record[self._referer].export()
 
     def _form(self, form, req, record=None, action=None, hidden=(), new=False, prefill=None,
