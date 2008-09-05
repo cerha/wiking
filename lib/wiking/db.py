@@ -374,7 +374,7 @@ class PytisModule(Module, ActionHandler):
         return uri
 
     def _form(self, form, req, record=None, uri=None, action=None, hidden=(),
-              new=False, prefill=None, **kwargs):
+              new=False, prefill=None, handler=None, **kwargs):
         if uri is None:
             uri = self._current_base_uri(req, record)
         def uri_provider(record_, cid, type=pw.UriType.LINK):
@@ -398,7 +398,7 @@ class PytisModule(Module, ActionHandler):
                 if not error:
                     valid_prefill[key] = value
         form_record = self._record(req, record and record.row(), prefill=valid_prefill, new=new)
-        return form(self._view, form_record, handler=req.uri(), name=self.name(),
+        return form(self._view, form_record, handler=handler or req.uri(), name=self.name(),
                     hidden=hidden, prefill=prefill, uri_provider=uri_provider, **kwargs)
 
     def _layout(self, req, action, record=None):
