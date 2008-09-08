@@ -1,4 +1,5 @@
 -- Wiking database creation script. --
+-- -*- indent-tabs-mode: nil -*-
 
 CREATE TABLE languages (
 	lang_id serial PRIMARY KEY,
@@ -114,18 +115,10 @@ CREATE OR REPLACE RULE pages_insert AS
      SELECT (SELECT mapping_id FROM _mapping WHERE identifier=new.identifier),
             new.lang, new.published, 
             new.title, new.description, new.content, new._title, new._description, new._content
-     RETURNING mapping_id ||'.'|| lang, lang, mapping_id,
-       (SELECT identifier FROM _mapping WHERE mapping_id=mapping_id),
-       (SELECT parent FROM _mapping WHERE mapping_id=mapping_id),
-       (SELECT modname FROM _mapping WHERE mapping_id=mapping_id),
-       (SELECT private FROM _mapping WHERE mapping_id=mapping_id),
-       (SELECT owner FROM _mapping WHERE mapping_id=mapping_id),
-       (SELECT hidden FROM _mapping WHERE mapping_id=mapping_id),
-       (SELECT ord FROM _mapping WHERE mapping_id=mapping_id),
-       (SELECT tree_order FROM _mapping WHERE mapping_id=mapping_id),
-       published, title, 
-       title, description, content,
-       _title, _description, _content 
+     RETURNING mapping_id ||'.'|| lang, 
+       lang, mapping_id, NULL::varchar(32), NULL::int, NULL::text, NULL::boolean, NULL::int,
+       NULL::boolean, NULL::int, NULL::text, published, title, title, description, content, _title,
+       _description, _content
 );
 
 CREATE OR REPLACE RULE pages_update AS
@@ -180,52 +173,105 @@ CREATE TABLE _attachments (
 );
 
 CREATE TABLE _attachment_descr (
-       attachment_id int NOT NULL REFERENCES _attachments ON DELETE CASCADE,
+       attachment_id int NOT NULL REFERENCES _attachments ON DELETE CASCADE INITIALLY DEFERRED,
        lang char(2) NOT NULL REFERENCES languages(lang) ON DELETE CASCADE,
        title text,
        description text,
        UNIQUE (attachment_id, lang)
 );
 
+CREATE TABLE _images (
+       attachment_id int NOT NULL REFERENCES _attachments ON DELETE CASCADE INITIALLY DEFERRED,
+       width int NOT NULL,
+       height int NOT NULL,
+       author text,
+       "location" text,
+       exif_date timestamp,
+       exif text
+);
+
 CREATE OR REPLACE VIEW attachments
-AS SELECT a.attachment_id  ||'.'|| l.lang as page_attachment_id,
-  a.attachment_id, l.lang, a.mapping_id ||'.'|| l.lang as page_id, 
-  a.mapping_id, m.identifier, a.filename, a.mime_type, a.bytesize, a.listed,
-  a."timestamp", d.title, d.description, current_database() as dbname 
-FROM _attachments a JOIN _mapping m USING (mapping_id) CROSS JOIN languages l  
-LEFT OUTER JOIN _attachment_descr d USING (attachment_id, lang);
+AS SELECT a.attachment_id  ||'.'|| l.lang as attachment_variant_id, l.lang,
+  a.attachment_id, a.mapping_id, a.filename, a.mime_type, a.bytesize, a.listed, a."timestamp",
+  d.title, d.description, i.width IS NOT NULL as is_image,
+  i.width, i.height, i.author, i."location", i.exif_date, i.exif
+FROM _attachments a JOIN _mapping m USING (mapping_id) CROSS JOIN languages l
+     LEFT OUTER JOIN _attachment_descr d USING (attachment_id, lang)
+     LEFT OUTER JOIN _images i USING (attachment_id);
 
 CREATE OR REPLACE RULE attachments_insert AS
  ON INSERT TO attachments DO INSTEAD (
-    INSERT INTO _attachments (attachment_id, mapping_id, filename, mime_type,
-                              bytesize, listed)
-            VALUES (new.attachment_id, new.mapping_id, new.filename, 
-                    new.mime_type, new.bytesize, new.listed);
     INSERT INTO _attachment_descr (attachment_id, lang, title, description)
            SELECT new.attachment_id, new.lang, new.title, new.description
            WHERE new.title IS NOT NULL OR new.description IS NOT NULL;
+    INSERT INTO _images (attachment_id, width, height, author, "location", exif_date, exif)
+           SELECT new.attachment_id, new.width, new.height, new.author, new."location",
+                  new.exif_date, new.exif
+           WHERE new.is_image;
+    INSERT INTO _attachments (attachment_id, mapping_id, filename, mime_type, bytesize, listed)
+           VALUES (new.attachment_id, new.mapping_id, new.filename,
+                   new.mime_type, new.bytesize, new.listed)
+           RETURNING
+             attachment_id ||'.'|| (SELECT max(lang) FROM _attachment_descr
+                                    WHERE attachment_id=attachment_id),  NULL::char(2),
+             attachment_id, mapping_id, filename, mime_type, bytesize, listed, "timestamp",
+             NULL::text, NULL::text, NULL::boolean, NULL::int, NULL::int, NULL::text, NULL::text,
+             NULL::timestamp, NULL::text
 );
 
 CREATE OR REPLACE RULE attachments_update AS
  ON UPDATE TO attachments DO INSTEAD (
-    UPDATE _attachments SET 
-    	   mapping_id = new.mapping_id, 
-	   filename = new.filename,
-	   mime_type = new.mime_type,
-	   bytesize = new.bytesize,
-	   listed = new.listed	
+    UPDATE _attachments SET
+           mapping_id = new.mapping_id,
+           filename = new.filename,
+           mime_type = new.mime_type,
+           bytesize = new.bytesize,
+           listed = new.listed
+           WHERE attachment_id = old.attachment_id;
+    UPDATE _images SET
+           width = new.width,
+           height = new.height,
+           author = new.author,
+           "location" = new."location",
+           exif_date = new.exif_date,
+           exif = new.exif
            WHERE attachment_id = old.attachment_id;
     UPDATE _attachment_descr SET title=new.title, description=new.description
-       	   WHERE attachment_id = old.attachment_id AND lang = old.lang;
-    INSERT INTO _attachment_descr (attachment_id, lang, title, description) 
-   	   SELECT new.attachment_id, new.lang, new.title, new.description
-	   WHERE new.attachment_id NOT IN
-             (SELECT attachment_id FROM _attachment_descr WHERE lang=new.lang);
+           WHERE attachment_id = old.attachment_id AND lang = old.lang;
+    INSERT INTO _attachment_descr (attachment_id, lang, title, description)
+           SELECT new.attachment_id, new.lang, new.title, new.description
+           WHERE old.attachment_id NOT IN
+             (SELECT attachment_id FROM _attachment_descr WHERE lang=old.lang);
 );
 
 CREATE OR REPLACE RULE attachments_delete AS
   ON DELETE TO attachments DO INSTEAD (
      DELETE FROM _attachments WHERE attachment_id = old.attachment_id;
+);
+
+-------------------------------------------------------------------------------
+
+CREATE TABLE news (
+	news_id serial PRIMARY KEY,
+	lang char(2) NOT NULL REFERENCES languages(lang),
+	"timestamp" timestamp NOT NULL DEFAULT now(),
+	title text NOT NULL,
+	author int NOT NULL REFERENCES users,
+	content text NOT NULL
+);
+
+-------------------------------------------------------------------------------
+
+CREATE TABLE planner (
+	planner_id serial PRIMARY KEY,
+	lang char(2) NOT NULL REFERENCES languages(lang),
+	start_date date NOT NULL,
+	end_date date,
+	title text NOT NULL,
+	author int NOT NULL REFERENCES users,
+	"timestamp" timestamp NOT NULL DEFAULT now(),
+	content text NOT NULL,
+	UNIQUE (start_date, lang, title)
 );
 
 -------------------------------------------------------------------------------
@@ -275,89 +321,6 @@ CREATE OR REPLACE RULE panels_delete AS
   ON DELETE TO panels DO INSTEAD (
      DELETE FROM _panels
      WHERE _panels.panel_id = old.panel_id;
-);
-
--------------------------------------------------------------------------------
-
-CREATE TABLE news (
-	news_id serial PRIMARY KEY,
-	lang char(2) NOT NULL REFERENCES languages(lang),
-	"timestamp" timestamp NOT NULL DEFAULT now(),
-	title text NOT NULL,
-	author int NOT NULL REFERENCES users,
-	content text NOT NULL
-);
-
--------------------------------------------------------------------------------
-
-CREATE TABLE planner (
-	planner_id serial PRIMARY KEY,
-	lang char(2) NOT NULL REFERENCES languages(lang),
-	start_date date NOT NULL,
-	end_date date,
-	title text NOT NULL,
-	author int NOT NULL REFERENCES users,
-	"timestamp" timestamp NOT NULL DEFAULT now(),
-	content text NOT NULL,
-	UNIQUE (start_date, lang, title)
-);
-
--------------------------------------------------------------------------------
-
-CREATE TABLE _images (
-       	image_id serial PRIMARY KEY,
-	filename varchar(64) NOT NULL,
-	format varchar(4) NOT NULL,
-	published boolean NOT NULL DEFAULT 'TRUE',
-	width int NOT NULL,
-	height int NOT NULL,
-	"size" text NOT NULL,
-	bytesize text NOT NULL,
-	title text NOT NULL,
-	author text,
-	"location" text,
-	description text,
-	taken timestamp,
-	exif text,
-	"timestamp" timestamp NOT NULL DEFAULT now()
-);
-
-CREATE OR REPLACE VIEW images AS 
-SELECT *, current_database() as dbname FROM _images;
-
-CREATE OR REPLACE RULE images_insert AS
-  ON INSERT TO images DO INSTEAD (
-     INSERT INTO _images (image_id, filename, format, published, width,
-     	height, "size", bytesize, title, author,
-	"location", description, taken, exif, "timestamp")
-     VALUES (new.image_id, new.filename, new.format, new.published, new.width,
-     	new.height, new."size", new.bytesize, new.title, new.author,
-	new."location", new.description, new.taken, new.exif, new."timestamp");
-);
-
-CREATE OR REPLACE RULE images_update AS
-  ON UPDATE TO images DO INSTEAD (
-    UPDATE _images SET
-      filename = new.filename,
-      format = new.format,
-      published = new.published,
-      width = new.width,
-      height = new.height,
-      "size" = new."size",
-      bytesize = new.bytesize,
-      title = new.title,
-      author = new.author,
-      "location" = new."location",
-      description = new.description,
-      taken = new.taken,
-      exif = new.exif,
-      "timestamp" = new."timestamp"
-   WHERE image_id = old.image_id
-);
-
-CREATE OR REPLACE RULE images_delete AS
-  ON DELETE TO images DO INSTEAD (
-     DELETE FROM _images WHERE image_id = old.image_id;
 );
 
 -------------------------------------------------------------------------------

@@ -369,7 +369,7 @@ class PytisModule(Module, ActionHandler):
         if record:
             # If the referer value is changed, the URI still contains the original value.
             referer = record.original_row()[self._referer].export()
-            if uri.endswith(referer):
+            if uri.endswith('/'+referer):
                 uri = uri[:-(len(referer)+1)]
         return uri
 
@@ -616,9 +616,10 @@ class PytisModule(Module, ActionHandler):
             binding_uri = ''
         content = self._form(form, req, uri=uri, columns=columns, binding_uri=binding_uri,
                              condition=self._condition(req, condition=condition, lang=lang))
-        menu = self._action_menu(req, uri=uri)
-        if menu:
-            content = lcg.Container((content, menu))
+        if binding_uri:
+            menu = self._action_menu(req, uri=binding_uri)
+            if menu:
+                content = lcg.Container((content, menu))
         return content
 
     # ===== Action handlers =====
@@ -934,13 +935,13 @@ class StoredFileModule(PytisModule):
                 return result
             return pp.Computer(func, depends=())
         
-        def _filename_computer(self, subdir, name, ext, append=''):
+        def _filename_computer(self, name, ext, append=''):
             """Return a computer computing filename for storing the file."""
             def func(row):
                 fname = row[name].export() + append + '.' + row[ext].value()
-                path = (cfg.storage, row[subdir].export(), self.table, fname)
+                path = (cfg.storage, cfg.dbname, self.table, fname)
                 return os.path.join(*path)
-            return pp.Computer(func, depends=(subdir, name, ext))
+            return pp.Computer(func, depends=(name, ext))
         
     def _save_files(self, record):
         if not os.path.exists(cfg.storage) \
@@ -955,8 +956,9 @@ class StoredFileModule(PytisModule):
             if not os.path.exists(dir):
                 os.makedirs(dir, 0700)
             buf = record[id].value()
-            log(OPR, "Saving file:", (fname, pp.format_byte_size(len(buf))))
-            buf.save(fname)
+            if buf is not None:
+                log(OPR, "Saving file:", (fname, pp.format_byte_size(len(buf))))
+                buf.save(fname)
         
     def _insert(self, record):
         super(StoredFileModule, self)._insert(record)

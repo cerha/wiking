@@ -7,7 +7,6 @@ Core features:
  * Allow extension module management to page owner
  * Disable table layout per layout spec, not per module.
  * Refer to the page in News and Planner items to allow a separate set for each page.
- * Remove the dbname column -- get the database name from somewhere else
  * Delete stray files after deletion triggered in the database (cascade)
  * Extension module listing commands don't work in the preview mode within WMI
  * Serve favicon and robots.txt
