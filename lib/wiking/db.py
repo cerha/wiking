@@ -34,14 +34,6 @@ class PytisModule(Module, ActionHandler):
     _TITLE_TEMPLATE = None
     _HONOUR_SPEC_TITLE = False
     _LIST_BY_LANGUAGE = False
-    _DEFAULT_ACTIONS_FIRST = (Action(_("Edit"), 'update', descr=_("Modify the record")),)
-    _DEFAULT_ACTIONS_LAST =  (Action(_("Remove"), 'delete', allow_referer=False,
-                                     descr=_("Remove the record permanently")),
-                              Action(_("Back"), 'list', context=None,
-                                     descr=_("Back to the list of all records")))
-    _LIST_ACTIONS = (Action(_("New record"), 'insert', context=None,
-                            descr=_("Create a new record")),)
-    
     _EXCEPTION_MATCHERS = (
         ('duplicate key violates unique constraint "_?[a-z]+_(?P<id>[a-z_]+)_key"',
          _("This value already exists.  Enter a unique value.")),
@@ -49,14 +41,21 @@ class PytisModule(Module, ActionHandler):
          _("Empty value.  This field is mandatory.")),
         )
     
-    
+    _INSERT_LABEL = _("New record")
+    _INSERT_DESCR = _("Create a new record")
     _INSERT_SUBTITLE = _("New Record")
+    _UPDATE_LABEL = _("Edit")
+    _UPDATE_DESCR = _("Modify the record")
     _UPDATE_SUBTITLE = _("Edit Form")
+    _DELETE_LABEL = _("Remove")
+    _DELETE_DESCR = _("Remove the record permanently")
     _DELETE_SUBTITLE = _("Remove")
     _DELETE_PROMPT = _("Please, confirm removing the record permanently.")
     _INSERT_MSG = _("New record was successfully inserted.")
     _UPDATE_MSG = _("The record was successfully updated.")
     _DELETE_MSG = _("The record was deleted.")
+    _LIST_LABEL = _("Back to list")
+    _LIST_DESCR = _("Back to the list of all records")
     
     _OWNER_COLUMN = None
     _SUPPLY_OWNER = True
@@ -312,18 +311,22 @@ class PytisModule(Module, ActionHandler):
         return Document(title, content, lang=lang, **kwargs)
 
     def _default_actions_first(self, req, record):
-        return self._DEFAULT_ACTIONS_FIRST
+        return (Action(self._INSERT_LABEL, 'insert', descr=self._INSERT_DESCR, context=None),
+                Action(self._UPDATE_LABEL, 'update', descr=self._UPDATE_DESCR),)
 
     def _default_actions_last(self, req, record):
-        return self._DEFAULT_ACTIONS_LAST
+        return (Action(self._DELETE_LABEL, 'delete', descr=self._DELETE_DESCR, allow_referer=False),
+                Action(self._LIST_LABEL, 'list', descr=self._LIST_DESCR, allow_referer=False))
 
     def _actions(self, req, record):
+        actions = self._default_actions_first(req, record) + \
+                  self._view.actions() + \
+                  self._default_actions_last(req, record)
         if record is not None:
-            return self._default_actions_first(req, record) + \
-                   self._view.actions() + \
-                   self._default_actions_last(req, record)
+            context = pp.ActionContext.CURRENT_ROW
         else:
-            return self._LIST_ACTIONS
+            context = None
+        return tuple([a for a in actions if a.context() == context])
 
     def _action_menu(self, req, record=None, actions=None, uri=None, **kwargs):
         actions = [action for action in actions or self._actions(req, record)
@@ -502,8 +505,9 @@ class PytisModule(Module, ActionHandler):
         return prefill
 
     def _binding_condition(self, binding, record):
-        if binding.condition():
-            condition = binding.condition()(record)
+        cfunc = binding.condition()
+        if cfunc:
+            condition = cfunc(record)
         else:
             condition = None
         binding_column = binding.binding_column()
@@ -532,9 +536,9 @@ class PytisModule(Module, ActionHandler):
         else:
             return None
     
-    def _rows(self, req, lang=None, limit=None):
+    def _rows(self, req, lang=None, condition=None, limit=None):
         return self._data.get_rows(sorting=self._sorting, limit=limit,
-                                   condition=self._condition(req, lang=lang))
+                                   condition=self._condition(req, lang=lang, condition=condition))
 
     def _handle(self, req, action, **kwargs):
         record = kwargs.get('record')
@@ -553,8 +557,11 @@ class PytisModule(Module, ActionHandler):
         return super(PytisModule, self)._handle(req, action, **kwargs)
 
     def _binding_enabled(self, binding, record):
-        return not isinstance(binding, Binding) or binding.enabled() is None \
-               or binding.enabled()(record)
+        return 
+
+    def _bindings(self, req, record):
+        return [b for b in self._view.bindings()
+                if not isinstance(b, Binding) or b.enabled() is None or b.enabled()(record)]
 
     # ===== Methods which modify the database =====
     
@@ -606,7 +613,7 @@ class PytisModule(Module, ActionHandler):
             form = binding.form()
         else:
             form = pw.ListView
-        condition = condition=self._binding_condition(binding, record)
+        condition = self._binding_condition(binding, record)
         columns = [c for c in self._view.columns() if c != binding.binding_column()]
         lang = req.prefered_language(raise_error=False)
         if binding.id():
@@ -653,26 +660,25 @@ class PytisModule(Module, ActionHandler):
         content = [self._form(pw.ShowForm, req, record=record,
                               layout=self._layout(req, 'view', record)),
                    self._action_menu(req, record)]
-        for binding in self._view.bindings():
-            if self._binding_enabled(binding, record):
-                module = self._module(binding.name())
-                related = module.related(req, binding, record,
-                                         uri=self._current_record_uri(req, record))
-                content.append(lcg.Section(title=binding.title(), content=related))
+        for binding in self._bindings(req, record):
+            module = self._module(binding.name())
+            related = module.related(req, binding, record,
+                                     uri=self._current_record_uri(req, record))
+            content.append(lcg.Section(title=binding.title(), content=related))
         return self._document(req, content, record, err=err, msg=msg)
 
     def action_subpath(self, req, record):
-        for binding in self._view.bindings():
+        for binding in self._bindings(req, record):
             if req.unresolved_path[0] == binding.id():
                 del req.unresolved_path[0]
-                if self._binding_enabled(binding, record):
-                    # TODO: respect the binding condition in the forwarded module.
-                    module = self._module(binding.name())
-                    return req.forward(module, binding=binding, record=record,
-                                       title=self._document_title(req, record))
-                else:
-                    raise Forbidden()
-        raise NotFound()
+                # TODO: respect the binding condition in the forwarded module.
+                module = self._module(binding.name())
+                return req.forward(module, binding=binding, record=record,
+                                   title=self._document_title(req, record))
+        if req.unresolved_path[0] in [b.id() for b in self._view.bindings()]:
+            raise Forbidden()
+        else:
+            raise NotFound()
 
     # ===== Action handlers which modify the database =====
 
@@ -855,18 +861,21 @@ class RssModule(object):
                               type='application/rss+xml'), " (",
                      lcg.link('_doc/rss', _("more about RSS")), ")")
         
-    def action_rss(self, req):
+    def action_rss(self, req, binding=None):
         if not self._RSS_TITLE_COLUMN:
             raise NotFound
         lang = req.param('lang')
-        rows = self._rows(req, lang=str(lang), limit=self._RSS_LIMIT)
+        if binding:
+            condition = self._binding_condition(*binding)
+        else:
+            condition = None
+        rows = self._rows(req, condition=condition, lang=lang, limit=self._RSS_LIMIT)
         from xml.sax.saxutils import escape
         base_uri = req.server_uri()
         record = self._record(req, None)
         items = []
         import mx.DateTime as dt
         tr = translator(str(lang))
-        users = self._module('Users')
         for row in rows:
             record.set_row(row)
             title = escape(tr.translate(record[self._RSS_TITLE_COLUMN].export()))
@@ -886,9 +895,12 @@ class RssModule(object):
                 date = dt.ARPA.str(v.localtime())
             else:
                 date = None
-            if self._RSS_AUTHOR_COLUMN:
-                uid = record[self._RSS_AUTHOR_COLUMN]
-                author = users.record(req, uid)['email'].export()
+            author_column = self._RSS_AUTHOR_COLUMN
+            if author_column:
+                if isinstance(author_column, tuple):
+                    author = record.cb_value(*author_column).export()
+                else:
+                    author = record[author_column].export()
             else:
                 author = cfg.webmaster_address
             items.append((title, uri, descr, date, author))
@@ -987,13 +999,17 @@ class Panelizable(object):
     _PANEL_DEFAULT_COUNT = 3
     _PANEL_FIELDS = None
 
-    def panelize(self, req, lang, count):
+    def panelize(self, req, lang, count, binding=None):
         count = count or self._PANEL_DEFAULT_COUNT
         fields = [self._view.field(id)
                   for id in self._PANEL_FIELDS or self._view.columns()]
+        if binding:
+            condition = self._binding_condition(*binding)
+        else:
+            condition = None
         record = self._record(req, None)
         items = []
-        for row in self._rows(req, lang=lang, limit=count-1):
+        for row in self._rows(req, condition=condition, lang=lang, limit=count-1):
             record.set_row(row)
             item = PanelItem([(f.id(), record[f.id()].export(),
                                f.id() == self._title_column and \

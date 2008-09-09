@@ -1,3 +1,10 @@
+2008-09-09  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/db.py: Allow easy redefinition of labels and
+	descriptions for default actions.  Allow easy redefinition of
+	bindings.  Support bindings in `RssModule' and `Panelizable'.
+	Avoid CMS dependency in `RssModule'.
+
 2008-09-08  Tomas Cerha  <cerha@brailcom.org>
 
 	* TODO: 

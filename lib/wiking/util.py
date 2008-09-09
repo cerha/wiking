@@ -546,9 +546,6 @@ class ActionCtrl(lcg.Content):
             enabled = enabled(self._row)
         uri = self._uri
         args = dict(action=action.name(), **action.kwargs())
-        if self._row and action.name() == 'list':
-            key = self._row.data().key()[0].id()
-            args = dict(args, search=self._row[key].export(), module=self._name)
         if self._row and action.context() == pp.ActionContext.CURRENT_ROW:
             if self._referer is not None and action.allow_referer():
                 if not uri.endswith('/'):
@@ -556,7 +553,10 @@ class ActionCtrl(lcg.Content):
                 uri += self._row[self._referer].export()
             else:
                 key = self._row.data().key()[0].id()
-                args = dict(args, **{key: self._row[key].export()})
+                if action.name() == 'list':
+                    args = dict(args, search=self._row[key].export(), module=self._name)
+                else:
+                    args = dict(args, **{key: self._row[key].export()})
         content = [g.hidden(name, value) for name, value in args.items()] + \
                   [g.submit(action.title(), title=action.descr(), disabled=not enabled)]
         return g.form(['  '+x for x in content], action=uri)
