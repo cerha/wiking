@@ -43,19 +43,16 @@ class PytisModule(Module, ActionHandler):
     
     _INSERT_LABEL = _("New record")
     _INSERT_DESCR = _("Create a new record")
-    _INSERT_SUBTITLE = _("New Record")
     _UPDATE_LABEL = _("Edit")
     _UPDATE_DESCR = _("Modify the record")
-    _UPDATE_SUBTITLE = _("Edit Form")
     _DELETE_LABEL = _("Remove")
     _DELETE_DESCR = _("Remove the record permanently")
-    _DELETE_SUBTITLE = _("Remove")
     _DELETE_PROMPT = _("Please, confirm removing the record permanently.")
+    _LIST_LABEL = _("Back to list")
+    _LIST_DESCR = _("Back to the list of all records")
     _INSERT_MSG = _("New record was successfully inserted.")
     _UPDATE_MSG = _("The record was successfully updated.")
     _DELETE_MSG = _("The record was deleted.")
-    _LIST_LABEL = _("Back to list")
-    _LIST_DESCR = _("Back to the list of all records")
     
     _OWNER_COLUMN = None
     _SUPPLY_OWNER = True
@@ -272,23 +269,24 @@ class PytisModule(Module, ActionHandler):
         return error
 
     def _document_title(self, req, record):
-        fw = self._binding_forward(req)
-        if fw and fw.arg('title'):
-            title = fw.arg('title') +' :: '
-        else:
-            title = ''
         if record:
             if self._TITLE_TEMPLATE:
-                title += self._TITLE_TEMPLATE.interpolate(lambda key: record[key].export())
+                title = self._TITLE_TEMPLATE.interpolate(lambda key: record[key].export())
             else:
-                title += record[self._title_column].export()
+                title = record[self._title_column].export()
         else:
             if self._HONOUR_SPEC_TITLE:
-                title += self._view.title()
-            elif fw:
-                title += fw.arg('binding').title()
+                title = self._view.title()
             else:
                 title = None # Current menu title will be substituted.
+        fw = self._binding_forward(req)
+        if fw and fw.arg('title'):
+            if title:
+                title = fw.arg('title') +' :: '+ title
+            else:
+                title = fw.arg('title')
+            #    title += fw.arg('binding').title()
+            #else:
         return title
         
     def _document(self, req, content, record=None, lang=None, err=None, msg=None, **kwargs):
@@ -781,16 +779,16 @@ class PytisModule(Module, ActionHandler):
                               msg=self._delete_prompt(req, record))
         
     def _insert_subtitle(self, req):
-        return self._INSERT_SUBTITLE
+        return self._INSERT_LABEL
         
     def _update_subtitle(self, req, record, action):
         for a in self._actions(req, record):
             if a.name() == action:
                 return a.title()
-        return self._UPDATE_SUBTITLE
+        return self._UPDATE_LABEL
         
     def _delete_subtitle(self, req, record):
-        return self._DELETE_SUBTITLE
+        return self._DELETE_LABEL
     
     def _delete_prompt(self, req, record):
         return self._DELETE_PROMPT
@@ -861,12 +859,12 @@ class RssModule(object):
                               type='application/rss+xml'), " (",
                      lcg.link('_doc/rss', _("more about RSS")), ")")
         
-    def action_rss(self, req, binding=None):
+    def action_rss(self, req, relation=None):
         if not self._RSS_TITLE_COLUMN:
             raise NotFound
         lang = req.param('lang')
-        if binding:
-            condition = self._binding_condition(*binding)
+        if relation:
+            condition = self._binding_condition(*relation)
         else:
             condition = None
         rows = self._rows(req, condition=condition, lang=lang, limit=self._RSS_LIMIT)
@@ -999,12 +997,12 @@ class Panelizable(object):
     _PANEL_DEFAULT_COUNT = 3
     _PANEL_FIELDS = None
 
-    def panelize(self, req, lang, count, binding=None):
+    def panelize(self, req, lang, count, relation=None):
         count = count or self._PANEL_DEFAULT_COUNT
         fields = [self._view.field(id)
                   for id in self._PANEL_FIELDS or self._view.columns()]
-        if binding:
-            condition = self._binding_condition(*binding)
+        if relation:
+            condition = self._binding_condition(*relation)
         else:
             condition = None
         record = self._record(req, None)
