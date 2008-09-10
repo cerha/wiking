@@ -479,6 +479,35 @@ class Document(object):
         return node
 
     
+class BoundCache(object):
+    """Simple unlimited cache caching only in a limited scope.
+
+    The scope can be passed as an arbitrary Python object and the cache is automatically reset if
+    the scope is different than the previously used scope.
+
+    """
+    def __init__(self):
+        self._scope = None
+        self._cache = {}
+    
+    def get(self, scope, key, func):
+        """Get the cached value for 'key'.
+
+        Use 'func' to retrieve the value if it is not in the cache.  Reset the cache if the 'scope'
+        is not the same object (in the sense of Python identity) as passed in the previous call to
+        this method.
+        
+        """
+        if self._scope is not scope:
+            self._cache = {}
+            self._scope = scope
+        try:
+            result = self._cache[key]
+        except KeyError:
+            result = self._cache[key] = func()
+        return result
+
+    
 # ============================================================================
 # Classes derived from LCG components
 # ============================================================================

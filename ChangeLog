@@ -1,9 +1,22 @@
+2008-09-10  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/db.py: Use action labels as default action subtitles.
+
+	* lib/wiking/cms/cms.py:
+	* lib/wiking/util.py: 
+	WMI reorganized.  Handle embedded modules through bindings.
+	Respect bindings in RSS and Panels.  Override default action
+	labels and descriptions where appropriate.  Respect changes in
+	action definition.
+
 2008-09-09  Tomas Cerha  <cerha@brailcom.org>
 
-	* lib/wiking/db.py: Allow easy redefinition of labels and
-	descriptions for default actions.  Allow easy redefinition of
-	bindings.  Support bindings in `RssModule' and `Panelizable'.
-	Avoid CMS dependency in `RssModule'.
+	* lib/wiking/db.py: 
+	* lib/wiking/util.py: 
+	Allow easy redefinition of labels and descriptions for default
+	actions.  Allow easy redefinition of bindings.  Support bindings
+	in `RssModule' and `Panelizable'.  Avoid CMS dependency in
+	`RssModule'.
 
 2008-09-08  Tomas Cerha  <cerha@brailcom.org>
 

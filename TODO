@@ -23,6 +23,7 @@ Core features:
 Cleaning:
  * Move RssModule and Panelizable from CMSModule to EmbeddableCMSModule
  * Remove `req.page' hack in CMS
+ * Handle redirection by raising exception.
 
 Minor:
  * Show original page in attachment move form.
