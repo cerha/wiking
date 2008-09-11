@@ -577,10 +577,10 @@ class Config(CMSModule):
         help = _("Edit site configuration.")
         fields = (
             _Field('config_id'),
-            _Field('theme_id', dbcolumn='theme', codebook='Themes'),
+            _Field('theme_id', codebook='Themes'),
             _Field('site_title', width=24),
             _Field('site_subtitle', width=64),
-            _Field('webmaster_address', dbcolumn='webmaster_addr',
+            _Field('webmaster_address',
                    descr=_("This address is used as public contact address for your site. "
                            "It is displayed at the bottom of each page, in error messages, RSS "
                            "feeds and so on.  Please make sure that this address is valid "

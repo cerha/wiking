@@ -1,3 +1,10 @@
+2008-09-11  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/cms/cms.py: 
+	* sql/wiking.sql: 
+	Database config columns renamed to match with configuration
+	option names.  Columns for new options added.
+
 2008-09-10  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/db.py: Use action labels as default action subtitles.

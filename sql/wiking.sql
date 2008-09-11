@@ -394,15 +394,24 @@ CREATE OR REPLACE RULE texts_update AS
 -------------------------------------------------------------------------------
 
 CREATE TABLE config (
-	config_id int PRIMARY KEY DEFAULT 0 CHECK (config_id = 0),
-	site_title text NOT NULL,
-	site_subtitle text,
-	allow_login_panel boolean NOT NULL DEFAULT 'TRUE',
-	allow_registration boolean NOT NULL DEFAULT 'TRUE',
-	force_https_login boolean NOT NULL DEFAULT 'FALSE',
-	webmaster_addr text,
-	upload_limit int,
-	theme integer REFERENCES themes
+        config_id int PRIMARY KEY DEFAULT 0 CHECK (config_id = 0),
+        site_title text NOT NULL,
+        site_subtitle text,
+        allow_login_panel boolean NOT NULL DEFAULT 'TRUE',
+        allow_registration boolean NOT NULL DEFAULT 'TRUE',
+        login_is_email boolean NOT NULL DEFAULT 'FALSE',
+        registration_expiration int,
+        force_https_login boolean NOT NULL DEFAULT 'FALSE',
+        https_port int,
+        smtp_server text,
+        webmaster_address text,
+        bug_report_address text,
+        default_sender_address text,
+        upload_limit int,
+        session_expiration int,
+        certificate_authentication boolean NOT NULL DEFAULT 'FALSE',
+        certificate_expiration int,
+        theme_id integer REFERENCES themes
 );
 
 --CREATE TABLE changes (
