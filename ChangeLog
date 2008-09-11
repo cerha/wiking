@@ -1,6 +1,10 @@
 2008-09-11  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/__init__.py: Version set to 0.4.4.
+	
 	* lib/wiking/cms/cms.py: 
+	Don't redirect to unpublished submenu items.
+	
 	* sql/wiking.sql: 
 	Database config columns renamed to match with configuration
 	option names.  Columns for new options added.

@@ -1217,8 +1217,9 @@ class Pages(CMSModule):
             content.append(lcg.Section(title=_("Attachments"), content=lcg.ul(items),
                                        anchor='attachment-automatic-list')) # Prevent dupl. anchor.
         if not content and record['parent'].value() is None:
-            rows = self._data.get_rows(parent=record['mapping_id'].value(),
-                                       condition=pd.EQ('hidden', pd.Value(pd.Boolean(), False)))
+            rows = self._data.get_rows(parent=record['mapping_id'].value(), condition=\
+                                       pd.AND(pd.EQ('hidden', pd.Value(pd.Boolean(), False)),
+                                              pd.EQ('published', pd.Value(pd.Boolean(), True))))
             if rows:
                 return req.redirect('/'+rows[0]['identifier'].value())
         # Action menu
