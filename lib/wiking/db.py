@@ -580,10 +580,9 @@ class PytisModule(Module, ActionHandler):
         """Update the record data in the database."""
         self._data.update(record.key(), record.rowdata())
 
-    def _delete(self, record, raise_error=True):
+    def _delete(self, record):
         """Delete the record from the database."""
-        if not self._data.delete(record.key()) and raise_error:
-            raise pd.DBException('???', Exception("Unable to delete record."))
+        self._data.delete(record.key())
         
     # ===== Public methods =====
     
@@ -641,7 +640,7 @@ class PytisModule(Module, ActionHandler):
                 t = translator(req.prefered_language()).translate
                 return self._binding_parent_redirect(req, fw.uri()[:-(len(binding_id)+1)],
                                                      search=req.param('search'),
-                                                     module=req.param('module'),
+                                                     form_name=req.param('form_name'),
                                                      err=t(err), msg=t(msg))
             #condition = self._binding_condition(binding, fw.arg('record'))
             #columns = [c for c in self._view.columns() if c != fw.arg('binding').binding_column()]
@@ -771,7 +770,7 @@ class PytisModule(Module, ActionHandler):
             else:
                 return self._redirect_after_delete(req, record)
         form = self._form(pw.ShowForm, req, record)
-        actions = (Action(_("Remove"), 'delete', allow_referer=False, submit=1),
+        actions = (Action(self._DELETE_LABEL, 'delete', allow_referer=False, submit=1),
                    Action(_("Back"), 'view'))
         action_menu = self._action_menu(req, record, actions)
         return self._document(req, (form, action_menu), record, err=err,
@@ -976,15 +975,15 @@ class StoredFileModule(PytisModule):
             self._save_files(record)
         except:
             # TODO: Rollback the transaction instead of deleting the record.
-            self._delete(record, raise_error=False)
+            self._delete(record)
             raise
         
     def _update(self, record):
         super(StoredFileModule, self)._update(record)
         self._save_files(record)
         
-    def _delete(self, record, raise_error=True):
-        super(StoredFileModule, self)._delete(record, raise_error=raise_error)
+    def _delete(self, record):
+        super(StoredFileModule, self)._delete(record)
         for id, filename_id in self._STORED_FIELDS:
             fname = record[filename_id].value()
             if os.path.exists(fname):
