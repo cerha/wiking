@@ -35,7 +35,8 @@ import mx.DateTime
 from mx.DateTime import today, TimeDelta
 
 import pytis.data
-from pytis.presentation import computer, Computer, CbComputer, Fields, HGroup, CodebookSpec
+from pytis.presentation import computer, Computer, CbComputer, Fields, HGroup, CodebookSpec, \
+     FieldSpec as Field
 from lcg import log as debug
 
 CHOICE = pp.SelectionType.CHOICE
@@ -94,8 +95,8 @@ class WikingManagementInterface(Module, RequestHandler):
                   _("Customize the appearance of your site.")),
                  (SECTION_USERS,   _("User Management"),
                   _("Manage registered users and their privileges.")),
-                 (SECTION_CERTIFICATES, _("Certificate Management"),
-                  _("Manage trusted certificates of your site.")),
+                 #(SECTION_CERTIFICATES, _("Certificate Management"),
+                 # _("Manage trusted certificates of your site.")),
                  (SECTION_SETUP,   _("Setup"),
                   _("Edit global properties of your web site.")),
                  )
@@ -975,7 +976,7 @@ class Pages(CMSModule):
                             ('hidden', 'ord'),
                             ('private', 'owner')),
                            horizontal=True))
-        columns = ('title_or_identifier', 'identifier', 'status', 'modname', 'hidden', 'ord',
+        columns = ('title_or_identifier', 'identifier', 'modname', 'status', 'hidden', 'ord',
                    'private', 'owner')
         cb = CodebookSpec(display='title_or_identifier', prefer_display=True)
         bindings = (Binding(_("Attachments"), 'Attachments', 'mapping_id', id='attachments'),)
@@ -1566,7 +1567,7 @@ class News(EmbeddableCMSModule):
             Field('date_title', virtual=True,
                   computer=Computer(self._date_title, depends=('date', 'title'))))
         sorting = (('timestamp', DESC),)
-        columns = ('title', 'date', 'author')
+        columns = ('title', 'timestamp', 'author')
         layout = ('timestamp', 'title', 'content')
         list_layout = pp.ListLayout('title', meta=('timestamp', 'author'),  content='content',
                                     anchor="item-%s")
