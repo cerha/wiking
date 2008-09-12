@@ -1,3 +1,12 @@
+2008-09-12  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/util.py:
+	Don't define `Field' here.  Pass `form_name' with `search'.
+
+	* lib/wiking/db.py:
+	Don't raise exceptions when `data.delete()' returns False.  Use
+	`_DELETE_LABEL' also for deletion confirmation button.
+
 2008-09-11  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/__init__.py: Version set to 0.4.4.

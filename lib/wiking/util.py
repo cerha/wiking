@@ -583,7 +583,7 @@ class ActionCtrl(lcg.Content):
             else:
                 key = self._row.data().key()[0].id()
                 if action.name() == 'list':
-                    args = dict(args, search=self._row[key].export(), module=self._name)
+                    args = dict(args, search=self._row[key].export(), form_name=self._name)
                 else:
                     args = dict(args, **{key: self._row[key].export()})
         content = [g.hidden(name, value) for name, value in args.items()] + \
@@ -686,8 +686,6 @@ class LoginDialog(lcg.Content):
 # ============================================================================
 # Classes derived from Pytis components
 # ============================================================================
-
-Field = pytis.presentation.FieldSpec
 
 class FieldSet(pp.GroupSpec):
     def __init__(self, label, fields, horizontal=False):
