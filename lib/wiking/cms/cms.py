@@ -546,7 +546,7 @@ class Config(CMSModule):
     """
     class Spec(Specification):
         class _Field(Field):
-            def __init__(self, name, label=None, descr=None, transform_default=repr, **kwargs):
+            def __init__(self, name, label=None, descr=None, transform_default=None, **kwargs):
                 if hasattr(cfg, name):
                     option = cfg.option(name)
                 elif hasattr(cfg.appl, name):
@@ -560,10 +560,12 @@ class Config(CMSModule):
                         label = option.description()
                     if descr is None:
                         descr = option.documentation()
-                    if transform_default is not None:
-                        if isinstance(option, cfg.BooleanOption) and transform_default == repr:
+                    if transform_default is None:
+                        if isinstance(option, cfg.BooleanOption):
                             transform_default = lambda x: x and _("enabled") or _("disabled")
-                        descr += ' '+ _("The default value is %s.", transform_default(default))
+                        else:
+                            transform_default = lambda x: x is None and _("undefined") or repr(x)
+                    descr += ' '+ _("The default value is %s.", transform_default(default))
                 self._cfg_option = option
                 self._cfg_default_value = default
                 Field.__init__(self, name, label, descr=descr, **kwargs)
@@ -586,16 +588,19 @@ class Config(CMSModule):
                            "It is displayed at the bottom of each page, in error messages, RSS "
                            "feeds and so on.  Please make sure that this address is valid "
                            "(e-mail sent to it is delivered to a responsible person).")),
+            _Field('default_sender_address',
+                   descr=_("E-mail messages sent by the system, such as automatic notifications, "
+                           "password reminders, bug-reports etc. will use this sender address. "
+                           "Please make sure that this address is valid, since users may reply "
+                           "to such messages if they encounter problems.")),
             _Field('allow_login_panel'),
             _Field('allow_registration'),
-            #_Field('allow_wmi_link'),
             _Field('force_https_login'),
             _Field('upload_limit',
                    transform_default=lambda n: repr(n) +' ('+ pp.format_byte_size(n)+')'),
             )
-        layout = ('site_title', 'site_subtitle', 'webmaster_address',
-                  'allow_login_panel', 'allow_registration', #'allow_wmi_link',
-                  'force_https_login', 'upload_limit')
+        layout = ('site_title', 'site_subtitle', 'webmaster_address', 'default_sender_address',
+                  'allow_login_panel', 'allow_registration', 'force_https_login', 'upload_limit')
     _TITLE_TEMPLATE = _("Basic Configuration")
     WMI_SECTION = WikingManagementInterface.SECTION_SETUP
     WMI_ORDER = 100
@@ -2056,7 +2061,7 @@ class Users(EmbeddableCMSModule):
             # TODO: The admin email is translated to users language.  It would be more approppriate
             # to subscribe admin messages from admin accounts and set the language for each admin.
             err = send_mail(addr, _("New user registration:") +' '+ record['fullname'].value(),
-                            text, lang=record['lang'].value(), sender=cfg.default_sender_address)
+                            text, lang=record['lang'].value())
             if err:
                 err = _("Failed sending e-mail notification:") +' '+ err
             else:
