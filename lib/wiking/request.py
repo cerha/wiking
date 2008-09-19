@@ -245,28 +245,34 @@ class Request(pytis.web.Request):
 
 
 class WikingRequest(Request):
-    """Wiking application specific request object."""
+    """Wiking application specific request object.
+
+    This class adds some features which are quite specific for the Wiking request handling
+    process.  See the Wiking Developer's Documentation for an overview.
+    
+    """
     
     class ForwardInfo(object):
         """Request forwarding information.
 
-        The method 'WikingRequest.forward()' automatically adds forward information to the stack,
-        which may be later inspected through the method 'WikingRequest.forwards()'.  Each item on
-        this stack is an instance of this class.  The constructor arguments are supplied as
-        follows:
-
-          module -- the handler instance to which the request was forwarded
-          resolved_path -- sequence of request path items (strings) corresponding to the resolved
-            portion of the path at the time of the forward
-          unresolved_path -- sequence of request path items (strings) corresponding to the
-            unresolved portion of the path at the time of the forward
-          kwargs -- any keyword arguments passed to the forward method call.  These arguments may
-            be later inspected through the 'args()' method and make it possible to pass any
-            application defined data for later inspection.
+        The method 'forward()' automatically adds forward information (as an instance of the
+        'ForwardInfo' class) to the stack, which may be later inspected through the method
+        'forwards()'.
 
         """
-        
         def __init__(self, module, resolved_path, unresolved_path, **kwargs):
+            """Arguments:
+
+              module -- the handler instance to which the request was forwarded
+              resolved_path -- sequence of request path items (strings) corresponding to the
+                resolved portion of the path at the time of the forward
+              unresolved_path -- sequence of request path items (strings) corresponding to the
+                unresolved portion of the path at the time of the forward
+              kwargs -- any keyword arguments passed to the forward method call.  These arguments
+                may be later inspected through the 'args()' method and make it possible to pass any
+                application defined data for later inspection.
+
+            """  
             self._module = module
             self._resolved_path = tuple(resolved_path)
             self._unresolved_path = tuple(unresolved_path)
@@ -294,15 +300,23 @@ class WikingRequest(Request):
                 return self._data[name]
             except KeyError:
                 return None
-            
+
     _LANG_COOKIE = 'wiking_prefered_language'
     _PANELS_COOKIE = 'wiking_show_panels'
     _UNDEFINED = object()
     
+    INFO = 'INFO'
+    """Message type constant for informational messages."""
+    WARN = 'WARN'
+    """Message type constant for warning messages."""
+    ERROR = 'ERROR'
+    """Message type constant for error messages."""
+            
     def __init__(self, req, application, **kwargs):
         super(WikingRequest, self).__init__(req, **kwargs)
         self._application = application
         self._forwards = []
+        self._messages = []
         self.unresolved_path = list(self.path)
 
     def _init_options(self):
@@ -388,6 +402,35 @@ class WikingRequest(Request):
         return tuple(self._forwards)
 
     def uri_prefix(self):
+        """Return the URI prefix as a string or empty string if no prefix is set.
+
+        URI prefix is the fixed part of request URI, which is ignored by Wiking URI resolution
+        process.  It may be typically useful when you want to run multiple Wiking applications on
+        one virtual host.
+
+        Examples:
+
+          Application 1:
+            URI = http://www.yourserver.org/appl1/news
+            req.uri() = '/appl1/news'
+            req.uri_prefix() = '/appl1'
+            req.path = ('news',)
+
+          Application 2:
+            URI = http://www.yourserver.org/appl2/xyz
+            req.uri() = '/appl2/xyz'
+            req.uri_prefix() = '/appl2'
+            req.path = ('xyz',)
+
+        It is especially important to respect the prefix when constructing URIs, however this
+        feature is now in experimantal state and it is not guaranteeed that it is correctly
+        handled by Wiking itself yet.
+
+        In the mod_python environment it can be set by the PythonOption PrefixPath to the value of
+        the prefix string and also by setting the appropriate Python interpretter isolation level
+        e.g. by the PythonInterpreter directive.
+
+        """
         return self._uri_prefix or ''
         
     def show_panels(self):
@@ -494,6 +537,24 @@ class WikingRequest(Request):
         """Return the current `Application' instance."""
         return self._application
         
+    def message(self, message, type=None):
+        """Add a message to the stack.
+
+        Arguments:
+          message -- message text as a string.
+          type -- message text as one of INFO, WARN, ERROR constatns of the class.  If None, the
+            default is INFO.
+
+        The stacked messages can be later retrieved using the 'messages()' method.
+
+        """
+        assert type in (None, self.INFO, self.WARN, self.ERROR)
+        self._messages.append((message, type or self.INFO))
+
+    def messages(self):
+        """Return the current stack of messages as a tuple of pairs (MESSAGE, TYPE)."""
+        return tuple(self._messages)
+    
 
 class User(object):
     """Representation of the logged in user.
