@@ -629,7 +629,7 @@ class PanelItem(lcg.Content):
 class Messages(lcg.Content):
     _CLASS = {WikingRequest.INFO: 'message',
               WikingRequest.WARN: 'warning',
-              WikingRequest.INFO: 'error'}
+              WikingRequest.ERROR: 'error'}
     def export(self, context):
         g = context.generator()
         result = []
