@@ -293,19 +293,18 @@ class PytisModule(Module, ActionHandler):
         title = self._document_title(req, record)
         if record and lang is None and self._LIST_BY_LANGUAGE:
             lang = str(record['lang'].value())
-        if isinstance(content, list):
-            content = tuple(content)
-        elif not isinstance(content, tuple):
-            content = (content,)
         # msg and err may be passed as request params on redirection (see action_list()).
-        if not msg and req.has_param('msg'):
-            msg = req.param('msg')
-        if not err and req.has_param('err'):
-            err = req.param('err')
+        # Maybe we could do this directly in the request constructor?
+        if req.has_param('msg'):
+            req.message(req.param('msg'))
+        if req.has_param('err'):
+            req.message(req.param('err'), type=req.ERROR)
+        # Messages should be now stacked using the req.message() method directly, but they were
+        # passed as _document arguments before, so this is just for backwards compatibility.
         if msg:
-            content = (Message(msg),) + content
+            req.message(msg)
         if err:
-            content = (ErrorMessage(err),) + content
+            req.message(err, type=req.ERROR)
         return Document(title, content, lang=lang, **kwargs)
 
     def _default_actions_first(self, req, record):

@@ -1,3 +1,23 @@
+2008-09-19  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/__init__.py: 
+	* lib/wiking/db.py: 
+	* lib/wiking/util.py: 
+	Pass messages through request message stack.	
+
+	* lib/wiking/request.py: Improved documentation.  Added support
+	for request message stack.
+
+2008-09-18  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/cms/cms.py:
+	* translations/wiking-cms.cs.po:
+	* translations/wiking.cs.po:
+	Allow modification of config option `default_sender_address'
+	through WMI.
+
+	* lib/wiking/configuration.py: Documentation improved.
+
 2008-09-12  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/util.py:
@@ -3450,3 +3470,11 @@
 	* translations/wiking.pl.po: New file
 
 	* translations/wiking.cs.po: Updated.
+Traceback (most recent call last):
+  File "/home/cerha/bin/denik.py", line 97, in <module>
+    period, n = process(projects, changelog)
+  File "/home/cerha/bin/denik.py", line 71, in process
+    for date, text in split(DAY_SPLITTER, changelog.strip(), 2):
+  File "/home/cerha/bin/denik.py", line 29, in split
+    raise Exception("Invalid syntax:", seq[0].splitlines()[0] + '...')
+Exception: ('Invalid syntax:', u'2008-09-18  Tomas Cerha  <cerha@brailcom.org>...')

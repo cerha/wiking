@@ -17,7 +17,6 @@
 
 from wiking import *
 
-import time, string, re, os, copy, urllib
 import email.Header
 
 DBG = pytis.util.DEBUG
@@ -411,8 +410,11 @@ class Document(object):
         self._title = title
         self._subtitle = subtitle
         if isinstance(content, (list, tuple)):
-            content = lcg.SectionContainer([c for c in content if c is not None], toc_depth=0)
-        self._content = content
+            content = [c for c in content if c is not None]
+        else:
+            content = [content]
+        content.insert(0, Messages())
+        self._content = lcg.SectionContainer(content, toc_depth=0)
         self._lang = lang
         self._sec_lang = sec_lang
         self._variants = variants
@@ -624,16 +626,17 @@ class PanelItem(lcg.Content):
         return g.div(items, cls="item")
 
     
-class Message(lcg.TextContent):
-    _CLASS = "message"
-    
+class Messages(lcg.Content):
+    _CLASS = {WikingRequest.INFO: 'message',
+              WikingRequest.WARN: 'warning',
+              WikingRequest.INFO: 'error'}
     def export(self, context):
         g = context.generator()
-        return g.p(g.escape(self._text), cls=self._CLASS) + "\n"
-
-  
-class ErrorMessage(Message):
-    _CLASS = "error"
+        result = []
+        req = context.req()
+        for message, type in req.messages():
+            result.append(g.p(g.escape(message), cls=self._CLASS[type]))
+        return g.concat(result)
     
 
 class LoginDialog(lcg.Content):

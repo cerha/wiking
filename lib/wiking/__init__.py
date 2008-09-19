@@ -17,7 +17,7 @@
 
 __version__ = '0.4.4'
 
-import sys, os
+import sys, os, time, string, re, copy, urllib
 
 # TODO: this can be removed once it is solved in Pytis...
 reload(sys)
@@ -38,8 +38,8 @@ import pytis.web as pw
 import lcg
 from lcg import log as debug 
 
-from util import *
 from request import *
+from util import *
 from modules import *
 from db import *
 from application import *
