@@ -1,5 +1,14 @@
 2008-09-19  Tomas Cerha  <cerha@brailcom.org>
 
+	* doc/src/devel/_index.txt: 
+	* doc/src/devel/application.py: 
+	* doc/src/devel/handling.en.txt: 
+	* doc/src/devel/modularization.en.txt: 
+	Added basic documentation of the request handling process.	
+
+	* doc/src/devel/qa.cs.txt: Renamed to `_qa.cs.txt' to hide it from
+	lcg-make.
+
 	* lib/wiking/__init__.py: 
 	* lib/wiking/db.py: 
 	* lib/wiking/util.py: 
