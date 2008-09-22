@@ -1,3 +1,7 @@
+2008-09-22  Tomas Cerha  <cerha@brailcom.org>
+
+	* resources/css/default.css: Highlight found record also in `ListView'.
+
 2008-09-19  Tomas Cerha  <cerha@brailcom.org>
 
 	* doc/src/devel/_index.txt: 
@@ -3479,11 +3483,3 @@
 	* translations/wiking.pl.po: New file
 
 	* translations/wiking.cs.po: Updated.
-Traceback (most recent call last):
-  File "/home/cerha/bin/denik.py", line 97, in <module>
-    period, n = process(projects, changelog)
-  File "/home/cerha/bin/denik.py", line 71, in process
-    for date, text in split(DAY_SPLITTER, changelog.strip(), 2):
-  File "/home/cerha/bin/denik.py", line 29, in split
-    raise Exception("Invalid syntax:", seq[0].splitlines()[0] + '...')
-Exception: ('Invalid syntax:', u'2008-09-18  Tomas Cerha  <cerha@brailcom.org>...')
