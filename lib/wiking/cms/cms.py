@@ -427,10 +427,20 @@ class CMSExtension(Module, Embeddable, RequestHandler):
     """
     class MenuItem(object):
         """Specification of a menu item bound to a submodule of an extension."""
-        def __init__(self, modname, id=None, submenu=(), **kwargs):
+        def __init__(self, modname, id=None, submenu=(), enabled=None, **kwargs):
             """Arguments:
-            
+
                modname -- string name of the submodule derived from 'CMSExtensionModule'
+               
+               id -- item identifier as a string.  The default value is determined by transforming
+                 'modname' to lower case using dashes to separate camel case words.  This
+                 identifier is used as part of the URI of the item.
+               enabled -- function of one argument (the request object) determining whether the
+                 item is enabled (visible) in given context.  Note, that the URI of a disabled item
+                 remains valid, so you still need to restrict access to the module by defining
+                 access rights or any other means appropriate for the reason of unavalability of
+                 the item.  This option only controls the presence of the item in the menu.  If
+                 None (default), the item is always visible.
                submenu -- sequence of subordinate 'CMSExtension.MenuItem' instances.
 
             All other keyword arguments will be passed to 'MenuItem' constructor when converting
@@ -439,11 +449,13 @@ class CMSExtension(Module, Embeddable, RequestHandler):
             """
             if __debug__:
                 assert isinstance(modname, (str, unicode)), modname
+                assert enabled is None or callable(enabled), enabled
                 for item in submenu:
                     assert isinstance(item, CMSExtension.MenuItem), item
             self.modname = modname
             self.id = id or pytis.util.camel_case_to_lower(modname, '-')
             self.submenu = submenu
+            self.enabled = enabled
             self.kwargs = kwargs
     
     _MENU = ()
@@ -472,7 +484,8 @@ class CMSExtension(Module, Embeddable, RequestHandler):
             submenu = [menu_item(i) for i in item.submenu] + module.submenu(req)
             return MenuItem(identifier, module.title(), descr=module.descr(),
                             submenu=submenu, **item.kwargs)
-        return [menu_item(item) for item in self._MENU]
+        return [menu_item(item) for item in self._MENU
+                if item.enabled is None or item.enabled(req)]
 
     def handle(self, req):
         try:

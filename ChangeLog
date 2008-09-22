@@ -1,5 +1,7 @@
 2008-09-22  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/cms/cms.py: Allow dynamic control of menu item availability.
+
 	* resources/css/default.css: Highlight found record also in `ListView'.
 
 2008-09-19  Tomas Cerha  <cerha@brailcom.org>
