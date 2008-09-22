@@ -457,6 +457,10 @@ form.browse-form #found-record {
 form.list-view div.list-item {
     margin-bottom: 1.1em;
 }
+form.list-view #found-record h3 {
+    background: $color.highlight-bg;
+}
+
 form.list-view div.list-item h3 {
     margin-bottom: 0.2em;
     font-size: 1.2em;
