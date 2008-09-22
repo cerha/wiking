@@ -56,10 +56,7 @@ class AuthenticationError(RequestError):
     _TITLE = _("Authentication required")
 
     def message(self, req):
-        content = LoginDialog()
-        if self.args:
-            content = (ErrorMessage(self.args[0]), content)
-        return content
+        return LoginDialog(self.args and self.args[0] or None)
 
     
 class AuthenticationRedirect(AuthenticationError):
@@ -641,6 +638,10 @@ class Messages(lcg.Content):
 
 class LoginDialog(lcg.Content):
     
+    def __init__(self, message=None):
+        self._message = message
+        super(LoginDialog, self).__init__()
+        
     def export(self, context):
         g = context.generator()
         req = context.req()
@@ -674,7 +675,8 @@ class LoginDialog(lcg.Content):
             uri = req.server_uri(force_https=True) + req.uri()
         else:
             uri = req.uri()
-        result = g.form(content, method='POST', action=uri, name='login_form', cls='login-form') +\
+        result = (self._message and g.p(g.escape(self._message), cls='error') or '') + \
+                 g.form(content, method='POST', action=uri, name='login_form', cls='login-form') +\
                  g.script("onload_ = window.onload; window.onload = function() { "
                           "if (onload_) onload_(); "
                           "setTimeout(function () { document.login_form.login.focus() }, 0); };")
