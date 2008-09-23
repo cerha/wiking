@@ -1,3 +1,10 @@
+2008-09-23  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/export.py: 
+	* lib/wiking/util.py: 
+	* lib/wiking/cms/cms.py: 
+	Allow sections in News and Panel content.
+
 2008-09-22  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/util.py: Login dialog error message handling fixed.

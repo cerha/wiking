@@ -297,6 +297,7 @@ class MenuItem(object):
 class Panel(object):
     """Panel representation to be passed to 'Document.build()'."""
     def __init__(self, id, title, content):
+        assert isinstance(content, lcg.Content)
         self._id = id
         self._title = title
         self._content = content

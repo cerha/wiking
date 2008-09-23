@@ -185,11 +185,11 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
                   g.div('', tabindex=-1, title=_("Panels"), id='panels-menu-item')]
         for panel in panels:
             content = panel.content()
-            if isinstance(content, lcg.Content):
-                content = content.export(context)
+            # Add a fake container to force the heading level start at 4.
+            container = lcg.SectionContainer(lcg.Section('', lcg.Section('', content)))
             result.append(g.div((g.h(g.link(panel.title(), None, name="panel-"+panel.id(),
                                             tabindex=0), 3),
-                                 g.div(content, cls="panel-content")),
+                                 g.div(content.export(context), cls="panel-content")),
                                 cls="panel panel-"+panel.id()))
         result.append(g.br())
         return result

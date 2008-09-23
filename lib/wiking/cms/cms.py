@@ -761,7 +761,7 @@ class Panels(CMSModule, Publishable):
                                                 relation=binding and (binding, row)))
             if row['content'].value():
                 content += tuple(parser.parse(row['content'].value()))
-            panels.append(Panel(panel_id, title, lcg.Container(content)))
+            panels.append(Panel(panel_id, title, lcg.SectionContainer(content, toc_depth=0)))
         return panels
                 
                 
