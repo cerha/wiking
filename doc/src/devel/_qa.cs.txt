@@ -227,3 +227,8 @@ se kterým se nedá nic dělat, viz výše.
     lcg, wiking.
 
  2. Zkontrolujte přístupová práva web serveru ke všem použitým knihovnám.
+
+=== Proč se po vytvoření databáze objeví hláška o neexistujícím db sloupci? ===
+
+Musí být provedena inicializace databáze pro všechny instalované wikingové
+moduly.
