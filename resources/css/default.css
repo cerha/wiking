@@ -345,7 +345,7 @@ div.item span.panel-field-date {
 
 /* Pytis forms styles */
 
-form.pytis-form .group, form.pytis-form div.submit, form.browse-form-controls { 
+form.pytis-form .group, form.pytis-form div.submit, form.list-form-controls .paging-controls { 
     background: $color.frame-bg;
     border: 1px solid $color.frame-border;
     border-width: 1px 0;
@@ -428,26 +428,39 @@ form.browse-form table tfoot td {
     text-align: right;
 }
 
-form.browse-form-controls {
+form.list-form-controls {
     margin: 0.8em 0;
     padding: .2em;
     text-align: right;
 }
-form.browse-form-controls span.offset, form.browse-form-controls span.buttons,
-form.browse-form-controls span.limit { 
-    white-space: nowrap;
+form.list-form-controls .results {
+    text-align: left;
+    font-weight: bold;
 }
-form.browse-form-controls span.offset, form.browse-form-controls span.buttons {
+form.list-form-controls .query {
+    text-align: left;
+}
+form.list-form-controls .query.with-filter {
     float: left;
 }
-form.browse-form-controls div.index-search-controls {
+form.list-form-controls span.offset, form.list-form-controls span.buttons,
+form.list-form-controls span.limit { 
+    white-space: nowrap;
+}
+form.list-form-controls span.offset, form.list-form-controls span.buttons {
+    float: left;
+}
+form.list-form-controls div.index-search-controls {
     text-align: left;
     padding-bottom: 0.4em;
 }
-form.browse-form-controls div.index-search-controls div {
+form.list-form-controls div.index-search-controls div {
     padding-bottom: 0.2em;
 }
-form.browse-form-controls span.buttons input.prev {
+form.list-form-controls span.buttons input.prev {
+    margin-left: 1em;
+}
+form.list-form-controls span.buttons input.search {
     margin-left: 1em;
 }
 form.browse-form #found-record {
