@@ -1,3 +1,9 @@
+2008-10-06  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/cms/cms.py: 
+	Pass error messages through `req.message()' rather than adding
+	them directly to the content.
+
 2008-09-30  Tomas Cerha  <cerha@brailcom.org>
 
 	* resources/css/default.css: Added styles for new form controls.

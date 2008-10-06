@@ -220,7 +220,6 @@ class Registration(Module, ActionHandler):
             title = _("Password reminder and certificate change")
         else:
             title = _("Password reminder")
-        error = None
         if req.param('login') or req_user:
             users = self._module('Users')
             record = users.find_user(req, req.param('login') or req_user.login())
@@ -265,22 +264,21 @@ class Registration(Module, ActionHandler):
                         cert_text,
                         separator='\n') + "\n"
                 elif req_user is None:
-                    return Document(title, ErrorMessage(_("Invalid request.")))
+                    # TODO: Raise RequestError?
+                    return Document(title, lcg.p(_("Invalid request.")))
                 err = send_mail(record['email'].value(), title, text, lang=req.prefered_language(),
                                 attachments=attachments)
                 if err:
-                    error = _("Failed sending e-mail notification:") +' '+ err
+                    req.message(_("Failed sending e-mail notification:") +' '+ err, type=req.ERROR)
                     msg = _("Please try repeating your request later or contact the administrator!")
                 else:
                     msg = _("E-mail information has been sent to your email address.")
                 content = lcg.p(msg)
             else:
-                error = _("No user account for your query.")
+                req.message(_("No user account for your query."), type=req.ERROR)
                 content = self.ReminderForm()
         else:
             content = self.ReminderForm()
-        if error:
-            content = (ErrorMessage(error), content)
         return Document(title, content)
     RIGHTS_remind = (Roles.ANYONE,)
 
