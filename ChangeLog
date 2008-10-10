@@ -1,5 +1,8 @@
 2008-10-10  Tomas Cerha  <cerha@brailcom.org>
 
+	* resources/css/default.css:
+	Minor improvements.
+
 	* lib/wiking/request.py:
 	If cookie value was updated by 'set_cookie()', respect it also in
 	'cookie()'.
