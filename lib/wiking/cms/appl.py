@@ -82,7 +82,7 @@ class Application(CookieAuthentication, wiking.Application):
     
     def panels(self, req, lang):
         if req.wmi:
-            return ()
+            return []
         else:
             if cfg.appl.allow_login_panel:
                 panels = [LoginPanel()]
@@ -95,7 +95,7 @@ class Application(CookieAuthentication, wiking.Application):
             try:
                 return panels + self._module('Panels').panels(req, lang)
             except MaintananceModeError:
-                return ()
+                return []
         
     def languages(self):
         try:
