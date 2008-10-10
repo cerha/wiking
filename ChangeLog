@@ -1,3 +1,9 @@
+2008-10-10  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/request.py:
+	If cookie value was updated by 'set_cookie()', respect it also in
+	'cookie()'.
+
 2008-10-06  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/cms/cms.py: 

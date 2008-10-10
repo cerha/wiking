@@ -54,6 +54,7 @@ class Request(pytis.web.Request):
     def __init__(self, req, encoding='utf-8'):
         self._req = req
         self._encoding = encoding
+        self._cookies = Cookie.SimpleCookie(self.header('Cookie'))
         # Store params and options in real dictionaries (not mod_python's mp_table).
         self._options = self._init_options() 
         self._params = self._init_params()
@@ -80,7 +81,7 @@ class Request(pytis.web.Request):
 
     def _cookie_path(self):
         return '/'
-        
+
     # Methods implementing the pytis Request interface:
     
     def has_param(self, name):
@@ -90,15 +91,18 @@ class Request(pytis.web.Request):
         return self._params.get(name, default)
         
     def cookie(self, name, default=None):
-        cookies = Cookie.SimpleCookie(self.header('Cookie'))
-        if cookies.has_key(name):
-            return cookies[name].value
+        if self._cookies.has_key(name):
+            return self._cookies[name].value
         else:
             return default
         
     def set_cookie(self, name, value, expires=None, secure=False):
+        if value is None:
+            del self._cookies[name]
+        else:
+            self._cookies[name] = value
         c = Cookie.SimpleCookie()
-        c[name] = value
+        c[name] = value or ''
         #c[name]['domain'] = self._req.connection.local_host
         c[name]['path'] = self._cookie_path()
         if expires is not None:
