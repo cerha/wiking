@@ -22,7 +22,7 @@ include $(domains:%=%.d)
 	msgmerge -q --update $@ $< && touch $@
 
 %.pot:
-	xgettext $^ --from-code=utf-8 -o $@
+	xgettext $^ --add-comments=Translators: --from-code=utf-8 -o $@
 
 clean:
 	rm -f *.d *.pot
