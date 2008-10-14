@@ -198,7 +198,7 @@ class Registration(Module, ActionHandler):
     def action_insert(self, req):
         if not cfg.appl.allow_registration:
             raise Forbidden()
-        if req.param('form-name') == 'CertificateRequest':
+        if req.param('form_name') == 'CertificateRequest':
             certificate_request_module = self._module('CertificateRequest')
             record, errors, layout = certificate_request_module.action_insert_perform(req)
             if errors:
@@ -1950,7 +1950,7 @@ class Users(EmbeddableCMSModule):
     RIGHTS_certload = (Roles.ANYONE,)
 
     def action_insert(self, req, record=None):
-        if req.param('form-name') == 'CertificateRequest':
+        if req.param('form_name') == 'CertificateRequest':
             result = self.action_newcert(req, record)
         else:
             result = super(Users, self).action_insert(req)
