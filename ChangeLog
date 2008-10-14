@@ -1,3 +1,23 @@
+2008-10-14  Tomas Cerha  <cerha@brailcom.org>
+
+	* translations/wiking-cms.cs.po: 
+	* translations/wiking-cms.es.po: 
+	* translations/wiking-cms.pl.po: 
+	* translations/wiking.cs.po: 
+	* translations/wiking.de.po: 
+	* translations/wiking.es.po: 
+	* translations/wiking.pl.po: 
+	* translations/wiking.sk.po: 
+	Updated.
+
+	* translations/wiking-cms.de.po:
+	* translations/wiking-cms.fr.po:
+	* translations/wiking-cms.hu.po:
+	* translations/wiking-cms.sk.po:
+	* translations/wiking.fr.po:
+	* translations/wiking.hu.po:
+	New empty translation files.
+
 2008-10-10  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/cms/appl.py:

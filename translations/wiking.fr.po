@@ -1,16 +1,16 @@
 # Wiking translations.
-# Copyright (C) 2006-2008 Brailcom, o.p.s.
+# Copyright (C) 2008 Brailcom, o.p.s.
 # This file is distributed under the same license as the Wiking package.
-# Tomas Cerha <cerha@brailcom.org>, 2006.
+# FIRST AUTHOR <EMAIL@ADDRESS>, .
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-10-14 10:49+0200\n"
-"PO-Revision-Date: 2008-02-18 20:20+0100\n"
-"Last-Translator: Tomas Cerha <cerha@brailcom.org>\n"
-"Language-Team: Spanish <wiking@lists.freebsoft.org>\n"
+"PO-Revision-Date: 2008-10-14 10:38+0200\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: French <wiking@lists.freebsoft.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -32,9 +32,9 @@ msgid "You don't have sufficient privilegs for this action."
 msgstr ""
 
 #: ../lib/wiking/util.py:93
-#, fuzzy, python-format
+#, python-format
 msgid "Error %(code)d: %(name)s"
-msgstr "Error %d: %s"
+msgstr ""
 
 #: ../lib/wiking/util.py:101
 #, python-format
@@ -46,12 +46,10 @@ msgid ""
 "If you are sure the web address is correct, but are encountering this error, "
 "please send an e-mail to the webmaster."
 msgstr ""
-"Si está seguro de que la dirección de la web es correcta pero encuentra\n"
-"este error, rogamos envíe un correo electrónico al webmaster."
 
 #: ../lib/wiking/util.py:106
 msgid "Thank you"
-msgstr "Gracias"
+msgstr ""
 
 #: ../lib/wiking/util.py:115
 #, python-format
@@ -66,7 +64,7 @@ msgstr ""
 #, python-format
 msgid ""
 "The resource '%s' is not available in either of the requested languages."
-msgstr "El elemento '%s' no existe en este servidor o no está disponible."
+msgstr ""
 
 #: ../lib/wiking/util.py:127
 msgid "Your browser is configured to accept only the following languages:"
@@ -284,17 +282,15 @@ msgstr ""
 #: ../lib/wiking/export.py:125 ../lib/wiking/export.py:157
 #: ../lib/wiking/export.py:161
 msgid "Main navigation"
-msgstr "Navegación Principal"
+msgstr ""
 
 #: ../lib/wiking/export.py:127 ../lib/wiking/export.py:171
-#, fuzzy
 msgid "Local navigation"
-msgstr "Navegación Principal"
+msgstr ""
 
 #: ../lib/wiking/export.py:129
-#, fuzzy
 msgid "Language selection"
-msgstr "Idioma"
+msgstr ""
 
 #: ../lib/wiking/export.py:133
 msgid "Jump in page"
@@ -326,7 +322,7 @@ msgstr ""
 
 #: ../lib/wiking/export.py:219
 msgid "Manage this site"
-msgstr "Gestione el sitio entero"
+msgstr ""
 
 #: ../lib/wiking/export.py:220
 msgid "Enter the Wiking Management Interface"
@@ -335,12 +331,12 @@ msgstr ""
 #: ../lib/wiking/export.py:223
 #, python-format
 msgid "Powered by %(wiking)s %(version)s"
-msgstr "Hecho con %(wiking)s %(version)s"
+msgstr ""
 
 #: ../lib/wiking/export.py:231
 #, python-format
 msgid "Last change: %(date)s, %(user)s"
-msgstr "Último cambio: %(date)s, %(user)s"
+msgstr ""
 
 #: ../lib/wiking/export.py:248
 msgid "US Government Section 508 Accessibility Guidelines."
@@ -348,19 +344,19 @@ msgstr ""
 
 #: ../lib/wiking/export.py:251
 msgid "Accessibility Statement"
-msgstr "Declaración de accesibilidad"
+msgstr ""
 
 #: ../lib/wiking/export.py:256
 msgid "This site conforms to the following standards:"
-msgstr "Este sitio ese conforme con los estándares siguientes:"
+msgstr ""
 
 #: ../lib/wiking/export.py:257
 msgid "This site can be viewed in ANY browser."
-msgstr "Este sitio se puede ver en CUALQUIER navegador."
+msgstr ""
 
 #: ../lib/wiking/export.py:258
 msgid "Contact:"
-msgstr "Contacto:"
+msgstr ""
 
 #: ../lib/wiking/modules.py:385
 msgid "Enter your login name, please!"
