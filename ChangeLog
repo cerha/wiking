@@ -1,3 +1,8 @@
+2008-10-14  Milan Zamazal  <pdm@brailcom.org>
+
+	* lib/wiking/cms/cms.py:
+	Typo in `form_name' parameter fixed.
+
 2008-10-14  Tomas Cerha  <cerha@brailcom.org>
 
 	* translations/wiking-cms.cs.po: 
