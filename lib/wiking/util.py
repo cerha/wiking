@@ -62,6 +62,7 @@ class AuthenticationError(RequestError):
 class AuthenticationRedirect(AuthenticationError):
     """Has the same effect as AuthenticationError, but is just not an error."""
     
+    # Translators: Login dialog page title - use a none.
     _TITLE = _("Login")
     
 
@@ -90,6 +91,7 @@ class HttpError(RequestError):
     
     def title(self):
         name = " ".join(pp.split_camel_case(self.__class__.__name__))
+        # Translators: '%(code)d' is replaced by error number and '%(name)s' by error title text.
         return _("Error %(code)d: %(name)s", code=self.ERROR_CODE, name=name)
 
 
@@ -98,6 +100,8 @@ class NotFound(HttpError):
     ERROR_CODE = 404
     
     def message(self, req):
+        # Translators: The word 'item' is intentionaly very generic, since it may mean a page,
+        # image, streaming video, RSS channel or anything else.
         msg = (_("The item '%s' does not exist on this server or cannot be "
                  "served.", req.uri()),
                _("If you are sure the web address is correct, "
@@ -325,9 +329,12 @@ class LoginPanel(Panel):
                 if user.auto_authentication():
                     cmd = label = None
                 else:
+                    # Translators: Button label - use a verb.
                     cmd, label = ('logout', _("log out"))
             else:
+                # Translators: Login status info.  If logged, the username is displayed instaed. 
                 username = _("not logged")
+                # Translators: Button label - use a verb.
                 cmd, label = ('login', _("log in"))
             if cmd is None:
                 content = username
@@ -340,6 +347,7 @@ class LoginPanel(Panel):
             if not user:
                 uri = appl.registration_uri(req)
                 if uri:
+                    # Translators: Login panel/dialog registration link.
                     content += g.br() +'\n'+ g.link(_("New user registration"), uri)
             else:
                 organization = user.organization()
@@ -347,9 +355,11 @@ class LoginPanel(Panel):
                     content += g.br()+'\n' + organization
                 if user.passwd_expiration():
                     date = lcg.LocalizableDateTime(str(user.passwd_expiration()))
+                    # Translators: Login panel info. '%(date)s' is replaced by a concrete date.
                     content += g.br() +'\n'+ _("Your password expires on %(date)s.", date=date)
                 uri = appl.password_change_uri(req)
                 if uri:
+                    # Translators: Login panel link.
                     content += g.br() +'\n'+ g.link(_("Change your password"), uri)
             added_content = appl.login_panel_content(req)
             if added_content:
@@ -595,6 +605,7 @@ class ActionMenu(lcg.Container):
     """A set of action controls."""
     
     def __init__(self, uri, actions, referer, name, row=None,
+                 # Translators: Label in front of action buttons.
                  title=_("Actions:"), help=None, cls='actions'):
         # Only Wiking's actions are considered, not all `pytis.presentation.Action'.
         ctrls = [ActionCtrl(uri, a, referer, name, row)
@@ -665,10 +676,13 @@ class LoginDialog(lcg.Content):
             g.br(),
             g.hidden(name='__log_in', value='1'),
             ) + tuple(hidden) + (
+            # Translators: Login button - use a verb.
             g.submit(_("Log in"), cls='submit'),)
         appl = req.application()
         links = [g.link(label, uri) for label, uri in
                  ((_("New user registration"), appl.registration_uri(req)),
+                 # Translators: Login dialog link to password change or password reminder (depends
+                 # on configuration).
                   (_("Forgot your password?"), appl.password_reminder_uri(req))) if uri]
         if links:
             content += (g.list(links),)

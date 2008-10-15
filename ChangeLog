@@ -1,8 +1,19 @@
+2008-10-15  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/util.py:
+	* translations/wiking.cs.po:
+	* translations/wiking.de.po:
+	* translations/wiking.es.po:
+	* translations/wiking.fr.po:
+	* translations/wiking.hu.po:
+	* translations/wiking.pl.po:
+	* translations/wiking.sk.po:
+	Translation comments added.
+
 2008-10-14  Tomas Cerha  <cerha@brailcom.org>
 
 	* translations/Makefile: 
 	Extract source file comments labeled by "Translators:".
-	
 
 2008-10-14  Milan Zamazal  <pdm@brailcom.org>
 
@@ -1438,7 +1449,7 @@
 
 	* lib/wiking/handler.py: Don't pass `modname' to node state.
 
-	* lib/wiking/__init__.py (Module): Version changes to `0.4.4pre'.
+	* lib/wiking/__init__.py: Version changes to `0.4.4pre'.
 
 	* lib/wiking/db.py: Added support for multiple layouts.  Actions
 	`add', `edit' and `delete' implemented within `insert', `update'
