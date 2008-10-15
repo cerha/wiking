@@ -1,3 +1,11 @@
+2008-10-15  Milan Zamazal  <pdm@brailcom.org>
+
+	* lib/wiking/cms/cms.py:
+	Send OpenSSL certificate request instruction, instead of GnuTLS.
+	.
+	The reason for this change is that certtool apparently doesn't allow to work.
+	with encrypted private keys..
+
 2008-10-15  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/db.py:
