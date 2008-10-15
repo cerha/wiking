@@ -8,7 +8,7 @@ Dependencies:
   * postgresql >= 8.3
   * lcg >= 0.3.5
   * pytis >= 0.1.0
-  * python-dns - DNS client module for Python
+  * python-dnspython - DNS client module for Python
   * python-egenix-mxdatetime - Python date/time manipulation routines
   * python-psycopg2 - Python DBAPI 2 implementation for PostgreSQL
   * python-imaging - Python Imaging Library (needed only when using Image galeries)  
