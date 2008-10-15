@@ -1,5 +1,8 @@
 2008-10-15  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/db.py:
+	Use record.validate() to respect runtime filters during validation.
+
 	* INSTALL:
 	Added python-dns dependency.
 

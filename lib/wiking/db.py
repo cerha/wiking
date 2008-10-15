@@ -195,41 +195,39 @@ class PytisModule(Module, ActionHandler):
             type = record[id].type()
             kwargs = {}
             if req.has_param(id):
-                value_ = req.param(id)
-                if isinstance(value_, tuple):
-                    if len(value_) == 2 and isinstance(type, pd.Password):
-                        value_, kwargs['verify'] = value_
+                value = req.param(id)
+                if isinstance(value, tuple):
+                    if len(value) == 2 and isinstance(type, pd.Password):
+                        value, kwargs['verify'] = value
                     else:
-                        value_ = value_[-1]
-                elif isinstance(value_, FileUpload):
+                        value = value[-1]
+                elif isinstance(value, FileUpload):
                     if isinstance(type, pd.Binary):
-                        fname = value_.filename()
+                        fname = value.filename()
                         if fname:
                             kwargs['filename'] = fname
-                            kwargs['type'] = value_.type()
-                            value_ = value_.file()
+                            kwargs['type'] = value.type()
+                            value = value.file()
                         else:
-                            value_ = None
+                            value = None
                     else:
-                        value_ = value_.filename()
+                        value = value.filename()
             elif isinstance(type, pd.Binary):
-                value_ = None
+                value = None
             elif isinstance(type, pd.Boolean):
-                value_ = "F"
+                value = "F"
             else:
-                value_ = ""
+                value = ""
             if isinstance(type, (Date, Time, DateTime)):
                 kwargs['format'] = type.locale_format(self._locale_data(req))
-            if isinstance(type, (pd.Binary, pd.Password)) and not value_ and not record.new():
+            if isinstance(type, (pd.Binary, pd.Password)) and not value and not record.new():
                 continue # Keep the original file if no file is uploaded.
             if isinstance(type, pd.Password) and kwargs.get('verify') is None:
-                kwargs['verify'] = not type.verify() and value_ or ''
-            value, error = type.validate(value_, **kwargs)
-            #log(OPR, "Validation:", (id, value_, kwargs, error))
+                kwargs['verify'] = not type.verify() and value or ''
+            error = record.validate(id, value, **kwargs)
+            #log(OPR, "Validation:", (id, value, kwargs, error))
             if error:
                 errors.append((id, error.message()))
-            else:
-                record[id] = value
         if errors:
             return errors
         else:
