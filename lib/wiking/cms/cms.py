@@ -145,19 +145,39 @@ class WikingManagementInterface(Module, RequestHandler):
                          submenu=self._module('Pages').menu(req))]
 
 def _certificate_mail_info(record):
-    text = _("To generate the request, you can use the certtool utility from the "
-             "GnuTLS suite and the attached certtool configuration file.\n"
+    text = _("To generate the request, you can use the OpenSSL package "
+             "and the attached OpenSSL configuration file.\n"
              "In such a case use the following command to generate the certificate "
              "request, assuming your private key is stored in a file named `key.pem':")
     text += ("\n\n"
-             "  certtool --generate-request --template certtool.cfg --load-privkey "
-             "key.pem --outfile request.pem\n\n")
-    attachment = "certtool.cfg"
+             "  openssl req -utf8 -new -key key.pem -out request.pem -config openssl.cnf\n\n")
+    text += ("If you don't have a private key, you can generate one together with the "
+             "certificate request using the following command:\n\n"
+             "  openssl req -utf8 -newkey rsa:2048 -keyout key.pem -out request.pem"
+             " -config openssl.cnf\n\n")
+    attachment = "openssl.cnf"
     user_name = '%s %s' % (record['firstname'].value(), record['surname'].value(),)
     user_email = record['email'].value()
-    attachment_stream = cStringIO.StringIO(str (('cn = "%s"\nemail = "%s"\n'
-                                                'tls_www_client\nencryption_key\n') %
-                                               (user_name, user_email,)))
+    attachment_stream = cStringIO.StringIO(str (
+                '''[ req ]
+distinguished_name  = req_distinguished_name
+attributes          = req_attributes
+x509_extensions     = v3_ca
+prompt              = no
+string_mask         = utf8only
+[ req_distinguished_name ]
+CN                  = %s
+emailAddress       = %s
+[ req_attributes ]
+[ usr_cert ]
+[ v3_req ]
+basicConstraints   = CA:FALSE
+nsCertType        = client
+keyUsage           = keyEncipherment
+[ v3_ca ]
+
+[ crl_ext ]
+''' % (user_name, user_email,)))
     return text, attachment, attachment_stream
     
 class Registration(Module, ActionHandler):
