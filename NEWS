@@ -1,22 +1,67 @@
 -*- mode: Text; fill-column: 80 -*-
 
-Version 0.4.4 (not released yet)
+Version 0.4.4 (2008-10-01):
+
+ * New page can be now created an published in one step.  The insertion form now
+   includes both, the language dependent texts and language independent options.
+
+ * Page order number is now generated automatically on page creation to append
+   the page to the end of the current menu hierarchy level.  The menu visibility
+   in now controlled separately by a "Hidden" checkbox (as oposed to the
+   previous practise of not entering the order number to denote a hidden page).
+
+ * The "parent" field for selection of the page position in menu hierarchy now
+   displays the items sorted and indented according to their hierarchy.
+
+ * Attachments can be moved between pages (button "Move", select the target page
+   and confirm).
 
  * The usage of extension modules and their relation with menu items and pages
    was completely reworked.  Extension modules can now be embedded into page
-   text and thus there is no more the need to distinguish between pages and menu
-   items.  Each menu item is now a page and all the properties are managed from
-   within one place.
+   text and also management of their contents (i.e. adding/editing/removing
+   messages of a News module) is now done directly within the corresponding
+   page.  This reduces the "Content" section of WMI to a simple listing of all
+   pages, since everything is now managed through them.
 
- * Multiple simultaneous logins to one account made possible.
+ * Email notifications are sent automatically after user registration and
+   account approval and password reminder is now possible 
 
- * Email notifications after user registration and account approval.
+ * Multiple simultaneous logins to one account are now possible.
 
  * Major improvements in users and access rights management.
 
- * Password reminder.
-	
- * Bug fixes
+ * Secure authentication through user certificates is now supported.
+  
+ * Management of panels was moved from "Content" section to "Setup" in Wiking
+   Management Interface.
+
+ * Active color theme selection is now done directly in section "Look &
+   Feel/Color themes" in WMI, not in Configuration (using the "Activate" button
+   on one of the available themes.
+
+ * There may be two configuration files applied for each site.  The global
+   configuration is read first (i.e. /etc/wiking/config.py) and site specific
+   configuration file may be set through apache configuration, overriding the
+   global configuration values.
+
+ * The default option value is displayed in help texts for all options in the
+   "Setup/Configuration" section of WMI.  Thus you exactly know which value will
+   be used when the option is left blank.
+
+ * New configuration options added.
+
+ * Experimental support for improved accessibility using the ARIA standard and
+   JavaScript driven keyboard navigation and automatic focus.  The keyboard
+   navigation allows quick access to page contents hiearchy (menus, panels,
+   language selection...).  Focus is automatically moved to the main contents of
+   the page or form fields when appropriate (i.e. in login dialog).
+
+ * More specific labels for user actions, such as "New attachment" instead of
+   generic "New Record" are more intuitive and improve the usability.
+
+ * Action buttons are now represented using real buttons in HTML, not links.
+   This improves navigation for assistive technology users, since they can move
+   directly to actions from anywhere within the form.
 
 
 Version 0.4.3 (2007-09-17)
