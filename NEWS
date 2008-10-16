@@ -1,5 +1,11 @@
 -*- mode: Text; fill-column: 80 -*-
 
+Version 0.4.5 (not released yet):
+
+ * New configuration options allow setting the default language statically as
+   well as dynamically based on the server name in the current request URI.
+
+
 Version 0.4.4 (2008-10-01):
 
  * New page can be now created an published in one step.  The insertion form now
@@ -7,8 +13,8 @@ Version 0.4.4 (2008-10-01):
 
  * Page order number is now generated automatically on page creation to append
    the page to the end of the current menu hierarchy level.  The menu visibility
-   in now controlled separately by a "Hidden" checkbox (as oposed to the
-   previous practise of not entering the order number to denote a hidden page).
+   in now controlled separately by a "Hidden" checkbox (as opposed to the
+   previous practice of not entering the order number to denote a hidden page).
 
  * The "parent" field for selection of the page position in menu hierarchy now
    displays the items sorted and indented according to their hierarchy.
@@ -52,7 +58,7 @@ Version 0.4.4 (2008-10-01):
 
  * Experimental support for improved accessibility using the ARIA standard and
    JavaScript driven keyboard navigation and automatic focus.  The keyboard
-   navigation allows quick access to page contents hiearchy (menus, panels,
+   navigation allows quick access to page contents hierarchy (menus, panels,
    language selection...).  Focus is automatically moved to the main contents of
    the page or form fields when appropriate (i.e. in login dialog).
 
