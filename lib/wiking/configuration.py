@@ -254,7 +254,7 @@ class Configuration(pc):
         _DEFAULT = None
             
     class _Option_default_language_by_domain(pc.Option):
-        _DESCR = "Default language by bomain"
+        _DESCR = "Default language by server domain name"
         _DOC = ("Allows setting different default language based on the server domain name.  The "
                 "value is a dictionary, where the server name is a key and language code is "
                 "a value.  If the server domain name of the current request is found in the "
