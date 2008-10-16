@@ -142,10 +142,36 @@ class Request(pytis.web.Request):
     def remote_host(self):
         return self._req.get_remote_host()
 
-    def server_hostname(self):
-        return self._req.server.server_hostname
+    def server_hostname(self, current=False):
+        """Return the server's fully qualified domain name as a string.
 
-    def server_uri(self, force_https=False):
+        Each virtual server may have several names through which it can be accessed, such as
+        'www.yourdomain.com' and 'www.yourdomain.org'.  One of them is the main one (i.e. as
+        defined in web server configuration).  The main name is returned by default, but if
+        'current' is True, the name used in the current request URI is returned.
+
+        """
+        if current:
+            return self._req.hostname
+        else:
+            return self._req.server.server_hostname
+
+    def server_uri(self, force_https=False, current=False):
+        """Return full server URI as a string.
+
+        Arguments:
+          force_https -- If True, the uri will point to an HTTPS address even if the current
+            request is not on HTTPS.  This may be useful for redirection of links or form
+            submissions to a secure channel.
+          current -- controls which server domain name to use.  Corrensponds to the same argument
+            of 'server_hostname()'.
+        
+        The URI in the form 'http://www.yourdomain.com' is constructed including port and protocol
+        specification.  If current request port corresponds to 'https_port' configuration option
+        (443 by default), the protocol is set to 'https'.  The port is also included in the uri if
+        it is not the current protocol's default port (80 or 443).
+
+        """
         if force_https:
             port = cfg.https_port
         else:
@@ -156,7 +182,7 @@ class Request(pytis.web.Request):
         else:
             protocol = 'http'
             default_port = 80
-        result = protocol + '://'+ self._req.server.server_hostname
+        result = protocol + '://'+ self.server_hostname(current=current)
         if port != default_port:
             result += ':'+ str(port)
         return result
@@ -321,6 +347,7 @@ class WikingRequest(Request):
         self._application = application
         self._forwards = []
         self._messages = []
+        self._prefered_languages = self._init_prefered_languages()
         self.unresolved_path = list(self.path)
 
     def _init_options(self):
@@ -371,6 +398,37 @@ class WikingRequest(Request):
         if prefix and uri.startswith(prefix):
             uri = uri[len(prefix):]
         return super(WikingRequest, self)._init_path(uri)
+
+    def _init_prefered_languages(self):
+        accepted = []
+        prefered = self._prefered_language # The prefered language setting from cookie or param.
+        for item in self.header('Accept-Language', '').lower().split(','):
+            if item:
+                x = item.split(';')
+                lang = x[0]
+                if lang == prefered:
+                    prefered = None
+                    q = 2.0
+                elif len(x) == 1:
+                    q = 1.0
+                elif x[1].startswith('q='):
+                    try:
+                        q = float(x[1][2:])
+                    except ValueError:
+                        continue
+                else:
+                    continue
+                accepted.append((q, lang))
+        accepted.sort()
+        accepted.reverse()
+        languages = [lang for q, lang in accepted]
+        if prefered:
+            languages.insert(0, prefered)
+        default = cfg.default_language_by_domain.get(self.server_hostname(current=True),
+                                                     cfg.default_language)
+        if default and default not in languages:
+            languages.append(default)
+        return tuple(languages)
 
     def _cookie_path(self):
         return self._uri_prefix or '/'
@@ -441,44 +499,14 @@ class WikingRequest(Request):
         return self._show_panels
     
     def prefered_languages(self):
-        """Return a sequence of languages acceptable by the client.
+        """Return a sequence of language codes in the order of client's preference.
 
-        The language codes are returned in the order of preference.
+        The result is based on the Accept-Language HTTP header, prefered language set previously
+        through 'setlang' parameter (stored in a cookie) and default language configured for the
+        server (see 'default_language' and 'default_language_by_domain' configuration options).
         
         """
-        try:
-            return self._prefered_languages
-        except AttributeError:
-            accepted = []
-            prefered = self._prefered_language
-            for item in self.header('Accept-Language', '').lower().split(','):
-                if not item:
-                    continue
-                x = item.split(';')
-                lang = x[0]
-                if lang == prefered:
-                    prefered = None
-                    q = 2.0
-                elif len(x) == 1:
-                    q = 1.0
-                elif x[1].startswith('q='):
-                    try:
-                        q = float(x[1][2:])
-                    except ValueError:
-                        continue
-                else:
-                    continue
-                accepted.append((q, lang))
-            accepted.sort()
-            accepted.reverse()
-            languages = [l for q, l in accepted]
-            if prefered:
-                languages = [prefered] + languages
-            default = 'en' #config.default_language
-            if default and default not in languages:
-                languages += [default]
-            self._prefered_languages = tuple(languages)
-            return self._prefered_languages
+        return self._prefered_languages
 
     def prefered_language(self, variants=None, raise_error=True):
         """Return the prefered variant from the list of available variants.

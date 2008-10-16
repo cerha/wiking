@@ -1,3 +1,13 @@
+2008-10-16  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/__init__.py:
+	Version set to 0.4.5-pre1.
+
+	* lib/wiking/configuration.py: 
+	* lib/wiking/request.py: 
+	Allow default language configuration, including server name
+	specific defaults.
+
 2008-10-15  Milan Zamazal  <pdm@brailcom.org>
 
 	* lib/wiking/cms/cms.py:

@@ -237,6 +237,31 @@ class Configuration(pc):
         _DESCR = "Color theme for stylesheet color substitutions."
         _DEFAULT = Theme()
 
+    class _Option_default_language(pc.StringOption):
+        _DESCR = _("Default language")
+        _DOC = _("Defines the language (lowercase ISO 639-1 Alpha-2 code) to be used when "
+                 "content language negotiation fails. If not set (which is the default), the "
+                 "server will issue a 606 HTTP error (Not acceptable) when the document is "
+                 "not available in any of the requested languages. The error page will contain "
+                 "a description of the problem and a list of available language variants of "
+                 "the requested document. The negotiation is based on the browser setting of "
+                 "user's language preference passed through the 'Accept-Language' HTTP header. "
+                 "If set, Wiking will automatically serve given language variant instead of "
+                 "issuing the error if that variant is available.  If unavailable, the 606 "
+                 "error is raised anyway, so you need to make sure that all documents are "
+                 "available at least in the default language variant if you want to avoid 606 "
+                 "errors completely.")
+        _DEFAULT = None
+            
+    class _Option_default_language_by_domain(pc.Option):
+        _DESCR = "Default language by bomain"
+        _DOC = ("Allows setting different default language based on the server domain name.  The "
+                "value is a dictionary, where the server name is a key and language code is "
+                "a value.  If the server domain name of the current request is found in the "
+                "dictionary, the assigned value overrides the value of 'default_language' for "
+                "given request.")
+        _DEFAULT = {}
+
     class _Option_session_expiration(pc.NumericOption):
         _DESCR = "Session expiration"
         _DOC = ("A number of hours to keep the login session alive.  The session is automatically "
