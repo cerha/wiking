@@ -28,19 +28,24 @@ The main menu is generated automatically by the system according to page
 hierarchy and order.  See also [navigation] for more information about menus
 from the point of view of a website visitor.
 
-Positioning a page within the main menu is controlled by two values within page
-``Global options'' (these settings apply to all language variants of given
+Positioning a page within the main menu is controlled by certain values within
+page ``Global options'' (these settings apply to all language variants of given
 page).  Use the button ``Options'' in page actions menu to change these values.
 
 The field /Parent/ defines the immediately upper page in the hierarchy.  You
 can leave it blank to put the page to the top level.
 
-The field /Menu order/ defines the order of pages in the same level of the
-hierarchy.  If you assign a number, the pages will be ordered according to
-their numbers.  You can also leave this field blank to hide the page from the
-main menu.  Such a page can be still displayed if the user knows its address
-(see [#uris]).  You probably want to create links to such pages from other
-pages.
+The field /Menu order/ defines the order of pages at the same hierarchy level.
+Pages will be ordered according to this number so that pages with lower values
+will appear first.  If you leave this field blank when creating a new page, the
+number will be assigned automatically to put the page to the end of the
+corresponding menu hierarchy level (as set by "Parent").
+
+If you check the /Hidden/ checkbox, the page will not appear in the main menu.
+Such page can be still displayed if the user enters its explicit address (see
+[#uris]) or if you create a link from some other page (recommended).  So hiding
+pages only controls their presence in the menu and has no effect on security or
+availability of the page itself.
 
 
 == Page URIs == uris

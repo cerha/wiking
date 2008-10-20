@@ -28,21 +28,28 @@ Hlavní nabídka je vytvářena systémem automaticky na základě hierarchie a 
 stránek.  V sekci [navigation Navigace] se dozvíte více o navigačních
 možnostech z pohledu návštěvníka stránek.
 
-Zařazení stránky do hlavní nabídky je řízeno dvěma hodnotami z „Globálních
-vlastností“ stránky (vlastnosti platné pro všechny jazykové verze stránky).
-Globální vlastnosti můžete měnit pomocí tlačítka „Vlastnosti“ v nabídce akcí
-stránky.
+Zařazení stránky do hlavní nabídky je řízeno hodnotami některých políček v
+„Globálních vlastnostech“ stránky (vlastnosti platné pro všechny jazykové verze
+stránky).  Globální vlastnosti můžete měnit pomocí tlačítka „Vlastnosti“ v
+nabídce akcí stránky.
 
 Kolonka /Nadřízená položka/ určuje umístění v hierarchii.  Pokud kolonku
-vyplníte, znamená to, že aktuální stránka bude v hierarchii o jednu úroveň
-níže, než stránka, kterou zvolíte.  Pokud ponecháte prázdné, aktuální stránka
+vyplníte, znamená to, že aktuální stránka bude v hierarchii umístěna jako
+podpoložka stránky, kterou zvolíte.  Pokud ponecháte prázdné, aktuální stránka
 bude na nejvyšší úrovni hierarchie.
 
 Kolonka /Pořadí v menu/ určuje pořadí stránek na stejné úrovni hierarchie.
-Můžete nastavit číslo a stránky budou seřazeny podle tohoto pořadového čísla.
-Pokud číslo nevyplníte, stránka nebude v hlavním menu přítomna vůbec.  Taková
-stránka může být zobrazena, pokud uživatel zná její adresu (viz [#uris]).
-Většinou bude vhodné vytvořit odkaz z jiné stránky.
+
+Stránky budou seřazeny tak, že stánky s nižším číslem budou v menu na
+přednějších pozicích.  Pokud číslo ponecháte při vytváření stránky prázdné,
+bude automaticky doplněno takové číslo, které stránku zařadí na konec v dané
+úrovni hierarchie (určené políčkem „Nadřízená položka“).
+
+Pokud zaškrtnete políčko /Skrytá/, nebude stránka v hlavním menu přítomna
+vůbec.  Taková stránka stále může být zobrazena, pokud uživatel přímo zadá její
+adresu (viz [#uris]), nebo pokud na ni vytvoříte odkaz z jiné stránky (což je
+doporučováno).  Skrytí se tedy týká výhradně zařazení stránky do menu, nikoliv
+zabezpečení nebo možnosti zobrazení stránky jako takové.
 
 
 == Vnější adresy stránek (URI) == uris
