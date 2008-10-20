@@ -10,7 +10,7 @@ Index: @TOC@
 
 It may be necessary to customize the behavior implemented by an existing Wiking
 (or Wiking CMS) module.  This may be achieved by defining a new module derived
-from the built-in module.  This module must be exported in by your `__init__py'
+from the built-in module.  This module must be exported in by your `\__init__py'
 under the same name as the original module.  If the *Python* module with the
 customized version of the Wiking module appears earlier in =cfg.modules= than
 the Python module with its original definition (such as `wiking.cms'), the
@@ -36,20 +36,20 @@ Submenu may be defined by Wiking CMS extension modules (derived from
 menu (defined by the hierarchy of CMS pages) when the extension module is active
 (the page using this extension is displayed).
 
-The menu is normally defined through the attribute `CMSExtension._MENU'
+The menu is normally defined through the attribute `CMSExtension.\_MENU'
 as a sequence of `CMSExtension.MenuItem' instances.
 
 Redefining the method `Embeddable.submenu()' (returning `wiking.MenuItem'
 instances) would be a more powerful solution, but this is discouraged, since its
 proper implementation is not trivial.  The menu defined through
-`CMSExtension._MENU' can also be dynamic to certain extent, so redefining
+`CMSExtension.\_MENU' can also be dynamic to certain extent, so redefining
 `Embeddable.submenu()' should be rarely needed.
 
 
 === How do I add module to a WMI menu? ===
 
 The top level menu (main sections at the top of the page) is defined by
-`WikingManagementInterface._SECTIONS'.
+`WikingManagementInterface.\_SECTIONS'.
 
 A module can be added to the submenu of a concrete main section by defining
 class attributes `WMI_SECTION' and `WMI_ORDER'.
