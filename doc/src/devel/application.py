@@ -17,12 +17,12 @@ class Reader(lcg.Reader):
         #modules.sort()
         content = parser.parse(Application.__doc__) + \
                   [lcg.TableOfContents(title="Application methods:", depth=1)]
-        for name, method in Application.__dict__.items():
+        for name, method in sorted(Application.__dict__.items()):
             if name.startswith('_') or name.startswith('action_') \
                    or not callable(method) or not method.__doc__:
                 continue
             args, varargs, varkw, defaults = inspect.getargspec(method)
             title = name + inspect.formatargspec(args[1:], varargs, varkw, defaults)
             doc = self._ARG_REGEX.sub(lambda m: ":" + m.group(1) + ": ", inspect.getdoc(method))
-            content.append(lcg.Section(title=title, content=parser.parse(doc)))
+            content.append(lcg.Section(title=title, content=parser.parse(doc), anchor=name))
         return content
