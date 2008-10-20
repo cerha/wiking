@@ -17,22 +17,19 @@ located (see below).
 Wiking handler creates instances of these classes and uses them for handling
 requests.  These instances are persistent, so that one instance is typically
 used for handling multiple requests.  Sharing of module instances is always
-limited to just one virtual host.
+limited to just one Wiking application (typically one virtual host).
 
 
-== Request Processing Overview ==
-
-As mentioned before, all requests are processed by the Wiking Handler.  This
-handler, however, is only a very thin layer, which postpones most of the actual
-functionality to modules.  
+== The Application Module ==
 
 The central module, which controls the application behavior is the module named
-'Application'.  Different stages of request processing, such as authentication,
-content generation, error handling etc. are controlled by different methods of
-the application instance.  Thus a custom Wiking application is implemented by
-deriving a new 'Application' module from the default class.  All the phases of
-request processing can be overridden by overriding its methods.  See
-[application] for details.
+'Application'.  Wiking handler uses its different methods in different phases
+ot request processing, such as authentication, content generation, error
+handling etc.
+
+Thus a new Wiking application is implemented by deriving a new 'Application'
+module from the default 'Application' class.  All phases of request processing
+can be overridden by overriding its methods.  See [application] for details.
 
 
 == Predefined Modules ==

@@ -1,28 +1,10 @@
-# -*- coding: utf-8; mode: structured-text -*-
+# -*- coding: utf-8; mode: structured-text; fill-column: 80 -*-
 
 = Wiking Developer's Documentation =
 
-Wiking is a platform for web application development.  The content management
-system described in [cms] is just an example of an application built on top
-of this platform.  This section describes Wiking from developer's point of
-view.
+Wiking is a platform for web application development.  The [cms] is just a
+sample application built on top of this platform.  The following sections
+describe this platform to allow developers to write their own applications or
+extend the CMS.
 
-@NodeIndex(1)@
-
-== Technology ==
-
-Wiking is written in Python and is based on two other important components:
-
- * *Pytis* ... provides data abstraction, modularization and database access.
-
- * *LCG* ... provides content abstraction, internationalization support and
-   html generation (see [http://www.freebsoft.org/lcg|LCG project website] for
-   more information).
-
-Wiking can be also considered a web interface to the Pytis toolkit.
-
-The current implementation runs on Apache web server (over mod_python) and
-stores its data in the PostgreSQL database.  Thanks to a high level of
-abstraction, these components could be replaced, however.
-
-
+@NodeIndex@

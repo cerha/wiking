@@ -1,3 +1,16 @@
+2008-10-20  Tomas Cerha  <cerha@brailcom.org>
+
+	* doc/src/devel/_index.txt: 
+	* doc/src/devel/handling.en.txt: 
+	* doc/src/devel/modularization.en.txt: 
+	* doc/src/devel/overview.en.txt: 
+	* doc/src/devel/devel.en.txt: 
+	Added devel overview and request handling overview.
+
+	* doc/src/devel/application.py:
+	Sort the methods alphabetically.
+	Use method names as section anchors.
+
 2008-10-16  Tomas Cerha  <cerha@brailcom.org>
 
 	* NEWS:

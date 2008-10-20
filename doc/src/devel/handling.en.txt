@@ -1,0 +1,107 @@
+# -*- coding: utf-8; mode: structured-text; fill-column: 80 -*-
+
+= Wiking Request Handling =
+
+@TOC@
+
+== Wiking Handler ==
+
+Processing of a request is always started by the Wiking Handler.  This handler,
+however, is only a very thin layer, which postpones most of the actual
+functionality to modules.  See [modularization] for more information about
+modules.
+
+The handler's responsibilities are:
+
+  * Interfacing the HTTP server environment (currently Apache/mod_python is
+    implemented).
+  * Instantiating the 'Application' module and passing the request processing
+    to it's [application#handle] method (the instance is cached for future
+    requests).
+  * Processing any exceptions raised during application's request processing.
+  * Rendering the result of request processing to the client (typically by
+    exporting the LCG content structure using the Wiking Exporter, but also
+    arbitrary content data may be sent to the client).
+
+
+== The WikingRequest Class ==
+
+The argument 'req' which appears in all request handling methods is an
+instance of the WikingRequest class.  This class, apart from the generic
+features, such as retrieving request parameters, cookies etc., implements some
+features specific for the Wiking request handling process.
+
+The following sections provide an overview of these additional features and
+their typical usage in the request handling process.  See the docstrings of the
+corresponding methods for more specific reference.
+
+WikingRequest specific features: @TOC@
+
+=== Request Resolution ===
+
+What is it?  By "request resolution" we mean the process of determination which
+final action will be performed to serve a particular request.  This resolution
+is most often based on request URI and parameters.
+
+The resolution process is completely in the competence of the application and its
+modules.  The method described below is the official mechanism used by most
+built-in modules and the request object provides explicit support for this
+method, but an application may decide to use a different logic.
+
+The resolution process typically answers the following three questions:
+  * Which Wiking module will handle the request?
+  * Which method of this module will be used?
+  * Which arguments will this method receive?
+
+The first question is resolved gradually.  The request is first passed to the
+Wiking handler (see above) and the handler passes it to the application.  The
+application will examine the first part of the request path (URI) and decide
+which module is responsible for handling this particular subpath and pass the
+request to this module using the 'req.forward()' method.
+
+If the request path was already consumed or if the module recognizes the
+supbath as its own responsibility, it handles the request itself, but if not,
+the request is passed on again using the 'req.forward()' method.  Each forward
+typically consumes one part of the request path.
+
+The later two questions mentioned above actually only apply to modules derived
+from 'ActionHandler'.  In general requests may be forwarded to modules derived
+from a more generic 'RequestHandler' module which has just one method --
+'handle(req)'.  However 'ActionHandler' is derived from 'RequestHandler' and
+defines the logic for further resolution.  The default implementation inspects
+the request parameter 'action' and calls the module's 'action_*()' method.
+This process can be customized by overriding 'ActionHandler' methods and also
+action method arguments may be passed based on other request parameters (see
+'ActionHandler' documentation for details).  For example the 'PytisModule'
+passes a 'Record' instance to action methods when the current request path
+contains a key of an existing database record.
+
+
+=== Request Forwarding ===
+
+Request handling is typically passed between different Wiking modules (or more
+precisely 'RequestHandler' instances).
+
+The method 'forward()' automatically adds forward information to the stack,
+which may be later inspected through the method 'forwards()'.  Each item on
+this stack is an instance of the 'ForwardInfo' class.
+
+      
+=== Authentication ===
+
+The method `user()' will return the current authenticated user in cooperation
+with Application.[application#authenticate].  Authentication is performed just
+once and the 'User' instance is kept for the duration of the request (if
+authentication was successful)
+
+
+=== Prefered Languages ===
+
+The prefered language is determined using the HTTP Accept-Language headers and
+Wiking specific cookies (which may override the Accept-Language settings).  The
+selection of languages is additionally restricted by the available languages
+determined by the current application (see Application.[application#languages]).
+
+The methods 'prefered_languages()' and 'prefered_language()' provide an
+interface for determining the user's language preferences and selection of the
+most appropriate language from a list of available language variants.
