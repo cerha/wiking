@@ -1,5 +1,11 @@
 2008-10-20  Tomas Cerha  <cerha@brailcom.org>
 
+
+	* doc/src/devel/_qa.cs.txt: 
+	* doc/src/devel/devel-faq.en.txt:
+	New FAQ section in developer's docuentation.  Some questions moved
+	from `_qa.cs.txt'
+
 	* doc/src/cms/wmi.cs.txt: 
 	* doc/src/cms/wmi.en.txt: 
 	Updated.

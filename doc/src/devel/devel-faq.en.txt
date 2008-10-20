@@ -1,0 +1,95 @@
+# -*- coding: utf-8; mode: structured-text; fill-column: 80 -*-
+
+= Frequently Asked Questions =
+
+Index: @TOC@
+
+== General ==
+
+=== How do I override a built-in module? ===
+
+It may be necessary to customize the behavior implemented by an existing Wiking
+(or Wiking CMS) module.  This may be achieved by defining a new module derived
+from the built-in module.  This module must be exported in by your `__init__py'
+under the same name as the original module.  If the *Python* module with the
+customized version of the Wiking module appears earlier in =cfg.modules= than
+the Python module with its original definition (such as `wiking.cms'), the
+customized module will take precedence.  Wiking distinguishes its modules just
+by name.
+
+
+== User Interface ==
+
+
+=== How do I create an item in the main menu outside WMI? ===
+
+The main menu in Wiking CMS is defined by the hierarchy of pages as managed
+through the CMS.  Wiking CMS extensions (modules derived from
+`wiking.cms.CMSExtension') may only define a submenu of the menu item of the
+corresponding page as described in the following question.
+
+
+=== How do I define a page submenu outside WMI? ===
+
+Submenu may be defined by Wiking CMS extension modules (derived from
+`wiking.cms.CMSExtension').  This submenu is automatically added to the main
+menu (defined by the hierarchy of CMS pages) when the extension module is active
+(the page using this extension is displayed).
+
+The menu is normally defined through the attribute `CMSExtension._MENU'
+as a sequence of `CMSExtension.MenuItem' instances.
+
+Redefining the method `Embeddable.submenu()' (returning `wiking.MenuItem'
+instances) would be a more powerful solution, but this is discouraged, since its
+proper implementation is not trivial.  The menu defined through
+`CMSExtension._MENU' can also be dynamic to certain extent, so redefining
+`Embeddable.submenu()' should be rarely needed.
+
+
+=== How do I add module to a WMI menu? ===
+
+The top level menu (main sections at the top of the page) is defined by
+`WikingManagementInterface._SECTIONS'.
+
+A module can be added to the submenu of a concrete main section by defining
+class attributes `WMI_SECTION' and `WMI_ORDER'.
+
+
+== Working with Data ==
+
+=== How do I get the logged-in user in a field computer function? ===
+
+Computer functions of Pytis computed fields receive the current
+`wiking.PytisModule.Record' (derived from `pytis.presentation.PresentedRow') as
+an argument.  This class has the method `req()' which may be used to access the
+current request and its method `user()' to get the information about the current
+authenticated user: `record.req().user()'.
+
+
+=== Is it possible to perform a muti-stage database operation atomically? ===
+
+It is possible to use the class `pytis.data.DBTransactionDefault' and pass it as
+an argument to database operations.  Wiking currently doesn't provide any higher
+level interface to simplify the usage of transactions.
+
+Using transactions can be, however, often avoided by performing the dependent
+operations within the database rules and/or triggers.  This way the operations
+are completely hidden from Pytis and Wiking.  This practice may lead to a
+cleaner design in certain situations (better separation of the database and
+application logic), but there will definitely be examples of the opposite case
+so any feedback on this topic is welcome.
+
+
+== Troubleshooting ==
+
+=== The application produces strange errors after update from CVS, what's that? ===
+
+ 1. Check that you have the latest CVS versions of all other components -- lcg,
+    pytis, wiking, other wiking applications.
+
+ 2. Check that the web server user has access rights to all used components.
+
+=== Why do I get an error about a non existing database column after database creation? ===
+
+Database objects for Wiking and all installed modules/extensions must be
+initialized.

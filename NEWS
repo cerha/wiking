@@ -5,6 +5,9 @@ Version 0.4.5 (not released yet):
  * New configuration options allow setting the default language statically as
    well as dynamically based on the server name in the current request URI.
 
+ * User's documentation updates.
+ 
+ * Developer's documentation additions.
 
 Version 0.4.4 (2008-10-01):
 
