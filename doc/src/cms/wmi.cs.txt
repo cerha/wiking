@@ -5,8 +5,8 @@
 Rozhraní správy obsahu si můžeme představit jako jakousi zadní bránu, která
 umožňuje správci pracovat s veškerými daty ovlivňujícími výsledný vzhled, obsah
 a logiku fungování portálu.  Mnohé zásahy (např. úpravy textu stránek) lze
-provádět pohodlně i mimo toto správcovské rozhraní, ale další aspekty lze měnit
-pouze zde.
+provádět pohodlně i mimo toto správcovské rozhraní, ale některé aspekty lze
+měnit pouze zde.
 
 Správcovské rozhraní poskytuje jednotný přístup ke všem datům ovlivňujícím
 fungování portálu prostřednictvím „databázových“ náhledů.  Data jsou
@@ -18,60 +18,24 @@ rozhraní.
 /Důležité:/ Ve správcovském rozhraní je možné přepínat mezi všemi
 zkonfigurovanými jazyky (viz [#languages]), narozdíl od běžného režimu
 prohlížení stránek, kdy jsou vždy nabízeny pouze ty jazyky, pro které obsah
-dané stránky skutečně existuje.  Důležité je, že změnou aktuálního jazyka
-měníte také množinu zobrazených položek.  Pro jazykově závislé moduly jsou vždy
-zobrazeny pouze položky odpovídající aktuálnímu jazyku.  U modulů na jazyce
-nezávislých jsou zobrazeny všechny položky nezávisle na aktuálním jazyce.
+dané stránky skutečně existuje.  Důležité je, že změnou aktuálního jazyka se
+také mění data zobrazená ve WMI.  Pro jazykově závislá data (např. texty
+stránek) jsou vždy zobrazeny pouze položky odpovídající aktuálnímu jazyku.  U
+jazkově nezávislých dat (např. barevná témata) nemá aktuálně zvolený jazyk na
+zobrazená data vliv.
 
-== Moduly správcovského rozhraní ==
+== Struktura správcovského rozhraní ==
 
-Rozhraní je rozděleno do čtyř hlavních sekcí, z nichž každá obsahuje podsekce
-(moduly) umožňující správu různých aspektů webového portálu.
+Rozhraní je rozděleno do čtyř hlavních sekcí, z nichž každá může obsahovat
+podsekce umožňující správu různých aspektů webového portálu.
 
-Sekce a jejich moduly: @TOC@
+Hierarchie WMI: @TOC@
 
 === Obsah ===
 
-==== Stránky ====
-
-Tento modul poskytuje přehled všech dostupných stránek a jejich hierarchie.
+Tato sekce zobrazuje přehled všech dostupných stránek a jejich hierarchie.
 Princip úprav stránek zůstává stejný jako při jejich správě mimo WMI (viz
 [pages]).
-
-==== Přílohy ====
-
-Přílohy jsou externí soubory připojené ke stránkám.  Tento modul zobrazuje
-všechny existující přílohy všech stránek.  Běžně jsou ovšem přílohy spravovány
-prostřednictvím stránek, ke kterým jsou připojené, proto podrobnější nápovědu
-naleznete v nápovědě [pages].
-
-==== Panely ====
-
-„Panely“ jsou malé rámečky s doplňujícími informacemi, které jsou většinou
-zobrazeny na boku stránky vedle hlavního obsahu.  Hlavní obsah se na různých
-stránkách mění, ale panely zůstávají na svých místech.
-
-Na každém panelu může být libovolný textový obsah, ale kromě toho mají panely
-jednu velice praktickou vlastnost – mohou zobrazit seznam položek rozšiřujícího
-modulu použitého v některé stránce.  Například pro modul [News Novinky] bude
-zobrazen výpis posledních zpráv.  Můžete také zvolit kolik položek má být
-zobrazeno.
-
-Množiny panelů pro jednotlivé jazykové verze portálu jsou zcela nezávislé.
-Můžete tak mít jiné seskupení panelů pro každý jazyk.  Tabulka zobrazuje
-vždy pouze panely pro /aktuální zvolený jazyk/, takže budete muset přepnout
-jazyk, pokud chcete spravovat panely jiné jazykové verze.
-
-Pořadí panelů na stránce je dáno číslem v kolonce „Pořadí“.  Také v této
-tabulce jsou panely zobrazeny v tomto pořadí.
-
-==== Novinky ====
-
-Viz sekce [modules].
-
-==== Plánovač ====
-
-Viz sekce [modules].
 
 === Vzhled ===
 
@@ -125,8 +89,8 @@ zapezpečení, aktivní barevný motiv apod.
 
 ==== Jazyky ==== languages
 
-Tento modul slouží k správě dostupných jazyků.  Můžete přidat libovolný jazyk
-zadáním dvouznakového kódu jazyka podle ISO 639-1.
+Správa dostupných jazyků.  Můžete přidat libovolný jazyk zadáním dvouznakového
+kódu jazyka podle ISO 639-1.
 
 Zde zkonfigurované jazyky jsou potom automaticky dostupné pro určení jazyka
 obsahu.
@@ -134,4 +98,24 @@ obsahu.
 Více informací o tom, jak systém zabezpečuje poskytování nejvhodnější jazykové
 varianty uživatelům stránek naleznate v kapitole [navigation#languages Volba
 jazyka] uživatelské příručky systému Wiking.
+
+==== Panely ====
+
+„Panely“ jsou malé rámečky s doplňujícími informacemi, které jsou většinou
+zobrazeny na boku stránky vedle hlavního obsahu.  Hlavní obsah se na různých
+stránkách mění, ale panely zůstávají na svých místech.
+
+Na každém panelu může být libovolný textový obsah, ale kromě toho mají panely
+jednu velice praktickou vlastnost – mohou zobrazit seznam položek rozšiřujícího
+modulu použitého v některé stránce.  Například pro modul [News Novinky] bude
+zobrazen výpis posledních zpráv.  Můžete také zvolit kolik položek má být
+zobrazeno.
+
+Množiny panelů pro jednotlivé jazykové verze portálu jsou zcela nezávislé.
+Můžete tak mít jiné seskupení panelů pro každý jazyk.  Tabulka zobrazuje
+vždy pouze panely pro /aktuální zvolený jazyk/, takže budete muset přepnout
+jazyk, pokud chcete spravovat panely jiné jazykové verze.
+
+Pořadí panelů na stránce je dáno číslem v kolonce „Pořadí“.  Také v této
+tabulce jsou panely zobrazeny v tomto pořadí.
 
