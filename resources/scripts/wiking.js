@@ -77,7 +77,7 @@ function init_menu(menu_id, parent) {
    var menu = document.getElementById(menu_id);
    if (menu != null) {
       var ul = menu.getElementsByTagName('ul')[0];
-      if ul
+      if (ul)
 	 return init_menu_items(ul, parent);
    }
    return null;
