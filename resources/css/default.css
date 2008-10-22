@@ -49,7 +49,7 @@ a.backref, a:link.backref {
 
 .hidden { display: none; }
 
-/*img { position: relative; } /* MSIE float workaround */
+img { position: relative; } /* MSIE float workaround */
 
 /* Page layout */
 

@@ -1,6 +1,6 @@
 2008-10-22  Tomas Cerha  <cerha@brailcom.org>
 
-	* resources/css/default.css: Minor improvement.
+	* resources/css/default.css: MSIE image float workaround.
 
 	* translations/wiking-cms.cs.po: Updated.
 
