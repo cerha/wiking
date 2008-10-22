@@ -1256,7 +1256,8 @@ class Pages(CMSModule):
         if not content and record['parent'].value() is None:
             rows = self._data.get_rows(parent=record['mapping_id'].value(), condition=\
                                        pd.AND(pd.EQ('hidden', pd.Value(pd.Boolean(), False)),
-                                              pd.EQ('published', pd.Value(pd.Boolean(), True))))
+                                              pd.EQ('published', pd.Value(pd.Boolean(), True))),
+                                       sorting=self._sorting)
             if rows:
                 return req.redirect('/'+rows[0]['identifier'].value())
         # Action menu
@@ -1960,6 +1961,7 @@ class Users(EmbeddableCMSModule):
         return result
     RIGHTS_confirm = (Roles.ANYONE,)
     
+    # TODO: Pravděpodobně zapomenuto při copy & paste.  Zrušit.
     def action_certload(self, req):
         record, error_message = self._authorize_registration(req)
         if error_message is None:
@@ -1969,6 +1971,7 @@ class Users(EmbeddableCMSModule):
         return result
     RIGHTS_certload = (Roles.ANYONE,)
 
+    # TODO: Nutno zrušit a předělat to, kvůli čemu to tu bylo.
     def action_insert(self, req, record=None):
         if req.param('form_name') == 'CertificateRequest':
             result = self.action_newcert(req, record)
@@ -2379,7 +2382,7 @@ class Texts(CMSModule):
         _ID_COLUMN = 'text_id'
 
         table = 'texts'
-        title = _("Texts")
+        title = _("System Texts")
         help = _("Edit miscellaneous system texts.")
         
         def fields(self): return (
