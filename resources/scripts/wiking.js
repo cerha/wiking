@@ -75,10 +75,12 @@ function init_menu(menu_id, parent) {
    // keyboard menu traversal.
    //
    var menu = document.getElementById(menu_id);
-   if (menu != null)
-      return init_menu_items(menu.getElementsByTagName('ul')[0], parent);
-   else
-      return null;
+   if (menu != null) {
+      var ul = menu.getElementsByTagName('ul')[0];
+      if ul
+	 return init_menu_items(ul, parent);
+   }
+   return null;
 }
 
 function init_menu_items(ul, parent) {

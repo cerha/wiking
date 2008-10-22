@@ -1,3 +1,7 @@
+2008-10-22  Tomas Cerha  <cerha@brailcom.org>
+
+	* resources/scripts/wiking.js: Handle pages with no menu gracefully.
+
 2008-10-20  Tomas Cerha  <cerha@brailcom.org>
 
 
