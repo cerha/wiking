@@ -1,5 +1,7 @@
 2008-10-22  Tomas Cerha  <cerha@brailcom.org>
 
+	* resources/css/default.css: Minor improvement.
+
 	* translations/wiking-cms.cs.po: Updated.
 
 	* lib/wiking/cms/cms.py: Apply sorting to ensure redirection to

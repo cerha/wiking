@@ -525,7 +525,7 @@ form.pytis-form .group span.color-display {
 }
 form.pytis-form .group span.color-value { 
     float: left;
-    width: 4em;
+    width: 6em;
 }
 form.show-form .group textarea, form.list-view .group textarea {
     background: $color.frame-bg;
