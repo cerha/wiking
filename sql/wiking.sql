@@ -254,6 +254,7 @@ CREATE OR REPLACE RULE attachments_delete AS
 CREATE TABLE news (
 	news_id serial PRIMARY KEY,
 	lang char(2) NOT NULL REFERENCES languages(lang),
+	mapping_id int NOT NULL REFERENCES _mapping ON DELETE CASCADE,
 	"timestamp" timestamp NOT NULL DEFAULT now(),
 	title text NOT NULL,
 	author int NOT NULL REFERENCES users,
@@ -265,6 +266,7 @@ CREATE TABLE news (
 CREATE TABLE planner (
 	planner_id serial PRIMARY KEY,
 	lang char(2) NOT NULL REFERENCES languages(lang),
+	mapping_id int NOT NULL REFERENCES _mapping ON DELETE CASCADE,
 	start_date date NOT NULL,
 	end_date date,
 	title text NOT NULL,

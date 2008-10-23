@@ -1,5 +1,8 @@
 2008-10-23  Tomas Cerha  <cerha@brailcom.org>
 
+	* sql/wiking.sql:
+	Added missing mapping_id references into `planner' and `news'.
+
 	* lib/wiking/__init__.py: 
 	* lib/wiking/export.py: 
 	* lib/wiking/cms/appl.py: 
