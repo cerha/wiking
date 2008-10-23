@@ -1,4 +1,4 @@
-# -*- coding: utf-8; mode: structured-text; fill-column: 80 -*-
+# -*- coding: utf-8; mode: structured-text -*-
 
 = Frequently Asked Questions =
 
@@ -33,8 +33,8 @@ corresponding page as described in the following question.
 
 Submenu may be defined by Wiking CMS extension modules (derived from
 `wiking.cms.CMSExtension').  This submenu is automatically added to the main
-menu (defined by the hierarchy of CMS pages) when the extension module is active
-(the page using this extension is displayed).
+menu (defined by the hierarchy of CMS pages) when the extension module is
+active (the page using this extension is displayed).
 
 The menu is normally defined through the attribute `CMSExtension.\_MENU'
 as a sequence of `CMSExtension.MenuItem' instances.

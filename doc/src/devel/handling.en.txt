@@ -1,4 +1,4 @@
-# -*- coding: utf-8; mode: structured-text; fill-column: 80 -*-
+# -*- coding: utf-8; mode: structured-text -*-
 
 = Wiking Request Handling =
 
