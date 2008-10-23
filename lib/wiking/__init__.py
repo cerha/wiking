@@ -15,7 +15,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-__version__ = '0.4.5-pre1'
+__version__ = '0.4.5-pre2'
 
 import sys, os, time, string, re, copy, urllib
 

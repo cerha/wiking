@@ -81,21 +81,18 @@ class Application(CookieAuthentication, wiking.Application):
             return ()
     
     def panels(self, req, lang):
-        if req.wmi:
-            return []
+        if cfg.appl.allow_login_panel:
+            panels = [LoginPanel()]
         else:
-            if cfg.appl.allow_login_panel:
-                panels = [LoginPanel()]
-            else:
-                panels = []
-            #if Roles.check(req, (Roles.AUTHOR,)) and hasattr(req, 'page'):
-            #    panel = self._module('Pages').content_management_panel(req, req.page)
-            #    if panel:
-            #        panels.append(panel)
-            try:
-                return panels + self._module('Panels').panels(req, lang)
-            except MaintananceModeError:
-                return []
+            panels = []
+        #if Roles.check(req, (Roles.AUTHOR,)) and hasattr(req, 'page'):
+        #    panel = self._module('Pages').content_management_panel(req, req.page)
+        #    if panel:
+        #        panels.append(panel)
+        try:
+            return panels + self._module('Panels').panels(req, lang)
+        except MaintananceModeError:
+            return []
         
     def languages(self):
         try:

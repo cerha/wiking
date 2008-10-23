@@ -1,3 +1,11 @@
+2008-10-23  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/__init__.py: 
+	* lib/wiking/export.py: 
+	* lib/wiking/cms/appl.py: 
+	* lib/wiking/cms/cms.py: 
+	Display the panels in WMI in the same form as outside.
+
 2008-10-22  Tomas Cerha  <cerha@brailcom.org>
 
 	* resources/css/default.css: MSIE image float workaround.

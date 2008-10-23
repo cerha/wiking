@@ -209,15 +209,19 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         import wiking
         g = self._generator
 	result = (g.hr(),)
-        ctrl = None
-        if context.wmi:
-            ctrl = concat(_("Login"), ': ', context.req().user().name(), ' (',
-                          g.link(_("log out"), '?command=logout', cls='login-ctrl'), ') | ',
-                          g.link(_("Leave the Management Interface"), '/', hotkey="9",
-                                 id='wmi-link'))
-        elif hasattr(cfg.appl, 'allow_wmi_link') and cfg.appl.allow_wmi_link:
-            ctrl = g.link(_("Manage this site"), '/_wmi/', hotkey="9", id='wmi-link',
-                          title=_("Enter the Wiking Management Interface"))
+        ctrl = ''
+        if not cfg.appl.allow_login_panel and context.req().user():
+            ctrl += concat(_("Login"), ': ', context.req().user().name(), ' (',
+                          g.link(_("log out"), '?command=logout', cls='login-ctrl'), ')')
+        if hasattr(cfg.appl, 'allow_wmi_link') and cfg.appl.allow_wmi_link:
+            if ctrl:
+                ctrl += ' | '
+            if context.wmi:
+                uri, label, title = ('/', _("Leave the Management Interface"), None)
+            else:
+                uri, label, title = ('/_wmi/', _("Manage this site"),
+                                     _("Enter the Wiking Management Interface"))
+            ctrl += g.link(label, uri, title=title, hotkey="9", id='wmi-link')
         if ctrl:
             result += (g.span(concat(ctrl, self._hidden(" | ")), cls="controls"),)
         result += (g.span(_("Powered by %(wiking)s %(version)s",
