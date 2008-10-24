@@ -1,7 +1,10 @@
 2008-10-24  Tomas Cerha  <cerha@brailcom.org>
 
-	* lib/wiking/application.py:
+	* lib/wiking/configuration.py
 	* lib/wiking/export.py:
+	Added support for configurable language selection images.
+
+	* lib/wiking/application.py:
 	* lib/wiking/cms/appl.py:
 	* resources/css/default.css:
 	Allow application defined bottom bar and footer content.  CMS

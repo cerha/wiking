@@ -70,6 +70,12 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             return self._generator.div(content, id=name.replace('_', '-'), **attr)
         else:
             return None
+
+    def _language_selection_image(self, context, lang):
+        if cfg.language_selection_image:
+            return cfg.language_selection_image % lang
+        else:
+            return None
     
     def _hidden(self, *text):
         return self._generator.span(text, cls="hidden")

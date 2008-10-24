@@ -261,6 +261,15 @@ class Configuration(pc):
                 "dictionary, the assigned value overrides the value of 'default_language' for "
                 "given request.")
         _DEFAULT = {}
+        
+    class _Option_language_selection_image(pc.StringOption):
+        _DESCR = "URI of images used in language selection menu."
+        _DOC = ("If defined, the language selection links will include images (typically national "
+                "flags).  The value is a string where '%s' is replaced by the language code of a "
+                "particular language to get the URI of an image used for that language.  It is up "
+                "to the developer/administrator to ensure that the resulting URIs are handled "
+                "correctly and images of all used languages are available.")
+        _DEFAULT = None
 
     class _Option_session_expiration(pc.NumericOption):
         _DESCR = "Session expiration"
