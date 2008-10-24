@@ -7,20 +7,34 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-10-15 11:26+0200\n"
-"PO-Revision-Date: 2008-10-15 11:15+0200\n"
+"POT-Creation-Date: 2008-10-24 13:16+0200\n"
+"PO-Revision-Date: 2008-10-24 12:03+0200\n"
 "Last-Translator: Tomas Cerha <cerha@brailcom.org>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+#: ../lib/wiking/handler.py:95 ../lib/wiking/util.py:154
+msgid "The server was unable to complete your request."
+msgstr "Server nebyl schopen obsloužit Váš požadavek."
+
+#: ../lib/wiking/handler.py:96 ../lib/wiking/util.py:155
+#, python-format
+msgid ""
+"Please inform the server administrator, %(admin)s if the problem persists."
+msgstr "Informujte prosím správce serveru, %(admin)s pokud problém přetrvává."
+
+#: ../lib/wiking/handler.py:98 ../lib/wiking/util.py:157
+msgid "The error message was:"
+msgstr "Chybová zpráva byla:"
+
 #: ../lib/wiking/util.py:56
 msgid "Authentication required"
 msgstr "Akce vyžaduje přihlášení"
 
 #. Translators: Login dialog page title - use a none.
-#: ../lib/wiking/util.py:66 ../lib/wiking/export.py:214
+#: ../lib/wiking/util.py:66
 msgid "Login"
 msgstr "Přihlášení"
 
@@ -97,20 +111,6 @@ msgstr ""
 msgid "Internal Server Error"
 msgstr "Interní chyba serveru"
 
-#: ../lib/wiking/util.py:154 ../lib/wiking/handler.py:95
-msgid "The server was unable to complete your request."
-msgstr "Server nebyl schopen obsloužit Váš požadavek."
-
-#: ../lib/wiking/util.py:155 ../lib/wiking/handler.py:96
-#, python-format
-msgid ""
-"Please inform the server administrator, %(admin)s if the problem persists."
-msgstr "Informujte prosím správce serveru, %(admin)s pokud problém přetrvává."
-
-#: ../lib/wiking/util.py:157 ../lib/wiking/handler.py:98
-msgid "The error message was:"
-msgstr "Chybová zpráva byla:"
-
 #: ../lib/wiking/util.py:173
 msgid "Maintenance mode"
 msgstr "Probíhá údržba systému"
@@ -124,7 +124,7 @@ msgid "Go to your profile"
 msgstr "Zobrazit uživatelský profil"
 
 #. Translators: Button label - use a verb.
-#: ../lib/wiking/util.py:333 ../lib/wiking/export.py:215
+#: ../lib/wiking/util.py:333
 msgid "log out"
 msgstr "odhlásit"
 
@@ -246,47 +246,47 @@ msgstr "Záznam byl odstraněn."
 msgid "Invalid binding column value."
 msgstr "Nepřípustná hodnota vazebního sloupce."
 
-#: ../lib/wiking/db.py:243
+#: ../lib/wiking/db.py:241
 msgid "Integrity check failed."
 msgstr "Kontrola integrity dat selhala."
 
-#: ../lib/wiking/db.py:773
+#: ../lib/wiking/db.py:771
 msgid "Back"
 msgstr "Zpět"
 
-#: ../lib/wiking/db.py:854
+#: ../lib/wiking/db.py:852
 msgid "An RSS channel is available for this section:"
 msgstr "K dispozici je také RSS kanál pro tuto sekci:"
 
-#: ../lib/wiking/db.py:858
+#: ../lib/wiking/db.py:856
 msgid "more about RSS"
 msgstr "více o RSS"
 
-#: ../lib/wiking/db.py:1018
+#: ../lib/wiking/db.py:1016
 msgid "No records."
 msgstr "Žádné záznamy"
 
-#: ../lib/wiking/db.py:1025
+#: ../lib/wiking/db.py:1023
 msgid "The item was published."
 msgstr "Položka byla zveřejněna."
 
-#: ../lib/wiking/db.py:1026
+#: ../lib/wiking/db.py:1024
 msgid "The item was unpublished."
 msgstr "Zveřejnění položky bylo zrušeno."
 
-#: ../lib/wiking/db.py:1035
+#: ../lib/wiking/db.py:1033
 msgid "Publish"
 msgstr "Zveřejnit"
 
-#: ../lib/wiking/db.py:1038
+#: ../lib/wiking/db.py:1036
 msgid "Make the item visible to website visitors"
 msgstr "Zpřístupnit položku návštěvníkům stránek"
 
-#: ../lib/wiking/db.py:1039
+#: ../lib/wiking/db.py:1037
 msgid "Unpublish"
 msgstr "Zneveřejnit"
 
-#: ../lib/wiking/db.py:1042
+#: ../lib/wiking/db.py:1040
 msgid "Make the item invisible to website visitors"
 msgstr "Učinit položku nedostupnou pro návštěvníky stránek"
 
@@ -339,47 +339,10 @@ msgstr "Skrýt panely"
 msgid "Panels"
 msgstr "Panely"
 
-#: ../lib/wiking/export.py:216
-msgid "Leave the Management Interface"
-msgstr "Opustit rozhraní správy obsahu"
-
-#: ../lib/wiking/export.py:219
-msgid "Manage this site"
-msgstr "Správa obsahu"
-
-#: ../lib/wiking/export.py:220
-msgid "Enter the Wiking Management Interface"
-msgstr "Vstoupit do rozhraní správy obsahu Wiking"
-
-#: ../lib/wiking/export.py:223
-#, python-format
-msgid "Powered by %(wiking)s %(version)s"
-msgstr "Provozováno na %(wiking)s %(version)s"
-
-#: ../lib/wiking/export.py:231
+#: ../lib/wiking/export.py:210
 #, python-format
 msgid "Last change: %(date)s, %(user)s"
 msgstr "Poslední změna: %(date)s, %(user)s"
-
-#: ../lib/wiking/export.py:248
-msgid "US Government Section 508 Accessibility Guidelines."
-msgstr "Sekce 508 směrnic pro zpřístupnění vydaných vládou USA"
-
-#: ../lib/wiking/export.py:251
-msgid "Accessibility Statement"
-msgstr "Prohlášení o zpřístupnění"
-
-#: ../lib/wiking/export.py:256
-msgid "This site conforms to the following standards:"
-msgstr "Tento portál odpovídá následujícím standardům:"
-
-#: ../lib/wiking/export.py:257
-msgid "This site can be viewed in ANY browser."
-msgstr "Tato stránka může být používána v LIBOVOLNÉM prohlížeči."
-
-#: ../lib/wiking/export.py:258
-msgid "Contact:"
-msgstr "Kontakt:"
 
 #: ../lib/wiking/modules.py:385
 msgid "Enter your login name, please!"
@@ -427,11 +390,34 @@ msgstr "Následující moduly byly úspěšně načteny znovu:"
 msgid "Reload"
 msgstr "Načíst znovu"
 
-#~ msgid "New Record"
-#~ msgstr "Nový záznam"
+#. Translators: This is followed by Wiking link and version number.
+#: ../lib/wiking/application.py:302
+msgid "Powered by"
+msgstr "Provozováno na"
 
-#~ msgid "Edit Form"
-#~ msgstr "Úpravy"
+#: ../lib/wiking/application.py:340
+msgid "US Government Section 508 Accessibility Guidelines."
+msgstr "Sekce 508 směrnic pro zpřístupnění vydaných vládou USA"
+
+#: ../lib/wiking/application.py:346
+msgid "Accessibility Statement"
+msgstr "Prohlášení o zpřístupnění"
+
+#: ../lib/wiking/application.py:351
+msgid "X"
+msgstr ""
+
+#: ../lib/wiking/application.py:352
+msgid "This site conforms to the following standards:"
+msgstr "Tento portál odpovídá následujícím standardům:"
+
+#: ../lib/wiking/application.py:354
+msgid "This site can be viewed in ANY browser."
+msgstr "Tato stránka může být používána v LIBOVOLNÉM prohlížeči."
+
+#: ../lib/wiking/application.py:355
+msgid "Contact:"
+msgstr "Kontakt:"
 
 #~ msgid "not available"
 #~ msgstr "nedostupné"

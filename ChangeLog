@@ -1,3 +1,12 @@
+2008-10-24  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/application.py:
+	* lib/wiking/export.py:
+	* lib/wiking/cms/appl.py:
+	* resources/css/default.css:
+	Allow application defined bottom bar and footer content.  CMS
+	specific code moved to CMS.
+
 2008-10-23  Tomas Cerha  <cerha@brailcom.org>
 
 	* sql/wiking.sql:

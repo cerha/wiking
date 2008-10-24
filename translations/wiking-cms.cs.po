@@ -2,12 +2,13 @@
 # Copyright (C) 2006, 2007, 2008 Brailcom, o.p.s.
 # This file is distributed under the same license as the Wiking package.
 # Tomas Cerha <cerha@brailcom.org>, 2006.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-10-22 13:28+0200\n"
-"PO-Revision-Date: 2008-10-22 13:29+0200\n"
+"POT-Creation-Date: 2008-10-24 13:24+0200\n"
+"PO-Revision-Date: 2008-10-24 13:18+0200\n"
 "Last-Translator: Tomas Cerha <cerha@brailcom.org>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
 "MIME-Version: 1.0\n"
@@ -1524,6 +1525,28 @@ msgstr "Požadavek na certifikát se nepodařilo zpracovat"
 msgid "Certificate upload"
 msgstr "Odeslání certifikátu"
 
+#: ../lib/wiking/cms/appl.py:56
+msgid "Manage this site"
+msgstr "Správa obsahu"
+
+#: ../lib/wiking/cms/appl.py:57
+msgid "Enter the Wiking Management Interface"
+msgstr "Vstoupit do rozhraní správy obsahu"
+
+#: ../lib/wiking/cms/appl.py:59
+msgid "Leave the Management Interface"
+msgstr "Opustit rozhraní správy obsahu"
+
+#. Translators: Label preceding login name display -- translate as a none.
+#: ../lib/wiking/cms/appl.py:183
+#, fuzzy
+msgid "Login"
+msgstr "Přihlašovací jméno"
+
+#: ../lib/wiking/cms/appl.py:184
+msgid "log out"
+msgstr ""
+
 #: ../lib/wiking/cms/configuration.py:35
 msgid "Allow login panel"
 msgstr "Zobrazit panel přihlášení"
@@ -1616,9 +1639,6 @@ msgstr ""
 
 #~ msgid "Enter WMI"
 #~ msgstr "Správcovské rozhraní"
-
-#~ msgid "Enter the Wiking Management Interface"
-#~ msgstr "Vstoupit do rozhraní správy obsahu"
 
 #~ msgid "Content management"
 #~ msgstr "Správa obsahu"

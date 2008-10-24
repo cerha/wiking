@@ -25,7 +25,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
     class Context(lcg.HtmlExporter.Context):
         def _init_kwargs(self, req=None, **kwargs):
             self._req = req
-            # Some tiny hacks...
+            # Some harmless hacks...
             self.has_submenu = bool([n for n in self.node().top().children() if not n.hidden()])
             self.wmi = hasattr(req, 'wmi') and req.wmi or False
             super(Exporter.Context, self)._init_kwargs(**kwargs)
@@ -37,7 +37,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
     _WRAP_PARTS = ('top', 'page', 'bottom')
     _PAGE_PARTS = ('links', 'breadcrumbs', 'language_selection',
                    'menu', 'submenu', 'panels', 'content', 'clearing')
-    _BOTTOM_PARTS = ('wiking_bar', 'last_change', 'footer')
+    _BOTTOM_PARTS = ('bottom_bar', 'footer')
     _LANGUAGE_SELECTION_LABEL = _("Language:")
 
     def _body_attr(self, context):
@@ -205,58 +205,41 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
     def _clearing(self, context):
         return '&nbsp;'
     
-    def _wiking_bar(self, context):
-        import wiking
-        g = self._generator
-	result = (g.hr(),)
-        ctrl = ''
-        if not cfg.appl.allow_login_panel and context.req().user():
-            ctrl += concat(_("Login"), ': ', context.req().user().name(), ' (',
-                          g.link(_("log out"), '?command=logout', cls='login-ctrl'), ')')
-        if hasattr(cfg.appl, 'allow_wmi_link') and cfg.appl.allow_wmi_link:
-            if ctrl:
-                ctrl += ' | '
-            if context.wmi:
-                uri, label, title = ('/', _("Leave the Management Interface"), None)
-            else:
-                uri, label, title = ('/_wmi/', _("Manage this site"),
-                                     _("Enter the Wiking Management Interface"))
-            ctrl += g.link(label, uri, title=title, hotkey="9", id='wmi-link')
-        if ctrl:
-            result += (g.span(concat(ctrl, self._hidden(" | ")), cls="controls"),)
-        result += (g.span(_("Powered by %(wiking)s %(version)s",
-                            wiking=g.link("Wiking", "http://www.freebsoft.org/wiking"),
-                            version=wiking.__version__)),)
-        return result
-        
-
     def _last_change(self, context):
-        return None
+        # Currently unused, left here just to have the translation.
 	return _("Last change: %(date)s, %(user)s")
 
+    def _bottom_bar(self, context):
+        req = context.req()
+        left  = req.application().bottom_bar_left_content(req)
+        right = req.application().bottom_bar_right_content(req)
+        if left or right:
+            g = self._generator
+            result = [g.hr()]
+            if left:
+                content = lcg.coerce(left)
+                content.set_parent(context.node())
+                if right:
+                    result.append(g.span(content.export(context), cls="left"))
+                else:
+                    result.append(g.div(content.export(context), cls="left"))
+            if right:
+                if left:
+                    result.append(self._hidden(" | "))
+                content = lcg.coerce(left)
+                content.set_parent(context.node())
+                result.append(g.span(content.export(context)))
+            return result
+        else:
+            return None
+        
     def _footer(self, context):
         g = self._generator
-        links = [g.link(label, uri, title=title) + ','
-                 for label, uri, title in
-                 (("HTML 4.01",
-                   "http://validator.w3.org/check/referer",
-                   None),
-                  ("CSS2",
-                   "http://jigsaw.w3.org/css-validator/check/referer",
-                   None),
-                  ("WCAG 1.0",
-                   "http://www.w3.org/WAI/WCAG1AAA-Conformance",
-                   "W3C-WAI Web Content Accessibility Guidelines."),
-                  ("Section 508",
-                   "http://www.section508.gov",
-                   _("US Government Section 508 Accessibility Guidelines.")))]
-        doc = context.req().application().module_uri('Documentation')
-        if doc:
-            a11y = ' '+ g.link(_("Accessibility Statement"), doc+'/accessibility', hotkey='0')
+        req = context.req()
+        content = req.application().footer_content(req)
+        if content:
+            content = lcg.coerce(content)
+            content.set_parent(context.node())
+            return g.hr() + content.export(context)
         else:
-            a11y = ''
-        contact = cfg.webmaster_address
-        return (g.hr(),
-                g.p(_("This site conforms to the following standards:"), *links),
-                g.p(_("This site can be viewed in ANY browser.") + a11y),
-                g.p(_("Contact:"), g.link(contact, "mailto:"+ contact)))
+            return None

@@ -49,6 +49,16 @@ class Application(CookieAuthentication, wiking.Application):
                'SiteMap': (Roles.ANYONE,),
                'WikingManagementInterface': (Roles.AUTHOR, )}
 
+    class WMILink(lcg.Content):
+        # Used in login panel or bottom bar.
+        def export(self, context):
+            if not context.req().wmi:
+                uri, label, title = ('/_wmi/', _("Manage this site"),
+                                     _("Enter the Wiking Management Interface"))
+            else:
+                uri, label, title = ('/', _("Leave the Management Interface"), None)
+            return context.generator().link(label, uri, title=title, hotkey="9", id='wmi-link')
+
     def handle(self, req):
         req.wmi = False # Will be set to True by `WikingManagementInterface' if needed.
         try:
@@ -157,7 +167,24 @@ class Application(CookieAuthentication, wiking.Application):
         
     def password_reminder_uri(self, req):
         return make_uri(req.uri_prefix() + self.module_uri('Registration'), action='remind')
-        
+
+    def login_panel_content(self, req):
+        #return self.WMILink()
+        return None
+
+    def bottom_bar_left_content(self, req):
+        return self._powered_by_wiking()
+    
+    def bottom_bar_right_content(self, req):
+        content = self.WMILink()
+        if not cfg.appl.allow_login_panel:
+            if req.user():
+                # Translators: Label preceding login name display -- translate as a none.
+                content = lcg.coerce((_("Login"), ': ', req.user().name(),
+                                      ' (', lcg.link('?command=logout', _("log out")), ') | ',
+                                      content))
+        return content
+
     def _maybe_install(self, req, errstr):
         """Check a DB error string and try to set it up if it is the problem."""
         def _button(label, action='/', **params):

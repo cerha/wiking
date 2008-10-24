@@ -252,16 +252,18 @@ div.panel form { margin: 0.3em 0; }
     clear: both;
     margin: 1em 0;
 }
-#wiking-bar { 
-    text-align: left; /* needed by MSIE - why? */
+#bottom-bar { 
+    text-align: right;
     font-size: 0.9em;
     border: solid $color.top-border;
     border-width: 1px 0px;
     background: $color.heading-bg;
 }
-#wiking-bar .controls { float: right; }
-#wiking-bar a { text-decoration: none; }
-#wiking-bar hr { display: none; }
+#bottom-bar { text-align: right; }
+#bottom-bar span.left { float: left; }
+#bottom-bar div.left { text-align: left; }
+#bottom-bar a { text-decoration: none; }
+#bottom-bar hr { display: none; }
 
 #last-change { 
     text-align: right;

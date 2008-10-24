@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-10-15 11:26+0200\n"
+"POT-Creation-Date: 2008-10-24 13:16+0200\n"
 "PO-Revision-Date: 2008-10-14 10:39+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Hungarian <wiking@lists.freebsoft.org>\n"
@@ -15,12 +15,26 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+#: ../lib/wiking/handler.py:95 ../lib/wiking/util.py:154
+msgid "The server was unable to complete your request."
+msgstr ""
+
+#: ../lib/wiking/handler.py:96 ../lib/wiking/util.py:155
+#, python-format
+msgid ""
+"Please inform the server administrator, %(admin)s if the problem persists."
+msgstr ""
+
+#: ../lib/wiking/handler.py:98 ../lib/wiking/util.py:157
+msgid "The error message was:"
+msgstr ""
+
 #: ../lib/wiking/util.py:56
 msgid "Authentication required"
 msgstr ""
 
 #. Translators: Login dialog page title - use a none.
-#: ../lib/wiking/util.py:66 ../lib/wiking/export.py:214
+#: ../lib/wiking/util.py:66
 msgid "Login"
 msgstr ""
 
@@ -88,20 +102,6 @@ msgstr ""
 msgid "Internal Server Error"
 msgstr ""
 
-#: ../lib/wiking/util.py:154 ../lib/wiking/handler.py:95
-msgid "The server was unable to complete your request."
-msgstr ""
-
-#: ../lib/wiking/util.py:155 ../lib/wiking/handler.py:96
-#, python-format
-msgid ""
-"Please inform the server administrator, %(admin)s if the problem persists."
-msgstr ""
-
-#: ../lib/wiking/util.py:157 ../lib/wiking/handler.py:98
-msgid "The error message was:"
-msgstr ""
-
 #: ../lib/wiking/util.py:173
 msgid "Maintenance mode"
 msgstr ""
@@ -115,7 +115,7 @@ msgid "Go to your profile"
 msgstr ""
 
 #. Translators: Button label - use a verb.
-#: ../lib/wiking/util.py:333 ../lib/wiking/export.py:215
+#: ../lib/wiking/util.py:333
 msgid "log out"
 msgstr ""
 
@@ -237,47 +237,47 @@ msgstr ""
 msgid "Invalid binding column value."
 msgstr ""
 
-#: ../lib/wiking/db.py:243
+#: ../lib/wiking/db.py:241
 msgid "Integrity check failed."
 msgstr ""
 
-#: ../lib/wiking/db.py:773
+#: ../lib/wiking/db.py:771
 msgid "Back"
 msgstr ""
 
-#: ../lib/wiking/db.py:854
+#: ../lib/wiking/db.py:852
 msgid "An RSS channel is available for this section:"
 msgstr ""
 
-#: ../lib/wiking/db.py:858
+#: ../lib/wiking/db.py:856
 msgid "more about RSS"
 msgstr ""
 
-#: ../lib/wiking/db.py:1018
+#: ../lib/wiking/db.py:1016
 msgid "No records."
 msgstr ""
 
-#: ../lib/wiking/db.py:1025
+#: ../lib/wiking/db.py:1023
 msgid "The item was published."
 msgstr ""
 
-#: ../lib/wiking/db.py:1026
+#: ../lib/wiking/db.py:1024
 msgid "The item was unpublished."
 msgstr ""
 
-#: ../lib/wiking/db.py:1035
+#: ../lib/wiking/db.py:1033
 msgid "Publish"
 msgstr ""
 
-#: ../lib/wiking/db.py:1038
+#: ../lib/wiking/db.py:1036
 msgid "Make the item visible to website visitors"
 msgstr ""
 
-#: ../lib/wiking/db.py:1039
+#: ../lib/wiking/db.py:1037
 msgid "Unpublish"
 msgstr ""
 
-#: ../lib/wiking/db.py:1042
+#: ../lib/wiking/db.py:1040
 msgid "Make the item invisible to website visitors"
 msgstr ""
 
@@ -330,46 +330,9 @@ msgstr ""
 msgid "Panels"
 msgstr ""
 
-#: ../lib/wiking/export.py:216
-msgid "Leave the Management Interface"
-msgstr ""
-
-#: ../lib/wiking/export.py:219
-msgid "Manage this site"
-msgstr ""
-
-#: ../lib/wiking/export.py:220
-msgid "Enter the Wiking Management Interface"
-msgstr ""
-
-#: ../lib/wiking/export.py:223
-#, python-format
-msgid "Powered by %(wiking)s %(version)s"
-msgstr ""
-
-#: ../lib/wiking/export.py:231
+#: ../lib/wiking/export.py:210
 #, python-format
 msgid "Last change: %(date)s, %(user)s"
-msgstr ""
-
-#: ../lib/wiking/export.py:248
-msgid "US Government Section 508 Accessibility Guidelines."
-msgstr ""
-
-#: ../lib/wiking/export.py:251
-msgid "Accessibility Statement"
-msgstr ""
-
-#: ../lib/wiking/export.py:256
-msgid "This site conforms to the following standards:"
-msgstr ""
-
-#: ../lib/wiking/export.py:257
-msgid "This site can be viewed in ANY browser."
-msgstr ""
-
-#: ../lib/wiking/export.py:258
-msgid "Contact:"
 msgstr ""
 
 #: ../lib/wiking/modules.py:385
@@ -414,4 +377,33 @@ msgstr ""
 
 #: ../lib/wiking/modules.py:575
 msgid "Reload"
+msgstr ""
+
+#. Translators: This is followed by Wiking link and version number.
+#: ../lib/wiking/application.py:302
+msgid "Powered by"
+msgstr ""
+
+#: ../lib/wiking/application.py:340
+msgid "US Government Section 508 Accessibility Guidelines."
+msgstr ""
+
+#: ../lib/wiking/application.py:346
+msgid "Accessibility Statement"
+msgstr ""
+
+#: ../lib/wiking/application.py:351
+msgid "X"
+msgstr ""
+
+#: ../lib/wiking/application.py:352
+msgid "This site conforms to the following standards:"
+msgstr ""
+
+#: ../lib/wiking/application.py:354
+msgid "This site can be viewed in ANY browser."
+msgstr ""
+
+#: ../lib/wiking/application.py:355
+msgid "Contact:"
 msgstr ""

@@ -175,34 +175,6 @@ class Application(Module):
         """
         return []
         
-    def registration_uri(self, req):
-        """Return the URI for new user registration or None if registration is not allowed."""
-        return None
-
-    def password_reminder_uri(self, req):
-        """Return the forgotten password link URI or None if password reminder not implemented."""
-        return None
-
-    def password_change_uri(self, req):
-        """Return the change password URI or None if the link should not appear in login panel."""
-        return None
-
-    def login_panel_content(self, req):
-        """Return the content displayed in the login panel below the automatically generated part.
-
-        A single 'lcg.Content' element or a sequence of such elements may be returned.
-
-        """
-        return None
-    
-    def login_dialog_content(self, req):
-        """Return the content displayed below the login dialog as 'lcg.Content' element(s).
-
-        A single element or a sequence of elements may be returned.
-
-        """
-        return None
-        
     def languages(self):
         """Return the list of available languages as the corresponding alpha-2 language codes.
         
@@ -295,4 +267,90 @@ class Application(Module):
                 "".join(traceback.format_exception(*sys.exc_info())))
             log(OPR, "The original exception was", ''.join(traceback.format_exception(*einfo)))
         raise InternalServerError(message)
+    
+    def registration_uri(self, req):
+        """Return the URI for new user registration or None if registration is not allowed."""
+        return None
+
+    def password_reminder_uri(self, req):
+        """Return the forgotten password link URI or None if password reminder not implemented."""
+        return None
+
+    def password_change_uri(self, req):
+        """Return the change password URI or None if the link should not appear in login panel."""
+        return None
+
+    def login_panel_content(self, req):
+        """Return the content displayed in the login panel below the automatically generated part.
+
+        Any content acceptable by 'lcg.coerce()' may be returned.
+
+        """
+        return None
+    
+    def login_dialog_content(self, req):
+        """Return the content displayed below the login dialog as 'lcg.Content' element(s).
+
+        Any content acceptable by 'lcg.coerce()' may be returned.
+
+        """
+        return None
+        
+    def _powered_by_wiking(self):
+        import wiking
+        # Translators: This is followed by Wiking link and version number.
+        return (_("Powered by"), ' ',
+                lcg.link('http://www.freebsoft.org/wiking', 'Wiking'), ' ', wiking.__version__)
+        
+    def bottom_bar_left_content(self, req):
+        """Return the content displayed on the left side of the bottom bar above the page footer.
+
+        Any content acceptable by 'lcg.coerce()' may be returned.
+
+        """
+        return None
+
+    def bottom_bar_right_content(self, req):
+        """Return the content displayed on the right side of the bottom bar above the page footer.
+
+        Any content acceptable by 'lcg.coerce()' may be returned.
+
+        """
+        return self._powered_by_wiking()
+
+    def footer_content(self, req):
+        """Return the content displayed in page footer as 'lcg.Content' element(s).
+        
+        Any content acceptable by 'lcg.coerce()' may be returned.
+
+        """
+        links = [lcg.link(uri, label, descr=descr)
+                 for label, uri, descr in
+                 (("HTML 4.01",
+                   "http://validator.w3.org/check/referer",
+                   None),
+                  ("CSS2",
+                   "http://jigsaw.w3.org/css-validator/check/referer",
+                   None),
+                  ("WCAG 1.0",
+                   "http://www.w3.org/WAI/WCAG1AAA-Conformance",
+                   "W3C-WAI Web Content Accessibility Guidelines."),
+                  ("Section 508",
+                   "http://www.section508.gov",
+                   _("US Government Section 508 Accessibility Guidelines.")))]
+        doc = self.module_uri('Documentation')
+        class A11yStatement(lcg.Content):
+            # A11y statement link with a hotkey (not supported by generic lcg links).
+            def export(self, context):
+                if doc:
+                    return ' ' + context.generator().link(_("Accessibility Statement"),
+                                                          doc+'/accessibility', hotkey='0')
+                else:
+                    return ''
+        contact = cfg.webmaster_address
+        _("X")
+        return (lcg.p(_("This site conforms to the following standards:"), ' ',
+                      lcg.join(links, separator=', ')),
+                lcg.p(_("This site can be viewed in ANY browser."), A11yStatement()),
+                lcg.p(_("Contact:"), ' ', lcg.link("mailto:"+ contact, contact)))
     
