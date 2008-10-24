@@ -119,7 +119,7 @@ class Handler(object):
                     '  <p>%s</p>\n'
                     '  <pre class="lcg-preformatted-text">%s</pre>\n'
                     ' </div>\n'
-                    ' <div id="wiking-bar">\n'
+                    ' <div id="bottom-bar">\n'
                     '  <hr/>\n'
                     '  <span><a href="http://www.freebsoft.org/wiking">Wiking</a> %s</span>\n'
                     ' </div>\n'
