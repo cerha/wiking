@@ -1,5 +1,10 @@
 2008-10-24  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/export.py:
+	* resources/css/default.css:
+	Present submenu as main navigation, when there are no items in
+	the main level of menus.
+
 	* NEWS: Updated.
 
 	* lib/wiking/configuration.py

@@ -26,6 +26,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         def _init_kwargs(self, req=None, **kwargs):
             self._req = req
             # Some harmless hacks...
+            self.has_menu = bool([n for n in self.node().root().children() if not n.hidden()])
             self.has_submenu = bool([n for n in self.node().top().children() if not n.hidden()])
             self.wmi = hasattr(req, 'wmi') and req.wmi or False
             super(Exporter.Context, self)._init_kwargs(**kwargs)
@@ -54,6 +55,8 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
 
     def _page_attr(self, context):
         cls = cls='node-id-%s' % context.node().id()
+        if context.has_menu:
+            cls += ' with-menu'
         if context.has_submenu:
             cls += ' with-submenu'
         if context.node().panels() and context.req().show_panels():
@@ -127,10 +130,10 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
     def _links(self, context):
         g = self._generator
         links = [g.link(_("Content"), '#content-heading', hotkey="2")]
-        if [n for n in context.node().root().children() if not n.hidden()]:
+        if context.has_menu or context.has_submenu:
             links.append(g.link(_("Main navigation"), '#main-navigation'))
-        if context.has_submenu:
-            links.append(g.link(_("Local navigation"), '#local-navigation'))
+            if context.has_submenu and not context.has_menu:
+                links.append(g.link(_("Local navigation"), '#local-navigation'))
         if len(context.node().variants()) > 1:
             links.append(g.link(_("Language selection"), '#language-selection-anchor'))
         if context.req().show_panels():
@@ -172,9 +175,20 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             return None
         menu = lcg.NodeIndex(node=context.node().top())
         menu.set_parent(context.node())
-        title = g.h(g.link(_("In this section:"), None, name='local-navigation', hotkey="3"), 3)
-        return g.map(g.div(title + menu.export(context), cls='menu-panel'),
-                     name='submenu-map', title=_("Local navigation"))
+        if context.has_menu:
+            # If there is the main menu, this is its submenu, but id the main menu is empty, this
+            # menu acts as the main menu.
+            title = _("Local navigation")
+            heading = _("In this section:")
+            name = 'local-navigation'
+        else:
+            title = _("Main navigation")
+            heading = title+':'
+            name = 'main-navigation'
+        return g.map(g.div((g.h(g.link(heading, None, name=name, hotkey="3"), 3),
+                            menu.export(context)),
+                           cls='menu-panel'),
+                     name='submenu-map', title=title)
     
     def _panels(self, context):
         g = self._generator
