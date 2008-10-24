@@ -1,5 +1,7 @@
 2008-10-24  Tomas Cerha  <cerha@brailcom.org>
 
+	* NEWS: Updated.
+
 	* lib/wiking/configuration.py
 	* lib/wiking/export.py:
 	Added support for configurable language selection images.
