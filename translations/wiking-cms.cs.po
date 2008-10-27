@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-10-24 13:24+0200\n"
-"PO-Revision-Date: 2008-10-24 13:18+0200\n"
+"PO-Revision-Date: 2008-10-27 11:56+0100\n"
 "Last-Translator: Tomas Cerha <cerha@brailcom.org>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
 "MIME-Version: 1.0\n"
@@ -41,7 +41,7 @@ msgstr ""
 
 #: ../lib/wiking/configuration.py:224
 msgid "Site title"
-msgstr "Název porálu"
+msgstr "Název portálu"
 
 #: ../lib/wiking/configuration.py:225
 msgid ""
