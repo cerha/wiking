@@ -49,3 +49,6 @@ different language.
 This module allows you to embed the list of registered users into any page.
 This is mostly practical to allow the users to view each others profile,
 contact infomation etc.
+
+Standard page options may be used to make the list completely public or private
+(only available to logged in users).

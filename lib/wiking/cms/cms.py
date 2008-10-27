@@ -1751,7 +1751,7 @@ class Styles(CMSModule):
             return None
 
 
-class Users(EmbeddableCMSModule):
+class Users(CMSModule):
     """Manage user accounts through a Pytis data object.
 
     This module is used by the Wiking CMS application to retrieve the login
@@ -1862,6 +1862,22 @@ class Users(EmbeddableCMSModule):
         layout = (FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname')),
                   FieldSet(_("Contact information"), ('email', 'phone', 'address', 'uri')))
         cb = CodebookSpec(display='user', prefer_display=True)
+        conditions = (
+            pp.Condition(_("All users"), None),
+            pp.Condition(_("Active users"),
+                         pd.AND(pd.NE('role', pd.Value(pd.String(), 'none')),
+                                pd.EQ('regexpire', pd.Value(pd.DateTime(), None))),
+                         id='active'),
+            pp.Condition(_("Inactive users (including unconfirmed registration requests)"),
+                         pd.AND(pd.EQ('role', pd.Value(pd.String(), 'none')),
+                                pd.EQ('regexpire', pd.Value(pd.DateTime(), None))),
+                         id='inactive'),
+            pp.Condition(_("Invalid registration requests (pending e-mail approval)"),
+                         pd.NE('regexpire', pd.Value(pd.DateTime(), None)),
+                         id='unconfirmed'),
+            )
+        default_filter = 'active'
+
     _REFERER = 'login'
     _PANEL_FIELDS = ('fullname',)
     _ALLOW_TABLE_LAYOUT_IN_FORMS = False
@@ -2241,36 +2257,26 @@ class Users(EmbeddableCMSModule):
         record.update(regexpire=None)
         return record, None
 
-    def _condition(self, req, lang=None, condition=None, values=None):
-        # Don't display random unconfirmed registrations at all
-        filter_conditon = pd.EQ('regexpire', pd.Value(pd.DateTime(), None))
-        if condition:
-            condition = pd.AND(condition, filter_conditon)
-        else:
-            condition = filter_conditon
-        # Don't display users not yet approved by the administrator publicly
-        if not req.wmi:
-            condition = pd.AND(condition,
-                               pd.NE('role', pd.Value(pd.String(), 'none')))
-        return condition
     
-class ActiveUsers(Users):
+class ActiveUsers(Users, EmbeddableCMSModule):
+    """User listing to be embedded into page content.
+
+    This extension module may be used to make the list of active users publically available on the
+    website.  Standard page options can be used to make the list completely public or private (only
+    available to logged in users).
+
+    """
     class Spec(Users.Spec):
         table = 'users'
         title = _("Active users")
         help = _("Listing of all active user accounts.")
-        condition = pd.NE('role', pd.Value(pd.String(), 'none'))
-    WMI_SECTION = WikingManagementInterface.SECTION_USERS
-    WMI_ORDER = 200
-    
-class InactiveUsers(Users):
-    class Spec(Users.Spec):
-        table = 'users'
-        title = _("Inactive users")
-        help = _("Listing of inactive user accounts waiting for administrator approval.")
-        condition = pd.EQ('role', pd.Value(pd.String(), 'none'))
-    WMI_SECTION = WikingManagementInterface.SECTION_USERS
-    WMI_ORDER = 300
+        condition = pd.AND(pd.NE('role', pd.Value(pd.String(), 'none')),
+                           pd.EQ('regexpire', pd.Value(pd.DateTime(), None)))
+        conditions = ()
+        default_filter = None
+    _INSERT_LABEL = lcg.TranslatableText("New user registration", _domain='wiking')
+    WMI_SECTION = None
+    WMI_ORDER = None
 
 
 class Organizations(CMSModule):

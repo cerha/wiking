@@ -52,3 +52,7 @@ přepnout aktuální jazyk.
 Tento modul umožňuje do libovolné stránky vložit výpis registrovaných uživatelů
 a jejich správu.  To může být zejména praktické, pokud chcete návštěvníkům
 umožnit zobrazení profilu uživatelů s kontaktními informacemi atd.
+
+Skrze standardní vlastnosti stránky je možné nastavit, zda má být seznam
+dostupný zcela veřejně, nebo jako privátní (dostupný pouze přihlášeným
+uživatelům).

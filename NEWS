@@ -1,11 +1,16 @@
 -*- mode: Text; fill-column: 80 -*-
 
 Version 0.4.5 (not released yet):
+ 
+ * User management in WMI now uses predefined filters to display
+   active/inactive/unconfirmed users.
 
  * New configuration options allow setting the default language statically as
    well as dynamically based on the server name in the current request URI.
 
  * Panels are now also displayed in WMI in the same form as outside WMI.
+  
+ * Wiking Application API extended to cover common exporter customizations.
 
  * User's documentation updates.
  

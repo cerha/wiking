@@ -1,5 +1,10 @@
 2008-10-27  Tomas Cerha  <cerha@brailcom.org>
 
+	* doc/src/cms/modules.cs.txt: 
+	* doc/src/cms/modules.en.txt: 
+	* lib/wiking/cms/cms.py: 
+	Use predefined filters to list active/inactive/unconfirmed users.
+
 	* translations/wiking-cms.cs.po: 
 	Fixed typo.
 
