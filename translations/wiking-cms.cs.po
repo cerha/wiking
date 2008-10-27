@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-10-24 13:24+0200\n"
-"PO-Revision-Date: 2008-10-27 11:56+0100\n"
+"POT-Creation-Date: 2008-10-27 15:09+0100\n"
+"PO-Revision-Date: 2008-10-27 15:14+0100\n"
 "Last-Translator: Tomas Cerha <cerha@brailcom.org>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
 "MIME-Version: 1.0\n"
@@ -84,11 +84,11 @@ msgid ""
 "errors completely."
 msgstr ""
 
-#: ../lib/wiking/configuration.py:332
+#: ../lib/wiking/configuration.py:341
 msgid "Whether to use e-mails as login names"
 msgstr "Použít e-mailové adresy jako přihlašovací jméno"
 
-#: ../lib/wiking/configuration.py:333
+#: ../lib/wiking/configuration.py:342
 msgid "Iff true, users must use e-mail addresses as their login names."
 msgstr ""
 "Je-li nastaveno, uživatelé musí jako svá přihlašovací jména používat e-"
@@ -218,8 +218,8 @@ msgstr "Požadavek na certifikát pošlete prostřednictvím stránky %(uri)s"
 msgid "Invalid request."
 msgstr "Neplatný požadavek."
 
-#: ../lib/wiking/cms/cms.py:292 ../lib/wiking/cms/cms.py:2078
-#: ../lib/wiking/cms/cms.py:2100 ../lib/wiking/cms/cms.py:2114
+#: ../lib/wiking/cms/cms.py:292 ../lib/wiking/cms/cms.py:2094
+#: ../lib/wiking/cms/cms.py:2116 ../lib/wiking/cms/cms.py:2130
 msgid "Failed sending e-mail notification:"
 msgstr "Nepodařilo se odeslat e-mailové upozornění:"
 
@@ -371,7 +371,7 @@ msgid "Code"
 msgstr "Kód"
 
 #: ../lib/wiking/cms/cms.py:800 ../lib/wiking/cms/cms.py:882
-#: ../lib/wiking/cms/cms.py:2290 ../lib/wiking/cms/cms.py:2714
+#: ../lib/wiking/cms/cms.py:2296 ../lib/wiking/cms/cms.py:2720
 msgid "Name"
 msgstr "Název"
 
@@ -387,7 +387,7 @@ msgstr "Běžné barvy stránky"
 #: ../lib/wiking/cms/cms.py:824 ../lib/wiking/cms/cms.py:836
 #: ../lib/wiking/cms/cms.py:844 ../lib/wiking/cms/cms.py:851
 #: ../lib/wiking/cms/cms.py:860 ../lib/wiking/cms/cms.py:864
-#: ../lib/wiking/cms/cms.py:868 ../lib/wiking/cms/cms.py:2394
+#: ../lib/wiking/cms/cms.py:868 ../lib/wiking/cms/cms.py:2400
 msgid "Text"
 msgstr "Text"
 
@@ -1116,16 +1116,16 @@ msgstr ""
 "Ponechte prázdné, pokud chcete, aby se na Vás systém odkazoval plným jménem, "
 "nebo zadejte jiné jméno, jako např. přezdívku nebo monogram."
 
-#: ../lib/wiking/cms/cms.py:1821 ../lib/wiking/cms/cms.py:2292
-#: ../lib/wiking/cms/cms.py:2716
+#: ../lib/wiking/cms/cms.py:1821 ../lib/wiking/cms/cms.py:2298
+#: ../lib/wiking/cms/cms.py:2722
 msgid "E-mail"
 msgstr "E-mail"
 
-#: ../lib/wiking/cms/cms.py:1822 ../lib/wiking/cms/cms.py:2293
+#: ../lib/wiking/cms/cms.py:1822 ../lib/wiking/cms/cms.py:2299
 msgid "Phone"
 msgstr "Telefon"
 
-#: ../lib/wiking/cms/cms.py:1823 ../lib/wiking/cms/cms.py:2294
+#: ../lib/wiking/cms/cms.py:1823 ../lib/wiking/cms/cms.py:2300
 msgid "Address"
 msgstr "Adresa"
 
@@ -1168,7 +1168,7 @@ msgstr "Organizace"
 msgid "Certificat request file"
 msgstr "Soubor s požadavkem na certifikát"
 
-#: ../lib/wiking/cms/cms.py:1845 ../lib/wiking/cms/cms.py:2586
+#: ../lib/wiking/cms/cms.py:1845 ../lib/wiking/cms/cms.py:2592
 msgid "Upload a PEM file containing the certificate"
 msgstr "Upload PEM souboru obsahujícího certifikát"
 
@@ -1176,71 +1176,87 @@ msgstr "Upload PEM souboru obsahujícího certifikát"
 msgid "No password given"
 msgstr "Nebylo zadáno heslo"
 
-#: ../lib/wiking/cms/cms.py:1854 ../lib/wiking/cms/cms.py:2300
+#: ../lib/wiking/cms/cms.py:1854 ../lib/wiking/cms/cms.py:2306
 #, python-format
 msgid "Invalid e-mail address: %s"
 msgstr "Chybná e-mailová adresa: %s"
 
-#: ../lib/wiking/cms/cms.py:1862 ../lib/wiking/cms/cms.py:1901
-#: ../lib/wiking/cms/cms.py:1909
+#: ../lib/wiking/cms/cms.py:1862 ../lib/wiking/cms/cms.py:1917
+#: ../lib/wiking/cms/cms.py:1925
 msgid "Personal data"
 msgstr "Osobní údaje"
 
-#: ../lib/wiking/cms/cms.py:1863 ../lib/wiking/cms/cms.py:1902
-#: ../lib/wiking/cms/cms.py:1910
+#: ../lib/wiking/cms/cms.py:1863 ../lib/wiking/cms/cms.py:1918
+#: ../lib/wiking/cms/cms.py:1926
 msgid "Contact information"
 msgstr "Kontaktní údaje"
 
+#: ../lib/wiking/cms/cms.py:1866
+msgid "All users"
+msgstr "Všichni uživatelé"
+
+#: ../lib/wiking/cms/cms.py:1867 ../lib/wiking/cms/cms.py:2271
+msgid "Active users"
+msgstr "Aktivní uživatelé"
+
 #: ../lib/wiking/cms/cms.py:1871
+msgid "Inactive users (including unconfirmed registration requests)"
+msgstr "Neaktivní uživatelé (včetně neschválených žádostí o registraci)"
+
+#: ../lib/wiking/cms/cms.py:1875
+msgid "Invalid registration requests (pending e-mail approval)"
+msgstr "Neplatné žádosti o registraci (čeká se na e-mailové potvrzení)"
+
+#: ../lib/wiking/cms/cms.py:1887
 msgid "New user"
 msgstr "Nový uživatel"
 
-#: ../lib/wiking/cms/cms.py:1872
+#: ../lib/wiking/cms/cms.py:1888
 msgid "Edit profile"
 msgstr "Upravit profil"
 
-#: ../lib/wiking/cms/cms.py:1873
+#: ../lib/wiking/cms/cms.py:1889
 msgid "Modify user's record"
 msgstr "Změnit údaje o uživateli"
 
-#: ../lib/wiking/cms/cms.py:1876 ../lib/wiking/cms/cms.py:1911
+#: ../lib/wiking/cms/cms.py:1892 ../lib/wiking/cms/cms.py:1927
 msgid "Access rights"
 msgstr "Oprávnění"
 
-#: ../lib/wiking/cms/cms.py:1876
+#: ../lib/wiking/cms/cms.py:1892
 msgid "Change access rights"
 msgstr "Práva"
 
-#: ../lib/wiking/cms/cms.py:1880
+#: ../lib/wiking/cms/cms.py:1896
 msgid "Change password"
 msgstr "Změna hesla"
 
-#: ../lib/wiking/cms/cms.py:1881
+#: ../lib/wiking/cms/cms.py:1897
 msgid "Change user's password"
 msgstr "Změna přihlašovacího hesla"
 
-#: ../lib/wiking/cms/cms.py:1883
+#: ../lib/wiking/cms/cms.py:1899
 msgid "Change certificate"
 msgstr "Změna certifikátu"
 
-#: ../lib/wiking/cms/cms.py:1884
+#: ../lib/wiking/cms/cms.py:1900
 msgid "Generate new certificate"
 msgstr "Vygenerovat nový certifikát"
 
-#: ../lib/wiking/cms/cms.py:1905
+#: ../lib/wiking/cms/cms.py:1921
 msgid "Login information"
 msgstr "Přihlašovací údaje"
 
-#: ../lib/wiking/cms/cms.py:1924
+#: ../lib/wiking/cms/cms.py:1940
 msgid "Here is your certificate to authenticate to the application"
 msgstr "Zde je váš certifikát pro autentizaci do aplikace"
 
-#: ../lib/wiking/cms/cms.py:1932
+#: ../lib/wiking/cms/cms.py:1948
 #, python-format
 msgid "Your certificate for %s"
 msgstr "Váš certifikát pro %s"
 
-#: ../lib/wiking/cms/cms.py:1941 ../lib/wiking/cms/cms.py:2041
+#: ../lib/wiking/cms/cms.py:1957 ../lib/wiking/cms/cms.py:2057
 msgid ""
 "Registration completed successfuly. Your account now awaits administrator's "
 "approval."
@@ -1248,55 +1264,55 @@ msgstr ""
 "Registrace proběhla úspěšně.  Váš účet nyní čeká na schválení "
 "administrátorem."
 
-#: ../lib/wiking/cms/cms.py:1944
+#: ../lib/wiking/cms/cms.py:1960
 msgid "The signed certificate has been sent to you by e-mail."
 msgstr "Podepsaný certifikát byl odeslán na Vaši e-mailovou adresu."
 
-#: ../lib/wiking/cms/cms.py:1946
+#: ../lib/wiking/cms/cms.py:1962
 msgid "Registration confirmed"
 msgstr "Registrace potvrzena"
 
-#: ../lib/wiking/cms/cms.py:1950
+#: ../lib/wiking/cms/cms.py:1966
 msgid "Certificate renewal failure"
 msgstr "Změna certifikátu selhala"
 
-#: ../lib/wiking/cms/cms.py:1952
+#: ../lib/wiking/cms/cms.py:1968
 msgid "Registration confirmation failed"
 msgstr "Potvrzení registrace zhavarovalo"
 
-#: ../lib/wiking/cms/cms.py:1992
+#: ../lib/wiking/cms/cms.py:2008
 msgid "Certificate updated"
 msgstr "Certifikát aktualizován"
 
-#: ../lib/wiking/cms/cms.py:1992
+#: ../lib/wiking/cms/cms.py:2008
 msgid "New certificate installed."
 msgstr "Certifikát byl uložen."
 
-#: ../lib/wiking/cms/cms.py:2007
+#: ../lib/wiking/cms/cms.py:2023
 msgid "Enter your current password."
 msgstr "Zadejte své současné heslo."
 
-#: ../lib/wiking/cms/cms.py:2009
+#: ../lib/wiking/cms/cms.py:2025
 msgid "Invalid password."
 msgstr "Neplatné heslo."
 
-#: ../lib/wiking/cms/cms.py:2012
+#: ../lib/wiking/cms/cms.py:2028
 msgid "Enter the new password."
 msgstr "Zadejte nové heslo."
 
-#: ../lib/wiking/cms/cms.py:2015
+#: ../lib/wiking/cms/cms.py:2031
 msgid "The new password is the same as the old one."
 msgstr "Nové heslo je stejné jako staré."
 
-#: ../lib/wiking/cms/cms.py:2037
+#: ../lib/wiking/cms/cms.py:2053
 msgid "Enable"
 msgstr "Povolit"
 
-#: ../lib/wiking/cms/cms.py:2037
+#: ../lib/wiking/cms/cms.py:2053
 msgid "Enable this account"
 msgstr "Povolit tento účet"
 
-#: ../lib/wiking/cms/cms.py:2056
+#: ../lib/wiking/cms/cms.py:2072
 #, python-format
 msgid ""
 "You have been successfully registered at %(server_hostname)s. To complete "
@@ -1306,7 +1322,7 @@ msgstr ""
 "vaší registrace navštivte stránku %(uri)s a následujte instrukce na této \n"
 "stránce.\n"
 
-#: ../lib/wiking/cms/cms.py:2064
+#: ../lib/wiking/cms/cms.py:2080
 msgid ""
 "\n"
 "You will be asked to upload your certificate request.\n"
@@ -1314,22 +1330,22 @@ msgstr ""
 "\n"
 "Budete požádáni poslat váš požadavek na certifikát.\n"
 
-#: ../lib/wiking/cms/cms.py:2074
+#: ../lib/wiking/cms/cms.py:2090
 #, python-format
 msgid "Your registration at %s"
 msgstr "Vaše registrace na %s"
 
-#: ../lib/wiking/cms/cms.py:2078
+#: ../lib/wiking/cms/cms.py:2094
 msgid "Registration cancelled."
 msgstr "Registrace neakceptována."
 
-#: ../lib/wiking/cms/cms.py:2080
+#: ../lib/wiking/cms/cms.py:2096
 msgid ""
 "E-mail was sent to you with instructions how to complete the registration "
 "process."
 msgstr "Byl vám zaslán e-mail s pokyny, jak registraci dokončit."
 
-#: ../lib/wiking/cms/cms.py:2091
+#: ../lib/wiking/cms/cms.py:2107
 #, python-format
 msgid ""
 "New user %(fullname)s registered at %(server_hostname)s. Please approve the "
@@ -1338,19 +1354,19 @@ msgstr ""
 "Nový uživatel %(fullname)s se registroval na %(server_hostname)s. Proveďte "
 "prosím potvrzení registrace: %(uri)s"
 
-#: ../lib/wiking/cms/cms.py:2097
+#: ../lib/wiking/cms/cms.py:2113
 msgid "New user registration:"
 msgstr "Registrace nového uživatele:"
 
-#: ../lib/wiking/cms/cms.py:2102
+#: ../lib/wiking/cms/cms.py:2118
 msgid "E-mail notification has been sent to server administrator."
 msgstr "E-mailové upozornění bylo odesláno správci serveru."
 
-#: ../lib/wiking/cms/cms.py:2107
+#: ../lib/wiking/cms/cms.py:2123
 msgid "The account was enabled."
 msgstr "Účet byl povolen."
 
-#: ../lib/wiking/cms/cms.py:2108
+#: ../lib/wiking/cms/cms.py:2124
 #, python-format
 msgid ""
 "Your account at %(uri)s has been enabled. Please log in with username '%"
@@ -1359,117 +1375,105 @@ msgstr ""
 "Váš účet na %(uri)s byl povolen. Přihlašte se, prosím, s Vaším uživatelským "
 "jménem „%(login)s“ a heslem zvoleným při registraci."
 
-#: ../lib/wiking/cms/cms.py:2111
+#: ../lib/wiking/cms/cms.py:2127
 msgid "Your account has been enabled."
 msgstr "Váš účet byl povolen."
 
-#: ../lib/wiking/cms/cms.py:2116
+#: ../lib/wiking/cms/cms.py:2132
 msgid "E-mail notification has been sent to:"
 msgstr "E-mailové upozornění bylo odesláno na:"
 
-#: ../lib/wiking/cms/cms.py:2186
+#: ../lib/wiking/cms/cms.py:2202
 msgid "Missing form parameters"
 msgstr "Chybějící parametry formuláře."
 
-#: ../lib/wiking/cms/cms.py:2196
+#: ../lib/wiking/cms/cms.py:2212
 msgid "Invalid login or user registration already confirmed"
 msgstr "Chybné přihlašovací jméno anebo jste již svoji registraci potvrdili"
 
-#: ../lib/wiking/cms/cms.py:2200
+#: ../lib/wiking/cms/cms.py:2216
 msgid "Invalid access code"
 msgstr "Neplatný přístupový kód"
 
-#: ../lib/wiking/cms/cms.py:2218 ../lib/wiking/cms/cms.py:2229
+#: ../lib/wiking/cms/cms.py:2234 ../lib/wiking/cms/cms.py:2245
 msgid "Database operation failed"
 msgstr "Selhala databázová operace"
 
-#: ../lib/wiking/cms/cms.py:2260
-msgid "Active users"
-msgstr "Aktivní uživatelé"
-
-#: ../lib/wiking/cms/cms.py:2261
+#: ../lib/wiking/cms/cms.py:2272
 msgid "Listing of all active user accounts."
 msgstr "Výpis všech aktivních uživatelských účtů."
 
-#: ../lib/wiking/cms/cms.py:2269
-msgid "Inactive users"
-msgstr "Neaktivní uživatelé"
-
-#: ../lib/wiking/cms/cms.py:2270
-msgid "Listing of inactive user accounts waiting for administrator approval."
-msgstr "Výpis neaktivních uživatelských účtů čekajících na schválení."
-
-#: ../lib/wiking/cms/cms.py:2285
+#: ../lib/wiking/cms/cms.py:2291
 msgid "Organizations"
 msgstr "Organizace"
 
-#: ../lib/wiking/cms/cms.py:2286
+#: ../lib/wiking/cms/cms.py:2292
 msgid "Manage institutions and other organizations."
 msgstr "Správa institucí a jiných organizací."
 
-#: ../lib/wiking/cms/cms.py:2291
+#: ../lib/wiking/cms/cms.py:2297
 msgid "VAT id"
 msgstr "DIČ"
 
-#: ../lib/wiking/cms/cms.py:2295
+#: ../lib/wiking/cms/cms.py:2301
 msgid "Notes"
 msgstr "Poznámky"
 
-#: ../lib/wiking/cms/cms.py:2385
+#: ../lib/wiking/cms/cms.py:2391
 msgid "System Texts"
 msgstr "Systémové texty"
 
-#: ../lib/wiking/cms/cms.py:2386
+#: ../lib/wiking/cms/cms.py:2392
 msgid "Edit miscellaneous system texts."
 msgstr "Přizpůsobit různé systémové texty."
 
-#: ../lib/wiking/cms/cms.py:2390
+#: ../lib/wiking/cms/cms.py:2396
 msgid "Label"
 msgstr "Název"
 
-#: ../lib/wiking/cms/cms.py:2392
+#: ../lib/wiking/cms/cms.py:2398
 msgid "Purpose"
 msgstr "Účel"
 
-#: ../lib/wiking/cms/cms.py:2395
+#: ../lib/wiking/cms/cms.py:2401
 msgid ""
 "Edit the given text as needed, in accordance with structured text rules."
 msgstr ""
 "Zeditujte text dle potřeby, formátovaný dle pravidel pro strukturovaný text."
 
-#: ../lib/wiking/cms/cms.py:2584
+#: ../lib/wiking/cms/cms.py:2590
 msgid "PEM file"
 msgstr "PEM soubor"
 
-#: ../lib/wiking/cms/cms.py:2587 ../lib/wiking/cms/cms.py:2593
+#: ../lib/wiking/cms/cms.py:2593 ../lib/wiking/cms/cms.py:2599
 msgid "Certificate"
 msgstr "Certifikát"
 
-#: ../lib/wiking/cms/cms.py:2589
+#: ../lib/wiking/cms/cms.py:2595
 msgid "X509 structure"
 msgstr "Struktura dat X509"
 
-#: ../lib/wiking/cms/cms.py:2591
+#: ../lib/wiking/cms/cms.py:2597
 msgid "Serial number"
 msgstr "Sériové číslo"
 
-#: ../lib/wiking/cms/cms.py:2595
+#: ../lib/wiking/cms/cms.py:2601
 msgid "Certification Authority"
 msgstr "Certifikační autorita"
 
-#: ../lib/wiking/cms/cms.py:2597
+#: ../lib/wiking/cms/cms.py:2603
 msgid "Valid from"
 msgstr "Platný od"
 
-#: ../lib/wiking/cms/cms.py:2599
+#: ../lib/wiking/cms/cms.py:2605
 msgid "Valid until"
 msgstr "Platný do"
 
-#: ../lib/wiking/cms/cms.py:2601
+#: ../lib/wiking/cms/cms.py:2607
 msgid "Trusted"
 msgstr "Důvěryhodný"
 
-#: ../lib/wiking/cms/cms.py:2602
+#: ../lib/wiking/cms/cms.py:2608
 msgid ""
 "When this is checked, certificates signed by this root certificate are "
 "considered valid."
@@ -1477,51 +1481,51 @@ msgstr ""
 "Je-li toto políčko zatrženo, certifikáty podepsané touto certifikační "
 "autoritou jsou považovány za platné."
 
-#: ../lib/wiking/cms/cms.py:2627
+#: ../lib/wiking/cms/cms.py:2633
 msgid "Invalid certificate"
 msgstr "Chybný certifikát"
 
-#: ../lib/wiking/cms/cms.py:2641
+#: ../lib/wiking/cms/cms.py:2647
 msgid "Unprocessable serial number"
 msgstr "Chybné sériové číslo"
 
-#: ../lib/wiking/cms/cms.py:2664
+#: ../lib/wiking/cms/cms.py:2670
 msgid "The certificate is not valid"
 msgstr "Certifikát je neplatný"
 
-#: ../lib/wiking/cms/cms.py:2683
+#: ../lib/wiking/cms/cms.py:2689
 msgid "CA Certificates"
 msgstr "Certifikáty certifikačních autorit"
 
-#: ../lib/wiking/cms/cms.py:2684
+#: ../lib/wiking/cms/cms.py:2690
 msgid "Manage trusted root certificates."
 msgstr "Správa důvěryhodných kořenových certifikátů"
 
-#: ../lib/wiking/cms/cms.py:2692
+#: ../lib/wiking/cms/cms.py:2698
 msgid "This is not a CA certificate."
 msgstr "Nejedná se o certifikát certifikační autority"
 
-#: ../lib/wiking/cms/cms.py:2704
+#: ../lib/wiking/cms/cms.py:2710
 msgid "User Certificates"
 msgstr "Uživatelské certifikáty"
 
-#: ../lib/wiking/cms/cms.py:2705
+#: ../lib/wiking/cms/cms.py:2711
 msgid "Manage user and other kinds of certificates."
 msgstr "Správa uživatelských a ostatních certifikátů."
 
-#: ../lib/wiking/cms/cms.py:2712
+#: ../lib/wiking/cms/cms.py:2718
 msgid "Subject"
 msgstr "Předmět"
 
-#: ../lib/wiking/cms/cms.py:2805
+#: ../lib/wiking/cms/cms.py:2811
 msgid "Upload a PEM file containing the certificate request"
 msgstr "Odeslání PEM souboru obsahujícího požadavek na certifikát"
 
-#: ../lib/wiking/cms/cms.py:2831
+#: ../lib/wiking/cms/cms.py:2837
 msgid "Certificate request could not be processed"
 msgstr "Požadavek na certifikát se nepodařilo zpracovat"
 
-#: ../lib/wiking/cms/cms.py:2854
+#: ../lib/wiking/cms/cms.py:2860
 msgid "Certificate upload"
 msgstr "Odeslání certifikátu"
 
@@ -1536,16 +1540,6 @@ msgstr "Vstoupit do rozhraní správy obsahu"
 #: ../lib/wiking/cms/appl.py:59
 msgid "Leave the Management Interface"
 msgstr "Opustit rozhraní správy obsahu"
-
-#. Translators: Label preceding login name display -- translate as a none.
-#: ../lib/wiking/cms/appl.py:183
-#, fuzzy
-msgid "Login"
-msgstr "Přihlašovací jméno"
-
-#: ../lib/wiking/cms/appl.py:184
-msgid "log out"
-msgstr ""
 
 #: ../lib/wiking/cms/configuration.py:35
 msgid "Allow login panel"
@@ -1595,17 +1589,8 @@ msgstr ""
 "Maximální velikost souborů přenášených na server (celé číslo v bajtech).  "
 "Pozor, aby se změny této volby uplatnily, je nutné server restartovat."
 
-#~ msgid "Texts"
-#~ msgstr "Texty"
-
 #~ msgid "Certificate Management"
 #~ msgstr "Správa certifikátů"
-
-#~ msgid "Manage trusted certificates of your site."
-#~ msgstr "Správa důvěryhodných certifikátů portálu."
-
-#~ msgid "Images"
-#~ msgstr "Obrázky"
 
 #~ msgid "Location"
 #~ msgstr "Místo"
@@ -1622,41 +1607,14 @@ msgstr ""
 #~ msgid "Color theme"
 #~ msgstr "Barevný motiv"
 
-#~ msgid "Buttons"
-#~ msgstr "Tlačítka"
-
 #~ msgid "System error while processing certificate"
 #~ msgstr "Systémová chyba při zpracování certifikátu"
-
-#~ msgid "Edit page text, title and description"
-#~ msgstr "Editace textu stránky, názvu a popisu"
 
 #~ msgid "Help"
 #~ msgstr "Nápověda"
 
 #~ msgid "Show on-line help"
 #~ msgstr "Zobrazit on-line nápovědu"
-
-#~ msgid "Enter WMI"
-#~ msgstr "Správcovské rozhraní"
-
-#~ msgid "Content management"
-#~ msgstr "Správa obsahu"
-
-#~ msgid "E-mail address for sending bug reports"
-#~ msgstr "E-mailová adresa pro zasílání chybových hlášení"
-
-#~ msgid ""
-#~ "Tracebacks of uncaught exceptions may be sent automatically to the site "
-#~ "maintainer by e-mail.  Empty value disables this feature.  The tracebacks "
-#~ "are logged on the server in any case."
-#~ msgstr ""
-#~ "Debugovací výpisy nezachycených výjimek mohou být zasílány správci "
-#~ "aplikace elektronickou poštou.  Ponechte prázdné, pokud tyto výpisy "
-#~ "nechcete nikam posílat.  Výpisy jsou v každém případě na serveru logovány."
-
-#~ msgid "Remove the user permanently"
-#~ msgstr "Nevratně odstranit uživatele"
 
 #~ msgid "Create the content by translating another language variant"
 #~ msgstr "Vytvořit obsah přeložením jiné jazykové verze stránky"

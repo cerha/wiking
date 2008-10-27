@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-10-24 13:16+0200\n"
+"POT-Creation-Date: 2008-10-27 15:17+0100\n"
 "PO-Revision-Date: 2008-10-24 12:03+0200\n"
 "Last-Translator: Tomas Cerha <cerha@brailcom.org>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
@@ -290,56 +290,56 @@ msgstr "Zneveřejnit"
 msgid "Make the item invisible to website visitors"
 msgstr "Učinit položku nedostupnou pro návštěvníky stránek"
 
-#: ../lib/wiking/export.py:41
+#: ../lib/wiking/export.py:42
 msgid "Language:"
 msgstr "Jazyk:"
 
-#: ../lib/wiking/export.py:98
+#: ../lib/wiking/export.py:107
 msgid "Wiking Management Interface"
 msgstr "Rozhraní správy obsahu Wiking"
 
-#: ../lib/wiking/export.py:123
+#: ../lib/wiking/export.py:132
 msgid "Content"
 msgstr "Obsah"
 
-#: ../lib/wiking/export.py:125 ../lib/wiking/export.py:157
-#: ../lib/wiking/export.py:161
+#: ../lib/wiking/export.py:134 ../lib/wiking/export.py:166
+#: ../lib/wiking/export.py:170 ../lib/wiking/export.py:185
 msgid "Main navigation"
 msgstr "Hlavní navigace"
 
-#: ../lib/wiking/export.py:127 ../lib/wiking/export.py:171
+#: ../lib/wiking/export.py:136 ../lib/wiking/export.py:181
 msgid "Local navigation"
 msgstr "Navigace této sekce"
 
-#: ../lib/wiking/export.py:129
+#: ../lib/wiking/export.py:138
 msgid "Language selection"
 msgstr "Výběr jazyka"
 
-#: ../lib/wiking/export.py:133
+#: ../lib/wiking/export.py:142
 msgid "Jump in page"
 msgstr "Přejít ve stránce"
 
-#: ../lib/wiking/export.py:137
+#: ../lib/wiking/export.py:146
 msgid "You are here:"
 msgstr "Nacházíte se zde:"
 
-#: ../lib/wiking/export.py:169
+#: ../lib/wiking/export.py:182
 msgid "In this section:"
 msgstr "V této sekci:"
 
-#: ../lib/wiking/export.py:182
+#: ../lib/wiking/export.py:202
 msgid "Show panels"
 msgstr "Zobrazit panely"
 
-#: ../lib/wiking/export.py:184
+#: ../lib/wiking/export.py:204
 msgid "Hide panels"
 msgstr "Skrýt panely"
 
-#: ../lib/wiking/export.py:185
+#: ../lib/wiking/export.py:205
 msgid "Panels"
 msgstr "Panely"
 
-#: ../lib/wiking/export.py:210
+#: ../lib/wiking/export.py:230
 #, python-format
 msgid "Last change: %(date)s, %(user)s"
 msgstr "Poslední změna: %(date)s, %(user)s"
@@ -404,18 +404,14 @@ msgid "Accessibility Statement"
 msgstr "Prohlášení o zpřístupnění"
 
 #: ../lib/wiking/application.py:351
-msgid "X"
-msgstr ""
-
-#: ../lib/wiking/application.py:352
 msgid "This site conforms to the following standards:"
 msgstr "Tento portál odpovídá následujícím standardům:"
 
-#: ../lib/wiking/application.py:354
+#: ../lib/wiking/application.py:353
 msgid "This site can be viewed in ANY browser."
 msgstr "Tato stránka může být používána v LIBOVOLNÉM prohlížeči."
 
-#: ../lib/wiking/application.py:355
+#: ../lib/wiking/application.py:354
 msgid "Contact:"
 msgstr "Kontakt:"
 

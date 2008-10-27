@@ -180,8 +180,12 @@ class Application(CookieAuthentication, wiking.Application):
         if not cfg.appl.allow_login_panel:
             if req.user():
                 # Translators: Label preceding login name display -- translate as a none.
-                content = lcg.coerce((_("Login"), ': ', req.user().name(),
-                                      ' (', lcg.link('?command=logout', _("log out")), ') | ',
+                content = lcg.coerce((lcg.TranslatableText("Login", _domain='wiking'), ': ',
+                                      req.user().name(),
+                                      ' (', lcg.link('?command=logout',
+                                                     lcg.TranslatableText("log out",
+                                                                          _domain='wiking')),
+                                      ') | ',
                                       content))
         return content
 

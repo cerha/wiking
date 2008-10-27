@@ -348,7 +348,6 @@ class Application(Module):
                 else:
                     return ''
         contact = cfg.webmaster_address
-        _("X")
         return (lcg.p(_("This site conforms to the following standards:"), ' ',
                       lcg.join(links, separator=', ')),
                 lcg.p(_("This site can be viewed in ANY browser."), A11yStatement()),
