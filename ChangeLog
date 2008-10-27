@@ -1,5 +1,8 @@
 2008-10-27  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/export.py: 
+	Fixed bottom-bar content composition.
+
 	* resources/css/default.css: Improved language selection display
 	when menu is not displayed.
 
