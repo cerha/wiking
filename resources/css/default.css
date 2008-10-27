@@ -154,13 +154,17 @@ img { position: relative; } /* MSIE float workaround */
 
 #language-selection { 
     position: absolute;
-    top: 2pt;
-    right: 6pt;
-    font-size: 0.9em;
+    top: .5em;
+    right: 8em;
     max-width: 55%;
+    font-size: 0.9em;
     /*white-space: nowrap;*/
 }
 #language-selection a.current { background-color: $color.highlight-bg; }
+#page.with-menu #language-selection {
+    top: 2pt;
+    right: 6pt;
+}
 
 /* Panels */
 
