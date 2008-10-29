@@ -1,5 +1,8 @@
 2008-10-29  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/__init__.py:
+	Version set to 0.4.5-pre3.
+
 	* lib/wiking/export.py: 
 	Fixed page navigation links.
 	
