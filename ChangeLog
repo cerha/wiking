@@ -7,7 +7,8 @@
 	Styling information polished.  Cosmetic improvements.
 
 	* doc/src/devel/_index.txt: 
-	* doc/src/devel/styles.en.txt: New chapter.
+	* doc/src/devel/styles.en.txt:
+	New chapter about Style Sheet Customization.
 
 	* doc/src/admin/apache.en.txt: 
 	Mod_python setup improved.  Added section about public hosting
