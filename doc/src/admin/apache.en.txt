@@ -7,28 +7,33 @@ Table Of Contents: @TOC@
 == Basic Setup ==
 
 When Wiking is installed successfully, you must configure Apache to use it for
-serving your site.  This can be as simple as adding two lines into your site's
+serving your site.  This can be as simple as adding four lines into your site's
 =VirtualHost= section.  An example follows:
 
 -----
 <VirtualHost *>
   ServerName www.yourdomain.com
-  ScriptAliasMatch .* /usr/local/share/wiking/wiking.py
+  AddHandler mod_python .py
+  PythonHandler wiking.handler
+  ScriptAliasMatch .* wiking.py
   PythonOption dbname yourdbname
 </VirtualHost>
 -----
 
-The =ScriptAliasMatch= line says Apache to handle all requests to given site by
-wiking handler.  You should change the path if you installed Wiking to a
-different location.  Please note, that the file 'wiking.py' does not actually
-exist in the named directory, but that is ok.  The request will be redirected
-to the Wiking handler.  The directory must exist, however (it is created by the
-installation script).
+  * The =AddHandler= line says Apache to use mod_python to execute *.py files.
 
-The =PythonOption= line sets the Wiking configuration option =dbname= to the
-name of the database used for www.yourdomain.com (you will normally want to
-have a separate database for each Wiking site).  See below for more details
-about setting Wiking configuration options.
+  * The =PythonHandler= directive instructs mod_python to use the module
+    'wiking.handler' to handle all requests.  The module must be available in
+    Python path.  See below how to set your python path.
+
+  * The =ScriptAliasMatch= line says Apache to handle all URIs using
+    'wiking.py'.  The file 'wiking.py' does not actually exist, but still
+    causes Apache to use mod_python as set in =AddHandler=.
+
+  * The =PythonOption= line sets the Wiking configuration option =dbname= to
+    the name of the database used for www.yourdomain.com (you normally have a
+    separate database for each Wiking site).  See below for more details about
+    setting Wiking configuration options.
 
 This basic setup should be sufficient for running the [cms].  Just reload
 Apache and try pointing your browser to the corresponding URI.  On the first
@@ -87,7 +92,7 @@ Examples:
     by Wiking configuration files (or the default path).
 
 
-== Non-Wiking URIs ==
+== Non-Wiking URIs == non-wiking-uris
 
 You may wish to redirect certain URIs to ordinary files and directories.
 
@@ -109,3 +114,39 @@ specifically for each virtual host:
 -----
   PythonPath "['/usr/local/myproject/lib] + sys.path"
 -----
+
+== Running Wiking on a Public Hosting ==
+
+In this special case you typically don't have privileges to write into the
+system directories.  You have just one directory where you can upload your
+files.  Thus you can't make a system-wide installation of Wiking or any of its
+components.
+
+You put all needed Python libraries (wiking, lcg, pytis and any other modules
+not installed in the base system) into one directory
+('\/var/www/sites/site1234/lib' in the example below) and set =PythonPath= to
+this directory.  Then you need to upload other files needed by Wiking and
+configure Wiking to use the appropriate directories (see [#config] for
+description of all options).
+
+Typical public hosting configuration example:
+-----
+<VirtualHost 100.10.20.30:80>
+
+  ServerName www.yourdomain.com
+  ServerAlias www.yourdomain.org
+
+  Alias /data /var/www/sites/site1234/data
+
+  AddHandler mod_python .py
+  PythonHandler wiking.handler
+  ScriptAliasMatch .* wiking.py
+
+  PythonOption config_file /var/www/sites/site1234/config.py
+  PythonPath "['/var/www/sites/site1234/lib]+sys.path"
+  
+</VirtualHost>
+-----
+
+This setup requires the webmaster to create the configuration just once and all
+further setup can be done with privileges limited to the host's directory.
