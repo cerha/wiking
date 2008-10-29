@@ -19,5 +19,7 @@ class Reader(lcg.Reader):
         import lcg
         return lcg.Parser().parse(lcg.unindent_docstring(cfg.__doc__)) + \
                [lcg.TableOfContents(title="Available options", depth=1)] + \
-               [lcg.Section(title="Option '%s': %s" % (o.name(),o.description()), content=descr(o))
+               [lcg.Section(title="Option '%s': %s" % (o.name(),o.description()),
+                            anchor=o.name(),
+                            content=descr(o))
                 for o in cfg.options(sort=True) if o.visible()]
