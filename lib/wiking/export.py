@@ -132,7 +132,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         links = [g.link(_("Content"), '#main-heading', hotkey="2")]
         if context.has_menu or context.has_submenu:
             links.append(g.link(_("Main navigation"), '#main-navigation'))
-            if context.has_submenu and not context.has_menu:
+            if context.has_menu and context.has_submenu:
                 links.append(g.link(_("Local navigation"), '#local-navigation'))
         if len(context.node().variants()) > 1:
             links.append(g.link(_("Language selection"), '#language-selection-anchor'))

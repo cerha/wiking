@@ -1,5 +1,8 @@
 2008-10-29  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/export.py: 
+	Fixed page navigation links.
+	
 	* lib/wiking/util.py: 
 	* lib/wiking/export.py: 
 	* resources/css/default.css:
