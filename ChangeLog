@@ -1,3 +1,15 @@
+2008-10-29  Tomas Cerha  <cerha@brailcom.org>
+
+	* doc/src/devel/_index.txt: 
+	* doc/src/devel/styles.en.txt: New chapter.
+
+	* doc/src/admin/apache.en.txt: 
+	Mod_python setup improved.  Added section about public hosting
+	setup.
+
+	* doc/src/admin/config.py:
+	Set section anchors according to configuration option names.
+	
 2008-10-27  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/application.py:

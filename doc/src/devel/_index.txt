@@ -1,5 +1,6 @@
 overview
 modularization
-application
 handling
+application
+styles
 devel-faq
