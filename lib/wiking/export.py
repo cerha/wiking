@@ -138,7 +138,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             links.append(g.link(_("Language selection"), '#language-selection-anchor'))
         if context.req().show_panels():
             for panel in context.node().panels():
-                links.append(g.link(panel.accessible_title(), '#panel-%s ' % panel.id()))
+                links.append(g.link(panel.accessible_title(), '#panel-%s-anchor ' % panel.id()))
         return _("Jump in page") + ": " + concat(links, separator=' | ')
         
     def _breadcrumbs(self, context):
@@ -147,27 +147,19 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         
     def _menu(self, context):
         g = self._generator
-        links = []
-        first = True
-        for item in context.node().root().children():
-            if not item.hidden():
-                cls = "navigation-link"
-                sign = ''
-                hotkey = None
-                if item is context.node().top():
-                    cls += " current"
-                    sign = self._hidden(' *')
-                if first:
-                    first = False
-                    hotkey = "1"
-                links.append(g.link(item.title(), self._uri_node(context, item),
-                                    title=item.descr(), hotkey=hotkey, cls=cls) + sign)
+        top = context.node().top()
+        links = [g.link(item.title(), self._uri_node(context, item),
+                        title=item.descr(), hotkey=(i==0 and '1' or None),
+                        cls='navigation-link' + (item is top and ' current' or ''),
+                        ) + (item is top and self._hidden(' *') or '')
+                 for i, item in enumerate(context.node().root().children())
+                 if not item.hidden()]
         if links:
             title = g.link(_("Main navigation")+':', None, name='main-navigation', hotkey="3")
-            content = (g.h(title, 3), g.list(links))
+            return g.map((g.h(title, 3), g.list(links)),
+                         name='menu-map', title=_("Main navigation"))
         else:
-            content = ()
-        return g.map(content, name='menu-map', title=_("Main navigation"))
+            return None
 
     def _submenu(self, context):
         g = self._generator
@@ -176,14 +168,13 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         menu = lcg.NodeIndex(node=context.node().top())
         menu.set_parent(context.node())
         if context.has_menu:
-            # If there is the main menu, this is its submenu, but id the main menu is empty, this
+            # If there is the main menu, this is its submenu, but if the main menu is empty, this
             # menu acts as the main menu.
             title = _("Local navigation")
             heading = _("In this section:")
             name = 'local-navigation'
         else:
-            title = _("Main navigation")
-            heading = title+':'
+            title = heading = _("Main navigation")
             name = 'main-navigation'
         return g.map(g.div((g.h(g.link(heading, None, name=name, hotkey="3"), 3),
                             menu.export(context)),
@@ -202,13 +193,13 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             return g.link(_("Show panels"), "?show_panels=1", cls='panel-control show',
                           id='panels-menu-item')
         result = [g.link(_("Hide panels"), "?hide_panels=1", cls='panel-control hide'),
-                  g.div('', tabindex=-1, title=_("Panels"), id='panels-menu-item')]
+                  g.div('', title=_("Panels"), id='panels-menu-item')]
         for panel in panels:
             content = panel.content()
             # Add a fake container to force the heading level start at 4.
             container = lcg.SectionContainer(lcg.Section('', lcg.Section('', content)))
-            result.append(g.div((g.h(g.link(panel.title(), None, name='panel-'+panel.id(),
-                                            tabindex=0), 3),
+            result.append(g.div((g.h(g.link(panel.title(), None,
+                                            name='panel-'+panel.id()+'-anchor', tabindex=0), 3),
                                  g.div(content.export(context), cls='panel-content')),
                                 id='panel-'+panel.id(), cls='panel'))
         result.append(g.br())
