@@ -1,5 +1,8 @@
 2008-10-29  Tomas Cerha  <cerha@brailcom.org>
 
+	* resources/scripts/wiking.js:
+	Initialize menus also when the main menu does not exist.
+	
 	* lib/wiking/__init__.py:
 	Version set to 0.4.5-pre3.
 

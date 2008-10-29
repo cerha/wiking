@@ -44,8 +44,19 @@ var _main_heading = null;
 
 function wiking_init() {
    // Not all browsers invoke onkeypress for arrow keys, so keys must be handled in onkeydown.
-   _main_heading = document.getElementById('main-heading')
-   init_menu('menu', null);
+   _main_heading = document.getElementById('main-heading');
+   // Initialize the menus -- assign ARIA roles to HTML tags and bind keyboard event handling to
+   // support hierarchical keyboard traversal.
+   var items = [];
+   append_menu(items, document.getElementById('menu'), null);
+   if (items.length == 0)
+      // The main menu is not present.
+      append_menu(items, document.getElementById('submenu'), null);
+   append_panels_menu(items);
+   append_language_selection_menu(items);
+   append_wmi_menu(items);
+   _first_menu_item = items[0];
+   // Other initializations.
    if (document.all)
       document.body.onkeydown = wiking_onkeydown;
    else
@@ -67,66 +78,44 @@ function wiking_onkeydown(event) {
    return true;
 }
 
-function init_menu(menu_id, parent) {
-   // Initialize given menu and its items.
-   //
-   // The initialization mainly consists of assigning ARIA roles to HTML tags and
-   // binding keyboard event handling to menu items to support hierarchical
-   // keyboard menu traversal.
-   //
-   var menu = document.getElementById(menu_id);
-   if (menu != null) {
-      var ul = menu.getElementsByTagName('ul')[0];
-      if (ul)
-	 return init_menu_items(ul, parent);
-   }
-   return null;
-}
-
-function init_menu_items(ul, parent) {
-   if (parent == null)
-      ul.setAttribute('role', 'menubar');
-   else
-      ul.setAttribute('role', 'menu');
-   var items = [];
-   for (var i = 0; i < ul.childNodes.length; i++) {
-      var node = ul.childNodes[i];
-      if (node.nodeName =='LI') {
-	 var child = null;
-	 var link = node.getElementsByTagName('a')[0];
-	 var item = link;
-	 item.setAttribute('role', 'menuitem');
-	 //item.setAttribute('tabindex', '-1');
-	 //item.setAttribute('title', link.innerHTML);
-	 if (parent == null) {
-	    var cls = link.getAttribute(document.all?'className':'class');
-	    if (cls && cls.match('(\^\|\\s)current(\\s\|\$)') != null) {
-	       _current_main_menu_item = item;
-	       child = init_menu('submenu', item);
-	    }
-	 } else {
-	    var submenu = node.getElementsByTagName('ul')[0];
-	    if (submenu != null && submenu.parentNode == node) {
-	       child = init_menu_items(submenu, item);
-	       //item.setAttribute('aria-haspopup', 'true');
+function append_menu(items, node, parent) {
+   if (node != null) {
+      var ul = node.getElementsByTagName('ul')[0];
+      if (ul != null) { // && ul.parentNode == node) {
+	 ul.setAttribute('role', 'menu');
+	 for (var i = 0; i < ul.childNodes.length; i++) {
+	    var li = ul.childNodes[i];
+	    if (li.nodeName =='LI') {
+	       var link = li.getElementsByTagName('a')[0];
+	       var item = link;
+	       item.setAttribute('role', 'menuitem');
+	       //item.setAttribute('tabindex', '-1');
+	       //item.setAttribute('title', link.innerHTML);
+	       var subitems = [];
+	       append_menu(subitems, li, item);
+	       if (subitems.length == 0) {
+		  var cls = link.getAttribute(document.all?'className':'class');
+		  if (cls && cls.match('(\^\|\\s)current(\\s\|\$)') != null) {
+		     _current_main_menu_item = item;
+		     append_menu(subitems, document.getElementById('submenu'), item);
+		  }
+	       }
+	       var child = null;
+	       if (subitems.length != 0)
+		  //item.setAttribute('aria-haspopup', 'true');
+		  child = subitems[0];
+	       append_menu_item(items, item, parent, child);
 	    }
 	 }
-	 append_menu_item(items, item, parent, child);
       }
    }
-   if (parent == null) {
-      append_panels_menu(items);
-      append_language_selection_menu(items);
-      append_wmi_menu(items);
-   }
-   _first_menu_item = items[0];
-   return items[0];
 }
 
 function append_panels_menu(items) {
    var panels = [];
    var node = document.getElementById('panels');
    var item = document.getElementById('panels-menu-item');
+   item.setAttribute('tabindex', '-1');
    //var item = node;
    if (node != null && item != null) {
       var headings = node.getElementsByTagName('h3');
@@ -143,6 +132,7 @@ function append_language_selection_menu(items) {
    var languages = [];
    var node = document.getElementById('language-selection');
    var item = document.getElementById('language-selection-anchor');
+   item.setAttribute('tabindex', '-1');
    if (node != null && item != null) {
       var links = node.getElementsByTagName('a');
       for (var i = 1; i < links.length; i++)
