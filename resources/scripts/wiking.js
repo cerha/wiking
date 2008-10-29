@@ -93,7 +93,7 @@ function append_menu(items, node, parent) {
 	       //item.setAttribute('title', link.innerHTML);
 	       var subitems = [];
 	       append_menu(subitems, li, item);
-	       if (subitems.length == 0) {
+	       if (subitems.length == 0 && parent == null) {
 		  var cls = link.getAttribute(document.all?'className':'class');
 		  if (cls && cls.match('(\^\|\\s)current(\\s\|\$)') != null) {
 		     _current_main_menu_item = item;
