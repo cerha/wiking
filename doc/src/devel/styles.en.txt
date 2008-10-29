@@ -219,7 +219,7 @@ When the LCG content is constructed directly in the code, the identifier can be
 passed to 'lcg.Section' constructor.
 
 This technique has a wide range of use cases from specific styling of inner
-content in specific sections to creation of absolutely positioned of floated
+content in specific sections to creation of absolutely positioned or floated
 frames rendered separately from the main content flow.
 
 === Images ===
