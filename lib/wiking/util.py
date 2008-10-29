@@ -300,15 +300,23 @@ class MenuItem(object):
 
 class Panel(object):
     """Panel representation to be passed to 'Document.build()'."""
-    def __init__(self, id, title, content):
+    
+    def __init__(self, id, title, content, accessible_title=None):
         assert isinstance(content, lcg.Content)
         self._id = id
         self._title = title
         self._content = content
+        self._accessible_title = accessible_title or title
+        
     def id(self):
         return self._id
+    
     def title(self):
         return self._title
+    
+    def accessible_title(self):
+        return self._accessible_title
+    
     def content(self):
         return self._content
 
@@ -368,7 +376,8 @@ class LoginPanel(Panel):
             return content
         
     def __init__(self):
-        super(LoginPanel, self).__init__('login', _("Login Panel"), self.PanelContent())
+        super(LoginPanel, self).__init__('login', _("Login"), self.PanelContent(),
+                                         accessible_title=_("Login Panel"))
         
 
 class Document(object):

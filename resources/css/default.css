@@ -52,12 +52,8 @@ img { position: relative; } /* MSIE float workaround */
 
 /* Page layout */
 
-#page { 
-    padding-top: 0.3em;
-    min-width: 100%;
-}
-#top { 
-}
+#top {}
+
 #top hr { display: none; }
 
 #site-title { 
@@ -65,21 +61,52 @@ img { position: relative; } /* MSIE float workaround */
     max-width: 70%;
 }
 
-/* Menu with folders */
-#menu {
+#page {
+    padding-top: 0.3em;
+    min-width: 100%;
+}
+
+#links {
+    display: none;
+}
+
+#breadcrumbs {
+    display: none;
+    /* The rest is a prototype for the case that breadcrumbs are displayed */
+    background: $color.frame-bg;
+    border: solid $color.frame-border 1px;
+    border-width: 1px 0;
+    padding: 1px 0;
+    margin-bottom: 0.3em;
+}
+
+#language-selection { 
+    position: absolute;
+    top: .5em;
+    right: 8em;
+    max-width: 55%;
+    font-size: 0.9em;
+    /*white-space: nowrap;*/
+}
+#language-selection a.current { background-color: $color.highlight-bg; }
+
+/* Horizontal menu with folders */
+
+#page.with-menu #menu {
+    border-bottom: 1px solid $color.top-border;
     padding-left: 0.2em;
-    /* padding-bottom: 0.1em; */
     /* leave some space for language selection and panel controls */
     padding-right: 6em; 
 }
-#page.with-menu #content {
+#page.with-menu #main {
     border-top-width: 0; /* The top border must be part of the navigation bar because MSIE... */
 }
 #page.with-menu #panels {
     top: -1px;
 }
-#page.with-menu #menu {
-    border-bottom: 1px solid $color.top-border;
+#page.with-menu #language-selection {
+    top: 2pt;
+    right: 6pt;
 }
 
 #menu h3 {
@@ -105,7 +132,8 @@ img { position: relative; } /* MSIE float workaround */
 }
 
 /* Hierarchical submenu */
-#page.with-submenu #content { 
+
+#page.with-submenu #main { 
     padding-left: 12em;
 }
 #submenu { 
@@ -152,26 +180,12 @@ img { position: relative; } /* MSIE float workaround */
     outline: solid 1px $color.heading-line;
 }*/
 
-#language-selection { 
-    position: absolute;
-    top: .5em;
-    right: 8em;
-    max-width: 55%;
-    font-size: 0.9em;
-    /*white-space: nowrap;*/
-}
-#language-selection a.current { background-color: $color.highlight-bg; }
-#page.with-menu #language-selection {
-    top: 2pt;
-    right: 6pt;
-}
-
 /* Panels */
 
 #page.with-panels { 
     float: left; /* Force the main div to fit its content. */
 }
-#page.with-panels #content { 
+#page.with-panels #main { 
     margin-right: 17em;
 }
 #page.with-panels #menu { 
@@ -219,9 +233,27 @@ div.panel ul, div.panel ol {
 div.panel hr { display: none; }
 div.panel form { margin: 0.3em 0; }
 
+#panel-login a.login-ctrl {
+    color: $color.foreground;
+    border: 1px solid $color.top-border;
+    background-color: $color.heading-bg;
+    padding: 0 0.5em;
+    text-decoration: none;
+    white-space: nowrap;
+    margin: 0 0.3em;
+}
+#panel-login a.login-ctrl:hover { 
+    background: $color.highlight-bg;
+}
+
+#panel-login div.panel-content {
+    padding: 0.3em;
+    line-height: 1.3em;
+}
+
 /* The actual page content */
 
-#content {
+#main {
     position: relative;
     color: $color.foreground;
     background-color: $color.background;
@@ -229,34 +261,24 @@ div.panel form { margin: 0.3em 0; }
     padding: 0.8em;
     margin-bottom: 0.5em;
 }
-#content h1 { 
+#main h1 { 
     margin-top: 0;
     margin-bottom: 0.8em;
 }
-#breadcrumbs {
-    display: none;
-    position: relative;
-    top: -0.5em;
-    background: $color.frame-bg;
-    border: solid $color.frame-border 1px;
-    border-width: 1px 0;
-    padding: 0.1em 0;
-    margin: 0;
-}
-#inner-content { 
+#content { 
     position: relative; /* fix MSIE background painting */
 }
-#content-clearing {
+#clearing {
     height: 0;
     font-size: 0;
     clear: left;
 }
-#clearing { 
+#page-clearing { 
     height: 0;
     font-size: 0;
 }
 
-/* Wiking bar in page footer */
+/* Bottom part of the page */
 
 #bottom { 
     clear: both;
@@ -291,8 +313,6 @@ div.panel form { margin: 0.3em 0; }
     bottom: 0;
     right: 0;
 }
-
-/* Page footer */
 
 #footer { font-size: 0.9em; text-align: center; margin: 0pt; }
 #footer p { margin: 1pt 0pt; }
@@ -586,24 +606,6 @@ form.pytis-form.list-view div.summary {
 .actions a { 
     vertical-align: top;
     padding-left: 0.5em;
-}
-
-div.panel-login a.login-ctrl {
-    color: $color.foreground;
-    border: 1px solid $color.top-border;
-    background-color: $color.heading-bg;
-    padding: 0 0.5em;
-    text-decoration: none;
-    white-space: nowrap;
-    margin: 0 0.3em;
-}
-div.panel-login a.login-ctrl:hover { 
-    background: $color.highlight-bg;
-}
-
-div.panel-login div.panel-content {
-    padding: 0.3em;
-    line-height: 1.3em;
 }
 
 /* LCG Formatter styles */

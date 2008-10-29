@@ -37,7 +37,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
     _BODY_PARTS = ('wrap', 'media_player')
     _WRAP_PARTS = ('top', 'page', 'bottom')
     _PAGE_PARTS = ('links', 'breadcrumbs', 'language_selection',
-                   'menu', 'submenu', 'panels', 'content', 'clearing')
+                   'menu', 'submenu', 'panels', 'main', 'page_clearing')
     _BOTTOM_PARTS = ('bottom_bar', 'footer')
     _LANGUAGE_SELECTION_LABEL = _("Language:")
 
@@ -129,7 +129,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
 
     def _links(self, context):
         g = self._generator
-        links = [g.link(_("Content"), '#content-heading', hotkey="2")]
+        links = [g.link(_("Content"), '#main-heading', hotkey="2")]
         if context.has_menu or context.has_submenu:
             links.append(g.link(_("Main navigation"), '#main-navigation'))
             if context.has_submenu and not context.has_menu:
@@ -138,8 +138,8 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             links.append(g.link(_("Language selection"), '#language-selection-anchor'))
         if context.req().show_panels():
             for panel in context.node().panels():
-                links.append(g.link(panel.title(), '#panel-%s ' % panel.id()))
-        return self._hidden(_("Jump in page") + ": " + concat(links, separator=' | '))
+                links.append(g.link(panel.accessible_title(), '#panel-%s ' % panel.id()))
+        return _("Jump in page") + ": " + concat(links, separator=' | ')
         
     def _breadcrumbs(self, context):
         links = [lcg.link(n).export(context) for n in context.node().path()[1:]]
@@ -207,22 +207,22 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             content = panel.content()
             # Add a fake container to force the heading level start at 4.
             container = lcg.SectionContainer(lcg.Section('', lcg.Section('', content)))
-            result.append(g.div((g.h(g.link(panel.title(), None, name="panel-"+panel.id(),
+            result.append(g.div((g.h(g.link(panel.title(), None, name='panel-'+panel.id(),
                                             tabindex=0), 3),
-                                 g.div(content.export(context), cls="panel-content")),
-                                cls="panel panel-"+panel.id()))
+                                 g.div(content.export(context), cls='panel-content')),
+                                id='panel-'+panel.id(), cls='panel'))
         result.append(g.br())
         return result
 
-    def _content(self, context):
+    def _main(self, context):
         g = self._generator
         return (g.hr(cls='hidden'),
                 g.div((g.h(g.link(context.node().heading(), None, tabindex=0,
-                                  name='content-heading', id='content-heading'), 1),
-                       super(Exporter, self)._content(context)), id='inner-content'),
-                g.div('&nbsp;', id='content-clearing'))
+                                  name='main-heading', id='main-heading'), 1),
+                       super(Exporter, self)._content(context)), id='content'),
+                g.div('&nbsp;', id='clearing'))
 
-    def _clearing(self, context):
+    def _page_clearing(self, context):
         return '&nbsp;'
     
     def _last_change(self, context):

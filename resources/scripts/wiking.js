@@ -40,18 +40,18 @@ var WIKING_KEYMAP = {'Ctrl-Alt-i': CMD_PREV,
 
 var _current_main_menu_item = null;
 var _first_menu_item = null;
-var _content_heading = null;
+var _main_heading = null;
 
 function wiking_init() {
    // Not all browsers invoke onkeypress for arrow keys, so keys must be handled in onkeydown.
-   _content_heading = document.getElementById('content-heading')
+   _main_heading = document.getElementById('main-heading')
    init_menu('menu', null);
    if (document.all)
       document.body.onkeydown = wiking_onkeydown;
    else
       window.onkeydown = wiking_onkeydown;
    if (window.location.href.match("#") == null)
-      set_focus(_content_heading);
+      set_focus(_main_heading);
 }
 
 function wiking_onkeydown(event) {
@@ -166,7 +166,7 @@ function append_menu_item(items, item, parent, child) {
    map[CMD_CHILD] = child;
    map[CMD_PREV] = prev;
    map[CMD_NEXT] = null;
-   map[CMD_QUIT] = _content_heading;
+   map[CMD_QUIT] = _main_heading;
    item._menu_navigation_target = map;
    if (prev != null)
       prev._menu_navigation_target[CMD_NEXT] = item;
