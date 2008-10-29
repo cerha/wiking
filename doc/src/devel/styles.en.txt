@@ -226,5 +226,5 @@ frames rendered separately from the main content flow.
 
 Specific styling of any image is possible thanks to LCG adding a =class=
 attribute to each =img= tag corresponding to the file name of the image.  For
-example an image refering to file "/img/rose.png" will have the =class= set to
+example an image refering to file "\/img/rose.png" will have the =class= set to
 "rose" -- the name of the file without path and extension.
