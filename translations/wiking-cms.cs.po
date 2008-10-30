@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-10-27 15:09+0100\n"
+"POT-Creation-Date: 2008-10-30 13:13+0100\n"
 "PO-Revision-Date: 2008-10-27 15:14+0100\n"
 "Last-Translator: Tomas Cerha <cerha@brailcom.org>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
@@ -15,84 +15,17 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../lib/wiking/configuration.py:155
-msgid "Webmaster's e-mail address"
-msgstr "E-mailová adresa správce"
+#: ../lib/wiking/cms/appl.py:56
+msgid "Manage this site"
+msgstr "Správa obsahu"
 
-#: ../lib/wiking/configuration.py:166
-msgid "Default sender address"
-msgstr "Výchozí adresa odesílatele"
+#: ../lib/wiking/cms/appl.py:57
+msgid "Enter the Wiking Management Interface"
+msgstr "Vstoupit do rozhraní správy obsahu"
 
-#: ../lib/wiking/configuration.py:182
-msgid "Force HTTPS login"
-msgstr "Vynutit HTTPS pro přihlášení"
-
-#: ../lib/wiking/configuration.py:183
-msgid ""
-"If enabled, the login form will always be redirected to an HTTPS address to "
-"ensure the security of the submitted credentials.  This, however, requires "
-"your server to be setup to accept HTTPS requests for the same virtual host "
-"and pass them to Wiking."
-msgstr ""
-"Pokud je povoleno, přihlašovací formulář bude vždy přesměrován na HTTPS "
-"adresu aby byla zajištěna bezpečnost přenášených přihlašovacích údajů.  To "
-"ovšem vyžaduje, aby byl server zkonfigurován pro obsluhu HTTPS požadavků pro "
-"stejný virtuální server a aby tyto požadavky byly předávány systému Wiking."
-
-#: ../lib/wiking/configuration.py:224
-msgid "Site title"
-msgstr "Název portálu"
-
-#: ../lib/wiking/configuration.py:225
-msgid ""
-"Site title is a short and (hopefully) unique title of the whole website. It "
-"will appear at the top of every page."
-msgstr ""
-"Tento název by měl krátce a pokud možno jednoznačně označovat celý portál.  "
-"Název bude zobrazen v záhlaví každé stránky."
-
-#: ../lib/wiking/configuration.py:230
-msgid "Site subtitle"
-msgstr "Podtitul portálu"
-
-#: ../lib/wiking/configuration.py:231
-msgid ""
-"Site subtitle is an optional more descriptive title of the website.  It will "
-"appear at the top of every page together with site title, but where brevity "
-"matters, only title will be used."
-msgstr ""
-"Podtitul je nepovinný podrobnější popis portálu.  Bude také zobrazen v "
-"záhlaví každé stránky, ale v situacích, kde je nutná stručnost bude vynechán."
-
-#: ../lib/wiking/configuration.py:241
-msgid "Default language"
-msgstr "Výchozí jazyk"
-
-#: ../lib/wiking/configuration.py:242
-msgid ""
-"Defines the language (lowercase ISO 639-1 Alpha-2 code) to be used when "
-"content language negotiation fails. If not set (which is the default), the "
-"server will issue a 606 HTTP error (Not acceptable) when the document is not "
-"available in any of the requested languages. The error page will contain a "
-"description of the problem and a list of available language variants of the "
-"requested document. The negotiation is based on the browser setting of "
-"user's language preference passed through the 'Accept-Language' HTTP header. "
-"If set, Wiking will automatically serve given language variant instead of "
-"issuing the error if that variant is available.  If unavailable, the 606 "
-"error is raised anyway, so you need to make sure that all documents are "
-"available at least in the default language variant if you want to avoid 606 "
-"errors completely."
-msgstr ""
-
-#: ../lib/wiking/configuration.py:341
-msgid "Whether to use e-mails as login names"
-msgstr "Použít e-mailové adresy jako přihlašovací jméno"
-
-#: ../lib/wiking/configuration.py:342
-msgid "Iff true, users must use e-mail addresses as their login names."
-msgstr ""
-"Je-li nastaveno, uživatelé musí jako svá přihlašovací jména používat e-"
-"mailové adresy."
+#: ../lib/wiking/cms/appl.py:59
+msgid "Leave the Management Interface"
+msgstr "Opustit rozhraní správy obsahu"
 
 #: ../lib/wiking/cms/cms.py:58
 msgid "formatting manual"
@@ -1529,18 +1462,6 @@ msgstr "Požadavek na certifikát se nepodařilo zpracovat"
 msgid "Certificate upload"
 msgstr "Odeslání certifikátu"
 
-#: ../lib/wiking/cms/appl.py:56
-msgid "Manage this site"
-msgstr "Správa obsahu"
-
-#: ../lib/wiking/cms/appl.py:57
-msgid "Enter the Wiking Management Interface"
-msgstr "Vstoupit do rozhraní správy obsahu"
-
-#: ../lib/wiking/cms/appl.py:59
-msgid "Leave the Management Interface"
-msgstr "Opustit rozhraní správy obsahu"
-
 #: ../lib/wiking/cms/configuration.py:35
 msgid "Allow login panel"
 msgstr "Zobrazit panel přihlášení"
@@ -1588,6 +1509,85 @@ msgid ""
 msgstr ""
 "Maximální velikost souborů přenášených na server (celé číslo v bajtech).  "
 "Pozor, aby se změny této volby uplatnily, je nutné server restartovat."
+
+#: ../lib/wiking/configuration.py:155
+msgid "Webmaster's e-mail address"
+msgstr "E-mailová adresa správce"
+
+#: ../lib/wiking/configuration.py:166
+msgid "Default sender address"
+msgstr "Výchozí adresa odesílatele"
+
+#: ../lib/wiking/configuration.py:182
+msgid "Force HTTPS login"
+msgstr "Vynutit HTTPS pro přihlášení"
+
+#: ../lib/wiking/configuration.py:183
+msgid ""
+"If enabled, the login form will always be redirected to an HTTPS address to "
+"ensure the security of the submitted credentials.  This, however, requires "
+"your server to be setup to accept HTTPS requests for the same virtual host "
+"and pass them to Wiking."
+msgstr ""
+"Pokud je povoleno, přihlašovací formulář bude vždy přesměrován na HTTPS "
+"adresu aby byla zajištěna bezpečnost přenášených přihlašovacích údajů.  To "
+"ovšem vyžaduje, aby byl server zkonfigurován pro obsluhu HTTPS požadavků pro "
+"stejný virtuální server a aby tyto požadavky byly předávány systému Wiking."
+
+#: ../lib/wiking/configuration.py:224
+msgid "Site title"
+msgstr "Název portálu"
+
+#: ../lib/wiking/configuration.py:225
+msgid ""
+"Site title is a short and (hopefully) unique title of the whole website. It "
+"will appear at the top of every page."
+msgstr ""
+"Tento název by měl krátce a pokud možno jednoznačně označovat celý portál.  "
+"Název bude zobrazen v záhlaví každé stránky."
+
+#: ../lib/wiking/configuration.py:230
+msgid "Site subtitle"
+msgstr "Podtitul portálu"
+
+#: ../lib/wiking/configuration.py:231
+msgid ""
+"Site subtitle is an optional more descriptive title of the website.  It will "
+"appear at the top of every page together with site title, but where brevity "
+"matters, only title will be used."
+msgstr ""
+"Podtitul je nepovinný podrobnější popis portálu.  Bude také zobrazen v "
+"záhlaví každé stránky, ale v situacích, kde je nutná stručnost bude vynechán."
+
+#: ../lib/wiking/configuration.py:241
+msgid "Default language"
+msgstr "Výchozí jazyk"
+
+#: ../lib/wiking/configuration.py:242
+msgid ""
+"Defines the language (lowercase ISO 639-1 Alpha-2 code) to be used when "
+"content language negotiation fails. If not set (which is the default), the "
+"server will issue a 606 HTTP error (Not acceptable) when the document is not "
+"available in any of the requested languages. The error page will contain a "
+"description of the problem and a list of available language variants of the "
+"requested document. The negotiation is based on the browser setting of "
+"user's language preference passed through the 'Accept-Language' HTTP header. "
+"If set, Wiking will automatically serve given language variant instead of "
+"issuing the error if that variant is available.  If unavailable, the 606 "
+"error is raised anyway, so you need to make sure that all documents are "
+"available at least in the default language variant if you want to avoid 606 "
+"errors completely."
+msgstr ""
+
+#: ../lib/wiking/configuration.py:341
+msgid "Whether to use e-mails as login names"
+msgstr "Použít e-mailové adresy jako přihlašovací jméno"
+
+#: ../lib/wiking/configuration.py:342
+msgid "Iff true, users must use e-mail addresses as their login names."
+msgstr ""
+"Je-li nastaveno, uživatelé musí jako svá přihlašovací jména používat e-"
+"mailové adresy."
 
 #~ msgid "Certificate Management"
 #~ msgstr "Správa certifikátů"
