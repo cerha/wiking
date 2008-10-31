@@ -8,6 +8,8 @@
 	Error page improved.
 
 	* resources/scripts/wiking.js: 
+	Put login panel to the end in keyboard navigation order.
+
 	* lib/wiking/export.py: 
 	Put panels directly into the main level of keyboard navigation.
 
