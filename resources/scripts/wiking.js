@@ -113,32 +113,33 @@ function append_menu(items, node, parent) {
 function append_panels_menu(items) {
    var node = document.getElementById('panels');
    if (node != null) {
+      var login_panel = null;
       var headings = node.getElementsByTagName('h3');
       for (var i = 0; i < headings.length; i++) {
 	 var item = headings[i].getElementsByTagName('a')[0];
 	 if (item != null)
-	    append_menu_item(items, item, null, null);
+	    if (item.parentNode.parentNode.getAttribute('id') == 'panel-login')
+	       // Append login panel as the last panel in navigation order.
+	       login_panel = item
+	    else
+	       append_menu_item(items, item, null, null);
       }
+      if (login_panel != null)
+	 append_menu_item(items, login_panel, null, null);
    }
 }
 
 function append_language_selection_menu(items) {
-   var languages = [];
    var node = document.getElementById('language-selection');
    var item = document.getElementById('language-selection-anchor');
    item.setAttribute('tabindex', '-1');
    if (node != null && item != null) {
+      var languages = [];
       var links = node.getElementsByTagName('a');
       for (var i = 1; i < links.length; i++)
 	 append_menu_item(languages, links[i], item, null);
       append_menu_item(items, item, null, languages[0]);
    }
-}
-
-function append_wmi_menu(items) {
-   var item = document.getElementById('wmi-link');
-   if (item != null)
-      append_menu_item(items, item, null, null);
 }
 
 function append_menu_item(items, item, parent, child) {
