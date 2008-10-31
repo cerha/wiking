@@ -62,7 +62,7 @@ class AuthenticationError(RequestError):
 class AuthenticationRedirect(AuthenticationError):
     """Has the same effect as AuthenticationError, but is just not an error."""
     
-    # Translators: Login dialog page title - use a none.
+    # Translators: Login dialog page title (use a noun).
     _TITLE = _("Login")
     
 
@@ -329,51 +329,30 @@ class LoginPanel(Panel):
             g = context.generator()
             req = context.req()
             user = req.user()
-            if user:
-                username = user.name()
-                uri = user.uri()
-                if uri:
-                    username = g.link(username, uri, title=_("Go to your profile"))
-                if user.auto_authentication():
-                    cmd = label = None
-                else:
-                    # Translators: Button label - use a verb.
-                    cmd, label = ('logout', _("log out"))
-            else:
-                # Translators: Login status info.  If logged, the username is displayed instaed. 
-                username = _("not logged")
-                # Translators: Button label - use a verb.
-                cmd, label = ('login', _("log in"))
-            if cmd is None:
-                content = username
-            else:
-                content = lcg.concat(username, ' ',
-                                     g.span('[', cls="hidden"),
-                                     g.link(label, g.uri(req.uri(), command=cmd), cls='login-ctrl'),
-                                     g.span(']',cls="hidden"))
+            result = LoginCtrl().export(context)
             appl = req.application()
-            if not user:
-                uri = appl.registration_uri(req)
-                if uri:
-                    # Translators: Login panel/dialog registration link.
-                    content += g.br() +'\n'+ g.link(_("New user registration"), uri)
-            else:
+            if user:
                 organization = user.organization()
                 if organization:
-                    content += g.br()+'\n' + organization
+                    result += g.br()+'\n' + organization
                 if user.passwd_expiration():
                     date = lcg.LocalizableDateTime(str(user.passwd_expiration()))
                     # Translators: Login panel info. '%(date)s' is replaced by a concrete date.
-                    content += g.br() +'\n'+ _("Your password expires on %(date)s.", date=date)
+                    result += g.br() +'\n'+ _("Your password expires on %(date)s.", date=date)
                 uri = appl.password_change_uri(req)
                 if uri:
                     # Translators: Login panel link.
-                    content += g.br() +'\n'+ g.link(_("Change your password"), uri)
+                    result += g.br() +'\n'+ g.link(_("Change your password"), uri)
+            else:
+                uri = appl.registration_uri(req)
+                if uri:
+                    # Translators: Login panel/dialog registration link.
+                    result += g.br() +'\n'+ g.link(_("New user registration"), uri)
             added_content = appl.login_panel_content(req)
             if added_content:
                 exported = lcg.coerce(added_content).export(context)
-                content += '\n'+ g.div(exported, cls='login-panel-content')
-            return content
+                result += '\n'+ g.div(exported, cls='login-panel-content')
+            return result
         
     def __init__(self):
         super(LoginPanel, self).__init__('login', _("Login"), self.PanelContent(),
@@ -657,8 +636,47 @@ class Messages(lcg.Content):
         return g.concat(result)
     
 
+class LoginCtrl(lcg.Content):
+    """Displays current logged in user and login/logout link/button."""
+    def __init__(self, inline=False):
+        super(LoginCtrl, self).__init__()
+        self._inline = inline
+        
+    def export(self, context):
+        g = context.generator()
+        req = context.req()
+        user = req.user()
+        if user:
+            username = user.name()
+            uri = user.uri()
+            if uri:
+                username = g.link(username, uri, title=_("Go to your profile"))
+            if user.auto_authentication():
+                cmd = label = None
+            else:
+                # Translators: Logout button label - verb in imperative.
+                cmd, label = ('logout', _("log out"))
+        else:
+            # Translators: Login status info.  If logged, the username is displayed instaed. 
+            username = _("not logged")
+            # Translators: Login button label - verb in imperative.
+            cmd, label = ('login', _("log in"))
+        if cmd is None:
+            result = username
+        else:
+            link = g.link(label, g.uri(req.uri(), command=cmd), cls='login-ctrl')
+            if self._inline:
+                link = lcg.concat('[', link, ']')
+            else:
+                link = lcg.concat(g.span('[', cls="hidden"), link, g.span(']',cls="hidden"))
+            result = lcg.concat(username, ' ', link)
+        if self._inline:
+            # Translators: Login info label (noun) followed by login name and login controls.
+            result = lcg.concat(_("Login"), ': ', result)
+        return result
+
 class LoginDialog(lcg.Content):
-    
+    """Login dialog for entering login name and password."""
     def __init__(self, message=None):
         self._message = message
         super(LoginDialog, self).__init__()
@@ -685,7 +703,7 @@ class LoginDialog(lcg.Content):
             g.br(),
             g.hidden(name='__log_in', value='1'),
             ) + tuple(hidden) + (
-            # Translators: Login button - use a verb.
+            # Translators: Login button label - verb in imperative.
             g.submit(_("Log in"), cls='submit'),)
         appl = req.application()
         links = [g.link(label, uri) for label, uri in

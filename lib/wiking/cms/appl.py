@@ -169,25 +169,22 @@ class Application(CookieAuthentication, wiking.Application):
         return make_uri(req.uri_prefix() + self.module_uri('Registration'), action='remind')
 
     def login_panel_content(self, req):
-        #return self.WMILink()
-        return None
+        if self.authorize(req, WikingManagementInterface):
+            return self.WMILink()
+        else:
+            return None
 
     def bottom_bar_left_content(self, req):
         return self._powered_by_wiking()
     
     def bottom_bar_right_content(self, req):
-        content = self.WMILink()
         if not cfg.appl.allow_login_panel:
-            if req.user():
-                # Translators: Label preceding login name display -- translate as a none.
-                content = lcg.coerce((lcg.TranslatableText("Login", _domain='wiking'), ': ',
-                                      req.user().name(),
-                                      ' (', lcg.link('?command=logout',
-                                                     lcg.TranslatableText("log out",
-                                                                          _domain='wiking')),
-                                      ') | ',
-                                      content))
-        return content
+            content = LoginCtrl(inline=True)
+            if self.authorize(req, WikingManagementInterface):
+                content = (content, ' ', self.WMILink())
+            return content
+        else:
+            return None
 
     def _maybe_install(self, req, errstr):
         """Check a DB error string and try to set it up if it is the problem."""

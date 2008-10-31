@@ -1,5 +1,12 @@
 2008-10-31  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/cms/appl.py:
+	* lib/wiking/util.py:
+	Show WMI link in login panel (if anabled).
+
+	* lib/wiking/handler.py:
+	Error page improved.
+
 	* resources/scripts/wiking.js: 
 	* lib/wiking/export.py: 
 	Put panels directly into the main level of keyboard navigation.
