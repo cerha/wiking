@@ -1,3 +1,9 @@
+2008-10-31  Tomas Cerha  <cerha@brailcom.org>
+
+	* resources/scripts/wiking.js: 
+	* lib/wiking/export.py: 
+	Put panels directly into the main level of keyboard navigation.
+
 2008-10-30  Milan Zamazal  <pdm@brailcom.org>
 
 	* translations/wiking-cms.cs.po:

@@ -54,7 +54,6 @@ function wiking_init() {
       append_menu(items, document.getElementById('submenu'), null);
    append_panels_menu(items);
    append_language_selection_menu(items);
-   append_wmi_menu(items);
    _first_menu_item = items[0];
    // Other initializations.
    if (document.all)
@@ -112,19 +111,14 @@ function append_menu(items, node, parent) {
 }
 
 function append_panels_menu(items) {
-   var panels = [];
    var node = document.getElementById('panels');
-   var item = document.getElementById('panels-menu-item');
-   item.setAttribute('tabindex', '-1');
-   //var item = node;
-   if (node != null && item != null) {
+   if (node != null) {
       var headings = node.getElementsByTagName('h3');
       for (var i = 0; i < headings.length; i++) {
-	 var link = headings[i].getElementsByTagName('a')[0];
-	 if (link != null)
-	    append_menu_item(panels, link, item, null);
+	 var item = headings[i].getElementsByTagName('a')[0];
+	 if (item != null)
+	    append_menu_item(items, item, null, null);
       }
-      append_menu_item(items, item, null, panels[0]);
    }
 }
 

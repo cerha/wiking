@@ -186,14 +186,9 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         panels = context.node().panels()
         if not panels:
             return None
-        # TODO: It would be more elagant to make the whole #panels div a keyboard navigable menubar
-        # item, but in this case the navigation between panels (inside this div) as its submenu
-        # items stops working...
         if not context.req().show_panels():
-            return g.link(_("Show panels"), "?show_panels=1", cls='panel-control show',
-                          id='panels-menu-item')
-        result = [g.link(_("Hide panels"), "?hide_panels=1", cls='panel-control hide'),
-                  g.div('', title=_("Panels"), id='panels-menu-item')]
+            return g.link(_("Show panels"), "?show_panels=1", cls='panel-control show')
+        result = [g.link(_("Hide panels"), "?hide_panels=1", cls='panel-control hide')]
         for panel in panels:
             content = panel.content()
             # Add a fake container to force the heading level start at 4.
