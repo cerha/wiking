@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-10-30 13:13+0100\n"
+"POT-Creation-Date: 2008-11-03 12:29+0100\n"
 "PO-Revision-Date: 2008-10-24 13:21+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Slovak <wiking@lists.freebsoft.org>\n"
@@ -53,7 +53,7 @@ msgstr ""
 msgid "User Management"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:97 ../lib/wiking/cms/cms.py:1764
+#: ../lib/wiking/cms/cms.py:97 ../lib/wiking/cms/cms.py:1870
 msgid "Manage registered users and their privileges."
 msgstr ""
 
@@ -66,7 +66,7 @@ msgid "Edit global properties of your web site."
 msgstr ""
 
 #: ../lib/wiking/cms/cms.py:135 ../lib/wiking/cms/cms.py:750
-#: ../lib/wiking/cms/cms.py:966 ../lib/wiking/cms/cms.py:1735
+#: ../lib/wiking/cms/cms.py:966 ../lib/wiking/cms/cms.py:1841
 msgid "Content"
 msgstr ""
 
@@ -115,11 +115,11 @@ msgstr ""
 msgid "Your credentials are:"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:264 ../lib/wiking/cms/cms.py:1795
+#: ../lib/wiking/cms/cms.py:264 ../lib/wiking/cms/cms.py:1901
 msgid "Login name"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:265 ../lib/wiking/cms/cms.py:1800
+#: ../lib/wiking/cms/cms.py:265 ../lib/wiking/cms/cms.py:1906
 msgid "Password"
 msgstr ""
 
@@ -142,8 +142,8 @@ msgstr ""
 msgid "Invalid request."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:292 ../lib/wiking/cms/cms.py:2094
-#: ../lib/wiking/cms/cms.py:2116 ../lib/wiking/cms/cms.py:2130
+#: ../lib/wiking/cms/cms.py:292 ../lib/wiking/cms/cms.py:2200
+#: ../lib/wiking/cms/cms.py:2222 ../lib/wiking/cms/cms.py:2236
 msgid "Failed sending e-mail notification:"
 msgstr ""
 
@@ -209,14 +209,14 @@ msgid "Manage panels – the small windows shown by the side of every page."
 msgstr ""
 
 #: ../lib/wiking/cms/cms.py:728 ../lib/wiking/cms/cms.py:961
-#: ../lib/wiking/cms/cms.py:1402 ../lib/wiking/cms/cms.py:1590
+#: ../lib/wiking/cms/cms.py:1399 ../lib/wiking/cms/cms.py:1696
 msgid "Language"
 msgstr ""
 
 #: ../lib/wiking/cms/cms.py:730 ../lib/wiking/cms/cms.py:734
 #: ../lib/wiking/cms/cms.py:962 ../lib/wiking/cms/cms.py:963
-#: ../lib/wiking/cms/cms.py:1417 ../lib/wiking/cms/cms.py:1597
-#: ../lib/wiking/cms/cms.py:1663
+#: ../lib/wiking/cms/cms.py:1413 ../lib/wiking/cms/cms.py:1703
+#: ../lib/wiking/cms/cms.py:1769
 msgid "Title"
 msgstr ""
 
@@ -282,7 +282,7 @@ msgid "Code"
 msgstr ""
 
 #: ../lib/wiking/cms/cms.py:800 ../lib/wiking/cms/cms.py:882
-#: ../lib/wiking/cms/cms.py:2296 ../lib/wiking/cms/cms.py:2720
+#: ../lib/wiking/cms/cms.py:2402 ../lib/wiking/cms/cms.py:2822
 msgid "Name"
 msgstr ""
 
@@ -298,7 +298,7 @@ msgstr ""
 #: ../lib/wiking/cms/cms.py:824 ../lib/wiking/cms/cms.py:836
 #: ../lib/wiking/cms/cms.py:844 ../lib/wiking/cms/cms.py:851
 #: ../lib/wiking/cms/cms.py:860 ../lib/wiking/cms/cms.py:864
-#: ../lib/wiking/cms/cms.py:868 ../lib/wiking/cms/cms.py:2400
+#: ../lib/wiking/cms/cms.py:868 ../lib/wiking/cms/cms.py:2506
 msgid "Text"
 msgstr ""
 
@@ -430,7 +430,7 @@ msgstr ""
 msgid "Manage available color themes."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:883 ../lib/wiking/cms/cms.py:1733
+#: ../lib/wiking/cms/cms.py:883 ../lib/wiking/cms/cms.py:1839
 msgid "Active"
 msgstr ""
 
@@ -467,7 +467,7 @@ msgstr ""
 msgid "Pages"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:956 ../lib/wiking/cms/cms.py:1732
+#: ../lib/wiking/cms/cms.py:956 ../lib/wiking/cms/cms.py:1838
 msgid "Identifier"
 msgstr ""
 
@@ -478,8 +478,8 @@ msgid ""
 "underscores.  It must start with a letter."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:964 ../lib/wiking/cms/cms.py:1420
-#: ../lib/wiking/cms/cms.py:1734
+#: ../lib/wiking/cms/cms.py:964 ../lib/wiking/cms/cms.py:1416
+#: ../lib/wiking/cms/cms.py:1840
 msgid "Description"
 msgstr ""
 
@@ -575,7 +575,7 @@ msgstr ""
 
 #: ../lib/wiking/cms/cms.py:1018 ../lib/wiking/cms/cms.py:1057
 #: ../lib/wiking/cms/cms.py:1254 ../lib/wiking/cms/cms.py:1303
-#: ../lib/wiking/cms/cms.py:1381
+#: ../lib/wiking/cms/cms.py:1389
 msgid "Attachments"
 msgstr ""
 
@@ -677,7 +677,7 @@ msgid ""
 "when you are done."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1147 ../lib/wiking/cms/cms.py:1551
+#: ../lib/wiking/cms/cms.py:1147 ../lib/wiking/cms/cms.py:1517
 msgid "Back"
 msgstr ""
 
@@ -721,25 +721,25 @@ msgstr ""
 msgid "The page was unpublished."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1382
+#: ../lib/wiking/cms/cms.py:1390
 msgid "Manage page attachments. Go to a page to create new attachments."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1399 ../lib/wiking/cms/cms.py:1589
+#: ../lib/wiking/cms/cms.py:1396 ../lib/wiking/cms/cms.py:1695
 msgid "Page"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1400
+#: ../lib/wiking/cms/cms.py:1397
 msgid ""
 "Select the page where you want to move this attachment.  Don't forget to "
 "update all explicit links to this attachment within page text(s)."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1403
+#: ../lib/wiking/cms/cms.py:1400
 msgid "File"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1407
+#: ../lib/wiking/cms/cms.py:1402
 msgid ""
 "Upload a file from your local system.  The file name will be used to refer "
 "to the attachment within the page content.  Please note, that the file will "
@@ -748,608 +748,638 @@ msgid ""
 "risk problems with most other characters."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1413
+#: ../lib/wiking/cms/cms.py:1408
 msgid "Filename"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1415
+#: ../lib/wiking/cms/cms.py:1411
 msgid "Mime-type"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1418
+#: ../lib/wiking/cms/cms.py:1414
 msgid ""
 "The name of the attachment (e.g. the full name of the document). If empty, "
 "the file name will be used instead."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1421
+#: ../lib/wiking/cms/cms.py:1417
 msgid "Optional description used for the listing of attachments (see below)."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1423
+#: ../lib/wiking/cms/cms.py:1419
 msgid "Size"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1425
+#: ../lib/wiking/cms/cms.py:1421
 msgid "Listed"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1426
+#: ../lib/wiking/cms/cms.py:1422
 msgid ""
 "Check if you want the item to appear in the listing of attachments at the "
 "bottom of the page."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1508
+#: ../lib/wiking/cms/cms.py:1476
 msgid "Move"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1508
+#: ../lib/wiking/cms/cms.py:1476
 msgid "Move the attachment to another page."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1513
+#: ../lib/wiking/cms/cms.py:1479 ../lib/wiking/cms/cms.py:1667
 msgid "New attachment"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1520
-msgid "Attachment of the same filename already exists for this page."
+#: ../lib/wiking/cms/cms.py:1486
+msgid "Attachment of the same file name already exists for this page."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1551
+#: ../lib/wiking/cms/cms.py:1517
 msgid "Display the page"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1585
+#: ../lib/wiking/cms/cms.py:1591
+msgid "Image title.  If empty, the file name will be used instead."
+msgstr ""
+
+#: ../lib/wiking/cms/cms.py:1593
+msgid "Optional image description."
+msgstr ""
+
+#: ../lib/wiking/cms/cms.py:1594
+msgid "In galery"
+msgstr ""
+
+#: ../lib/wiking/cms/cms.py:1595
+msgid ""
+"Check if you want the image to appear an automatically generated galery."
+msgstr ""
+
+#: ../lib/wiking/cms/cms.py:1606 ../lib/wiking/cms/cms.py:1709
+#: ../lib/wiking/cms/cms.py:1874
+msgid "Author"
+msgstr ""
+
+#: ../lib/wiking/cms/cms.py:1607
+msgid "Location"
+msgstr ""
+
+#: ../lib/wiking/cms/cms.py:1608
+msgid "Width"
+msgstr ""
+
+#: ../lib/wiking/cms/cms.py:1610
+msgid "Height"
+msgstr ""
+
+#: ../lib/wiking/cms/cms.py:1691
 msgid "News"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1586
+#: ../lib/wiking/cms/cms.py:1692
 msgid "Publish site news."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1592 ../lib/wiking/cms/cms.py:1594
-#: ../lib/wiking/cms/cms.py:1655 ../lib/wiking/cms/cms.py:1662
+#: ../lib/wiking/cms/cms.py:1698 ../lib/wiking/cms/cms.py:1700
+#: ../lib/wiking/cms/cms.py:1761 ../lib/wiking/cms/cms.py:1768
 msgid "Date"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1596
+#: ../lib/wiking/cms/cms.py:1702
 msgid "Date of the news item creation."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1597 ../lib/wiking/cms/cms.py:1599
+#: ../lib/wiking/cms/cms.py:1703 ../lib/wiking/cms/cms.py:1705
 msgid "Message"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1598
+#: ../lib/wiking/cms/cms.py:1704
 msgid "The item brief summary."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1600
+#: ../lib/wiking/cms/cms.py:1706
 msgid ""
 "It is, however, recommened to use the simplest possible formatting, since "
 "the item may be also published through an RSS channel, which does not "
 "support formatting."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1603 ../lib/wiking/cms/cms.py:1768
-msgid "Author"
-msgstr ""
-
-#: ../lib/wiking/cms/cms.py:1621
+#: ../lib/wiking/cms/cms.py:1727
 msgid "New message"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1651
+#: ../lib/wiking/cms/cms.py:1757
 msgid "Planner"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1652
+#: ../lib/wiking/cms/cms.py:1758
 msgid "Announce future events by date in a callendar-like listing."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1657
+#: ../lib/wiking/cms/cms.py:1763
 #, python-format
 msgid ""
 "The date when the planned event begins. Enter the date including year. "
 "Example: %(date)s"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1659
+#: ../lib/wiking/cms/cms.py:1765
 msgid "End date"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1660
+#: ../lib/wiking/cms/cms.py:1766
 msgid ""
 "The date when the event ends if it is not the same as the start date (for "
 "events which last several days)."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1663
+#: ../lib/wiking/cms/cms.py:1769
 msgid "Event"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1664
+#: ../lib/wiking/cms/cms.py:1770
 msgid "The event brief summary."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1674
+#: ../lib/wiking/cms/cms.py:1780
 msgid "Date in the past"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1683
+#: ../lib/wiking/cms/cms.py:1789
 msgid "End date precedes start date"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1699
+#: ../lib/wiking/cms/cms.py:1805
 msgid "Site Map"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1727
+#: ../lib/wiking/cms/cms.py:1833
 msgid "Stylesheets"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1729
+#: ../lib/wiking/cms/cms.py:1835
 msgid "Manage available Cascading Stylesheets."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1763
+#: ../lib/wiking/cms/cms.py:1869
 msgid "Users"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1765
+#: ../lib/wiking/cms/cms.py:1871
 msgid "Account disabled"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1766 ../lib/wiking/cms/cms.py:1814
+#: ../lib/wiking/cms/cms.py:1872 ../lib/wiking/cms/cms.py:1920
 msgid "User"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1767
+#: ../lib/wiking/cms/cms.py:1873
 msgid "Contributor"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1769
+#: ../lib/wiking/cms/cms.py:1875
 msgid "Administrator"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1798
+#: ../lib/wiking/cms/cms.py:1904
 msgid ""
 "A valid login name can only contain letters, digits, underscores, dashes and "
 "dots and must start with a letter."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1803 ../lib/wiking/cms/cms.py:1810
+#: ../lib/wiking/cms/cms.py:1909 ../lib/wiking/cms/cms.py:1916
 msgid ""
 "Please, write the password into each of the two fields to eliminate typos."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1805
+#: ../lib/wiking/cms/cms.py:1911
 msgid "Old password"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1807
+#: ../lib/wiking/cms/cms.py:1913
 msgid "Verify your identity by entering your original (current) password."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1808
+#: ../lib/wiking/cms/cms.py:1914
 msgid "New password"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1812
+#: ../lib/wiking/cms/cms.py:1918
 msgid "Full Name"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1816
+#: ../lib/wiking/cms/cms.py:1922
 msgid "First name"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1817
+#: ../lib/wiking/cms/cms.py:1923
 msgid "Surname"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1818
+#: ../lib/wiking/cms/cms.py:1924
 msgid "Displayed name"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1819
+#: ../lib/wiking/cms/cms.py:1925
 msgid ""
 "Leave blank if you want to be referred by your full name or enter an "
 "alternate name, such as nickname or monogram."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1821 ../lib/wiking/cms/cms.py:2298
-#: ../lib/wiking/cms/cms.py:2722
+#: ../lib/wiking/cms/cms.py:1927 ../lib/wiking/cms/cms.py:2404
+#: ../lib/wiking/cms/cms.py:2824
 msgid "E-mail"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1822 ../lib/wiking/cms/cms.py:2299
+#: ../lib/wiking/cms/cms.py:1928 ../lib/wiking/cms/cms.py:2405
 msgid "Phone"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1823 ../lib/wiking/cms/cms.py:2300
+#: ../lib/wiking/cms/cms.py:1929 ../lib/wiking/cms/cms.py:2406
 msgid "Address"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1824
+#: ../lib/wiking/cms/cms.py:1930
 msgid "URI"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1825
+#: ../lib/wiking/cms/cms.py:1931
 msgid "Registered since"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1826
+#: ../lib/wiking/cms/cms.py:1932
 msgid "Role"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1830
+#: ../lib/wiking/cms/cms.py:1936
 msgid ""
 "Select one of the predefined roles to grant the user the corresponding "
 "privileges."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1835
+#: ../lib/wiking/cms/cms.py:1941
 msgid "Certificate authentication"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1836
+#: ../lib/wiking/cms/cms.py:1942
 msgid ""
 "Check this field to authenticate by a certificate rather than by a password."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1838 ../lib/wiking/cms/cms.py:1842
+#: ../lib/wiking/cms/cms.py:1944 ../lib/wiking/cms/cms.py:1948
 msgid "Organization"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1843
+#: ../lib/wiking/cms/cms.py:1949
 msgid "Certificat request file"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1845 ../lib/wiking/cms/cms.py:2592
+#: ../lib/wiking/cms/cms.py:1951 ../lib/wiking/cms/cms.py:2698
 msgid "Upload a PEM file containing the certificate"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1850
+#: ../lib/wiking/cms/cms.py:1956
 msgid "No password given"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1854 ../lib/wiking/cms/cms.py:2306
+#: ../lib/wiking/cms/cms.py:1960 ../lib/wiking/cms/cms.py:2412
 #, python-format
 msgid "Invalid e-mail address: %s"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1862 ../lib/wiking/cms/cms.py:1917
-#: ../lib/wiking/cms/cms.py:1925
+#: ../lib/wiking/cms/cms.py:1968 ../lib/wiking/cms/cms.py:2023
+#: ../lib/wiking/cms/cms.py:2031
 msgid "Personal data"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1863 ../lib/wiking/cms/cms.py:1918
-#: ../lib/wiking/cms/cms.py:1926
+#: ../lib/wiking/cms/cms.py:1969 ../lib/wiking/cms/cms.py:2024
+#: ../lib/wiking/cms/cms.py:2032
 msgid "Contact information"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1866
+#: ../lib/wiking/cms/cms.py:1972
 msgid "All users"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1867 ../lib/wiking/cms/cms.py:2271
+#: ../lib/wiking/cms/cms.py:1973 ../lib/wiking/cms/cms.py:2377
 msgid "Active users"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1871
+#: ../lib/wiking/cms/cms.py:1977
 msgid "Inactive users (including unconfirmed registration requests)"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1875
+#: ../lib/wiking/cms/cms.py:1981
 msgid "Invalid registration requests (pending e-mail approval)"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1887
+#: ../lib/wiking/cms/cms.py:1993
 msgid "New user"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1888
+#: ../lib/wiking/cms/cms.py:1994
 msgid "Edit profile"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1889
+#: ../lib/wiking/cms/cms.py:1995
 msgid "Modify user's record"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1892 ../lib/wiking/cms/cms.py:1927
+#: ../lib/wiking/cms/cms.py:1998 ../lib/wiking/cms/cms.py:2033
 msgid "Access rights"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1892
+#: ../lib/wiking/cms/cms.py:1998
 msgid "Change access rights"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1896
+#: ../lib/wiking/cms/cms.py:2002
 msgid "Change password"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1897
+#: ../lib/wiking/cms/cms.py:2003
 msgid "Change user's password"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1899
+#: ../lib/wiking/cms/cms.py:2005
 msgid "Change certificate"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1900
+#: ../lib/wiking/cms/cms.py:2006
 msgid "Generate new certificate"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1921
+#: ../lib/wiking/cms/cms.py:2027
 msgid "Login information"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1940
+#: ../lib/wiking/cms/cms.py:2046
 msgid "Here is your certificate to authenticate to the application"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1948
+#: ../lib/wiking/cms/cms.py:2054
 #, python-format
 msgid "Your certificate for %s"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1957 ../lib/wiking/cms/cms.py:2057
+#: ../lib/wiking/cms/cms.py:2063 ../lib/wiking/cms/cms.py:2163
 msgid ""
 "Registration completed successfuly. Your account now awaits administrator's "
 "approval."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1960
+#: ../lib/wiking/cms/cms.py:2066
 msgid "The signed certificate has been sent to you by e-mail."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1962
+#: ../lib/wiking/cms/cms.py:2068
 msgid "Registration confirmed"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1966
+#: ../lib/wiking/cms/cms.py:2072
 msgid "Certificate renewal failure"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1968
+#: ../lib/wiking/cms/cms.py:2074
 msgid "Registration confirmation failed"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2008
+#: ../lib/wiking/cms/cms.py:2114
 msgid "Certificate updated"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2008
+#: ../lib/wiking/cms/cms.py:2114
 msgid "New certificate installed."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2023
+#: ../lib/wiking/cms/cms.py:2129
 msgid "Enter your current password."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2025
+#: ../lib/wiking/cms/cms.py:2131
 msgid "Invalid password."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2028
+#: ../lib/wiking/cms/cms.py:2134
 msgid "Enter the new password."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2031
+#: ../lib/wiking/cms/cms.py:2137
 msgid "The new password is the same as the old one."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2053
+#: ../lib/wiking/cms/cms.py:2159
 msgid "Enable"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2053
+#: ../lib/wiking/cms/cms.py:2159
 msgid "Enable this account"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2072
+#: ../lib/wiking/cms/cms.py:2178
 #, python-format
 msgid ""
 "You have been successfully registered at %(server_hostname)s. To complete "
 "your registration visit the URL %(uri)s and follow the instructions there.\n"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2080
+#: ../lib/wiking/cms/cms.py:2186
 msgid ""
 "\n"
 "You will be asked to upload your certificate request.\n"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2090
+#: ../lib/wiking/cms/cms.py:2196
 #, python-format
 msgid "Your registration at %s"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2094
+#: ../lib/wiking/cms/cms.py:2200
 msgid "Registration cancelled."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2096
+#: ../lib/wiking/cms/cms.py:2202
 msgid ""
 "E-mail was sent to you with instructions how to complete the registration "
 "process."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2107
+#: ../lib/wiking/cms/cms.py:2213
 #, python-format
 msgid ""
 "New user %(fullname)s registered at %(server_hostname)s. Please approve the "
 "account: %(uri)s"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2113
+#: ../lib/wiking/cms/cms.py:2219
 msgid "New user registration:"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2118
+#: ../lib/wiking/cms/cms.py:2224
 msgid "E-mail notification has been sent to server administrator."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2123
+#: ../lib/wiking/cms/cms.py:2229
 msgid "The account was enabled."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2124
+#: ../lib/wiking/cms/cms.py:2230
 #, python-format
 msgid ""
 "Your account at %(uri)s has been enabled. Please log in with username '%"
 "(login)s' and your password."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2127
+#: ../lib/wiking/cms/cms.py:2233
 msgid "Your account has been enabled."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2132
+#: ../lib/wiking/cms/cms.py:2238
 msgid "E-mail notification has been sent to:"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2202
+#: ../lib/wiking/cms/cms.py:2308
 msgid "Missing form parameters"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2212
+#: ../lib/wiking/cms/cms.py:2318
 msgid "Invalid login or user registration already confirmed"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2216
+#: ../lib/wiking/cms/cms.py:2322
 msgid "Invalid access code"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2234 ../lib/wiking/cms/cms.py:2245
+#: ../lib/wiking/cms/cms.py:2340 ../lib/wiking/cms/cms.py:2351
 msgid "Database operation failed"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2272
+#: ../lib/wiking/cms/cms.py:2378
 msgid "Listing of all active user accounts."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2291
+#: ../lib/wiking/cms/cms.py:2397
 msgid "Organizations"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2292
+#: ../lib/wiking/cms/cms.py:2398
 msgid "Manage institutions and other organizations."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2297
+#: ../lib/wiking/cms/cms.py:2403
 msgid "VAT id"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2301
+#: ../lib/wiking/cms/cms.py:2407
 msgid "Notes"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2391
+#: ../lib/wiking/cms/cms.py:2497
 msgid "System Texts"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2392
+#: ../lib/wiking/cms/cms.py:2498
 msgid "Edit miscellaneous system texts."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2396
+#: ../lib/wiking/cms/cms.py:2502
 msgid "Label"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2398
+#: ../lib/wiking/cms/cms.py:2504
 msgid "Purpose"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2401
+#: ../lib/wiking/cms/cms.py:2507
 msgid ""
 "Edit the given text as needed, in accordance with structured text rules."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2590
+#: ../lib/wiking/cms/cms.py:2696
 msgid "PEM file"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2593 ../lib/wiking/cms/cms.py:2599
+#: ../lib/wiking/cms/cms.py:2699 ../lib/wiking/cms/cms.py:2705
 msgid "Certificate"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2595
+#: ../lib/wiking/cms/cms.py:2701
 msgid "X509 structure"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2597
+#: ../lib/wiking/cms/cms.py:2703
 msgid "Serial number"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2601
+#: ../lib/wiking/cms/cms.py:2707
 msgid "Certification Authority"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2603
+#: ../lib/wiking/cms/cms.py:2709
 msgid "Valid from"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2605
+#: ../lib/wiking/cms/cms.py:2711
 msgid "Valid until"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2607
+#: ../lib/wiking/cms/cms.py:2713
 msgid "Trusted"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2608
+#: ../lib/wiking/cms/cms.py:2714
 msgid ""
 "When this is checked, certificates signed by this root certificate are "
 "considered valid."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2633
+#: ../lib/wiking/cms/cms.py:2739
 msgid "Invalid certificate"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2647
+#: ../lib/wiking/cms/cms.py:2753
 msgid "Unprocessable serial number"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2670
+#: ../lib/wiking/cms/cms.py:2772
 msgid "The certificate is not valid"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2689
+#: ../lib/wiking/cms/cms.py:2791
 msgid "CA Certificates"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2690
+#: ../lib/wiking/cms/cms.py:2792
 msgid "Manage trusted root certificates."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2698
+#: ../lib/wiking/cms/cms.py:2800
 msgid "This is not a CA certificate."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2710
+#: ../lib/wiking/cms/cms.py:2812
 msgid "User Certificates"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2711
+#: ../lib/wiking/cms/cms.py:2813
 msgid "Manage user and other kinds of certificates."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2718
+#: ../lib/wiking/cms/cms.py:2820
 msgid "Subject"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2811
+#: ../lib/wiking/cms/cms.py:2913
 msgid "Upload a PEM file containing the certificate request"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2837
+#: ../lib/wiking/cms/cms.py:2939
 msgid "Certificate request could not be processed"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2860
+#: ../lib/wiking/cms/cms.py:2962
 msgid "Certificate upload"
 msgstr ""
 

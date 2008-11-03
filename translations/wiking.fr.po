@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-10-30 13:32+0100\n"
+"POT-Creation-Date: 2008-11-03 12:29+0100\n"
 "PO-Revision-Date: 2008-10-14 10:38+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: French <wiking@lists.freebsoft.org>\n"
@@ -104,43 +104,43 @@ msgstr ""
 msgid "Integrity check failed."
 msgstr ""
 
-#: ../lib/wiking/db.py:771
+#: ../lib/wiking/db.py:774
 msgid "Back"
 msgstr ""
 
-#: ../lib/wiking/db.py:852
+#: ../lib/wiking/db.py:855
 msgid "An RSS channel is available for this section:"
 msgstr ""
 
-#: ../lib/wiking/db.py:856
+#: ../lib/wiking/db.py:859
 msgid "more about RSS"
 msgstr ""
 
-#: ../lib/wiking/db.py:1016
+#: ../lib/wiking/db.py:937
 msgid "No records."
 msgstr ""
 
-#: ../lib/wiking/db.py:1023
+#: ../lib/wiking/db.py:944
 msgid "The item was published."
 msgstr ""
 
-#: ../lib/wiking/db.py:1024
+#: ../lib/wiking/db.py:945
 msgid "The item was unpublished."
 msgstr ""
 
-#: ../lib/wiking/db.py:1033
+#: ../lib/wiking/db.py:954
 msgid "Publish"
 msgstr ""
 
-#: ../lib/wiking/db.py:1036
+#: ../lib/wiking/db.py:957
 msgid "Make the item visible to website visitors"
 msgstr ""
 
-#: ../lib/wiking/db.py:1037
+#: ../lib/wiking/db.py:958
 msgid "Unpublish"
 msgstr ""
 
-#: ../lib/wiking/db.py:1040
+#: ../lib/wiking/db.py:961
 msgid "Make the item invisible to website visitors"
 msgstr ""
 
@@ -181,19 +181,15 @@ msgstr ""
 msgid "In this section:"
 msgstr ""
 
-#: ../lib/wiking/export.py:193
+#: ../lib/wiking/export.py:190
 msgid "Show panels"
 msgstr ""
 
-#: ../lib/wiking/export.py:195
+#: ../lib/wiking/export.py:191
 msgid "Hide panels"
 msgstr ""
 
-#: ../lib/wiking/export.py:196
-msgid "Panels"
-msgstr ""
-
-#: ../lib/wiking/export.py:221
+#: ../lib/wiking/export.py:216
 #, python-format
 msgid "Last change: %(date)s, %(user)s"
 msgstr ""
@@ -260,8 +256,10 @@ msgstr ""
 msgid "Authentication required"
 msgstr ""
 
-#. Translators: Login dialog page title - use a none.
-#: ../lib/wiking/util.py:66 ../lib/wiking/util.py:379
+#. Translators: Login dialog page title (use a noun).
+#. Translators: Login info label (noun) followed by login name and login controls.
+#: ../lib/wiking/util.py:66 ../lib/wiking/util.py:358
+#: ../lib/wiking/util.py:675
 msgid "Login"
 msgstr ""
 
@@ -337,69 +335,69 @@ msgstr ""
 msgid "The system is temporarily down for maintenance."
 msgstr ""
 
-#: ../lib/wiking/util.py:336
-msgid "Go to your profile"
-msgstr ""
-
-#. Translators: Button label - use a verb.
-#: ../lib/wiking/util.py:341
-msgid "log out"
-msgstr ""
-
-#. Translators: Login status info.  If logged, the username is displayed instaed.
-#: ../lib/wiking/util.py:344
-msgid "not logged"
-msgstr ""
-
-#. Translators: Button label - use a verb.
-#: ../lib/wiking/util.py:346
-msgid "log in"
-msgstr ""
-
-#. Translators: Login panel/dialog registration link.
-#: ../lib/wiking/util.py:359 ../lib/wiking/util.py:692
-msgid "New user registration"
-msgstr ""
-
 #. Translators: Login panel info. '%(date)s' is replaced by a concrete date.
-#: ../lib/wiking/util.py:367
+#: ../lib/wiking/util.py:341
 #, python-format
 msgid "Your password expires on %(date)s."
 msgstr ""
 
 #. Translators: Login panel link.
-#: ../lib/wiking/util.py:371
+#: ../lib/wiking/util.py:345
 msgid "Change your password"
 msgstr ""
 
-#: ../lib/wiking/util.py:380
+#. Translators: Login panel/dialog registration link.
+#: ../lib/wiking/util.py:350 ../lib/wiking/util.py:710
+msgid "New user registration"
+msgstr ""
+
+#: ../lib/wiking/util.py:359
 msgid "Login Panel"
 msgstr ""
 
 #. Translators: Label in front of action buttons.
-#: ../lib/wiking/util.py:618
+#: ../lib/wiking/util.py:597
 msgid "Actions:"
 msgstr ""
 
-#: ../lib/wiking/util.py:623
+#: ../lib/wiking/util.py:602
 msgid "Help"
 msgstr ""
 
-#: ../lib/wiking/util.py:679
+#: ../lib/wiking/util.py:653
+msgid "Go to your profile"
+msgstr ""
+
+#. Translators: Logout button label - verb in imperative.
+#: ../lib/wiking/util.py:658
+msgid "log out"
+msgstr ""
+
+#. Translators: Login status info.  If logged, the username is displayed instaed.
+#: ../lib/wiking/util.py:661
+msgid "not logged"
+msgstr ""
+
+#. Translators: Login button label - verb in imperative.
+#: ../lib/wiking/util.py:663
+msgid "log in"
+msgstr ""
+
+#: ../lib/wiking/util.py:697
 msgid "Login name"
 msgstr ""
 
-#: ../lib/wiking/util.py:682
+#: ../lib/wiking/util.py:700
 msgid "Password"
 msgstr ""
 
-#. Translators: Login button - use a verb.
-#: ../lib/wiking/util.py:689
+#. Translators: Login button label - verb in imperative.
+#: ../lib/wiking/util.py:707
 msgid "Log in"
 msgstr ""
 
 #. Translators: Login dialog link to password change or password reminder (depends
 #. on configuration).
-#: ../lib/wiking/util.py:695
+#: ../lib/wiking/util.py:713
 msgid "Forgot your password?"
 msgstr ""
