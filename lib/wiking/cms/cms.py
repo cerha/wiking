@@ -210,7 +210,7 @@ class Registration(Module, ActionHandler):
         if req.user():
             return self._module('Users').action_view(req, req.user().data())
         elif req.param('command') == 'logout':
-            return Document("Good Bye", lcg.p(_("You have been logged out.")))
+            return Document(_("Good Bye"), lcg.p(_("You have been logged out.")))
         else:
             raise AuthenticationError()
     RIGHTS_view = (Roles.ANYONE,)

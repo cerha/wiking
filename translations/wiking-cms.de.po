@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-11-03 12:29+0100\n"
+"POT-Creation-Date: 2008-11-03 19:14+0100\n"
 "PO-Revision-Date: 2008-10-24 13:19+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: German <wiking@lists.freebsoft.org>\n"
@@ -88,6 +88,10 @@ msgstr ""
 
 #: ../lib/wiking/cms/cms.py:202
 msgid "Submit"
+msgstr ""
+
+#: ../lib/wiking/cms/cms.py:213
+msgid "Good Bye"
 msgstr ""
 
 #: ../lib/wiking/cms/cms.py:213
