@@ -1,5 +1,17 @@
 2008-11-03  Milan Zamazal  <pdm@brailcom.org>
 
+	* lib/wiking/cms/cms.py:
+	* translations/wiking-cms.cs.po:
+	* translations/wiking-cms.de.po:
+	* translations/wiking-cms.es.po:
+	* translations/wiking-cms.fr.po:
+	* translations/wiking-cms.hu.po:
+	* translations/wiking-cms.pl.po:
+	* translations/wiking-cms.sk.po:
+	Make logout page title translatable.
+
+2008-11-03  Milan Zamazal  <pdm@brailcom.org>
+
 	* translations/wiking-cms.cs.po:
 	* translations/wiking-cms.de.po:
 	* translations/wiking-cms.es.po:
