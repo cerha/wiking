@@ -1,3 +1,21 @@
+2008-11-03  Milan Zamazal  <pdm@brailcom.org>
+
+	* translations/wiking-cms.cs.po:
+	* translations/wiking-cms.de.po:
+	* translations/wiking-cms.es.po:
+	* translations/wiking-cms.fr.po:
+	* translations/wiking-cms.hu.po:
+	* translations/wiking-cms.pl.po:
+	* translations/wiking-cms.sk.po:
+	* translations/wiking.cs.po:
+	* translations/wiking.de.po:
+	* translations/wiking.es.po:
+	* translations/wiking.fr.po:
+	* translations/wiking.hu.po:
+	* translations/wiking.pl.po:
+	* translations/wiking.sk.po:
+	Translations updated.
+
 2008-11-03  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/db.py: 
