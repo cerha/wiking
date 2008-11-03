@@ -35,7 +35,7 @@ class PytisModule(Module, ActionHandler):
     _HONOUR_SPEC_TITLE = False
     _LIST_BY_LANGUAGE = False
     _EXCEPTION_MATCHERS = (
-        ('duplicate key violates unique constraint "_?[a-z]+_(?P<id>[a-z_]+)_key"',
+        ('duplicate key (value )?violates unique constraint "_?[a-z]+_(?P<id>[a-z_]+)_key"',
          _("This value already exists.  Enter a unique value.")),
         ('null value in column "(?P<id>[a-z_]+)" violates not-null constraint',
          _("Empty value.  This field is mandatory.")),
@@ -250,9 +250,12 @@ class PytisModule(Module, ActionHandler):
             for matcher, msg in self._exception_matchers:
                 match = matcher.match(str(e.exception()).strip())
                 if match:
-                    if match.groupdict().has_key('id'):
+                    if isinstance(msg, tuple):
+                        return msg
+                    elif match.groupdict().has_key('id'):
                         return (match.group('id'), msg)
-                    return (None, msg)
+                    else:
+                        return (None, msg)
         return (None, unicode(e.exception()))
 
     def _error_message(self, fid, error):
@@ -903,88 +906,6 @@ class RssModule(object):
                      lang=lang, webmaster=cfg.webmaster_address)
         return ('application/xml', result)
 
-
-class StoredFileModule(PytisModule):
-    """Module which stores its data in files.
-
-    This class can be used by modules with binary data fields, such as images,
-    documents etc.  Pytis supports storing binary data types directly in the
-    database, however the current implementation is unfortunately too slow for
-    web usage.  Thus we workaround that making the field virtual, storing its
-    value in a file and loading it back by its 'computer'.
-
-    """
-    
-    _STORED_FIELDS = ()
-    """A sequence of pairs, where the first item is the identifier of the
-    binary field to store, and the second is the identifier of the filename
-    field.  The filename field provides the absolute path for saving the
-    file."""
-    
-    class Spec(Specification):
-        
-        def _file_computer(self, id, filename, origname=None, mime=None, compute=None):
-            """Return a computer loading the field value from a file."""
-            def func(row):
-                result = row[id].value()
-                # We let the `compute' function decide whether it wants to recompute the value.  If
-                # it returns None, we will load the file.
-                if result is None and compute is not None:
-                    result = compute(row)
-                if result is None and not row.new():
-                    #log(OPR, "Loading file:", row[filename].value())
-                    type = row[id].type()
-                    kwargs = dict([(arg, str(row[fid].value()))
-                                   for arg, fid in (('filename', origname),
-                                                    ('type', mime)) if fid])
-                    result = type.Buffer(row[filename].value(), **kwargs)
-                return result
-            return pp.Computer(func, depends=())
-        
-        def _filename_computer(self, name, ext, append=''):
-            """Return a computer computing filename for storing the file."""
-            def func(row):
-                fname = row[name].export() + append + '.' + row[ext].value()
-                path = (cfg.storage, cfg.dbname, self.table, fname)
-                return os.path.join(*path)
-            return pp.Computer(func, depends=(name, ext))
-        
-    def _save_files(self, record):
-        if not os.path.exists(cfg.storage) \
-               or not os.access(cfg.storage, os.W_OK):
-            import getpass
-            raise Exception("The configuration option 'storage' points to '%(dir)s', but this "
-                            "directory does not exist or is not writable by user '%(user)s'." %
-                            dict(dir=cfg.storage, user=getpass.getuser()))
-        for id, filename_id in self._STORED_FIELDS:
-            fname = record[filename_id].value()
-            dir = os.path.split(fname)[0]
-            if not os.path.exists(dir):
-                os.makedirs(dir, 0700)
-            buf = record[id].value()
-            if buf is not None:
-                log(OPR, "Saving file:", (fname, pp.format_byte_size(len(buf))))
-                buf.save(fname)
-        
-    def _insert(self, record):
-        super(StoredFileModule, self)._insert(record)
-        try:
-            self._save_files(record)
-        except:
-            # TODO: Rollback the transaction instead of deleting the record.
-            self._delete(record)
-            raise
-        
-    def _update(self, record):
-        super(StoredFileModule, self)._update(record)
-        self._save_files(record)
-        
-    def _delete(self, record):
-        super(StoredFileModule, self)._delete(record)
-        for id, filename_id in self._STORED_FIELDS:
-            fname = record[filename_id].value()
-            if os.path.exists(fname):
-                os.unlink(fname)
     
 # Mixin module classes
 

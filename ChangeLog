@@ -1,3 +1,11 @@
+2008-11-03  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/db.py: 
+	* lib/wiking/cms/cms.py: 
+	Distinguish 'row' vs. 'record' consistently.  `StoredFileModule'
+	removed and implemented directly within `Attachments'.  Default
+	exception matchers updated.
+
 2008-10-31  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/cms/appl.py:

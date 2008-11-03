@@ -993,15 +993,15 @@ class Pages(CMSModule):
                   descr=_("Set the ownership if you want a particular user to have full control "
                           "of the page even if his normal privileges are lower.")),
             )
-        def _status(self, row, published, _content, content):
+        def _status(self, record, published, _content, content):
             if not published:
                 return _("Not published")
             elif _content == content:
                 return _("Ok")
             else:
                 return _("Changed")
-        def row_style(self, row):
-            return not row['published'].value() and pp.Style(foreground='#777') or None
+        def row_style(self, record):
+            return not record['published'].value() and pp.Style(foreground='#777') or None
         sorting = (('tree_order', ASC), ('identifier', ASC),)
         #grouping = 'group'
         #group_heading = 'title'
@@ -1019,9 +1019,9 @@ class Pages(CMSModule):
 
     _REFERER = 'identifier'
     _EXCEPTION_MATCHERS = (
-        ('duplicate key violates unique constraint "_pages_mapping_id_key"',
+        ('duplicate key (value )?violates unique constraint "_pages_mapping_id_key"',
          _("The page already exists in given language.")),
-        ('duplicate key violates unique constraint "_mapping_unique_tree_(?P<id>ord)er"',
+        ('duplicate key (value )?violates unique constraint "_mapping_unique_tree_(?P<id>ord)er"',
          _("Duplicate menu order at this level of hierarchy.")),) + \
          CMSModule._EXCEPTION_MATCHERS
     _LIST_BY_LANGUAGE = True
@@ -1375,23 +1375,20 @@ class Pages(CMSModule):
         return self.action_view(req, record, **kwargs)
     RIGHTS_unpublish = (Roles.ADMIN, Roles.OWNER)
 
+    
+class Attachments(CMSModule):
+    """Attachments are external files (documents, images, media, ...) attached to CMS pages.
 
-class Attachments(StoredFileModule, CMSModule):
-    class Spec(StoredFileModule.Spec):
+    Pytis supports storing binary data types directly in the database, however the current
+    implementation is unfortunately too slow for web usage.  Thus we work around that making the
+    field virtual, storing its value in a file and loading it back through a 'computer'.
+
+    """
+    
+    class Spec(Specification):
         title = _("Attachments")
         help = _("Manage page attachments. Go to a page to create new attachments.")
-        def fields(self):
-            def fcomp(ffunc):
-                def func(row):
-                    f = row['file'].value()
-                    return f is not None and ffunc(f) or None
-                return pp.Computer(func, depends=('file',))
-            def imgcomp(imgfunc):
-                def func(row):
-                    img = row['image'].value()
-                    return img is not None and imgfunc(img) or None
-                return pp.Computer(func, depends=('image',))
-            return (
+        def fields(self): return (
             Field('attachment_variant_id',
                   computer=computer(lambda r, attachment_id, lang:
                                     attachment_id and '%d.%s' % (attachment_id, lang))),
@@ -1400,20 +1397,19 @@ class Attachments(StoredFileModule, CMSModule):
                   descr=_("Select the page where you want to move this attachment.  Don't forget "
                           "to update all explicit links to this attachment within page text(s).")),
             Field('lang', _("Language"), codebook='Languages', editable=ONCE, value_column='lang'),
-            Field('file', _("File"), virtual=True, editable=ALWAYS,
+            Field('file', _("File"), virtual=True, editable=ALWAYS, computer=computer(self._file),
                   type=pd.Binary(not_null=True, maxlen=cfg.appl.upload_limit),
-                  computer=self._file_computer('file', '_filename', origname='filename',
-                                               mime='mime_type'),
                   descr=_("Upload a file from your local system.  The file name will be used "
                           "to refer to the attachment within the page content.  Please note, "
                           "that the file will be served over the internet, so the filename should "
                           "not contain any special characters.  Letters, digits, underscores, "
                           "dashes and dots are safe.  You risk problems with most other "
                           "characters.")),
-            Field('filename', _("Filename"), computer=fcomp(lambda f: f.filename()),
+            Field('filename', _("Filename"),
+                  computer=computer(lambda r, file: file and file.filename()),
                   type=pd.RegexString(maxlen=64, not_null=True, regex='^[0-9a-zA-Z_\.-]*$')),
             Field('mime_type', _("Mime-type"), width=22,
-                  computer=fcomp(lambda f: f.type())),
+                  computer=computer(lambda r, file: file and file.type())),
             Field('title', _("Title"), width=30, maxlen=64,
                   descr=_("The name of the attachment (e.g. the full name of the document). "
                           "If empty, the file name will be used instead.")),
@@ -1421,73 +1417,42 @@ class Attachments(StoredFileModule, CMSModule):
                   descr=_("Optional description used for the listing of attachments (see below).")),
             Field('ext', virtual=True, computer=computer(self._ext)),
             Field('bytesize', _("Size"),
-                  computer=fcomp(lambda f: pp.format_byte_size(len(f)))),
+                  computer=computer(lambda r, file: file and pp.format_byte_size(len(file)))),
             Field('listed', _("Listed"), default=True,
                   descr=_("Check if you want the item to appear in the listing of attachments at "
                           "the bottom of the page.")),
-            #Field('image', virtual=True, editable=ALWAYS, computer=computer(self._image),
-            #      type=pd.Image(maxsize=(3000, 3000))),
-            #Field('resized', virtual=True, editable=ALWAYS, type=pd.Image(),
-            #      computer=self._file_computer('resized', '_resized_filename',
-            #                                   compute=lambda r: self._resize(r, (800, 800)))),
-            #Field('thumbnail', virtual=True, type=pd.Image(),
-            #      computer=self._file_computer('thumbnail', '_thumbnail_filename',
-            #                                   compute=lambda r: self._resize(r, (130, 130)))),
-            #Field('author', _("Author"), width=30),
-            #Field('location', _("Location"), width=50),
-            #Field('width', _("Width"), computer=imgcomp(lambda i: i.size[0])),
-            #Field('height', _("Height"), computer=imgcomp(lambda i: i.size[1])),
-            #Field('size', _("Pixel size"), virtual=True,
-            #      computer=computer(lambda r, width, height:
-            #                        width is not None and '%dx%d' % (width, height))),
-            #Field('exif_date', _("EXIF date"), type=DateTime()),
-            #Field('exif'),
+            Field('is_image'),
             Field('_filename', virtual=True,
-                  computer=self._filename_computer('attachment_id', 'ext')),
-            #Field('_thumbnail_filename', virtual=True,
-            #      computer=self._filename_computer('attachment_id', 'ext', '-thumbnail')),
-            #Field('_resized_filename', virtual=True,
-            #      computer=self._filename_computer('attachment_id', 'ext', '-resized')),
+                  computer=self._filename_computer()),
             )
-        layout = ('file', 'title', 'description', 'listed')
-        columns = ('filename', 'title', 'bytesize', 'mime_type', 'listed', 'mapping_id')
-        sorting = (('filename', ASC),)
-        def _ext(self, row, filename):
+        def _ext(self, record, filename):
             if filename is None:
                 return ''
             else:
                 ext = filename and os.path.splitext(filename)[1].lower()
                 return len(ext) > 1 and ext[1:] or ext
-        def _image(self, row):
-            # We use the lazy get to prevent running the computer.  This allows
-            # us to find out, whether a new file was uploaded and prevents
-            # loading the value from file.
-            file = row.get('file', lazy=True).value()
-            if file is not None and file.path() is None:
-                log(OPR, "Loading image:", len(file))
-                import PIL.Image 
-                stream = cStringIO.StringIO(file.buffer())
-                try:
-                    image = PIL.Image.open(stream)
-                except IOError:
-                    return None
-                else:
-                    return image
-            return None
-        def _resize(self, row, size):
-            img = copy.copy(row['image'].value())
-            if img:
-                # Recompute the value by resizing the original image.
-                from PIL.Image import ANTIALIAS
-                log(OPR, "Resizing image:", (img.size, size))
-                img.thumbnail(size, ANTIALIAS)
-                stream = cStringIO.StringIO()
-                img.save(stream, img.format)
-                return pd.Image.Buffer(buffer(stream.getvalue()))
+        def _file(self, record):
+            value = record['file']
+            result = value.value()
+            if result is not None or record.new():
+                return result
             else:
-                # The image will be loaded from file.
-                return None
-            
+                #log(OPR, "Loading file:", record['_filename'].value())
+                return value.type().Buffer(record['_filename'].value(),
+                                           type=str(record['mime_type'].value()),
+                                           filename=str(record['filename'].value()))
+        def _filename_computer(self, append=''):
+            """Return a computer computing filename for storing the file."""
+            def func(record, attachment_id, ext):
+                fname = str(attachment_id) + append + '.' + ext
+                return os.path.join(cfg.storage, cfg.dbname, self.table, fname)
+            return computer(func)
+        def redirect(self, record):
+            return record['is_image'].value() and 'Images' or None
+        layout = ('file', 'title', 'description', 'listed')
+        columns = ('filename', 'title', 'bytesize', 'mime_type', 'listed', 'mapping_id')
+        sorting = (('filename', ASC),)
+
     class Attachment(object):
         def __init__(self, row, uri):
             self.filename = filename = row['filename'].export()
@@ -1504,20 +1469,21 @@ class Attachments(StoredFileModule, CMSModule):
             else:
                 cls = lcg.Resource
             return cls(self.filename, uri=self.uri, title=self.title, descr=self.descr)
-            
-    _ACTIONS = (Action(_("Move"), 'move', descr=_("Move the attachment to another page.")),)
-    _STORED_FIELDS = (('file', '_filename'),
-                      #('resized', '_resized_filename'),
-                      #('thumbnail', '_thumbnail_filename')
-                      )
+        
+    _ACTIONS = (
+        #Action(_("New image"), 'insert_image', descr=_("Insert a new image attachment"),
+        #       context=None),
+        Action(_("Move"), 'move', descr=_("Move the attachment to another page.")),
+        )
+    _STORED_FIELDS = (('file', '_filename'),) # Define which fields are stored as files.
     _INSERT_LABEL = _("New attachment")
     _REFERER = 'filename'
     _LAYOUT = {'move': ('mapping_id',)}
     _LIST_BY_LANGUAGE = True
     _SEQUENCE_FIELDS = (('attachment_id', '_attachments_attachment_id_seq'),)
     _EXCEPTION_MATCHERS = (
-        ('duplicate key violates unique constraint "_attachments_mapping_id_key"',
-         _("Attachment of the same filename already exists for this page.")),)
+        ('duplicate key (value )?violates unique constraint "_attachments_mapping_id_key"',
+         ('file', _("Attachment of the same file name already exists for this page."))),)
     RIGHTS_view   = (Roles.AUTHOR, Roles.OWNER)
     RIGHTS_insert = (Roles.AUTHOR, Roles.OWNER)
     RIGHTS_update = (Roles.AUTHOR, Roles.OWNER)
@@ -1559,8 +1525,45 @@ class Attachments(StoredFileModule, CMSModule):
             kwargs['action'] = 'attachments'
         return super(Attachments, self)._binding_parent_redirect(req, uri, **kwargs)
 
+    def _save_files(self, record):
+        if not os.path.exists(cfg.storage) \
+               or not os.access(cfg.storage, os.W_OK):
+            import getpass
+            raise Exception("The configuration option 'storage' points to '%(dir)s', but this "
+                            "directory does not exist or is not writable by user '%(user)s'." %
+                            dict(dir=cfg.storage, user=getpass.getuser()))
+        for id, filename_id in self._STORED_FIELDS:
+            fname = record[filename_id].value()
+            dir = os.path.split(fname)[0]
+            if not os.path.exists(dir):
+                os.makedirs(dir, 0700)
+            buf = record[id].value()
+            if buf is not None:
+                log(OPR, "Saving file:", (fname, pp.format_byte_size(len(buf))))
+                buf.save(fname)
+        
+    def _insert(self, record):
+        super(Attachments, self)._insert(record)
+        try:
+            self._save_files(record)
+        except:
+            # TODO: Rollback the transaction instead of deleting the record.
+            self._delete(record)
+            raise
+        
+    def _update(self, record):
+        super(Attachments, self)._update(record)
+        self._save_files(record)
+        
+    def _delete(self, record):
+        super(Attachments, self)._delete(record)
+        for id, filename_id in self._STORED_FIELDS:
+            fname = record[filename_id].value()
+            if os.path.exists(fname):
+                os.unlink(fname)
+
     def attachments(self, mapping_id, lang, uri):
-        return [self.Attachment(row, uri) for row in
+        return [self.Attachment(record, uri) for record in
                 self._data.get_rows(mapping_id=mapping_id, lang=lang)]
     
     def action_move(self, req, record):
@@ -1571,6 +1574,109 @@ class Attachments(StoredFileModule, CMSModule):
         return (str(record['mime_type'].value()), record['file'].value().buffer())
     RIGHTS_download = (Roles.ANYONE)
 
+    def action_insert_image(self, req):
+        req.set_param('action', 'insert')
+        return self._module('Images').action_insert(req)
+    RIGHTS_insert_image  = (Roles.AUTHOR, Roles.OWNER)
+
+
+class Images(Attachments):
+    class Spec(Attachments.Spec):
+        table = 'attachments'
+        def fields(self):
+            fields = pp.Fields(super(Images.Spec, self).fields())
+            overridden = (
+                #Field(inherit=fields['mime_type'], check=),
+                Field(inherit=fields['title'], 
+                      descr=_("Image title.  If empty, the file name will be used instead.")),
+                Field(inherit=fields['description'], maxlen=512,
+                      descr=_("Optional image description.")),
+                Field(inherit=fields['listed'], label=_("In galery"),
+                      descr=_("Check if you want the image to appear an automatically generated "
+                              "galery.")),
+                Field(inherit=fields['is_image'], default=True),
+                )
+            extra = (
+                Field('image', virtual=True, editable=ALWAYS, computer=computer(self._image),
+                      type=pd.Image(maxsize=(3000, 3000))),
+                #Field('resized', virtual=True, editable=ALWAYS, type=pd.Image(),
+                #      computer=self._resize_computer('resized', '_resized_filename', (800, 800))),
+                #Field('thumbnail', virtual=True, type=pd.Image(),
+                #      computer=self._resize_computer('thumbnail', '_thumbnail_filename', (130, 130))),
+                Field('author', _("Author"), width=30),
+                Field('location', _("Location"), width=50),
+                Field('width', _("Width"),
+                      computer=computer(lambda r, image: image and image.size[0])),
+                Field('height', _("Height"), 
+                      computer=computer(lambda r, image: image and image.size[1])),
+                #Field('size', _("Pixel size"), virtual=True,
+                #      computer=computer(lambda r, width, height:
+                #                        width is not None and '%dx%d' % (width, height))),
+                #Field('exif_date', _("EXIF date"), type=DateTime()),
+                #Field('exif'),
+                Field('_thumbnail_filename', virtual=True,
+                      computer=self._filename_computer('-thumbnail')),
+                Field('_resized_filename', virtual=True,
+                      computer=self._filename_computer('-resized')),
+                )
+            return tuple(fields.fields(override=overridden)) + extra
+        def _image(self, record):
+            # Use lazy get to prevent running the computer (to find out, whether a new file was
+            # uploaded and prevent loading the previously saved file in that case).
+            file = record.get('file', lazy=True).value()
+            if file is not None and file.path() is None:
+                log(OPR, "Loading image:", len(file))
+                import PIL.Image 
+                stream = cStringIO.StringIO(file.buffer())
+                try:
+                    image = PIL.Image.open(stream)
+                except IOError:
+                    return None
+                else:
+                    return image
+            return None
+        def _resize_computer(self, cid, filename, size):
+            """Return a computer loading field value from file."""
+            def func(record):
+                value = record[cid]
+                result = value.value()
+                if result is not None:
+                    return result
+                else:
+                    img = copy.copy(record['image'].value())
+                    if img:
+                        # Recompute the value by resizing the original image.
+                        from PIL.Image import ANTIALIAS
+                        log(OPR, "Resizing image:", (img.size, size))
+                        img.thumbnail(size, ANTIALIAS)
+                        stream = cStringIO.StringIO()
+                        img.save(stream, img.format)
+                        return pd.Image.Buffer(buffer(stream.getvalue()))
+                    elif not record.new():
+                        #log(OPR, "Loading file:", record[filename].value())
+                        return value.type().Buffer(record[filename].value(),
+                                                   type=str(record['mime_type'].value()))
+                return result
+            return computer(func)
+        layout = ('file', 'title', 'description', 'author', 'location', 'listed')
+            
+    _STORED_FIELDS = (('file', '_filename'),
+                      ('resized', '_resized_filename'),
+                      ('thumbnail', '_thumbnail_filename')
+                      )
+    _INSERT_LABEL = _("New attachment")
+
+    def _binding_forward(self, req):
+        # HACK: This module is always accessed through redirect in Attachments, but the parent
+        # method does not take that into account.
+        for fw in reversed(req.forwards()):
+            if fw.arg('binding') is not None:
+                if fw.module().name() == 'Attachments':
+                    return fw
+                else:
+                    return None
+        return None
+    
     #def action_resized(self, req, record):
     #    return (str(record['mime_type'].value()), record['resized'].value().buffer())
     #RIGHTS_resized = (Roles.ANYONE,)
@@ -1608,11 +1714,11 @@ class News(EmbeddableCMSModule):
         layout = ('timestamp', 'title', 'content')
         list_layout = pp.ListLayout('title', meta=('timestamp', 'author'),  content='content',
                                     anchor="item-%s")
-        def _date(self, row):
-            return row['timestamp'].export(show_time=False)
-        def _date_title(self, row):
-            if row['title'].value():
-                return row['date'].export() +': '+ row['title'].value()
+        def _date(self, record):
+            return record['timestamp'].export(show_time=False)
+        def _date_title(self, record):
+            if record['title'].value():
+                return record['date'].export() +': '+ record['title'].value()
         
     _LIST_BY_LANGUAGE = True
     _OWNER_COLUMN = 'author'
@@ -1672,14 +1778,14 @@ class Planner(News):
         def _check_date(self, date):
             if date < today():
                 return _("Date in the past")
-        def _date(self, row, start_date, end_date):
-            date = row['start_date'].export(show_weekday=True)
+        def _date(self, record, start_date, end_date):
+            date = record['start_date'].export(show_weekday=True)
             if end_date:
-                date += ' - ' + row['end_date'].export(show_weekday=True)
+                date += ' - ' + record['end_date'].export(show_weekday=True)
             return date
-        def check(self, row):
-            end = row['end_date'].value()
-            if end and end <= row['start_date'].value():
+        def check(self, record):
+            end = record['end_date'].value()
+            if end and end <= record['start_date'].value():
                 return ('end_date', _("End date precedes start date"))
     _RSS_TITLE_COLUMN = 'date_title'
     _RSS_DATE_COLUMN = None
@@ -1770,17 +1876,17 @@ class Users(CMSModule):
                                                 Roles.ADMIN)))
         _ROLE_DICT = dict([(_code, (_title, _roles)) for _code, _title, _roles in _ROLES])
 
-        def _fullname(self, row, firstname, surname, login):
+        def _fullname(self, record, firstname, surname, login):
             if firstname and surname:
                 return firstname + " " + surname
             else:
                 return firstname or surname or login
-        def _registration_expiry(self, row):
+        def _registration_expiry(self, record):
             if not cfg.login_is_email:
                 return None
             expiry_days = cfg.registration_expiry_days
             return mx.DateTime.now().gmtime() + mx.DateTime.TimeDelta(hours=expiry_days*24)
-        def _registration_code(self, row):
+        def _registration_code(self, record):
             if not cfg.login_is_email:
                 return None
             return self._generate_registration_code()
@@ -1844,9 +1950,9 @@ class Users(CMSModule):
                   type=pytis.data.Binary(not_null=True, maxlen=10000),
                   descr=_("Upload a PEM file containing the certificate")),
             )
-        def check(self, row):
+        def check(self, record):
             if cfg.certificate_authentication:
-                if not row['password'].value() and not row['certauth'].value():
+                if not record['password'].value() and not record['certauth'].value():
                     return 'password', _("No password given")
         def _check_email(self, email):
             result = wiking.validate_email_address(email)
@@ -2405,8 +2511,8 @@ class Texts(CMSModule):
         sorting = (('text_id', ASC,),)
         layout = ('text_id', 'descr', 'content',)
 
-        def _description(self, row):
-            return self._texts.get(row['label'].value(), "")
+        def _description(self, record):
+            return self._texts.get(record['label'].value(), "")
             
     _LIST_BY_LANGUAGE = True
     RIGHTS_insert = ()
@@ -2577,10 +2683,10 @@ class Certificates(CMSModule):
 
         """
 
-    class Spec(StoredFileModule.Spec):
+    class Spec(Specification):
 
         def __init__(self, *args, **kwargs):
-            StoredFileModule.Spec.__init__(self, *args, **kwargs)
+            Specification.__init__(self, *args, **kwargs)
             self._ca_x509 = None
 
         _ID_COLUMN = 'certificates_id'
@@ -2614,17 +2720,17 @@ class Certificates(CMSModule):
 
         def _certificate_computation(self, buffer):
             return str(buffer)
-        def _certificate_computer(self, row):
-            file_value = row['file'].value()
+        def _certificate_computer(self, record):
+            file_value = record['file'].value()
             if file_value is None: # new record form
                 return None
             certificate = self._certificate_computation(file_value.buffer())
             return certificate
-        def _x509_computer(self, row):
+        def _x509_computer(self, record):
             import gnutls.crypto
             if self._ca_x509 is None:
                 self._ca_x509 = gnutls.crypto.X509Certificate(open(cfg.ca_certificate_file).read())
-            certificate = row['certificate'].value()
+            certificate = record['certificate'].value()
             if certificate is None: # new record form
                 return None
             try:
@@ -2635,8 +2741,8 @@ class Certificates(CMSModule):
                 x509 = None
             return x509
         def _make_x509_computer(self, function):
-            def func(row):
-                x509 = row['x509'].value()
+            def func(record):
+                x509 = record['x509'].value()
                 if x509 is None:
                     return None
                 return function(x509)
@@ -2660,12 +2766,8 @@ class Certificates(CMSModule):
             mx_time = mx.DateTime.DateTime(*time_tuple[:6])
             return mx_time
             
-        def check(self, row):
-            if hasattr(StoredFileModule.Spec, 'check'):
-                error = StoredFileModule.Spec.check(self, row)
-                if error is not None:
-                    return error
-            x509 = row['x509'].value()
+        def check(self, record):
+            x509 = record['x509'].value()
             if x509 is None:
                 return ('file', _("The certificate is not valid"),)
                 
@@ -2689,11 +2791,11 @@ class CACertificates(Certificates):
         title = _("CA Certificates")
         help = _("Manage trusted root certificates.")
         
-        def check(self, row):
-            error = Certificates.Spec.check(self, row)
+        def check(self, record):
+            error = Certificates.Spec.check(self, record)
             if error is not None:
                 return error
-            x509 = row['x509'].value()
+            x509 = record['x509'].value()
             if x509.check_ca() != 1:
                 return ('file', _("This is not a CA certificate."))
         
@@ -2732,13 +2834,13 @@ class UserCertificates(Certificates):
 
         def _subject_computer(self, x509):
             return x509.subject
-        def _common_name_computer(self, row):
-            subject = row['subject'].value()
+        def _common_name_computer(self, record):
+            subject = record['subject'].value()
             if subject is None:
                 return ''
             return subject.common_name
-        def _email_computer(self, row):
-            subject = row['subject'].value()
+        def _email_computer(self, record):
+            subject = record['subject'].value()
             if subject is None:
                 return ''
             return subject.email
