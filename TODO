@@ -6,13 +6,10 @@ Core features:
  * Create an admin account during site installation
  * Allow extension module management to page owner
  * Disable table layout per layout spec, not per module.
- * Refer to the page in News and Planner items to allow a separate set for each page.
  * Delete stray files after deletion triggered in the database (cascade)
- * Extension module listing commands don't work in the preview mode within WMI
  * Serve favicon and robots.txt
  * RSS links in page header and panels
  * Image allignment and link title in the LCG formatting manual
- * Default language when Accept-Language is not set at all
  * Locking
  * Change log and Last-Modified HTTP header support
  * Recode HTML attachments
@@ -27,9 +24,6 @@ Cleaning:
 
 Minor:
  * Show original page in attachment move form.
- * Allow attachment creation in WMI Attachments module (add page selection to the insert form).
- * Include page texts in page insert form and allow also 'Save and publish' directly.
- * Make Active/Inactive users a submenu in WMI.
 
 Extensions:
 
