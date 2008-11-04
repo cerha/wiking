@@ -1,5 +1,16 @@
 2008-11-04  Milan Zamazal  <pdm@brailcom.org>
 
+	* translations/wiking-cms.cs.po:
+	* translations/wiking-cms.de.po:
+	* translations/wiking-cms.es.po:
+	* translations/wiking-cms.fr.po:
+	* translations/wiking-cms.hu.po:
+	* translations/wiking-cms.pl.po:
+	* translations/wiking-cms.sk.po:
+	Translations updated.
+
+2008-11-04  Milan Zamazal  <pdm@brailcom.org>
+
 	* lib/wiking/cms/appl.py:
 	* lib/wiking/cms/cms.py:
 	* lib/wiking/configuration.py:
