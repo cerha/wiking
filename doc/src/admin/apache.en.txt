@@ -126,7 +126,7 @@ You put all needed Python libraries (wiking, lcg, pytis and any other modules
 not installed in the base system) into one directory
 ('\/var/www/sites/site1234/lib' in the example below) and set =PythonPath= to
 this directory.  Then you need to upload other files needed by Wiking and
-configure Wiking to use the appropriate directories (see [#config] for
+configure Wiking to use the appropriate directories (see [config] for
 description of all options).
 
 Typical public hosting configuration example:
