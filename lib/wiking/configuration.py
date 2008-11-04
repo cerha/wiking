@@ -303,7 +303,15 @@ class Configuration(pc):
                 "available through the main configuration instance.  Type of the value is "
                 "optional, but an instance of class derived from 'pytis.util.Configuration' is "
                 "recommended.")
-        
+
+    class _Option_password_storage(pc.Option):
+        _DESCR = "Form of storing user passwords in the database"
+        _DOC = _("This option defines in which way user passwords are stored in a database. "
+                 "The allowed values are the strings 'plain' "
+                 "(passwords are stored in the plain text form), "
+                 "and 'md5' (passwords are stored in the form of MD5 hashes).")
+        _DEFAULT = 'plain'
+
     # The following options are actually Wiking CMS specific, but we have them here to allow their
     # setting through a configuration file.  As soon as the support for application specific
     # configuration files is ready, the options should be moved to CMS configuration.  The options

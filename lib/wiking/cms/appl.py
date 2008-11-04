@@ -124,7 +124,16 @@ class Application(CookieAuthentication, wiking.Application):
             return None
     
     def _auth_check_password(self, user, password):
-        return password == user.data()['password'].value()
+        import md5
+        record = user.data()
+        password_storage = cfg.password_storage
+        if password_storage == 'plain':
+            pass
+        elif password_storage == 'md5':
+            password = md5.new(password).hexdigest()
+        else:
+            raise Exception("Invalid password storage option", password_storage)
+        return password == record['password'].value()
 
     def authenticate(self, req):
         user = None
