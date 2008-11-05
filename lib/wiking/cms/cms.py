@@ -1915,7 +1915,7 @@ class Users(CMSModule):
                   type=pd.Password(verify=False, not_null=True, md5=md5_passwords),
                   descr=_(u"Verify your identity by entering your original (current) password.")),
             Field('new_password', _("New password"), virtual=True, width=16,
-                  type=pd.Password(minlen=4, maxlen=32, not_null=True),
+                  type=pd.Password(not_null=True),
                   descr=_("Please, write the password into each of the two fields to eliminate "
                           "typos.")),
             Field('fullname', _("Full Name"), virtual=True, editable=NEVER,
@@ -2131,25 +2131,21 @@ class Users(CMSModule):
             if not old_password:
                 errors.append(('old_password', _(u"Enter your current password.")))
             else:
-                old_password_value = record['old_password'].type().validate(old_password, verify=old_password)[0].value()
-                if old_password_value != current_password_value:
+                error = record.validate('old_password', old_password, verify=old_password)
+                if error or record['old_password'].value() != current_password_value:
                     errors.append(('old_password', _(u"Invalid password.")))
             new_password = req.param('new_password')
             if not new_password:
                 errors.append(('new_password', _(u"Enter the new password.")))
             else:
-                new_password_value_instance, new_password_error = \
-                    record['password'].type().validate(new_password[0], verify=new_password[1])
-                if new_password_error:
-                    errors.append(('new_password', new_password_error.message(),))
-                else:
-                    new_password_value = new_password_value_instance.value()
-                    if new_password_value == current_password_value:
-                        errors.append(('new_password', _(u"The new password is the same as the old one.")))
+                error = record.validate('password', new_password[0], verify=new_password[1])
+                if error:
+                    errors.append(('new_password', error.message(),))
+                elif record['password'].value() == current_password_value:
+                    errors.append(('new_password',
+                                   _(u"The new password is the same as the old one.")))
             if errors:
                 return errors
-            else:
-                record['password'] = pd.Value(record['password'].type(), new_password_value)
         return super(Users, self)._validate(req, record, layout=layout)
         
     def _base_uri(self, req):
