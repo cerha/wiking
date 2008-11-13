@@ -2300,6 +2300,30 @@ class Users(CMSModule):
         else:
             return None
 
+    def role_users(self, req, role):
+        """Return list of user records of the users having 'role'.
+
+        Arguments:
+
+          req -- web request instance
+          role -- role identifier as defined in 'Roles' or its successor, string
+
+        """
+        assert isinstance(role, str)
+        role_codes = [code for code, title, roles in self.Spec._ROLES if role in roles]
+        String = pd.String()
+        condition = pd.OR(*[pd.EQ('role', pd.Value(String, code)) for code in role_codes])
+        data = self._data
+        data.select(condition=condition)
+        result_rows = []
+        while True:
+            row = data.fetchone()
+            if row is None:
+                break
+            result_rows.append(row)
+        data.close()
+        return result_rows
+        
     def check_registration_code(self, req):
         """Check whether given request contains valid login and registration code.
 
