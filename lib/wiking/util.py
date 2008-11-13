@@ -1086,7 +1086,7 @@ def send_mail(addr, subject, text, sender=None, html=None, lang=None, cc=(), hea
 
     Arguments:
 
-      addr -- recipient address as a string
+      addr -- recipient address as a string or sequence of recipient addresses
       subject -- message subject as a string or unicode
       text -- message text as a string or unicode
       sender -- sender address as a string; if None, the address specified by the configuration
@@ -1106,7 +1106,7 @@ def send_mail(addr, subject, text, sender=None, html=None, lang=None, cc=(), hea
       
     """
     string_class = type('')
-    assert isinstance(addr, basestring), ('type error', addr,)
+    assert isinstance(addr, (basestring, tuple, list,)), ('type error', addr,)
     assert isinstance(subject, basestring), ('type error', subject,)
     assert isinstance(text, basestring), ('type error', text,)
     assert sender is None or isinstance(sender, basestring), ('type error', sender,)
@@ -1117,6 +1117,8 @@ def send_mail(addr, subject, text, sender=None, html=None, lang=None, cc=(), hea
     if __debug__:
         for a in attachments:
             assert isinstance(a, MailAttachment), ('type error', attachments, a,)
+    if isinstance(addr, (tuple, list,)):
+        addr = string.join(addr, ', ')
     import MimeWriter
     import mimetools
     from cStringIO import StringIO
