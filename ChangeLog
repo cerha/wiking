@@ -1,5 +1,10 @@
 2008-11-13  Milan Zamazal  <pdm@brailcom.org>
 
+	* lib/wiking/util.py:
+	Allow multiple recipients in e-mails.
+
+2008-11-13  Milan Zamazal  <pdm@brailcom.org>
+
 	* lib/wiking/cms/cms.py:
 	New method Users.role_users.
 
