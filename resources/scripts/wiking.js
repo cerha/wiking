@@ -132,8 +132,8 @@ function append_panels_menu(items) {
 function append_language_selection_menu(items) {
    var node = document.getElementById('language-selection');
    var item = document.getElementById('language-selection-anchor');
-   item.setAttribute('tabindex', '-1');
    if (node != null && item != null) {
+      item.setAttribute('tabindex', '-1');
       var languages = [];
       var links = node.getElementsByTagName('a');
       for (var i = 1; i < links.length; i++)
