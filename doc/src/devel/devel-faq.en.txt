@@ -51,9 +51,19 @@ The top level menu (main sections at the top of the page) is defined by
 A module can be added to the submenu of a concrete main section by defining
 class attributes `WMI_SECTION' and `WMI_ORDER'.
 
-=== How do I change primary link destinations in list forms?
+=== How do I change primary link destinations in list forms? ===
 
 Redefine `_link_provider' method of the module.
+
+=== How do I display field values using a special formatting? ===
+
+Create new virtual field with a custom data type.
+
+=== How to localize displayed field values, e.g. float numbers? ===
+
+Derive a new data type from the original value data type.  Then use an instance
+of a class derived from `lcg.Localizable' as a return result of the type's
+`_export' method.
 
 
 == Working with Data ==
