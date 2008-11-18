@@ -1996,19 +1996,6 @@ class Users(CMSModule):
     _INSERT_LABEL = _("New user")
     _UPDATE_LABEL = _("Edit profile")
     _UPDATE_DESCR = _("Modify user's record")
-    def _default_actions_first(self, req, record):
-        actions = super(Users, self)._default_actions_first(req, record) + ( 
-            Action(_("Access rights"), 'rights', descr=_("Change access rights")),)
-        if req.user():
-            authentication_method = req.user().authentication_method()
-            if authentication_method == 'password':
-                actions += (Action(_("Change password"), 'passwd',
-                                   descr=_("Change user's password")),)
-            elif authentication_method == 'certificate':
-                actions += (Action(_("Change certificate"), 'newcert',
-                                   descr=_("Generate new certificate"),
-                                   uid=req.user().uid()),)
-        return actions
     RIGHTS_insert = (Roles.ANYONE,)
     RIGHTS_update = (Roles.ADMIN, Roles.OWNER)
     RIGHTS_delete = (Roles.ADMIN,) #, Roles.OWNER)
@@ -2037,6 +2024,67 @@ class Users(CMSModule):
                 'rights': ('role',),
                 'passwd': ((cfg.login_is_email and 'email' or 'login'),
                            'old_password', 'new_password',)}
+
+    def _validate(self, req, record, layout=None):
+        if record.new():
+            record['lang'] = pd.Value(record['lang'].type(), req.prefered_language())
+        if layout and 'old_password' in layout.order():
+            errors = []
+            current_password_value = record['password'].value()
+            #if not Roles.check(req, (Roles.ADMIN,)): Too dangerous?
+            old_password = req.param('old_password')
+            if not old_password:
+                errors.append(('old_password', _(u"Enter your current password.")))
+            else:
+                error = record.validate('old_password', old_password, verify=old_password)
+                if error or record['old_password'].value() != current_password_value:
+                    errors.append(('old_password', _(u"Invalid password.")))
+            new_password = req.param('new_password')
+            if not new_password:
+                errors.append(('new_password', _(u"Enter the new password.")))
+            else:
+                error = record.validate('password', new_password[0], verify=new_password[1])
+                if error:
+                    errors.append(('new_password', error.message(),))
+                elif record['password'].value() == current_password_value:
+                    errors.append(('new_password',
+                                   _(u"The new password is the same as the old one.")))
+            if errors:
+                return errors
+        return super(Users, self)._validate(req, record, layout=layout)
+        
+    def _base_uri(self, req):
+        if req.path[0] == '_registration':
+            return '_registration'
+        return super(Users, self)._base_uri(req)
+
+    def _insert_subtitle(self, req):
+        if req.path[0] == '_registration':
+            return None
+        return super(Users, self)._insert_subtitle(req)
+        
+    def _default_actions_first(self, req, record):
+        actions = super(Users, self)._default_actions_first(req, record) + \
+                  (Action(_("Access rights"), 'rights', descr=_("Change access rights")),)
+        if record and (record['role'].value() == 'none' or record['regexpire'].value() is not None):
+            actions = (Action(_("Enable"), 'enable', descr=_("Enable this account")),) + \
+                      actions
+        if req.user():
+            authentication_method = req.user().authentication_method()
+            if authentication_method == 'password':
+                actions += (Action(_("Change password"), 'passwd',
+                                   descr=_("Change user's password")),)
+            elif authentication_method == 'certificate':
+                actions += (Action(_("Change certificate"), 'newcert',
+                                   descr=_("Generate new certificate"),
+                                   uid=req.user().uid()),)
+        return actions
+    
+    def _actions(self, req, record):
+        actions = list(super(Users, self)._actions(req, record))
+        if req.path[0] == '_registration':
+            actions = [a for a in actions if a.name() != 'list']
+        return actions
 
     def _send_admin_confirmation_mail(self, req, record):
         self._module('Users').send_admin_approval_mail(req, record)
@@ -2120,52 +2168,6 @@ class Users(CMSModule):
         return result
     RIGHTS_newcert = (Roles.OWNER,)
     
-    def _validate(self, req, record, layout=None):
-        if record.new():
-            record['lang'] = pd.Value(record['lang'].type(), req.prefered_language())
-        if layout and 'old_password' in layout.order():
-            errors = []
-            current_password_value = record['password'].value()
-            #if not Roles.check(req, (Roles.ADMIN,)): Too dangerous?
-            old_password = req.param('old_password')
-            if not old_password:
-                errors.append(('old_password', _(u"Enter your current password.")))
-            else:
-                error = record.validate('old_password', old_password, verify=old_password)
-                if error or record['old_password'].value() != current_password_value:
-                    errors.append(('old_password', _(u"Invalid password.")))
-            new_password = req.param('new_password')
-            if not new_password:
-                errors.append(('new_password', _(u"Enter the new password.")))
-            else:
-                error = record.validate('password', new_password[0], verify=new_password[1])
-                if error:
-                    errors.append(('new_password', error.message(),))
-                elif record['password'].value() == current_password_value:
-                    errors.append(('new_password',
-                                   _(u"The new password is the same as the old one.")))
-            if errors:
-                return errors
-        return super(Users, self)._validate(req, record, layout=layout)
-        
-    def _base_uri(self, req):
-        if req.path[0] == '_registration':
-            return '_registration'
-        return super(Users, self)._base_uri(req)
-
-    def _insert_subtitle(self, req):
-        if req.path[0] == '_registration':
-            return None
-        return super(Users, self)._insert_subtitle(req)
-        
-    def _actions(self, req, record):
-        actions = list(super(Users, self)._actions(req, record))
-        if req.path[0] == '_registration':
-            actions = [a for a in actions if a.name() != 'list']
-        if record and record['role'].value() == 'none':
-            actions.insert(0, Action(_("Enable"), 'enable', descr=_("Enable this account")))
-        return actions
-
     def _registration_success_content(self, req, record):
         content = lcg.p(_("Registration completed successfuly. "
                           "Your account now awaits administrator's approval."))
@@ -2233,25 +2235,33 @@ class Users(CMSModule):
         return msg, err
 
     def _redirect_after_update(self, req, record):
-        if record.original_row()['role'].value() == 'none' and record['role'].value() != 'none':
-            msg = _("The account was enabled.")
+        orig_row = record.original_row()
+        if record['regexpire'].value() is None \
+               and (orig_row['role'].value() == 'none' and record['role'].value() != 'none' \
+                    or orig_row['regexpire'].value() is not None):
+            req.message(_("The account was enabled."))
             text = _("Your account at %(uri)s has been enabled. "
                      "Please log in with username '%(login)s' and your password.",
                      uri=req.server_uri(), login=record['login'].value()) + "\n"
             err = send_mail(record['email'].value(), _("Your account has been enabled."),
                             text, lang=record['lang'].value())
             if err:
-                err = _("Failed sending e-mail notification:") +' '+ err
+                req.message(_("Failed sending e-mail notification:") +' '+ err, type=req.ERROR)
             else:
-                msg += ' '+_("E-mail notification has been sent to:") +' '+ record['email'].value()
-            return self.action_view(req, record, msg=msg, err=err)
+                req.message(_("E-mail notification has been sent to:")+' '+record['email'].value())
+            return self.action_view(req, record)
         else:
             return super(Users, self)._redirect_after_update(req, record)
     
     def action_enable(self, req, record):
-        req.set_param('submit', '1')
-        req.set_param('role', 'user')
-        return self.action_update(req, record, action='rights')
+        role = record['role'].value()
+        if role == 'none':
+            role = 'user'
+        try:
+            record.update(role=role, regexpire=None)
+        except pd.DBException, e:
+            req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
+        return self._redirect_after_update(req, record)
     RIGHTS_enable = (Roles.ADMIN,)
     
     def action_rights(self, req, record):

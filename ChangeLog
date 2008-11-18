@@ -1,3 +1,9 @@
+2008-11-18  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/cms/cms.py:
+	Don't require registration code confirmation when the account is
+	enabled manually.
+
 2008-11-18  Milan Zamazal  <pdm@brailcom.org>
 
 	* translations/wiking-cms.cs.po:
@@ -45,6 +51,11 @@
 
 	* lib/wiking/cms/cms.py:
 	New method Users.role_users.
+
+2008-11-13  Tomas Cerha  <cerha@brailcom.org>
+
+	* resources/scripts/wiking.js: Avoid error when language selection
+	is not present.
 
 2008-11-05  Tomas Cerha  <cerha@brailcom.org>
 
