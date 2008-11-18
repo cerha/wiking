@@ -1,6 +1,12 @@
 -*- mode: Text; fill-column: 80 -*-
 
 Version 0.4.5 (not released yet):
+
+ * Added support for MD5 passwords (new option password_storage in configuration
+   file).
+
+ * Registration code confirmation is not required when the account is enabled
+   manually by administrator.
  
  * User management in WMI now uses predefined filters to display
    active/inactive/unconfirmed users.
@@ -9,6 +15,8 @@ Version 0.4.5 (not released yet):
    well as dynamically based on the server name in the current request URI.
 
  * Panels are now also displayed in WMI in the same form as outside WMI.
+
+ * WMI link was moved to the login panel (if enabled).
   
  * Wiking Application API extended to cover common exporter customizations.
 
