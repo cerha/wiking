@@ -311,10 +311,10 @@ class Configuration(pc):
 
     class _Option_password_storage(pc.Option):
         _DESCR = "Form of storing user passwords in the database"
-        _DOC = _("This option defines in which way user passwords are stored in a database. "
-                 "The allowed values are the strings 'plain' "
-                 "(passwords are stored in the plain text form), "
-                 "and 'md5' (passwords are stored in the form of MD5 hashes).")
+        _DOC = ("This option defines in which way user passwords are stored in a database. "
+                "The allowed values are the strings 'plain' "
+                "(passwords are stored in the plain text form), "
+                "and 'md5' (passwords are stored in the form of MD5 hashes).")
         _DEFAULT = 'plain'
 
     class _Option_registration_expiry_days(pc.NumericOption, pc.HiddenOption):
