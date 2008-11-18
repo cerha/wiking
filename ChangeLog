@@ -1,5 +1,8 @@
 2008-11-18  Tomas Cerha  <cerha@brailcom.org>
 
+	* NEWS:
+	Updated.
+
 	* lib/wiking/configuration.py: Don't define the documentation of
 	`password_storage' as translatable.
 
