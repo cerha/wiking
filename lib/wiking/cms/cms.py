@@ -2203,7 +2203,8 @@ class Users(CMSModule):
         if cfg.login_is_email:
             text, attachments = self._make_registration_email(req, record)
             user_email = record['email'].value()
-            err = send_mail(user_email, _("Your registration at %s" % (req.server_hostname(),)), text,
+            subject = _("Your registration at %s", req.server_hostname())
+            err = send_mail(user_email, subject, text,
                             lang=record['lang'].value(), attachments=attachments)
             if err:
                 self._data.delete(record['uid'])
