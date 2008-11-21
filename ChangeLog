@@ -1,5 +1,10 @@
 2008-11-21  Milan Zamazal  <pdm@brailcom.org>
 
+	* lib/wiking/cms/cms.py:
+	Users.role_users removed, Users.send_mail created.
+
+2008-11-21  Milan Zamazal  <pdm@brailcom.org>
+
 	* doc/src/devel/devel-faq.en.txt:
 	New FAQ entry (non-breakable spaces).
 
