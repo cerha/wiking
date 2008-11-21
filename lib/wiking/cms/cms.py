@@ -2184,10 +2184,10 @@ class Users(CMSModule):
             action = 'confirm'
         uri = req.server_uri() + make_uri(base_uri, action=action, uid=record['uid'].value(),
                                           regcode=record['regcode'].value())
-        text = _("You have been successfully registered at %(server_hostname)s.\n"
-                 "To complete your registration visit the URL\n"
-                 "%(uri)s\n"
-                 "and follow the instructions there.\n",
+        text = _("The first step of your registration at %(server_hostname)s.\n"
+                 "was successfully completed.\n"
+                 "For the next step visit the following URL and follow the instructions there:\n"
+                 "%(uri)s\n",
                  server_hostname=server_hostname,
                  uri=uri)
         attachments = ()
