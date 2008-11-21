@@ -1,3 +1,8 @@
+2008-11-21  Milan Zamazal  <pdm@brailcom.org>
+
+	* doc/src/devel/devel-faq.en.txt:
+	New FAQ entry (non-breakable spaces).
+
 2008-11-18  Tomas Cerha  <cerha@brailcom.org>
 
 	* NEWS:
