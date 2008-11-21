@@ -1,6 +1,18 @@
 2008-11-21  Milan Zamazal  <pdm@brailcom.org>
 
 	* lib/wiking/cms/cms.py:
+	* translations/wiking-cms.cs.po:
+	* translations/wiking-cms.de.po:
+	* translations/wiking-cms.es.po:
+	* translations/wiking-cms.fr.po:
+	* translations/wiking-cms.hu.po:
+	* translations/wiking-cms.pl.po:
+	* translations/wiking-cms.sk.po:
+	New action Users.action_regreminder.
+
+2008-11-21  Milan Zamazal  <pdm@brailcom.org>
+
+	* lib/wiking/cms/cms.py:
 	Users.role_users removed, Users.send_mail created.
 
 2008-11-21  Milan Zamazal  <pdm@brailcom.org>
