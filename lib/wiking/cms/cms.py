@@ -2084,6 +2084,9 @@ class Users(CMSModule):
         actions = list(super(Users, self)._actions(req, record))
         if req.path[0] == '_registration':
             actions = [a for a in actions if a.name() != 'list']
+        if record is not None and record['regexpire'].value() is not None:
+            actions.append(Action(_("Resend registration code"), 'regreminder',
+                                  descr=_("Re-send registration mail")))
         return actions
 
     def _send_admin_confirmation_mail(self, req, record):
@@ -2273,6 +2276,10 @@ class Users(CMSModule):
     def action_passwd(self, req, record):
         return self.action_update(req, record, action='passwd')
     RIGHTS_passwd = (Roles.ADMIN, Roles.OWNER)
+
+    def action_regreminder(self, req, record):
+        return self._redirect_after_insert(req, record)
+    RIGHTS_regreminder = (Roles.ANYONE,)
 
     def user(self, req, login):
         row = self._data.get_row(login=login)
