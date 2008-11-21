@@ -65,6 +65,10 @@ Derive a new data type from the original value data type.  Then use an instance
 of a class derived from `lcg.Localizable' as a return result of the type's
 `_export' method.
 
+=== How to prevent line breaking inside view field values? ===
+
+Use non-breakable spaces instead of plain spaces.
+
 
 == Working with Data ==
 
