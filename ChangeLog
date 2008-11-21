@@ -1,3 +1,8 @@
+2008-11-21  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/util.py:
+	Make login dialog fields larger.
+
 2008-11-21  Milan Zamazal  <pdm@brailcom.org>
 
 	* lib/wiking/cms/cms.py:

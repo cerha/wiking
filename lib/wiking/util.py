@@ -695,10 +695,10 @@ class LoginDialog(lcg.Content):
                   if k not in ('command', 'login', 'password', '__log_in')]
         content = (
             g.label(_("Login name")+':', id='login') + g.br(),
-            g.field(name='login', value=login, id='login', size=14),
+            g.field(name='login', value=login, id='login', size=18),
             g.br(), 
             g.label(_("Password")+':', id='password') + g.br(),
-            g.field(name='password', value=password, id='password', size=14,
+            g.field(name='password', value=password, id='password', size=18,
                     password=True),
             g.br(),
             g.hidden(name='__log_in', value='1'),
