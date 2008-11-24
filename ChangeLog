@@ -1,3 +1,8 @@
+2008-11-24  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/request.py:
+	(Request.serve_file): Added support for file locking.
+
 2008-11-21  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/util.py:

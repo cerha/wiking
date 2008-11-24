@@ -229,14 +229,15 @@ class Request(pytis.web.Request):
         self.write(data)
         return apache.OK
 
-    def serve_file(self, filename, content_type):
+    def serve_file(self, filename, content_type, lock=False):
         """Send the contents of given file to the remote host.
 
         Arguments:
           filename -- full path to the file
           content_type -- Content-Type header as a string
+          lock -- iff True, shared lock will be aquired on the file while it is served.
 
-        'NotFound' exception will be raised if the file does not exist.
+        'NotFound' exception is raised if the file does not exist.
 
         Important note: The file size is read in advance to determine the Content-Lenght header.
         If the file is changed before it gets sent, the result may be incorrect.
@@ -248,6 +249,9 @@ class Request(pytis.web.Request):
             raise NotFound
         self.send_http_header(content_type, size)
         f = file(filename)
+        if lock:
+            import fcntl
+            fcntl.lockf(f, fcntl.LOCK_SH)
         try:
             while True:
                 # Read the file in 0.5MB chunks.
@@ -256,6 +260,8 @@ class Request(pytis.web.Request):
                     break
                 self.write(data)
         finally:
+            if lock:
+                fcntl.lockf(f, fcntl.LOCK_UN)
             f.close()
         return apache.OK        
 
