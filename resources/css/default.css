@@ -308,7 +308,7 @@ div.panel form { margin: 0.3em 0; }
 #media-player-container { 
     margin-top: 1.2em;
 }
-#mediaplayer { 
+#shared-audio-player { 
     position: fixed;
     bottom: 0;
     right: 0;
