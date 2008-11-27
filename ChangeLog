@@ -1,3 +1,8 @@
+2008-11-27  Tomas Cerha  <cerha@brailcom.org>
+
+	* resources/css/default.css:
+	Media player styles updated.
+
 2008-11-24  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/request.py:
