@@ -220,7 +220,7 @@ class Request(pytis.web.Request):
         return apache.OK
     
     def result(self, data, content_type="text/html"):
-        if content_type in ("text/html", "application/xml", "text/css") \
+        if content_type in ("text/html", "application/xml", "text/css", "text/plain") \
                and isinstance(data, unicode):
             content_type += "; charset=%s" % self._encoding
             #data = self._UNIX_NEWLINE.sub("\r\n", data)
