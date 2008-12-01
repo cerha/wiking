@@ -1,3 +1,8 @@
+2008-12-01  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/db.py:
+	Allow access to Wiking modules from computer functions.
+
 2008-11-28  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/request.py:
