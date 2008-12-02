@@ -91,15 +91,30 @@ class Request(pytis.web.Request):
         return self._params.get(name, default)
         
     def cookie(self, name, default=None):
+        """Get the value of given cookie as unicode or return DEFAULT if cookie was not set."""
         if self._cookies.has_key(name):
-            return self._cookies[name].value
+            try:
+                return unicode(self._cookies[name].value, self._encoding)
+            except UnicodeDecodeError:
+                return default
         else:
             return default
         
     def set_cookie(self, name, value, expires=None, secure=False):
+        """Set given value as a cookie with given name.
+
+        Arguments:
+          name -- cookie name as a string.
+          value -- unicode value to store or None to remove the cookie.
+          expires -- cookie expiration time in seconds or None for unlimited cookie.
+          secure -- if True, the cookie will only be returned by the browser on secure connections.
+
+        """
         if value is None:
             del self._cookies[name]
         else:
+            if isinstance(value, unicode):
+                value = value.encode(self._encoding)
             self._cookies[name] = value
         c = Cookie.SimpleCookie()
         c[name] = value or ''
