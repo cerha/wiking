@@ -1,6 +1,11 @@
 2008-12-02  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/request.py: 
+	Convert prefered language cookie to str.
+
+2008-12-02  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/request.py: 
 	Encode/decode unicode cookies properly.  Docstrings added.
 
 2008-12-01  Tomas Cerha  <cerha@brailcom.org>
