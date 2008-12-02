@@ -384,7 +384,7 @@ class WikingRequest(Request):
             # Expires in 2 years (in seconds)
             self.set_cookie(self._LANG_COOKIE, lang, expires=730*DAY)
         else:
-            self._prefered_language = self.cookie(self._LANG_COOKIE)
+            self._prefered_language = str(self.cookie(self._LANG_COOKIE))
         if params.has_key('hide_panels'):
             self.set_cookie(self._PANELS_COOKIE, 'no', expires=730*DAY)
             self._show_panels = False
