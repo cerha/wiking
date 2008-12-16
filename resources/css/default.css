@@ -302,16 +302,16 @@ div.panel form { margin: 0.3em 0; }
     font-size: 0.75em;
 }
 
-#media-player { 
-    margin: 0.5em 0;
-}
-#media-player-container { 
-    margin-top: 1.2em;
-}
 #shared-audio-player { 
     position: fixed;
     bottom: 0;
     right: 0;
+}
+div#shared-audio-player { 
+    color: $color.error-fg;
+    background: $color.error-bg;
+    border: solid 1px $color.error-border;
+    padding: .1em;
 }
 
 #footer { font-size: 0.9em; text-align: center; margin: 0pt; }
@@ -474,6 +474,7 @@ form.list-form-controls .query {
     text-align: left;
 }
 form.list-form-controls .query.with-filter {
+    position: relative;
     float: left;
 }
 form.list-form-controls span.offset, form.list-form-controls span.buttons,
@@ -481,6 +482,10 @@ form.list-form-controls span.limit {
     white-space: nowrap;
 }
 form.list-form-controls span.offset, form.list-form-controls span.buttons {
+    position: relative;
+    float: left;
+}
+form.list-form-controls span.buttons input {
     float: left;
 }
 form.list-form-controls div.index-search-controls {
@@ -490,9 +495,7 @@ form.list-form-controls div.index-search-controls {
 form.list-form-controls div.index-search-controls div {
     padding-bottom: 0.2em;
 }
-form.list-form-controls span.buttons input.prev {
-    margin-left: 1em;
-}
+form.list-form-controls span.buttons input.prev,
 form.list-form-controls span.buttons input.search {
     margin-left: 1em;
 }
