@@ -43,7 +43,6 @@ var _first_menu_item = null;
 var _main_heading = null;
 
 function wiking_init() {
-   // Not all browsers invoke onkeypress for arrow keys, so keys must be handled in onkeydown.
    _main_heading = document.getElementById('main-heading');
    // Initialize the menus -- assign ARIA roles to HTML tags and bind keyboard event handling to
    // support hierarchical keyboard traversal.
@@ -66,6 +65,7 @@ function wiking_init() {
 
 function wiking_onkeydown(event) {
    // Handle global Wiking keyboard shortcuts.
+   // Not all browsers invoke onkeypress for arrow keys, so keys must be handled in onkeydown.
    switch (WIKING_KEYMAP[event_key(event)]) {
    case CMD_MENU: // Set focus to the first menu item.
       if (_current_main_menu_item != null)
