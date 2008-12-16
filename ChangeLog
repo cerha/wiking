@@ -1,3 +1,11 @@
+2008-12-16  Tomas Cerha  <cerha@brailcom.org>
+
+	* resources/css/default.css:
+	MSIE 7 fixes.  Media player style updated for new LCG export.
+
+	* lib/wiking/request.py:
+	Ignore country in HTTP Accept-Language header.
+
 2008-12-02  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/request.py: 
