@@ -426,7 +426,8 @@ class WikingRequest(Request):
         for item in self.header('Accept-Language', '').lower().split(','):
             if item:
                 x = item.split(';')
-                lang = x[0]
+                # For now we ignore the country part and recognize just the core languages.
+                lang = x[0].split('-')[0]
                 if lang == prefered:
                     prefered = None
                     q = 2.0
@@ -439,7 +440,8 @@ class WikingRequest(Request):
                         continue
                 else:
                     continue
-                accepted.append((q, lang))
+                if lang not in [l for _q, l in accepted]:
+                    accepted.append((q, lang))
         accepted.sort()
         accepted.reverse()
         languages = [lang for q, lang in accepted]
