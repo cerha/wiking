@@ -267,6 +267,7 @@ div.panel form { margin: 0.3em 0; }
 }
 #content { 
     position: relative; /* fix MSIE background painting */
+    width: 100%;
 }
 #clearing {
     height: 0;
@@ -464,41 +465,31 @@ form.browse-form table tfoot td {
 form.list-form-controls {
     margin: 0.8em 0;
     padding: .2em;
-    text-align: right;
 }
 form.list-form-controls .results {
-    text-align: left;
     font-weight: bold;
 }
-form.list-form-controls .query {
-    text-align: left;
+form.list-form-controls .filter,
+form.list-form-controls .paging-controls.one-page {
+    text-align: right;
 }
-form.list-form-controls .query.with-filter {
-    position: relative;
-    float: left;
-}
-form.list-form-controls span.offset, form.list-form-controls span.buttons,
-form.list-form-controls span.limit { 
+form.list-form-controls span.offset,
+form.list-form-controls span.buttons,
+form.list-form-controls span.limit {
     white-space: nowrap;
 }
-form.list-form-controls span.offset, form.list-form-controls span.buttons {
-    position: relative;
-    float: left;
-}
-form.list-form-controls span.buttons input {
-    float: left;
-}
 form.list-form-controls div.index-search-controls {
-    text-align: left;
     padding-bottom: 0.4em;
 }
 form.list-form-controls div.index-search-controls div {
     padding-bottom: 0.2em;
 }
+form.list-form-controls span.limit,
 form.list-form-controls span.buttons input.prev,
 form.list-form-controls span.buttons input.search {
     margin-left: 1em;
 }
+
 form.browse-form #found-record {
     background: $color.highlight-bg;
 }
