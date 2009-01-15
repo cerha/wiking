@@ -879,7 +879,7 @@ class RssModule(object):
             condition = None
         rows = self._rows(req, condition=condition, lang=lang, limit=self._RSS_LIMIT)
         from xml.sax.saxutils import escape
-        base_uri = req.server_uri()
+        base_uri = req.server_uri(current=True)
         record = self._record(req, None)
         items = []
         import mx.DateTime as dt

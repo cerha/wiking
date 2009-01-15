@@ -1,3 +1,12 @@
+2009-01-15  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/db.py: 
+	Allow customization of displayed related content in derived
+	classes.
+	
+	* lib/wiking/db.py: 
+	Use current server uri in RSS.
+
 2008-12-16  Tomas Cerha  <cerha@brailcom.org>
 
 	* resources/css/default.css:
