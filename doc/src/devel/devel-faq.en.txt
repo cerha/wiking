@@ -55,6 +55,11 @@ class attributes `WMI_SECTION' and `WMI_ORDER'.
 
 Redefine `_link_provider' method of the module.
 
+=== What is `cid' argument in `_link_provider'? ===
+
+Column id to generate the link for.  In case a link for the whole record should
+be generated, `cid' is `None'.
+
 === How do I display field values using a special formatting? ===
 
 Create new virtual field with a custom data type.
@@ -68,6 +73,19 @@ of a class derived from `lcg.Localizable' as a return result of the type's
 === How to prevent line breaking inside view field values? ===
 
 Use non-breakable spaces instead of plain spaces.
+
+=== How to make a nested form inside a related form? ===
+
+In the nested form module: Make sure the form field specification referencing
+to the parent form sets `codebook' argument to the parent form module.
+
+In the parent form module: Define `bindings'.  If the nested forms items are to
+be clickable, `bindings' must contain `id' argument defining the url part
+string referring to the nested form items.
+
+=== How to add a form summary text at the beginning or end of a nested form? ===
+
+Redefine `related' method in the nested form module.
 
 
 == Working with Data ==
@@ -107,3 +125,8 @@ so any feedback on this topic is welcome.
 
 Database objects for Wiking and all installed modules/extensions must be
 initialized.
+
+=== How to make visible resources/ from another tree? ===
+
+Either link it into the Wiking tree or set the `resource_path' configuration
+variable.
