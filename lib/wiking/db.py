@@ -1,4 +1,4 @@
-# Copyright (C) 2005-2008 Brailcom, o.p.s.
+# Copyright (C) 2005-2009 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -656,15 +656,23 @@ class PytisModule(Module, ActionHandler):
         # May be overriden in derived classes.
         return req.redirect(make_uri(uri, **kwargs))
 
+    def _related_content(self, req, record):
+        # Return content related to given record to be displayed within the view action under the
+        # record details.  Returns a list of lcg.Content instances.  Binding forms are displayed by
+        # default (may be overriden in derived classes).
+        result = []
+        for binding in self._bindings(req, record):
+            module = self._module(binding.name())
+            content = module.related(req, binding, record,
+                                     uri=self._current_record_uri(req, record))
+            result.append(lcg.Section(title=binding.title(), content=content))
+        return result
+    
     def action_view(self, req, record, err=None, msg=None):
         content = [self._form(pw.ShowForm, req, record=record,
                               layout=self._layout(req, 'view', record)),
-                   self._action_menu(req, record)]
-        for binding in self._bindings(req, record):
-            module = self._module(binding.name())
-            related = module.related(req, binding, record,
-                                     uri=self._current_record_uri(req, record))
-            content.append(lcg.Section(title=binding.title(), content=related))
+                   self._action_menu(req, record)] + \
+                   self._related_content(req, record)
         return self._document(req, content, record, err=err, msg=msg)
 
     def action_subpath(self, req, record):
