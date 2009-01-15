@@ -1,3 +1,8 @@
+2009-01-15  Milan Zamazal  <pdm@brailcom.org>
+
+	* doc/src/devel/devel-faq.en.txt:
+	Some devel FAQ added.
+
 2009-01-15  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/db.py: 
