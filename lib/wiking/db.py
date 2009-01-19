@@ -632,30 +632,36 @@ class PytisModule(Module, ActionHandler):
     # ===== Action handlers =====
     
     def action_list(self, req, err=None, msg=None):
-        fw = self._binding_forward(req)
-        if fw:
-            binding_id = fw.arg('binding').id()
-            if binding_id and fw.uri().endswith(binding_id):
-                # Don't display the listing alone, but display the original form with bindings,
-                # when this list is accessed through a related form.
-                # The messages are passed to support redirection after update/insert/delete, but it
-                # might be better to make a redirect directly in the _redirect_after_* methods.
-                t = translator(req.prefered_language()).translate
-                return self._binding_parent_redirect(req, fw.uri()[:-(len(binding_id)+1)],
-                                                     search=req.param('search'),
-                                                     form_name=req.param('form_name'),
-                                                     err=t(err), msg=t(msg))
-            #condition = self._binding_condition(binding, fw.arg('record'))
-            #columns = [c for c in self._view.columns() if c != fw.arg('binding').binding_column()]
+        # Don't display the listing alone, but display the original form with bindings,
+        # when this list is accessed through a related form.
+        # The messages are passed to support redirection after update/insert/delete, but it
+        # might be better to make a redirect directly in the _redirect_after_* methods.
+        result = self._binding_parent_redirect(req, err=err, msg=msg,
+                                               search=req.param('search'),
+                                               form_name=req.param('form_name'))
+        if result is not None:
+            return result
+        # If this is not a binding forwarded request, display the listing.
         lang = req.prefered_language()
         content = (self._form(pw.ListView, req, condition=self._condition(req, lang=lang)),
                    self._action_menu(req))
         return self._document(req, content, lang=lang, err=err, msg=msg)
 
-    def _binding_parent_redirect(self, req, uri, **kwargs):
-        # May be overriden in derived classes.
-        return req.redirect(make_uri(uri, **kwargs))
-
+    def _binding_parent_redirect(self, req, err=None, msg=None, **kwargs):
+        fw = self._binding_forward(req)
+        if fw:
+            binding_id = fw.arg('binding').id()
+            if binding_id and fw.uri().endswith(binding_id):
+                t = translator(req.prefered_language()).translate
+                for text, type in req.messages():
+                    if type == req.ERROR:
+                        err = err and err +'\n'+ text or text
+                    else:
+                        msg = msg and msg +'\n'+ text or text
+                uri = fw.uri()[:-(len(binding_id)+1)]
+                return req.redirect(make_uri(uri, err=t(err), msg=t(msg), **kwargs))
+        return None
+        
     def _related_content(self, req, record):
         # Return content related to given record to be displayed within the view action under the
         # record details.  Returns a list of lcg.Content instances.  Binding forms are displayed by

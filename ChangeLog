@@ -1,3 +1,9 @@
+2009-01-19  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/db.py: 
+	* lib/wiking/cms/cms.py: 
+	Allow easier binding parent redirection.
+
 2009-01-15  Milan Zamazal  <pdm@brailcom.org>
 
 	* doc/src/devel/devel-faq.en.txt:

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2006, 2007, 2008 Brailcom, o.p.s.
+# Copyright (C) 2006-2009 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -1517,13 +1517,13 @@ class Attachments(CMSModule):
             actions += (Action(_("Back"), 'list', context=None, descr=_("Display the page")),)
         return actions
 
-    def _binding_parent_redirect(self, req, uri, **kwargs):
+    def _binding_parent_redirect(self, req, **kwargs):
         if not req.wmi and (req.param('action') != 'list' or req.param('module') == 'Attachments'):
-            # We normally want to redirect to the 'attachments' action in all cases (outside WMI),
-            # but we want the default page action (view) when the _("Back") button defined above is
-            # used.
+            # Redirect to the 'attachments' action when "Back to list" is pressed within attachment
+            # record view page outside WMI, but use the default page action (view) when the
+            # _("Back") button (defined above) is pressed in the 'attachments' listing.
             kwargs['action'] = 'attachments'
-        return super(Attachments, self)._binding_parent_redirect(req, uri, **kwargs)
+        return super(Attachments, self)._binding_parent_redirect(req, **kwargs)
 
     def _save_files(self, record):
         if not os.path.exists(cfg.storage) \
