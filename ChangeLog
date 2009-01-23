@@ -1,5 +1,8 @@
 2009-01-23  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/cms/cms.py:
+	Bugfix.
+
 	* bin/import-texts.py:
 	Expect different filename format (for consistency).  Suppress
 	pytis logging and improve the output.

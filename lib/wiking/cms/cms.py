@@ -2212,6 +2212,7 @@ class Users(CMSModule):
             if err:
                 self._data.delete(record['uid'])
                 err = _("Failed sending e-mail notification:") +' '+ err + '\n' + _("Registration cancelled.")
+                msg = None
             else:
                 msg = _("E-mail was sent to you with instructions how to complete the registration process.")
         else:
