@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2008 Brailcom, o.p.s.
+# Copyright (C) 2008, 2009 Brailcom, o.p.s.
 #
 # COPYRIGHT NOTICE
 #
@@ -24,7 +24,7 @@
 ##   DATABASE -- name of the database to connect to
 ##   DIRECTORY -- directory containing text files
 ## DIRECTORY is typically `sql/texts/' subdirectory of a Wiking extension and
-## it must contain files named NAMESPACE.LABEL@LANGUAGECODE.  For each such
+## it must contain files named `NAMESPACE.LABEL.LANGUAGECODE.txt'.  For each such
 ## file the contents of the file, that must be a structured text, is imported
 ## into the database.  NAMESPACE, LABEL and LANGUAGECODE attributes of the
 ## stored text are defined by the file name.
@@ -35,45 +35,48 @@ import os
 import re
 import sys
 
-import pytis.data
+import pytis.data, config
+config.log_exclude = [pytis.util.ACTION, pytis.util.EVENT, pytis.util.DEBUG]
 
 def usage():
     print 'usage: %s DATABASE DIRECTORY' % (sys.argv[0],)
     sys.exit(1)
 
+def data_object(table, columns, connection):
+    bindings = [pytis.data.DBColumnBinding(column, table, column)
+                for column in columns]
+    factory = pytis.data.DataFactory(pytis.data.DBDataDefault, bindings, bindings[0])
+    return factory.create(dbconnection_spec=connection)
+    
 def import_texts(database, directory):
     connection = pytis.data.DBConnection(database=database)
-    # `texts' specification
-    C = pytis.data.DBColumnBinding
-    columns = [pytis.data.DBColumnBinding(column, 'texts', column) for column in 'text_id', 'label', 'lang', 'content',]
-    factory = pytis.data.DataFactory(pytis.data.DBDataDefault, columns, columns[0])
-    data = factory.create(dbconnection_spec=connection)
-    data_columns = data.columns()
-    # `text_labels' specification
-    label_columns = [pytis.data.DBColumnBinding('label', 'text_labels', 'label')]
-    label_factory = pytis.data.DataFactory(pytis.data.DBDataDefault, label_columns, label_columns[0])
-    label_data = label_factory.create(dbconnection_spec=connection)
+    data = data_object('texts', ('text_id', 'label', 'lang', 'content'), connection)
+    label_data = data_object('text_labels', ('label',), connection)
     label_column_type = label_data.columns()[0].type()
-    # Data insertion
-    file_regexp = re.compile('^(.+\..+)@(.+)$')
-    for file in os.listdir(directory):
-        match = file_regexp.match(file)
-        if match:
-            print "Importing file %s ..." % (file,),
-            label, lang = match.groups()
+    for filename in os.listdir(directory):
+        parts = filename.split('.')
+        print "  - %s ..." % filename,
+        if filename.endswith('.txt') and len(parts) == 4:
+            label = '.'.join(parts[:2])
+            lang = parts[2]
             label_key = label_column_type.validate(label)[0]
             if not label_data.row(label_key):
-                print "[adding new text label `%s'] ..." % (label,),
-                label_data.insert(pytis.data.Row([('label', label_key,)]))
-            content = codecs.open(os.path.join(directory, file), 'r', 'utf-8').read()
-            row_data = [(c.id(), c.type().validate(v)[0],) for c, v in zip(data_columns, [file, label, lang, content])]
+                print "new label `%s' ..." % label,
+                label_data.insert(pytis.data.Row([('label', label_key)]))
+            else:
+                print "updating label `%s' ..." % label,
+            content = codecs.open(os.path.join(directory, filename), 'r', 'utf-8').read()
+            text_id = label+'@'+lang
+            row_data = [(c.id(), c.type().validate(v)[0],)
+                        for c, v in zip(data.columns(), [text_id, label, lang, content])]
             row = pytis.data.Row(row_data)
-            if data.update(row[0], row)[1]:
+            error, success = data.update(row[0], row)
+            if success:
                 print "done"
             else:
-                print "FAILED"
+                print "FAILED:", error
         else:
-            print "File name doesn't match required pattern, ignored: %s" % (file,)
+            print "ignored (file name doesn't match the required pattern)"
     
 def run():
     if len(sys.argv) != 3:

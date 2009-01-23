@@ -1,3 +1,9 @@
+2009-01-23  Tomas Cerha  <cerha@brailcom.org>
+
+	* bin/import-texts.py:
+	Expect different filename format (for consistency).  Suppress
+	pytis logging and improve the output.
+
 2009-01-19  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/db.py: 
