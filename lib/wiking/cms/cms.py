@@ -1064,7 +1064,7 @@ class Pages(CMSModule):
     RIGHTS_update = (Roles.AUTHOR, Roles.OWNER)
 
     def _handle(self, req, action, **kwargs):
-        # TODO: This is quite a hack.  It is used to find out the parent page in the embedded
+        # TODO: This is a hack to find out the parent page in the embedded
         # module, but a better solution would be desirable.
         req.page = kwargs.get('record')
         return super(Pages, self)._handle(req, action, **kwargs)
@@ -1518,7 +1518,8 @@ class Attachments(CMSModule):
         return actions
 
     def _binding_parent_redirect(self, req, **kwargs):
-        if not req.wmi and (req.param('action') != 'list' or req.param('module') == 'Attachments'):
+        if not req.wmi and (req.param('action') != 'list'
+                            or req.param('form_name') == 'Attachments'):
             # Redirect to the 'attachments' action when "Back to list" is pressed within attachment
             # record view page outside WMI, but use the default page action (view) when the
             # _("Back") button (defined above) is pressed in the 'attachments' listing.
