@@ -5,7 +5,6 @@ datadir = /var/lib
 SHARE = $(prefix)/share
 LIB = $(prefix)/lib/python%d.%d/site-packages
 CFGFILE = $(sysconfdir)/wiking/config.py
-APACHECFG = $(sysconfdir)/apache2/conf.d/wiking
 STORAGE = $(datadir)/wiking/
 APACHE_USER = www-data
 
@@ -14,7 +13,7 @@ lib := $(shell python -c 'import sys; print "$(LIB)".find("%d") != -1 and \
 
 .PHONY: translations doc
 
-all: check-lib check-user check-deps compile 
+all: check-lib check-user compile translations
 
 check-lib:
 	@echo -e "import sys\nif '$(lib)' not in sys.path: sys.exit(1)" \
@@ -23,26 +22,6 @@ check-lib:
 check-user:
 	@if [ ~$(APACHE_USER) == '~$(APACHE_USER)' ]; then \
 	   echo 'Error: $(APACHE_USER) is not a valid user!' && exit 1; fi
-
-MIN_LCG_VERSION = 0.3.5
-MIN_PYTIS_VERSION = 0.1.0
-
-lcg_version = $(shell python -c 'import lcg; print lcg.__version__')
-lcg_version_cmp = $(shell python -c 'import wiking; print \
-	wiking.cmp_versions("$(lcg_version)", "$(MIN_LCG_VERSION)")')
-pytis_version = $(shell python -c 'import pytis; print pytis.__version__')
-pytis_version_cmp = $(shell python -c 'import wiking; print \
-	wiking.cmp_versions("$(pytis_version)","$(MIN_PYTIS_VERSION)")')
-
-check-deps:
-	@python -c 'import lcg' || exit 1
-	@echo -n "LCG version $(lcg_version) found... "
-	@if [ $(lcg_version_cmp) == -1 ]; then \
-	   echo "Error: $(MIN_LCG_VERSION) required!" && exit 1; else echo "ok"; fi
-	@python -c 'import pytis' || exit 1
-	@echo -n "Pytis version $(pytis_version) found... "
-	@if [ $(pytis_version_cmp) == -1 ]; then \
-	   echo "Error $(MIN_PYTIS_VERSION) required!"&& exit 1; else echo "ok"; fi
 
 compile:
 	@echo "Compiling Python libraries from source..."
@@ -55,14 +34,13 @@ translations:
 doc:
 	lcgmake doc/src doc/html
 
-install: $(SHARE)/wiking copy-files $(APACHECFG) $(CFGFILE) $(STORAGE)
+install: $(SHARE)/wiking copy-files $(CFGFILE) $(STORAGE)
 
-cvs-install: link-lib link-share $(APACHECFG) $(CFGFILE) $(STORAGE)
+cvs-install: link-lib link-share $(CFGFILE) $(STORAGE)
 
 uninstall:
 	rm -rf $(SHARE)/wiking
 	rm -rf $(lib)/wiking
-	rm -f $(APACHECFG)
 
 purge: uninstall
 	rm -f $(CFGFILE)
@@ -104,13 +82,6 @@ $(config_dir):
 
 $(SHARE)/wiking:
 	mkdir $(SHARE)/wiking
-
-$(APACHECFG):
-	@echo "Writing $(APACHECFG)"
-	@echo "<Directory $(SHARE)/wiking>" > $(APACHECFG)
-	@echo "    AddHandler python-program .py" >> $(APACHECFG)
-	@echo "    PythonHandler wiking.handler" >> $(APACHECFG)
-	@echo "</Directory>" >> $(APACHECFG)
 
 $(STORAGE):
 	mkdir $(STORAGE)
