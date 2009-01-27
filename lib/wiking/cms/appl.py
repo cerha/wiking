@@ -187,13 +187,14 @@ class Application(CookieAuthentication, wiking.Application):
         return self._powered_by_wiking()
     
     def bottom_bar_right_content(self, req):
-        if not cfg.appl.allow_login_panel:
-            content = LoginCtrl(inline=True)
-            if self.authorize(req, WikingManagementInterface):
-                content = (content, ' ', self.WMILink())
-            return content
-        else:
+        if cfg.appl.allow_login_panel:
             return None
+        elif req.user() is None:
+            return self.WMILink()
+        elif self.authorize(req, WikingManagementInterface):
+            return (LoginCtrl(inline=True), ' ', self.WMILink())
+        else:
+            return LoginCtrl(inline=True)
 
     def _maybe_install(self, req, errstr):
         """Check a DB error string and try to set it up if it is the problem."""
