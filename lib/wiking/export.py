@@ -195,9 +195,11 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             channel = panel.channel()
             if channel:
                 icon = context.node().resource('feed-icon-small.png')
-                img = g.img(context.uri(icon), align='right')
-                link = g.link(img, channel.uri(), title=channel.title(), type='application/rss+xml')
-                title = link +' '+ title
+                if icon:
+                    img = g.img(context.uri(icon), align='right')
+                    link = g.link(img, channel.uri(), title=channel.title(),
+                                  type='application/rss+xml')
+                    title = link +' '+ title
             result.append(g.div((g.h(title, 3),
                                  g.div(content.export(context), cls='panel-content')),
                                 id='panel-'+panel.id(), cls='panel'))
