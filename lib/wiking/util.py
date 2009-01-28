@@ -794,9 +794,9 @@ class Data(pd.DBDataDefault):
     def make_row(self, **kwargs):
         return pd.Row(self._row_data(**kwargs))
 
-
     def dbfunction(self, name, *args):
-        """Call the database function 'name' and return the returned value."""
+        """DEPRECATED.  Use PytisModule._call_db_function() instead."""
+        # Used in some applications (solas).
         try:
             function = self.__class__._dbfunction[name]
         except KeyError:

@@ -57,12 +57,17 @@ class PytisModule(Module, ActionHandler):
     _OWNER_COLUMN = None
     _SUPPLY_OWNER = True
     _SEQUENCE_FIELDS = ()
+    _DB_FUNCTIONS = {}
+    """Specification of available DB functions and their arguments.
+
+    Dictionary keyed by function name, where values are sequences of pairs (NAME, TYPE) describing
+    function arguments and their pytis data types.
+    
+    """
 
     _ALLOW_TABLE_LAYOUT_IN_FORMS = True
     _SUBMIT_BUTTONS = {}
     _LAYOUT = {}
-
-    _spec_cache = {}
 
     class Record(pp.PresentedRow):
         """An abstraction of one record within the module's data object.
@@ -120,6 +125,7 @@ class PytisModule(Module, ActionHandler):
         self._view = spec.view_spec()
         self._key = key = self._data.key()[0].id()
         self._sorting = self._view.sorting()
+        self._db_function = {}
         if self._sorting is None:
             self._sorting = ((key, pytis.data.ASCENDENT),)
         self._exception_matchers = [(re.compile(regex), msg)
@@ -563,6 +569,26 @@ class PytisModule(Module, ActionHandler):
     def _bindings(self, req, record):
         return [b for b in self._view.bindings()
                 if not isinstance(b, Binding) or b.enabled() is None or b.enabled()(record)]
+
+    def _call_db_function(self, name, *args):
+        """Call database function NAME with given arguments and return the result.
+
+        Arguments are Python values wich will be automatically wrapped into 'pytis.data.Value'
+        instances.
+        
+        """
+        try:
+            function, arg_spec = self._db_function[name]
+        except KeyError:
+            function = pytis.data.DBFunctionDefault(name, self._dbconnection)
+            arg_spec = self._DB_FUNCTIONS[name]
+            self._db_function[name] = function, arg_spec
+        assert len(args) == len(arg_spec), \
+               "Wrong number of arguments for '%s': %r" % (name, args)
+        arg_data = [(spec[0], pd.Value(spec[1], value)) for spec, value in zip(arg_spec, args)]
+        result = function.call(pytis.data.Row(arg_data))
+        #debug("**", name, result[0][0].value())
+        return result[0][0].value()
 
     # ===== Methods which modify the database =====
     
