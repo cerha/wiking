@@ -301,12 +301,14 @@ class MenuItem(object):
 class Panel(object):
     """Panel representation to be passed to 'Document.build()'."""
     
-    def __init__(self, id, title, content, accessible_title=None):
+    def __init__(self, id, title, content, accessible_title=None, channel=None):
         assert isinstance(content, lcg.Content)
+        assert channel is None or isinstance(channel, Channel)
         self._id = id
         self._title = title
         self._content = content
         self._accessible_title = accessible_title or title
+        self._channel = channel
         
     def id(self):
         return self._id
@@ -320,6 +322,24 @@ class Panel(object):
     def content(self):
         return self._content
 
+    def channel(self):
+        return self._channel
+
+
+class Channel(object):
+    """RSS channel specification."""
+    def __init__(self, title, uri):
+        assert isinstance(title, (str, unicode))
+        assert isinstance(uri, (str, unicode))
+        self._title = title
+        self._uri = uri
+        
+    def title(self):
+        return self._title
+    
+    def uri(self):
+        return self._uri
+    
 
 class LoginPanel(Panel):
     """Displays login/logout controls and other relevant information."""

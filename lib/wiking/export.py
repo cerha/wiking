@@ -1,4 +1,4 @@
-# Copyright (C) 2006, 2007, 2008 Brailcom, o.p.s.
+# Copyright (C) 2006-2009 Brailcom, o.p.s.
 # Author: Tomas Cerha <cerha@brailcom.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -95,12 +95,10 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
     def _head(self, context):
         context.node().resource('wiking.js')
         result = super(Exporter, self)._head(context)
-        #rss = context.rss()
-        #if rss:
-        #    result = concat(result, '<link rel="alternate" '
-        #                    'type="application/rss+xml" title="%s" href="%s"/>'
-        #                    % (context.node().title(), rss), separator='\n  ')
-        return result
+        channels = [('<link rel="alternate" type="application/rss+xml" '
+                     'title="'+ p.channel().title() +'" href="'+ p.channel().uri() +'"/>')
+                    for p in context.node().panels() if p.channel() is not None]
+        return lcg.concat(result, channels, separator="\n  ")
     
     def _site_title(self, context):
         if context.wmi:
@@ -193,8 +191,14 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             content = panel.content()
             # Add a fake container to force the heading level start at 4.
             container = lcg.SectionContainer(lcg.Section('', lcg.Section('', content)))
-            result.append(g.div((g.h(g.link(panel.title(), None,
-                                            name='panel-'+panel.id()+'-anchor', tabindex=0), 3),
+            title = g.link(panel.title(), None, name='panel-'+panel.id()+'-anchor', tabindex=0)
+            channel = panel.channel()
+            if channel:
+                icon = context.node().resource('feed-icon-small.png')
+                img = g.img(context.uri(icon), align='right')
+                link = g.link(img, channel.uri(), title=channel.title(), type='application/rss+xml')
+                title = link +' '+ title
+            result.append(g.div((g.h(title, 3),
                                  g.div(content.export(context), cls='panel-content')),
                                 id='panel-'+panel.id(), cls='panel'))
         result.append(g.br())

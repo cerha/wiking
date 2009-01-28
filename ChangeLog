@@ -1,5 +1,9 @@
 2009-01-28  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/export.py: 
+	* lib/wiking/util.py: 
+	Added support for RSS channels defined by panels.
+
 	* lib/wiking/db.py: 
 	Added basic support for database functions.
 
