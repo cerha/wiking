@@ -1,5 +1,6 @@
 2009-01-28  Tomas Cerha  <cerha@brailcom.org>
 
+	* resources/images/feed-icon-small.png: 
 	* lib/wiking/export.py: 
 	* lib/wiking/util.py: 
 	Added support for RSS channels defined by panels.
