@@ -3,6 +3,9 @@
 	* lib/wiking/db.py: 
 	Added basic support for database functions.
 
+	* lib/wiking/db.py: 
+	Allow link arguments in `link()' method.
+
 2009-01-27  Tomas Cerha  <cerha@brailcom.org>
 
 	* Makefile:

@@ -354,7 +354,7 @@ class PytisModule(Module, ActionHandler):
                 module = self._module(link.name())
             except AttributeError:
                 return None
-            uri = module.link(req, **{link.column(): record[value_column].value()})
+            uri = module.link(req, {link.column(): record[value_column].value()}, **kwargs)
             if link.label():
                 return pw.Link(uri, title=link.label())
             else:
@@ -620,16 +620,14 @@ class PytisModule(Module, ActionHandler):
         row = self._data.row((value,))
         return row and self._record(req, row)
         
-    def link(self, req, *args, **kwargs):
+    def link(self, req, key, *args, **kwargs):
         """Return a uri for given key value."""
-        if args and not kwargs:
-            row = self._data.row(args)
-        elif kwargs and not args:
-            row = self._data.get_row(**kwargs)
+        if isinstance(key, dict):
+            row = self._data.get_row(**key)
         else:
-            raise Exception("Invalid link args:", args, kwargs)
+            row = self._data.row(key)
         if row:
-            return self._record_uri(req, self._record(req, row))
+            return self._record_uri(req, self._record(req, row), *args, **kwargs)
         else:
             return None
         
@@ -895,11 +893,12 @@ class RssModule(object):
     def _rss_info(self, req, lang):
         if self._RSS_TITLE_COLUMN is None:
             return None
-        return lcg.p(_("An RSS channel is available for this section:"), ' ',
-                     lcg.link(req.uri() +'.'+ lang +'.rss',
-                              lcg.join((lcg.Title('/'.join(req.path)), 'RSS')),
-                              type='application/rss+xml'), " (",
-                     lcg.link('_doc/rss', _("more about RSS")), ")")
+        else:
+            title = lcg.join((lcg.Title('/'.join(req.path)), 'RSS'))
+            uri = req.uri() +'.'+ lang +'.rss'
+            return lcg.p(_("An RSS channel is available for this section:"), ' ',
+                         lcg.link(uri, title, type='application/rss+xml'),
+                         " (", lcg.link('_doc/rss', _("more about RSS")), ")")
         
     def action_rss(self, req, relation=None):
         if not self._RSS_TITLE_COLUMN:
@@ -916,26 +915,17 @@ class RssModule(object):
         items = []
         import mx.DateTime as dt
         tr = translator(str(lang))
+        author_column = self._RSS_AUTHOR_COLUMN
         for row in rows:
             record.set_row(row)
             title = escape(tr.translate(record[self._RSS_TITLE_COLUMN].export()))
-            uri = self._record_uri(req, record)
-            if uri:
-                uri = base_uri + uri
-                if lang:
-                    setlang = (uri.find('?') == -1 and '?' or ';') + 'setlang=' + lang
-                    pos = uri.find('#')
-                    if pos == -1:
-                        uri += setlang
-                    else:
-                        uri = uri[:pos] + setlang + uri[pos:]
+            uri = self._record_uri(req, record, setlang=lang)
             descr = self._descr_provider(req, record, tr)
             if self._RSS_DATE_COLUMN:
                 v = record[self._RSS_DATE_COLUMN].value()
                 date = dt.ARPA.str(v.localtime())
             else:
                 date = None
-            author_column = self._RSS_AUTHOR_COLUMN
             if author_column:
                 if isinstance(author_column, tuple):
                     author = record.cb_value(*author_column).export()
@@ -943,7 +933,7 @@ class RssModule(object):
                     author = record[author_column].export()
             else:
                 author = cfg.webmaster_address
-            items.append((title, uri, descr, date, author))
+            items.append((title, uri and base_uri + uri, descr, date, author))
         title = cfg.site_title +' - '+ tr.translate(self._real_title(req))
         result = rss(title, base_uri, items, cfg.site_subtitle,
                      lang=lang, webmaster=cfg.webmaster_address)
