@@ -1,6 +1,10 @@
 2009-01-29  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/export.py: 
+	* lib/wiking/cms/cms.py: 
 	* lib/wiking/db.py: 
+	Show RSS info in CMS panels.
+
 	* lib/wiking/request.py:
 	Pass RSS channel language through prefered languages to prevent
 	406 errors.

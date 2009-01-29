@@ -196,8 +196,9 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             if channel:
                 icon = context.node().resource('feed-icon-small.png')
                 if icon:
-                    img = g.img(context.uri(icon), align='right')
-                    link = g.link(img, channel.uri(), title=channel.title(),
+                    channel_title = channel.title() +' ('+ _("RSS channel") +')'
+                    img = g.img(context.uri(icon), align='right', alt=channel_title)
+                    link = g.link(img, channel.uri(), title=channel_title,
                                   type='application/rss+xml')
                     title = link +' '+ title
             result.append(g.div((g.h(title, 3),

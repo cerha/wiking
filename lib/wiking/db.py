@@ -878,28 +878,42 @@ class RssModule(object):
             descr = None
         return descr
 
-    def _real_title(self, req):
-        def find(items):
+    def _rss_channel_title(self, req):
+        def find(items, item_id):
             for item in items:
-                if item.id() == req.path[0]:
+                if item.id() == item_id:
                     return item.title()
                 else:
-                    title = find(item.submenu())
+                    title = find(item.submenu(), item_id)
                     if title:
                         return title
             return None
-        return find(self._application.menu(req)) or self._view.title()
+        return find(self._application.menu(req), req.path[0]) or self._view.title()
 
-    def _rss_info(self, req, lang):
-        if self._RSS_TITLE_COLUMN is None:
-            return None
-        else:
-            title = lcg.join((lcg.Title('/'.join(req.path)), 'RSS'))
-            uri = req.uri() +'.'+ lang +'.rss'
+    def _rss_channel_uri(self, req):
+        # TODO: This note applies to this method anf the above `_rss_channel_title()'.  They are
+        # both limited to situations, where the RSS module is the final handler of the request.
+        # This is the case for determination of the uri in `_rss_info()' and of the title in
+        # `action_rss()'.  It is necessary to be able to determine the URI globally, but it is
+        # currently not possible when a module is mapped more than once in CMS.
+        return req.uri() +'.'+ req.prefered_language() +'.rss'
+
+    def _rss_info(self, req, lang=None):
+        # Argument lang is unused (defined only for backwards compatibility).
+        if self._RSS_TITLE_COLUMN is not None:
             return lcg.p(_("An RSS channel is available for this section:"), ' ',
-                         lcg.link(uri, title, type='application/rss+xml'),
+                         lcg.link(self._rss_channel_uri(req),
+                                  self._rss_channel_title(req)+' RSS',
+                                  type='application/rss+xml'),
                          " (", lcg.link('_doc/rss', _("more about RSS")), ")")
-        
+        return None
+
+    def has_channel(self):
+        # TODO: If the methods `_rss_channel_title()' and `_rss_channel_uri()' can be used
+        # globally, this method can be replaced by a new method returning a `Channel' instance
+        # directly.
+        return self._RSS_TITLE_COLUMN is not None
+
     def action_rss(self, req, relation=None):
         if not self._RSS_TITLE_COLUMN:
             raise NotFound
@@ -934,7 +948,7 @@ class RssModule(object):
             else:
                 author = cfg.webmaster_address
             items.append((title, uri and base_uri + uri, descr, date, author))
-        title = cfg.site_title +' - '+ tr.translate(self._real_title(req))
+        title = cfg.site_title +' - '+ tr.translate(self._rss_channel_title(req))
         result = rss(title, base_uri, items, cfg.site_subtitle,
                      lang=lang, webmaster=cfg.webmaster_address)
         return ('application/xml', result)

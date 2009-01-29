@@ -420,9 +420,8 @@ class EmbeddableCMSModule(CMSModule, Embeddable):
 
     def embed(self, req):
         content = [self.related(req, self.binding(), req.page, req.uri())]
-        lang = req.page['lang'].value()
-        if not req.wmi and lang:
-            rss_info = self._rss_info(req, lang)
+        if not req.wmi:
+            rss_info = self._rss_info(req)
             if rss_info:
                 content.append(rss_info)
         return content
@@ -771,15 +770,20 @@ class Panels(CMSModule, Publishable):
             title = row['ptitle'].value() or row['mtitle'].value() or \
                     _modtitle(row['modname'].value())
             content = ()
+            channel = None
             modname = row['modname'].value()
             if modname:
                 module = self._module(modname)
                 binding = self._embed_binding(modname)
                 content = tuple(module.panelize(req, lang, row['size'].value(),
                                                 relation=binding and (binding, row)))
+                if module.has_channel():
+                    uri = '/'+'.'.join((row['identifier'].value(), req.prefered_language(), 'rss'))
+                    channel = Channel(row['mtitle'].value(), uri)
             if row['content'].value():
                 content += tuple(parser.parse(row['content'].value()))
-            panels.append(Panel(panel_id, title, lcg.SectionContainer(content, toc_depth=0)))
+            content = lcg.SectionContainer(content, toc_depth=0)
+            panels.append(Panel(panel_id, title, content, channel=channel))
         return panels
                 
                 
