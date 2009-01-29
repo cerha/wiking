@@ -1,4 +1,4 @@
-# Copyright (C) 2006, 2007, 2008 Brailcom, o.p.s.
+# Copyright (C) 2006-2009 Brailcom, o.p.s.
 # Author: Tomas Cerha <cerha@brailcom.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -381,15 +381,14 @@ class WikingRequest(Request):
         if params.has_key('setlang'):
             self._prefered_language = lang = str(params['setlang'])
             del params['setlang']
-            # Expires in 2 years (in seconds)
-            self.set_cookie(self._LANG_COOKIE, lang, expires=730*DAY)
+            self.set_cookie(self._LANG_COOKIE, lang)
         else:
             self._prefered_language = str(self.cookie(self._LANG_COOKIE))
         if params.has_key('hide_panels'):
-            self.set_cookie(self._PANELS_COOKIE, 'no', expires=730*DAY)
+            self.set_cookie(self._PANELS_COOKIE, 'no')
             self._show_panels = False
         elif params.has_key('show_panels'):
-            self.set_cookie(self._PANELS_COOKIE, 'yes', expires=730*DAY)
+            self.set_cookie(self._PANELS_COOKIE, 'yes')
             self._show_panels = True
         else:
             self._show_panels = self.cookie(self._PANELS_COOKIE) != 'no'
@@ -413,7 +412,7 @@ class WikingRequest(Request):
             self._params['action'] = 'rss'
             uri = uri[:-4]
             if len(uri) > 3 and uri[-3] == '.' and uri[-2:].isalpha():
-                self._params['lang'] = uri[-2:]
+                self._prefered_language = str(uri[-2:])
                 uri = uri[:-3]
         prefix = self._uri_prefix
         if prefix and uri.startswith(prefix):

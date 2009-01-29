@@ -903,7 +903,7 @@ class RssModule(object):
     def action_rss(self, req, relation=None):
         if not self._RSS_TITLE_COLUMN:
             raise NotFound
-        lang = req.param('lang')
+        lang = req.prefered_language()
         if relation:
             condition = self._binding_condition(*relation)
         else:
