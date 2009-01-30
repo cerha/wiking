@@ -96,7 +96,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         context.node().resource('wiking.js')
         result = super(Exporter, self)._head(context)
         channels = [('<link rel="alternate" type="application/rss+xml" '
-                     'title="'+ p.channel().title() +'" href="'+ p.channel().uri() +'"/>')
+                     'title="'+ p.channel().title() +'" href="'+ p.channel().uri() +'">')
                     for p in context.node().panels() if p.channel() is not None]
         return lcg.concat(result, channels, separator="\n  ")
     

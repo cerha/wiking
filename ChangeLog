@@ -1,3 +1,8 @@
+2009-01-30  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/export.py:
+	HTML validity fix.
+
 2009-01-29  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/export.py: 
