@@ -284,9 +284,6 @@ class Registration(Module, ActionHandler):
                         _("Visit %(uri)s to upload your certificate request.", uri=uri),
                         cert_text,
                         separator='\n') + "\n"
-                elif req_user is None:
-                    # TODO: Raise RequestError?
-                    return Document(title, lcg.p(_("Invalid request.")))
                 err = send_mail(record['email'].value(), title, text, lang=req.prefered_language(),
                                 attachments=attachments)
                 if err:
