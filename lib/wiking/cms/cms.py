@@ -234,10 +234,11 @@ class Registration(Module, ActionHandler):
     def action_remind(self, req):
         certificate_authentication = cfg.certificate_authentication
         req_user = req.user()
-        if req_user is not None:
-            title = req_user.name() + " :: " + _("Certificate renewal")
-        elif certificate_authentication:
-            title = _("Password reminder and certificate change")
+        if certificate_authentication:
+            if req_user is None:
+                title = _("Password reminder and certificate change")
+            else:
+                title = req_user.name() + " :: " + _("Certificate renewal")
         else:
             title = _("Password reminder")
         if req.param('login') or req_user:
