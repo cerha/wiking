@@ -1,6 +1,11 @@
 2009-02-02  Milan Zamazal  <pdm@brailcom.org>
 
 	* lib/wiking/cms/cms.py:
+	Reset password on password reminder when md5 passwords are used.
+
+2009-02-02  Milan Zamazal  <pdm@brailcom.org>
+
+	* lib/wiking/cms/cms.py:
 	Don't fail on password reminder request.
 
 2009-02-02  Milan Zamazal  <pdm@brailcom.org>
