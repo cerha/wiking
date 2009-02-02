@@ -1,3 +1,8 @@
+2009-02-02  Milan Zamazal  <pdm@brailcom.org>
+
+	* lib/wiking/cms/cms.py:
+	Set correct title on password reminders for logged-in users.
+
 2009-01-30  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/export.py:
