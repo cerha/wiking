@@ -98,8 +98,24 @@ an argument.  This class has the method `req()' which may be used to access the
 current request and its method `user()' to get the information about the current
 authenticated user: `record.req().user()'.
 
+=== How can I change a single column database value in form processing? ===
 
-== How do I call a database function ==
+Assuming you need to make a change to a database by setting a value of the
+column `foo' within a Wiking module form processing method where form `record'
+instance is available.  The easiest way to do this is as follows:
+
+------
+  try:
+      record.update(foo=new_foo)
+  except pd.DBException, e:
+      req.message(unicode(e.exception()), type=req.ERROR)
+      ....
+  else:
+      req.message(_("Your password was updated..."), type=req.ERROR)
+------
+
+
+== How do I call a database function? ==
 
 Specify the function in module's `_DB_FUNCTIONS' dictionary and then use the
 module's `_call_db_function()' method to call it.
