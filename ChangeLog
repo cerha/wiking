@@ -1,5 +1,10 @@
 2009-02-02  Milan Zamazal  <pdm@brailcom.org>
 
+	* doc/src/devel/devel-faq.en.txt:
+	New Q&A: How can I change a single column database value in form processing?.
+
+2009-02-02  Milan Zamazal  <pdm@brailcom.org>
+
 	* translations/wiking-cms.cs.po:
 	* translations/wiking-cms.de.po:
 	* translations/wiking-cms.es.po:
