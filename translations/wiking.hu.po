@@ -7,13 +7,38 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-01-29 15:21+0100\n"
+"POT-Creation-Date: 2009-02-02 16:53+0100\n"
 "PO-Revision-Date: 2008-10-14 10:39+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Hungarian <wiking@lists.freebsoft.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#. Translators: This is followed by Wiking link and version number.
+#: ../lib/wiking/application.py:302
+msgid "Powered by"
+msgstr ""
+
+#: ../lib/wiking/application.py:340
+msgid "US Government Section 508 Accessibility Guidelines."
+msgstr ""
+
+#: ../lib/wiking/application.py:346
+msgid "Accessibility Statement"
+msgstr ""
+
+#: ../lib/wiking/application.py:351
+msgid "This site conforms to the following standards:"
+msgstr ""
+
+#: ../lib/wiking/application.py:353
+msgid "This site can be viewed in ANY browser."
+msgstr ""
+
+#: ../lib/wiking/application.py:354
+msgid "Contact:"
+msgstr ""
 
 #: ../lib/wiking/db.py:39
 msgid "This value already exists.  Enter a unique value."
@@ -119,6 +144,60 @@ msgstr ""
 msgid "Make the item invisible to website visitors"
 msgstr ""
 
+#: ../lib/wiking/export.py:42
+msgid "Language:"
+msgstr ""
+
+#: ../lib/wiking/export.py:105
+msgid "Wiking Management Interface"
+msgstr ""
+
+#: ../lib/wiking/export.py:130
+msgid "Content"
+msgstr ""
+
+#: ../lib/wiking/export.py:132 ../lib/wiking/export.py:156
+#: ../lib/wiking/export.py:158 ../lib/wiking/export.py:175
+msgid "Main navigation"
+msgstr ""
+
+#: ../lib/wiking/export.py:134 ../lib/wiking/export.py:171
+msgid "Local navigation"
+msgstr ""
+
+#: ../lib/wiking/export.py:136
+msgid "Language selection"
+msgstr ""
+
+#: ../lib/wiking/export.py:140
+msgid "Jump in page"
+msgstr ""
+
+#: ../lib/wiking/export.py:144
+msgid "You are here:"
+msgstr ""
+
+#: ../lib/wiking/export.py:172
+msgid "In this section:"
+msgstr ""
+
+#: ../lib/wiking/export.py:188
+msgid "Show panels"
+msgstr ""
+
+#: ../lib/wiking/export.py:189
+msgid "Hide panels"
+msgstr ""
+
+#: ../lib/wiking/export.py:199
+msgid "RSS channel"
+msgstr ""
+
+#: ../lib/wiking/export.py:223
+#, python-format
+msgid "Last change: %(date)s, %(user)s"
+msgstr ""
+
 #: ../lib/wiking/handler.py:95 ../lib/wiking/util.py:154
 msgid "The server was unable to complete your request."
 msgstr ""
@@ -131,6 +210,50 @@ msgstr ""
 
 #: ../lib/wiking/handler.py:98 ../lib/wiking/util.py:157
 msgid "The error message was:"
+msgstr ""
+
+#: ../lib/wiking/modules.py:385
+msgid "Enter your login name, please!"
+msgstr ""
+
+#: ../lib/wiking/modules.py:387
+msgid "Enter your password, please!"
+msgstr ""
+
+#: ../lib/wiking/modules.py:391
+msgid "Invalid login!"
+msgstr ""
+
+#: ../lib/wiking/modules.py:453
+msgid "Searching"
+msgstr ""
+
+#: ../lib/wiking/modules.py:454
+msgid "Search results"
+msgstr ""
+
+#: ../lib/wiking/modules.py:455
+msgid "Given search term doesn't contain any searchable term."
+msgstr ""
+
+#: ../lib/wiking/modules.py:459
+msgid "Search words:"
+msgstr ""
+
+#: ../lib/wiking/modules.py:460
+msgid "Search"
+msgstr ""
+
+#: ../lib/wiking/modules.py:516
+msgid "Nothing found."
+msgstr ""
+
+#: ../lib/wiking/modules.py:573
+msgid "The following modules were successfully reloaded:"
+msgstr ""
+
+#: ../lib/wiking/modules.py:575
+msgid "Reload"
 msgstr ""
 
 #: ../lib/wiking/util.py:56
@@ -281,127 +404,4 @@ msgstr ""
 #. on configuration).
 #: ../lib/wiking/util.py:733
 msgid "Forgot your password?"
-msgstr ""
-
-#: ../lib/wiking/export.py:42
-msgid "Language:"
-msgstr ""
-
-#: ../lib/wiking/export.py:105
-msgid "Wiking Management Interface"
-msgstr ""
-
-#: ../lib/wiking/export.py:130
-msgid "Content"
-msgstr ""
-
-#: ../lib/wiking/export.py:132 ../lib/wiking/export.py:156
-#: ../lib/wiking/export.py:158 ../lib/wiking/export.py:175
-msgid "Main navigation"
-msgstr ""
-
-#: ../lib/wiking/export.py:134 ../lib/wiking/export.py:171
-msgid "Local navigation"
-msgstr ""
-
-#: ../lib/wiking/export.py:136
-msgid "Language selection"
-msgstr ""
-
-#: ../lib/wiking/export.py:140
-msgid "Jump in page"
-msgstr ""
-
-#: ../lib/wiking/export.py:144
-msgid "You are here:"
-msgstr ""
-
-#: ../lib/wiking/export.py:172
-msgid "In this section:"
-msgstr ""
-
-#: ../lib/wiking/export.py:188
-msgid "Show panels"
-msgstr ""
-
-#: ../lib/wiking/export.py:189
-msgid "Hide panels"
-msgstr ""
-
-#: ../lib/wiking/export.py:199
-msgid "RSS channel"
-msgstr ""
-
-#: ../lib/wiking/export.py:223
-#, python-format
-msgid "Last change: %(date)s, %(user)s"
-msgstr ""
-
-#: ../lib/wiking/modules.py:385
-msgid "Enter your login name, please!"
-msgstr ""
-
-#: ../lib/wiking/modules.py:387
-msgid "Enter your password, please!"
-msgstr ""
-
-#: ../lib/wiking/modules.py:391
-msgid "Invalid login!"
-msgstr ""
-
-#: ../lib/wiking/modules.py:453
-msgid "Searching"
-msgstr ""
-
-#: ../lib/wiking/modules.py:454
-msgid "Search results"
-msgstr ""
-
-#: ../lib/wiking/modules.py:455
-msgid "Given search term doesn't contain any searchable term."
-msgstr ""
-
-#: ../lib/wiking/modules.py:459
-msgid "Search words:"
-msgstr ""
-
-#: ../lib/wiking/modules.py:460
-msgid "Search"
-msgstr ""
-
-#: ../lib/wiking/modules.py:516
-msgid "Nothing found."
-msgstr ""
-
-#: ../lib/wiking/modules.py:573
-msgid "The following modules were successfully reloaded:"
-msgstr ""
-
-#: ../lib/wiking/modules.py:575
-msgid "Reload"
-msgstr ""
-
-#. Translators: This is followed by Wiking link and version number.
-#: ../lib/wiking/application.py:302
-msgid "Powered by"
-msgstr ""
-
-#: ../lib/wiking/application.py:340
-msgid "US Government Section 508 Accessibility Guidelines."
-msgstr ""
-
-#: ../lib/wiking/application.py:346
-msgid "Accessibility Statement"
-msgstr ""
-
-#: ../lib/wiking/application.py:351
-msgid "This site conforms to the following standards:"
-msgstr ""
-
-#: ../lib/wiking/application.py:353
-msgid "This site can be viewed in ANY browser."
-msgstr ""
-
-#: ../lib/wiking/application.py:354
-msgid "Contact:"
 msgstr ""
