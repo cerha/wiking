@@ -27,7 +27,9 @@ from wiking.cms import *
 
 import cStringIO
 import os
+import random
 import re
+import string
 import subprocess
 import tempfile
 
@@ -206,6 +208,13 @@ class Registration(Module, ActionHandler):
     def _default_action(self, req, **kwargs):
         return 'view'
 
+    def _generate_password(self):
+        random.seed()
+        characters = [random.choice('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01233456789')
+                      for i in range(8)]
+        password = string.join(characters, '')
+        return password
+
     def action_view(self, req):
         if req.user():
             return self._module('Users').action_view(req, req.user().data())
@@ -259,11 +268,25 @@ class Registration(Module, ActionHandler):
                 if req_user is not None:
                     pass
                 elif password:
+                    if cfg.password_storage == 'md5':
+                        password = self._generate_password()
+                        password_value, password_error = \
+                            pytis.data.Password(md5=True).validate(password, verify=password)
+                        assert password_error is None, password_error
+                        try:
+                            record.update(password=password_value.value())
+                        except pd.DBException, e:
+                            req.message(unicode(e.exception()), type=req.ERROR)
+                            content = self.ReminderForm()
+                            return Document(title, content)
+                        intro_text = _("Your credentials were reset to:")
+                    else:
+                        intro_text = _("Your credentials are:")
                     text = concat(
                         text,
-                        _("Your credentials are:"),
+                        intro_text,
                         '   '+_("Login name") +': '+ login,
-                        '   '+_("Password") +': '+ record['password'].value(), '',
+                        '   '+_("Password") +': '+ password, '',
                         _("We strongly recommend you change your password at nearest occassion, "
                           "since it has been exposed to an unsecure channel."),
                         separator='\n')
