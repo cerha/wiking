@@ -111,7 +111,7 @@ instance is available.  The easiest way to do this is as follows:
       req.message(unicode(e.exception()), type=req.ERROR)
       ....
   else:
-      req.message(_("Your password was updated..."), type=req.ERROR)
+      req.message(_("Foo was successfully updated."), type=req.ERROR)
 ------
 
 
