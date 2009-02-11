@@ -132,6 +132,11 @@ cleaner design in certain situations (better separation of the database and
 application logic), but there will definitely be examples of the opposite case
 so any feedback on this topic is welcome.
 
+=== How to define the key column of a module table? ===
+
+Define the `key' attribute of the module specification or put the key column to
+the first position in `fields'.
+
 
 == Troubleshooting ==
 
