@@ -114,12 +114,10 @@ instance is available.  The easiest way to do this is as follows:
       req.message(_("Foo was successfully updated."), type=req.ERROR)
 ------
 
-
-== How do I call a database function? ==
+=== How do I call a database function? ===
 
 Specify the function in module's `_DB_FUNCTIONS' dictionary and then use the
 module's `_call_db_function()' method to call it.
-
 
 === Is it possible to perform a muti-stage database operation atomically? ===
 
