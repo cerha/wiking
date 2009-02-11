@@ -2308,29 +2308,36 @@ class Users(CMSModule):
         return self._redirect_after_insert(req, record)
     RIGHTS_regreminder = (Roles.ANYONE,)
 
+    def _user_arguments(self, req, login, row):
+        record = self._record(req, row)
+        base_uri = self._application.module_uri(self.name())
+        if base_uri:
+            uri = base_uri +'/'+ login
+        else:
+            uri = self._application.module_uri('Registration')
+        organization_id_value = record['organization_id']
+        organization_id = organization_id_value.value()
+        if organization_id:
+            organizations = self._module('Organizations')
+            organization_record = organizations.record(req, organization_id_value)
+            organization = organization_record['name'].value()
+        else:
+            organization = None
+        return dict(login=login, name=record['user'].value(), uid=record['uid'].value(),
+                    uri=uri, email=record['email'].value(), data=record,
+                    roles=self.Spec._roles(record),
+                    organization_id=organization_id, organization=organization)
+
+    def _make_user(self, kwargs):
+        return User(**kwargs)
+
     def user(self, req, login):
         row = self._data.get_row(login=login)
-        if row:
-            record = self._record(req, row)
-            base_uri = self._application.module_uri(self.name())
-            if base_uri:
-                uri = base_uri +'/'+ login
-            else:
-                uri = self._application.module_uri('Registration')
-            organization_id_value = record['organization_id']
-            organization_id = organization_id_value.value()
-            if organization_id:
-                organizations = self._module('Organizations')
-                organization_record = organizations.record(req, organization_id_value)
-                organization = organization_record['name'].value()
-            else:
-                organization = None
-            return User(login, name=record['user'].value(), uid=record['uid'].value(),
-                        uri=uri, email=record['email'].value(), data=record,
-                        roles=self.Spec._roles(record),
-                        organization_id=organization_id, organization=organization)
-        else:
+        if row is None:
             return None
+        kwargs = self._user_arguments(req, login, row)
+        user = self._make_user(kwargs)
+        return user
 
     def find_user(self, req, query):
         """Return the user record for given uid, login or email address (for password reminder).
