@@ -1,5 +1,10 @@
 2009-02-11  Milan Zamazal  <pdm@brailcom.org>
 
+	* doc/src/devel/devel-faq.en.txt:
+	New Q&A: How to define the key column of a module table?.
+
+2009-02-11  Milan Zamazal  <pdm@brailcom.org>
+
 	* lib/wiking/cms/cms.py:
 	Allow making customized User info classes.
 
