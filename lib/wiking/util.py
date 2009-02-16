@@ -1,4 +1,4 @@
-# Copyright (C) 2006, 2007, 2008 Brailcom, o.p.s.
+# Copyright (C) 2006, 2007, 2008, 2009 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -831,6 +831,16 @@ class Specification(pp.Specification):
     help = None # Default value needed by CMSModule.descr()
     actions = []
     data_cls = Data
+
+    connection = None
+    """Name of the database connection to use.
+
+    If None, the default database connection defined by 'dbname', 'dbhost' and other configuration
+    options is used.  If not None, the value is a string identifier of connection options defined
+    within 'connections' configuration option.
+
+    """
+   
     def __new__(cls, module, resolver):
         try:
             instance = cls._instance_cache[module]
@@ -848,7 +858,8 @@ class Specification(pp.Specification):
                     if action not in actions:
                         actions.append(action)
         self.actions = tuple(actions)
-        return super(Specification, self).__init__(resolver)
+        super(Specification, self).__init__(resolver)
+        del self._view_spec_kwargs['connection']
 
 
 class Binding(pp.Binding):
@@ -883,13 +894,29 @@ class Binding(pp.Binding):
 class WikingResolver(pytis.util.Resolver):
     """A custom resolver of Wiking modules."""
 
-    def __init__(self, dbconnection, search_modules, maintenance=False, **kwargs):
-        self._dbconnection = dbconnection
-        self._search_modules = search_modules
-        self._maintenance = maintenance
+    def __init__(self, *args, **kwargs):
+        super(WikingResolver, self).__init__(*args, **kwargs)
         self._wiking_module_cache = {}
-        super(WikingResolver, self).__init__(**kwargs)
-        
+        self._db_connection_cache = {}
+
+    def _db_connection(self, module_cls):
+        name = module_cls.Spec.connection
+        try:
+            connection = self._db_connection_cache[name]
+        except KeyError:
+            map = {'dbname': 'database',
+                   'dbhost': 'host',
+                   'dbport': 'port',
+                   'dbuser': 'user',
+                   'dbpass': 'password'}
+            if name is None:
+                options = dict([(map[key], getattr(cfg, key)) for key in map.keys()])
+            else:
+                spec = cfg.connections[name]
+                options = dict([(map[key], value) for key, value in spec.items()])
+            connection = self._db_connection_cache[name] = pd.DBConnection(**options)
+        return connection
+
     def _import_python_module(self, name):
         mod = __import__(name)
         components = name.split('.')
@@ -900,7 +927,7 @@ class WikingResolver(pytis.util.Resolver):
     def available_modules(self):
         """Return a tuple of classes of all available Wiking modules."""
         modules = {}
-        for python_module_name in self._search_modules:
+        for python_module_name in cfg.modules:
             python_module = self._import_python_module(python_module_name)
             for name, mod in python_module.__dict__.items():
                 if not modules.has_key(name) and type(mod) == type(Module) \
@@ -910,13 +937,13 @@ class WikingResolver(pytis.util.Resolver):
     
     def wiking_module_cls(self, name):
         """Return the Wiking module class of given 'name'."""
-        for python_module_name in self._search_modules:
+        for python_module_name in cfg.modules:
             python_module = self._import_python_module(python_module_name)
             try:
                 return getattr(python_module, name)
             except AttributeError:
                 continue
-        raise AttributeError("Wiking module not found!", name, self._search_modules)
+        raise AttributeError("Wiking module not found!", name, cfg.modules)
 
     def wiking_module(self, name, **kwargs):
         """Return the instance of a Wiking module given by 'name'.
@@ -937,9 +964,9 @@ class WikingResolver(pytis.util.Resolver):
             cls = self.wiking_module_cls(name)
             args = (self,)
             if issubclass(cls, PytisModule):
-                if self._maintenance:
+                if cfg.maintenance:
                     raise MaintananceModeError()
-                args += (self._dbconnection,)
+                args += (self._db_connection(cls),)
             module = cls(*args, **kwargs)
             self._wiking_module_cache[key] = module
         return module

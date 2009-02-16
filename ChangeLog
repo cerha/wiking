@@ -1,3 +1,10 @@
+2009-02-16  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/configuration.py: 
+	* lib/wiking/handler.py: 
+	* lib/wiking/util.py: 
+	Added support for multiple database connections.
+
 2009-02-11  Milan Zamazal  <pdm@brailcom.org>
 
 	* doc/src/devel/devel-faq.en.txt:

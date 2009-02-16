@@ -1,4 +1,4 @@
-# Copyright (C) 2006, 2007, 2008 Brailcom, o.p.s.
+# Copyright (C) 2006, 2007, 2008, 2009 Brailcom, o.p.s.
 # Author: Tomas Cerha <cerha@brailcom.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -187,10 +187,10 @@ class ModPythonHandler(object):
             cfg.webmaster_address = webmaster_address
         if cfg.default_sender_address is None:
             cfg.default_sender_address = 'wiking@' + domain
+        if cfg.dbname is None:
+           cfg.dbname = hostname
         if cfg.resolver is None:
-            dbconnection = pd.DBConnection(database=cfg.dbname or hostname, host=cfg.dbhost,
-                                           port=cfg.dbport, user=cfg.dbuser, password=cfg.dbpass)
-            cfg.resolver = WikingResolver(dbconnection, cfg.modules, cfg.maintenance)
+            cfg.resolver = WikingResolver()
         self._application = cfg.resolver.wiking_module('Application')
         self._handler = Handler(hostname)
         self._initialized = True

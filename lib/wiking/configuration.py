@@ -1,4 +1,4 @@
-# Copyright (C) 2006, 2007, 2008 Brailcom, o.p.s.
+# Copyright (C) 2006, 2007, 2008, 2009 Brailcom, o.p.s.
 # Author: Tomas Cerha <cerha@brailcom.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -128,6 +128,21 @@ class Configuration(pc):
         
     class _Option_dbpass(pc.StringOption):
         _DESCR = "Database password"
+
+    class _Option_connections(pc.Option):
+        _DESCR = "Alternative database connections."
+        _DOC = ("Wiking modules normally use the default database connection defined by 'dbname', "
+                "'dbhost', 'dbport', 'dbuser' and 'dbpass', but certain applications may require "
+                "multiple database connections.  If your installation uses modules employing "
+                "alternative connections, you must configure them using this option.  The value is "
+                "a dictionary assigning a connection specification to each connection by name. "
+                "Connection names are defined by applications (each application should mention the "
+                "names of used conections in its documentation).  The connection specification "
+                "(the value assigned to a connection name) is a dictionary with keys 'dbname', "
+                "'dbhost', 'dbport', 'dbuser' and 'dbpass'.  Only 'dbname' is mandatory.  Their "
+                "meaning and default values are the same as for the configuration options of the "
+                "same names specifying the properties of the default connection.")
+        _DEFAULT = {}
         
     class _Option_maintenance(pc.BooleanOption):
         _DESCR = "Maintenance mode flag"
