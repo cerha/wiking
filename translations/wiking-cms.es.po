@@ -56,7 +56,7 @@ msgstr "Gestión de usuarios"
 #: ../lib/wiking/cms/cms.py:97
 #: ../lib/wiking/cms/cms.py:1870
 msgid "Manage registered users and their privileges."
-msgstr "Gestionar usuarios registrados y sus privilegios"
+msgstr "Gestionar usuarios registrados y sus privilegios."
 
 #: ../lib/wiking/cms/cms.py:100
 msgid "Setup"
@@ -88,7 +88,7 @@ msgstr ""
 
 #: ../lib/wiking/cms/cms.py:200
 msgid "Enter your login name or e-mail address"
-msgstr "Introduzca su usuario o correo electrónico."
+msgstr "Introduzca su usuario o correo electrónico"
 
 #: ../lib/wiking/cms/cms.py:202
 msgid "Submit"
@@ -167,7 +167,7 @@ msgstr "La información ha sido enviada a su dirección de correo electrónico."
 
 #: ../lib/wiking/cms/cms.py:298
 msgid "No user account for your query."
-msgstr "Ningún nombre de usuario para su solicitud"
+msgstr "Ningún nombre de usuario para su solicitud."
 
 #: ../lib/wiking/cms/cms.py:596
 msgid "enabled"
@@ -193,7 +193,7 @@ msgstr "Configuración básica"
 
 #: ../lib/wiking/cms/cms.py:611
 msgid "Edit site configuration."
-msgstr "Edita la configuración de sitio web"
+msgstr "Edita la configuración de sitio web."
 
 #: ../lib/wiking/cms/cms.py:618
 msgid "This address is used as public contact address for your site. It is displayed at the bottom of each page, in error messages, RSS feeds and so on.  Please make sure that this address is valid (e-mail sent to it is delivered to a responsible person)."
@@ -400,7 +400,7 @@ msgstr "Graba meta data"
 
 #: ../lib/wiking/cms/cms.py:870
 msgid "These colors are used for additional items printed listings, such as date and author of a message in news, etc."
-msgstr "Estos colores se utilizan para imprimir las listas de registros adicionales, como la fecha y autor de un mensaje de noticias, etc"
+msgstr "Estos colores se utilizan para imprimir las listas de registros adicionales, como la fecha y autor de un mensaje de noticias, etc."
 
 #: ../lib/wiking/cms/cms.py:872
 msgid "Misc."
@@ -428,7 +428,7 @@ msgstr "Tema de colores"
 
 #: ../lib/wiking/cms/cms.py:879
 msgid "Manage available color themes."
-msgstr "Gestionar temas de colores disponibles"
+msgstr "Gestionar temas de colores disponibles."
 
 #: ../lib/wiking/cms/cms.py:883
 #: ../lib/wiking/cms/cms.py:1839
@@ -607,7 +607,7 @@ msgstr "Opciones"
 
 #: ../lib/wiking/cms/cms.py:1047
 msgid "Edit global (language independent) page options and menu position"
-msgstr "Editar (independiente del idioma) las opciones globales de la página y posición del menú "
+msgstr "Editar (independiente del idioma) las opciones globales de la página y posición del menú"
 
 #: ../lib/wiking/cms/cms.py:1048
 msgid "Publish"
@@ -651,7 +651,7 @@ msgstr "No tiene privilegios suficientes para esta acción."
 
 #: ../lib/wiking/cms/cms.py:1106
 msgid "Save the page without publishing and ask the administrator to publish your changes."
-msgstr "Guardar esta página sin publicar y pide el administrador que publique sus cambios"
+msgstr "Guardar esta página sin publicar y pide el administrador que publique sus cambios."
 
 #: ../lib/wiking/cms/cms.py:1116
 msgid "Page content was modified, however the changes remain unpublished. Don't forget to publish the changes when you are done."
@@ -786,7 +786,7 @@ msgstr "Título de imagen. Si es vacío, se va a usar el nombre del archivo."
 
 #: ../lib/wiking/cms/cms.py:1593
 msgid "Optional image description."
-msgstr "Descripción opcional de la imágen"
+msgstr "Descripción opcional de la imágen."
 
 #: ../lib/wiking/cms/cms.py:1594
 msgid "In galery"
@@ -1085,7 +1085,7 @@ msgstr "Contraseña no válida."
 
 #: ../lib/wiking/cms/cms.py:2044
 msgid "Enter the new password."
-msgstr "Introducir contraseña nueva"
+msgstr "Introducir contraseña nueva."
 
 #: ../lib/wiking/cms/cms.py:2051
 msgid "The new password is the same as the old one."
@@ -1353,7 +1353,7 @@ msgstr "Certificados de los usuarios"
 
 #: ../lib/wiking/cms/cms.py:2865
 msgid "Manage user and other kinds of certificates."
-msgstr "Gestionar certificados de los usuarios y otros tipos"
+msgstr "Gestionar certificados de los usuarios y otros tipos."
 
 #: ../lib/wiking/cms/cms.py:2872
 msgid "Subject"
@@ -1445,5 +1445,5 @@ msgstr "Usar el correo electrónico el nombre del usuario"
 
 #: ../lib/wiking/configuration.py:350
 msgid "Iff true, users must use e-mail addresses as their login names."
-msgstr "Si es verdad, los usuarios tienen que usar el correo electrónico como su nombre del usuario"
+msgstr "Si es verdad, los usuarios tienen que usar el correo electrónico como su nombre del usuario."
 
