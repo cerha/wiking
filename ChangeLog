@@ -1,3 +1,9 @@
+2009-02-24  Hynek Hanke  <hanke@brailcom.org>
+
+	* translations/wiking-cms.es.po: Translations updated.
+	* translations/wiking.es.po: Translations updated.	
+	
+
 2009-02-16  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/configuration.py: 
