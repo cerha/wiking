@@ -33,7 +33,7 @@ msgstr "El mensaje de error ha sido:"
 
 #: ../lib/wiking/util.py:56
 msgid "Authentication required"
-msgstr "Autentificación necesaria."
+msgstr "Autentificación necesaria"
 
 #. Translators: Login dialog page title (use a noun).
 #. Translators: Login info label (noun) followed by login name and login controls.
@@ -41,11 +41,11 @@ msgstr "Autentificación necesaria."
 #: ../lib/wiking/util.py:358
 #: ../lib/wiking/util.py:675
 msgid "Login"
-msgstr "Usuario / Iniciar sesión"
+msgstr "Iniciar sesión"
 
 #: ../lib/wiking/util.py:72
 msgid "Not Authorized"
-msgstr "No autorizado."
+msgstr "No autorizado"
 
 #: ../lib/wiking/util.py:75
 msgid "You don't have sufficient privilegs for this action."
@@ -96,7 +96,7 @@ msgstr "Las variantes disponibles son:"
 
 #: ../lib/wiking/util.py:140
 msgid "If you want to accept other languages permanently, setup the language preferences in your browser or contact your system administrator."
-msgstr "Si usted quiere aceptar otros idiomas permanentemente, configure las preferencias de idioma en su buscador o contacte con su administrador de sistema"
+msgstr "Si usted quiere aceptar otros idiomas permanentemente, configure las preferencias de idioma en su buscador o contacte con su administrador de sistema."
 
 #: ../lib/wiking/util.py:151
 msgid "Internal Server Error"
@@ -108,7 +108,7 @@ msgstr "Modo de mantenimiento"
 
 #: ../lib/wiking/util.py:176
 msgid "The system is temporarily down for maintenance."
-msgstr "El sistema está temporalmente fuera de servicio por mantenimiento"
+msgstr "El sistema está temporalmente fuera de servicio por mantenimiento."
 
 #. Translators: Login panel info. '%(date)s' is replaced by a concrete date.
 #: ../lib/wiking/util.py:341
@@ -180,11 +180,11 @@ msgstr "¿Olvidó su contraseña?"
 
 #: ../lib/wiking/db.py:39
 msgid "This value already exists.  Enter a unique value."
-msgstr "Este valor ya existe. Introduzca un valor único"
+msgstr "Este valor ya existe. Introduzca un valor único."
 
 #: ../lib/wiking/db.py:41
 msgid "Empty value.  This field is mandatory."
-msgstr "Valor vacío. Este campo es obligatorio "
+msgstr "Valor vacío. Este campo es obligatorio."
 
 #: ../lib/wiking/db.py:44
 msgid "New record"
@@ -212,7 +212,7 @@ msgstr "Eliminar el registro permanentemente"
 
 #: ../lib/wiking/db.py:50
 msgid "Please, confirm removing the record permanently."
-msgstr "Por favor, confirme eliminar el registro permantemente"
+msgstr "Por favor, confirme eliminar el registro permantemente."
 
 #: ../lib/wiking/db.py:51
 msgid "Back to list"
@@ -264,7 +264,7 @@ msgstr "El registro ha sido publicado."
 
 #: ../lib/wiking/db.py:945
 msgid "The item was unpublished."
-msgstr "El registro no ha sido publicado"
+msgstr "El registro no ha sido publicado."
 
 #: ../lib/wiking/db.py:954
 msgid "Publish"
