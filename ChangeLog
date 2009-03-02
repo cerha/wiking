@@ -1,3 +1,9 @@
+2009-03-02  Milan Zamazal  <pdm@brailcom.org>
+
+	* lib/wiking/configuration.py:
+	* lib/wiking/util.py:
+	New configuration option `dbsslm'.
+
 2009-02-24  Hynek Hanke  <hanke@brailcom.org>
 
 	* translations/wiking-cms.es.po: Translations updated.
