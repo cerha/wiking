@@ -128,11 +128,14 @@ class Configuration(pc):
         
     class _Option_dbpass(pc.StringOption):
         _DESCR = "Database password"
+        
+    class _Option_dbsslm(pc.StringOption):
+        _DESCR = "Database ssl mode"
 
     class _Option_connections(pc.Option):
         _DESCR = "Alternative database connections."
         _DOC = ("Wiking modules normally use the default database connection defined by 'dbname', "
-                "'dbhost', 'dbport', 'dbuser' and 'dbpass', but certain applications may require "
+                "'dbhost', 'dbport', 'dbuser', 'dbpass' and 'dbsslm', but certain applications may require "
                 "multiple database connections.  If your installation uses modules employing "
                 "alternative connections, you must configure them using this option.  The value is "
                 "a dictionary assigning a connection specification to each connection by name. "

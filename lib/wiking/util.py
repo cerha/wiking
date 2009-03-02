@@ -908,7 +908,8 @@ class WikingResolver(pytis.util.Resolver):
                    'dbhost': 'host',
                    'dbport': 'port',
                    'dbuser': 'user',
-                   'dbpass': 'password'}
+                   'dbpass': 'password',
+                   'dbsslm': 'sslmode'}
             if name is None:
                 options = dict([(map[key], getattr(cfg, key)) for key in map.keys()])
             else:
