@@ -107,6 +107,15 @@ class PytisModule(Module, ActionHandler):
             rdata = [(k, v) for k, v in self.row().items() if update or v.value() is not None]
             return pd.Row(rdata)
 
+        def user_roles(self):
+            """Return sequence of the current user roles."""
+            user = self.req().user()
+            if user is None:
+                roles = ()
+            else:
+                roles = user.roles()
+            return roles
+
     @classmethod
     def title(cls):
         return cls.Spec.title
