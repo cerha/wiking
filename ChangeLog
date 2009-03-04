@@ -1,3 +1,8 @@
+2009-03-04  Milan Zamazal  <pdm@brailcom.org>
+
+	* lib/wiking/cms/cms.py:
+	Typo in Users.check_registration_code fixed.
+
 2009-03-04  Tomas Cerha  <cerha@brailcom.org>
 
 	* Makefile:
