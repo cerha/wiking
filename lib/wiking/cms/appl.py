@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2006, 2007, 2008 Brailcom, o.p.s.
+# Copyright (C) 2006, 2007, 2008, 2009 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -71,6 +71,8 @@ class Application(CookieAuthentication, wiking.Application):
             except KeyError:
                 modname = 'Pages'
             else:            
+                # Consume the unresolved path if it was in static mapping or leave it for further
+                # resolution when passing to Pages.
                 del req.unresolved_path[0]
             return req.forward(self._module(modname))
         else:
@@ -95,10 +97,6 @@ class Application(CookieAuthentication, wiking.Application):
             panels = [LoginPanel()]
         else:
             panels = []
-        #if Roles.check(req, (Roles.AUTHOR,)) and hasattr(req, 'page'):
-        #    panel = self._module('Pages').content_management_panel(req, req.page)
-        #    if panel:
-        #        panels.append(panel)
         try:
             return panels + self._module('Panels').panels(req, lang)
         except MaintananceModeError:

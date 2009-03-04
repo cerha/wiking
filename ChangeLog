@@ -1,3 +1,9 @@
+2009-03-04  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/cms/appl.py: 
+	* lib/wiking/cms/cms.py: 
+	Cosmetic improvements.
+
 2009-03-03  Milan Zamazal  <pdm@brailcom.org>
 
 	* lib/wiking/db.py:

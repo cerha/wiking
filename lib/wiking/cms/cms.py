@@ -1103,14 +1103,12 @@ class Pages(CMSModule):
                 del req.unresolved_path[0]
             return row
         identifier = req.unresolved_path[0]
-        variants = self._data.get_rows(identifier=identifier, published=True)
-        if variants:
-            for lang in req.prefered_languages():
-                for row in variants:
-                    if row['lang'].value() == lang:
-                        del req.unresolved_path[0]
-                        return row
-            raise NotAcceptable([str(r['lang'].value()) for r in variants])
+        rows = self._data.get_rows(identifier=identifier, published=True)
+        if rows:
+            variants = [str(row['lang'].value()) for row in rows]
+            lang = req.prefered_language(variants)
+            del req.unresolved_path[0]
+            return rows[variants.index(lang)]
         elif self._data.get_rows(identifier=identifier):
             raise Forbidden()
         else:
@@ -1180,28 +1178,20 @@ class Pages(CMSModule):
 
     # Public methods
     
-    def content_management_panel(self, req, record):
-        # Currently unused!
-        menu = self._action_menu(req, record, title=None, cls=None)
-        if not menu:
-            return None
-        #links = (#(_("List all pages"), '/?action=list'),
-        #         ('/_doc/pages', _("Help"),      _("Show on-line help")),
-        #         ('/_wmi',       _("Enter WMI"), _("Enter the Wiking Management Interface")))
-        #content = lcg.ul(((_("Current page:"), menu),
-        #                  (_(""), lcg.ul([lcg.link(target, label, descr=descr)
-        #                                  for target, label, descr in links]))))
-        #return Panel('content-management-panel', _("Content management"), content)
-
     def menu(self, req):
         children = {None: []}
         translations = {}
-        def mkitem(row):
-            mapping_id, identifier = row['mapping_id'].value(), str(row['identifier'].value())
+        def item(row):
+            mapping_id = row['mapping_id'].value()
+            identifier = str(row['identifier'].value())
             titles, descriptions = translations[mapping_id]
-            if row['modname'].value():
+            title = lcg.SelfTranslatableText(identifier, translations=titles)
+            descr = lcg.SelfTranslatableText('', translations=descriptions)
+            hidden = row['hidden'].value()
+            modname = row['modname'].value()
+            if modname is not None:
                 try:
-                    module = self._module(row['modname'].value())
+                    module = self._module(modname)
                 except AttributeError:
                     # We want the CMS to work even if the module was uninstalled or renamed. 
                     submenu = []
@@ -1209,11 +1199,9 @@ class Pages(CMSModule):
                     submenu = list(module.submenu(req))
             else:
                 submenu = []
-            return MenuItem(identifier,
-                            lcg.SelfTranslatableText(identifier, translations=titles),
-                            descr=lcg.SelfTranslatableText('', translations=descriptions),
-                            hidden=row['hidden'].value(), variants=titles.keys(),
-                            submenu=submenu + [mkitem(r) for r in children.get(mapping_id, ())])
+            submenu += [item(r) for r in children.get(mapping_id, ())]
+            return MenuItem(identifier, title, descr=descr, hidden=hidden,
+                            variants=titles.keys(), submenu=submenu)
         for row in self._data.get_rows(sorting=self._sorting, published=True):
             mapping_id = row['mapping_id'].value()
             if not translations.has_key(mapping_id):
@@ -1227,7 +1215,7 @@ class Pages(CMSModule):
             titles[lang] = row['title_or_identifier'].value()
             if row['description'].value() is not None:
                 descriptions[lang] = row['description'].value()
-        return [mkitem(row) for row in children[None]] + \
+        return [item(row) for row in children[None]] + \
                [MenuItem('_registration', _("Registration"), hidden=True),
                 MenuItem('_doc', _("Wiking Documentation"), hidden=True)]
     
@@ -1248,18 +1236,18 @@ class Pages(CMSModule):
         if req.wmi and not preview:
             return super(Pages, self).action_view(req, record, err=err, msg=msg)
         # Main content
-        if preview:
-            text = record['_content'].value()
-        else:
-            text = record['content'].value()
-        module = record['modname'].value() and self._module(record['modname'].value())
-        if module:
-            content = module.embed(req)
+        modname = record['modname'].value()
+        if modname is not None:
+            content = self._module(modname).embed(req)
             if isinstance(content, int):
                 # The request has already been served by the embedded module. 
                 return content
         else:
             content = []
+        if preview:
+            text = record['_content'].value()
+        else:
+            text = record['content'].value()
         if text:
             if self._SEPARATOR.search(text):
                 pre, post = self._SEPARATOR.split(text, maxsplit=2)
