@@ -2358,7 +2358,7 @@ class Users(CMSModule):
         # avoid it?
         row = self._data.get_row(uid=uid)
         if row is None:
-            record is None
+            record = None
         else:
             record = self._record(req, row)
         if record is None or (not record['regexpire'].value() and record['role'] == 'none'):
