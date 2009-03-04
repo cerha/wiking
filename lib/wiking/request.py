@@ -23,6 +23,12 @@ try:
     import mod_python.util
 except:
     pass
+else:
+    # Modify pytis configuration only in the apache environment.
+    import config
+    config.dblisten = False
+    config.log_exclude = [pytis.util.ACTION, pytis.util.EVENT, pytis.util.DEBUG]
+    del config
     
 import Cookie
 
@@ -547,9 +553,9 @@ class WikingRequest(Request):
         """
         if variants is None:
             variants = self._application.languages()
-        for l in self.prefered_languages():
-            if l in variants:
-                return l
+        for lang in self.prefered_languages():
+            if lang in variants:
+                return lang
         if raise_error:
             raise NotAcceptable(variants)
         else:

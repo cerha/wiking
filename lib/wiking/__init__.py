@@ -24,13 +24,6 @@ reload(sys)
 sys.setdefaultencoding('iso-8859-2')
 
 import pytis, pytis.util
-
-# Initialize pytis configuration
-import config
-config.dblisten = False
-config.log_exclude = [pytis.util.ACTION, pytis.util.EVENT, pytis.util.DEBUG]
-del config
-
 import pytis.data as pd
 import pytis.presentation as pp
 import pytis.web as pw

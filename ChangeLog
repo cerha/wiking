@@ -1,5 +1,9 @@
 2009-03-04  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/__init__.py: 
+	* lib/wiking/request.py: 
+	Modify pytis configuration only in the Apache environment.
+
 	* lib/wiking/cms/appl.py: 
 	* lib/wiking/cms/cms.py: 
 	Cosmetic improvements.
