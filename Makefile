@@ -16,8 +16,8 @@ lib := $(shell python -c 'import sys; print "$(LIB)".find("%d") != -1 and \
 all: check-lib check-user compile translations
 
 check-lib:
-	@echo -e "import sys\nif '$(lib)' not in sys.path: sys.exit(1)" \
-	| python || echo 'WARNING: $(lib) not in Python path!'
+	@python -c "import sys; '$(lib)' not in sys.path and sys.exit(1)" || \
+           echo 'WARNING: $(lib) not in Python path!'
 
 check-user:
 	@if [ ~$(APACHE_USER) == '~$(APACHE_USER)' ]; then \
