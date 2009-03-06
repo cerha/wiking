@@ -1,5 +1,8 @@
 2009-03-06  Tomas Cerha  <cerha@debian.brailcom.xx>
 
+	* TODO: 
+	Updated.
+
 	* lib/wiking/cms/appl.py: 
 	`Roles.check' -> `Request.check_roles()'.
 

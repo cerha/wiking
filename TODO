@@ -8,7 +8,6 @@ Core features:
  * Disable table layout per layout spec, not per module.
  * Delete stray files after deletion triggered in the database (cascade)
  * Serve favicon and robots.txt
- * RSS links in page header and panels
  * Image allignment and link title in the LCG formatting manual
  * Locking
  * Change log and Last-Modified HTTP header support
@@ -18,6 +17,7 @@ Core features:
  * Support multithreaded Apache MPM (currently broken)
 
 Cleaning:
+ * Remove deprecated method Roles.check().
  * Move RssModule and Panelizable from CMSModule to EmbeddableCMSModule
  * Remove `req.page' hack in CMS
  * Handle redirection by raising exception.
@@ -27,7 +27,6 @@ Minor:
  * Show original page in attachment move form.
 
 Extensions:
-
  * Image galeries
  * Blog
  * Articles
