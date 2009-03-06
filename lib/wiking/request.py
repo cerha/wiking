@@ -592,6 +592,29 @@ class WikingRequest(Request):
             #      raise AuthenticationError(_("Session expired. Please log in again."))
             raise AuthenticationError()
         return self._user
+
+    def check_roles(self, *roles):
+        """Return true, iff the current user belongs to at least one of given roles.
+
+        Arguments may be roles or nested sequences of roles, which will be unpacked.  Roles are
+        represented by unique string identifiers as described in documentation of the class
+        'Roles'.
+
+        Authentication will be performed only if needed.  In other words, if 'roles' contain
+        ANYONE, True will be returned without an attempt to authenticate the user.
+        
+        """
+        if cls.ANYONE in roles:
+            return True
+        user = self.user()
+        if user is None:
+            return False
+        for role in roles:
+            if isinstance(role, (list, tuple)) and self.check_roles(*role):
+                return True
+            if role in user.roles():
+                return True
+        return False
     
     def application(self):
         """Return the current `Application' instance."""
@@ -635,7 +658,7 @@ class User(object):
           login -- user's login name as a string
           uid -- user identifier used for ownership determination (see role OWNER)
           name -- visible name as a string (login is used if None)
-          roles -- sequence of user roles as 'Roles' constants
+          roles -- sequence of user roles as unique string identifiers (see 'Roles')
           email -- e-mail address as a string
           data -- application specific data
           passwd_expiration -- password expiration date as a Python 'date' instance or None
@@ -679,7 +702,7 @@ class User(object):
         return self._name
     
     def roles(self):
-        """Return valid user's roles as a tuple of 'Roles' constants."""
+        """Return valid user's roles as a tuple of unique string identifiers (see 'Roles')."""
         return self._roles
     
     def email(self):
@@ -750,31 +773,35 @@ class User(object):
         
     
 class Roles(object):
-    """Static definition of available user roles."""
+    """Predefined static user roles.
+
+    Wiking applications may use the roles defined here, extend this class to define additional
+    static roles or use application specific dynamic roles.  In any case, all valid roles are
+    represented by string identifiers and the application must take care to use unique identifiers
+    for all its roles.
+
+    Static roles are defined as public constants of this class below.
+
+    """
     ANYONE = 'ANYONE'
     """Anyone, even a user who is not logged-in."""
     USER = 'USER'
     """Any logged-in user who is at least enabled."""
-    OWNER = 'OWNER'
-    """The owner of the item being operated."""
     ADMIN = 'ADMIN'
-    """Administrator (usually has unlimited privileges)."""
+    """Administrator (usually with unlimited privileges)."""
+    OWNER = 'OWNER'
+    """The owner of the item being operated.
+    
+    Wiking application is responsible for providing owner checking in its authorization checking
+    routines (it it wants to make use of this role).  Wiking CMS, for example, implements this
+    through the method `PytisModule.check_owner()' for pytis based modules (each record may have
+    its owner).
+
+    """
 
     @classmethod
     def check(cls, req, roles):
-        """Check, whether the logged in user belongs at least to one of given 'roles'.
-
-        Arguments:
-
-          req -- request object used for obtaining the current user (if needed)
-          roles -- sequence of allowed user roles
-
-        Returns True if the user belongs at least to one of given roles and False otherwise.
-
-        Authentication will be performed only if needed.  In other words, if 'roles' contain
-        ANYONE, True will be returned without an attempt to authenticate the user.
-
-        """
+        """DEPRECATED!  Use 'Request.check_roles()' instead."""
         if cls.ANYONE in roles:
             return True
         user = req.user()
