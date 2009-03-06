@@ -1,3 +1,8 @@
+2009-03-06  Tomas Cerha  <cerha@debian.brailcom.xx>
+
+	* lib/wiking/cms/cms.py:
+	Don't alias `FieldSpec' -> `Field' here.  It is already in pytis.
+
 2009-03-04  Milan Zamazal  <pdm@brailcom.org>
 
 	* lib/wiking/cms/cms.py:

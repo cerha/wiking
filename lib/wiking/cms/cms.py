@@ -37,8 +37,7 @@ import mx.DateTime
 from mx.DateTime import today, TimeDelta
 
 import pytis.data
-from pytis.presentation import computer, Computer, CbComputer, Fields, HGroup, CodebookSpec, \
-     FieldSpec as Field
+from pytis.presentation import computer, Computer, CbComputer, Fields, HGroup, CodebookSpec, Field
 from lcg import log as debug
 
 CHOICE = pp.SelectionType.CHOICE
