@@ -593,7 +593,7 @@ class WikingRequest(Request):
             raise AuthenticationError()
         return self._user
 
-    def check_roles(self, *roles):
+    def check_roles(self, *args):
         """Return true, iff the current user belongs to at least one of given roles.
 
         Arguments may be roles or nested sequences of roles, which will be unpacked.  Roles are
@@ -604,15 +604,20 @@ class WikingRequest(Request):
         ANYONE, True will be returned without an attempt to authenticate the user.
         
         """
+        roles = []
+        for arg in args:
+            if isinstance(arg, (list, tuple)):
+                roles.extend(arg)
+            else:
+                roles.append(arg)
         if Roles.ANYONE in roles:
             return True
         user = self.user()
         if user is None:
             return False
+        user_roles = user.roles()
         for role in roles:
-            if isinstance(role, (list, tuple)) and self.check_roles(*role):
-                return True
-            if role in user.roles():
+            if role in user_roles:
                 return True
         return False
     
