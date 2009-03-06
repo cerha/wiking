@@ -1,7 +1,15 @@
 2009-03-06  Tomas Cerha  <cerha@debian.brailcom.xx>
 
+	* lib/wiking/cms/appl.py: 
+	`Roles.check' -> `Request.check_roles()'.
+
+	* lib/wiking/request.py:
+	New method `Request.check_roles()'.  Role documentation updated to
+	include dynamic roles.
+
 	* lib/wiking/cms/cms.py:
 	Don't alias `FieldSpec' -> `Field' here.  It is already in pytis.
+	(Module): 
 
 2009-03-04  Milan Zamazal  <pdm@brailcom.org>
 

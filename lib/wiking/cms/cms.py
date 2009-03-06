@@ -784,7 +784,7 @@ class Panels(CMSModule, Publishable):
         panels = []
         parser = lcg.Parser()
         for row in self._data.get_rows(lang=lang, published=True, sorting=self._sorting):
-            if row['private'].value() is True and not Roles.check(req, (Roles.USER,)):
+            if row['private'].value() is True and not req.check_roles(Roles.USER):
                 continue
             panel_id = row['identifier'].value() or str(row['panel_id'].value())
             title = row['ptitle'].value() or row['mtitle'].value() or \
@@ -1123,7 +1123,7 @@ class Pages(CMSModule):
     def _validate(self, req, record, layout=None):
         result = super(Pages, self)._validate(req, record, layout=layout)
         if result is None and req.has_param('commit'):
-            if not (Roles.check(req, self.RIGHTS_commit) or self.check_owner(req.user(), record)):
+            if not (req.check_roles(self.RIGHTS_commit) or self.check_owner(req.user(), record)):
                 return [(None, _("You don't have sufficient privilegs for this action.") +' '+ \
                          _("Save the page without publishing and ask the administrator to publish "
                            "your changes."))]
@@ -2044,7 +2044,7 @@ class Users(CMSModule):
         if layout and 'old_password' in layout.order():
             errors = []
             current_password_value = record['password'].value()
-            #if not Roles.check(req, (Roles.ADMIN,)): Too dangerous?
+            #if not req.check_roles(Roles.ADMIN): Too dangerous?
             old_password = req.param('old_password')
             if not old_password:
                 errors.append(('old_password', _(u"Enter your current password.")))

@@ -157,7 +157,7 @@ class Application(CookieAuthentication, wiking.Application):
         if module.name() == 'Pages' and record and record['private'].value():
             roles = tuple([r == Roles.ANYONE and Roles.USER or r for r in roles])
         #debug("***:", module.name(), action, record.__class__, roles, hasattr(req, 'page'))
-        if Roles.check(req, roles):
+        if req.check_roles(roles):
             return True
         elif Roles.OWNER in roles and module.name() == 'Attachments' and hasattr(req, 'page') \
                  and req.user():
