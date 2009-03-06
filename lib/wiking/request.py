@@ -604,7 +604,7 @@ class WikingRequest(Request):
         ANYONE, True will be returned without an attempt to authenticate the user.
         
         """
-        if cls.ANYONE in roles:
+        if Roles.ANYONE in roles:
             return True
         user = self.user()
         if user is None:
