@@ -1,4 +1,4 @@
-# Copyright (C) 2005, 2006, 2007, 2008 Brailcom, o.p.s.
+# Copyright (C) 2005, 2006, 2007, 2008, 2009 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -442,7 +442,7 @@ class Session(Module):
         return None
         
     def check(self, req, user, session_key):
-	return False
+        return False
 
     def close(self, req, user, session_key):
         pass

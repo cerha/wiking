@@ -1,7 +1,10 @@
 2009-03-10  Tomas Cerha  <cerha@debian.brailcom.xx>
 
-	* lib/wiking/request.py (Request.set_cookie): Don't fail to unset
-	cookie even if it was not set.
+	* lib/wiking/modules.py: 
+	Indentation fixed.
+
+	* lib/wiking/request.py:
+	Don't fail to unset cookie even if it was not set.
 
 2009-03-06  Tomas Cerha  <cerha@debian.brailcom.xx>
 
