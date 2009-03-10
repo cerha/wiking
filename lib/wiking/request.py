@@ -117,7 +117,8 @@ class Request(pytis.web.Request):
 
         """
         if value is None:
-            del self._cookies[name]
+            if self._cookies.has_key(name):
+                del self._cookies[name]
         else:
             if isinstance(value, unicode):
                 value = value.encode(self._encoding)
