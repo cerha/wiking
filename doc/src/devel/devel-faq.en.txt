@@ -60,6 +60,16 @@ Redefine `_link_provider' method of the module.
 Column id to generate the link for.  In case a link for the whole record should
 be generated, `cid' is `None'.
 
+=== How to add an action button that invokes an action of another module? ===
+
+If there is no need to transfer form data from one module (let's say
+PreviousModule) to another (let's say NextModule), the easiest way is to define
+some special action in PreviousModule and use HTTP redirection.  For example:
+
+     def action_something_special(self, req):
+         uri = self._module('UpperModule).submodule_uri(req, 'NextModule')
+         return req.redirect(wiking.make_uri(uri, action='desiredaction'))
+
 === How do I display field values using a special formatting? ===
 
 Create new virtual field with a custom data type.
