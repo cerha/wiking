@@ -1,3 +1,8 @@
+2009-03-25  Milan Zamazal  <pdm@brailcom.org>
+
+	* doc/src/devel/devel-faq.en.txt:
+	New FAQ entry: How to add an action button that invokes an action of another module.
+
 2009-03-10  Tomas Cerha  <cerha@debian.brailcom.xx>
 
 	* lib/wiking/modules.py: 
