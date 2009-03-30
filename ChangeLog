@@ -1,3 +1,9 @@
+2009-03-30  Tomas Cerha  <cerha@debian.brailcom.xx>
+
+	* lib/wiking/modules.py: 
+	* lib/wiking/cms/cms.py: 
+	Pass the request object to session `init()'.
+
 2009-03-25  Milan Zamazal  <pdm@brailcom.org>
 
 	* doc/src/devel/devel-faq.en.txt:

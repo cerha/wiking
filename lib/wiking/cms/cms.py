@@ -563,7 +563,7 @@ class Session(PytisModule, wiking.Session):
     class Spec(Specification):
         fields = [Field(_id) for _id in ('session_id', 'login', 'key', 'expire')]
 
-    def init(self, user):
+    def init(self, req, user):
         # Delete all expired records first...
         self._data.delete_many(pd.AND(pd.EQ('login', pd.Value(pd.String(), user.login())),
                                       pd.LT('expire', pd.Value(pd.DateTime(),

@@ -388,11 +388,12 @@ class CookieAuthentication(object):
             user = self._auth_user(req, login)
             if not user or not self._auth_check_password(user, password):
                 self._auth_hook(req, login, user, initial=True, success=False)
+                session.failure(req, user, login)
                 raise AuthenticationError(_("Invalid login!"))
             assert isinstance(user, User)
             # Login succesfull
             self._auth_hook(req, login, user, initial=True, success=True)
-            session_key = session.init(user)
+            session_key = session.init(req, user)
             req.set_cookie(self._LOGIN_COOKIE, login, expires=730*day, secure=secure)
             req.set_cookie(self._SESSION_COOKIE, session_key, secure=secure)
         else:
@@ -438,7 +439,10 @@ class Session(Module):
     def _expired(self, time):
         return time <= mx.DateTime.now().gmtime()
     
-    def init(self, user):
+    def init(self, req, user):
+        return None
+        
+    def failure(self, req, user, login):
         return None
         
     def check(self, req, user, session_key):
