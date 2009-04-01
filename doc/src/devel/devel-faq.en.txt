@@ -53,9 +53,13 @@ class attributes `WMI_SECTION' and `WMI_ORDER'.
 
 === How do I change primary link destinations in list forms? ===
 
-Redefine `_link_provider' method of the module.
+Redefine `\_link_provider' method of the module.
 
-=== What is `cid' argument in `_link_provider'? ===
+=== How can I present field content as a link? ===
+
+You can use `\_link_provider' as well.
+
+=== What is `cid' argument in `\_link_provider'? ===
 
 Column id to generate the link for.  In case a link for the whole record should
 be generated, `cid' is `None'.
