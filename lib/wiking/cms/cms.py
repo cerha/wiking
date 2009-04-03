@@ -1145,9 +1145,6 @@ class Pages(CMSModule):
             return _("New page was successfully created, but was not published yet. "
                      "Publish it when you are done.")
         
-    def _mapped_uri(self):
-        return '/'
-        
     def _link_provider(self, req, uri, record, cid, **kwargs):
         if cid == 'parent':
             return None
@@ -1217,16 +1214,19 @@ class Pages(CMSModule):
         return [item(row) for row in children[None]] + \
                [MenuItem('_registration', _("Registration"), hidden=True),
                 MenuItem('_doc', _("Wiking Documentation"), hidden=True)]
-    
+
     def module_uri(self, modname):
-        row = self._data.get_row(modname=modname) #, published=True)
-        if row:
-            uri = '/'+ row['identifier'].value()
-            binding = self._embed_binding(row['modname'].value())
-            if binding:
-                uri += '/'+ binding.id()
+        if modname == self.name():
+            uri = '/'
         else:
-            uri = None
+            row = self._data.get_row(modname=modname) #, published=True)
+            if row:
+                uri = '/'+ row['identifier'].value()
+                binding = self._embed_binding(row['modname'].value())
+                if binding:
+                    uri += '/'+ binding.id()
+            else:
+                uri = None
         return uri
 
     # Action handlers.

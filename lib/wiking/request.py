@@ -376,6 +376,7 @@ class WikingRequest(Request):
         self._forwards = []
         self._messages = []
         self._prefered_languages = self._init_prefered_languages()
+        self._module_uri = {}
         self.unresolved_path = list(self.path)
 
     def _init_options(self):
@@ -625,6 +626,21 @@ class WikingRequest(Request):
     def application(self):
         """Return the current `Application' instance."""
         return self._application
+
+    def module_uri(self, modname):
+        """Return the base URI of given Wiking module (relative to server root)."""
+        # Since the uris may be used many times, they are cached at least for the duration of one
+        # request.  We cannot cache them over multiple requests, sice there is no way to invalidate
+        # them if mapping changes (at least in the multiprocess server invironment).  This method
+        # can be implemented by using a global cache if this limitation is overcome in another
+        # environment.
+        try:
+            uri = self._module_uri[modname]
+        except KeyError:
+            uri = self._module_uri[modname] = self._application.module_uri(modname)
+        if uri is not None:
+            uri = self.uri_prefix() + uri
+        return uri
         
     def message(self, message, type=None):
         """Add a message to the stack.

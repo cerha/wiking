@@ -65,32 +65,9 @@ class RequestHandler(object):
         self._application = self._module('Application')
         super(RequestHandler, self).__init__(*args, **kwargs)
     
-    def _mapped_uri(self):
-        # Retrive the current mapping uri for the module.  This method is used by _base_uri() and
-        # may be overriden in derived classes.  The result may be cached for the duration of one
-        # request.
-        return self._application.module_uri(self.name())
-
     def _base_uri(self, req):
         """Return module's current URI as a string or None if not mapped."""
-        # Since the identifiers may be used many times, they are cached at least for the duration
-        # of one request.  We cannot cache them over requests, sice there is no way to invalidate
-        # them if mapping changes (at least in the multiprocess server invironment).
-        req_, uri = self._cached_uri
-        if req is not req_:
-            uri = self._mapped_uri()
-            #if uri is None:
-            #    handlers = req.handlers()
-            #    try:
-            #        module = handlers[handlers.index(self) - 1]
-            #    except (IndexError, ValueError):
-            #        pass
-            #    else:
-            #        uri = module._mapped_uri()
-            if uri is not None:
-                uri = req.uri_prefix() + uri
-            self._cached_uri = (req, uri)
-        return uri
+        return req.module_uri(self.name())
 
     def _authorize(self, req, **kwargs):
         if not self._application.authorize(req, self, **kwargs):
