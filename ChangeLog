@@ -1,3 +1,8 @@
+2009-04-06  Tomas Cerha  <cerha@debian.brailcom.xx>
+
+	* lib/wiking/db.py: 
+	Allow easier overriding of refered row resolution.
+
 2009-04-03  Tomas Cerha  <cerha@debian.brailcom.xx>
 
 	* lib/wiking/modules.py: 

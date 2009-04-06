@@ -458,7 +458,7 @@ class PytisModule(Module, ActionHandler):
     def _resolve(self, req):
         # Returns Row, None or raises HttpError.
         if req.unresolved_path:
-            row = self._get_referered_row(req, req.unresolved_path[0])
+            row = self._refered_row(req, req.unresolved_path[0])
             # If no error was raised, the path was resolved.
             del req.unresolved_path[0]
             return row
@@ -482,20 +482,39 @@ class PytisModule(Module, ActionHandler):
             raise NotFound()
         return row
 
-    def _get_referered_row(self, req, value):
+    def _refered_row_values(self, req, value):
+        """Return a dictionary of row values identifying unambiguously the refered record.
+
+        The argument is a string representation of the module's referer column value (from URI
+        path).
+
+        """
         if not isinstance(self._referer_type, pd.String):
             v, error = self._referer_type.validate(value)
             if error is not None:
                 raise NotFound()
             else:
                 value = v.value()
-        kwargs = {self._referer: value}
+        # The referer value from URI is the most important, but not always the only needed value.
+        values = {self._referer: value}
+        # Add a binding column value if we are in a binding forwarded request.
         binding_column, value = self._binding_column(req)
         if binding_column:
-            kwargs[binding_column] = value
+            values[binding_column] = value
+        # Add the current prefered language in language dependent modules.
         if self._LIST_BY_LANGUAGE:
-            kwargs['lang'] = req.prefered_language(raise_error=False)
-        row = self._data.get_row(**kwargs)
+            values['lang'] = req.prefered_language(raise_error=False)
+        return values
+    
+    def _refered_row(self, req, value):
+        """Return a 'pytis.data.Row' instance corresponding to the refered record.
+
+        The argument is a string representation of the module's referer column value (from URI
+        path).  Raise 'NotFound' error if the refered row doesn't exist.
+
+        """
+        values = self._refered_row_values(req, value)
+        row = self._data.get_row(**values)
         if row is None:
             raise NotFound()
         return row
