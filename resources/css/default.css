@@ -13,7 +13,7 @@ p {
 }
 hr {
     height: 1px;
-    background: $color.border;
+    background-color: $color.border;
     border: 0px;
 }
 h1, h2, h3 {
@@ -73,7 +73,7 @@ img { position: relative; } /* MSIE float workaround */
 #breadcrumbs {
     display: none;
     /* The rest is a prototype for the case that breadcrumbs are displayed */
-    background: $color.frame-bg;
+    background-color: $color.frame-bg;
     border: solid $color.frame-border 1px;
     border-width: 1px 0;
     padding: 1px 0;
@@ -243,7 +243,7 @@ div.panel form { margin: 0.3em 0; }
     margin: 0 0.3em;
 }
 #panel-login a.login-ctrl:hover { 
-    background: $color.highlight-bg;
+    background-color: $color.highlight-bg;
 }
 
 #panel-login div.panel-content {
@@ -290,7 +290,7 @@ div.panel form { margin: 0.3em 0; }
     font-size: 0.9em;
     border: solid $color.top-border;
     border-width: 1px 0px;
-    background: $color.heading-bg;
+    background-color: $color.heading-bg;
 }
 #bottom-bar { text-align: right; }
 #bottom-bar span.left { float: left; }
@@ -310,7 +310,7 @@ div.panel form { margin: 0.3em 0; }
 }
 div#shared-audio-player { 
     color: $color.error-fg;
-    background: $color.error-bg;
+    background-color: $color.error-bg;
     border: solid 1px $color.error-border;
     padding: .1em;
 }
@@ -338,7 +338,7 @@ div#shared-audio-player {
     color: #f00;
 }
 form.login-form {
-    background: $color.frame-bg;
+    background-color: $color.frame-bg;
     border: 1px solid $color.frame-border;
     border-width: 1px 0;
     padding: .8em 2em;
@@ -362,12 +362,12 @@ div.errors, #messages .error, #messages .info, #messages .warning {
 }
 #messages .info { 
     color: $color.message-fg;
-    background: $color.message-bg;
+    background-color: $color.message-bg;
     border-color: $color.message-border;
 }
 div.errors, #messages .error { 
     color: $color.error-fg;
-    background: $color.error-bg;
+    background-color: $color.error-bg;
     border-color: $color.error-border;
 }
 
@@ -380,7 +380,7 @@ div.item span.panel-field-date {
 /* Pytis forms styles */
 
 form.pytis-form .group, form.pytis-form div.submit, form.list-form-controls .paging-controls { 
-    background: $color.frame-bg;
+    background-color: $color.frame-bg;
     border: 1px solid $color.frame-border;
     border-width: 1px 0;
     margin: 0.4em 0;
@@ -444,10 +444,10 @@ form.browse-form table td .multiline {
     white-space: pre;
 }
 
-form.browse-form table tr { background: $color.table-cell; }
-form.browse-form table tr.even { background: $color.table-cell2; }
+form.browse-form table tr { background-color: $color.table-cell; }
+form.browse-form table tr.even { background-color: $color.table-cell2; }
 form.browse-form table tr.group-heading th { text-align: left; }
-form.browse-form table th { background: $color.heading-bg; }
+form.browse-form table th { background-color: $color.heading-bg; }
 form.browse-form table td pre {
     background-color: transparent;
     border: none;
@@ -491,14 +491,14 @@ form.list-form-controls span.buttons input.search {
 }
 
 form.browse-form #found-record {
-    background: $color.highlight-bg;
+    background-color: $color.highlight-bg;
 }
 
 form.list-view div.list-item {
     margin-bottom: 1.1em;
 }
 form.list-view #found-record h3 {
-    background: $color.highlight-bg;
+    background-color: $color.highlight-bg;
 }
 
 form.list-view div.list-item h3 {
@@ -515,7 +515,7 @@ form.list-view div.list-item div.meta {
     margin: 0.2em 0;
     color: $color.meta-fg;
     padding: 0.1em 0;
-    background: $color.meta-bg;
+    background-color: $color.meta-bg;
 }
 form.list-view table.grid {
     border-collapse: separate;
@@ -554,7 +554,7 @@ form.pytis-form .group span.color-value {
     width: 6em;
 }
 form.show-form .group textarea, form.list-view .group textarea {
-    background: $color.frame-bg;
+    background-color: $color.frame-bg;
     border: 0px;
     font-size: 1em;
 }
@@ -578,7 +578,7 @@ form.pytis-form.list-view div.summary {
     border-top: 1px solid $color.frame-border;
 }
 /*form.pytis-form .invalid {
-    background: $color.error-bg;
+    background-color: $color.error-bg;
 }*/
 
 .actions { 
@@ -639,8 +639,8 @@ table.lcg-table td, table.lcg-table th {
     white-space: nowrap;
     border: solid $color.border 1px;
 }
-table.lcg-table td { background: $color.table-cell; }
-table.lcg-table th { background: $color.heading-bg; }
+table.lcg-table td { background-color: $color.table-cell; }
+table.lcg-table th { background-color: $color.heading-bg; }
 table.lcg-table caption, table.lcg-fieldset caption {
     font-weight: bold;
     font-size: 1.1em;
@@ -649,7 +649,7 @@ table.lcg-table caption, table.lcg-fieldset caption {
 table.lcg-fieldset th { white-space: nowrap; text-align: left; padding-right: 0.5em; }
 
 pre.lcg-preformatted-text {
-    background: $color.frame-bg;
+    background-color: $color.frame-bg;
     border: solid $color.frame-border 1px;
     color: $color.foreground;
     padding: 0.3em;
@@ -659,7 +659,7 @@ pre.lcg-preformatted-text {
 div.table-of-contents { 
     border: solid $color.frame-border;
     border-width: 1px 0;
-    background: $color.frame-bg;
+    background-color: $color.frame-bg;
     margin: 1em 0;
     padding: 3pt;
 }
