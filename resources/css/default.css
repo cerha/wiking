@@ -354,18 +354,18 @@ form.login-form label {
     font-weight: bold;
 }
 
-div.errors, p.error, p.message { 
+div.errors, #messages .error, #messages .info, #messages .warning { 
     border-style: solid;
     border-width: 1px 0;
     padding: 0.3em;
     margin: 1em 0;
 }
-p.message { 
+#messages .info { 
     color: $color.message-fg;
     background: $color.message-bg;
     border-color: $color.message-border;
 }
-div.errors, p.error { 
+div.errors, #messages .error { 
     color: $color.error-fg;
     background: $color.error-bg;
     border-color: $color.error-border;

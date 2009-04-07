@@ -1,3 +1,10 @@
+2009-04-07  Tomas Cerha  <cerha@debian.brailcom.xx>
+
+	* lib/wiking/export.py: 
+	* resources/css/default.css: 
+	* lib/wiking/util.py:
+	Export request messages in exporter instead of adding special content.
+
 2009-04-06  Tomas Cerha  <cerha@debian.brailcom.xx>
 
 	* lib/wiking/db.py: 

@@ -426,11 +426,8 @@ class Document(object):
         self._title = title
         self._subtitle = subtitle
         if isinstance(content, (list, tuple)):
-            content = [c for c in content if c is not None]
-        else:
-            content = [content]
-        content.insert(0, Messages())
-        self._content = lcg.SectionContainer(content, toc_depth=0)
+            content = lcg.SectionContainer([c for c in content if c is not None], toc_depth=0)
+        self._content = content
         self._lang = lang
         self._sec_lang = sec_lang
         self._variants = variants
@@ -642,19 +639,6 @@ class PanelItem(lcg.Content):
                  for id, value, uri in self._fields]
         return g.div(items, cls="item")
 
-    
-class Messages(lcg.Content):
-    _CLASS = {WikingRequest.INFO: 'message',
-              WikingRequest.WARN: 'warning',
-              WikingRequest.ERROR: 'error'}
-    def export(self, context):
-        g = context.generator()
-        result = []
-        req = context.req()
-        for message, type in req.messages():
-            result.append(g.p(g.escape(message), cls=self._CLASS[type]))
-        return g.concat(result)
-    
 
 class LoginCtrl(lcg.Content):
     """Displays current logged in user and login/logout link/button."""

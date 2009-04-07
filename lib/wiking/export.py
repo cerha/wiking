@@ -40,6 +40,9 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
                    'menu', 'submenu', 'panels', 'main', 'page_clearing')
     _BOTTOM_PARTS = ('bottom_bar', 'footer')
     _LANGUAGE_SELECTION_LABEL = _("Language:")
+    _MESSAGE_TYPE_CLASS = {WikingRequest.INFO: 'info',
+                           WikingRequest.WARN: 'warning',
+                           WikingRequest.ERROR: 'error'}
 
     def _body_attr(self, context):
         return super(Exporter, self)._body_attr(context, onload='wiking_init();')
@@ -207,11 +210,22 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         result.append(g.br())
         return result
 
+    def _messages(self, context):
+        messages = context.req().messages()
+        if messages:
+            g = self._generator
+            return g.div([g.div(g.escape(message), cls=self._MESSAGE_TYPE_CLASS[type])
+                          for message, type in messages],
+                         id='messages')
+        else:
+            return ''
+    
     def _main(self, context):
         g = self._generator
         return (g.hr(cls='hidden'),
                 g.div((g.h(g.link(context.node().heading(), None, tabindex=0,
                                   name='main-heading', id='main-heading'), 1),
+                       self._messages(context),
                        super(Exporter, self)._content(context)), id='content'),
                 g.div('&nbsp;', id='clearing'))
 
