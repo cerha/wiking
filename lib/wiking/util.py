@@ -1112,8 +1112,8 @@ class MailAttachment(object):
         """Return MIME type of the attachment."""
         return self._type
     
-def send_mail(addr, subject, text, sender=None, html=None, lang=None, cc=(), headers=(),
-              attachments=(), smtp_server=None):
+def send_mail(addr, subject, text, sender=None, html=None, export=False, lang=None, cc=(),
+              headers=(), attachments=(), smtp_server=None):
     """Send a MIME e-mail message.
 
     Arguments:
@@ -1124,6 +1124,8 @@ def send_mail(addr, subject, text, sender=None, html=None, lang=None, cc=(), hea
       sender -- sender address as a string; if None, the address specified by the configuration
         option `default_sender_address' is used.
       html -- HTML part of the message as string or unicode
+      export -- iff true, create the HTML part of the message by parsing 'text' as LCG Structured
+        text and exporting it to HTML.
       lang -- ISO language code as a string; if not None, message 'subject', 'text' and 'html' will
          be translated into given language (if they are LCG translatable strings)
       cc -- sequence of other recipient string addresses
@@ -1143,6 +1145,7 @@ def send_mail(addr, subject, text, sender=None, html=None, lang=None, cc=(), hea
     assert isinstance(text, basestring), ('type error', text,)
     assert sender is None or isinstance(sender, basestring), ('type error', sender,)
     assert html is None or isinstance(html, basestring), ('type error', html,)
+    assert isinstance(export, bool), ('type error', bool,)
     assert lang is None or isinstance(lang, basestring), ('type error', lang,)
     assert isinstance(cc, (tuple, list,)), ('type error', cc,)
     assert smtp_server is None or isinstance(smtp_server, basestring), ('type error', smtp_server,)
@@ -1184,14 +1187,21 @@ def send_mail(addr, subject, text, sender=None, html=None, lang=None, cc=(), hea
     writer.flushheaders()
     # The plain text section.
     if isinstance(text, unicode):
-        text = tr.translate(text).encode('utf-8')
-    txtin = StringIO(text)
+        text = tr.translate(text)
+    txtin = StringIO(text.encode('utf-8'))
     subpart = writer.nextpart()
     subpart.addheader("Content-Transfer-Encoding", "quoted-printable")
     pout = subpart.startbody("text/plain", [("charset", 'utf-8')])
     mimetools.encode(txtin, pout, 'quoted-printable')
     txtin.close()
     # The html section.
+    if export:
+        assert html is None
+        content = lcg.SectionContainer(lcg.Parser().parse(text), toc_depth=0)
+        exporter = lcg.HtmlExporter(translations=cfg.translation_path)
+        node = lcg.ContentNode('mail', title=subject, content=content)
+        context = exporter.context(node, str(lang))
+        html = "<html>\n"+ content.export(context) +"\n</html>\n"
     if html:
         if isinstance(html, unicode):
             html = tr.translate(html).encode('utf-8')
@@ -1250,6 +1260,7 @@ def validate_email_address(address, helo=None):
     of the address on remote sites.
 
     """
+    return (True, None)
     assert isinstance(address, basestring)
     address = str(address)      # DNS query doesn't work with unicode
     import dns.resolver
