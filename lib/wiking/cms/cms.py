@@ -2125,13 +2125,16 @@ class Users(CMSModule):
                                                   stream=cStringIO.StringIO(str(certificate))),))
         return certificate_row
         
+    def _confirmation_success_content(self, req, record):
+        content = [lcg.p(_("Registration completed successfuly. "
+                           "Your account now awaits administrator's approval."))]
+        if cfg.certificate_authentication and self._certificate_confirmation(req, record):
+            content.append(lcg.p(_("The signed certificate has been sent to you by e-mail.")))
+        return content
+
     def _confirmation_success(self, req, record):
         self._send_admin_confirmation_mail(req, record)
-        content = lcg.p(_("Registration completed successfuly. "
-                          "Your account now awaits administrator's approval."))
-        if cfg.certificate_authentication and self._certificate_confirmation(req, record):
-            content = lcg.Container((content, lcg.p(_("The signed certificate has been sent to "
-                                                      "you by e-mail."))))
+        content = self._confirmation_success_content(req, record)
         return Document(_("Registration confirmed"), content)
     
     def _confirmation_failure(self, req, error_message):
@@ -2215,24 +2218,33 @@ class Users(CMSModule):
         return text, attachments
 
     def _redirect_after_insert(self, req, record):
-        content = lcg.p('')
         if cfg.login_is_email:
-            text, attachments = self._make_registration_email(req, record)
-            user_email = record['email'].value()
-            subject = _("Your registration at %s", req.server_hostname())
-            err = send_mail(user_email, subject, text,
-                            lang=record['lang'].value(), attachments=attachments)
+            msg, err = self._send_registration_email(req, record)
             if err:
                 self._data.delete(record['uid'])
-                err = _("Failed sending e-mail notification:") +' '+ err + '\n' + _("Registration cancelled.")
-                msg = None
+                content = lcg.p(_("Registration cancelled."))
             else:
-                msg = _("E-mail was sent to you with instructions how to complete the registration process.")
+                content = lcg.p(_("Registration accepted."))
         else:
             content = self._registration_success_content(req, record)
             msg, err = self.send_admin_approval_mail(req, record)
-        return self._document(req, content, subtitle=None, msg=msg, err=err)
+        return self._document(req, content, record, subtitle=None, msg=msg, err=err)
 
+    def _send_registration_email(self, req, record):
+        text, attachments = self._make_registration_email(req, record)
+        err = send_mail(record['email'].value(),
+                        _("Your registration at %s", req.server_hostname()),
+                        text,
+                        lang=record['lang'].value(), attachments=attachments)
+        if err:
+            err = _("Failed sending e-mail notification:") +' '+ err
+            msg = None
+        else:
+            msg = _("Instructions how to complete the registration process were sent to %s.",
+                    record['email'].value())
+        return msg, err
+
+    
     def send_admin_approval_mail(self, req, record):
         msg, err = None, None
         addr = cfg.webmaster_address
@@ -2292,7 +2304,8 @@ class Users(CMSModule):
     RIGHTS_passwd = (Roles.ADMIN, Roles.OWNER)
 
     def action_regreminder(self, req, record):
-        return self._redirect_after_insert(req, record)
+        msg, err = self._send_registration_email(req, record)
+        return self.action_view(req, record, msg=msg, err=err)
     RIGHTS_regreminder = (Roles.ANYONE,)
 
     def _user_arguments(self, req, login, row):
