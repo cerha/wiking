@@ -2203,8 +2203,8 @@ class Users(CMSModule):
             action = 'confirm'
         uri = req.server_uri() + make_uri(base_uri, action=action, uid=record['uid'].value(),
                                           regcode=record['regcode'].value())
-        text = _("The first step of your registration at %(server_hostname)s.\n"
-                 "was successfully completed.\n"
+        text = _("The first step of your registration at %(server_hostname)s "
+                 "was successfully completed.\n\n"
                  "For the next step visit the following URL and follow the instructions there:\n"
                  "%(uri)s\n",
                  server_hostname=server_hostname,
