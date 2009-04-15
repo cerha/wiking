@@ -1,3 +1,10 @@
+2009-04-15  Tomas Cerha  <cerha@debian.brailcom.xx>
+
+	* lib/wiking/export.py: 
+	* lib/wiking/request.py: 
+	* resources/css/default.css: 
+	Improved export of warning messages.
+
 2009-04-10  Tomas Cerha  <cerha@debian.brailcom.xx>
 
 	* lib/wiking/util.py:

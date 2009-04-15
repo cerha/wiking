@@ -365,7 +365,7 @@ class WikingRequest(Request):
     
     INFO = 'INFO'
     """Message type constant for informational messages."""
-    WARN = 'WARN'
+    WARNING = 'WARNING'
     """Message type constant for warning messages."""
     ERROR = 'ERROR'
     """Message type constant for error messages."""
@@ -647,13 +647,13 @@ class WikingRequest(Request):
 
         Arguments:
           message -- message text as a string.
-          type -- message text as one of INFO, WARN, ERROR constatns of the class.  If None, the
+          type -- message text as one of INFO, WARNING, ERROR constatns of the class.  If None, the
             default is INFO.
 
         The stacked messages can be later retrieved using the 'messages()' method.
 
         """
-        assert type in (None, self.INFO, self.WARN, self.ERROR)
+        assert type in (None, self.INFO, self.WARNING, self.ERROR)
         self._messages.append((message, type or self.INFO))
 
     def messages(self):

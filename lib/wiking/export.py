@@ -41,7 +41,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
     _BOTTOM_PARTS = ('bottom_bar', 'footer')
     _LANGUAGE_SELECTION_LABEL = _("Language:")
     _MESSAGE_TYPE_CLASS = {WikingRequest.INFO: 'info',
-                           WikingRequest.WARN: 'warning',
+                           WikingRequest.WARNING: 'warning',
                            WikingRequest.ERROR: 'error'}
 
     def _body_attr(self, context):
@@ -214,7 +214,9 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         messages = context.req().messages()
         if messages:
             g = self._generator
-            return g.div([g.div(g.escape(message), cls=self._MESSAGE_TYPE_CLASS[type])
+            return g.div([g.div((type == WikingRequest.WARNING and _("Warning")+': 'or '') + \
+                                g.escape(message),
+                                cls=self._MESSAGE_TYPE_CLASS[type])
                           for message, type in messages],
                          id='messages')
         else:

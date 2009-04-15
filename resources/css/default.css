@@ -365,7 +365,7 @@ div.errors, #messages .error, #messages .info, #messages .warning {
     background-color: $color.message-bg;
     border-color: $color.message-border;
 }
-div.errors, #messages .error { 
+div.errors, #messages .error, #messages .warning { 
     color: $color.error-fg;
     background-color: $color.error-bg;
     border-color: $color.error-border;
