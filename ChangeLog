@@ -1,3 +1,8 @@
+2009-04-22  Milan Zamazal  <pdm@brailcom.org>
+
+	* lib/wiking/cms/cms.py:
+	Don't crash on non-integer uids in registration confirmation.
+
 2009-04-15  Tomas Cerha  <cerha@debian.brailcom.xx>
 
 	* translations/wiking.cs.po: 
