@@ -2362,7 +2362,10 @@ class Users(CMSModule):
         valid, or a unicode describing the error.
 
         """
-        uid = req.param('uid')
+        uid_string = req.param('uid')
+        uid, error = pytis.data.Integer().validate(uid_string)
+        if error is not None:
+            return None, _("Invalid user id in the request")
         registration_code = req.param('regcode')
         if not uid:
             return None, _("Missing form parameters")
