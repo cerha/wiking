@@ -1,5 +1,8 @@
 2009-04-23  Tomas Cerha  <cerha@debian.brailcom.xx>
 
+	* lib/wiking/cms/cms.py:
+	Use exceptions in registration confirmation error handling.
+
 	* lib/wiking/util.py:
 	New exception type BadRequest.
 

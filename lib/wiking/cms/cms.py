@@ -336,8 +336,9 @@ class Registration(Module, ActionHandler):
 
     def action_certload(self, req):
         users = self._module('Users')
-        record, error = users.check_registration_code(req)
-        if error:
+        try:
+            record = users.check_registration_code(req)
+        except BadRequest:
             raise AuthorizationError()
         result = self._module('CertificateRequest').action_insert(req)
         if req.param('submit'):
@@ -2131,37 +2132,20 @@ class Users(CMSModule):
         if cfg.certificate_authentication and self._certificate_confirmation(req, record):
             content.append(lcg.p(_("The signed certificate has been sent to you by e-mail.")))
         return content
+    
+    def action_confirm(self, req):
+        """Make user registration valid.
 
-    def _confirmation_success(self, req, record):
+        Additionally perform all related actions such as sending an e-mail notification to the
+        administrator.
+        
+        """
+        record = self.check_registration_code(req)
+        record.update(regexpire=None)
         self._send_admin_confirmation_mail(req, record)
         content = self._confirmation_success_content(req, record)
         return Document(_("Registration confirmed"), content)
-    
-    def _confirmation_failure(self, req, error_message):
-        if req.param('action') == 'certload':
-            title = _("Certificate renewal failure")
-        else:
-            title = _("Registration confirmation failed")
-        return Document(title, lcg.p(error_message))
-    
-    def action_confirm(self, req):
-        record, error_message = self._authorize_registration(req)
-        if error_message is None:
-            result = self._confirmation_success(req, record)
-        else:
-            result = self._confirmation_failure(req, error_message)
-        return result
     RIGHTS_confirm = (Roles.ANYONE,)
-    
-    # TODO: Pravděpodobně zapomenuto při copy & paste.  Zrušit.
-    def action_certload(self, req):
-        record, error_message = self._authorize_registration(req)
-        if error_message is None:
-            result = self._confirmation_success(req, record)
-        else:
-            result = self._confirmation_failure(req, error_message)
-        return result
-    RIGHTS_certload = (Roles.ANYONE,)
 
     # TODO: Nutno zrušit a předělat to, kvůli čemu to tu bylo.
     def action_insert(self, req, record=None):
@@ -2356,34 +2340,29 @@ class Users(CMSModule):
     def check_registration_code(self, req):
         """Check whether given request contains valid login and registration code.
 
-        Return pair (RECORD, MESSAGE) where RECORD is a 'Record' corresponding
-        to the user id given in the request (if the record is available) and
-        MESSAGE is either 'None' in case the login and registration code are
-        valid, or a unicode describing the error.
+        Return a 'Record' instance corresponding to the user id given in the request (if the uid
+        and registration code are valid) or raise 'BadRequest' exception.
 
         """
-        uid_string = req.param('uid')
-        uid, error = pytis.data.Integer().validate(uid_string)
-        if error is not None:
-            return None, _("Invalid user id in the request")
-        registration_code = req.param('regcode')
-        if not uid:
-            return None, _("Missing form parameters")
+        uid, error = pytis.data.Integer().validate(req.param('uid'))
+        if error is not None or uid.value() is None:
+            raise BadRequest()
         # This doesn't prevent double registration confirmation, but how to
         # avoid it?
-        row = self._data.get_row(uid=uid)
+        row = self._data.get_row(uid=uid.value())
         if row is None:
             record = None
         else:
             record = self._record(req, row)
-        if record is None or (not record['regexpire'].value() and record['role'] == 'none'):
+        if record is None:
+            raise BadRequest()
+        if not record['regexpire'].value() and record['role'] == 'none':
             # Let's be careful not to depict whether given login name is registered
-            return None, _("Invalid login or user registration already confirmed")
-        else:
-            code = record['regcode'].value()
-            if not code or code != registration_code:
-                return record, _("Invalid access code")
-        return record, None
+            raise BadRequest(_("User registration already confirmed."))
+        code = record['regcode'].value()
+        if not code or code != req.param('regcode'):
+            raise BadRequest(_("Invalid registration code."))
+        return record
 
     def set_registration_code(self, uid):
         """Generate and set new registration code for given user 'uid'.
@@ -2412,19 +2391,6 @@ class Users(CMSModule):
         new_row, result = self._data.update(uid_value, row)
         if not result:
             raise Exception(_("Database operation failed"))
-        
-    def _authorize_registration(self, req):
-        """Make user registration defined by 'Request' 'req' valid.
-
-        Additionally perform all related actions such as sending an e-mail
-        notification to the administrator.
-        
-        """
-        record, error = self.check_registration_code(req)
-        if error:
-            return record, error
-        record.update(regexpire=None)
-        return record, None
 
     def send_mail(self, role, *args, **kwargs):
         """Send mail to all users of given 'role'.
