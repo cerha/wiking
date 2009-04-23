@@ -1,3 +1,8 @@
+2009-04-23  Tomas Cerha  <cerha@debian.brailcom.xx>
+
+	* lib/wiking/util.py:
+	New exception type BadRequest.
+
 2009-04-22  Milan Zamazal  <pdm@brailcom.org>
 
 	* lib/wiking/cms/cms.py:

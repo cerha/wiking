@@ -95,6 +95,29 @@ class HttpError(RequestError):
         return _("Error %(code)d: %(name)s", code=self.ERROR_CODE, name=name)
 
 
+class BadRequest(HttpError):
+    """Error indicating invalid request argument values or their combination.
+
+    Wiking applications usually ignore request arguments which they don't
+    recognize.  This error is mostly usefull in situations, where the required
+    arguments are missing or contain invalid values or their combinations.
+
+    More precise error description may be optionally passed as constructor
+    argument.  This message will be printed into user's browser window.  If
+    no argument is passed, the default message `Invalid request arguments.'
+    is printed.  If more arguments are passed, each message is printed as
+    separate paragraph. 
+
+    """
+    ERROR_CODE = 400
+    
+    def message(self, req):
+        if self.args:
+            return lcg.coerce([lcg.p(arg) for arg in self.args])
+        else:
+            return lcg.p(_("Invalid request arguments."))
+
+    
 class NotFound(HttpError):
     """Error indicating invalid request target."""
     ERROR_CODE = 404
