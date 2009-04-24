@@ -2218,7 +2218,7 @@ class Users(CMSModule):
         text, attachments = self._make_registration_email(req, record)
         err = send_mail(record['email'].value(),
                         _("Your registration at %s", req.server_hostname()),
-                        text,
+                        text, #export=True,
                         lang=record['lang'].value(), attachments=attachments)
         if err:
             err = _("Failed sending e-mail notification:") +' '+ err
@@ -2357,7 +2357,6 @@ class Users(CMSModule):
         if record is None:
             raise BadRequest()
         if not record['regexpire'].value() and record['role'] == 'none':
-            # Let's be careful not to depict whether given login name is registered
             raise BadRequest(_("User registration already confirmed."))
         code = record['regcode'].value()
         if not code or code != req.param('regcode'):
