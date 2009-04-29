@@ -1958,11 +1958,11 @@ class Users(CMSModule):
             Field('certauth', _("Certificate authentication"), type=pd.Boolean(),
                   descr=_("Check this field to authenticate by a certificate rather than by "
                           "a password."), ),
-            Field('organization', _("Organization"), editable=ONCE,
-                  descr=_(("If you are a member of an organization registered in the application "
-                           "write the name of the organization here. "
-                           "Otherwise leave the field empty."))),
-            Field('organization_id', _("Organization"), codebook='Organizations', not_null=False),
+            #Field('organization', _("Organization"), editable=ONCE,
+            #      descr=_(("If you are a member of an organization registered in the application "
+            #               "write the name of the organization here. "
+            #               "Otherwise leave the field empty."))),
+            #Field('organization_id', _("Organization"), codebook='Organizations', not_null=False),
             Field('certfile', _("Certificat request file"), virtual=True, editable=ALWAYS,
                   type=pytis.data.Binary(not_null=True, maxlen=10000),
                   descr=_("Upload a PEM file containing the certificate")),
@@ -2299,18 +2299,18 @@ class Users(CMSModule):
             uri = base_uri +'/'+ login
         else:
             uri = self._application.module_uri('Registration')
-        organization_id_value = record['organization_id']
-        organization_id = organization_id_value.value()
-        if organization_id:
-            organizations = self._module('Organizations')
-            organization_record = organizations.record(req, organization_id_value)
-            organization = organization_record['name'].value()
-        else:
-            organization = None
+        #organization_id_value = record['organization_id']
+        #organization_id = organization_id_value.value()
+        #if organization_id:
+        #    organizations = self._module('Organizations')
+        #    organization_record = organizations.record(req, organization_id_value)
+        #    organization = organization_record['name'].value()
+        #else:
+        #    organization = None
         return dict(login=login, name=record['user'].value(), uid=record['uid'].value(),
                     uri=uri, email=record['email'].value(), data=record,
-                    roles=self.Spec._roles(record),
-                    organization_id=organization_id, organization=organization)
+                    roles=self.Spec._roles(record))
+                    #organization_id=organization_id, organization=organization)
 
     def _make_user(self, kwargs):
         return User(**kwargs)
@@ -2474,7 +2474,7 @@ class Organizations(CMSModule):
     RIGHTS_update = (Roles.ADMIN,)
     RIGHTS_delete = (Roles.ADMIN,)
 
-    WMI_SECTION = WikingManagementInterface.SECTION_USERS
+    WMI_SECTION = None #WikingManagementInterface.SECTION_USERS
     WMI_ORDER = 500
 
     _TITLE_COLUMN = 'name'
