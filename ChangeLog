@@ -1,5 +1,8 @@
 2009-04-29  Tomas Cerha  <cerha@debian.brailcom.xx>
 
+	* lib/wiking/db.py: 
+	Avoid duplicate assignments into one DB column.
+
 	* lib/wiking/cms/cms.py:
 	Comment out the currently unusable support for user organizations.
 

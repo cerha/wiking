@@ -104,7 +104,22 @@ class PytisModule(Module, ActionHandler):
         def rowdata(self):
             """Return record's row data for insert/update operations."""
             update = not self.new()
-            rdata = [(k, v) for k, v in self.row().items() if update or v.value() is not None]
+            rdata = []
+            dbcolumns = []
+            for f in self._fields:
+                if f.virtual():
+                    continue
+                id, value = f.id(), self[f.id()]
+                if value is None and not update:
+                    # Omit empty values for insert to allow DB default values.
+                    continue
+                dbcolumn = f.dbcolumn()
+                if dbcolumn in dbcolumns:
+                    # Avoid multiple assignments to the same DB column.
+                    continue
+                dbcolumns.append(dbcolumn)
+                rdata.append((id, value))
+            debug("**", rdata)
             return pd.Row(rdata)
 
         def user_roles(self):
@@ -431,7 +446,6 @@ class PytisModule(Module, ActionHandler):
         if isinstance(layout, (tuple, list)):
             layout = pp.GroupSpec(layout, orientation=pp.Orientation.VERTICAL)
         return layout
-    
 
     def _action(self, req, record=None):
         if record is not None and req.unresolved_path:
