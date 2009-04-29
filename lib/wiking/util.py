@@ -838,16 +838,6 @@ class Specification(pp.Specification):
     help = None # Default value needed by CMSModule.descr()
     actions = []
     data_cls = Data
-
-    connection = None
-    """Name of the database connection to use.
-
-    If None, the default database connection defined by 'dbname', 'dbhost' and other configuration
-    options is used.  If not None, the value is a string identifier of connection options defined
-    within 'connections' configuration option.
-
-    """
-   
     def __new__(cls, module, resolver):
         try:
             instance = cls._instance_cache[module]
@@ -866,7 +856,6 @@ class Specification(pp.Specification):
                         actions.append(action)
         self.actions = tuple(actions)
         super(Specification, self).__init__(resolver)
-        del self._view_spec_kwargs['connection']
 
 
 class Binding(pp.Binding):
@@ -904,26 +893,19 @@ class WikingResolver(pytis.util.Resolver):
     def __init__(self, *args, **kwargs):
         super(WikingResolver, self).__init__(*args, **kwargs)
         self._wiking_module_cache = {}
-        self._db_connection_cache = {}
-
-    def _db_connection(self, module_cls):
-        name = module_cls.Spec.connection
-        try:
-            connection = self._db_connection_cache[name]
-        except KeyError:
-            map = {'dbname': 'database',
-                   'dbhost': 'host',
-                   'dbport': 'port',
-                   'dbuser': 'user',
-                   'dbpass': 'password',
-                   'dbsslm': 'sslmode'}
-            if name is None:
-                options = dict([(map[key], getattr(cfg, key)) for key in map.keys()])
-            else:
-                spec = cfg.connections[name]
-                options = dict([(map[key], value) for key, value in spec.items()])
-            connection = self._db_connection_cache[name] = pd.DBConnection(**options)
-        return connection
+        map = {'dbname': 'database',
+               'dbhost': 'host',
+               'dbport': 'port',
+               'dbuser': 'user',
+               'dbpass': 'password',
+               'dbsslm': 'sslmode'}
+        def connection_options(items):
+            # Transform configuration option names to DBConnection option names.
+            return dict([(map[key], value) for key, value in items if value is not None])
+        options = connection_options([(option, getattr(cfg, option)) for option in map.keys()])
+        alternatives = dict([(name, connection_options(opts.items()))
+                             for name, opts in cfg.connections.items()])
+        self._db_connection = pytis.data.DBConnection(alternatives=alternatives, **options)
 
     def _import_python_module(self, name):
         mod = __import__(name)
@@ -974,7 +956,7 @@ class WikingResolver(pytis.util.Resolver):
             if issubclass(cls, PytisModule):
                 if cfg.maintenance:
                     raise MaintananceModeError()
-                args += (self._db_connection(cls),)
+                args += (self._db_connection.select(cls.Spec.connection),)
             module = cls(*args, **kwargs)
             self._wiking_module_cache[key] = module
         return module
