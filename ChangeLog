@@ -1,5 +1,9 @@
 2009-04-30  Tomas Cerha  <cerha@debian.brailcom.xx>
 
+	* lib/wiking/util.py: 
+	Make use of new Pytis support for multiple database connections
+	also in DB function handling.
+
 	* lib/wiking/cms/cms.py:
 	Define dynamic layouts in `_layout()' to allow easier
 	redefinition.  Allow password change to admin without knowledge of

@@ -785,8 +785,7 @@ class Data(pd.DBDataDefault):
     def __init__(self, *args, **kwargs):
         super(Data, self).__init__(*args, **kwargs)
         # We don't want to care how `connection_data' is stored in the parent class...
-        # We surely pass the
-        self._dbconnection = kwargs['connection_data']
+        self._dbconnection = kwargs['connection_data'].select(kwargs.get('connection_name'))
 
     def _row_data(self, **kwargs):
         return [(k, pd.Value(self.find_column(k).type(), v)) for k, v in kwargs.items()]
