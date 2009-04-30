@@ -1982,8 +1982,7 @@ class Users(CMSModule):
             return cls._ROLE_DICT[row['role'].value()][1]
         columns = ('fullname', 'nickname', 'email', 'role', 'since')
         sorting = (('surname', ASC), ('firstname', ASC))
-        layout = (FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname')),
-                  FieldSet(_("Contact information"), ('email', 'phone', 'address', 'uri')))
+        layout = () # Force specific layout definition for each action.
         cb = CodebookSpec(display='user', prefer_display=True)
         conditions = (
             pp.Condition(_("All users"), None),
@@ -2006,7 +2005,15 @@ class Users(CMSModule):
     _ALLOW_TABLE_LAYOUT_IN_FORMS = False
     _OWNER_COLUMN = 'uid'
     _SUPPLY_OWNER = False
-    _LAYOUT = {} # to be initialized in the constructor and/or redefined in a subclass
+    _LAYOUT = {
+        # 'insert' and 'passwd' layout is constructed dynamicallly in _layout().
+        'update': (FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname')),
+                   FieldSet(_("Contact information"), ('email', 'phone', 'address', 'uri'))),
+        'view': (FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname',)),
+                 FieldSet(_("Contact information"), ('email', 'phone', 'address','uri')),
+                 FieldSet(_("Access rights"), ('role',))),
+        'rights': ('role',),
+        }
     _INSERT_LABEL = _("New user")
     _UPDATE_LABEL = _("Edit profile")
     _UPDATE_DESCR = _("Modify user's record")
@@ -2020,52 +2027,64 @@ class Users(CMSModule):
     def _embed_binding_condition(row):
         return pd.NE('role', pd.Value(pd.String(), 'none'))
 
-    def __init__(self, *args, **kwargs):
-        super(Users, self).__init__(*args, **kwargs)
-        if not self._LAYOUT:
-            self._LAYOUT = {
-                'insert': (FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname',)),
-                           FieldSet(_("Contact information"),
-                                    (((not cfg.login_is_email) and ('email',) or ()) +
-                                     ('phone', 'address', 'uri',))),
-                           FieldSet(_("Login information"),
-                                    ((cfg.login_is_email and ('email',) or ('login',)) +
-                                     ('password',) +
-                                     (cfg.certificate_authentication and ('certauth',) or ())))),
-                'view':   (FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname',)),
-                           FieldSet(_("Contact information"), ('email', 'phone', 'address','uri')),
-                           FieldSet(_("Access rights"), ('role',))),
-                'rights': ('role',),
-                'passwd': ((cfg.login_is_email and 'email' or 'login'),
-                           'old_password', 'new_password',)}
-
+    def _layout(self, req, action, record=None):
+        if not self._LAYOUT.has_key(action): # Allow overriding this layout in derived classes.
+            if action == 'insert':
+                layout = (FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname',)),
+                          FieldSet(_("Contact information"),
+                                   ((not cfg.login_is_email) and ('email',) or ()) +
+                                   ('phone', 'address', 'uri')),
+                          FieldSet(_("Login information"),
+                                   ((cfg.login_is_email and 'email' or 'login'), 'password') + \
+                                   (cfg.certificate_authentication and ('certauth',) or ())))
+            elif action == 'passwd' and record is not None:
+                layout = ['new_password']
+                if not req.check_roles(Roles.ADMIN) or req.user().uid() == record['uid'].value():
+                    # Don't require old password for admin, unless he is changing his own password.
+                    layout.insert(0, 'old_password')
+                if not cfg.login_is_email:
+                    # Add read-only login to make sure the user knows which password is edited.  It
+                    # also helps the browser password helper to recognize which password is changed
+                    # (if the user has multiple accounts).
+                    layout.insert(0, 'login') # Don't include email, since it is editable.
+            else:
+                layout = None
+            if layout:
+                return pp.GroupSpec(layout, orientation=pp.Orientation.VERTICAL)
+        return super(Users, self)._layout(req, action, record=record)
+                
     def _validate(self, req, record, layout=None):
         if record.new():
+            # This language is used for translation of email messages sent to the user.  This way
+            # it is set only once during registration.  It would make sense to change it on each
+            # change of user interface language by that user.
             record['lang'] = pd.Value(record['lang'].type(), req.prefered_language())
+        errors = []
         if layout and 'old_password' in layout.order():
-            errors = []
-            current_password_value = record['password'].value()
             #if not req.check_roles(Roles.ADMIN): Too dangerous?
             old_password = req.param('old_password')
             if not old_password:
                 errors.append(('old_password', _(u"Enter your current password.")))
             else:
                 error = record.validate('old_password', old_password, verify=old_password)
-                if error or record['old_password'].value() != current_password_value:
+                if error or record['old_password'].value() != record['password'].value():
                     errors.append(('old_password', _(u"Invalid password.")))
+        if layout and 'new_password' in layout.order():
             new_password = req.param('new_password')
             if not new_password:
                 errors.append(('new_password', _(u"Enter the new password.")))
             else:
+                current_password_value = record['password'].value()
                 error = record.validate('password', new_password[0], verify=new_password[1])
                 if error:
                     errors.append(('new_password', error.message(),))
                 elif record['password'].value() == current_password_value:
                     errors.append(('new_password',
                                    _(u"The new password is the same as the old one.")))
-            if errors:
-                return errors
-        return super(Users, self)._validate(req, record, layout=layout)
+        if errors:
+            return errors
+        else:
+            return super(Users, self)._validate(req, record, layout=layout)
         
     def _base_uri(self, req):
         if req.path[0] == '_registration':

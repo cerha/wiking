@@ -1,3 +1,10 @@
+2009-04-30  Tomas Cerha  <cerha@debian.brailcom.xx>
+
+	* lib/wiking/cms/cms.py:
+	Define dynamic layouts in `_layout()' to allow easier
+	redefinition.  Allow password change to admin without knowledge of
+	the previous password.
+
 2009-04-29  Tomas Cerha  <cerha@debian.brailcom.xx>
 
 	* lib/wiking/db.py: 
