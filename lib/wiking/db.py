@@ -142,7 +142,7 @@ class PytisModule(Module, ActionHandler):
     
     def __init__(self, resolver, dbconnection, **kwargs):
         super(PytisModule, self).__init__(resolver, **kwargs)
-        self._dbconnection = dbconnection.select(self.Spec.connection)
+        self._dbconnection = dbconnection
         spec = self._spec(resolver)
         self._data = spec.data_spec().create(connection_data=dbconnection)
         self._view = spec.view_spec()
@@ -621,7 +621,8 @@ class PytisModule(Module, ActionHandler):
         try:
             function, arg_spec = self._db_function[name]
         except KeyError:
-            function = pytis.data.DBFunctionDefault(name, self._dbconnection)
+            function = pytis.data.DBFunctionDefault(name, self._dbconnection,
+                                                    connection_name=self.Spec.connection)
             arg_spec = self._DB_FUNCTIONS[name]
             self._db_function[name] = function, arg_spec
         assert len(args) == len(arg_spec), \
@@ -637,7 +638,9 @@ class PytisModule(Module, ActionHandler):
         """Insert new row into the database and return a Record instance."""
         for key, seq in self._SEQUENCE_FIELDS:
             if record[key].value() is None:
-                value = pd.DBCounterDefault(seq, self._dbconnection).next()
+                counter = pd.DBCounterDefault(seq, self._dbconnection,
+                                              connection_name=self.Spec.connection)
+                value = counter.next()
                 record[key] = pd.Value(record[key].type(), value)
         new_row, success = self._data.insert(record.rowdata())
         #debug(":::", success, new_row and [(k, new_row[k].value()) for k in new_row.keys()])
