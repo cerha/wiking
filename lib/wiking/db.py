@@ -119,7 +119,6 @@ class PytisModule(Module, ActionHandler):
                     continue
                 dbcolumns.append(dbcolumn)
                 rdata.append((id, value))
-            debug("**", rdata)
             return pd.Row(rdata)
 
         def user_roles(self):
