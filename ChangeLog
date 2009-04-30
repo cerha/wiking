@@ -1,5 +1,6 @@
 2009-04-30  Tomas Cerha  <cerha@debian.brailcom.xx>
 
+	* lib/wiking/db.py: 
 	* lib/wiking/util.py: 
 	Make use of new Pytis support for multiple database connections
 	also in DB function handling.

@@ -142,7 +142,7 @@ class PytisModule(Module, ActionHandler):
     
     def __init__(self, resolver, dbconnection, **kwargs):
         super(PytisModule, self).__init__(resolver, **kwargs)
-        self._dbconnection = dbconnection
+        self._dbconnection = dbconnection.select(self.Spec.connection)
         spec = self._spec(resolver)
         self._data = spec.data_spec().create(connection_data=dbconnection)
         self._view = spec.view_spec()
