@@ -145,7 +145,6 @@ class PytisModule(Module, ActionHandler):
         self._dbconnection = dbconnection
         spec = self._spec(resolver)
         self._data_spec = spec.data_spec()
-        self._connection_data = dbconnection
         self._view = spec.view_spec()
         self._exception_matchers = [(re.compile(regex), msg)
                                     for regex, msg in self._EXCEPTION_MATCHERS]
@@ -162,7 +161,7 @@ class PytisModule(Module, ActionHandler):
         return getattr(self, name)
 
     def _delayed_init(self):
-        self._data = self._data_spec.create(connection_data=self._connection_data)
+        self._data = self._data_spec.create(connection_data=self._dbconnection)
         self._key = key = self._data.key()[0].id()
         self._sorting = self._view.sorting()
         if self._sorting is None:
