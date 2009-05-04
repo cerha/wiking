@@ -110,7 +110,7 @@ class PytisModule(Module, ActionHandler):
                 if f.virtual():
                     continue
                 id, value = f.id(), self[f.id()]
-                if value is None and not update:
+                if value.value() is None and not update:
                     # Omit empty values for insert to allow DB default values.
                     continue
                 dbcolumn = f.dbcolumn()
