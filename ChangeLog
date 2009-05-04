@@ -1,3 +1,8 @@
+2009-05-04  Milan Zamazal  <pdm@brailcom.org>
+
+	* lib/wiking/db.py:
+	Delay database access initialization in PytisModule.
+
 2009-04-30  Tomas Cerha  <cerha@debian.brailcom.xx>
 
 	* lib/wiking/db.py: 
