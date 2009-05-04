@@ -1,3 +1,11 @@
+2009-05-04  Tomas Cerha  <cerha@debian.brailcom.xx>
+
+	* lib/wiking/cms/cms.py:
+	Export registration notification message to HTML to prevent URI misinterpretation.
+
+	* lib/wiking/util.py: 
+	Removed forgotten bypass of email address validation.
+
 2009-05-04  Milan Zamazal  <pdm@brailcom.org>
 
 	* lib/wiking/db.py:

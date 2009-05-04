@@ -2237,7 +2237,7 @@ class Users(CMSModule):
         text, attachments = self._make_registration_email(req, record)
         err = send_mail(record['email'].value(),
                         _("Your registration at %s", req.server_hostname()),
-                        text, #export=True,
+                        text, export=True,
                         lang=record['lang'].value(), attachments=attachments)
         if err:
             err = _("Failed sending e-mail notification:") +' '+ err
