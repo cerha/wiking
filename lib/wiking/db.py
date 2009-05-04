@@ -129,7 +129,7 @@ class PytisModule(Module, ActionHandler):
             else:
                 roles = user.roles()
             return roles
-
+            
     @classmethod
     def title(cls):
         return cls.Spec.title
@@ -144,18 +144,31 @@ class PytisModule(Module, ActionHandler):
         super(PytisModule, self).__init__(resolver, **kwargs)
         self._dbconnection = dbconnection
         spec = self._spec(resolver)
-        self._data = spec.data_spec().create(connection_data=dbconnection)
+        self._data_spec = spec.data_spec()
+        self._connection_data = dbconnection
         self._view = spec.view_spec()
-        self._key = key = self._data.key()[0].id()
-        self._sorting = self._view.sorting()
-        self._db_function = {}
-        if self._sorting is None:
-            self._sorting = ((key, pytis.data.ASCENDENT),)
         self._exception_matchers = [(re.compile(regex), msg)
                                     for regex, msg in self._EXCEPTION_MATCHERS]
+        self._db_function = {}
+        self._title_column = self._TITLE_COLUMN or self._view.columns()[0]
+
+    def __getattr__(self, name):
+        if name not in ('_data', '_key', '_sorting', '_referer', '_referer_type', '_links',):
+            try:
+                return super(PytisModule, self).__getattr__(name)
+            except AttributeError: # can be thrown in absence of __getattr__ itself!
+                raise AttributeError(name)
+        self._delayed_init()
+        return getattr(self, name)
+
+    def _delayed_init(self):
+        self._data = self._data_spec.create(connection_data=self._connection_data)
+        self._key = key = self._data.key()[0].id()
+        self._sorting = self._view.sorting()
+        if self._sorting is None:
+            self._sorting = ((key, pytis.data.ASCENDENT),)
         self._referer = self._REFERER or key
         self._referer_type = self._data.find_column(self._referer).type()
-        self._title_column = self._TITLE_COLUMN or self._view.columns()[0]
         self._links = {}
         def cb_link(field):
             e = field.type(self._data).enumerator()
@@ -172,7 +185,6 @@ class PytisModule(Module, ActionHandler):
                 link = cb_link(self._view.field(cb_field))
                 if link: # and link.name() not in [x[1].name() for x in self._links.values()]:
                     self._links[f.id()] = (cb_field, link)
-            
 
     def _spec(self, resolver):
         return self.__class__.Spec(self.__class__, resolver)
