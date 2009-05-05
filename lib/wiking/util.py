@@ -415,7 +415,7 @@ class Document(object):
     """
     
     def __init__(self, title, content, subtitle=None, lang=None, sec_lang=None, variants=None,
-                 resources=(), globals=None):
+                 resources=(), globals=None, layout=None):
         """Initialize the instance.
 
         Arguments:
@@ -445,6 +445,9 @@ class Document(object):
           resources -- external resources available for this document as a sequence of
             'lcg.Resource' instances.
 
+          layout -- output layout as one of `wiking.Exporter.Layout' constants or None for the
+            default layout.
+
         """
         self._title = title
         self._subtitle = subtitle
@@ -456,7 +459,9 @@ class Document(object):
         self._variants = variants
         self._resources = tuple(resources)
         self._globals = globals
-
+        self._layout = layout
+        
+        
     def build(self, req, application):
         id = '/'.join(req.path)
         lang = self._lang or req.prefered_language(raise_error=False) or 'en'
@@ -491,7 +496,8 @@ class Document(object):
                               lang=lang, sec_lang=self._sec_lang, variants=variants or (),
                               active=item.active(), hidden=hidden, panels=panels,
                               children=[mknode(i) for i in item.submenu()],
-                              resource_provider=resource_provider, globals=self._globals)
+                              resource_provider=resource_provider, globals=self._globals,
+                              layout=self._layout)
             nodes[item.id()] = node
             return node
         top_level_nodes = [mknode(item) for item in application.menu(req)]
@@ -552,12 +558,14 @@ class BoundCache(object):
 
 class WikingNode(lcg.ContentNode):
 
-    def __init__(self, id, heading=None, panels=(), lang=None, sec_lang=None, **kwargs):
+    def __init__(self, id, heading=None, panels=(), lang=None, sec_lang=None, layout=None,
+                 **kwargs):
         super(WikingNode, self).__init__(id, **kwargs)
         self._heading = heading
         self._panels = panels
         self._lang = lang
         self._sec_lang = sec_lang
+        self._layout = layout
         for panel in panels:
             panel.content().set_parent(self)
 
@@ -587,6 +595,9 @@ class WikingNode(lcg.ContentNode):
     
     def panels(self):
         return self._panels
+
+    def layout(self):
+        return self._layout
 
 
 class ActionCtrl(lcg.Content):

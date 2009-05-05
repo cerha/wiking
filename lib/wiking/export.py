@@ -34,6 +34,17 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         def req(self):
             return self._req
 
+    class Layout(object):
+        """Enumeration of output document layout styles."""
+        DEFAULT = 'default'
+        """Default Wiking layout wrapping the page content in menus, panels etc."""
+        FRAME = 'frame'
+        """Frame layout displaying just the document content without any wrapping.
+
+        This layout is typically useful for rendering the IFRAME content.
+        
+        """
+
     _BODY_PARTS = ('wrap', 'media_player')
     _WRAP_PARTS = ('top', 'page', 'bottom')
     _PAGE_PARTS = ('links', 'breadcrumbs', 'language_selection',
@@ -44,8 +55,16 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
                            WikingRequest.WARNING: 'warning',
                            WikingRequest.ERROR: 'error'}
 
-    def _body_attr(self, context):
-        return super(Exporter, self)._body_attr(context, onload='wiking_init();')
+    def _body_attr(self, context, **kwargs):
+        layout = context.node().layout() or self.Layout.DEFAULT
+        cls =  layout +'-layout'
+        return super(Exporter, self)._body_attr(context, onload='wiking_init();', cls=cls, **kwargs)
+
+    def _body_content(self, context):
+        if context.node().layout() == self.Layout.FRAME:
+            return self._content(context)
+        else:
+            return super(Exporter, self)._body_content(context)
 
     def _wrap(self, context):
         return self._parts(context, self._WRAP_PARTS)

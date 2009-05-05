@@ -1,3 +1,9 @@
+2009-05-05  Tomas Cerha  <cerha@debian.brailcom.xx>
+
+	* lib/wiking/export.py: 
+	* lib/wiking/util.py: 
+	Added support for exporting the iframe content.
+
 2009-05-04  Tomas Cerha  <cerha@debian.brailcom.xx>
 
 	* lib/wiking/db.py:
