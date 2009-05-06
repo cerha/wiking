@@ -1,7 +1,7 @@
 -*- mode: Text; fill-column: 80 -*-
 
 Version 0.4.5 (not released yet):
-
+ 
  * Added support for MD5 passwords (new option password_storage in configuration
    file).
 
@@ -18,11 +18,22 @@ Version 0.4.5 (not released yet):
 
  * WMI link was moved to the login panel (if enabled).
   
+ * Registration notification emails are now sent in HTML to prevent confirmation
+   URI misinterpretation.
+
+ * Admin can now change user's password without knowing the prevoius password
+   (except for his own password).
+
+ * RSS links are now automatically shown within panels and announced in page
+   header meta tags.
+
  * Wiking Application API extended to cover common exporter customizations.
 
  * User's documentation updates.
  
  * Developer's documentation additions.
+
+ * Bug fixes.
 
 Version 0.4.4 (2008-10-01):
 
