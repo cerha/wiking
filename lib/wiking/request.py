@@ -327,7 +327,7 @@ class WikingRequest(Request):
               unresolved_path -- sequence of request path items (strings) corresponding to the
                 unresolved portion of the path at the time of the forward
               kwargs -- any keyword arguments passed to the forward method call.  These arguments
-                may be later inspected through the 'args()' method and make it possible to pass any
+                may be later inspected through the 'arg()' method and make it possible to pass any
                 application defined data for later inspection.
 
             """  
@@ -464,12 +464,14 @@ class WikingRequest(Request):
         return self._uri_prefix or '/'
 
     def forward(self, handler, **kwargs):
-        """Pass the request on to another handler keeping track of the handlers.
+        """Pass the request on to another handler keeping track of the forwarding history.
 
-        Adds the module to the list of used handlers and returns the result of calling
-        'handler.handle(req)'.  The 'handler' must be a 'RequestHandler' instance.
-
-        The list of used handlers can be retrieved using the 'handlers()' method.
+        Arguments:
+          handler -- 'RequestHandler' instance to handle request.
+          kwargs -- all keyword arguments are passed to the 'ForwardInfo' instance created for
+            this forward (later available in forward history using the method 'forwards()').
+  
+        Returns the result of calling 'handler.handle(req)'.
 
         """
         unresolved_path = self.unresolved_path

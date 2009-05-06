@@ -1,3 +1,8 @@
+2009-05-06  Tomas Cerha  <cerha@debian.brailcom.xx>
+
+	* lib/wiking/request.py: 
+	Docstrings improved.
+
 2009-05-05  Tomas Cerha  <cerha@debian.brailcom.xx>
 
 	* lib/wiking/export.py: 
