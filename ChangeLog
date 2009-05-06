@@ -1,5 +1,9 @@
 2009-05-06  Tomas Cerha  <cerha@debian.brailcom.xx>
 
+	* lib/wiking/db.py:
+	Add forward argument to distingiush request forwarding caused by
+	pytis redirection.
+
 	* NEWS: 
 	Updated.
 

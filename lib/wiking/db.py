@@ -616,7 +616,7 @@ class PytisModule(Module, ActionHandler):
                             break
                     else:
                         req.unresolved_path = list(req.path)
-                    return req.forward(self._module(module))
+                    return req.forward(self._module(module), pytis_redirect=True)
         return super(PytisModule, self)._handle(req, action, **kwargs)
 
     def handle(self, req):
