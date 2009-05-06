@@ -1,5 +1,8 @@
 2009-05-06  Tomas Cerha  <cerha@debian.brailcom.xx>
 
+	* NEWS: 
+	Updated.
+
 	* lib/wiking/request.py: 
 	Docstrings improved.
 
