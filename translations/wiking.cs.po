@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-04-23 19:32+0200\n"
+"POT-Creation-Date: 2009-05-07 18:13+0200\n"
 "PO-Revision-Date: 2009-04-23 19:32+0200\n"
 "Last-Translator: Tomas Cerha <cerha@brailcom.org>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
@@ -71,51 +71,55 @@ msgstr "Záznam byl úspěšně aktualizován."
 msgid "The record was deleted."
 msgstr "Záznam byl odstraněn."
 
-#: ../lib/wiking/db.py:208
+#: ../lib/wiking/db.py:233
 msgid "Invalid binding column value."
 msgstr "Nepřípustná hodnota vazebního sloupce."
 
-#: ../lib/wiking/db.py:259
+#: ../lib/wiking/db.py:284
 msgid "Integrity check failed."
 msgstr "Kontrola integrity dat selhala."
 
-#: ../lib/wiking/db.py:843
+#: ../lib/wiking/db.py:603
+msgid "This function is temporarily unavailable."
+msgstr ""
+
+#: ../lib/wiking/db.py:847
 msgid "Back"
 msgstr "Zpět"
 
-#: ../lib/wiking/db.py:932
+#: ../lib/wiking/db.py:936
 msgid "An RSS channel is available for this section:"
 msgstr "K dispozici je také RSS kanál pro tuto sekci:"
 
-#: ../lib/wiking/db.py:936
+#: ../lib/wiking/db.py:940
 msgid "more about RSS"
 msgstr "více o RSS"
 
-#: ../lib/wiking/db.py:1012
+#: ../lib/wiking/db.py:1016
 msgid "No records."
 msgstr "Žádné záznamy"
 
-#: ../lib/wiking/db.py:1019
+#: ../lib/wiking/db.py:1023
 msgid "The item was published."
 msgstr "Položka byla zveřejněna."
 
-#: ../lib/wiking/db.py:1020
+#: ../lib/wiking/db.py:1024
 msgid "The item was unpublished."
 msgstr "Zveřejnění položky bylo zrušeno."
 
-#: ../lib/wiking/db.py:1029
+#: ../lib/wiking/db.py:1033
 msgid "Publish"
 msgstr "Zveřejnit"
 
-#: ../lib/wiking/db.py:1032
+#: ../lib/wiking/db.py:1036
 msgid "Make the item visible to website visitors"
 msgstr "Zpřístupnit položku návštěvníkům stránek"
 
-#: ../lib/wiking/db.py:1033
+#: ../lib/wiking/db.py:1037
 msgid "Unpublish"
 msgstr "Zneveřejnit"
 
-#: ../lib/wiking/db.py:1036
+#: ../lib/wiking/db.py:1040
 msgid "Make the item invisible to website visitors"
 msgstr "Učinit položku nedostupnou pro návštěvníky stránek"
 
@@ -140,7 +144,7 @@ msgstr "Akce vyžaduje přihlášení"
 #. Translators: Login dialog page title (use a noun).
 #. Translators: Login info label (noun) followed by login name and login controls.
 #: ../lib/wiking/util.py:66 ../lib/wiking/util.py:401
-#: ../lib/wiking/util.py:702
+#: ../lib/wiking/util.py:713
 msgid "Login"
 msgstr "Přihlášení"
 
@@ -241,7 +245,7 @@ msgid "Change your password"
 msgstr "Změnit heslo"
 
 #. Translators: Login panel/dialog registration link.
-#: ../lib/wiking/util.py:393 ../lib/wiking/util.py:737
+#: ../lib/wiking/util.py:393 ../lib/wiking/util.py:748
 msgid "New user registration"
 msgstr "Registrace nového uživatele"
 
@@ -250,106 +254,106 @@ msgid "Login Panel"
 msgstr "Panel přihlášení"
 
 #. Translators: Label in front of action buttons.
-#: ../lib/wiking/util.py:637
+#: ../lib/wiking/util.py:648
 msgid "Actions:"
 msgstr "Akce:"
 
-#: ../lib/wiking/util.py:642
+#: ../lib/wiking/util.py:653
 msgid "Help"
 msgstr "Nápověda"
 
-#: ../lib/wiking/util.py:680
+#: ../lib/wiking/util.py:691
 msgid "Go to your profile"
 msgstr "Zobrazit uživatelský profil"
 
 #. Translators: Logout button label - verb in imperative.
-#: ../lib/wiking/util.py:685
+#: ../lib/wiking/util.py:696
 msgid "log out"
 msgstr "odhlásit"
 
 #. Translators: Login status info.  If logged, the username is displayed instaed.
-#: ../lib/wiking/util.py:688
+#: ../lib/wiking/util.py:699
 msgid "not logged"
 msgstr "nepřihlášen"
 
 #. Translators: Login button label - verb in imperative.
-#: ../lib/wiking/util.py:690
+#: ../lib/wiking/util.py:701
 msgid "log in"
 msgstr "přihlásit"
 
-#: ../lib/wiking/util.py:724
+#: ../lib/wiking/util.py:735
 msgid "Login name"
 msgstr "Přihlašovací jméno"
 
-#: ../lib/wiking/util.py:727
+#: ../lib/wiking/util.py:738
 msgid "Password"
 msgstr "Heslo"
 
 #. Translators: Login button label - verb in imperative.
-#: ../lib/wiking/util.py:734
+#: ../lib/wiking/util.py:745
 msgid "Log in"
 msgstr "přihlásit"
 
 #. Translators: Login dialog link to password change or password reminder (depends
 #. on configuration).
-#: ../lib/wiking/util.py:740
+#: ../lib/wiking/util.py:751
 msgid "Forgot your password?"
 msgstr "Zapomenuté heslo?"
 
-#: ../lib/wiking/export.py:42
+#: ../lib/wiking/export.py:53
 msgid "Language:"
 msgstr "Jazyk:"
 
-#: ../lib/wiking/export.py:108
+#: ../lib/wiking/export.py:127
 msgid "Wiking Management Interface"
 msgstr "Rozhraní správy obsahu Wiking"
 
-#: ../lib/wiking/export.py:133
+#: ../lib/wiking/export.py:152
 msgid "Content"
 msgstr "Obsah"
 
-#: ../lib/wiking/export.py:135 ../lib/wiking/export.py:159
-#: ../lib/wiking/export.py:161 ../lib/wiking/export.py:178
+#: ../lib/wiking/export.py:154 ../lib/wiking/export.py:178
+#: ../lib/wiking/export.py:180 ../lib/wiking/export.py:197
 msgid "Main navigation"
 msgstr "Hlavní navigace"
 
-#: ../lib/wiking/export.py:137 ../lib/wiking/export.py:174
+#: ../lib/wiking/export.py:156 ../lib/wiking/export.py:193
 msgid "Local navigation"
 msgstr "Navigace této sekce"
 
-#: ../lib/wiking/export.py:139
+#: ../lib/wiking/export.py:158
 msgid "Language selection"
 msgstr "Výběr jazyka"
 
-#: ../lib/wiking/export.py:143
+#: ../lib/wiking/export.py:162
 msgid "Jump in page"
 msgstr "Přejít ve stránce"
 
-#: ../lib/wiking/export.py:147
+#: ../lib/wiking/export.py:166
 msgid "You are here:"
 msgstr "Nacházíte se zde:"
 
-#: ../lib/wiking/export.py:175
+#: ../lib/wiking/export.py:194
 msgid "In this section:"
 msgstr "V této sekci:"
 
-#: ../lib/wiking/export.py:191
+#: ../lib/wiking/export.py:210
 msgid "Show panels"
 msgstr "Zobrazit panely"
 
-#: ../lib/wiking/export.py:192
+#: ../lib/wiking/export.py:211
 msgid "Hide panels"
 msgstr "Skrýt panely"
 
-#: ../lib/wiking/export.py:202
+#: ../lib/wiking/export.py:221
 msgid "RSS channel"
 msgstr "RSS kanál"
 
-#: ../lib/wiking/export.py:217
+#: ../lib/wiking/export.py:236
 msgid "Warning"
 msgstr "Varování"
 
-#: ../lib/wiking/export.py:239
+#: ../lib/wiking/export.py:258
 #, python-format
 msgid "Last change: %(date)s, %(user)s"
 msgstr "Poslední změna: %(date)s, %(user)s"

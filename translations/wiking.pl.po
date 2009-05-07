@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-04-23 19:32+0200\n"
+"POT-Creation-Date: 2009-05-07 18:13+0200\n"
 "PO-Revision-Date: 2008-10-24 13:02+0200\n"
 "Last-Translator: Pawel Loba <ploba@rogers.com>\n"
 "Language-Team: Polish <wiking@lists.freebsoft.org>\n"
@@ -73,51 +73,55 @@ msgstr "Wpis został uaktualniony."
 msgid "The record was deleted."
 msgstr "Wpis został usunięty."
 
-#: ../lib/wiking/db.py:208
+#: ../lib/wiking/db.py:233
 msgid "Invalid binding column value."
 msgstr ""
 
-#: ../lib/wiking/db.py:259
+#: ../lib/wiking/db.py:284
 msgid "Integrity check failed."
 msgstr "Sprawdzian integralności nie powiódł się"
 
-#: ../lib/wiking/db.py:843
+#: ../lib/wiking/db.py:603
+msgid "This function is temporarily unavailable."
+msgstr ""
+
+#: ../lib/wiking/db.py:847
 msgid "Back"
 msgstr ""
 
-#: ../lib/wiking/db.py:932
+#: ../lib/wiking/db.py:936
 msgid "An RSS channel is available for this section:"
 msgstr "Kanał RSS jest dostępny dla tej sekcji:"
 
-#: ../lib/wiking/db.py:936
+#: ../lib/wiking/db.py:940
 msgid "more about RSS"
 msgstr "Więcej o RSS"
 
-#: ../lib/wiking/db.py:1012
+#: ../lib/wiking/db.py:1016
 msgid "No records."
 msgstr "Nie ma wpisu"
 
-#: ../lib/wiking/db.py:1019
+#: ../lib/wiking/db.py:1023
 msgid "The item was published."
 msgstr "Pozycja została opublikowana."
 
-#: ../lib/wiking/db.py:1020
+#: ../lib/wiking/db.py:1024
 msgid "The item was unpublished."
 msgstr "Pozycja nie została opublikowana."
 
-#: ../lib/wiking/db.py:1029
+#: ../lib/wiking/db.py:1033
 msgid "Publish"
 msgstr "Opublikować"
 
-#: ../lib/wiking/db.py:1032
+#: ../lib/wiking/db.py:1036
 msgid "Make the item visible to website visitors"
 msgstr ""
 
-#: ../lib/wiking/db.py:1033
+#: ../lib/wiking/db.py:1037
 msgid "Unpublish"
 msgstr "Nie publikować"
 
-#: ../lib/wiking/db.py:1036
+#: ../lib/wiking/db.py:1040
 msgid "Make the item invisible to website visitors"
 msgstr ""
 
@@ -142,7 +146,7 @@ msgstr "Wymagane potwierdzenie"
 #. Translators: Login dialog page title (use a noun).
 #. Translators: Login info label (noun) followed by login name and login controls.
 #: ../lib/wiking/util.py:66 ../lib/wiking/util.py:401
-#: ../lib/wiking/util.py:702
+#: ../lib/wiking/util.py:713
 #, fuzzy
 msgid "Login"
 msgstr "Wlogowanie"
@@ -241,7 +245,7 @@ msgid "Change your password"
 msgstr ""
 
 #. Translators: Login panel/dialog registration link.
-#: ../lib/wiking/util.py:393 ../lib/wiking/util.py:737
+#: ../lib/wiking/util.py:393 ../lib/wiking/util.py:748
 msgid "New user registration"
 msgstr ""
 
@@ -251,108 +255,108 @@ msgid "Login Panel"
 msgstr "Nazwa logująca"
 
 #. Translators: Label in front of action buttons.
-#: ../lib/wiking/util.py:637
+#: ../lib/wiking/util.py:648
 msgid "Actions:"
 msgstr "Akcje:"
 
-#: ../lib/wiking/util.py:642
+#: ../lib/wiking/util.py:653
 msgid "Help"
 msgstr "Pomoc"
 
-#: ../lib/wiking/util.py:680
+#: ../lib/wiking/util.py:691
 msgid "Go to your profile"
 msgstr ""
 
 #. Translators: Logout button label - verb in imperative.
-#: ../lib/wiking/util.py:685
+#: ../lib/wiking/util.py:696
 msgid "log out"
 msgstr "wyloguj się"
 
 #. Translators: Login status info.  If logged, the username is displayed instaed.
-#: ../lib/wiking/util.py:688
+#: ../lib/wiking/util.py:699
 msgid "not logged"
 msgstr ""
 
 #. Translators: Login button label - verb in imperative.
-#: ../lib/wiking/util.py:690
+#: ../lib/wiking/util.py:701
 msgid "log in"
 msgstr "wloguj się"
 
-#: ../lib/wiking/util.py:724
+#: ../lib/wiking/util.py:735
 msgid "Login name"
 msgstr "Nazwa logująca"
 
-#: ../lib/wiking/util.py:727
+#: ../lib/wiking/util.py:738
 msgid "Password"
 msgstr "Hasło"
 
 #. Translators: Login button label - verb in imperative.
-#: ../lib/wiking/util.py:734
+#: ../lib/wiking/util.py:745
 msgid "Log in"
 msgstr "Wlogowanie"
 
 #. Translators: Login dialog link to password change or password reminder (depends
 #. on configuration).
-#: ../lib/wiking/util.py:740
+#: ../lib/wiking/util.py:751
 msgid "Forgot your password?"
 msgstr ""
 
-#: ../lib/wiking/export.py:42
+#: ../lib/wiking/export.py:53
 msgid "Language:"
 msgstr "Język:"
 
-#: ../lib/wiking/export.py:108
+#: ../lib/wiking/export.py:127
 msgid "Wiking Management Interface"
 msgstr "Zarządzający Interfejs Wikinga"
 
-#: ../lib/wiking/export.py:133
+#: ../lib/wiking/export.py:152
 msgid "Content"
 msgstr "treść"
 
-#: ../lib/wiking/export.py:135 ../lib/wiking/export.py:159
-#: ../lib/wiking/export.py:161 ../lib/wiking/export.py:178
+#: ../lib/wiking/export.py:154 ../lib/wiking/export.py:178
+#: ../lib/wiking/export.py:180 ../lib/wiking/export.py:197
 msgid "Main navigation"
 msgstr "Główna Nawigacja"
 
-#: ../lib/wiking/export.py:137 ../lib/wiking/export.py:174
+#: ../lib/wiking/export.py:156 ../lib/wiking/export.py:193
 #, fuzzy
 msgid "Local navigation"
 msgstr "Główna Nawigacja"
 
-#: ../lib/wiking/export.py:139
+#: ../lib/wiking/export.py:158
 #, fuzzy
 msgid "Language selection"
 msgstr "Języki"
 
-#: ../lib/wiking/export.py:143
+#: ../lib/wiking/export.py:162
 msgid "Jump in page"
 msgstr ""
 
-#: ../lib/wiking/export.py:147
+#: ../lib/wiking/export.py:166
 msgid "You are here:"
 msgstr ""
 
-#: ../lib/wiking/export.py:175
+#: ../lib/wiking/export.py:194
 msgid "In this section:"
 msgstr ""
 
-#: ../lib/wiking/export.py:191
+#: ../lib/wiking/export.py:210
 msgid "Show panels"
 msgstr "Pokaż panele"
 
-#: ../lib/wiking/export.py:192
+#: ../lib/wiking/export.py:211
 msgid "Hide panels"
 msgstr "Ukryj panele"
 
-#: ../lib/wiking/export.py:202
+#: ../lib/wiking/export.py:221
 msgid "RSS channel"
 msgstr ""
 
-#: ../lib/wiking/export.py:217
+#: ../lib/wiking/export.py:236
 msgid "Warning"
 msgstr ""
 
-#: ../lib/wiking/export.py:239
+#: ../lib/wiking/export.py:258
 #, python-format
 msgid "Last change: %(date)s, %(user)s"
 msgstr "Ostatnia zmiana: %(date)s, %(user)s"
