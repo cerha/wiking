@@ -1,3 +1,11 @@
+2009-05-07  Tomas Cerha  <cerha@debian.brailcom.xx>
+
+	* lib/wiking/configuration.py: 
+	* lib/wiking/cms/appl.py: 
+	* lib/wiking/cms/certificates.py: 
+	* lib/wiking/cms/cms.py: 
+	Support for certificates moved to a saparate module and	disabled for now.
+
 2009-05-06  Tomas Cerha  <cerha@debian.brailcom.xx>
 
 	* lib/wiking/db.py:

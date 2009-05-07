@@ -133,18 +133,6 @@ class Application(CookieAuthentication, wiking.Application):
             raise Exception("Invalid password storage option", password_storage)
         return password == record['password'].value()
 
-    def authenticate(self, req):
-        user = None
-        if cfg.certificate_authentication:
-            certificate = req.certificate()
-            if certificate is not None:
-                user = self._module('UserCertificates').certificate_user(req, certificate)
-                if user is not None:
-                    user.set_authentication_parameters(method='certificate', auto=True)
-        if user is None:
-            user = super(Application, self).authenticate(req)
-        return user
-
     def authorize(self, req, module, action=None, record=None, **kwargs):
         if req.path[0] == '_registration' and module.name() == 'Users':
             # This hack redirects action authorization back to Registration after redirection to
