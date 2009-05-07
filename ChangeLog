@@ -1,5 +1,9 @@
 2009-05-07  Tomas Cerha  <cerha@debian.brailcom.xx>
 
+	* lib/wiking/db.py: 
+	* lib/wiking/cms/cms.py: 
+	Methods `action_insert' and `action_update' cleaned up.
+
 	* translations/wiking-cms.cs.po:
 	* translations/wiking-cms.de.po:
 	* translations/wiking-cms.es.po:

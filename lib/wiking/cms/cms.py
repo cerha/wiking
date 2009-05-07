@@ -565,7 +565,8 @@ class Config(CMSModule):
     def _redirect_after_update(self, req, record):
         self._configure(record.row())
         req.set_param('submit', None) # Avoid recursion.
-        return self.action_update(req, record, msg=self._update_msg(record))
+        req.message(self._update_msg(record))
+        return self.action_update(req, record)
     
     def _configure(self, row):
         for f in self._view.fields():

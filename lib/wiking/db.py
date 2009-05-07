@@ -786,27 +786,24 @@ class PytisModule(Module, ActionHandler):
 
     # ===== Action handlers which modify the database =====
 
-    def _action_insert_data(self, req, layout):
-        if self._OWNER_COLUMN and self._SUPPLY_OWNER and req.user():
-            prefill = {self._OWNER_COLUMN: req.user().uid()}
+    def action_insert(self, req):
+        layout = self._layout(req, 'insert')
+        if req.param('submit'):
+            if self._OWNER_COLUMN and self._SUPPLY_OWNER and req.user():
+                prefill = {self._OWNER_COLUMN: req.user().uid()}
+            else:
+                prefill = None
+            record = self._record(req, None, new=True, prefill=prefill)
+            errors = self._validate(req, record, layout=layout)
+            if not errors:
+                try:
+                    self._insert(record)
+                except pd.DBException, e:
+                    errors = (self._analyze_exception(e),)
+                else:
+                    return self._redirect_after_insert(req, record)
         else:
-            prefill = None
-        record = self._record(req, None, new=True, prefill=prefill)
-        errors = self._validate(req, record, layout=layout)
-        if not errors:
-            try:
-                self._insert(record)
-            except pd.DBException, e:
-                errors = (self._analyze_exception(e),)
-        return record, errors
-
-    def _action_insert_success(self, req, layout, record):
-        return self._redirect_after_insert(req, record)        
-        
-    def _action_insert_failure(self, req, layout, errors):
-        return self._action_insert_form(req, layout, errors=errors)
-        
-    def _action_insert_form(self, req, layout, errors=()):
+            errors = ()
         # TODO: Redirect handler to HTTPS if cfg.force_https_login is true?
         # The primary motivation is to protect registration form data.  The
         # same would apply for action_edit.
@@ -815,39 +812,8 @@ class PytisModule(Module, ActionHandler):
                           submit=self._SUBMIT_BUTTONS.get('insert'),
                           errors=errors)
         return self._document(req, form, subtitle=self._insert_subtitle(req))
-
-    def action_insert_perform(self, req):
-        """Perform insert action for given 'req', without generating output.
-
-        Return tripple (RECORD, ERRORS, LAYOUT), where RECORD is resulting
-        'Record' instance or 'None' (in case there is nothing to insert),
-        ERRORS is a sequence of errors (what exactly?) and LAYOUT is the form
-        'Layout' instance.
-
-        """
-        layout = self._layout(req, 'insert')
-        if req.param('submit'):
-            record, errors = self._action_insert_data(req, layout)
-        else:
-            record, errors = None, ()
-        return record, errors, layout
-
-    def action_insert_document(self, req, layout, errors, record):
-        """Generate and return output document for insert action."""
-        if errors:              # unsuccessful insert
-            document = self._action_insert_failure(req, layout, errors)
-        elif record is not None: # successful insert
-            document = self._action_insert_success(req, layout, record)
-        else:                   # empty form
-            document = self._action_insert_form(req, layout, errors=())
-        return document
-        
-    def action_insert(self, req, errors=()):
-        record, errors, layout = self.action_insert_perform(req)
-        document = self.action_insert_document(req, layout, errors, record)
-        return document
             
-    def action_update(self, req, record, action='update', msg=None):
+    def action_update(self, req, record, action='update'):
         layout = self._layout(req, action, record)
         if req.param('submit'):
             errors = self._validate(req, record, layout=layout)
@@ -865,7 +831,7 @@ class PytisModule(Module, ActionHandler):
                           submit=self._SUBMIT_BUTTONS.get(action),
                           prefill=self._prefill(req), errors=errors)
         subtitle = self._update_subtitle(req, record, action)
-        return self._document(req, form, record, subtitle=subtitle, msg=msg)
+        return self._document(req, form, record, subtitle=subtitle)
 
     def action_delete(self, req, record):
         err = None
