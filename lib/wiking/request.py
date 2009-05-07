@@ -788,6 +788,8 @@ class User(object):
         retains its value.
         
         """
+        # TODO: Wouldn't it be possible to pass these parameters to the constructor as all other
+        # parameters?
         if method is not None:
             assert method in ('password', 'certificate')
             self._authentication_method = method
