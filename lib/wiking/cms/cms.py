@@ -2158,11 +2158,28 @@ class Users(CMSModule):
     def _make_user(self, kwargs):
         return User(**kwargs)
 
-    def user(self, req, login):
-        row = self._data.get_row(login=login)
+    def user(self, req, login=None, uid=None):
+        """Return a user for given login name or uid.
+
+        Arguments:
+        login -- login name of the user
+        uid -- unique identifier of the user
+
+        Returns a User instance (defined in request.py) or None"""
+
+        # Make sure we got exactly one of {login, uid}
+        assert (login or uid) and not (login and uid)
+
+        # Get the user data from db
+        if login:
+            row = self._data.get_row(login=login)
+        elif uid:
+            row = self._data.get_row(uid=uid)
         if row is None:
             return None
-        kwargs = self._user_arguments(req, login, row)
+
+        # Convert user data into a User instance
+        kwargs = self._user_arguments(req, row['login'].value(), row)
         user = self._make_user(kwargs)
         return user
 
@@ -2173,7 +2190,7 @@ class Users(CMSModule):
         encapsulation and doesn't work for queries based on email (it
         only returns the first user with that email, not all users).
 
-        Use find_users() instead.
+        Use user() or find_users() instead.
         """
         if isinstance(query, int):
             row = self._data.get_row(uid=query)
@@ -2186,13 +2203,10 @@ class Users(CMSModule):
         else:
             return None
 
-    def find_users(self, req, query):
-        """Return a user for given uid or login name or a list of
-        users for given email.
-
-        Returns a User instance (defined in request.py) for ids and
-        logins or a list of User instances for emails or None if no
-        user corresponds to this criteria."""
+    def find_users(self, req, email):
+        """Returns a list of users (User instances defined in
+        request.py) who are registered with this email or None
+        if there is no such user"""
 
         def record_to_user(row):
             """Convert a user record to a User instance"""
@@ -2200,22 +2214,13 @@ class Users(CMSModule):
             return self._make_user(kwargs)
 
         # Find the user(s) in database and store in res
-        if isinstance(query, int):
-            res = self._data.get_row(uid=query)
-        elif query.find('@') == -1:
-            res = self._data.get_row(login=query)
-        else:
-            res = self._data.get_rows(email=query)                
+        res = self._data.get_rows(email=email)
 
-        # From a (list of) record(s) in res construct a (list of) User instance(s)
+        # From a list of records in res construct a list of User instance(s)
         if res is None:
-            # Unknown query or no matches
             return None
-        elif isinstance(res, list):
-            users = [record_to_user(row) for row in res]
-        else:
-            users = record_to_user(res)
-
+        users = [record_to_user(row) for row in res]
+        
         return users
 
     def check_registration_code(self, req):
