@@ -1,3 +1,8 @@
+2009-05-14  Hynek Hanke  <hanke@brailcom.org>
+
+	* lib/wiking/cms/cms.py (Users.find_user): Marked as deprecated.
+	(Users.find_users): New method.
+
 2009-05-07  Tomas Cerha  <cerha@debian.brailcom.xx>
 
 	* lib/wiking/db.py: 
