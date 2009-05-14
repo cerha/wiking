@@ -2214,7 +2214,7 @@ class Users(CMSModule):
         elif isinstance(res, list):
             users = [record_to_user(row) for row in res]
         else:
-            users = record_to_user(row)
+            users = record_to_user(res)
 
         return users
 
