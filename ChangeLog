@@ -2,6 +2,10 @@
 
 	* lib/wiking/cms/cms.py (Users.find_user): Marked as deprecated.
 	(Users.find_users): New method.
+	(Users.find_users.record_to_user): Fixed.
+	(Users.user): Accept login or uid as user identification parameter.
+	(Users.find_users.record_to_user): Only accept email as a parameter and
+	always return a list.
 
 2009-05-07  Tomas Cerha  <cerha@debian.brailcom.xx>
 
