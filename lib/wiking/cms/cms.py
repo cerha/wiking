@@ -2168,6 +2168,12 @@ class Users(CMSModule):
 
     def find_user(self, req, query):
         """Return the user record for given uid, login or email address (for password reminder).
+
+        This method is DEPRECATED because it doesn't follow proper
+        encapsulation and doesn't work for queries based on email (it
+        only returns the first user with that email, not all users).
+
+        Use find_users() instead.
         """
         if isinstance(query, int):
             row = self._data.get_row(uid=query)
@@ -2179,7 +2185,39 @@ class Users(CMSModule):
             return self._record(req, row)
         else:
             return None
-        
+
+    def find_users(self, req, query):
+        """Return a user for given uid or login name or a list of
+        users for given email.
+
+        Returns a User instance (defined in request.py) for ids and
+        logins or a list of User instances for emails or None if no
+        user corresponds to this criteria."""
+
+        def record_to_user(row):
+            """Convert a user record to a User instance"""
+            kwargs = self._user_arguments(req, row['login'].value(), row)
+            return self._make_user(kwargs)
+
+        # Find the user(s) in database and store in res
+        if isinstance(query, int):
+            res = self._data.get_row(uid=query)
+        elif query.find('@') == -1:
+            res = self._data.get_row(login=query)
+        else:
+            res = self._data.get_rows(email=query)                
+
+        # From a (list of) record(s) in res construct a (list of) User instance(s)
+        if res is None:
+            # Unknown query or no matches
+            return None
+        elif isinstance(res, list):
+            users = [record_to_user(row) for row in res]
+        else:
+            users = record_to_user(row)
+
+        return users
+
     def check_registration_code(self, req):
         """Check whether given request contains valid login and registration code.
 
