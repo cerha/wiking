@@ -155,24 +155,18 @@ class Registration(Module, ActionHandler):
     
     """
     class ReminderForm(lcg.Content):
-        def export(self, exporter):
-            g = exporter.generator()
+        def export(self, context):
+            g = context.generator()
+            req = context.req()
             controls = (
-                g.label(_("Enter your login name or e-mail address")+':', id='login'),
-                g.field(name='login', value='', id='login', tabindex=0, size=14),
+                g.label(_("Enter your login name or e-mail address")+':', id='query'),
+                g.field(name='query', value=req.param('query'), id='query', tabindex=0, size=14),
                 g.submit(_("Submit"), cls='submit'),)
             return g.form(controls, method='POST', cls='password-reminder-form') #+ \
                    #g.p(_(""))
     
     def _default_action(self, req, **kwargs):
         return 'view'
-
-    def _generate_password(self):
-        random.seed()
-        characters = [random.choice('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01233456789')
-                      for i in range(8)]
-        password = string.join(characters, '')
-        return password
 
     def action_view(self, req):
         if req.user():
@@ -191,38 +185,47 @@ class Registration(Module, ActionHandler):
     
     def action_remind(self, req):
         title = _("Password reminder")
-        if req.param('login'):
-            users = self._module('Users')
-            record = users.find_user(req, req.param('login'))
-            if record:
-                text = _("A password reminder request has been made at %(server_uri)s.",
-                         server_uri=req.server_uri()) +'\n\n'
-                uid = record['uid'].value()
-                login = record['login'].value()
-                password = record['password'].value()
+        query = req.param('query')
+        if query:
+            users_module = self._module('Users')
+            if query.find('@') == -1:
+                user = users_module.user(req, query)
+            else:
+                users = users_module.find_users(req, query)
+                if not users:
+                    user = None
+                elif len(users) == 1:
+                    user = users[0]
+                else:
+                    content = (lcg.p(_("Multiple user accounts found for given email address.")),
+                               lcg.p(_("Please, select the account for which you want to remind:")),
+                               lcg.ul([lcg.link(make_uri(req.uri(), action='remind',
+                                                         query=u.login()), u.name())
+                                       for u in users]))
+                    return Document(title, content)
+            if user:
                 if cfg.password_storage == 'md5':
-                    password = self._generate_password()
-                    password_value, password_error = \
-                        pytis.data.Password(md5=True).validate(password, verify=password)
-                    assert password_error is None, password_error
                     try:
-                        record.update(password=password_value.value())
-                    except pd.DBException, e:
+                        password = users_module.reset_password(user)
+                    except Exception, e:
                         req.message(unicode(e.exception()), type=req.ERROR)
-                        content = self.ReminderForm()
-                        return Document(title, content)
+                        return Document(title, self.ReminderForm())
                     intro_text = _("Your credentials were reset to:")
                 else:
+                    password = user.data()['password'].value()
                     intro_text = _("Your credentials are:")
-                text += concat(
+                text = concat(
+                    _("A password reminder request has been made at %(server_uri)s.",
+                      server_uri=req.server_uri()),
+                    '',
                     intro_text,
-                    '   '+_("Login name") +': '+ login,
-                    '   '+_("Password") +': '+ password, '',
+                    '   '+_("Login name") +': '+ user.login(),
+                    '   '+_("Password") +': '+ password,
+                    '',
                     _("We strongly recommend you change your password at nearest occassion, "
                       "since it has been exposed to an unsecure channel."),
-                    separator='\n')
-                err = send_mail(record['email'].value(), title, text+"\n",
-                                lang=req.prefered_language())
+                    '', separator='\n')
+                err = send_mail(user.email(), title, text, lang=req.prefered_language())
                 if err:
                     req.message(_("Failed sending e-mail notification:") +' '+ err, type=req.ERROR)
                     msg = _("Please try repeating your request later or contact the administrator!")
@@ -2159,25 +2162,27 @@ class Users(CMSModule):
         return User(**kwargs)
 
     def user(self, req, login=None, uid=None):
-        """Return a user for given login name or uid.
+        """Return a user for given login name or user id.
 
         Arguments:
-        login -- login name of the user
-        uid -- unique identifier of the user
+          login -- login name of the user as a string.
+          uid -- unique identifier of the user as integer.
 
-        Returns a User instance (defined in request.py) or None"""
+        Only one of 'uid' or 'login' may be passed (not None).  Argument 'login' may also be passed
+        as positional (its position is guaranteed to remain).
 
-        # Make sure we got exactly one of {login, uid}
-        assert (login or uid) and not (login and uid)
+        Returns a 'User' instance (defined in request.py) or None.
 
+        """
         # Get the user data from db
-        if login:
+        if login is not None and uid is None:
             row = self._data.get_row(login=login)
-        elif uid:
+        elif uid is not None and login is None:
             row = self._data.get_row(uid=uid)
+        else:
+            raise Exception("Invalid 'user()' argumets.")
         if row is None:
             return None
-
         # Convert user data into a User instance
         kwargs = self._user_arguments(req, row['login'].value(), row)
         user = self._make_user(kwargs)
@@ -2190,7 +2195,8 @@ class Users(CMSModule):
         encapsulation and doesn't work for queries based on email (it
         only returns the first user with that email, not all users).
 
-        Use user() or find_users() instead.
+        Use 'user()' or 'find_users()' instead.
+        
         """
         if isinstance(query, int):
             row = self._data.get_row(uid=query)
@@ -2204,24 +2210,29 @@ class Users(CMSModule):
             return None
 
     def find_users(self, req, email):
-        """Returns a list of users (User instances defined in
-        request.py) who are registered with this email or None
-        if there is no such user"""
-
-        def record_to_user(row):
-            """Convert a user record to a User instance"""
+        """Return a list of 'User' instances who are registered with given email address."""
+        def make_user(row):
             kwargs = self._user_arguments(req, row['login'].value(), row)
             return self._make_user(kwargs)
+        return [make_user(row) for row in self._data.get_rows(email=email)]
 
-        # Find the user(s) in database and store in res
-        res = self._data.get_rows(email=email)
+    def _generate_password(self):
+        characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01233456789'
+        random.seed()
+        return string.join([random.choice(characters) for i in range(8)], '')
 
-        # From a list of records in res construct a list of User instance(s)
-        if res is None:
-            return None
-        users = [record_to_user(row) for row in res]
+    def reset_password(self, user):
+        """Reset md5 password for given 'User' instance and return the new password.
+
+        May raise 'pd.DBException' if the database operation fails.
         
-        return users
+        """
+        record = user.data()
+        password = self._generate_password()
+        value, error = pytis.data.Password(md5=True).validate(password, verify=password)
+        assert error is None, error
+        record.update(password=value.value())
+        return password
 
     def check_registration_code(self, req):
         """Check whether given request contains valid login and registration code.

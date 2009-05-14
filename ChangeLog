@@ -1,3 +1,8 @@
+2009-05-14  Tomas Cerha  <cerha@debian.brailcom.xx>
+
+	* lib/wiking/cms/cms.py: 
+	Handle multiple accounts with one email address in password reminder.
+
 2009-05-14  Hynek Hanke  <hanke@brailcom.org>
 
 	* lib/wiking/cms/cms.py (Users.find_user): Marked as deprecated.
