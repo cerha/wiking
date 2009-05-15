@@ -2,6 +2,12 @@
 
 	* lib/wiking/cms/cms.py:
 	* sql/wiking.sql:
+	Allow adding custom predefined e-mails.
+
+2009-05-15  Milan Zamazal  <pdm@brailcom.org>
+
+	* lib/wiking/cms/cms.py:
+	* sql/wiking.sql:
 	Preliminary support for predefined e-mail texts.
 
 2009-05-15  Milan Zamazal  <pdm@brailcom.org>
