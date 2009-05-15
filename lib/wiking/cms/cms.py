@@ -2378,6 +2378,19 @@ class Organizations(CMSModule):
 
 
 class Text(Structure):
+    """Representation of a predefined text.
+
+    Each predefined text consists of the following attributes:
+
+      label -- unique identifier of the text, string
+      description -- human description of the text, presented to application
+        administrators managing the texts
+      text -- the text itself, as a translatable string or unicode
+
+    Note the predefined texts get automatically translated using gettext
+    mechanism.
+
+    """
     _attributes = (Attribute('label', str),
                    Attribute('description', basestring),
                    Attribute('text', basestring),)
@@ -2386,24 +2399,28 @@ class Text(Structure):
 
     
 class Texts(CMSModule):
-    """Storage of various texts editable by administrators.
+    """Management of predefined texts editable by administrators.
 
-    The texts are LCG structured texts.  These texts are language dependent.
+    Predefined texts may be used for various purposes in applications,
+    typically to display some application specific information.  Application
+    developer must define all the predefined texts to be used in the
+    application, in the form of 'Text' instances.  Application administrators
+    may change the texts in CMS, but they can't delete them nor to insert new
+    texts (except for translations of defined texts).
 
-    Each of the texts is identified by a unique identifier.  To avoid naming
-    conflicts between various Wiking extensions the identifiers are of the form
-    NAMESPACE.ID where NAMESPACE is an identifier of the extension name space
-    and ID is the particular text id within the name space.  It is recommended
-    to limit both NAMESPACE and ID characters to English letters, digits and
-    dashes.
+    The texts are LCG structured texts and they are language dependent.  Each
+    of the texts is identified by a 'Text' instance with unique identifier (its
+    'label' attribute).  See 'Text' class for more details.
 
-    Particular texts are defined by applications through the 'register_text'
-    method.  Unregistered texts cannot be used and accessed.  Administrators
-    may change registered texts in CMS, but they can't delete them nor to
-    insert new texts (except for translations of existing texts).
+    So that the module can find the texts, '_TEXT_MODULES' attribute of this
+    class must be defined.  It's a tuple of Python modules in which the texts
+    are placed.  If a Wiking extension adds its own texts, it must add their
+    Python module(s) to '_TEXT_MODULES' through a customized 'Texts' Wiking
+    module.
 
-    Wiking modules can access the texts by using the 'text' method.
-
+    Wiking modules can access the texts by using the 'text()' method.  See also
+    'TextReferrer' class.
+    
     """
 
     class Spec(Specification):
@@ -2466,19 +2483,21 @@ class Texts(CMSModule):
                     self.Spec._register_text(text)
     
     def text(self, req, text, lang=None):
-        """Return text identified by 'namespace' and 'label'.
+        """Return text corresponding to 'text'.
 
         If there is no such text, return 'None'.
 
         Arguments:
 
-          namespace -- string identifying Wiking extension name space
-          label -- string identifying the text within the name space
+          req -- wiking request
+          text -- 'Text' instance identifying the text
           lang -- two-character string identifying the language of the text
 
-        If there is no text available for the given 'lang', the same text is
-        search for language 'en'.  If no text is available even for 'en'
-        language, 'None' is returned.
+        If the language is not specied explicitly, language of the request is
+        used.  If there is no language set in request, 'en' is assumed.  If the
+        text is not available for the selected language in the database, the
+        method looks for the predefined text in the application and gettext
+        mechanism is used for its translation.
           
         """
         if lang is None:
@@ -2496,9 +2515,9 @@ class Texts(CMSModule):
         return text
 
     def parsed_text(self, req, text, lang=None):
-        """Return parsed text identified by 'namespace' and 'label'.
+        """Return parsed text corresponding to 'text'.
 
-        This method is the same as 'text' but instead of returning LCG
+        This method is the same as 'text()' but instead of returning LCG
         structured text, it returns its parsed form, as a sequence of
         'lcg.Content' instances.  If the given text doesn't exist, an empty
         sequence is returned.
@@ -2513,47 +2532,37 @@ class Texts(CMSModule):
 
 
 class TextReferrer(object):
-    """Class of modules using 'Text' module.
+    """Utility class for modules using 'Texts' module.
 
-    This class simplifies registration and retrieval of texts stored in 'Text'
-    module.  It is intended to be inherited as an additional class into Wiking
+    It defines two convenience methods for text retrieval methods: 'text()' and
+    'parsed_text()'.
+
+    The class is intended to be inherited as an additional class into Wiking
     modules using multiple inheritance.
-
-    In order to perform automatic registration, you must do the following:
-
-      - Define text namespace in '_TEXTS_NAMESPACE' attribute, as a string.
-
-      - Define texts to register in '_TEXTS' attribute.  It is a tuple
-        containing entries of the form (LABEL, DESCRIPTION,) where LABEL is a
-        string label of the text (without the name space identifier) and
-        DESCRIPTION is a unicode describing the purpose of the text.
-
-    Additionaly the class defines convenience methods 'text' and 'parsed_text'
-    to simplify retrieving registered texts.
 
     """
     
     def text(self, req, text, lang=None, _method=Texts.text):
-        """Return text identified by 'label'.
+        """Return text corresponding to 'text'.
 
         If there is no such text, return 'None'.
 
         Arguments:
 
-          label -- string identifying the text within the name space defined in
-            the class
+          req -- wiking request
+          text -- 'Text' instance identifying the text
           lang -- two-character string identifying the language of the text
 
         Looking texts for a particular language is performed according the
-        rules documented in 'Text.text'.
+        rules documented in 'Texts.text()'.
           
         """
         return _method(self._module('Texts'), req, text, lang=lang)
 
     def parsed_text(self, req, text, lang='en'):
-        """Return parsed text identified by 'label'.
+        """Return parsed text corresponding to 'text'.
 
-        This method is the same as 'text' but instead of returning LCG
+        This method is the same as 'text()' but instead of returning LCG
         structured text, it returns its parsed form, as a sequence of
         'lcg.Content' instances.  If the given text doesn't exist, an empty
         sequence is returned.
