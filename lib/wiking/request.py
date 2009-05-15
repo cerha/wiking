@@ -674,7 +674,8 @@ class User(object):
     """
     
     def __init__(self, login, uid=None, name=None, roles=(), email=None, data=None,
-                 passwd_expiration=None, uri=None, organization_id=None, organization=None):
+                 passwd_expiration=None, uri=None, organization_id=None, organization=None,
+                 lang='en'):
         """Initialize the instance.
 
         Arguments:
@@ -690,6 +691,7 @@ class User(object):
           organization_id -- id of the user's organization as an Integer
           organization -- name of the user's organization as a string or
             unicode; or 'None' if the user doesn't belong to any organization
+          lang -- code of the user's preferred language
 
         Please note, that password expiration date has currently no impact on the authentication
         process.  It will just be displayed in the login panel, if defined.
@@ -710,6 +712,7 @@ class User(object):
         if organization is not None:
             organization = unicode(organization)
         self._organization = organization
+        self._lang = lang
         self._auto_authentication = False
         self._authentication_method = None
         
@@ -760,6 +763,10 @@ class User(object):
 
         """
         return self._organization
+
+    def lang(self):
+        """Return code of the user's preferred language."""
+        return self._lang
 
     def auto_authentication(self):
         """Return true iff the user was authenticated automatically."""

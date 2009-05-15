@@ -2156,7 +2156,7 @@ class Users(CMSModule):
         #    organization = None
         return dict(login=login, name=record['user'].value(), uid=record['uid'].value(),
                     uri=uri, email=record['email'].value(), data=record,
-                    roles=self.Spec._roles(record))
+                    roles=self.Spec._roles(record), lang=record['lang'].value())
                     #organization_id=organization_id, organization=organization)
 
     def _make_user(self, kwargs):
