@@ -1,6 +1,11 @@
 2009-05-15  Milan Zamazal  <pdm@brailcom.org>
 
 	* lib/wiking/cms/cms.py:
+	Some fixes in Texts.
+
+2009-05-15  Milan Zamazal  <pdm@brailcom.org>
+
+	* lib/wiking/cms/cms.py:
 	Doc fix in Texts.
 
 2009-05-15  Milan Zamazal  <pdm@brailcom.org>
