@@ -2210,12 +2210,29 @@ class Users(CMSModule):
         else:
             return None
 
-    def find_users(self, req, email):
-        """Return a list of 'User' instances who are registered with given email address."""
+    def find_users(self, req, email=None, role=None):
+        """Return a list of 'User' instances corresponding to given criteria.
+
+        Arguments:
+
+          req -- wiking request
+          email -- if not 'None', only users registered with given e-mail
+            address (string) are returned
+          role -- if not 'None', only users belonging to given role (one of the
+            role string codes) are returned
+
+        If all the criteria arguments are 'None', all users are returned.
+
+        """
         def make_user(row):
             kwargs = self._user_arguments(req, row['login'].value(), row)
             return self._make_user(kwargs)
-        return [make_user(row) for row in self._data.get_rows(email=email)]
+        kwargs = {}
+        if email is not None:
+            kwargs['email'] = email
+        if role is not None:
+            kwargs['role'] = role
+        return [make_user(row) for row in self._data.get_rows(**kwargs)]
 
     def _generate_password(self):
         characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01233456789'
