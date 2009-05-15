@@ -373,12 +373,12 @@ CREATE TABLE themes (
 -------------------------------------------------------------------------------
 
 CREATE TABLE text_labels (
-         label varchar(64) PRIMARY KEY
+         label name PRIMARY KEY
 );
 
 CREATE TABLE _texts (
-        label varchar(64) NOT NULL REFERENCES text_labels,
-        lang char(2) NOT NULL REFERENCES languages(lang),
+        label name NOT NULL REFERENCES text_labels,
+        lang char(2) NOT NULL REFERENCES languages(lang) on delete cascade,
         content text DEFAULT '',
         PRIMARY KEY (label, lang)
 );
@@ -392,6 +392,16 @@ CREATE OR REPLACE RULE texts_update AS
     DELETE FROM _texts WHERE label = new.label AND lang = new.lang;
     INSERT INTO _texts VALUES (new.label, new.lang, new.content);
 );
+
+create or replace function add_text_label (_label name) returns void as $$
+declare
+  already_present int := count(*) from text_labels where label = _label;
+begin
+  if already_present = 0 then
+    insert into text_labels (label) values (_label);
+  end if;
+end
+$$ language plpgsql;
 
 -------------------------------------------------------------------------------
 

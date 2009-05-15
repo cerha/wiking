@@ -34,6 +34,7 @@ import string
 import mx.DateTime
 from mx.DateTime import today, TimeDelta
 
+from pytis.util import *
 import pytis.data
 from pytis.presentation import computer, Computer, CbComputer, Fields, HGroup, CodebookSpec, Field
 from lcg import log as debug
@@ -2376,36 +2377,12 @@ class Organizations(CMSModule):
     _TITLE_COLUMN = 'name'
 
 
-class TextLabels(PytisModule):
-    """Internal module for managing identifiers of the texts accessed through the 'Text' module.
-    """
-    
-    class Spec(Specification):
-        
-        _ID_COLUMN = 'label'
-
-        table = 'text_labels'
-        
-        def fields(self): return (
-            Field(self._ID_COLUMN),
-            )
-
-    def register_label(self, label):
-        """Register text identified by 'label'.
-
-        This ensures 'label' is present in the database and thus it can be
-        accessed and managed in CMS.
-
-        Arguments:
-
-          label -- text identifier as a string
-
-        """
-        data = self._data
-        if not data.get_row(label=label):
-            label_value = pytis.data.Value(pytis.data.String(), label)
-            row = pytis.data.Row((('label', label_value,),))
-            data.insert(row)
+class Text(Structure):
+    _attributes = (Attribute('label', str),
+                   Attribute('description', basestring),
+                   Attribute('text', basestring),)
+    def __init__(self, label, description, text):
+        super(Text, self).__init__(label=label, description=description, text=text)
 
     
 class Texts(CMSModule):
@@ -2431,53 +2408,64 @@ class Texts(CMSModule):
 
     class Spec(Specification):
 
-        _texts = {}
-
-        # This must be a private method, otherwise Wiking handles it in a special way
-        @classmethod
-        def _register_text(class_, label, description, module):
-            texts = class_._texts
-            if not texts.has_key(label):
-                texts[label] = description
-                module._module('TextLabels').register_label(label)
-        
-        _ID_COLUMN = 'text_id'
-
         table = 'texts'
         title = _("System Texts")
         help = _("Edit miscellaneous system texts.")
+
+        _texts = {}
+        # This must be a private method, otherwise Wiking handles it in a special way
+        @classmethod
+        def _register_text(class_, text):
+            texts = class_._texts
+            label = text.label()
+            if not texts.has_key(label):
+                texts[label] = text
         
         def fields(self): return (
-            Field(self._ID_COLUMN, editable=NEVER),
+            Field('text_id', editable=NEVER),
             Field('label', _("Label"), width=32, editable=NEVER),
             Field('lang', editable=NEVER),
             Field('descr', _("Purpose"), type=pytis.data.String(), width=64, editable=NEVER, virtual=True,
-                  computer=Computer(self._description, depends=('label',))),
+                  computer=computer(self._description)),
             Field('content', _("Text"), width=80, height=10,
                   descr=_("Edit the given text as needed, in accordance with structured text rules.")),
             )
         
-        columns = ('text_id', 'descr',)
-        sorting = (('text_id', ASC,),)
-        layout = ('text_id', 'descr', 'content',)
+        columns = ('label', 'descr',)
+        sorting = (('label', ASC,),)
+        layout = ('label', 'descr', 'content',)
 
-        def _description(self, record):
-            return self._texts.get(record['label'].value(), "")
-            
+        def _description(self, row, label):
+            try:
+                description = self._texts[label].description()
+            except KeyError:
+                # May happen only for obsolete texts in the database
+                description = ''
+            return description
+
+    _DB_FUNCTIONS = {'add_text_label': (('1', pd.String(),),)}
+        
     _LIST_BY_LANGUAGE = True
+    _TEXT_MODULES = ()
     RIGHTS_insert = ()
     RIGHTS_update = (Roles.ADMIN,)
     RIGHTS_delete = ()
     WMI_SECTION = WikingManagementInterface.SECTION_SETUP
     WMI_ORDER = 900
 
-    def _text_identifier(self, namespace, label, lang=None):
-        identifier = '%s.%s' % (namespace, label,)
-        if lang is not None:
-            identifier = '%s@%s' % (identifier, lang,)
-        return identifier
+    def _delayed_init(self):
+        super(Texts, self)._delayed_init()
+        self._register_texts()
+
+    def _register_texts(self):
+        for module in self._TEXT_MODULES:
+            for identifier in dir(module):
+                text = getattr(module, identifier)
+                if isinstance(text, Text):
+                    self._call_db_function('add_text_label', text.label())
+                    self.Spec._register_text(text)
     
-    def text(self, namespace, label, lang='en'):
+    def text(self, req, text, lang=None):
         """Return text identified by 'namespace' and 'label'.
 
         If there is no such text, return 'None'.
@@ -2493,20 +2481,21 @@ class Texts(CMSModule):
         language, 'None' is returned.
           
         """
-        assert isinstance(namespace, str)
-        assert isinstance(label, str)
-        assert isinstance(lang, str)
-        identifier = self._text_identifier(namespace, label, lang=lang)
+        if lang is None:
+            lang = req.prefered_language()
+            if lang is None:
+                lang = 'en'
+        identifier = text.label() + '@' + lang
         row = self._data.get_row(text_id=identifier)
-        if row is None and lang != 'en':
-            identifier = self._text_identifier(namespace, label, lang='en')
-            row = self._data.get_row(text_id=identifier)
         if row is None:
-            return None
-        text = row['content'].value()
+            text = None
+        else:
+            text = row['content'].value()
+        if not text:
+            text = text.text()
         return text
 
-    def parsed_text(self, namespace, label, lang='en'):
+    def parsed_text(self, req, text, lang=None):
         """Return parsed text identified by 'namespace' and 'label'.
 
         This method is the same as 'text' but instead of returning LCG
@@ -2515,32 +2504,12 @@ class Texts(CMSModule):
         sequence is returned.
         
         """
-        text = self.text(namespace, label, lang=lang)
+        text = self.text(req, text, lang=lang)
         if text:
             sections = lcg.Parser().parse(text)
         else:
             sections = ()
         return sections
-
-    def register_text(self, namespace, label, description):
-        """Register text with given 'label'.
-
-        All texts must be registered using this module method before their
-        first use.
-
-        Arguments:
-
-          namespace -- string identifying Wiking extension name space
-          label -- identifier of the text as a string
-          description -- human description of the purpose of the text as a
-            string or unicode
-          
-        """
-        assert isinstance(namespace, str)
-        assert isinstance(label, str)
-        assert isinstance(description, basestring)
-        identifier = self._text_identifier(namespace, label)
-        self.Spec._register_text(identifier, description, self)
 
 
 class TextReferrer(object):
@@ -2564,34 +2533,7 @@ class TextReferrer(object):
 
     """
     
-    _TEXTS_NAMESPACE = ''
-    _TEXTS = ()
-
-    def __init__(self, *args, **kwargs):
-        super(TextReferrer, self).__init__(*args, **kwargs)
-        self._register_texts()
-
-    def _register_texts(self):
-        # Check text specification
-        assert isinstance(self._TEXTS_NAMESPACE, str)
-        assert self._TEXTS_NAMESPACE, "Name space of registered texts may not be empty"
-        assert isinstance(self._TEXTS, tuple)
-        if __debug__:
-            for definition in self._TEXTS:
-                assert isinstance(definition, tuple)
-                try:
-                    label, description = definition
-                except ValueError:
-                    raise AssertionError("Invalid _TEXTS entry", definition)
-                assert isinstance(label, str), ("Invalid text label in _TEXTS", label,)
-                assert isinstance(description, basestring), ("Invalid text description in _TEXTS", description,)
-        # Perform registration
-        text_module = self._module('Texts')
-        namespace = self._TEXTS_NAMESPACE
-        for label, description in self._TEXTS:
-            text_module.register_text(namespace, label, description)
-
-    def text(self, label, lang='en', _method=Texts.text):
+    def text(self, req, text, lang=None, _method=Texts.text):
         """Return text identified by 'label'.
 
         If there is no such text, return 'None'.
@@ -2606,11 +2548,9 @@ class TextReferrer(object):
         rules documented in 'Text.text'.
           
         """
-        assert label in [t[0] for t in self._TEXTS], ("Unregistered text referred", label,)
-        assert isinstance(lang, str)
-        return _method(self._module('Texts'), self._TEXTS_NAMESPACE, label, lang=lang)
+        return _method(self._module('Texts'), req, text, lang=lang)
 
-    def parsed_text(self, label, lang='en'):
+    def parsed_text(self, req, text, lang='en'):
         """Return parsed text identified by 'label'.
 
         This method is the same as 'text' but instead of returning LCG
@@ -2619,6 +2559,4 @@ class TextReferrer(object):
         sequence is returned.
         
         """
-        return self.text(label, lang=lang, _method=Texts.parsed_text)
-
-        
+        return self.text(req, text, lang=lang, _method=Texts.parsed_text)
