@@ -1,6 +1,11 @@
 2009-05-15  Milan Zamazal  <pdm@brailcom.org>
 
 	* lib/wiking/cms/cms.py:
+	New argument `role' added to Users.find_users.
+
+2009-05-15  Milan Zamazal  <pdm@brailcom.org>
+
+	* lib/wiking/cms/cms.py:
 	* lib/wiking/request.py:
 	New method User.lang.
 
