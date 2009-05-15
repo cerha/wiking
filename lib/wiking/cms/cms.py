@@ -2501,6 +2501,7 @@ class Texts(CMSModule):
         mechanism is used for its translation.
           
         """
+        assert isinstance(text, Text)
         if lang is None:
             lang = req.prefered_language()
             if lang is None:
@@ -2508,14 +2509,14 @@ class Texts(CMSModule):
         identifier = text.label() + '@' + lang
         row = self._data.get_row(text_id=identifier)
         if row is None:
-            text = None
+            retrieved_text = None
         else:
-            text = row['content'].value()
-        if not text:
-            text = text.text()
+            retrieved_text = row['content'].value()
+        if not retrieved_text:
+            retrieved_text = text.text()
         if args:
-            text = text % args
-        return text
+            retrieved_text = retrieved_text % args
+        return retrieved_text
 
     def parsed_text(self, req, text, lang=None, args=None):
         """Return parsed text corresponding to 'text'.
@@ -2526,9 +2527,10 @@ class Texts(CMSModule):
         sequence is returned.
         
         """
-        text = self.text(req, text, lang=lang, args=args)
-        if text:
-            sections = lcg.Parser().parse(text)
+        assert isinstance(text, Text)
+        retrieved_text = self.text(req, text, lang=lang, args=args)
+        if retrieved_text:
+            sections = lcg.Parser().parse(retrieved_text)
         else:
             sections = ()
         return sections
@@ -2561,6 +2563,7 @@ class TextReferrer(object):
         rules documented in 'Texts.text()'.
           
         """
+        assert isinstance(text, Text)
         return _method(self._module('Texts'), req, text, lang=lang, args=args)
 
     def parsed_text(self, req, text, args=None, lang='en'):
@@ -2572,4 +2575,5 @@ class TextReferrer(object):
         sequence is returned.
         
         """
+        assert isinstance(text, Text)
         return self.text(req, text, lang=lang, args=args, _method=Texts.parsed_text)
