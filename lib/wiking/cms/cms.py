@@ -2181,7 +2181,7 @@ class Users(CMSModule):
         elif uid is not None and login is None:
             row = self._data.get_row(uid=uid)
         else:
-            raise Exception("Invalid 'user()' argumets.")
+            raise Exception("Invalid 'user()' arguments.")
         if row is None:
             return None
         # Convert user data into a User instance
