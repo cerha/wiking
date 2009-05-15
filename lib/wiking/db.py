@@ -650,9 +650,13 @@ class PytisModule(Module, ActionHandler):
         assert len(args) == len(arg_spec), \
                "Wrong number of arguments for '%s': %r" % (name, args)
         arg_data = [(spec[0], pd.Value(spec[1], value)) for spec, value in zip(arg_spec, args)]
-        result = function.call(pytis.data.Row(arg_data))
+        row = function.call(pytis.data.Row(arg_data))[0]
         #debug("**", name, result[0][0].value())
-        return result[0][0].value()
+        if row:
+            result = row[0].value()
+        else:
+            result = None
+        return result
 
     # ===== Methods which modify the database =====
     
