@@ -403,6 +403,39 @@ begin
 end
 $$ language plpgsql;
 
+create table email_labels (
+         label name primary key
+);
+
+create table _emails (
+        label name not null references email_labels,
+        lang char(2) not null references languages(lang) on delete cascade,
+        subject text,
+        cc text,
+        content text default '',
+        primary key (label, lang)
+);
+
+create or replace view emails as
+select label || '@' || lang as text_id, label, lang,
+       coalesce(subject, '') as subject,
+       coalesce(cc, '') as cc,
+       coalesce(content, '') as content
+from email_labels cross join languages left outer join _emails using (label, lang);
+
+create or replace rule emails_update as
+  on update to emails do instead (
+    delete from _emails where label = new.label and lang = new.lang;
+    insert into _emails values (new.label, new.lang, new.subject, new.cc, new.content);
+);
+
+create table email_attachments (
+       attachment_id serial primary key,
+       label name not null references email_labels on delete cascade,
+       filename varchar(64) not null,
+       mime_type text not null
+);
+
 -------------------------------------------------------------------------------
 
 CREATE TABLE config (

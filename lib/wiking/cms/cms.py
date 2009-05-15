@@ -2474,11 +2474,14 @@ class Texts(CMSModule):
         super(Texts, self)._delayed_init()
         self._register_texts()
 
+    def _is_text(self, object):
+        return isinstance(object, Text)
+    
     def _register_texts(self):
         for module in self._TEXT_MODULES:
             for identifier in dir(module):
                 text = getattr(module, identifier)
-                if isinstance(text, Text):
+                if self._is_text(text):
                     self._call_db_function('add_text_label', text.label())
                     self.Spec._register_text(text)
     
@@ -2577,3 +2580,65 @@ class TextReferrer(object):
         """
         assert isinstance(text, Text)
         return self.text(req, text, lang=lang, args=args, _method=Texts.parsed_text)
+
+class EmailText(Structure):
+    """Representation of a predefined e-mail.
+
+    Each predefined e-mail consists of the following attributes:
+
+      label -- unique identifier of the e-mail, string
+      description -- human description of the e-mail, presented to application
+        administrators managing the e-mails
+      subject -- subject of the mail, as a translatable string or unicode
+      text -- body of the mail, as a translatable string or unicode
+      cc -- body of the mail, as a translatable string or unicode
+
+    Note the predefined e-mail texts get automatically translated using gettext
+    mechanism.
+
+    """
+    _attributes = (Attribute('label', str),
+                   Attribute('description', basestring),
+                   Attribute('text', basestring),
+                   Attribute('subject', basestring),
+                   Attribute('cc', str, default=''),)
+    def __init__(self, label, description, subject, text, **kwargs):
+        super(Text, self).__init__(label=label, description=description, text=text, subject=subject,
+                                   **kwargs)
+
+class Emails(Texts):
+    """Management of e-mail predefined texts.
+
+    This is similar to managing general predefined texts.  But e-mails may
+    contain more data such as subjects or CC lists.
+
+    """
+    
+    class Spec(Texts.Spec):
+
+        table = 'emails'
+        title = _("E-mails")
+        help = _("Edit e-mail texts.")
+        
+        def fields(self): return (
+            Field('text_id', editable=NEVER),
+            Field('label', _("Label"), width=32, editable=NEVER),
+            Field('lang', editable=NEVER),
+            Field('descr', _("Purpose"), type=pytis.data.String(), width=64, editable=NEVER, virtual=True,
+                  computer=computer(self._description)),
+            Field('content', _("Text"), width=80, height=10,
+                  descr=_("Edit the given text as needed, in accordance with structured text rules.")),
+            Field('subject', _("Subject")),
+            Field('cc', _("Additional recipients"),
+                  descr=_("Comma separated list of e-mail addresses.")),
+            )
+        
+        columns = ('label', 'descr',)
+        sorting = (('label', ASC,),)
+        layout = ('label', 'descr', 'subject', 'cc', 'content',)
+        
+    WMI_SECTION = WikingManagementInterface.SECTION_SETUP
+    WMI_ORDER = 910
+
+    def _is_text(self, object):
+        return isinstance(object, Email)
