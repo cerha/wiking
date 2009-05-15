@@ -2298,7 +2298,7 @@ class Users(CMSModule):
           args, kwargs -- just forwarded to 'wiking.send_mail' call
 
         """
-        assert role is None or isinstance(role, str)
+        assert role is None or isinstance(role, basestring)
         if role is None:
             user_rows = self._data.get_rows()
         else:
@@ -2385,7 +2385,8 @@ class Text(Structure):
       label -- unique identifier of the text, string
       description -- human description of the text, presented to application
         administrators managing the texts
-      text -- the text itself, as a translatable string or unicode
+      text -- the text itself, as a translatable string or unicode in LCG
+        formatting
 
     Note the predefined texts get automatically translated using gettext
     mechanism.
@@ -2395,10 +2396,10 @@ class Text(Structure):
                    Attribute('description', basestring),
                    Attribute('text', basestring),)
     def __init__(self, label, description, text):
-        super(Text, self).__init__(label=label, description=description, text=text)
+        Structure.__init__(self, label=label, description=description, text=text)
 
     
-class Texts(CMSModule):
+class CommonTexts(CMSModule):
     """Management of predefined texts editable by administrators.
 
     Predefined texts may be used for various purposes in applications,
@@ -2408,21 +2409,19 @@ class Texts(CMSModule):
     may change the texts in CMS, but they can't delete them nor to insert new
     texts (except for translations of defined texts).
 
-    The texts are LCG structured texts and they are language dependent.  Each
-    of the texts is identified by a 'Text' instance with unique identifier (its
-    'label' attribute).  See 'Text' class for more details.
-
     So that the module can find the texts, '_TEXT_MODULES' attribute of this
     class must be defined.  It's a tuple of Python modules in which the texts
     are placed.  If a Wiking extension adds its own texts, it must add their
     Python module(s) to '_TEXT_MODULES' through a customized 'Texts' Wiking
     module.
 
+    This is a base class for text retrieval modules, its subclasses may define
+    access to various kinds of texts.
+
     Wiking modules can access the texts by using the 'text()' method.  See also
     'TextReferrer' class.
     
     """
-
     class Spec(Specification):
 
         table = 'texts'
@@ -2463,11 +2462,10 @@ class Texts(CMSModule):
                     # May happen only for obsolete texts in the database
                     descr = ''
             return descr
-
-    _DB_FUNCTIONS = {'add_text_label': (('1', pd.String(),),)}
         
     _LIST_BY_LANGUAGE = True
     _TEXT_MODULES = ()
+    _TEXT_REGISTRAR = None
     RIGHTS_insert = ()
     RIGHTS_update = (Roles.ADMIN,)
     RIGHTS_delete = ()
@@ -2475,7 +2473,7 @@ class Texts(CMSModule):
     WMI_ORDER = 900
 
     def _delayed_init(self):
-        super(Texts, self)._delayed_init()
+        super(CommonTexts, self)._delayed_init()
         self._register_texts()
         
     def _is_text(self, object):
@@ -2486,9 +2484,30 @@ class Texts(CMSModule):
             for identifier in dir(module):
                 text = getattr(module, identifier)
                 if self._is_text(text):
-                    self._call_db_function('add_text_label', text.label())
+                    self._call_db_function(self._TEXT_REGISTRAR, text.label())
                     self.Spec._register_text(text)
+
+    def _retrieve_text_row(self, req, text, lang):
+        if lang is None:
+            lang = req.prefered_language()
+            if lang is None:
+                lang = 'en'
+        identifier = text.label() + '@' + lang
+        row = self._data.get_row(text_id=identifier)
+        return row
+
+
+class Texts(CommonTexts):
+    """Management of simple texts.
+
+    The texts are LCG structured texts and they are language dependent.  Each
+    of the texts is identified by a 'Text' instance with unique identifier (its
+    'label' attribute).  See 'Text' class for more details.
     
+    """
+    _TEXT_REGISTRAR = 'add_text_label'
+    _DB_FUNCTIONS = {'add_text_label': (('1', pd.String(),),)}
+
     def text(self, req, text, lang=None, args=None):
         """Return text corresponding to 'text'.
 
@@ -2509,12 +2528,7 @@ class Texts(CMSModule):
           
         """
         assert isinstance(text, Text)
-        if lang is None:
-            lang = req.prefered_language()
-            if lang is None:
-                lang = 'en'
-        identifier = text.label() + '@' + lang
-        row = self._data.get_row(text_id=identifier)
+        row = self._retrieve_text_row(req, text, lang)
         if row is None:
             retrieved_text = None
         else:
@@ -2543,48 +2557,6 @@ class Texts(CMSModule):
         return sections
 
 
-class TextReferrer(object):
-    """Utility class for modules using 'Texts' module.
-
-    It defines two convenience methods for text retrieval methods: 'text()' and
-    'parsed_text()'.
-
-    The class is intended to be inherited as an additional class into Wiking
-    modules using multiple inheritance.
-
-    """
-    
-    def text(self, req, text, lang=None, args=None, _method=Texts.text):
-        """Return text corresponding to 'text'.
-
-        Arguments:
-
-          req -- wiking request
-          text -- 'Text' instance identifying the text
-          lang -- two-character string identifying the language of the text
-          args -- dictionary of formatting arguments for the text; if
-            non-empty, the text is processed by the '%' operator and all '%'
-            occurences within it must be properly escaped
-
-        Looking texts for a particular language is performed according the
-        rules documented in 'Texts.text()'.
-          
-        """
-        assert isinstance(text, Text)
-        return _method(self._module('Texts'), req, text, lang=lang, args=args)
-
-    def parsed_text(self, req, text, args=None, lang='en'):
-        """Return parsed text corresponding to 'text'.
-
-        This method is the same as 'text()' but instead of returning LCG
-        structured text, it returns its parsed form, as a sequence of
-        'lcg.Content' instances.  If the given text doesn't exist, an empty
-        sequence is returned.
-        
-        """
-        assert isinstance(text, Text)
-        return self.text(req, text, lang=lang, args=args, _method=Texts.parsed_text)
-
 class EmailText(Structure):
     """Representation of a predefined e-mail.
 
@@ -2593,9 +2565,9 @@ class EmailText(Structure):
       label -- unique identifier of the e-mail, string
       description -- human description of the e-mail, presented to application
         administrators managing the e-mails
-      subject -- subject of the mail, as a translatable string or unicode
-      text -- body of the mail, as a translatable string or unicode
-      cc -- body of the mail, as a translatable string or unicode
+      subject -- subject of the mail, as a translatable plain text string or unicode
+      text -- body of the mail, as a translatable plain text string or unicode
+      cc -- comma separated recipient e-mail addresses, as a string
 
     Note the predefined e-mail texts get automatically translated using gettext
     mechanism.
@@ -2607,22 +2579,24 @@ class EmailText(Structure):
                    Attribute('subject', basestring),
                    Attribute('cc', str, default=''),)
     def __init__(self, label, description, subject, text, **kwargs):
-        super(Text, self).__init__(label=label, description=description, text=text, subject=subject,
-                                   **kwargs)
+        Structure.__init__(self, label=label, description=description, subject=subject, text=text,
+                           **kwargs)
 
-class Emails(Texts):
-    """Management of e-mail predefined texts.
+class Emails(CommonTexts):
+    """Management of predefined e-mails.
 
-    This is similar to managing general predefined texts.  But there are some differences:
+    This class provides the following special features:
 
     - E-mails may contain more data such as subjects or CC lists.
 
     - Application administrator can add his own e-mail texts.
 
-    Standard e-mail texts and custom ones are distinguished by an underscore
-    prefix identifying custom e-mail texts.
+    Standard predefined e-mails and custom ones are distinguished by an
+    underscore prefix prepended to custom e-mail labels.
 
     """
+    _TEXT_REGISTRAR = 'add_email_label'
+    _DB_FUNCTIONS = {'add_email_label': (('1', pd.String(),),)}
 
     class LabelType(pytis.data.String):
         def _validate(self, obj, **kwargs):
@@ -2656,16 +2630,129 @@ class Emails(Texts):
         
     WMI_SECTION = WikingManagementInterface.SECTION_SETUP
     WMI_ORDER = 910
+        
+    RIGHTS_insert = (Roles.ADMIN,)
+    RIGHTS_update = (Roles.ADMIN,)
+    RIGHTS_delete = (Roles.ADMIN,)
 
     def _is_text(self, object):
-        return isinstance(object, Email)
+        return isinstance(object, EmailText)
 
     def _actions(self, req, record):
         actions = super(Emails, self)._actions(req, record)
         if record is not None and not record['label'].value().startswith('_'):
             actions = [a for a in actions if a.name() != 'delete']
         return actions
+
+    def email_args(self, req, text, lang=None, args=None):
+        """Return dictionary of some 'wiking.send_mail' arguments for 'text'.
+
+        The dictionary contains 'subject', 'text', 'cc' and 'lang' keys with
+        corresponding values.
+
+        Arguments:
+
+          req -- wiking request
+          text -- 'EmailText' instance identifying the text
+          lang -- two-character string identifying the language of the text
+          args -- dictionary of formatting arguments for the text; if
+            non-empty, the text is processed by the '%' operator and all '%'
+            occurences within it must be properly escaped
+
+        If the language is not specied explicitly, language of the request is
+        used.  If there is no language set in request, 'en' is assumed.  If the
+        text is not available for the selected language in the database, the
+        method looks for the predefined text in the application and gettext
+        mechanism is used for its translation.
+          
+        """
+        assert isinstance(text, EmailText)
+        row = self._retrieve_text_row(req, text, lang)
+        send_mail_args = dict(lang=lang, subject='', text='', cc=())
+        if row is not None:
+            send_mail_args['subject'] = row['subject'].value() or text.subject()
+            send_mail_args['text'] = row['content'].value() or text.text()
+            cc_string = row['cc'].value() or text.cc()
+            if cc_string:
+                send_mail_args['cc'] = [address.strip() for address in cc_string.split(',')]
+        if args:
+            for key in ('subject', 'text',):
+                send_mail_args[key] = send_mail_args[key] % args
+        return send_mail_args
+
+
+class TextReferrer(object):
+    """Convenience class for modules using 'Texts' and 'Emails' modules.
+
+    It defines convenience methods for text retrieval.
+
+    The class is intended to be inherited as an additional class into Wiking
+    modules using multiple inheritance.
+
+    """
+    def text(self, req, text, lang=None, args=None, _method=Texts.text):
+        """Return text corresponding to 'text'.
+
+        Arguments:
+
+          req -- wiking request
+          text -- 'Text' instance identifying the text
+          lang -- two-character string identifying the language of the text
+          args -- dictionary of formatting arguments for the text; if
+            non-empty, the text is processed by the '%' operator and all '%'
+            occurences within it must be properly escaped
+
+        Looking texts for a particular language is performed according the
+        rules documented in 'Texts.text()'.
+          
+        """
+        assert isinstance(text, Text)
+        return _method(self._module('Texts'), req, text, lang=lang, args=args)
+
+    def parsed_text(self, req, text, args=None, lang='en'):
+        """Return parsed text corresponding to 'text'.
+
+        This method is the same as 'text()' but instead of returning LCG
+        structured text, it returns its parsed form, as a sequence of
+        'lcg.Content' instances.  If the given text doesn't exist, an empty
+        sequence is returned.
         
-    RIGHTS_insert = (Roles.ADMIN,)
-    RIGHTS_update = (Roles.ADMIN,)
-    RIGHTS_delete = (Roles.ADMIN,)
+        """
+        assert isinstance(text, Text)
+        return self.text(req, text, lang=lang, args=args, _method=Texts.parsed_text)
+
+    def email_args(self, *args, **kwargs):
+        """The same as 'Emails.email_args'"""
+        return self._module('Emails').email_args(*args, **kwargs)
+
+    def send_mail(self, req, text, recipients, lang=None, args=None, **kwargs):
+        """Send e-mail identified by 'text' to 'recipients'.
+
+        Arguments:
+
+          req -- wiking request
+          text -- 'EmailText' instance identifying the predefined e-mail
+          recipients -- sequence of e-mail recipients, it can contain three
+            kinds of elements: 1. string containing '@' representing an e-mail
+            address, 2. string without '@' representing a user role, 3. 'None'
+            representing all registered users
+          lang -- two-character string identifying the language of the text
+          args -- dictionary of formatting arguments for the text; if
+            non-empty, the text is processed by the '%' operator and all '%'
+            occurences within it must be properly escaped
+          kwargs -- other arguments to be passed to 'send_mail'
+        
+        """
+        email_args = self.email_args(req, text, lang=lang, args=args)
+        email_args['cc'] = list(email_args['cc']) + list(kwargs.get('cc', []))
+        for k, v in kwargs.items():
+            if not email_args.has_key(k):
+                email_args[k] = v
+        addr = []
+        for r in recipients:
+            if r is None or r.find('@') == -1:
+                self._module('Users').send_mail(r, **email_args)
+            else:
+                addr.append(r)
+        if addr:
+            send_mail(addr, **email_args)
