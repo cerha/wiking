@@ -372,25 +372,8 @@ CREATE TABLE themes (
 
 -------------------------------------------------------------------------------
 
-CREATE TABLE text_labels (
-         label name PRIMARY KEY
-);
-
-CREATE TABLE _texts (
-        label name NOT NULL REFERENCES text_labels,
-        lang char(2) NOT NULL REFERENCES languages(lang) on delete cascade,
-        content text DEFAULT '',
-        PRIMARY KEY (label, lang)
-);
-
-CREATE OR REPLACE VIEW texts AS
-SELECT label || '@' || lang as text_id, label, lang, coalesce(content, '') as content
-FROM text_labels CROSS JOIN languages LEFT OUTER JOIN _texts USING (label, lang);
-
-CREATE OR REPLACE RULE texts_update AS
-  ON UPDATE TO texts DO INSTEAD (
-    DELETE FROM _texts WHERE label = new.label AND lang = new.lang;
-    INSERT INTO _texts VALUES (new.label, new.lang, new.content);
+create table text_labels (
+         label name primary key
 );
 
 create or replace function add_text_label (_label name) returns void as $$
@@ -403,13 +386,46 @@ begin
 end
 $$ language plpgsql;
 
+create table _texts (
+        label name not null references text_labels,
+        lang char(2) not null references languages(lang) on delete cascade,
+        description text default '',
+        content text default '',
+        primary key (label, lang)
+);
+
+create or replace view texts as
+select label || '@' || lang as text_id,
+       label,
+       lang,
+       coalesce(description, '') as description,
+       coalesce(content, '') as content
+from text_labels cross join languages left outer join _texts using (label, lang);
+
+create or replace rule texts_update as
+  on update to texts do instead (
+    delete from _texts where label = new.label and lang = new.lang;
+    insert into _texts values (new.label, new.lang, new.description, new.content);
+);
+
 create table email_labels (
          label name primary key
 );
 
+create or replace function add_email_label (_label name) returns void as $$
+declare
+  already_present int := count(*) from email_labels where label = _label;
+begin
+  if already_present = 0 then
+    insert into email_labels (label) values (_label);
+  end if;
+end
+$$ language plpgsql;
+
 create table _emails (
         label name not null references email_labels,
         lang char(2) not null references languages(lang) on delete cascade,
+        description text,
         subject text,
         cc text,
         content text default '',
@@ -417,16 +433,29 @@ create table _emails (
 );
 
 create or replace view emails as
-select label || '@' || lang as text_id, label, lang,
+select label || '@' || lang as text_id,
+       label,
+       lang,
+       coalesce(description, '') as description,
        coalesce(subject, '') as subject,
        coalesce(cc, '') as cc,
        coalesce(content, '') as content
 from email_labels cross join languages left outer join _emails using (label, lang);
 
+create or replace rule emails_insert as
+  on insert to emails do instead (
+    select add_email_label(new.label);
+    insert into _emails values (new.label, new.lang, new.description, new.subject, new.cc, new.content);
+);
 create or replace rule emails_update as
   on update to emails do instead (
     delete from _emails where label = new.label and lang = new.lang;
-    insert into _emails values (new.label, new.lang, new.subject, new.cc, new.content);
+    insert into _emails values (new.label, new.lang, new.description, new.subject, new.cc, new.content);
+);
+create or replace rule emails_delete as
+  on delete to emails do instead (
+    delete from _emails where label = old.label;
+    delete from email_labels where label = old.label;
 );
 
 create table email_attachments (

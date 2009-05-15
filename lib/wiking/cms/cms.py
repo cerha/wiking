@@ -2442,23 +2442,27 @@ class Texts(CMSModule):
             Field('text_id', editable=NEVER),
             Field('label', _("Label"), width=32, editable=NEVER),
             Field('lang', editable=NEVER),
-            Field('descr', _("Purpose"), type=pytis.data.String(), width=64, editable=NEVER, virtual=True,
+            Field('description', editable=NEVER),
+            Field('descr', _("Purpose"), type=pytis.data.String(), width=64, virtual=True,
                   computer=computer(self._description)),
             Field('content', _("Text"), width=80, height=10,
                   descr=_("Edit the given text as needed, in accordance with structured text rules.")),
             )
-        
+
         columns = ('label', 'descr',)
         sorting = (('label', ASC,),)
         layout = ('label', 'descr', 'content',)
 
-        def _description(self, row, label):
-            try:
-                description = self._texts[label].description()
-            except KeyError:
-                # May happen only for obsolete texts in the database
-                description = ''
-            return description
+        def _description(self, row, label, description):
+            if description:
+                descr = description
+            else:
+                try:
+                    descr = self._texts[label].description()
+                except KeyError:
+                    # May happen only for obsolete texts in the database
+                    descr = ''
+            return descr
 
     _DB_FUNCTIONS = {'add_text_label': (('1', pd.String(),),)}
         
@@ -2473,7 +2477,7 @@ class Texts(CMSModule):
     def _delayed_init(self):
         super(Texts, self)._delayed_init()
         self._register_texts()
-
+        
     def _is_text(self, object):
         return isinstance(object, Text)
     
@@ -2609,10 +2613,22 @@ class EmailText(Structure):
 class Emails(Texts):
     """Management of e-mail predefined texts.
 
-    This is similar to managing general predefined texts.  But e-mails may
-    contain more data such as subjects or CC lists.
+    This is similar to managing general predefined texts.  But there are some differences:
+
+    - E-mails may contain more data such as subjects or CC lists.
+
+    - Application administrator can add his own e-mail texts.
+
+    Standard e-mail texts and custom ones are distinguished by an underscore
+    prefix identifying custom e-mail texts.
 
     """
+
+    class LabelType(pytis.data.String):
+        def _validate(self, obj, **kwargs):
+            if isinstance(obj, basestring) and not obj.startswith('_'):
+                obj = '_' + obj
+            return pytis.data.String._validate(self, obj, **kwargs)
     
     class Spec(Texts.Spec):
 
@@ -2622,10 +2638,11 @@ class Emails(Texts):
         
         def fields(self): return (
             Field('text_id', editable=NEVER),
-            Field('label', _("Label"), width=32, editable=NEVER),
+            Field('label', _("Label"), type=Emails.LabelType(maxlen=64), width=32, editable=ONCE),
             Field('lang', editable=NEVER),
-            Field('descr', _("Purpose"), type=pytis.data.String(), width=64, editable=NEVER, virtual=True,
-                  computer=computer(self._description)),
+            Field('description', editable=NEVER),
+            Field('descr', _("Purpose"), width=64,
+                  virtual=True, computer=computer(self._description)),
             Field('content', _("Text"), width=80, height=10,
                   descr=_("Edit the given text as needed, in accordance with structured text rules.")),
             Field('subject', _("Subject")),
@@ -2642,3 +2659,13 @@ class Emails(Texts):
 
     def _is_text(self, object):
         return isinstance(object, Email)
+
+    def _actions(self, req, record):
+        actions = super(Emails, self)._actions(req, record)
+        if record is not None and not record['label'].value().startswith('_'):
+            actions = [a for a in actions if a.name() != 'delete']
+        return actions
+        
+    RIGHTS_insert = (Roles.ADMIN,)
+    RIGHTS_update = (Roles.ADMIN,)
+    RIGHTS_delete = (Roles.ADMIN,)
