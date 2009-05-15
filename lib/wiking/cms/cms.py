@@ -2482,7 +2482,7 @@ class Texts(CMSModule):
                     self._call_db_function('add_text_label', text.label())
                     self.Spec._register_text(text)
     
-    def text(self, req, text, lang=None):
+    def text(self, req, text, lang=None, args=None):
         """Return text corresponding to 'text'.
 
         If there is no such text, return 'None'.
@@ -2492,6 +2492,9 @@ class Texts(CMSModule):
           req -- wiking request
           text -- 'Text' instance identifying the text
           lang -- two-character string identifying the language of the text
+          args -- dictionary of formatting arguments for the text; if
+            non-empty, the text is processed by the '%' operator and all '%'
+            occurences within it must be properly escaped
 
         If the language is not specied explicitly, language of the request is
         used.  If there is no language set in request, 'en' is assumed.  If the
@@ -2512,9 +2515,11 @@ class Texts(CMSModule):
             text = row['content'].value()
         if not text:
             text = text.text()
+        if args:
+            text = text % args
         return text
 
-    def parsed_text(self, req, text, lang=None):
+    def parsed_text(self, req, text, lang=None, args=None):
         """Return parsed text corresponding to 'text'.
 
         This method is the same as 'text()' but instead of returning LCG
@@ -2523,7 +2528,7 @@ class Texts(CMSModule):
         sequence is returned.
         
         """
-        text = self.text(req, text, lang=lang)
+        text = self.text(req, text, lang=lang, args=args)
         if text:
             sections = lcg.Parser().parse(text)
         else:
@@ -2542,7 +2547,7 @@ class TextReferrer(object):
 
     """
     
-    def text(self, req, text, lang=None, _method=Texts.text):
+    def text(self, req, text, lang=None, args=None, _method=Texts.text):
         """Return text corresponding to 'text'.
 
         If there is no such text, return 'None'.
@@ -2552,14 +2557,17 @@ class TextReferrer(object):
           req -- wiking request
           text -- 'Text' instance identifying the text
           lang -- two-character string identifying the language of the text
+          args -- dictionary of formatting arguments for the text; if
+            non-empty, the text is processed by the '%' operator and all '%'
+            occurences within it must be properly escaped
 
         Looking texts for a particular language is performed according the
         rules documented in 'Texts.text()'.
           
         """
-        return _method(self._module('Texts'), req, text, lang=lang)
+        return _method(self._module('Texts'), req, text, lang=lang, args=args)
 
-    def parsed_text(self, req, text, lang='en'):
+    def parsed_text(self, req, text, args=None, lang='en'):
         """Return parsed text corresponding to 'text'.
 
         This method is the same as 'text()' but instead of returning LCG
@@ -2568,4 +2576,4 @@ class TextReferrer(object):
         sequence is returned.
         
         """
-        return self.text(req, text, lang=lang, _method=Texts.parsed_text)
+        return self.text(req, text, lang=lang, args=args, _method=Texts.parsed_text)
