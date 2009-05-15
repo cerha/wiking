@@ -1,6 +1,11 @@
 2009-05-15  Milan Zamazal  <pdm@brailcom.org>
 
 	* lib/wiking/cms/cms.py:
+	Documentation of Texts etc. updated.
+
+2009-05-15  Milan Zamazal  <pdm@brailcom.org>
+
+	* lib/wiking/cms/cms.py:
 	* sql/wiking.sql:
 	Texts module reworked.
 
