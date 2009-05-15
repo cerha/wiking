@@ -1,3 +1,8 @@
+2009-05-15  Milan Zamazal  <pdm@brailcom.org>
+
+	* lib/wiking/db.py:
+	Don't crash on calls of db functions returning void.
+
 2009-05-14  Tomas Cerha  <cerha@debian.brailcom.xx>
 
 	* lib/wiking/cms/cms.py: 
