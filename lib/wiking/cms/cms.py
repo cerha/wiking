@@ -2485,8 +2485,6 @@ class Texts(CMSModule):
     def text(self, req, text, lang=None, args=None):
         """Return text corresponding to 'text'.
 
-        If there is no such text, return 'None'.
-
         Arguments:
 
           req -- wiking request
@@ -2549,8 +2547,6 @@ class TextReferrer(object):
     
     def text(self, req, text, lang=None, args=None, _method=Texts.text):
         """Return text corresponding to 'text'.
-
-        If there is no such text, return 'None'.
 
         Arguments:
 
