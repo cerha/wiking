@@ -1,6 +1,11 @@
 2009-05-15  Milan Zamazal  <pdm@brailcom.org>
 
 	* lib/wiking/cms/cms.py:
+	Minor typo fix.
+
+2009-05-15  Milan Zamazal  <pdm@brailcom.org>
+
+	* lib/wiking/cms/cms.py:
 	Make the new classes for handling predefined texts actually usable.
 
 2009-05-15  Milan Zamazal  <pdm@brailcom.org>
