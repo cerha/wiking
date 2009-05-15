@@ -2504,14 +2504,26 @@ class CommonTexts(CMSModule):
                     self._call_db_function(self._TEXT_REGISTRAR, text.label())
                     self.Spec._register_text(text)
 
-    def _retrieve_text_row(self, req, text, lang):
+    def _select_language(self, req, lang):
         if lang is None:
             lang = req.prefered_language()
             if lang is None:
                 lang = 'en'
+        return lang
+
+    def _retrieve_text_row(self, req, text, lang):
+        lang = self._select_language(req, lang)
         identifier = text.label() + '@' + lang
         row = self._data.get_row(text_id=identifier)
         return row
+
+    def _translated_args(self, translate, args):
+        translated_args = {}
+        for k, v in args.items():
+            if isinstance(v, lcg.Localizable):
+                v = translate(v)
+            translated_args[k] = v
+        return translated_args
 
 
 class Texts(CommonTexts):
@@ -2550,10 +2562,12 @@ class Texts(CommonTexts):
             retrieved_text = None
         else:
             retrieved_text = row['content'].value()
+        lang = self._select_language(req, lang)
+        translate = translator(lang).translate
         if not retrieved_text:
-            retrieved_text = text.text()
+            retrieved_text = translate(text.text())
         if args:
-            retrieved_text = retrieved_text % args
+            retrieved_text = retrieved_text % self._translated_args(translate, args)
         return retrieved_text
 
     def parsed_text(self, req, text, lang=None, args=None):
@@ -2686,15 +2700,17 @@ class Emails(CommonTexts):
         assert isinstance(text, EmailText)
         row = self._retrieve_text_row(req, text, lang)
         send_mail_args = dict(lang=lang, subject='', text='', cc=())
+        lang = self._select_language(req, lang)
+        translate = translator(lang).translate
         if row is not None:
-            send_mail_args['subject'] = row['subject'].value() or text.subject()
-            send_mail_args['text'] = row['content'].value() or text.text()
+            send_mail_args['subject'] = row['subject'].value() or translate(text.subject())
+            send_mail_args['text'] = row['content'].value() or translate(text.text())
             cc_string = row['cc'].value() or text.cc()
             if cc_string:
                 send_mail_args['cc'] = [address.strip() for address in cc_string.split(',')]
         if args:
             for key in ('subject', 'text',):
-                send_mail_args[key] = send_mail_args[key] % args
+                send_mail_args[key] = send_mail_args[key] % self._translated_args(translate, args)
         return send_mail_args
 
 
@@ -2753,23 +2769,32 @@ class TextReferrer(object):
             kinds of elements: 1. string containing '@' representing an e-mail
             address, 2. string without '@' representing a user role, 3. 'None'
             representing all registered users
-          lang -- two-character string identifying the language of the text
+          lang -- two-character string identifying the preferred language of
+            the text
           args -- dictionary of formatting arguments for the text; if
             non-empty, the text is processed by the '%' operator and all '%'
             occurences within it must be properly escaped
           kwargs -- other arguments to be passed to 'send_mail'
         
         """
-        email_args = self.email_args(req, text, lang=lang, args=args)
-        email_args['cc'] = list(email_args['cc']) + list(kwargs.get('cc', []))
-        for k, v in kwargs.items():
-            if not email_args.has_key(k):
-                email_args[k] = v
+        lang_args = {}
+        def lang_email_args(lang):
+            email_args = lang_args.get(lang)
+            if email_args is None:
+                email_args = self.email_args(req, text, lang=lang, args=args)
+                email_args['cc'] = list(email_args['cc']) + list(kwargs.get('cc', []))
+                for k, v in kwargs.items():
+                    if not email_args.has_key(k):
+                        email_args[k] = v
+                lang_args[lang] = email_args
+            return email_args
         addr = []
         for r in recipients:
             if r is None or r.find('@') == -1:
-                self._module('Users').send_mail(r, **email_args)
+                users = self._module.find_users(role=r)
+                for u in users:
+                    send_mail(u.email(), **lang_email_args(u.lang()))
             else:
                 addr.append(r)
         if addr:
-            send_mail(addr, **email_args)
+            send_mail(addr, **lang_email_args(lang))
