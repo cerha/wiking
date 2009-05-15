@@ -114,8 +114,12 @@ Redefine `related' method in the nested form module.
 A global condition restricts the set of values displayed in the
 tables. The table then only contains values that match this condition.
 
-Redefine the _condition method for the appropriate class. Simple example
-in the module wiking-boards.
+A /static/ global condition can be defined through the 'condition'
+parameter in table specification.
+
+For /dynamic/ global condition redefine the _condition method for the
+appropriate class. Simple example can be found in the module
+wiking-boards.
 
 This condition should be added with pd.AND() to the existing
 condition of the parent class as in this example:
@@ -124,37 +128,6 @@ condition of the parent class as in this example:
   super_condition = super(ThisClass, self)._condition(req, **kwargs)
   if super_condition:
       condition = pd.AND(super_condition, condition)
-------
-
-=== How to define a filter with non-static criteria ===
-
-A filter with non-static criteria is a filter in which the condition
-is not a simple matching against a static value, but against a variable
-known by the module at runtime, e.g. user-id.
-
-It is possible to construct the filter in the class constructor.
-An example can be found in the module wiking-boards: WbThreads.__init__
-
-------
-
-class MyTableModule(wiking.cms.CMSExtensionModule):
-  class Spec(wiking.Specification):
-  	[...]
-
-  def __init__(self, *args, **kwargs):
-      super(MyTableModule, self).__init__(*args, **kwargs)
-
-      self._view._filters = [pp.Condition(_("All threads"), None)]
-
-      [...]
-      # Here we construct the filtering condition dynamically
-      # based on the value of the variable _users_
-      for id, name in users:
-         self._view._filters.append(
-            pp.Condition(name, pd.EQ('for_user', pd.Value(pd.Integer(), id)), id=str(id)))
-
-      self._view_default_filter = None
-
 ------
 
 == Working with Data ==
@@ -208,17 +181,15 @@ the first position in `fields'.
 
 == Pytis ==
 
-=== How to get arbitrary value from a table ===
+=== How to access another module ===
 
-If it is not possible to access the data you want in the Pytis/Wiking
-framework (e.g. through _record_ or _req_ parameter), it is possible
-to address the module, row and and column directly. An example can
-be found in wiking-boards WbThreadsCommon._send_notification_email
+It is possible to address another module through the method
+'self._module()'.  An example can be found in
+'WbThreadsCommon._send_notification_email'.
 
 ------
   # Get the email of a particular user identified by _user_uid_
-  # from table _users_
-  self._module('Users')._data.get_rows(uid=user_uid)[0]['email'].value()
+  email = self._module('Users').user(req, uid=thread_for_user).email()
 ------
 
 == Troubleshooting ==
