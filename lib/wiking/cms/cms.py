@@ -2723,7 +2723,7 @@ class TextReferrer(object):
     modules using multiple inheritance.
 
     """
-    def text(self, req, text, lang=None, args=None, _method=Texts.text):
+    def _text(self, req, text, lang=None, args=None, _method=Texts.text):
         """Return text corresponding to 'text'.
 
         Arguments:
@@ -2742,7 +2742,7 @@ class TextReferrer(object):
         assert isinstance(text, Text)
         return _method(self._module('Texts'), req, text, lang=lang, args=args)
 
-    def parsed_text(self, req, text, args=None, lang='en'):
+    def _parsed_text(self, req, text, args=None, lang='en'):
         """Return parsed text corresponding to 'text'.
 
         This method is the same as 'text()' but instead of returning LCG
@@ -2752,13 +2752,13 @@ class TextReferrer(object):
         
         """
         assert isinstance(text, Text)
-        return self.text(req, text, lang=lang, args=args, _method=Texts.parsed_text)
+        return self._text(req, text, lang=lang, args=args, _method=Texts.parsed_text)
 
-    def email_args(self, *args, **kwargs):
+    def _email_args(self, *args, **kwargs):
         """The same as 'Emails.email_args'"""
         return self._module('Emails').email_args(*args, **kwargs)
 
-    def send_mail(self, req, text, recipients, lang=None, args=None, **kwargs):
+    def _send_mail(self, req, text, recipients, lang=None, args=None, **kwargs):
         """Send e-mail identified by 'text' to 'recipients'.
 
         Arguments:
@@ -2781,7 +2781,7 @@ class TextReferrer(object):
         def lang_email_args(lang):
             email_args = lang_args.get(lang)
             if email_args is None:
-                email_args = self.email_args(req, text, lang=lang, args=args)
+                email_args = self._email_args(req, text, lang=lang, args=args)
                 email_args['cc'] = list(email_args['cc']) + list(kwargs.get('cc', []))
                 for k, v in kwargs.items():
                     if not email_args.has_key(k):
