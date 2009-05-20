@@ -2414,6 +2414,7 @@ class Text(Structure):
                    Attribute('text', basestring),)
     def __init__(self, label, description, text):
         Structure.__init__(self, label=label, description=description, text=text)
+        Texts.register_text(self)
 
     
 class CommonTexts(CMSModule):
@@ -2426,11 +2427,9 @@ class CommonTexts(CMSModule):
     may change the texts in CMS, but they can't delete them nor to insert new
     texts (except for translations of defined texts).
 
-    So that the module can find the texts, '_TEXT_MODULES' attribute of this
-    class must be defined.  It's a tuple of Python modules in which the texts
-    are placed.  If a Wiking extension adds its own texts, it must add their
-    Python module(s) to '_TEXT_MODULES' through a customized 'Texts' Wiking
-    module.
+    So that the module can find the texts, they must be registered using
+    'register_text' method.  This usually happens in constructors of text
+    definition classes (such as 'Text').
 
     This is a base class for text retrieval modules, its subclasses may define
     access to various kinds of texts.
@@ -2445,14 +2444,8 @@ class CommonTexts(CMSModule):
         title = _("System Texts")
         help = _("Edit miscellaneous system texts.")
 
+        # This must be a private attribute, otherwise Wiking handles it in a special way
         _texts = {}
-        # This must be a private method, otherwise Wiking handles it in a special way
-        @classmethod
-        def _register_text(class_, text):
-            texts = class_._texts
-            label = text.label()
-            if not texts.has_key(label):
-                texts[label] = text
         
         def fields(self): return (
             Field('text_id', editable=NEVER),
@@ -2481,7 +2474,6 @@ class CommonTexts(CMSModule):
             return descr
         
     _LIST_BY_LANGUAGE = True
-    _TEXT_MODULES = ()
     _TEXT_REGISTRAR = None
     RIGHTS_insert = ()
     RIGHTS_update = (Roles.ADMIN,)
@@ -2495,12 +2487,26 @@ class CommonTexts(CMSModule):
         return isinstance(object, Text)
     
     def _register_texts(self):
-        for module in self._TEXT_MODULES:
-            for identifier in dir(module):
-                text = getattr(module, identifier)
-                if self._is_text(text):
-                    self._call_db_function(self._TEXT_REGISTRAR, text.label())
-                    self.Spec._register_text(text)
+        for identifier, text in self.Spec._texts.items():
+            if self._is_text(text):
+                self._call_db_function(self._TEXT_REGISTRAR, text.label())
+
+    @classmethod
+    def register_text(class_, text):
+        """Register 'text' into the texts.
+
+        This method is intended to be called only from the constructor of
+        compatible text definition classes, such as 'Text'.  The 'text'
+        argument must be an instance of such a class.
+
+        All texts to be used must be registered in their corresponding
+        management classes, otherwise they are unknown to them.
+
+        """
+        texts = class_.Spec._texts
+        label = text.label()
+        if not texts.has_key(label):
+            texts[label] = text
 
     def _select_language(self, req, lang):
         if lang is None:
@@ -2637,6 +2643,7 @@ class EmailText(Structure):
     def __init__(self, label, description, subject, text, **kwargs):
         Structure.__init__(self, label=label, description=description, subject=subject, text=text,
                            **kwargs)
+        Emails.register_text(self)
 
 class Emails(CommonTexts):
     """Management of predefined e-mails.
