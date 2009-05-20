@@ -2523,6 +2523,19 @@ class CommonTexts(CMSModule):
             translated_args[k] = v
         return translated_args
 
+    def _auto_filled_fields(self):
+        return ()
+
+    def _record(self, req, row, new=False, prefill=None):
+        record = super(CommonTexts, self)._record(req, row, new=new, prefill=prefill)
+        values_to_update = {}
+        for field_id, function in self._auto_filled_fields():
+            if not record[field_id].value():
+                values_to_update[field_id] = function(req, record, field_id)
+        if values_to_update:
+            record.update(**values_to_update)
+        return record
+
 
 class Texts(CommonTexts):
     """Management of simple texts.
@@ -2538,6 +2551,16 @@ class Texts(CommonTexts):
     WMI_SECTION = WikingManagementInterface.SECTION_SETUP
     WMI_ORDER = 900
 
+    def _auto_filled_fields(self):
+        def content(req, record, field_id):
+            label = record['label'].value()
+            if label is None:
+                return ''
+            lang = record['lang'].value()
+            text = self.Spec._texts[label]
+            return translator(lang).translate(text.text())
+        return (('content', content,),)
+
     def text(self, req, text, lang=None, args=None):
         """Return text corresponding to 'text'.
 
@@ -2548,7 +2571,8 @@ class Texts(CommonTexts):
           lang -- two-character string identifying the language of the text
           args -- dictionary of formatting arguments for the text; if
             non-empty, the text is processed by the '%' operator and all '%'
-            occurences within it must be properly escaped
+            occurences within it must be properly escaped; if 'False', no
+            formatting is performed
 
         If the language is not specied explicitly, language of the request is
         used.  If there is no language set in request, 'en' is assumed.  If the
@@ -2675,6 +2699,23 @@ class Emails(CommonTexts):
         if record is not None and not record['label'].value().startswith('_'):
             actions = [a for a in actions if a.name() != 'delete']
         return actions
+    
+    def _auto_filled_fields(self):
+        def content(req, record, field_id):
+            label = record['label'].value()
+            if label is None:
+                return ''
+            lang = record['lang'].value()
+            email = self.Spec._texts[label]
+            if field_id == 'content':
+                text = email.text()
+            elif field_id == 'subject':
+                text = email.subject()
+            else:
+                return ''
+            return translator(lang).translate(text)
+        return (('content', content,),
+                ('subject', content,),)
 
     def email_args(self, req, text, lang=None, args=None):
         """Return dictionary of some 'wiking.send_mail' arguments for 'text'.
