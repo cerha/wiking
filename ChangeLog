@@ -1,6 +1,11 @@
 2009-05-20  Milan Zamazal  <pdm@brailcom.org>
 
 	* lib/wiking/cms/cms.py:
+	Prefill default custom texts in CommonTexts forms.
+
+2009-05-20  Milan Zamazal  <pdm@brailcom.org>
+
+	* lib/wiking/cms/cms.py:
 	Move WMI settings from CommonTexts to Texts.
 
 2009-05-19  Milan Zamazal  <pdm@brailcom.org>
