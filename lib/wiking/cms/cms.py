@@ -2486,8 +2486,6 @@ class CommonTexts(CMSModule):
     RIGHTS_insert = ()
     RIGHTS_update = (Roles.ADMIN,)
     RIGHTS_delete = ()
-    WMI_SECTION = WikingManagementInterface.SECTION_SETUP
-    WMI_ORDER = 900
 
     def _delayed_init(self):
         super(CommonTexts, self)._delayed_init()
@@ -2536,6 +2534,9 @@ class Texts(CommonTexts):
     """
     _TEXT_REGISTRAR = 'add_text_label'
     _DB_FUNCTIONS = {'add_text_label': (('1', pd.String(),),)}
+    
+    WMI_SECTION = WikingManagementInterface.SECTION_SETUP
+    WMI_ORDER = 900
 
     def text(self, req, text, lang=None, args=None):
         """Return text corresponding to 'text'.
