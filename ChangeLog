@@ -1,3 +1,8 @@
+2009-05-28  Tomas Cerha  <cerha@debian.brailcom.xx>
+
+	* lib/wiking/db.py: 
+	Allow dynamic determination of BrowseForm columns.
+
 2009-05-20  Milan Zamazal  <pdm@brailcom.org>
 
 	* lib/wiking/cms/cms.py:

@@ -451,7 +451,32 @@ class PytisModule(Module, ActionHandler):
         return form(self._view, form_record, handler=handler or req.uri(), name=self.name(),
                     hidden=hidden, prefill=prefill, uri_provider=uri_provider, **kwargs)
 
+    def _columns(self, req):
+        """Return the list of BrowseForm columns or None.
+
+        'None' means to use the default list of columns defined by specification.
+
+        Override this metod to dynamically change the list of visible BrowseForm columns.  The
+        default implementation returns 'None'.
+
+        """
+        return None
+
     def _layout(self, req, action, record=None):
+        """Return the form layout as a 'pytis.presentation.GroupSpec' instance or None.
+
+        'None' means to use the default layout defined by specification.
+
+        Arguments:
+          req -- current request
+          action -- name of the action as a string (determines also the form type)
+          record -- the current record instance or None (for 'insert' action)
+
+        Override this metod to dynamically change form layout.  The default implementation returns
+        one of (statical) layouts defined in '_LAYOUTS' (dictionary keyed by action name) or None
+        of no specific layout is defined for given action.
+
+        """
         layout = self._LAYOUT.get(action)
         if isinstance(layout, (tuple, list)):
             layout = pp.GroupSpec(layout, orientation=pp.Orientation.VERTICAL)
@@ -708,7 +733,8 @@ class PytisModule(Module, ActionHandler):
         else:
             form = pw.ListView
         condition = self._binding_condition(binding, record)
-        columns = [c for c in self._view.columns() if c != binding.binding_column()]
+        columns = [c for c in self._columns(req) or self._view.columns()
+                   if c != binding.binding_column()]
         lang = req.prefered_language(raise_error=False)
         if binding.id():
             binding_uri = uri +'/'+ binding.id()
@@ -737,7 +763,8 @@ class PytisModule(Module, ActionHandler):
             return result
         # If this is not a binding forwarded request, display the listing.
         lang = req.prefered_language()
-        content = (self._form(pw.ListView, req, condition=self._condition(req, lang=lang)),
+        content = (self._form(pw.ListView, req, condition=self._condition(req, lang=lang),
+                              columns=self._columns(req)),
                    self._action_menu(req))
         return self._document(req, content, lang=lang, err=err, msg=msg)
 
