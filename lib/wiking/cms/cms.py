@@ -1764,7 +1764,7 @@ class Styles(CMSModule):
     WMI_SECTION = WikingManagementInterface.SECTION_STYLE
     WMI_ORDER = 200
 
-    def stylesheets(self):
+    def stylesheets(self, req):
         return [r['identifier'].value() for r in self._data.get_rows(active=True)]
         
     def stylesheet(self, name):

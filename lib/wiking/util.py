@@ -466,7 +466,7 @@ class Document(object):
         id = '/'.join(req.path)
         lang = self._lang or req.prefered_language(raise_error=False) or 'en'
         nodes = {}
-        styles = [lcg.Stylesheet(uri, uri=uri) for uri in application.stylesheets()]
+        styles = [lcg.Stylesheet(uri, uri=uri) for uri in application.stylesheets(req)]
         resource_provider = lcg.ResourceProvider(resources=tuple(styles)+self._resources,
                                                  dirs=cfg.resource_path)
         def mknode(item):
@@ -736,8 +736,7 @@ class LoginDialog(lcg.Content):
             g.field(name='login', value=login, id='login', size=18),
             g.br(), 
             g.label(_("Password")+':', id='password') + g.br(),
-            g.field(name='password', value=password, id='password', size=18,
-                    password=True),
+            g.field(name='password', value=password, id='password', size=18, password=True),
             g.br(),
             g.hidden(name='__log_in', value='1'),
             ) + tuple(hidden) + (

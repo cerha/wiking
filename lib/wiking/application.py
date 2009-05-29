@@ -214,7 +214,7 @@ class Application(Module):
         """
         return ['en']
 
-    def stylesheets(self):
+    def stylesheets(self, req):
         """Return the list of URIs of all available stylesheets.
 
         The application is responsible for handling the returned URIs correctly.  Wiking provides a

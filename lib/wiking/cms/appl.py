@@ -120,9 +120,9 @@ class Application(CookieAuthentication, wiking.Application):
         except MaintananceModeError:
             return ('en', 'cs')
         
-    def stylesheets(self):
+    def stylesheets(self, req):
         try:
-            styles = self._module('Styles').stylesheets()
+            styles = self._module('Styles').stylesheets(req)
         except MaintananceModeError:
             styles = ('default.css',)
         return ['/_css/'+ name for name in styles]

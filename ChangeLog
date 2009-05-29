@@ -1,6 +1,11 @@
 2009-05-29  Tomas Cerha  <cerha@debian.brailcom.xx>
 
+	* lib/wiking/util.py: 
+	* lib/wiking/cms/cms.py: 
 	* lib/wiking/application.py: 
+	* lib/wiking/cms/appl.py: 
+	Pass `req' to `Application.stylesheets()'.
+
 	* lib/wiking/export.py: 
 	* lib/wiking/cms/appl.py: 
 	Allow dynamic site title and subtitle modification.
