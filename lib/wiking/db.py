@@ -451,17 +451,6 @@ class PytisModule(Module, ActionHandler):
         return form(self._view, form_record, handler=handler or req.uri(), name=self.name(),
                     hidden=hidden, prefill=prefill, uri_provider=uri_provider, **kwargs)
 
-    def _columns(self, req):
-        """Return the list of BrowseForm columns or None.
-
-        'None' means to use the default list of columns defined by specification.
-
-        Override this metod to dynamically change the list of visible BrowseForm columns.  The
-        default implementation returns 'None'.
-
-        """
-        return None
-
     def _layout(self, req, action, record=None):
         """Return the form layout as a 'pytis.presentation.GroupSpec' instance or None.
 
@@ -474,7 +463,8 @@ class PytisModule(Module, ActionHandler):
 
         Override this metod to dynamically change form layout.  The default implementation returns
         one of (statical) layouts defined in '_LAYOUTS' (dictionary keyed by action name) or None
-        of no specific layout is defined for given action.
+        if no specific layout is defined for given action (to use the default layout from
+        specification).
 
         """
         layout = self._LAYOUT.get(action)
@@ -482,6 +472,29 @@ class PytisModule(Module, ActionHandler):
             layout = pp.GroupSpec(layout, orientation=pp.Orientation.VERTICAL)
         return layout
 
+    def _columns(self, req):
+        """Return a list of BrowseForm columns or None.
+
+        'None' means to use the default list of columns defined by specification.
+
+        Override this metod to dynamically change the list of visible BrowseForm columns.  The
+        default implementation returns 'None'.
+
+        """
+        return None
+
+    def _filters(self, req):
+        """Return a list of dynamic filters as 'pytis.presentation.Filter' instances or None.
+
+        'None' means to use the default list of columns defined by specification.
+
+        Override this metod to dynamically change the list of user visible filters in the
+        BrowseForm/ListView form.  The default implementation returns 'None' (to use the default
+        static list from specification).
+
+        """
+        return None
+    
     def _action(self, req, record=None):
         if record is not None and req.unresolved_path:
             return 'subpath'
@@ -742,7 +755,8 @@ class PytisModule(Module, ActionHandler):
             # Special value indicating that this is a related form, but uri is not available.
             binding_uri = ''
         content = self._form(form, req, uri=uri, columns=columns, binding_uri=binding_uri,
-                             condition=self._condition(req, condition=condition, lang=lang))
+                             condition=self._condition(req, condition=condition, lang=lang),
+                             filters=self._filters(req))
         if binding_uri:
             menu = self._action_menu(req, uri=binding_uri)
             if menu:
@@ -764,7 +778,7 @@ class PytisModule(Module, ActionHandler):
         # If this is not a binding forwarded request, display the listing.
         lang = req.prefered_language()
         content = (self._form(pw.ListView, req, condition=self._condition(req, lang=lang),
-                              columns=self._columns(req)),
+                              columns=self._columns(req), filters=self._filters(req)),
                    self._action_menu(req))
         return self._document(req, content, lang=lang, err=err, msg=msg)
 
