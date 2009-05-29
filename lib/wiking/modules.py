@@ -202,8 +202,8 @@ class Stylesheets(Module, RequestHandler):
 
     _MATCHER = re.compile (r"\$(\w[\w-]*)(?:\.(\w[\w-]*))?")
 
-    def _stylesheet(self, name):
-        filename = os.path.join(cfg.wiking_dir, 'resources', 'css', name)
+    def _stylesheet(self, path):
+        filename = os.path.join(cfg.wiking_dir, 'resources', 'css', *path)
         if os.path.exists(filename):
             return "".join(file(filename).readlines())
         else:
@@ -221,8 +221,8 @@ class Stylesheets(Module, RequestHandler):
 
     def _handle(self, req):
         """Serve the stylesheet from a file."""
-        if len(req.unresolved_path) == 1:
-            return ('text/css', self._substitute(self._stylesheet(req.unresolved_path[0])))
+        if len(req.unresolved_path) >= 1:
+            return ('text/css', self._substitute(self._stylesheet(req.unresolved_path)))
         elif not req.unresolved_path:
             raise Forbidden()
         else:

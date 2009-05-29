@@ -1,5 +1,9 @@
 2009-05-29  Tomas Cerha  <cerha@debian.brailcom.xx>
 
+	* lib/wiking/modules.py: 
+	* lib/wiking/cms/cms.py: 
+	Allow subdirectories in stylesheet URIs.
+
 	* lib/wiking/util.py: 
 	* lib/wiking/cms/cms.py: 
 	* lib/wiking/application.py: 

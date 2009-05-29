@@ -1734,15 +1734,17 @@ class Stylesheets(Stylesheets):
     filesystem).
 
     """
-    def _stylesheet(self, name):
-        try:
-            content = self._module('Styles').stylesheet(name)
-        except MaintananceModeError:
-            content = None
-        if content:
+    def _stylesheet(self, path):
+        content = None
+        if len(path) == 1:
+            try:
+                content = self._module('Styles').stylesheet(path[0])
+            except MaintananceModeError:
+                pass
+        if content is not None:
             return content
         else:
-            return super(Stylesheets, self)._stylesheet(name)
+            return super(Stylesheets, self)._stylesheet(path)
 
    
 class Styles(CMSModule):
