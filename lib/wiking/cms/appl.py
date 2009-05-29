@@ -84,7 +84,19 @@ class Application(CookieAuthentication, wiking.Application):
         except MaintananceModeError:
             uri = None
         return uri or super(Application, self).module_uri(modname)
-        
+
+    def site_title(self, req):
+        if req.wmi:
+            return _("Wiking Management Interface")
+        else:
+            return cfg.site_title
+
+    def site_subtitle(self, req):
+        if req.wmi:
+            return None
+        else:
+            return cfg.site_subtitle
+    
     def menu(self, req):
         module = req.wmi and 'WikingManagementInterface' or 'Pages'
         try:

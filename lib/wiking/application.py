@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2006-2008 Brailcom, o.p.s.
+# Copyright (C) 2006-2009 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -102,6 +102,27 @@ class Application(Module):
         """
         identitier = self._reverse_mapping.get(modname)
         return identitier and '/'+identitier or None
+
+    def site_title(self, req):
+        """Return site title as a string.
+
+        This method returns the value of configuration option 'site_title' by default.  It may
+        be overriden to change the title dynamically.
+        
+        """
+        return cfg.site_title
+
+    def site_subtitle(self, req):
+        """Return site subtitle as a string or None.
+
+        Site subtitle is normally appended to site title separated by a dash (if not 'None').  It
+        is, however, exported in a differnt html element to allow independent styling.
+
+        This method returns the value of configuration option 'site_subtitle' by default.  It may
+        be overriden to change the subtitle dynamically.
+
+        """
+        return cfg.site_subtitle
     
     def menu(self, req):
         """Return the main navigation menu hierarchy.

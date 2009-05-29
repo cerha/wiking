@@ -25,13 +25,20 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
     class Context(lcg.HtmlExporter.Context):
         def _init_kwargs(self, req=None, **kwargs):
             self._req = req
-            # Some harmless hacks...
+            # Some harmless hacks for faster access to some often used parameters...
+            # These attributes are not the part of the official context extension (such as the
+            # 'req()' method, so their use should be limited to this module only!
             self.has_menu = bool([n for n in self.node().root().children() if not n.hidden()])
             self.has_submenu = bool([n for n in self.node().top().children() if not n.hidden()])
-            self.wmi = hasattr(req, 'wmi') and req.wmi or False
+            self.application = req.application()
             super(Exporter.Context, self)._init_kwargs(**kwargs)
 
         def req(self):
+            """Return the current request as a 'WikingRequest' instance.
+
+            This method is the official Wiking extension of LCG export context.
+
+            """
             return self._req
 
     class Layout(object):
@@ -112,7 +119,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         return context.generator().uri(uri, setlang=lang)
 
     def _resource_uri_prefix(self, context, resource):
-        return context.req().application().module_uri('Resources')
+        return context.application.module_uri('Resources')
     
     def _head(self, context):
         context.node().resource('wiking.js')
@@ -123,16 +130,10 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         return lcg.concat(result, channels, separator="\n  ")
     
     def _site_title(self, context):
-        if context.wmi:
-            return _("Wiking Management Interface")
-        else:
-            return cfg.site_title
+        return context.application.site_title(context.req())
 
     def _site_subtitle(self, context):
-        if context.wmi:
-            return None
-        else:
-            return cfg.site_subtitle
+        return context.application.site_subtitle(context.req())
     
     def _title(self, context):
         return self._site_title(context) + ' - ' + context.node().heading()
@@ -259,8 +260,8 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
 
     def _bottom_bar(self, context):
         req = context.req()
-        left  = req.application().bottom_bar_left_content(req)
-        right = req.application().bottom_bar_right_content(req)
+        left  = context.application.bottom_bar_left_content(req)
+        right = context.application.bottom_bar_right_content(req)
         if left or right:
             g = self._generator
             result = [g.hr()]
@@ -283,8 +284,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         
     def _footer(self, context):
         g = self._generator
-        req = context.req()
-        content = req.application().footer_content(req)
+        content = context.application.footer_content(context.req())
         if content:
             content = lcg.coerce(content)
             content.set_parent(context.node())
