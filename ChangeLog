@@ -1,5 +1,21 @@
 2009-06-02  Tomas Cerha  <cerha@debian.brailcom.xx>
 
+	* translations/wiking-cms.cs.po:
+	* translations/wiking-cms.de.po:
+	* translations/wiking-cms.es.po:
+	* translations/wiking-cms.fr.po:
+	* translations/wiking-cms.hu.po:
+	* translations/wiking-cms.pl.po:
+	* translations/wiking-cms.sk.po:
+	* translations/wiking.cs.po:
+	* translations/wiking.de.po:
+	* translations/wiking.es.po:
+	* translations/wiking.fr.po:
+	* translations/wiking.hu.po:
+	* translations/wiking.pl.po:
+	* translations/wiking.sk.po:
+	Translations updated.
+
 	* lib/wiking/application.py:
 	* lib/wiking/modules.py:
 	* lib/wiking/request.py:
