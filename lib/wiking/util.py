@@ -58,6 +58,19 @@ class AuthenticationError(RequestError):
     def message(self, req):
         return LoginDialog(self.args and self.args[0] or None)
 
+
+class PasswordExpirationError(RequestError):
+    
+    _TITLE = _("Your password expired")
+    
+    def message(self, req):
+        content = lcg.p(_("Your password expired.  Access to the application is now blocked for "
+                          "security reasons until you change your password."))
+        uri = req.application().password_change_uri(req)
+        if uri:
+            content = (content, lcg.p(lcg.link(uri, _("Change your password"))))
+        return content
+
     
 class AuthenticationRedirect(AuthenticationError):
     """Has the same effect as AuthenticationError, but is just not an error."""
@@ -378,8 +391,9 @@ class LoginPanel(Panel):
                 organization = user.organization()
                 if organization:
                     result += g.br()+'\n' + organization
-                if user.passwd_expiration():
-                    date = lcg.LocalizableDateTime(str(user.passwd_expiration()))
+                expiration = user.password_expiration()
+                if expiration:
+                    date = lcg.LocalizableDateTime(str(expiration))
                     # Translators: Login panel info. '%(date)s' is replaced by a concrete date.
                     result += g.br() +'\n'+ _("Your password expires on %(date)s.", date=date)
                 uri = appl.password_change_uri(req)

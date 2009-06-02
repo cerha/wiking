@@ -667,15 +667,18 @@ class User(object):
     """Representation of the logged in user.
 
     The authentication module returns an instance of this class on successful authentication.  The
-    interface defined by this class is used within the framework, but application is allowed to
-    append any application specific data to the instance by passing the 'data' argument to the
-    constructor.
+    interface defined by this class is used within the framework, but applications are allowed (and
+    encouraged) to derive a class with an extended interface used by the application.
+
+    The simplest way of using application-specific extensions is passing an arbitrary object as the
+    'data' constructor argument.  This doesn't require deriving a specific 'User' subclass, but may
+    be a little cumbersome in some situations.
 
     """
     
-    def __init__(self, login, uid=None, name=None, roles=(), email=None, data=None,
-                 passwd_expiration=None, uri=None, organization_id=None, organization=None,
-                 lang='en'):
+    def __init__(self, login, uid=None, name=None, roles=(), email=None, password=None, 
+                 password_expiration=None, uri=None, data=None, lang='en',
+                 organization_id=None, organization=None):
         """Initialize the instance.
 
         Arguments:
@@ -685,9 +688,12 @@ class User(object):
           name -- visible name as a string (login is used if None)
           roles -- sequence of user roles as unique string identifiers (see 'Roles')
           email -- e-mail address as a string
-          data -- application specific data
-          passwd_expiration -- password expiration date as a Python 'date' instance or None
+          password -- user's expected authentication password or None if password authentication is
+            not allowed.  The login password will be checked against this value for authentication
+            to succeed.
+          password_expiration -- password expiration date as a Python 'date' instance or None
           uri -- user's profile URI or None
+          data -- application specific data
           organization_id -- id of the user's organization as an Integer
           organization -- name of the user's organization as a string or
             unicode; or 'None' if the user doesn't belong to any organization
@@ -705,9 +711,10 @@ class User(object):
         self._name = name or login
         self._roles = tuple(roles)
         self._email = email
-        self._data = data
-        self._passwd_expiration = passwd_expiration
+        self._password = password
+        self._password_expiration = password_expiration
         self._uri = uri
+        self._data = data
         self._organization_id = organization_id
         if organization is not None:
             organization = unicode(organization)
@@ -736,17 +743,21 @@ class User(object):
         """Return user's e-mail address as a string or None if not defined."""
         return self._email
     
-    def data(self):
-        """Return application specific data passed to the constructor."""
-        return self._data
+    def password(self):
+        """Return user's authentication password as a string or None."""
+        return self._password
 
-    def passwd_expiration(self):
+    def password_expiration(self):
         """Return password expiration date as a Python 'date' instance or None."""
-        return self._passwd_expiration
+        return self._password_expiration
 
     def uri(self):
         """Return the URI of user's profile."""
         return self._uri
+
+    def data(self):
+        """Return application specific data passed to the constructor."""
+        return self._data
 
     def organization_id(self):
         """Return user's organization id as an integer.

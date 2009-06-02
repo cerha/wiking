@@ -1,3 +1,11 @@
+2009-06-02  Tomas Cerha  <cerha@debian.brailcom.xx>
+
+	* lib/wiking/application.py:
+	* lib/wiking/modules.py:
+	* lib/wiking/request.py:
+	* lib/wiking/util.py:
+	Handle password expiration within authentication procedure automatically.
+
 2009-05-29  Tomas Cerha  <cerha@debian.brailcom.xx>
 
 	* lib/wiking/modules.py: 

@@ -145,8 +145,10 @@ class Application(Module):
 
         This method is called when authentication is needed.  A 'User' instance must be returned if
         authentication was successful or None if not.  'AuthenticationError' may be raised if
-        authentication credentials are supplied but are not correct.  In other cases, None as the
-        returned value means, that the user is not logged or that the session expired.
+        authentication credentials are supplied but are not correct.  'PasswordExpirationError' may
+        be raised if the user is correctly authenticated, but user's 'password_expiration' date is
+        today or earlier.  In other cases, None as the returned value means, that the user is not
+        logged or that the session expired.
 
         The only argument is the request object, which may be used to obtain authentication
         credentials, store session data (for example as cookies) or whatever else is needed by the

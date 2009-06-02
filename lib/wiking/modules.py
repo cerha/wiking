@@ -397,6 +397,11 @@ class CookieAuthentication(object):
             raise AuthenticationRedirect()
         if user is not None:
             user.set_authentication_parameters(method='password', auto=False)
+            password_expiration = user.password_expiration()
+            if password_expiration is not None and req.uri() != self.password_change_uri(req):
+                import datetime
+                if password_expiration <= datetime.date.today():
+                    raise PasswordExpirationError()
         return user
 
     
@@ -411,6 +416,8 @@ class Session(Module):
         #    return hex(random.randint(0, pow(256, self._SESSION_KEY_LENGTH)))[2:]
     
     def _expiration(self):
+        # TODO: Using mx.Datetime here and `datetime' for password expiration (above) is
+        # inconsistent.  Move this to `datetime' too?
         return mx.DateTime.now().gmtime() + mx.DateTime.TimeDelta(hours=cfg.session_expiration)
 
     def _expired(self, time):
