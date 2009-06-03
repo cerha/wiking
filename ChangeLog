@@ -1,3 +1,8 @@
+2009-06-03  Tomas Cerha  <cerha@debian.brailcom.xx>
+
+	* lib/wiking/util.py:
+	Allow cloning existing `Document' instances.
+
 2009-06-02  Tomas Cerha  <cerha@debian.brailcom.xx>
 
 	* translations/wiking-cms.cs.po:
