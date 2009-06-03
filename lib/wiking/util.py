@@ -465,8 +465,6 @@ class Document(object):
         """
         self._title = title
         self._subtitle = subtitle
-        if isinstance(content, (list, tuple)):
-            content = lcg.SectionContainer([c for c in content if c is not None], toc_depth=0)
         self._content = content
         self._lang = lang
         self._sec_lang = sec_lang
@@ -474,7 +472,20 @@ class Document(object):
         self._resources = tuple(resources)
         self._globals = globals
         self._layout = layout
-        
+
+    def clone(self, **kwargs):
+        """Return an instance identical with this one, except for arguments passed to this method.
+
+        Keyword arguments are the same as in the constructor.  Their values override the properties
+        of the original instance (original constructor arguments).
+
+        """
+        args = [(k[1:], v) for k, v in self.__dict__.items() if k.startswith('_')]
+        return self.__class__(**dict(args, **kwargs))
+
+    def content(self):
+        """Return the 'content' passed to the constructor."""
+        return self._content
         
     def build(self, req, application):
         id = '/'.join(req.path)
@@ -489,6 +500,8 @@ class Document(object):
                 if heading and self._subtitle:
                     heading = lcg.concat(heading, ' :: ', self._subtitle)
                 content = self._content
+                if isinstance(content, (list, tuple)):
+                    content = lcg.SectionContainer([c for c in content if c is not None], toc_depth=0)
                 panels = application.panels(req, lang)
                 variants = self._variants
                 if variants is None:
