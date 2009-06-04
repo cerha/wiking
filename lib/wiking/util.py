@@ -393,9 +393,13 @@ class LoginPanel(Panel):
                     result += g.br()+'\n' + organization
                 expiration = user.password_expiration()
                 if expiration:
-                    date = lcg.LocalizableDateTime(str(expiration))
-                    # Translators: Login panel info. '%(date)s' is replaced by a concrete date.
-                    result += g.br() +'\n'+ _("Your password expires on %(date)s.", date=date)
+                    import datetime
+                    if datetime.date.today() >= expiration:
+                        result += g.br() +'\n'+ _("Your password expired")
+                    else:
+                        date = lcg.LocalizableDateTime(str(expiration))
+                        # Translators: Login panel info. '%(date)s' is replaced by a concrete date.
+                        result += g.br() +'\n'+ _("Your password expires on %(date)s", date=date)
                 uri = appl.password_change_uri(req)
                 if uri:
                     # Translators: Login panel link.
