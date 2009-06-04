@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-06-02 11:23+0200\n"
+"POT-Creation-Date: 2009-06-04 09:27+0200\n"
 "PO-Revision-Date: 2008-10-14 10:39+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Hungarian <wiking@lists.freebsoft.org>\n"
@@ -141,7 +141,7 @@ msgstr ""
 msgid "Authentication required"
 msgstr ""
 
-#: ../lib/wiking/util.py:64
+#: ../lib/wiking/util.py:64 ../lib/wiking/util.py:398
 msgid "Your password expired"
 msgstr ""
 
@@ -152,14 +152,14 @@ msgid ""
 msgstr ""
 
 #. Translators: Login panel link.
-#: ../lib/wiking/util.py:71 ../lib/wiking/util.py:402
+#: ../lib/wiking/util.py:71 ../lib/wiking/util.py:406
 msgid "Change your password"
 msgstr ""
 
 #. Translators: Login dialog page title (use a noun).
 #. Translators: Login info label (noun) followed by login name and login controls.
-#: ../lib/wiking/util.py:79 ../lib/wiking/util.py:415
-#: ../lib/wiking/util.py:727
+#: ../lib/wiking/util.py:79 ../lib/wiking/util.py:419
+#: ../lib/wiking/util.py:744
 msgid "Login"
 msgstr ""
 
@@ -240,64 +240,64 @@ msgid "The system is temporarily down for maintenance."
 msgstr ""
 
 #. Translators: Login panel info. '%(date)s' is replaced by a concrete date.
-#: ../lib/wiking/util.py:398
+#: ../lib/wiking/util.py:402
 #, python-format
-msgid "Your password expires on %(date)s."
+msgid "Your password expires on %(date)s"
 msgstr ""
 
 #. Translators: Login panel/dialog registration link.
-#: ../lib/wiking/util.py:407 ../lib/wiking/util.py:761
+#: ../lib/wiking/util.py:411 ../lib/wiking/util.py:778
 msgid "New user registration"
 msgstr ""
 
-#: ../lib/wiking/util.py:416
+#: ../lib/wiking/util.py:420
 msgid "Login Panel"
 msgstr ""
 
 #. Translators: Label in front of action buttons.
-#: ../lib/wiking/util.py:662
+#: ../lib/wiking/util.py:679
 msgid "Actions:"
 msgstr ""
 
-#: ../lib/wiking/util.py:667
+#: ../lib/wiking/util.py:684
 msgid "Help"
 msgstr ""
 
-#: ../lib/wiking/util.py:705
+#: ../lib/wiking/util.py:722
 msgid "Go to your profile"
 msgstr ""
 
 #. Translators: Logout button label - verb in imperative.
-#: ../lib/wiking/util.py:710
+#: ../lib/wiking/util.py:727
 msgid "log out"
 msgstr ""
 
 #. Translators: Login status info.  If logged, the username is displayed instaed.
-#: ../lib/wiking/util.py:713
+#: ../lib/wiking/util.py:730
 msgid "not logged"
 msgstr ""
 
 #. Translators: Login button label - verb in imperative.
-#: ../lib/wiking/util.py:715
+#: ../lib/wiking/util.py:732
 msgid "log in"
 msgstr ""
 
-#: ../lib/wiking/util.py:749
+#: ../lib/wiking/util.py:766
 msgid "Login name"
 msgstr ""
 
-#: ../lib/wiking/util.py:752
+#: ../lib/wiking/util.py:769
 msgid "Password"
 msgstr ""
 
 #. Translators: Login button label - verb in imperative.
-#: ../lib/wiking/util.py:758
+#: ../lib/wiking/util.py:775
 msgid "Log in"
 msgstr ""
 
 #. Translators: Login dialog link to password change or password reminder (depends
 #. on configuration).
-#: ../lib/wiking/util.py:764
+#: ../lib/wiking/util.py:781
 msgid "Forgot your password?"
 msgstr ""
 

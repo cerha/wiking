@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-06-02 11:23+0200\n"
-"PO-Revision-Date: 2009-06-02 11:24+0200\n"
+"POT-Creation-Date: 2009-06-04 09:27+0200\n"
+"PO-Revision-Date: 2009-06-04 09:28+0200\n"
 "Last-Translator: Tomas Cerha <cerha@brailcom.org>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
 "MIME-Version: 1.0\n"
@@ -141,7 +141,7 @@ msgstr "Chybová zpráva byla:"
 msgid "Authentication required"
 msgstr "Akce vyžaduje přihlášení"
 
-#: ../lib/wiking/util.py:64
+#: ../lib/wiking/util.py:64 ../lib/wiking/util.py:398
 msgid "Your password expired"
 msgstr "Platnost hesla vypršela"
 
@@ -149,17 +149,19 @@ msgstr "Platnost hesla vypršela"
 msgid ""
 "Your password expired.  Access to the application is now blocked for "
 "security reasons until you change your password."
-msgstr "Platnost Vašeho hesla vypršela. Přístup k aplikaci bude z bezpečnostních důvodů až do změny hesla zablokován."
+msgstr ""
+"Platnost Vašeho hesla vypršela. Přístup k aplikaci bude z bezpečnostních "
+"důvodů až do změny hesla zablokován."
 
 #. Translators: Login panel link.
-#: ../lib/wiking/util.py:71 ../lib/wiking/util.py:402
+#: ../lib/wiking/util.py:71 ../lib/wiking/util.py:406
 msgid "Change your password"
 msgstr "Změnit heslo"
 
 #. Translators: Login dialog page title (use a noun).
 #. Translators: Login info label (noun) followed by login name and login controls.
-#: ../lib/wiking/util.py:79 ../lib/wiking/util.py:415
-#: ../lib/wiking/util.py:727
+#: ../lib/wiking/util.py:79 ../lib/wiking/util.py:419
+#: ../lib/wiking/util.py:744
 msgid "Login"
 msgstr "Přihlášení"
 
@@ -249,64 +251,64 @@ msgid "The system is temporarily down for maintenance."
 msgstr "Systém je dočasně mimo provoz z důvodů údržby."
 
 #. Translators: Login panel info. '%(date)s' is replaced by a concrete date.
-#: ../lib/wiking/util.py:398
+#: ../lib/wiking/util.py:402
 #, python-format
-msgid "Your password expires on %(date)s."
-msgstr "Platnost hesla vyprší %(date)s."
+msgid "Your password expires on %(date)s"
+msgstr "Platnost hesla vyprší %(date)s"
 
 #. Translators: Login panel/dialog registration link.
-#: ../lib/wiking/util.py:407 ../lib/wiking/util.py:761
+#: ../lib/wiking/util.py:411 ../lib/wiking/util.py:778
 msgid "New user registration"
 msgstr "Registrace nového uživatele"
 
-#: ../lib/wiking/util.py:416
+#: ../lib/wiking/util.py:420
 msgid "Login Panel"
 msgstr "Panel přihlášení"
 
 #. Translators: Label in front of action buttons.
-#: ../lib/wiking/util.py:662
+#: ../lib/wiking/util.py:679
 msgid "Actions:"
 msgstr "Akce:"
 
-#: ../lib/wiking/util.py:667
+#: ../lib/wiking/util.py:684
 msgid "Help"
 msgstr "Nápověda"
 
-#: ../lib/wiking/util.py:705
+#: ../lib/wiking/util.py:722
 msgid "Go to your profile"
 msgstr "Zobrazit uživatelský profil"
 
 #. Translators: Logout button label - verb in imperative.
-#: ../lib/wiking/util.py:710
+#: ../lib/wiking/util.py:727
 msgid "log out"
 msgstr "odhlásit"
 
 #. Translators: Login status info.  If logged, the username is displayed instaed.
-#: ../lib/wiking/util.py:713
+#: ../lib/wiking/util.py:730
 msgid "not logged"
 msgstr "nepřihlášen"
 
 #. Translators: Login button label - verb in imperative.
-#: ../lib/wiking/util.py:715
+#: ../lib/wiking/util.py:732
 msgid "log in"
 msgstr "přihlásit"
 
-#: ../lib/wiking/util.py:749
+#: ../lib/wiking/util.py:766
 msgid "Login name"
 msgstr "Přihlašovací jméno"
 
-#: ../lib/wiking/util.py:752
+#: ../lib/wiking/util.py:769
 msgid "Password"
 msgstr "Heslo"
 
 #. Translators: Login button label - verb in imperative.
-#: ../lib/wiking/util.py:758
+#: ../lib/wiking/util.py:775
 msgid "Log in"
 msgstr "přihlásit"
 
 #. Translators: Login dialog link to password change or password reminder (depends
 #. on configuration).
-#: ../lib/wiking/util.py:764
+#: ../lib/wiking/util.py:781
 msgid "Forgot your password?"
 msgstr "Zapomenuté heslo?"
 

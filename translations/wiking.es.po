@@ -1,5 +1,5 @@
 # Wiking translations.
-# Copyright (C) 2006-2008 Brailcom, o.p.s.
+# Copyright (C) 2006-2009 Brailcom, o.p.s.
 # This file is distributed under the same license as the Wiking package.
 # Tomas Cerha <cerha@brailcom.org>, 2006.
 #
@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-06-02 11:23+0200\n"
-"PO-Revision-Date: 2009-02-15 20:13+0100\n"
+"POT-Creation-Date: 2009-06-04 09:27+0200\n"
+"PO-Revision-Date: 2009-06-04 09:30+0200\n"
 "Last-Translator: Hynek Hanke <hanke@volny.cz>\n"
 "Language-Team: Spanish <wiking@lists.freebsoft.org>\n"
 "MIME-Version: 1.0\n"
@@ -143,7 +143,7 @@ msgstr "El mensaje de error ha sido:"
 msgid "Authentication required"
 msgstr "Autentificación necesaria"
 
-#: ../lib/wiking/util.py:64
+#: ../lib/wiking/util.py:64 ../lib/wiking/util.py:398
 #, fuzzy
 msgid "Your password expired"
 msgstr "Su contraseña caduca el %(date)s."
@@ -155,14 +155,14 @@ msgid ""
 msgstr ""
 
 #. Translators: Login panel link.
-#: ../lib/wiking/util.py:71 ../lib/wiking/util.py:402
+#: ../lib/wiking/util.py:71 ../lib/wiking/util.py:406
 msgid "Change your password"
 msgstr "Cambie su contraseña"
 
 #. Translators: Login dialog page title (use a noun).
 #. Translators: Login info label (noun) followed by login name and login controls.
-#: ../lib/wiking/util.py:79 ../lib/wiking/util.py:415
-#: ../lib/wiking/util.py:727
+#: ../lib/wiking/util.py:79 ../lib/wiking/util.py:419
+#: ../lib/wiking/util.py:744
 msgid "Login"
 msgstr "Iniciar sesión"
 
@@ -249,64 +249,64 @@ msgid "The system is temporarily down for maintenance."
 msgstr "El sistema está temporalmente fuera de servicio por mantenimiento."
 
 #. Translators: Login panel info. '%(date)s' is replaced by a concrete date.
-#: ../lib/wiking/util.py:398
+#: ../lib/wiking/util.py:402
 #, python-format
-msgid "Your password expires on %(date)s."
-msgstr "Su contraseña caduca el %(date)s."
+msgid "Your password expires on %(date)s"
+msgstr "Su contraseña caduca el %(date)s"
 
 #. Translators: Login panel/dialog registration link.
-#: ../lib/wiking/util.py:407 ../lib/wiking/util.py:761
+#: ../lib/wiking/util.py:411 ../lib/wiking/util.py:778
 msgid "New user registration"
 msgstr "Registro de nuevo usuario"
 
-#: ../lib/wiking/util.py:416
+#: ../lib/wiking/util.py:420
 msgid "Login Panel"
 msgstr "Iniciar sesión"
 
 #. Translators: Label in front of action buttons.
-#: ../lib/wiking/util.py:662
+#: ../lib/wiking/util.py:679
 msgid "Actions:"
 msgstr "Acciones:"
 
-#: ../lib/wiking/util.py:667
+#: ../lib/wiking/util.py:684
 msgid "Help"
 msgstr "Ayuda"
 
-#: ../lib/wiking/util.py:705
+#: ../lib/wiking/util.py:722
 msgid "Go to your profile"
 msgstr "Ir a su perfil"
 
 #. Translators: Logout button label - verb in imperative.
-#: ../lib/wiking/util.py:710
+#: ../lib/wiking/util.py:727
 msgid "log out"
 msgstr "cerrar sesión"
 
 #. Translators: Login status info.  If logged, the username is displayed instaed.
-#: ../lib/wiking/util.py:713
+#: ../lib/wiking/util.py:730
 msgid "not logged"
 msgstr "sesión no iniciada"
 
 #. Translators: Login button label - verb in imperative.
-#: ../lib/wiking/util.py:715
+#: ../lib/wiking/util.py:732
 msgid "log in"
 msgstr "iniciar sesión"
 
-#: ../lib/wiking/util.py:749
+#: ../lib/wiking/util.py:766
 msgid "Login name"
 msgstr "Nombre de usuario"
 
-#: ../lib/wiking/util.py:752
+#: ../lib/wiking/util.py:769
 msgid "Password"
 msgstr "Contraseña"
 
 #. Translators: Login button label - verb in imperative.
-#: ../lib/wiking/util.py:758
+#: ../lib/wiking/util.py:775
 msgid "Log in"
 msgstr "Iniciar sesión"
 
 #. Translators: Login dialog link to password change or password reminder (depends
 #. on configuration).
-#: ../lib/wiking/util.py:764
+#: ../lib/wiking/util.py:781
 msgid "Forgot your password?"
 msgstr "¿Olvidó su contraseña?"
 

@@ -1,5 +1,14 @@
 2009-06-04  Tomas Cerha  <cerha@debian.brailcom.xx>
 
+	* translations/wiking.cs.po: 
+	* translations/wiking.de.po: 
+	* translations/wiking.es.po: 
+	* translations/wiking.fr.po: 
+	* translations/wiking.hu.po: 
+	* translations/wiking.pl.po: 
+	* translations/wiking.sk.po: 
+	Translations updated.
+
 	* lib/wiking/util.py:
 	Display different message when the password already expired.
 
