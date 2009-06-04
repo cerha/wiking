@@ -1,3 +1,8 @@
+2009-06-04  Tomas Cerha  <cerha@bob.xx>
+
+	* sql/wiking.sql: 
+	Suppress server notifications during database objects creation.
+
 2009-06-04  Tomas Cerha  <cerha@debian.brailcom.xx>
 
 	* translations/wiking.cs.po: 

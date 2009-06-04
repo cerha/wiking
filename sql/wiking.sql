@@ -1,6 +1,8 @@
 -- Wiking database creation script. --
 -- -*- indent-tabs-mode: nil -*-
 
+SET client_min_messages=WARNING;
+
 CREATE TABLE languages (
 	lang_id serial PRIMARY KEY,
 	lang char(2) UNIQUE NOT NULL
