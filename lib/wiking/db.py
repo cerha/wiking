@@ -765,13 +765,10 @@ class PytisModule(Module, ActionHandler):
 
     # ===== Action handlers =====
     
-    def action_list(self, req, err=None, msg=None):
-        # Don't display the listing alone, but display the original form with bindings,
-        # when this list is accessed through a related form.
-        # The messages are passed to support redirection after update/insert/delete, but it
-        # might be better to make a redirect directly in the _redirect_after_* methods.
-        result = self._binding_parent_redirect(req, err=err, msg=msg,
-                                               search=req.param('search'),
+    def action_list(self, req):
+        # Don't display the listing alone, but display the original main form,
+        # when this list is accessed through bindings as a related form.
+        result = self._binding_parent_redirect(req, search=req.param('search'),
                                                form_name=req.param('form_name'))
         if result is not None:
             return result
@@ -780,21 +777,27 @@ class PytisModule(Module, ActionHandler):
         content = (self._form(pw.ListView, req, condition=self._condition(req, lang=lang),
                               columns=self._columns(req), filters=self._filters(req)),
                    self._action_menu(req))
-        return self._document(req, content, lang=lang, err=err, msg=msg)
+        return self._document(req, content, lang=lang)
 
-    def _binding_parent_redirect(self, req, err=None, msg=None, **kwargs):
+    def _binding_parent_uri(self, req):
         fw = self._binding_forward(req)
         if fw:
             binding_id = fw.arg('binding').id()
             if binding_id and fw.uri().endswith(binding_id):
-                t = translator(req.prefered_language()).translate
-                for text, type in req.messages():
-                    if type == req.ERROR:
-                        err = err and err +'\n'+ text or text
-                    else:
-                        msg = msg and msg +'\n'+ text or text
-                uri = fw.uri()[:-(len(binding_id)+1)]
-                return req.redirect(make_uri(uri, err=t(err), msg=t(msg), **kwargs))
+                return fw.uri()[:-(len(fw.arg('binding').id())+1)]
+        return None
+    
+    def _binding_parent_redirect(self, req, **kwargs):
+        uri = self._binding_parent_uri(req)
+        if uri is not None:
+            msg = err = []
+            translate = translator(req.prefered_language()).translate
+            for text, type in req.messages():
+                if type == req.ERROR:
+                    err.append(translate(text))
+                else:
+                    msg.append(translate(text))
+            return req.redirect(make_uri(uri, err='\n'.join(err), msg='\n'.join(msg), **kwargs))
         return None
         
     def _related_content(self, req, record):
@@ -924,13 +927,16 @@ class PytisModule(Module, ActionHandler):
     # ===== Request redirection after successful data operations =====
 
     def _redirect_after_insert(self, req, record):
-        return self.action_list(req, msg=self._insert_msg(record))
+        req.message(self._insert_msg(record))
+        return self.action_list(req)
         
     def _redirect_after_update(self, req, record):
-        return self.action_view(req, record, msg=self._update_msg(record))
+        req.message(self._update_msg(record))
+        return self.action_view(req, record)
         
     def _redirect_after_delete(self, req, record):
-        return self.action_list(req, msg=self._delete_msg(record))
+        req.message(self._delete_msg(record))
+        return self.action_list(req)
     
         
 # ==============================================================================

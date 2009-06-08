@@ -856,11 +856,11 @@ class Themes(CMSModule):
             cfg.theme = Theme()
         err = self._module('Config').set_theme(req, theme_id)
         if err is None:
-            msg = _("The color theme \"%s\" has been activated.", name)
+            req.message(_("The color theme \"%s\" has been activated.", name))
         else:
-            msg = None
+            req.message(err, type=req.ERROR)
         req.set_param('search', theme_id)
-        return self.action_list(req, msg=msg, err=err)
+        return self.action_list(req)
     RIGHTS_activate = (Roles.ADMIN,)
     
 
@@ -1206,12 +1206,12 @@ class Pages(CMSModule):
         else:
             raise NotFound()
         
-    def action_list(self, req, record=None, **kwargs):
+    def action_list(self, req, record=None):
         if record is not None:
             # Simulate the list action for the embedded module.
-            return self.action_view(req, record, **kwargs)
+            return self.action_view(req, record)
         else:
-            return super(Pages, self).action_list(req, **kwargs)
+            return super(Pages, self).action_list(req)
         
     def action_attachments(self, req, record, err=None, msg=None):
         binding = self._view.bindings()[0]
