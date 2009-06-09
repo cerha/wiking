@@ -1,14 +1,15 @@
 Core features:
+ * Use Post/Redirect/Get (http://en.wikipedia.org/wiki/Post/Redirect/Get)
  * Handle Computer exceptions
  * Calling 'constraints' of a virtual field
  * The default check() method in base Specification class
  * Force HTTPS also for registration form (see note at PytisModule.action_insert())
  * Create an admin account during site installation
  * Allow extension module management to page owner
- * Disable table layout per layout spec, not per module.
- * Delete stray files after deletion triggered in the database (cascade)
+ * Disable table layout per layout spec, not per module
+ * Delete stray attachment files after deletion triggered in database (cascade)
  * Serve favicon and robots.txt
- * Image allignment and link title in the LCG formatting manual
+ * Image alignment and link title in the LCG formatting manual
  * Locking
  * Change log and Last-Modified HTTP header support
  * Recode HTML attachments
