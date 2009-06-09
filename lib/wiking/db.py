@@ -790,7 +790,8 @@ class PytisModule(Module, ActionHandler):
     def _binding_parent_redirect(self, req, **kwargs):
         uri = self._binding_parent_uri(req)
         if uri is not None:
-            msg = err = []
+            err = []
+            msg = []
             translate = translator(req.prefered_language()).translate
             for text, type in req.messages():
                 if type == req.ERROR:
