@@ -469,7 +469,7 @@ create table email_attachments (
 
 create table email_spool (
        id serial primary key,
-       report_address text, -- email for sending operation result
+       sender_address text,
        role char(4), -- recipient role, if NULL then all users
        subject text unique, -- unique to prevent inadvertent multiple insertion
        content text, -- body of the e-mail

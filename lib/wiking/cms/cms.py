@@ -2883,8 +2883,8 @@ class EmailSpool(CMSModule):
         
         def fields(self): return (
             Field('id', editable=NEVER),
-            Field('report_address', _("Report results to"),
-                  descr=_("E-mail address where to send bulk e-mailing results to")),
+            Field('sender_address', _("Sender address"), default=wiking.cfg.default_sender_address,
+                  descr=_("E-mail address of the sender.")),
             Field('role', _("Recipients"), display=self._rolename, prefer_display=True, default='_all',
                   enumerator=enum([code for code, title, roles in self._ROLES])),
             Field('subject', _("Subject")),
@@ -2911,7 +2911,7 @@ class EmailSpool(CMSModule):
         
         columns = ('id', 'subject', 'date', 'state',)
         sorting = (('date', DESC,),)
-        layout = ('role', 'report_address', 'subject', 'content', 'date', 'state',)
+        layout = ('role', 'sender_address', 'subject', 'content', 'date', 'state',)
         
     def _spec(self, resolver):
         self.Spec._ROLES = roles = (('_all', _("All"), (),),) + self._module('Users').all_roles()
@@ -2919,7 +2919,7 @@ class EmailSpool(CMSModule):
         return super(EmailSpool, self)._spec(resolver)
     
     _TITLE_TEMPLATE = _('%(subject)s')
-    _LAYOUT = {'insert': ('role', 'report_address', 'subject', 'content',)}
+    _LAYOUT = {'insert': ('role', 'sender_address', 'subject', 'content',)}
         
     WMI_SECTION = WikingManagementInterface.SECTION_SERVICES
     WMI_ORDER = 100
