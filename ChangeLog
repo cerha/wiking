@@ -1,5 +1,10 @@
 2009-06-10  Milan Zamazal  <pdm@brailcom.org>
 
+	* ev/null:
+	bulkmailer script added.
+
+2009-06-10  Milan Zamazal  <pdm@brailcom.org>
+
 	* lib/wiking/cms/cms.py:
 	* sql/wiking.sql:
 	Change report_address to sender_address in e-mail spool.
