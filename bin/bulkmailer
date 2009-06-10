@@ -1,0 +1,127 @@
+#!/usr/bin/env python
+
+# Copyright (C) 2009 Brailcom, o.p.s.
+#
+# COPYRIGHT NOTICE
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+"""This script is intended to be run from cron, in reasonable intervals, to
+handle bulk e-mailing request stored in email_spool database table.
+
+The script must run under a user having sufficient permissions to modify the
+database table.
+
+"""
+
+import os
+import popen2
+import sys
+
+import psycopg2 as dbapi
+
+import lcg
+import wiking
+
+_ = lcg.TranslatableTextFactory('wiking-cms')
+
+def open_database():
+    database = wiking.cfg.dbname
+    connection = dbapi.connect(database=database)
+    return connection
+
+def pid_dead(pid):
+    my_name = sys.argv[0]
+    child_output, child_input = popen2.popen2(['/usr/bin/pgrep', '-f', '-x', my_name])
+    output = ''
+    while True:
+        next_output = child_output.read()
+        if not next_output:
+            break
+        output = output + next_output
+    return pid not in output.split()
+    
+def check_obsolete_pids(connection):
+    cursor = connection.cursor()
+    cursor.execute("select distinct pid from email_spool where pid is not null and finished='F'")
+    pids = []
+    while True:
+        row = cursor.fetchone()
+        if row is None:
+            break
+        pids.append(row[0])
+    for pid in pids:
+        if pid_dead(pid):
+            connection.cursor().execute("update email_spool set pid=NULL where pid=%s", (pid,))
+            if pid_dead(pid):
+                connection.commit()
+            else:
+                connection.rollback()
+
+def mark_spool(connection, pid):
+    connection.cursor().execute("update email_spool set pid=%s where pid is NULL and finished='F'", (pid,))
+    connection.commit()
+
+def mail_it(connection, sender_address, role, subject, content):
+    query = "select email, lang from users where role != 'none'"
+    query_args = ()
+    if role and role != '_all':
+        query += " and role=%s"
+        query_args = (role,)
+    cursor = connection.cursor()
+    cursor.execute(query, query_args)
+    failures = []
+    number_sent = 0
+    while True:
+        row = cursor.fetchone()
+        if row is None:
+            break
+        email, language = row
+        try:
+            wiking.send_mail(email, subject, content, lang=language, sender=sender_address)
+            number_sent += 1
+        except:
+            failures.append((email, language,))
+    report = _("%s e-mails sent\n", number_sent)
+    if failures:
+        failures += '\nFailures:\n\n'
+        for email, language in failures:
+            report += '%s\n' % (email,)
+    subject = _("Bulk mail report: %s", subject)
+    wiking.send_mail(sender_address, subject, report, sender=sender_address)
+    
+def mail(connection, pid):
+    cursor = connection.cursor()
+    cursor.execute("select id, sender_address, role, subject, content from email_spool where pid=%s", (pid,))
+    emails = []
+    while True:
+        row = cursor.fetchone()
+        if row is None:
+            break
+        emails.append(row)
+    connection.commit()
+    for email in emails:
+        mail_it(connection, *email[1:])
+        connection.cursor().execute("update email_spool set pid=NULL, finished='T' where id=%s", (email[0],))
+        connection.commit()
+
+def run(argv):
+    connection = open_database()
+    check_obsolete_pids(connection)
+    pid = os.getpid()
+    mark_spool(connection, pid)
+    mail(connection, pid)
+
+if __name__ == '__main__':
+    run(sys.argv)
