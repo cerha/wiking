@@ -467,6 +467,17 @@ create table email_attachments (
        mime_type text not null
 );
 
+create table email_spool (
+       id serial primary key,
+       report_address text, -- email for sending operation result
+       role char(4), -- recipient role, if NULL then all users
+       subject text unique, -- unique to prevent inadvertent multiple insertion
+       content text, -- body of the e-mail
+       date timestamp default now (), -- time of insertion
+       pid int, -- PID of the process currently sending the mails
+       finished boolean default 'FALSE' -- set TRUE after the mail was successfully sent
+);
+
 -------------------------------------------------------------------------------
 
 CREATE TABLE config (

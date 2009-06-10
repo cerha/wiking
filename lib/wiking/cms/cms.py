@@ -89,6 +89,7 @@ class WikingManagementInterface(Module, RequestHandler):
     SECTION_USERS = 'users'
     SECTION_STYLE = 'style'
     SECTION_SETUP = 'setup'
+    SECTION_SERVICES = 'services'
     
     _SECTIONS = ((SECTION_STYLE,   _("Look &amp; Feel"),
                   _("Customize the appearance of your site.")),
@@ -96,6 +97,8 @@ class WikingManagementInterface(Module, RequestHandler):
                   _("Manage registered users and their privileges.")),
                  (SECTION_SETUP,   _("Setup"),
                   _("Edit global properties of your web site.")),
+                 (SECTION_SERVICES,   _("Services"),
+                  _("Various services.")),
                  )
     
     def _wmi_modules(self, modules, section):
@@ -2236,6 +2239,17 @@ class Users(CMSModule):
             kwargs['role'] = role
         return [make_user(row) for row in self._data.get_rows(**kwargs)]
 
+    def all_roles(self):
+        """Return information about all user roles.
+
+        The returned value is a sequence of tuples.  Each of the tuples is of
+        the form '(CODE, TITLE, ROLES)' where CODE is the role code (as stored
+        in the database data), TITLE human readable role description, and ROLES
+        sequence of member roles.
+
+        """
+        return self.Spec._ROLES
+    
     def _generate_password(self):
         characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01233456789'
         random.seed()
@@ -2660,6 +2674,8 @@ class Emails(CommonTexts):
     underscore prefix prepended to custom e-mail labels.
 
     """
+    _ACTIONS = ((Action(_("Bulk Mail"), 'bulk_mail', descr=_("Send this mail to users")),))
+    
     _TEXT_REGISTRAR = 'add_email_label'
     _DB_FUNCTIONS = {'add_email_label': (('1', pd.String(),),)}
 
@@ -2764,6 +2780,10 @@ class Emails(CommonTexts):
                 send_mail_args[key] = send_mail_args[key] % self._translated_args(translate, args)
         return send_mail_args
 
+    def action_bulk_mail(self, req, record):
+        return self._module('EmailSpool').action_insert(req, record)
+    RIGHTS_bulk_mail = (Roles.ADMIN,)
+
 
 class TextReferrer(object):
     """Convenience class for modules using 'Texts' and 'Emails' modules.
@@ -2849,3 +2869,63 @@ class TextReferrer(object):
                 addr.append(r)
         if addr:
             send_mail(addr, **lang_email_args(lang))
+
+
+class EmailSpool(CMSModule):
+    """Storage and archive for bulk e-mails sent to application users.
+    """
+    class Spec(Specification):
+
+        table = 'email_spool'
+        title = _("Bulk E-mails")
+
+        _ROLES = UNDEFINED
+        
+        def fields(self): return (
+            Field('id', editable=NEVER),
+            Field('report_address', _("Report results to"),
+                  descr=_("E-mail address where to send bulk e-mailing results to")),
+            Field('role', _("Recipients"), display=self._rolename, prefer_display=True, default='_all',
+                  enumerator=enum([code for code, title, roles in self._ROLES])),
+            Field('subject', _("Subject")),
+            Field('content', _("Text"), width=80, height=10,
+                  descr=_("Edit the given text as needed, in accordance with structured text rules.")),
+            Field('date', _("Date"), type=DateTime(), default=now, editable=NEVER),
+            Field('pid', editable=NEVER),
+            Field('finished', editable=NEVER),
+            Field('state', _("State"), type=pytis.data.String(), editable=NEVER,
+                  virtual=True, computer=computer(self._state_computer)),
+            )
+        
+        def _rolename(self, code):
+            return self._ROLE_DICT[code][0]
+
+        def _state_computer(self, row, pid, finished):
+            if finished:
+                state = _("Sent")
+            elif pid:
+                state = _("Sending")
+            else:
+                state = _("New")
+            return state
+        
+        columns = ('id', 'subject', 'date', 'state',)
+        sorting = (('date', DESC,),)
+        layout = ('role', 'report_address', 'subject', 'content', 'date', 'state',)
+        
+    def _spec(self, resolver):
+        self.Spec._ROLES = roles = (('_all', _("All"), (),),) + self._module('Users').all_roles()
+        self.Spec._ROLE_DICT = dict([(code, (title, roles)) for code, title, roles in roles])
+        return super(EmailSpool, self)._spec(resolver)
+    
+    _TITLE_TEMPLATE = _('%(subject)s')
+    _LAYOUT = {'insert': ('role', 'report_address', 'subject', 'content',)}
+        
+    WMI_SECTION = WikingManagementInterface.SECTION_SERVICES
+    WMI_ORDER = 100
+
+    RIGHTS_list = (Roles.ADMIN,)
+    RIGHTS_view = (Roles.ADMIN,)
+    RIGHTS_insert = (Roles.ADMIN,)
+    RIGHTS_update = ()
+    RIGHTS_delete = (Roles.ADMIN,)
