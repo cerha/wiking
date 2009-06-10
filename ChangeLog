@@ -2,6 +2,12 @@
 
 	* lib/wiking/cms/cms.py:
 	* sql/wiking.sql:
+	Change report_address to sender_address in e-mail spool.
+
+2009-06-10  Milan Zamazal  <pdm@brailcom.org>
+
+	* lib/wiking/cms/cms.py:
+	* sql/wiking.sql:
 	New module EmailSpool.
 
 2009-06-09  Tomas Cerha  <cerha@bob.xx>
