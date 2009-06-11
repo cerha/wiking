@@ -491,7 +491,7 @@ form.list-form-controls span.buttons input.search {
 }
 
 form.browse-form #found-record {
-    background-color: $color.highlight-bg;
+    background-color: $color.highlight-bg !important;
 }
 
 form.list-view div.list-item {
