@@ -1,5 +1,8 @@
 2009-06-11  Tomas Cerha  <cerha@bob.xx>
 
+	* resources/css/default.css:
+	Force the found record style to override row styles.
+
 	* lib/wiking/db.py:
 	Fix search highlighting on pytis redirection.  Allow turning off
 	automatic binding parent title concatenation.
