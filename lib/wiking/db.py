@@ -33,6 +33,7 @@ class PytisModule(Module, ActionHandler):
     _TITLE_COLUMN = None
     _TITLE_TEMPLATE = None
     _HONOUR_SPEC_TITLE = False
+    _USE_BINDING_PARENT_TITLE = True
     _LIST_BY_LANGUAGE = False
     _EXCEPTION_MATCHERS = (
         ('duplicate key (value )?violates unique constraint "_?[a-z]+_(?P<id>[a-z_]+)_key"',
@@ -323,14 +324,13 @@ class PytisModule(Module, ActionHandler):
                 title = self._view.title()
             else:
                 title = None # Current menu title will be substituted.
-        fw = self._binding_forward(req)
-        if fw and fw.arg('title'):
-            if title:
-                title = fw.arg('title') +' :: '+ title
-            else:
-                title = fw.arg('title')
-            #    title += fw.arg('binding').title()
-            #else:
+        if self._USE_BINDING_PARENT_TITLE:
+            fw = self._binding_forward(req)
+            if fw and fw.arg('title'):
+                if title:
+                    title = fw.arg('title') +' :: '+ title
+                else:
+                    title = fw.arg('title')
         return title
         
     def _document(self, req, content, record=None, lang=None, err=None, msg=None, **kwargs):
@@ -769,7 +769,7 @@ class PytisModule(Module, ActionHandler):
         # Don't display the listing alone, but display the original main form,
         # when this list is accessed through bindings as a related form.
         result = self._binding_parent_redirect(req, search=req.param('search'),
-                                               form_name=req.param('form_name'))
+                                               form_name=self.name())
         if result is not None:
             return result
         # If this is not a binding forwarded request, display the listing.
@@ -782,9 +782,9 @@ class PytisModule(Module, ActionHandler):
     def _binding_parent_uri(self, req):
         fw = self._binding_forward(req)
         if fw:
-            binding_id = fw.arg('binding').id()
-            if binding_id and fw.uri().endswith(binding_id):
-                return fw.uri()[:-(len(fw.arg('binding').id())+1)]
+            path = fw.uri().lstrip('/').split('/')
+            if path and path[-1] == fw.arg('binding').id():
+                return '/'+ '/'.join(path[:-1])
         return None
     
     def _binding_parent_redirect(self, req, **kwargs):
@@ -798,7 +798,11 @@ class PytisModule(Module, ActionHandler):
                     err.append(translate(text))
                 else:
                     msg.append(translate(text))
-            return req.redirect(make_uri(uri, err='\n'.join(err), msg='\n'.join(msg), **kwargs))
+            if err:
+                kwargs['err'] = '\n'.join(err)
+            if msg:
+                kwargs['msg'] = '\n'.join(msg)
+            return req.redirect(make_uri(uri, **kwargs))
         return None
         
     def _related_content(self, req, record):

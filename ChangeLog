@@ -1,3 +1,9 @@
+2009-06-11  Tomas Cerha  <cerha@bob.xx>
+
+	* lib/wiking/db.py:
+	Fix search highlighting on pytis redirection.  Allow turning off
+	automatic binding parent title concatenation.
+
 2009-06-10  Milan Zamazal  <pdm@brailcom.org>
 
 	* ev/null:
