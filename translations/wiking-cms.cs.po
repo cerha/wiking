@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-06-02 11:23+0200\n"
-"PO-Revision-Date: 2009-04-24 08:16+0200\n"
+"PO-Revision-Date: 2009-06-12 15:57+0200\n"
 "Last-Translator: Tomas Cerha <cerha@brailcom.org>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
 "MIME-Version: 1.0\n"
@@ -1396,14 +1396,12 @@ msgstr ""
 "Zeditujte text dle potřeby, formátovaný dle pravidel pro strukturovaný text."
 
 #: ../lib/wiking/cms/cms.py:2675
-#, fuzzy
 msgid "E-mails"
-msgstr "E-mail"
+msgstr "E-maily"
 
 #: ../lib/wiking/cms/cms.py:2676
-#, fuzzy
 msgid "Edit e-mail texts."
-msgstr "Přizpůsobit různé systémové texty."
+msgstr "Přizpůsobit texty e-mailů."
 
 #: ../lib/wiking/cms/cms.py:2687
 msgid "Subject"
@@ -1411,12 +1409,11 @@ msgstr "Předmět"
 
 #: ../lib/wiking/cms/cms.py:2688
 msgid "Additional recipients"
-msgstr ""
+msgstr "Další adresáti"
 
 #: ../lib/wiking/cms/cms.py:2689
-#, fuzzy
 msgid "Comma separated list of e-mail addresses."
-msgstr "E-mailová adresa správce"
+msgstr "Seznam e-mailových adres oddělených čárkami."
 
 #: ../lib/wiking/cms/appl.py:56
 msgid "Manage this site"
