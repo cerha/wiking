@@ -1,3 +1,15 @@
+2009-06-12  Milan Zamazal  <pdm@brailcom.org>
+
+	* translations/wiking-cms.cs.po:
+	* translations/wiking.cs.po:
+	* translations/wiking.de.po:
+	* translations/wiking.es.po:
+	* translations/wiking.fr.po:
+	* translations/wiking.hu.po:
+	* translations/wiking.pl.po:
+	* translations/wiking.sk.po:
+	Translations updated.
+
 2009-06-11  Tomas Cerha  <cerha@bob.xx>
 
 	* resources/css/default.css:
