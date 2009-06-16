@@ -1,3 +1,8 @@
+2009-06-16  Milan Zamazal  <pdm@brailcom.org>
+
+	* lib/wiking/cms/cms.py:
+	Remove superfluous method EmailSpool.action_insert.
+
 2009-06-16  Tomas Cerha  <cerha@bob.xx>
 
 	* lib/wiking/cms/cms.py:
