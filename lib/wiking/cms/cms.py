@@ -2675,8 +2675,6 @@ class Emails(CommonTexts):
     underscore prefix prepended to custom e-mail labels.
 
     """
-    _ACTIONS = ((Action(_("Bulk Mail"), 'bulk_mail', descr=_("Send this mail to users")),))
-    
     _TEXT_REGISTRAR = 'add_email_label'
     _DB_FUNCTIONS = {'add_email_label': (('1', pd.String(),),)}
 
@@ -2780,10 +2778,6 @@ class Emails(CommonTexts):
             for key in ('subject', 'text',):
                 send_mail_args[key] = send_mail_args[key] % self._translated_args(translate, args)
         return send_mail_args
-
-    def action_bulk_mail(self, req, record):
-        return self._module('EmailSpool').action_insert(req, record)
-    RIGHTS_bulk_mail = (Roles.ADMIN,)
 
 
 class TextReferrer(object):
