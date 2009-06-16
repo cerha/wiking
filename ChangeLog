@@ -1,3 +1,8 @@
+2009-06-16  Milan Zamazal  <pdm@brailcom.org>
+
+	* lib/wiking/cms/cms.py:
+	Allow creating new bulk e-mails by copying from old bulk e-mails.
+
 2009-06-16  Tomas Cerha  <cerha@bob.xx>
 
 	* lib/wiking/util.py: Added documentation on 'Action' specifications.
