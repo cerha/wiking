@@ -2913,9 +2913,6 @@ class EmailSpool(CMSModule):
         columns = ('id', 'subject', 'date', 'state',)
         sorting = (('date', DESC,),)
         layout = ('role', 'sender_address', 'subject', 'content', 'date', 'state',)
-        actions = (Specification.actions +
-                   [Action(_("Use as a Template"), 'reuse', allow_referer=False,
-                           descr=_("Edit this mail for repeated use"))])
         
     def _spec(self, resolver):
         self.Spec._ROLES = roles = (('_all', _("All"), (),),) + self._module('Users').all_roles()
@@ -2924,6 +2921,9 @@ class EmailSpool(CMSModule):
     
     _TITLE_TEMPLATE = _('%(subject)s')
     _LAYOUT = {'insert': ('role', 'sender_address', 'subject', 'content',)}
+    _ALLOW_COPY = True
+    _COPY_LABEL = _("Use as a Template")
+    _COPY_DESCR = _("Edit this mail for repeated use")
         
     WMI_SECTION = WikingManagementInterface.SECTION_SERVICES
     WMI_ORDER = 100
@@ -2933,15 +2933,3 @@ class EmailSpool(CMSModule):
     RIGHTS_insert = (Roles.ADMIN,)
     RIGHTS_update = ()
     RIGHTS_delete = (Roles.ADMIN,)
-
-    def action_reuse(self, req, record, action='insert'):
-        action = 'insert'
-        prefill = [(field, value,) for field, value in self._prefill(req, new=True)
-                   if field in self._LAYOUT[action]]
-        layout = self._layout(req, action, record)
-        form = self._form(pw.EditForm, req, record=record, action=action, layout=layout,
-                          submit=self._SUBMIT_BUTTONS.get(action),
-                          prefill=prefill, errors=(), new=True)
-        subtitle = self._insert_subtitle(req)
-        return self._document(req, form, subtitle=subtitle)
-    RIGHTS_reuse = (Roles.ADMIN,)
