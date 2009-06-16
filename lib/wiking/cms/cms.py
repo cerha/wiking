@@ -2934,9 +2934,6 @@ class EmailSpool(CMSModule):
     RIGHTS_update = ()
     RIGHTS_delete = (Roles.ADMIN,)
 
-    def action_insert(self, req, *args, **kwargs):
-        return super(EmailSpool, self).action_insert(req)
-
     def action_reuse(self, req, record, action='insert'):
         action = 'insert'
         prefill = [(field, value,) for field, value in self._prefill(req, new=True)
