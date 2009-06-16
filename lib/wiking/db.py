@@ -49,6 +49,8 @@ class PytisModule(Module, ActionHandler):
     _DELETE_LABEL = _("Remove")
     _DELETE_DESCR = _("Remove the record permanently")
     _DELETE_PROMPT = _("Please, confirm removing the record permanently.")
+    _COPY_LABEL = _("Copy")
+    _COPY_DESCR = _("Create new record initialized by values of this record")
     _LIST_LABEL = _("Back to list")
     _LIST_DESCR = _("Back to the list of all records")
     _INSERT_MSG = _("New record was successfully inserted.")
@@ -67,6 +69,7 @@ class PytisModule(Module, ActionHandler):
     """
 
     _ALLOW_TABLE_LAYOUT_IN_FORMS = True
+    _ALLOW_COPY = False
     _SUBMIT_BUTTONS = {}
     _LAYOUT = {}
 
@@ -356,9 +359,16 @@ class PytisModule(Module, ActionHandler):
                 Action(self._UPDATE_LABEL, 'update', descr=self._UPDATE_DESCR),)
 
     def _default_actions_last(self, req, record):
-        return (Action(self._DELETE_LABEL, 'delete', descr=self._DELETE_DESCR, allow_referer=False),
-                Action(self._LIST_LABEL, 'list', descr=self._LIST_DESCR, allow_referer=False))
-
+        if self._ALLOW_COPY:
+            actions = (Action(self._COPY_LABEL, 'insert', descr=self._COPY_DESCR,
+                              allow_referer=False),)
+        else:
+            actions = ()
+        actions += (Action(self._DELETE_LABEL, 'delete', descr=self._DELETE_DESCR,
+                           allow_referer=False),
+                    Action(self._LIST_LABEL, 'list', descr=self._LIST_DESCR, allow_referer=False))
+        return actions
+    
     def _actions(self, req, record):
         actions = self._default_actions_first(req, record) + \
                   self._view.actions() + \
@@ -839,7 +849,8 @@ class PytisModule(Module, ActionHandler):
 
     # ===== Action handlers which modify the database =====
 
-    def action_insert(self, req):
+    def action_insert(self, req, record=None):
+        # 'record' is passed when copying an existing record.
         layout = self._layout(req, 'insert')
         if req.param('submit'):
             if self._OWNER_COLUMN and self._SUPPLY_OWNER and req.user():
@@ -860,10 +871,20 @@ class PytisModule(Module, ActionHandler):
         # TODO: Redirect handler to HTTPS if cfg.force_https_login is true?
         # The primary motivation is to protect registration form data.  The
         # same would apply for action_edit.
+        prefill = self._prefill(req, new=True)
+        if record is not None:
+            # Copy values of the existing record as prefill values for the new record.  Exclude
+            # key column, computed columns depending on key column and fields with 'nocopy'.
+            key = self._data.key()[0].id()
+            for fid in (layout or self._view.layout()).order():
+                field = self._view.field(fid)
+                if fid != key and not field.nocopy():
+                    computer = field.computer()
+                    if not computer or key not in computer.depends():
+                        prefill[fid] = record[fid].export()
         form = self._form(pw.EditForm, req, new=True, action='insert',
-                          prefill=self._prefill(req, new=True), layout=layout, 
-                          submit=self._SUBMIT_BUTTONS.get('insert'),
-                          errors=errors)
+                          prefill=prefill, layout=layout, errors=errors,
+                          submit=self._SUBMIT_BUTTONS.get('insert'))
         return self._document(req, form, subtitle=self._insert_subtitle(req))
             
     def action_update(self, req, record, action='update'):
