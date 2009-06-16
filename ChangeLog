@@ -1,5 +1,16 @@
 2009-06-16  Milan Zamazal  <pdm@brailcom.org>
 
+	* translations/wiking-cms.cs.po:
+	* translations/wiking-cms.de.po:
+	* translations/wiking-cms.es.po:
+	* translations/wiking-cms.fr.po:
+	* translations/wiking-cms.hu.po:
+	* translations/wiking-cms.pl.po:
+	* translations/wiking-cms.sk.po:
+	CMS translations updated.
+
+2009-06-16  Milan Zamazal  <pdm@brailcom.org>
+
 	* lib/wiking/cms/cms.py:
 	Allow creating new bulk e-mails by copying from old bulk e-mails.
 
