@@ -1,5 +1,8 @@
 2009-06-16  Tomas Cerha  <cerha@bob.xx>
 
+	* lib/wiking/cms/cms.py:
+	Allow copying color themes.
+
 	* translations/wiking-cms.cs.po: 
 	* translations/wiking-cms.de.po: 
 	* translations/wiking-cms.es.po: 

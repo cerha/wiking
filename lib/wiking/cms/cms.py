@@ -811,7 +811,7 @@ class Themes(CMSModule):
         help = _("Manage available color themes.")
         def fields(self):
             fields = [Field('theme_id'),
-                      Field('name', _("Name")),
+                      Field('name', _("Name"), nocopy=True),
                       Field('active', _("Active"), virtual=True,
                             computer=computer(self._is_active))]
             for label, group in self._FIELDS:
@@ -834,6 +834,7 @@ class Themes(CMSModule):
                 Action(_("Activate default"), 'activate', context=None,
                        descr=_("Activate the default color theme"),
                        enabled=lambda r: isinstance(cfg.theme, Themes.Theme)),)
+    _ALLOW_COPY = True
     
     class Theme(Theme):
         def __init__(self, row):
