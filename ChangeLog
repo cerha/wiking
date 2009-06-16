@@ -1,5 +1,10 @@
 2009-06-16  Milan Zamazal  <pdm@brailcom.org>
 
+	* doc/src/devel/devel-faq.en.txt:
+	New FAQ entry: How to discard original item ids in global actions invoked from items?.
+
+2009-06-16  Milan Zamazal  <pdm@brailcom.org>
+
 	* translations/wiking-cms.cs.po:
 	* translations/wiking-cms.de.po:
 	* translations/wiking-cms.es.po:
