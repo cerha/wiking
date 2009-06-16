@@ -808,8 +808,38 @@ class FieldSet(pp.GroupSpec):
         super(FieldSet, self).__init__(fields, label=label, orientation=orientation)
         
 class Action(pytis.presentation.Action):
-    
+    """User action specification.
+
+    User actions are user visible actions available in the user interface of modules derived from
+    'PytisModule'.  Actions typically appear in the user interface as action buttons and instances
+    of this class define their properties, such as label, identifier, description, context, in
+    which they appear (for example actions 'update' or 'delete' can be performed in the context of
+    one record, 'list' applies to the whole module, etc as defined by Pytis and the parent class).
+
+    One difference between standard Pytis actions and Wiking actions is that Pytis actions must
+    define a handler function which is called when the action is performed.  In Wiking, the action
+    must have a name (string), which determines the action method to be used for handling the
+    action.  A method 'action_<name>' of the Wiking module is then called to perform the action.
+    This method receives the 'req' argument with the instance of the current request and optionally
+    'record' argument with a 'PytisModule.Record' instance if the action context is record (current
+    pytis row).
+
+    """
     def __init__(self, title, name, handler=None, allow_referer=True, **kwargs):
+        """Arguments:
+
+          name -- string identifier determining the Wiking module's method to be used to handle
+            perform the action (see the docstring of this class).
+          allow_referer -- allow using record identifier (referer column value) in the URI of this
+            action.  It is not desirable to use full record URI for certain actions -- for example
+            'delete' would end up on an invalid URI after the action is performed.
+
+        All other arguments have the same meaning as in the parent class.  The argument 'handler'
+        is currently not supported by Wiking and the argument `context' can currently only be set
+        to None (all records) or 'pytis.presentation.ActionContext.CURRENT_ROW' (current record,
+        which is the default).
+            
+        """
         # name determines the Wiking's action method.
         if not handler:
             handler = lambda r: None
