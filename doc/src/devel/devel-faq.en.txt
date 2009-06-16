@@ -72,6 +72,10 @@ You can use `\_link_provider' as well.
 Column id to generate the link for.  In case a link for the whole record should
 be generated, `cid' is `None'.
 
+=== How to discard original item ids in global actions invoked from items? ===
+
+Set `allow_referer=False' argument in the `Action' constructor.
+
 === How to add an action button that invokes an action of another module? ===
 
 If there is no need to transfer form data from one module (let's say
