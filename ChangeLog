@@ -1,6 +1,11 @@
 2009-06-16  Milan Zamazal  <pdm@brailcom.org>
 
 	* lib/wiking/cms/cms.py:
+	Remove Emails.action_bulk_mail.
+
+2009-06-16  Milan Zamazal  <pdm@brailcom.org>
+
+	* lib/wiking/cms/cms.py:
 	Utilize new action_insert copy functionality in EmailSpool.
 
 2009-06-16  Milan Zamazal  <pdm@brailcom.org>
