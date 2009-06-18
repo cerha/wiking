@@ -1,5 +1,8 @@
 2009-06-18  Tomas Cerha  <cerha@bob.xx>
 
+	* sql/upgrade.10.sql:
+	New file for upgrade from Wiking CMS 0.4.4 to 0.4.5.
+
 	* sql/wiking.sql:
 	Added column for configuration option `default_language'.  SQL
 	converted to lowercase.
