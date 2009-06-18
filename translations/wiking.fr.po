@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-06-16 17:23+0200\n"
+"POT-Creation-Date: 2009-06-18 16:19+0200\n"
 "PO-Revision-Date: 2008-10-14 10:38+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: French <wiking@lists.freebsoft.org>\n"
@@ -307,6 +307,10 @@ msgstr ""
 #. on configuration).
 #: ../lib/wiking/util.py:781
 msgid "Forgot your password?"
+msgstr ""
+
+#: ../lib/wiking/util.py:1346
+msgid "Invalid format"
 msgstr ""
 
 #: ../lib/wiking/export.py:60

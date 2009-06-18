@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-06-16 17:23+0200\n"
+"POT-Creation-Date: 2009-06-18 16:19+0200\n"
 "PO-Revision-Date: 2009-04-10 17:51+0200\n"
 "Last-Translator: Hynek Hanke <hanke@volny.cz>\n"
 "Language-Team: Spanish <wiking@lists.freebsoft.org>\n"
@@ -399,7 +399,7 @@ msgstr "Colores normales de la página"
 #: ../lib/wiking/cms/cms.py:776 ../lib/wiking/cms/cms.py:783
 #: ../lib/wiking/cms/cms.py:792 ../lib/wiking/cms/cms.py:796
 #: ../lib/wiking/cms/cms.py:800 ../lib/wiking/cms/cms.py:2474
-#: ../lib/wiking/cms/cms.py:2702 ../lib/wiking/cms/cms.py:2892
+#: ../lib/wiking/cms/cms.py:2700 ../lib/wiking/cms/cms.py:2886
 msgid "Text"
 msgstr "Texto"
 
@@ -1006,7 +1006,7 @@ msgstr "Publicar novedades del sitio."
 
 #: ../lib/wiking/cms/cms.py:1620 ../lib/wiking/cms/cms.py:1622
 #: ../lib/wiking/cms/cms.py:1683 ../lib/wiking/cms/cms.py:1690
-#: ../lib/wiking/cms/cms.py:2894
+#: ../lib/wiking/cms/cms.py:2888
 msgid "Date"
 msgstr "Fecha"
 
@@ -1422,106 +1422,98 @@ msgstr "Textos del sistema"
 msgid "Edit miscellaneous system texts."
 msgstr "Editar sistema de textos diversos."
 
-#: ../lib/wiking/cms/cms.py:2469 ../lib/wiking/cms/cms.py:2697
+#: ../lib/wiking/cms/cms.py:2469 ../lib/wiking/cms/cms.py:2695
 msgid "Label"
 msgstr "Etiqueta"
 
-#: ../lib/wiking/cms/cms.py:2472 ../lib/wiking/cms/cms.py:2700
+#: ../lib/wiking/cms/cms.py:2472 ../lib/wiking/cms/cms.py:2698
 msgid "Purpose"
 msgstr "Propósito"
 
-#: ../lib/wiking/cms/cms.py:2475 ../lib/wiking/cms/cms.py:2703
-#: ../lib/wiking/cms/cms.py:2893
+#: ../lib/wiking/cms/cms.py:2475 ../lib/wiking/cms/cms.py:2701
+#: ../lib/wiking/cms/cms.py:2887
 msgid ""
 "Edit the given text as needed, in accordance with structured text rules."
 msgstr ""
 "Editar el texto dado, según sea necesario, de conformidad con las normas del "
 "texto estructurado."
 
-#: ../lib/wiking/cms/cms.py:2678
-msgid "Bulk Mail"
-msgstr ""
-
-#: ../lib/wiking/cms/cms.py:2678
-msgid "Send this mail to users"
-msgstr ""
-
-#: ../lib/wiking/cms/cms.py:2692
+#: ../lib/wiking/cms/cms.py:2690
 #, fuzzy
 msgid "E-mails"
 msgstr "Correo electrónico"
 
-#: ../lib/wiking/cms/cms.py:2693
+#: ../lib/wiking/cms/cms.py:2691
 #, fuzzy
 msgid "Edit e-mail texts."
 msgstr "Editar sistema de textos diversos."
 
-#: ../lib/wiking/cms/cms.py:2704 ../lib/wiking/cms/cms.py:2891
+#: ../lib/wiking/cms/cms.py:2702 ../lib/wiking/cms/cms.py:2885
 msgid "Subject"
 msgstr "Objeto"
 
-#: ../lib/wiking/cms/cms.py:2705
+#: ../lib/wiking/cms/cms.py:2703
 msgid "Additional recipients"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2706
+#: ../lib/wiking/cms/cms.py:2704
 #, fuzzy
 msgid "Comma separated list of e-mail addresses."
 msgstr "Dirección de correo electrónico de administrado de sitio web"
 
-#: ../lib/wiking/cms/cms.py:2881
+#: ../lib/wiking/cms/cms.py:2875
 #, fuzzy
 msgid "Bulk E-mails"
 msgstr "Correo electrónico"
 
-#: ../lib/wiking/cms/cms.py:2887
+#: ../lib/wiking/cms/cms.py:2881
 #, fuzzy
 msgid "Sender address"
 msgstr "Dirección del remitente predeterminada"
 
-#: ../lib/wiking/cms/cms.py:2888
+#: ../lib/wiking/cms/cms.py:2882
 msgid "E-mail address of the sender."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2889
+#: ../lib/wiking/cms/cms.py:2883
 msgid "Recipients"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2897
+#: ../lib/wiking/cms/cms.py:2891
 #, fuzzy
 msgid "State"
 msgstr "Estado"
 
-#: ../lib/wiking/cms/cms.py:2906
+#: ../lib/wiking/cms/cms.py:2900
 #, fuzzy
 msgid "Sent"
 msgstr "Configurar"
 
-#: ../lib/wiking/cms/cms.py:2908
+#: ../lib/wiking/cms/cms.py:2902
 msgid "Sending"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2910
+#: ../lib/wiking/cms/cms.py:2904
 #, fuzzy
 msgid "New"
 msgstr "Novedades"
 
-#: ../lib/wiking/cms/cms.py:2917
-msgid "Use as a Template"
-msgstr ""
-
-#: ../lib/wiking/cms/cms.py:2918
-msgid "Edit this mail for repeated use"
-msgstr ""
-
-#: ../lib/wiking/cms/cms.py:2921
+#: ../lib/wiking/cms/cms.py:2912
 msgid "All"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2925
+#: ../lib/wiking/cms/cms.py:2916
 #, fuzzy, python-format
 msgid "%(subject)s"
 msgstr "Objeto"
+
+#: ../lib/wiking/cms/cms.py:2919
+msgid "Use as a Template"
+msgstr ""
+
+#: ../lib/wiking/cms/cms.py:2920
+msgid "Edit this mail for repeated use"
+msgstr ""
 
 #: ../lib/wiking/cms/appl.py:56
 msgid "Manage this site"

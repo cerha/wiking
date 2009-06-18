@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-06-16 17:23+0200\n"
+"POT-Creation-Date: 2009-06-18 16:19+0200\n"
 "PO-Revision-Date: 2009-06-04 09:31+0200\n"
 "Last-Translator: Pavel Vohnout <vohnout@officehouse.cz>\n"
 "Language-Team: Slovak <wiking@lists.freebsoft.org>\n"
@@ -318,6 +318,11 @@ msgstr "prihlásiť"
 #: ../lib/wiking/util.py:781
 msgid "Forgot your password?"
 msgstr "Zabudli ste heslo?"
+
+#: ../lib/wiking/util.py:1346
+#, fuzzy
+msgid "Invalid format"
+msgstr "Neplatné prihlásenie!"
 
 #: ../lib/wiking/export.py:60
 msgid "Language:"

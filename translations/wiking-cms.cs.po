@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-06-16 17:23+0200\n"
+"POT-Creation-Date: 2009-06-18 16:19+0200\n"
 "PO-Revision-Date: 2009-06-16 12:43+0200\n"
 "Last-Translator: Tomas Cerha <cerha@brailcom.org>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
@@ -378,7 +378,7 @@ msgstr "Běžné barvy stránky"
 #: ../lib/wiking/cms/cms.py:776 ../lib/wiking/cms/cms.py:783
 #: ../lib/wiking/cms/cms.py:792 ../lib/wiking/cms/cms.py:796
 #: ../lib/wiking/cms/cms.py:800 ../lib/wiking/cms/cms.py:2474
-#: ../lib/wiking/cms/cms.py:2702 ../lib/wiking/cms/cms.py:2892
+#: ../lib/wiking/cms/cms.py:2700 ../lib/wiking/cms/cms.py:2886
 msgid "Text"
 msgstr "Text"
 
@@ -981,7 +981,7 @@ msgstr "Publikovat krátké aktuální zprávy."
 
 #: ../lib/wiking/cms/cms.py:1620 ../lib/wiking/cms/cms.py:1622
 #: ../lib/wiking/cms/cms.py:1683 ../lib/wiking/cms/cms.py:1690
-#: ../lib/wiking/cms/cms.py:2894
+#: ../lib/wiking/cms/cms.py:2888
 msgid "Date"
 msgstr "Datum"
 
@@ -1390,97 +1390,89 @@ msgstr "Systémové texty"
 msgid "Edit miscellaneous system texts."
 msgstr "Přizpůsobit různé systémové texty."
 
-#: ../lib/wiking/cms/cms.py:2469 ../lib/wiking/cms/cms.py:2697
+#: ../lib/wiking/cms/cms.py:2469 ../lib/wiking/cms/cms.py:2695
 msgid "Label"
 msgstr "Název"
 
-#: ../lib/wiking/cms/cms.py:2472 ../lib/wiking/cms/cms.py:2700
+#: ../lib/wiking/cms/cms.py:2472 ../lib/wiking/cms/cms.py:2698
 msgid "Purpose"
 msgstr "Účel"
 
-#: ../lib/wiking/cms/cms.py:2475 ../lib/wiking/cms/cms.py:2703
-#: ../lib/wiking/cms/cms.py:2893
+#: ../lib/wiking/cms/cms.py:2475 ../lib/wiking/cms/cms.py:2701
+#: ../lib/wiking/cms/cms.py:2887
 msgid ""
 "Edit the given text as needed, in accordance with structured text rules."
 msgstr ""
 "Zeditujte text dle potřeby, formátovaný dle pravidel pro strukturovaný text."
 
-#: ../lib/wiking/cms/cms.py:2678
-msgid "Bulk Mail"
-msgstr "Hromadné mailování"
-
-#: ../lib/wiking/cms/cms.py:2678
-msgid "Send this mail to users"
-msgstr "Odeslat mail uživatelům"
-
-#: ../lib/wiking/cms/cms.py:2692
+#: ../lib/wiking/cms/cms.py:2690
 msgid "E-mails"
 msgstr "E-maily"
 
-#: ../lib/wiking/cms/cms.py:2693
+#: ../lib/wiking/cms/cms.py:2691
 msgid "Edit e-mail texts."
 msgstr "Přizpůsobit texty e-mailů."
 
-#: ../lib/wiking/cms/cms.py:2704 ../lib/wiking/cms/cms.py:2891
+#: ../lib/wiking/cms/cms.py:2702 ../lib/wiking/cms/cms.py:2885
 msgid "Subject"
 msgstr "Předmět"
 
-#: ../lib/wiking/cms/cms.py:2705
+#: ../lib/wiking/cms/cms.py:2703
 msgid "Additional recipients"
 msgstr "Další adresáti"
 
-#: ../lib/wiking/cms/cms.py:2706
+#: ../lib/wiking/cms/cms.py:2704
 msgid "Comma separated list of e-mail addresses."
 msgstr "Seznam e-mailových adres oddělených čárkami."
 
-#: ../lib/wiking/cms/cms.py:2881
+#: ../lib/wiking/cms/cms.py:2875
 msgid "Bulk E-mails"
 msgstr "Hromadné maily"
 
-#: ../lib/wiking/cms/cms.py:2887
+#: ../lib/wiking/cms/cms.py:2881
 msgid "Sender address"
 msgstr "Adresa odesílatele"
 
-#: ../lib/wiking/cms/cms.py:2888
+#: ../lib/wiking/cms/cms.py:2882
 msgid "E-mail address of the sender."
 msgstr "E-mailová adresa odesílatele."
 
-#: ../lib/wiking/cms/cms.py:2889
+#: ../lib/wiking/cms/cms.py:2883
 msgid "Recipients"
 msgstr "Role příjemců"
 
-#: ../lib/wiking/cms/cms.py:2897
+#: ../lib/wiking/cms/cms.py:2891
 msgid "State"
 msgstr "Stav"
 
-#: ../lib/wiking/cms/cms.py:2906
+#: ../lib/wiking/cms/cms.py:2900
 msgid "Sent"
 msgstr "Odesláno"
 
-#: ../lib/wiking/cms/cms.py:2908
+#: ../lib/wiking/cms/cms.py:2902
 msgid "Sending"
 msgstr "Odesílá se"
 
-#: ../lib/wiking/cms/cms.py:2910
+#: ../lib/wiking/cms/cms.py:2904
 msgid "New"
 msgstr "Nový"
 
-#: ../lib/wiking/cms/cms.py:2917
-msgid "Use as a Template"
-msgstr "Použít jako vzor"
-
-#: ../lib/wiking/cms/cms.py:2918
-msgid "Edit this mail for repeated use"
-msgstr "Editace mailu pro nové použití"
-
-#: ../lib/wiking/cms/cms.py:2921
+#: ../lib/wiking/cms/cms.py:2912
 msgid "All"
 msgstr "Všichni"
 
-#: ../lib/wiking/cms/cms.py:2925
+#: ../lib/wiking/cms/cms.py:2916
 #, python-format
 msgid "%(subject)s"
 msgstr "%(subject)s"
+
+#: ../lib/wiking/cms/cms.py:2919
+msgid "Use as a Template"
+msgstr "Použít jako vzor"
+
+#: ../lib/wiking/cms/cms.py:2920
+msgid "Edit this mail for repeated use"
+msgstr "Editace mailu pro nové použití"
 
 #: ../lib/wiking/cms/appl.py:56
 msgid "Manage this site"
@@ -1545,6 +1537,12 @@ msgid ""
 msgstr ""
 "Maximální velikost souborů přenášených na server (celé číslo v bajtech).  "
 "Pozor, aby se změny této volby uplatnily, je nutné server restartovat."
+
+#~ msgid "Bulk Mail"
+#~ msgstr "Hromadné mailování"
+
+#~ msgid "Send this mail to users"
+#~ msgstr "Odeslat mail uživatelům"
 
 #~ msgid "No password authentication for your account"
 #~ msgstr "Pro váš účet není nastaveno žádné heslo"
