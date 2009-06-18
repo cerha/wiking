@@ -1336,14 +1336,14 @@ def validate_email_address(address, helo=None):
 
     """
     assert isinstance(address, basestring)
-    address = str(address)      # DNS query doesn't work with unicode
     import dns.resolver
     import smtplib
     try:
+        address = str(address)      # DNS query doesn't work with unicode
         # We validate only common addresses, not pathological cases
         __, domain = address.split('@')
-    except Exception, e:
-        return False, str(e)
+    except (UnicodeEncodeError, ValueError):
+        return False, _("Invalid format")
     try:
         mxhosts = dns.resolver.query(domain, 'MX')
     except dns.resolver.NoAnswer:
