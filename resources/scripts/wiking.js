@@ -1,6 +1,6 @@
 /* -*- coding: utf-8 -*-
  *
- * Copyright (C) 2008 Brailcom, o.p.s.
+ * Copyright (C) 2008, 2009 Brailcom, o.p.s.
  * Author: Tomas Cerha
  *
  * This program is free software; you can redistribute it and/or modify
@@ -26,17 +26,12 @@ var CMD_MENU = 'menu';
 var CMD_QUIT = 'quit';
 
 /* Menu navigation keyboard shortcuts */
-var WIKING_KEYMAP = {'Ctrl-Alt-i': CMD_PREV,
-		     'Ctrl-Alt-k': CMD_NEXT,
-		     'Ctrl-Alt-j': CMD_PARENT,
-		     'Ctrl-Alt-l': CMD_CHILD,
-		     'Ctrl-Shift-Up':    CMD_PREV,
+var WIKING_KEYMAP = {'Ctrl-Shift-Up':    CMD_PREV,
 		     'Ctrl-Shift-Down':  CMD_NEXT,
 		     'Ctrl-Shift-Left':  CMD_PARENT,
 		     'Ctrl-Shift-Right': CMD_CHILD,
-		     'Ctrl-Shift-m': CMD_MENU,
-		     'Ctrl-Alt-m':   CMD_MENU,
-		     'Escape': CMD_QUIT};
+		     'Ctrl-Shift-m':     CMD_MENU,
+		     'Escape':           CMD_QUIT};
 
 var _current_main_menu_item = null;
 var _first_menu_item = null;
@@ -81,13 +76,13 @@ function append_menu(items, node, parent) {
    if (node != null) {
       var ul = node.getElementsByTagName('ul')[0];
       if (ul != null) { // && ul.parentNode == node) {
-	 ul.setAttribute('role', 'menu');
+	 //ul.setAttribute('role', 'menu');
 	 for (var i = 0; i < ul.childNodes.length; i++) {
 	    var li = ul.childNodes[i];
 	    if (li.nodeName =='LI') {
 	       var link = li.getElementsByTagName('a')[0];
 	       var item = link;
-	       item.setAttribute('role', 'menuitem');
+	       //item.setAttribute('role', 'menuitem');
 	       //item.setAttribute('tabindex', '-1');
 	       //item.setAttribute('title', link.innerHTML);
 	       var subitems = [];
@@ -205,6 +200,14 @@ function event_key(event) {
       //alert(code+': '+key);
    }
    return key;
+}
+
+function add_on_load(func) {
+   if(window.addEventListener) {
+      window.addEventListener("load", func, false);
+   } else {
+      window.attachEvent('onload', func);
+   }
 }
 
 function set_focus(element) {

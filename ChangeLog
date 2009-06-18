@@ -1,5 +1,8 @@
 2009-06-18  Tomas Cerha  <cerha@bob.xx>
 
+	* resources/scripts/wiking.js:
+	Disable main menu aria markup for now (breaks keyboard navigation with JAWS).
+
 	* translations/wiking-cms.cs.po: 
 	* translations/wiking-cms.de.po: 
 	* translations/wiking-cms.es.po: 
