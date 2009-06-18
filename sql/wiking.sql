@@ -1,19 +1,19 @@
 -- Wiking database creation script. --
 -- -*- indent-tabs-mode: nil -*-
 
-SET client_min_messages=WARNING;
+set client_min_messages=WARNING;
 
-CREATE TABLE languages (
-	lang_id serial PRIMARY KEY,
-	lang char(2) UNIQUE NOT NULL
+create table languages (
+	lang_id serial primary key,
+	lang char(2) unique not null
 );
 
 -------------------------------------------------------------------------------
 
-CREATE TABLE organizations (
-       organization_id serial PRIMARY KEY,
-       name varchar(128) NOT NULL UNIQUE,
-       vatid varchar(16) NOT NULL UNIQUE,
+create table organizations (
+       organization_id serial primary key,
+       name varchar(128) not null unique,
+       vatid varchar(16) not null unique,
        phone text,
        email text,
        address text,
@@ -22,110 +22,110 @@ CREATE TABLE organizations (
 
 -------------------------------------------------------------------------------
 
-CREATE TABLE users (
-	uid serial PRIMARY KEY,
-	login varchar(32) UNIQUE NOT NULL,
+create table users (
+	uid serial primary key,
+	login varchar(32) unique not null,
 	password varchar(32),
-	firstname text NOT NULL,
-	surname text NOT NULL,
+	firstname text not null,
+	surname text not null,
 	nickname text,
-	user_ text NOT NULL,
-	email text NOT NULL,
+	user_ text not null,
+	email text not null,
 	phone text,
 	address text,
 	uri text,
-	role char(4) NOT NULL DEFAULT 'none',
-	since timestamp NOT NULL DEFAULT current_timestamp(0),
-	lang char(2) REFERENCES languages(lang),
+	role char(4) not null default 'none',
+	since timestamp not null default current_timestamp(0),
+	lang char(2) references languages(lang),
         regexpire timestamp,
         regcode char(16),
-        certauth boolean NOT NULL DEFAULT 'FALSE',
+        certauth boolean not null default 'false',
         organization text, -- free form field just for registration
-        organization_id int REFERENCES organizations
+        organization_id int references organizations
 );
-ALTER TABLE users ALTER COLUMN since 
-SET DEFAULT current_timestamp(0) AT TIME ZONE 'GMT';
+alter table users alter column since 
+set default current_timestamp(0) at time zone 'GMT';
 
-CREATE TABLE session (
-       session_id serial PRIMARY KEY,
-       login varchar(32) NOT NULL,
+create table session (
+       session_id serial primary key,
+       login varchar(32) not null,
        key text,
        expire timestamp,
-       UNIQUE (login, key)
+       unique (login, key)
 );
 
 -------------------------------------------------------------------------------
 
-CREATE TABLE _mapping (
-	mapping_id serial PRIMARY KEY,
-	identifier varchar(32) UNIQUE NOT NULL,
-	parent integer REFERENCES _mapping,
+create table _mapping (
+	mapping_id serial primary key,
+	identifier varchar(32) unique not null,
+	parent integer references _mapping,
 	modname text,
-	private boolean NOT NULL DEFAULT 'FALSE',
-	owner int REFERENCES users,
-	hidden boolean NOT NULL,
-	ord int NOT NULL,
+	private boolean not null default 'FALSE',
+	owner int references users,
+	hidden boolean not null,
+	ord int not null,
 	tree_order text
 );
-CREATE UNIQUE INDEX _mapping_unique_tree_order ON _mapping (ord, coalesce(parent, 0));
+create unique index _mapping_unique_tree_order on _mapping (ord, coalesce(parent, 0));
 
-CREATE OR REPLACE FUNCTION _mapping_tree_order(mapping_id int) RETURNS text AS $$
-  SELECT
-    CASE WHEN $1 IS NULL THEN '' ELSE
-      (SELECT _mapping_tree_order(parent) || '.' || to_char(coalesce(ord, 999999), 'FM000000')
-       FROM _mapping where mapping_id=$1)
-    END
-  AS RESULT
-$$ LANGUAGE SQL;
+create or replace function _mapping_tree_order(mapping_id int) returns text as $$
+  select
+    case when $1 is null then '' else
+      (select _mapping_tree_order(parent) || '.' || to_char(coalesce(ord, 999999), 'FM000000')
+       from _mapping where mapping_id=$1)
+    end
+  as result
+$$ language sql;
 
-CREATE OR REPLACE VIEW mapping AS SELECT * FROM _mapping;
+create or replace view mapping as select * from _mapping;
 
 -------------------------------------------------------------------------------
 
-CREATE TABLE _pages (
-       mapping_id integer NOT NULL REFERENCES _mapping ON DELETE CASCADE,
-       lang char(2) NOT NULL REFERENCES languages(lang),
-       published boolean NOT NULL DEFAULT 'TRUE',
-       title text NOT NULL,
+create table _pages (
+       mapping_id integer not null references _mapping on delete cascade,
+       lang char(2) not null references languages(lang),
+       published boolean not null default 'TRUE',
+       title text not null,
        description text,
        content text,
        _title text,
        _description text,
        _content text,
-       PRIMARY KEY (mapping_id, lang)
+       primary key (mapping_id, lang)
 );
 
-CREATE OR REPLACE VIEW pages AS 
-SELECT m.mapping_id ||'.'|| l.lang as page_id, l.lang, 
+create or replace view pages as 
+select m.mapping_id ||'.'|| l.lang as page_id, l.lang, 
        m.mapping_id, m.identifier, m.parent, m.modname, 
        m.private, m.owner, m.hidden, m.ord, m.tree_order,
        coalesce(p.published, 'FALSE') as published,
        coalesce(p.title, m.identifier) as title_or_identifier, 
        p.title, p.description, p.content, p._title, p._description, p._content
-FROM _mapping m CROSS JOIN languages l
-     LEFT OUTER JOIN _pages p USING (mapping_id, lang);
+from _mapping m cross join languages l
+     left outer join _pages p using (mapping_id, lang);
 
-CREATE OR REPLACE RULE pages_insert AS
-  ON INSERT TO pages DO INSTEAD (
-     INSERT INTO _mapping (identifier, parent, modname, private, owner, hidden, ord)
-     VALUES (new.identifier, new.parent, new.modname, new.private, new.owner, new.hidden, 
-             coalesce(new.ord, (SELECT max(ord)+100 FROM _mapping 
-                                WHERE coalesce(parent, 0)=coalesce(new.parent, 0)), 100));
-     UPDATE _mapping SET tree_order = _mapping_tree_order(mapping_id);
-     INSERT INTO _pages (mapping_id, lang, published, 
+create or replace rule pages_insert as
+  on insert to pages do instead (
+     insert into _mapping (identifier, parent, modname, private, owner, hidden, ord)
+     values (new.identifier, new.parent, new.modname, new.private, new.owner, new.hidden, 
+             coalesce(new.ord, (select max(ord)+100 from _mapping 
+                                where coalesce(parent, 0)=coalesce(new.parent, 0)), 100));
+     update _mapping set tree_order = _mapping_tree_order(mapping_id);
+     insert into _pages (mapping_id, lang, published, 
                          title, description, content, _title, _description, _content)
-     SELECT (SELECT mapping_id FROM _mapping WHERE identifier=new.identifier),
+     select (select mapping_id from _mapping where identifier=new.identifier),
             new.lang, new.published, 
             new.title, new.description, new.content, new._title, new._description, new._content
      RETURNING mapping_id ||'.'|| lang, 
-       lang, mapping_id, NULL::varchar(32), NULL::int, NULL::text, NULL::boolean, NULL::int,
-       NULL::boolean, NULL::int, NULL::text, published, title, title, description, content, _title,
+       lang, mapping_id, null::varchar(32), null::int, null::text, null::boolean, null::int,
+       null::boolean, null::int, null::text, published, title, title, description, content, _title,
        _description, _content
 );
 
-CREATE OR REPLACE RULE pages_update AS
-  ON UPDATE TO pages DO INSTEAD (
-    UPDATE _mapping SET
+create or replace rule pages_update as
+  on update to pages do instead (
+    update _mapping set
         identifier = new.identifier,
         parent = new.parent,
         modname = new.modname,
@@ -133,9 +133,9 @@ CREATE OR REPLACE RULE pages_update AS
         owner = new.owner,
         hidden = new.hidden,
         ord = new.ord
-    WHERE _mapping.mapping_id = old.mapping_id;
-    UPDATE _mapping SET tree_order = _mapping_tree_order(mapping_id);
-    UPDATE _pages SET
+    where _mapping.mapping_id = old.mapping_id;
+    update _mapping set tree_order = _mapping_tree_order(mapping_id);
+    update _pages set
         published = new.published,
         title = new.title,
         description = new.description,
@@ -143,93 +143,93 @@ CREATE OR REPLACE RULE pages_update AS
         _title = new._title,
         _description = new._description,
         _content = new._content
-    WHERE mapping_id = old.mapping_id AND lang = new.lang;
-    INSERT INTO _pages (mapping_id, lang, published, 
+    where mapping_id = old.mapping_id and lang = new.lang;
+    insert into _pages (mapping_id, lang, published, 
                         title, description, content, _title, _description, _content) 
-           SELECT old.mapping_id, new.lang, new.published, 
+           select old.mapping_id, new.lang, new.published, 
                   new.title, new.description, new.content, 
                   new._title, new._description, new._content
-           WHERE new.lang NOT IN (SELECT lang FROM _pages WHERE mapping_id=old.mapping_id)
-                 AND (new.title IS NOT NULL OR new.description IS NOT NULL 
-                      OR new.content IS NOT NULL 
-                      OR new._title IS NOT NULL OR new._description IS NOT NULL 
-                      OR new._content IS NOT NULL);
+           where new.lang not in (select lang from _pages where mapping_id=old.mapping_id)
+                 and (new.title is not null or new.description is not null 
+                      or new.content is not null 
+                      or new._title is not null or new._description is not null 
+                      or new._content is not null);
 );
 
-CREATE OR REPLACE RULE pages_delete AS
-  ON DELETE TO pages DO INSTEAD (
-     DELETE FROM _mapping WHERE mapping_id = old.mapping_id;
+create or replace rule pages_delete as
+  on delete to pages do instead (
+     delete from _mapping where mapping_id = old.mapping_id;
 );
 
 -------------------------------------------------------------------------------
 
-CREATE TABLE _attachments (
-       attachment_id serial PRIMARY KEY,
-       mapping_id int NOT NULL REFERENCES _mapping ON DELETE CASCADE,
-       filename varchar(64) NOT NULL,
-       mime_type text NOT NULL,
-       bytesize text NOT NULL,
-       listed boolean NOT NULL DEFAULT 'TRUE',
-       "timestamp" timestamp NOT NULL DEFAULT now(),
-       UNIQUE (mapping_id, filename)
+create table _attachments (
+       attachment_id serial primary key,
+       mapping_id int not null references _mapping on delete cascade,
+       filename varchar(64) not null,
+       mime_type text not null,
+       bytesize text not null,
+       listed boolean not null default 'TRUE',
+       "timestamp" timestamp not null default now(),
+       unique (mapping_id, filename)
 );
 
-CREATE TABLE _attachment_descr (
-       attachment_id int NOT NULL REFERENCES _attachments ON DELETE CASCADE INITIALLY DEFERRED,
-       lang char(2) NOT NULL REFERENCES languages(lang) ON DELETE CASCADE,
+create table _attachment_descr (
+       attachment_id int not null references _attachments on delete cascade initially deferred,
+       lang char(2) not null references languages(lang) on delete cascade,
        title text,
        description text,
-       UNIQUE (attachment_id, lang)
+       unique (attachment_id, lang)
 );
 
-CREATE TABLE _images (
-       attachment_id int NOT NULL REFERENCES _attachments ON DELETE CASCADE INITIALLY DEFERRED,
-       width int NOT NULL,
-       height int NOT NULL,
+create table _images (
+       attachment_id int not null references _attachments on delete cascade initially deferred,
+       width int not null,
+       height int not null,
        author text,
        "location" text,
        exif_date timestamp,
        exif text
 );
 
-CREATE OR REPLACE VIEW attachments
-AS SELECT a.attachment_id  ||'.'|| l.lang as attachment_variant_id, l.lang,
+create or replace view attachments
+as select a.attachment_id  ||'.'|| l.lang as attachment_variant_id, l.lang,
   a.attachment_id, a.mapping_id, a.filename, a.mime_type, a.bytesize, a.listed, a."timestamp",
-  d.title, d.description, i.width IS NOT NULL as is_image,
+  d.title, d.description, i.width is not null as is_image,
   i.width, i.height, i.author, i."location", i.exif_date, i.exif
-FROM _attachments a JOIN _mapping m USING (mapping_id) CROSS JOIN languages l
-     LEFT OUTER JOIN _attachment_descr d USING (attachment_id, lang)
-     LEFT OUTER JOIN _images i USING (attachment_id);
+from _attachments a JOIN _mapping m using (mapping_id) cross join languages l
+     left outer join _attachment_descr d using (attachment_id, lang)
+     left outer join _images i using (attachment_id);
 
-CREATE OR REPLACE RULE attachments_insert AS
- ON INSERT TO attachments DO INSTEAD (
-    INSERT INTO _attachment_descr (attachment_id, lang, title, description)
-           SELECT new.attachment_id, new.lang, new.title, new.description
-           WHERE new.title IS NOT NULL OR new.description IS NOT NULL;
-    INSERT INTO _images (attachment_id, width, height, author, "location", exif_date, exif)
-           SELECT new.attachment_id, new.width, new.height, new.author, new."location",
+create or replace rule attachments_insert as
+ on insert to attachments do instead (
+    insert into _attachment_descr (attachment_id, lang, title, description)
+           select new.attachment_id, new.lang, new.title, new.description
+           where new.title IS not null OR new.description IS not null;
+    insert into _images (attachment_id, width, height, author, "location", exif_date, exif)
+           select new.attachment_id, new.width, new.height, new.author, new."location",
                   new.exif_date, new.exif
-           WHERE new.is_image;
-    INSERT INTO _attachments (attachment_id, mapping_id, filename, mime_type, bytesize, listed)
+           where new.is_image;
+    insert into _attachments (attachment_id, mapping_id, filename, mime_type, bytesize, listed)
            VALUES (new.attachment_id, new.mapping_id, new.filename,
                    new.mime_type, new.bytesize, new.listed)
            RETURNING
-             attachment_id ||'.'|| (SELECT max(lang) FROM _attachment_descr
-                                    WHERE attachment_id=attachment_id),  NULL::char(2),
+             attachment_id ||'.'|| (select max(lang) from _attachment_descr
+                                    where attachment_id=attachment_id),  NULL::char(2),
              attachment_id, mapping_id, filename, mime_type, bytesize, listed, "timestamp",
              NULL::text, NULL::text, NULL::boolean, NULL::int, NULL::int, NULL::text, NULL::text,
              NULL::timestamp, NULL::text
 );
 
-CREATE OR REPLACE RULE attachments_update AS
- ON UPDATE TO attachments DO INSTEAD (
+create or replace rule attachments_update as
+ on UPDATE to attachments do instead (
     UPDATE _attachments SET
            mapping_id = new.mapping_id,
            filename = new.filename,
            mime_type = new.mime_type,
            bytesize = new.bytesize,
            listed = new.listed
-           WHERE attachment_id = old.attachment_id;
+           where attachment_id = old.attachment_id;
     UPDATE _images SET
            width = new.width,
            height = new.height,
@@ -237,78 +237,78 @@ CREATE OR REPLACE RULE attachments_update AS
            "location" = new."location",
            exif_date = new.exif_date,
            exif = new.exif
-           WHERE attachment_id = old.attachment_id;
+           where attachment_id = old.attachment_id;
     UPDATE _attachment_descr SET title=new.title, description=new.description
-           WHERE attachment_id = old.attachment_id AND lang = old.lang;
-    INSERT INTO _attachment_descr (attachment_id, lang, title, description)
-           SELECT new.attachment_id, new.lang, new.title, new.description
-           WHERE old.attachment_id NOT IN
-             (SELECT attachment_id FROM _attachment_descr WHERE lang=old.lang);
+           where attachment_id = old.attachment_id and lang = old.lang;
+    insert into _attachment_descr (attachment_id, lang, title, description)
+           select new.attachment_id, new.lang, new.title, new.description
+           where old.attachment_id NOT IN
+             (select attachment_id from _attachment_descr where lang=old.lang);
 );
 
-CREATE OR REPLACE RULE attachments_delete AS
-  ON DELETE TO attachments DO INSTEAD (
-     DELETE FROM _attachments WHERE attachment_id = old.attachment_id;
-);
-
--------------------------------------------------------------------------------
-
-CREATE TABLE news (
-	news_id serial PRIMARY KEY,
-	lang char(2) NOT NULL REFERENCES languages(lang),
-	mapping_id int NOT NULL REFERENCES _mapping ON DELETE CASCADE,
-	"timestamp" timestamp NOT NULL DEFAULT now(),
-	title text NOT NULL,
-	author int NOT NULL REFERENCES users,
-	content text NOT NULL
+create or replace rule attachments_delete as
+  on delete to attachments do instead (
+     delete from _attachments where attachment_id = old.attachment_id;
 );
 
 -------------------------------------------------------------------------------
 
-CREATE TABLE planner (
-	planner_id serial PRIMARY KEY,
-	lang char(2) NOT NULL REFERENCES languages(lang),
-	mapping_id int NOT NULL REFERENCES _mapping ON DELETE CASCADE,
-	start_date date NOT NULL,
+create table news (
+	news_id serial primary key,
+	lang char(2) not null references languages(lang),
+	mapping_id int not null references _mapping on delete cascade,
+	"timestamp" timestamp not null default now(),
+	title text not null,
+	author int not null references users,
+	content text not null
+);
+
+-------------------------------------------------------------------------------
+
+create table planner (
+	planner_id serial primary key,
+	lang char(2) not null references languages(lang),
+	mapping_id int not null references _mapping on delete cascade,
+	start_date date not null,
 	end_date date,
-	title text NOT NULL,
-	author int NOT NULL REFERENCES users,
-	"timestamp" timestamp NOT NULL DEFAULT now(),
-	content text NOT NULL,
+	title text not null,
+	author int not null references users,
+	"timestamp" timestamp not null default now(),
+	content text not null,
 	UNIQUE (start_date, lang, title)
 );
 
 -------------------------------------------------------------------------------
 
-CREATE TABLE _panels (
-	panel_id serial PRIMARY KEY,
-	lang char(2) NOT NULL REFERENCES languages(lang),
+create table _panels (
+	panel_id serial primary key,
+	lang char(2) not null references languages(lang),
 	ptitle text,
 	ord int,
-	mapping_id integer REFERENCES _mapping,
+	mapping_id integer references _mapping,
 	size int,
 	content text,
 	_content text,
-	published boolean NOT NULL DEFAULT 'FALSE'
+	published boolean not null default 'FALSE'
 );
 
-CREATE OR REPLACE VIEW panels AS 
-SELECT _panels.*, _mapping.modname, _mapping.identifier, _mapping.private, _pages.title as mtitle
-FROM _panels 
-     LEFT OUTER JOIN _mapping USING (mapping_id) 
-     LEFT OUTER JOIN _pages USING (mapping_id, lang);
+create or replace view panels as 
+select _panels.*, _mapping.modname, _mapping.identifier, _mapping.private, _pages.title as mtitle
+from _panels 
+     left outer join _mapping using (mapping_id) 
+     left outer join _pages using (mapping_id, lang);
 
-CREATE OR REPLACE RULE panels_insert AS
-  ON INSERT TO panels DO INSTEAD (
-     INSERT INTO _panels 
+create or replace rule panels_insert as
+  on insert to panels do instead (
+     insert into _panels 
         (lang, ptitle, ord, mapping_id, size, content, _content, published)
      VALUES
         (new.lang, new.ptitle, new.ord, new.mapping_id, new.size, 
 	 new.content, new._content, new.published)
 );
 
-CREATE OR REPLACE RULE panels_update AS
-  ON UPDATE TO panels DO INSTEAD (
+create or replace rule panels_update as
+  on UPDATE to panels do instead (
     UPDATE _panels SET
 	lang = new.lang,
 	ptitle = new.ptitle,
@@ -318,30 +318,30 @@ CREATE OR REPLACE RULE panels_update AS
 	content = new.content,
 	_content = new._content,
 	published = new.published
-    WHERE _panels.panel_id = old.panel_id;
+    where _panels.panel_id = old.panel_id;
 );
 
-CREATE OR REPLACE RULE panels_delete AS
-  ON DELETE TO panels DO INSTEAD (
-     DELETE FROM _panels
-     WHERE _panels.panel_id = old.panel_id;
+create or replace rule panels_delete as
+  on delete to panels do instead (
+     delete from _panels
+     where _panels.panel_id = old.panel_id;
 );
 
 -------------------------------------------------------------------------------
 
-CREATE TABLE stylesheets (
-	stylesheet_id serial PRIMARY KEY,
-	identifier varchar(32) UNIQUE NOT NULL,
-	active boolean NOT NULL DEFAULT 'TRUE',
+create table stylesheets (
+	stylesheet_id serial primary key,
+	identifier varchar(32) UNIQUE not null,
+	active boolean not null default 'TRUE',
 	description text,
 	content text
 );
 
 -------------------------------------------------------------------------------
 
-CREATE TABLE themes (
-	theme_id serial PRIMARY KEY,
-	name text UNIQUE NOT NULL,	
+create table themes (
+	theme_id serial primary key,
+	name text UNIQUE not null,	
         foreground varchar(7),
         background varchar(7),
         border varchar(7),
@@ -480,15 +480,15 @@ create table email_spool (
 
 -------------------------------------------------------------------------------
 
-CREATE TABLE config (
-        config_id int PRIMARY KEY DEFAULT 0 CHECK (config_id = 0),
-        site_title text NOT NULL,
+create table config (
+        config_id int primary key default 0 check (config_id = 0),
+        site_title text not null,
         site_subtitle text,
-        allow_login_panel boolean NOT NULL DEFAULT 'TRUE',
-        allow_registration boolean NOT NULL DEFAULT 'TRUE',
-        login_is_email boolean NOT NULL DEFAULT 'FALSE',
+        allow_login_panel boolean not null default 'TRUE',
+        allow_registration boolean not null default 'TRUE',
+        login_is_email boolean not null default 'FALSE',
         registration_expiration int,
-        force_https_login boolean NOT NULL DEFAULT 'FALSE',
+        force_https_login boolean not null default 'FALSE',
         https_port int,
         smtp_server text,
         webmaster_address text,
@@ -496,49 +496,50 @@ CREATE TABLE config (
         default_sender_address text,
         upload_limit int,
         session_expiration int,
-        certificate_authentication boolean NOT NULL DEFAULT 'FALSE',
+	default_language char(2) references languages(lang),
+        certificate_authentication boolean not null default 'FALSE',
         certificate_expiration int,
-        theme_id integer REFERENCES themes
+        theme_id integer references themes
 );
 
---CREATE TABLE changes (
---	content_id integer NOT NULL REFERENCES content ON DELETE CASCADE,
---	author text NOT NULL,
---	time timestamp NOT NULL DEFAULT now(),
+--create table changes (
+--	content_id integer not null references content on delete cascade,
+--	author text not null,
+--	time timestamp not null default now(),
 --	message text,
 --);
 
 -------------------------------------------------------------------------------
 
-CREATE TABLE cacertificates (
-       cacertificates_id serial PRIMARY KEY,
-       certificate text NOT NULL,
-       serial_number int NOT NULL,
-       text text NOT NULL,  -- human readable form of the certificate
-       issuer text NOT NULL,  -- CN, i.e. the authority
-       valid_from timestamp NOT NULL,
-       valid_until timestamp NOT NULL,
-       trusted boolean DEFAULT 'FALSE'
+create table cacertificates (
+       cacertificates_id serial primary key,
+       certificate text not null,
+       serial_number int not null,
+       text text not null,  -- human readable form of the certificate
+       issuer text not null,  -- CN, i.e. the authority
+       valid_from timestamp not null,
+       valid_until timestamp not null,
+       trusted boolean default 'FALSE'
 );
 
-CREATE TABLE certificates (
-       certificates_id serial PRIMARY KEY,
-       certificate text NOT NULL,
-       serial_number int NOT NULL,
-       text text NOT NULL,  -- human readable form of the certificate
-       common_name text NOT NULL,
+create table certificates (
+       certificates_id serial primary key,
+       certificate text not null,
+       serial_number int not null,
+       text text not null,  -- human readable form of the certificate
+       common_name text not null,
        email text,
-       issuer text NOT NULL,
-       valid_from timestamp NOT NULL,
-       valid_until timestamp NOT NULL,
-       trusted boolean DEFAULT 'FALSE',
-       uid int REFERENCES users NOT NULL,
-       purpose int NOT NULL -- 0=none, 1=authentication, 2=signing, 3=1+2
+       issuer text not null,
+       valid_from timestamp not null,
+       valid_until timestamp not null,
+       trusted boolean default 'FALSE',
+       uid int references users not null,
+       purpose int not null -- 0=none, 1=authentication, 2=signing, 3=1+2
 );
-CREATE INDEX certificates_serial_number ON certificates (serial_number);
-CREATE INDEX certificates_uid ON certificates (uid);
-CREATE OR REPLACE RULE certificates_insert AS
-  ON INSERT TO certificates DO
-  DELETE FROM certificates WHERE uid = new.uid AND purpose = 1 AND purpose = new.purpose AND serial_number != new.serial_number;
+create INDEX certificates_serial_number on certificates (serial_number);
+create INDEX certificates_uid on certificates (uid);
+create or replace rule certificates_insert as
+  on insert to certificates do
+  delete from certificates where uid = new.uid and purpose = 1 and purpose = new.purpose and serial_number != new.serial_number;
 
-CREATE SEQUENCE certificate_serial_number;
+create sequence certificate_serial_number;

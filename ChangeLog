@@ -1,5 +1,9 @@
 2009-06-18  Tomas Cerha  <cerha@bob.xx>
 
+	* sql/wiking.sql:
+	Added column for configuration option `default_language'.  SQL
+	converted to lowercase.
+
 	* resources/scripts/wiking.js:
 	Disable main menu aria markup for now (breaks keyboard navigation with JAWS).
 
