@@ -1,5 +1,18 @@
 2009-06-19  Tomas Cerha  <cerha@brailcom.org>
 
+	* translations/wiking.cs.po: 
+	* translations/wiking.de.po: 
+	* translations/wiking.es.po: 
+	* translations/wiking.fr.po: 
+	* translations/wiking.hu.po: 
+	* translations/wiking.it.po: 
+	* translations/wiking.pl.po: 
+	* translations/wiking.sk.po: 
+	Translations updated.
+
+	* lib/wiking/export.py:
+	Add titles to all page elements used for ARIA landmarks.
+
 	* TODO:
 	Updated.
 
