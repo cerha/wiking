@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-06-19 09:48+0200\n"
+"POT-Creation-Date: 2009-06-19 18:11+0200\n"
 "PO-Revision-Date: 2008-10-14 10:38+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Hungarian <wiking@lists.freebsoft.org>\n"
@@ -15,58 +15,73 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../lib/wiking/cms/appl.py:56
-msgid "Manage this site"
+#: ../lib/wiking/configuration.py:173
+msgid "Webmaster's e-mail address"
 msgstr ""
 
-#: ../lib/wiking/cms/appl.py:57
-msgid "Enter the Wiking Management Interface"
+#: ../lib/wiking/configuration.py:184
+msgid "Default sender address"
 msgstr ""
 
-#: ../lib/wiking/cms/appl.py:59
-msgid "Leave the Management Interface"
+#: ../lib/wiking/configuration.py:200
+msgid "Force HTTPS login"
 msgstr ""
 
-#: ../lib/wiking/cms/appl.py:90
-msgid "Wiking Management Interface"
-msgstr ""
-
-#: ../lib/wiking/cms/configuration.py:35
-msgid "Allow login panel"
-msgstr ""
-
-#: ../lib/wiking/cms/configuration.py:36
+#: ../lib/wiking/configuration.py:201
 msgid ""
-"If enabled, the information about the currently logged user and login/logout "
-"controls will be present on each page as a separate panel.  This panel will "
-"always be the first panel on the page."
+"If enabled, the login form will always be redirected to an HTTPS address to "
+"ensure the security of the submitted credentials.  This, however, requires "
+"your server to be setup to accept HTTPS requests for the same virtual host "
+"and pass them to Wiking."
 msgstr ""
 
-#: ../lib/wiking/cms/configuration.py:42
-msgid "Allow WMI link"
+#: ../lib/wiking/configuration.py:242
+msgid "Site title"
 msgstr ""
 
-#: ../lib/wiking/cms/configuration.py:48
-msgid "Allow new user registration"
-msgstr ""
-
-#: ../lib/wiking/cms/configuration.py:49
+#: ../lib/wiking/configuration.py:243
 msgid ""
-"If enabled, all visitors are allowed to create a user account.  If disabled, "
-"new user accounts must be created by administrator.  Note, that the newly "
-"created accounts are inactive (at least with the default implementation of "
-"the user management module), so the creation of the account doesn't give the "
-"user any actual privileges."
+"Site title is a short and (hopefully) unique title of the whole website. It "
+"will appear at the top of every page."
 msgstr ""
 
-#: ../lib/wiking/cms/configuration.py:58
-msgid "Maximal upload size"
+#: ../lib/wiking/configuration.py:248
+msgid "Site subtitle"
 msgstr ""
 
-#: ../lib/wiking/cms/configuration.py:59
+#: ../lib/wiking/configuration.py:249
 msgid ""
-"The maximal size of uploaded files in bytes.  The server needs to be "
-"relaoded for the changes in this option to take effect."
+"Site subtitle is an optional more descriptive title of the website.  It will "
+"appear at the top of every page together with site title, but where brevity "
+"matters, only title will be used."
+msgstr ""
+
+#: ../lib/wiking/configuration.py:259
+msgid "Default language"
+msgstr ""
+
+#: ../lib/wiking/configuration.py:260
+msgid ""
+"Defines the language (lowercase ISO 639-1 Alpha-2 code) to be used when "
+"content language negotiation fails. If not set (which is the default), the "
+"server will issue a 606 HTTP error (Not acceptable) when the document is not "
+"available in any of the requested languages. The error page will contain a "
+"description of the problem and a list of available language variants of the "
+"requested document. The negotiation is based on the browser setting of "
+"user's language preference passed through the 'Accept-Language' HTTP header. "
+"If set, Wiking will automatically serve given language variant instead of "
+"issuing the error if that variant is available.  If unavailable, the 606 "
+"error is raised anyway, so you need to make sure that all documents are "
+"available at least in the default language variant if you want to avoid 606 "
+"errors completely."
+msgstr ""
+
+#: ../lib/wiking/configuration.py:339
+msgid "Whether to use e-mails as login names"
+msgstr ""
+
+#: ../lib/wiking/configuration.py:340
+msgid "Iff true, users must use e-mail addresses as their login names."
 msgstr ""
 
 #: ../lib/wiking/cms/cms.py:58
@@ -1348,71 +1363,56 @@ msgstr ""
 msgid "Edit this mail for repeated use"
 msgstr ""
 
-#: ../lib/wiking/configuration.py:173
-msgid "Webmaster's e-mail address"
+#: ../lib/wiking/cms/appl.py:56
+msgid "Manage this site"
 msgstr ""
 
-#: ../lib/wiking/configuration.py:184
-msgid "Default sender address"
+#: ../lib/wiking/cms/appl.py:57
+msgid "Enter the Wiking Management Interface"
 msgstr ""
 
-#: ../lib/wiking/configuration.py:200
-msgid "Force HTTPS login"
+#: ../lib/wiking/cms/appl.py:59
+msgid "Leave the Management Interface"
 msgstr ""
 
-#: ../lib/wiking/configuration.py:201
+#: ../lib/wiking/cms/appl.py:90
+msgid "Wiking Management Interface"
+msgstr ""
+
+#: ../lib/wiking/cms/configuration.py:35
+msgid "Allow login panel"
+msgstr ""
+
+#: ../lib/wiking/cms/configuration.py:36
 msgid ""
-"If enabled, the login form will always be redirected to an HTTPS address to "
-"ensure the security of the submitted credentials.  This, however, requires "
-"your server to be setup to accept HTTPS requests for the same virtual host "
-"and pass them to Wiking."
+"If enabled, the information about the currently logged user and login/logout "
+"controls will be present on each page as a separate panel.  This panel will "
+"always be the first panel on the page."
 msgstr ""
 
-#: ../lib/wiking/configuration.py:242
-msgid "Site title"
+#: ../lib/wiking/cms/configuration.py:42
+msgid "Allow WMI link"
 msgstr ""
 
-#: ../lib/wiking/configuration.py:243
+#: ../lib/wiking/cms/configuration.py:48
+msgid "Allow new user registration"
+msgstr ""
+
+#: ../lib/wiking/cms/configuration.py:49
 msgid ""
-"Site title is a short and (hopefully) unique title of the whole website. It "
-"will appear at the top of every page."
+"If enabled, all visitors are allowed to create a user account.  If disabled, "
+"new user accounts must be created by administrator.  Note, that the newly "
+"created accounts are inactive (at least with the default implementation of "
+"the user management module), so the creation of the account doesn't give the "
+"user any actual privileges."
 msgstr ""
 
-#: ../lib/wiking/configuration.py:248
-msgid "Site subtitle"
+#: ../lib/wiking/cms/configuration.py:58
+msgid "Maximal upload size"
 msgstr ""
 
-#: ../lib/wiking/configuration.py:249
+#: ../lib/wiking/cms/configuration.py:59
 msgid ""
-"Site subtitle is an optional more descriptive title of the website.  It will "
-"appear at the top of every page together with site title, but where brevity "
-"matters, only title will be used."
-msgstr ""
-
-#: ../lib/wiking/configuration.py:259
-msgid "Default language"
-msgstr ""
-
-#: ../lib/wiking/configuration.py:260
-msgid ""
-"Defines the language (lowercase ISO 639-1 Alpha-2 code) to be used when "
-"content language negotiation fails. If not set (which is the default), the "
-"server will issue a 606 HTTP error (Not acceptable) when the document is not "
-"available in any of the requested languages. The error page will contain a "
-"description of the problem and a list of available language variants of the "
-"requested document. The negotiation is based on the browser setting of "
-"user's language preference passed through the 'Accept-Language' HTTP header. "
-"If set, Wiking will automatically serve given language variant instead of "
-"issuing the error if that variant is available.  If unavailable, the 606 "
-"error is raised anyway, so you need to make sure that all documents are "
-"available at least in the default language variant if you want to avoid 606 "
-"errors completely."
-msgstr ""
-
-#: ../lib/wiking/configuration.py:339
-msgid "Whether to use e-mails as login names"
-msgstr ""
-
-#: ../lib/wiking/configuration.py:340
-msgid "Iff true, users must use e-mail addresses as their login names."
+"The maximal size of uploaded files in bytes.  The server needs to be "
+"relaoded for the changes in this option to take effect."
 msgstr ""

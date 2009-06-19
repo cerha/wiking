@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-06-19 09:48+0200\n"
+"POT-Creation-Date: 2009-06-19 18:11+0200\n"
 "PO-Revision-Date: 2009-06-18 15:37+0100\n"
 "Last-Translator: tana prosdocimova <prosdocim@seznam.cz>\n"
 "Language-Team: Spanish <wiking@lists.freebsoft.org>\n"
@@ -16,70 +16,97 @@ msgstr ""
 "X-Poedit-Language: Spanish\n"
 "X-Poedit-Country: SPAIN\n"
 
-#: ../lib/wiking/cms/appl.py:56
-msgid "Manage this site"
-msgstr "Gestionar este sitio"
+#: ../lib/wiking/configuration.py:173
+msgid "Webmaster's e-mail address"
+msgstr "Dirección de correo electrónico de administrado de sitio web"
 
-#: ../lib/wiking/cms/appl.py:57
-msgid "Enter the Wiking Management Interface"
-msgstr "Entrar en Gestión del interfaz de Wiking"
+#: ../lib/wiking/configuration.py:184
+msgid "Default sender address"
+msgstr "Dirección del remitente predeterminada"
 
-#: ../lib/wiking/cms/appl.py:59
-msgid "Leave the Management Interface"
-msgstr "Salir de Gestión del interfaz"
+#: ../lib/wiking/configuration.py:200
+msgid "Force HTTPS login"
+msgstr "Forzar el inicio de sesión HTTPS"
 
-#: ../lib/wiking/cms/appl.py:90
-msgid "Wiking Management Interface"
-msgstr "Interfaz de Wiking Management "
-
-#: ../lib/wiking/cms/configuration.py:35
-msgid "Allow login panel"
-msgstr "Permitir el panel de iniciar la sesión"
-
-#: ../lib/wiking/cms/configuration.py:36
+#: ../lib/wiking/configuration.py:201
 msgid ""
-"If enabled, the information about the currently logged user and login/logout "
-"controls will be present on each page as a separate panel.  This panel will "
-"always be the first panel on the page."
+"If enabled, the login form will always be redirected to an HTTPS address to "
+"ensure the security of the submitted credentials.  This, however, requires "
+"your server to be setup to accept HTTPS requests for the same virtual host "
+"and pass them to Wiking."
 msgstr ""
-"Si está habilitada, la información sobre el usuario actual y los controles "
-"de inicion / cierra de sesión estará presentes en cada página como un panel "
-"independiente. Este panel siempre será el primer panel en la página."
+"Si está activado, el formulario de acceso siempre será remitido a una "
+"dirección HTTPS para garantizar la seguridad de las credenciales "
+"presentadas. Esto, sin embargo, requiere que su servidor esté configurado "
+"para aceptar peticiones HTTPS para la misma máquina virtual y pasar a Wiking."
 
-#: ../lib/wiking/cms/configuration.py:42
-msgid "Allow WMI link"
-msgstr "Permitir enlace WMI"
+#: ../lib/wiking/configuration.py:242
+msgid "Site title"
+msgstr "Título del sitio"
 
-#: ../lib/wiking/cms/configuration.py:48
-msgid "Allow new user registration"
-msgstr "Permitir registro de usuarios nuevos"
-
-#: ../lib/wiking/cms/configuration.py:49
+#: ../lib/wiking/configuration.py:243
 msgid ""
-"If enabled, all visitors are allowed to create a user account.  If disabled, "
-"new user accounts must be created by administrator.  Note, that the newly "
-"created accounts are inactive (at least with the default implementation of "
-"the user management module), so the creation of the account doesn't give the "
-"user any actual privileges."
+"Site title is a short and (hopefully) unique title of the whole website. It "
+"will appear at the top of every page."
 msgstr ""
-"Si está activada, todos los visitantes se les permite crear una cuenta de "
-"usuario. Si está desactivada, las nuevas cuentas de usuario deben ser "
-"creados por el administrador. Tenga en cuenta que las cuentas creadas "
-"recientemente están inactivas (por lo menos con la aplicación predeterminada "
-"de módulo de gestión del usuario), por lo que la creación de la cuenta no da "
-"al usuario privilegios actualmente."
+"El título del sitio es corto y (esperemos) único título de toda la web. Éste "
+"aparecerá en la parte superior de cada página."
 
-#: ../lib/wiking/cms/configuration.py:58
-msgid "Maximal upload size"
-msgstr "Máximo tamaño de subida"
+#: ../lib/wiking/configuration.py:248
+msgid "Site subtitle"
+msgstr "Subtítulo del sitio"
 
-#: ../lib/wiking/cms/configuration.py:59
+#: ../lib/wiking/configuration.py:249
 msgid ""
-"The maximal size of uploaded files in bytes.  The server needs to be "
-"relaoded for the changes in this option to take effect."
+"Site subtitle is an optional more descriptive title of the website.  It will "
+"appear at the top of every page together with site title, but where brevity "
+"matters, only title will be used."
 msgstr ""
-"El tamaño máximo de los archivos cargados en bytes. El servidor debe ser "
-"recargado para que los cambios surjan efecto."
+"El subtítulo del sitio es opcional y más descriptivo título de la página "
+"web. Éste aparecerá en la parte superior de cada página junto con el título "
+"del sitio, pero en asuntos breves, sólo se usará el título."
+
+#: ../lib/wiking/configuration.py:259
+msgid "Default language"
+msgstr "Idioma predeterminado"
+
+#: ../lib/wiking/configuration.py:260
+msgid ""
+"Defines the language (lowercase ISO 639-1 Alpha-2 code) to be used when "
+"content language negotiation fails. If not set (which is the default), the "
+"server will issue a 606 HTTP error (Not acceptable) when the document is not "
+"available in any of the requested languages. The error page will contain a "
+"description of the problem and a list of available language variants of the "
+"requested document. The negotiation is based on the browser setting of "
+"user's language preference passed through the 'Accept-Language' HTTP header. "
+"If set, Wiking will automatically serve given language variant instead of "
+"issuing the error if that variant is available.  If unavailable, the 606 "
+"error is raised anyway, so you need to make sure that all documents are "
+"available at least in the default language variant if you want to avoid 606 "
+"errors completely."
+msgstr ""
+"Define el idioma (minúsculas ISO 639-1 Código Alfa-2) que se utilizará "
+"cuando el idioma de contenido de negociación fracasa. Si no se establece (el "
+"valor predeterminado), el servidor emitirá un error HTTP 606 (no aceptable) "
+"cuando el documento no está disponible en alguno de los idiomas solicitados. "
+"La página de error contendrá una descripción del problema y una lista de "
+"variantes lingüísticas del documento solicitado. La negociación se basa en "
+"la configuración del navegador del usuario de idioma preferido elegido como "
+"'Accept-Language' para HTTP. Si se establece, Wiking automáticamente "
+"mostrará la variante del idioma si está disponible en lugar de emitir un "
+"error. Si no está disponible, el error 606 se mostrará de todos modos, por "
+"lo que necesita estar seguro de que todos documentos están disponibles al "
+"menos en un idioma predeterminado para evitar completamente los errores 606"
+
+#: ../lib/wiking/configuration.py:339
+msgid "Whether to use e-mails as login names"
+msgstr "Usar el correo electrónico el nombre del usuario"
+
+#: ../lib/wiking/configuration.py:340
+msgid "Iff true, users must use e-mail addresses as their login names."
+msgstr ""
+"Si es verdad, los usuarios tienen que usar el correo electrónico como su "
+"nombre del usuario."
 
 #: ../lib/wiking/cms/cms.py:58
 msgid "formatting manual"
@@ -1479,97 +1506,70 @@ msgstr ""
 msgid "Edit this mail for repeated use"
 msgstr ""
 
-#: ../lib/wiking/configuration.py:173
-msgid "Webmaster's e-mail address"
-msgstr "Dirección de correo electrónico de administrado de sitio web"
+#: ../lib/wiking/cms/appl.py:56
+msgid "Manage this site"
+msgstr "Gestionar este sitio"
 
-#: ../lib/wiking/configuration.py:184
-msgid "Default sender address"
-msgstr "Dirección del remitente predeterminada"
+#: ../lib/wiking/cms/appl.py:57
+msgid "Enter the Wiking Management Interface"
+msgstr "Entrar en Gestión del interfaz de Wiking"
 
-#: ../lib/wiking/configuration.py:200
-msgid "Force HTTPS login"
-msgstr "Forzar el inicio de sesión HTTPS"
+#: ../lib/wiking/cms/appl.py:59
+msgid "Leave the Management Interface"
+msgstr "Salir de Gestión del interfaz"
 
-#: ../lib/wiking/configuration.py:201
+#: ../lib/wiking/cms/appl.py:90
+msgid "Wiking Management Interface"
+msgstr "Interfaz de Wiking Management "
+
+#: ../lib/wiking/cms/configuration.py:35
+msgid "Allow login panel"
+msgstr "Permitir el panel de iniciar la sesión"
+
+#: ../lib/wiking/cms/configuration.py:36
 msgid ""
-"If enabled, the login form will always be redirected to an HTTPS address to "
-"ensure the security of the submitted credentials.  This, however, requires "
-"your server to be setup to accept HTTPS requests for the same virtual host "
-"and pass them to Wiking."
+"If enabled, the information about the currently logged user and login/logout "
+"controls will be present on each page as a separate panel.  This panel will "
+"always be the first panel on the page."
 msgstr ""
-"Si está activado, el formulario de acceso siempre será remitido a una "
-"dirección HTTPS para garantizar la seguridad de las credenciales "
-"presentadas. Esto, sin embargo, requiere que su servidor esté configurado "
-"para aceptar peticiones HTTPS para la misma máquina virtual y pasar a Wiking."
+"Si está habilitada, la información sobre el usuario actual y los controles "
+"de inicion / cierra de sesión estará presentes en cada página como un panel "
+"independiente. Este panel siempre será el primer panel en la página."
 
-#: ../lib/wiking/configuration.py:242
-msgid "Site title"
-msgstr "Título del sitio"
+#: ../lib/wiking/cms/configuration.py:42
+msgid "Allow WMI link"
+msgstr "Permitir enlace WMI"
 
-#: ../lib/wiking/configuration.py:243
+#: ../lib/wiking/cms/configuration.py:48
+msgid "Allow new user registration"
+msgstr "Permitir registro de usuarios nuevos"
+
+#: ../lib/wiking/cms/configuration.py:49
 msgid ""
-"Site title is a short and (hopefully) unique title of the whole website. It "
-"will appear at the top of every page."
+"If enabled, all visitors are allowed to create a user account.  If disabled, "
+"new user accounts must be created by administrator.  Note, that the newly "
+"created accounts are inactive (at least with the default implementation of "
+"the user management module), so the creation of the account doesn't give the "
+"user any actual privileges."
 msgstr ""
-"El título del sitio es corto y (esperemos) único título de toda la web. Éste "
-"aparecerá en la parte superior de cada página."
+"Si está activada, todos los visitantes se les permite crear una cuenta de "
+"usuario. Si está desactivada, las nuevas cuentas de usuario deben ser "
+"creados por el administrador. Tenga en cuenta que las cuentas creadas "
+"recientemente están inactivas (por lo menos con la aplicación predeterminada "
+"de módulo de gestión del usuario), por lo que la creación de la cuenta no da "
+"al usuario privilegios actualmente."
 
-#: ../lib/wiking/configuration.py:248
-msgid "Site subtitle"
-msgstr "Subtítulo del sitio"
+#: ../lib/wiking/cms/configuration.py:58
+msgid "Maximal upload size"
+msgstr "Máximo tamaño de subida"
 
-#: ../lib/wiking/configuration.py:249
+#: ../lib/wiking/cms/configuration.py:59
 msgid ""
-"Site subtitle is an optional more descriptive title of the website.  It will "
-"appear at the top of every page together with site title, but where brevity "
-"matters, only title will be used."
+"The maximal size of uploaded files in bytes.  The server needs to be "
+"relaoded for the changes in this option to take effect."
 msgstr ""
-"El subtítulo del sitio es opcional y más descriptivo título de la página "
-"web. Éste aparecerá en la parte superior de cada página junto con el título "
-"del sitio, pero en asuntos breves, sólo se usará el título."
-
-#: ../lib/wiking/configuration.py:259
-msgid "Default language"
-msgstr "Idioma predeterminado"
-
-#: ../lib/wiking/configuration.py:260
-msgid ""
-"Defines the language (lowercase ISO 639-1 Alpha-2 code) to be used when "
-"content language negotiation fails. If not set (which is the default), the "
-"server will issue a 606 HTTP error (Not acceptable) when the document is not "
-"available in any of the requested languages. The error page will contain a "
-"description of the problem and a list of available language variants of the "
-"requested document. The negotiation is based on the browser setting of "
-"user's language preference passed through the 'Accept-Language' HTTP header. "
-"If set, Wiking will automatically serve given language variant instead of "
-"issuing the error if that variant is available.  If unavailable, the 606 "
-"error is raised anyway, so you need to make sure that all documents are "
-"available at least in the default language variant if you want to avoid 606 "
-"errors completely."
-msgstr ""
-"Define el idioma (minúsculas ISO 639-1 Código Alfa-2) que se utilizará "
-"cuando el idioma de contenido de negociación fracasa. Si no se establece (el "
-"valor predeterminado), el servidor emitirá un error HTTP 606 (no aceptable) "
-"cuando el documento no está disponible en alguno de los idiomas solicitados. "
-"La página de error contendrá una descripción del problema y una lista de "
-"variantes lingüísticas del documento solicitado. La negociación se basa en "
-"la configuración del navegador del usuario de idioma preferido elegido como "
-"'Accept-Language' para HTTP. Si se establece, Wiking automáticamente "
-"mostrará la variante del idioma si está disponible en lugar de emitir un "
-"error. Si no está disponible, el error 606 se mostrará de todos modos, por "
-"lo que necesita estar seguro de que todos documentos están disponibles al "
-"menos en un idioma predeterminado para evitar completamente los errores 606"
-
-#: ../lib/wiking/configuration.py:339
-msgid "Whether to use e-mails as login names"
-msgstr "Usar el correo electrónico el nombre del usuario"
-
-#: ../lib/wiking/configuration.py:340
-msgid "Iff true, users must use e-mail addresses as their login names."
-msgstr ""
-"Si es verdad, los usuarios tienen que usar el correo electrónico como su "
-"nombre del usuario."
+"El tamaño máximo de los archivos cargados en bytes. El servidor debe ser "
+"recargado para que los cambios surjan efecto."
 
 #~ msgid "No password authentication for your account"
 #~ msgstr "Ninguna constraseña de autentificación para su cuenta"
