@@ -26,12 +26,23 @@ var CMD_MENU = 'menu';
 var CMD_QUIT = 'quit';
 
 /* Menu navigation keyboard shortcuts */
-var WIKING_KEYMAP = {'Ctrl-Shift-Up':    CMD_PREV,
-		     'Ctrl-Shift-Down':  CMD_NEXT,
-		     'Ctrl-Shift-Left':  CMD_PARENT,
-		     'Ctrl-Shift-Right': CMD_CHILD,
-		     'Ctrl-Shift-m':     CMD_MENU,
-		     'Escape':           CMD_QUIT};
+var WIKING_KEYMAP = {
+   'Ctrl-Shift-Up':    CMD_PREV,
+   'Ctrl-Shift-Down':  CMD_NEXT,
+   'Ctrl-Shift-Left':  CMD_PARENT,
+   'Ctrl-Shift-Right': CMD_CHILD,
+   'Ctrl-Shift-m':     CMD_MENU,
+   'Escape':           CMD_QUIT,
+};
+
+var WIKING_LANDMARKS = {
+   'top':     'banner',
+   'menu':    'navigation',
+   'submenu': 'navigation',
+   'main':    'main',
+   'panels':  'complementary',
+   'bottom':  'contentinfo',
+};
 
 var _current_main_menu_item = null;
 var _first_menu_item = null;
@@ -49,11 +60,18 @@ function wiking_init() {
    append_panels_menu(items);
    append_language_selection_menu(items);
    _first_menu_item = items[0];
-   // Other initializations.
+   //Initialize ARIA landmarks;
+   for (var id in WIKING_LANDMARKS) {
+      var element = document.getElementById(id);
+      if (element != null)
+	 element.setAttribute('role', WIKING_LANDMARKS[id]);
+   }
+   // Set up global key handler.
    if (document.all)
       document.body.onkeydown = wiking_onkeydown;
    else
       window.onkeydown = wiking_onkeydown;
+   // Move focus to the main content if there is no anchor in the current URL.
    if (window.location.href.match("#") == null)
       set_focus(_main_heading);
 }

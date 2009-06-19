@@ -5,15 +5,10 @@ Version 0.4.5 (not released yet):
  * Added support for MD5 passwords (new option password_storage in configuration
    file).
 
- * Registration code confirmation is not required when the account is enabled
-   manually by administrator.
+ * Added support for ARIA landmarks.
+
+ * Improved user registration, account confirmation process and user management.
  
- * User management in WMI now uses predefined filters to display
-   active/inactive/unconfirmed users.
-
- * New configuration options allow setting the default language statically as
-   well as dynamically based on the server name in the current request URI.
-
  * Panels are now also displayed in WMI in the same form as outside WMI.
 
  * WMI link was moved to the login panel (if enabled).
@@ -21,11 +16,11 @@ Version 0.4.5 (not released yet):
  * Registration notification emails are now sent in HTML to prevent confirmation
    URI misinterpretation.
 
- * Admin can now change user's password without knowing the prevoius password
-   (except for his own password).
-
- * RSS links are now automatically shown within panels and announced in page
+ * RSS links are now automatically displayed within panels and announced in page
    header meta tags.
+
+ * New configuration options allow setting the default language statically as
+   well as dynamically based on the server name in the current request URI.
 
  * Wiking Application API extended to cover common exporter customizations.
 
