@@ -57,6 +57,14 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
     _PAGE_PARTS = ('links', 'breadcrumbs', 'language_selection',
                    'menu', 'submenu', 'panels', 'main', 'page_clearing')
     _BOTTOM_PARTS = ('bottom_bar', 'footer')
+    _PART_TITLE = {
+        'top':     _("Page heading"),
+        'menu':    _("Main navigation"),
+        'submenu': _("Local navigation"),
+        'main':    _("Main content"),
+        'bottom':  _("Page footer"),
+        'language_selection': _("Language selection"),
+    }
     _LANGUAGE_SELECTION_LABEL = _("Language:")
     _MESSAGE_TYPE_CLASS = {WikingRequest.INFO: 'info',
                            WikingRequest.WARNING: 'warning',
@@ -99,6 +107,8 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
                 attr = getattr(self, '_'+name+'_attr')(context)
             else:
                 attr = {}
+            if self._PART_TITLE.has_key(name):
+                attr['title'] = self._PART_TITLE[name]
             return self._generator.div(content, id=name.replace('_', '-'), **attr)
         else:
             return None
@@ -150,7 +160,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
 
     def _links(self, context):
         g = self._generator
-        links = [g.link(_("Content"), '#main-heading', hotkey="2")]
+        links = [g.link(_("Main content"), '#main-heading', hotkey="2")]
         if context.has_menu or context.has_submenu:
             links.append(g.link(_("Main navigation"), '#main-navigation'))
             if context.has_menu and context.has_submenu:
@@ -226,7 +236,8 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
                     title = link +' '+ title
             result.append(g.div((g.h(title, 3),
                                  g.div(content.export(context), cls='panel-content')),
-                                id='panel-'+panel.id(), cls='panel'))
+                                id='panel-'+panel.id(), cls='panel',
+                                title=panel.accessible_title()))
         result.append(g.br())
         return result
 
