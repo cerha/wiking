@@ -130,7 +130,7 @@ function append_panels_menu(items) {
       for (var i = 0; i < headings.length; i++) {
 	 var heading = headings[i];
 	 var panel = heading.parentNode;
-	 panel.setAttribute('role', 'supplementary');
+	 panel.setAttribute('role', 'complementary');
 	 var item = heading.getElementsByTagName('a')[0];
 	 if (item != null)
 	    if (panel.getAttribute('id') == 'panel-login')
@@ -148,7 +148,7 @@ function append_language_selection_menu(items) {
    var node = document.getElementById('language-selection');
    var item = document.getElementById('language-selection-anchor');
    if (node != null && item != null) {
-      node.setAttribute('role', 'supplementary');
+      node.setAttribute('role', 'complementary');
       item.setAttribute('tabindex', '-1');
       var languages = [];
       var links = node.getElementsByTagName('a');
