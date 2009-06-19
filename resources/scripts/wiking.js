@@ -40,7 +40,6 @@ var WIKING_LANDMARKS = {
    'menu':    'navigation',
    'submenu': 'navigation',
    'main':    'main',
-   'panels':  'complementary',
    'bottom':  'contentinfo'
 };
 
@@ -129,9 +128,12 @@ function append_panels_menu(items) {
       var login_panel = null;
       var headings = node.getElementsByTagName('h3');
       for (var i = 0; i < headings.length; i++) {
-	 var item = headings[i].getElementsByTagName('a')[0];
+	 var heading = headings[i];
+	 var panel = heading.parentNode;
+	 panel.setAttribute('role', 'supplementary');
+	 var item = heading.getElementsByTagName('a')[0];
 	 if (item != null)
-	    if (item.parentNode.parentNode.getAttribute('id') == 'panel-login')
+	    if (panel.getAttribute('id') == 'panel-login')
 	       // Append login panel as the last panel in navigation order.
 	       login_panel = item
 	    else
@@ -146,6 +148,7 @@ function append_language_selection_menu(items) {
    var node = document.getElementById('language-selection');
    var item = document.getElementById('language-selection-anchor');
    if (node != null && item != null) {
+      node.setAttribute('role', 'supplementary');
       item.setAttribute('tabindex', '-1');
       var languages = [];
       var links = node.getElementsByTagName('a');
