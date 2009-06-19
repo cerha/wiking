@@ -93,13 +93,13 @@ function append_menu(items, node, parent) {
    if (node != null) {
       var ul = node.getElementsByTagName('ul')[0];
       if (ul != null) { // && ul.parentNode == node) {
-	 //ul.setAttribute('role', 'menu');
+	 ul.setAttribute('role', 'menu');
 	 for (var i = 0; i < ul.childNodes.length; i++) {
 	    var li = ul.childNodes[i];
 	    if (li.nodeName =='LI') {
 	       var link = li.getElementsByTagName('a')[0];
 	       var item = link;
-	       //item.setAttribute('role', 'menuitem');
+	       item.setAttribute('role', 'menuitem');
 	       //item.setAttribute('tabindex', '-1');
 	       //item.setAttribute('title', link.innerHTML);
 	       var subitems = [];
@@ -176,11 +176,16 @@ function append_menu_item(items, item, parent, child) {
 }
 
 function on_menu_keydown(event, link) {
-   var cmd = WIKING_KEYMAP[event_key(event)];
+   var key = event_key(event);
+   var cmd = WIKING_KEYMAP[key];
    if (cmd != null) {
       var target = link._menu_navigation_target[cmd];
       if (target != null)
 	 set_focus(target);
+      return false;
+   } else if (key == 'Enter' && link.parentNode.nodeName == 'H3') {
+      // Go to the panel when pressing Enter on panel menu item.
+      set_focus(link.parentNode);
       return false;
    } else {
       return true;

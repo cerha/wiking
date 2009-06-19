@@ -20,7 +20,9 @@
 	Updated.
 
 	* resources/scripts/wiking.js:
-	Added support for aria landmarks.
+	Added support for ARIA landmarks.  
+	ARIA menu roles re-enabled.  Make panel navigation consistent with
+	menu navigation.
 
 	* translations/wiking-cms.cs.po:
 	Reverted last changes made from outdated source.
