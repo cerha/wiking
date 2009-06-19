@@ -5,7 +5,7 @@ Version 0.4.5 (not released yet):
  * Added support for MD5 passwords (new option password_storage in configuration
    file).
 
- * Added support for ARIA landmarks.
+ * Added support for ARIA landmarks and JavaScript page navigation improved.
 
  * Improved user registration, account confirmation process and user management.
  
