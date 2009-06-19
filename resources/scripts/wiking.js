@@ -32,7 +32,7 @@ var WIKING_KEYMAP = {
    'Ctrl-Shift-Left':  CMD_PARENT,
    'Ctrl-Shift-Right': CMD_CHILD,
    'Ctrl-Shift-m':     CMD_MENU,
-   'Escape':           CMD_QUIT,
+   'Escape':           CMD_QUIT
 };
 
 var WIKING_LANDMARKS = {
@@ -41,7 +41,7 @@ var WIKING_LANDMARKS = {
    'submenu': 'navigation',
    'main':    'main',
    'panels':  'complementary',
-   'bottom':  'contentinfo',
+   'bottom':  'contentinfo'
 };
 
 var _current_main_menu_item = null;
