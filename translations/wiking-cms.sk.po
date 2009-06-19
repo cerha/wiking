@@ -1,14 +1,29 @@
-# Wiking CMS translations.
-# Copyright (C) 2008 Brailcom, o.p.s.
-# This file is distributed under the same license as the Wiking package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, .
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Free Software Foundation, Inc.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
+#, fuzzy
 msgid ""
 msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"PO-Revision-Date: 2009-06-19 11:30+0200\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+# Wiking CMS translations.
+# Copyright (C) 2008, 2009 Brailcom, o.p.s.
+# This file is distributed under the same license as the Wiking package.
+# Tomas Cerha <cerha@brailcom.org>, 2008
+# 
+msgid "" 
+msgstr "" 
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-06-02 11:23+0200\n"
-"PO-Revision-Date: 2009-06-18 19:46+0100\n"
+"PO-Revision-Date: 2009-06-19 11:25+0200\n"
 "Last-Translator: Zuzana Lamperova <lamperova.zuzana@centrum.cz>\n"
 "Language-Team: Slovak <wiking@lists.freebsoft.org>\n"
 "MIME-Version: 1.0\n"
@@ -88,7 +103,6 @@ msgstr "Prispôsobiť vzhľad portálu."
 msgid "User Management"
 msgstr "Správa užívateľov"
 
-
 #: ../lib/wiking/cms/cms.py:97 ../lib/wiking/cms/cms.py:1794
 msgid "Manage registered users and their privileges."
 msgstr "Správa registrovaných užívateľov a ich oprávnenia."
@@ -113,7 +127,6 @@ msgstr ""
 #: ../lib/wiking/cms/cms.py:899 ../lib/wiking/cms/cms.py:1765
 msgid "Content"
 msgstr "Obsah"
-
 
 #: ../lib/wiking/cms/cms.py:136 ../lib/wiking/cms/cms.py:885
 msgid "Manage available pages and their content."
@@ -1253,9 +1266,8 @@ msgid "All"
 msgstr ""
 
 #: ../lib/wiking/cms/cms.py:2916
-#, python-format
 msgid "%(subject)s"
-msgstr ""
+msgstr "%(subject)s"
 
 #: ../lib/wiking/cms/cms.py:2919
 msgid "Use as a Template"
