@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-06-12 15:54+0200\n"
+"POT-Creation-Date: 2009-06-19 10:17+0200\n"
 "PO-Revision-Date: 2009-06-18 08:30+0100\n"
 "Last-Translator: Jana Pazlarova <JanaPazlarova@seznam.cz>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
@@ -15,45 +15,57 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../lib/wiking/handler.py:95
-#: ../lib/wiking/util.py:190
-msgid "The server was unable to complete your request."
-msgstr "Il server no é stato in grado di finire la Vostra richiesta. "
+#. Translators: This is followed by Wiking link and version number.
+#: ../lib/wiking/application.py:325
+msgid "Powered by"
+msgstr "Gestito da: "
 
-#: ../lib/wiking/handler.py:96
-#: ../lib/wiking/util.py:191
-#, python-format
-msgid "Please inform the server administrator, %(admin)s if the problem persists."
-msgstr "La preghiamo di informare l´amministratore del server%(admin)s se il problema persiste.  "
+#: ../lib/wiking/application.py:363
+msgid "US Government Section 508 Accessibility Guidelines."
+msgstr ""
+"Sezione 508 delle Direttive relative all´accessibiilitá, emanate dal Governo "
+"degli  USA.  "
 
-#: ../lib/wiking/handler.py:98
-#: ../lib/wiking/util.py:193
-msgid "The error message was:"
-msgstr "Messaggio d´errore é stato il seguente:"
+#: ../lib/wiking/application.py:369
+msgid "Accessibility Statement"
+msgstr "Dichiarazione di accessibilita"
+
+#: ../lib/wiking/application.py:374
+msgid "This site conforms to the following standards:"
+msgstr "Questo portale é conforme alle seguenti norme:"
+
+#: ../lib/wiking/application.py:376
+msgid "This site can be viewed in ANY browser."
+msgstr "Questa pagina puo essere visualizzata tramite QUALSIASI  browser. "
+
+#: ../lib/wiking/application.py:377
+msgid "Contact:"
+msgstr "Contatto:"
 
 #: ../lib/wiking/util.py:56
 msgid "Authentication required"
 msgstr "L´operazione richiede un´autenticazione. "
 
-#: ../lib/wiking/util.py:64
-#: ../lib/wiking/util.py:398
+#: ../lib/wiking/util.py:64 ../lib/wiking/util.py:398
 msgid "Your password expired"
 msgstr "Validitá della password scaduta. "
 
 #: ../lib/wiking/util.py:67
-msgid "Your password expired.  Access to the application is now blocked for security reasons until you change your password."
-msgstr "Validitá della Sua pasword é scaduta. L´accesso all´applicazione  sará bloccata per motivi di sicurezza,  finché non sara stato cambiata la pasword."
+msgid ""
+"Your password expired.  Access to the application is now blocked for "
+"security reasons until you change your password."
+msgstr ""
+"Validitá della Sua pasword é scaduta. L´accesso all´applicazione  sará "
+"bloccata per motivi di sicurezza,  finché non sara stato cambiata la pasword."
 
 #. Translators: Login panel link.
-#: ../lib/wiking/util.py:71
-#: ../lib/wiking/util.py:406
+#: ../lib/wiking/util.py:71 ../lib/wiking/util.py:406
 msgid "Change your password"
 msgstr "Cambiare la password"
 
 #. Translators: Login dialog page title (use a noun).
 #. Translators: Login info label (noun) followed by login name and login controls.
-#: ../lib/wiking/util.py:79
-#: ../lib/wiking/util.py:419
+#: ../lib/wiking/util.py:79 ../lib/wiking/util.py:419
 #: ../lib/wiking/util.py:744
 msgid "Login"
 msgstr "Login (connessione) "
@@ -81,11 +93,17 @@ msgstr "Argomenti  della Vostra richiesta non sono validi."
 #: ../lib/wiking/util.py:141
 #, python-format
 msgid "The item '%s' does not exist on this server or cannot be served."
-msgstr " La voce richiesta  '%s non si trova su questo server, oppure non puo essere servita.  "
+msgstr ""
+" La voce richiesta  '%s non si trova su questo server, oppure non puo essere "
+"servita.  "
 
 #: ../lib/wiking/util.py:143
-msgid "If you are sure the web address is correct, but are encountering this error, please send an e-mail to the webmaster."
-msgstr "Se siete sicuri di aver scritto l´indirizzo giusto, ma l´ errore persiste, siete pregati di mandare una email all´amministratore di queste pagine.  "
+msgid ""
+"If you are sure the web address is correct, but are encountering this error, "
+"please send an e-mail to the webmaster."
+msgstr ""
+"Se siete sicuri di aver scritto l´indirizzo giusto, ma l´ errore persiste, "
+"siete pregati di mandare una email all´amministratore di queste pagine.  "
 
 #: ../lib/wiking/util.py:146
 msgid "Thank you"
@@ -102,8 +120,10 @@ msgstr "La voce richiesta esiste sul server, ma non puó essere visualizzata. "
 
 #: ../lib/wiking/util.py:165
 #, python-format
-msgid "The resource '%s' is not available in either of the requested languages."
-msgstr "La voce selezionata  '%s non é disponibile in nessuna delle lingue richieste."
+msgid ""
+"The resource '%s' is not available in either of the requested languages."
+msgstr ""
+"La voce selezionata  '%s non é disponibile in nessuna delle lingue richieste."
 
 #: ../lib/wiking/util.py:167
 msgid "Your browser is configured to accept only the following languages:"
@@ -114,12 +134,33 @@ msgid "The available variants are:"
 msgstr "Le varianti disponibili sono:"
 
 #: ../lib/wiking/util.py:176
-msgid "If you want to accept other languages permanently, setup the language preferences in your browser or contact your system administrator."
-msgstr "Se volete permettere in modo permanente la visualizzazione di documenti in altre lingue, bisogna editare il settaggio delle lingue nel Vostro browser o contattare l´amministratore del Vostro sistema.  "
+msgid ""
+"If you want to accept other languages permanently, setup the language "
+"preferences in your browser or contact your system administrator."
+msgstr ""
+"Se volete permettere in modo permanente la visualizzazione di documenti in "
+"altre lingue, bisogna editare il settaggio delle lingue nel Vostro browser o "
+"contattare l´amministratore del Vostro sistema.  "
 
 #: ../lib/wiking/util.py:187
 msgid "Internal Server Error"
 msgstr "Errore interno del sistema"
+
+#: ../lib/wiking/util.py:190 ../lib/wiking/handler.py:95
+msgid "The server was unable to complete your request."
+msgstr "Il server no é stato in grado di finire la Vostra richiesta. "
+
+#: ../lib/wiking/util.py:191 ../lib/wiking/handler.py:96
+#, python-format
+msgid ""
+"Please inform the server administrator, %(admin)s if the problem persists."
+msgstr ""
+"La preghiamo di informare l´amministratore del server%(admin)s se il "
+"problema persiste.  "
+
+#: ../lib/wiking/util.py:193 ../lib/wiking/handler.py:98
+msgid "The error message was:"
+msgstr "Messaggio d´errore é stato il seguente:"
 
 #: ../lib/wiking/util.py:209
 msgid "Maintenance mode"
@@ -127,7 +168,8 @@ msgstr "Manutenzione del sistema "
 
 #: ../lib/wiking/util.py:212
 msgid "The system is temporarily down for maintenance."
-msgstr "Il sistema é temporaneamente fuori servizio per motivi della manutenzione.  "
+msgstr ""
+"Il sistema é temporaneamente fuori servizio per motivi della manutenzione.  "
 
 #. Translators: Login panel info. '%(date)s' is replaced by a concrete date.
 #: ../lib/wiking/util.py:402
@@ -136,8 +178,7 @@ msgid "Your password expires on %(date)s"
 msgstr "La validita della data  scade %(date)s"
 
 #. Translators: Login panel/dialog registration link.
-#: ../lib/wiking/util.py:411
-#: ../lib/wiking/util.py:778
+#: ../lib/wiking/util.py:411 ../lib/wiking/util.py:778
 msgid "New user registration"
 msgstr "Registrazione del nuovo utente"
 
@@ -192,6 +233,173 @@ msgstr "Log in "
 msgid "Forgot your password?"
 msgstr "Avete dimenticato la Vostra password?"
 
+#: ../lib/wiking/util.py:1346
+#, fuzzy
+msgid "Invalid format"
+msgstr "Connessione non valida!"
+
+#: ../lib/wiking/db.py:40
+msgid "This value already exists.  Enter a unique value."
+msgstr "Questo valore é giá esistente. Impostarel valore unico. "
+
+#: ../lib/wiking/db.py:42
+msgid "Empty value.  This field is mandatory."
+msgstr "Valore vuoto. Questa voce é obbligatoria. "
+
+#: ../lib/wiking/db.py:45
+msgid "New record"
+msgstr "Nuova registrazione"
+
+#: ../lib/wiking/db.py:46
+msgid "Create a new record"
+msgstr "Creare nuova registrazione"
+
+#: ../lib/wiking/db.py:47
+msgid "Edit"
+msgstr "Editare"
+
+#: ../lib/wiking/db.py:48
+msgid "Modify the record"
+msgstr "Modificare la registrazione"
+
+#: ../lib/wiking/db.py:49
+msgid "Remove"
+msgstr "Cancellare"
+
+#: ../lib/wiking/db.py:50
+msgid "Remove the record permanently"
+msgstr "Cancellare la registrazione irreversibile"
+
+#: ../lib/wiking/db.py:51
+msgid "Please, confirm removing the record permanently."
+msgstr "Confermare cancellazione irreversibile della registrazione, per favore"
+
+#: ../lib/wiking/db.py:52
+msgid "Copy"
+msgstr ""
+
+#: ../lib/wiking/db.py:53
+msgid "Create new record initialized by values of this record"
+msgstr ""
+
+#: ../lib/wiking/db.py:54
+msgid "Back to list"
+msgstr "Ritornare alla registrazione. "
+
+#: ../lib/wiking/db.py:55
+msgid "Back to the list of all records"
+msgstr "Ritornare alla lista di tutte le registrazioni."
+
+#: ../lib/wiking/db.py:56
+msgid "New record was successfully inserted."
+msgstr "Nuova registrazione é stata inserita con successo."
+
+#: ../lib/wiking/db.py:57
+msgid "The record was successfully updated."
+msgstr "Nuova registrazione é stata attualizzata con successo. "
+
+#: ../lib/wiking/db.py:58
+msgid "The record was deleted."
+msgstr "Registrazione cancellata. "
+
+#: ../lib/wiking/db.py:237
+msgid "Invalid binding column value."
+msgstr "Valore  della colonna di associazione non é ammissibile. "
+
+#: ../lib/wiking/db.py:288
+msgid "Integrity check failed."
+msgstr "Controllo di integritá dati é fallito."
+
+#: ../lib/wiking/db.py:651
+msgid "This function is temporarily unavailable."
+msgstr "Questa funzione é temporaneamente indisponibile."
+
+#: ../lib/wiking/db.py:921
+msgid "Back"
+msgstr "Ritornare"
+
+#: ../lib/wiking/db.py:1013
+msgid "An RSS channel is available for this section:"
+msgstr "Per questa sezione é disponibile anche canale RSS. "
+
+#: ../lib/wiking/db.py:1017
+msgid "more about RSS"
+msgstr "ulteriori informazioni di RSS"
+
+#: ../lib/wiking/db.py:1093
+msgid "No records."
+msgstr "Nessuna registrazione. "
+
+#: ../lib/wiking/db.py:1100
+msgid "The item was published."
+msgstr "La voce é stata pubblicata. "
+
+#: ../lib/wiking/db.py:1101
+msgid "The item was unpublished."
+msgstr "La voce non é stata pubblicata."
+
+#: ../lib/wiking/db.py:1110
+msgid "Publish"
+msgstr "Pubblicare"
+
+#: ../lib/wiking/db.py:1113
+msgid "Make the item visible to website visitors"
+msgstr "Rendere accessibile la voce per i visitatori del sito web. "
+
+#: ../lib/wiking/db.py:1114
+msgid "Unpublish"
+msgstr "Non pubblicato"
+
+#: ../lib/wiking/db.py:1117
+msgid "Make the item invisible to website visitors"
+msgstr "Rendere la voce inaccessibile per visitatori delle pagine "
+
+#: ../lib/wiking/modules.py:362
+msgid "Enter your login name, please!"
+msgstr "Vi preghiamo di impostare il Vostro nome utente!"
+
+#: ../lib/wiking/modules.py:364
+msgid "Enter your password, please!"
+msgstr "Vi preghiamo di impostare la Vostra password!"
+
+#: ../lib/wiking/modules.py:369
+msgid "Invalid login!"
+msgstr "Connessione non valida!"
+
+#: ../lib/wiking/modules.py:441
+msgid "Searching"
+msgstr "Ricerca "
+
+#: ../lib/wiking/modules.py:442
+msgid "Search results"
+msgstr "Risultati della ricerca "
+
+#: ../lib/wiking/modules.py:443
+msgid "Given search term doesn't contain any searchable term."
+msgstr ""
+"L´espressione ricercata non contiene nessun termine che permetta di eseguire "
+"una ricerca.  "
+
+#: ../lib/wiking/modules.py:447
+msgid "Search words:"
+msgstr "Ricercare le parole :"
+
+#: ../lib/wiking/modules.py:448
+msgid "Search"
+msgstr "Ricercare "
+
+#: ../lib/wiking/modules.py:504
+msgid "Nothing found."
+msgstr "Non é stato trovato niente."
+
+#: ../lib/wiking/modules.py:561
+msgid "The following modules were successfully reloaded:"
+msgstr "Seguenti moduli sono stati riletti con successo: "
+
+#: ../lib/wiking/modules.py:563
+msgid "Reload"
+msgstr "Rileggere"
+
 #: ../lib/wiking/export.py:60
 msgid "Language:"
 msgstr "Lingua:"
@@ -200,15 +408,12 @@ msgstr "Lingua:"
 msgid "Content"
 msgstr "Contenuto"
 
-#: ../lib/wiking/export.py:155
-#: ../lib/wiking/export.py:179
-#: ../lib/wiking/export.py:181
-#: ../lib/wiking/export.py:198
+#: ../lib/wiking/export.py:155 ../lib/wiking/export.py:179
+#: ../lib/wiking/export.py:181 ../lib/wiking/export.py:198
 msgid "Main navigation"
 msgstr "Navigazione principale"
 
-#: ../lib/wiking/export.py:157
-#: ../lib/wiking/export.py:194
+#: ../lib/wiking/export.py:157 ../lib/wiking/export.py:194
 msgid "Local navigation"
 msgstr "Navigazione locale"
 
@@ -249,193 +454,20 @@ msgstr "Avvertimento"
 msgid "Last change: %(date)s, %(user)s"
 msgstr "Ultima modificazione:  %(date)s, %(user)s"
 
-#: ../lib/wiking/db.py:40
-msgid "This value already exists.  Enter a unique value."
-msgstr "Questo valore é giá esistente. Impostarel valore unico. "
-
-#: ../lib/wiking/db.py:42
-msgid "Empty value.  This field is mandatory."
-msgstr "Valore vuoto. Questa voce é obbligatoria. "
-
-#: ../lib/wiking/db.py:45
-msgid "New record"
-msgstr "Nuova registrazione"
-
-#: ../lib/wiking/db.py:46
-msgid "Create a new record"
-msgstr "Creare nuova registrazione"
-
-#: ../lib/wiking/db.py:47
-msgid "Edit"
-msgstr "Editare"
-
-#: ../lib/wiking/db.py:48
-msgid "Modify the record"
-msgstr "Modificare la registrazione"
-
-#: ../lib/wiking/db.py:49
-msgid "Remove"
-msgstr "Cancellare"
-
-#: ../lib/wiking/db.py:50
-msgid "Remove the record permanently"
-msgstr "Cancellare la registrazione irreversibile"
-
-#: ../lib/wiking/db.py:51
-msgid "Please, confirm removing the record permanently."
-msgstr "Confermare cancellazione irreversibile della registrazione, per favore"
-
-#: ../lib/wiking/db.py:52
-msgid "Back to list"
-msgstr "Ritornare alla registrazione. "
-
-#: ../lib/wiking/db.py:53
-msgid "Back to the list of all records"
-msgstr "Ritornare alla lista di tutte le registrazioni."
-
-#: ../lib/wiking/db.py:54
-msgid "New record was successfully inserted."
-msgstr "Nuova registrazione é stata inserita con successo."
-
-#: ../lib/wiking/db.py:55
-msgid "The record was successfully updated."
-msgstr "Nuova registrazione é stata attualizzata con successo. "
-
-#: ../lib/wiking/db.py:56
-msgid "The record was deleted."
-msgstr "Registrazione cancellata. "
-
-#: ../lib/wiking/db.py:234
-msgid "Invalid binding column value."
-msgstr "Valore  della colonna di associazione non é ammissibile. "
-
-#: ../lib/wiking/db.py:285
-msgid "Integrity check failed."
-msgstr "Controllo di integritá dati é fallito."
-
-#: ../lib/wiking/db.py:641
-msgid "This function is temporarily unavailable."
-msgstr "Questa funzione é temporaneamente indisponibile."
-
-#: ../lib/wiking/db.py:900
-msgid "Back"
-msgstr "Ritornare"
-
-#: ../lib/wiking/db.py:992
-msgid "An RSS channel is available for this section:"
-msgstr "Per questa sezione é disponibile anche canale RSS. "
-
-#: ../lib/wiking/db.py:996
-msgid "more about RSS"
-msgstr "ulteriori informazioni di RSS"
-
-#: ../lib/wiking/db.py:1072
-msgid "No records."
-msgstr "Nessuna registrazione. "
-
-#: ../lib/wiking/db.py:1079
-msgid "The item was published."
-msgstr "La voce é stata pubblicata. "
-
-#: ../lib/wiking/db.py:1080
-msgid "The item was unpublished."
-msgstr "La voce non é stata pubblicata."
-
-#: ../lib/wiking/db.py:1089
-msgid "Publish"
-msgstr "Pubblicare"
-
-#: ../lib/wiking/db.py:1092
-msgid "Make the item visible to website visitors"
-msgstr "Rendere accessibile la voce per i visitatori del sito web. "
-
-#: ../lib/wiking/db.py:1093
-msgid "Unpublish"
-msgstr "Non pubblicato"
-
-#: ../lib/wiking/db.py:1096
-msgid "Make the item invisible to website visitors"
-msgstr "Rendere la voce inaccessibile per visitatori delle pagine "
-
-#. Translators: This is followed by Wiking link and version number.
-#: ../lib/wiking/application.py:325
-msgid "Powered by"
-msgstr "Gestito da: "
-
-#: ../lib/wiking/application.py:363
-msgid "US Government Section 508 Accessibility Guidelines."
-msgstr "Sezione 508 delle Direttive relative all´accessibiilitá, emanate dal Governo degli  USA.  "
-
-#: ../lib/wiking/application.py:369
-msgid "Accessibility Statement"
-msgstr "Dichiarazione di accessibilita"
-
-#: ../lib/wiking/application.py:374
-msgid "This site conforms to the following standards:"
-msgstr "Questo portale é conforme alle seguenti norme:"
-
-#: ../lib/wiking/application.py:376
-msgid "This site can be viewed in ANY browser."
-msgstr "Questa pagina puo essere visualizzata tramite QUALSIASI  browser. "
-
-#: ../lib/wiking/application.py:377
-msgid "Contact:"
-msgstr "Contatto:"
-
-#: ../lib/wiking/modules.py:362
-msgid "Enter your login name, please!"
-msgstr "Vi preghiamo di impostare il Vostro nome utente!"
-
-#: ../lib/wiking/modules.py:364
-msgid "Enter your password, please!"
-msgstr "Vi preghiamo di impostare la Vostra password!"
-
-#: ../lib/wiking/modules.py:369
-msgid "Invalid login!"
-msgstr "Connessione non valida!"
-
-#: ../lib/wiking/modules.py:441
-msgid "Searching"
-msgstr "Ricerca "
-
-#: ../lib/wiking/modules.py:442
-msgid "Search results"
-msgstr "Risultati della ricerca "
-
-#: ../lib/wiking/modules.py:443
-msgid "Given search term doesn't contain any searchable term."
-msgstr "L´espressione ricercata non contiene nessun termine che permetta di eseguire una ricerca.  "
-
-#: ../lib/wiking/modules.py:447
-msgid "Search words:"
-msgstr "Ricercare le parole :"
-
-#: ../lib/wiking/modules.py:448
-msgid "Search"
-msgstr "Ricercare "
-
-#: ../lib/wiking/modules.py:504
-msgid "Nothing found."
-msgstr "Non é stato trovato niente."
-
-#: ../lib/wiking/modules.py:561
-msgid "The following modules were successfully reloaded:"
-msgstr "Seguenti moduli sono stati riletti con successo: "
-
-#: ../lib/wiking/modules.py:563
-msgid "Reload"
-msgstr "Rileggere"
-
 #~ msgid "Wiking Management Interface"
 #~ msgstr "Rozhraní správy obsahu Wiking"
+
 #~ msgid "Panels"
 #~ msgstr "Panely"
+
 #~ msgid "not available"
 #~ msgstr "nedostupné"
+
 #~ msgid "List"
 #~ msgstr "Seznam"
+
 #~ msgid "Wiking Help System"
 #~ msgstr "Nápověda systému Wiking"
+
 #~ msgid "Leave the Help System"
 #~ msgstr "Opustit systém nápovědy"
-
