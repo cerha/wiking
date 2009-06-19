@@ -1,4 +1,25 @@
-2009-06-18  Tomas Cerha  <cerha@bob.xx>
+2009-06-19  Tomas Cerha  <cerha@brailcom.org>
+
+	* translations/wiking-cms.cs.po:
+	Reverted last changes made from outdated source.
+
+	* translations/wiking-cms.sk.po:
+	Header fixed.
+	
+2009-06-18  Petr Topiarz  <cerha@brailcom.org>
+
+	* translations/wiking-cms.cs.po: 
+	* translations/wiking-cms.es.po: 
+	* translations/wiking-cms.sk.po: 
+	* translations/wiking.es.po: 
+	* translations/wiking.sk.po: 
+	Updated sk and es translations.
+	
+	* translations/wiking.it.po:
+	* translations/wiking-cms.it.po:
+	New translations.
+	
+2009-06-18  Tomas Cerha  <cerha@brailcom.org>
 
 	* sql/upgrade.10.sql:
 	New file for upgrade from Wiking CMS 0.4.4 to 0.4.5.
@@ -44,7 +65,7 @@
 	* lib/wiking/cms/cms.py:
 	Remove superfluous method EmailSpool.action_insert.
 
-2009-06-16  Tomas Cerha  <cerha@bob.xx>
+2009-06-16  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/cms/cms.py:
 	Allow copying color themes.
@@ -88,7 +109,7 @@
 	* lib/wiking/cms/cms.py:
 	Allow creating new bulk e-mails by copying from old bulk e-mails.
 
-2009-06-16  Tomas Cerha  <cerha@bob.xx>
+2009-06-16  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/util.py: Added documentation on 'Action' specifications.
 
@@ -104,7 +125,7 @@
 	* translations/wiking.sk.po:
 	Translations updated.
 
-2009-06-11  Tomas Cerha  <cerha@bob.xx>
+2009-06-11  Tomas Cerha  <cerha@brailcom.org>
 
 	* resources/css/default.css:
 	Force the found record style to override row styles.
@@ -130,7 +151,7 @@
 	* sql/wiking.sql:
 	New module EmailSpool.
 
-2009-06-09  Tomas Cerha  <cerha@bob.xx>
+2009-06-09  Tomas Cerha  <cerha@brailcom.org>
 
 	* TODO: 
 	Updated.
@@ -138,19 +159,19 @@
 	* lib/wiking/db.py:
 	Fixed request message processing in binding parent redirect.
 
-2009-06-08  Tomas Cerha  <cerha@bob.xx>
+2009-06-08  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/cms/cms.py: 
 	* lib/wiking/db.py:
 	Allow redefinition of binding parent uri.  Avoid `action_list'
 	message arguments.
 
-2009-06-04  Tomas Cerha  <cerha@bob.xx>
+2009-06-04  Tomas Cerha  <cerha@brailcom.org>
 
 	* sql/wiking.sql: 
 	Suppress server notifications during database objects creation.
 
-2009-06-04  Tomas Cerha  <cerha@debian.brailcom.xx>
+2009-06-04  Tomas Cerha  <cerha@brailcom.org>
 
 	* translations/wiking.cs.po: 
 	* translations/wiking.de.po: 
@@ -164,12 +185,12 @@
 	* lib/wiking/util.py:
 	Display different message when the password already expired.
 
-2009-06-03  Tomas Cerha  <cerha@debian.brailcom.xx>
+2009-06-03  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/util.py:
 	Allow cloning existing `Document' instances.
 
-2009-06-02  Tomas Cerha  <cerha@debian.brailcom.xx>
+2009-06-02  Tomas Cerha  <cerha@brailcom.org>
 
 	* translations/wiking-cms.cs.po:
 	* translations/wiking-cms.de.po:
@@ -193,7 +214,7 @@
 	* lib/wiking/util.py:
 	Handle password expiration within authentication procedure automatically.
 
-2009-05-29  Tomas Cerha  <cerha@debian.brailcom.xx>
+2009-05-29  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/modules.py: 
 	* lib/wiking/cms/cms.py: 
@@ -212,7 +233,7 @@
 	* lib/wiking/db.py:
 	Allow dynamic determination of user selectable filters.
 
-2009-05-28  Tomas Cerha  <cerha@debian.brailcom.xx>
+2009-05-28  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/db.py: 
 	Allow dynamic determination of BrowseForm columns.
@@ -306,7 +327,7 @@
 	* lib/wiking/db.py:
 	Don't crash on calls of db functions returning void.
 
-2009-05-14  Tomas Cerha  <cerha@debian.brailcom.xx>
+2009-05-14  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/cms/cms.py: 
 	Handle multiple accounts with one email address in password reminder.
@@ -320,7 +341,7 @@
 	(Users.find_users.record_to_user): Only accept email as a parameter and
 	always return a list.
 
-2009-05-07  Tomas Cerha  <cerha@debian.brailcom.xx>
+2009-05-07  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/db.py: 
 	* lib/wiking/cms/cms.py: 
@@ -348,7 +369,7 @@
 	* lib/wiking/cms/cms.py: 
 	Support for certificates moved to a saparate module and	disabled for now.
 
-2009-05-06  Tomas Cerha  <cerha@debian.brailcom.xx>
+2009-05-06  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/db.py:
 	Add forward argument to distingiush request forwarding caused by
@@ -360,13 +381,13 @@
 	* lib/wiking/request.py: 
 	Docstrings improved.
 
-2009-05-05  Tomas Cerha  <cerha@debian.brailcom.xx>
+2009-05-05  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/export.py: 
 	* lib/wiking/util.py: 
 	Added support for exporting the iframe content.
 
-2009-05-04  Tomas Cerha  <cerha@debian.brailcom.xx>
+2009-05-04  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/db.py:
 	Fixed error in inserted row construction.
@@ -376,7 +397,7 @@
 	* lib/wiking/db.py:
 	Redundant dbconnection storage in PytisModule removed.
 
-2009-05-04  Tomas Cerha  <cerha@debian.brailcom.xx>
+2009-05-04  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/cms/cms.py:
 	Export registration notification message to HTML to prevent URI misinterpretation.
@@ -394,7 +415,7 @@
 	* lib/wiking/db.py:
 	Delay database access initialization in PytisModule.
 
-2009-04-30  Tomas Cerha  <cerha@debian.brailcom.xx>
+2009-04-30  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/db.py: 
 	* lib/wiking/util.py: 
@@ -406,7 +427,7 @@
 	redefinition.  Allow password change to admin without knowledge of
 	the previous password.
 
-2009-04-29  Tomas Cerha  <cerha@debian.brailcom.xx>
+2009-04-29  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/db.py: 
 	Avoid duplicate assignments into one DB column.
@@ -417,7 +438,7 @@
 	* lib/wiking/util.py:
 	Make use of new Pytis support for multiple database connections.
 
-2009-04-24  Tomas Cerha  <cerha@debian.brailcom.xx>
+2009-04-24  Tomas Cerha  <cerha@brailcom.org>
 
 	* translations/wiking-cms.cs.po: 
 	* translations/wiking-cms.de.po: 
@@ -435,7 +456,7 @@
 	* translations/wiking.sk.po:
 	Translations updated.
 
-2009-04-23  Tomas Cerha  <cerha@debian.brailcom.xx>
+2009-04-23  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/cms/cms.py:
 	Use exceptions in registration confirmation error handling.
@@ -448,7 +469,7 @@
 	* lib/wiking/cms/cms.py:
 	Don't crash on non-integer uids in registration confirmation.
 
-2009-04-15  Tomas Cerha  <cerha@debian.brailcom.xx>
+2009-04-15  Tomas Cerha  <cerha@brailcom.org>
 
 	* translations/wiking.cs.po: 
 	Translations updated.
@@ -458,7 +479,7 @@
 	* resources/css/default.css: 
 	Improved export of warning messages.
 
-2009-04-10  Tomas Cerha  <cerha@debian.brailcom.xx>
+2009-04-10  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/util.py:
 	Added support for exporting mail text into HTML (as LCG Structured text).
@@ -470,7 +491,7 @@
 	* lib/wiking/cms/cms.py: 
 	Separate sending the registration code from `_redirect_after_insert()'.
 
-2009-04-07  Tomas Cerha  <cerha@debian.brailcom.xx>
+2009-04-07  Tomas Cerha  <cerha@brailcom.org>
 
 	* resources/css/default.css:
 	Replace `background' by `background-color' when setting just color.
@@ -480,12 +501,12 @@
 	* lib/wiking/util.py:
 	Export request messages in exporter instead of adding special content.
 
-2009-04-06  Tomas Cerha  <cerha@debian.brailcom.xx>
+2009-04-06  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/db.py: 
 	Allow easier overriding of refered row resolution.
 
-2009-04-03  Tomas Cerha  <cerha@debian.brailcom.xx>
+2009-04-03  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/modules.py: 
 	* lib/wiking/request.py: 
@@ -497,7 +518,7 @@
 	* doc/src/devel/devel-faq.en.txt:
 	New FAQ entry: How can I present field content as a link?.
 
-2009-03-30  Tomas Cerha  <cerha@debian.brailcom.xx>
+2009-03-30  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/modules.py: 
 	* lib/wiking/cms/cms.py: 
@@ -508,7 +529,7 @@
 	* doc/src/devel/devel-faq.en.txt:
 	New FAQ entry: How to add an action button that invokes an action of another module.
 
-2009-03-10  Tomas Cerha  <cerha@debian.brailcom.xx>
+2009-03-10  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/modules.py: 
 	Indentation fixed.
@@ -516,7 +537,7 @@
 	* lib/wiking/request.py:
 	Don't fail to unset cookie even if it was not set.
 
-2009-03-06  Tomas Cerha  <cerha@debian.brailcom.xx>
+2009-03-06  Tomas Cerha  <cerha@brailcom.org>
 
 	* TODO: 
 	Updated.
