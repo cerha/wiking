@@ -9,6 +9,9 @@ Version 0.4.5 (not released yet):
 
  * Improved user registration, account confirmation process and user management.
  
+ * Added bulk mailing support to allow sending email to all registered users or
+   to certain user roles (new tab "Services" in WMI).
+ 
  * Panels are now also displayed in WMI in the same form as outside WMI.
 
  * WMI link was moved to the login panel (if enabled).

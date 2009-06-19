@@ -1,5 +1,6 @@
 Core features:
  * Use Post/Redirect/Get (http://en.wikipedia.org/wiki/Post/Redirect/Get)
+ * Make Error 406 message more polite.
  * Handle Computer exceptions
  * Calling 'constraints' of a virtual field
  * The default check() method in base Specification class

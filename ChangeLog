@@ -1,5 +1,11 @@
 2009-06-19  Tomas Cerha  <cerha@brailcom.org>
 
+	* TODO:
+	Updated.
+
+	* NEWS:
+	Updated.
+
 	* resources/scripts/wiking.js:
 	Added support for aria landmarks.
 
