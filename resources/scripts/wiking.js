@@ -93,13 +93,13 @@ function append_menu(items, node, parent) {
    if (node != null) {
       var ul = node.getElementsByTagName('ul')[0];
       if (ul != null) { // && ul.parentNode == node) {
-	 ul.setAttribute('role', 'menu');
+	 //ul.setAttribute('role', 'menu');
 	 for (var i = 0; i < ul.childNodes.length; i++) {
 	    var li = ul.childNodes[i];
 	    if (li.nodeName =='LI') {
 	       var link = li.getElementsByTagName('a')[0];
 	       var item = link;
-	       item.setAttribute('role', 'menuitem');
+	       //item.setAttribute('role', 'menuitem');
 	       //item.setAttribute('tabindex', '-1');
 	       //item.setAttribute('title', link.innerHTML);
 	       var subitems = [];
