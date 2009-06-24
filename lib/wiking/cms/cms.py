@@ -501,8 +501,8 @@ class Session(PytisModule, wiking.Session):
 
 class SessionLog(PytisModule):
     class Spec(Specification):
-        title = _("Session Log")
-        help = _("History of login sessions and unsuccessful login attempts.")
+        title = _("Login History")
+        help = _("History of successful login sessions and unsuccessful login attempts.")
         def fields(self): return (
             Field('log_id'),
             Field('session_id'),
@@ -514,8 +514,10 @@ class SessionLog(PytisModule):
             Field('active', _("Active")),
             Field('ip_address', _("IP address")),
             Field('hostname', _("Hostname"), virtual=True, computer=computer(self._hostname)),
+            # Translators: "User agent" is a generalized name for browser or more exactly the
+            # software which produced the HTTP request.
             Field('user_agent', _("User agent")),
-            Field('referer', _("Referer")))
+            Field('referer', _("HTTP Referer")))
         def _hostname(self, row, ip_address):
             try:
                 return socket.gethostbyaddr(ip_address)[0]
