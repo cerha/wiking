@@ -7,239 +7,13 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-06-19 16:55+0200\n"
+"POT-Creation-Date: 2009-06-24 23:45+0200\n"
 "PO-Revision-Date: 2009-06-18 08:30+0100\n"
 "Last-Translator: Jana Pazlarova <JanaPazlarova@seznam.cz>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-
-#. Translators: This is followed by Wiking link and version number.
-#: ../lib/wiking/application.py:325
-msgid "Powered by"
-msgstr "Gestito da:"
-
-#: ../lib/wiking/application.py:363
-msgid "US Government Section 508 Accessibility Guidelines."
-msgstr ""
-"Sezione 508 delle Direttive relative all´accessibiilitá, emanate dal Governo "
-"degli  USA.  "
-
-#: ../lib/wiking/application.py:369
-msgid "Accessibility Statement"
-msgstr "Dichiarazione di accessibilita"
-
-#: ../lib/wiking/application.py:374
-msgid "This site conforms to the following standards:"
-msgstr "Questo portale é conforme alle seguenti norme:"
-
-#: ../lib/wiking/application.py:376
-msgid "This site can be viewed in ANY browser."
-msgstr "Questa pagina puo essere visualizzata tramite QUALSIASI  browser."
-
-#: ../lib/wiking/application.py:377
-msgid "Contact:"
-msgstr "Contatto:"
-
-#: ../lib/wiking/util.py:56
-msgid "Authentication required"
-msgstr "L´operazione richiede un´autenticazione."
-
-#: ../lib/wiking/util.py:64 ../lib/wiking/util.py:398
-msgid "Your password expired"
-msgstr "Validitá della password scaduta."
-
-#: ../lib/wiking/util.py:67
-msgid ""
-"Your password expired.  Access to the application is now blocked for "
-"security reasons until you change your password."
-msgstr ""
-"Validitá della Sua pasword é scaduta. L´accesso all´applicazione  sará "
-"bloccata per motivi di sicurezza,  finché non sara stato cambiata la pasword."
-
-#. Translators: Login panel link.
-#: ../lib/wiking/util.py:71 ../lib/wiking/util.py:406
-#, fuzzy
-msgid "Change your password"
-msgstr "Cambiare la password"
-
-#. Translators: Login dialog page title (use a noun).
-#. Translators: Login info label (noun) followed by login name and login controls.
-#: ../lib/wiking/util.py:79 ../lib/wiking/util.py:419
-#: ../lib/wiking/util.py:744
-#, fuzzy
-msgid "Login"
-msgstr "Login (connessione) "
-
-#: ../lib/wiking/util.py:85
-#, fuzzy
-msgid "Not Authorized"
-msgstr "Errore di autorizzazione"
-
-#: ../lib/wiking/util.py:88
-msgid "You don't have sufficient privilegs for this action."
-msgstr "Non avete diritti sufficienti per eseguire questa operazione."
-
-#. Translators: '%(code)d' is replaced by error number and '%(name)s' by error title text.
-#: ../lib/wiking/util.py:108
-#, python-format
-msgid "Error %(code)d: %(name)s"
-msgstr "Errore %(code)d: %(name)s"
-
-#: ../lib/wiking/util.py:131
-msgid "Invalid request arguments."
-msgstr "Argomenti  della Vostra richiesta non sono validi."
-
-#. Translators: The word 'item' is intentionaly very generic, since it may mean a page,
-#. image, streaming video, RSS channel or anything else.
-#: ../lib/wiking/util.py:141
-#, python-format
-msgid "The item '%s' does not exist on this server or cannot be served."
-msgstr ""
-" La voce richiesta  '%s non si trova su questo server, oppure non puo essere "
-"servita."
-
-#: ../lib/wiking/util.py:143
-msgid ""
-"If you are sure the web address is correct, but are encountering this error, "
-"please send an e-mail to the webmaster."
-msgstr ""
-"Se siete sicuri di aver scritto l´indirizzo giusto, ma l´ errore persiste, "
-"siete pregati di mandare una email all´amministratore di queste pagine."
-
-#: ../lib/wiking/util.py:146
-msgid "Thank you"
-msgstr "Grazie"
-
-#: ../lib/wiking/util.py:155
-#, python-format
-msgid "The item '%s' is not available."
-msgstr " La voce'  %s ' non é disponibile."
-
-#: ../lib/wiking/util.py:156
-msgid "The item exists on the server, but can not be accessed."
-msgstr "La voce richiesta esiste sul server, ma non puó essere visualizzata."
-
-#: ../lib/wiking/util.py:165
-#, python-format
-msgid ""
-"The resource '%s' is not available in either of the requested languages."
-msgstr ""
-"La voce selezionata  '%s non é disponibile in nessuna delle lingue richieste."
-
-#: ../lib/wiking/util.py:167
-msgid "Your browser is configured to accept only the following languages:"
-msgstr "Il Vostro browser é  configurato per accettare le seguenti lingue:"
-
-#: ../lib/wiking/util.py:172
-msgid "The available variants are:"
-msgstr "Le varianti disponibili sono:"
-
-#: ../lib/wiking/util.py:176
-msgid ""
-"If you want to accept other languages permanently, setup the language "
-"preferences in your browser or contact your system administrator."
-msgstr ""
-"Se volete permettere in modo permanente la visualizzazione di documenti in "
-"altre lingue, bisogna editare il settaggio delle lingue nel Vostro browser o "
-"contattare l´amministratore del Vostro sistema.  "
-
-#: ../lib/wiking/util.py:187
-msgid "Internal Server Error"
-msgstr "Errore interno del sistema"
-
-#: ../lib/wiking/util.py:190 ../lib/wiking/handler.py:95
-msgid "The server was unable to complete your request."
-msgstr "Il server no é stato in grado di finire la Vostra richiesta."
-
-#: ../lib/wiking/util.py:191 ../lib/wiking/handler.py:96
-#, python-format
-msgid ""
-"Please inform the server administrator, %(admin)s if the problem persists."
-msgstr ""
-"La preghiamo di informare l´amministratore del server%(admin)s se il "
-"problema persiste."
-
-#: ../lib/wiking/util.py:193 ../lib/wiking/handler.py:98
-msgid "The error message was:"
-msgstr "Messaggio d´errore é stato il seguente:"
-
-#: ../lib/wiking/util.py:209
-msgid "Maintenance mode"
-msgstr "Manutenzione del sistema"
-
-#: ../lib/wiking/util.py:212
-msgid "The system is temporarily down for maintenance."
-msgstr ""
-"Il sistema é temporaneamente fuori servizio per motivi della manutenzione."
-
-#. Translators: Login panel info. '%(date)s' is replaced by a concrete date.
-#: ../lib/wiking/util.py:402
-#, python-format
-msgid "Your password expires on %(date)s"
-msgstr "La validita della data  scade %(date)s"
-
-#. Translators: Login panel/dialog registration link.
-#: ../lib/wiking/util.py:411 ../lib/wiking/util.py:778
-msgid "New user registration"
-msgstr "Registrazione del nuovo utente"
-
-#: ../lib/wiking/util.py:420
-msgid "Login Panel"
-msgstr "Pannello per la connessione"
-
-#. Translators: Label in front of action buttons.
-#: ../lib/wiking/util.py:679
-msgid "Actions:"
-msgstr "Azioni:"
-
-#: ../lib/wiking/util.py:684
-msgid "Help"
-msgstr "Aiuto"
-
-#: ../lib/wiking/util.py:722
-msgid "Go to your profile"
-msgstr "Visualizzare il profilo dell´utente"
-
-#. Translators: Logout button label - verb in imperative.
-#: ../lib/wiking/util.py:727
-msgid "log out"
-msgstr "sconnettersi"
-
-#. Translators: Login status info.  If logged, the username is displayed instaed.
-#: ../lib/wiking/util.py:730
-msgid "not logged"
-msgstr "non siete connessi "
-
-#. Translators: Login button label - verb in imperative.
-#: ../lib/wiking/util.py:732
-msgid "log in"
-msgstr "connettersi"
-
-#: ../lib/wiking/util.py:766
-msgid "Login name"
-msgstr "Nome utente"
-
-#: ../lib/wiking/util.py:769
-msgid "Password"
-msgstr "Password"
-
-#. Translators: Login button label - verb in imperative.
-#: ../lib/wiking/util.py:775
-msgid "Log in"
-msgstr "Connettersi"
-
-#. Translators: Login dialog link to password change or password reminder (depends
-#. on configuration).
-#: ../lib/wiking/util.py:781
-msgid "Forgot your password?"
-msgstr "Avete dimenticato la Vostra password?"
-
-#: ../lib/wiking/util.py:1346
-#, fuzzy
-msgid "Invalid format"
-msgstr "Connessione non valida!"
 
 #: ../lib/wiking/db.py:40
 msgid "This value already exists.  Enter a unique value."
@@ -358,51 +132,204 @@ msgstr "Non pubblicato"
 msgid "Make the item invisible to website visitors"
 msgstr "Rendere la voce inaccessibile per visitatori delle pagine"
 
-#: ../lib/wiking/modules.py:362
-msgid "Enter your login name, please!"
-msgstr "Vi preghiamo di impostare il Vostro nome utente!"
+#: ../lib/wiking/handler.py:95 ../lib/wiking/util.py:190
+msgid "The server was unable to complete your request."
+msgstr "Il server no é stato in grado di finire la Vostra richiesta."
 
-#: ../lib/wiking/modules.py:364
-msgid "Enter your password, please!"
-msgstr "Vi preghiamo di impostare la Vostra password!"
-
-#: ../lib/wiking/modules.py:369
-msgid "Invalid login!"
-msgstr "Connessione non valida!"
-
-#: ../lib/wiking/modules.py:441
-msgid "Searching"
-msgstr "Ricerca "
-
-#: ../lib/wiking/modules.py:442
-msgid "Search results"
-msgstr "Risultati della ricerca"
-
-#: ../lib/wiking/modules.py:443
-msgid "Given search term doesn't contain any searchable term."
+#: ../lib/wiking/handler.py:96 ../lib/wiking/util.py:191
+#, python-format
+msgid ""
+"Please inform the server administrator, %(admin)s if the problem persists."
 msgstr ""
-"L´espressione ricercata non contiene nessun termine che permetta di eseguire "
-"una ricerca."
+"La preghiamo di informare l´amministratore del server%(admin)s se il "
+"problema persiste."
 
-#: ../lib/wiking/modules.py:447
-msgid "Search words:"
-msgstr "Ricercare le parole:"
+#: ../lib/wiking/handler.py:98 ../lib/wiking/util.py:193
+msgid "The error message was:"
+msgstr "Messaggio d´errore é stato il seguente:"
 
-#: ../lib/wiking/modules.py:448
-msgid "Search"
-msgstr "Ricercare"
+#: ../lib/wiking/util.py:56
+msgid "Authentication required"
+msgstr "L´operazione richiede un´autenticazione."
 
-#: ../lib/wiking/modules.py:504
-msgid "Nothing found."
-msgstr "Non é stato trovato niente."
+#: ../lib/wiking/util.py:64 ../lib/wiking/util.py:398
+msgid "Your password expired"
+msgstr "Validitá della password scaduta."
 
-#: ../lib/wiking/modules.py:561
-msgid "The following modules were successfully reloaded:"
-msgstr "Seguenti moduli sono stati riletti con successo:"
+#: ../lib/wiking/util.py:67
+msgid ""
+"Your password expired.  Access to the application is now blocked for "
+"security reasons until you change your password."
+msgstr ""
+"Validitá della Sua pasword é scaduta. L´accesso all´applicazione  sará "
+"bloccata per motivi di sicurezza,  finché non sara stato cambiata la pasword."
 
-#: ../lib/wiking/modules.py:563
-msgid "Reload"
-msgstr "Rileggere"
+#. Translators: Login panel link.
+#: ../lib/wiking/util.py:71 ../lib/wiking/util.py:406
+#, fuzzy
+msgid "Change your password"
+msgstr "Cambiare la password"
+
+#. Translators: Login dialog page title (use a noun).
+#. Translators: Login info label (noun) followed by login name and login controls.
+#: ../lib/wiking/util.py:79 ../lib/wiking/util.py:419
+#: ../lib/wiking/util.py:744
+#, fuzzy
+msgid "Login"
+msgstr "Login (connessione) "
+
+#: ../lib/wiking/util.py:85
+#, fuzzy
+msgid "Not Authorized"
+msgstr "Errore di autorizzazione"
+
+#: ../lib/wiking/util.py:88
+msgid "You don't have sufficient privilegs for this action."
+msgstr "Non avete diritti sufficienti per eseguire questa operazione."
+
+#. Translators: '%(code)d' is replaced by error number and '%(name)s' by error title text.
+#: ../lib/wiking/util.py:108
+#, python-format
+msgid "Error %(code)d: %(name)s"
+msgstr "Errore %(code)d: %(name)s"
+
+#: ../lib/wiking/util.py:131
+msgid "Invalid request arguments."
+msgstr "Argomenti  della Vostra richiesta non sono validi."
+
+#. Translators: The word 'item' is intentionaly very generic, since it may mean a page,
+#. image, streaming video, RSS channel or anything else.
+#: ../lib/wiking/util.py:141
+#, python-format
+msgid "The item '%s' does not exist on this server or cannot be served."
+msgstr ""
+" La voce richiesta  '%s non si trova su questo server, oppure non puo essere "
+"servita."
+
+#: ../lib/wiking/util.py:143
+msgid ""
+"If you are sure the web address is correct, but are encountering this error, "
+"please send an e-mail to the webmaster."
+msgstr ""
+"Se siete sicuri di aver scritto l´indirizzo giusto, ma l´ errore persiste, "
+"siete pregati di mandare una email all´amministratore di queste pagine."
+
+#: ../lib/wiking/util.py:146
+msgid "Thank you"
+msgstr "Grazie"
+
+#: ../lib/wiking/util.py:155
+#, python-format
+msgid "The item '%s' is not available."
+msgstr " La voce'  %s ' non é disponibile."
+
+#: ../lib/wiking/util.py:156
+msgid "The item exists on the server, but can not be accessed."
+msgstr "La voce richiesta esiste sul server, ma non puó essere visualizzata."
+
+#: ../lib/wiking/util.py:165
+#, python-format
+msgid ""
+"The resource '%s' is not available in either of the requested languages."
+msgstr ""
+"La voce selezionata  '%s non é disponibile in nessuna delle lingue richieste."
+
+#: ../lib/wiking/util.py:167
+msgid "Your browser is configured to accept only the following languages:"
+msgstr "Il Vostro browser é  configurato per accettare le seguenti lingue:"
+
+#: ../lib/wiking/util.py:172
+msgid "The available variants are:"
+msgstr "Le varianti disponibili sono:"
+
+#: ../lib/wiking/util.py:176
+msgid ""
+"If you want to accept other languages permanently, setup the language "
+"preferences in your browser or contact your system administrator."
+msgstr ""
+"Se volete permettere in modo permanente la visualizzazione di documenti in "
+"altre lingue, bisogna editare il settaggio delle lingue nel Vostro browser o "
+"contattare l´amministratore del Vostro sistema.  "
+
+#: ../lib/wiking/util.py:187
+msgid "Internal Server Error"
+msgstr "Errore interno del sistema"
+
+#: ../lib/wiking/util.py:209
+msgid "Maintenance mode"
+msgstr "Manutenzione del sistema"
+
+#: ../lib/wiking/util.py:212
+msgid "The system is temporarily down for maintenance."
+msgstr ""
+"Il sistema é temporaneamente fuori servizio per motivi della manutenzione."
+
+#. Translators: Login panel info. '%(date)s' is replaced by a concrete date.
+#: ../lib/wiking/util.py:402
+#, python-format
+msgid "Your password expires on %(date)s"
+msgstr "La validita della data  scade %(date)s"
+
+#. Translators: Login panel/dialog registration link.
+#: ../lib/wiking/util.py:411 ../lib/wiking/util.py:778
+msgid "New user registration"
+msgstr "Registrazione del nuovo utente"
+
+#: ../lib/wiking/util.py:420
+msgid "Login Panel"
+msgstr "Pannello per la connessione"
+
+#. Translators: Label in front of action buttons.
+#: ../lib/wiking/util.py:679
+msgid "Actions:"
+msgstr "Azioni:"
+
+#: ../lib/wiking/util.py:684
+msgid "Help"
+msgstr "Aiuto"
+
+#: ../lib/wiking/util.py:722
+msgid "Go to your profile"
+msgstr "Visualizzare il profilo dell´utente"
+
+#. Translators: Logout button label - verb in imperative.
+#: ../lib/wiking/util.py:727
+msgid "log out"
+msgstr "sconnettersi"
+
+#. Translators: Login status info.  If logged, the username is displayed instaed.
+#: ../lib/wiking/util.py:730
+msgid "not logged"
+msgstr "non siete connessi "
+
+#. Translators: Login button label - verb in imperative.
+#: ../lib/wiking/util.py:732
+msgid "log in"
+msgstr "connettersi"
+
+#: ../lib/wiking/util.py:766
+msgid "Login name"
+msgstr "Nome utente"
+
+#: ../lib/wiking/util.py:769
+msgid "Password"
+msgstr "Password"
+
+#. Translators: Login button label - verb in imperative.
+#: ../lib/wiking/util.py:775
+msgid "Log in"
+msgstr "Connettersi"
+
+#. Translators: Login dialog link to password change or password reminder (depends
+#. on configuration).
+#: ../lib/wiking/util.py:781
+msgid "Forgot your password?"
+msgstr "Avete dimenticato la Vostra password?"
+
+#: ../lib/wiking/util.py:1346
+#, fuzzy
+msgid "Invalid format"
+msgstr "Connessione non valida!"
 
 #: ../lib/wiking/export.py:61
 msgid "Page heading"
@@ -468,3 +395,76 @@ msgstr "Avvertimento"
 #, python-format
 msgid "Last change: %(date)s, %(user)s"
 msgstr "Ultima modificazione:  %(date)s, %(user)s"
+
+#: ../lib/wiking/modules.py:362
+msgid "Enter your login name, please!"
+msgstr "Vi preghiamo di impostare il Vostro nome utente!"
+
+#: ../lib/wiking/modules.py:364
+msgid "Enter your password, please!"
+msgstr "Vi preghiamo di impostare la Vostra password!"
+
+#: ../lib/wiking/modules.py:369
+msgid "Invalid login!"
+msgstr "Connessione non valida!"
+
+#: ../lib/wiking/modules.py:454
+msgid "Searching"
+msgstr "Ricerca "
+
+#: ../lib/wiking/modules.py:455
+msgid "Search results"
+msgstr "Risultati della ricerca"
+
+#: ../lib/wiking/modules.py:456
+msgid "Given search term doesn't contain any searchable term."
+msgstr ""
+"L´espressione ricercata non contiene nessun termine che permetta di eseguire "
+"una ricerca."
+
+#: ../lib/wiking/modules.py:460
+msgid "Search words:"
+msgstr "Ricercare le parole:"
+
+#: ../lib/wiking/modules.py:461
+msgid "Search"
+msgstr "Ricercare"
+
+#: ../lib/wiking/modules.py:517
+msgid "Nothing found."
+msgstr "Non é stato trovato niente."
+
+#: ../lib/wiking/modules.py:574
+msgid "The following modules were successfully reloaded:"
+msgstr "Seguenti moduli sono stati riletti con successo:"
+
+#: ../lib/wiking/modules.py:576
+msgid "Reload"
+msgstr "Rileggere"
+
+#. Translators: This is followed by Wiking link and version number.
+#: ../lib/wiking/application.py:325
+msgid "Powered by"
+msgstr "Gestito da:"
+
+#: ../lib/wiking/application.py:363
+msgid "US Government Section 508 Accessibility Guidelines."
+msgstr ""
+"Sezione 508 delle Direttive relative all´accessibiilitá, emanate dal Governo "
+"degli  USA.  "
+
+#: ../lib/wiking/application.py:369
+msgid "Accessibility Statement"
+msgstr "Dichiarazione di accessibilita"
+
+#: ../lib/wiking/application.py:374
+msgid "This site conforms to the following standards:"
+msgstr "Questo portale é conforme alle seguenti norme:"
+
+#: ../lib/wiking/application.py:376
+msgid "This site can be viewed in ANY browser."
+msgstr "Questa pagina puo essere visualizzata tramite QUALSIASI  browser."
+
+#: ../lib/wiking/application.py:377
+msgid "Contact:"
+msgstr "Contatto:"

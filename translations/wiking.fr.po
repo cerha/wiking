@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-06-19 13:55+0200\n"
+"POT-Creation-Date: 2009-06-24 23:45+0200\n"
 "PO-Revision-Date: 2008-10-14 10:38+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: French <wiking@lists.freebsoft.org>\n"
@@ -389,35 +389,35 @@ msgstr ""
 msgid "Invalid login!"
 msgstr ""
 
-#: ../lib/wiking/modules.py:441
+#: ../lib/wiking/modules.py:454
 msgid "Searching"
 msgstr ""
 
-#: ../lib/wiking/modules.py:442
+#: ../lib/wiking/modules.py:455
 msgid "Search results"
 msgstr ""
 
-#: ../lib/wiking/modules.py:443
+#: ../lib/wiking/modules.py:456
 msgid "Given search term doesn't contain any searchable term."
 msgstr ""
 
-#: ../lib/wiking/modules.py:447
+#: ../lib/wiking/modules.py:460
 msgid "Search words:"
 msgstr ""
 
-#: ../lib/wiking/modules.py:448
+#: ../lib/wiking/modules.py:461
 msgid "Search"
 msgstr ""
 
-#: ../lib/wiking/modules.py:504
+#: ../lib/wiking/modules.py:517
 msgid "Nothing found."
 msgstr ""
 
-#: ../lib/wiking/modules.py:561
+#: ../lib/wiking/modules.py:574
 msgid "The following modules were successfully reloaded:"
 msgstr ""
 
-#: ../lib/wiking/modules.py:563
+#: ../lib/wiking/modules.py:576
 msgid "Reload"
 msgstr ""
 

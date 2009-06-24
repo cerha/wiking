@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-06-19 13:55+0200\n"
+"POT-Creation-Date: 2009-06-24 23:45+0200\n"
 "PO-Revision-Date: 2009-06-19 13:57+0200\n"
 "Last-Translator: Tomas Cerha <cerha@brailcom.org>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
@@ -400,37 +400,37 @@ msgstr "Zadejte, prosím, vaše heslo!"
 msgid "Invalid login!"
 msgstr "Neplatné přihlášení!"
 
-#: ../lib/wiking/modules.py:441
+#: ../lib/wiking/modules.py:454
 msgid "Searching"
 msgstr "Vyhledávání"
 
-#: ../lib/wiking/modules.py:442
+#: ../lib/wiking/modules.py:455
 msgid "Search results"
 msgstr "Výsledky vyhledávání"
 
-#: ../lib/wiking/modules.py:443
+#: ../lib/wiking/modules.py:456
 msgid "Given search term doesn't contain any searchable term."
 msgstr ""
 "Zadaný vyhledávací výraz neobsahuje nic, podle čeho by bylo možno vyhledání "
 "provést."
 
-#: ../lib/wiking/modules.py:447
+#: ../lib/wiking/modules.py:460
 msgid "Search words:"
 msgstr "Vyhledat slova:"
 
-#: ../lib/wiking/modules.py:448
+#: ../lib/wiking/modules.py:461
 msgid "Search"
 msgstr "Vyhledat"
 
-#: ../lib/wiking/modules.py:504
+#: ../lib/wiking/modules.py:517
 msgid "Nothing found."
 msgstr "Nic nebylo nalezeno."
 
-#: ../lib/wiking/modules.py:561
+#: ../lib/wiking/modules.py:574
 msgid "The following modules were successfully reloaded:"
 msgstr "Následující moduly byly úspěšně načteny znovu:"
 
-#: ../lib/wiking/modules.py:563
+#: ../lib/wiking/modules.py:576
 msgid "Reload"
 msgstr "Načíst znovu"
 
