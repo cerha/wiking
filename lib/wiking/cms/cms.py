@@ -462,38 +462,89 @@ class CMSExtensionModule(CMSModule):
 
     
 class Session(PytisModule, wiking.Session):
-    """Implement Wiking session management by storing session ids in database.
-
-    This module is required by the 'CookieAuthentication' Wiking module.
-    
-    """
+    """Implement Wiking session management by storing session information in database."""
     class Spec(Specification):
-        fields = [Field(_id) for _id in ('session_id', 'login', 'key', 'expire')]
+        fields = [Field(_id) for _id in ('session_id', 'uid', 'session_key', 'last_access')]
 
     def init(self, req, user):
         # Delete all expired records first...
-        self._data.delete_many(pd.AND(pd.EQ('login', pd.Value(pd.String(), user.login())),
-                                      pd.LT('expire', pd.Value(pd.DateTime(),
-                                                               mx.DateTime.now().gmtime()))))
+        data = self._data
+        now = mx.DateTime.now().gmtime()
+        expiration = mx.DateTime.TimeDelta(hours=cfg.session_expiration)
+        data.delete_many(pd.LE('last_access', pd.Value(pd.DateTime(), now - expiration)))
         session_key = self._new_session_key()
-        row = self._data.make_row(login=user.login(), key=session_key, expire=self._expiration())
-        self._data.insert(row)
+        row, success = data.insert(data.make_row(uid=user.uid(),
+                                                 session_key=session_key,
+                                                 last_access=now))
+        self._module('SessionLog').log(req, now, row['session_id'].value(),
+                                       user.uid(), user.login())
         return session_key
         
-    def check(self, req, user, key):
-        row = self._data.get_row(login=user.login(), key=key)
-        if row and not self._expired(row['expire'].value()):
-            self._record(req, row).update(expire=self._expiration())
-            return True
-        else:
-            return False
-
-    def close(self, req, user, key):
-        row = self._data.get_row(login=user.login(), key=key)
+    def failure(self, req, user, login):
+        self._module('SessionLog').log(req, mx.DateTime.now().gmtime(), None,
+                                       user and user.uid(), login)
+        
+    def check(self, req, user, session_key):
+        row = self._data.get_row(uid=user.uid(), session_key=session_key)
         if row:
-            self._delete(self._record(req, row))
+            now = mx.DateTime.now().gmtime()
+            expiration = mx.DateTime.TimeDelta(hours=cfg.session_expiration)
+            if row['last_access'].value() > now - expiration:
+                self._data.update((row['session_id'],), self._data.make_row(last_access=now))
+                return True
+        return False
+
+    def close(self, req, user, session_key):
+        self._data.delete_many(pd.AND(pd.EQ('uid', pd.Value(pd.Integer(), user.uid())),
+                                      pd.EQ('session_key', pd.Value(pd.DateTime(), session_key))))
             
 
+class SessionLog(PytisModule):
+    class Spec(Specification):
+        title = _("Session Log")
+        help = _("History of login sessions and unsuccessful login attempts.")
+        def fields(self): return (
+            Field('log_id'),
+            Field('session_id'),
+            Field('uid', _('User'), codebook='Users'),
+            Field('login', _("Login")),
+            Field('success', _("Success")),
+            Field('start_time', _("Start time"), type=DateTime(exact=True, not_null=True)),
+            Field('duration', _("Duration"), type=Time(exact=True)),
+            Field('active', _("Active")),
+            Field('ip_address', _("IP address")),
+            Field('hostname', _("Hostname"), virtual=True, computer=computer(self._hostname)),
+            Field('user_agent', _("User agent")),
+            Field('referer', _("Referer")))
+        def _hostname(self, row, ip_address):
+            try:
+                return socket.gethostbyaddr(ip_address)[0]
+            except:
+                return None # _("Unknown")
+        def row_style(self, row):
+            if row['success'].value():
+                return None
+            else:
+                return pp.Style(foreground='#f00')
+        layout = ('start_time', 'duration', 'active', 'success', 'uid', 'login', 'ip_address',
+                  'hostname', 'user_agent', 'referer')
+        columns = ('start_time', 'duration', 'active', 'success', 'uid', 'login', 'ip_address')
+        sorting = (('start_time', DESC),)
+        
+    def log(self, req, time, session_id, uid, login):
+        row = self._data.make_row(session_id=session_id, uid=uid, login=login,
+                                  success=session_id is not None, start_time=time,
+                                  ip_address=req.header('X-Forwarded-For') or req.remote_host(),
+                                  referer=req.header('Referer'),
+                                  user_agent=req.header('User-Agent'))
+        self._data.insert(row)
+    WMI_SECTION = WikingManagementInterface.SECTION_USERS
+    WMI_ORDER = 1000
+    RIGHTS_view = (Roles.ADMIN,)
+    RIGHTS_list = (Roles.ADMIN,)
+        
+
+            
 class Config(CMSModule):
     """Site specific configuration provider.
 
@@ -706,7 +757,7 @@ class Panels(CMSModule, Publishable):
                 content = tuple(module.panelize(req, lang, row['size'].value(),
                                                 relation=binding and (binding, row)))
                 if module.has_channel():
-                    uri = '/'+'.'.join((row['identifier'].value(), req.prefered_language(), 'rss'))
+                    uri = '/'+'.'.join((row['identifier'].value(), lang, 'rss'))
                     channel = Channel(row['mtitle'].value(), uri)
             if row['content'].value():
                 content += tuple(parser.parse(row['content'].value()))
@@ -1782,13 +1833,6 @@ class Styles(CMSModule):
 
 
 class Users(CMSModule):
-    """Manage user accounts through a Pytis data object.
-
-    This module is used by the Wiking CMS application to retrieve the login
-    information.
-    
-    """
-
     class Spec(Specification):
         title = _("Users")
         help = _("Manage registered users and their privileges.")

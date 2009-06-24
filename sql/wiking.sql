@@ -39,7 +39,7 @@ create table users (
 	lang char(2) references languages(lang),
         regexpire timestamp,
         regcode char(16),
-        certauth boolean not null default 'false',
+        certauth boolean not null default false,
         organization text, -- free form field just for registration
         organization_id int references organizations
 );
@@ -48,11 +48,53 @@ set default current_timestamp(0) at time zone 'GMT';
 
 create table session (
        session_id serial primary key,
-       login varchar(32) not null,
-       key text,
-       expire timestamp,
-       unique (login, key)
+       uid int not null references users on delete cascade,
+       session_key text not null,
+       last_access timestamp,
+       unique (uid, sesion_key)
 );
+
+create table _session_log (
+       log_id serial primary key,
+       session_id int references session on delete set null,
+       uid int references users on delete cascade, -- may be null for invalid logins
+       login varchar(32) not null, -- usefull when uid is null or login changes
+       success bool not null,
+       start_time timestamp not null,
+       end_time timestamp,
+       ip_address text not null,
+       user_agent text,
+       referer text
+);
+
+create or replace rule session_delete as on delete to session do (
+       update _session_log set end_time=old.last_access WHERE session_id=old.session_id;
+);
+
+create view session_log as select 
+       l.log_id,
+       l.session_id,
+       l.uid,
+       l.login,
+       l.success,
+       s.session_id is not null and age(s.last_access) < '1 hour' as active,
+       l.start_time,
+       coalesce(l.end_time, s.last_access) - l.start_time as duration,
+       l.ip_address,
+       l.user_agent,
+       l.referer
+from _session_log l left outer join session s using (session_id);
+
+create or replace rule session_log_insert as
+  on insert to session_log do instead (
+     insert into _session_log (session_id, uid, login, success, 
+     	    	 	       start_time, ip_address, user_agent, referer)
+            values (new.session_id, new.uid, new.login, new.success, 
+	    	    new.start_time, new.ip_address, new.user_agent, new.referer)
+            returning log_id, session_id, uid, login, success, NULL::boolean,
+	    	      start_time, NULL::interval, ip_address, user_agent, referer;
+);
+
 
 -------------------------------------------------------------------------------
 
@@ -61,7 +103,7 @@ create table _mapping (
 	identifier varchar(32) unique not null,
 	parent integer references _mapping,
 	modname text,
-	private boolean not null default 'FALSE',
+	private boolean not null default false,
 	owner int references users,
 	hidden boolean not null,
 	ord int not null,
@@ -85,7 +127,7 @@ create or replace view mapping as select * from _mapping;
 create table _pages (
        mapping_id integer not null references _mapping on delete cascade,
        lang char(2) not null references languages(lang),
-       published boolean not null default 'TRUE',
+       published boolean not null default true,
        title text not null,
        description text,
        content text,
@@ -99,7 +141,7 @@ create or replace view pages as
 select m.mapping_id ||'.'|| l.lang as page_id, l.lang, 
        m.mapping_id, m.identifier, m.parent, m.modname, 
        m.private, m.owner, m.hidden, m.ord, m.tree_order,
-       coalesce(p.published, 'FALSE') as published,
+       coalesce(p.published, false) as published,
        coalesce(p.title, m.identifier) as title_or_identifier, 
        p.title, p.description, p.content, p._title, p._description, p._content
 from _mapping m cross join languages l
@@ -117,7 +159,7 @@ create or replace rule pages_insert as
      select (select mapping_id from _mapping where identifier=new.identifier),
             new.lang, new.published, 
             new.title, new.description, new.content, new._title, new._description, new._content
-     RETURNING mapping_id ||'.'|| lang, 
+     returning mapping_id ||'.'|| lang, 
        lang, mapping_id, null::varchar(32), null::int, null::text, null::boolean, null::int,
        null::boolean, null::int, null::text, published, title, title, description, content, _title,
        _description, _content
@@ -169,7 +211,7 @@ create table _attachments (
        filename varchar(64) not null,
        mime_type text not null,
        bytesize text not null,
-       listed boolean not null default 'TRUE',
+       listed boolean not null default true,
        "timestamp" timestamp not null default now(),
        unique (mapping_id, filename)
 );
@@ -213,7 +255,7 @@ create or replace rule attachments_insert as
     insert into _attachments (attachment_id, mapping_id, filename, mime_type, bytesize, listed)
            VALUES (new.attachment_id, new.mapping_id, new.filename,
                    new.mime_type, new.bytesize, new.listed)
-           RETURNING
+           returning
              attachment_id ||'.'|| (select max(lang) from _attachment_descr
                                     where attachment_id=attachment_id),  NULL::char(2),
              attachment_id, mapping_id, filename, mime_type, bytesize, listed, "timestamp",
@@ -289,7 +331,7 @@ create table _panels (
 	size int,
 	content text,
 	_content text,
-	published boolean not null default 'FALSE'
+	published boolean not null default false
 );
 
 create or replace view panels as 
@@ -332,7 +374,7 @@ create or replace rule panels_delete as
 create table stylesheets (
 	stylesheet_id serial primary key,
 	identifier varchar(32) UNIQUE not null,
-	active boolean not null default 'TRUE',
+	active boolean not null default true,
 	description text,
 	content text
 );
@@ -475,7 +517,7 @@ create table email_spool (
        content text, -- body of the e-mail
        date timestamp default now (), -- time of insertion
        pid int, -- PID of the process currently sending the mails
-       finished boolean default 'FALSE' -- set TRUE after the mail was successfully sent
+       finished boolean default false -- set TRUE after the mail was successfully sent
 );
 
 -------------------------------------------------------------------------------
@@ -484,11 +526,11 @@ create table config (
         config_id int primary key default 0 check (config_id = 0),
         site_title text not null,
         site_subtitle text,
-        allow_login_panel boolean not null default 'TRUE',
-        allow_registration boolean not null default 'TRUE',
-        login_is_email boolean not null default 'FALSE',
+        allow_login_panel boolean not null default true,
+        allow_registration boolean not null default true,
+        login_is_email boolean not null default false,
         registration_expiration int,
-        force_https_login boolean not null default 'FALSE',
+        force_https_login boolean not null default false,
         https_port int,
         smtp_server text,
         webmaster_address text,
@@ -497,7 +539,7 @@ create table config (
         upload_limit int,
         session_expiration int,
 	default_language char(2) references languages(lang),
-        certificate_authentication boolean not null default 'FALSE',
+        certificate_authentication boolean not null default false,
         certificate_expiration int,
         theme_id integer references themes
 );
@@ -519,7 +561,7 @@ create table cacertificates (
        issuer text not null,  -- CN, i.e. the authority
        valid_from timestamp not null,
        valid_until timestamp not null,
-       trusted boolean default 'FALSE'
+       trusted boolean default false
 );
 
 create table certificates (
@@ -532,7 +574,7 @@ create table certificates (
        issuer text not null,
        valid_from timestamp not null,
        valid_until timestamp not null,
-       trusted boolean default 'FALSE',
+       trusted boolean default false,
        uid int references users not null,
        purpose int not null -- 0=none, 1=authentication, 2=signing, 3=1+2
 );

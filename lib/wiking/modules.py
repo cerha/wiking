@@ -406,6 +406,13 @@ class CookieAuthentication(object):
 
     
 class Session(Module):
+    """Session management module abstract interface.
+
+    The 'Session' module is required by 'CookieAuthentication' module.  The application must
+    implement the methods 'init()', 'check()' and 'close()' to store session information between
+    requests.
+    
+    """
     _SESSION_KEY_LENGTH = 32
     """Size of session key in *bytes* (the length of the string representation is double)."""
 
@@ -415,24 +422,30 @@ class Session(Module):
         #    import random
         #    return hex(random.randint(0, pow(256, self._SESSION_KEY_LENGTH)))[2:]
     
-    def _expiration(self):
-        # TODO: Using mx.Datetime here and `datetime' for password expiration (above) is
-        # inconsistent.  Move this to `datetime' too?
-        return mx.DateTime.now().gmtime() + mx.DateTime.TimeDelta(hours=cfg.session_expiration)
-
-    def _expired(self, time):
-        return time <= mx.DateTime.now().gmtime()
-    
     def init(self, req, user):
+        """Begin new session for given user ('User' instance).
+
+        The method is responsible for generating new session key and storing it to a persistent
+        storage to allow later checking during upcoming requests.  The method '_new_session_key()'
+        may be used to generate a new session key.
+
+        
+        Returns new session key as a string to be sent to the user's browser as a cookie used for
+        authentication during next requests.
+
+        """
         return None
         
     def failure(self, req, user, login):
+        """Store information about unsuccessful login attempt (optional)."""
         return None
         
     def check(self, req, user, session_key):
+        """Return true if session_key is valid for an active session of given user."""
         return False
 
     def close(self, req, user, session_key):
+        """Remove persistent session information and clean-up after user logged out."""
         pass
     
 
