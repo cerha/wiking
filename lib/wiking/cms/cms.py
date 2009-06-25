@@ -1924,6 +1924,9 @@ class Users(CMSModule):
         @classmethod
         def _roles(cls, row):
             return cls._ROLE_DICT[row['role'].value()][1]
+        def bindings(self):
+            return (Binding(_("Login History"), 'SessionLog', 'uid', id='login-history',
+                            enabled=lambda r: r.req().check_roles(Roles.ADMIN)),)
         columns = ('fullname', 'nickname', 'email', 'role', 'since')
         sorting = (('surname', ASC), ('firstname', ASC))
         layout = () # Force specific layout definition for each action.
