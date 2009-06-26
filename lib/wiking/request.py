@@ -140,7 +140,18 @@ class Request(pytis.web.Request):
         return self._uri
         
     def set_param(self, name, value):
-        self._params[name] = value
+        """Set given request parameter value.
+
+        Arguments:
+          name -- parameter name as a string.
+          value -- unicode value to set or None to remove the parameter.
+
+        """
+        if value is None:
+            if req.has_param(name):
+                del self._params[name]
+        else:
+            self._params[name] = value
         
     def params(self):
         return self._params.keys()

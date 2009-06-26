@@ -1,3 +1,8 @@
+2009-06-26  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/request.py:
+	Interpret setting request param value to None as removing the param.
+
 2009-06-25  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/cms/cms.py:
