@@ -209,20 +209,30 @@ class Stylesheets(Module, RequestHandler):
         else:
             raise NotFound()
 
-    def _substitute(self, data):
-        theme = cfg.theme
+    def _theme(self, req):
+        """Return the color theme to be used for stylesheet color substitution.
+
+        Returns cfg.theme by default but may be overriden to select the current theme based on some
+        application specific logic (eg. according to user's preferences, etc.).
+        
+        """
+        return cfg.theme
+
+    def _substitute(self, stylesheet, theme):
         def subst(match):
             name, key = match.groups()
             value = theme[name]
             if key:
                 value = value[key]
             return value
-        return self._MATCHER.sub(subst, data)
+        return self._MATCHER.sub(subst, stylesheet)
 
     def _handle(self, req):
         """Serve the stylesheet from a file."""
         if len(req.unresolved_path) >= 1:
-            return ('text/css', self._substitute(self._stylesheet(req.unresolved_path)))
+            theme = self._theme(req)
+            stylesheet = self._stylesheet(req.unresolved_path)
+            return ('text/css', self._substitute(stylesheet, theme))
         elif not req.unresolved_path:
             raise Forbidden()
         else:
