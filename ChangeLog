@@ -1,5 +1,9 @@
 2009-06-26  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/cms/cms.py: 
+	Don't limit redirection to first subpage for empty pages to the
+	first menu level. 
+
 	* lib/wiking/request.py:
 	Interpret setting request param value to None as removing the param.
 
