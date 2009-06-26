@@ -51,7 +51,7 @@ create table session (
        uid int not null references users on delete cascade,
        session_key text not null,
        last_access timestamp,
-       unique (uid, sesion_key)
+       unique (uid, session_key)
 );
 
 create table _session_log (
