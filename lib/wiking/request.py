@@ -148,7 +148,7 @@ class Request(pytis.web.Request):
 
         """
         if value is None:
-            if req.has_param(name):
+            if self._params.has_key(name):
                 del self._params[name]
         else:
             self._params[name] = value
