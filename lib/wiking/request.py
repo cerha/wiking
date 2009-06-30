@@ -299,6 +299,17 @@ class Request(pytis.web.Request):
         return apache.OK        
 
     def redirect(self, uri, permanent=False):
+        """Send an HTTP redirection response to the browser.
+
+        Arguments:
+          uri -- redirection target URI as a string.  May be relative to the current request server
+            address or absolute if it begins with 'http://' or 'https://'.
+          permanent -- boolean flag indicatnig whether this is a permanent (moved
+            permanently) or temporary (moved temporarily) redirect according HTTP specs.
+
+        This call ends the request processing by instructing the user agent to go to another URI.
+            
+        """
         self._req.content_type = "text/html"
         try:
             self._req.send_http_header()
@@ -306,6 +317,10 @@ class Request(pytis.web.Request):
             raise ClosedConnection(str(e))
         self._req.status = permanent and apache.HTTP_MOVED_PERMANENTLY or \
                            apache.HTTP_MOVED_TEMPORARILY
+        if not (uri.startswith('http://') or uri.startswith('https://')):
+            if not uri.startswith('/'):
+                uri = '/' + uri
+            uri = self.server_uri(current=True) + uri
         self.set_header('Location', uri)
         self.write("<html><head><title>Redirected</title></head>"
                    "<body>Your request has been redirected to "
