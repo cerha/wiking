@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-06-25 14:29+0200\n"
+"POT-Creation-Date: 2009-06-27 20:13+0200\n"
 "PO-Revision-Date: 2009-06-23 23:02+0100\n"
 "Last-Translator: katarina kletecka <na cisarce 3224/28 Praha 15000>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
@@ -345,47 +345,47 @@ msgstr "Ikke utgi"
 msgid "Make the item invisible to website visitors"
 msgstr "La elementet være usynlig for webområdebrukerne"
 
-#: ../lib/wiking/modules.py:362
+#: ../lib/wiking/modules.py:372
 msgid "Enter your login name, please!"
 msgstr "Vennligst skriv inn ditt loginn navn!"
 
-#: ../lib/wiking/modules.py:364
+#: ../lib/wiking/modules.py:374
 msgid "Enter your password, please!"
 msgstr "Vennligst skrivinn ditt passord!"
 
-#: ../lib/wiking/modules.py:369
+#: ../lib/wiking/modules.py:379
 msgid "Invalid login!"
 msgstr "Ugyldig loginn!"
 
-#: ../lib/wiking/modules.py:454
+#: ../lib/wiking/modules.py:464
 msgid "Searching"
 msgstr "Søker"
 
-#: ../lib/wiking/modules.py:455
+#: ../lib/wiking/modules.py:465
 msgid "Search results"
 msgstr "Søkeresultat"
 
-#: ../lib/wiking/modules.py:456
+#: ../lib/wiking/modules.py:466
 msgid "Given search term doesn't contain any searchable term."
 msgstr "Oppgitt søkeord inneholder intet søkbare sikt."
 
-#: ../lib/wiking/modules.py:460
+#: ../lib/wiking/modules.py:470
 msgid "Search words:"
 msgstr "Søk ordene:"
 
-#: ../lib/wiking/modules.py:461
+#: ../lib/wiking/modules.py:471
 msgid "Search"
 msgstr "Søk"
 
-#: ../lib/wiking/modules.py:517
+#: ../lib/wiking/modules.py:527
 msgid "Nothing found."
 msgstr "Ingenting funnet."
 
-#: ../lib/wiking/modules.py:574
+#: ../lib/wiking/modules.py:584
 msgid "The following modules were successfully reloaded:"
 msgstr "Følgende moduler ble omlastet:"
 
-#: ../lib/wiking/modules.py:576
+#: ../lib/wiking/modules.py:586
 msgid "Reload"
 msgstr "Omlaste"
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-06-25 14:29+0200\n"
+"POT-Creation-Date: 2009-06-27 20:13+0200\n"
 "PO-Revision-Date: 2009-06-18 15:44+0100\n"
 "Last-Translator: tana prosdocimova <prosdocim@seznam.cz>\n"
 "Language-Team: Spanish <wiking@lists.freebsoft.org>\n"
@@ -350,47 +350,47 @@ msgstr "No publicar"
 msgid "Make the item invisible to website visitors"
 msgstr "Hacer el registro invisible para los visitantes del sitio web"
 
-#: ../lib/wiking/modules.py:362
+#: ../lib/wiking/modules.py:372
 msgid "Enter your login name, please!"
 msgstr "Introduzca su nombre de usuario, por favor!"
 
-#: ../lib/wiking/modules.py:364
+#: ../lib/wiking/modules.py:374
 msgid "Enter your password, please!"
 msgstr "Introduzca su contraseña, please!"
 
-#: ../lib/wiking/modules.py:369
+#: ../lib/wiking/modules.py:379
 msgid "Invalid login!"
 msgstr "Usuario inválido!"
 
-#: ../lib/wiking/modules.py:454
+#: ../lib/wiking/modules.py:464
 msgid "Searching"
 msgstr "Buscando"
 
-#: ../lib/wiking/modules.py:455
+#: ../lib/wiking/modules.py:465
 msgid "Search results"
 msgstr "Resultados de búsqueda"
 
-#: ../lib/wiking/modules.py:456
+#: ../lib/wiking/modules.py:466
 msgid "Given search term doesn't contain any searchable term."
 msgstr "No hay resultados para los parámetros de búsqueda."
 
-#: ../lib/wiking/modules.py:460
+#: ../lib/wiking/modules.py:470
 msgid "Search words:"
 msgstr "Buscar palabras:"
 
-#: ../lib/wiking/modules.py:461
+#: ../lib/wiking/modules.py:471
 msgid "Search"
 msgstr "Búsqueda"
 
-#: ../lib/wiking/modules.py:517
+#: ../lib/wiking/modules.py:527
 msgid "Nothing found."
 msgstr "Nada encontrado."
 
-#: ../lib/wiking/modules.py:574
+#: ../lib/wiking/modules.py:584
 msgid "The following modules were successfully reloaded:"
 msgstr "Los siguientes módulos han sido recargados con éxito:"
 
-#: ../lib/wiking/modules.py:576
+#: ../lib/wiking/modules.py:586
 msgid "Reload"
 msgstr "Recarga"
 
