@@ -69,6 +69,10 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
     _MESSAGE_TYPE_CLASS = {WikingRequest.INFO: 'info',
                            WikingRequest.WARNING: 'warning',
                            WikingRequest.ERROR: 'error'}
+    _UNSAFE_CHARS = re.compile(r"[^a-zA-Z0-9_-]")
+
+    def _safe_css_id(self, id):
+        return self._UNSAFE_CHARS.sub('-', id)
 
     def _body_attr(self, context, **kwargs):
         layout = context.node().layout() or self.Layout.DEFAULT
@@ -91,7 +95,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         return self._parts(context, self._PAGE_PARTS)
 
     def _page_attr(self, context):
-        cls = cls='node-id-%s' % context.node().id()
+        cls = 'node-id-' + self._safe_css_id(context.node().id())
         if context.has_menu:
             cls += ' with-menu'
         if context.has_submenu:
@@ -236,7 +240,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
                     title = link +' '+ title
             result.append(g.div((g.h(title, 3),
                                  g.div(content.export(context), cls='panel-content')),
-                                id='panel-'+panel.id(), cls='panel',
+                                id='panel-'+self._safe_css_id(panel.id()), cls='panel',
                                 title=panel.accessible_title()))
         result.append(g.br())
         return result
