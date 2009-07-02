@@ -13,7 +13,9 @@ lib := $(shell python -c 'import sys; print "$(LIB)".find("%d") != -1 and \
 
 .PHONY: translations doc
 
-all: check-lib check-user compile translations
+all: check compile translations
+
+check: check-lib check-user
 
 check-lib:
 	@python -c "import sys; '$(lib)' not in sys.path and sys.exit(1)" || \
@@ -34,9 +36,9 @@ translations:
 doc:
 	lcgmake doc/src doc/html
 
-install: $(SHARE)/wiking copy-files $(CFGFILE) $(STORAGE)
+install-links: link-lib link-share $(CFGFILE) $(STORAGE)
 
-cvs-install: link-lib link-share $(CFGFILE) $(STORAGE)
+install: $(SHARE)/wiking copy-files $(CFGFILE) $(STORAGE)
 
 uninstall:
 	rm -rf $(SHARE)/wiking
@@ -61,14 +63,6 @@ link-share-%: $(SHARE)/wiking
 	@if [ -d $(SHARE)/wiking/$* ]; then echo "$(SHARE)/wiking/$* already exists!"; \
 	else echo "Linking wiking $* to $(SHARE)/wiking"; \
 	ln -s $(CURDIR)/$* $(SHARE)/wiking; fi
-
-cvs-update: do-cvs-update compile translations
-
-do-cvs-update:
-	@echo "All local modifications will be lost and owerwritten with clean repository copies!"
-	@echo -n "Press Enter to continue or Ctrl-C to abort: "
-	@read || exit 1
-	cvs update -dPC
 
 config_dir = $(shell dirname $(CFGFILE))
 

@@ -17,10 +17,16 @@ Multithreaded Apache MPM is currently not supported.  Since it is the default
 in some distributions, please check and switch to prefork MPM to be able to run
 Wiking.
 
-When you have all the above installed, run "make install" in the package root
-directory.  You need to have GNU make to be able to run the automatic
-installation.  You may also wish to change some variables at the beginning of
-the Makefile to customize the installation.
+The simplest installation can be done using the provided Makefile.  Just run
+"make && make install" within the package root directory.  Feel free to
+edit the Makefile and setup your own installation paths.
+
+You can also run the development version directly out of your checked out tree,
+being able to check out a newer version at any time and using this new version
+right away.  The Makefile supports this setup by linking the necessary
+directories into your checked out tree.  You need to run "make && make
+install-links" for the first time, and then just "make all" after each
+checkout.
 
 After installing Wiking, you must configure Apache to use Wiking for serving
 your site.  Please, see the Administration section within the included HTML
