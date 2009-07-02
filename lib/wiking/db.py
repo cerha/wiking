@@ -67,8 +67,13 @@ class PytisModule(Module, ActionHandler):
     function arguments and their pytis data types.
     
     """
-
     _ALLOW_TABLE_LAYOUT_IN_FORMS = True
+    """Default value to pass to 'pytis.web.EditForm' 'allow_table_layout' constructor argument."""
+    _BROWSE_FORM_LIMITS = (25, 50, 100, 200, 500)
+    """Default value to pass to 'pytis.web.BrowseForm' 'limits' constructor argument."""
+    _BROWSE_FORM_DEFAULT_LIMIT = 50
+    """Default value to pass to 'pytis.web.BrowseForm' 'limit' constructor argument."""
+    
     _ALLOW_COPY = False
     _SUBMIT_BUTTONS = {}
     _LAYOUT = {}
@@ -447,6 +452,10 @@ class PytisModule(Module, ActionHandler):
             kwargs['allow_table_layout'] = self._ALLOW_TABLE_LAYOUT_IN_FORMS
         elif issubclass(form, pw.BrowseForm):
             kwargs['req'] = req
+            if not kwargs.has_key('limits'):
+                kwargs['limits'] = self._BROWSE_FORM_LIMITS
+            if not kwargs.has_key('limit'):
+                kwargs['limit'] = self._BROWSE_FORM_DEFAULT_LIMIT
         if action is not None:
             hidden += (('action', action),
                        ('submit', 'submit'))
