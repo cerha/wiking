@@ -411,6 +411,8 @@ form.pytis-form .horizontal-group fieldset.group {
 form.pytis-form .horizontal-group td.spaced {
     padding-left: 0.6em;
 }
+
+
 /* Fix MSIE fieldset background */
 * html form.pytis-form table.horizontal-group { position: relative; }
 * html form.pytis-form fieldset.group { position: relative; margin: 1em 0; padding-top: 0.7em; }
@@ -566,13 +568,22 @@ form.edit-form div.help {
     color: $color.help;
     margin-bottom: 0.4em;
 }
-form.edit-form .group input, form.edit-form textarea,
+form.edit-form .group input.text,
+form.edit-form .group input.password,
+form.edit-form .group input.file,
+form.edit-form .group input.text,
+form.edit-form textarea,
 form.edit-form select, #login, #password { 
     border: 1px solid $color.border;
 }
 form.pytis-form textarea.fullsize {
     width: 100%;
 }
+form.pytis-form input.button.selection-invocation { 
+    margin-left: 2px;
+    padding: 0;
+}
+
 form.pytis-form.list-view div.summary {
     margin-top: 1.2em;
     border-top: 1px solid $color.frame-border;
