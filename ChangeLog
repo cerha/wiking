@@ -1,3 +1,13 @@
+2009-07-13  Tomas Cerha  <cerha@brailcom.org>
+
+	* resources/css/calendarview.css: 
+	* resources/scripts/calendarview.js: 
+	* resources/scripts/prototype.js: 
+	Added support for dynamic calendar widget.
+
+	* resources/css/default.css:
+	Fixed input field style selectors.
+
 2009-07-02  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/db.py: 
