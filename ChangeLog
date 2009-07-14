@@ -1,5 +1,9 @@
 2009-07-14  Tomas Cerha  <cerha@brailcom.org>
 
+	* doc/src/devel/_index.txt: 
+	* doc/src/devel/ui-design.en.txt: 
+	New documentation section `User Interface Design Guidlines'.
+
 	* lib/wiking/application.py:
 	* lib/wiking/export.py:
 	* lib/wiking/request.py:

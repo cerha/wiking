@@ -1,0 +1,41 @@
+# -*- coding: utf-8; mode: structured-text  -*-
+
+= User Interface Design Guidelines =
+
+This document tries to cover user interface design concepts which are mostly
+useful generally, but we would like to encourage their usage in Wiking
+applications and show how Wiking supports them.
+
+== Availability of user interface actions ==
+
+User interface actions may be available/unavailable due to many reasons.  For
+the purpose of UI design we distinguish two primary situations:
+
+  * Action is unavailable for the current user due to access rights.
+  * Action is unavailable due to some other condition.
+
+The first situation should lead to the action control being completely removed
+from the application.  Thus user's only see actions, which are allowed for
+their role and are not disturbed by action controls which will never be
+available.
+
+The second case should be handled by leaving the action control on its place in
+the disabled state.  Thus the user can find the control, but sees that it is
+not usable in the current context.  For example after ordering the item in an
+on-line store which doesn't allow multiple ordering of one item, the order
+button should become disabled.  Removing the control may lead to user's
+confusion, since he might believe, that he is only not able to find the control
+and try to look for it all around the application.  Leaving the controls on
+their place avoids this confusion.  The reason of the unavailability is often
+obvious.  For example publishing is only available for unpublished articles and
+it is not necessary to explain it.  Sometimes (as in the online store example
+above) the reason is not so obvious, so it is a good idea to add an explanation
+to the user interface somewhere near the disabled control.
+
+Wiking supports both situations.  Actions defined through `wiking.Action'
+specifications may use the 'enabled' argument to determine the availability
+dynamically.  Action controls rendered through `PytisModule._action_menu()'
+method automatically omit actions with insufficient access rights.  Action
+controls rendered within the application using custom content/widgets should
+implement the same behavior to preserve the consistency of the user interface.
+
