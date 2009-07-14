@@ -6,7 +6,9 @@ This document tries to cover user interface design concepts which are mostly
 useful generally, but we would like to encourage their usage in Wiking
 applications and show how Wiking supports them.
 
-== Availability of user interface actions ==
+@TOC@
+
+== Availability of User Interface Actions ==
 
 User interface actions may be available/unavailable due to many reasons.  For
 the purpose of UI design we distinguish two primary situations:
@@ -34,8 +36,56 @@ to the user interface somewhere near the disabled control.
 
 Wiking supports both situations.  Actions defined through `wiking.Action'
 specifications may use the 'enabled' argument to determine the availability
-dynamically.  Action controls rendered through `PytisModule._action_menu()'
+dynamically.  Action controls rendered through `PytisModule.\_action_menu()'
 method automatically omit actions with insufficient access rights.  Action
 controls rendered within the application using custom content/widgets should
 implement the same behavior to preserve the consistency of the user interface.
 
+
+== Response After User Actions ==
+
+Most user actions within a web application require some form of feedback,
+indicating that the record was deleted, registration was confirmed, item was
+added to the shopping cart and so on.
+
+Very typical mistake still common in many web applications is showing the
+feedback on a separate page.  For example an error page is displayed as a
+response to form submission with invalid data.  The page usually contains the
+description of the error and the `Back' button, which leads the user back to
+the form.  The problem is, that after the user gets back to the form, he might
+not remember the details described on the error page.  When the submission is
+successful, again, a separate page informing the user about the success is
+displayed.  The user ends up on a page which has no other purpose than giving
+him the feedback.  This practice harms user's orientation and smoothness of his
+user experience.  
+
+It is much more practical to always display something useful, what the user
+most likely wants to do next.  The submitted form may be redisplayed after
+validation errors showing the description of errors right within the form,
+shopping cart contents may be displayed after adding an item, list of the
+remaining records may be displayed after record deletion.  The user feedback
+may be displayed as a part of the response page, but not as its only contents.
+
+Wiking supports displaying feedback messages through the method
+`WikingRequest.message()'.  Three kinds of messages can be displayed --
+informational, error and warning.  The messages are displayed at the top of the
+main page contents and visually emphasized.  This way their display is
+consistent throughout the application and the user is able to locate and
+identify them easily.
+
+Handler methods performing user actions will typically validate the input,
+perform a database operation and on its success call `req.message()' providing
+the feedback.  After that, another handler method is typically called to render
+the main page contents.  For example after record deletion,
+`PytisModule.action_delete()' ends up calling `PytisModule.action_list()' to
+render the list of remaining records.  All built in action methods respect this
+principal.  The methods `PytisModule.\_redirect_after_insert()',
+`PytisModule.\_redirect_after_update()' and
+`PytisModule.\_redirect_after_delete()' may be overriding of the default
+behavior for the respective PytisModule.
+
+
+
+
+
+ 
