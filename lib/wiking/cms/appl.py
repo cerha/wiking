@@ -78,12 +78,12 @@ class Application(CookieAuthentication, wiking.Application):
         else:
             return super(Application, self).handle(req)
 
-    def module_uri(self, modname):
+    def module_uri(self, req, modname):
         try:
-            uri = self._module('Pages').module_uri(modname)
+            uri = self._module('Pages').module_uri(req, modname)
         except MaintananceModeError:
             uri = None
-        return uri or super(Application, self).module_uri(modname)
+        return uri or super(Application, self).module_uri(req, modname)
 
     def site_title(self, req):
         if req.wmi:
@@ -169,11 +169,11 @@ class Application(CookieAuthentication, wiking.Application):
         
     def registration_uri(self, req):
         if cfg.appl.allow_registration:
-            return make_uri(req.uri_prefix() + self.module_uri('Registration'), action='insert')
+            return make_uri(req.uri_prefix() + req.module_uri('Registration'), action='insert')
         return None
         
     def password_reminder_uri(self, req):
-        return make_uri(req.uri_prefix() + self.module_uri('Registration'), action='remind')
+        return make_uri(req.uri_prefix() + req.module_uri('Registration'), action='remind')
 
     def login_panel_content(self, req):
         if self.authorize(req, WikingManagementInterface):

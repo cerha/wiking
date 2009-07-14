@@ -133,7 +133,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         return context.generator().uri(uri, setlang=lang)
 
     def _resource_uri_prefix(self, context, resource):
-        return context.application.module_uri('Resources')
+        return context.req().module_uri('Resources')
     
     def _head(self, context):
         context.node().resource('wiking.js')

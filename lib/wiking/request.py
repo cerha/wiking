@@ -665,7 +665,7 @@ class WikingRequest(Request):
         try:
             uri = self._module_uri[modname]
         except KeyError:
-            uri = self._module_uri[modname] = self._application.module_uri(modname)
+            uri = self._module_uri[modname] = self._application.module_uri(self, modname)
         if uri is not None:
             uri = self.uri_prefix() + uri
         return uri

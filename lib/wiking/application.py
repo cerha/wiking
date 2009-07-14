@@ -92,12 +92,15 @@ class Application(Module):
         req.unresolved_path.pop(0)
         return req.forward(module)
     
-    def module_uri(self, modname):
+    def module_uri(self, req, modname):
         """Return the current uri for given module name.
 
-        The default implementation performes a reverse lookup in the '\_MAPPING' dictionary.  None
+        The default implementation performs a reverse lookup in the '\_MAPPING' dictionary.  None
         is returned when there is no mapping item for the module, or when there is more than one
         item for the same module (which is also legal).
+
+        This method should not be called directly by application code.  Use
+        'WikingRequest.module_uri()' instead (which calls this method internally if necessary).
         
         """
         identitier = self._reverse_mapping.get(modname)
@@ -227,7 +230,7 @@ class Application(Module):
         the current mapped uri of the 'Stylesheets' module (if the module is mapped).
 
         """
-        uri = self.module_uri('Stylesheets')
+        uri = req.module_uri('Stylesheets')
         if uri is not None:
             return [uri +'/'+ file for file in self._STYLESHEETS]
         else:
@@ -361,7 +364,7 @@ class Application(Module):
                   ("Section 508",
                    "http://www.section508.gov",
                    _("US Government Section 508 Accessibility Guidelines.")))]
-        doc = self.module_uri('Documentation')
+        doc = req.module_uri('Documentation')
         class A11yStatement(lcg.Content):
             # A11y statement link with a hotkey (not supported by generic lcg links).
             def export(self, context):
