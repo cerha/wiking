@@ -8,6 +8,7 @@
 	* lib/wiking/export.py:
 	* lib/wiking/request.py:
 	* lib/wiking/cms/appl.py:
+	* lib/wiking/cms/cms.py: 
 	Pass `req' to `Application.module_uri()'.  Use
 	`WikingRequest.module_uri()' instead of `Application.module_uri()'
 	directly in application code.
