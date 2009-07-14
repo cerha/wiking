@@ -1177,7 +1177,7 @@ class Pages(CMSModule):
                [MenuItem('_registration', _("Registration"), hidden=True),
                 MenuItem('_doc', _("Wiking Documentation"), hidden=True)]
 
-    def module_uri(self, modname):
+    def module_uri(self, req, modname):
         if modname == self.name():
             uri = '/'
         else:
@@ -1738,7 +1738,7 @@ class Planner(News):
                   type=Date(not_null=True, constraints=(self._check_date,)),
                   descr=_("The date when the planned event begins. Enter the date including year. "
                           "Example: %(date)s", date=lcg.LocalizableDateTime((now()+7).date))),
-            Field('end_date', _("End date"), width=10, type=Date(),
+            Field('end_date', _("End date"), width=10, type=Date(), editable=NEVER,
                   descr=_("The date when the event ends if it is not the same as the start date "
                           "(for events which last several days).")),
             Field('date', _("Date"), virtual=True, computer=computer(self._date)),
@@ -2091,7 +2091,7 @@ class Users(CMSModule):
 
     def _make_registration_email(self, req, record):
         msg, err = None, None
-        base_uri = self._application.module_uri('Registration') or '/_wmi/'+ self.name()
+        base_uri = req.module_uri('Registration') or '/_wmi/'+ self.name()
         server_hostname = req.server_hostname()
         uri = req.server_uri() + make_uri(base_uri, action='confirm', uid=record['uid'].value(),
                                           regcode=record['regcode'].value())
@@ -2136,7 +2136,7 @@ class Users(CMSModule):
         msg, err = None, None
         addr = cfg.webmaster_address
         if addr:
-            base_uri = self._application.module_uri(self.name()) or '/_wmi/'+ self.name()
+            base_uri = req.module_uri(self.name()) or '/_wmi/'+ self.name()
             text = _("New user %(fullname)s registered at %(server_hostname)s. "
                      "Please approve the account: %(uri)s",
                      fullname=record['fullname'].value(), server_hostname=req.server_hostname(),
@@ -2197,11 +2197,11 @@ class Users(CMSModule):
 
     def _user_arguments(self, req, login, row):
         record = self._record(req, row)
-        base_uri = self._application.module_uri(self.name())
+        base_uri = req.module_uri(self.name())
         if base_uri:
             uri = base_uri +'/'+ login
         else:
-            uri = self._application.module_uri('Registration')
+            uri = req.module_uri('Registration')
         #organization_id_value = record['organization_id']
         #organization_id = organization_id_value.value()
         #if organization_id:
