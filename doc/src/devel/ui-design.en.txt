@@ -79,13 +79,7 @@ the feedback.  After that, another handler method is typically called to render
 the main page contents.  For example after record deletion,
 `PytisModule.action_delete()' ends up calling `PytisModule.action_list()' to
 render the list of remaining records.  All built in action methods respect this
-principal.  The methods `PytisModule.\_redirect_after_insert()',
+principle.  The methods `PytisModule.\_redirect_after_insert()',
 `PytisModule.\_redirect_after_update()' and
-`PytisModule.\_redirect_after_delete()' may be overriding of the default
-behavior for the respective PytisModule.
-
-
-
-
-
- 
+`PytisModule.\_redirect_after_delete()' may override the default
+behavior for the respective PytisModule subclass.
