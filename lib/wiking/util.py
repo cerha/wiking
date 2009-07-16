@@ -59,6 +59,13 @@ class AuthenticationError(RequestError):
         return LoginDialog(self.args and self.args[0] or None)
 
 
+class AuthenticationRedirect(AuthenticationError):
+    """Has the same effect as AuthenticationError, but is just not an error."""
+    
+    # Translators: Login dialog page title (use a noun).
+    _TITLE = _("Login")
+    
+
 class PasswordExpirationError(RequestError):
     
     _TITLE = _("Your password expired")
@@ -72,20 +79,17 @@ class PasswordExpirationError(RequestError):
         return content
 
     
-class AuthenticationRedirect(AuthenticationError):
-    """Has the same effect as AuthenticationError, but is just not an error."""
-    
-    # Translators: Login dialog page title (use a noun).
-    _TITLE = _("Login")
-    
-
 class AuthorizationError(RequestError):
     """Error indicating that the user doesn't have privilegs for the action."""
     
-    _TITLE = _("Not Authorized")
+    _TITLE = _("Access Denied")
 
     def message(self, req):
-        return lcg.p(_("You don't have sufficient privilegs for this action."))
+        return (lcg.p(_("You don't have sufficient privilegs for this action.")),
+                lcg.p(_("If you are sure that you are logged in under the right account "
+                        "and you believe that this is a problem of access rights assignment, "
+                        "please contact the administrator at %s.", cfg.webmaster_address),
+                      formatted=True))
 
 
 class HttpError(RequestError):
@@ -103,9 +107,12 @@ class HttpError(RequestError):
     ERROR_CODE = None
     
     def title(self):
-        name = " ".join(pp.split_camel_case(self.__class__.__name__))
-        # Translators: '%(code)d' is replaced by error number and '%(name)s' by error title text.
-        return _("Error %(code)d: %(name)s", code=self.ERROR_CODE, name=name)
+        if self._TITLE is not None:
+            return self._TITLE
+        else:
+            name = " ".join(pp.split_camel_case(self.__class__.__name__))
+            # Translators: '%(code)d' is replaced by error number and '%(name)s' by error title.
+            return _("Error %(code)d: %(name)s", code=self.ERROR_CODE, name=name)
 
 
 class BadRequest(HttpError):
@@ -130,7 +137,7 @@ class BadRequest(HttpError):
         else:
             return lcg.p(_("Invalid request arguments."))
 
-    
+        
 class NotFound(HttpError):
     """Error indicating invalid request target."""
     ERROR_CODE = 404
@@ -138,13 +145,13 @@ class NotFound(HttpError):
     def message(self, req):
         # Translators: The word 'item' is intentionaly very generic, since it may mean a page,
         # image, streaming video, RSS channel or anything else.
-        msg = (_("The item '%s' does not exist on this server or cannot be "
-                 "served.", req.uri()),
-               _("If you are sure the web address is correct, "
-                 "but are encountering this error, please send "
-                 "an e-mail to the webmaster."),
-               _("Thank you"))
-        return lcg.coerce([lcg.p(p) for p in msg])
+        return (lcg.p(_("The item '%s' does not exist on this server or cannot be served.",
+                        req.uri())),
+                lcg.p(_("If you are sure the web address is correct, but are encountering "
+                        "this error, please contact the administrator at %s.",
+                        cfg.webmaster_address),
+                      formatted=True))
+    #return lcg.coerce([lcg.p(p) for p in msg])
 
     
 class Forbidden(HttpError):
@@ -152,46 +159,43 @@ class Forbidden(HttpError):
     ERROR_CODE = 403
     
     def message(self, req):
-        msg = (_("The item '%s' is not available.", req.uri()),
-               _("The item exists on the server, but can not be accessed."))
-        return lcg.coerce([lcg.p(p) for p in msg])
+        return (lcg.p(_("The item '%s' is not available.", req.uri())),
+                lcg.p(_("The item exists on the server, but can not be accessed.")))
 
     
 class NotAcceptable(HttpError):
     """Error indicating unavailability of the resource in requested language."""
     ERROR_CODE = 406
+    _TITLE = _("Language selection")
     
     def message(self, req):
-        msg = (_("The resource '%s' is not available in either of "
-                 "the requested languages.", req.uri()),
-               (_("Your browser is configured to accept only the "
-                  "following languages:"), ' ',
-                lcg.concat([lcg.language_name(l) for l in
-                            req.prefered_languages()], separator=', ')))
+        msg = (lcg.p(_("The resource '%s' is not available in either of the requested languages.",
+                       req.uri())),)
         if self.args:
-            msg += ((_("The available variants are:"), ' ',
-                     lcg.join([lcg.link("%s?setlang=%s" % (req.uri(), l),
-                                        label=lcg.language_name(l),)
-                               for l in self.args[0]], separator=', ')),
-                    _("If you want to accept other languages permanently, "
-                      "setup the language preferences in your browser "
-                      "or contact your system administrator."))
-        return lcg.coerce([lcg.p(p) for p in msg])
+            msg += (lcg.p(_("The available variants are:")), 
+                    lcg.ul([lcg.link("%s?setlang=%s" % (req.uri(), l), label=lcg.language_name(l))
+                            for l in self.args[0]]))
+        msg += (lcg.HorizontalSeparator(),
+                lcg.p(_("Your browser is configured to accept only the following languages:")),
+                lcg.ul([lcg.language_name(l) for l in req.prefered_languages()]),
+                lcg.p(_("If you want to accept other languages permanently, setup the language "
+                        "preferences in your browser or contact your system administrator.")))
+        return msg
 
 
 class InternalServerError(HttpError):
     """General error in application -- error message is required as an argument."""
     ERROR_CODE = 500
-    
-    def title(self):
-        return _("Internal Server Error")
+    _TITLE = _("Internal Server Error")
 
     def message(self, req):
-        msg = (_("The server was unable to complete your request."),
-               _("Please inform the server administrator, %(admin)s if the problem persists.",
-                 admin=cfg.webmaster_address),
-               _("The error message was:"))
-        return lcg.coerce([lcg.p(p) for p in msg] + [lcg.PreformattedText(self.args[0])])
+        # TODO: Even though the admin address is in a formatted paragraph, it is not formatted as a
+        # link by the during internal server error export.  It works well in all other cases.
+        return (lcg.p(_("The server was unable to complete your request.")),
+                lcg.p(_("Please inform the server administrator, %s if the problem "
+                        "persists.", cfg.webmaster_address), formatted=True),
+                lcg.p(_("The error message was:")),
+                lcg.PreformattedText(self.args[0]))
 
     
 class MaintananceModeError(HttpError):
@@ -204,9 +208,7 @@ class MaintananceModeError(HttpError):
     
     """
     ERROR_CODE = 503
-
-    def title(self):
-        return _("Maintenance mode")
+    _TITLE = _("Maintenance mode")
 
     def message(self, req):
         return lcg.p(_("The system is temporarily down for maintenance."))
