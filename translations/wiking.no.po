@@ -7,227 +7,13 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-06-27 20:13+0200\n"
+"POT-Creation-Date: 2009-07-16 11:35+0200\n"
 "PO-Revision-Date: 2009-06-23 23:02+0100\n"
 "Last-Translator: katarina kletecka <na cisarce 3224/28 Praha 15000>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-
-#. Translators: This is followed by Wiking link and version number.
-#: ../lib/wiking/application.py:325
-msgid "Powered by"
-msgstr "Drive"
-
-#: ../lib/wiking/application.py:363
-msgid "US Government Section 508 Accessibility Guidelines."
-msgstr "Seksjon 508 tilgjengelihet retningslinjer utgitt av USAs regjering"
-
-#: ../lib/wiking/application.py:369
-msgid "Accessibility Statement"
-msgstr "Tilgengelighet uttalelse"
-
-#: ../lib/wiking/application.py:374
-msgid "This site conforms to the following standards:"
-msgstr "Dette nettstedet følger disse standardene:"
-
-#: ../lib/wiking/application.py:376
-msgid "This site can be viewed in ANY browser."
-msgstr "Dette området kan ses i alle nettlesere."
-
-#: ../lib/wiking/application.py:377
-msgid "Contact:"
-msgstr "Kontakt:"
-
-#: ../lib/wiking/util.py:56
-msgid "Authentication required"
-msgstr "Godkjenning kreves"
-
-#: ../lib/wiking/util.py:64 ../lib/wiking/util.py:398
-msgid "Your password expired"
-msgstr "Passordet ditt er utløpt"
-
-#: ../lib/wiking/util.py:67
-msgid ""
-"Your password expired.  Access to the application is now blocked for "
-"security reasons until you change your password."
-msgstr ""
-"Passordet ditt er utløpt. Tilgang til programmet er nå sperret av "
-"sikkerhetshensyn til du endrer passordet ditt."
-
-#. Translators: Login panel link.
-#: ../lib/wiking/util.py:71 ../lib/wiking/util.py:406
-msgid "Change your password"
-msgstr "Endre passordet"
-
-#. Translators: Login dialog page title (use a noun).
-#. Translators: Login info label (noun) followed by login name and login controls.
-#: ../lib/wiking/util.py:79 ../lib/wiking/util.py:419
-#: ../lib/wiking/util.py:744
-msgid "Login"
-msgstr "Innlogging"
-
-#: ../lib/wiking/util.py:85
-msgid "Not Authorized"
-msgstr "Ikke authorisert"
-
-#: ../lib/wiking/util.py:88
-msgid "You don't have sufficient privilegs for this action."
-msgstr "Du har ikke tilstrekkelig privilegium for denne handlingen."
-
-#. Translators: '%(code)d' is replaced by error number and '%(name)s' by error title text.
-#: ../lib/wiking/util.py:108
-#, python-format
-msgid "Error %(code)d: %(name)s"
-msgstr "Feil %(code)d: %(name)s"
-
-#: ../lib/wiking/util.py:131
-msgid "Invalid request arguments."
-msgstr "Ugyldige forespørsel argumenter."
-
-#. Translators: The word 'item' is intentionaly very generic, since it may mean a page,
-#. image, streaming video, RSS channel or anything else.
-#: ../lib/wiking/util.py:141
-#, python-format
-msgid "The item '%s' does not exist on this server or cannot be served."
-msgstr "Elementet '%s' finnes ikke på denne serveren eller kan ikke betjenes."
-
-#: ../lib/wiking/util.py:143
-msgid ""
-"If you are sure the web address is correct, but are encountering this error, "
-"please send an e-mail to the webmaster."
-msgstr ""
-"Hvis du er sikker på at web-adressen er riktig, men denne feilen oppstår, "
-"kan du sende en e-mail til webmaster."
-
-#: ../lib/wiking/util.py:146
-msgid "Thank you"
-msgstr "Takk"
-
-#: ../lib/wiking/util.py:155
-#, python-format
-msgid "The item '%s' is not available."
-msgstr "Elementet '% s' er ikke tilgjengelig."
-
-#: ../lib/wiking/util.py:156
-msgid "The item exists on the server, but can not be accessed."
-msgstr "Elementet eksisterer på serveren, men kan ikke nås."
-
-#: ../lib/wiking/util.py:165
-#, python-format
-msgid ""
-"The resource '%s' is not available in either of the requested languages."
-msgstr "Ressursen '% s' er ikke tilgjengelig i et av valgte språk."
-
-#: ../lib/wiking/util.py:167
-msgid "Your browser is configured to accept only the following languages:"
-msgstr "Nettleseren er konfigurert til å godta bare følgende språk:"
-
-#: ../lib/wiking/util.py:172
-msgid "The available variants are:"
-msgstr "De tilgjengelige variantene er:"
-
-#: ../lib/wiking/util.py:176
-msgid ""
-"If you want to accept other languages permanently, setup the language "
-"preferences in your browser or contact your system administrator."
-msgstr ""
-"Hvis du vil godta andre språk permanent, oppsett språkinnstillingene i "
-"webleseren din, eller kontakt systemadministratoren."
-
-#: ../lib/wiking/util.py:187
-msgid "Internal Server Error"
-msgstr "Intern serverfeil"
-
-#: ../lib/wiking/util.py:190 ../lib/wiking/handler.py:95
-msgid "The server was unable to complete your request."
-msgstr "Serveren kunne ikke fullføre forespørselen."
-
-#: ../lib/wiking/util.py:191 ../lib/wiking/handler.py:96
-#, python-format
-msgid ""
-"Please inform the server administrator, %(admin)s if the problem persists."
-msgstr "Vennligst informer systemansvarlig,%(admin)s hvis problemet vedvarer."
-
-#: ../lib/wiking/util.py:193 ../lib/wiking/handler.py:98
-msgid "The error message was:"
-msgstr "Feilmeldingen var:"
-
-#: ../lib/wiking/util.py:209
-msgid "Maintenance mode"
-msgstr "Vedlikeholdsmodus"
-
-#: ../lib/wiking/util.py:212
-msgid "The system is temporarily down for maintenance."
-msgstr "Systemet er midlertidig nede for vedlikehold."
-
-#. Translators: Login panel info. '%(date)s' is replaced by a concrete date.
-#: ../lib/wiking/util.py:402
-#, python-format
-msgid "Your password expires on %(date)s"
-msgstr "Passordet utløper %(date)s"
-
-#. Translators: Login panel/dialog registration link.
-#: ../lib/wiking/util.py:411 ../lib/wiking/util.py:778
-msgid "New user registration"
-msgstr "Ny bruker registrering"
-
-#: ../lib/wiking/util.py:420
-msgid "Login Panel"
-msgstr "Loginn Panel"
-
-#. Translators: Label in front of action buttons.
-#: ../lib/wiking/util.py:679
-msgid "Actions:"
-msgstr "Aksjon:"
-
-#: ../lib/wiking/util.py:684
-msgid "Help"
-msgstr "Hjelp"
-
-#: ../lib/wiking/util.py:722
-msgid "Go to your profile"
-msgstr "Gå til din profil"
-
-#. Translators: Logout button label - verb in imperative.
-#: ../lib/wiking/util.py:727
-msgid "log out"
-msgstr "logg ut"
-
-#. Translators: Login status info.  If logged, the username is displayed instaed.
-#: ../lib/wiking/util.py:730
-msgid "not logged"
-msgstr "ikke logget"
-
-#. Translators: Login button label - verb in imperative.
-#: ../lib/wiking/util.py:732
-msgid "log in"
-msgstr "logg inn"
-
-#: ../lib/wiking/util.py:766
-msgid "Login name"
-msgstr "Loginn navn"
-
-#: ../lib/wiking/util.py:769
-msgid "Password"
-msgstr "Passord"
-
-#. Translators: Login button label - verb in imperative.
-#: ../lib/wiking/util.py:775
-msgid "Log in"
-msgstr "Logg inn"
-
-#. Translators: Login dialog link to password change or password reminder (depends
-#. on configuration).
-#: ../lib/wiking/util.py:781
-msgid "Forgot your password?"
-msgstr "har du glemt ditt passord?"
-
-#: ../lib/wiking/util.py:1346
-#, fuzzy
-msgid "Invalid format"
-msgstr "Ugyldig loginn!"
 
 #: ../lib/wiking/db.py:40
 msgid "This value already exists.  Enter a unique value."
@@ -293,57 +79,319 @@ msgstr "Den nye fortegnelsen ble aktualisert."
 msgid "The record was deleted."
 msgstr "Fortegnelsen ble fjernet."
 
-#: ../lib/wiking/db.py:237
+#: ../lib/wiking/db.py:242
 msgid "Invalid binding column value."
 msgstr "Ugyldig bindende kolonne verdi."
 
-#: ../lib/wiking/db.py:288
+#: ../lib/wiking/db.py:293
 msgid "Integrity check failed."
 msgstr "Integritets sjekk feilet."
 
-#: ../lib/wiking/db.py:651
+#: ../lib/wiking/db.py:660
 msgid "This function is temporarily unavailable."
 msgstr "Denne funksjonen er midlertidig utilgjengelig."
 
-#: ../lib/wiking/db.py:921
+#: ../lib/wiking/db.py:930
 msgid "Back"
 msgstr "Tilbake"
 
-#: ../lib/wiking/db.py:1013
+#: ../lib/wiking/db.py:1022
 msgid "An RSS channel is available for this section:"
 msgstr "En RSS-kanal  er tilgjengelig for denne seksjonen:"
 
-#: ../lib/wiking/db.py:1017
+#: ../lib/wiking/db.py:1026
 msgid "more about RSS"
 msgstr "mer om RSS"
 
-#: ../lib/wiking/db.py:1093
+#: ../lib/wiking/db.py:1102
 msgid "No records."
 msgstr "Ingen fortegnelse"
 
-#: ../lib/wiking/db.py:1100
+#: ../lib/wiking/db.py:1109
 msgid "The item was published."
 msgstr "Elementet ble utgitt."
 
-#: ../lib/wiking/db.py:1101
+#: ../lib/wiking/db.py:1110
 msgid "The item was unpublished."
 msgstr "Elementet ble ikke utgitt."
 
-#: ../lib/wiking/db.py:1110
+#: ../lib/wiking/db.py:1119
 msgid "Publish"
 msgstr "Utgi"
 
-#: ../lib/wiking/db.py:1113
+#: ../lib/wiking/db.py:1122
 msgid "Make the item visible to website visitors"
 msgstr "La elementet være synlig for webområdebrukerne"
 
-#: ../lib/wiking/db.py:1114
+#: ../lib/wiking/db.py:1123
 msgid "Unpublish"
 msgstr "Ikke utgi"
 
-#: ../lib/wiking/db.py:1117
+#: ../lib/wiking/db.py:1126
 msgid "Make the item invisible to website visitors"
 msgstr "La elementet være usynlig for webområdebrukerne"
+
+#: ../lib/wiking/handler.py:95 ../lib/wiking/util.py:193
+msgid "The server was unable to complete your request."
+msgstr "Serveren kunne ikke fullføre forespørselen."
+
+#: ../lib/wiking/handler.py:96 ../lib/wiking/util.py:194
+#, python-format
+msgid ""
+"Please inform the server administrator, %(admin)s if the problem persists."
+msgstr "Vennligst informer systemansvarlig,%(admin)s hvis problemet vedvarer."
+
+#: ../lib/wiking/handler.py:98 ../lib/wiking/util.py:197
+msgid "The error message was:"
+msgstr "Feilmeldingen var:"
+
+#: ../lib/wiking/util.py:56
+msgid "Authentication required"
+msgstr "Godkjenning kreves"
+
+#: ../lib/wiking/util.py:64 ../lib/wiking/util.py:401
+msgid "Your password expired"
+msgstr "Passordet ditt er utløpt"
+
+#: ../lib/wiking/util.py:67
+msgid ""
+"Your password expired.  Access to the application is now blocked for "
+"security reasons until you change your password."
+msgstr ""
+"Passordet ditt er utløpt. Tilgang til programmet er nå sperret av "
+"sikkerhetshensyn til du endrer passordet ditt."
+
+#. Translators: Login panel link.
+#: ../lib/wiking/util.py:71 ../lib/wiking/util.py:409
+msgid "Change your password"
+msgstr "Endre passordet"
+
+#. Translators: Login dialog page title (use a noun).
+#. Translators: Login info label (noun) followed by login name and login controls.
+#: ../lib/wiking/util.py:79 ../lib/wiking/util.py:422
+#: ../lib/wiking/util.py:747
+msgid "Login"
+msgstr "Innlogging"
+
+#: ../lib/wiking/util.py:85
+msgid "Access Denied"
+msgstr ""
+
+#: ../lib/wiking/util.py:88
+msgid "You don't have sufficient privilegs for this action."
+msgstr "Du har ikke tilstrekkelig privilegium for denne handlingen."
+
+#: ../lib/wiking/util.py:89
+#, fuzzy, python-format
+msgid ""
+"If you are sure that you are logged in under the right account and you "
+"believe that this is a problem of access rights assignment, please contact "
+"the administrator at %s."
+msgstr ""
+"Hvis du er sikker på at web-adressen er riktig, men denne feilen oppstår, "
+"kan du sende en e-mail til webmaster."
+
+#. Translators: '%(code)d' is replaced by error number and '%(name)s' by error title.
+#: ../lib/wiking/util.py:115
+#, python-format
+msgid "Error %(code)d: %(name)s"
+msgstr "Feil %(code)d: %(name)s"
+
+#: ../lib/wiking/util.py:138
+msgid "Invalid request arguments."
+msgstr "Ugyldige forespørsel argumenter."
+
+#. Translators: The word 'item' is intentionaly very generic, since it may mean a page,
+#. image, streaming video, RSS channel or anything else.
+#: ../lib/wiking/util.py:148
+#, python-format
+msgid "The item '%s' does not exist on this server or cannot be served."
+msgstr "Elementet '%s' finnes ikke på denne serveren eller kan ikke betjenes."
+
+#: ../lib/wiking/util.py:150
+#, fuzzy, python-format
+msgid ""
+"If you are sure the web address is correct, but are encountering this error, "
+"please contact the administrator at %s."
+msgstr ""
+"Hvis du er sikker på at web-adressen er riktig, men denne feilen oppstår, "
+"kan du sende en e-mail til webmaster."
+
+#: ../lib/wiking/util.py:162
+#, python-format
+msgid "The item '%s' is not available."
+msgstr "Elementet '% s' er ikke tilgjengelig."
+
+#: ../lib/wiking/util.py:163
+msgid "The item exists on the server, but can not be accessed."
+msgstr "Elementet eksisterer på serveren, men kan ikke nås."
+
+#: ../lib/wiking/util.py:170 ../lib/wiking/export.py:66
+#: ../lib/wiking/export.py:173
+msgid "Language selection"
+msgstr "Språkvalg"
+
+#: ../lib/wiking/util.py:173
+#, python-format
+msgid ""
+"The resource '%s' is not available in either of the requested languages."
+msgstr "Ressursen '% s' er ikke tilgjengelig i et av valgte språk."
+
+#: ../lib/wiking/util.py:176
+msgid "The available variants are:"
+msgstr "De tilgjengelige variantene er:"
+
+#: ../lib/wiking/util.py:180
+msgid "Your browser is configured to accept only the following languages:"
+msgstr "Nettleseren er konfigurert til å godta bare følgende språk:"
+
+#: ../lib/wiking/util.py:182
+msgid ""
+"If you want to accept other languages permanently, setup the language "
+"preferences in your browser or contact your system administrator."
+msgstr ""
+"Hvis du vil godta andre språk permanent, oppsett språkinnstillingene i "
+"webleseren din, eller kontakt systemadministratoren."
+
+#: ../lib/wiking/util.py:190
+msgid "Internal Server Error"
+msgstr "Intern serverfeil"
+
+#: ../lib/wiking/util.py:211
+msgid "Maintenance mode"
+msgstr "Vedlikeholdsmodus"
+
+#: ../lib/wiking/util.py:214
+msgid "The system is temporarily down for maintenance."
+msgstr "Systemet er midlertidig nede for vedlikehold."
+
+#. Translators: Login panel info. '%(date)s' is replaced by a concrete date.
+#: ../lib/wiking/util.py:405
+#, python-format
+msgid "Your password expires on %(date)s"
+msgstr "Passordet utløper %(date)s"
+
+#. Translators: Login panel/dialog registration link.
+#: ../lib/wiking/util.py:414 ../lib/wiking/util.py:781
+msgid "New user registration"
+msgstr "Ny bruker registrering"
+
+#: ../lib/wiking/util.py:423
+msgid "Login Panel"
+msgstr "Loginn Panel"
+
+#. Translators: Label in front of action buttons.
+#: ../lib/wiking/util.py:682
+msgid "Actions:"
+msgstr "Aksjon:"
+
+#: ../lib/wiking/util.py:687
+msgid "Help"
+msgstr "Hjelp"
+
+#: ../lib/wiking/util.py:725
+msgid "Go to your profile"
+msgstr "Gå til din profil"
+
+#. Translators: Logout button label - verb in imperative.
+#: ../lib/wiking/util.py:730
+msgid "log out"
+msgstr "logg ut"
+
+#. Translators: Login status info.  If logged, the username is displayed instaed.
+#: ../lib/wiking/util.py:733
+msgid "not logged"
+msgstr "ikke logget"
+
+#. Translators: Login button label - verb in imperative.
+#: ../lib/wiking/util.py:735
+msgid "log in"
+msgstr "logg inn"
+
+#: ../lib/wiking/util.py:769
+msgid "Login name"
+msgstr "Loginn navn"
+
+#: ../lib/wiking/util.py:772
+msgid "Password"
+msgstr "Passord"
+
+#. Translators: Login button label - verb in imperative.
+#: ../lib/wiking/util.py:778
+msgid "Log in"
+msgstr "Logg inn"
+
+#. Translators: Login dialog link to password change or password reminder (depends
+#. on configuration).
+#: ../lib/wiking/util.py:784
+msgid "Forgot your password?"
+msgstr "har du glemt ditt passord?"
+
+#: ../lib/wiking/util.py:1349
+#, fuzzy
+msgid "Invalid format"
+msgstr "Ugyldig loginn!"
+
+#: ../lib/wiking/export.py:61
+msgid "Page heading"
+msgstr ""
+
+#: ../lib/wiking/export.py:62 ../lib/wiking/export.py:169
+#: ../lib/wiking/export.py:193 ../lib/wiking/export.py:195
+#: ../lib/wiking/export.py:212
+msgid "Main navigation"
+msgstr "Hoved navigasjon"
+
+#: ../lib/wiking/export.py:63 ../lib/wiking/export.py:171
+#: ../lib/wiking/export.py:208
+msgid "Local navigation"
+msgstr "Lokal navigasjon"
+
+#: ../lib/wiking/export.py:64 ../lib/wiking/export.py:167
+#, fuzzy
+msgid "Main content"
+msgstr "Innhold"
+
+#: ../lib/wiking/export.py:65
+msgid "Page footer"
+msgstr ""
+
+#: ../lib/wiking/export.py:68
+msgid "Language:"
+msgstr "Språk:"
+
+#: ../lib/wiking/export.py:177
+msgid "Jump in page"
+msgstr "Gå på siden"
+
+#: ../lib/wiking/export.py:181
+msgid "You are here:"
+msgstr "Du er her:"
+
+#: ../lib/wiking/export.py:209
+msgid "In this section:"
+msgstr "I denne seksjonen:"
+
+#: ../lib/wiking/export.py:225
+msgid "Show panels"
+msgstr "Vis panelene"
+
+#: ../lib/wiking/export.py:226
+msgid "Hide panels"
+msgstr "Skjul panelene"
+
+#: ../lib/wiking/export.py:236
+msgid "RSS channel"
+msgstr "RSS kanal"
+
+#: ../lib/wiking/export.py:252
+msgid "Warning"
+msgstr "Advarsel"
+
+#: ../lib/wiking/export.py:274
+#, python-format
+msgid "Last change: %(date)s, %(user)s"
+msgstr "Siste forandring: %(date)s, %(user)s"
 
 #: ../lib/wiking/modules.py:372
 msgid "Enter your login name, please!"
@@ -389,67 +437,33 @@ msgstr "Følgende moduler ble omlastet:"
 msgid "Reload"
 msgstr "Omlaste"
 
-#: ../lib/wiking/export.py:61
-msgid "Page heading"
-msgstr ""
+#. Translators: This is followed by Wiking link and version number.
+#: ../lib/wiking/application.py:328
+msgid "Powered by"
+msgstr "Drive"
 
-#: ../lib/wiking/export.py:62 ../lib/wiking/export.py:165
-#: ../lib/wiking/export.py:189 ../lib/wiking/export.py:191
-#: ../lib/wiking/export.py:208
-msgid "Main navigation"
-msgstr "Hoved navigasjon"
+#: ../lib/wiking/application.py:366
+msgid "US Government Section 508 Accessibility Guidelines."
+msgstr "Seksjon 508 tilgjengelihet retningslinjer utgitt av USAs regjering"
 
-#: ../lib/wiking/export.py:63 ../lib/wiking/export.py:167
-#: ../lib/wiking/export.py:204
-msgid "Local navigation"
-msgstr "Lokal navigasjon"
+#: ../lib/wiking/application.py:372
+msgid "Accessibility Statement"
+msgstr "Tilgengelighet uttalelse"
 
-#: ../lib/wiking/export.py:64 ../lib/wiking/export.py:163
-#, fuzzy
-msgid "Main content"
-msgstr "Innhold"
+#: ../lib/wiking/application.py:377
+msgid "This site conforms to the following standards:"
+msgstr "Dette nettstedet følger disse standardene:"
 
-#: ../lib/wiking/export.py:65
-msgid "Page footer"
-msgstr ""
+#: ../lib/wiking/application.py:379
+msgid "This site can be viewed in ANY browser."
+msgstr "Dette området kan ses i alle nettlesere."
 
-#: ../lib/wiking/export.py:66 ../lib/wiking/export.py:169
-msgid "Language selection"
-msgstr "Språkvalg"
+#: ../lib/wiking/application.py:380
+msgid "Contact:"
+msgstr "Kontakt:"
 
-#: ../lib/wiking/export.py:68
-msgid "Language:"
-msgstr "Språk:"
+#~ msgid "Thank you"
+#~ msgstr "Takk"
 
-#: ../lib/wiking/export.py:173
-msgid "Jump in page"
-msgstr "Gå på siden"
-
-#: ../lib/wiking/export.py:177
-msgid "You are here:"
-msgstr "Du er her:"
-
-#: ../lib/wiking/export.py:205
-msgid "In this section:"
-msgstr "I denne seksjonen:"
-
-#: ../lib/wiking/export.py:221
-msgid "Show panels"
-msgstr "Vis panelene"
-
-#: ../lib/wiking/export.py:222
-msgid "Hide panels"
-msgstr "Skjul panelene"
-
-#: ../lib/wiking/export.py:232
-msgid "RSS channel"
-msgstr "RSS kanal"
-
-#: ../lib/wiking/export.py:248
-msgid "Warning"
-msgstr "Advarsel"
-
-#: ../lib/wiking/export.py:270
-#, python-format
-msgid "Last change: %(date)s, %(user)s"
-msgstr "Siste forandring: %(date)s, %(user)s"
+#~ msgid "Not Authorized"
+#~ msgstr "Ikke authorisert"

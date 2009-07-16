@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-06-27 20:13+0200\n"
+"POT-Creation-Date: 2009-07-16 09:46+0200\n"
 "PO-Revision-Date: 2009-06-19 11:31+0200\n"
 "Last-Translator: Tomas Cerha <cerha@brailcom.org>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
@@ -15,69 +15,84 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../lib/wiking/cms/appl.py:56
-msgid "Manage this site"
-msgstr "Správa obsahu"
+#: ../lib/wiking/configuration.py:173
+msgid "Webmaster's e-mail address"
+msgstr "E-mailová adresa správce"
 
-#: ../lib/wiking/cms/appl.py:57
-msgid "Enter the Wiking Management Interface"
-msgstr "Vstoupit do rozhraní správy obsahu"
+#: ../lib/wiking/configuration.py:184
+msgid "Default sender address"
+msgstr "Výchozí adresa odesílatele"
 
-#: ../lib/wiking/cms/appl.py:59
-msgid "Leave the Management Interface"
-msgstr "Opustit rozhraní správy obsahu"
+#: ../lib/wiking/configuration.py:200
+msgid "Force HTTPS login"
+msgstr "Vynutit HTTPS pro přihlášení"
 
-#: ../lib/wiking/cms/appl.py:90
-msgid "Wiking Management Interface"
-msgstr "Rozhraní správy obsahu"
-
-#: ../lib/wiking/cms/configuration.py:35
-msgid "Allow login panel"
-msgstr "Zobrazit panel přihlášení"
-
-#: ../lib/wiking/cms/configuration.py:36
+#: ../lib/wiking/configuration.py:201
 msgid ""
-"If enabled, the information about the currently logged user and login/logout "
-"controls will be present on each page as a separate panel.  This panel will "
-"always be the first panel on the page."
+"If enabled, the login form will always be redirected to an HTTPS address to "
+"ensure the security of the submitted credentials.  This, however, requires "
+"your server to be setup to accept HTTPS requests for the same virtual host "
+"and pass them to Wiking."
 msgstr ""
-"Pokud tuto volbu povolíte, informace o právě přihlášeném uživateli a "
-"ovládací prvky pro přihlášení/odhlášení budou zobrazeny v samostatném "
-"panelu.  Tento panel bude vždy zobrazen jako první z panelů."
+"Pokud je povoleno, přihlašovací formulář bude vždy přesměrován na HTTPS "
+"adresu aby byla zajištěna bezpečnost přenášených přihlašovacích údajů.  To "
+"ovšem vyžaduje, aby byl server zkonfigurován pro obsluhu HTTPS požadavků pro "
+"stejný virtuální server a aby tyto požadavky byly předávány systému Wiking."
 
-#: ../lib/wiking/cms/configuration.py:42
-msgid "Allow WMI link"
-msgstr "Povolit odkaz do správcovského rozhraní"
+#: ../lib/wiking/configuration.py:242
+msgid "Site title"
+msgstr "Název portálu"
 
-#: ../lib/wiking/cms/configuration.py:48
-msgid "Allow new user registration"
-msgstr "Umožnit registraci nových uživatelů"
-
-#: ../lib/wiking/cms/configuration.py:49
+#: ../lib/wiking/configuration.py:243
 msgid ""
-"If enabled, all visitors are allowed to create a user account.  If disabled, "
-"new user accounts must be created by administrator.  Note, that the newly "
-"created accounts are inactive (at least with the default implementation of "
-"the user management module), so the creation of the account doesn't give the "
-"user any actual privileges."
+"Site title is a short and (hopefully) unique title of the whole website. It "
+"will appear at the top of every page."
 msgstr ""
-"Pokud je povoleno, všem návštěvníkům je umožněno se zaregistrovat jako "
-"uživatel a vytvořit tak uživatelský účet.  Pokud tuto možnost zakážete, "
-"budou všechy účty vytvářeny administrátorem.  Nově vytvořené účty jsou vždy "
-"neaktivní (alespoň ve výchozí implementaci modulu správy uživatelů), takže "
-"vytvoření účtu ještě samo o sobě uživateli nedává žádná práva."
+"Tento název by měl krátce a pokud možno jednoznačně označovat celý portál.  "
+"Název bude zobrazen v záhlaví každé stránky."
 
-#: ../lib/wiking/cms/configuration.py:58
-msgid "Maximal upload size"
-msgstr "Maximální velikost pro upload"
+#: ../lib/wiking/configuration.py:248
+msgid "Site subtitle"
+msgstr "Podtitul portálu"
 
-#: ../lib/wiking/cms/configuration.py:59
+#: ../lib/wiking/configuration.py:249
 msgid ""
-"The maximal size of uploaded files in bytes.  The server needs to be "
-"relaoded for the changes in this option to take effect."
+"Site subtitle is an optional more descriptive title of the website.  It will "
+"appear at the top of every page together with site title, but where brevity "
+"matters, only title will be used."
 msgstr ""
-"Maximální velikost souborů přenášených na server (celé číslo v bajtech).  "
-"Pozor, aby se změny této volby uplatnily, je nutné server restartovat."
+"Podtitul je nepovinný podrobnější popis portálu.  Bude také zobrazen v "
+"záhlaví každé stránky, ale v situacích, kde je nutná stručnost bude vynechán."
+
+#: ../lib/wiking/configuration.py:259
+msgid "Default language"
+msgstr "Výchozí jazyk"
+
+#: ../lib/wiking/configuration.py:260
+msgid ""
+"Defines the language (lowercase ISO 639-1 Alpha-2 code) to be used when "
+"content language negotiation fails. If not set (which is the default), the "
+"server will issue a 606 HTTP error (Not acceptable) when the document is not "
+"available in any of the requested languages. The error page will contain a "
+"description of the problem and a list of available language variants of the "
+"requested document. The negotiation is based on the browser setting of "
+"user's language preference passed through the 'Accept-Language' HTTP header. "
+"If set, Wiking will automatically serve given language variant instead of "
+"issuing the error if that variant is available.  If unavailable, the 606 "
+"error is raised anyway, so you need to make sure that all documents are "
+"available at least in the default language variant if you want to avoid 606 "
+"errors completely."
+msgstr ""
+
+#: ../lib/wiking/configuration.py:339
+msgid "Whether to use e-mails as login names"
+msgstr "Použít e-mailové adresy jako přihlašovací jméno"
+
+#: ../lib/wiking/configuration.py:340
+msgid "Iff true, users must use e-mail addresses as their login names."
+msgstr ""
+"Je-li nastaveno, uživatelé musí jako svá přihlašovací jména používat e-"
+"mailové adresy."
 
 #: ../lib/wiking/cms/cms.py:58
 msgid "formatting manual"
@@ -142,14 +157,6 @@ msgstr "Zadejte své přihlašovací jméno, nebo e-mailovou adresu"
 #: ../lib/wiking/cms/cms.py:168
 msgid "Submit"
 msgstr "Odeslat"
-
-#: ../lib/wiking/cms/cms.py:179
-msgid "Good Bye"
-msgstr "Na shledanou"
-
-#: ../lib/wiking/cms/cms.py:179
-msgid "You have been logged out."
-msgstr "Odhlášení proběhlo úspěšně."
 
 #: ../lib/wiking/cms/cms.py:191
 msgid "Password reminder"
@@ -1503,84 +1510,75 @@ msgstr "Použít jako vzor"
 msgid "Edit this mail for repeated use"
 msgstr "Upravit tento mail pro nové použití"
 
-#: ../lib/wiking/configuration.py:173
-msgid "Webmaster's e-mail address"
-msgstr "E-mailová adresa správce"
+#: ../lib/wiking/cms/appl.py:56
+msgid "Manage this site"
+msgstr "Správa obsahu"
 
-#: ../lib/wiking/configuration.py:184
-msgid "Default sender address"
-msgstr "Výchozí adresa odesílatele"
+#: ../lib/wiking/cms/appl.py:57
+msgid "Enter the Wiking Management Interface"
+msgstr "Vstoupit do rozhraní správy obsahu"
 
-#: ../lib/wiking/configuration.py:200
-msgid "Force HTTPS login"
-msgstr "Vynutit HTTPS pro přihlášení"
+#: ../lib/wiking/cms/appl.py:59
+msgid "Leave the Management Interface"
+msgstr "Opustit rozhraní správy obsahu"
 
-#: ../lib/wiking/configuration.py:201
+#: ../lib/wiking/cms/appl.py:90
+msgid "Wiking Management Interface"
+msgstr "Rozhraní správy obsahu"
+
+#: ../lib/wiking/cms/configuration.py:35
+msgid "Allow login panel"
+msgstr "Zobrazit panel přihlášení"
+
+#: ../lib/wiking/cms/configuration.py:36
 msgid ""
-"If enabled, the login form will always be redirected to an HTTPS address to "
-"ensure the security of the submitted credentials.  This, however, requires "
-"your server to be setup to accept HTTPS requests for the same virtual host "
-"and pass them to Wiking."
+"If enabled, the information about the currently logged user and login/logout "
+"controls will be present on each page as a separate panel.  This panel will "
+"always be the first panel on the page."
 msgstr ""
-"Pokud je povoleno, přihlašovací formulář bude vždy přesměrován na HTTPS "
-"adresu aby byla zajištěna bezpečnost přenášených přihlašovacích údajů.  To "
-"ovšem vyžaduje, aby byl server zkonfigurován pro obsluhu HTTPS požadavků pro "
-"stejný virtuální server a aby tyto požadavky byly předávány systému Wiking."
+"Pokud tuto volbu povolíte, informace o právě přihlášeném uživateli a "
+"ovládací prvky pro přihlášení/odhlášení budou zobrazeny v samostatném "
+"panelu.  Tento panel bude vždy zobrazen jako první z panelů."
 
-#: ../lib/wiking/configuration.py:242
-msgid "Site title"
-msgstr "Název portálu"
+#: ../lib/wiking/cms/configuration.py:42
+msgid "Allow WMI link"
+msgstr "Povolit odkaz do správcovského rozhraní"
 
-#: ../lib/wiking/configuration.py:243
+#: ../lib/wiking/cms/configuration.py:48
+msgid "Allow new user registration"
+msgstr "Umožnit registraci nových uživatelů"
+
+#: ../lib/wiking/cms/configuration.py:49
 msgid ""
-"Site title is a short and (hopefully) unique title of the whole website. It "
-"will appear at the top of every page."
+"If enabled, all visitors are allowed to create a user account.  If disabled, "
+"new user accounts must be created by administrator.  Note, that the newly "
+"created accounts are inactive (at least with the default implementation of "
+"the user management module), so the creation of the account doesn't give the "
+"user any actual privileges."
 msgstr ""
-"Tento název by měl krátce a pokud možno jednoznačně označovat celý portál.  "
-"Název bude zobrazen v záhlaví každé stránky."
+"Pokud je povoleno, všem návštěvníkům je umožněno se zaregistrovat jako "
+"uživatel a vytvořit tak uživatelský účet.  Pokud tuto možnost zakážete, "
+"budou všechy účty vytvářeny administrátorem.  Nově vytvořené účty jsou vždy "
+"neaktivní (alespoň ve výchozí implementaci modulu správy uživatelů), takže "
+"vytvoření účtu ještě samo o sobě uživateli nedává žádná práva."
 
-#: ../lib/wiking/configuration.py:248
-msgid "Site subtitle"
-msgstr "Podtitul portálu"
+#: ../lib/wiking/cms/configuration.py:58
+msgid "Maximal upload size"
+msgstr "Maximální velikost pro upload"
 
-#: ../lib/wiking/configuration.py:249
+#: ../lib/wiking/cms/configuration.py:59
 msgid ""
-"Site subtitle is an optional more descriptive title of the website.  It will "
-"appear at the top of every page together with site title, but where brevity "
-"matters, only title will be used."
+"The maximal size of uploaded files in bytes.  The server needs to be "
+"relaoded for the changes in this option to take effect."
 msgstr ""
-"Podtitul je nepovinný podrobnější popis portálu.  Bude také zobrazen v "
-"záhlaví každé stránky, ale v situacích, kde je nutná stručnost bude vynechán."
+"Maximální velikost souborů přenášených na server (celé číslo v bajtech).  "
+"Pozor, aby se změny této volby uplatnily, je nutné server restartovat."
 
-#: ../lib/wiking/configuration.py:259
-msgid "Default language"
-msgstr "Výchozí jazyk"
+#~ msgid "Good Bye"
+#~ msgstr "Na shledanou"
 
-#: ../lib/wiking/configuration.py:260
-msgid ""
-"Defines the language (lowercase ISO 639-1 Alpha-2 code) to be used when "
-"content language negotiation fails. If not set (which is the default), the "
-"server will issue a 606 HTTP error (Not acceptable) when the document is not "
-"available in any of the requested languages. The error page will contain a "
-"description of the problem and a list of available language variants of the "
-"requested document. The negotiation is based on the browser setting of "
-"user's language preference passed through the 'Accept-Language' HTTP header. "
-"If set, Wiking will automatically serve given language variant instead of "
-"issuing the error if that variant is available.  If unavailable, the 606 "
-"error is raised anyway, so you need to make sure that all documents are "
-"available at least in the default language variant if you want to avoid 606 "
-"errors completely."
-msgstr ""
-
-#: ../lib/wiking/configuration.py:339
-msgid "Whether to use e-mails as login names"
-msgstr "Použít e-mailové adresy jako přihlašovací jméno"
-
-#: ../lib/wiking/configuration.py:340
-msgid "Iff true, users must use e-mail addresses as their login names."
-msgstr ""
-"Je-li nastaveno, uživatelé musí jako svá přihlašovací jména používat e-"
-"mailové adresy."
+#~ msgid "You have been logged out."
+#~ msgstr "Odhlášení proběhlo úspěšně."
 
 #~ msgid ""
 #~ "To generate the request, you can use the OpenSSL package and the attached "
