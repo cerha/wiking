@@ -23,6 +23,10 @@ handle bulk e-mailing request stored in email_spool database table.
 The script must run under a user having sufficient permissions to modify the
 database table.
 
+The script must be invoked with the database name as its argument:
+
+  bulkmailer DATABASE
+
 """
 
 import os
@@ -36,8 +40,7 @@ import wiking
 
 _ = lcg.TranslatableTextFactory('wiking-cms')
 
-def open_database():
-    database = wiking.cfg.dbname
+def open_database(database):
     connection = dbapi.connect(database=database)
     return connection
 
@@ -117,7 +120,8 @@ def mail(connection, pid):
         connection.commit()
 
 def run(argv):
-    connection = open_database()
+    database = argv[1]
+    connection = open_database(database)
     check_obsolete_pids(connection)
     pid = os.getpid()
     mark_spool(connection, pid)
