@@ -2479,9 +2479,12 @@ class Text(Structure):
     _attributes = (Attribute('label', str),
                    Attribute('description', basestring),
                    Attribute('text', basestring),)
+    @classmethod
+    def _module_class(class_):
+        return Texts
     def __init__(self, label, description, text):
         Structure.__init__(self, label=label, description=description, text=text)
-        Texts.register_text(self)
+        self._module_class().register_text(self)
 
     
 class CommonTexts(CMSModule):
@@ -2707,10 +2710,13 @@ class EmailText(Structure):
                    Attribute('text', basestring),
                    Attribute('subject', basestring),
                    Attribute('cc', str, default=''),)
+    @classmethod
+    def _module_class(class_):
+        return Emails
     def __init__(self, label, description, subject, text, **kwargs):
         Structure.__init__(self, label=label, description=description, subject=subject, text=text,
                            **kwargs)
-        Emails.register_text(self)
+        self._module_class().register_text(self)
 
 class Emails(CommonTexts):
     """Management of predefined e-mails.
