@@ -804,7 +804,7 @@ class LoginDialog(lcg.Content):
             uri = req.server_uri(force_https=True) + req.uri()
         else:
             uri = req.uri()
-        result = (self._message and g.p(g.escape(self._message), cls='error') or '') + \
+        result = (self._message and g.div(g.escape(self._message), cls='errors') or '') + \
                  g.form(content, method='POST', action=uri, name='login_form', cls='login-form') +\
                  g.script("onload_ = window.onload; window.onload = function() { "
                           "if (onload_) onload_(); "

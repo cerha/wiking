@@ -9,6 +9,9 @@
 	* lib/wiking/cms/configuration.py: 
 	Translation comments refined.
 
+	* lib/wiking/util.py:
+	Fix css recognition of login dialog error messages.
+
 2009-07-20  Hynek Hanke  <hanke@kropacek>
 
 	* lib/: Comments for translators added to all python sources.
