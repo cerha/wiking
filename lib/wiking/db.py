@@ -40,37 +40,38 @@ class PytisModule(Module, ActionHandler):
         ('duplicate key (value )?violates unique constraint "_?[a-z]+_(?P<id>[a-z_]+)_key"',
          _("This value already exists.  Enter a unique value.")),
         ('null value in column "(?P<id>[a-z_]+)" violates not-null constraint',
-         # Translators: This is about an empty (not filled in) value in a web form. Field means a form field.
+         # Translators: This is about an empty (not filled in) value in a web form. Field means a
+         # form field.
          _("Empty value.  This field is mandatory.")),
         )
 
-    # Translators: Button label. Record as in ,,database record''.
+    # Translators: Button label. Record as in `database record' (computer terminology).
     _INSERT_LABEL = _("New record")
-    # Translators: Button label. Record as in ,,database record''.
+    # Translators: Button label. Record as in `database record' (computer terminology).
     _INSERT_DESCR = _("Create a new record")
-    # Translators: Edit button label. Computer terminology and form common for a webpage button
+    # Translators: Button label. Meaning `Modify the database record' (computer terminology).
     _UPDATE_LABEL = _("Edit")
-    # Translators: Button label. Record as in ,,database record''.
+    # Translators: Button label. Record as in `database record' (computer terminology).
     _UPDATE_DESCR = _("Modify the record")
-    # Translators: Button label.
+    # Translators: Button label. Meaning `Delete the database record' (computer terminology).
     _DELETE_LABEL = _("Remove")
-    # Translators: Button label. Record as in ,,database record''.
+    # Translators: Button label. Record as in `database record' (computer terminology).
     _DELETE_DESCR = _("Remove the record permanently")
-    # Translators: Record as in ,,database record''.
+    # Translators: Record as in `database record' (computer terminology).
     _DELETE_PROMPT = _("Please, confirm removing the record permanently.")
     # Translators: Copy button label. Computer terminology and form common for a webpage button.
     _COPY_LABEL = _("Copy")
-    # Translators: Record as in ,,database record''.
+    # Translators: Record as in `database record' (computer terminology).
     _COPY_DESCR = _("Create new record initialized by values of this record")
     # Translators: Button label.
     _LIST_LABEL = _("Back to list")
-    # Translators: Record as in ,,database record''.
+    # Translators: Record as in `database record' (computer terminology).
     _LIST_DESCR = _("Back to the list of all records")
-    # Translators: Record as in ,,database record''.
+    # Translators: Record as in `database record' (computer terminology).
     _INSERT_MSG = _("New record was successfully inserted.")
-    # Translators: Record as in ,,database record''.
+    # Translators: Record as in `database record' (computer terminology).
     _UPDATE_MSG = _("The record was successfully updated.")
-    # Translators: Record as in ,,database record''.
+    # Translators: Record as in `database record' (computer terminology).
     _DELETE_MSG = _("The record was deleted.")
     
     _OWNER_COLUMN = None
@@ -1118,7 +1119,7 @@ class Panelizable(object):
         if items:
             return items
         else:
-            # Translators: Record as in ,,database record''.
+            # Translators: Record as in `database record'.
             return (lcg.TextContent(_("No records.")),)
 
 
@@ -1126,8 +1127,7 @@ class Panelizable(object):
 class Publishable(object):
     """Mix-in class for modules with publishable/unpublishable records."""
     
-    # Translators: ``Item'' is intentionally general. Could be webpage, notice
-    # or something else.
+    # Translators: `Item' is intentionally general. Could be webpage, notice or something else.
     _MSG_PUBLISHED = _("The item was published.")
     _MSG_UNPUBLISHED = _("The item was unpublished.")
 

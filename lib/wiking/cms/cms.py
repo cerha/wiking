@@ -91,8 +91,8 @@ class WikingManagementInterface(Module, RequestHandler):
     SECTION_SETUP = 'setup'
     SECTION_SERVICES = 'services'
     
-    # Translators: Heading and menu title. Computer idiom meaning
-    # configuration of layout (colors, sizes, positions...)
+    # Translators: Heading and menu title. Computer idiom meaning configuration of appearance
+    # (colors, sizes, positions, graphical presentation...).
     _SECTIONS = ((SECTION_STYLE,   _("Look &amp; Feel"),
                   _("Customize the appearance of your site.")),
                  # Translators: Heading and menu title. 
@@ -102,7 +102,7 @@ class WikingManagementInterface(Module, RequestHandler):
                  (SECTION_SETUP,   _("Setup"),
                   _("Edit global properties of your web site.")),
                  # Translators: Heading and menu title for various
-                 # services (intentionally very general term)
+                 # services (intentionally very general term).
                  (SECTION_SERVICES,   _("Services"),
                   _("Various services.")),
                  )
@@ -138,7 +138,7 @@ class WikingManagementInterface(Module, RequestHandler):
     def menu(self, req):
         modules = _modules()
         variants = self._application.languages()
-        # Translators: Heading and menu title.
+        # Translators: Heading and menu title for website content management.
         return [MenuItem(req.path[0] + '/Pages', _("Content"),
                          descr=_("Manage available pages and their content."),
                          variants=variants)] + \
@@ -526,13 +526,13 @@ class SessionLog(PytisModule):
             Field('duration', _("Duration"), type=Time(exact=True)),
             Field('active', _("Active")),
             Field('ip_address', _("IP address")),
-            # Translators: Computer terminology.
+            # Translators: Internet name of the remote computer (computer terminology).
             Field('hostname', _("Hostname"), virtual=True, computer=computer(self._hostname)),
-            # Translators: "User agent" is a generalized name for browser or more exactly the
-            # software which produced the HTTP request.
+            # Translators: "User agent" is a generalized name for browser or more precisely the
+            # software which produced the HTTP request (was used to access the website).
             Field('user_agent', _("User agent")),
-            # Translators: Computer terminology. Meaning where the user came from. Do not translate
-            # HTTP.
+            # Translators: Meaning where the user came from. Computer terminology. Do not translate
+            # "HTTP" and if unsure, don't translate at all (it is a very technical term).
             Field('referer', _("HTTP Referer")))
         def _hostname(self, row, ip_address):
             try:
@@ -717,9 +717,10 @@ class Panels(CMSModule, Publishable):
 
     """
     class Spec(Specification):
-        # Translators: Panels are small windows containing different
-        # things (such as news or sponsorship reference) displayed by
-        # the side of a webpage.
+        # Translators: Panels are small windows containing different things (such as recent news,
+        # application specific controls, sponsorship reference etc.) displayed by the side of a
+        # webpage.  To avoid confusion, we should avoid terms such as "windows", "frames"
+        # etc. which all have their specific meaning in computer terminology.
         title = _("Panels")
         help = _(u"Manage panels – the small windows shown by the side of "
                  "every page.")
@@ -806,7 +807,7 @@ class Languages(CMSModule):
 
     """
     class Spec(Specification):
-        # Translators: Heading and menu item
+        # Translators: Heading and menu item for language configuration section.
         title = _("Languages")
         help = _("Manage available languages.")
         fields = (
@@ -823,7 +824,7 @@ class Languages(CMSModule):
         layout = ('lang',)
         columns = ('lang', 'name')
     _REFERER = 'lang'
-    # Translators: Do not translate this
+    # Translators: Do not translate this.
     _TITLE_TEMPLATE = _('%(name)s')
     WMI_SECTION = WikingManagementInterface.SECTION_SETUP
     WMI_ORDER = 200
@@ -848,9 +849,8 @@ class Themes(CMSModule):
                              "language, etc.")),
               _Field('link', _("Link")),
               _Field('link-visited', _("Visited link")),
-              # Translators: Computer terminology. Term for how a
-              # website hyperlink changes when you move mouse cursor
-              # over it
+              # Translators: Computer terminology. Term for how a website hyperlink changes when
+              # you move mouse cursor over it.
               _Field('link-hover', _("Hover link"),
                      descr=_("Used for changing the link color when the user moves the mouse "
                              "pointer over it.")),
@@ -898,10 +898,11 @@ class Themes(CMSModule):
               _Field('help', _("Form help text")),
               _Field('inactive-folder', _("Inactive folder")))),
             )
-        # Translators: ''Color Themes'' is computer terminology.
-        # Similar to color styles.
+        # Translators: "Color Themes" is computer terminology.  Predefined sets of colors to be
+        # used for changing the visual appearance of a web page/application.  Similar to color
+        # styles.
         title = _("Color Themes")
-        # Translators: Message from help.
+        # Translators: Describes more precisely the meaing of "Color Themes" section.
         help = _("Manage available color themes.")
         def fields(self):
             fields = [Field('theme_id'),
@@ -996,18 +997,21 @@ class Pages(CMSModule):
             Field('_content', _("Content"), compact=True, height=20, width=80,
                   descr=_STRUCTURED_TEXT_DESCR), #type=pd.StructuredText()),
             Field('content'),
-            # Translators: Module meaning an independent part of a program (here a module of Wiking)
+            # Translators: "Module" is an independent reusable part of a computer program (here a
+            # module of Wiking CMS).
             Field('modname', _("Module"), display=_modtitle, prefer_display=True, not_null=False,
                   enumerator=enum([_m.name() for _m in _modules() if issubclass(_m, Embeddable) \
                                    and _m not in (EmbeddableCMSModule, CMSExtension)]),
                   descr=_("Select the extension module to embed into the page.  Leave blank for "
                           "an ordinary text page.")),
-            # Translators: An item (a page in this case) in the hierarchical tree of items (pages)
+            # Translators: "Parent item" has the meaning of hierarchical position.  More precise
+            # term might be "Superordinate item" but doesn't sound that nice in English.  The term
+            # "item" represents a page, but also a menu item.
             Field('parent', _("Parent item"), codebook='Mapping', not_null=False,
                   descr=_("Select the superordinate item in page hierarchy.  Leave blank for "
                           "a top-level page.")),
-            # Translators: Configuration option followed by a checkbox
-            # whether the page is published. Passive form of publish.
+            # Translators: Configuration option determining whether the page is published or not
+            # (passive form of publish).  The label may be followed by a checkbox.
             Field('published', _("Published"), default=False,
                   descr=_("Allows you to control the availability of this page in each of the "
                           "supported languages (switch language to control the availability in "
@@ -1017,12 +1021,12 @@ class Pages(CMSModule):
             Field('status', _("Status"), virtual=True, computer=computer(self._status)),
             Field('hidden', _("Hidden"),
                   descr=_("Check if you don't want this page to appear in the menu.")),
-            # Translators: Configuration option followed by an input field. Means order
-            # in the sense of sequence. What is first and what next.
+            # Translators: Page configuration option followed by an input field. Means order in the
+            # sense of sequence. What is first and what next.
             Field('ord', _("Menu order"), width=6, editable=ALWAYS,
                   descr=_("Enter a number denoting the order of the page in the menu.  Leave "
                           "blank if you want to put the page automatically to the end.")),
-            Field('tree_order', _("Tree level"), type=pd.TreeOrder()),
+            Field('tree_order', type=pd.TreeOrder()),
             #Field('group', virtual=True,
             #      computer=computer(lambda r, tree_order: tree_order.split('.')[1])),
             Field('owner', _("Owner"), codebook='Users', not_null=False,
@@ -1043,7 +1047,7 @@ class Pages(CMSModule):
         #group_heading = 'title'
         layout = (FieldSet(_("Page Text (for the current language)"),
                            ('title', 'description', 'status', '_content')),
-                  # Translators: Options meaning configuration settings.
+                  # Translators: Options meaning page configuration settings.
                   FieldSet(_("Global Options (for all languages)"),
                            (('identifier', 'parent',),
                             ('hidden', 'ord'),
@@ -1081,7 +1085,7 @@ class Pages(CMSModule):
     _UPDATE_LABEL = _("Edit Text")
     _UPDATE_DESCR = _("Edit title, description and content for the current language")
     _ACTIONS = (
-        # Translators: Button label. Configuration options.
+        # Translators: Button label. Page configuration options.
         Action(_("Options"), 'options',
                descr=_("Edit global (language independent) page options and menu position")),
         Action(_("Publish"), 'commit', descr=_("Publish the page in its current state"),
@@ -1449,7 +1453,7 @@ class Attachments(CMSModule):
             Field('description', _("Description"), height=3, width=60, maxlen=240,
                   descr=_("Optional description used for the listing of attachments (see below).")),
             Field('ext', virtual=True, computer=computer(self._ext)),
-            # Translators: Size of text, in number of bytes.
+            # Translators: Size of a file, in number of bytes, kilobytes etc.
             Field('bytesize', _("Size"),
                   computer=computer(lambda r, file: file and pp.format_byte_size(len(file)))),
             Field('listed', _("Listed"), default=True,
@@ -1727,7 +1731,7 @@ class News(EmbeddableCMSModule):
     class Spec(Specification):
         # Translators: Section title and menu item
         title = _("News")
-        # Translators: Help string.
+        # Translators: Help string describing more precisely the meaning of the "News" section.
         help = _("Publish site news.")
         def fields(self): return (
             Field('news_id', editable=NEVER),
@@ -1763,7 +1767,7 @@ class News(EmbeddableCMSModule):
     _OWNER_COLUMN = 'author'
     _EMBED_BINDING_COLUMN = 'mapping_id'
     _PANEL_FIELDS = ('date', 'title')
-    # Translators: Button label
+    # Translators: Button label for creating a new message in "News".
     _INSERT_LABEL = _("New message")
     _RSS_TITLE_COLUMN = 'title'
     _RSS_DESCR_COLUMN = 'content'
@@ -1874,12 +1878,11 @@ class Stylesheets(Stylesheets):
 class Styles(CMSModule):
     """Manage available Cascading Stylesheets through a Pytis data object."""
     class Spec(Specification):
-        # Translators: Section heading and menu item. Meaning the
-        # graphical appearance. Computer terminology.
+        # Translators: Section heading and menu item. Meaning the visual appearance. Computer
+        # terminology.
         title = _("Stylesheets")
         table = 'stylesheets'
-        # Translators: Help string. Cascading stylesheet (CSS) is
-        # computer terminology idiom.
+        # Translators: Help string. Cascading stylesheet (CSS) is computer terminology idiom.
         help = _("Manage available Cascading Stylesheets.")
         fields = (
             Field('stylesheet_id'),
@@ -1969,7 +1972,7 @@ class Users(CMSModule):
             Field('email', _("E-mail"), width=36, constraints=(self._check_email,)),
             Field('phone', _("Phone")),
             Field('address', _("Address"), width=20, height=3),
-            # Translators: Do not translate.
+            # Translators: Do not translate (means Uniform Resource Identifier).
             Field('uri', _("URI"), width=36),
             Field('since', _("Registered since"), type=DateTime(show_time=False), default=now),
             Field('role', _("Role"), display=self._rolename, prefer_display=True, default='none',

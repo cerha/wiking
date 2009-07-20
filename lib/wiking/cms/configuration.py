@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2006, 2007, 2008 Brailcom, o.p.s.
+# Copyright (C) 2006, 2007, 2008, 2009 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -32,7 +32,7 @@ class CMSConfiguration(pc):
     """CMS Specific Configuration."""
         
     class _Option_allow_login_panel(pc.BooleanOption):
-        # Translators: Yes/No configuration label. Should the login panel be visible?
+        # Translators: Yes/No configuration option label. Should the login panel be visible?
         _DESCR = _("Allow login panel")
         _DOC = _("If enabled, the information about the currently logged user and login/logout "
                  "controls will be present on each page as a separate panel.  This panel will "
@@ -40,14 +40,18 @@ class CMSConfiguration(pc):
         _DEFAULT = True
 
     class _Option_allow_wmi_link(pc.BooleanOption):
-        # Translators: Yes/No configuration label. Should a certain link be visible?
+        # Translators: Yes/No configuration option label. Should link to WMI be visible?  "WMI"
+        # stands for Wiking Management Interface.  Don't feel obliged to use an abbreviation.  Use
+        # whatever brief form obviously referning to whatever translation you used for "Wiking
+        # Management Interface".
         _DESCR = _("Allow WMI link")
         _DOC = ("Set to true to disable the link to the Wiking Management Interface in page "
                 "footer.")
         _DEFAULT = True
 
     class _Option_allow_registration(pc.BooleanOption):
-        # Translators: Yes/no configuration label. Can new users register?
+        # Translators: Yes/no configuration label. Can new users register to this
+        # website/application?
         _DESCR = _("Allow new user registration")
         _DOC = _("If enabled, all visitors are allowed to create a user account.  If disabled, "
                  "new user accounts must be created by administrator.  Note, that the newly "
@@ -58,7 +62,7 @@ class CMSConfiguration(pc):
 
 
     class _Option_upload_limit(pc.NumericOption):
-        # Translators: Maximal size an uploaded file can have
+        # Translators: Maximal size an uploaded file can have.
         _DESCR = _("Maximal upload size")
         _DOC = _("The maximal size of uploaded files in bytes.  The server "
                  "needs to be relaoded for the changes in this option to take effect.")
