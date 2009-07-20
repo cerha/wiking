@@ -197,6 +197,7 @@ class Configuration(pc):
         _DEFAULT = 443
         
     class _Option_force_https_login(pc.BooleanOption):
+        # Translation: ``Force'' means ,,do not allow otherwise'', sentence in imperative followed by a checkbox.
         _DESCR = _("Force HTTPS login")
         _DOC = _("If enabled, the login form will always be redirected to an HTTPS address "
                  "to ensure the security of the submitted credentials.  This, however, requires "
@@ -239,12 +240,14 @@ class Configuration(pc):
         _DEFAULT = '/var/lib/wiking'
         
     class _Option_site_title(pc.StringOption):
+        # Translators: Site means a webpage or web application.
         _DESCR = _("Site title")
         _DOC = _("Site title is a short and (hopefully) unique title of the whole website. "
                  "It will appear at the top of every page.")
         _DEFAULT = 'Wiking site'
 
     class _Option_site_subtitle(pc.StringOption):
+        # Translators: Site means a webpage or web application. Subtitle as in ,,title -- subtitle''.
         _DESCR = _("Site subtitle")
         _DOC = _("Site subtitle is an optional more descriptive title of the website.  It will "
                  "appear at the top of every page together with site title, but where brevity "
@@ -252,10 +255,13 @@ class Configuration(pc):
         _DEFAULT = None
         
     class _Option_theme(pc.Option):
+        # Translators: ,,Color theme'' and ,,stylesheet'' are computer
+        # terminology.  This is a label of a settings dialog where the
+        # user can select a color set (theme) for his website.
         _DESCR = "Color theme for stylesheet color substitutions."
         _DEFAULT = Theme()
 
-    class _Option_default_language(pc.StringOption):
+    class _Option_default_language(pc.StringOption):        
         _DESCR = _("Default language")
         _DOC = _("Defines the language (lowercase ISO 639-1 Alpha-2 code) to be used when "
                  "content language negotiation fails. If not set (which is the default), the "
@@ -272,6 +278,8 @@ class Configuration(pc):
         _DEFAULT = None
             
     class _Option_default_language_by_domain(pc.Option):
+        # Translators: Settings label. Meaning default language
+        # according to the domain a user comes from
         _DESCR = "Default language by server domain name"
         _DOC = ("Allows setting different default language based on the server domain name.  The "
                 "value is a dictionary, where the server name is a key and language code is "
@@ -281,6 +289,7 @@ class Configuration(pc):
         _DEFAULT = {}
         
     class _Option_language_selection_image(pc.StringOption):
+        # Translators: Settings label. URI means a link. Do not translate ''URI''.
         _DESCR = "URI of images used in language selection menu."
         _DOC = ("If defined, the language selection links will include images (typically national "
                 "flags).  The value is a string where '%s' is replaced by the language code of a "

@@ -32,6 +32,7 @@ class CMSConfiguration(pc):
     """CMS Specific Configuration."""
         
     class _Option_allow_login_panel(pc.BooleanOption):
+        # Translators: Yes/No configuration label. Should the login panel be visible?
         _DESCR = _("Allow login panel")
         _DOC = _("If enabled, the information about the currently logged user and login/logout "
                  "controls will be present on each page as a separate panel.  This panel will "
@@ -39,12 +40,14 @@ class CMSConfiguration(pc):
         _DEFAULT = True
 
     class _Option_allow_wmi_link(pc.BooleanOption):
+        # Translators: Yes/No configuration label. Should a certain link be visible?
         _DESCR = _("Allow WMI link")
         _DOC = ("Set to true to disable the link to the Wiking Management Interface in page "
                 "footer.")
         _DEFAULT = True
 
     class _Option_allow_registration(pc.BooleanOption):
+        # Translators: Yes/no configuration label. Can new users register?
         _DESCR = _("Allow new user registration")
         _DOC = _("If enabled, all visitors are allowed to create a user account.  If disabled, "
                  "new user accounts must be created by administrator.  Note, that the newly "
@@ -55,6 +58,7 @@ class CMSConfiguration(pc):
 
 
     class _Option_upload_limit(pc.NumericOption):
+        # Translators: Maximal size an uploaded file can have
         _DESCR = _("Maximal upload size")
         _DOC = _("The maximal size of uploaded files in bytes.  The server "
                  "needs to be relaoded for the changes in this option to take effect.")

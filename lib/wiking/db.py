@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Copyright (C) 2005-2009 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
@@ -39,22 +40,37 @@ class PytisModule(Module, ActionHandler):
         ('duplicate key (value )?violates unique constraint "_?[a-z]+_(?P<id>[a-z_]+)_key"',
          _("This value already exists.  Enter a unique value.")),
         ('null value in column "(?P<id>[a-z_]+)" violates not-null constraint',
+         # Translators: This is about an empty (not filled in) value in a web form. Field means a form field.
          _("Empty value.  This field is mandatory.")),
         )
-    
+
+    # Translators: Button label. Record as in ,,database record''.
     _INSERT_LABEL = _("New record")
+    # Translators: Button label. Record as in ,,database record''.
     _INSERT_DESCR = _("Create a new record")
+    # Translators: Edit button label. Computer terminology and form common for a webpage button
     _UPDATE_LABEL = _("Edit")
+    # Translators: Button label. Record as in ,,database record''.
     _UPDATE_DESCR = _("Modify the record")
+    # Translators: Button label.
     _DELETE_LABEL = _("Remove")
+    # Translators: Button label. Record as in ,,database record''.
     _DELETE_DESCR = _("Remove the record permanently")
+    # Translators: Record as in ,,database record''.
     _DELETE_PROMPT = _("Please, confirm removing the record permanently.")
+    # Translators: Copy button label. Computer terminology and form common for a webpage button.
     _COPY_LABEL = _("Copy")
+    # Translators: Record as in ,,database record''.
     _COPY_DESCR = _("Create new record initialized by values of this record")
+    # Translators: Button label.
     _LIST_LABEL = _("Back to list")
+    # Translators: Record as in ,,database record''.
     _LIST_DESCR = _("Back to the list of all records")
+    # Translators: Record as in ,,database record''.
     _INSERT_MSG = _("New record was successfully inserted.")
+    # Translators: Record as in ,,database record''.
     _UPDATE_MSG = _("The record was successfully updated.")
+    # Translators: Record as in ,,database record''.
     _DELETE_MSG = _("The record was deleted.")
     
     _OWNER_COLUMN = None
@@ -621,6 +637,7 @@ class PytisModule(Module, ActionHandler):
         return prefill
 
     def _binding_condition(self, binding, record):
+        # What is binding condition??
         cfunc = binding.condition()
         if cfunc:
             condition = cfunc(record)
@@ -927,6 +944,7 @@ class PytisModule(Module, ActionHandler):
                 return self._redirect_after_delete(req, record)
         form = self._form(pw.ShowForm, req, record)
         actions = (Action(self._DELETE_LABEL, 'delete', allow_referer=False, submit=1),
+                   # Translators: Back button label. Standard computer terminology.
                    Action(_("Back"), 'view'))
         action_menu = self._action_menu(req, record, actions)
         return self._document(req, (form, action_menu), record, err=err,
@@ -1019,6 +1037,7 @@ class RssModule(object):
     def _rss_info(self, req, lang=None):
         # Argument lang is unused (defined only for backwards compatibility).
         if self._RSS_TITLE_COLUMN is not None:
+            # Translators: RSS channel is a computer idiom, see Wikipedia.
             return lcg.p(_("An RSS channel is available for this section:"), ' ',
                          lcg.link(self._rss_channel_uri(req),
                                   self._rss_channel_title(req)+' RSS',
@@ -1099,6 +1118,7 @@ class Panelizable(object):
         if items:
             return items
         else:
+            # Translators: Record as in ,,database record''.
             return (lcg.TextContent(_("No records.")),)
 
 
@@ -1106,6 +1126,8 @@ class Panelizable(object):
 class Publishable(object):
     """Mix-in class for modules with publishable/unpublishable records."""
     
+    # Translators: ``Item'' is intentionally general. Could be webpage, notice
+    # or something else.
     _MSG_PUBLISHED = _("The item was published.")
     _MSG_UNPUBLISHED = _("The item was unpublished.")
 

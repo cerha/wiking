@@ -324,7 +324,8 @@ class Application(Module):
         
     def _powered_by_wiking(self):
         import wiking
-        # Translators: This is followed by Wiking link and version number.
+        # Translators: Website idiom. This is followed by information on the underlying software tools.
+        # Means: This website runs on [...this and that software...].
         return (_("Powered by"), ' ',
                 lcg.link('http://www.freebsoft.org/wiking', 'Wiking'), ' ', wiking.__version__)
         
@@ -363,6 +364,7 @@ class Application(Module):
                    "W3C-WAI Web Content Accessibility Guidelines."),
                   ("Section 508",
                    "http://www.section508.gov",
+                   # Translators: Title of a document
                    _("US Government Section 508 Accessibility Guidelines.")))]
         doc = req.module_uri('Documentation')
         class A11yStatement(lcg.Content):
@@ -374,8 +376,11 @@ class Application(Module):
                 else:
                     return ''
         contact = cfg.webmaster_address
+        # Translators: "Site" means a website.
         return (lcg.p(_("This site conforms to the following standards:"), ' ',
                       lcg.join(links, separator=', ')),
-                lcg.p(_("This site can be viewed in ANY browser."), A11yStatement()),
+                # Translators: "Site" means a website. "Browser" is an internet browser.
+                # Leave the translation for ``any'' in capitals.
+                lcg.p(_("This site can be viewed in ANY browser."), A11yStatement()),              
                 lcg.p(_("Contact:"), ' ', lcg.link("mailto:"+ contact, contact)))
     

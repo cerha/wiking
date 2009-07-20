@@ -65,6 +65,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         'bottom':  _("Page footer"),
         'language_selection': _("Language selection"),
     }
+    # Translators: Label for language selection followed by list of languages
     _LANGUAGE_SELECTION_LABEL = _("Language:")
     _MESSAGE_TYPE_CLASS = {WikingRequest.INFO: 'info',
                            WikingRequest.WARNING: 'warning',
@@ -178,6 +179,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         
     def _breadcrumbs(self, context):
         links = [lcg.link(n).export(context) for n in context.node().path()[1:]]
+        # Translators: A label followed by location information in webpage navigation
         return _("You are here:") + ' ' + concat(links, separator=' / ')
         
     def _menu(self, context):
@@ -206,6 +208,8 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             # If there is the main menu, this is its submenu, but if the main menu is empty, this
             # menu acts as the main menu.
             title = _("Local navigation")
+            # Translators: Heding of webpage navigation menu
+            # containing a list of links to pages in this web section
             heading = _("In this section:")
             name = 'local-navigation'
         else:
@@ -222,6 +226,8 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         if not panels:
             return None
         if not context.req().show_panels():
+            # Translators: Panels are small windows on the side of the page. This is a label
+            # for a link that shows/hides the panels.
             return g.link(_("Show panels"), "?show_panels=1", cls='panel-control show')
         result = [g.link(_("Hide panels"), "?hide_panels=1", cls='panel-control hide')]
         for panel in panels:
@@ -233,6 +239,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             if channel:
                 icon = context.node().resource('feed-icon-small.png')
                 if icon:
+                    # Translators: ``RSS channel'' is terminology idiom, see Wikipedia
                     channel_title = channel.title() +' ('+ _("RSS channel") +')'
                     img = g.img(context.uri(icon), align='right', alt=channel_title)
                     link = g.link(img, channel.uri(), title=channel_title,
@@ -271,6 +278,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
     
     def _last_change(self, context):
         # Currently unused, left here just to have the translation.
+        # Translators: Information about last change of a webpage (when and who)
 	return _("Last change: %(date)s, %(user)s")
 
     def _bottom_bar(self, context):

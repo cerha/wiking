@@ -53,6 +53,8 @@ class RequestError(Exception):
 class AuthenticationError(RequestError):
     """Error indicating that authentication is required for the resource."""
     
+    # Translators: This is a warning on a webpage which is only
+    # accessible for logged in users
     _TITLE = _("Authentication required")
 
     def message(self, req):
@@ -75,6 +77,7 @@ class PasswordExpirationError(RequestError):
                           "security reasons until you change your password."))
         uri = req.application().password_change_uri(req)
         if uri:
+            # Translators: This is a link on a webpage
             content = (content, lcg.p(lcg.link(uri, _("Change your password"))))
         return content
 
@@ -82,6 +85,7 @@ class PasswordExpirationError(RequestError):
 class AuthorizationError(RequestError):
     """Error indicating that the user doesn't have privilegs for the action."""
     
+    # Translators: An error message
     _TITLE = _("Access Denied")
 
     def message(self, req):
@@ -166,12 +170,14 @@ class Forbidden(HttpError):
 class NotAcceptable(HttpError):
     """Error indicating unavailability of the resource in requested language."""
     ERROR_CODE = 406
+    # Translators: Title of a dialog on webpage
     _TITLE = _("Language selection")
     
     def message(self, req):
         msg = (lcg.p(_("The resource '%s' is not available in either of the requested languages.",
                        req.uri())),)
         if self.args:
+            # Translators: Meaning language variants. A selection of links to various language versions follows.
             msg += (lcg.p(_("The available variants are:")), 
                     lcg.ul([lcg.link("%s?setlang=%s" % (req.uri(), l), label=lcg.language_name(l))
                             for l in self.args[0]]))
@@ -211,6 +217,9 @@ class MaintananceModeError(HttpError):
     _TITLE = _("Maintenance mode")
 
     def message(self, req):
+        # Translators: Meaning that the system (webpage) does not work
+        # now because we are updating/fixing something but will work
+        # again after the maintaince is finished.
         return lcg.p(_("The system is temporarily down for maintenance."))
     
 
@@ -356,6 +365,8 @@ class Panel(object):
     
     def accessible_title(self):
         return self._accessible_title
+
+    # TODO: navigable ....
     
     def content(self):
         return self._content
@@ -397,6 +408,7 @@ class LoginPanel(Panel):
                 if expiration:
                     import datetime
                     if datetime.date.today() >= expiration:
+                        # Translators: Information text on login panel.
                         result += g.br() +'\n'+ _("Your password expired")
                     else:
                         date = lcg.LocalizableDateTime(str(expiration))
@@ -404,7 +416,7 @@ class LoginPanel(Panel):
                         result += g.br() +'\n'+ _("Your password expires on %(date)s", date=date)
                 uri = appl.password_change_uri(req)
                 if uri:
-                    # Translators: Login panel link.
+                    # Translators: Link on login panel on the webpage.
                     result += g.br() +'\n'+ g.link(_("Change your password"), uri)
             else:
                 uri = appl.registration_uri(req)
@@ -677,12 +689,15 @@ class ActionMenu(lcg.Container):
     """A set of action controls."""
     
     def __init__(self, uri, actions, referer, name, row=None,
-                 # Translators: Label in front of action buttons.
+                 # Translators: A set of buttons for various actions
+                 # (edit, delete, atc.) is prepended with this label.
                  title=_("Actions:"), help=None, cls='actions'):
         # Only Wiking's actions are considered, not all `pytis.presentation.Action'.
         ctrls = [ActionCtrl(uri, a, referer, name, row)
                  for a in actions]
         if help:
+            # Translators: Link or button leading to
+            # documentation/help. Use standard computer terminlogy.
             ctrls.append(lcg.link(help, _("Help")))
         super(ActionMenu, self).__init__(ctrls)
         self._title = title
@@ -725,12 +740,12 @@ class LoginCtrl(lcg.Content):
             if user.auto_authentication():
                 cmd = label = None
             else:
-                # Translators: Logout button label - verb in imperative.
+                # Translators: Logout button label -- verb in imperative.
                 cmd, label = ('logout', _("log out"))
         else:
-            # Translators: Login status info.  If logged, the username is displayed instaed. 
+            # Translators: Login status info.  If logged, the username is displayed instead. 
             username = _("not logged")
-            # Translators: Login button label - verb in imperative.
+            # Translators: Login button label -- verb in imperative.
             cmd, label = ('login', _("log in"))
         if cmd is None:
             result = username
@@ -742,7 +757,7 @@ class LoginCtrl(lcg.Content):
                 link = lcg.concat(g.span('[', cls="hidden"), link, g.span(']',cls="hidden"))
             result = lcg.concat(username, ' ', link)
         if self._inline:
-            # Translators: Login info label (noun) followed by login name and login controls.
+            # Translators: Login info label (noun) followed by login name and other info.
             result = lcg.concat(_("Login"), ': ', result)
         return result
 
@@ -777,6 +792,7 @@ class LoginDialog(lcg.Content):
             g.submit(_("Log in"), cls='submit'),)
         appl = req.application()
         links = [g.link(label, uri) for label, uri in
+                 # Translators: Webpage link leading to registration form.
                  ((_("New user registration"), appl.registration_uri(req)),
                  # Translators: Login dialog link to password change or password reminder (depends
                  # on configuration).
