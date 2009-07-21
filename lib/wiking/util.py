@@ -1416,12 +1416,38 @@ def cmp_versions(v1, v2):
             return c
     return 0
 
+_ABS_URI_MATCHER = re.compile(r'^((https?|ftp)://[^/]+)(.*)$')
+
 def make_uri(base, *args, **kwargs):
-    """Return a URI constructed from given base URI and args."""
+    """Return a URI constructed from given base URI and args.
+
+    Arguments:
+    
+      base -- base URI.  May be a relative path, such as '/xx/yy', absolute URI, such as
+        'http://host.domain.com/xx/yy' or a mailto URI, such as 'mailto:name@domain.com'.
+
+      *args -- pairs (NAME, VALUE) representing arguments appended to base uri in the order in
+         which they appear.
+         
+      **kwargs -- keyword arguments representing additional arguments to append to the URI.  Use
+        'kwargs' if you don't care about the order of arguments in the returned URI, otherwise use
+        'args'.
+
+    The URI and the arguments may be unicode strings.  All strings are properly encoded in the
+    returned URI.
+
+    """
     # TODO: The string passed to urllib.quote must be already encoded, but we don't know which
     # encoding will be used in the context, where the URI is used.  We just rely on the fact, thet
     # LCG uses UTF-8.
-    uri = urllib.quote(base.encode('utf-8'))
+    if base.startswith('mailto:'):
+        uri = base
+    else:
+        match = _ABS_URI_MATCHER.match(base)
+        if match:
+            uri = match.group(1) + urllib.quote(match.group(3).encode('utf-8'))
+        else:
+            uri = urllib.quote(base.encode('utf-8'))
     if args and isinstance(args[0], basestring):
         uri += '#'+ urllib.quote(unicode(args[0]).encode('utf-8'))
         args = args[1:]
