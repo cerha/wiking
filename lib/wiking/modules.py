@@ -188,6 +188,8 @@ class Documentation(DocumentHandler):
             basedir = lcg.config.doc_dir
         else:
             basedir = os.path.join(cfg.wiking_dir, 'doc', 'src')
+        if not path:
+            raise Forbidden()
         return self._document(req, basedir, path)
 
 
