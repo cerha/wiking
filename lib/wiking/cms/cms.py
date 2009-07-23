@@ -1232,8 +1232,8 @@ class Pages(CMSModule):
                 descriptions[lang] = row['description'].value()
         return [item(row) for row in children[None]] + \
                [MenuItem('_registration', _("Registration"), hidden=True),
-                # Translators: Wiking is name of the program. Do not translate.
-                MenuItem('_doc', _("Wiking Documentation"), hidden=True)]
+                # Translators: Label for section with user manuals, help pages etc.
+                MenuItem('_doc', _("Documentation"), hidden=True)]
 
     def module_uri(self, req, modname):
         if modname == self.name():
@@ -1295,7 +1295,7 @@ class Pages(CMSModule):
             if rows:
                 return req.redirect('/'+rows[0]['identifier'].value())
         # Action menu
-        content.append(self._action_menu(req, record, help='/_doc/pages', cls='actions separate'))
+        content.append(self._action_menu(req, record, help='/_doc/wiking/cms/pages', cls='actions separate'))
         resources = [a.resource() for a in attachments]
         return self._document(req, content, record, resources=resources, err=err, msg=msg)
 

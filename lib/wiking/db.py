@@ -1043,7 +1043,7 @@ class RssModule(object):
                          lcg.link(self._rss_channel_uri(req),
                                   self._rss_channel_title(req)+' RSS',
                                   type='application/rss+xml'),
-                         " (", lcg.link('_doc/rss', _("more about RSS")), ")")
+                         " (", lcg.link('_doc/wiking/user/rss', _("more about RSS")), ")")
         return None
 
     def has_channel(self):

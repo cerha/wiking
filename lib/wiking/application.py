@@ -372,8 +372,9 @@ class Application(Module):
             # A11y statement link with a hotkey (not supported by generic lcg links).
             def export(self, context):
                 if doc:
-                    return ' ' + context.generator().link(_("Accessibility Statement"),
-                                                          doc+'/accessibility', hotkey='0')
+                    g = context.generator()
+                    return ' ' + g.link(_("Accessibility Statement"),
+                                        doc+'/wiking/user/accessibility', hotkey='0')
                 else:
                     return ''
         contact = cfg.webmaster_address

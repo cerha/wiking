@@ -140,22 +140,58 @@ class ActionHandler(RequestHandler):
         return self._handle(req, action, **kwargs)
 
 
-class DocumentHandler(Module, RequestHandler):
-    _BASE_DIR = None
+class Documentation(Module, RequestHandler):
+    """Serve the on-line documentation.
+
+    This module is not bound to a data object.  It serves on-line documentation directly from files
+    on the disk.
+
+    By default, the first component of unresolved path refers to the key of `cfg.doc_dirs' which
+    determines the base directory, where the documents are searched.  The rest of unresolved path
+    refers to the actual file within this directory.  Filename extension and language variant is
+    added automatically.
+
+    For example a request to '/doc/wiking/user/navigation' is resolved as follows:
+      * 'doc' must be mapped within application to the `Documentation' module.
+      * 'wiking' is searched in `cfg.doc_dirs', where it translates for example to
+        '/usr/local/share/wiking/doc/src'.
+      * File '/usr/local/share/wiking/doc/src/user/navigation.<lang>.txt'. is searched,
+        where <lang> may be one of the application defined languages.  Prefered language
+        is determined through `Request.prefered_language()'.
+
+    """
     
-    def _document(self, req, basedir, path):
+    def _document_base_dir(self, req):
+        """Return the documentation base directory."""
+        if req.unresolved_path:
+            component = req.unresolved_path[0]
+            del req.unresolved_path[0]
+        else:
+            raise Forbidden()
+        try:
+            basedir = cfg.doc_dirs[component]
+        except KeyError:
+            log(OPR, "Component '%s' not found in 'cfg.doc_dirs':" % component, cfg.doc_dirs)
+            raise NotFound()
         if not os.path.exists(basedir):
-            raise Exception("Directory %s does not exist" % basedir)
-        import glob, codecs
+            raise Exception("Documentation directory for '%s' does not exist. "
+                            "Please check 'doc_dirs' configuration option." % component)
+        return basedir
+
+    def _document_path(self, req):
+        return req.unresolved_path
+        
+    def _handle(self, req):
         # TODO: the documentation should be processed by LCG first into some
         # reasonable output format.  Now we just search the file in all the
         # source directories and format it.  No global navigation is used.
-        for subdir in ('', 'user', 'cms', 'admin', 'devel'):
-            basename = os.path.join(basedir, subdir, *path)
-            variants = [f[-6:-4] for f in glob.glob(basename+'.*.txt')]
-            if variants:
-                break
-        else:
+        if not req.unresolved_path:
+            raise Forbidden()
+        import codecs
+        basename = os.path.join(self._document_base_dir(req), *self._document_path(req))
+        variants = [lang for lang in self._application.languages()
+                    if os.path.exists('.'.join((basename, lang, 'txt')))]
+        if not variants:
             raise NotFound()
         lang = req.prefered_language(variants)
         filename = '.'.join((basename, lang, 'txt'))
@@ -167,31 +203,9 @@ class DocumentHandler(Module, RequestHandler):
             title = content[0].title()
             content = lcg.SectionContainer(content[0].content(), toc_depth=0)
         else:
-            title = ' :: '.join(path)
+            title = ' :: '.join(req.unresolved_path)
         return Document(title, content, lang=lang, variants=variants)
         
-    def _handle(self, req):
-        return self._document(req, self._BASE_DIR, req.path)
-        
-
-class Documentation(DocumentHandler):
-    """Serve the on-line documentation.
-
-    This module is not bound to a data object.  It only serves the on-line documentation from files
-    on the disk.
-
-    """
-    def _handle(self, req):
-        path = req.unresolved_path
-        if path and path[0] == 'lcg':
-            path = path[1:]
-            basedir = lcg.config.doc_dir
-        else:
-            basedir = os.path.join(cfg.wiking_dir, 'doc', 'src')
-        if not path:
-            raise Forbidden()
-        return self._document(req, basedir, path)
-
 
 class Stylesheets(Module, RequestHandler):
     """Serve installed stylesheets.
@@ -205,11 +219,11 @@ class Stylesheets(Module, RequestHandler):
     _MATCHER = re.compile (r"\$(\w[\w-]*)(?:\.(\w[\w-]*))?")
 
     def _stylesheet(self, path):
-        filename = os.path.join(cfg.wiking_dir, 'resources', 'css', *path)
-        if os.path.exists(filename):
-            return "".join(file(filename).readlines())
-        else:
-            raise NotFound()
+        for resource_dir in cfg.resource_path:
+            filename = os.path.join(resource_dir, 'css', *path)
+            if os.path.exists(filename):
+                return "".join(file(filename).readlines())
+        raise NotFound()
 
     def _theme(self, req):
         """Return the color theme to be used for stylesheet color substitution.

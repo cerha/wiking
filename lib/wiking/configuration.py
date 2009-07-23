@@ -205,10 +205,6 @@ class Configuration(pc):
                  "pass them to Wiking.")
         _DEFAULT = False
 
-    class _Option_wiking_dir(pc.StringOption):
-        _DESCR = "Base directory for Wiking shared files"
-        _DEFAULT = '/usr/local/share/wiking'
-        
     class _Option_translation_path(pc.Option):
         _DESCR = "Translation search path"
         _DOC = ("The value is a sequence of directory names (strings), where locale data are "
@@ -216,7 +212,7 @@ class Configuration(pc):
                 "should contain a subdirectory 'lang/LC_MESSAGES' and a file 'domain.mo' in it, "
                 "where lang is the language code and domain is the translation domain name.")
         def default(self):
-            return (os.path.join(self._configuration.wiking_dir, 'translations'),
+            return ('/usr/local/share/wiking/translations',
                     '/usr/local/share/lcg/translations',
                     '/usr/local/share/pytis/translations')
 
@@ -231,7 +227,20 @@ class Configuration(pc):
                 "if you are using the 'Resources' module.  Beware that all files located within "
                 "the named directories will be directly exposed to the Internet!")
         def default(self):
-            return (os.path.join(self._configuration.wiking_dir, 'resources'),)
+            return ('/usr/local/share/wiking/resources',)
+        
+    class _Option_doc_dirs(pc.Option):
+        _DESCR = "Documentation search directories"
+        _DOC = ("The value is a dictionary of directory names keyed by component "
+                "identifiers.  Component identifiers are unique strings identifying different "
+                "components of a Wiking application.  Core Wiking requires directories for two "
+                "components: 'wiking' and 'lcg'.  Wiking applications may require access to "
+                "documentation of additional components (application specific documentation). "
+                "Dictionary values are names of directories containing documentation source "
+                "files, such as full path to the 'doc/src' subdirectory of the wiking package.")
+        def default(self):
+            return {'wiking': '/usr/local/share/wiking/doc/src',
+                    'lcg': '/usr/local/share/lcg/doc/src'}
         
     class _Option_storage(pc.StringOption):
         _DESCR = "Directory for storing uploaded files"
