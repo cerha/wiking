@@ -4,10 +4,12 @@
 	* lib/wiking/configuration.py:
 	* lib/wiking/db.py:
 	* lib/wiking/modules.py:
-	* lib/wiking/cms/cms.py:
 	Allow application specific documentation to be handled by the
 	default `Documentation' module.
-	
+
+	* lib/wiking/cms/cms.py:
+	Allow maping a `CMSExtension' module directly.
+
 2009-07-22  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/modules.py:

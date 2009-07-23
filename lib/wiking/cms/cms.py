@@ -444,6 +444,9 @@ class CMSExtension(Module, Embeddable, RequestHandler):
                 if item.enabled is None or item.enabled(req)]
 
     def handle(self, req):
+        if not req.unresolved_path:
+            uri = self.submenu(req)[0].id()
+            return req.redirect(uri)
         try:
             modname = self._mapping[req.unresolved_path[0]]
         except KeyError:
