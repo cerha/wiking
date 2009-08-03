@@ -263,11 +263,19 @@ class Configuration(pc):
                  "matters, only title will be used.")
         _DEFAULT = None
         
+    class _Option_site_icon(pc.StringOption):
+        # Translators: Web page or web application specific image.
+        _DESCR = _("Site icon")
+        _DOC = ("Full file path to the site icon to be served as '/favicon.ico'. "
+                "See http://en.wikipedia.org/wiki/Favicon for more information. "
+                "Only ICO format icons are currently supported.")
+        _DEFAULT = None
+
     class _Option_theme(pc.Option):
-        # Translators: ,,Color theme'' and ,,stylesheet'' are computer
-        # terminology.  This is a label of a settings dialog where the
-        # user can select a color set (theme) for his website.
-        _DESCR = "Color theme for stylesheet color substitutions."
+        _DESCR = "Color theme"
+        _DOC = ("Color theme is a set of predefined colors to be used for style sheet color "
+                "substitution.  Thus Wiking style sheets may be color neutral and colors may "
+                "be defined separately.  The value is an instance of 'wiking.Theme' class.")
         _DEFAULT = Theme()
 
     class _Option_default_language(pc.StringOption):        

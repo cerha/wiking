@@ -37,6 +37,7 @@ class Application(Module):
 
     _MAPPING = {'doc': 'Documentation',
                 'css': 'Stylesheets',
+                'favicon.ico': 'SiteIcon',
                 }
     """Defines static assignment of modules responsible for handling distinct URI paths. 
 

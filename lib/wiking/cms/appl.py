@@ -41,12 +41,14 @@ class Application(CookieAuthentication, wiking.Application):
                 '_wmi': 'WikingManagementInterface',
                 '_css': 'Stylesheets',
                 '_resources': 'Resources',
-                '_registration': 'Registration'}
+                '_registration': 'Registration',
+                'favicon.ico': 'SiteIcon'}
 
     _RIGHTS = {'Documentation': (Roles.ANYONE,),
                'Stylesheets': (Roles.ANYONE,),
                'Resources': (Roles.ANYONE,),
                'SiteMap': (Roles.ANYONE,),
+               'SiteIcon': (Roles.ANYONE,),
                'WikingManagementInterface': (Roles.AUTHOR, )}
 
     class WMILink(lcg.Content):

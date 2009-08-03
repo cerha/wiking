@@ -1,5 +1,11 @@
 2009-08-03  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/application.py: 
+	* lib/wiking/configuration.py: 
+	* lib/wiking/modules.py: 
+	* lib/wiking/cms/appl.py:
+	Added support for site icons.
+
 	* lib/wiking/cms/appl.py: 
 	Reflect error message change in pytis.data.
 

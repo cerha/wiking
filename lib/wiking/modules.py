@@ -286,6 +286,21 @@ class Resources(Module, RequestHandler):
                     return req.serve_file(src_file, mime_type or 'application/octet-stream')
         raise NotFound()
 
+
+class SiteIcon(Module, RequestHandler):
+    """Serve site icon according to the configuration option 'site_icon'.
+
+    This module is mapped to '/favicon.ico' in the default 'Application'.
+
+    """
+    
+    def _handle(self, req):
+        filename = cfg.site_icon
+        if filename:
+            return req.serve_file(filename, 'image/vnd.microsoft.icon')
+        else:
+            raise NotFound()
+
     
 class SubmenuRedirect(Module, RequestHandler):
     """Handle all requests by redirecting to the first submenu item.
