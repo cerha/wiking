@@ -224,7 +224,7 @@ class Application(CookieAuthentication, wiking.Application):
                             _button("Continue", initdb=1))
                 else:
                     return 'Unable to create database: %s' % err
-        elif errstr == 'Nen\xed mo\xbeno zjistit typ sloupce':
+        elif errstr.startswith("Unknown column '"):
             if not req.param('initdb'):
                 err = self._try_query(dbname, "select * from mapping")
                 if err:
