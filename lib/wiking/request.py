@@ -279,6 +279,7 @@ class Request(pytis.web.Request):
         try:
             size = os.stat(filename).st_size
         except OSError:
+            log(OPR, "File not found:", filename)
             raise NotFound
         self.send_http_header(content_type, size)
         f = file(filename)
