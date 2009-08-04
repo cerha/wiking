@@ -15,6 +15,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+import pytis.data
 from wiking import *
 
 _ = lcg.TranslatableTextFactory('wiking')
@@ -40,9 +41,14 @@ class Handler(object):
         return self._serve_document(req, document)
 
     def _serve_document(self, req, document):
-        node = document.build(req, self._application)
-        context = self._exporter.context(node, node.lang(), sec_lang=node.sec_lang(), req=req)
-        exported = self._exporter.export(context)
+        try:
+            node = document.build(req, self._application)
+            context = self._exporter.context(node, node.lang(), sec_lang=node.sec_lang(), req=req)
+            exported = self._exporter.export(context)
+        except pytis.data.DBSystemException:
+            error = _("This function is temporarily unavailable.")
+            document = Document(error, lcg.TextContent(error))
+            return self._serve_document(req, document)
         return req.result(context.translate(exported))
 
     def handle(self, req):
