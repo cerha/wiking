@@ -1142,8 +1142,8 @@ class Pages(CMSModule):
             bindings.insert(0, binding)
         return bindings
 
-    def _validate(self, req, record, layout=None):
-        result = super(Pages, self)._validate(req, record, layout=layout)
+    def _validate(self, req, record, layout):
+        result = super(Pages, self)._validate(req, record, layout)
         if result is None and req.has_param('commit'):
             if not (req.check_roles(self.RIGHTS_commit) or self.check_owner(req.user(), record)):
                 return [(None, _("You don't have sufficient privilegs for this action.") +' '+ \
@@ -2055,12 +2055,12 @@ class Users(CMSModule):
     def _layout(self, req, action, record=None):
         if not self._LAYOUT.has_key(action): # Allow overriding this layout in derived classes.
             if action == 'insert':
-                layout = (FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname',)),
-                          FieldSet(_("Contact information"),
-                                   ((not cfg.login_is_email) and ('email',) or ()) +
-                                   ('phone', 'address', 'uri')),
-                          FieldSet(_("Login information"),
-                                   ((cfg.login_is_email and 'email' or 'login'), 'password')))
+                return (FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname',)),
+                        FieldSet(_("Contact information"),
+                                 ((not cfg.login_is_email) and ('email',) or ()) +
+                                 ('phone', 'address', 'uri')),
+                        FieldSet(_("Login information"),
+                                 ((cfg.login_is_email and 'email' or 'login'), 'password')))
             elif action == 'passwd' and record is not None:
                 layout = ['new_password']
                 if not req.check_roles(Roles.ADMIN) or req.user().uid() == record['uid'].value():
@@ -2071,20 +2071,17 @@ class Users(CMSModule):
                     # also helps the browser password helper to recognize which password is changed
                     # (if the user has multiple accounts).
                     layout.insert(0, 'login') # Don't include email, since it is editable.
-            else:
-                layout = None
-            if layout:
-                return pp.GroupSpec(layout, orientation=pp.Orientation.VERTICAL)
+                return layout
         return super(Users, self)._layout(req, action, record=record)
                 
-    def _validate(self, req, record, layout=None):
+    def _validate(self, req, record, layout):
         if record.new():
             # This language is used for translation of email messages sent to the user.  This way
             # it is set only once during registration.  It would make sense to change it on each
             # change of user interface language by that user.
             record['lang'] = pd.Value(record['lang'].type(), req.prefered_language())
         errors = []
-        if layout and 'old_password' in layout.order():
+        if 'old_password' in layout.order():
             #if not req.check_roles(Roles.ADMIN): Too dangerous?
             old_password = req.param('old_password')
             if not old_password:
@@ -2093,7 +2090,7 @@ class Users(CMSModule):
                 error = record.validate('old_password', old_password, verify=old_password)
                 if error or record['old_password'].value() != record['password'].value():
                     errors.append(('old_password', _(u"Invalid password.")))
-        if layout and 'new_password' in layout.order():
+        if 'new_password' in layout.order():
             new_password = req.param('new_password')
             if not new_password:
                 errors.append(('new_password', _(u"Enter the new password.")))
@@ -2108,7 +2105,7 @@ class Users(CMSModule):
         if errors:
             return errors
         else:
-            return super(Users, self)._validate(req, record, layout=layout)
+            return super(Users, self)._validate(req, record, layout)
         
     def _base_uri(self, req):
         if req.path[0] == '_registration':

@@ -1,5 +1,9 @@
 2009-08-07  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/cms/certificates.py: 
+	* lib/wiking/cms/cms.py: 
+	Simplify dynamic `_layout()' specifications and respect changes in `_validate()'.
+
 	* lib/wiking/db.py: 
 	Added support for AJAX form update request processing.
 

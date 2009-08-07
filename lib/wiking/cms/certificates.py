@@ -364,10 +364,9 @@ class CertificateRequest(UserCertificates):
         # This is necessary to propagate `uid' given in the form to the actual
         # data row
         if action == 'insert' and req.param('submit'):
-            result = pp.GroupSpec(('uid', 'file',), orientation=pp.Orientation.VERTICAL)
+            return ('uid', 'file',)
         else:
-            result = super(CertificateRequest, self)._layout(req, action, record)
-        return result
+            return super(CertificateRequest, self)._layout(req, action, record)
 
     def _document_title(self, req, record):
         return _("Certificate upload")
