@@ -244,11 +244,9 @@ class PytisModule(Module, ActionHandler):
                 return (binding_column, fw.arg('record')[col].value())
         return None, None
         
-    def _validate(self, req, record, layout=None):
+    def _validate(self, req, record, layout):
         # TODO: This should go to pytis.web....
         errors = []
-        if layout is None:
-            layout = self._view.layout()
         if record.new():
             # Suppply the value of the binding column (if this is a binding forwarded request).
             binding_column, value = self._binding_column(req)
@@ -257,7 +255,12 @@ class PytisModule(Module, ActionHandler):
                     record[binding_column] = pd.Value(record[binding_column].type(), value)
                 else:
                     errors.append((binding_column, _("Invalid binding column value.")))
-        for id in layout.order():
+        order = layout.order()
+        # Validate the changed field last (for AJAX update request) to invoke computers correctly.
+        changed_field = req.param('_pytis_form_update_request')
+        if changed_field:
+            order = [id for id in order if id != changed_field] + [str(changed_field)]
+        for id in order:
             f = self._view.field(id)
             if not record.editable(id):
                 continue
@@ -311,8 +314,8 @@ class PytisModule(Module, ActionHandler):
                     else:
                         assert isinstance(result, tuple) and len(result) == 2, \
                                ('Invalid check() result:', e, result)
-                    return (result,)
-            return None
+                    return [result]
+            return []
 
     def _analyze_exception(self, e):
         if e.exception():
@@ -473,6 +476,9 @@ class PytisModule(Module, ActionHandler):
                 kwargs['limits'] = self._BROWSE_FORM_LIMITS
             if not kwargs.has_key('limit'):
                 kwargs['limit'] = self._BROWSE_FORM_DEFAULT_LIMIT
+        layout = kwargs.get('layout')
+        if layout is not None and not isinstance(layout, pp.GroupSpec):
+            kwargs['layout'] = self._layout_instance(layout)
         if action is not None:
             hidden += (('action', action),
                        ('submit', 'submit'))
@@ -487,26 +493,38 @@ class PytisModule(Module, ActionHandler):
         return form(self._view, form_record, handler=handler or req.uri(), name=self.name(),
                     hidden=hidden, prefill=prefill, uri_provider=uri_provider, **kwargs)
 
-    def _layout(self, req, action, record=None):
-        """Return the form layout as a 'pytis.presentation.GroupSpec' instance or None.
+    def _layout_instance(self, layout):
+        if layout is None:
+            layout = self._view.layout().group()
+        if isinstance(layout, (tuple, list)):
+            layout = pp.GroupSpec(layout, orientation=pp.Orientation.VERTICAL)
+        return layout
 
-        'None' means to use the default layout defined by specification.
+    def _layout(self, req, action, record=None):
+        """Return the form layout for given action and record.
+
+        This method may be overriden to change form layout dynamically based on the combination of
+        record, action and current request properties.  You may, for example, determine the layout
+        according to field values or the currently logged in user.
 
         Arguments:
           req -- current request
           action -- name of the action as a string (determines also the form type)
-          record -- the current record instance or None (for 'insert' action)
+          record -- the current record instance or None (for actions which don't work on an
+            existing record, such as 'insert')
 
-        Override this metod to dynamically change form layout.  The default implementation returns
-        one of (statical) layouts defined in '_LAYOUTS' (dictionary keyed by action name) or None
-        if no specific layout is defined for given action (to use the default layout from
-        specification).
+        The returned value may be a 'pytis.presentation.GroupSpec' instance, a sequence of field
+        identifiers or 'pytis.presentation.GroupSpec' instances or 'None' to use the default layout
+        defined by specification.  If you ever need to call this method (you most often just define
+        it), use the '_layout_instance()' method to convert the returned value into a
+        'pytis.presentation.GroupSpec' instance.
+
+        The default implementation returns one of (statical) layouts defined in '_LAYOUTS'
+        (dictionary keyed by action name) or None if no specific layout is defined for given action
+        (to use the default layout from specification).
 
         """
-        layout = self._LAYOUT.get(action)
-        if isinstance(layout, (tuple, list)):
-            layout = pp.GroupSpec(layout, orientation=pp.Orientation.VERTICAL)
-        return layout
+        return self._LAYOUT.get(action)
 
     def _columns(self, req):
         """Return a list of BrowseForm columns or None.
@@ -733,6 +751,25 @@ class PytisModule(Module, ActionHandler):
             result = None
         return result
 
+    def _ajax_handler(self, req, record, layout, errors):
+        changed_field = str(req.param('_pytis_form_update_request'))
+        data = {}
+        translate = translator(req.prefered_language()).translate
+        for fid in layout.order():
+            data[fid] = fdata = {}
+            if fid != changed_field:
+                fdata['editable'] = record.editable(fid)
+                if record.invalid_string(fid) is None:
+                    value = translate(record[fid].export())
+                    if value != req.param(fid, ''):
+                        fdata['value'] = value
+        for fid, error in errors:
+            if data.has_key(fid):
+                data[fid]['error'] = error
+        import simplejson as json
+        req.set_header('X-Json', json.dumps(data))
+        return ('text/plain', '')
+
     # ===== Methods which modify the database =====
     
     def _insert(self, record):
@@ -878,14 +915,16 @@ class PytisModule(Module, ActionHandler):
 
     def action_insert(self, req, record=None):
         # 'record' is passed when copying an existing record.
-        layout = self._layout(req, 'insert')
+        layout = self._layout_instance(self._layout(req, 'insert'))
         if req.param('submit'):
             if self._OWNER_COLUMN and self._SUPPLY_OWNER and req.user():
                 prefill = {self._OWNER_COLUMN: req.user().uid()}
             else:
                 prefill = None
             record = self._record(req, None, new=True, prefill=prefill)
-            errors = self._validate(req, record, layout=layout)
+            errors = self._validate(req, record, layout)
+            if req.param('_pytis_form_update_request'):
+                return self._ajax_handler(req, record, layout, errors)
             if not errors:
                 try:
                     self._insert(record)
@@ -903,7 +942,7 @@ class PytisModule(Module, ActionHandler):
             # Copy values of the existing record as prefill values for the new record.  Exclude
             # key column, computed columns depending on key column and fields with 'nocopy'.
             key = self._data.key()[0].id()
-            for fid in (layout or self._view.layout()).order():
+            for fid in layout.order():
                 field = self._view.field(fid)
                 if fid != key and not field.nocopy():
                     computer = field.computer()
@@ -915,9 +954,11 @@ class PytisModule(Module, ActionHandler):
         return self._document(req, form, subtitle=self._insert_subtitle(req))
             
     def action_update(self, req, record, action='update'):
-        layout = self._layout(req, action, record)
+        layout = self._layout_instance(self._layout(req, action, record))
         if req.param('submit'):
-            errors = self._validate(req, record, layout=layout)
+            errors = self._validate(req, record, layout)
+            if req.param('_pytis_form_update_request'):
+                return self._ajax_handler(req, record, layout, errors)
         else:
             errors = ()
         if req.param('submit') and not errors:
@@ -991,7 +1032,7 @@ class PytisModule(Module, ActionHandler):
     def _redirect_after_delete(self, req, record):
         req.message(self._delete_msg(record))
         return self.action_list(req)
-    
+
         
 # ==============================================================================
 # Module extensions 

@@ -1,5 +1,8 @@
 2009-08-07  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/db.py: 
+	Added support for AJAX form update request processing.
+
 	* lib/wiking/configuration.py:
 	Add pytis and lcg resource directories to the default resource
 	search path.
