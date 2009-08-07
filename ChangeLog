@@ -1,3 +1,9 @@
+2009-08-07  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/configuration.py:
+	Add pytis and lcg resource directories to the default resource
+	search path.
+
 2009-08-04  Milan Zamazal  <pdm@brailcom.org>
 
 	* lib/wiking/handler.py:

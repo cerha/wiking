@@ -227,7 +227,9 @@ class Configuration(pc):
                 "if you are using the 'Resources' module.  Beware that all files located within "
                 "the named directories will be directly exposed to the Internet!")
         def default(self):
-            return ('/usr/local/share/wiking/resources',)
+            return ('/usr/local/share/wiking/resources',
+                    '/usr/local/share/lcg/resources',
+                    '/usr/local/share/pytis/resources')
         
     class _Option_doc_dirs(pc.Option):
         _DESCR = "Documentation search directories"
