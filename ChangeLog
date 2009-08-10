@@ -1,5 +1,8 @@
 2009-08-10  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/util.py: 
+	Pass multivalue parameters correctly in the login dialog.
+
 	* lib/wiking/cms/appl.py: 
 	Avoid exception on empty request path (the mystery is how to
 	invoke this...).

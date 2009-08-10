@@ -778,8 +778,17 @@ class LoginDialog(lcg.Content):
         else:
             login = req.param('login')
             password = req.param('password') or None
-        hidden = [g.hidden(name=k, value=req.param(k)) for k in req.params() 
-                  if k not in ('command', 'login', 'password', '__log_in')]
+        def hidden_field(param, value):
+            if isinstance(value, basestring):
+                return g.hidden(name=param, value=value)
+            elif isinstance(value, (tuple, list)):
+                return lcg.concat([hidden_field(param, v) for v in value], separator="\n")
+            else:
+                # This may be a file field, or anything else?
+                # TODO: Is it a good idea to leave the field out without a warning?
+                return ''
+        hidden = [hidden_field(param, req.param(param)) for param in req.params()
+                  if param not in ('command', 'login', 'password', '__log_in')]
         content = (
             g.label(_("Login name")+':', id='login') + g.br(),
             g.field(name='login', value=login, id='login', size=18),
