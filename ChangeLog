@@ -1,5 +1,9 @@
 2009-08-10  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/cms/appl.py: 
+	Avoid exception on empty request path (the mystery is how to
+	invoke this...).
+
 	* lib/wiking/application.py:
 	Include also query parameter values in exception info.
 	Log exceptions always (regardless whether it was sent by email or not).
