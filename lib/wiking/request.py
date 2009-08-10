@@ -455,7 +455,11 @@ class WikingRequest(Request):
         prefix = self._uri_prefix
         if prefix and uri.startswith(prefix):
             uri = uri[len(prefix):]
-        return super(WikingRequest, self)._init_path(uri)
+        path = super(WikingRequest, self)._init_path(uri)
+        if '..' in path:
+            # Prevent directory traversal attacs globally (no need to handle them all around).
+            raise Forbidden()
+        return path
 
     def _init_prefered_languages(self):
         accepted = []

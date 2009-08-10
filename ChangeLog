@@ -2,6 +2,7 @@
 
 	* lib/wiking/request.py: 
 	Make sure `server_hostname()' never returns None.
+	Prevent '..' directory traversal attacs globally.
 
 	* lib/wiking/util.py: 
 	Pass multivalue parameters correctly in the login dialog.
