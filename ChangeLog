@@ -1,5 +1,8 @@
 2009-08-10  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/request.py: 
+	Make sure `server_hostname()' never returns None.
+
 	* lib/wiking/util.py: 
 	Pass multivalue parameters correctly in the login dialog.
 

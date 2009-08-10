@@ -185,9 +185,12 @@ class Request(pytis.web.Request):
 
         """
         if current:
-            return self._req.hostname
-        else:
-            return self._req.server.server_hostname
+            hostname = self._req.hostname
+            # Should not be None by definition, but it happens.  We were not able to reproduce it,
+            # but we have tracebacks, where server_hostname(True) returned None.
+            if hostname:
+                return self._req.hostname
+        return self._req.server.server_hostname
 
     def server_uri(self, force_https=False, current=False):
         """Return full server URI as a string.
@@ -199,10 +202,10 @@ class Request(pytis.web.Request):
           current -- controls which server domain name to use.  Corrensponds to the same argument
             of 'server_hostname()'.
         
-        The URI in the form 'http://www.yourdomain.com' is constructed including port and protocol
+        The URI in the form 'http://www.yourdomain.com' is constructed including port and scheme
         specification.  If current request port corresponds to 'https_port' configuration option
-        (443 by default), the protocol is set to 'https'.  The port is also included in the uri if
-        it is not the current protocol's default port (80 or 443).
+        (443 by default), the scheme is set to 'https'.  The port is also included in the uri if
+        it is not the current scheme's default port (80 or 443).
 
         """
         if force_https:
@@ -210,12 +213,12 @@ class Request(pytis.web.Request):
         else:
             port = self._req.connection.local_addr[1]
         if port == cfg.https_port:
-            protocol = 'https'
+            scheme = 'https'
             default_port = 443
         else:
-            protocol = 'http'
+            scheme = 'http'
             default_port = 80
-        result = protocol + '://'+ self.server_hostname(current=current)
+        result = scheme + '://'+ self.server_hostname(current=current)
         if port != default_port:
             result += ':'+ str(port)
         return result
