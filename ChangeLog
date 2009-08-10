@@ -1,3 +1,8 @@
+2009-08-10  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/application.py:
+	Include also query parameter values in exception info.
+
 2009-08-07  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/cms/certificates.py: 

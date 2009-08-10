@@ -256,6 +256,7 @@ class Application(Module):
 
         """
         import traceback, cgitb
+        from xml.sax import saxutils
         einfo = sys.exc_info()
         message = ''.join(traceback.format_exception_only(*einfo[:2]))
         try:
@@ -263,6 +264,21 @@ class Application(Module):
                 user = req.user()
             except:
                 user = None
+            def param_value(param):
+                if param in ('passwd', 'password'):
+                    value = '<password hidden>'
+                else:
+                    value = req.param(param)
+                if not isinstance(value, basestring):
+                    value = str(value)
+                lines = value.splitlines()
+                if len(lines) > 1:
+                    value = lines[0][:40] + '... (trimmed; total %d lines)' % len(lines)
+                elif len(value) > 40:
+                    value = value[:40] + '... (trimmed; total %d chars)' % len(value)
+                return saxutils.escape(value)
+            params = ["  %s = %s" % (saxutils.escape(param), param_value(param))
+                      for param in req.params()]
             req_info = "\n".join(["%s: %s" % pair for pair in
                                   (("Server", req.server_hostname()),
                                    ("URI", req.uri()),
@@ -270,6 +286,7 @@ class Application(Module):
                                    ("Remote user", user and user.login() or ''),
                                    ("HTTP referrer", req.header('Referer')),
                                    ("User agent", req.header('User-Agent')),
+                                   ("Query parematers", "\n"+"\n".join(params)),
                                    )])
             text = req_info + "\n\n" + cgitb.text(einfo)
             if cfg.bug_report_address is not None:
