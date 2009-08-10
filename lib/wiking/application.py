@@ -289,6 +289,7 @@ class Application(Module):
                                    ("Query parematers", "\n"+"\n".join(params)),
                                    )])
             text = req_info + "\n\n" + cgitb.text(einfo)
+            log(OPR, "\n"+ text)
             if cfg.bug_report_address is not None:
                 tb = einfo[2]
                 while tb.tb_next is not None:
@@ -299,13 +300,9 @@ class Application(Module):
                 err = send_mail(cfg.bug_report_address, 'Wiking Error: ' + buginfo, text,
                                 html="<html><pre>"+ pre +"</pre>"+ cgitb.html(einfo) +"</html>")
                 if err:
-                    log(OPR, "\n"+ text)
-                    log(OPR, "Failed sending traceback by email:", (cfg.bug_report_address, err))
+                    log(OPR, "Failed sending exception info to %s:" % cfg.bug_report_address, err)
                 else:
-                    log(OPR, "Exception:", message.strip())
-                    log(OPR, "Traceback sent to:", cfg.bug_report_address)
-            else:
-                log(OPR, "\n"+ text)
+                    log(OPR, "Traceback sent to %s." % cfg.bug_report_address)
         except:
             log(OPR, "Error in exception handling:",
                 "".join(traceback.format_exception(*sys.exc_info())))

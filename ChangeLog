@@ -2,7 +2,8 @@
 
 	* lib/wiking/application.py:
 	Include also query parameter values in exception info.
-
+	Log exceptions always (regardless whether it was sent by email or not).
+	
 2009-08-07  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/cms/certificates.py: 
