@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-07-20 23:02+0200\n"
+"POT-Creation-Date: 2009-08-11 14:57+0200\n"
 "PO-Revision-Date: 2008-10-14 10:38+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: French <wiking@lists.freebsoft.org>\n"
@@ -95,73 +95,73 @@ msgstr ""
 msgid "The record was deleted."
 msgstr ""
 
-#: ../lib/wiking/db.py:259
+#: ../lib/wiking/db.py:257
 msgid "Invalid binding column value."
 msgstr ""
 
-#: ../lib/wiking/db.py:310
+#: ../lib/wiking/db.py:313
 msgid "Integrity check failed."
 msgstr ""
 
-#: ../lib/wiking/db.py:678
+#: ../lib/wiking/db.py:696 ../lib/wiking/handler.py:49
 msgid "This function is temporarily unavailable."
 msgstr ""
 
 #. Translators: Back button label. Standard computer terminology.
-#: ../lib/wiking/db.py:949
+#: ../lib/wiking/db.py:990
 msgid "Back"
 msgstr ""
 
 #. Translators: RSS channel is a computer idiom, see Wikipedia.
-#: ../lib/wiking/db.py:1042
+#: ../lib/wiking/db.py:1083
 msgid "An RSS channel is available for this section:"
 msgstr ""
 
-#: ../lib/wiking/db.py:1046
+#: ../lib/wiking/db.py:1087
 msgid "more about RSS"
 msgstr ""
 
 #. Translators: Record as in `database record'.
-#: ../lib/wiking/db.py:1123
+#: ../lib/wiking/db.py:1164
 msgid "No records."
 msgstr ""
 
 #. Translators: `Item' is intentionally general. Could be webpage, notice or something else.
-#: ../lib/wiking/db.py:1131
+#: ../lib/wiking/db.py:1172
 msgid "The item was published."
 msgstr ""
 
-#: ../lib/wiking/db.py:1132
+#: ../lib/wiking/db.py:1173
 msgid "The item was unpublished."
 msgstr ""
 
-#: ../lib/wiking/db.py:1141
+#: ../lib/wiking/db.py:1182
 msgid "Publish"
 msgstr ""
 
-#: ../lib/wiking/db.py:1144
+#: ../lib/wiking/db.py:1185
 msgid "Make the item visible to website visitors"
 msgstr ""
 
-#: ../lib/wiking/db.py:1145
+#: ../lib/wiking/db.py:1186
 msgid "Unpublish"
 msgstr ""
 
-#: ../lib/wiking/db.py:1148
+#: ../lib/wiking/db.py:1189
 msgid "Make the item invisible to website visitors"
 msgstr ""
 
-#: ../lib/wiking/handler.py:95 ../lib/wiking/util.py:200
+#: ../lib/wiking/handler.py:101 ../lib/wiking/util.py:200
 msgid "The server was unable to complete your request."
 msgstr ""
 
-#: ../lib/wiking/handler.py:96
+#: ../lib/wiking/handler.py:102
 #, python-format
 msgid ""
 "Please inform the server administrator, %(admin)s if the problem persists."
 msgstr ""
 
-#: ../lib/wiking/handler.py:98 ../lib/wiking/util.py:203
+#: ../lib/wiking/handler.py:104 ../lib/wiking/util.py:203
 msgid "The error message was:"
 msgstr ""
 
@@ -301,7 +301,7 @@ msgstr ""
 #. user to obtain access to the website/application by submitting his personal
 #. details.
 #. Translators: Webpage link leading to registration form.
-#: ../lib/wiking/util.py:426 ../lib/wiking/util.py:797
+#: ../lib/wiking/util.py:426 ../lib/wiking/util.py:806
 msgid "New user registration"
 msgstr ""
 
@@ -340,26 +340,26 @@ msgstr ""
 msgid "log in"
 msgstr ""
 
-#: ../lib/wiking/util.py:784
+#: ../lib/wiking/util.py:793
 msgid "Login name"
 msgstr ""
 
-#: ../lib/wiking/util.py:787
+#: ../lib/wiking/util.py:796
 msgid "Password"
 msgstr ""
 
 #. Translators: Login button label - verb in imperative.
-#: ../lib/wiking/util.py:793
+#: ../lib/wiking/util.py:802
 msgid "Log in"
 msgstr ""
 
 #. Translators: Login dialog link to password change or password reminder (depends
 #. on configuration).
-#: ../lib/wiking/util.py:800
+#: ../lib/wiking/util.py:809
 msgid "Forgot your password?"
 msgstr ""
 
-#: ../lib/wiking/util.py:1365
+#: ../lib/wiking/util.py:1375
 msgid "Invalid format"
 msgstr ""
 
@@ -431,78 +431,78 @@ msgstr ""
 msgid "Last change: %(date)s, %(user)s"
 msgstr ""
 
-#: ../lib/wiking/modules.py:372
+#: ../lib/wiking/modules.py:403
 msgid "Enter your login name, please!"
 msgstr ""
 
-#: ../lib/wiking/modules.py:374
+#: ../lib/wiking/modules.py:405
 msgid "Enter your password, please!"
 msgstr ""
 
-#: ../lib/wiking/modules.py:379
+#: ../lib/wiking/modules.py:410
 msgid "Invalid login!"
 msgstr ""
 
-#: ../lib/wiking/modules.py:464
+#: ../lib/wiking/modules.py:495
 msgid "Searching"
 msgstr ""
 
-#: ../lib/wiking/modules.py:465
+#: ../lib/wiking/modules.py:496
 msgid "Search results"
 msgstr ""
 
-#: ../lib/wiking/modules.py:466
+#: ../lib/wiking/modules.py:497
 msgid "Given search term doesn't contain any searchable term."
 msgstr ""
 
-#: ../lib/wiking/modules.py:470
+#: ../lib/wiking/modules.py:501
 msgid "Search words:"
 msgstr ""
 
-#: ../lib/wiking/modules.py:471
+#: ../lib/wiking/modules.py:502
 msgid "Search"
 msgstr ""
 
-#: ../lib/wiking/modules.py:527
+#: ../lib/wiking/modules.py:558
 msgid "Nothing found."
 msgstr ""
 
-#: ../lib/wiking/modules.py:584
+#: ../lib/wiking/modules.py:615
 msgid "The following modules were successfully reloaded:"
 msgstr ""
 
-#: ../lib/wiking/modules.py:586
+#: ../lib/wiking/modules.py:617
 msgid "Reload"
 msgstr ""
 
 #. Translators: Website idiom. This is followed by information on the underlying software
 #. tools.  Means: This website runs on [...this and that software...].
-#: ../lib/wiking/application.py:329
+#: ../lib/wiking/application.py:344
 msgid "Powered by"
 msgstr ""
 
 #. Translators: The document named "Section 508" contains accessibility
 #. guidelines and was issued by the US government.
-#: ../lib/wiking/application.py:369
+#: ../lib/wiking/application.py:384
 msgid "US Government Section 508 Accessibility Guidelines."
 msgstr ""
 
-#: ../lib/wiking/application.py:375
+#: ../lib/wiking/application.py:391
 msgid "Accessibility Statement"
 msgstr ""
 
 #. Translators: "Site" means a website.
-#: ../lib/wiking/application.py:381
+#: ../lib/wiking/application.py:397
 msgid "This site conforms to the following standards:"
 msgstr ""
 
 #. Translators: "Site" means a website. "Browser" is an internet browser (software
 #. used to access internet, such as Firefox, MSIE or Safari).  Leave the translation
 #. for ``any'' in capitals.
-#: ../lib/wiking/application.py:386
+#: ../lib/wiking/application.py:402
 msgid "This site can be viewed in ANY browser."
 msgstr ""
 
-#: ../lib/wiking/application.py:387
+#: ../lib/wiking/application.py:403
 msgid "Contact:"
 msgstr ""
