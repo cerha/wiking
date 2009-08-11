@@ -1928,21 +1928,14 @@ class Users(CMSModule):
                 return firstname + " " + surname
             else:
                 return firstname or surname or login
-        def _registration_expiry(self, record):
-            if not cfg.login_is_email:
-                return None
+        def _registration_expiry(self):
             expiry_days = cfg.registration_expiry_days
             return mx.DateTime.now().gmtime() + mx.DateTime.TimeDelta(hours=expiry_days*24)
-        def _registration_code(self, record):
-            if not cfg.login_is_email:
-                return None
-            return self._generate_registration_code()
         @staticmethod
         def _generate_registration_code():
             import random
-            import string
             random.seed()
-            return string.join(['%d' % (random.randint(0, 9),) for i in range(16)], '')            
+            return ''.join(['%d' % (random.randint(0, 9),) for i in range(16)])
         def fields(self):
             md5_passwords = (cfg.password_storage == 'md5')
             return (
@@ -1985,14 +1978,53 @@ class Users(CMSModule):
                   descr=_("Select one of the predefined roles to grant the user "
                           "the corresponding privileges.")),
             Field('lang'),
-            Field('regexpire', computer=Computer(self._registration_expiry, depends=())),
-            Field('regcode', computer=Computer(self._registration_code, depends=())),
+            Field('regexpire', default=self._registration_expiry, type=DateTime()),
+            Field('regcode', default=self._generate_registration_code),
             #Field('organization', _("Organization"), editable=ONCE,
             #      descr=_(("If you are a member of an organization registered in the application "
             #               "write the name of the organization here. "
             #               "Otherwise leave the field empty."))),
             #Field('organization_id', _("Organization"), codebook='Organizations', not_null=False),
+            # The value of the following field is a sequence even though its pytis type is
+            # string...  But it is only used in AccountInfo.
+            Field('state', virtual=True, computer=computer(self._state)),
             )
+        def _state(self, record, role, regexpire):
+            req = record.req()
+            if role != 'none':
+                texts = ()
+            elif regexpire is None:
+                texts = _("The security code was succesfully confirmed."),
+                if req.check_roles(Roles.ADMIN):
+                    texts = (texts[0] +' '+ \
+                            _("Therefore it was verified that given e-mail address "
+                              "belongs to the person who requested the registration."),)
+                    texts += _("The user is now able to log in, but still has no rights "
+                              "(other than an anonymous user)."),
+                texts += _("The account now awaits administrator's action to be given "
+                          "access rights."),
+            elif regexpire > mx.DateTime.now().gmtime():
+                texts = (_("The security code was not yet confirmed by the user. Therefore it is "
+                          "not possible to trust that given e-mail address belongs to the person "
+                          "who requested the registration."),
+                        # Translators: %(date)s is replaced by date and time of registration
+                        # expiration.
+                        _("The security code will expire on %(date)s and the user will not be "
+                          "able to complete the registration anymore.",
+                          date=record['regexpire'].export()))
+                if req.check_roles(Roles.ADMIN):
+                    texts += _("Use the button \"Resend registration code\" below to remind the "
+                              "user of his pending registration."),
+            else:
+                # Translators: %(date)s is replaced by date and time of registration expiration.
+                texts = _("The registration expired on %(date)s.  The user didn't confirm the "
+                         "security code sent to the declared e-mail address in time.",
+                         date=record['regexpire'].export()),
+                if req.check_roles(Roles.ADMIN):
+                    texts += _("The account should be deleted automatically if the server "
+                              "maintenence script is installed correctly.  Otherwise you can "
+                              "delete the account manually."),
+            return texts
         def _check_email(self, email):
             result = wiking.validate_email_address(email)
             if not result[0]:
@@ -2009,21 +2041,36 @@ class Users(CMSModule):
         sorting = (('surname', ASC), ('firstname', ASC))
         layout = () # Force specific layout definition for each action.
         cb = CodebookSpec(display='user', prefer_display=True)
-        conditions = (
+        filters = (
             pp.Condition(_("All users"), None),
             pp.Condition(_("Active users"),
                          pd.AND(pd.NE('role', pd.Value(pd.String(), 'none')),
                                 pd.EQ('regexpire', pd.Value(pd.DateTime(), None))),
                          id='active'),
-            pp.Condition(_("Inactive users (including unconfirmed registration requests)"),
+            pp.Condition(_("Inactive users (pending admin approvals)"),
                          pd.AND(pd.EQ('role', pd.Value(pd.String(), 'none')),
                                 pd.EQ('regexpire', pd.Value(pd.DateTime(), None))),
                          id='inactive'),
-            pp.Condition(_("Invalid registration requests (pending e-mail approval)"),
+            pp.Condition(_("Invalid registration requests (security code not confirmed)"),
                          pd.NE('regexpire', pd.Value(pd.DateTime(), None)),
                          id='unconfirmed'),
             )
         default_filter = 'active'
+    class AccountInfo(lcg.Content):
+        """Content shown in 'view' layout describing the current account state.
+
+        Exports to a series of paragraphs or to an empty string if the sequence of texts passed to
+        the constructor is empty.
+
+        """
+        def __init__(self, texts):
+            self._texts = texts
+        def export(self, context):
+            if not self._texts:
+                return ''
+            else:
+                g = context.generator()
+                return g.div([g.p(p) for p in self._texts], cls='account-info')
 
     _REFERER = 'login'
     _PANEL_FIELDS = ('fullname',)
@@ -2036,7 +2083,8 @@ class Users(CMSModule):
                    FieldSet(_("Contact information"), ('email', 'phone', 'address', 'uri'))),
         'view': (FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname',)),
                  FieldSet(_("Contact information"), ('email', 'phone', 'address','uri')),
-                 FieldSet(_("Access rights"), ('role',))),
+                 FieldSet(_("Access rights"), ('role',)),
+                 lambda r: Users.AccountInfo(r['state'].value())),
         'rights': ('role',),
         }
     _INSERT_LABEL = _("New user")
@@ -2119,11 +2167,18 @@ class Users(CMSModule):
         
     def _default_actions_first(self, req, record):
         actions = super(Users, self)._default_actions_first(req, record) + \
-                  (Action(_("Access rights"), 'rights', descr=_("Change access rights")),)
-        if record and (record['role'].value() == 'none' or record['regexpire'].value() is not None):
+                  (Action(_("Access rights"), 'rights', descr=_("Change access rights"),
+                          enabled=lambda r: r['regexpire'].value() is None),)
+        if record and record['role'].value() == 'none':
             # Translators: Button label. Computer terminology. Use common word and form.
-            actions = (Action(_("Enable"), 'enable', descr=_("Enable this account")),) + \
-                      actions
+            actions = (Action(_("Enable"), 'enable', descr=_("Enable this account"),
+                              enabled=lambda r: r['regexpire'].value() is None),
+                       ) + actions
+        if record and record['regexpire'].value() is not None:
+            # Currently inactive due to limited access rights (is this action really needed?).
+            actions = (Action(_("Confirm"), 'admin_confirm',
+                              descr=_("Confirm the account without checking the security code")),
+                       ) + actions
         if req.user():
             actions += (Action(_("Change password"), 'passwd', descr=_("Change user's password")),)
         return actions
@@ -2136,33 +2191,6 @@ class Users(CMSModule):
             actions.append(Action(_("Resend registration code"), 'regreminder',
                                   descr=_("Re-send registration mail")))
         return actions
-
-    def _send_admin_confirmation_mail(self, req, record):
-        self._module('Users').send_admin_approval_mail(req, record)
-        
-    def _confirmation_success_content(self, req, record):
-        content = [lcg.p(_("Registration completed successfuly. "
-                           "Your account now awaits administrator's approval."))]
-        return content
-    
-    def action_confirm(self, req):
-        """Make user registration valid.
-
-        Additionally perform all related actions such as sending an e-mail notification to the
-        administrator.
-        
-        """
-        record = self.check_registration_code(req)
-        record.update(regexpire=None)
-        self._send_admin_confirmation_mail(req, record)
-        content = self._confirmation_success_content(req, record)
-        return Document(_("Registration confirmed"), content)
-    RIGHTS_confirm = (Roles.ANYONE,)
-
-    def _registration_success_content(self, req, record):
-        content = lcg.p(_("Registration completed successfuly. "
-                          "Your account now awaits administrator's approval."))
-        return content
 
     def _make_registration_email(self, req, record):
         msg, err = None, None
@@ -2180,17 +2208,14 @@ class Users(CMSModule):
         return text, attachments
 
     def _redirect_after_insert(self, req, record):
-        if cfg.login_is_email:
-            msg, err = self._send_registration_email(req, record)
-            if err:
-                self._data.delete(record['uid'])
-                content = lcg.p(_("Registration cancelled."))
-            else:
-                content = lcg.p(_("Registration accepted."))
+        if self._send_registration_email(req, record):
+            content = (lcg.p(_("Registration accepted.")),
+                       lcg.p(_("Please, check your mailbox for instructions how to proceed.")))
+            
         else:
-            content = self._registration_success_content(req, record)
-            msg, err = self.send_admin_approval_mail(req, record)
-        return self._document(req, content, record, subtitle=None, msg=msg, err=err)
+            self._data.delete(record['uid'])
+            content = lcg.p(_("Registration cancelled."))
+        return self._document(req, content, record, subtitle=None)
 
     def _send_registration_email(self, req, record):
         text, attachments = self._make_registration_email(req, record)
@@ -2199,32 +2224,11 @@ class Users(CMSModule):
                         text, export=True,
                         lang=record['lang'].value(), attachments=attachments)
         if err:
-            err = _("Failed sending e-mail notification:") +' '+ err
-            msg = None
+            req.message(_("Failed sending e-mail notification:") +' '+ err, type=req.ERROR)
+            return False
         else:
-            msg = _("Instructions how to complete the registration process were sent to %s.",
-                    record['email'].value())
-        return msg, err
-
-    
-    def send_admin_approval_mail(self, req, record):
-        msg, err = None, None
-        addr = cfg.webmaster_address
-        if addr:
-            base_uri = req.module_uri(self.name()) or '/_wmi/'+ self.name()
-            text = _("New user %(fullname)s registered at %(server_hostname)s. "
-                     "Please approve the account: %(uri)s",
-                     fullname=record['fullname'].value(), server_hostname=req.server_hostname(),
-                     uri=req.server_uri() + base_uri +'/'+ record['login'].value()) + "\n"
-            # TODO: The admin email is translated to users language.  It would be more approppriate
-            # to subscribe admin messages from admin accounts and set the language for each admin.
-            err = send_mail(addr, _("New user registration:") +' '+ record['fullname'].value(),
-                            text, lang=record['lang'].value())
-            if err:
-                err = _("Failed sending e-mail notification:") +' '+ err
-            else:
-                msg = _("E-mail notification has been sent to server administrator.")
-        return msg, err
+            req.message(_("Security code was sent to %s.", record['email'].value()))
+            return True
 
     def _redirect_after_update(self, req, record):
         orig_row = record.original_row()
@@ -2245,6 +2249,90 @@ class Users(CMSModule):
         else:
             return super(Users, self)._redirect_after_update(req, record)
     
+    def _check_registration_code(self, req):
+        """Check whether given request contains valid login and registration code.
+
+        Return a 'Record' instance corresponding to the user id given in the request (if the uid
+        and registration code are valid) or raise 'BadRequest' exception.
+
+        """
+        uid, error = pytis.data.Integer().validate(req.param('uid'))
+        if error is not None or uid.value() is None:
+            raise BadRequest()
+        # This doesn't prevent double registration confirmation, but how to
+        # avoid it?
+        row = self._data.get_row(uid=uid.value())
+        if row is None:
+            record = None
+        else:
+            record = self._record(req, row)
+        if record is None:
+            raise BadRequest()
+        if not record['regexpire'].value() and record['role'] == 'none':
+            raise BadRequest(_("User registration already confirmed."))
+        code = record['regcode'].value()
+        if not code or code != req.param('regcode'):
+            raise BadRequest(_("Invalid registration code."))
+        return record
+
+    def _send_admin_approval_mail(self, req, record):
+        addr = cfg.webmaster_address
+        if addr:
+            base_uri = req.module_uri(self.name()) or '/_wmi/'+ self.name()
+            text = _("New user %(fullname)s registered at %(server_hostname)s. "
+                     "Please approve the account: %(uri)s",
+                     fullname=record['fullname'].value(), server_hostname=req.server_hostname(),
+                     uri=req.server_uri() + base_uri +'/'+ record['login'].value()) + "\n"
+            # TODO: The admin email is translated to users language.  It would be more approppriate
+            # to subscribe admin messages from admin accounts and set the language for each admin.
+            err = send_mail(addr, _("New user registration:") +' '+ record['fullname'].value(),
+                            text, lang=record['lang'].value())
+            
+            if err:
+                req.message(_("Failed sending e-mail notification:") +' '+ err, type=req.ERROR)
+                return False
+            else:
+                req.message(_("E-mail notification has been sent to server administrator."))
+                return True
+
+    def _confirmation_success_content(self, req, record):
+        # TODO: This method allows overriding the text in applications.
+        # Better would be to use the `Texts' module.
+        content = [lcg.p(_("Registration completed successfuly. "
+                           "Your account now awaits administrator's approval."))]
+        return content
+    
+
+    def action_admin_confirm(self, req, record):
+        """Force registration confirmation without checking security code."""
+        if req.param('submit'):
+            record.update(regexpire=None)
+            req.message(_("The account was confirmed.  Grant the access rights now."))
+            return self.action_view(req, record)
+        else:
+            form = self._form(pw.ShowForm, req, record, layout=self._layout(req, 'view', record))
+            actions = (Action(_("Confirm"), 'admin_confirm', submit=1),
+                       # Translators: Back button label. Standard computer terminology.
+                       Action(_("Back"), 'view'))
+            action_menu = self._action_menu(req, record, actions)
+            req.message(_("Please confirm the account only if you are sure that "
+                          "the e-mail address belongs to given user."))
+            return self._document(req, (form, action_menu), record)
+    RIGHTS_admin_confirm = () #Roles.ADMIN,)
+
+    def action_confirm(self, req):
+        """Confirm the registration code sent by e-mail to make user registration valid.
+
+        Additionally send e-mail notification to the administrator to ask him for account approval.
+        
+        """
+        record = self._check_registration_code(req)
+        record.update(regexpire=None)
+        self._send_admin_approval_mail(req, record)
+        return Document(_("Registration confirmed"),
+                        content=self._confirmation_success_content(req, record))
+    RIGHTS_confirm = (Roles.ANYONE,)
+
     def action_enable(self, req, record):
         role = record['role'].value()
         if role == 'none':
@@ -2266,8 +2354,8 @@ class Users(CMSModule):
     RIGHTS_passwd = (Roles.ADMIN, Roles.OWNER)
 
     def action_regreminder(self, req, record):
-        msg, err = self._send_registration_email(req, record)
-        return self.action_view(req, record, msg=msg, err=err)
+        self._send_registration_email(req, record)
+        return self.action_view(req, record)
     RIGHTS_regreminder = (Roles.ANYONE,)
 
     def _user_arguments(self, req, login, row):
@@ -2394,32 +2482,6 @@ class Users(CMSModule):
         record.update(password=value.value())
         return password
 
-    def check_registration_code(self, req):
-        """Check whether given request contains valid login and registration code.
-
-        Return a 'Record' instance corresponding to the user id given in the request (if the uid
-        and registration code are valid) or raise 'BadRequest' exception.
-
-        """
-        uid, error = pytis.data.Integer().validate(req.param('uid'))
-        if error is not None or uid.value() is None:
-            raise BadRequest()
-        # This doesn't prevent double registration confirmation, but how to
-        # avoid it?
-        row = self._data.get_row(uid=uid.value())
-        if row is None:
-            record = None
-        else:
-            record = self._record(req, row)
-        if record is None:
-            raise BadRequest()
-        if not record['regexpire'].value() and record['role'] == 'none':
-            raise BadRequest(_("User registration already confirmed."))
-        code = record['regcode'].value()
-        if not code or code != req.param('regcode'):
-            raise BadRequest(_("Invalid registration code."))
-        return record
-
     def set_registration_code(self, uid):
         """Generate and set new registration code for given user 'uid'.
 
@@ -2488,7 +2550,7 @@ class ActiveUsers(Users, EmbeddableCMSModule):
         help = _("Listing of all active user accounts.")
         condition = pd.AND(pd.NE('role', pd.Value(pd.String(), 'none')),
                            pd.EQ('regexpire', pd.Value(pd.DateTime(), None)))
-        conditions = ()
+        filters = ()
         default_filter = None
     _INSERT_LABEL = lcg.TranslatableText("New user registration", _domain='wiking')
     WMI_SECTION = None

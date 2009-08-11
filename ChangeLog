@@ -1,3 +1,16 @@
+2009-08-11  Tomas Cerha  <cerha@brailcom.org>
+
+	* resources/css/default.css: 
+	* resources/images/error.png: 
+	* resources/images/info.png: 
+	* resources/images/warning.png: 
+	* lib/wiking/cms/cms.py:
+	Don't allow activation of unconfirmed account.  Use registration
+	code confirmation even if cfg.login_is_email is not true.  Show
+	detailed description of account state in user profile page.
+	Registration feedback made more descriptive and other smaller
+	improvements.
+
 2009-08-10  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/request.py: 

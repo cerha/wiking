@@ -679,6 +679,16 @@ div.table-of-contents ul {
     margin-bottom: 0;
 }
 
+form.pytis-form .account-info { 
+    margin: 1em 0;
+    padding: .3em;
+    padding-left: 28px;
+    border: dotted 2px $color.message-border;
+    /* background-color: $color.background; */
+    background-image: url(/_resources/images/info.png);
+    background-position: left center;
+    background-repeat: no-repeat;
+}
 
 /* Border-less table:
 form.browse-form.mapping table {
