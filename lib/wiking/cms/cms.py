@@ -1143,15 +1143,16 @@ class Pages(CMSModule):
         return bindings
 
     def _validate(self, req, record, layout):
-        result = super(Pages, self)._validate(req, record, layout)
-        if result is None and req.has_param('commit'):
-            if not (req.check_roles(self.RIGHTS_commit) or self.check_owner(req.user(), record)):
-                return [(None, _("You don't have sufficient privilegs for this action.") +' '+ \
-                         _("Save the page without publishing and ask the administrator to publish "
-                           "your changes."))]
-            record['content'] = record['_content']
-            record['published'] = pytis.data.Value(pytis.data.Boolean(), True)
-        return result
+        errors = super(Pages, self)._validate(req, record, layout)
+        if not errors and req.has_param('commit'):
+            if req.check_roles(self.RIGHTS_commit) or self.check_owner(req.user(), record):
+                record['content'] = record['_content']
+                record['published'] = pytis.data.Value(pytis.data.Boolean(), True)
+            else:
+                errors = [(None, _("You don't have sufficient privilegs for this action.") +' '+ \
+                           _("Save the page without publishing and ask the administrator "
+                             "to publish your changes."))]
+        return errors
 
     def _update_msg(self, record):
         if record['content'].value() == record['_content'].value():
@@ -1173,11 +1174,13 @@ class Pages(CMSModule):
         return super(Pages, self)._link_provider(req, uri, record, cid, **kwargs)
 
     def _redirect_after_insert(self, req, record):
-        return self.action_view(req, record, msg=self._insert_msg(record))
+        req.message(self._insert_msg(record))
+        return self.action_view(req, record)
         
     def _redirect_after_update(self, req, record):
         if not req.wmi:
-            return self.action_preview(req, record, msg=self._update_msg(record))
+            req.message(self._update_msg(record))
+            return self.action_preview(req, record)
         else:
             return super(Pages, self)._redirect_after_update(req, record)
 
@@ -1254,9 +1257,9 @@ class Pages(CMSModule):
 
     # Action handlers.
         
-    def action_view(self, req, record, err=None, msg=None, preview=False):
+    def action_view(self, req, record, preview=False):
         if req.wmi and not preview:
-            return super(Pages, self).action_view(req, record, err=err, msg=msg)
+            return super(Pages, self).action_view(req, record)
         # Main content
         modname = record['modname'].value()
         if modname is not None:
@@ -1300,7 +1303,7 @@ class Pages(CMSModule):
         # Action menu
         content.append(self._action_menu(req, record, help='/_doc/wiking/cms/pages', cls='actions separate'))
         resources = [a.resource() for a in attachments]
-        return self._document(req, content, record, resources=resources, err=err, msg=msg)
+        return self._document(req, content, record, resources=resources)
 
     def action_subpath(self, req, record):
         modname = record['modname'].value()
@@ -1333,16 +1336,16 @@ class Pages(CMSModule):
         else:
             return super(Pages, self).action_list(req)
         
-    def action_attachments(self, req, record, err=None, msg=None):
+    def action_attachments(self, req, record):
         binding = self._view.bindings()[0]
         content = self._module('Attachments').related(req, binding, record,
                                                       uri=self._current_record_uri(req, record))
         # Translators: Section title. Attachments as in email attachments.
-        return self._document(req, content, record, subtitle=_("Attachments"), err=err, msg=msg)
+        return self._document(req, content, record, subtitle=_("Attachments"))
     RIGHTS_attachments = (Roles.AUTHOR, Roles.OWNER)
         
-    def action_preview(self, req, record, **kwargs):
-        return self.action_view(req, record, preview=True, **kwargs)
+    def action_preview(self, req, record):
+        return self.action_view(req, record, preview=True)
     RIGHTS_preview = (Roles.AUTHOR, Roles.OWNER)
 
     def action_options(self, req, record):
@@ -1353,15 +1356,16 @@ class Pages(CMSModule):
         lang = req.param('src_lang')
         if not lang:
             if record['_content'].value() is not None:
-                e = _("Content for this page already exists!")
-                return self.action_view(req, record, err=e)
+                req.message(_("Content for this page already exists!"), type=req.ERROR)
+                return self.action_view(req, record)
             cond = pd.AND(pd.NE('_content', pd.Value(pd.String(), None)),
                           pd.NE('lang', record['lang']))
             langs = [(str(row['lang'].value()), lcg.language_name(row['lang'].value())) for row in 
                      self._data.get_rows(mapping_id=record['mapping_id'].value(), condition=cond)]
             if not langs:
-                e = _("Content for this page does not exist in any language.")
-                return self.action_view(req, record, err=e)
+                req.message(_("Content for this page does not exist in any language."),
+                            type=req.ERROR)
+                return self.action_view(req, record)
             d = pw.SelectionDialog('src_lang', _("Choose source language"), langs,
                                    action='translate', hidden=\
                                    [(id, record[id].value()) for id in ('mapping_id', 'lang')])
@@ -1383,34 +1387,35 @@ class Pages(CMSModule):
                 tr = translator(record['lang'].value())
                 values['title'] = tr.translate(module.title())
             else:
-                return self.action_view(req, record, err=_("Can't publish untitled page."))
+                req.message(_("Can't publish untitled page."), type=req.ERROR)
+                return self.action_view(req, record)
         try:
             record.update(**values)
         except pd.DBException, e:
-            kwargs = dict(err=self._error_message(*self._analyze_exception(e)))
+            req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
         else:
-            kwargs = dict(msg=_("The changes were published."))
-        return self.action_view(req, record, **kwargs)
+            req.message(_("The changes were published."))
+        return self.action_view(req, record)
     RIGHTS_commit = (Roles.AUTHOR, Roles.OWNER)
 
     def action_revert(self, req, record):
         try:
             record.update(_content=record['content'].value())
         except pd.DBException, e:
-            kwargs = dict(err=self._error_message(*self._analyze_exception(e)))
+            req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
         else:
-            kwargs = dict(msg=_("The page contents was reverted to its previous state."))
-        return self.action_view(req, record, **kwargs)
+            req.message(_("The page contents was reverted to its previous state."))
+        return self.action_view(req, record)
     RIGHTS_revert = (Roles.ADMIN, Roles.OWNER)
     
     def action_unpublish(self, req, record):
         try:
             record.update(published=False)
         except pd.DBException, e:
-            kwargs = dict(err=self._error_message(*self._analyze_exception(e)))
+            req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
         else:
-            kwargs = dict(msg=_("The page was unpublished."))
-        return self.action_view(req, record, **kwargs)
+            req.message(_("The page was unpublished."))
+        return self.action_view(req, record)
     RIGHTS_unpublish = (Roles.ADMIN, Roles.OWNER)
 
     
@@ -1796,7 +1801,8 @@ class News(EmbeddableCMSModule):
         if req.wmi:
             return super(News, self)._redirect_after_insert(req, record)
         else:
-            return self._module('Pages').action_view(req, req.page, msg=self._insert_msg(record))
+            req.message(self._insert_msg(record))
+            return self._module('Pages').action_view(req, req.page)
         
 
 class Planner(News):
@@ -2194,7 +2200,6 @@ class Users(CMSModule):
         return actions
 
     def _make_registration_email(self, req, record):
-        msg, err = None, None
         base_uri = req.module_uri('Registration') or '/_wmi/'+ self.name()
         server_hostname = req.server_hostname()
         uri = req.server_uri() + make_uri(base_uri, action='confirm', uid=record['uid'].value(),

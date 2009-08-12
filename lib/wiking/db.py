@@ -693,8 +693,8 @@ class PytisModule(Module, ActionHandler):
                                    condition=self._condition(req, lang=lang, condition=condition))
 
     def _inaccessible_database(self, req):
-        error = _("This function is temporarily unavailable.")
-        return self._document(req, [], err=error)
+        req.message(_("This function is temporarily unavailable."), type.req.ERROR)
+        return self._document(req, [])
 
     def _handle(self, req, action, **kwargs):
         record = kwargs.get('record')
@@ -892,6 +892,8 @@ class PytisModule(Module, ActionHandler):
         return result
     
     def action_view(self, req, record, err=None, msg=None):
+        # The arguments `msg' and `err' are DEPRECATED!  Please don't use.
+        # They are currently still used in Eurochance LMS.
         content = [self._form(pw.ShowForm, req, record=record,
                               layout=self._layout(req, 'view', record)),
                    self._action_menu(req, record)] + \
@@ -976,22 +978,20 @@ class PytisModule(Module, ActionHandler):
         return self._document(req, form, record, subtitle=subtitle)
 
     def action_delete(self, req, record):
-        err = None
         if req.param('submit'):
             try:
                 self._delete(record)
             except pd.DBException, e:
-                err = self._error_message(*self._analyze_exception(e))
+                req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
             else:
                 return self._redirect_after_delete(req, record)
         form = self._form(pw.ShowForm, req, record)
         actions = (Action(self._DELETE_LABEL, 'delete', allow_referer=False, submit=1),
                    # Translators: Back button label. Standard computer terminology.
                    Action(_("Back"), 'view'))
-        action_menu = self._action_menu(req, record, actions)
-        return self._document(req, (form, action_menu), record, err=err,
-                              subtitle=self._delete_subtitle(req, record),
-                              msg=self._delete_prompt(req, record))
+        req.message(self._delete_prompt(req, record))
+        return self._document(req, (form, self._action_menu(req, record, actions)), record,
+                              subtitle=self._delete_subtitle(req, record))
         
     def _insert_subtitle(self, req):
         return self._INSERT_LABEL
@@ -1194,15 +1194,15 @@ class Publishable(object):
     # action handler method for each pytis action.
     
     def action_publish(self, req, record, publish=True):
-        err, msg = (None, None)
         try:
             if publish != record['published'].value():
                 Publishable._change_published(record)
                 record.reload()
-            msg = publish and self._MSG_PUBLISHED or self._MSG_UNPUBLISHED
         except pd.DBException, e:
-            err = self._error_message(*self._analyze_exception(e))
-        return self.action_view(req, record, msg=msg, err=err)
+            req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
+        else:
+            req.message(publish and self._MSG_PUBLISHED or self._MSG_UNPUBLISHED)
+        return self.action_view(req, record)
 
     def action_unpublish(self, req, record):
         return self.action_publish(req, record, publish=False)

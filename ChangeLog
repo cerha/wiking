@@ -1,5 +1,11 @@
 2009-08-12  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/db.py:
+	* lib/wiking/cms/cms.py:
+	Cleanup: Use `req.message()' instead of passing `msg' and `err' to
+	the document.
+	
+
 	* translations/wiking-cms.cs.po:
 	Drobná oprava.
 
