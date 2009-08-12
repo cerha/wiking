@@ -1994,7 +1994,7 @@ class Users(CMSModule):
             if role != 'none':
                 texts = ()
             elif regexpire is None:
-                texts = _("The security code was succesfully confirmed."),
+                texts = _("The activation code was succesfully confirmed."),
                 if req.check_roles(Roles.ADMIN):
                     texts = (texts[0] +' '+ \
                             _("Therefore it was verified that given e-mail address "
@@ -2004,12 +2004,12 @@ class Users(CMSModule):
                 texts += _("The account now awaits administrator's action to be given "
                           "access rights."),
             elif regexpire > mx.DateTime.now().gmtime():
-                texts = (_("The security code was not yet confirmed by the user. Therefore it is "
-                          "not possible to trust that given e-mail address belongs to the person "
-                          "who requested the registration."),
+                texts = (_("The activation code was not yet confirmed by the user. Therefore "
+                           "it is not possible to trust that given e-mail address belongs to "
+                           "the person who requested the registration."),
                         # Translators: %(date)s is replaced by date and time of registration
                         # expiration.
-                        _("The security code will expire on %(date)s and the user will not be "
+                        _("The activation code will expire on %(date)s and the user will not be "
                           "able to complete the registration anymore.",
                           date=record['regexpire'].export()))
                 if req.check_roles(Roles.ADMIN):
@@ -2018,12 +2018,12 @@ class Users(CMSModule):
             else:
                 # Translators: %(date)s is replaced by date and time of registration expiration.
                 texts = _("The registration expired on %(date)s.  The user didn't confirm the "
-                         "security code sent to the declared e-mail address in time.",
+                          "activation code sent to the declared e-mail address in time.",
                          date=record['regexpire'].export()),
                 if req.check_roles(Roles.ADMIN):
                     texts += _("The account should be deleted automatically if the server "
-                              "maintenence script is installed correctly.  Otherwise you can "
-                              "delete the account manually."),
+                               "maintenence script is installed correctly.  Otherwise you can "
+                               "delete the account manually."),
             return texts
         def _check_email(self, email):
             result = wiking.validate_email_address(email)
@@ -2042,7 +2042,8 @@ class Users(CMSModule):
         layout = () # Force specific layout definition for each action.
         cb = CodebookSpec(display='user', prefer_display=True)
         filters = (
-            pp.Condition(_("All users"), None),
+            # Translators: Accounts as in user accounts (computer terminology).
+            pp.Condition(_("All accounts"), None),
             pp.Condition(_("Active users"),
                          pd.AND(pd.NE('role', pd.Value(pd.String(), 'none')),
                                 pd.EQ('regexpire', pd.Value(pd.DateTime(), None))),
@@ -2051,7 +2052,7 @@ class Users(CMSModule):
                          pd.AND(pd.EQ('role', pd.Value(pd.String(), 'none')),
                                 pd.EQ('regexpire', pd.Value(pd.DateTime(), None))),
                          id='inactive'),
-            pp.Condition(_("Invalid registration requests (security code not confirmed)"),
+            pp.Condition(_("Unfinished registration requests (activation code not confirmed)"),
                          pd.NE('regexpire', pd.Value(pd.DateTime(), None)),
                          id='unconfirmed'),
             )
@@ -2177,7 +2178,7 @@ class Users(CMSModule):
         if record and record['regexpire'].value() is not None:
             # Currently inactive due to limited access rights (is this action really needed?).
             actions = (Action(_("Confirm"), 'admin_confirm',
-                              descr=_("Confirm the account without checking the security code")),
+                              descr=_("Confirm the account without checking the activation code")),
                        ) + actions
         if req.user():
             actions += (Action(_("Change password"), 'passwd', descr=_("Change user's password")),)
@@ -2227,7 +2228,7 @@ class Users(CMSModule):
             req.message(_("Failed sending e-mail notification:") +' '+ err, type=req.ERROR)
             return False
         else:
-            req.message(_("Security code was sent to %s.", record['email'].value()))
+            req.message(_("Activation code was sent to %s.", record['email'].value()))
             return True
 
     def _redirect_after_update(self, req, record):
@@ -2304,7 +2305,7 @@ class Users(CMSModule):
     
 
     def action_admin_confirm(self, req, record):
-        """Force registration confirmation without checking security code."""
+        """Force registration confirmation without checking activation code."""
         if req.param('submit'):
             record.update(regexpire=None)
             req.message(_("The account was confirmed.  Grant the access rights now."))

@@ -1,3 +1,8 @@
+2009-08-12  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/cms/cms.py: 
+	Improved wording: "Security code" -> "Activation code".
+
 2009-08-11  Tomas Cerha  <cerha@brailcom.org>
 
 	* translations/wiking-cms.cs.po:
