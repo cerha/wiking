@@ -1,5 +1,16 @@
 2009-08-12  Tomas Cerha  <cerha@brailcom.org>
 
+	* translations/wiking-cms.cs.po:
+	* translations/wiking-cms.de.po:
+	* translations/wiking-cms.es.po:
+	* translations/wiking-cms.fr.po:
+	* translations/wiking-cms.hu.po:
+	* translations/wiking-cms.it.po:
+	* translations/wiking-cms.no.po:
+	* translations/wiking-cms.pl.po:
+	* translations/wiking-cms.sk.po:
+	Translations updated.
+
 	* lib/wiking/cms/cms.py: 
 	Improved wording: "Security code" -> "Activation code".
 
