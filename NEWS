@@ -4,7 +4,8 @@ Version 0.4.5 (not released yet):
  
  * Added support for ARIA landmarks and JavaScript page navigation improved.
 
- * Improved user registration, account confirmation process and user management.
+ * Major improvements in user registration, account confirmation process and
+   user management.
  
  * Implemented session history logging and added a view of successful and
    unsuccessful login attempts (both global and per user).
@@ -15,20 +16,23 @@ Version 0.4.5 (not released yet):
  * Added bulk mailing support to allow sending email to all registered users or
    to certain user roles (new tab "Services" in WMI).
  
- * Panels are now also displayed in WMI in the same form as outside WMI.
+ * Implemented on-line form updated through AJAX (computed fields, dynamic field
+   editability, runtime codebook filters, runtime validation).
 
- * WMI link was moved to the login panel (if enabled).
-  
- * Registration notification emails are now sent in HTML to prevent confirmation
-   URI misinterpretation.
-
- * RSS links are now automatically displayed within panels and announced in page
-   header meta tags.
+ * Improved management and behavior of panels:
+   - Panels are now displayed in WMI in the same form as outside WMI.
+   - WMI link was moved to the login panel (if enabled).
+   - RSS links are now automatically displayed within panels and announced in
+     page header meta tags.
 
  * New configuration options allow setting the default language statically as
    well as dynamically based on the server name in the current request URI.
 
+ * New complete translations (de, es, fr, hu, it, no, pl, sk).
+
  * Wiking Application API extended to cover common exporter customizations.
+
+ * Major Wiking module API extensions and cleanup.
 
  * User's documentation updates.
  

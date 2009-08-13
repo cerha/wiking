@@ -1,10 +1,17 @@
+2009-08-13  Tomas Cerha  <cerha@brailcom.org>
+
+	* NEWS: 
+	Updated.
+
+	* lib/wiking/__init__.py: 
+	Version set to 0.4.5-pre5.
+
 2009-08-12  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/db.py:
 	* lib/wiking/cms/cms.py:
 	Cleanup: Use `req.message()' instead of passing `msg' and `err' to
 	the document.
-	
 
 	* translations/wiking-cms.cs.po:
 	Drobná oprava.
