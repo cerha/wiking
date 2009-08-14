@@ -774,10 +774,8 @@ class LoginDialog(lcg.Content):
         credentials = req.credentials()
         if credentials:
             login = credentials[0]
-            password = None
         else:
-            login = req.param('login')
-            password = req.param('password') or None
+            login = None
         def hidden_field(param, value):
             if isinstance(value, basestring):
                 return g.hidden(name=param, value=value)
@@ -794,7 +792,7 @@ class LoginDialog(lcg.Content):
             g.field(name='login', value=login, id='login', size=18),
             g.br(), 
             g.label(_("Password")+':', id='password') + g.br(),
-            g.field(name='password', value=password, id='password', size=18, password=True),
+            g.field(name='password', id='password', size=18, password=True),
             g.br(),
             g.hidden(name='__log_in', value='1'),
             ) + tuple(hidden) + (
