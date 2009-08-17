@@ -1376,6 +1376,8 @@ def validate_email_address(address, helo=None):
     except dns.resolver.NoAnswer:
         mxhosts = None
     except dns.resolver.NXDOMAIN:
+        # Translators: Computer terminology. `gmail.com' is a domain name in email address
+        # `joe@gmail.com'.
         return False, _("Domain not found")
     except Exception, e:
         return False, str(e) or e.__class__.__name__
