@@ -2019,7 +2019,7 @@ class Users(CMSModule):
                           "able to complete the registration anymore.",
                           date=record['regexpire'].export()))
                 if req.check_roles(Roles.ADMIN):
-                    texts += _("Use the button \"Resend registration code\" below to remind the "
+                    texts += _("Use the button \"Resend activation code\" below to remind the "
                               "user of his pending registration."),
             else:
                 # Translators: %(date)s is replaced by date and time of registration expiration.
@@ -2195,7 +2195,7 @@ class Users(CMSModule):
         if req.path[0] == '_registration':
             actions = [a for a in actions if a.name() != 'list']
         if record is not None and record['regexpire'].value() is not None:
-            actions.append(Action(_("Resend registration code"), 'regreminder',
+            actions.append(Action(_("Resend activation code"), 'regreminder',
                                   descr=_("Re-send registration mail")))
         return actions
 
@@ -2256,10 +2256,10 @@ class Users(CMSModule):
             return super(Users, self)._redirect_after_update(req, record)
     
     def _check_registration_code(self, req):
-        """Check whether given request contains valid login and registration code.
+        """Check whether given request contains valid login and activation code.
 
         Return a 'Record' instance corresponding to the user id given in the request (if the uid
-        and registration code are valid) or raise 'BadRequest' exception.
+        and activation code are valid) or raise 'BadRequest' exception.
 
         """
         uid, error = pytis.data.Integer().validate(req.param('uid'))
@@ -2278,7 +2278,7 @@ class Users(CMSModule):
             raise BadRequest(_("User registration already confirmed."))
         code = record['regcode'].value()
         if not code or code != req.param('regcode'):
-            raise BadRequest(_("Invalid registration code."))
+            raise BadRequest(_("Invalid activation code."))
         return record
 
     def _send_admin_approval_mail(self, req, record):
@@ -2327,7 +2327,7 @@ class Users(CMSModule):
     RIGHTS_admin_confirm = () #Roles.ADMIN,)
 
     def action_confirm(self, req):
-        """Confirm the registration code sent by e-mail to make user registration valid.
+        """Confirm the activation code sent by e-mail to make user registration valid.
 
         Additionally send e-mail notification to the administrator to ask him for account approval.
         
@@ -2487,33 +2487,6 @@ class Users(CMSModule):
         assert error is None, error
         record.update(password=value.value())
         return password
-
-    def set_registration_code(self, uid):
-        """Generate and set new registration code for given user 'uid'.
-
-        Return the generated code.
-
-        This method can be used in registration or in password reminders.
-        
-        """
-        code = self.Spec._generate_registration_code()
-        code_value = pytis.data.String().validate(code)[0]
-        uid_value = pytis.data.Integer().validate(str(uid))[0]
-        row = pytis.data.Row((('regcode', code_value,),))
-        new_row, result = self._data.update(uid_value, row)
-        if not result:
-            raise Exception(_("Database operation failed"))
-        return code
-
-    def delete_registration_code(self, req):
-        """Remove registration code for user identified by 'req'."""
-        uid = req.param('uid')
-        uid_value = pytis.data.Integer().validate(str(uid))[0]
-        code_value = pytis.data.String().validate('')[0]
-        row = pytis.data.Row((('regcode', code_value,),))
-        new_row, result = self._data.update(uid_value, row)
-        if not result:
-            raise Exception(_("Database operation failed"))
 
     def send_mail(self, role, *args, **kwargs):
         """Send mail to all users of given 'role'.
