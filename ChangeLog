@@ -1,3 +1,17 @@
+2009-08-17  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/application.py: 
+	Set 'Reply-To' and 'X-Wiking-Bug-Report-From' headers of bug
+	report emails.
+	
+	* lib/wiking/configuration.py: 
+	Description updated.
+
+2009-08-14  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/util.py: 
+	Don't prefill login and password in login dialog from request arguments.
+
 2009-08-13  Tomas Cerha  <cerha@brailcom.org>
 
 	* NEWS: 

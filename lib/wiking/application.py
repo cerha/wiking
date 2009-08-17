@@ -279,8 +279,9 @@ class Application(Module):
                 return saxutils.escape(value)
             params = ["  %s = %s" % (saxutils.escape(param), param_value(param))
                       for param in req.params()]
+            hostname = req.server_hostname()
             req_info = "\n".join(["%s: %s" % pair for pair in
-                                  (("Server", req.server_hostname()),
+                                  (("Server", hostname),
                                    ("URI", req.uri()),
                                    ("Remote host", req.remote_host()),
                                    ("Remote user", user and user.login() or ''),
@@ -290,19 +291,22 @@ class Application(Module):
                                    )])
             text = req_info + "\n\n" + cgitb.text(einfo)
             log(OPR, "\n"+ text)
-            if cfg.bug_report_address is not None:
+            address = cfg.bug_report_address
+            if address is not None:
                 tb = einfo[2]
                 while tb.tb_next is not None:
                     tb = tb.tb_next
                 filename = os.path.split(tb.tb_frame.f_code.co_filename)[-1]
                 buginfo = "%s at %s line %d" % (einfo[0].__name__, filename, tb.tb_lineno)
                 pre = req_info + "\n\n" + "".join(traceback.format_exception(*einfo))
-                err = send_mail(cfg.bug_report_address, 'Wiking Error: ' + buginfo, text,
-                                html="<html><pre>"+ pre +"</pre>"+ cgitb.html(einfo) +"</html>")
+                err = send_mail(address, 'Wiking Error: ' + buginfo, text,
+                                html="<html><pre>"+ pre +"</pre>"+ cgitb.html(einfo) +"</html>",
+                                headers=(('Reply-To', address),
+                                         ('X-Wiking-Bug-Report-From', hostname)))
                 if err:
-                    log(OPR, "Failed sending exception info to %s:" % cfg.bug_report_address, err)
+                    log(OPR, "Failed sending exception info to %s:" % address, err)
                 else:
-                    log(OPR, "Traceback sent to %s." % cfg.bug_report_address)
+                    log(OPR, "Traceback sent to %s." % address)
         except:
             log(OPR, "Error in exception handling:",
                 "".join(traceback.format_exception(*sys.exc_info())))
