@@ -1,5 +1,8 @@
 2009-08-17  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/__init__.py: 
+	Version changed to 0.4.5-pre6.
+
 	* translations/wiking-cms.cs.po:
 	* translations/wiking-cms.de.po:
 	* translations/wiking-cms.es.po:
