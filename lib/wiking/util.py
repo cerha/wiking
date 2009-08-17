@@ -1365,7 +1365,8 @@ def validate_email_address(address, helo=None):
     import dns.resolver
     import smtplib
     try:
-        address = str(address)      # DNS query doesn't work with unicode
+        # DNS query doesn't work with unicode
+        address = str(address) 
         # We validate only common addresses, not pathological cases
         __, domain = address.split('@')
     except (UnicodeEncodeError, ValueError):
@@ -1374,38 +1375,40 @@ def validate_email_address(address, helo=None):
         mxhosts = dns.resolver.query(domain, 'MX')
     except dns.resolver.NoAnswer:
         mxhosts = None
+    except dns.resolver.NXDOMAIN:
+        return False, _("Domain not found")
     except Exception, e:
-        return False, str(e)
+        return False, str(e) or e.__class__.__name__
     if mxhosts is None:
         try:
             ahosts = dns.resolver.query(domain, 'A')
         except dns.resolver.NoAnswer:
-            return False, "Address domain not found"
+            return False, _("Domain not found")
         except Exception, e:
-            return False, str(e)
+            return False, str(e) or e.__class__.__name__
         hosts = [h.to_text() for h in ahosts]
     else:
         hosts = [h.exchange.to_text() for h in mxhosts]
-    for i in range(len(hosts)):
-        if hosts[i][-1] == '.':
-            hosts[i] = hosts[i][:-1]
-    reasons = ''
-    for host in hosts:
-        try:
-            smtp = smtplib.SMTP(host, local_hostname=helo)
-            smtp.helo()
-            code, message = smtp.mail('')
-            if code >= 500:
-                raise Exception('SMTP command MAIL failed', code, message)
-            code, message = smtp.rcpt(address)
-            if code >= 500:
-                raise Exception('SMTP command RCPT failed', code, message)
-            smtp.quit()
-            break
-        except Exception, e:
-            reasons += ('%s: %s; ' % (host, e,))
-    else:
-        return False, reasons
+    if cfg.allow_smtp_email_validation:
+        reasons = ''
+        for host in hosts:
+            if host[-1] == '.':
+                host = host[:-1]
+            try:
+                smtp = smtplib.SMTP(host, local_hostname=helo)
+                smtp.helo()
+                code, message = smtp.mail('')
+                if code >= 500:
+                    raise Exception('SMTP command MAIL failed', code, message)
+                code, message = smtp.rcpt(address)
+                if code >= 500:
+                    raise Exception('SMTP command RCPT failed', code, message)
+                smtp.quit()
+                break
+            except Exception, e:
+                reasons += ('%s: %s; ' % (host, e,))
+        else:
+            return False, reasons
     return True, None
 
 

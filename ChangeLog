@@ -5,7 +5,7 @@
 	report emails.
 	
 	* lib/wiking/configuration.py: 
-	Description updated.
+	New option `allow_smtp_email_validation'.
 
 2009-08-14  Tomas Cerha  <cerha@brailcom.org>
 

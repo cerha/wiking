@@ -161,6 +161,16 @@ class Configuration(pc):
         _DOC = ("SMTP server is used for sending bug reports by e-mail.  To allow this feature, "
                 "you must also supply the 'bug_report_address' option.")
         _DEFAULT = 'localhost'
+
+    class _Option_allow_smtp_email_validation(pc.BooleanOption):
+        _DESCR = "Allow SMTP e-mail validation"
+        _DOC = ("Wiking email validation functions may use SMTP to verify the existence of an "
+                "e-mail account on the remote mail server.  Some installations, however, may "
+                "not allow the server to create such SMTP connections (e.g. when the server "
+                "is located behind a firewall).  This option allows you to disable SMTP checking "
+                "in such situations.  If disabled, the mail addres domain is only checked "
+                "through DNS")
+        _DEFAULT = True
         
     class _Option_bug_report_address(pc.StringOption):
         _DESCR = "E-mail address where bug reports will be sent"
