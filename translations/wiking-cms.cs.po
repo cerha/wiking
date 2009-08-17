@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-08-17 15:01+0200\n"
-"PO-Revision-Date: 2009-08-12 15:50+0200\n"
+"POT-Creation-Date: 2009-08-17 17:10+0200\n"
+"PO-Revision-Date: 2009-08-17 17:13+0200\n"
 "Last-Translator: Hynek Hanke <hanke@brailcom.org>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
 "MIME-Version: 1.0\n"
@@ -460,7 +460,7 @@ msgstr "Kód"
 
 #. Translators: Language name: e.g. Czech, Slovak etc.
 #: ../lib/wiking/cms/cms.py:822 ../lib/wiking/cms/cms.py:912
-#: ../lib/wiking/cms/cms.py:2580
+#: ../lib/wiking/cms/cms.py:2553
 msgid "Name"
 msgstr "Název"
 
@@ -477,8 +477,8 @@ msgstr "Běžné barvy stránky"
 #: ../lib/wiking/cms/cms.py:847 ../lib/wiking/cms/cms.py:862
 #: ../lib/wiking/cms/cms.py:870 ../lib/wiking/cms/cms.py:877
 #: ../lib/wiking/cms/cms.py:886 ../lib/wiking/cms/cms.py:890
-#: ../lib/wiking/cms/cms.py:894 ../lib/wiking/cms/cms.py:2670
-#: ../lib/wiking/cms/cms.py:2899 ../lib/wiking/cms/cms.py:3086
+#: ../lib/wiking/cms/cms.py:894 ../lib/wiking/cms/cms.py:2643
+#: ../lib/wiking/cms/cms.py:2872 ../lib/wiking/cms/cms.py:3059
 msgid "Text"
 msgstr "Text"
 
@@ -1101,7 +1101,7 @@ msgstr "Publikovat krátké aktuální zprávy."
 
 #: ../lib/wiking/cms/cms.py:1749 ../lib/wiking/cms/cms.py:1751
 #: ../lib/wiking/cms/cms.py:1815 ../lib/wiking/cms/cms.py:1822
-#: ../lib/wiking/cms/cms.py:3088
+#: ../lib/wiking/cms/cms.py:3061
 msgid "Date"
 msgstr "Datum"
 
@@ -1262,15 +1262,15 @@ msgstr ""
 "Ponechte prázdné, pokud chcete, aby se na Vás systém odkazoval plným jménem, "
 "nebo zadejte jiné jméno, jako např. přezdívku nebo monogram."
 
-#: ../lib/wiking/cms/cms.py:1974 ../lib/wiking/cms/cms.py:2582
+#: ../lib/wiking/cms/cms.py:1974 ../lib/wiking/cms/cms.py:2555
 msgid "E-mail"
 msgstr "E-mail"
 
-#: ../lib/wiking/cms/cms.py:1975 ../lib/wiking/cms/cms.py:2583
+#: ../lib/wiking/cms/cms.py:1975 ../lib/wiking/cms/cms.py:2556
 msgid "Phone"
 msgstr "Telefon"
 
-#: ../lib/wiking/cms/cms.py:1976 ../lib/wiking/cms/cms.py:2584
+#: ../lib/wiking/cms/cms.py:1976 ../lib/wiking/cms/cms.py:2557
 msgid "Address"
 msgstr "Adresa"
 
@@ -1344,11 +1344,9 @@ msgstr ""
 
 #: ../lib/wiking/cms/cms.py:2022
 msgid ""
-"Use the button \"Resend registration code\" below to remind the user of his "
+"Use the button \"Resend activation code\" below to remind the user of his "
 "pending registration."
-msgstr ""
-"Použijte tlačítko „Poslat registrační kód“ níže pro připomenutí nedokončené "
-"registrace uživateli."
+msgstr "Použijte tlačítko „Poslat aktivační kód“ níže pro připomenutí nedokončené registrace uživateli."
 
 #. Translators: %(date)s is replaced by date and time of registration expiration.
 #: ../lib/wiking/cms/cms.py:2026
@@ -1368,7 +1366,7 @@ msgstr ""
 "Účet by měl být odstraněn automaticky, pokud je skript údržby korektně "
 "nainstalován.  Pokud ne, můžete jej smazat manuálně."
 
-#: ../lib/wiking/cms/cms.py:2037 ../lib/wiking/cms/cms.py:2590
+#: ../lib/wiking/cms/cms.py:2037 ../lib/wiking/cms/cms.py:2563
 #, python-format
 msgid "Invalid e-mail address: %s"
 msgstr "Chybná e-mailová adresa: %s"
@@ -1378,7 +1376,7 @@ msgstr "Chybná e-mailová adresa: %s"
 msgid "All accounts"
 msgstr "Všechny účty"
 
-#: ../lib/wiking/cms/cms.py:2053 ../lib/wiking/cms/cms.py:2555
+#: ../lib/wiking/cms/cms.py:2053 ../lib/wiking/cms/cms.py:2528
 msgid "Active users"
 msgstr "Aktivní uživatelé"
 
@@ -1466,8 +1464,8 @@ msgid "Change user's password"
 msgstr "Změna přihlašovacího hesla"
 
 #: ../lib/wiking/cms/cms.py:2198
-msgid "Resend registration code"
-msgstr "Poslat registrační kód"
+msgid "Resend activation code"
+msgstr "Poslat aktivační kód"
 
 #: ../lib/wiking/cms/cms.py:2199
 msgid "Re-send registration mail"
@@ -1538,8 +1536,8 @@ msgid "User registration already confirmed."
 msgstr "Registrace uživatele již byla dříve potvrzena."
 
 #: ../lib/wiking/cms/cms.py:2281
-msgid "Invalid registration code."
-msgstr "Neplatný registrační kód."
+msgid "Invalid activation code."
+msgstr "Neplatný aktivační kód."
 
 #: ../lib/wiking/cms/cms.py:2288
 #, python-format
@@ -1582,120 +1580,116 @@ msgstr ""
 msgid "Registration confirmed"
 msgstr "Registrace potvrzena"
 
-#: ../lib/wiking/cms/cms.py:2505 ../lib/wiking/cms/cms.py:2516
-msgid "Database operation failed"
-msgstr "Selhala databázová operace"
-
-#: ../lib/wiking/cms/cms.py:2556
+#: ../lib/wiking/cms/cms.py:2529
 msgid "Listing of all active user accounts."
 msgstr "Výpis všech aktivních uživatelských účtů."
 
-#: ../lib/wiking/cms/cms.py:2575
+#: ../lib/wiking/cms/cms.py:2548
 msgid "Organizations"
 msgstr "Organizace"
 
-#: ../lib/wiking/cms/cms.py:2576
+#: ../lib/wiking/cms/cms.py:2549
 msgid "Manage institutions and other organizations."
 msgstr "Správa institucí a jiných organizací."
 
-#: ../lib/wiking/cms/cms.py:2581
+#: ../lib/wiking/cms/cms.py:2554
 msgid "VAT id"
 msgstr "DIČ"
 
-#: ../lib/wiking/cms/cms.py:2585
+#: ../lib/wiking/cms/cms.py:2558
 msgid "Notes"
 msgstr "Poznámky"
 
-#: ../lib/wiking/cms/cms.py:2657
+#: ../lib/wiking/cms/cms.py:2630
 msgid "System Texts"
 msgstr "Systémové texty"
 
-#: ../lib/wiking/cms/cms.py:2658
+#: ../lib/wiking/cms/cms.py:2631
 msgid "Edit miscellaneous system texts."
 msgstr "Přizpůsobit různé systémové texty."
 
-#: ../lib/wiking/cms/cms.py:2665 ../lib/wiking/cms/cms.py:2894
+#: ../lib/wiking/cms/cms.py:2638 ../lib/wiking/cms/cms.py:2867
 msgid "Label"
 msgstr "Název"
 
-#: ../lib/wiking/cms/cms.py:2668 ../lib/wiking/cms/cms.py:2897
+#: ../lib/wiking/cms/cms.py:2641 ../lib/wiking/cms/cms.py:2870
 msgid "Purpose"
 msgstr "Účel"
 
-#: ../lib/wiking/cms/cms.py:2671 ../lib/wiking/cms/cms.py:2900
-#: ../lib/wiking/cms/cms.py:3087
+#: ../lib/wiking/cms/cms.py:2644 ../lib/wiking/cms/cms.py:2873
+#: ../lib/wiking/cms/cms.py:3060
 msgid ""
 "Edit the given text as needed, in accordance with structured text rules."
 msgstr ""
 "Zeditujte text dle potřeby, formátovaný dle pravidel pro strukturovaný text."
 
-#: ../lib/wiking/cms/cms.py:2889
+#: ../lib/wiking/cms/cms.py:2862
 msgid "E-mails"
 msgstr "E-maily"
 
-#: ../lib/wiking/cms/cms.py:2890
+#: ../lib/wiking/cms/cms.py:2863
 msgid "Edit e-mail texts."
 msgstr "Přizpůsobit texty e-mailů."
 
-#: ../lib/wiking/cms/cms.py:2901 ../lib/wiking/cms/cms.py:3085
+#: ../lib/wiking/cms/cms.py:2874 ../lib/wiking/cms/cms.py:3058
 msgid "Subject"
 msgstr "Předmět"
 
-#: ../lib/wiking/cms/cms.py:2902
+#: ../lib/wiking/cms/cms.py:2875
 msgid "Additional recipients"
 msgstr "Další adresáti"
 
-#: ../lib/wiking/cms/cms.py:2903
+#: ../lib/wiking/cms/cms.py:2876
 msgid "Comma separated list of e-mail addresses."
 msgstr "Seznam e-mailových adres oddělených čárkami."
 
 #. Translators: Section title and menu item. Sending emails to multiple recipients.
-#: ../lib/wiking/cms/cms.py:3075
+#: ../lib/wiking/cms/cms.py:3048
 msgid "Bulk E-mails"
 msgstr "Hromadné maily"
 
-#: ../lib/wiking/cms/cms.py:3081
+#: ../lib/wiking/cms/cms.py:3054
 msgid "Sender address"
 msgstr "Adresa odesílatele"
 
-#: ../lib/wiking/cms/cms.py:3082
+#: ../lib/wiking/cms/cms.py:3055
 msgid "E-mail address of the sender."
 msgstr "E-mailová adresa odesílatele."
 
-#: ../lib/wiking/cms/cms.py:3083
+#: ../lib/wiking/cms/cms.py:3056
 msgid "Recipients"
 msgstr "Role příjemců"
 
-#: ../lib/wiking/cms/cms.py:3091
+#: ../lib/wiking/cms/cms.py:3064
 msgid "State"
 msgstr "Stav"
 
-#: ../lib/wiking/cms/cms.py:3100
+#: ../lib/wiking/cms/cms.py:3073
 msgid "Sent"
 msgstr "Odesláno"
 
-#: ../lib/wiking/cms/cms.py:3102
+#: ../lib/wiking/cms/cms.py:3075
 msgid "Sending"
 msgstr "Odesílá se"
 
-#: ../lib/wiking/cms/cms.py:3104
+#: ../lib/wiking/cms/cms.py:3077
 msgid "New"
 msgstr "Nový"
 
-#: ../lib/wiking/cms/cms.py:3112
+#: ../lib/wiking/cms/cms.py:3085
 msgid "All"
 msgstr "Všichni"
 
-#: ../lib/wiking/cms/cms.py:3116
+#: ../lib/wiking/cms/cms.py:3089
 #, python-format
 msgid "%(subject)s"
 msgstr "%(subject)s"
 
-#: ../lib/wiking/cms/cms.py:3119
+#: ../lib/wiking/cms/cms.py:3092
 msgid "Use as a Template"
 msgstr "Použít jako vzor"
 
-#: ../lib/wiking/cms/cms.py:3120
+#: ../lib/wiking/cms/cms.py:3093
 msgid "Edit this mail for repeated use"
 msgstr "Upravit tento mail pro nové použití"
 
@@ -1770,6 +1764,9 @@ msgid ""
 msgstr ""
 "Maximální velikost souborů přenášených na server (celé číslo v bajtech).  "
 "Pozor, aby se změny této volby uplatnily, je nutné server restartovat."
+
+#~ msgid "Database operation failed"
+#~ msgstr "Selhala databázová operace"
 
 #~ msgid "All users"
 #~ msgstr "Všichni uživatelé"

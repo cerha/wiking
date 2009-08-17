@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-08-17 15:01+0200\n"
+"POT-Creation-Date: 2009-08-17 17:10+0200\n"
 "PO-Revision-Date: 2009-06-26 15:48+0100\n"
 "Last-Translator: katarina kletecka <na cisarce 3224/28 Praha 15000>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
@@ -465,7 +465,7 @@ msgstr "Kode"
 
 #. Translators: Language name: e.g. Czech, Slovak etc.
 #: ../lib/wiking/cms/cms.py:822 ../lib/wiking/cms/cms.py:912
-#: ../lib/wiking/cms/cms.py:2580
+#: ../lib/wiking/cms/cms.py:2553
 msgid "Name"
 msgstr "Navn"
 
@@ -482,8 +482,8 @@ msgstr "Normal side farger"
 #: ../lib/wiking/cms/cms.py:847 ../lib/wiking/cms/cms.py:862
 #: ../lib/wiking/cms/cms.py:870 ../lib/wiking/cms/cms.py:877
 #: ../lib/wiking/cms/cms.py:886 ../lib/wiking/cms/cms.py:890
-#: ../lib/wiking/cms/cms.py:894 ../lib/wiking/cms/cms.py:2670
-#: ../lib/wiking/cms/cms.py:2899 ../lib/wiking/cms/cms.py:3086
+#: ../lib/wiking/cms/cms.py:894 ../lib/wiking/cms/cms.py:2643
+#: ../lib/wiking/cms/cms.py:2872 ../lib/wiking/cms/cms.py:3059
 msgid "Text"
 msgstr "Tekst"
 
@@ -1097,7 +1097,7 @@ msgstr "Publiser side nyheter. "
 
 #: ../lib/wiking/cms/cms.py:1749 ../lib/wiking/cms/cms.py:1751
 #: ../lib/wiking/cms/cms.py:1815 ../lib/wiking/cms/cms.py:1822
-#: ../lib/wiking/cms/cms.py:3088
+#: ../lib/wiking/cms/cms.py:3061
 msgid "Date"
 msgstr "Dato"
 
@@ -1257,15 +1257,15 @@ msgstr ""
 "La det stå tomt hvis du vil bli henvist av hele navn eller skriv inn et "
 "alternativt navn, for eksempel kallenavn eller monogram."
 
-#: ../lib/wiking/cms/cms.py:1974 ../lib/wiking/cms/cms.py:2582
+#: ../lib/wiking/cms/cms.py:1974 ../lib/wiking/cms/cms.py:2555
 msgid "E-mail"
 msgstr "E-post"
 
-#: ../lib/wiking/cms/cms.py:1975 ../lib/wiking/cms/cms.py:2583
+#: ../lib/wiking/cms/cms.py:1975 ../lib/wiking/cms/cms.py:2556
 msgid "Phone"
 msgstr "Telefon"
 
-#: ../lib/wiking/cms/cms.py:1976 ../lib/wiking/cms/cms.py:2584
+#: ../lib/wiking/cms/cms.py:1976 ../lib/wiking/cms/cms.py:2557
 msgid "Address"
 msgstr "Adress"
 
@@ -1330,7 +1330,7 @@ msgstr ""
 
 #: ../lib/wiking/cms/cms.py:2022
 msgid ""
-"Use the button \"Resend registration code\" below to remind the user of his "
+"Use the button \"Resend activation code\" below to remind the user of his "
 "pending registration."
 msgstr ""
 
@@ -1348,7 +1348,7 @@ msgid ""
 "is installed correctly.  Otherwise you can delete the account manually."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2037 ../lib/wiking/cms/cms.py:2590
+#: ../lib/wiking/cms/cms.py:2037 ../lib/wiking/cms/cms.py:2563
 #, python-format
 msgid "Invalid e-mail address: %s"
 msgstr "Ugyldig e-post adresse: %s"
@@ -1358,7 +1358,7 @@ msgstr "Ugyldig e-post adresse: %s"
 msgid "All accounts"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2053 ../lib/wiking/cms/cms.py:2555
+#: ../lib/wiking/cms/cms.py:2053 ../lib/wiking/cms/cms.py:2528
 msgid "Active users"
 msgstr "Aktive brukere"
 
@@ -1450,7 +1450,8 @@ msgid "Change user's password"
 msgstr "Bytt brukers passord"
 
 #: ../lib/wiking/cms/cms.py:2198
-msgid "Resend registration code"
+#, fuzzy
+msgid "Resend activation code"
 msgstr "Send igjen registreringskode"
 
 #: ../lib/wiking/cms/cms.py:2199
@@ -1520,7 +1521,8 @@ msgid "User registration already confirmed."
 msgstr "Bruker registrering allerede bekreftet."
 
 #: ../lib/wiking/cms/cms.py:2281
-msgid "Invalid registration code."
+#, fuzzy
+msgid "Invalid activation code."
 msgstr "Ugyldig registrering kode."
 
 #: ../lib/wiking/cms/cms.py:2288
@@ -1563,126 +1565,122 @@ msgstr ""
 msgid "Registration confirmed"
 msgstr "Registrering bekreftes"
 
-#: ../lib/wiking/cms/cms.py:2505 ../lib/wiking/cms/cms.py:2516
-msgid "Database operation failed"
-msgstr "Database operasjon mislyktes"
-
-#: ../lib/wiking/cms/cms.py:2556
+#: ../lib/wiking/cms/cms.py:2529
 msgid "Listing of all active user accounts."
 msgstr "Liste over alle aktive brukerkontoer."
 
-#: ../lib/wiking/cms/cms.py:2575
+#: ../lib/wiking/cms/cms.py:2548
 msgid "Organizations"
 msgstr "Organizasjoner"
 
-#: ../lib/wiking/cms/cms.py:2576
+#: ../lib/wiking/cms/cms.py:2549
 msgid "Manage institutions and other organizations."
 msgstr "Administrer institusjoner og andre organisasjoner."
 
-#: ../lib/wiking/cms/cms.py:2581
+#: ../lib/wiking/cms/cms.py:2554
 msgid "VAT id"
 msgstr "Merverdiavgift"
 
-#: ../lib/wiking/cms/cms.py:2585
+#: ../lib/wiking/cms/cms.py:2558
 msgid "Notes"
 msgstr "Notater"
 
-#: ../lib/wiking/cms/cms.py:2657
+#: ../lib/wiking/cms/cms.py:2630
 msgid "System Texts"
 msgstr "System Tekster"
 
-#: ../lib/wiking/cms/cms.py:2658
+#: ../lib/wiking/cms/cms.py:2631
 msgid "Edit miscellaneous system texts."
 msgstr "Rediger diverse system tekster."
 
-#: ../lib/wiking/cms/cms.py:2665 ../lib/wiking/cms/cms.py:2894
+#: ../lib/wiking/cms/cms.py:2638 ../lib/wiking/cms/cms.py:2867
 msgid "Label"
 msgstr "Etikett"
 
-#: ../lib/wiking/cms/cms.py:2668 ../lib/wiking/cms/cms.py:2897
+#: ../lib/wiking/cms/cms.py:2641 ../lib/wiking/cms/cms.py:2870
 msgid "Purpose"
 msgstr "Formål"
 
-#: ../lib/wiking/cms/cms.py:2671 ../lib/wiking/cms/cms.py:2900
-#: ../lib/wiking/cms/cms.py:3087
+#: ../lib/wiking/cms/cms.py:2644 ../lib/wiking/cms/cms.py:2873
+#: ../lib/wiking/cms/cms.py:3060
 msgid ""
 "Edit the given text as needed, in accordance with structured text rules."
 msgstr ""
 "Rediger den gitte teksten etter behov, i samsvar med strukturert tekst "
 "regler."
 
-#: ../lib/wiking/cms/cms.py:2889
+#: ../lib/wiking/cms/cms.py:2862
 msgid "E-mails"
 msgstr "E-post"
 
-#: ../lib/wiking/cms/cms.py:2890
+#: ../lib/wiking/cms/cms.py:2863
 msgid "Edit e-mail texts."
 msgstr "Rediger e-post tekstene."
 
-#: ../lib/wiking/cms/cms.py:2901 ../lib/wiking/cms/cms.py:3085
+#: ../lib/wiking/cms/cms.py:2874 ../lib/wiking/cms/cms.py:3058
 msgid "Subject"
 msgstr "Subjekt"
 
-#: ../lib/wiking/cms/cms.py:2902
+#: ../lib/wiking/cms/cms.py:2875
 msgid "Additional recipients"
 msgstr "Ytterligere mottagere"
 
-#: ../lib/wiking/cms/cms.py:2903
+#: ../lib/wiking/cms/cms.py:2876
 msgid "Comma separated list of e-mail addresses."
 msgstr "Kommadelt liste med e-postadresser."
 
 #. Translators: Section title and menu item. Sending emails to multiple recipients.
-#: ../lib/wiking/cms/cms.py:3075
+#: ../lib/wiking/cms/cms.py:3048
 #, fuzzy
 msgid "Bulk E-mails"
 msgstr "E-post"
 
-#: ../lib/wiking/cms/cms.py:3081
+#: ../lib/wiking/cms/cms.py:3054
 #, fuzzy
 msgid "Sender address"
 msgstr "Avsenderadressen"
 
-#: ../lib/wiking/cms/cms.py:3082
+#: ../lib/wiking/cms/cms.py:3055
 msgid "E-mail address of the sender."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:3083
+#: ../lib/wiking/cms/cms.py:3056
 msgid "Recipients"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:3091
+#: ../lib/wiking/cms/cms.py:3064
 #, fuzzy
 msgid "State"
 msgstr "Status"
 
-#: ../lib/wiking/cms/cms.py:3100
+#: ../lib/wiking/cms/cms.py:3073
 #, fuzzy
 msgid "Sent"
 msgstr "Opplegg"
 
-#: ../lib/wiking/cms/cms.py:3102
+#: ../lib/wiking/cms/cms.py:3075
 msgid "Sending"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:3104
+#: ../lib/wiking/cms/cms.py:3077
 #, fuzzy
 msgid "New"
 msgstr "Nyheter"
 
-#: ../lib/wiking/cms/cms.py:3112
+#: ../lib/wiking/cms/cms.py:3085
 msgid "All"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:3116
+#: ../lib/wiking/cms/cms.py:3089
 #, fuzzy, python-format
 msgid "%(subject)s"
 msgstr "Subjekt"
 
-#: ../lib/wiking/cms/cms.py:3119
+#: ../lib/wiking/cms/cms.py:3092
 msgid "Use as a Template"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:3120
+#: ../lib/wiking/cms/cms.py:3093
 msgid "Edit this mail for repeated use"
 msgstr ""
 
@@ -1757,6 +1755,9 @@ msgid ""
 msgstr ""
 "Den maksimale størrelsen på opplastede filer i byter. Serveren må omlastes "
 "for at endringene i denne opsjonen begynner å virke."
+
+#~ msgid "Database operation failed"
+#~ msgstr "Database operasjon mislyktes"
 
 #~ msgid "All users"
 #~ msgstr "Alle brukere"

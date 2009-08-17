@@ -1,13 +1,13 @@
 2009-08-17  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/__init__.py: 
+	Version changed to 0.4.5-pre6.
+
 	* lib/wiking/cms/cms.py:
 	Refer to activation code consistently (not as `registration code').
 	Removed unused methods `Users.set_registration_code()' and
 	`Users.delete_registration_code()'.
 	
-	* lib/wiking/__init__.py: 
-	Version changed to 0.4.5-pre6.
-
 	* translations/wiking-cms.cs.po:
 	* translations/wiking-cms.de.po:
 	* translations/wiking-cms.es.po:
