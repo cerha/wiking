@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-08-11 14:57+0200\n"
+"POT-Creation-Date: 2009-08-17 15:01+0200\n"
 "PO-Revision-Date: 2009-06-23 23:02+0100\n"
 "Last-Translator: katarina kletecka <na cisarce 3224/28 Praha 15000>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
@@ -108,7 +108,7 @@ msgid "This function is temporarily unavailable."
 msgstr "Denne funksjonen er midlertidig utilgjengelig."
 
 #. Translators: Back button label. Standard computer terminology.
-#: ../lib/wiking/db.py:990
+#: ../lib/wiking/db.py:991
 msgid "Back"
 msgstr "Tilbake"
 
@@ -309,7 +309,7 @@ msgstr "Passordet utløper %(date)s"
 #. user to obtain access to the website/application by submitting his personal
 #. details.
 #. Translators: Webpage link leading to registration form.
-#: ../lib/wiking/util.py:426 ../lib/wiking/util.py:806
+#: ../lib/wiking/util.py:426 ../lib/wiking/util.py:804
 msgid "New user registration"
 msgstr "Ny bruker registrering"
 
@@ -348,29 +348,34 @@ msgstr "ikke logget"
 msgid "log in"
 msgstr "logg inn"
 
-#: ../lib/wiking/util.py:793
+#: ../lib/wiking/util.py:791
 msgid "Login name"
 msgstr "Loginn navn"
 
-#: ../lib/wiking/util.py:796
+#: ../lib/wiking/util.py:794
 msgid "Password"
 msgstr "Passord"
 
 #. Translators: Login button label - verb in imperative.
-#: ../lib/wiking/util.py:802
+#: ../lib/wiking/util.py:800
 msgid "Log in"
 msgstr "Logg inn"
 
 #. Translators: Login dialog link to password change or password reminder (depends
 #. on configuration).
-#: ../lib/wiking/util.py:809
+#: ../lib/wiking/util.py:807
 msgid "Forgot your password?"
 msgstr "har du glemt ditt passord?"
 
-#: ../lib/wiking/util.py:1375
+#: ../lib/wiking/util.py:1373
 #, fuzzy
 msgid "Invalid format"
 msgstr "Ugyldig loginn!"
+
+#: ../lib/wiking/util.py:1379 ../lib/wiking/util.py:1386
+#, fuzzy
+msgid "Domain not found"
+msgstr "Ingenting funnet."
 
 #: ../lib/wiking/export.py:61
 msgid "Page heading"
@@ -487,33 +492,33 @@ msgstr "Omlaste"
 
 #. Translators: Website idiom. This is followed by information on the underlying software
 #. tools.  Means: This website runs on [...this and that software...].
-#: ../lib/wiking/application.py:344
+#: ../lib/wiking/application.py:348
 msgid "Powered by"
 msgstr "Drive"
 
 #. Translators: The document named "Section 508" contains accessibility
 #. guidelines and was issued by the US government.
-#: ../lib/wiking/application.py:384
+#: ../lib/wiking/application.py:388
 msgid "US Government Section 508 Accessibility Guidelines."
 msgstr "Seksjon 508 tilgjengelihet retningslinjer utgitt av USAs regjering"
 
-#: ../lib/wiking/application.py:391
+#: ../lib/wiking/application.py:395
 msgid "Accessibility Statement"
 msgstr "Tilgengelighet uttalelse"
 
 #. Translators: "Site" means a website.
-#: ../lib/wiking/application.py:397
+#: ../lib/wiking/application.py:401
 msgid "This site conforms to the following standards:"
 msgstr "Dette nettstedet følger disse standardene:"
 
 #. Translators: "Site" means a website. "Browser" is an internet browser (software
 #. used to access internet, such as Firefox, MSIE or Safari).  Leave the translation
 #. for ``any'' in capitals.
-#: ../lib/wiking/application.py:402
+#: ../lib/wiking/application.py:406
 msgid "This site can be viewed in ANY browser."
 msgstr "Dette området kan ses i alle nettlesere."
 
-#: ../lib/wiking/application.py:403
+#: ../lib/wiking/application.py:407
 msgid "Contact:"
 msgstr "Kontakt:"
 

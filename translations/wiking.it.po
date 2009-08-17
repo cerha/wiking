@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-08-11 14:57+0200\n"
+"POT-Creation-Date: 2009-08-17 15:01+0200\n"
 "PO-Revision-Date: 2009-06-18 08:30+0100\n"
 "Last-Translator: Jana Pazlarova <JanaPazlarova@seznam.cz>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
@@ -109,7 +109,7 @@ msgid "This function is temporarily unavailable."
 msgstr "Questa funzione é temporaneamente indisponibile."
 
 #. Translators: Back button label. Standard computer terminology.
-#: ../lib/wiking/db.py:990
+#: ../lib/wiking/db.py:991
 msgid "Back"
 msgstr "Ritornare"
 
@@ -321,7 +321,7 @@ msgstr "La validita della data  scade %(date)s"
 #. user to obtain access to the website/application by submitting his personal
 #. details.
 #. Translators: Webpage link leading to registration form.
-#: ../lib/wiking/util.py:426 ../lib/wiking/util.py:806
+#: ../lib/wiking/util.py:426 ../lib/wiking/util.py:804
 msgid "New user registration"
 msgstr "Registrazione del nuovo utente"
 
@@ -360,29 +360,34 @@ msgstr "non siete connessi "
 msgid "log in"
 msgstr "connettersi"
 
-#: ../lib/wiking/util.py:793
+#: ../lib/wiking/util.py:791
 msgid "Login name"
 msgstr "Nome utente"
 
-#: ../lib/wiking/util.py:796
+#: ../lib/wiking/util.py:794
 msgid "Password"
 msgstr "Password"
 
 #. Translators: Login button label - verb in imperative.
-#: ../lib/wiking/util.py:802
+#: ../lib/wiking/util.py:800
 msgid "Log in"
 msgstr "Connettersi"
 
 #. Translators: Login dialog link to password change or password reminder (depends
 #. on configuration).
-#: ../lib/wiking/util.py:809
+#: ../lib/wiking/util.py:807
 msgid "Forgot your password?"
 msgstr "Avete dimenticato la Vostra password?"
 
-#: ../lib/wiking/util.py:1375
+#: ../lib/wiking/util.py:1373
 #, fuzzy
 msgid "Invalid format"
 msgstr "Connessione non valida!"
+
+#: ../lib/wiking/util.py:1379 ../lib/wiking/util.py:1386
+#, fuzzy
+msgid "Domain not found"
+msgstr "Non é stato trovato niente."
 
 #: ../lib/wiking/export.py:61
 msgid "Page heading"
@@ -501,35 +506,35 @@ msgstr "Rileggere"
 
 #. Translators: Website idiom. This is followed by information on the underlying software
 #. tools.  Means: This website runs on [...this and that software...].
-#: ../lib/wiking/application.py:344
+#: ../lib/wiking/application.py:348
 msgid "Powered by"
 msgstr "Gestito da:"
 
 #. Translators: The document named "Section 508" contains accessibility
 #. guidelines and was issued by the US government.
-#: ../lib/wiking/application.py:384
+#: ../lib/wiking/application.py:388
 msgid "US Government Section 508 Accessibility Guidelines."
 msgstr ""
 "Sezione 508 delle Direttive relative all´accessibiilitá, emanate dal Governo "
 "degli  USA.  "
 
-#: ../lib/wiking/application.py:391
+#: ../lib/wiking/application.py:395
 msgid "Accessibility Statement"
 msgstr "Dichiarazione di accessibilita"
 
 #. Translators: "Site" means a website.
-#: ../lib/wiking/application.py:397
+#: ../lib/wiking/application.py:401
 msgid "This site conforms to the following standards:"
 msgstr "Questo portale é conforme alle seguenti norme:"
 
 #. Translators: "Site" means a website. "Browser" is an internet browser (software
 #. used to access internet, such as Firefox, MSIE or Safari).  Leave the translation
 #. for ``any'' in capitals.
-#: ../lib/wiking/application.py:402
+#: ../lib/wiking/application.py:406
 msgid "This site can be viewed in ANY browser."
 msgstr "Questa pagina puo essere visualizzata tramite QUALSIASI  browser."
 
-#: ../lib/wiking/application.py:403
+#: ../lib/wiking/application.py:407
 msgid "Contact:"
 msgstr "Contatto:"
 
