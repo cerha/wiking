@@ -165,8 +165,8 @@ class Configuration(pc):
     class _Option_bug_report_address(pc.StringOption):
         _DESCR = "E-mail address where bug reports will be sent"
         _DOC = ("Tracebacks of uncaught exceptions are sent automatically by e-mail to the "
-                "specified address.  If None, bug reports are not sent by e-mail, but logged to "
-                "server's error log.")
+                "specified address.  If None, bug reports are not sent by e-mail.  In any case "
+                "they are logged to server's error log.")
         _DEFAULT = None
 
     class _Option_webmaster_address(pc.StringOption):
