@@ -1,3 +1,11 @@
+2009-08-19  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/modules.py:
+	Removed forgotten initialization.
+
+	* lib/wiking/cms/cms.py:
+	Allow handling subpath within the registration module.
+
 2009-08-17  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/__init__.py: 

@@ -61,7 +61,6 @@ class RequestHandler(object):
     """Mix-in class for modules capable of handling requests."""
     
     def __init__(self, *args, **kwargs):
-        self._cached_uri = (None, None)
         self._application = self._module('Application')
         super(RequestHandler, self).__init__(*args, **kwargs)
     

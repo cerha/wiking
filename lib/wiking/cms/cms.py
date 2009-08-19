@@ -182,6 +182,16 @@ class Registration(Module, ActionHandler):
     def _default_action(self, req, **kwargs):
         return 'view'
 
+    def _action(self, req):
+        if req.unresolved_path:
+            return 'subpath'
+        else:
+            return super(Registration, self)._action(req)
+        
+    def action_subpath(self, req):
+        return self._module('Users').action_subpath(req, req.user().data())
+    RIGHTS_subpath = (Roles.USER,)
+
     def action_view(self, req):
         if req.user():
             return self._module('Users').action_view(req, req.user().data())
