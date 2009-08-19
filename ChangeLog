@@ -1,3 +1,8 @@
+2009-08-19  Milan Zamazal  <pdm@brailcom.org>
+
+	* lib/wiking/db.py:
+	Fix typo in PytisModule._inaccessible_database.
+
 2009-08-19  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/modules.py:
