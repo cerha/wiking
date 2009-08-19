@@ -693,7 +693,7 @@ class PytisModule(Module, ActionHandler):
                                    condition=self._condition(req, lang=lang, condition=condition))
 
     def _inaccessible_database(self, req):
-        req.message(_("This function is temporarily unavailable."), type.req.ERROR)
+        req.message(_("This function is temporarily unavailable."), type=req.ERROR)
         return self._document(req, [])
 
     def _handle(self, req, action, **kwargs):
