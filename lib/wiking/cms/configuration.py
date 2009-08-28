@@ -60,10 +60,16 @@ class CMSConfiguration(pc):
                  "any actual privileges.")
         _DEFAULT = True
 
-
     class _Option_upload_limit(pc.NumericOption):
         # Translators: Maximal size an uploaded file can have.
         _DESCR = _("Maximal upload size")
         _DOC = _("The maximal size of uploaded files in bytes.  The server "
                  "needs to be relaoded for the changes in this option to take effect.")
         _DEFAULT = 3*1024*1024
+
+    class _Option_sql_dir(pc.StringOption):
+        _DESCR = _("SQL directory")
+        _DOC = ("The directory where Wiking CMS database initialization/upgrade scripts "
+                "can be found.")
+        _DEFAULT = '/usr/local/share/wiking/sql'
+        

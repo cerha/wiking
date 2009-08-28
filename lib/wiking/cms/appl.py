@@ -235,14 +235,12 @@ class Application(CookieAuthentication, wiking.Application):
             else:
                 script = ''
                 for f in ('wiking.sql', 'init.sql'):
-                    path = os.path.join(cfg.wiking_dir, 'sql', f)
+                    path = os.path.join(cfg.appl.sql_dir, f)
                     if os.path.exists(path):
                         script += "".join(file(path).readlines())
                     else:
                         return ("File %s not found! " % path +
-                                "Was Wiking installed properly? "
-                                "Try setting-up wiking_dir in %s" %
-                                cfg.config_file)
+                                "Was Wiking CMS installed properly sql_dir set in configuration?")
                 err = self._try_query(dbname, script)
                 if not err:
                     return ("<p>Database initialized. " +

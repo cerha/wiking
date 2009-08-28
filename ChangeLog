@@ -1,3 +1,9 @@
+2009-08-28  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/cms/appl.py:
+	* lib/wiking/cms/configuration.py:
+	New CMS specific config option `sql_dir'.
+
 2009-08-19  Milan Zamazal  <pdm@brailcom.org>
 
 	* lib/wiking/db.py:
