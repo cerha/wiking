@@ -172,9 +172,8 @@ class Registration(Module, ActionHandler):
             controls = (
                 g.label(_("Enter your login name or e-mail address")+':', id='query'),
                 g.field(name='query', value=req.param('query'), id='query', tabindex=0, size=14),
-                # Translators: Button name. Computer terminology. Use
-                # the word and its form common for this submitting
-                # forms in a computer application.
+                # Translators: Button name. Computer terminology. Use an appropriate term common
+                # for submitting forms in a computer application.
                 g.submit(_("Submit"), cls='submit'),)
             return g.form(controls, method='POST', cls='password-reminder-form') #+ \
                    #g.p(_(""))
@@ -183,13 +182,18 @@ class Registration(Module, ActionHandler):
         return 'view'
 
     def _action(self, req):
-        if req.unresolved_path:
+        if len(req.unresolved_path) > 1:
             return 'subpath'
         else:
             return super(Registration, self)._action(req)
         
     def action_subpath(self, req):
-        return self._module('Users').action_subpath(req, req.user().data())
+        user = req.user()
+        if req.unresolved_path and req.unresolved_path[0] == user.login():
+            del req.unresolved_path[0]
+            return self._module('Users').action_subpath(req, user.data())
+        else:
+            raise Forbidden()
     RIGHTS_subpath = (Roles.USER,)
 
     def action_view(self, req):
