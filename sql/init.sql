@@ -11,7 +11,9 @@ UPDATE pages SET content=_content;
 --INSERT INTO themes ("name") VALUES ('Default');
 INSERT INTO config (site_title) VALUES ('Wiking site');
 
-INSERT INTO stylesheets (identifier) VALUES ('default.css');
+insert into stylesheets (identifier, media, ord) values ('default.css', 'all', 10);
+insert into stylesheets (identifier, media, ord) values ('layout.css', 'screen', 20);
+insert into stylesheets (identifier, media, ord) values ('print.css', 'print', 30);
 
 INSERT INTO users (login, password, firstname, surname, nickname, user_, email, role)
 VALUES ('admin', 'wiking', 'Wiking', 'Admin', 'Admin', 'Admin', '-', 'admn');

@@ -124,10 +124,9 @@ class Application(CookieAuthentication, wiking.Application):
         
     def stylesheets(self, req):
         try:
-            styles = self._module('Styles').stylesheets(req)
+            return self._module('Styles').stylesheets(req)
         except MaintananceModeError:
-            styles = ('default.css',)
-        return ['/_css/'+ name for name in styles]
+            return super(Application, self).stylesheets(req)
 
     def _auth_user(self, req, login):
         try:

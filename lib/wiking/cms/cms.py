@@ -877,7 +877,7 @@ class Themes(CMSModule):
               _Field('heading-bg', _("Background")),
               _Field('heading-line', _("Underline"),
                      descr=_("Heading colors are used for section headings, panel headings and "
-                             "other heading-like elements.  Depending on stylesheets, some "
+                             "other heading-like elements.  Depending on style sheets, some "
                              "heading types may be distinguished by a different background color "
                              "and others may be just underlined.")))),
             (_("Frames"),
@@ -1878,7 +1878,7 @@ class SiteMap(Module, Embeddable):
 
 
 class Stylesheets(Stylesheets):
-    """Serve the available stylesheets.
+    """Serve the available style sheets.
 
     The Wiking base stylesheet class is extended to retrieve the stylesheet contents from the
     database driven 'Styles' module (in addition to serving the default styles installed on the
@@ -1899,29 +1899,48 @@ class Stylesheets(Stylesheets):
 
    
 class Styles(CMSModule):
-    """Manage available Cascading Stylesheets through a Pytis data object."""
+    """Manage available Cascading Style Sheets through a Pytis data object."""
     class Spec(Specification):
         # Translators: Section heading and menu item. Meaning the visual appearance. Computer
         # terminology.
         title = _("Stylesheets")
         table = 'stylesheets'
-        # Translators: Help string. Cascading stylesheet (CSS) is computer terminology idiom.
-        help = _("Manage available Cascading Stylesheets.")
-        fields = (
+        # Translators: Help string. Cascading Style Sheet (CSS) is computer terminology idiom.
+        help = _("Manage available Cascading Style Sheets.")
+        def fields(self): return (
             Field('stylesheet_id'),
             Field('identifier',  _("Identifier"), width=16),
-            Field('active',      _("Active")),
             Field('description', _("Description"), width=50),
+            Field('active',      _("Active"), default=True),
+            Field('media',       _("Media"), default='all',
+                  enumerator=enum([media for media, title in self._MEDIA]),
+                  display=lambda m: dict(self._MEDIA).get(m, m), prefer_display=True),
+            Field('ord', _("Order"), width=5,
+                  descr=_("Number denoting the style sheet precedence.")),
             Field('content',     _("Content"), height=20, width=80),
             )
-        layout = ('identifier', 'active', 'description', 'content')
-        columns = ('identifier', 'active', 'description')
+        layout = ('identifier', 'active', 'media', 'ord', 'description', 'content')
+        columns = ('identifier', 'active', 'media', 'ord', 'description')
+        sorting = (('ord', ASC),)
+        _MEDIA = (('all', _("All types")),
+                  ('braille', _("Braille")), # braille tactile feedback devices
+                  #('embossed', _("Embossed") # for paged braille printers
+                  ('handheld', _("Handheld")),  # typically small screen, limited bandwidth
+                  ('print', _("Print")), # paged material
+                  #('projection', _(""))), # projected presentations, for example projectors
+                  ('screen', _("Screen")), # color computer screens
+                  ('speech', _("Speech")), # for speech synthesizers
+                  #('tty', _(""))), # media using a fixed-pitch character grid
+                  #('tv', _(""))), # television-type devices
+                  )
     _REFERER = 'identifier'
     WMI_SECTION = WikingManagementInterface.SECTION_STYLE
     WMI_ORDER = 200
 
     def stylesheets(self, req):
-        return [r['identifier'].value() for r in self._data.get_rows(active=True)]
+        return [lcg.Stylesheet(r['identifier'].value(), uri='/_css/'+r['identifier'].value(),
+                               media=r['media'].value())
+                for r in self._data.get_rows(active=True, sorting=self._sorting)]
         
     def stylesheet(self, name):
         row = self._data.get_row(identifier=name, active=True)

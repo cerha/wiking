@@ -510,7 +510,11 @@ class Document(object):
         id = '/'.join(req.path)
         lang = self._lang or req.prefered_language(raise_error=False) or 'en'
         nodes = {}
-        styles = [lcg.Stylesheet(uri, uri=uri) for uri in application.stylesheets(req)]
+        styles = []
+        for x in application.stylesheets(req):
+            if isinstance(x, basestring):
+                x = lcg.Stylesheet(x, uri=x)
+            styles.append(x)
         resource_provider = lcg.ResourceProvider(resources=tuple(styles)+self._resources,
                                                  dirs=cfg.resource_path)
         def mknode(item):

@@ -51,7 +51,14 @@ class Application(Module):
     
     """
     
-    _STYLESHEETS = ('default.css',)
+    _STYLESHEETS = (('default.css', 'all'), ('layout.css', 'screen'), ('print.css', 'print'))
+    """Static list of available style sheets used by the 'stylesheets()' method.
+
+    The list consists of pairs (FILENAME, MEDIA), where FILENAME will be prefixed by the current
+    URI of the 'Stylesheets' module and MEDIA corresponds to the 'lcg.Stylesheet' constructor
+    argument of the same name.
+
+    """
     
     def __init__(self, *args, **kwargs):
         super(Application, self).__init__(*args, **kwargs)
@@ -221,19 +228,19 @@ class Application(Module):
         return ['en']
 
     def stylesheets(self, req):
-        """Return the list of URIs of all available stylesheets.
+        """Return the list of all available style sheets as 'lcg.Stylesheet' instances.
 
-        The application is responsible for handling the returned URIs correctly.  Wiking provides a
-        generic 'Stylesheets' module for this purpose.
+        The application is responsible for handling the stylesheets (by their URIs) correctly.
+        Wiking provides a generic 'Stylesheets' module for this purpose.
 
-        The default implementation returns the list of stylesheets defined by the '_STYLESHEETS'
-        constant of the class.  The filenames defined in this list are automatically prefixed by
-        the current mapped uri of the 'Stylesheets' module (if the module is mapped).
+        The default implementation returns the list of style sheets defined by the '_STYLESHEETS'
+        constant of the class (see its docstring for more info).
 
         """
         uri = req.module_uri('Stylesheets')
         if uri is not None:
-            return [uri +'/'+ file for file in self._STYLESHEETS]
+            return [lcg.Stylesheet(file, uri=uri+'/'+file, media=media)
+                    for file, media in self._STYLESHEETS]
         else:
             return []
 

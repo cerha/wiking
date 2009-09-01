@@ -1,0 +1,21 @@
+/* Wiking generic print styles (to be used with media="print") */
+
+body {
+  color : #000;
+  background : #fff;
+  font-family : "Times New Roman", Times, serif;
+  font-size : 12pt;
+}
+a {
+  text-decoration : underline;
+  color : #00f;
+}
+a.backref, a:link.backref { 
+    color: #000 !important; /* important needed for MSIE */
+    text-decoration: none;
+}
+
+
+#links, #menu, #submenu, #panels, #language-selection, #bottom {
+    display: none;
+}

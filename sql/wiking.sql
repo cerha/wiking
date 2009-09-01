@@ -375,6 +375,7 @@ create table stylesheets (
 	stylesheet_id serial primary key,
 	identifier varchar(32) UNIQUE not null,
 	active boolean not null default true,
+	media varchar(12) not null default 'all',
 	description text,
 	content text
 );

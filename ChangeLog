@@ -1,5 +1,18 @@
 2009-09-01  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/application.py:
+	* lib/wiking/util.py:
+	* lib/wiking/cms/appl.py:
+	* lib/wiking/cms/cms.py: 
+	* resources/css/default.css:
+	* resources/css/layout.css:
+	* resources/css/print.css:
+	* sql/init.sql:
+	* sql/upgrade.12.sql:
+	* sql/wiking.sql:
+	Added support for media specific style sheets and style sheet
+	order management.
+
 	* lib/wiking/cms/cms.py: 
 	Enlarge password reminder form field.
 
