@@ -1,5 +1,9 @@
 2009-09-01  Tomas Cerha  <cerha@brailcom.org>
 
+	* translations/wiking-cms.cs.po:
+	* translations/wiking.cs.po:
+	Translations updated.
+
 	* lib/wiking/application.py:
 	* lib/wiking/db.py:
 	* lib/wiking/handler.py:
