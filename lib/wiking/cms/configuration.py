@@ -68,7 +68,7 @@ class CMSConfiguration(pc):
         _DEFAULT = 3*1024*1024
 
     class _Option_sql_dir(pc.StringOption):
-        _DESCR = _("SQL directory")
+        _DESCR = "SQL directory"
         _DOC = ("The directory where Wiking CMS database initialization/upgrade scripts "
                 "can be found.")
         _DEFAULT = '/usr/local/share/wiking/sql'
