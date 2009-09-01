@@ -171,7 +171,7 @@ class Registration(Module, ActionHandler):
             req = context.req()
             controls = (
                 g.label(_("Enter your login name or e-mail address")+':', id='query'),
-                g.field(name='query', value=req.param('query'), id='query', tabindex=0, size=14),
+                g.field(name='query', value=req.param('query'), id='query', tabindex=0, size=32),
                 # Translators: Button name. Computer terminology. Use an appropriate term common
                 # for submitting forms in a computer application.
                 g.submit(_("Submit"), cls='submit'),)

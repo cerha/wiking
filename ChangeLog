@@ -1,3 +1,8 @@
+2009-09-01  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/cms/cms.py: 
+	Enlarge password reminder form field.
+
 2009-08-29  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/cms/cms.py: 
