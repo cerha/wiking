@@ -1,6 +1,13 @@
 2009-09-01  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/application.py:
+	* lib/wiking/db.py:
+	* lib/wiking/handler.py:
+	* lib/wiking/util.py:
+	Detect `DBSystemException' in top level exception handling
+	routines and present a generic error message in such situations.
+
+	* lib/wiking/application.py:
 	* lib/wiking/util.py:
 	* lib/wiking/cms/appl.py:
 	* lib/wiking/cms/cms.py: 

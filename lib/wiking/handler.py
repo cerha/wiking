@@ -34,22 +34,62 @@ class Handler(object):
         self._exporter = cfg.exporter(translations=cfg.translation_path)
         #log(OPR, 'New Handler instance for %s.' % hostname)
 
+    def _serve_document(self, req, document):
+        """Serve a document using the Wiking exporter."""
+        node = document.build(req, self._application)
+        context = self._exporter.context(node, node.lang(), sec_lang=node.sec_lang(), req=req)
+        exported = self._exporter.export(context)
+        return req.result(context.translate(exported))
+
     def _serve_error_document(self, req, error):
+        """Serve an error page using the Wiking exporter."""
         if isinstance(error, HttpError):
             req.set_status(error.ERROR_CODE)
         document = Document(error.title(), error.message(req))
         return self._serve_document(req, document)
 
-    def _serve_document(self, req, document):
+    def _serve_minimal_error_document(self, req, error):
+        """Serve a minimal error page avoiding using the exporter."""
+        req.set_status(error.ERROR_CODE)
+        admin = cfg.webmaster_address
+        from xml.sax.saxutils import escape
+        from wiking import __version__
+        texts = (
+            error.ERROR_CODE, error.title(),
+            error.title(),
+            _("The server was unable to complete your request."),
+            _("Please inform the server administrator, %(admin)s if the problem persists.",
+              admin=cfg.webmaster_address),
+            _("The error message was:"),
+            escape(error.args[0]),
+            __version__)
         try:
-            node = document.build(req, self._application)
-            context = self._exporter.context(node, node.lang(), sec_lang=node.sec_lang(), req=req)
-            exported = self._exporter.export(context)
-        except pytis.data.DBSystemException:
-            error = _("This function is temporarily unavailable.")
-            document = Document(error, lcg.TextContent(error))
-            return self._serve_document(req, document)
-        return req.result(context.translate(exported))
+            tr = translator(req.prefered_language())
+            texts = tuple([tr.translate(t) for t in texts])
+        except:
+            pass
+        result = (
+            '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">\n' 
+            '<html>\n'
+            '<head>\n'
+            ' <title>%d %s</title>\n'
+            ' <link rel="stylesheet" type="text/css" href="/_css/default.css" />\n'
+            '</head>\n'
+            '<body>\n'
+            ' <div id="main">\n'
+            '  <h1>%s</h1>\n'
+            '  <p>%s</p>\n'
+            '  <p>%s</p>\n'
+            '  <p>%s</p>\n'
+            '  <pre class="lcg-preformatted-text">%s</pre>\n'
+            ' </div>\n'
+            ' <div id="bottom-bar">\n'
+            '  <hr/>\n'
+            '  <span><a href="http://www.freebsoft.org/wiking">Wiking</a> %s</span>\n'
+            ' </div>\n'
+            '</body>\n'
+            '</html>\n') 
+        return req.result(result % texts)
 
     def handle(self, req):
         application = self._application
@@ -78,8 +118,8 @@ class Handler(object):
                 # Try to return a nice error document produced by the exporter.
                 try:
                     return application.handle_exception(req, e)
-                except InternalServerError, ie:
-                    return self._serve_error_document(req, ie)
+                except RequestError, error:
+                    return self._serve_error_document(req, error)
         except ClosedConnection:
             return req.done()
         except Exception, e:
@@ -89,49 +129,8 @@ class Handler(object):
             # the same level above.
             try:
                 return application.handle_exception(req, e)
-            except InternalServerError, error:
-                req.set_status(error.ERROR_CODE)
-
-                admin = cfg.webmaster_address
-                from xml.sax.saxutils import escape
-                from wiking import __version__
-                texts = (
-                    error.ERROR_CODE, error.title(),
-                    error.title(),
-                    _("The server was unable to complete your request."),
-                    _("Please inform the server administrator, %(admin)s if the problem persists.",
-                      admin=cfg.webmaster_address),
-                    _("The error message was:"),
-                    escape(error.args[0]),
-                    __version__)
-                try:
-                    tr = translator(req.prefered_language())
-                    texts = tuple([tr.translate(t) for t in texts])
-                except:
-                    pass
-                result = (
-                    '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">\n' 
-                    '<html>\n'
-                    '<head>\n'
-                    ' <title>%d %s</title>\n'
-                    ' <link rel="stylesheet" type="text/css" href="/_css/default.css" />\n'
-                    '</head>\n'
-                    '<body>\n'
-                    ' <div id="main">\n'
-                    '  <h1>%s</h1>\n'
-                    '  <p>%s</p>\n'
-                    '  <p>%s</p>\n'
-                    '  <p>%s</p>\n'
-                    '  <pre class="lcg-preformatted-text">%s</pre>\n'
-                    ' </div>\n'
-                    ' <div id="bottom-bar">\n'
-                    '  <hr/>\n'
-                    '  <span><a href="http://www.freebsoft.org/wiking">Wiking</a> %s</span>\n'
-                    ' </div>\n'
-                    '</body>\n'
-                    '</html>\n') 
-                return req.result(result % texts)
-
+            except RequestError, error:
+                return self._serve_minimal_error_document(req, error)
 
 class ModPythonHandler(object):
     """The main Apache/mod_python handler interface.

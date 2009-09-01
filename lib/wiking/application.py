@@ -245,17 +245,15 @@ class Application(Module):
             return []
 
     def handle_exception(self, req, exception):
-        """Handle exceptions raised during request processing.
+        """Handle an unhandled exception raised during request processing.
 
         Arguments:
           req -- current request object
           exception -- exception instance
 
         The application can do any custom error processing within this method, but finally it must
-        either handle the request and return a request result or raise an 'InternalServerError'
-        exception to signal, that the handler should display an Internal Server Error page with an
-        error message.  The error message must be passed to the 'InternalServerError' constructor
-        as an argument.
+        either handle the request and return a request result or raise an 'RequestError' exception
+        to signal, that the handler should display the appropriate error page.
 
         The default implementation sends a complete exception information (including Python
         traceback) by email if 'cfg.bug_report_address' has been set up.  If not, the traceback is
@@ -265,7 +263,10 @@ class Application(Module):
         import traceback, cgitb
         from xml.sax import saxutils
         einfo = sys.exc_info()
-        message = ''.join(traceback.format_exception_only(*einfo[:2]))
+        if isinstance(exception, pytis.data.DBSystemException):
+            message = _("Unable to perform a database operation.")
+        else:
+            message = ''.join(traceback.format_exception_only(*einfo[:2]))
         try:
             try:
                 user = req.user()
@@ -319,7 +320,7 @@ class Application(Module):
                 "".join(traceback.format_exception(*sys.exc_info())))
             log(OPR, "The original exception was", ''.join(traceback.format_exception(*einfo)))
         raise InternalServerError(message)
-    
+
     def registration_uri(self, req):
         """Return the URI for new user registration or None if registration is not allowed."""
         return None

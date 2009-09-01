@@ -692,10 +692,6 @@ class PytisModule(Module, ActionHandler):
         return self._data.get_rows(sorting=self._sorting, limit=limit,
                                    condition=self._condition(req, lang=lang, condition=condition))
 
-    def _inaccessible_database(self, req):
-        req.message(_("This function is temporarily unavailable."), type=req.ERROR)
-        return self._document(req, [])
-
     def _handle(self, req, action, **kwargs):
         record = kwargs.get('record')
         if record is not None:
@@ -711,13 +707,6 @@ class PytisModule(Module, ActionHandler):
                         req.unresolved_path = list(req.path)
                     return req.forward(self._module(module), pytis_redirect=True)
         return super(PytisModule, self)._handle(req, action, **kwargs)
-
-    def handle(self, req):
-        try:
-            result = super(PytisModule, self).handle(req)
-        except pytis.data.DBSystemException:
-            result = self._inaccessible_database(req)
-        return result
 
     def _binding_enabled(self, binding, record):
         return 

@@ -202,10 +202,22 @@ class InternalServerError(HttpError):
                         "persists.", cfg.webmaster_address), formatted=True),
                 lcg.p(_("The error message was:")),
                 lcg.PreformattedText(self.args[0]))
-
     
-class MaintananceModeError(HttpError):
-    """Error indicating an invalid action in mainenance mode.
+
+class ServiceUnavailable(HttpError):
+    """Error indicating a temporary problem, which may not appaper in further requests."""
+    ERROR_CODE = 503
+    _TITLE = _("Service Unavailable")
+
+    def message(self, req):
+        return (lcg.p(_("The requested function is currently unavailable. "
+                        "Try repeating your request later.")),
+                lcg.p(_("Please inform the server administrator, %s if the problem "
+                        "persists.", cfg.webmaster_address), formatted=True))
+    
+    
+class MaintenanceModeError(ServiceUnavailable):
+    """Error indicating an invalid action in maintenance mode.
 
     The maintenance mode can be turned on by the 'maintenance' configuration option.  If this
     option is set to 'true', no database access will be allowed and any attempt to do so will raise
@@ -213,14 +225,16 @@ class MaintananceModeError(HttpError):
     mainenance mode.
     
     """
-    ERROR_CODE = 503
     _TITLE = _("Maintenance mode")
 
     def message(self, req):
         # Translators: Meaning that the system (webpage) does not work now because we are
         # updating/fixing something but will work again after the maintaince is finished.
         return lcg.p(_("The system is temporarily down for maintenance."))
-    
+
+# Keep the misspelled name for backwards compatibility...
+MaintananceModeError = MaintenanceModeError
+
 
 # ============================================================================
 
