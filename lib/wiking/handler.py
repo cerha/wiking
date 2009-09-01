@@ -106,12 +106,12 @@ class Handler(object):
                 else:
                     content_type, data = result
                     return req.result(data, content_type=content_type)
-            except RequestError, e:
+            except RequestError, error:
                 try:
                     req.user()
-                except AuthenticationError, ae:
-                    return self._serve_error_document(req, ae)
-                return self._serve_error_document(req, e)
+                except AuthenticationError, auth_error:
+                    return self._serve_error_document(req, auth_error)
+                return self._serve_error_document(req, error)
             except ClosedConnection:
                 return req.done()
             except Exception, e:
@@ -123,10 +123,10 @@ class Handler(object):
         except ClosedConnection:
             return req.done()
         except Exception, e:
-            # If error document export fails, return an ugly error message.  It is reasonable to
+            # If error document export fails, return a minimal error page.  It is reasonable to
             # assume, that if RequestError handling fails, somethong is wrong with the exporter and
-            # nice error document export will fail too, so it is ok, to have them handled both at
-            # the same level above.
+            # error document export will fail too, so it is ok, to have them handled both at the
+            # same level above.
             try:
                 return application.handle_exception(req, e)
             except RequestError, error:
