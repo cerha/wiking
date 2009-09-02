@@ -1,3 +1,8 @@
+2009-09-02  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/cms/cms.py:
+	Missleading terminology fixed.
+
 2009-09-02  Milan Zamazal  <pdm@brailcom.org>
 
 	* sql/wiking.sql:

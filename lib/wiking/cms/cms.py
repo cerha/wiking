@@ -2087,7 +2087,7 @@ class Users(CMSModule):
                          pd.AND(pd.NE('role', pd.Value(pd.String(), 'none')),
                                 pd.EQ('regexpire', pd.Value(pd.DateTime(), None))),
                          id='active'),
-            pp.Condition(_("Inactive users (pending admin approvals)"),
+            pp.Condition(_("Unapproved accounts (pending admin approvals)"),
                          pd.AND(pd.EQ('role', pd.Value(pd.String(), 'none')),
                                 pd.EQ('regexpire', pd.Value(pd.DateTime(), None))),
                          id='inactive'),
