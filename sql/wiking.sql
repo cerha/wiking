@@ -377,7 +377,8 @@ create table stylesheets (
 	active boolean not null default true,
 	media varchar(12) not null default 'all',
 	description text,
-	content text
+	content text,
+        ord integer
 );
 
 -------------------------------------------------------------------------------
