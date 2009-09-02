@@ -1,5 +1,8 @@
 2009-09-02  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/__init__.py: 
+	Version changed to 0.4.5-pre7.
+
 	* lib/wiking/cms/cms.py:
 	Missleading terminology fixed.
 
