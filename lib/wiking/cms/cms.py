@@ -2526,8 +2526,8 @@ class Users(CMSModule):
 
         Arguments:
 
-          role -- destination role, string, or 'None' in which case the
-            mail is sent to all users
+          role -- destination role as one of 'Roles' class role constants, such as 'Roles.USER',
+            'Roles.ADMIN', etc. or 'None' in which case the mail is sent to all users
           args, kwargs -- just forwarded to 'wiking.send_mail' call
 
         """

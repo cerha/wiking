@@ -5,6 +5,7 @@
 
 	* lib/wiking/cms/cms.py:
 	Missleading terminology fixed.
+	`Users.send_mail()' docstring clarified.
 
 2009-09-02  Milan Zamazal  <pdm@brailcom.org>
 
