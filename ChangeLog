@@ -1,3 +1,8 @@
+2009-09-06  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/configuration.py:
+	Define `password_storage' as string option.
+
 2009-09-02  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/__init__.py: 

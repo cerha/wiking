@@ -365,7 +365,7 @@ class Configuration(pc):
     # configuration files is ready, the options should be moved to CMS configuration.  The options
     # are currently marked as hidden to prevent them in the automatically generated documentation.
 
-    class _Option_password_storage(pc.Option):
+    class _Option_password_storage(pc.StringOption):
         _DESCR = "Form of storing user passwords in the database"
         _DOC = ("This option defines in which way user passwords are stored in a database. "
                 "The allowed values are the strings 'plain' "
