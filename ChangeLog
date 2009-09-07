@@ -1,3 +1,7 @@
+2009-09-07  Hynek Hanke  <hanke@kropacek>
+
+	* lib/wiking/configuration.py: New comments for translators.
+
 2009-09-06  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/configuration.py:
