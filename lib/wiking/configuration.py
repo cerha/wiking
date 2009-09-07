@@ -292,6 +292,8 @@ class Configuration(pc):
 
     class _Option_default_language(pc.StringOption):        
         _DESCR = _("Default language")
+        # Translators: Language negotiation means the process where the server is trying
+        # to find a language that matches with what the users internet browser asks for.
         _DOC = _("Defines the language (lowercase ISO 639-1 Alpha-2 code) to be used when "
                  "content language negotiation fails. If not set (which is the default), the "
                  "server will issue a 606 HTTP error (Not acceptable) when the document is "

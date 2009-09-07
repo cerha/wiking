@@ -59,7 +59,7 @@ class PytisModule(Module, ActionHandler):
     _DELETE_DESCR = _("Remove the record permanently")
     # Translators: Record as in `database record' (computer terminology).
     _DELETE_PROMPT = _("Please, confirm removing the record permanently.")
-    # Translators: Copy button label. Computer terminology and form common for a webpage button.
+    # Translators: Copy button label. Verb. Computer terminology and form common for a webpage button.
     _COPY_LABEL = _("Copy")
     # Translators: Record as in `database record' (computer terminology).
     _COPY_DESCR = _("Create new record initialized by values of this record")
