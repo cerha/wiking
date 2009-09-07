@@ -741,22 +741,9 @@ class PytisModule(Module, ActionHandler):
         return result
 
     def _ajax_handler(self, req, record, layout, errors):
-        changed_field = str(req.param('_pytis_form_update_request'))
-        data = {}
-        translate = translator(req.prefered_language()).translate
-        for fid in layout.order():
-            data[fid] = fdata = {}
-            if fid != changed_field:
-                fdata['editable'] = record.editable(fid)
-                if record.invalid_string(fid) is None:
-                    value = translate(record[fid].export())
-                    if value != req.param(fid, ''):
-                        fdata['value'] = value
-        for fid, error in errors:
-            if data.has_key(fid):
-                data[fid]['error'] = error
-        import simplejson as json
-        req.set_header('X-Json', json.dumps(data))
+        tr = translator(req.prefered_language())
+        response = pw.EditForm.ajax_response(req, record, layout, errors, tr)
+        req.set_header('X-Json', response)
         return ('text/plain', '')
 
     # ===== Methods which modify the database =====
