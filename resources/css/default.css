@@ -197,6 +197,9 @@ form.pytis-form label {
     white-space: nowrap;
     font-weight: bold;
 }
+form.pytis-form div.radio-group label { 
+    font-weight: normal;
+}
 form.pytis-form .group table { 
     border-collapse: collapse;
 }
