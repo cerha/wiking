@@ -1023,15 +1023,6 @@ class RssModule(object):
     _RSS_AUTHOR_COLUMN = None
     _RSS_LIMIT = 10
 
-    def _descr_provider(self, req, row, translator):
-        from xml.sax.saxutils import escape
-        if self._RSS_DESCR_COLUMN:
-            exported = row[self._RSS_DESCR_COLUMN].export()
-            descr = escape(translator.translate(exported))
-        else:
-            descr = None
-        return descr
-
     def _rss_channel_title(self, req):
         def find(items, item_id):
             for item in items:
@@ -1063,6 +1054,32 @@ class RssModule(object):
                          " (", lcg.link('_doc/wiking/user/rss', _("more about RSS")), ")")
         return None
 
+    def _rss_title(self, req, record):
+        return record[self._RSS_TITLE_COLUMN].export()
+    
+    def _rss_uri(self, req, record, lang=None):
+        return self._record_uri(req, record, setlang=lang)
+
+    def _rss_description(self, req, record):
+        if self._RSS_DESCR_COLUMN:
+            return record[self._RSS_DESCR_COLUMN].export()
+        else:
+            return None
+        
+    def _rss_date(self, req, record):
+        if self._RSS_DATE_COLUMN:
+            import mx.DateTime
+            v = record[self._RSS_DATE_COLUMN].value()
+            return mx.DateTime.ARPA.str(v.localtime())
+        else:
+            date = None
+        
+    def _rss_author(self, req, record):
+        if self._RSS_AUTHOR_COLUMN:
+            return record[self._RSS_AUTHOR_COLUMN].export()
+        else:
+            return cfg.webmaster_address
+        
     def has_channel(self):
         # TODO: If the methods `_rss_channel_title()' and `_rss_channel_uri()' can be used
         # globally, this method can be replaced by a new method returning a `Channel' instance
@@ -1078,32 +1095,23 @@ class RssModule(object):
         else:
             condition = None
         rows = self._rows(req, condition=condition, lang=lang, limit=self._RSS_LIMIT)
-        from xml.sax.saxutils import escape
         base_uri = req.server_uri(current=True)
         record = self._record(req, None)
+        translate = translator(str(lang)).translate
         items = []
-        import mx.DateTime as dt
-        tr = translator(str(lang))
-        author_column = self._RSS_AUTHOR_COLUMN
         for row in rows:
             record.set_row(row)
-            title = escape(tr.translate(record[self._RSS_TITLE_COLUMN].export()))
-            uri = self._record_uri(req, record, setlang=lang)
-            descr = self._descr_provider(req, record, tr)
-            if self._RSS_DATE_COLUMN:
-                v = record[self._RSS_DATE_COLUMN].value()
-                date = dt.ARPA.str(v.localtime())
-            else:
-                date = None
-            if author_column:
-                if isinstance(author_column, tuple):
-                    author = record.cb_value(*author_column).export()
-                else:
-                    author = record[author_column].export()
-            else:
-                author = cfg.webmaster_address
-            items.append((title, uri and base_uri + uri, descr, date, author))
-        title = cfg.site_title +' - '+ tr.translate(self._rss_channel_title(req))
+            title = translate(self._rss_title(req, record))
+            uri = self._rss_uri(req, record, lang=lang)
+            if uri:
+                uri = base_uri + uri
+            description = self._rss_description(req, record)
+            if description:
+                description = translate(description)
+            date = self._rss_date(req, record)
+            author = self._rss_author(req, record)
+            items.append((title, uri, description, date, author))
+        title = cfg.site_title +' - '+ translate(self._rss_channel_title(req))
         result = rss(title, base_uri, items, cfg.site_subtitle,
                      lang=lang, webmaster=cfg.webmaster_address)
         return ('application/xml', result)

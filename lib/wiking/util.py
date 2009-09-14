@@ -1173,30 +1173,32 @@ def timeit(func, *args, **kwargs):
     result = func(*args, **kwargs)
     return result,  time.clock() - t1, time.time() - t2
 
-def rss(title, url, items, descr, lang=None, webmaster=None):
+def rss(title, url, items, descr, lang=None, webmaster=None, ttl=60):
+    from xml.sax.saxutils import escape
     import wiking
-    result = '''<?xml version="1.0" encoding="UTF-8"?>
+    items = ['''<item>
+       <title>'''+ escape(ititle) +'''</title>
+       <guid>'''+ iurl +'''</guid>
+       <link>'''+ iurl +'''</link>''' + (idescr and '''
+       <description>'''+ escape(idescr) +'''</description>''' or '') + (idate and '''
+       <pubDate>'''+ escape(idate) +'''</pubDate>''' or '') + (iauthor and '''
+       <author>'''+ iauthor +'''</author>''' or '') + '''
+    </item>''' for ititle, iurl, idescr, idate, iauthor in items]
+    return '''<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
   <channel>
     <title>%s</title>
     <link>%s</link>
-    <description>%s</description>''' % (title, url, descr or '') + \
+    <description>%s</description>''' % (escape(title), url, escape(descr or '')) + \
     (lang and '''
     <language>%s</language>''' % lang or '') + (webmaster and '''
     <webMaster>%s</webMaster>''' % webmaster or '') + '''
     <generator>Wiking %s</generator>''' % wiking.__version__ + '''
-    <ttl>60</ttl>
-    %s
+    <ttl>%d</ttl>''' % ttl + '''
+    ''' + '\n    '.join(items) + '''
   </channel>
-</rss>''' % '\n    '.join(['''<item>
-       <title>%s</title>
-       <guid>%s</guid>
-       <link>%s</link>''' % (title, url, url) + (descr and '''
-       <description>%s</description>''' % descr or '') + (date and '''
-       <pubDate>%s</pubDate>''' % date or '') + (author and '''
-       <author>%s</author>''' % author or '') + '''
-    </item>''' for title, url, descr, date, author in items])
-    return result
+</rss>'''
+
 
 class MailAttachment(object):
     """Definition of a mail attachment.
