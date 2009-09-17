@@ -1794,7 +1794,6 @@ class News(EmbeddableCMSModule):
     _RSS_TITLE_COLUMN = 'title'
     _RSS_DESCR_COLUMN = 'content'
     _RSS_DATE_COLUMN = 'timestamp'
-    _RSS_AUTHOR_COLUMN = ('author', 'email')
     RIGHTS_insert = (Roles.CONTRIBUTOR,)
     RIGHTS_update = (Roles.ADMIN, Roles.OWNER)
     RIGHTS_delete = (Roles.ADMIN,)
@@ -1818,6 +1817,8 @@ class News(EmbeddableCMSModule):
             req.message(self._insert_msg(record))
             return self._module('Pages').action_view(req, req.page)
         
+    def _rss_author(self, req, record):
+        return record.cb_value('author', 'email').export()
 
 class Planner(News):
     class Spec(News.Spec):

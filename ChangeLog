@@ -1,3 +1,8 @@
+2009-09-17  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/cms/cms.py:
+	RSS specifications modified according to the recent change in db.py.
+
 2009-09-14  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/util.py: 
