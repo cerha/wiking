@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-09-15 15:33+0200\n"
+"POT-Creation-Date: 2009-09-18 13:07+0200\n"
 "PO-Revision-Date: 2009-09-13 15:28+0100\n"
 "Last-Translator: david <rohozka@gmail.com>\n"
 "Language-Team: Spanish <wiking@lists.freebsoft.org>\n"
@@ -15,41 +15,211 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../lib/wiking/application.py:267
-msgid "Unable to perform a database operation."
-msgstr ""
+#: ../lib/wiking/db.py:41
+msgid "This value already exists.  Enter a unique value."
+msgstr "Este valor ya existe. Introduzca un valor único."
 
-#. Translators: Website idiom. This is followed by information on the underlying software
-#. tools.  Means: This website runs on [...this and that software...].
-#: ../lib/wiking/application.py:356
-msgid "Powered by"
-msgstr "Desarrollado por"
+#. Translators: This is about an empty (not filled in) value in a web form. Field means a
+#. form field.
+#: ../lib/wiking/db.py:45
+msgid "Empty value.  This field is mandatory."
+msgstr "Valor vacío. Este campo es obligatorio."
 
-#. Translators: The document named "Section 508" contains accessibility
-#. guidelines and was issued by the US government.
-#: ../lib/wiking/application.py:396
-msgid "US Government Section 508 Accessibility Guidelines."
-msgstr "Gobierno Estados Unidos Sección 508 Pautas de Accesibilidad."
+#. Translators: Button label. Record as in `database record' (computer terminology).
+#: ../lib/wiking/db.py:49
+msgid "New record"
+msgstr "Nuevo registro"
 
-#: ../lib/wiking/application.py:403
-msgid "Accessibility Statement"
-msgstr "Declaración de accesibilidad"
+#. Translators: Button label. Record as in `database record' (computer terminology).
+#: ../lib/wiking/db.py:51
+msgid "Create a new record"
+msgstr "Crear un nuevo registro"
 
-#. Translators: "Site" means a website.
-#: ../lib/wiking/application.py:409
-msgid "This site conforms to the following standards:"
-msgstr "Este sitio está conforme con los estándares siguientes:"
+#. Translators: Button label. Meaning `Modify the database record' (computer terminology).
+#: ../lib/wiking/db.py:53
+msgid "Edit"
+msgstr "Editar"
 
-#. Translators: "Site" means a website. "Browser" is an internet browser (software
-#. used to access internet, such as Firefox, MSIE or Safari).  Leave the translation
-#. for ``any'' in capitals.
-#: ../lib/wiking/application.py:414
-msgid "This site can be viewed in ANY browser."
-msgstr "Este sitio se puede ver en cualquier buscador."
+#. Translators: Button label. Record as in `database record' (computer terminology).
+#: ../lib/wiking/db.py:55
+msgid "Modify the record"
+msgstr "Modificar el registro"
 
-#: ../lib/wiking/application.py:415
-msgid "Contact:"
-msgstr "Contacto:"
+#. Translators: Button label. Meaning `Delete the database record' (computer terminology).
+#: ../lib/wiking/db.py:57
+msgid "Remove"
+msgstr "Eliminar"
+
+#. Translators: Button label. Record as in `database record' (computer terminology).
+#: ../lib/wiking/db.py:59
+msgid "Remove the record permanently"
+msgstr "Eliminar el registro definitivamente"
+
+#. Translators: Record as in `database record' (computer terminology).
+#: ../lib/wiking/db.py:61
+msgid "Please, confirm removing the record permanently."
+msgstr "Por favor, confirme eliminar el registro definitivamente."
+
+#. Translators: Copy button label. Verb. Computer terminology and form common for a webpage button.
+#: ../lib/wiking/db.py:63
+msgid "Copy"
+msgstr "Copiar"
+
+#. Translators: Record as in `database record' (computer terminology).
+#: ../lib/wiking/db.py:65
+msgid "Create new record initialized by values of this record"
+msgstr "Crear un nuevo registro inicializado con valores de este registro"
+
+#. Translators: Button label.
+#: ../lib/wiking/db.py:67
+msgid "Back to list"
+msgstr "Volver a la lista"
+
+#. Translators: Record as in `database record' (computer terminology).
+#: ../lib/wiking/db.py:69
+msgid "Back to the list of all records"
+msgstr "Volver a la lista de todos los registros"
+
+#. Translators: Record as in `database record' (computer terminology).
+#: ../lib/wiking/db.py:71
+msgid "New record was successfully inserted."
+msgstr "El nuevo registro ha sido insertado con éxito."
+
+#. Translators: Record as in `database record' (computer terminology).
+#: ../lib/wiking/db.py:73
+msgid "The record was successfully updated."
+msgstr "El registro ha sido actualizado con éxito."
+
+#. Translators: Record as in `database record' (computer terminology).
+#: ../lib/wiking/db.py:75
+msgid "The record was deleted."
+msgstr "El registro ha sido borrado."
+
+#: ../lib/wiking/db.py:257
+msgid "Invalid binding column value."
+msgstr "Valor de columna vinculante no válido."
+
+#: ../lib/wiking/db.py:313
+msgid "Integrity check failed."
+msgstr "Fallo en el control de integridad."
+
+#. Translators: Back button label. Standard computer terminology.
+#: ../lib/wiking/db.py:967
+msgid "Back"
+msgstr "Atrás"
+
+#. Translators: RSS channel is a computer idiom, see Wikipedia.
+#: ../lib/wiking/db.py:1050
+msgid "An RSS channel is available for this section:"
+msgstr "Un canal RSS está disponible para esta sección:"
+
+#: ../lib/wiking/db.py:1054
+msgid "more about RSS"
+msgstr "Más sobre RSS"
+
+#. Translators: Record as in `database record'.
+#: ../lib/wiking/db.py:1148
+msgid "No records."
+msgstr "Ningún registro."
+
+#. Translators: `Item' is intentionally general. Could be webpage, notice or something else.
+#: ../lib/wiking/db.py:1156
+msgid "The item was published."
+msgstr "El registro ha sido publicado."
+
+#: ../lib/wiking/db.py:1157
+msgid "The item was unpublished."
+msgstr "El registro no ha sido publicado."
+
+#: ../lib/wiking/db.py:1166
+msgid "Publish"
+msgstr "Publicar"
+
+#: ../lib/wiking/db.py:1169
+msgid "Make the item visible to website visitors"
+msgstr "Hacer el registro visible para los visitantes del sitio web"
+
+#: ../lib/wiking/db.py:1170
+msgid "Unpublish"
+msgstr "No publicar"
+
+#: ../lib/wiking/db.py:1173
+msgid "Make the item invisible to website visitors"
+msgstr "Hacer el registro invisible para los visitantes del sitio web"
+
+#: ../lib/wiking/export.py:61
+msgid "Page heading"
+msgstr "Título de la página"
+
+#: ../lib/wiking/export.py:62 ../lib/wiking/export.py:170
+#: ../lib/wiking/export.py:195 ../lib/wiking/export.py:197
+#: ../lib/wiking/export.py:216
+msgid "Main navigation"
+msgstr "Navegación principal"
+
+#: ../lib/wiking/export.py:63 ../lib/wiking/export.py:172
+#: ../lib/wiking/export.py:210
+msgid "Local navigation"
+msgstr "Navegación local"
+
+#: ../lib/wiking/export.py:64 ../lib/wiking/export.py:168
+msgid "Main content"
+msgstr "Contenido principal"
+
+#: ../lib/wiking/export.py:65
+msgid "Page footer"
+msgstr "Pie de página"
+
+#. Translators: Title of a dialog on a webpage
+#: ../lib/wiking/export.py:66 ../lib/wiking/export.py:174
+#: ../lib/wiking/util.py:173
+msgid "Language selection"
+msgstr "Selección de idioma"
+
+#. Translators: Label for language selection followed by list of languages
+#: ../lib/wiking/export.py:69
+msgid "Language:"
+msgstr "Idioma:"
+
+#: ../lib/wiking/export.py:178
+msgid "Jump in page"
+msgstr "Saltar en la página"
+
+#. Translators: A label followed by location information in webpage navigation
+#: ../lib/wiking/export.py:183
+msgid "You are here:"
+msgstr "Usted está aquí:"
+
+#. Translators: Heding of webpage navigation menu
+#. containing a list of links to pages in this web section
+#: ../lib/wiking/export.py:213
+msgid "In this section:"
+msgstr "En esta sección:"
+
+#. Translators: Panels are small windows on the side of the page. This is a label
+#. for a link that shows/hides the panels.
+#: ../lib/wiking/export.py:231
+msgid "Show panels"
+msgstr "Ocultar paneles"
+
+#: ../lib/wiking/export.py:232
+msgid "Hide panels"
+msgstr "Esconder paneles"
+
+#. Translators: ``RSS channel'' is terminology idiom, see Wikipedia
+#: ../lib/wiking/export.py:243
+msgid "RSS channel"
+msgstr "RSS canal"
+
+#: ../lib/wiking/export.py:259
+msgid "Warning"
+msgstr "Advertencia"
+
+#. Translators: Information about last change of a webpage (when and who)
+#: ../lib/wiking/export.py:282
+#, python-format
+msgid "Last change: %(date)s, %(user)s"
+msgstr "Último cambio: %(date)s, %(user)s"
 
 #. Translators: This is a warning on a webpage which is only accessible for logged in users
 #: ../lib/wiking/util.py:57
@@ -137,12 +307,6 @@ msgstr "El registro '%s' no está disponible."
 #: ../lib/wiking/util.py:166
 msgid "The item exists on the server, but can not be accessed."
 msgstr "El registro existe en el servidor, pero no puede dar acceso."
-
-#. Translators: Title of a dialog on a webpage
-#: ../lib/wiking/util.py:173 ../lib/wiking/export.py:66
-#: ../lib/wiking/export.py:174
-msgid "Language selection"
-msgstr "Selección de idioma"
 
 #: ../lib/wiking/util.py:176
 #, python-format
@@ -295,137 +459,41 @@ msgstr ""
 "Por favor informe al administrador del servidor, %(admin)s si el problema "
 "persiste."
 
-#: ../lib/wiking/db.py:41
-msgid "This value already exists.  Enter a unique value."
-msgstr "Este valor ya existe. Introduzca un valor único."
+#: ../lib/wiking/application.py:267
+msgid "Unable to perform a database operation."
+msgstr ""
 
-#. Translators: This is about an empty (not filled in) value in a web form. Field means a
-#. form field.
-#: ../lib/wiking/db.py:45
-msgid "Empty value.  This field is mandatory."
-msgstr "Valor vacío. Este campo es obligatorio."
+#. Translators: Website idiom. This is followed by information on the underlying software
+#. tools.  Means: This website runs on [...this and that software...].
+#: ../lib/wiking/application.py:356
+msgid "Powered by"
+msgstr "Desarrollado por"
 
-#. Translators: Button label. Record as in `database record' (computer terminology).
-#: ../lib/wiking/db.py:49
-msgid "New record"
-msgstr "Nuevo registro"
+#. Translators: The document named "Section 508" contains accessibility
+#. guidelines and was issued by the US government.
+#: ../lib/wiking/application.py:396
+msgid "US Government Section 508 Accessibility Guidelines."
+msgstr "Gobierno Estados Unidos Sección 508 Pautas de Accesibilidad."
 
-#. Translators: Button label. Record as in `database record' (computer terminology).
-#: ../lib/wiking/db.py:51
-msgid "Create a new record"
-msgstr "Crear un nuevo registro"
+#: ../lib/wiking/application.py:403
+msgid "Accessibility Statement"
+msgstr "Declaración de accesibilidad"
 
-#. Translators: Button label. Meaning `Modify the database record' (computer terminology).
-#: ../lib/wiking/db.py:53
-msgid "Edit"
-msgstr "Editar"
+#. Translators: "Site" means a website.
+#: ../lib/wiking/application.py:409
+msgid "This site conforms to the following standards:"
+msgstr "Este sitio está conforme con los estándares siguientes:"
 
-#. Translators: Button label. Record as in `database record' (computer terminology).
-#: ../lib/wiking/db.py:55
-msgid "Modify the record"
-msgstr "Modificar el registro"
+#. Translators: "Site" means a website. "Browser" is an internet browser (software
+#. used to access internet, such as Firefox, MSIE or Safari).  Leave the translation
+#. for ``any'' in capitals.
+#: ../lib/wiking/application.py:414
+msgid "This site can be viewed in ANY browser."
+msgstr "Este sitio se puede ver en cualquier buscador."
 
-#. Translators: Button label. Meaning `Delete the database record' (computer terminology).
-#: ../lib/wiking/db.py:57
-msgid "Remove"
-msgstr "Eliminar"
-
-#. Translators: Button label. Record as in `database record' (computer terminology).
-#: ../lib/wiking/db.py:59
-msgid "Remove the record permanently"
-msgstr "Eliminar el registro definitivamente"
-
-#. Translators: Record as in `database record' (computer terminology).
-#: ../lib/wiking/db.py:61
-msgid "Please, confirm removing the record permanently."
-msgstr "Por favor, confirme eliminar el registro definitivamente."
-
-#. Translators: Copy button label. Verb. Computer terminology and form common for a webpage button.
-#: ../lib/wiking/db.py:63
-msgid "Copy"
-msgstr "Copiar"
-
-#. Translators: Record as in `database record' (computer terminology).
-#: ../lib/wiking/db.py:65
-msgid "Create new record initialized by values of this record"
-msgstr "Crear un nuevo registro inicializado con valores de este registro"
-
-#. Translators: Button label.
-#: ../lib/wiking/db.py:67
-msgid "Back to list"
-msgstr "Volver a la lista"
-
-#. Translators: Record as in `database record' (computer terminology).
-#: ../lib/wiking/db.py:69
-msgid "Back to the list of all records"
-msgstr "Volver a la lista de todos los registros"
-
-#. Translators: Record as in `database record' (computer terminology).
-#: ../lib/wiking/db.py:71
-msgid "New record was successfully inserted."
-msgstr "El nuevo registro ha sido insertado con éxito."
-
-#. Translators: Record as in `database record' (computer terminology).
-#: ../lib/wiking/db.py:73
-msgid "The record was successfully updated."
-msgstr "El registro ha sido actualizado con éxito."
-
-#. Translators: Record as in `database record' (computer terminology).
-#: ../lib/wiking/db.py:75
-msgid "The record was deleted."
-msgstr "El registro ha sido borrado."
-
-#: ../lib/wiking/db.py:257
-msgid "Invalid binding column value."
-msgstr "Valor de columna vinculante no válido."
-
-#: ../lib/wiking/db.py:313
-msgid "Integrity check failed."
-msgstr "Fallo en el control de integridad."
-
-#. Translators: Back button label. Standard computer terminology.
-#: ../lib/wiking/db.py:967
-msgid "Back"
-msgstr "Atrás"
-
-#. Translators: RSS channel is a computer idiom, see Wikipedia.
-#: ../lib/wiking/db.py:1050
-msgid "An RSS channel is available for this section:"
-msgstr "Un canal RSS está disponible para esta sección:"
-
-#: ../lib/wiking/db.py:1054
-msgid "more about RSS"
-msgstr "Más sobre RSS"
-
-#. Translators: Record as in `database record'.
-#: ../lib/wiking/db.py:1148
-msgid "No records."
-msgstr "Ningún registro."
-
-#. Translators: `Item' is intentionally general. Could be webpage, notice or something else.
-#: ../lib/wiking/db.py:1156
-msgid "The item was published."
-msgstr "El registro ha sido publicado."
-
-#: ../lib/wiking/db.py:1157
-msgid "The item was unpublished."
-msgstr "El registro no ha sido publicado."
-
-#: ../lib/wiking/db.py:1166
-msgid "Publish"
-msgstr "Publicar"
-
-#: ../lib/wiking/db.py:1169
-msgid "Make the item visible to website visitors"
-msgstr "Hacer el registro visible para los visitantes del sitio web"
-
-#: ../lib/wiking/db.py:1170
-msgid "Unpublish"
-msgstr "No publicar"
-
-#: ../lib/wiking/db.py:1173
-msgid "Make the item invisible to website visitors"
-msgstr "Hacer el registro invisible para los visitantes del sitio web"
+#: ../lib/wiking/application.py:415
+msgid "Contact:"
+msgstr "Contacto:"
 
 #: ../lib/wiking/modules.py:402
 msgid "Enter your login name, please!"
@@ -470,74 +538,6 @@ msgstr "Los siguientes módulos han sido recargados con éxito:"
 #: ../lib/wiking/modules.py:616
 msgid "Reload"
 msgstr "Recarga"
-
-#: ../lib/wiking/export.py:61
-msgid "Page heading"
-msgstr "Título de la página"
-
-#: ../lib/wiking/export.py:62 ../lib/wiking/export.py:170
-#: ../lib/wiking/export.py:195 ../lib/wiking/export.py:197
-#: ../lib/wiking/export.py:216
-msgid "Main navigation"
-msgstr "Navegación principal"
-
-#: ../lib/wiking/export.py:63 ../lib/wiking/export.py:172
-#: ../lib/wiking/export.py:210
-msgid "Local navigation"
-msgstr "Navegación local"
-
-#: ../lib/wiking/export.py:64 ../lib/wiking/export.py:168
-msgid "Main content"
-msgstr "Contenido principal"
-
-#: ../lib/wiking/export.py:65
-msgid "Page footer"
-msgstr "Pie de página"
-
-#. Translators: Label for language selection followed by list of languages
-#: ../lib/wiking/export.py:69
-msgid "Language:"
-msgstr "Idioma:"
-
-#: ../lib/wiking/export.py:178
-msgid "Jump in page"
-msgstr "Saltar en la página"
-
-#. Translators: A label followed by location information in webpage navigation
-#: ../lib/wiking/export.py:183
-msgid "You are here:"
-msgstr "Usted está aquí:"
-
-#. Translators: Heding of webpage navigation menu
-#. containing a list of links to pages in this web section
-#: ../lib/wiking/export.py:213
-msgid "In this section:"
-msgstr "En esta sección:"
-
-#. Translators: Panels are small windows on the side of the page. This is a label
-#. for a link that shows/hides the panels.
-#: ../lib/wiking/export.py:231
-msgid "Show panels"
-msgstr "Ocultar paneles"
-
-#: ../lib/wiking/export.py:232
-msgid "Hide panels"
-msgstr "Esconder paneles"
-
-#. Translators: ``RSS channel'' is terminology idiom, see Wikipedia
-#: ../lib/wiking/export.py:243
-msgid "RSS channel"
-msgstr "RSS canal"
-
-#: ../lib/wiking/export.py:259
-msgid "Warning"
-msgstr "Advertencia"
-
-#. Translators: Information about last change of a webpage (when and who)
-#: ../lib/wiking/export.py:282
-#, python-format
-msgid "Last change: %(date)s, %(user)s"
-msgstr "Último cambio: %(date)s, %(user)s"
 
 #~ msgid "This function is temporarily unavailable."
 #~ msgstr "Esta función está temporalmente no disponible."

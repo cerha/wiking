@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-09-09 10:24+0200\n"
+"POT-Creation-Date: 2009-09-18 13:07+0200\n"
 "PO-Revision-Date: 2009-09-08 16:37+0100\n"
 "Last-Translator: Petr Topiarz <topiarz@post.cz>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
@@ -109,41 +109,41 @@ msgid "Back"
 msgstr "Tilbake"
 
 #. Translators: RSS channel is a computer idiom, see Wikipedia.
-#: ../lib/wiking/db.py:1059
+#: ../lib/wiking/db.py:1050
 msgid "An RSS channel is available for this section:"
 msgstr "En RSS-kanal  er tilgjengelig for denne seksjonen:"
 
-#: ../lib/wiking/db.py:1063
+#: ../lib/wiking/db.py:1054
 msgid "more about RSS"
 msgstr "mer om RSS"
 
 #. Translators: Record as in `database record'.
-#: ../lib/wiking/db.py:1140
+#: ../lib/wiking/db.py:1148
 msgid "No records."
 msgstr "Ingen fortegnelse."
 
 #. Translators: `Item' is intentionally general. Could be webpage, notice or something else.
-#: ../lib/wiking/db.py:1148
+#: ../lib/wiking/db.py:1156
 msgid "The item was published."
 msgstr "Elementet ble publisert."
 
-#: ../lib/wiking/db.py:1149
+#: ../lib/wiking/db.py:1157
 msgid "The item was unpublished."
 msgstr "Elementet ble avpublisert."
 
-#: ../lib/wiking/db.py:1158
+#: ../lib/wiking/db.py:1166
 msgid "Publish"
 msgstr "Publiser"
 
-#: ../lib/wiking/db.py:1161
+#: ../lib/wiking/db.py:1169
 msgid "Make the item visible to website visitors"
 msgstr "La elementet være synlig for besøkende på nettstedet"
 
-#: ../lib/wiking/db.py:1162
+#: ../lib/wiking/db.py:1170
 msgid "Unpublish"
 msgstr "Avpubliser"
 
-#: ../lib/wiking/db.py:1165
+#: ../lib/wiking/db.py:1173
 msgid "Make the item invisible to website visitors"
 msgstr "La elementet være usynlig for besøkende på nettstedet"
 
@@ -436,13 +436,13 @@ msgstr "Logg inn"
 msgid "Forgot your password?"
 msgstr "Har du glemt ditt passord?"
 
-#: ../lib/wiking/util.py:1391
+#: ../lib/wiking/util.py:1393
 msgid "Invalid format"
 msgstr "Ugyldig format"
 
 #. Translators: Computer terminology. `gmail.com' is a domain name in email address
 #. `joe@gmail.com'.
-#: ../lib/wiking/util.py:1399 ../lib/wiking/util.py:1406
+#: ../lib/wiking/util.py:1401 ../lib/wiking/util.py:1408
 #, fuzzy
 msgid "Domain not found"
 msgstr "Ingenting funnet."

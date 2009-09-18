@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-09-15 14:43+0200\n"
+"POT-Creation-Date: 2009-09-18 13:07+0200\n"
 "PO-Revision-Date: 2009-09-14 14:56+0100\n"
 "Last-Translator: Petr Topiarz <topiarz@post.cz>\n"
 "Language-Team: Slovak <wiking@lists.freebsoft.org>\n"
@@ -104,46 +104,46 @@ msgid "Integrity check failed."
 msgstr "Kontrola integrity dát zlyhala."
 
 #. Translators: Back button label. Standard computer terminology.
-#: ../lib/wiking/db.py:968
+#: ../lib/wiking/db.py:967
 msgid "Back"
 msgstr "Späť"
 
 #. Translators: RSS channel is a computer idiom, see Wikipedia.
-#: ../lib/wiking/db.py:1051
+#: ../lib/wiking/db.py:1050
 msgid "An RSS channel is available for this section:"
 msgstr "K dispozícii je tiež RSS kanál pre túto sekciu:"
 
-#: ../lib/wiking/db.py:1055
+#: ../lib/wiking/db.py:1054
 msgid "more about RSS"
 msgstr "viac o RSS"
 
 #. Translators: Record as in `database record'.
-#: ../lib/wiking/db.py:1149
+#: ../lib/wiking/db.py:1148
 msgid "No records."
 msgstr "Žiadne záznamy."
 
 #. Translators: `Item' is intentionally general. Could be webpage, notice or something else.
-#: ../lib/wiking/db.py:1157
+#: ../lib/wiking/db.py:1156
 msgid "The item was published."
 msgstr "Položka bola zverejnená."
 
-#: ../lib/wiking/db.py:1158
+#: ../lib/wiking/db.py:1157
 msgid "The item was unpublished."
 msgstr "Zverejnenie položky bolo zrušené."
 
-#: ../lib/wiking/db.py:1167
+#: ../lib/wiking/db.py:1166
 msgid "Publish"
 msgstr "Zverejniť"
 
-#: ../lib/wiking/db.py:1170
+#: ../lib/wiking/db.py:1169
 msgid "Make the item visible to website visitors"
 msgstr "Sprístupniť "
 
-#: ../lib/wiking/db.py:1171
+#: ../lib/wiking/db.py:1170
 msgid "Unpublish"
 msgstr "Nezverejniť"
 
-#: ../lib/wiking/db.py:1174
+#: ../lib/wiking/db.py:1173
 msgid "Make the item invisible to website visitors"
 msgstr "Učiniť položku nedostupnú pre návštevníkov stránok"
 
