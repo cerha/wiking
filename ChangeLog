@@ -1,3 +1,7 @@
+2009-09-18  Hynek Hanke  <hanke@kropacek>
+
+	* lib/wiking/cms/cms.py: New comments for translators.
+
 2009-09-17  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/cms/cms.py:
