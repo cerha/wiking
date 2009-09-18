@@ -1,0 +1,144 @@
+# -*- coding: utf-8; mode: structured-text -*-
+
+= Localization =
+
+@TOC@
+
+== Localization overview ==
+
+Wiking supports full localization of both the content and the
+interface of web applications. It's done on three levels.
+
+ * Static pages generated from LCG can have different content based on the language
+ * Content stored in the database (page content, emails etc.) are editable separately for different languages
+ * User interface messages contained in the Python code are translatable through Gettext
+
+== Gettext ==
+
+== Translatable strings ==
+
+Strings translatable through Gettext are marked as \_("") convention.
+The '_' function takes care of supplying the correct translation for
+the given language. Such strings are extracted and translated in .po
+files using the standard Gettext procedures.
+
+Most every translatable string should be preceeded by a comment for
+the translator explaining the meaning and context of the string to
+translate.
+
+The comment is a standard Python comentary which begins by the words
+"Translators: " and immediatelly precedes the string to translate.
+
+Example:
+-----
+    # Translators: Order in the meaning of sequence. A noun, not verb. E.g. first, second...
+    Field('ord', _("Order"), width=5,
+-----
+
+=== Comments for translators ===
+
+There are two problems with translations:
+ * The messages appear out of context to the translator
+ * The messages don't appear in the same order as in the program code or in the user interface
+
+Comments are especially important for short messages. When displayed
+in a table out of context, it is almost always impossible for the
+translator to guess the correct meaning and translation. All short
+messages need a comment.
+
+For long messages, forming at least a full sentence or several
+sentences, the message itself might be enough to explain the context
+and might not need additional comments. Watch out however for possible
+amiguities.
+
+Following is a list of things which are necessary to indicate in a
+good comment. It's of course not necessary to write them if the matter
+is obvious from the message itself. It's preferable to keep these
+comments as short as possible.:
+
+  * Kind of message: Button label, form field caption, column in a table, email text etc.
+
+For example buttons require a special form of translation according to
+the target language.  Some languages use imperative, some infinitive,
+they differ in form of politeness etc. When a word is used on a
+button, it might require a different translation, e.g. "OK", "Exit"
+etc.
+
+-----
+# Translators: Button.
+_("OK")
+# Translators: Page heading.
+_("Search")
+-----
+
+  * Meaning of the message
+
+What does the button do? What is the kind of family this item belongs to?
+(e.g. Italian -- language or person?)
+
+-----
+# Translators: Person from italy, list item.
+_("Italian"),
+-----
+
+ * Position in the application and surroundings of the message
+
+What immediatelly surrounds this message. How it continues with another
+message. Does it form a part of something bigger?
+
+(e.g. ``Notification sent to'' -- the translator needs to know whether
+a name or an email follows to be able to supply a correct preposition;
+``English'' starts in lowercase in some languages but it might still be
+desirable to start it with uppercase if it's an item in a menu etc.)
+
+-----
+# Translators: Followed by an email address. E.g. ``Notification sent to joe@brailcom.org.''
+_("Notification sent to %s.")
+# Translators: Name of language. Appears in a menu. Start capital.
+_("Italian")
+-----
+
+ * Terminology, idioms
+
+Some words have a different or only one possible translation if they
+are meant in a technical or educational slang (e.g. a ``star'' sign
+marking a form field; types of language exercises might have
+standardized name). The translator might without context not be aware
+of the fact that he is supposed to use a standardized term.
+
+-----
+ # Translators: Star denoting a required form field. Terminology.
+ _("Fields marked with a star")
+ # Translators: Type of language exercise. Terminology.
+ _("Cloze")
+-----
+
+ * Gramatical type of word: Noun, Verb, ...
+
+E.g. ``login'' -- Noun or verb? Do not however prescribe such things
+as imperative-indicative if not necessary as conventions differ in
+target languages, just continue and indicate it's a button or heading.
+
+-----
+ # Translators: Button label. Use verb, not noun.
+ _("Login"),
+-----
+
+ * Rephrasing
+
+Two possible problems: 1) The wording of the original might not be
+understandable without the context or might be ambigous. 2) The target
+language might not allow to form the sentence in the same way.
+
+The translators will use the comment as guidance, not substitute, so
+it doesn't need to be as accurate.
+
+-----
+# Translators: In other words, the administrator needs to approve the account first.
+ _("The account now awaits administrator's action to be given access rights.")
+-----
+
+=== Plural forms ===
+
+TODO: How to handle and comment messages which have possibly different
+form if the argument is one, two or more items.
