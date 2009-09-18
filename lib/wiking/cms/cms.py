@@ -537,10 +537,15 @@ class SessionLog(PytisModule):
             Field('log_id'),
             Field('session_id'),
             Field('uid', _('User'), codebook='Users'),
+            # Translators: Login name.
             Field('login', _("Login")),
+            # Translators: Form field saying whether the users attempt was succesful. Values are Yes/No.
             Field('success', _("Success")),
+            # Translators: Table column heading. Time of the start of user session, followed by a date and time.
             Field('start_time', _("Start time"), type=DateTime(exact=True, not_null=True)),
+            # Translators: Table column heading. The length of user session. Contains time.
             Field('duration', _("Duration"), type=Time(exact=True)),
+            # Translators: Table column heading. Whether the account is active. Values are yes/no.
             Field('active', _("Active")),
             Field('ip_address', _("IP address")),
             # Translators: Internet name of the remote computer (computer terminology).
@@ -1910,13 +1915,19 @@ class Styles(CMSModule):
         help = _("Manage available Cascading Style Sheets.")
         def fields(self): return (
             Field('stylesheet_id'),
+            # Translators: Unique identifier of a stylesheet.
             Field('identifier',  _("Identifier"), width=16),
             Field('description', _("Description"), width=50),
             Field('active',      _("Active"), default=True),
+            # Translators: Heading of a form field determining in
+            # which media the page is displayed. E.g. web, print,
+            # Braille, speech.
             Field('media',       _("Media"), default='all',
                   enumerator=enum([media for media, title in self._MEDIA]),
                   display=lambda m: dict(self._MEDIA).get(m, m), prefer_display=True),
+            # Translators: Order as a position in sequence. E.g. first, second...
             Field('ord', _("Order"), width=5,
+                  # Translators: Precedence meaning position in a sequence of importance or priority.
                   descr=_("Number denoting the style sheet precedence.")),
             Field('content',     _("Content"), height=20, width=80),
             )
@@ -1924,12 +1935,17 @@ class Styles(CMSModule):
         columns = ('identifier', 'active', 'media', 'ord', 'description')
         sorting = (('ord', ASC),)
         _MEDIA = (('all', _("All types")),
+                  # Translators: Braille as a type of media
                   ('braille', _("Braille")), # braille tactile feedback devices
                   #('embossed', _("Embossed") # for paged braille printers
+                  # Translators: Handheld device. Small computer.
                   ('handheld', _("Handheld")),  # typically small screen, limited bandwidth
+                  # Translators: Print as a type of media (print, speech...)
                   ('print', _("Print")), # paged material
                   #('projection', _(""))), # projected presentations, for example projectors
+                  # Translators: Meaning computer screen
                   ('screen', _("Screen")), # color computer screens
+                  # Translators: Speech as a type of media (print, speech...)
                   ('speech', _("Speech")), # for speech synthesizers
                   #('tty', _(""))), # media using a fixed-pitch character grid
                   #('tv', _(""))), # television-type devices
@@ -2041,6 +2057,7 @@ class Users(CMSModule):
                               "belongs to the person who requested the registration."),)
                     texts += _("The user is now able to log in, but still has no rights "
                               "(other than an anonymous user)."),
+                # Translators: In other words, the administrator needs to approve the account first.
                 texts += _("The account now awaits administrator's action to be given "
                           "access rights."),
             elif regexpire > mx.DateTime.now().gmtime():
@@ -2217,6 +2234,7 @@ class Users(CMSModule):
                        ) + actions
         if record and record['regexpire'].value() is not None:
             # Currently inactive due to limited access rights (is this action really needed?).
+            # Translators: Confirm button
             actions = (Action(_("Confirm"), 'admin_confirm',
                               descr=_("Confirm the account without checking the activation code")),
                        ) + actions
@@ -2267,6 +2285,7 @@ class Users(CMSModule):
             req.message(_("Failed sending e-mail notification:") +' '+ err, type=req.ERROR)
             return False
         else:
+            # Translators: Follos an email addres, e.g. ``Activation code was sent to joe@brailcom.org''
             req.message(_("Activation code was sent to %s.", record['email'].value()))
             return True
 
@@ -3087,6 +3106,7 @@ class EmailSpool(CMSModule):
             Field('id', editable=NEVER),
             Field('sender_address', _("Sender address"), default=wiking.cfg.default_sender_address,
                   descr=_("E-mail address of the sender.")),
+            # Translators: List of recipients of an email message
             Field('role', _("Recipients"), display=self._rolename, prefer_display=True, default='_all',
                   enumerator=enum([code for code, title, roles in self._ROLES])),
             Field('subject', _("Subject")),
@@ -3104,10 +3124,13 @@ class EmailSpool(CMSModule):
 
         def _state_computer(self, row, pid, finished):
             if finished:
+                # Translators: State of processing of an email message (e.g. New, Sending, Sent)
                 state = _("Sent")
             elif pid:
+                # Translators: State of processing of an email message (e.g. New, Sending, Sent)
                 state = _("Sending")
             else:
+                # Translators: State of processing of an email message (e.g. New, Sending, Sent)
                 state = _("New")
             return state
         
@@ -3116,6 +3139,7 @@ class EmailSpool(CMSModule):
         layout = ('role', 'sender_address', 'subject', 'content', 'date', 'state',)
         
     def _spec(self, resolver):
+        # Translators: All as in ``all user roles''
         self.Spec._ROLES = roles = (('_all', _("All"), (),),) + self._module('Users').all_roles()
         self.Spec._ROLE_DICT = dict([(code, (title, roles)) for code, title, roles in roles])
         return super(EmailSpool, self)._spec(resolver)
@@ -3123,7 +3147,9 @@ class EmailSpool(CMSModule):
     _TITLE_TEMPLATE = _('%(subject)s')
     _LAYOUT = {'insert': ('role', 'sender_address', 'subject', 'content',)}
     _ALLOW_COPY = True
+    # Translators: Button label meaning save this email text for later repeated usage
     _COPY_LABEL = _("Use as a Template")
+    # Translators: Description of button for creating a template of an email
     _COPY_DESCR = _("Edit this mail for repeated use")
         
     WMI_SECTION = WikingManagementInterface.SECTION_SERVICES
