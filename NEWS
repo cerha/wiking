@@ -14,7 +14,7 @@ Version 0.4.5 (2009-09-21):
    file).
 
  * Added bulk mailing support to allow sending email to all registered users or
-   to certain user roles (new tab "Services" in WMI).
+   to certain user roles.
  
  * Implemented on-line form updated through AJAX (computed fields, dynamic field
    editability, runtime codebook filters, runtime validation).
