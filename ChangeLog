@@ -9,6 +9,9 @@
 	* NEWS:
 	Updated.
 
+	* lib/wiking/cms/cms.py:
+	Bulk e-mails moved to WMI section Users.
+
 2009-09-18  Hynek Hanke  <hanke@kropacek>
 
 	* lib/wiking/cms/cms.py: New comments for translators.

@@ -89,22 +89,17 @@ class WikingManagementInterface(Module, RequestHandler):
     SECTION_USERS = 'users'
     SECTION_STYLE = 'style'
     SECTION_SETUP = 'setup'
-    SECTION_SERVICES = 'services'
     
     # Translators: Heading and menu title. Computer idiom meaning configuration of appearance
     # (colors, sizes, positions, graphical presentation...).
     _SECTIONS = ((SECTION_STYLE,   _("Look &amp; Feel"),
                   _("Customize the appearance of your site.")),
                  # Translators: Heading and menu title. 
-                 (SECTION_USERS,   _("User Management"),
-                  _("Manage registered users and their privileges.")),
+                 (SECTION_USERS,   _("Users"),
+                  _("Manage user accounts, privileges and perform other user related tasks.")),
                  # Translators: Heading and menu title for configuration.
                  (SECTION_SETUP,   _("Setup"),
                   _("Edit global properties of your web site.")),
-                 # Translators: Heading and menu title for various
-                 # services (intentionally very general term).
-                 (SECTION_SERVICES,   _("Services"),
-                  _("Various services.")),
                  )
     
     def _wmi_modules(self, modules, section):
@@ -1969,7 +1964,7 @@ class Styles(CMSModule):
 
 class Users(CMSModule):
     class Spec(Specification):
-        title = _("Users")
+        title = _("User Management")
         help = _("Manage registered users and their privileges.")
         _ROLES = (('none', _("Account disabled"), ()),
                   ('user', _("User"),         (Roles.USER,)),
@@ -3152,8 +3147,8 @@ class EmailSpool(CMSModule):
     # Translators: Description of button for creating a template of an email
     _COPY_DESCR = _("Edit this mail for repeated use")
         
-    WMI_SECTION = WikingManagementInterface.SECTION_SERVICES
-    WMI_ORDER = 100
+    WMI_SECTION = WikingManagementInterface.SECTION_USERS
+    WMI_ORDER = 2000
     
     RIGHTS_list = (Roles.ADMIN,)
     RIGHTS_view = (Roles.ADMIN,)
