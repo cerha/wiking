@@ -1,8 +1,13 @@
 2009-09-21  Tomas Cerha  <cerha@brailcom.org>
 
-	* lib/wiking/__init__.py: Version changed to 0.4.5.
+	* lib/wiking/__init__.py:
+	Version changed to 0.4.5.
 	
-	* NEWS: Updated.
+	* TODO:
+	Updated.
+
+	* NEWS:
+	Updated.
 
 2009-09-18  Hynek Hanke  <hanke@kropacek>
 

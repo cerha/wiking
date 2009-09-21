@@ -1,6 +1,5 @@
 Core features:
  * Use Post/Redirect/Get (http://en.wikipedia.org/wiki/Post/Redirect/Get)
- * Make Error 406 message more polite.
  * Handle Computer exceptions
  * Calling 'constraints' of a virtual field
  * The default check() method in base Specification class
@@ -9,13 +8,12 @@ Core features:
  * Allow extension module management to page owner
  * Disable table layout per layout spec, not per module
  * Delete stray attachment files after deletion triggered in database (cascade)
- * Serve favicon and robots.txt
+ * Serve robots.txt
  * Image alignment and link title in the LCG formatting manual
  * Locking
  * Change log and Last-Modified HTTP header support
  * Recode HTML attachments
  * Cache exported HTML for structured text content in DB?
- * Print preview
  * Support multithreaded Apache MPM (currently broken)
 
 Cleaning:
@@ -32,4 +30,3 @@ Extensions:
  * Image galeries
  * Blog
  * Articles
-
