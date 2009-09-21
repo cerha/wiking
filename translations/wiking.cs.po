@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-09-18 13:07+0200\n"
+"POT-Creation-Date: 2009-09-21 19:50+0200\n"
 "PO-Revision-Date: 2009-09-01 15:57+0200\n"
 "Last-Translator: Hynek Hanke <hanke@brailcom.org>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
@@ -95,11 +95,11 @@ msgstr "Záznam byl úspěšně aktualizován."
 msgid "The record was deleted."
 msgstr "Záznam byl odstraněn."
 
-#: ../lib/wiking/db.py:257
+#: ../lib/wiking/db.py:258
 msgid "Invalid binding column value."
 msgstr "Nepřípustná hodnota vazebního sloupce."
 
-#: ../lib/wiking/db.py:313
+#: ../lib/wiking/db.py:314
 msgid "Integrity check failed."
 msgstr "Kontrola integrity dat selhala."
 
@@ -146,80 +146,6 @@ msgstr "Zneveřejnit"
 #: ../lib/wiking/db.py:1173
 msgid "Make the item invisible to website visitors"
 msgstr "Učinit položku nedostupnou pro návštěvníky stránek"
-
-#: ../lib/wiking/export.py:61
-msgid "Page heading"
-msgstr "Záhlaví stránky"
-
-#: ../lib/wiking/export.py:62 ../lib/wiking/export.py:170
-#: ../lib/wiking/export.py:195 ../lib/wiking/export.py:197
-#: ../lib/wiking/export.py:216
-msgid "Main navigation"
-msgstr "Hlavní navigace"
-
-#: ../lib/wiking/export.py:63 ../lib/wiking/export.py:172
-#: ../lib/wiking/export.py:210
-msgid "Local navigation"
-msgstr "Navigace této sekce"
-
-#: ../lib/wiking/export.py:64 ../lib/wiking/export.py:168
-msgid "Main content"
-msgstr "Hlavní obsah"
-
-#: ../lib/wiking/export.py:65
-msgid "Page footer"
-msgstr "Zápatí stránky"
-
-#. Translators: Title of a dialog on a webpage
-#: ../lib/wiking/export.py:66 ../lib/wiking/export.py:174
-#: ../lib/wiking/util.py:173
-msgid "Language selection"
-msgstr "Výběr jazyka"
-
-#. Translators: Label for language selection followed by list of languages
-#: ../lib/wiking/export.py:69
-msgid "Language:"
-msgstr "Jazyk:"
-
-#: ../lib/wiking/export.py:178
-msgid "Jump in page"
-msgstr "Přejít ve stránce"
-
-#. Translators: A label followed by location information in webpage navigation
-#: ../lib/wiking/export.py:183
-msgid "You are here:"
-msgstr "Nacházíte se zde:"
-
-#. Translators: Heding of webpage navigation menu
-#. containing a list of links to pages in this web section
-#: ../lib/wiking/export.py:213
-msgid "In this section:"
-msgstr "V této sekci:"
-
-#. Translators: Panels are small windows on the side of the page. This is a label
-#. for a link that shows/hides the panels.
-#: ../lib/wiking/export.py:231
-msgid "Show panels"
-msgstr "Zobrazit panely"
-
-#: ../lib/wiking/export.py:232
-msgid "Hide panels"
-msgstr "Skrýt panely"
-
-#. Translators: ``RSS channel'' is terminology idiom, see Wikipedia
-#: ../lib/wiking/export.py:243
-msgid "RSS channel"
-msgstr "RSS kanál"
-
-#: ../lib/wiking/export.py:259
-msgid "Warning"
-msgstr "Varování"
-
-#. Translators: Information about last change of a webpage (when and who)
-#: ../lib/wiking/export.py:282
-#, python-format
-msgid "Last change: %(date)s, %(user)s"
-msgstr "Poslední změna: %(date)s, %(user)s"
 
 #. Translators: This is a warning on a webpage which is only accessible for logged in users
 #: ../lib/wiking/util.py:57
@@ -308,6 +234,12 @@ msgstr "Položka '%s' není dostupná."
 msgid "The item exists on the server, but can not be accessed."
 msgstr "Požadovaná položka na serveru existuje, ale nemůže být zobrazena."
 
+#. Translators: Title of a dialog on a webpage
+#: ../lib/wiking/util.py:173 ../lib/wiking/export.py:84
+#: ../lib/wiking/export.py:192
+msgid "Language selection"
+msgstr "Výběr jazyka"
+
 #: ../lib/wiking/util.py:176
 #, python-format
 msgid ""
@@ -339,7 +271,7 @@ msgstr ""
 msgid "Internal Server Error"
 msgstr "Interní chyba serveru"
 
-#: ../lib/wiking/util.py:200 ../lib/wiking/handler.py:60
+#: ../lib/wiking/util.py:200
 msgid "The server was unable to complete your request."
 msgstr "Server nebyl schopen obsloužit Váš požadavek."
 
@@ -348,7 +280,7 @@ msgstr "Server nebyl schopen obsloužit Váš požadavek."
 msgid "Please inform the server administrator, %s if the problem persists."
 msgstr "Informujte prosím správce serveru, %s pokud problém přetrvává."
 
-#: ../lib/wiking/util.py:203 ../lib/wiking/handler.py:63
+#: ../lib/wiking/util.py:203
 msgid "The error message was:"
 msgstr "Chybová zpráva byla:"
 
@@ -452,47 +384,73 @@ msgstr "Neplatný formát"
 msgid "Domain not found"
 msgstr "Doména nenalezena"
 
-#: ../lib/wiking/handler.py:61
+#: ../lib/wiking/export.py:79
+msgid "Page heading"
+msgstr "Záhlaví stránky"
+
+#: ../lib/wiking/export.py:80 ../lib/wiking/export.py:188
+#: ../lib/wiking/export.py:213 ../lib/wiking/export.py:215
+#: ../lib/wiking/export.py:234
+msgid "Main navigation"
+msgstr "Hlavní navigace"
+
+#: ../lib/wiking/export.py:81 ../lib/wiking/export.py:190
+#: ../lib/wiking/export.py:228
+msgid "Local navigation"
+msgstr "Navigace této sekce"
+
+#: ../lib/wiking/export.py:82 ../lib/wiking/export.py:186
+msgid "Main content"
+msgstr "Hlavní obsah"
+
+#: ../lib/wiking/export.py:83
+msgid "Page footer"
+msgstr "Zápatí stránky"
+
+#. Translators: Label for language selection followed by list of languages
+#: ../lib/wiking/export.py:87
+msgid "Language:"
+msgstr "Jazyk:"
+
+#: ../lib/wiking/export.py:196
+msgid "Jump in page"
+msgstr "Přejít ve stránce"
+
+#. Translators: A label followed by location information in webpage navigation
+#: ../lib/wiking/export.py:201
+msgid "You are here:"
+msgstr "Nacházíte se zde:"
+
+#. Translators: Heding of webpage navigation menu
+#. containing a list of links to pages in this web section
+#: ../lib/wiking/export.py:231
+msgid "In this section:"
+msgstr "V této sekci:"
+
+#. Translators: Panels are small windows on the side of the page. This is a label
+#. for a link that shows/hides the panels.
+#: ../lib/wiking/export.py:249
+msgid "Show panels"
+msgstr "Zobrazit panely"
+
+#: ../lib/wiking/export.py:250
+msgid "Hide panels"
+msgstr "Skrýt panely"
+
+#. Translators: ``RSS channel'' is terminology idiom, see Wikipedia
+#: ../lib/wiking/export.py:261
+msgid "RSS channel"
+msgstr "RSS kanál"
+
+#: ../lib/wiking/export.py:277
+msgid "Warning"
+msgstr "Varování"
+
+#. Translators: Information about last change of a webpage (when and who)
+#: ../lib/wiking/export.py:300
 #, python-format
-msgid ""
-"Please inform the server administrator, %(admin)s if the problem persists."
-msgstr "Informujte prosím správce serveru, %(admin)s pokud problém přetrvává."
-
-#: ../lib/wiking/application.py:267
-msgid "Unable to perform a database operation."
-msgstr "Provedení databázové operace se nezdařilo."
-
-#. Translators: Website idiom. This is followed by information on the underlying software
-#. tools.  Means: This website runs on [...this and that software...].
-#: ../lib/wiking/application.py:356
-msgid "Powered by"
-msgstr "Provozováno na"
-
-#. Translators: The document named "Section 508" contains accessibility
-#. guidelines and was issued by the US government.
-#: ../lib/wiking/application.py:396
-msgid "US Government Section 508 Accessibility Guidelines."
-msgstr "Sekce 508 směrnic pro zpřístupnění vydaných vládou USA"
-
-#: ../lib/wiking/application.py:403
-msgid "Accessibility Statement"
-msgstr "Prohlášení o zpřístupnění"
-
-#. Translators: "Site" means a website.
-#: ../lib/wiking/application.py:409
-msgid "This site conforms to the following standards:"
-msgstr "Tento portál odpovídá následujícím standardům:"
-
-#. Translators: "Site" means a website. "Browser" is an internet browser (software
-#. used to access internet, such as Firefox, MSIE or Safari).  Leave the translation
-#. for ``any'' in capitals.
-#: ../lib/wiking/application.py:414
-msgid "This site can be viewed in ANY browser."
-msgstr "Tato stránka může být používána v LIBOVOLNÉM prohlížeči."
-
-#: ../lib/wiking/application.py:415
-msgid "Contact:"
-msgstr "Kontakt:"
+msgid "Last change: %(date)s, %(user)s"
+msgstr "Poslední změna: %(date)s, %(user)s"
 
 #: ../lib/wiking/modules.py:402
 msgid "Enter your login name, please!"
@@ -539,6 +497,47 @@ msgstr "Následující moduly byly úspěšně načteny znovu:"
 #: ../lib/wiking/modules.py:616
 msgid "Reload"
 msgstr "Načíst znovu"
+
+#: ../lib/wiking/application.py:267
+msgid "Unable to perform a database operation."
+msgstr "Provedení databázové operace se nezdařilo."
+
+#. Translators: Website idiom. This is followed by information on the underlying software
+#. tools.  Means: This website runs on [...this and that software...].
+#: ../lib/wiking/application.py:356
+msgid "Powered by"
+msgstr "Provozováno na"
+
+#. Translators: The document named "Section 508" contains accessibility
+#. guidelines and was issued by the US government.
+#: ../lib/wiking/application.py:396
+msgid "US Government Section 508 Accessibility Guidelines."
+msgstr "Sekce 508 směrnic pro zpřístupnění vydaných vládou USA"
+
+#: ../lib/wiking/application.py:403
+msgid "Accessibility Statement"
+msgstr "Prohlášení o zpřístupnění"
+
+#. Translators: "Site" means a website.
+#: ../lib/wiking/application.py:409
+msgid "This site conforms to the following standards:"
+msgstr "Tento portál odpovídá následujícím standardům:"
+
+#. Translators: "Site" means a website. "Browser" is an internet browser (software
+#. used to access internet, such as Firefox, MSIE or Safari).  Leave the translation
+#. for ``any'' in capitals.
+#: ../lib/wiking/application.py:414
+msgid "This site can be viewed in ANY browser."
+msgstr "Tato stránka může být používána v LIBOVOLNÉM prohlížeči."
+
+#: ../lib/wiking/application.py:415
+msgid "Contact:"
+msgstr "Kontakt:"
+
+#~ msgid ""
+#~ "Please inform the server administrator, %(admin)s if the problem persists."
+#~ msgstr ""
+#~ "Informujte prosím správce serveru, %(admin)s pokud problém přetrvává."
 
 #~ msgid "This function is temporarily unavailable."
 #~ msgstr "Tato funkce je dočasně nedostupná."
