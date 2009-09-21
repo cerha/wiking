@@ -1,3 +1,7 @@
+2009-09-21  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/__init__.py: Version changed to 0.4.5.
+
 2009-09-18  Hynek Hanke  <hanke@kropacek>
 
 	* lib/wiking/cms/cms.py: New comments for translators.
