@@ -1,6 +1,6 @@
 -*- mode: Text; fill-column: 80 -*-
 
-Version 0.4.5 (not released yet):
+Version 0.4.5:
  
  * Added support for ARIA landmarks and JavaScript page navigation improved.
 
@@ -25,10 +25,15 @@ Version 0.4.5 (not released yet):
    - RSS links are now automatically displayed within panels and announced in
      page header meta tags.
 
+ * Allowed specific style sheets for different media types and implemented basic
+   printing style.
+
  * New configuration options allow setting the default language statically as
    well as dynamically based on the server name in the current request URI.
 
- * New complete translations (de, es, fr, hu, it, no, pl, sk).
+ * Added support for site icons (favicon).
+
+ * New complete translations (de, es, it, no, sk).
 
  * Wiking Application API extended to cover common exporter customizations.
 
