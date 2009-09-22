@@ -1,3 +1,8 @@
+2009-09-22  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/cms/cms.py:
+	Changed order of filters in user management.
+
 2009-09-21  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/__init__.py:

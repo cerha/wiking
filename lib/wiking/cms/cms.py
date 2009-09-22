@@ -2094,8 +2094,6 @@ class Users(CMSModule):
         layout = () # Force specific layout definition for each action.
         cb = CodebookSpec(display='user', prefer_display=True)
         filters = (
-            # Translators: Accounts as in user accounts (computer terminology).
-            pp.Condition(_("All accounts"), None),
             pp.Condition(_("Active users"),
                          pd.AND(pd.NE('role', pd.Value(pd.String(), 'none')),
                                 pd.EQ('regexpire', pd.Value(pd.DateTime(), None))),
@@ -2107,6 +2105,8 @@ class Users(CMSModule):
             pp.Condition(_("Unfinished registration requests (activation code not confirmed)"),
                          pd.NE('regexpire', pd.Value(pd.DateTime(), None)),
                          id='unconfirmed'),
+            # Translators: Accounts as in user accounts (computer terminology).
+            pp.Condition(_("All accounts"), None),
             )
         default_filter = 'active'
     class AccountInfo(lcg.Content):
