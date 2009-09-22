@@ -115,13 +115,13 @@ of the fact that he is supposed to use a standardized term.
 
  * Gramatical type of word: Noun, Verb, ...
 
-E.g. ``login'' -- Noun or verb? Do not however prescribe such things
+E.g. ``start'' -- Noun or verb? Do not however prescribe such things
 as imperative-indicative if not necessary as conventions differ in
 target languages, just continue and indicate it's a button or heading.
 
 -----
  # Translators: Button label. Use verb, not noun.
- _("Login"),
+ _("Start"),
 -----
 
  * Rephrasing
