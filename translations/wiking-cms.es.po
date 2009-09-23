@@ -1600,7 +1600,7 @@ msgid ""
 "New user %(fullname)s registered at %(server_hostname)s. Please approve the "
 "account: %(uri)s"
 msgstr ""
-"Nuevo usuario %(fullname) registrado en %(server_hostname)s. Por favor, "
+"Nuevo usuario %(fullname)s registrado en %(server_hostname)s. Por favor, "
 "aprobar la cuenta: %(uri)s"
 
 #: ../lib/wiking/cms/cms.py:2342
