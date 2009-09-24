@@ -1,3 +1,8 @@
+2009-09-24  Milan Zamazal  <pdm@brailcom.org>
+
+	* lib/wiking/util.py:
+	Don't crash on None iurl in RSS data building.
+
 2009-09-22  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/cms/cms.py:
