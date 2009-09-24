@@ -430,11 +430,11 @@ msgstr "En esta sección:"
 #. for a link that shows/hides the panels.
 #: ../lib/wiking/export.py:249
 msgid "Show panels"
-msgstr "Ocultar paneles"
+msgstr "Mostrar paneles"
 
 #: ../lib/wiking/export.py:250
 msgid "Hide panels"
-msgstr "Esconder paneles"
+msgstr "Ocultar paneles"
 
 #. Translators: ``RSS channel'' is terminology idiom, see Wikipedia
 #: ../lib/wiking/export.py:261
