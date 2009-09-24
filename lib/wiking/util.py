@@ -1178,8 +1178,8 @@ def rss(title, url, items, descr, lang=None, webmaster=None, ttl=60):
     import wiking
     items = ['''<item>
        <title>'''+ escape(ititle) +'''</title>
-       <guid>'''+ iurl +'''</guid>
-       <link>'''+ iurl +'''</link>''' + (idescr and '''
+       <guid>'''+ (iurl or '') +'''</guid>
+       <link>'''+ (iurl or '') +'''</link>''' + (idescr and '''
        <description>'''+ escape(idescr) +'''</description>''' or '') + (idate and '''
        <pubDate>'''+ escape(idate) +'''</pubDate>''' or '') + (iauthor and '''
        <author>'''+ iauthor +'''</author>''' or '') + '''
