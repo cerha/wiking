@@ -1,3 +1,9 @@
+2009-09-24  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/util.py:
+	Limit login dialog fields to 32 characters to prevent errors when
+	writing weird login attempts into CMS session log.
+
 2009-09-24  Milan Zamazal  <pdm@brailcom.org>
 
 	* lib/wiking/util.py:
