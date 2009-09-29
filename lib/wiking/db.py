@@ -95,14 +95,31 @@ class PytisModule(Module, ActionHandler):
     _SUBMIT_BUTTONS = {}
     _LAYOUT = {}
 
-    class Record(pp.PresentedRow):
+    class _Record(pp.PresentedRow):
+        # Just a base class implementing the enumerator hack needed in the web
+        # environment.  This hack forces the enumerator data objects to use the
+        # current dbconnection of the module instead of the global
+        # config.dbconnection.
+        def __init__(self, dbconnection, *args, **kwargs):
+            self._dbconnection = dbconnection
+            super(PytisModule._Record, self).__init__(*args, **kwargs)
+
+        def _type(self, fspec):
+            type = super(PytisModule._Record, self)._type(fspec)
+            enumerator = type.enumerator()
+            if enumerator and isinstance(enumerator, pytis.data.DataEnumerator):
+                enumerator.set_connection_data(self._dbconnection)
+            return type
+
+
+    class Record(_Record):
         """An abstraction of one record within the module's data object.
 
         The current request is stored within the record data to make it available within computer
         functions.
 
         Warning: Instances of this class should not persist across multiple requests!
-        
+
         """
         def __init__(self, req, *args, **kwargs):
             self._req = req
@@ -110,10 +127,10 @@ class PytisModule(Module, ActionHandler):
 
         def req(self):
             return self._req
-            
+
         def module(self, name, **kwargs):
             return self._resolver.wiking_module(name, **kwargs)
-            
+
         def key(self):
             """Return the value of record's key for data operations."""
             return (self[self._data.key()[0].id()],)
@@ -155,7 +172,7 @@ class PytisModule(Module, ActionHandler):
             else:
                 roles = user.roles()
             return roles
-            
+    
     @classmethod
     def title(cls):
         return cls.Spec.title
@@ -178,7 +195,7 @@ class PytisModule(Module, ActionHandler):
         self._title_column = self._TITLE_COLUMN or self._view.columns()[0]
 
     def __getattr__(self, name):
-        if name not in ('_data', '_key', '_sorting', '_referer', '_referer_type', '_links',):
+        if name not in ('_data', '_key', '_sorting', '_referer', '_links', '_type'):
             try:
                 return super(PytisModule, self).__getattr__(name)
             except AttributeError: # can be thrown in absence of __getattr__ itself!
@@ -193,12 +210,17 @@ class PytisModule(Module, ActionHandler):
         if self._sorting is None:
             self._sorting = ((key, pytis.data.ASCENDENT),)
         self._referer = self._REFERER or key
-        self._referer_type = self._data.find_column(self._referer).type()
+        fields = self._view.fields()
+        # We sometimes need to know the data type of certain field without having access to the
+        # record at the same time, so we create a record here just to save the data types of all
+        # fields for future use.
+        record = self._Record(self._dbconnection, fields, self._data, None, resolver=self._resolver)
+        self._type = dict([(key, record[key].type()) for key in record.keys()])
         self._links = {}
         def cb_link(field):
-            e = field.type(self._data).enumerator()
+            e = self._type[field.id()].enumerator()
             return e and pp.Link(field.codebook(), e.value_column())
-        for f in self._view.fields():
+        for f in fields:
             if f.links():
                 self._links[f.id()] = (f.id(), f.links()[0])
             elif f.codebook():
@@ -216,8 +238,8 @@ class PytisModule(Module, ActionHandler):
 
     def _record(self, req, row, new=False, prefill=None):
         """Return the Record instance initialized by given data row."""
-        return self.Record(req, self._view.fields(), self._data, row, prefill=prefill,
-                           resolver=self._resolver, new=new)
+        return self.Record(req, self._dbconnection, self._view.fields(), self._data,
+                           row, prefill=prefill, resolver=self._resolver, new=new)
 
     def _locale_data(self, req):
         lang = req.prefered_language(raise_error=False)
@@ -240,7 +262,7 @@ class PytisModule(Module, ActionHandler):
         if fw:
             binding_column = fw.arg('binding').binding_column()
             if binding_column:
-                col = self._data.find_column(binding_column).type().enumerator().value_column()
+                col = self._type[binding_column].enumerator().value_column()
                 return (binding_column, fw.arg('record')[col].value())
         return None, None
         
@@ -485,7 +507,7 @@ class PytisModule(Module, ActionHandler):
         valid_prefill = {}
         if prefill:
             for key, value in prefill.items():
-                type = self._view.field(key).type(self._data)
+                type = self._type[key]
                 value, error = type.validate(value, strict=False)
                 if not error:
                     valid_prefill[key] = value
@@ -605,8 +627,9 @@ class PytisModule(Module, ActionHandler):
         path).
 
         """
-        if not isinstance(self._referer_type, pd.String):
-            v, error = self._referer_type.validate(value)
+        type = self._type[self._referer]
+        if not isinstance(type, pd.String):
+            v, error = type.validate(value)
             if error is not None:
                 raise NotFound()
             else:
@@ -642,13 +665,11 @@ class PytisModule(Module, ActionHandler):
         return False
         
     def _prefill(self, req, new=False):
-        prefill = dict([(f.id(), req.param(f.id())) for f in self._view.fields()
-                        if req.has_param(f.id()) and \
-                        not isinstance(f.type(self._data), (pd.Binary, pd.Password))])
+        prefill = dict([(key, req.param(key)) for key, type in self._type.items()
+                        if req.has_param(key) and not isinstance(type, (pd.Binary, pd.Password))])
         binding_column, value = self._binding_column(req)
         if binding_column:
-            type = self._view.field(binding_column).type(self._data)
-            prefill[binding_column] = type.export(value)
+            prefill[binding_column] = self._type[binding_column].export(value)
         if new and not prefill.has_key('lang') and self._LIST_BY_LANGUAGE:
             lang = req.prefered_language(raise_error=False)
             if lang:
@@ -664,7 +685,7 @@ class PytisModule(Module, ActionHandler):
             condition = None
         binding_column = binding.binding_column()
         if binding_column:
-            type = self._data.find_column(binding_column).type()
+            type = self._type[binding_column]
             value = record[type.enumerator().value_column()].value()
             bcond = pd.EQ(binding_column, pd.Value(type, value))
             if condition: 
@@ -680,7 +701,7 @@ class PytisModule(Module, ActionHandler):
             conds.append(condition)
         if values:
             for k, v in values.items():
-                conds.append(pd.EQ(k, pd.Value(self._data.find_column(k).type(), v)))
+                conds.append(pd.EQ(k, pd.Value(self._type[k], v)))
         if lang and self._LIST_BY_LANGUAGE:
             conds.append(pd.EQ('lang', pd.Value(pd.String(), lang)))
         if conds:

@@ -1,3 +1,8 @@
+2009-09-29  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/db.py: 
+	Avoid using `pytis.presentation.Field.type()'.
+
 2009-09-24  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/util.py:
