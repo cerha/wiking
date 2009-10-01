@@ -101,7 +101,9 @@ class Application(Module):
         return req.forward(module)
     
     def module_uri(self, req, modname):
-        """Return the current uri for given module name.
+        """Return the base URI of given Wiking module (relative to server root).
+
+        If the module has no definite global path within the application, None may be returned.
 
         The default implementation performs a reverse lookup in the '\_MAPPING' dictionary.  None
         is returned when there is no mapping item for the module, or when there is more than one

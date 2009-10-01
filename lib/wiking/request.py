@@ -664,12 +664,21 @@ class WikingRequest(Request):
         return self._application
 
     def module_uri(self, modname):
-        """Return the base URI of given Wiking module (relative to server root)."""
-        # Since the uris may be used many times, they are cached at least for the duration of one
-        # request.  We cannot cache them over multiple requests, sice there is no way to invalidate
-        # them if mapping changes (at least in the multiprocess server invironment).  This method
-        # can be implemented by using a global cache if this limitation is overcome in another
-        # environment.
+        """Return the base URI of given Wiking module (relative to server root).
+
+        If the module has no definite global path within the application, None may be returned.
+        
+        The URI is actually obtained from 'Application.module_uri()', but is cached at this level
+        for performance reasons.  The Application may often need to access the database to
+        determine the answer, so using this method instead of 'Application.module_uri()' is highly
+        recommended unless you have a special reason not to do so.
+
+        Implementation note: Caching is done at the level of the request instance, since global
+        caching would not allow invalidation of cached items after mapping changes in the
+        multiprocess server invironment.  This method can be implemented using a global cache if
+        this limitation doesn't apply in another environment.
+        
+        """
         try:
             uri = self._module_uri[modname]
         except KeyError:

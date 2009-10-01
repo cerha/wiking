@@ -65,7 +65,13 @@ class RequestHandler(object):
         super(RequestHandler, self).__init__(*args, **kwargs)
     
     def _base_uri(self, req):
-        """Return module's current URI as a string or None if not mapped."""
+        """Return the URI of this module as a string or None if not mapped.
+
+        The URI is the full path to the module relative to server root.  If the module has no
+        definite global path within the application, None is returned.  This method is actually
+        just a shortcut to 'WikingRequest.module_uri()'.  See its documentation for more details.
+
+        """
         return req.module_uri(self.name())
 
     def _authorize(self, req, **kwargs):
