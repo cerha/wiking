@@ -290,13 +290,6 @@ class CMSModule(PytisModule, RssModule, Panelizable):
     RIGHTS_publish   = (Roles.ADMIN,)
     RIGHTS_unpublish = (Roles.ADMIN,)
 
-    def _base_uri(self, req):
-        if req.wmi:
-            uri = req.uri_prefix() + '/_wmi/'+ self.name()
-        else:
-            uri = super(CMSModule, self)._base_uri(req)
-        return uri
-
     def _embed_binding(self, modname):
         cls = _modcls(modname)
         if cls and issubclass(cls, EmbeddableCMSModule):
@@ -471,20 +464,21 @@ class CMSExtensionModule(CMSModule):
     """CMS module to be used within a 'CMSExtension'."""
     _HONOUR_SPEC_TITLE = True
 
+    def __init__(self, *args, **kwargs):
+        self._parent = None
+        super(CMSExtensionModule, self).__init__(*args, **kwargs)
+        
     def set_parent(self, parent):
+        assert isinstance(parent, CMSExtension)
         self._parent = parent
+    
+    def parent(self):
+        return self._parent
     
     def submenu(self, req):
         return []
-        
-    def _base_uri(self, req):
-        try:
-            parent = self._parent
-        except AttributeError:
-            return None
-        return parent.submodule_uri(req, self.name())
 
-    
+
 class Session(PytisModule, wiking.Session):
     """Implement Wiking session management by storing session information in database."""
     class Spec(Specification):
@@ -1262,7 +1256,7 @@ class Pages(CMSModule):
             row = self._data.get_row(modname=modname) #, published=True)
             if row:
                 uri = '/'+ row['identifier'].value()
-                binding = self._embed_binding(row['modname'].value())
+                binding = self._embed_binding(modname)
                 if binding:
                     uri += '/'+ binding.id()
             else:

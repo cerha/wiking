@@ -1,3 +1,14 @@
+2009-10-01  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/cms/appl.py:
+	* lib/wiking/cms/cms.py:
+	Make `Application.module_uri()' work also for embedded modules.	
+
+	* lib/wiking/request.py:
+	* lib/wiking/modules.py:
+	* lib/wiking/application.py:
+	Module URI construction documented.
+
 2009-09-29  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/db.py: 

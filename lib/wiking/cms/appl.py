@@ -81,11 +81,25 @@ class Application(CookieAuthentication, wiking.Application):
             return super(Application, self).handle(req)
 
     def module_uri(self, req, modname):
-        try:
-            uri = self._module('Pages').module_uri(req, modname)
-        except MaintananceModeError:
-            uri = None
-        return uri or super(Application, self).module_uri(req, modname)
+        # Try the static mapping first.
+        uri = super(Application, self).module_uri(req, modname)
+        if uri is None:
+            if req.wmi:
+                uri = req.uri_prefix() + '/_wmi/'+ modname
+            else:
+                try:
+                    # Try if the module is directly embedded in a page.
+                    uri = self._module('Pages').module_uri(req, modname)
+                    if uri is None:
+                        # If not embeded directly, try if it is a submodule of an embedded module.
+                        module = self._module(modname)
+                        if isinstance(module, CMSExtensionModule):
+                            parent = module.parent()
+                            if parent is not None:
+                                uri = parent.submodule_uri(req, modname)
+                except MaintananceModeError:
+                    pass
+        return uri
 
     def site_title(self, req):
         if req.wmi:
