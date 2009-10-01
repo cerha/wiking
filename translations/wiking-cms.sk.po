@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-09-21 19:50+0200\n"
+"POT-Creation-Date: 2009-10-01 16:37+0200\n"
 "PO-Revision-Date: 2009-09-14 15:18+0100\n"
 "Last-Translator: Petr Topiarz <topiarz@post.cz>\n"
 "Language-Team: Slovak <wiking@lists.freebsoft.org>\n"
@@ -15,108 +15,78 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../lib/wiking/configuration.py:183
-msgid "Webmaster's e-mail address"
-msgstr "Emailová adresa webmastera"
+#: ../lib/wiking/cms/appl.py:58
+msgid "Manage this site"
+msgstr "Správa obsahu"
 
-#: ../lib/wiking/configuration.py:194
-msgid "Default sender address"
-msgstr "Prednastavená adresa odosielateľa"
+#: ../lib/wiking/cms/appl.py:59
+msgid "Enter the Wiking Management Interface"
+msgstr "Vstúpiť do rozhrania správy obsahu"
 
-#: ../lib/wiking/configuration.py:211
-msgid "Force HTTPS login"
-msgstr "Účinnosť HTTP prihlásení"
+#: ../lib/wiking/cms/appl.py:61
+msgid "Leave the Management Interface"
+msgstr "Opustiť rozhranie správy obsahu"
 
-#: ../lib/wiking/configuration.py:212
-msgid ""
-"If enabled, the login form will always be redirected to an HTTPS address to "
-"ensure the security of the submitted credentials.  This, however, requires "
-"your server to be setup to accept HTTPS requests for the same virtual host "
-"and pass them to Wiking."
-msgstr ""
-"Ak je aktivovaný, prihlasovací formulár bude vždy presmerovaný na adresu "
-"HTTPS, aby bola zaistená bezpečnosť vložených osobných údajov. To však "
-"vyžaduje, aby bol váš server konfigurovaný pre obsluhu HTTPS požiadaviek pre "
-"rovnaký virtuálny server a aby tieto požiadavky boli odovzdávané systému "
-"Wiking."
-
-#. Translators: Site means a webpage or web application.
-#: ../lib/wiking/configuration.py:265
-msgid "Site title"
-msgstr "Názov portálu"
-
-#: ../lib/wiking/configuration.py:266
-msgid ""
-"Site title is a short and (hopefully) unique title of the whole website. It "
-"will appear at the top of every page."
-msgstr ""
-"Tento názov by mal byť krátky a ak je to možné, mal by byť jediným názvom "
-"internetového portálu. Názov sa bude zobrazovať v záhlaví každej stránky."
-
-#. Translators: Site means a webpage or web application. Subtitle as in ,,title -- subtitle''.
-#: ../lib/wiking/configuration.py:272
-msgid "Site subtitle"
-msgstr "Podnázov portálu"
-
-#: ../lib/wiking/configuration.py:273
-msgid ""
-"Site subtitle is an optional more descriptive title of the website.  It will "
-"appear at the top of every page together with site title, but where brevity "
-"matters, only title will be used."
-msgstr ""
-"Podnázov je nepovinný podrobnejší popis portálu. Bude tiež zobrazený v "
-"záhlaví každej stránky, ale v situáciách, ktoré vyžadujú stručnosť, bude "
-"vynechaný."
-
-#. Translators: Web page or web application specific image.
-#: ../lib/wiking/configuration.py:280
+#: ../lib/wiking/cms/appl.py:92
 #, fuzzy
-msgid "Site icon"
-msgstr "Názov portálu"
+msgid "Wiking Management Interface"
+msgstr "Vstúpiť do rozhrania správy obsahu"
 
-#: ../lib/wiking/configuration.py:294
-msgid "Default language"
-msgstr "Východzí jazyk"
+#. Translators: Yes/No configuration option label. Should the login panel be visible?
+#: ../lib/wiking/cms/configuration.py:36
+msgid "Allow login panel"
+msgstr "Zobraziť panel prihlásenia"
 
-#. Translators: Language negotiation means the process where the server is trying
-#. to find a language that matches with what the users internet browser asks for.
-#: ../lib/wiking/configuration.py:297
+#: ../lib/wiking/cms/configuration.py:37
 msgid ""
-"Defines the language (lowercase ISO 639-1 Alpha-2 code) to be used when "
-"content language negotiation fails. If not set (which is the default), the "
-"server will issue a 606 HTTP error (Not acceptable) when the document is not "
-"available in any of the requested languages. The error page will contain a "
-"description of the problem and a list of available language variants of the "
-"requested document. The negotiation is based on the browser setting of "
-"user's language preference passed through the 'Accept-Language' HTTP header. "
-"If set, Wiking will automatically serve given language variant instead of "
-"issuing the error if that variant is available.  If unavailable, the 606 "
-"error is raised anyway, so you need to make sure that all documents are "
-"available at least in the default language variant if you want to avoid 606 "
-"errors completely."
+"If enabled, the information about the currently logged user and login/logout "
+"controls will be present on each page as a separate panel.  This panel will "
+"always be the first panel on the page."
 msgstr ""
-"Definuje jazyk (ISO 639-1 Alpha-2 kód), ktorý má byť použitý, ak obsah "
-"zvoleného jazyk zlyhá. Ak nie je nastavený (čo je predvolená hodnota), "
-"server vygeneruje chybu 606 HTTP (Nie je prijateľné), ak dokument nebude k "
-"dispozícii v žiadnom z požadovaných jazykov. Stránka o chybách bude "
-"obsahovať popis problému a zoznam dostupných jazykových variánt k "
-"požadovanému dokumentu. Zobrazenie závisí na nastavení prehliadača "
-"používateľa a na jeho jazykových preferenciách odosielaných cez HTTP "
-"záhlavie 'Akceptovať-Jazyk'. Ak je to nastavené, Wiking automaticky zobrazí "
-"dostupnú jazykovú variantu namiesto zobrazenia hlásenia o chybe. Ak nie je "
-"dostupná, bude zobrazené hlásenie o chybe 606, takže ak mu chcete úplne "
-"predísť, uistite sa, že všetky dokumenty sú dostupné aspoň vo východzom "
-"jazyku."
+"Ak túto voľbu povolíte, informácie o práve prihlásenom používateľovi a "
+"ovládacie prvky na prihlásenie/odhlásenie budú zobrazené v samostatnom "
+"paneli.  Tento panel bude vždy zobrazený ako prvý z panelov."
 
-#: ../lib/wiking/configuration.py:379
-msgid "Whether to use e-mails as login names"
-msgstr "Použiť emailovú adresu ako prihlasovacie meno"
+#. Translators: Yes/No configuration option label. Should link to WMI be visible?  "WMI"
+#. stands for Wiking Management Interface.  Don't feel obliged to use an abbreviation.  Use
+#. whatever brief form obviously referning to whatever translation you used for "Wiking
+#. Management Interface".
+#: ../lib/wiking/cms/configuration.py:47
+msgid "Allow WMI link"
+msgstr "Povoliť odkaz do správcovského rozhrania"
 
-#: ../lib/wiking/configuration.py:380
-msgid "Iff true, users must use e-mail addresses as their login names."
+#. Translators: Yes/no configuration label. Can new users register to this
+#. website/application?
+#: ../lib/wiking/cms/configuration.py:55
+msgid "Allow new user registration"
+msgstr "Povoliť registráciu nových používateľov"
+
+#: ../lib/wiking/cms/configuration.py:56
+msgid ""
+"If enabled, all visitors are allowed to create a user account.  If disabled, "
+"new user accounts must be created by administrator.  Note, that the newly "
+"created accounts are inactive (at least with the default implementation of "
+"the user management module), so the creation of the account doesn't give the "
+"user any actual privileges."
 msgstr ""
-"Ak je to tak nastavené, používatelia musia používať emailovú adresu ako "
-"prihlasovacie meno."
+"Ak je to povolené, všetkým návštevníkom je umožnené vytvoriť si "
+"používateľský účet.  Ak túto možnosť zakážete, budú všetky účty vytvárané "
+"správcom.  Novo vytvorené účty sú vždy neaktívne (aspoň vo východzej "
+"implementácii modulu správy užívateľov), takže vytvorenie účtu ešte samo o "
+"sebe nedáva užívateľovi žiadne práva."
+
+#. Translators: Maximal size an uploaded file can have.
+#: ../lib/wiking/cms/configuration.py:65
+msgid "Maximal upload size"
+msgstr "Maximálna veľkosť pre upload"
+
+#: ../lib/wiking/cms/configuration.py:66
+msgid ""
+"The maximal size of uploaded files in bytes.  The server needs to be "
+"relaoded for the changes in this option to take effect."
+msgstr ""
+"Maximálna veľkosť pre uploadované súbory v bajtoch. Pozor, aby sa zmeny "
+"uplatnili, je nutné server reštartovať."
 
 #: ../lib/wiking/cms/cms.py:58
 msgid "formatting manual"
@@ -1412,24 +1382,24 @@ msgstr ""
 msgid "Invalid e-mail address: %s"
 msgstr "Neplatná emailová adresa: %s"
 
-#. Translators: Accounts as in user accounts (computer terminology).
-#: ../lib/wiking/cms/cms.py:2098
-msgid "All accounts"
-msgstr ""
-
-#: ../lib/wiking/cms/cms.py:2099 ../lib/wiking/cms/cms.py:2576
+#: ../lib/wiking/cms/cms.py:2097 ../lib/wiking/cms/cms.py:2576
 msgid "Active users"
 msgstr "Aktívni používatelia"
 
-#: ../lib/wiking/cms/cms.py:2103
+#: ../lib/wiking/cms/cms.py:2101
 #, fuzzy
 msgid "Unapproved accounts (pending admin approvals)"
 msgstr "Neplatná žiadosť o registráciu (čaká sa na emailové potvrdenie)"
 
-#: ../lib/wiking/cms/cms.py:2107
+#: ../lib/wiking/cms/cms.py:2105
 #, fuzzy
 msgid "Unfinished registration requests (activation code not confirmed)"
 msgstr "Registrácia používateľa už bola potvrdená."
+
+#. Translators: Accounts as in user accounts (computer terminology).
+#: ../lib/wiking/cms/cms.py:2109
+msgid "All accounts"
+msgstr ""
 
 #: ../lib/wiking/cms/cms.py:2135 ../lib/wiking/cms/cms.py:2137
 #: ../lib/wiking/cms/cms.py:2159
@@ -1537,7 +1507,7 @@ msgstr "Registrácia prijatá."
 
 #: ../lib/wiking/cms/cms.py:2266
 msgid "Please, check your mailbox for instructions how to proceed."
-msgstr ""
+msgstr "Prosím, prečítajte si ďalšie inštrukcie vo vašej emailovej schránke."
 
 #: ../lib/wiking/cms/cms.py:2270
 msgid "Registration cancelled."
@@ -1552,7 +1522,7 @@ msgstr "Vaša registrácia na %s"
 #: ../lib/wiking/cms/cms.py:2284
 #, python-format
 msgid "Activation code was sent to %s."
-msgstr ""
+msgstr "Aktivačný kód bol zaslaný na  %s."
 
 #: ../lib/wiking/cms/cms.py:2292
 msgid "The account was enabled."
@@ -1748,78 +1718,108 @@ msgstr ""
 msgid "Edit this mail for repeated use"
 msgstr ""
 
-#: ../lib/wiking/cms/appl.py:58
-msgid "Manage this site"
-msgstr "Správa obsahu"
+#: ../lib/wiking/configuration.py:183
+msgid "Webmaster's e-mail address"
+msgstr "Emailová adresa webmastera"
 
-#: ../lib/wiking/cms/appl.py:59
-msgid "Enter the Wiking Management Interface"
-msgstr "Vstúpiť do rozhrania správy obsahu"
+#: ../lib/wiking/configuration.py:194
+msgid "Default sender address"
+msgstr "Prednastavená adresa odosielateľa"
 
-#: ../lib/wiking/cms/appl.py:61
-msgid "Leave the Management Interface"
-msgstr "Opustiť rozhranie správy obsahu"
+#: ../lib/wiking/configuration.py:211
+msgid "Force HTTPS login"
+msgstr "Účinnosť HTTP prihlásení"
 
-#: ../lib/wiking/cms/appl.py:92
+#: ../lib/wiking/configuration.py:212
+msgid ""
+"If enabled, the login form will always be redirected to an HTTPS address to "
+"ensure the security of the submitted credentials.  This, however, requires "
+"your server to be setup to accept HTTPS requests for the same virtual host "
+"and pass them to Wiking."
+msgstr ""
+"Ak je aktivovaný, prihlasovací formulár bude vždy presmerovaný na adresu "
+"HTTPS, aby bola zaistená bezpečnosť vložených osobných údajov. To však "
+"vyžaduje, aby bol váš server konfigurovaný pre obsluhu HTTPS požiadaviek pre "
+"rovnaký virtuálny server a aby tieto požiadavky boli odovzdávané systému "
+"Wiking."
+
+#. Translators: Site means a webpage or web application.
+#: ../lib/wiking/configuration.py:265
+msgid "Site title"
+msgstr "Názov portálu"
+
+#: ../lib/wiking/configuration.py:266
+msgid ""
+"Site title is a short and (hopefully) unique title of the whole website. It "
+"will appear at the top of every page."
+msgstr ""
+"Tento názov by mal byť krátky a ak je to možné, mal by byť jediným názvom "
+"internetového portálu. Názov sa bude zobrazovať v záhlaví každej stránky."
+
+#. Translators: Site means a webpage or web application. Subtitle as in ,,title -- subtitle''.
+#: ../lib/wiking/configuration.py:272
+msgid "Site subtitle"
+msgstr "Podnázov portálu"
+
+#: ../lib/wiking/configuration.py:273
+msgid ""
+"Site subtitle is an optional more descriptive title of the website.  It will "
+"appear at the top of every page together with site title, but where brevity "
+"matters, only title will be used."
+msgstr ""
+"Podnázov je nepovinný podrobnejší popis portálu. Bude tiež zobrazený v "
+"záhlaví každej stránky, ale v situáciách, ktoré vyžadujú stručnosť, bude "
+"vynechaný."
+
+#. Translators: Web page or web application specific image.
+#: ../lib/wiking/configuration.py:280
 #, fuzzy
-msgid "Wiking Management Interface"
-msgstr "Vstúpiť do rozhrania správy obsahu"
+msgid "Site icon"
+msgstr "Názov portálu"
 
-#. Translators: Yes/No configuration option label. Should the login panel be visible?
-#: ../lib/wiking/cms/configuration.py:36
-msgid "Allow login panel"
-msgstr "Zobraziť panel prihlásenia"
+#: ../lib/wiking/configuration.py:294
+msgid "Default language"
+msgstr "Východzí jazyk"
 
-#: ../lib/wiking/cms/configuration.py:37
+#. Translators: Language negotiation means the process where the server is trying
+#. to find a language that matches with what the users internet browser asks for.
+#: ../lib/wiking/configuration.py:297
 msgid ""
-"If enabled, the information about the currently logged user and login/logout "
-"controls will be present on each page as a separate panel.  This panel will "
-"always be the first panel on the page."
+"Defines the language (lowercase ISO 639-1 Alpha-2 code) to be used when "
+"content language negotiation fails. If not set (which is the default), the "
+"server will issue a 606 HTTP error (Not acceptable) when the document is not "
+"available in any of the requested languages. The error page will contain a "
+"description of the problem and a list of available language variants of the "
+"requested document. The negotiation is based on the browser setting of "
+"user's language preference passed through the 'Accept-Language' HTTP header. "
+"If set, Wiking will automatically serve given language variant instead of "
+"issuing the error if that variant is available.  If unavailable, the 606 "
+"error is raised anyway, so you need to make sure that all documents are "
+"available at least in the default language variant if you want to avoid 606 "
+"errors completely."
 msgstr ""
-"Ak túto voľbu povolíte, informácie o práve prihlásenom používateľovi a "
-"ovládacie prvky na prihlásenie/odhlásenie budú zobrazené v samostatnom "
-"paneli.  Tento panel bude vždy zobrazený ako prvý z panelov."
+"Definuje jazyk (ISO 639-1 Alpha-2 kód), ktorý má byť použitý, ak obsah "
+"zvoleného jazyk zlyhá. Ak nie je nastavený (čo je predvolená hodnota), "
+"server vygeneruje chybu 606 HTTP (Nie je prijateľné), ak dokument nebude k "
+"dispozícii v žiadnom z požadovaných jazykov. Stránka o chybách bude "
+"obsahovať popis problému a zoznam dostupných jazykových variánt k "
+"požadovanému dokumentu. Zobrazenie závisí na nastavení prehliadača "
+"používateľa a na jeho jazykových preferenciách odosielaných cez HTTP "
+"záhlavie 'Akceptovať-Jazyk'. Ak je to nastavené, Wiking automaticky zobrazí "
+"dostupnú jazykovú variantu namiesto zobrazenia hlásenia o chybe. Ak nie je "
+"dostupná, bude zobrazené hlásenie o chybe 606, takže ak mu chcete úplne "
+"predísť, uistite sa, že všetky dokumenty sú dostupné aspoň vo východzom "
+"jazyku."
 
-#. Translators: Yes/No configuration option label. Should link to WMI be visible?  "WMI"
-#. stands for Wiking Management Interface.  Don't feel obliged to use an abbreviation.  Use
-#. whatever brief form obviously referning to whatever translation you used for "Wiking
-#. Management Interface".
-#: ../lib/wiking/cms/configuration.py:47
-msgid "Allow WMI link"
-msgstr "Povoliť odkaz do správcovského rozhrania"
+#: ../lib/wiking/configuration.py:379
+msgid "Whether to use e-mails as login names"
+msgstr "Použiť emailovú adresu ako prihlasovacie meno"
 
-#. Translators: Yes/no configuration label. Can new users register to this
-#. website/application?
-#: ../lib/wiking/cms/configuration.py:55
-msgid "Allow new user registration"
-msgstr "Povoliť registráciu nových používateľov"
-
-#: ../lib/wiking/cms/configuration.py:56
-msgid ""
-"If enabled, all visitors are allowed to create a user account.  If disabled, "
-"new user accounts must be created by administrator.  Note, that the newly "
-"created accounts are inactive (at least with the default implementation of "
-"the user management module), so the creation of the account doesn't give the "
-"user any actual privileges."
+#: ../lib/wiking/configuration.py:380
+msgid "Iff true, users must use e-mail addresses as their login names."
 msgstr ""
-"Ak je to povolené, všetkým návštevníkom je umožnené vytvoriť si "
-"používateľský účet.  Ak túto možnosť zakážete, budú všetky účty vytvárané "
-"správcom.  Novo vytvorené účty sú vždy neaktívne (aspoň vo východzej "
-"implementácii modulu správy užívateľov), takže vytvorenie účtu ešte samo o "
-"sebe nedáva užívateľovi žiadne práva."
-
-#. Translators: Maximal size an uploaded file can have.
-#: ../lib/wiking/cms/configuration.py:65
-msgid "Maximal upload size"
-msgstr "Maximálna veľkosť pre upload"
-
-#: ../lib/wiking/cms/configuration.py:66
-msgid ""
-"The maximal size of uploaded files in bytes.  The server needs to be "
-"relaoded for the changes in this option to take effect."
-msgstr ""
-"Maximálna veľkosť pre uploadované súbory v bajtoch. Pozor, aby sa zmeny "
-"uplatnili, je nutné server reštartovať."
+"Ak je to tak nastavené, používatelia musia používať emailovú adresu ako "
+"prihlasovacie meno."
 
 #~ msgid "Good Bye"
 #~ msgstr "Dovidenia"
