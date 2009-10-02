@@ -104,6 +104,10 @@ class Application(Module):
         """Return the base URI of given Wiking module (relative to server root).
 
         If the module has no definite global path within the application, None may be returned.
+        The exact behavior depends on the particular application in use.  Please see the
+        documentation of this method in the relevant application class (such as
+        'wiking.cms.Application.module_uri()' for applications built on Wiking CMS) for more
+        details.
 
         The default implementation performs a reverse lookup in the '\_MAPPING' dictionary.  None
         is returned when there is no mapping item for the module, or when there is more than one
