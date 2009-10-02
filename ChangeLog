@@ -1,5 +1,8 @@
 2009-10-03  Tomas Cerha  <cerha@brailcom.org>
 
+	* translations/wiking-cms.*.po: 
+	Translations updated.
+
 	* lib/wiking/cms/cms.py:
 	* resources/css/default.css:
 	Added a simple forum-like discussion module.

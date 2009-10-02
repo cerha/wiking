@@ -7,1716 +7,13 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-10-01 16:37+0200\n"
+"POT-Creation-Date: 2009-10-03 00:51+0200\n"
 "PO-Revision-Date: 2009-09-14 15:18+0100\n"
 "Last-Translator: Petr Topiarz <topiarz@post.cz>\n"
 "Language-Team: Slovak <wiking@lists.freebsoft.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-
-#: ../lib/wiking/cms/appl.py:58
-msgid "Manage this site"
-msgstr "Správa obsahu"
-
-#: ../lib/wiking/cms/appl.py:59
-msgid "Enter the Wiking Management Interface"
-msgstr "Vstúpiť do rozhrania správy obsahu"
-
-#: ../lib/wiking/cms/appl.py:61
-msgid "Leave the Management Interface"
-msgstr "Opustiť rozhranie správy obsahu"
-
-#: ../lib/wiking/cms/appl.py:92
-#, fuzzy
-msgid "Wiking Management Interface"
-msgstr "Vstúpiť do rozhrania správy obsahu"
-
-#. Translators: Yes/No configuration option label. Should the login panel be visible?
-#: ../lib/wiking/cms/configuration.py:36
-msgid "Allow login panel"
-msgstr "Zobraziť panel prihlásenia"
-
-#: ../lib/wiking/cms/configuration.py:37
-msgid ""
-"If enabled, the information about the currently logged user and login/logout "
-"controls will be present on each page as a separate panel.  This panel will "
-"always be the first panel on the page."
-msgstr ""
-"Ak túto voľbu povolíte, informácie o práve prihlásenom používateľovi a "
-"ovládacie prvky na prihlásenie/odhlásenie budú zobrazené v samostatnom "
-"paneli.  Tento panel bude vždy zobrazený ako prvý z panelov."
-
-#. Translators: Yes/No configuration option label. Should link to WMI be visible?  "WMI"
-#. stands for Wiking Management Interface.  Don't feel obliged to use an abbreviation.  Use
-#. whatever brief form obviously referning to whatever translation you used for "Wiking
-#. Management Interface".
-#: ../lib/wiking/cms/configuration.py:47
-msgid "Allow WMI link"
-msgstr "Povoliť odkaz do správcovského rozhrania"
-
-#. Translators: Yes/no configuration label. Can new users register to this
-#. website/application?
-#: ../lib/wiking/cms/configuration.py:55
-msgid "Allow new user registration"
-msgstr "Povoliť registráciu nových používateľov"
-
-#: ../lib/wiking/cms/configuration.py:56
-msgid ""
-"If enabled, all visitors are allowed to create a user account.  If disabled, "
-"new user accounts must be created by administrator.  Note, that the newly "
-"created accounts are inactive (at least with the default implementation of "
-"the user management module), so the creation of the account doesn't give the "
-"user any actual privileges."
-msgstr ""
-"Ak je to povolené, všetkým návštevníkom je umožnené vytvoriť si "
-"používateľský účet.  Ak túto možnosť zakážete, budú všetky účty vytvárané "
-"správcom.  Novo vytvorené účty sú vždy neaktívne (aspoň vo východzej "
-"implementácii modulu správy užívateľov), takže vytvorenie účtu ešte samo o "
-"sebe nedáva užívateľovi žiadne práva."
-
-#. Translators: Maximal size an uploaded file can have.
-#: ../lib/wiking/cms/configuration.py:65
-msgid "Maximal upload size"
-msgstr "Maximálna veľkosť pre upload"
-
-#: ../lib/wiking/cms/configuration.py:66
-msgid ""
-"The maximal size of uploaded files in bytes.  The server needs to be "
-"relaoded for the changes in this option to take effect."
-msgstr ""
-"Maximálna veľkosť pre uploadované súbory v bajtoch. Pozor, aby sa zmeny "
-"uplatnili, je nutné server reštartovať."
-
-#: ../lib/wiking/cms/cms.py:58
-msgid "formatting manual"
-msgstr "príručka o formátovaní"
-
-#: ../lib/wiking/cms/cms.py:56
-#, python-format
-msgid ""
-"The content should be formatted as LCG structured text. See the %(manual)s."
-msgstr ""
-"Obsah môže byť formátovaný pomocou štrukturovaného textu LCG, viď %(manual)s."
-
-#: ../lib/wiking/cms/cms.py:75
-msgid "unknown"
-msgstr "neznámy"
-
-#. Translators: Heading and menu title. Computer idiom meaning configuration of appearance
-#. (colors, sizes, positions, graphical presentation...).
-#: ../lib/wiking/cms/cms.py:95
-msgid "Look &amp; Feel"
-msgstr "Vzhľad"
-
-#: ../lib/wiking/cms/cms.py:96
-msgid "Customize the appearance of your site."
-msgstr "Prispôsobiť vzhľad portálu."
-
-#. Translators: Heading and menu title.
-#: ../lib/wiking/cms/cms.py:98
-msgid "Users"
-msgstr "Používatelia"
-
-#: ../lib/wiking/cms/cms.py:99
-msgid "Manage user accounts, privileges and perform other user related tasks."
-msgstr ""
-
-#. Translators: Heading and menu title for configuration.
-#: ../lib/wiking/cms/cms.py:101
-msgid "Setup"
-msgstr "Nastavenie"
-
-#: ../lib/wiking/cms/cms.py:102
-msgid "Edit global properties of your web site."
-msgstr "Upraviť všeobecné nastavenia portálu."
-
-#. Translators: Heading and menu title for website content management.
-#. Translators: Content of a page (text or something else)
-#: ../lib/wiking/cms/cms.py:137 ../lib/wiking/cms/cms.py:774
-#: ../lib/wiking/cms/cms.py:1014 ../lib/wiking/cms/cms.py:1927
-msgid "Content"
-msgstr "Obsah"
-
-#: ../lib/wiking/cms/cms.py:138 ../lib/wiking/cms/cms.py:1000
-msgid "Manage available pages and their content."
-msgstr "Správa dostupných stránok a ich obsahu."
-
-#: ../lib/wiking/cms/cms.py:168
-msgid "Enter your login name or e-mail address"
-msgstr "Zadajte svoje prihlasovacie meno alebo emailovú adresu"
-
-#. Translators: Button name. Computer terminology. Use an appropriate term common
-#. for submitting forms in a computer application.
-#: ../lib/wiking/cms/cms.py:172
-msgid "Submit"
-msgstr "Odoslať"
-
-#: ../lib/wiking/cms/cms.py:210
-msgid "Password reminder"
-msgstr "Pomocník zabudnutého hesla"
-
-#: ../lib/wiking/cms/cms.py:223
-msgid "Multiple user accounts found for given email address."
-msgstr "Pre zadanú emailovú adresu bolo nájdených viac používateľských účtov."
-
-#: ../lib/wiking/cms/cms.py:224
-msgid "Please, select the account for which you want to remind:"
-msgstr "Zvoľte prosím účet, pre ktorý chcete použiť funkciu pripomenutia:"
-
-#. Translators: Credentials such as password...
-#: ../lib/wiking/cms/cms.py:237
-msgid "Your credentials were reset to:"
-msgstr "Vaše prihlasovacie údaje boli nastavené na:"
-
-#. Translators: Credentials such as password...
-#: ../lib/wiking/cms/cms.py:241
-msgid "Your credentials are:"
-msgstr "Vaše prihlasovacie údaje sú:"
-
-#: ../lib/wiking/cms/cms.py:243
-#, python-format
-msgid "A password reminder request has been made at %(server_uri)s."
-msgstr ""
-"Na serveri %(server_uri)s bola zadaná žiadosť o zaslanie zabudnutého hesla."
-
-#: ../lib/wiking/cms/cms.py:247 ../lib/wiking/cms/cms.py:1994
-msgid "Login name"
-msgstr "Prihlasovacie meno"
-
-#: ../lib/wiking/cms/cms.py:248 ../lib/wiking/cms/cms.py:1999
-msgid "Password"
-msgstr "Heslo"
-
-#: ../lib/wiking/cms/cms.py:250
-msgid ""
-"We strongly recommend you change your password at nearest occassion, since "
-"it has been exposed to an unsecure channel."
-msgstr ""
-"Silne vám doporučujeme zmeniť si heslo pri najbližšej možnej príležitosti, "
-"pretože počas prenosu emailom mohlo byť zachytené neoprávnenou osobou."
-
-#: ../lib/wiking/cms/cms.py:255 ../lib/wiking/cms/cms.py:2280
-#: ../lib/wiking/cms/cms.py:2299 ../lib/wiking/cms/cms.py:2346
-msgid "Failed sending e-mail notification:"
-msgstr "Nepodarilo sa odoslať emailové upozornenie:"
-
-#: ../lib/wiking/cms/cms.py:256
-msgid "Please try repeating your request later or contact the administrator!"
-msgstr "Zopakujte prosím svoju žiadosť neskôr alebo kontaktujte správcu!"
-
-#: ../lib/wiking/cms/cms.py:258
-msgid "E-mail information has been sent to your email address."
-msgstr "Emailové upozornenie bolo odoslané na vašu emailovú adresu."
-
-#: ../lib/wiking/cms/cms.py:261
-msgid "No user account for your query."
-msgstr "Zadaniu nezodpovedá žiadny používateľský účet."
-
-#. Translators: Heading for an overview when and how the user has accessed the application.
-#: ../lib/wiking/cms/cms.py:529 ../lib/wiking/cms/cms.py:2090
-#, fuzzy
-msgid "Login History"
-msgstr "Prihlasovacie údaje"
-
-#: ../lib/wiking/cms/cms.py:530
-msgid "History of successful login sessions and unsuccessful login attempts."
-msgstr ""
-
-#: ../lib/wiking/cms/cms.py:534 ../lib/wiking/cms/cms.py:1970
-#: ../lib/wiking/cms/cms.py:2012
-msgid "User"
-msgstr "Používateľ"
-
-#. Translators: Login name.
-#: ../lib/wiking/cms/cms.py:536
-#, fuzzy
-msgid "Login"
-msgstr "Prihlasovacie meno"
-
-#. Translators: Form field saying whether the users attempt was succesful. Values are Yes/No.
-#: ../lib/wiking/cms/cms.py:538
-msgid "Success"
-msgstr ""
-
-#. Translators: Table column heading. Time of the start of user session, followed by a date and time.
-#: ../lib/wiking/cms/cms.py:540
-#, fuzzy
-msgid "Start time"
-msgstr "Názov portálu"
-
-#. Translators: Table column heading. The length of user session. Contains time.
-#: ../lib/wiking/cms/cms.py:542
-#, fuzzy
-msgid "Duration"
-msgstr "Popis"
-
-#. Translators: Table column heading. Whether the account is active. Values are yes/no.
-#: ../lib/wiking/cms/cms.py:544 ../lib/wiking/cms/cms.py:927
-#: ../lib/wiking/cms/cms.py:1916
-msgid "Active"
-msgstr "Aktívne"
-
-#: ../lib/wiking/cms/cms.py:545
-#, fuzzy
-msgid "IP address"
-msgstr "Adresa"
-
-#. Translators: Internet name of the remote computer (computer terminology).
-#: ../lib/wiking/cms/cms.py:547
-#, fuzzy
-msgid "Hostname"
-msgstr "Meno"
-
-#. Translators: "User agent" is a generalized name for browser or more precisely the
-#. software which produced the HTTP request (was used to access the website).
-#: ../lib/wiking/cms/cms.py:550
-#, fuzzy
-msgid "User agent"
-msgstr "Správa používateľov"
-
-#. Translators: Meaning where the user came from. Computer terminology. Do not translate
-#. "HTTP" and if unsure, don't translate at all (it is a very technical term).
-#: ../lib/wiking/cms/cms.py:553
-msgid "HTTP Referer"
-msgstr ""
-
-#: ../lib/wiking/cms/cms.py:608
-msgid "enabled"
-msgstr "povolené"
-
-#: ../lib/wiking/cms/cms.py:608
-msgid "disabled"
-msgstr "zakázané"
-
-#: ../lib/wiking/cms/cms.py:610
-msgid "undefined"
-msgstr "neurčené"
-
-#: ../lib/wiking/cms/cms.py:611
-#, python-format
-msgid "The default value is %s."
-msgstr "Východzia hodnota je %s."
-
-#. Translators: Website heading and menu item
-#: ../lib/wiking/cms/cms.py:623 ../lib/wiking/cms/cms.py:648
-msgid "Basic Configuration"
-msgstr "Základné nastavenie"
-
-#: ../lib/wiking/cms/cms.py:624
-msgid "Edit site configuration."
-msgstr "Upraviť nastavenie portálu."
-
-#: ../lib/wiking/cms/cms.py:631
-msgid ""
-"This address is used as public contact address for your site. It is "
-"displayed at the bottom of each page, in error messages, RSS feeds and so "
-"on.  Please make sure that this address is valid (e-mail sent to it is "
-"delivered to a responsible person)."
-msgstr ""
-"Táto adresa je používaná ako verejný kontakt na správcu portálu. Je "
-"zobrazovaná v dolnej časti každej stránky, v správach o chybách, RSS "
-"kanáloch a podobne. Uistite sa prosím, že adresa je platná a že správy na ňu "
-"odoslané sú doručené správnej osobe."
-
-#: ../lib/wiking/cms/cms.py:636
-msgid ""
-"E-mail messages sent by the system, such as automatic notifications, "
-"password reminders, bug-reports etc. will use this sender address. Please "
-"make sure that this address is valid, since users may reply to such messages "
-"if they encounter problems."
-msgstr ""
-"Emailové správy odosielané systémom, ako napríklad automatické upozornenia, "
-"hlásenia o chybe, pripomenutie zabudnutého hesla a podobne, budú ako adresu "
-"odosielateľa používať zadanú adresu. Uistite sa prosím, že adresa je platná, "
-"aby používatelia mohli na tieto správy odpovedať v prípade problémov."
-
-#. Translators: Panels are small windows containing different things (such as recent news,
-#. application specific controls, sponsorship reference etc.) displayed by the side of a
-#. webpage.  To avoid confusion, we should avoid terms such as "windows", "frames"
-#. etc. which all have their specific meaning in computer terminology.
-#: ../lib/wiking/cms/cms.py:741
-msgid "Panels"
-msgstr "Panely"
-
-#: ../lib/wiking/cms/cms.py:742
-msgid "Manage panels – the small windows shown by the side of every page."
-msgstr "Správa panelov – malých okienok zobrazených na boku každej stránky."
-
-#: ../lib/wiking/cms/cms.py:746 ../lib/wiking/cms/cms.py:1009
-#: ../lib/wiking/cms/cms.py:1457 ../lib/wiking/cms/cms.py:1761
-msgid "Language"
-msgstr "Jazyk"
-
-#. Translators: Title in the meaning of a heading
-#: ../lib/wiking/cms/cms.py:749 ../lib/wiking/cms/cms.py:753
-#: ../lib/wiking/cms/cms.py:1010 ../lib/wiking/cms/cms.py:1011
-#: ../lib/wiking/cms/cms.py:1472 ../lib/wiking/cms/cms.py:1768
-#: ../lib/wiking/cms/cms.py:1838
-msgid "Title"
-msgstr "Názov"
-
-#: ../lib/wiking/cms/cms.py:750
-msgid ""
-"Panel title – you may leave the field blank to use the menu title of the "
-"selected module."
-msgstr ""
-"Názov panelu – nechajte prázdne ak chcete použiť menu názvov daného modulu."
-
-#. Translators: Order in the meaning of sequence. A noun, not verb.
-#. Translators: Order as a position in sequence. E.g. first, second...
-#: ../lib/wiking/cms/cms.py:757 ../lib/wiking/cms/cms.py:1924
-msgid "Order"
-msgstr "Poradie"
-
-#: ../lib/wiking/cms/cms.py:758
-msgid "Number denoting the order of the panel on the page."
-msgstr "Číslo udávajúce poradie panelu na stránke."
-
-#. Translators: List items can be news, webpages, names of users. Intentionally general.
-#: ../lib/wiking/cms/cms.py:760
-msgid "List items"
-msgstr "Výpis položiek"
-
-#: ../lib/wiking/cms/cms.py:761
-msgid ""
-"The items of the extension module used by the selected page will be shown by "
-"the panel.  Leave blank for a text content panel."
-msgstr ""
-"Panel bude zobrazovať položky rozširujúceho modulu zadanej stránky. "
-"Nevyplňujte ak chcete do panelu umiestniť textový obsah."
-
-#. Translators: Computer term for a part of application.
-#. Translators: "Module" is an independent reusable part of a computer program (here a
-#. module of Wiking CMS).
-#: ../lib/wiking/cms/cms.py:767 ../lib/wiking/cms/cms.py:1019
-msgid "Module"
-msgstr "Modul"
-
-#. Translators: As number of items in a table.
-#: ../lib/wiking/cms/cms.py:770
-msgid "Items count"
-msgstr "Počet položiek"
-
-#: ../lib/wiking/cms/cms.py:771
-msgid ""
-"Number of items from the selected module, which will be shown by the panel."
-msgstr "Počet položek vybraného modulu, ktoré budú panelom zobrazené."
-
-#: ../lib/wiking/cms/cms.py:775
-msgid "Additional text content displayed on the panel."
-msgstr "Pridaný textový obsah panelu."
-
-#. Translators: Yes/no configuration of whether the page is
-#. published. Followed by a checkbox.
-#. Translators: Configuration option determining whether the page is published or not
-#. (passive form of publish).  The label may be followed by a checkbox.
-#: ../lib/wiking/cms/cms.py:779 ../lib/wiking/cms/cms.py:1032
-msgid "Published"
-msgstr "Zverejnené"
-
-#: ../lib/wiking/cms/cms.py:780
-msgid "Controls whether the panel is actually displayed."
-msgstr "Kontroluje, či je panel skutočne zobrazený."
-
-#. Translators: Heading and menu item for language configuration section.
-#: ../lib/wiking/cms/cms.py:828
-msgid "Languages"
-msgstr "Jazyky"
-
-#: ../lib/wiking/cms/cms.py:829
-msgid "Manage available languages."
-msgstr "Správa dostupných jazykov."
-
-#. Translators: Language code, e.g. 'cs', 'sk' etc.
-#: ../lib/wiking/cms/cms.py:833
-msgid "Code"
-msgstr "Kód"
-
-#. Translators: Language name: e.g. Czech, Slovak etc.
-#: ../lib/wiking/cms/cms.py:836 ../lib/wiking/cms/cms.py:926
-#: ../lib/wiking/cms/cms.py:2601
-msgid "Name"
-msgstr "Názov"
-
-#. Translators: Do not translate this.
-#: ../lib/wiking/cms/cms.py:845
-#, python-format
-msgid "%(name)s"
-msgstr "%(name)s"
-
-#: ../lib/wiking/cms/cms.py:860
-msgid "Normal page colors"
-msgstr "Bežné farby stránky"
-
-#: ../lib/wiking/cms/cms.py:861 ../lib/wiking/cms/cms.py:876
-#: ../lib/wiking/cms/cms.py:884 ../lib/wiking/cms/cms.py:891
-#: ../lib/wiking/cms/cms.py:900 ../lib/wiking/cms/cms.py:904
-#: ../lib/wiking/cms/cms.py:908 ../lib/wiking/cms/cms.py:2691
-#: ../lib/wiking/cms/cms.py:2920 ../lib/wiking/cms/cms.py:3108
-msgid "Text"
-msgstr "Text"
-
-#. Translators: Website background (e.g. color)
-#: ../lib/wiking/cms/cms.py:863 ../lib/wiking/cms/cms.py:877
-#: ../lib/wiking/cms/cms.py:885 ../lib/wiking/cms/cms.py:892
-#: ../lib/wiking/cms/cms.py:901 ../lib/wiking/cms/cms.py:905
-#: ../lib/wiking/cms/cms.py:909
-msgid "Background"
-msgstr "Pozadie"
-
-#: ../lib/wiking/cms/cms.py:864
-msgid "Highlight background"
-msgstr "Zvýraznené pozadie"
-
-#: ../lib/wiking/cms/cms.py:865
-msgid ""
-"Background highlighting may be used for emphasizing the current language, "
-"etc."
-msgstr ""
-"Zvýraznenie pomocou farby pozadia môže byť použité napríklad na zdôraznenie "
-"aktuálneho jazyka a podobne."
-
-#: ../lib/wiking/cms/cms.py:867
-msgid "Link"
-msgstr "Odkaz"
-
-#: ../lib/wiking/cms/cms.py:868
-msgid "Visited link"
-msgstr "Navštívený odkaz"
-
-#. Translators: Computer terminology. Term for how a website hyperlink changes when
-#. you move mouse cursor over it.
-#: ../lib/wiking/cms/cms.py:871
-msgid "Hover link"
-msgstr "Zvýraznený odkaz"
-
-#: ../lib/wiking/cms/cms.py:872
-msgid ""
-"Used for changing the link color when the user moves the mouse pointer over "
-"it."
-msgstr ""
-"Použité na zmenu farby odkazu, vo chvíli keď používateľ presunie kurzor myši "
-"na tento odkaz."
-
-#: ../lib/wiking/cms/cms.py:874
-msgid "Borders"
-msgstr "Okraje"
-
-#: ../lib/wiking/cms/cms.py:875
-msgid "Heading colors"
-msgstr "Farby nadpisov"
-
-#: ../lib/wiking/cms/cms.py:878
-msgid "Underline"
-msgstr "Podčiarknutie"
-
-#: ../lib/wiking/cms/cms.py:879
-#, fuzzy
-msgid ""
-"Heading colors are used for section headings, panel headings and other "
-"heading-like elements.  Depending on style sheets, some heading types may be "
-"distinguished by a different background color and others may be just "
-"underlined."
-msgstr ""
-"Farby nadpisov sú používané na zvýraznenie názvov kapitol, panelov a iných "
-"prvkov, ktoré majú povahu nadpisu. V závislosti na použitých štýloch môžu "
-"niektoré typy nadpisov používať odlišnú farbu pozadia, iné môžu byť iba "
-"podčiarknuté."
-
-#: ../lib/wiking/cms/cms.py:883
-msgid "Frames"
-msgstr "Rámy"
-
-#: ../lib/wiking/cms/cms.py:886 ../lib/wiking/cms/cms.py:893
-#: ../lib/wiking/cms/cms.py:902 ../lib/wiking/cms/cms.py:906
-msgid "Border"
-msgstr "Okraje"
-
-#: ../lib/wiking/cms/cms.py:887
-msgid ""
-"Frames are generally used for distinguishing separate areas of the page, "
-"such as forms, tables of contents, etc.  The usage may vary by stylesheet."
-msgstr ""
-"Rámy sú všeobecne využívané na odlíšenie samostatných častí stránky, ako sú "
-"napríklad formuláre, obsahy atd. Použitie sa môže meniť podľa štýlov."
-
-#: ../lib/wiking/cms/cms.py:890
-msgid "Page surrounding colors"
-msgstr "Farby okolia stránky"
-
-#: ../lib/wiking/cms/cms.py:894
-msgid ""
-"What is 'page surrounding' depends from the stylesheet. In general it is the "
-"part of the page, which does not include the actual contents. Most often it "
-"is the page header and footer which usually remain unchanged throughout the "
-"whole website."
-msgstr ""
-"To, čo nazývame okolím stránky, závisí na použitých štýloch. Väčšinou sa "
-"jedná o tú časť stránky, ktorá neobsahuje vlastný obsah dokumentu. Obvykle "
-"je to časť obsahujúca hornú a dolnú časť stránky a všetko ostatné, čo sa pri "
-"zobrazovaní rôznych stránok daného portálu nemení."
-
-#: ../lib/wiking/cms/cms.py:899
-msgid "Error messages"
-msgstr "Správy o chybách"
-
-#: ../lib/wiking/cms/cms.py:903
-msgid "Informational messages"
-msgstr "Informatívne správy"
-
-#: ../lib/wiking/cms/cms.py:907
-msgid "Record meta data"
-msgstr "Meta dáta záznamu"
-
-#: ../lib/wiking/cms/cms.py:910
-msgid ""
-"These colors are used for additional items printed listings, such as date "
-"and author of a message in news, etc."
-msgstr ""
-"Tieto farby sú používané na odlišné zvýraznenie dodatočných informácií o "
-"jednotlivých položkách vo výpisoch, akými sú napríklad dátum a meno autora v "
-"zozname noviniek a podobne."
-
-#: ../lib/wiking/cms/cms.py:912
-#, fuzzy
-msgid "Misc"
-msgstr "Rôzne"
-
-#: ../lib/wiking/cms/cms.py:913
-msgid "Table cell"
-msgstr "Políčko tabuľky"
-
-#: ../lib/wiking/cms/cms.py:914
-msgid "Shaded table cell"
-msgstr "Vytieňované políčko tabuľky"
-
-#: ../lib/wiking/cms/cms.py:915
-msgid "Form help text"
-msgstr "Formulár textu pomocníka"
-
-#: ../lib/wiking/cms/cms.py:916
-msgid "Inactive folder"
-msgstr "Neaktívna záložka"
-
-#. Translators: "Color Themes" is computer terminology.  Predefined sets of colors to be
-#. used for changing the visual appearance of a web page/application.  Similar to color
-#. styles.
-#: ../lib/wiking/cms/cms.py:921
-msgid "Color Themes"
-msgstr "Farebné motívy"
-
-#. Translators: Describes more precisely the meaing of "Color Themes" section.
-#: ../lib/wiking/cms/cms.py:923
-msgid "Manage available color themes."
-msgstr "Správa dostupných farebných motívov."
-
-#: ../lib/wiking/cms/cms.py:934
-msgid "Yes"
-msgstr "Áno"
-
-#. Translators: Button label
-#: ../lib/wiking/cms/cms.py:945
-msgid "Activate"
-msgstr "Aktivovať"
-
-#: ../lib/wiking/cms/cms.py:945
-msgid "Activate this color theme"
-msgstr "Aktivovať tento farebý motív"
-
-#. Translators: Button label
-#: ../lib/wiking/cms/cms.py:948
-msgid "Activate default"
-msgstr "Aktivovať východzie nastavenie"
-
-#: ../lib/wiking/cms/cms.py:949
-msgid "Activate the default color theme"
-msgstr "Aktivovať východzí farebný motív"
-
-#: ../lib/wiking/cms/cms.py:973
-msgid "Default"
-msgstr "Východzie"
-
-#: ../lib/wiking/cms/cms.py:977
-#, python-format
-msgid "The color theme \"%s\" has been activated."
-msgstr "Farebný motív \"%s\" bol aktivovaný."
-
-#. Translators: Heading and menu item. Meaning web pages.
-#: ../lib/wiking/cms/cms.py:999
-msgid "Pages"
-msgstr "Stránky"
-
-#. Translators: Unique identifier of a stylesheet.
-#: ../lib/wiking/cms/cms.py:1004 ../lib/wiking/cms/cms.py:1914
-msgid "Identifier"
-msgstr "Identifikátor"
-
-#: ../lib/wiking/cms/cms.py:1006
-msgid ""
-"The identifier may be used to refer to this page from outside and also from "
-"other pages. A valid identifier can only contain letters, digits, dashes and "
-"underscores.  It must start with a letter."
-msgstr ""
-"Identifikátor môže byť použitý, aby odkazoval na stránku zvonku a tiež z "
-"ostatých stránok. Platný identifikátor obsahuje iba písmená bez diakritiky, "
-"číslice, pomlčky a prípadne podčiarkovník. Musí však vždy začínať písmenom."
-
-#: ../lib/wiking/cms/cms.py:1012 ../lib/wiking/cms/cms.py:1475
-#: ../lib/wiking/cms/cms.py:1915
-msgid "Description"
-msgstr "Popis"
-
-#: ../lib/wiking/cms/cms.py:1013
-msgid "Brief page description (shown as a tooltip and in site map)."
-msgstr "Stručný popis stránky (bude zobrazený ako tooltip a v mape stránok)."
-
-#: ../lib/wiking/cms/cms.py:1022
-msgid ""
-"Select the extension module to embed into the page.  Leave blank for an "
-"ordinary text page."
-msgstr ""
-"Zvoľte rozširujúci modul, ktorý chcete zobraziť v stránke. Nechajte prázdne, "
-"ak chcete na stránke zobraziť iba vlastný textový obsah."
-
-#. Translators: "Parent item" has the meaning of hierarchical position.  More precise
-#. term might be "Superordinate item" but doesn't sound that nice in English.  The term
-#. "item" represents a page, but also a menu item.
-#: ../lib/wiking/cms/cms.py:1027
-msgid "Parent item"
-msgstr "Nadriadená položka"
-
-#: ../lib/wiking/cms/cms.py:1028
-msgid ""
-"Select the superordinate item in page hierarchy.  Leave blank for a top-"
-"level page."
-msgstr ""
-"Vyberte hierarchicky nadradenú stránku. Nechajte prázdne na stránku na "
-"najvyššej úrovni menu."
-
-#: ../lib/wiking/cms/cms.py:1033
-msgid ""
-"Allows you to control the availability of this page in each of the supported "
-"languages (switch language to control the availability in other languages)"
-msgstr ""
-"Umožňuje určiť dostupnosť položky v každej z podporovaných jazykových verzií "
-"(prepnite aktuálny jazyk pre nastavenie dostupnosti v iných jazykových "
-"verziách)"
-
-#: ../lib/wiking/cms/cms.py:1036
-msgid "Private"
-msgstr "Privátne"
-
-#: ../lib/wiking/cms/cms.py:1037
-msgid "Make the item available only to logged-in users."
-msgstr "Umožniť zobrazenie položky iba prihláseným používateľom."
-
-#: ../lib/wiking/cms/cms.py:1038
-msgid "Status"
-msgstr "Stav"
-
-#: ../lib/wiking/cms/cms.py:1039
-msgid "Hidden"
-msgstr "Skryté"
-
-#: ../lib/wiking/cms/cms.py:1040
-msgid "Check if you don't want this page to appear in the menu."
-msgstr "Zaškrtnite, ak nechcete, aby sa táto stránka zobrazovala v menu."
-
-#. Translators: Page configuration option followed by an input field. Means order in the
-#. sense of sequence. What is first and what next.
-#: ../lib/wiking/cms/cms.py:1043
-msgid "Menu order"
-msgstr "Poradie v menu"
-
-#: ../lib/wiking/cms/cms.py:1044
-msgid ""
-"Enter a number denoting the order of the page in the menu.  Leave blank if "
-"you want to put the page automatically to the end."
-msgstr ""
-"Zadajte číslo určujúce poradie stránky v menu. Nechajte prázdne, ak chcete, "
-"aby bola stránka zaradená automaticky na koniec."
-
-#: ../lib/wiking/cms/cms.py:1049
-msgid "Owner"
-msgstr "Vlastník"
-
-#: ../lib/wiking/cms/cms.py:1050
-msgid ""
-"Set the ownership if you want a particular user to have full control of the "
-"page even if his normal privileges are lower."
-msgstr ""
-"Nastavte vlastníka, ak chcete určitému používateľovi dať právo meniť túto "
-"stránku, aj keď by mu to jeho užívateľské oprávnenie normálne nedovoľovalo."
-
-#: ../lib/wiking/cms/cms.py:1055
-msgid "Not published"
-msgstr "Nezverejnené"
-
-#: ../lib/wiking/cms/cms.py:1057
-msgid "Ok"
-msgstr "Ok"
-
-#: ../lib/wiking/cms/cms.py:1059
-msgid "Changed"
-msgstr "Zmenené"
-
-#: ../lib/wiking/cms/cms.py:1065 ../lib/wiking/cms/cms.py:1089
-msgid "Page Text (for the current language)"
-msgstr "Text stránky (pre aktuálny jazyk)"
-
-#. Translators: Options meaning page configuration settings.
-#: ../lib/wiking/cms/cms.py:1068 ../lib/wiking/cms/cms.py:1091
-msgid "Global Options (for all languages)"
-msgstr "Všeobecné vlastnosti (pre všetky jazyky)"
-
-#. Translators: Noun. Such as e-mail attachments (here attachments for a webpage).
-#. Translators: Section title. Attachments as in email attachments.
-#: ../lib/wiking/cms/cms.py:1077 ../lib/wiking/cms/cms.py:1117
-#: ../lib/wiking/cms/cms.py:1307 ../lib/wiking/cms/cms.py:1358
-#: ../lib/wiking/cms/cms.py:1447
-msgid "Attachments"
-msgstr "Prílohy"
-
-#: ../lib/wiking/cms/cms.py:1082
-msgid "The page already exists in given language."
-msgstr "V zadanom jazyku táto stránka už existuje."
-
-#: ../lib/wiking/cms/cms.py:1084
-msgid "Duplicate menu order at this level of hierarchy."
-msgstr "Duplicitné poradie na rovnakej úrovni hierarchie."
-
-#: ../lib/wiking/cms/cms.py:1098
-msgid "Save"
-msgstr "Uložiť"
-
-#: ../lib/wiking/cms/cms.py:1098
-msgid "Save and publish"
-msgstr "Uložiť a zverejniť"
-
-#: ../lib/wiking/cms/cms.py:1101
-msgid "New page"
-msgstr "Nová stránka"
-
-#: ../lib/wiking/cms/cms.py:1102
-msgid "Edit Text"
-msgstr "Upraviť text"
-
-#: ../lib/wiking/cms/cms.py:1103
-msgid "Edit title, description and content for the current language"
-msgstr "Upraviť názov, opis a obsah stránky pre aktuálny jazyk"
-
-#. Translators: Button label. Page configuration options.
-#: ../lib/wiking/cms/cms.py:1106
-msgid "Options"
-msgstr "Vlastnosti"
-
-#: ../lib/wiking/cms/cms.py:1107
-msgid "Edit global (language independent) page options and menu position"
-msgstr ""
-"Upraviť všeobecné (jazykovo nezávislé) vlastnosti stránky a umiestnenie v "
-"menu"
-
-#: ../lib/wiking/cms/cms.py:1108
-msgid "Publish"
-msgstr "Zverejniť"
-
-#: ../lib/wiking/cms/cms.py:1108
-msgid "Publish the page in its current state"
-msgstr "Zverejeniť súčasnú podobu stránky"
-
-#: ../lib/wiking/cms/cms.py:1111
-msgid "Unpublish"
-msgstr "Nezverejeniť"
-
-#: ../lib/wiking/cms/cms.py:1111
-msgid "Make the page invisible from outside"
-msgstr "Učiniť stránku neviditeľnou zvonku"
-
-#: ../lib/wiking/cms/cms.py:1113
-msgid "Revert"
-msgstr "Vrátiť zmeny"
-
-#: ../lib/wiking/cms/cms.py:1113
-msgid "Revert last modifications"
-msgstr "Zrušiť posledné úpravy"
-
-#: ../lib/wiking/cms/cms.py:1115
-msgid "Preview"
-msgstr "Náhľad"
-
-#: ../lib/wiking/cms/cms.py:1115
-msgid "Display the page in its current state"
-msgstr "Zobraziť súčasnú podobu stránky"
-
-#: ../lib/wiking/cms/cms.py:1117
-msgid "Manage this page's attachments"
-msgstr "Správa príloh tejto stránky"
-
-#: ../lib/wiking/cms/cms.py:1166
-msgid "You don't have sufficient privilegs for this action."
-msgstr "Nemáte dostatočné oprávnenie k tomuto úkonu."
-
-#: ../lib/wiking/cms/cms.py:1167
-msgid ""
-"Save the page without publishing and ask the administrator to publish your "
-"changes."
-msgstr ""
-"Uložte stránku bez zverejnenia a požiadajte správcu o zverejnenie vašich "
-"zmien."
-
-#: ../lib/wiking/cms/cms.py:1175
-msgid ""
-"Page content was modified, however the changes remain unpublished. Don't "
-"forget to publish the changes when you are done."
-msgstr ""
-"Obsah stránky bol zmenený, zmeny však zostávajú nezverejnené. Nezabudnite "
-"zmeny zverejniť keď stránku dokončíte."
-
-#: ../lib/wiking/cms/cms.py:1180
-msgid "New page was successfully created and published."
-msgstr "Nová stránka bola úspešne vytvorená a zverejnená."
-
-#: ../lib/wiking/cms/cms.py:1182
-msgid ""
-"New page was successfully created, but was not published yet. Publish it "
-"when you are done."
-msgstr ""
-"Nová stránka bola úspešne vytvorená ale ešte nezverejnená. Zverejnite ju, "
-"keď bude dokončená."
-
-#. Translators: Button label. Use standard computer terminology.
-#. Translators: Back button label. Standard computer terminology.
-#: ../lib/wiking/cms/cms.py:1205 ../lib/wiking/cms/cms.py:1579
-#: ../lib/wiking/cms/cms.py:2370
-msgid "Back"
-msgstr "Späť"
-
-#: ../lib/wiking/cms/cms.py:1254
-msgid "Registration"
-msgstr "Registrácia"
-
-#. Translators: Label for section with user manuals, help pages etc.
-#: ../lib/wiking/cms/cms.py:1256
-#, fuzzy
-msgid "Documentation"
-msgstr "Dokumentácia systému Wiking"
-
-#: ../lib/wiking/cms/cms.py:1373
-msgid "Content for this page already exists!"
-msgstr "Obsah pre túto stránku už existuje!"
-
-#: ../lib/wiking/cms/cms.py:1380
-msgid "Content for this page does not exist in any language."
-msgstr "Obsah pre túto stránku neexistuje v žiadnom jazyku."
-
-#: ../lib/wiking/cms/cms.py:1383
-msgid "Choose source language"
-msgstr "Zvoľte zdrojový jazyk"
-
-#: ../lib/wiking/cms/cms.py:1386
-msgid "Translate"
-msgstr "Preložiť"
-
-#: ../lib/wiking/cms/cms.py:1404
-msgid "Can't publish untitled page."
-msgstr "Nie je možné zverejniť stránku bez názvu."
-
-#: ../lib/wiking/cms/cms.py:1411
-msgid "The changes were published."
-msgstr "Zmeny boli zverejnené."
-
-#: ../lib/wiking/cms/cms.py:1421
-msgid "The page contents was reverted to its previous state."
-msgstr "Obsah stránky bol vrátený do pôvodného stavu."
-
-#: ../lib/wiking/cms/cms.py:1431
-msgid "The page was unpublished."
-msgstr "Stránka nebola zverejnená."
-
-#: ../lib/wiking/cms/cms.py:1448
-msgid "Manage page attachments. Go to a page to create new attachments."
-msgstr ""
-"Správa príloh.  Nové prílohy pridávajte vždy cez stránku, ku ktorej chcete "
-"prílohu priradiť."
-
-#: ../lib/wiking/cms/cms.py:1454 ../lib/wiking/cms/cms.py:1760
-msgid "Page"
-msgstr "Stránka"
-
-#: ../lib/wiking/cms/cms.py:1455
-msgid ""
-"Select the page where you want to move this attachment.  Don't forget to "
-"update all explicit links to this attachment within page text(s)."
-msgstr ""
-"Zvoľte stránku, do ktorej chcete túto prílohu presunúť. Nezabudnite "
-"aktualizovať explicitné odkazy na túto prílohu v texte stránok."
-
-#. Translators: Noun. File on disk. Computer terminology.
-#: ../lib/wiking/cms/cms.py:1459
-msgid "File"
-msgstr "Súbor"
-
-#: ../lib/wiking/cms/cms.py:1461
-msgid ""
-"Upload a file from your local system.  The file name will be used to refer "
-"to the attachment within the page content.  Please note, that the file will "
-"be served over the internet, so the filename should not contain any special "
-"characters.  Letters, digits, underscores, dashes and dots are safe.  You "
-"risk problems with most other characters."
-msgstr ""
-"Nahrajte súbor z vášho disku. Názov súboru bude používaný pri odkazovaní na "
-"túto prílohu v rámci obsahu stránky. Názov bude tiež používaný pri "
-"poskytovaní súboru v rámci internetu a preto by nemal obsahovať žiadne "
-"špeciálne znaky. Bezpečné sú písmená bez diaktritiky, číslice, pomlčka, "
-"podčiarkovník a bodka. Použitím iných znakov v názve súboru riskujete "
-"problémy."
-
-#: ../lib/wiking/cms/cms.py:1467
-msgid "Filename"
-msgstr "Názov súboru"
-
-#: ../lib/wiking/cms/cms.py:1470
-msgid "Mime-type"
-msgstr "Typ MIME"
-
-#: ../lib/wiking/cms/cms.py:1473
-msgid ""
-"The name of the attachment (e.g. the full name of the document). If empty, "
-"the file name will be used instead."
-msgstr ""
-"Názov prílohy (napr. plný názov dokumentu). Ak nie je zadaný, bude zobrazený "
-"názov súboru."
-
-#: ../lib/wiking/cms/cms.py:1476
-msgid "Optional description used for the listing of attachments (see below)."
-msgstr "Nepovinný opis použitý pri zozname príloh (viď nižšie)."
-
-#. Translators: Size of a file, in number of bytes, kilobytes etc.
-#: ../lib/wiking/cms/cms.py:1479
-msgid "Size"
-msgstr "Veľkosť"
-
-#: ../lib/wiking/cms/cms.py:1481
-msgid "Listed"
-msgstr "V zozname"
-
-#: ../lib/wiking/cms/cms.py:1482
-msgid ""
-"Check if you want the item to appear in the listing of attachments at the "
-"bottom of the page."
-msgstr ""
-"Zaškrtnite, ak chcete, aby bola táto príloha zobrazená v zozname príloh na "
-"konci stránky."
-
-#. Translators: Button label
-#: ../lib/wiking/cms/cms.py:1537
-msgid "Move"
-msgstr "Presunúť"
-
-#: ../lib/wiking/cms/cms.py:1537
-msgid "Move the attachment to another page."
-msgstr "Presunúť prílohu do inej stránky."
-
-#: ../lib/wiking/cms/cms.py:1540 ../lib/wiking/cms/cms.py:1730
-msgid "New attachment"
-msgstr "Nová príloha"
-
-#: ../lib/wiking/cms/cms.py:1547
-msgid "Attachment of the same file name already exists for this page."
-msgstr "Príloha s rovnakým názvom súboru pre túto stránku už existuje."
-
-#: ../lib/wiking/cms/cms.py:1579
-msgid "Display the page"
-msgstr "Zobraziť stránku"
-
-#: ../lib/wiking/cms/cms.py:1654
-msgid "Image title.  If empty, the file name will be used instead."
-msgstr "Názov obrázku. Ak nie je vyplnený, bude zobrazený názov súboru."
-
-#: ../lib/wiking/cms/cms.py:1656
-msgid "Optional image description."
-msgstr "Nepovinný popis obrázku."
-
-#: ../lib/wiking/cms/cms.py:1657
-msgid "In galery"
-msgstr "V galérii"
-
-#: ../lib/wiking/cms/cms.py:1658
-msgid ""
-"Check if you want the image to appear an automatically generated galery."
-msgstr ""
-"Zaškrtnite, ak chcete aby bol obrázok zobrazený v automaticky vytváranej "
-"galérii."
-
-#: ../lib/wiking/cms/cms.py:1669 ../lib/wiking/cms/cms.py:1774
-#: ../lib/wiking/cms/cms.py:1972
-msgid "Author"
-msgstr "Autor"
-
-#: ../lib/wiking/cms/cms.py:1670
-msgid "Location"
-msgstr "Miesto"
-
-#: ../lib/wiking/cms/cms.py:1671
-msgid "Width"
-msgstr "Šírka"
-
-#: ../lib/wiking/cms/cms.py:1673
-msgid "Height"
-msgstr "Výška"
-
-#. Translators: Section title and menu item
-#: ../lib/wiking/cms/cms.py:1755
-msgid "News"
-msgstr "Novinky"
-
-#. Translators: Help string describing more precisely the meaning of the "News" section.
-#: ../lib/wiking/cms/cms.py:1757
-msgid "Publish site news."
-msgstr "Zverejniť aktuálne správy."
-
-#: ../lib/wiking/cms/cms.py:1763 ../lib/wiking/cms/cms.py:1765
-#: ../lib/wiking/cms/cms.py:1830 ../lib/wiking/cms/cms.py:1837
-#: ../lib/wiking/cms/cms.py:3110
-msgid "Date"
-msgstr "Dátum"
-
-#: ../lib/wiking/cms/cms.py:1767
-msgid "Date of the news item creation."
-msgstr "Dátum vloženia novej správy."
-
-#: ../lib/wiking/cms/cms.py:1768 ../lib/wiking/cms/cms.py:1770
-msgid "Message"
-msgstr "Správa"
-
-#: ../lib/wiking/cms/cms.py:1769
-msgid "The item brief summary."
-msgstr "Stručné zhrnutie obsahu správy."
-
-#: ../lib/wiking/cms/cms.py:1771
-msgid ""
-"It is, however, recommened to use the simplest possible formatting, since "
-"the item may be also published through an RSS channel, which does not "
-"support formatting."
-msgstr ""
-"Je však doporučované použiť čo najjednoduchšie formátovanie, pretože položka "
-"môže byť zverejnená tiež prostredníctvom RSS kanálu, ktorý formátovanie "
-"nepodporuje."
-
-#. Translators: Button label for creating a new message in "News".
-#: ../lib/wiking/cms/cms.py:1793
-msgid "New message"
-msgstr "Nová správa"
-
-#. Translators: Section heading and menu item
-#: ../lib/wiking/cms/cms.py:1826
-msgid "Planner"
-msgstr "Plánovač"
-
-#: ../lib/wiking/cms/cms.py:1827
-msgid "Announce future events by date in a callendar-like listing."
-msgstr ""
-"Umožňuje oznámenie budúcich udalostí podľa dátumu v kaledárovom výpise."
-
-#: ../lib/wiking/cms/cms.py:1832
-#, python-format
-msgid ""
-"The date when the planned event begins. Enter the date including year. "
-"Example: %(date)s"
-msgstr ""
-"Dátum, kedy plánovaná udalosť začína. Dátum vkladajte vrátane roku. "
-"Napríklad: %(date)s"
-
-#: ../lib/wiking/cms/cms.py:1834
-msgid "End date"
-msgstr "Dátum do"
-
-#: ../lib/wiking/cms/cms.py:1835
-msgid ""
-"The date when the event ends if it is not the same as the start date (for "
-"events which last several days)."
-msgstr ""
-"Dátum, kedy plánovaná udalosť končí, ak nie je zhodný s dátumom začiatku "
-"(pre udalosti, ktoré trvajú niekoľko dní)."
-
-#: ../lib/wiking/cms/cms.py:1838
-msgid "Event"
-msgstr "Udalosť"
-
-#: ../lib/wiking/cms/cms.py:1839
-msgid "The event brief summary."
-msgstr "Stručné zhrnutie obsahu udalosti."
-
-#: ../lib/wiking/cms/cms.py:1849
-msgid "Date in the past"
-msgstr "Dátum je v minulosti"
-
-#: ../lib/wiking/cms/cms.py:1858
-msgid "End date precedes start date"
-msgstr "Dátum konca je pred dátumom začiatku"
-
-#. Translators: Section heading and menu item. Computer terminology idiom.
-#: ../lib/wiking/cms/cms.py:1875
-msgid "Site Map"
-msgstr "Mapa stránok"
-
-#. Translators: Section heading and menu item. Meaning the visual appearance. Computer
-#. terminology.
-#: ../lib/wiking/cms/cms.py:1907
-msgid "Stylesheets"
-msgstr "Štýly"
-
-#. Translators: Help string. Cascading Style Sheet (CSS) is computer terminology idiom.
-#: ../lib/wiking/cms/cms.py:1910
-#, fuzzy
-msgid "Manage available Cascading Style Sheets."
-msgstr "Správa použitých kaskádových štýlov."
-
-#. Translators: Heading of a form field determining in
-#. which media the page is displayed. E.g. web, print,
-#. Braille, speech.
-#: ../lib/wiking/cms/cms.py:1920
-msgid "Media"
-msgstr ""
-
-#. Translators: Precedence meaning position in a sequence of importance or priority.
-#: ../lib/wiking/cms/cms.py:1926
-#, fuzzy
-msgid "Number denoting the style sheet precedence."
-msgstr "Číslo udávajúce poradie panelu na stránke."
-
-#: ../lib/wiking/cms/cms.py:1932
-#, fuzzy
-msgid "All types"
-msgstr "Všetci používatelia"
-
-#. Translators: Braille as a type of media
-#: ../lib/wiking/cms/cms.py:1934
-msgid "Braille"
-msgstr ""
-
-#. Translators: Handheld device. Small computer.
-#: ../lib/wiking/cms/cms.py:1937
-msgid "Handheld"
-msgstr ""
-
-#. Translators: Print as a type of media (print, speech...)
-#: ../lib/wiking/cms/cms.py:1939
-#, fuzzy
-msgid "Print"
-msgstr "Privátne"
-
-#. Translators: Meaning computer screen
-#: ../lib/wiking/cms/cms.py:1942
-msgid "Screen"
-msgstr ""
-
-#. Translators: Speech as a type of media (print, speech...)
-#: ../lib/wiking/cms/cms.py:1944
-msgid "Speech"
-msgstr ""
-
-#: ../lib/wiking/cms/cms.py:1967
-msgid "User Management"
-msgstr "Správa používateľov"
-
-#: ../lib/wiking/cms/cms.py:1968
-msgid "Manage registered users and their privileges."
-msgstr "Správa registrovaných používateľov a ich oprávnenia."
-
-#: ../lib/wiking/cms/cms.py:1969
-msgid "Account disabled"
-msgstr "Neaktívy účet"
-
-#: ../lib/wiking/cms/cms.py:1971
-msgid "Contributor"
-msgstr "Prispievateľ"
-
-#: ../lib/wiking/cms/cms.py:1973
-msgid "Administrator"
-msgstr "Správca"
-
-#: ../lib/wiking/cms/cms.py:1997
-msgid ""
-"A valid login name can only contain letters, digits, underscores, dashes and "
-"dots and must start with a letter."
-msgstr ""
-"Platné prihlasovacie meno obsahuje iba písmená bez diakritiky, číslice, "
-"bodky, pomlčky a prípadne podčiarkovníky a musí začínať písmenom."
-
-#: ../lib/wiking/cms/cms.py:2001 ../lib/wiking/cms/cms.py:2008
-msgid ""
-"Please, write the password into each of the two fields to eliminate typos."
-msgstr "Prosím, zadajte heslo do oboch políčok, aby sa predišlo preklepom."
-
-#: ../lib/wiking/cms/cms.py:2003
-msgid "Old password"
-msgstr "Staré heslo"
-
-#: ../lib/wiking/cms/cms.py:2005
-msgid "Verify your identity by entering your original (current) password."
-msgstr "Potvrďte svoju identitu vložením starého (nového) hesla."
-
-#: ../lib/wiking/cms/cms.py:2006
-msgid "New password"
-msgstr "Nové heslo"
-
-#: ../lib/wiking/cms/cms.py:2010
-msgid "Full Name"
-msgstr "Celé meno"
-
-#: ../lib/wiking/cms/cms.py:2014
-msgid "First name"
-msgstr "Meno"
-
-#: ../lib/wiking/cms/cms.py:2015
-msgid "Surname"
-msgstr "Priezvisko"
-
-#: ../lib/wiking/cms/cms.py:2016
-msgid "Displayed name"
-msgstr "Zobrazené meno"
-
-#: ../lib/wiking/cms/cms.py:2017
-msgid ""
-"Leave blank if you want to be referred by your full name or enter an "
-"alternate name, such as nickname or monogram."
-msgstr ""
-"Ponechajte prázdne, ak chcete, aby vás systém oslovoval plným menom alebo "
-"zadajte iné meno, ako napr. prezývku alebo monogram."
-
-#: ../lib/wiking/cms/cms.py:2019 ../lib/wiking/cms/cms.py:2603
-msgid "E-mail"
-msgstr "Email"
-
-#: ../lib/wiking/cms/cms.py:2020 ../lib/wiking/cms/cms.py:2604
-msgid "Phone"
-msgstr "Telefón"
-
-#: ../lib/wiking/cms/cms.py:2021 ../lib/wiking/cms/cms.py:2605
-msgid "Address"
-msgstr "Adresa"
-
-#. Translators: Do not translate (means Uniform Resource Identifier).
-#: ../lib/wiking/cms/cms.py:2023
-msgid "URI"
-msgstr "URI"
-
-#: ../lib/wiking/cms/cms.py:2024
-msgid "Registered since"
-msgstr "Registrácia od"
-
-#: ../lib/wiking/cms/cms.py:2025
-msgid "Role"
-msgstr "Rola"
-
-#: ../lib/wiking/cms/cms.py:2029
-msgid ""
-"Select one of the predefined roles to grant the user the corresponding "
-"privileges."
-msgstr ""
-"Vyberte jednu z preddefinovaných rolí a priraďte tak používateľovi príslušné "
-"oprávnenie."
-
-#: ../lib/wiking/cms/cms.py:2048
-msgid "The activation code was succesfully confirmed."
-msgstr ""
-
-#: ../lib/wiking/cms/cms.py:2051
-msgid ""
-"Therefore it was verified that given e-mail address belongs to the person "
-"who requested the registration."
-msgstr ""
-
-#: ../lib/wiking/cms/cms.py:2053
-msgid ""
-"The user is now able to log in, but still has no rights (other than an "
-"anonymous user)."
-msgstr ""
-
-#. Translators: In other words, the administrator needs to approve the account first.
-#: ../lib/wiking/cms/cms.py:2056
-msgid ""
-"The account now awaits administrator's action to be given access rights."
-msgstr ""
-
-#: ../lib/wiking/cms/cms.py:2059
-msgid ""
-"The activation code was not yet confirmed by the user. Therefore it is not "
-"possible to trust that given e-mail address belongs to the person who "
-"requested the registration."
-msgstr ""
-
-#. Translators: %(date)s is replaced by date and time of registration
-#. expiration.
-#: ../lib/wiking/cms/cms.py:2064
-#, python-format
-msgid ""
-"The activation code will expire on %(date)s and the user will not be able to "
-"complete the registration anymore."
-msgstr ""
-
-#: ../lib/wiking/cms/cms.py:2068
-msgid ""
-"Use the button \"Resend activation code\" below to remind the user of his "
-"pending registration."
-msgstr ""
-
-#. Translators: %(date)s is replaced by date and time of registration expiration.
-#: ../lib/wiking/cms/cms.py:2072
-#, python-format
-msgid ""
-"The registration expired on %(date)s.  The user didn't confirm the "
-"activation code sent to the declared e-mail address in time."
-msgstr ""
-
-#: ../lib/wiking/cms/cms.py:2076
-msgid ""
-"The account should be deleted automatically if the server maintenence script "
-"is installed correctly.  Otherwise you can delete the account manually."
-msgstr ""
-
-#: ../lib/wiking/cms/cms.py:2083 ../lib/wiking/cms/cms.py:2611
-#, python-format
-msgid "Invalid e-mail address: %s"
-msgstr "Neplatná emailová adresa: %s"
-
-#: ../lib/wiking/cms/cms.py:2097 ../lib/wiking/cms/cms.py:2576
-msgid "Active users"
-msgstr "Aktívni používatelia"
-
-#: ../lib/wiking/cms/cms.py:2101
-#, fuzzy
-msgid "Unapproved accounts (pending admin approvals)"
-msgstr "Neplatná žiadosť o registráciu (čaká sa na emailové potvrdenie)"
-
-#: ../lib/wiking/cms/cms.py:2105
-#, fuzzy
-msgid "Unfinished registration requests (activation code not confirmed)"
-msgstr "Registrácia používateľa už bola potvrdená."
-
-#. Translators: Accounts as in user accounts (computer terminology).
-#: ../lib/wiking/cms/cms.py:2109
-msgid "All accounts"
-msgstr ""
-
-#: ../lib/wiking/cms/cms.py:2135 ../lib/wiking/cms/cms.py:2137
-#: ../lib/wiking/cms/cms.py:2159
-msgid "Personal data"
-msgstr "Osobné údaje"
-
-#: ../lib/wiking/cms/cms.py:2136 ../lib/wiking/cms/cms.py:2138
-#: ../lib/wiking/cms/cms.py:2160
-msgid "Contact information"
-msgstr "Kontaktné údaje"
-
-#: ../lib/wiking/cms/cms.py:2139 ../lib/wiking/cms/cms.py:2223
-msgid "Access rights"
-msgstr "Oprávnenie"
-
-#: ../lib/wiking/cms/cms.py:2143
-msgid "New user"
-msgstr "Nový používateľ"
-
-#: ../lib/wiking/cms/cms.py:2144
-msgid "Edit profile"
-msgstr "Upraviť profil"
-
-#: ../lib/wiking/cms/cms.py:2145
-msgid "Modify user's record"
-msgstr "Zmeniť údaje o používateľovi"
-
-#: ../lib/wiking/cms/cms.py:2163
-msgid "Login information"
-msgstr "Prihlasovacie údaje"
-
-#: ../lib/wiking/cms/cms.py:2189
-msgid "Enter your current password."
-msgstr "Zadajte svoje súčasné heslo."
-
-#: ../lib/wiking/cms/cms.py:2193
-msgid "Invalid password."
-msgstr "Neplatné heslo."
-
-#: ../lib/wiking/cms/cms.py:2197
-msgid "Enter the new password."
-msgstr "Vložte nové heslo."
-
-#: ../lib/wiking/cms/cms.py:2205
-msgid "The new password is the same as the old one."
-msgstr "Nové heslo je rovnaké ako staré."
-
-#: ../lib/wiking/cms/cms.py:2223
-msgid "Change access rights"
-msgstr "Zmeniť oprávnenie"
-
-#. Translators: Button label. Computer terminology. Use common word and form.
-#: ../lib/wiking/cms/cms.py:2227
-msgid "Enable"
-msgstr "Povoliť"
-
-#: ../lib/wiking/cms/cms.py:2227
-msgid "Enable this account"
-msgstr "Povoliť tento účet"
-
-#. Translators: Confirm button
-#: ../lib/wiking/cms/cms.py:2233 ../lib/wiking/cms/cms.py:2368
-msgid "Confirm"
-msgstr ""
-
-#: ../lib/wiking/cms/cms.py:2234
-msgid "Confirm the account without checking the activation code"
-msgstr ""
-
-#: ../lib/wiking/cms/cms.py:2237
-msgid "Change password"
-msgstr "Zmeniť heslo"
-
-#: ../lib/wiking/cms/cms.py:2237
-msgid "Change user's password"
-msgstr "Zmeniť heslo používateľa"
-
-#: ../lib/wiking/cms/cms.py:2245
-#, fuzzy
-msgid "Resend activation code"
-msgstr "Znovu poslať registračný kód"
-
-#: ../lib/wiking/cms/cms.py:2246
-msgid "Re-send registration mail"
-msgstr "Znovu poslať registračný email"
-
-#: ../lib/wiking/cms/cms.py:2254
-#, python-format
-msgid ""
-"The first step of your registration at %(server_hostname)s was successfully "
-"completed.\n"
-"\n"
-"For the next step visit the following URL and follow the instructions "
-"there:\n"
-"%(uri)s\n"
-msgstr ""
-"Prvý krok vašej registrácie na %(server_hostname)s bol úspešne dokončený.\n"
-"\n"
-"Na ďalšie kroky navštívte webovú adresu a riaďte sa inštrukciami:\n"
-"%(uri)s\n"
-
-#: ../lib/wiking/cms/cms.py:2265
-msgid "Registration accepted."
-msgstr "Registrácia prijatá."
-
-#: ../lib/wiking/cms/cms.py:2266
-msgid "Please, check your mailbox for instructions how to proceed."
-msgstr "Prosím, prečítajte si ďalšie inštrukcie vo vašej emailovej schránke."
-
-#: ../lib/wiking/cms/cms.py:2270
-msgid "Registration cancelled."
-msgstr "Registrácia zrušená."
-
-#: ../lib/wiking/cms/cms.py:2276
-#, python-format
-msgid "Your registration at %s"
-msgstr "Vaša registrácia na %s"
-
-#. Translators: Follos an email addres, e.g. ``Activation code was sent to joe@brailcom.org''
-#: ../lib/wiking/cms/cms.py:2284
-#, python-format
-msgid "Activation code was sent to %s."
-msgstr "Aktivačný kód bol zaslaný na  %s."
-
-#: ../lib/wiking/cms/cms.py:2292
-msgid "The account was enabled."
-msgstr "Účet bol povolený."
-
-#: ../lib/wiking/cms/cms.py:2293
-#, python-format
-msgid ""
-"Your account at %(uri)s has been enabled. Please log in with username '%"
-"(login)s' and your password."
-msgstr ""
-"Váš účet na %(uri)s bol povolený. Prihláste sa prosím pomocou vášho "
-"používateľského mena '%(login)s' a vášho hesla."
-
-#: ../lib/wiking/cms/cms.py:2296
-msgid "Your account has been enabled."
-msgstr "Váš účet bol povolený."
-
-#: ../lib/wiking/cms/cms.py:2301
-msgid "E-mail notification has been sent to:"
-msgstr "Emailové upozornenie bolo odoslané na:"
-
-#: ../lib/wiking/cms/cms.py:2326
-msgid "User registration already confirmed."
-msgstr "Registrácia používateľa už bola potvrdená."
-
-#: ../lib/wiking/cms/cms.py:2329
-#, fuzzy
-msgid "Invalid activation code."
-msgstr "Neplatný registračný kód."
-
-#: ../lib/wiking/cms/cms.py:2336
-#, python-format
-msgid ""
-"New user %(fullname)s registered at %(server_hostname)s. Please approve the "
-"account: %(uri)s"
-msgstr ""
-"Nový používateľ %(fullname)s sa registroval na %(server_hostname)s. Učiňte "
-"prosím potvrdenie registrácie: %(uri)s"
-
-#: ../lib/wiking/cms/cms.py:2342
-msgid "New user registration:"
-msgstr "Registrácia nového používateľa:"
-
-#: ../lib/wiking/cms/cms.py:2349
-msgid "E-mail notification has been sent to server administrator."
-msgstr "Emailové upozornenie bolo zaslané správcovi serveru."
-
-#: ../lib/wiking/cms/cms.py:2355
-msgid ""
-"Registration completed successfuly. Your account now awaits administrator's "
-"approval."
-msgstr ""
-"Registrácia prebehla úspešne. Váš účet teraz čaká na schválenie správcom."
-
-#: ../lib/wiking/cms/cms.py:2364
-msgid "The account was confirmed.  Grant the access rights now."
-msgstr ""
-
-#: ../lib/wiking/cms/cms.py:2372
-msgid ""
-"Please confirm the account only if you are sure that the e-mail address "
-"belongs to given user."
-msgstr ""
-
-#: ../lib/wiking/cms/cms.py:2386
-msgid "Registration confirmed"
-msgstr "Registrácia potvrdená"
-
-#: ../lib/wiking/cms/cms.py:2577
-msgid "Listing of all active user accounts."
-msgstr "Výpis všetkých aktívnych používateľských účtov."
-
-#: ../lib/wiking/cms/cms.py:2596
-msgid "Organizations"
-msgstr "Organizácie"
-
-#: ../lib/wiking/cms/cms.py:2597
-msgid "Manage institutions and other organizations."
-msgstr "Správa inštitúcií a iných organizácií."
-
-#: ../lib/wiking/cms/cms.py:2602
-msgid "VAT id"
-msgstr "DIČ"
-
-#: ../lib/wiking/cms/cms.py:2606
-msgid "Notes"
-msgstr "Poznámky"
-
-#: ../lib/wiking/cms/cms.py:2678
-msgid "System Texts"
-msgstr "Systémové texty"
-
-#: ../lib/wiking/cms/cms.py:2679
-msgid "Edit miscellaneous system texts."
-msgstr "Prispôsobiť rôzne systémové texty."
-
-#: ../lib/wiking/cms/cms.py:2686 ../lib/wiking/cms/cms.py:2915
-msgid "Label"
-msgstr "Názov"
-
-#: ../lib/wiking/cms/cms.py:2689 ../lib/wiking/cms/cms.py:2918
-msgid "Purpose"
-msgstr "Účel"
-
-#: ../lib/wiking/cms/cms.py:2692 ../lib/wiking/cms/cms.py:2921
-#: ../lib/wiking/cms/cms.py:3109
-msgid ""
-"Edit the given text as needed, in accordance with structured text rules."
-msgstr ""
-"Upravte text podľa potreby, formátovaný podľa pravidiel pre štrukturovaný "
-"text."
-
-#: ../lib/wiking/cms/cms.py:2910
-msgid "E-mails"
-msgstr "Emaily"
-
-#: ../lib/wiking/cms/cms.py:2911
-msgid "Edit e-mail texts."
-msgstr "Upraviť text emailov."
-
-#: ../lib/wiking/cms/cms.py:2922 ../lib/wiking/cms/cms.py:3107
-msgid "Subject"
-msgstr "Predmet"
-
-#: ../lib/wiking/cms/cms.py:2923
-msgid "Additional recipients"
-msgstr "Ďaľší príjemcovia"
-
-#: ../lib/wiking/cms/cms.py:2924
-msgid "Comma separated list of e-mail addresses."
-msgstr "Zoznam emailových adries oddelených čiarkou."
-
-#. Translators: Section title and menu item. Sending emails to multiple recipients.
-#: ../lib/wiking/cms/cms.py:3096
-#, fuzzy
-msgid "Bulk E-mails"
-msgstr "Emaily"
-
-#: ../lib/wiking/cms/cms.py:3102
-#, fuzzy
-msgid "Sender address"
-msgstr "Prednastavená adresa odosielateľa"
-
-#: ../lib/wiking/cms/cms.py:3103
-msgid "E-mail address of the sender."
-msgstr ""
-
-#. Translators: List of recipients of an email message
-#: ../lib/wiking/cms/cms.py:3105
-msgid "Recipients"
-msgstr ""
-
-#: ../lib/wiking/cms/cms.py:3113
-#, fuzzy
-msgid "State"
-msgstr "Stav"
-
-#. Translators: State of processing of an email message (e.g. New, Sending, Sent)
-#: ../lib/wiking/cms/cms.py:3123
-#, fuzzy
-msgid "Sent"
-msgstr "Nastavenie"
-
-#. Translators: State of processing of an email message (e.g. New, Sending, Sent)
-#: ../lib/wiking/cms/cms.py:3126
-msgid "Sending"
-msgstr ""
-
-#. Translators: State of processing of an email message (e.g. New, Sending, Sent)
-#: ../lib/wiking/cms/cms.py:3129
-#, fuzzy
-msgid "New"
-msgstr "Novinky"
-
-#. Translators: All as in ``all user roles''
-#: ../lib/wiking/cms/cms.py:3138
-msgid "All"
-msgstr ""
-
-#: ../lib/wiking/cms/cms.py:3142
-#, fuzzy, python-format
-msgid "%(subject)s"
-msgstr "Predmet"
-
-#. Translators: Button label meaning save this email text for later repeated usage
-#: ../lib/wiking/cms/cms.py:3146
-msgid "Use as a Template"
-msgstr ""
-
-#. Translators: Description of button for creating a template of an email
-#: ../lib/wiking/cms/cms.py:3148
-msgid "Edit this mail for repeated use"
-msgstr ""
 
 #: ../lib/wiking/configuration.py:183
 msgid "Webmaster's e-mail address"
@@ -1820,6 +117,1734 @@ msgid "Iff true, users must use e-mail addresses as their login names."
 msgstr ""
 "Ak je to tak nastavené, používatelia musia používať emailovú adresu ako "
 "prihlasovacie meno."
+
+#: ../lib/wiking/cms/cms.py:58
+msgid "formatting manual"
+msgstr "príručka o formátovaní"
+
+#: ../lib/wiking/cms/cms.py:56
+#, python-format
+msgid ""
+"The content should be formatted as LCG structured text. See the %(manual)s."
+msgstr ""
+"Obsah môže byť formátovaný pomocou štrukturovaného textu LCG, viď %(manual)s."
+
+#: ../lib/wiking/cms/cms.py:75
+msgid "unknown"
+msgstr "neznámy"
+
+#. Translators: Heading and menu title. Computer idiom meaning configuration of appearance
+#. (colors, sizes, positions, graphical presentation...).
+#: ../lib/wiking/cms/cms.py:95
+msgid "Look &amp; Feel"
+msgstr "Vzhľad"
+
+#: ../lib/wiking/cms/cms.py:96
+msgid "Customize the appearance of your site."
+msgstr "Prispôsobiť vzhľad portálu."
+
+#. Translators: Heading and menu title.
+#: ../lib/wiking/cms/cms.py:98
+msgid "Users"
+msgstr "Používatelia"
+
+#: ../lib/wiking/cms/cms.py:99
+msgid "Manage user accounts, privileges and perform other user related tasks."
+msgstr ""
+
+#. Translators: Heading and menu title for configuration.
+#: ../lib/wiking/cms/cms.py:101
+msgid "Setup"
+msgstr "Nastavenie"
+
+#: ../lib/wiking/cms/cms.py:102
+msgid "Edit global properties of your web site."
+msgstr "Upraviť všeobecné nastavenia portálu."
+
+#. Translators: Heading and menu title for website content management.
+#. Translators: Content of a page (text or something else)
+#: ../lib/wiking/cms/cms.py:137 ../lib/wiking/cms/cms.py:768
+#: ../lib/wiking/cms/cms.py:1008 ../lib/wiking/cms/cms.py:1987
+msgid "Content"
+msgstr "Obsah"
+
+#: ../lib/wiking/cms/cms.py:138 ../lib/wiking/cms/cms.py:994
+msgid "Manage available pages and their content."
+msgstr "Správa dostupných stránok a ich obsahu."
+
+#: ../lib/wiking/cms/cms.py:168
+msgid "Enter your login name or e-mail address"
+msgstr "Zadajte svoje prihlasovacie meno alebo emailovú adresu"
+
+#. Translators: Button name. Computer terminology. Use an appropriate term common
+#. for submitting forms in a computer application.
+#: ../lib/wiking/cms/cms.py:172
+msgid "Submit"
+msgstr "Odoslať"
+
+#: ../lib/wiking/cms/cms.py:210
+msgid "Password reminder"
+msgstr "Pomocník zabudnutého hesla"
+
+#: ../lib/wiking/cms/cms.py:223
+msgid "Multiple user accounts found for given email address."
+msgstr "Pre zadanú emailovú adresu bolo nájdených viac používateľských účtov."
+
+#: ../lib/wiking/cms/cms.py:224
+msgid "Please, select the account for which you want to remind:"
+msgstr "Zvoľte prosím účet, pre ktorý chcete použiť funkciu pripomenutia:"
+
+#. Translators: Credentials such as password...
+#: ../lib/wiking/cms/cms.py:237
+msgid "Your credentials were reset to:"
+msgstr "Vaše prihlasovacie údaje boli nastavené na:"
+
+#. Translators: Credentials such as password...
+#: ../lib/wiking/cms/cms.py:241
+msgid "Your credentials are:"
+msgstr "Vaše prihlasovacie údaje sú:"
+
+#: ../lib/wiking/cms/cms.py:243
+#, python-format
+msgid "A password reminder request has been made at %(server_uri)s."
+msgstr ""
+"Na serveri %(server_uri)s bola zadaná žiadosť o zaslanie zabudnutého hesla."
+
+#: ../lib/wiking/cms/cms.py:247 ../lib/wiking/cms/cms.py:2054
+msgid "Login name"
+msgstr "Prihlasovacie meno"
+
+#: ../lib/wiking/cms/cms.py:248 ../lib/wiking/cms/cms.py:2059
+msgid "Password"
+msgstr "Heslo"
+
+#: ../lib/wiking/cms/cms.py:250
+msgid ""
+"We strongly recommend you change your password at nearest occassion, since "
+"it has been exposed to an unsecure channel."
+msgstr ""
+"Silne vám doporučujeme zmeniť si heslo pri najbližšej možnej príležitosti, "
+"pretože počas prenosu emailom mohlo byť zachytené neoprávnenou osobou."
+
+#: ../lib/wiking/cms/cms.py:255 ../lib/wiking/cms/cms.py:2340
+#: ../lib/wiking/cms/cms.py:2359 ../lib/wiking/cms/cms.py:2406
+msgid "Failed sending e-mail notification:"
+msgstr "Nepodarilo sa odoslať emailové upozornenie:"
+
+#: ../lib/wiking/cms/cms.py:256
+msgid "Please try repeating your request later or contact the administrator!"
+msgstr "Zopakujte prosím svoju žiadosť neskôr alebo kontaktujte správcu!"
+
+#: ../lib/wiking/cms/cms.py:258
+msgid "E-mail information has been sent to your email address."
+msgstr "Emailové upozornenie bolo odoslané na vašu emailovú adresu."
+
+#: ../lib/wiking/cms/cms.py:261
+msgid "No user account for your query."
+msgstr "Zadaniu nezodpovedá žiadny používateľský účet."
+
+#. Translators: Heading for an overview when and how the user has accessed the application.
+#: ../lib/wiking/cms/cms.py:523 ../lib/wiking/cms/cms.py:2150
+#, fuzzy
+msgid "Login History"
+msgstr "Prihlasovacie údaje"
+
+#: ../lib/wiking/cms/cms.py:524
+msgid "History of successful login sessions and unsuccessful login attempts."
+msgstr ""
+
+#: ../lib/wiking/cms/cms.py:528 ../lib/wiking/cms/cms.py:2030
+#: ../lib/wiking/cms/cms.py:2072
+msgid "User"
+msgstr "Používateľ"
+
+#. Translators: Login name.
+#: ../lib/wiking/cms/cms.py:530
+#, fuzzy
+msgid "Login"
+msgstr "Prihlasovacie meno"
+
+#. Translators: Form field saying whether the users attempt was succesful. Values are Yes/No.
+#: ../lib/wiking/cms/cms.py:532
+msgid "Success"
+msgstr ""
+
+#. Translators: Table column heading. Time of the start of user session, followed by a date and time.
+#: ../lib/wiking/cms/cms.py:534
+#, fuzzy
+msgid "Start time"
+msgstr "Názov portálu"
+
+#. Translators: Table column heading. The length of user session. Contains time.
+#: ../lib/wiking/cms/cms.py:536
+#, fuzzy
+msgid "Duration"
+msgstr "Popis"
+
+#. Translators: Table column heading. Whether the account is active. Values are yes/no.
+#: ../lib/wiking/cms/cms.py:538 ../lib/wiking/cms/cms.py:921
+#: ../lib/wiking/cms/cms.py:1976
+msgid "Active"
+msgstr "Aktívne"
+
+#: ../lib/wiking/cms/cms.py:539
+#, fuzzy
+msgid "IP address"
+msgstr "Adresa"
+
+#. Translators: Internet name of the remote computer (computer terminology).
+#: ../lib/wiking/cms/cms.py:541
+#, fuzzy
+msgid "Hostname"
+msgstr "Meno"
+
+#. Translators: "User agent" is a generalized name for browser or more precisely the
+#. software which produced the HTTP request (was used to access the website).
+#: ../lib/wiking/cms/cms.py:544
+#, fuzzy
+msgid "User agent"
+msgstr "Správa používateľov"
+
+#. Translators: Meaning where the user came from. Computer terminology. Do not translate
+#. "HTTP" and if unsure, don't translate at all (it is a very technical term).
+#: ../lib/wiking/cms/cms.py:547
+msgid "HTTP Referer"
+msgstr ""
+
+#: ../lib/wiking/cms/cms.py:602
+msgid "enabled"
+msgstr "povolené"
+
+#: ../lib/wiking/cms/cms.py:602
+msgid "disabled"
+msgstr "zakázané"
+
+#: ../lib/wiking/cms/cms.py:604
+msgid "undefined"
+msgstr "neurčené"
+
+#: ../lib/wiking/cms/cms.py:605
+#, python-format
+msgid "The default value is %s."
+msgstr "Východzia hodnota je %s."
+
+#. Translators: Website heading and menu item
+#: ../lib/wiking/cms/cms.py:617 ../lib/wiking/cms/cms.py:642
+msgid "Basic Configuration"
+msgstr "Základné nastavenie"
+
+#: ../lib/wiking/cms/cms.py:618
+msgid "Edit site configuration."
+msgstr "Upraviť nastavenie portálu."
+
+#: ../lib/wiking/cms/cms.py:625
+msgid ""
+"This address is used as public contact address for your site. It is "
+"displayed at the bottom of each page, in error messages, RSS feeds and so "
+"on.  Please make sure that this address is valid (e-mail sent to it is "
+"delivered to a responsible person)."
+msgstr ""
+"Táto adresa je používaná ako verejný kontakt na správcu portálu. Je "
+"zobrazovaná v dolnej časti každej stránky, v správach o chybách, RSS "
+"kanáloch a podobne. Uistite sa prosím, že adresa je platná a že správy na ňu "
+"odoslané sú doručené správnej osobe."
+
+#: ../lib/wiking/cms/cms.py:630
+msgid ""
+"E-mail messages sent by the system, such as automatic notifications, "
+"password reminders, bug-reports etc. will use this sender address. Please "
+"make sure that this address is valid, since users may reply to such messages "
+"if they encounter problems."
+msgstr ""
+"Emailové správy odosielané systémom, ako napríklad automatické upozornenia, "
+"hlásenia o chybe, pripomenutie zabudnutého hesla a podobne, budú ako adresu "
+"odosielateľa používať zadanú adresu. Uistite sa prosím, že adresa je platná, "
+"aby používatelia mohli na tieto správy odpovedať v prípade problémov."
+
+#. Translators: Panels are small windows containing different things (such as recent news,
+#. application specific controls, sponsorship reference etc.) displayed by the side of a
+#. webpage.  To avoid confusion, we should avoid terms such as "windows", "frames"
+#. etc. which all have their specific meaning in computer terminology.
+#: ../lib/wiking/cms/cms.py:735
+msgid "Panels"
+msgstr "Panely"
+
+#: ../lib/wiking/cms/cms.py:736
+msgid "Manage panels – the small windows shown by the side of every page."
+msgstr "Správa panelov – malých okienok zobrazených na boku každej stránky."
+
+#: ../lib/wiking/cms/cms.py:740 ../lib/wiking/cms/cms.py:1003
+#: ../lib/wiking/cms/cms.py:1451 ../lib/wiking/cms/cms.py:1755
+msgid "Language"
+msgstr "Jazyk"
+
+#. Translators: Title in the meaning of a heading
+#: ../lib/wiking/cms/cms.py:743 ../lib/wiking/cms/cms.py:747
+#: ../lib/wiking/cms/cms.py:1004 ../lib/wiking/cms/cms.py:1005
+#: ../lib/wiking/cms/cms.py:1466 ../lib/wiking/cms/cms.py:1762
+#: ../lib/wiking/cms/cms.py:1832
+msgid "Title"
+msgstr "Názov"
+
+#: ../lib/wiking/cms/cms.py:744
+msgid ""
+"Panel title – you may leave the field blank to use the menu title of the "
+"selected module."
+msgstr ""
+"Názov panelu – nechajte prázdne ak chcete použiť menu názvov daného modulu."
+
+#. Translators: Order in the meaning of sequence. A noun, not verb.
+#. Translators: Order as a position in sequence. E.g. first, second...
+#: ../lib/wiking/cms/cms.py:751 ../lib/wiking/cms/cms.py:1984
+msgid "Order"
+msgstr "Poradie"
+
+#: ../lib/wiking/cms/cms.py:752
+msgid "Number denoting the order of the panel on the page."
+msgstr "Číslo udávajúce poradie panelu na stránke."
+
+#. Translators: List items can be news, webpages, names of users. Intentionally general.
+#: ../lib/wiking/cms/cms.py:754
+msgid "List items"
+msgstr "Výpis položiek"
+
+#: ../lib/wiking/cms/cms.py:755
+msgid ""
+"The items of the extension module used by the selected page will be shown by "
+"the panel.  Leave blank for a text content panel."
+msgstr ""
+"Panel bude zobrazovať položky rozširujúceho modulu zadanej stránky. "
+"Nevyplňujte ak chcete do panelu umiestniť textový obsah."
+
+#. Translators: Computer term for a part of application.
+#. Translators: "Module" is an independent reusable part of a computer program (here a
+#. module of Wiking CMS).
+#: ../lib/wiking/cms/cms.py:761 ../lib/wiking/cms/cms.py:1013
+msgid "Module"
+msgstr "Modul"
+
+#. Translators: As number of items in a table.
+#: ../lib/wiking/cms/cms.py:764
+msgid "Items count"
+msgstr "Počet položiek"
+
+#: ../lib/wiking/cms/cms.py:765
+msgid ""
+"Number of items from the selected module, which will be shown by the panel."
+msgstr "Počet položek vybraného modulu, ktoré budú panelom zobrazené."
+
+#: ../lib/wiking/cms/cms.py:769
+msgid "Additional text content displayed on the panel."
+msgstr "Pridaný textový obsah panelu."
+
+#. Translators: Yes/no configuration of whether the page is
+#. published. Followed by a checkbox.
+#. Translators: Configuration option determining whether the page is published or not
+#. (passive form of publish).  The label may be followed by a checkbox.
+#: ../lib/wiking/cms/cms.py:773 ../lib/wiking/cms/cms.py:1026
+msgid "Published"
+msgstr "Zverejnené"
+
+#: ../lib/wiking/cms/cms.py:774
+msgid "Controls whether the panel is actually displayed."
+msgstr "Kontroluje, či je panel skutočne zobrazený."
+
+#. Translators: Heading and menu item for language configuration section.
+#: ../lib/wiking/cms/cms.py:822
+msgid "Languages"
+msgstr "Jazyky"
+
+#: ../lib/wiking/cms/cms.py:823
+msgid "Manage available languages."
+msgstr "Správa dostupných jazykov."
+
+#. Translators: Language code, e.g. 'cs', 'sk' etc.
+#: ../lib/wiking/cms/cms.py:827
+msgid "Code"
+msgstr "Kód"
+
+#. Translators: Language name: e.g. Czech, Slovak etc.
+#: ../lib/wiking/cms/cms.py:830 ../lib/wiking/cms/cms.py:920
+#: ../lib/wiking/cms/cms.py:2661
+msgid "Name"
+msgstr "Názov"
+
+#. Translators: Do not translate this.
+#: ../lib/wiking/cms/cms.py:839
+#, python-format
+msgid "%(name)s"
+msgstr "%(name)s"
+
+#: ../lib/wiking/cms/cms.py:854
+msgid "Normal page colors"
+msgstr "Bežné farby stránky"
+
+#: ../lib/wiking/cms/cms.py:855 ../lib/wiking/cms/cms.py:870
+#: ../lib/wiking/cms/cms.py:878 ../lib/wiking/cms/cms.py:885
+#: ../lib/wiking/cms/cms.py:894 ../lib/wiking/cms/cms.py:898
+#: ../lib/wiking/cms/cms.py:902 ../lib/wiking/cms/cms.py:2751
+#: ../lib/wiking/cms/cms.py:2980 ../lib/wiking/cms/cms.py:3168
+msgid "Text"
+msgstr "Text"
+
+#. Translators: Website background (e.g. color)
+#: ../lib/wiking/cms/cms.py:857 ../lib/wiking/cms/cms.py:871
+#: ../lib/wiking/cms/cms.py:879 ../lib/wiking/cms/cms.py:886
+#: ../lib/wiking/cms/cms.py:895 ../lib/wiking/cms/cms.py:899
+#: ../lib/wiking/cms/cms.py:903
+msgid "Background"
+msgstr "Pozadie"
+
+#: ../lib/wiking/cms/cms.py:858
+msgid "Highlight background"
+msgstr "Zvýraznené pozadie"
+
+#: ../lib/wiking/cms/cms.py:859
+msgid ""
+"Background highlighting may be used for emphasizing the current language, "
+"etc."
+msgstr ""
+"Zvýraznenie pomocou farby pozadia môže byť použité napríklad na zdôraznenie "
+"aktuálneho jazyka a podobne."
+
+#: ../lib/wiking/cms/cms.py:861
+msgid "Link"
+msgstr "Odkaz"
+
+#: ../lib/wiking/cms/cms.py:862
+msgid "Visited link"
+msgstr "Navštívený odkaz"
+
+#. Translators: Computer terminology. Term for how a website hyperlink changes when
+#. you move mouse cursor over it.
+#: ../lib/wiking/cms/cms.py:865
+msgid "Hover link"
+msgstr "Zvýraznený odkaz"
+
+#: ../lib/wiking/cms/cms.py:866
+msgid ""
+"Used for changing the link color when the user moves the mouse pointer over "
+"it."
+msgstr ""
+"Použité na zmenu farby odkazu, vo chvíli keď používateľ presunie kurzor myši "
+"na tento odkaz."
+
+#: ../lib/wiking/cms/cms.py:868
+msgid "Borders"
+msgstr "Okraje"
+
+#: ../lib/wiking/cms/cms.py:869
+msgid "Heading colors"
+msgstr "Farby nadpisov"
+
+#: ../lib/wiking/cms/cms.py:872
+msgid "Underline"
+msgstr "Podčiarknutie"
+
+#: ../lib/wiking/cms/cms.py:873
+#, fuzzy
+msgid ""
+"Heading colors are used for section headings, panel headings and other "
+"heading-like elements.  Depending on style sheets, some heading types may be "
+"distinguished by a different background color and others may be just "
+"underlined."
+msgstr ""
+"Farby nadpisov sú používané na zvýraznenie názvov kapitol, panelov a iných "
+"prvkov, ktoré majú povahu nadpisu. V závislosti na použitých štýloch môžu "
+"niektoré typy nadpisov používať odlišnú farbu pozadia, iné môžu byť iba "
+"podčiarknuté."
+
+#: ../lib/wiking/cms/cms.py:877
+msgid "Frames"
+msgstr "Rámy"
+
+#: ../lib/wiking/cms/cms.py:880 ../lib/wiking/cms/cms.py:887
+#: ../lib/wiking/cms/cms.py:896 ../lib/wiking/cms/cms.py:900
+msgid "Border"
+msgstr "Okraje"
+
+#: ../lib/wiking/cms/cms.py:881
+msgid ""
+"Frames are generally used for distinguishing separate areas of the page, "
+"such as forms, tables of contents, etc.  The usage may vary by stylesheet."
+msgstr ""
+"Rámy sú všeobecne využívané na odlíšenie samostatných častí stránky, ako sú "
+"napríklad formuláre, obsahy atd. Použitie sa môže meniť podľa štýlov."
+
+#: ../lib/wiking/cms/cms.py:884
+msgid "Page surrounding colors"
+msgstr "Farby okolia stránky"
+
+#: ../lib/wiking/cms/cms.py:888
+msgid ""
+"What is 'page surrounding' depends from the stylesheet. In general it is the "
+"part of the page, which does not include the actual contents. Most often it "
+"is the page header and footer which usually remain unchanged throughout the "
+"whole website."
+msgstr ""
+"To, čo nazývame okolím stránky, závisí na použitých štýloch. Väčšinou sa "
+"jedná o tú časť stránky, ktorá neobsahuje vlastný obsah dokumentu. Obvykle "
+"je to časť obsahujúca hornú a dolnú časť stránky a všetko ostatné, čo sa pri "
+"zobrazovaní rôznych stránok daného portálu nemení."
+
+#: ../lib/wiking/cms/cms.py:893
+msgid "Error messages"
+msgstr "Správy o chybách"
+
+#: ../lib/wiking/cms/cms.py:897
+msgid "Informational messages"
+msgstr "Informatívne správy"
+
+#: ../lib/wiking/cms/cms.py:901
+msgid "Record meta data"
+msgstr "Meta dáta záznamu"
+
+#: ../lib/wiking/cms/cms.py:904
+msgid ""
+"These colors are used for additional items printed listings, such as date "
+"and author of a message in news, etc."
+msgstr ""
+"Tieto farby sú používané na odlišné zvýraznenie dodatočných informácií o "
+"jednotlivých položkách vo výpisoch, akými sú napríklad dátum a meno autora v "
+"zozname noviniek a podobne."
+
+#: ../lib/wiking/cms/cms.py:906
+#, fuzzy
+msgid "Misc"
+msgstr "Rôzne"
+
+#: ../lib/wiking/cms/cms.py:907
+msgid "Table cell"
+msgstr "Políčko tabuľky"
+
+#: ../lib/wiking/cms/cms.py:908
+msgid "Shaded table cell"
+msgstr "Vytieňované políčko tabuľky"
+
+#: ../lib/wiking/cms/cms.py:909
+msgid "Form help text"
+msgstr "Formulár textu pomocníka"
+
+#: ../lib/wiking/cms/cms.py:910
+msgid "Inactive folder"
+msgstr "Neaktívna záložka"
+
+#. Translators: "Color Themes" is computer terminology.  Predefined sets of colors to be
+#. used for changing the visual appearance of a web page/application.  Similar to color
+#. styles.
+#: ../lib/wiking/cms/cms.py:915
+msgid "Color Themes"
+msgstr "Farebné motívy"
+
+#. Translators: Describes more precisely the meaing of "Color Themes" section.
+#: ../lib/wiking/cms/cms.py:917
+msgid "Manage available color themes."
+msgstr "Správa dostupných farebných motívov."
+
+#: ../lib/wiking/cms/cms.py:928
+msgid "Yes"
+msgstr "Áno"
+
+#. Translators: Button label
+#: ../lib/wiking/cms/cms.py:939
+msgid "Activate"
+msgstr "Aktivovať"
+
+#: ../lib/wiking/cms/cms.py:939
+msgid "Activate this color theme"
+msgstr "Aktivovať tento farebý motív"
+
+#. Translators: Button label
+#: ../lib/wiking/cms/cms.py:942
+msgid "Activate default"
+msgstr "Aktivovať východzie nastavenie"
+
+#: ../lib/wiking/cms/cms.py:943
+msgid "Activate the default color theme"
+msgstr "Aktivovať východzí farebný motív"
+
+#: ../lib/wiking/cms/cms.py:967
+msgid "Default"
+msgstr "Východzie"
+
+#: ../lib/wiking/cms/cms.py:971
+#, python-format
+msgid "The color theme \"%s\" has been activated."
+msgstr "Farebný motív \"%s\" bol aktivovaný."
+
+#. Translators: Heading and menu item. Meaning web pages.
+#: ../lib/wiking/cms/cms.py:993
+msgid "Pages"
+msgstr "Stránky"
+
+#. Translators: Unique identifier of a stylesheet.
+#: ../lib/wiking/cms/cms.py:998 ../lib/wiking/cms/cms.py:1974
+msgid "Identifier"
+msgstr "Identifikátor"
+
+#: ../lib/wiking/cms/cms.py:1000
+msgid ""
+"The identifier may be used to refer to this page from outside and also from "
+"other pages. A valid identifier can only contain letters, digits, dashes and "
+"underscores.  It must start with a letter."
+msgstr ""
+"Identifikátor môže byť použitý, aby odkazoval na stránku zvonku a tiež z "
+"ostatých stránok. Platný identifikátor obsahuje iba písmená bez diakritiky, "
+"číslice, pomlčky a prípadne podčiarkovník. Musí však vždy začínať písmenom."
+
+#: ../lib/wiking/cms/cms.py:1006 ../lib/wiking/cms/cms.py:1469
+#: ../lib/wiking/cms/cms.py:1975
+msgid "Description"
+msgstr "Popis"
+
+#: ../lib/wiking/cms/cms.py:1007
+msgid "Brief page description (shown as a tooltip and in site map)."
+msgstr "Stručný popis stránky (bude zobrazený ako tooltip a v mape stránok)."
+
+#: ../lib/wiking/cms/cms.py:1016
+msgid ""
+"Select the extension module to embed into the page.  Leave blank for an "
+"ordinary text page."
+msgstr ""
+"Zvoľte rozširujúci modul, ktorý chcete zobraziť v stránke. Nechajte prázdne, "
+"ak chcete na stránke zobraziť iba vlastný textový obsah."
+
+#. Translators: "Parent item" has the meaning of hierarchical position.  More precise
+#. term might be "Superordinate item" but doesn't sound that nice in English.  The term
+#. "item" represents a page, but also a menu item.
+#: ../lib/wiking/cms/cms.py:1021
+msgid "Parent item"
+msgstr "Nadriadená položka"
+
+#: ../lib/wiking/cms/cms.py:1022
+msgid ""
+"Select the superordinate item in page hierarchy.  Leave blank for a top-"
+"level page."
+msgstr ""
+"Vyberte hierarchicky nadradenú stránku. Nechajte prázdne na stránku na "
+"najvyššej úrovni menu."
+
+#: ../lib/wiking/cms/cms.py:1027
+msgid ""
+"Allows you to control the availability of this page in each of the supported "
+"languages (switch language to control the availability in other languages)"
+msgstr ""
+"Umožňuje určiť dostupnosť položky v každej z podporovaných jazykových verzií "
+"(prepnite aktuálny jazyk pre nastavenie dostupnosti v iných jazykových "
+"verziách)"
+
+#: ../lib/wiking/cms/cms.py:1030
+msgid "Private"
+msgstr "Privátne"
+
+#: ../lib/wiking/cms/cms.py:1031
+msgid "Make the item available only to logged-in users."
+msgstr "Umožniť zobrazenie položky iba prihláseným používateľom."
+
+#: ../lib/wiking/cms/cms.py:1032
+msgid "Status"
+msgstr "Stav"
+
+#: ../lib/wiking/cms/cms.py:1033
+msgid "Hidden"
+msgstr "Skryté"
+
+#: ../lib/wiking/cms/cms.py:1034
+msgid "Check if you don't want this page to appear in the menu."
+msgstr "Zaškrtnite, ak nechcete, aby sa táto stránka zobrazovala v menu."
+
+#. Translators: Page configuration option followed by an input field. Means order in the
+#. sense of sequence. What is first and what next.
+#: ../lib/wiking/cms/cms.py:1037
+msgid "Menu order"
+msgstr "Poradie v menu"
+
+#: ../lib/wiking/cms/cms.py:1038
+msgid ""
+"Enter a number denoting the order of the page in the menu.  Leave blank if "
+"you want to put the page automatically to the end."
+msgstr ""
+"Zadajte číslo určujúce poradie stránky v menu. Nechajte prázdne, ak chcete, "
+"aby bola stránka zaradená automaticky na koniec."
+
+#: ../lib/wiking/cms/cms.py:1043
+msgid "Owner"
+msgstr "Vlastník"
+
+#: ../lib/wiking/cms/cms.py:1044
+msgid ""
+"Set the ownership if you want a particular user to have full control of the "
+"page even if his normal privileges are lower."
+msgstr ""
+"Nastavte vlastníka, ak chcete určitému používateľovi dať právo meniť túto "
+"stránku, aj keď by mu to jeho užívateľské oprávnenie normálne nedovoľovalo."
+
+#: ../lib/wiking/cms/cms.py:1049
+msgid "Not published"
+msgstr "Nezverejnené"
+
+#: ../lib/wiking/cms/cms.py:1051
+msgid "Ok"
+msgstr "Ok"
+
+#: ../lib/wiking/cms/cms.py:1053
+msgid "Changed"
+msgstr "Zmenené"
+
+#: ../lib/wiking/cms/cms.py:1059 ../lib/wiking/cms/cms.py:1083
+msgid "Page Text (for the current language)"
+msgstr "Text stránky (pre aktuálny jazyk)"
+
+#. Translators: Options meaning page configuration settings.
+#: ../lib/wiking/cms/cms.py:1062 ../lib/wiking/cms/cms.py:1085
+msgid "Global Options (for all languages)"
+msgstr "Všeobecné vlastnosti (pre všetky jazyky)"
+
+#. Translators: Noun. Such as e-mail attachments (here attachments for a webpage).
+#. Translators: Section title. Attachments as in email attachments.
+#: ../lib/wiking/cms/cms.py:1071 ../lib/wiking/cms/cms.py:1111
+#: ../lib/wiking/cms/cms.py:1301 ../lib/wiking/cms/cms.py:1352
+#: ../lib/wiking/cms/cms.py:1441
+msgid "Attachments"
+msgstr "Prílohy"
+
+#: ../lib/wiking/cms/cms.py:1076
+msgid "The page already exists in given language."
+msgstr "V zadanom jazyku táto stránka už existuje."
+
+#: ../lib/wiking/cms/cms.py:1078
+msgid "Duplicate menu order at this level of hierarchy."
+msgstr "Duplicitné poradie na rovnakej úrovni hierarchie."
+
+#: ../lib/wiking/cms/cms.py:1092
+msgid "Save"
+msgstr "Uložiť"
+
+#: ../lib/wiking/cms/cms.py:1092
+msgid "Save and publish"
+msgstr "Uložiť a zverejniť"
+
+#: ../lib/wiking/cms/cms.py:1095
+msgid "New page"
+msgstr "Nová stránka"
+
+#: ../lib/wiking/cms/cms.py:1096
+msgid "Edit Text"
+msgstr "Upraviť text"
+
+#: ../lib/wiking/cms/cms.py:1097
+msgid "Edit title, description and content for the current language"
+msgstr "Upraviť názov, opis a obsah stránky pre aktuálny jazyk"
+
+#. Translators: Button label. Page configuration options.
+#: ../lib/wiking/cms/cms.py:1100
+msgid "Options"
+msgstr "Vlastnosti"
+
+#: ../lib/wiking/cms/cms.py:1101
+msgid "Edit global (language independent) page options and menu position"
+msgstr ""
+"Upraviť všeobecné (jazykovo nezávislé) vlastnosti stránky a umiestnenie v "
+"menu"
+
+#: ../lib/wiking/cms/cms.py:1102
+msgid "Publish"
+msgstr "Zverejniť"
+
+#: ../lib/wiking/cms/cms.py:1102
+msgid "Publish the page in its current state"
+msgstr "Zverejeniť súčasnú podobu stránky"
+
+#: ../lib/wiking/cms/cms.py:1105
+msgid "Unpublish"
+msgstr "Nezverejeniť"
+
+#: ../lib/wiking/cms/cms.py:1105
+msgid "Make the page invisible from outside"
+msgstr "Učiniť stránku neviditeľnou zvonku"
+
+#: ../lib/wiking/cms/cms.py:1107
+msgid "Revert"
+msgstr "Vrátiť zmeny"
+
+#: ../lib/wiking/cms/cms.py:1107
+msgid "Revert last modifications"
+msgstr "Zrušiť posledné úpravy"
+
+#: ../lib/wiking/cms/cms.py:1109
+msgid "Preview"
+msgstr "Náhľad"
+
+#: ../lib/wiking/cms/cms.py:1109
+msgid "Display the page in its current state"
+msgstr "Zobraziť súčasnú podobu stránky"
+
+#: ../lib/wiking/cms/cms.py:1111
+msgid "Manage this page's attachments"
+msgstr "Správa príloh tejto stránky"
+
+#: ../lib/wiking/cms/cms.py:1160
+msgid "You don't have sufficient privilegs for this action."
+msgstr "Nemáte dostatočné oprávnenie k tomuto úkonu."
+
+#: ../lib/wiking/cms/cms.py:1161
+msgid ""
+"Save the page without publishing and ask the administrator to publish your "
+"changes."
+msgstr ""
+"Uložte stránku bez zverejnenia a požiadajte správcu o zverejnenie vašich "
+"zmien."
+
+#: ../lib/wiking/cms/cms.py:1169
+msgid ""
+"Page content was modified, however the changes remain unpublished. Don't "
+"forget to publish the changes when you are done."
+msgstr ""
+"Obsah stránky bol zmenený, zmeny však zostávajú nezverejnené. Nezabudnite "
+"zmeny zverejniť keď stránku dokončíte."
+
+#: ../lib/wiking/cms/cms.py:1174
+msgid "New page was successfully created and published."
+msgstr "Nová stránka bola úspešne vytvorená a zverejnená."
+
+#: ../lib/wiking/cms/cms.py:1176
+msgid ""
+"New page was successfully created, but was not published yet. Publish it "
+"when you are done."
+msgstr ""
+"Nová stránka bola úspešne vytvorená ale ešte nezverejnená. Zverejnite ju, "
+"keď bude dokončená."
+
+#. Translators: Button label. Use standard computer terminology.
+#. Translators: Back button label. Standard computer terminology.
+#: ../lib/wiking/cms/cms.py:1199 ../lib/wiking/cms/cms.py:1573
+#: ../lib/wiking/cms/cms.py:2430
+msgid "Back"
+msgstr "Späť"
+
+#: ../lib/wiking/cms/cms.py:1248
+msgid "Registration"
+msgstr "Registrácia"
+
+#. Translators: Label for section with user manuals, help pages etc.
+#: ../lib/wiking/cms/cms.py:1250
+#, fuzzy
+msgid "Documentation"
+msgstr "Dokumentácia systému Wiking"
+
+#: ../lib/wiking/cms/cms.py:1367
+msgid "Content for this page already exists!"
+msgstr "Obsah pre túto stránku už existuje!"
+
+#: ../lib/wiking/cms/cms.py:1374
+msgid "Content for this page does not exist in any language."
+msgstr "Obsah pre túto stránku neexistuje v žiadnom jazyku."
+
+#: ../lib/wiking/cms/cms.py:1377
+msgid "Choose source language"
+msgstr "Zvoľte zdrojový jazyk"
+
+#: ../lib/wiking/cms/cms.py:1380
+msgid "Translate"
+msgstr "Preložiť"
+
+#: ../lib/wiking/cms/cms.py:1398
+msgid "Can't publish untitled page."
+msgstr "Nie je možné zverejniť stránku bez názvu."
+
+#: ../lib/wiking/cms/cms.py:1405
+msgid "The changes were published."
+msgstr "Zmeny boli zverejnené."
+
+#: ../lib/wiking/cms/cms.py:1415
+msgid "The page contents was reverted to its previous state."
+msgstr "Obsah stránky bol vrátený do pôvodného stavu."
+
+#: ../lib/wiking/cms/cms.py:1425
+msgid "The page was unpublished."
+msgstr "Stránka nebola zverejnená."
+
+#: ../lib/wiking/cms/cms.py:1442
+msgid "Manage page attachments. Go to a page to create new attachments."
+msgstr ""
+"Správa príloh.  Nové prílohy pridávajte vždy cez stránku, ku ktorej chcete "
+"prílohu priradiť."
+
+#: ../lib/wiking/cms/cms.py:1448 ../lib/wiking/cms/cms.py:1754
+msgid "Page"
+msgstr "Stránka"
+
+#: ../lib/wiking/cms/cms.py:1449
+msgid ""
+"Select the page where you want to move this attachment.  Don't forget to "
+"update all explicit links to this attachment within page text(s)."
+msgstr ""
+"Zvoľte stránku, do ktorej chcete túto prílohu presunúť. Nezabudnite "
+"aktualizovať explicitné odkazy na túto prílohu v texte stránok."
+
+#. Translators: Noun. File on disk. Computer terminology.
+#: ../lib/wiking/cms/cms.py:1453
+msgid "File"
+msgstr "Súbor"
+
+#: ../lib/wiking/cms/cms.py:1455
+msgid ""
+"Upload a file from your local system.  The file name will be used to refer "
+"to the attachment within the page content.  Please note, that the file will "
+"be served over the internet, so the filename should not contain any special "
+"characters.  Letters, digits, underscores, dashes and dots are safe.  You "
+"risk problems with most other characters."
+msgstr ""
+"Nahrajte súbor z vášho disku. Názov súboru bude používaný pri odkazovaní na "
+"túto prílohu v rámci obsahu stránky. Názov bude tiež používaný pri "
+"poskytovaní súboru v rámci internetu a preto by nemal obsahovať žiadne "
+"špeciálne znaky. Bezpečné sú písmená bez diaktritiky, číslice, pomlčka, "
+"podčiarkovník a bodka. Použitím iných znakov v názve súboru riskujete "
+"problémy."
+
+#: ../lib/wiking/cms/cms.py:1461
+msgid "Filename"
+msgstr "Názov súboru"
+
+#: ../lib/wiking/cms/cms.py:1464
+msgid "Mime-type"
+msgstr "Typ MIME"
+
+#: ../lib/wiking/cms/cms.py:1467
+msgid ""
+"The name of the attachment (e.g. the full name of the document). If empty, "
+"the file name will be used instead."
+msgstr ""
+"Názov prílohy (napr. plný názov dokumentu). Ak nie je zadaný, bude zobrazený "
+"názov súboru."
+
+#: ../lib/wiking/cms/cms.py:1470
+msgid "Optional description used for the listing of attachments (see below)."
+msgstr "Nepovinný opis použitý pri zozname príloh (viď nižšie)."
+
+#. Translators: Size of a file, in number of bytes, kilobytes etc.
+#: ../lib/wiking/cms/cms.py:1473
+msgid "Size"
+msgstr "Veľkosť"
+
+#: ../lib/wiking/cms/cms.py:1475
+msgid "Listed"
+msgstr "V zozname"
+
+#: ../lib/wiking/cms/cms.py:1476
+msgid ""
+"Check if you want the item to appear in the listing of attachments at the "
+"bottom of the page."
+msgstr ""
+"Zaškrtnite, ak chcete, aby bola táto príloha zobrazená v zozname príloh na "
+"konci stránky."
+
+#. Translators: Button label
+#: ../lib/wiking/cms/cms.py:1531
+msgid "Move"
+msgstr "Presunúť"
+
+#: ../lib/wiking/cms/cms.py:1531
+msgid "Move the attachment to another page."
+msgstr "Presunúť prílohu do inej stránky."
+
+#: ../lib/wiking/cms/cms.py:1534 ../lib/wiking/cms/cms.py:1724
+msgid "New attachment"
+msgstr "Nová príloha"
+
+#: ../lib/wiking/cms/cms.py:1541
+msgid "Attachment of the same file name already exists for this page."
+msgstr "Príloha s rovnakým názvom súboru pre túto stránku už existuje."
+
+#: ../lib/wiking/cms/cms.py:1573
+msgid "Display the page"
+msgstr "Zobraziť stránku"
+
+#: ../lib/wiking/cms/cms.py:1648
+msgid "Image title.  If empty, the file name will be used instead."
+msgstr "Názov obrázku. Ak nie je vyplnený, bude zobrazený názov súboru."
+
+#: ../lib/wiking/cms/cms.py:1650
+msgid "Optional image description."
+msgstr "Nepovinný popis obrázku."
+
+#: ../lib/wiking/cms/cms.py:1651
+msgid "In galery"
+msgstr "V galérii"
+
+#: ../lib/wiking/cms/cms.py:1652
+msgid ""
+"Check if you want the image to appear an automatically generated galery."
+msgstr ""
+"Zaškrtnite, ak chcete aby bol obrázok zobrazený v automaticky vytváranej "
+"galérii."
+
+#: ../lib/wiking/cms/cms.py:1663 ../lib/wiking/cms/cms.py:1768
+#: ../lib/wiking/cms/cms.py:2032
+msgid "Author"
+msgstr "Autor"
+
+#: ../lib/wiking/cms/cms.py:1664
+msgid "Location"
+msgstr "Miesto"
+
+#: ../lib/wiking/cms/cms.py:1665
+msgid "Width"
+msgstr "Šírka"
+
+#: ../lib/wiking/cms/cms.py:1667
+msgid "Height"
+msgstr "Výška"
+
+#. Translators: Section title and menu item
+#: ../lib/wiking/cms/cms.py:1749
+msgid "News"
+msgstr "Novinky"
+
+#. Translators: Help string describing more precisely the meaning of the "News" section.
+#: ../lib/wiking/cms/cms.py:1751
+msgid "Publish site news."
+msgstr "Zverejniť aktuálne správy."
+
+#: ../lib/wiking/cms/cms.py:1757 ../lib/wiking/cms/cms.py:1759
+#: ../lib/wiking/cms/cms.py:1824 ../lib/wiking/cms/cms.py:1831
+#: ../lib/wiking/cms/cms.py:3170
+msgid "Date"
+msgstr "Dátum"
+
+#: ../lib/wiking/cms/cms.py:1761
+msgid "Date of the news item creation."
+msgstr "Dátum vloženia novej správy."
+
+#: ../lib/wiking/cms/cms.py:1762 ../lib/wiking/cms/cms.py:1764
+msgid "Message"
+msgstr "Správa"
+
+#: ../lib/wiking/cms/cms.py:1763
+msgid "The item brief summary."
+msgstr "Stručné zhrnutie obsahu správy."
+
+#: ../lib/wiking/cms/cms.py:1765
+msgid ""
+"It is, however, recommened to use the simplest possible formatting, since "
+"the item may be also published through an RSS channel, which does not "
+"support formatting."
+msgstr ""
+"Je však doporučované použiť čo najjednoduchšie formátovanie, pretože položka "
+"môže byť zverejnená tiež prostredníctvom RSS kanálu, ktorý formátovanie "
+"nepodporuje."
+
+#. Translators: Button label for creating a new message in "News".
+#: ../lib/wiking/cms/cms.py:1787
+msgid "New message"
+msgstr "Nová správa"
+
+#. Translators: Section heading and menu item
+#: ../lib/wiking/cms/cms.py:1820
+msgid "Planner"
+msgstr "Plánovač"
+
+#: ../lib/wiking/cms/cms.py:1821
+msgid "Announce future events by date in a callendar-like listing."
+msgstr ""
+"Umožňuje oznámenie budúcich udalostí podľa dátumu v kaledárovom výpise."
+
+#: ../lib/wiking/cms/cms.py:1826
+#, python-format
+msgid ""
+"The date when the planned event begins. Enter the date including year. "
+"Example: %(date)s"
+msgstr ""
+"Dátum, kedy plánovaná udalosť začína. Dátum vkladajte vrátane roku. "
+"Napríklad: %(date)s"
+
+#: ../lib/wiking/cms/cms.py:1828
+msgid "End date"
+msgstr "Dátum do"
+
+#: ../lib/wiking/cms/cms.py:1829
+msgid ""
+"The date when the event ends if it is not the same as the start date (for "
+"events which last several days)."
+msgstr ""
+"Dátum, kedy plánovaná udalosť končí, ak nie je zhodný s dátumom začiatku "
+"(pre udalosti, ktoré trvajú niekoľko dní)."
+
+#: ../lib/wiking/cms/cms.py:1832
+msgid "Event"
+msgstr "Udalosť"
+
+#: ../lib/wiking/cms/cms.py:1833
+msgid "The event brief summary."
+msgstr "Stručné zhrnutie obsahu udalosti."
+
+#: ../lib/wiking/cms/cms.py:1843
+msgid "Date in the past"
+msgstr "Dátum je v minulosti"
+
+#: ../lib/wiking/cms/cms.py:1852
+msgid "End date precedes start date"
+msgstr "Dátum konca je pred dátumom začiatku"
+
+#. Translators: Name of the extension module for simple forum-like discussions.
+#: ../lib/wiking/cms/cms.py:1868
+msgid "Discussions"
+msgstr ""
+
+#: ../lib/wiking/cms/cms.py:1869
+msgid "Allow logged in users to post messages as in a simple forum."
+msgstr ""
+
+#. Translators: Field label for posting a message to the discussion.
+#: ../lib/wiking/cms/cms.py:1875
+msgid "Your comment"
+msgstr ""
+
+#: ../lib/wiking/cms/cms.py:1918
+msgid "Your comment was posted to the discussion."
+msgstr ""
+
+#. Translators: The square brackets mark a link.  Please leave the brackets and the link
+#. target '?command=login' untouched and traslate 'log in' to fit into the sentence.
+#. The user only sees it as 'You need to log in before ...'.
+#: ../lib/wiking/cms/cms.py:1926
+msgid "Note: You need to [?command=login log in] before you can post messages."
+msgstr ""
+
+#. Translators: Section heading and menu item. Computer terminology idiom.
+#: ../lib/wiking/cms/cms.py:1935
+msgid "Site Map"
+msgstr "Mapa stránok"
+
+#. Translators: Section heading and menu item. Meaning the visual appearance. Computer
+#. terminology.
+#: ../lib/wiking/cms/cms.py:1967
+msgid "Stylesheets"
+msgstr "Štýly"
+
+#. Translators: Help string. Cascading Style Sheet (CSS) is computer terminology idiom.
+#: ../lib/wiking/cms/cms.py:1970
+#, fuzzy
+msgid "Manage available Cascading Style Sheets."
+msgstr "Správa použitých kaskádových štýlov."
+
+#. Translators: Heading of a form field determining in
+#. which media the page is displayed. E.g. web, print,
+#. Braille, speech.
+#: ../lib/wiking/cms/cms.py:1980
+msgid "Media"
+msgstr ""
+
+#. Translators: Precedence meaning position in a sequence of importance or priority.
+#: ../lib/wiking/cms/cms.py:1986
+#, fuzzy
+msgid "Number denoting the style sheet precedence."
+msgstr "Číslo udávajúce poradie panelu na stránke."
+
+#: ../lib/wiking/cms/cms.py:1992
+#, fuzzy
+msgid "All types"
+msgstr "Všetci používatelia"
+
+#. Translators: Braille as a type of media
+#: ../lib/wiking/cms/cms.py:1994
+msgid "Braille"
+msgstr ""
+
+#. Translators: Handheld device. Small computer.
+#: ../lib/wiking/cms/cms.py:1997
+msgid "Handheld"
+msgstr ""
+
+#. Translators: Print as a type of media (print, speech...)
+#: ../lib/wiking/cms/cms.py:1999
+#, fuzzy
+msgid "Print"
+msgstr "Privátne"
+
+#. Translators: Meaning computer screen
+#: ../lib/wiking/cms/cms.py:2002
+msgid "Screen"
+msgstr ""
+
+#. Translators: Speech as a type of media (print, speech...)
+#: ../lib/wiking/cms/cms.py:2004
+msgid "Speech"
+msgstr ""
+
+#: ../lib/wiking/cms/cms.py:2027
+msgid "User Management"
+msgstr "Správa používateľov"
+
+#: ../lib/wiking/cms/cms.py:2028
+msgid "Manage registered users and their privileges."
+msgstr "Správa registrovaných používateľov a ich oprávnenia."
+
+#: ../lib/wiking/cms/cms.py:2029
+msgid "Account disabled"
+msgstr "Neaktívy účet"
+
+#: ../lib/wiking/cms/cms.py:2031
+msgid "Contributor"
+msgstr "Prispievateľ"
+
+#: ../lib/wiking/cms/cms.py:2033
+msgid "Administrator"
+msgstr "Správca"
+
+#: ../lib/wiking/cms/cms.py:2057
+msgid ""
+"A valid login name can only contain letters, digits, underscores, dashes and "
+"dots and must start with a letter."
+msgstr ""
+"Platné prihlasovacie meno obsahuje iba písmená bez diakritiky, číslice, "
+"bodky, pomlčky a prípadne podčiarkovníky a musí začínať písmenom."
+
+#: ../lib/wiking/cms/cms.py:2061 ../lib/wiking/cms/cms.py:2068
+msgid ""
+"Please, write the password into each of the two fields to eliminate typos."
+msgstr "Prosím, zadajte heslo do oboch políčok, aby sa predišlo preklepom."
+
+#: ../lib/wiking/cms/cms.py:2063
+msgid "Old password"
+msgstr "Staré heslo"
+
+#: ../lib/wiking/cms/cms.py:2065
+msgid "Verify your identity by entering your original (current) password."
+msgstr "Potvrďte svoju identitu vložením starého (nového) hesla."
+
+#: ../lib/wiking/cms/cms.py:2066
+msgid "New password"
+msgstr "Nové heslo"
+
+#: ../lib/wiking/cms/cms.py:2070
+msgid "Full Name"
+msgstr "Celé meno"
+
+#: ../lib/wiking/cms/cms.py:2074
+msgid "First name"
+msgstr "Meno"
+
+#: ../lib/wiking/cms/cms.py:2075
+msgid "Surname"
+msgstr "Priezvisko"
+
+#: ../lib/wiking/cms/cms.py:2076
+msgid "Displayed name"
+msgstr "Zobrazené meno"
+
+#: ../lib/wiking/cms/cms.py:2077
+msgid ""
+"Leave blank if you want to be referred by your full name or enter an "
+"alternate name, such as nickname or monogram."
+msgstr ""
+"Ponechajte prázdne, ak chcete, aby vás systém oslovoval plným menom alebo "
+"zadajte iné meno, ako napr. prezývku alebo monogram."
+
+#: ../lib/wiking/cms/cms.py:2079 ../lib/wiking/cms/cms.py:2663
+msgid "E-mail"
+msgstr "Email"
+
+#: ../lib/wiking/cms/cms.py:2080 ../lib/wiking/cms/cms.py:2664
+msgid "Phone"
+msgstr "Telefón"
+
+#: ../lib/wiking/cms/cms.py:2081 ../lib/wiking/cms/cms.py:2665
+msgid "Address"
+msgstr "Adresa"
+
+#. Translators: Do not translate (means Uniform Resource Identifier).
+#: ../lib/wiking/cms/cms.py:2083
+msgid "URI"
+msgstr "URI"
+
+#: ../lib/wiking/cms/cms.py:2084
+msgid "Registered since"
+msgstr "Registrácia od"
+
+#: ../lib/wiking/cms/cms.py:2085
+msgid "Role"
+msgstr "Rola"
+
+#: ../lib/wiking/cms/cms.py:2089
+msgid ""
+"Select one of the predefined roles to grant the user the corresponding "
+"privileges."
+msgstr ""
+"Vyberte jednu z preddefinovaných rolí a priraďte tak používateľovi príslušné "
+"oprávnenie."
+
+#: ../lib/wiking/cms/cms.py:2108
+msgid "The activation code was succesfully confirmed."
+msgstr ""
+
+#: ../lib/wiking/cms/cms.py:2111
+msgid ""
+"Therefore it was verified that given e-mail address belongs to the person "
+"who requested the registration."
+msgstr ""
+
+#: ../lib/wiking/cms/cms.py:2113
+msgid ""
+"The user is now able to log in, but still has no rights (other than an "
+"anonymous user)."
+msgstr ""
+
+#. Translators: In other words, the administrator needs to approve the account first.
+#: ../lib/wiking/cms/cms.py:2116
+msgid ""
+"The account now awaits administrator's action to be given access rights."
+msgstr ""
+
+#: ../lib/wiking/cms/cms.py:2119
+msgid ""
+"The activation code was not yet confirmed by the user. Therefore it is not "
+"possible to trust that given e-mail address belongs to the person who "
+"requested the registration."
+msgstr ""
+
+#. Translators: %(date)s is replaced by date and time of registration
+#. expiration.
+#: ../lib/wiking/cms/cms.py:2124
+#, python-format
+msgid ""
+"The activation code will expire on %(date)s and the user will not be able to "
+"complete the registration anymore."
+msgstr ""
+
+#: ../lib/wiking/cms/cms.py:2128
+msgid ""
+"Use the button \"Resend activation code\" below to remind the user of his "
+"pending registration."
+msgstr ""
+
+#. Translators: %(date)s is replaced by date and time of registration expiration.
+#: ../lib/wiking/cms/cms.py:2132
+#, python-format
+msgid ""
+"The registration expired on %(date)s.  The user didn't confirm the "
+"activation code sent to the declared e-mail address in time."
+msgstr ""
+
+#: ../lib/wiking/cms/cms.py:2136
+msgid ""
+"The account should be deleted automatically if the server maintenence script "
+"is installed correctly.  Otherwise you can delete the account manually."
+msgstr ""
+
+#: ../lib/wiking/cms/cms.py:2143 ../lib/wiking/cms/cms.py:2671
+#, python-format
+msgid "Invalid e-mail address: %s"
+msgstr "Neplatná emailová adresa: %s"
+
+#: ../lib/wiking/cms/cms.py:2157 ../lib/wiking/cms/cms.py:2636
+msgid "Active users"
+msgstr "Aktívni používatelia"
+
+#: ../lib/wiking/cms/cms.py:2161
+#, fuzzy
+msgid "Unapproved accounts (pending admin approvals)"
+msgstr "Neplatná žiadosť o registráciu (čaká sa na emailové potvrdenie)"
+
+#: ../lib/wiking/cms/cms.py:2165
+#, fuzzy
+msgid "Unfinished registration requests (activation code not confirmed)"
+msgstr "Registrácia používateľa už bola potvrdená."
+
+#. Translators: Accounts as in user accounts (computer terminology).
+#: ../lib/wiking/cms/cms.py:2169
+msgid "All accounts"
+msgstr ""
+
+#: ../lib/wiking/cms/cms.py:2195 ../lib/wiking/cms/cms.py:2197
+#: ../lib/wiking/cms/cms.py:2219
+msgid "Personal data"
+msgstr "Osobné údaje"
+
+#: ../lib/wiking/cms/cms.py:2196 ../lib/wiking/cms/cms.py:2198
+#: ../lib/wiking/cms/cms.py:2220
+msgid "Contact information"
+msgstr "Kontaktné údaje"
+
+#: ../lib/wiking/cms/cms.py:2199 ../lib/wiking/cms/cms.py:2283
+msgid "Access rights"
+msgstr "Oprávnenie"
+
+#: ../lib/wiking/cms/cms.py:2203
+msgid "New user"
+msgstr "Nový používateľ"
+
+#: ../lib/wiking/cms/cms.py:2204
+msgid "Edit profile"
+msgstr "Upraviť profil"
+
+#: ../lib/wiking/cms/cms.py:2205
+msgid "Modify user's record"
+msgstr "Zmeniť údaje o používateľovi"
+
+#: ../lib/wiking/cms/cms.py:2223
+msgid "Login information"
+msgstr "Prihlasovacie údaje"
+
+#: ../lib/wiking/cms/cms.py:2249
+msgid "Enter your current password."
+msgstr "Zadajte svoje súčasné heslo."
+
+#: ../lib/wiking/cms/cms.py:2253
+msgid "Invalid password."
+msgstr "Neplatné heslo."
+
+#: ../lib/wiking/cms/cms.py:2257
+msgid "Enter the new password."
+msgstr "Vložte nové heslo."
+
+#: ../lib/wiking/cms/cms.py:2265
+msgid "The new password is the same as the old one."
+msgstr "Nové heslo je rovnaké ako staré."
+
+#: ../lib/wiking/cms/cms.py:2283
+msgid "Change access rights"
+msgstr "Zmeniť oprávnenie"
+
+#. Translators: Button label. Computer terminology. Use common word and form.
+#: ../lib/wiking/cms/cms.py:2287
+msgid "Enable"
+msgstr "Povoliť"
+
+#: ../lib/wiking/cms/cms.py:2287
+msgid "Enable this account"
+msgstr "Povoliť tento účet"
+
+#. Translators: Confirm button
+#: ../lib/wiking/cms/cms.py:2293 ../lib/wiking/cms/cms.py:2428
+msgid "Confirm"
+msgstr ""
+
+#: ../lib/wiking/cms/cms.py:2294
+msgid "Confirm the account without checking the activation code"
+msgstr ""
+
+#: ../lib/wiking/cms/cms.py:2297
+msgid "Change password"
+msgstr "Zmeniť heslo"
+
+#: ../lib/wiking/cms/cms.py:2297
+msgid "Change user's password"
+msgstr "Zmeniť heslo používateľa"
+
+#: ../lib/wiking/cms/cms.py:2305
+#, fuzzy
+msgid "Resend activation code"
+msgstr "Znovu poslať registračný kód"
+
+#: ../lib/wiking/cms/cms.py:2306
+msgid "Re-send registration mail"
+msgstr "Znovu poslať registračný email"
+
+#: ../lib/wiking/cms/cms.py:2314
+#, python-format
+msgid ""
+"The first step of your registration at %(server_hostname)s was successfully "
+"completed.\n"
+"\n"
+"For the next step visit the following URL and follow the instructions "
+"there:\n"
+"%(uri)s\n"
+msgstr ""
+"Prvý krok vašej registrácie na %(server_hostname)s bol úspešne dokončený.\n"
+"\n"
+"Na ďalšie kroky navštívte webovú adresu a riaďte sa inštrukciami:\n"
+"%(uri)s\n"
+
+#: ../lib/wiking/cms/cms.py:2325
+msgid "Registration accepted."
+msgstr "Registrácia prijatá."
+
+#: ../lib/wiking/cms/cms.py:2326
+msgid "Please, check your mailbox for instructions how to proceed."
+msgstr "Prosím, prečítajte si ďalšie inštrukcie vo vašej emailovej schránke."
+
+#: ../lib/wiking/cms/cms.py:2330
+msgid "Registration cancelled."
+msgstr "Registrácia zrušená."
+
+#: ../lib/wiking/cms/cms.py:2336
+#, python-format
+msgid "Your registration at %s"
+msgstr "Vaša registrácia na %s"
+
+#. Translators: Follos an email addres, e.g. ``Activation code was sent to joe@brailcom.org''
+#: ../lib/wiking/cms/cms.py:2344
+#, python-format
+msgid "Activation code was sent to %s."
+msgstr "Aktivačný kód bol zaslaný na  %s."
+
+#: ../lib/wiking/cms/cms.py:2352
+msgid "The account was enabled."
+msgstr "Účet bol povolený."
+
+#: ../lib/wiking/cms/cms.py:2353
+#, python-format
+msgid ""
+"Your account at %(uri)s has been enabled. Please log in with username '%"
+"(login)s' and your password."
+msgstr ""
+"Váš účet na %(uri)s bol povolený. Prihláste sa prosím pomocou vášho "
+"používateľského mena '%(login)s' a vášho hesla."
+
+#: ../lib/wiking/cms/cms.py:2356
+msgid "Your account has been enabled."
+msgstr "Váš účet bol povolený."
+
+#: ../lib/wiking/cms/cms.py:2361
+msgid "E-mail notification has been sent to:"
+msgstr "Emailové upozornenie bolo odoslané na:"
+
+#: ../lib/wiking/cms/cms.py:2386
+msgid "User registration already confirmed."
+msgstr "Registrácia používateľa už bola potvrdená."
+
+#: ../lib/wiking/cms/cms.py:2389
+#, fuzzy
+msgid "Invalid activation code."
+msgstr "Neplatný registračný kód."
+
+#: ../lib/wiking/cms/cms.py:2396
+#, python-format
+msgid ""
+"New user %(fullname)s registered at %(server_hostname)s. Please approve the "
+"account: %(uri)s"
+msgstr ""
+"Nový používateľ %(fullname)s sa registroval na %(server_hostname)s. Učiňte "
+"prosím potvrdenie registrácie: %(uri)s"
+
+#: ../lib/wiking/cms/cms.py:2402
+msgid "New user registration:"
+msgstr "Registrácia nového používateľa:"
+
+#: ../lib/wiking/cms/cms.py:2409
+msgid "E-mail notification has been sent to server administrator."
+msgstr "Emailové upozornenie bolo zaslané správcovi serveru."
+
+#: ../lib/wiking/cms/cms.py:2415
+msgid ""
+"Registration completed successfuly. Your account now awaits administrator's "
+"approval."
+msgstr ""
+"Registrácia prebehla úspešne. Váš účet teraz čaká na schválenie správcom."
+
+#: ../lib/wiking/cms/cms.py:2424
+msgid "The account was confirmed.  Grant the access rights now."
+msgstr ""
+
+#: ../lib/wiking/cms/cms.py:2432
+msgid ""
+"Please confirm the account only if you are sure that the e-mail address "
+"belongs to given user."
+msgstr ""
+
+#: ../lib/wiking/cms/cms.py:2446
+msgid "Registration confirmed"
+msgstr "Registrácia potvrdená"
+
+#: ../lib/wiking/cms/cms.py:2637
+msgid "Listing of all active user accounts."
+msgstr "Výpis všetkých aktívnych používateľských účtov."
+
+#: ../lib/wiking/cms/cms.py:2656
+msgid "Organizations"
+msgstr "Organizácie"
+
+#: ../lib/wiking/cms/cms.py:2657
+msgid "Manage institutions and other organizations."
+msgstr "Správa inštitúcií a iných organizácií."
+
+#: ../lib/wiking/cms/cms.py:2662
+msgid "VAT id"
+msgstr "DIČ"
+
+#: ../lib/wiking/cms/cms.py:2666
+msgid "Notes"
+msgstr "Poznámky"
+
+#: ../lib/wiking/cms/cms.py:2738
+msgid "System Texts"
+msgstr "Systémové texty"
+
+#: ../lib/wiking/cms/cms.py:2739
+msgid "Edit miscellaneous system texts."
+msgstr "Prispôsobiť rôzne systémové texty."
+
+#: ../lib/wiking/cms/cms.py:2746 ../lib/wiking/cms/cms.py:2975
+msgid "Label"
+msgstr "Názov"
+
+#: ../lib/wiking/cms/cms.py:2749 ../lib/wiking/cms/cms.py:2978
+msgid "Purpose"
+msgstr "Účel"
+
+#: ../lib/wiking/cms/cms.py:2752 ../lib/wiking/cms/cms.py:2981
+#: ../lib/wiking/cms/cms.py:3169
+msgid ""
+"Edit the given text as needed, in accordance with structured text rules."
+msgstr ""
+"Upravte text podľa potreby, formátovaný podľa pravidiel pre štrukturovaný "
+"text."
+
+#: ../lib/wiking/cms/cms.py:2970
+msgid "E-mails"
+msgstr "Emaily"
+
+#: ../lib/wiking/cms/cms.py:2971
+msgid "Edit e-mail texts."
+msgstr "Upraviť text emailov."
+
+#: ../lib/wiking/cms/cms.py:2982 ../lib/wiking/cms/cms.py:3167
+msgid "Subject"
+msgstr "Predmet"
+
+#: ../lib/wiking/cms/cms.py:2983
+msgid "Additional recipients"
+msgstr "Ďaľší príjemcovia"
+
+#: ../lib/wiking/cms/cms.py:2984
+msgid "Comma separated list of e-mail addresses."
+msgstr "Zoznam emailových adries oddelených čiarkou."
+
+#. Translators: Section title and menu item. Sending emails to multiple recipients.
+#: ../lib/wiking/cms/cms.py:3156
+#, fuzzy
+msgid "Bulk E-mails"
+msgstr "Emaily"
+
+#: ../lib/wiking/cms/cms.py:3162
+#, fuzzy
+msgid "Sender address"
+msgstr "Prednastavená adresa odosielateľa"
+
+#: ../lib/wiking/cms/cms.py:3163
+msgid "E-mail address of the sender."
+msgstr ""
+
+#. Translators: List of recipients of an email message
+#: ../lib/wiking/cms/cms.py:3165
+msgid "Recipients"
+msgstr ""
+
+#: ../lib/wiking/cms/cms.py:3173
+#, fuzzy
+msgid "State"
+msgstr "Stav"
+
+#. Translators: State of processing of an email message (e.g. New, Sending, Sent)
+#: ../lib/wiking/cms/cms.py:3183
+#, fuzzy
+msgid "Sent"
+msgstr "Nastavenie"
+
+#. Translators: State of processing of an email message (e.g. New, Sending, Sent)
+#: ../lib/wiking/cms/cms.py:3186
+msgid "Sending"
+msgstr ""
+
+#. Translators: State of processing of an email message (e.g. New, Sending, Sent)
+#: ../lib/wiking/cms/cms.py:3189
+#, fuzzy
+msgid "New"
+msgstr "Novinky"
+
+#. Translators: All as in ``all user roles''
+#: ../lib/wiking/cms/cms.py:3198
+msgid "All"
+msgstr ""
+
+#: ../lib/wiking/cms/cms.py:3202
+#, fuzzy, python-format
+msgid "%(subject)s"
+msgstr "Predmet"
+
+#. Translators: Button label meaning save this email text for later repeated usage
+#: ../lib/wiking/cms/cms.py:3206
+msgid "Use as a Template"
+msgstr ""
+
+#. Translators: Description of button for creating a template of an email
+#: ../lib/wiking/cms/cms.py:3208
+msgid "Edit this mail for repeated use"
+msgstr ""
+
+#: ../lib/wiking/cms/appl.py:58
+msgid "Manage this site"
+msgstr "Správa obsahu"
+
+#: ../lib/wiking/cms/appl.py:59
+msgid "Enter the Wiking Management Interface"
+msgstr "Vstúpiť do rozhrania správy obsahu"
+
+#: ../lib/wiking/cms/appl.py:61
+msgid "Leave the Management Interface"
+msgstr "Opustiť rozhranie správy obsahu"
+
+#: ../lib/wiking/cms/appl.py:129
+#, fuzzy
+msgid "Wiking Management Interface"
+msgstr "Vstúpiť do rozhrania správy obsahu"
+
+#. Translators: Yes/No configuration option label. Should the login panel be visible?
+#: ../lib/wiking/cms/configuration.py:36
+msgid "Allow login panel"
+msgstr "Zobraziť panel prihlásenia"
+
+#: ../lib/wiking/cms/configuration.py:37
+msgid ""
+"If enabled, the information about the currently logged user and login/logout "
+"controls will be present on each page as a separate panel.  This panel will "
+"always be the first panel on the page."
+msgstr ""
+"Ak túto voľbu povolíte, informácie o práve prihlásenom používateľovi a "
+"ovládacie prvky na prihlásenie/odhlásenie budú zobrazené v samostatnom "
+"paneli.  Tento panel bude vždy zobrazený ako prvý z panelov."
+
+#. Translators: Yes/No configuration option label. Should link to WMI be visible?  "WMI"
+#. stands for Wiking Management Interface.  Don't feel obliged to use an abbreviation.  Use
+#. whatever brief form obviously referning to whatever translation you used for "Wiking
+#. Management Interface".
+#: ../lib/wiking/cms/configuration.py:47
+msgid "Allow WMI link"
+msgstr "Povoliť odkaz do správcovského rozhrania"
+
+#. Translators: Yes/no configuration label. Can new users register to this
+#. website/application?
+#: ../lib/wiking/cms/configuration.py:55
+msgid "Allow new user registration"
+msgstr "Povoliť registráciu nových používateľov"
+
+#: ../lib/wiking/cms/configuration.py:56
+msgid ""
+"If enabled, all visitors are allowed to create a user account.  If disabled, "
+"new user accounts must be created by administrator.  Note, that the newly "
+"created accounts are inactive (at least with the default implementation of "
+"the user management module), so the creation of the account doesn't give the "
+"user any actual privileges."
+msgstr ""
+"Ak je to povolené, všetkým návštevníkom je umožnené vytvoriť si "
+"používateľský účet.  Ak túto možnosť zakážete, budú všetky účty vytvárané "
+"správcom.  Novo vytvorené účty sú vždy neaktívne (aspoň vo východzej "
+"implementácii modulu správy užívateľov), takže vytvorenie účtu ešte samo o "
+"sebe nedáva užívateľovi žiadne práva."
+
+#. Translators: Maximal size an uploaded file can have.
+#: ../lib/wiking/cms/configuration.py:65
+msgid "Maximal upload size"
+msgstr "Maximálna veľkosť pre upload"
+
+#: ../lib/wiking/cms/configuration.py:66
+msgid ""
+"The maximal size of uploaded files in bytes.  The server needs to be "
+"relaoded for the changes in this option to take effect."
+msgstr ""
+"Maximálna veľkosť pre uploadované súbory v bajtoch. Pozor, aby sa zmeny "
+"uplatnili, je nutné server reštartovať."
 
 #~ msgid "Good Bye"
 #~ msgstr "Dovidenia"
