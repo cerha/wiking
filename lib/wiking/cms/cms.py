@@ -1894,7 +1894,7 @@ class Discussions(News):
     def related(self, req, binding, record, uri):
         # We don't want to insert messages through a separate insert form, so we embed one directly
         # under the message list and process the insertion here as well.
-        if req.param('form_name') == self.name() and req.param('content'):
+        if req.param('form_name') == self.name() and req.param('content') and not req.wmi:
             if not req.user():
                 raise AuthenticationError()
             elif not req.check_roles(Roles.USER):
@@ -1917,14 +1917,15 @@ class Discussions(News):
                 #elif req.param('posted') == '1':
                 req.message(_("Your comment was posted to the discussion."))
         content = [super(Discussions, self).related(req, binding, record, uri)]
-        if req.check_roles(Roles.USER):
-            content.append(self._form(pw.EditForm, req, reset=None))
-        else:
-            # Translators: The square brackets mark a link.  Please leave the brackets and the link
-            # target '?command=login' untouched and traslate 'log in' to fit into the sentence.
-            # The user only sees it as 'You need to log in before ...'.
-            msg = _("Note: You need to [?command=login log in] before you can post messages.")
-            content.append(lcg.Container((lcg.p(msg, formatted=True),), id='login-info'))
+        if not req.wmi:
+            if req.check_roles(Roles.USER):
+                content.append(self._form(pw.EditForm, req, reset=None))
+            else:
+                # Translators: The square brackets mark a link.  Please leave the brackets and the
+                # link target '?command=login' untouched and traslate 'log in' to fit into the
+                # sentence.  The user only sees it as 'You need to log in before ...'.
+                msg = _("Note: You need to [?command=login log in] before you can post messages.")
+                content.append(lcg.Container((lcg.p(msg, formatted=True),), id='login-info'))
         return lcg.Container(content, id='discussions')
         
         
