@@ -81,6 +81,29 @@ class Application(CookieAuthentication, wiking.Application):
             return super(Application, self).handle(req)
 
     def module_uri(self, req, modname):
+        """Return the base URI of given Wiking module (relative to server root).
+
+        This method implements the interface defined by 'wiking.Application.module_uri()'
+        specifically for the Wiking CMS application.
+
+        The method bahaves as follows:
+          1. Static mapping as defined by the parent class is searched first.  If the module is
+             found there, the corresponding path is returned.
+          2. Otherwise, if the application is currently in the Wiking Management Interface mode,
+             the WMI path is returned as '/_wmi/modname' (any module is accessible through this
+             path in WMI).
+          3. If the above fails, the module is searched within CMS pages as their extension module.
+             If the module is found as an extension module of a particular page, the path to that
+             page (including the subpath to the module) is returned.  Beware that if the same
+             module had been used as an extension module for more than one page, there would be no
+             way to distinguish which page to use to form the path and thus None is returned in
+             such cases.
+          4. If the above fails and the module is derived from 'CMSExtensionModule', its parent
+             module is searched according to 3. and if found, the corresponding path plus the path
+             to the submodule is returned.
+        
+        """
+        
         # Try the static mapping first.
         uri = super(Application, self).module_uri(req, modname)
         if uri is None:
