@@ -1,3 +1,9 @@
+2009-10-03  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/cms/cms.py:
+	* resources/css/default.css:
+	Added a simple forum-like discussion module.
+
 2009-10-02  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/cms/appl.py: 

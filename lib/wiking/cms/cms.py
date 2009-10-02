@@ -1792,7 +1792,7 @@ class News(EmbeddableCMSModule):
     RIGHTS_update = (Roles.ADMIN, Roles.OWNER)
     RIGHTS_delete = (Roles.ADMIN,)
     _mapping_identifier_cache = BoundCache()
-    
+
     def _record_uri(self, req, record, *args, **kwargs):
         def get():
             return record.cb_value('mapping_id', 'identifier').value()
@@ -1862,6 +1862,72 @@ class Planner(News):
             return condition
 
 
+class Discussions(News):
+    class Spec(News.Spec):
+        # Translators: Name of the extension module for simple forum-like discussions.
+        title = _("Discussions")
+        help = _("Allow logged in users to post messages as in a simple forum.")
+        table = 'news'
+        def fields(self):
+            fields = pp.Fields([f for f in super(Discussions.Spec, self).fields() 
+                                if f.id() not in ('date', 'date_title')])
+            # Translators: Field label for posting a message to the discussion.
+            overridden = (Field(inherit=fields['content'], label=_("Your comment"),
+                                compact=True, descr=_STRUCTURED_TEXT_DESCR),)
+            return tuple(fields.fields(override=overridden))
+            
+            return fields
+        sorting = (('timestamp', ASC),)
+        columns = ('timestamp', 'author')
+        layout = ('content',)
+        list_layout = pp.ListLayout(lcg.TranslatableText("%(timestamp)s, %(author)s:"),
+                                    content=('content',))
+
+    # Insertion is handled within the 'related()' method (called on page 'view' action).
+    RIGHTS_insert = ()
+    
+    def _link_provider(self, req, uri, record, cid, **kwargs):
+        if cid is None and not req.wmi:
+            return None
+        return super(Discussions, self)._link_provider(req, uri, record, cid, **kwargs)
+    
+    def related(self, req, binding, record, uri):
+        # We don't want to insert messages through a separate insert form, so we embed one directly
+        # under the message list and process the insertion here as well.
+        if req.param('form_name') == self.name() and req.param('content'):
+            if not req.user():
+                raise AuthenticationError()
+            elif not req.check_roles(Roles.USER):
+                raise AuthorizationError()
+            prefill = dict(timestamp=now(),
+                           lang=req.prefered_language(),
+                           mapping_id=record['mapping_id'].value(),
+                           author=req.user().uid(),
+                           title='-',
+                           content=req.param('content'))
+            new_record = self._record(req, None, new=True, prefill=prefill)
+            try:
+                self._insert(new_record)
+            except pd.DBException, e:
+                req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
+            else:
+                # Redirect the POST request to GET to avoid double postings on reload.
+                # Ouha: We can't redirect from 'related()'...
+                #return req.redirect(make_uri(req.uri(), posted=1))
+                #elif req.param('posted') == '1':
+                req.message(_("Your comment was posted to the discussion."))
+        content = [super(Discussions, self).related(req, binding, record, uri)]
+        if req.check_roles(Roles.USER):
+            content.append(self._form(pw.EditForm, req, reset=None))
+        else:
+            # Translators: The square brackets mark a link.  Please leave the brackets and the link
+            # target '?command=login' untouched and traslate 'log in' to fit into the sentence.
+            # The user only sees it as 'You need to log in before ...'.
+            msg = _("Note: You need to [?command=login log in] before you can post messages.")
+            content.append(lcg.Container((lcg.p(msg, formatted=True),), id='login-info'))
+        return lcg.Container(content, id='discussions')
+        
+        
 class SiteMap(Module, Embeddable):
     """Extend page content by including a hierarchical listing of the main menu."""
 

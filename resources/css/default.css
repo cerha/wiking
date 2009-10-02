@@ -355,6 +355,47 @@ form.pytis-form .account-info {
     background-repeat: no-repeat;
 }
 
+div.discussions form.list-view.discussions .summary { display: none; }
+div.discussions form.list-view.discussions h3 { 
+    font-weight: normal;
+    font-size: 1em;
+    background-color: #eee;
+    border-width: 1px 0;
+}
+
+div.discussions form.edit-form.discussions { 
+    margin: 1.2em 0;
+    background-color: $color.frame-bg;
+    border: 1px solid $color.frame-border;
+    border-width: 1px 0;
+    padding: 0.3em;
+}
+div.discussions form.edit-form.discussions div.group,
+div.discussions form.edit-form.discussions div.submit { 
+    margin: 0;
+    padding: 0;
+    background: none;
+    border: none;
+}
+div.discussions form.edit-form.discussions div.submit { 
+    padding: 0;
+    text-align: right;
+}
+div.discussions form.edit-form.discussions div.submit input { 
+    margin: 0;
+}
+div.discussions form.edit-form.discussions div.footer { display: none; }
+div.discussions div.login-info p {
+    margin: 1em 0;
+    padding: 0.5em;
+    padding-left: 28px;
+    border: dotted 2px $color.message-border;
+    /* background-color: $color.background; */
+    background-image: url(/_resources/images/info.png);
+    background-position: left center;
+    background-repeat: no-repeat;
+}
+
 /* Border-less table:
 form.browse-form.mapping table {
     border-collapse: separate;
