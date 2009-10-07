@@ -1885,12 +1885,15 @@ class Discussions(News):
 
     # Insertion is handled within the 'related()' method (called on page 'view' action).
     RIGHTS_insert = ()
-    
+
+    def _rss_title(self, req, record):
+        return record.display('author')
+
     def _link_provider(self, req, uri, record, cid, **kwargs):
         if cid is None and not req.wmi:
             return None
         return super(Discussions, self)._link_provider(req, uri, record, cid, **kwargs)
-    
+
     def related(self, req, binding, record, uri):
         # We don't want to insert messages through a separate insert form, so we embed one directly
         # under the message list and process the insertion here as well.

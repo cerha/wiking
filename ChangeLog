@@ -1,3 +1,8 @@
+2009-10-07  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/cms/cms.py:
+	Improve discussion RSS item title.
+
 2009-10-03  Tomas Cerha  <cerha@brailcom.org>
 
 	* translations/wiking-cms.*.po: 
