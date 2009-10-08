@@ -1,3 +1,11 @@
+2009-10-08  Tomas Cerha  <cerha@brailcom.org>
+
+	* doc/src/devel/overview.en.txt: 
+	* lib/wiking/application.py: 
+	* lib/wiking/request.py: 
+	* lib/wiking/cms/appl.py: 
+	Documentation improvements.
+
 2009-10-07  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/cms/cms.py:

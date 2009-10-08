@@ -87,8 +87,8 @@ class Application(CookieAuthentication, wiking.Application):
         specifically for the Wiking CMS application.
 
         The method bahaves as follows:
-          1. Static mapping as defined by the parent class is searched first.  If the module is
-             found there, the corresponding path is returned.
+          1. Static mapping as defined by the parent class (see 'wiking.application._MAPPING') is
+             searched first.  If the module is found there, the corresponding path is returned.
           2. Otherwise, if the application is currently in the Wiking Management Interface mode,
              the WMI path is returned as '/_wmi/modname' (any module is accessible through this
              path in WMI).
@@ -101,6 +101,32 @@ class Application(CookieAuthentication, wiking.Application):
           4. If the above fails and the module is derived from 'CMSExtensionModule', its parent
              module is searched according to 3. and if found, the corresponding path plus the path
              to the submodule is returned.
+
+         The mapping used in step 1. is called static, because it is a hardcoded assignment of URIs
+         of modules needed for Wiking CMS to run (such as 'Stylesheets', 'Documentation',
+         'Resources', etc).  The user is not able to change this mapping.  The convention is, that
+         URIs in the static mapping in Wiking CMS start with an underscore to prevent conflicts
+         with user defined URIs (identifiers) of CMS pages (which are dynamic from this perspective
+         — the user may change them).
+
+         Examples (calling through 'WikingRequest.module_uri()'):
+
+           req.module_uri('Documentation')
+
+         Returns '/_doc'.
+           
+           req.module_uri('Planner')
+
+         Returns '/_wmi/Planner' in WMI or '/planner' outside WMI if the module 'Planner' is used
+         in a page with an identifier 'planner' or None if the module 'Planner' is not used in any
+         CMS page or if it is used more than once.  The identifier, of course, may be any string
+         the user decides to use, not just 'planner'.
+         
+           req.module_uri('BugComments')
+
+         Returns '/_wmi/BugComments' in WMI or '/bts/bug-comments' outside WMI if the module
+         'WikingBTS' is used in a page with an identifier 'bts' ('BugComments' is a submodule of
+         'WikingBTS' with a static subpath 'bug-comments').
         
         """
         

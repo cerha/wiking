@@ -666,6 +666,8 @@ class WikingRequest(Request):
     def module_uri(self, modname):
         """Return the base URI of given Wiking module (relative to server root).
 
+        The argument 'modname' is the Wiking module name as a string.
+        
         If the module has no definite global path within the application, None may be returned.
         
         The URI is actually obtained from 'Application.module_uri()', but is cached at this level

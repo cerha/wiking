@@ -46,8 +46,8 @@ class Application(Module):
     Other parts (after the first slash) may be used by the module for further resolution of the
     request.
 
-    This constant is used by the default implementation of 'Application.handle()'.  See its
-    documentation for more information.
+    This constant is used by the default implementation of 'Application.handle()' and
+    'Application.module_uri()'.  See their documentation for more information.
     
     """
     
@@ -102,6 +102,8 @@ class Application(Module):
     
     def module_uri(self, req, modname):
         """Return the base URI of given Wiking module (relative to server root).
+
+        The argument 'modname' is the Wiking module name as a string.
 
         If the module has no definite global path within the application, None may be returned.
         The exact behavior depends on the particular application in use.  Please see the
