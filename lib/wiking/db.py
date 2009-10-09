@@ -86,7 +86,7 @@ class PytisModule(Module, ActionHandler):
     """
     _ALLOW_TABLE_LAYOUT_IN_FORMS = True
     """Default value to pass to 'pytis.web.EditForm' 'allow_table_layout' constructor argument."""
-    _BROWSE_FORM_LIMITS = (25, 50, 100, 200, 500)
+    _BROWSE_FORM_LIMITS = (50, 100, 200, 500)
     """Default value to pass to 'pytis.web.BrowseForm' 'limits' constructor argument."""
     _BROWSE_FORM_DEFAULT_LIMIT = 50
     """Default value to pass to 'pytis.web.BrowseForm' 'limit' constructor argument."""
