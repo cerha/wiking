@@ -1,3 +1,18 @@
+2009-10-14  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/util.py: 
+	Derive the default pytis data class used by Wiking modules from
+	`DBAPIData' to avoid application of pytis access restrictions.
+
+2009-10-13  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/modules.py: 
+	* lib/wiking/cms/cms.py:
+	Allow passing arbitrary session key to session initialization call.
+
+	* lib/wiking/modules.py: 
+	Don't use module's docstring as default description text.
+
 2009-10-09  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/db.py:

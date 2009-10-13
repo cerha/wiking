@@ -780,6 +780,7 @@ class LoginCtrl(lcg.Content):
             result = lcg.concat(_("Login"), ': ', result)
         return result
 
+
 class LoginDialog(lcg.Content):
     """Login dialog for entering login name and password."""
     def __init__(self, message=None):
@@ -893,12 +894,27 @@ class Action(pytis.presentation.Action):
     def allow_referer(self):
         return self._allow_referer
 
-class Data(pd.DBDataDefault):
+
+from pytis.data.dbapi import DBAPIData
+    
+class WikingDefaultDataClass(DBAPIData):
+    """Default data class used by wiking modules connected to pytis data objects.
+
+    Web applications don't use pytis access rights, since they always access the database as one
+    system user (the web server).  Wiking authentication and authorization logic is implemented
+    completely within Wiking modules and doesn't penetrate to the pytis layer.  We can't use the
+    default data class defined by pytis, because it implements pytis access restrictions, so we
+    define a Wiking specific class derived just from the basic pytis data accessor class.
+
+    Apart from the unresticted access described above, this class only implements a few helper
+    methods which make data access bit easier.
+
+    """
 
     _dbfunction = {} # DBFunftion* instance cache
 
     def __init__(self, *args, **kwargs):
-        super(Data, self).__init__(*args, **kwargs)
+        super(WikingDefaultDataClass, self).__init__(*args, **kwargs)
         # We don't want to care how `connection_data' is stored in the parent class...
         self._dbconnection = kwargs['connection_data'].select(kwargs.get('connection_name'))
 
@@ -951,7 +967,7 @@ class Specification(pp.Specification):
     _instance_cache = {}
     help = None # Default value needed by CMSModule.descr()
     actions = []
-    data_cls = Data
+    data_cls = WikingDefaultDataClass
     def __new__(cls, module, resolver):
         try:
             instance = cls._instance_cache[module]
