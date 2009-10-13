@@ -39,7 +39,7 @@ class Module(object):
     @classmethod
     def descr(cls):
         """Return brief module description as a string or 'lcg.LocalizableText'."""
-        return cls._DESCR or doc(cls)
+        return cls._DESCR
 
     def __init__(self, resolver, **kwargs):
         """Initialize the instance.
