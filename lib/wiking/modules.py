@@ -416,7 +416,8 @@ class CookieAuthentication(object):
             assert isinstance(user, User)
             # Login succesfull
             self._auth_hook(req, login, user, initial=True, success=True)
-            session_key = session.init(req, user)
+            session_key = session.session_key()
+            session.init(req, user, session_key)
             req.set_cookie(self._LOGIN_COOKIE, login, expires=730*day, secure=secure)
             req.set_cookie(self._SESSION_COOKIE, session_key, secure=secure)
         else:
@@ -459,31 +460,39 @@ class Session(Module):
     requests.
     
     """
-    _SESSION_KEY_LENGTH = 32
-    """Size of session key in *bytes* (the length of the string representation is double)."""
 
-    def _new_session_key(self):
-        return ''.join(['%02x' % ord(c) for c in os.urandom(self._SESSION_KEY_LENGTH)])
-        #except NotImplementedError:
-        #    import random
-        #    return hex(random.randint(0, pow(256, self._SESSION_KEY_LENGTH)))[2:]
-    
-    def init(self, req, user):
-        """Begin new session for given user ('User' instance).
+    def session_key(self, length=32):
+        """Generate a new random session key and return it as a string.
 
-        The method is responsible for generating new session key and storing it to a persistent
-        storage to allow later checking during upcoming requests.  The method '_new_session_key()'
-        may be used to generate a new session key.
-
+        Arguments:
         
-        Returns new session key as a string to be sent to the user's browser as a cookie used for
-        authentication during next requests.
+          length -- Size of session key in *bytes* (the length of the hex string representation is
+            twice as much)
+
+        This method may be used to generate a new key to be passed to the 'init()' method, but the
+        caller may decide to generate the key himself.  In any case, the security of the
+        authentication method depends on the randomness of the session key, so it should be done
+        with caution.
 
         """
-        return None
-        
-    def failure(self, req, user, login):
-        """Store information about unsuccessful login attempt (optional)."""
+        return ''.join(['%02x' % ord(c) for c in os.urandom(length)])
+        #except NotImplementedError:
+        #    import random
+        #    return hex(random.randint(0, pow(256, length)))[2:]
+    
+    def init(self, req, user, session_key):
+        """Begin new session for given user ('User' instance) with given session key.
+
+        The method is responsible for storing given session key in a persistent storage to allow
+        later checking during upcoming requests.
+
+        The caller is responsible for storing the session key within the user's browser as a cookie
+        and passing it back to the 'check()' or 'close()' methods within upcoming requests.
+
+        The method 'session_key()' may be used to generate a new session key to be passed as the
+        'session_key' argument.
+
+        """
         return None
         
     def check(self, req, user, session_key):
@@ -494,6 +503,10 @@ class Session(Module):
         """Remove persistent session information and clean-up after user logged out."""
         pass
     
+    def failure(self, req, user, login):
+        """Store information about unsuccessful login attempt (optional)."""
+        return None
+        
 
 class Search(Module, ActionHandler):
 

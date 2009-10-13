@@ -484,19 +484,17 @@ class Session(PytisModule, wiking.Session):
     class Spec(Specification):
         fields = [Field(_id) for _id in ('session_id', 'uid', 'session_key', 'last_access')]
 
-    def init(self, req, user):
+    def init(self, req, user, session_key):
         # Delete all expired records first...
         data = self._data
         now = mx.DateTime.now().gmtime()
         expiration = mx.DateTime.TimeDelta(hours=cfg.session_expiration)
         data.delete_many(pd.LE('last_access', pd.Value(pd.DateTime(), now - expiration)))
-        session_key = self._new_session_key()
         row, success = data.insert(data.make_row(uid=user.uid(),
                                                  session_key=session_key,
                                                  last_access=now))
         self._module('SessionLog').log(req, now, row['session_id'].value(),
                                        user.uid(), user.login())
-        return session_key
         
     def failure(self, req, user, login):
         self._module('SessionLog').log(req, mx.DateTime.now().gmtime(), None,
@@ -513,6 +511,8 @@ class Session(PytisModule, wiking.Session):
         return False
 
     def close(self, req, user, session_key):
+        # This deletion will lead to end_time in cms_session_log_data being set to last_access
+        # value of the deleted row.  Use delete_many() because we don't know session_id.
         self._data.delete_many(pd.AND(pd.EQ('uid', pd.Value(pd.Integer(), user.uid())),
                                       pd.EQ('session_key', pd.Value(pd.DateTime(), session_key))))
             
