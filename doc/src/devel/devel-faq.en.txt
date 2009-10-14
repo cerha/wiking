@@ -136,26 +136,26 @@ condition of the parent class as in this example:
 
 === How to get an URI of a module ===
 
-There are two basic cases.
+In applications built on top of Wiking CMS there are two basic cases.
 
-If the module is directly related to a webpage (either statically
-or through WMI) and is used only once in the whole website,
-use the CMSExtensionModule.module_uri().
+If the module is directly related to a webpage (either statically or through a
+CMS page) and is used only once in the whole website, use
+'Request.module_uri()'.
 
-If the module is only accessible through bindings to another module or
-is not directly related to any other module, module_uri() returns None
-and it is necessary to construct the URI manually based on
-server_uri() and/or module_uri() of a related module which is directly
-related to a webpage.
+If the module is only accessible through bindings to another module or is not
+directly related to any other module, 'module_uri()' returns None and it is
+necessary to construct the URI manually based on 'Request.server_uri()' and/or
+'Request.module_uri()' of a related module which is directly related to a
+webpage.
 
 Example of the later case from wiking-boards:
 ------
   board_uri = self._module('WikingBoards').link(req, record['board_id'])
   uri = req.server_uri() + board_uri + '/threads/%s' % (record['thread_id'].value(),)
 ------
-
-In any case, study CMSExtensionModule.module_uri() to get more
-information.
+ 
+In any case, study 'wiking.cms.Application.module_uri()' (which is called by
+'wiking.Request.module_uri()' internally) to get more information.
 
 == Working with Data ==
 

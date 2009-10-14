@@ -1,5 +1,8 @@
 2009-10-14  Tomas Cerha  <cerha@brailcom.org>
 
+	* doc/src/devel/devel-faq.en.txt:
+	Improve the recent addition to be more precise.
+
 	* lib/wiking/cms/appl.py:
 	Improve the recent docstring addition to be more precise.
 
