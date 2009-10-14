@@ -49,47 +49,21 @@ class Handler(object):
         return self._serve_document(req, document)
 
     def _serve_minimal_error_document(self, req, error):
-        """Serve a minimal error page avoiding using the exporter."""
-        req.set_status(error.ERROR_CODE)
-        admin = cfg.webmaster_address
-        from xml.sax.saxutils import escape
-        from wiking import __version__
-        texts = (
-            error.ERROR_CODE, error.title(),
-            error.title(),
-            _("The server was unable to complete your request."),
-            _("Please inform the server administrator, %(admin)s if the problem persists.",
-              admin=cfg.webmaster_address),
-            _("The error message was:"),
-            escape(error.args[0]),
-            __version__)
+        """Serve a minimal error page using the minimalistic exporter."""
+        if isinstance(error, HttpError):
+            req.set_status(error.ERROR_CODE)
+        node = lcg.ContentNode(req.uri().encode('utf-8'),
+                               title=error.title(),
+                               content=error.message(req))
+        exporter = MinimalExporter(translations=cfg.translation_path)
         try:
-            tr = translator(req.prefered_language())
-            texts = tuple([tr.translate(t) for t in texts])
+            lang = req.prefered_language()
         except:
-            pass
-        result = (
-            '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">\n' 
-            '<html>\n'
-            '<head>\n'
-            ' <title>%d %s</title>\n'
-            ' <link rel="stylesheet" type="text/css" href="/_css/default.css" />\n'
-            '</head>\n'
-            '<body>\n'
-            ' <div id="main">\n'
-            '  <h1>%s</h1>\n'
-            '  <p>%s</p>\n'
-            '  <p>%s</p>\n'
-            '  <p>%s</p>\n'
-            '  <pre class="lcg-preformatted-text">%s</pre>\n'
-            ' </div>\n'
-            ' <div id="bottom-bar">\n'
-            '  <hr/>\n'
-            '  <span><a href="http://www.freebsoft.org/wiking">Wiking</a> %s</span>\n'
-            ' </div>\n'
-            '</body>\n'
-            '</html>\n') 
-        return req.result(result % texts)
+            lang = cfg.default_language_by_domain.get(req.server_hostname(current=True),
+                                                      cfg.default_language) or 'en'
+        context = exporter.context(node, lang=lang)
+        exported = exporter.export(context)
+        return req.result(context.translate(exported))
 
     def handle(self, req):
         application = self._application
@@ -131,6 +105,7 @@ class Handler(object):
                 return application.handle_exception(req, e)
             except RequestError, error:
                 return self._serve_minimal_error_document(req, error)
+
 
 class ModPythonHandler(object):
     """The main Apache/mod_python handler interface.

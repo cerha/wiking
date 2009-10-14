@@ -20,6 +20,25 @@ from lcg import concat
 
 _ = lcg.TranslatableTextFactory('wiking')
 
+class MinimalExporter(lcg.HtmlExporter):
+    _BODY_PARTS = ('main', 'bottom_bar')
+
+    def _head(self, context):
+        return super(MinimalExporter, self)._head(context) + \
+               ['<link rel="stylesheet" type="text/css" href="/_css/%s">' % style
+                for style in ('default.css', 'layout.css')]
+    
+    def _main(self, context):
+        return (context.generator().h(context.node().title(), 1),
+                super(MinimalExporter, self)._content(context))
+        
+    def _bottom_bar(self, context):
+        g = context.generator()
+        import wiking
+        return (g.hr(cls='hidden'),
+                g.span(g.link("Wiking", "http://www.freebsoft.org/wiking")+' '+wiking.__version__))
+
+
 class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
 
     class Context(lcg.HtmlExporter.Context):

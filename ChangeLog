@@ -1,5 +1,10 @@
 2009-10-14  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/export.py:
+	* lib/wiking/handler.py:
+	Export error documents using a minimalistic exporter rather than
+	printing HTML directly.
+
 	* doc/src/devel/devel-faq.en.txt:
 	Improve the recent addition to be more precise.
 
