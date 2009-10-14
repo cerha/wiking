@@ -86,14 +86,13 @@ class Application(CookieAuthentication, wiking.Application):
         This method implements the interface defined by 'wiking.Application.module_uri()'
         specifically for the Wiking CMS application.
 
+
         The method bahaves as follows:
 
           1. Static mapping as defined by the parent class (see 'wiking.application._MAPPING') is
              searched first.  If the module is found there, the corresponding path is returned.
-             Particularly, this method will return None for modules, which are not directly
-             associated with any page but only accessible through bindings to another modules.
           2. Otherwise, if the application is currently in the Wiking Management Interface mode,
-             the WMI path is returned as '/_wmi/modname' (any module is accessible through this
+             the WMI path is returned as '/_wmi/<modname>' (any module is accessible through this
              path in WMI).
           3. If the above fails, the module is searched within CMS pages as their extension module.
              If the module is found as an extension module of a particular page, the path to that
@@ -104,6 +103,9 @@ class Application(CookieAuthentication, wiking.Application):
           4. If the above fails and the module is derived from 'CMSExtensionModule', its parent
              module is searched according to 3. and if found, the corresponding path plus the path
              to the submodule is returned.
+          5. If all the above fails, None is returned.  Particularly, this happens for modules,
+             which are not directly associated with any page, which may also be the case for
+             modules accessible through bindings to other modules.
 
          The mapping used in step 1. is called static, because it is a hardcoded assignment of URIs
          of modules needed for Wiking CMS to run (such as 'Stylesheets', 'Documentation',
