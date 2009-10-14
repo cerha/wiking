@@ -87,8 +87,11 @@ class Application(CookieAuthentication, wiking.Application):
         specifically for the Wiking CMS application.
 
         The method bahaves as follows:
+
           1. Static mapping as defined by the parent class (see 'wiking.application._MAPPING') is
              searched first.  If the module is found there, the corresponding path is returned.
+             Particularly, this method will return None for modules, which are not directly
+             associated with any page but only accessible through bindings to another modules.
           2. Otherwise, if the application is currently in the Wiking Management Interface mode,
              the WMI path is returned as '/_wmi/modname' (any module is accessible through this
              path in WMI).

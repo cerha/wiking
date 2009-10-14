@@ -1,3 +1,8 @@
+2009-10-14  Hynek Hanke  <hanke@kropacek>
+
+	* lib/wiking/cms/appl.py (Application.module_uri): Docstring: Warn about consequence
+	of point 1 for modules only accessible via binding.
+
 2009-10-14  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/util.py: 
