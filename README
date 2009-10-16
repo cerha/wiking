@@ -1,18 +1,11 @@
-Wiking is a content management system which was designed to produce highly
-accessible web sites. You can manage your web site using a web browser.
-
-Most important features:
-
-    * Accessibility for website visitors
-    * Accessible content management and authoring
-    * Support for internationalization and multilingual content
-    * Conformance to W3C and other relevant standards 
+Wiking is a Python web application development platform.  Wiking is distributed
+together with Wiking CMS -- an extensible content management system built on
+top of this platform.
 
 See the file INSTALL for installation instructions.
 
-HTML documentation is included.  If you obtained Wiking from CVS, you will need
-to run "make doc" to generate it.  You can also view it online at the project
-homepage.
+HTML documentation is included.  If you obtained Wiking from source control,
+you will need to run "make doc" to generate it into HTML.  You can also view it
+online at the project homepage.
 
 See http://www.freebsoft.org/wiking for more information.
-
