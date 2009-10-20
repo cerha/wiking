@@ -171,6 +171,14 @@ class ModPythonHandler(object):
            cfg.dbname = hostname
         if cfg.resolver is None:
             cfg.resolver = WikingResolver()
+        # Modify pytis configuration.
+        import config
+        config.dblisten = False
+        config.log_exclude = [pytis.util.ACTION, pytis.util.EVENT, pytis.util.DEBUG]
+        for option in ('dbname', 'dbhost', 'dbport', 'dbuser', 'dbpass', 'dbsslm'):
+            setattr(config, option, getattr(cfg, option))
+        config.dbconnection = config.option('dbconnection').default()
+        del config
         self._application = cfg.resolver.wiking_module('Application')
         self._handler = Handler(hostname)
         self._initialized = True

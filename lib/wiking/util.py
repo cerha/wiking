@@ -1019,23 +1019,7 @@ class Binding(pp.Binding):
 
 class WikingResolver(pytis.util.Resolver):
     """A custom resolver of Wiking modules."""
-
-    def __init__(self, *args, **kwargs):
-        super(WikingResolver, self).__init__(*args, **kwargs)
-        self._wiking_module_cache = {}
-        map = {'dbname': 'database',
-               'dbhost': 'host',
-               'dbport': 'port',
-               'dbuser': 'user',
-               'dbpass': 'password',
-               'dbsslm': 'sslmode'}
-        def connection_options(items):
-            # Transform configuration option names to DBConnection option names.
-            return dict([(map[key], value) for key, value in items if value is not None])
-        options = connection_options([(option, getattr(cfg, option)) for option in map.keys()])
-        alternatives = dict([(name, connection_options(opts.items()))
-                             for name, opts in cfg.connections.items()])
-        self._db_connection = pytis.data.DBConnection(alternatives=alternatives, **options)
+    _wiking_module_cache = {}
 
     def _import_python_module(self, name):
         mod = __import__(name)
@@ -1070,7 +1054,7 @@ class WikingResolver(pytis.util.Resolver):
 
         All keyword arguments will be passed to the module constructor.  The instances are cached
         (for the same constructor arguments).  The constructor argument 'resolver' is supplied
-        automatically, as well as the 'dbconnection' for 'PytisModule' subclasses. 
+        automatically.
         
         """
         key = (name, tuple(kwargs.items()))
@@ -1082,12 +1066,9 @@ class WikingResolver(pytis.util.Resolver):
             #    raise KeyError()
         except KeyError:
             cls = self.wiking_module_cls(name)
-            args = (self,)
-            if issubclass(cls, PytisModule):
-                if cfg.maintenance:
-                    raise MaintananceModeError()
-                args += (self._db_connection.select(cls.Spec.connection),)
-            module = cls(*args, **kwargs)
+            if issubclass(cls, PytisModule) and cfg.maintenance:
+                raise MaintananceModeError()
+            module = cls(self, **kwargs)
             self._wiking_module_cache[key] = module
         return module
     

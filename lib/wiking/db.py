@@ -95,24 +95,7 @@ class PytisModule(Module, ActionHandler):
     _SUBMIT_BUTTONS = {}
     _LAYOUT = {}
 
-    class _Record(pp.PresentedRow):
-        # Just a base class implementing the enumerator hack needed in the web
-        # environment.  This hack forces the enumerator data objects to use the
-        # current dbconnection of the module instead of the global
-        # config.dbconnection.
-        def __init__(self, dbconnection, *args, **kwargs):
-            self._dbconnection = dbconnection
-            super(PytisModule._Record, self).__init__(*args, **kwargs)
-
-        def _type(self, fspec):
-            type = super(PytisModule._Record, self)._type(fspec)
-            enumerator = type.enumerator()
-            if enumerator and isinstance(enumerator, pytis.data.DataEnumerator):
-                enumerator.set_connection_data(self._dbconnection)
-            return type
-
-
-    class Record(_Record):
+    class Record(pp.PresentedRow):
         """An abstraction of one record within the module's data object.
 
         The current request is stored within the record data to make it available within computer
@@ -183,9 +166,11 @@ class PytisModule(Module, ActionHandler):
     
     # Instance methods
     
-    def __init__(self, resolver, dbconnection, **kwargs):
+    def __init__(self, resolver, **kwargs):
         super(PytisModule, self).__init__(resolver, **kwargs)
-        self._dbconnection = dbconnection
+        import config
+        self._dbconnection = config.dbconnection.select(self.Spec.connection)
+        del config
         spec = self._spec(resolver)
         self._data_spec = spec.data_spec()
         self._view = spec.view_spec()
@@ -214,7 +199,7 @@ class PytisModule(Module, ActionHandler):
         # We sometimes need to know the data type of certain field without having access to the
         # record at the same time, so we create a record here just to save the data types of all
         # fields for future use.
-        record = self._Record(self._dbconnection, fields, self._data, None, resolver=self._resolver)
+        record = pp.PresentedRow(fields, self._data, None, resolver=self._resolver)
         self._type = dict([(key, record[key].type()) for key in record.keys()])
         self._links = {}
         def cb_link(field):
@@ -238,8 +223,8 @@ class PytisModule(Module, ActionHandler):
 
     def _record(self, req, row, new=False, prefill=None):
         """Return the Record instance initialized by given data row."""
-        return self.Record(req, self._dbconnection, self._view.fields(), self._data,
-                           row, prefill=prefill, resolver=self._resolver, new=new)
+        return self.Record(req, self._view.fields(), self._data, row,
+                           prefill=prefill, resolver=self._resolver, new=new)
 
     def _locale_data(self, req):
         lang = req.prefered_language(raise_error=False)

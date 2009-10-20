@@ -23,13 +23,7 @@ try:
     import mod_python.util
 except:
     pass
-else:
-    # Modify pytis configuration only in the apache environment.
-    import config
-    config.dblisten = False
-    config.log_exclude = [pytis.util.ACTION, pytis.util.EVENT, pytis.util.DEBUG]
-    del config
-    
+
 import Cookie
 
 _ = lcg.TranslatableTextFactory('wiking')
