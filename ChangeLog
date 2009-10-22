@@ -1,3 +1,7 @@
+2009-10-22  Milan Zamazal  <pdm@brailcom.org>
+
+	* Moved to git.
+
 2009-10-20  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/db.py:
