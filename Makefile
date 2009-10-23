@@ -2,14 +2,15 @@
 prefix = /usr/local
 sysconfdir = /etc
 datadir = /var/lib
-SHARE = $(prefix)/share
-LIB = $(prefix)/lib/python%d.%d/site-packages
-CFGFILE = $(sysconfdir)/wiking/config.py
-STORAGE = $(datadir)/wiking/
-APACHE_USER = www-data
+share = $(prefix)/share
+confdir = $(sysconfdir)/wiking
+libdir = $(prefix)/lib/python%d.%d/site-packages
+cfgfile = $(confdir)/config.py
+storage = $(datadir)/wiking/
+webuser = www-data
 
-lib := $(shell python -c 'import sys; print "$(LIB)".find("%d") != -1 and \
-	                 "$(LIB)" % sys.version_info[:2] or "$(LIB)"')
+lib := $(shell python -c 'import sys; print "$(libdir)".find("%d") != -1 and \
+	                 "$(libdir)" % sys.version_info[:2] or "$(libdir)"')
 
 .PHONY: translations doc
 
@@ -22,8 +23,8 @@ check-lib:
            echo 'WARNING: $(lib) not in Python path!'
 
 check-user:
-	@if [ ~$(APACHE_USER) == '~$(APACHE_USER)' ]; then \
-	   echo 'Error: $(APACHE_USER) is not a valid user!' && exit 1; fi
+	@if [ ~$(webuser) == '~$(webuser)' ]; then \
+	   echo 'Error: $(webuser) is not a valid user!' && exit 1; fi
 
 compile:
 	@echo "Compiling Python libraries from source..."
@@ -36,20 +37,20 @@ translations:
 doc:
 	lcgmake doc/src doc/html
 
-install-links: link-lib link-share $(CFGFILE) $(STORAGE)
+install-links: link-lib link-share $(cfgfile) $(storage)
 
-install: $(SHARE)/wiking copy-files $(CFGFILE) $(STORAGE)
+install: $(share)/wiking copy-files $(cfgfile) $(storage)
 
 uninstall:
-	rm -rf $(SHARE)/wiking
+	rm -rf $(share)/wiking
 	rm -rf $(lib)/wiking
 
 purge: uninstall
-	rm -f $(CFGFILE)
-	rm -rf $(STORAGE)
+	rm -f $(cfgfile)
+	rm -rf $(storage)
 
 copy-files:
-	cp -ruv doc resources sql translations $(SHARE)/wiking
+	cp -ruv doc resources sql translations $(share)/wiking
 	cp -ruv lib/wiking $(lib)
 
 link-lib:
@@ -59,40 +60,23 @@ link-lib:
 
 link-share: link-share-doc link-share-translations link-share-resources link-share-sql
 
-link-share-%: $(SHARE)/wiking
-	@if [ -d $(SHARE)/wiking/$* ]; then echo "$(SHARE)/wiking/$* already exists!"; \
-	else echo "Linking wiking $* to $(SHARE)/wiking"; \
-	ln -s $(CURDIR)/$* $(SHARE)/wiking; fi
+link-share-%: $(share)/wiking
+	@if [ -d $(share)/wiking/$* ]; then echo "$(share)/wiking/$* already exists!"; \
+	else echo "Linking wiking $* to $(share)/wiking"; \
+	ln -s $(CURDIR)/$* $(share)/wiking; fi
 
-config_dir = $(shell dirname $(CFGFILE))
-
-$(CFGFILE): $(config_dir)
-	@echo "Writing $(CFGFILE)"
+$(cfgfile): $(confdir)
+	@echo "Writing $(cfgfile)"
 	@echo "import wiking,sys; wiking.cfg.dump_config_template(sys.stdout)" \
-	| PYTHONPATH=$(lib):$$PYTHONPATH python >$(CFGFILE)
+	| PYTHONPATH=$(lib):$$PYTHONPATH python >$(cfgfile)
 
-$(config_dir):
-	mkdir $(config_dir)
+$(confdir):
+	mkdir $(confdir)
 
-$(SHARE)/wiking:
-	mkdir $(SHARE)/wiking
+$(share)/wiking:
+	mkdir $(share)/wiking
 
-$(STORAGE):
-	mkdir $(STORAGE)
-	chgrp $(APACHE_USER) $(STORAGE)
-	chmod g+w $(STORAGE)
-
-version = $(shell echo 'import wiking; print wiking.__version__' | python)
-dir = wiking-$(version)
-file = wiking-$(version).tar.gz
-
-release: doc compile translations
-	@ln -s .. releases/$(dir)
-	@if [ -f releases/$(file) ]; then \
-	   echo "Removing old file $(file)"; rm releases/$(file); fi
-	@echo "Generating $(file)..."
-	@(cd releases; tar --exclude "CVS" --exclude "*~" --exclude "#*" \
-	     --exclude ".*" --exclude releases --exclude site \
-	     --exclude "config.py*" --exclude "*.pyo" --exclude upload.sh \
-	     -czhf $(file) $(dir))
-	@rm releases/$(dir)
+$(storage):
+	mkdir $(storage)
+	chgrp $(webuser) $(storage)
+	chmod g+w $(storage)
