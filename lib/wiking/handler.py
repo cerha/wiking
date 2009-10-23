@@ -177,6 +177,7 @@ class ModPythonHandler(object):
         config.log_exclude = [pytis.util.ACTION, pytis.util.EVENT, pytis.util.DEBUG]
         for option in ('dbname', 'dbhost', 'dbport', 'dbuser', 'dbpass', 'dbsslm'):
             setattr(config, option, getattr(cfg, option))
+        config.dbconnections = cfg.connections
         config.dbconnection = config.option('dbconnection').default()
         del config
         self._application = cfg.resolver.wiking_module('Application')
