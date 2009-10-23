@@ -928,7 +928,7 @@ class Action(pytis.presentation.Action):
         if not handler:
             handler = lambda r: None
         self._allow_referer = allow_referer
-        super(Action, self).__init__(title, handler, name=name, **kwargs)
+        super(Action, self).__init__(name, title, handler, **kwargs)
 
     def allow_referer(self):
         return self._allow_referer
