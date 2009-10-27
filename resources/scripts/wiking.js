@@ -22,7 +22,7 @@ var CMD_PARENT = 'parent'; // Go up in the hierarchy.
 var CMD_CHILD  = 'child';  // Go down in the hierarchy.
 var CMD_PREV = 'prev'; // Go to the next item at the same level.
 var CMD_NEXT = 'next'; // Go to the previous item at the same level.
-var CMD_MENU = 'menu'; 
+var CMD_MENU = 'menu';
 var CMD_QUIT = 'quit';
 
 /* Menu navigation keyboard shortcuts */
@@ -91,30 +91,27 @@ function wiking_onkeydown(event) {
 
 function append_menu(items, node, parent) {
    if (node != null) {
-      var ul = node.getElementsByTagName('ul')[0];
-      if (ul != null) { // && ul.parentNode == node) {
+      var ul = $(node).down('ul');
+      if (ul != null) {
 	 //ul.setAttribute('role', 'menu');
 	 for (var i = 0; i < ul.childNodes.length; i++) {
-	    var li = ul.childNodes[i];
+	    var li = $(ul.childNodes[i]);
 	    if (li.nodeName =='LI') {
-	       var link = li.getElementsByTagName('a')[0];
-	       var item = link;
+	       var item = li.down('a');
+	       item.observe('click', on_menu_click);
 	       //item.setAttribute('role', 'menuitem');
 	       //item.setAttribute('tabindex', '-1');
-	       //item.setAttribute('title', link.innerHTML);
+	       //item.setAttribute('title', item.innerHTML);
 	       var subitems = [];
 	       append_menu(subitems, li, item);
-	       if (subitems.length == 0 && parent == null) {
-		  var cls = link.getAttribute(document.all?'className':'class');
-		  if (cls && cls.match('(\^\|\\s)current(\\s\|\$)') != null) {
-		     _current_main_menu_item = item;
-		     append_menu(subitems, document.getElementById('submenu'), item);
-		  }
+	       if (subitems.length == 0 && parent == null && item.hasClassName('current')) {
+		  _current_main_menu_item = item;
+		  append_menu(subitems, $('submenu'), item);
 	       }
 	       var child = null;
 	       if (subitems.length != 0)
-		  //item.setAttribute('aria-haspopup', 'true');
 		  child = subitems[0];
+	          //item.setAttribute('aria-haspopup', 'true');
 	       append_menu_item(items, item, parent, child);
 	    }
 	 }
@@ -175,13 +172,41 @@ function append_menu_item(items, item, parent, child) {
    items[items.length] = item;
 }
 
+function on_menu_click(event) {
+   var element = event.element();
+   if (element.nodeName == 'A') {
+      // MSIE only handles this on the A element, not on LI, which would be
+      // easier.  Thus we need to put a SPAN inside with a left margin making
+      // space for folding controls.  Then, if the user clicks inside the A
+      // element, but not inside SPAN, folding controls were clicked.
+      var span = element.down('span');
+      if (event.pointerX() < span.cumulativeOffset().left) {
+	 var li = element.parentNode;
+	 if (li.hasClassName('foldable')) {
+	    if (li.hasClassName('folded'))
+	       li.removeClassName('folded');
+	    else
+	       li.addClassName('folded');
+	 }
+	 event.stop();
+      }
+   }
+}
+
 function on_menu_keydown(event, link) {
    var key = event_key(event);
    var cmd = WIKING_KEYMAP[key];
    if (cmd != null) {
       var target = link._menu_navigation_target[cmd];
-      if (target != null)
+      if (target != null) {
+	 if (cmd == CMD_CHILD && link.parentNode.hasClassName('foldable') &&
+	     link.parentNode.hasClassName('folded'))
+	    link.parentNode.removeClassName('folded');
+	 if (cmd == CMD_PARENT && target.parentNode.hasClassName('foldable') &&
+	     !target.parentNode.hasClassName('folded'))
+	    target.parentNode.addClassName('folded');
 	 set_focus(target);
+      }
       return false;
    } else if (key == 'Enter' && link.parentNode.nodeName == 'H3') {
       // Go to the panel when pressing Enter on panel menu item.

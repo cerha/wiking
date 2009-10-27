@@ -287,6 +287,16 @@
 	still unclear as Roles contains Role.ANYONE, which I don't understand
 	in this context.
 
+2009-10-27  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/export.py:
+	* lib/wiking/util.py:
+	* resources/css/layout.css:
+	* resources/images/folder-closed.png:
+	* resources/images/folder-open.png:
+	* resources/scripts/wiking.js:
+	Added support for foldable tree menu..
+
 2009-10-23  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/handler.py:

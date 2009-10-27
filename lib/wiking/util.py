@@ -352,13 +352,44 @@ class Theme(object):
         
 class MenuItem(object):
     """Abstract menu item representation."""
-    def __init__(self, id, title, descr=None, hidden=False, active=True, submenu=(), order=None,
-                 variants=None):
+    def __init__(self, id, title, descr=None, submenu=(), hidden=False, active=True,
+                 foldable=False, order=None, variants=None):
+        """Arguments:
+
+          id -- unique menu item identifier.  
+          title -- title as a (translatable) string displayed in menu.
+          descr -- brief description as a (translatable) string used as a
+            tooltip or a sitemap description.
+          submenu -- sequence of subordinate menu items as nested 'MenuItem'
+            instances.
+          hidden -- iff true, the item will not be present in the menu, but
+          active -- iff false, the item will be presented as inactive.
+            Designed to visually distinguish items disabled due to access
+            rights or some other conditions.  It is left up to the application
+            developer to decide whether to hide such items alltogether or
+            present them as inactive.  The item will be presented as inactive
+            (ie. grayed out), but in fact will remain active (clickable) to
+            allow invocation of the target, which should lead to displaying a
+            more descriptive error page explaining the reason.  It the
+            responsibility of the application to handle the request properly.
+          foldable -- iff true, the item's submenu will be presented as a
+            foldable tree if the techology allows it (if the user agent
+            supports JavaScript).
+          order -- item order on its level of hierarchy as any python object
+            supporting comparison.  If None, the items will be presented in the
+            order in which they appear.
+          variants -- sequence of language codes (strings) in which the item is
+            available.  If None, the item is supposed to exist in all
+            languages.  This allows to filter out only items available in the
+            current user's language when the page is displayed.
+
+        """
         self._id = id
         self._title = title
         self._descr = descr
         self._hidden = hidden
         self._active = active
+        self._foldable = foldable
         submenu = list(submenu)
         submenu.sort(key=lambda i: i.order())
         self._submenu = submenu
@@ -374,6 +405,8 @@ class MenuItem(object):
         return self._hidden
     def active(self):
         return self._active
+    def foldable(self):
+        return self._foldable
     def order(self):
         return self._order
     def submenu(self):
@@ -582,10 +615,10 @@ class Document(object):
             node = WikingNode(item.id().encode('utf-8'), title=item.title(), heading=heading,
                               descr=item.descr(), content=content,
                               lang=lang, sec_lang=self._sec_lang, variants=variants or (),
-                              active=item.active(), hidden=hidden, panels=panels,
+                              active=item.active(), foldable=item.foldable(), hidden=hidden,
                               children=[mknode(i) for i in item.submenu()],
                               resource_provider=resource_provider, globals=self._globals,
-                              layout=self._layout)
+                              panels=panels, layout=self._layout)
             nodes[item.id()] = node
             return node
         top_level_nodes = [mknode(item) for item in application.menu(req)]
@@ -646,13 +679,15 @@ class BoundCache(object):
 
 class WikingNode(lcg.ContentNode):
 
-    def __init__(self, id, heading=None, panels=(), lang=None, sec_lang=None, layout=None,
-                 **kwargs):
+    def __init__(self, id, heading=None, panels=(), lang=None, sec_lang=None,
+                 active=True, foldable=False, layout=None, **kwargs):
         super(WikingNode, self).__init__(id, **kwargs)
         self._heading = heading
         self._panels = panels
         self._lang = lang
         self._sec_lang = sec_lang
+        self._active = active
+        self._foldable = foldable
         self._layout = layout
         for panel in panels:
             panel.content().set_parent(self)
@@ -669,6 +704,12 @@ class WikingNode(lcg.ContentNode):
     def sec_lang(self):
         return self._sec_lang
 
+    def active(self):
+        return self._active
+
+    def foldable(self):
+        return self._foldable
+    
     def heading(self):
         return self._heading or self._title
     

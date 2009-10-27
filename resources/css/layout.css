@@ -7,7 +7,7 @@ body {
     font-size: 0.8em;
     margin: 2pt 6pt;
 }
-table td, table th { 
+table td, table th {
     font-size: 0.8em;
 }
 p {
@@ -23,13 +23,13 @@ h1, h2, h3 {
     font-weight: bold;
     text-align: left;
 }
-h1 { 
+h1 {
     background-color: $color.heading-bg;
-    padding: 1pt; 
+    padding: 1pt;
     border: solid $color.border;
     border-width: 1px 0px;
 }
-h2, h3 { 
+h2, h3 {
     border: solid $color.heading-line 0px;
     border-bottom-width: 1px;
 }
@@ -45,7 +45,7 @@ a:link:hover, a:visited:hover { color: $color.link-hover; }
 
 #top hr { display: none; }
 
-#site-title { 
+#site-title {
     font-size: 1.1em;
     max-width: 70%;
 }
@@ -69,7 +69,7 @@ a:link:hover, a:visited:hover { color: $color.link-hover; }
     margin-bottom: 0.3em;
 }
 
-#language-selection { 
+#language-selection {
     position: absolute;
     top: .5em;
     right: 8em;
@@ -85,7 +85,7 @@ a:link:hover, a:visited:hover { color: $color.link-hover; }
     border-bottom: 1px solid $color.top-border;
     padding-left: 0.2em;
     /* leave some space for language selection and panel controls */
-    padding-right: 6em; 
+    padding-right: 6em;
 }
 #page.with-menu #main {
     border-top-width: 0; /* The top border must be part of the navigation bar because MSIE... */
@@ -101,7 +101,7 @@ a:link:hover, a:visited:hover { color: $color.link-hover; }
 #menu h3 {
     display: none;
 }
-#menu ul { 
+#menu ul {
     margin: 0;
     padding: 0;
 }
@@ -122,21 +122,22 @@ a:link:hover, a:visited:hover { color: $color.link-hover; }
 
 /* Hierarchical submenu */
 
-#page.with-submenu #main { 
+#page.with-submenu #main {
     padding-left: 12em;
 }
 
-#submenu { 
+#submenu {
     position: relative;
     z-index: 1;
     float: left;
     width: 12em;
 }
-#submenu div.menu-panel  { 
+#submenu div.menu-panel  {
     position: relative;
     border: 1px solid $color.top-border;
     margin: 0.8em 0.5em 0.5em 0.8em;
     padding: 0;
+    overflow: auto;
 }
 #submenu h3 {
     margin: 0;
@@ -145,41 +146,65 @@ a:link:hover, a:visited:hover { color: $color.link-hover; }
     background-color: $color.heading-bg;
     border-bottom: 1px solid $color.top-border;
 }
-#submenu ul { 
+#submenu ul {
     display: block;
-    padding: 0.3em;
-    padding-left: 1.5em;
+    padding: 0 0.4em;
     margin: 0;
+    list-style-type: none;
 }
-#submenu ul ul { 
+#submenu ul ul {
     padding-left: 1em;
+    padding-right: 0;
 }
 #submenu li { 
-    display: inline; /* MSIE has problems with block element inside a list item... */
+    line-height: 1.2em;
+    padding: 0.1em;
 }
-#submenu li a { 
+#submenu li a, #submenu li a span {
+    display: block;
+    width: 100%;
+    clear: both;
+}
+#submenu li a {
+    cursor: default;
+    padding-left: 14px;
+}
+#submenu li a span {
+    cursor: pointer;
+}
+#submenu li a span.bullet {
     display: list-item;
     list-style-type: circle;
 }
-#submenu li a.current { 
+#submenu li a.current span {
     background-color: $color.heading-bg;
-    list-style-type: disc;
+}
+#submenu li.foldable {
+    background-image: url(/_resources/images/folder-open.png);
+    background-position: left 0.35em;
+    background-repeat: no-repeat;
+}
+#submenu li.foldable.folded {
+    background-image: url(/_resources/images/folder-closed.png);
+}
+#submenu li.folded ul {
+    display: none;
 }
 /* This makes panels to skip in Firefox when page content is too wide...
-#submenu li a:hover { 
+#submenu li a:hover {
     outline: solid 1px $color.heading-line;
 }*/
 
 /* Panels */
-#page.with-panels { 
+#page.with-panels {
     float: left; /* Force the main div to fit its content. */
 }
-#page.with-panels #main { 
+#page.with-panels #main {
     margin-right: 17em;
 }
-#page.with-panels #menu { 
+#page.with-panels #menu {
     margin-right: 17em;
-    padding-right: 0; 
+    padding-right: 0;
 }
 #panels {
     position: relative;
@@ -194,28 +219,28 @@ a:link:hover, a:visited:hover { color: $color.link-hover; }
     font-size: 0.8em;
     right: 0;
 }
-div#panels-menu-item { 
+div#panels-menu-item {
     margin-left: 0.5em;
 }
 
-div.panel { 
+div.panel {
     margin: 0 0em 0.5em 0.5em;
     color: $color.foreground;
     border: 1px solid $color.top-border;
     background-color: $color.background;
 }
-div.panel h3 { 
-    padding: 0.1em 0.2em; 
-    margin: 0; 
+div.panel h3 {
+    padding: 0.1em 0.2em;
+    margin: 0;
     font-size: 1.1em;
     position: relative;
     background-color: $color.heading-bg;
-    border-bottom: 1px solid $color.top-border; 
+    border-bottom: 1px solid $color.top-border;
 }
-div.panel div.panel-content { 
-    padding: 0.05em 0.2em; 
+div.panel div.panel-content {
+    padding: 0.05em 0.2em;
 }
-div.panel ul, div.panel ol { 
+div.panel ul, div.panel ol {
     padding-left: 1.5em;
     margin: 0;
 }
@@ -231,7 +256,7 @@ div.panel form { margin: 0.3em 0; }
     white-space: nowrap;
     margin: 0 0.3em;
 }
-#panel-login a.login-ctrl:hover { 
+#panel-login a.login-ctrl:hover {
     background-color: $color.highlight-bg;
 }
 
@@ -251,11 +276,11 @@ div.panel form { margin: 0.3em 0; }
     padding: 0.8em;
     margin-bottom: 0.5em;
 }
-#main h1 { 
+#main h1 {
     margin-top: 0;
     margin-bottom: 0.8em;
 }
-#content { 
+#content {
     position: relative; /* fix MSIE background painting */
     width: 100%;
 }
@@ -264,18 +289,18 @@ div.panel form { margin: 0.3em 0; }
     font-size: 0;
     clear: left;
 }
-#page-clearing { 
+#page-clearing {
     height: 0;
     font-size: 0;
 }
 
 /* Bottom part of the page */
 
-#bottom { 
+#bottom {
     clear: both;
     margin: 1em 0;
 }
-#bottom-bar { 
+#bottom-bar {
     text-align: right;
     font-size: 0.9em;
     border: solid $color.top-border;
@@ -288,17 +313,17 @@ div.panel form { margin: 0.3em 0; }
 #bottom-bar a { text-decoration: none; }
 #bottom-bar hr { display: none; }
 
-#last-change { 
+#last-change {
     text-align: right;
     font-size: 0.75em;
 }
 
-#shared-audio-player { 
+#shared-audio-player {
     position: fixed;
     bottom: 0;
     right: 0;
 }
-div#shared-audio-player { 
+div#shared-audio-player {
     color: $color.error-fg;
     background-color: $color.error-bg;
     border: solid 1px $color.error-border;
@@ -312,7 +337,7 @@ div#shared-audio-player {
 
 /* Special controls */
 
-#login-controls { 
+#login-controls {
     position: absolute;
     top: 0.7em;
     right: 0.9em;

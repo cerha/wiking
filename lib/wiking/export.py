@@ -156,6 +156,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         return context.req().module_uri('Resources')
     
     def _head(self, context):
+        context.node().resource('prototype.js')
         context.node().resource('wiking.js')
         result = super(Exporter, self)._head(context)
         channels = [('<link rel="alternate" type="application/rss+xml" '
@@ -221,21 +222,59 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         g = self._generator
         if not context.has_submenu:
             return None
-        menu = lcg.NodeIndex(node=context.node().top())
-        menu.set_parent(context.node())
+        current = context.node()
+        while current is not None and current.hidden():
+            current = current.parent()
+        path = current.path()
+        def li_cls(node):
+            if node.children() and node.foldable():
+                cls = 'foldable'
+                if node not in path:
+                    cls += ' folded'
+                return cls
+            return None
+        def item(node):
+            cls = []
+            if node is current:
+                cls.append('current')
+            if not node.active():
+                cls.append('inactive')
+            # The inner span is necessary because MSIE doesn't fire on click events outside the A
+            # tag, so we basically need to indent the link title inside and draw folding controls
+            # in this space.  This is only needed for foldable trees, but we render also fixed
+            # trees in the same manner for consistency.  The CSS class 'bullet' represents either
+            # fixed tree items or leaves in foldable trees (where no further folding is possible).
+            content = g.span(node.title(),
+                             cls=not (node.children() and node.foldable()) and 'bullet' or None)
+            return g.link(content, context.uri(node), title=node.descr(),
+                          cls=' '.join(cls) or None)
+        def menu(node, indent=0):
+            spaces = ' ' * indent
+            items = [g.concat(spaces, '  ',
+                              g.li(g.concat(item(n),
+                                            menu(n, indent+4)),
+                                   cls=li_cls(n)),
+                              '\n')
+                     for n in node.children() if not n.hidden()]
+            if items:
+                return g.concat("\n", spaces,
+                                g.ul(concat('\n', items, spaces)),
+                                '\n', ' '*(indent-2))
+            else:
+                return ''
         if context.has_menu:
-            # If there is the main menu, this is its submenu, but if the main menu is empty, this
-            # menu acts as the main menu.
+            # If there is the main menu, this is its submenu, but if the main
+            # menu is empty, this menu acts as the main menu.
             title = _("Local navigation")
-            # Translators: Heding of webpage navigation menu
-            # containing a list of links to pages in this web section
+            # Translators: Heading of webpage navigation menu containing a list
+            # of links to pages in this web section
             heading = _("In this section:")
             name = 'local-navigation'
         else:
             title = heading = _("Main navigation")
             name = 'main-navigation'
         return g.map(g.div((g.h(g.link(heading, None, name=name, hotkey="3"), 3),
-                            menu.export(context)),
+                            menu(context.node().top())),
                            cls='menu-panel'),
                      name='submenu-map', title=title)
     
