@@ -632,7 +632,7 @@ class WikingRequest(Request):
         represented by unique string identifiers as described in documentation of the class
         'Roles'.
 
-        Authentication will be performed only if needed.  In other words, if 'roles' contain
+        Authentication will be performed only if needed.  In other words, if 'args' contain
         ANYONE, True will be returned without an attempt to authenticate the user.
         
         """
