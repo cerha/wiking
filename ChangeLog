@@ -1,3 +1,15 @@
+2009-11-05  Hynek Hanke  <hanke@kropacek>
+
+	* lib/wiking/cms/cms.py (TextReferrer._send_mail.lang_email_args):
+	If recipients is None, only send emails to users with at least
+	one active role (not to disabled users).
+
+	
+	* lib/wiking/request.py (WikingRequest.check_roles): Typo in docstring.
+	(User.roles): More precise docstring. The reference to Roles is however	
+	still unclear as Roles contains Role.ANYONE, which I don't understand
+	in this context.
+
 2009-10-23  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/handler.py:
