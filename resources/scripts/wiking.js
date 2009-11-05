@@ -98,7 +98,7 @@ function append_menu(items, node, parent) {
 	    var li = $(ul.childNodes[i]);
 	    if (li.nodeName =='LI') {
 	       var item = li.down('a');
-	       item.observe('click', on_menu_click);
+	       li.observe('click', on_menu_click);
 	       //item.setAttribute('role', 'menuitem');
 	       //item.setAttribute('tabindex', '-1');
 	       //item.setAttribute('title', item.innerHTML);
@@ -174,14 +174,15 @@ function append_menu_item(items, item, parent, child) {
 
 function on_menu_click(event) {
    var element = event.element();
-   if (element.nodeName == 'A') {
-      // MSIE only handles this on the A element, not on LI, which would be
-      // easier.  Thus we need to put a SPAN inside with a left margin making
-      // space for folding controls.  Then, if the user clicks inside the A
-      // element, but not inside SPAN, folding controls were clicked.
+   if (element.nodeName == 'A' || element.nodeName == 'LI') {
+      // The inner SPAN has a left margin making space for folding controls.
+      // Then, if the user clicks inside the A or LI element, but not inside
+      // SPAN, folding controls were clicked.  The strange hack with the inner
+      // SPAN is needed to make folding work across browsers (particulartly
+      // MSIE).
       var span = element.down('span');
       if (event.pointerX() < span.cumulativeOffset().left) {
-	 var li = element.parentNode;
+	 var li = span.parentNode.parentNode;
 	 if (li.hasClassName('foldable')) {
 	    if (li.hasClassName('folded'))
 	       li.removeClassName('folded');

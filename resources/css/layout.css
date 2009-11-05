@@ -137,7 +137,6 @@ a:link:hover, a:visited:hover { color: $color.link-hover; }
     border: 1px solid $color.top-border;
     margin: 0.8em 0.5em 0.5em 0.8em;
     padding: 0;
-    overflow: auto;
 }
 #submenu h3 {
     margin: 0;
@@ -148,9 +147,9 @@ a:link:hover, a:visited:hover { color: $color.link-hover; }
 }
 #submenu ul {
     display: block;
-    padding: 0 0.4em;
-    margin: 0;
     list-style-type: none;
+    padding: 0.1em 0.2em 0.1em 0.3em;
+    margin: 0;
 }
 #submenu ul ul {
     padding-left: 1em;
@@ -158,11 +157,10 @@ a:link:hover, a:visited:hover { color: $color.link-hover; }
 }
 #submenu li { 
     line-height: 1.2em;
-    padding: 0.1em;
+    width: 100%;
 }
 #submenu li a, #submenu li a span {
     display: block;
-    width: 100%;
     clear: both;
 }
 #submenu li a {
@@ -171,6 +169,8 @@ a:link:hover, a:visited:hover { color: $color.link-hover; }
 }
 #submenu li a span {
     cursor: pointer;
+    padding: 0.1em 0;
+    margin-left: 1px; /* Fix MSIE bullet display */
 }
 #submenu li a span.bullet {
     display: list-item;

@@ -287,6 +287,12 @@
 	still unclear as Roles contains Role.ANYONE, which I don't understand
 	in this context.
 
+2009-11-05  Tomas Cerha  <cerha@brailcom.org>
+
+	* resources/css/layout.css:
+	* resources/scripts/wiking.js:
+	Fix foldable menu display inconsistencies across browsers..
+
 2009-10-27  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/export.py:
