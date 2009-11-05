@@ -775,7 +775,10 @@ class User(object):
         return self._name
     
     def roles(self):
-        """Return valid user's roles as a tuple of unique string identifiers (see 'Roles')."""
+        """Return valid user's roles as a tuple of unique string
+        identifiers (see 'Roles'). For disabled users or users who
+        don't have any active role, returns an empty touple.
+        """
         return self._roles
     
     def email(self):
