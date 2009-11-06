@@ -3123,8 +3123,7 @@ class TextReferrer(object):
           recipients -- sequence of e-mail recipients, it can contain three
             kinds of elements: 1. string containing '@' representing an e-mail
             address, 2. string without '@' representing a user role, 3. 'None'
-            representing all registered users who have some active role (e.g.
-            not disabled users).
+            representing all registered users
           lang -- two-character string identifying the preferred language of
             the text
           args -- dictionary of formatting arguments for the text; if
@@ -3149,9 +3148,7 @@ class TextReferrer(object):
             if r is None or r.find('@') == -1:
                 users = self._module.find_users(role=r)
                 for u in users:
-                    # Send email only to users who are not disabled
-                    if len(u.roles() > 0):
-                        send_mail(u.email(), **lang_email_args(u.lang()))
+                    send_mail(u.email(), **lang_email_args(u.lang()))
             else:
                 addr.append(r)
         if addr:
