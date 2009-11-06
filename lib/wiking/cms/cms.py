@@ -3123,7 +3123,7 @@ class TextReferrer(object):
           recipients -- sequence of e-mail recipients, it can contain three
             kinds of elements: 1. string containing '@' representing an e-mail
             address, 2. string without '@' representing a user role, 3. 'None'
-            representing all registered users
+            representing all registered users including disabled users
           lang -- two-character string identifying the preferred language of
             the text
           args -- dictionary of formatting arguments for the text; if
