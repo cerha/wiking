@@ -2605,19 +2605,24 @@ class Users(CMSModule):
 
         Arguments:
 
-          role -- destination role as one of 'Roles' class role constants, such as 'Roles.USER',
-            'Roles.ADMIN', etc. or 'None' in which case the mail is sent to all users
+          role -- destination role as one of 'Roles' class role
+            constants, such as 'Roles.USER', 'Roles.ADMIN', etc. or
+            'None' in which case the mail is sent to all active (not
+            disabled) users
           args, kwargs -- just forwarded to 'wiking.send_mail' call
 
         """
         assert role is None or isinstance(role, basestring)
+        String = pd.String()
         if role is None:
-            user_rows = self._data.get_rows()
+            # Get all users who have an active role (their accounts are not Disabled)
+            role_codes = [code for code, title, roles in self.Spec._ROLES if len(roles)>0]
         else:
+            # Construct wiking codes of roles which contain the requested 'role'
             role_codes = [code for code, title, roles in self.Spec._ROLES if role in roles]
-            String = pd.String()
-            condition = pd.OR(*[pd.EQ('role', pd.Value(String, code)) for code in role_codes])
-            user_rows = self._data.get_rows(condition=condition)
+        # Get user records for the selected roles
+        condition = pd.OR(*[pd.EQ('role', pd.Value(String, code)) for code in role_codes])        
+        user_rows = self._data.get_rows(condition=condition)
         import copy
         kwargs = copy.copy(kwargs)
         for row in user_rows:

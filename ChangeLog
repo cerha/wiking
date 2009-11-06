@@ -1,3 +1,8 @@
+2009-11-06  Hynek Hanke  <hanke@kropacek>
+
+	* lib/wiking/cms/cms.py (Users.send_mail): If role is None, only send emails to
+	users with at least one active role (not to disabled users).
+
 2009-11-05  Hynek Hanke  <hanke@kropacek>
 
 	* lib/wiking/cms/cms.py (TextReferrer._send_mail.lang_email_args):
