@@ -2027,10 +2027,32 @@ class Styles(CMSModule):
 
 
 class Users(CMSModule):
+    """
+    TODO: General description
+    
+    There is no easy way to delete a particular user, since that could
+    have many unexpected consequences to other content in the
+    system. Instead, to remove a user from the system, his role is
+    changed to Disabled. His history is thus preserved in other
+    modules, but he can no longer access the system, doesn't figure in
+    the lists of users, doesn't receive any email notifications etc.
+
+    The available user roles are (some roles also implicitly contain
+    other roles, see Spec._Roles):
+
+    'none' -- New users who register but do not have any priviledges assigned yet.
+    'disa' -- Users who were made devoid of priviledges, such as deleted users, refused registration
+    requests etc.
+    'user' -- ?
+    'contributor' -- ?
+    'auth' -- ?
+    'admn' -- Administrator. The superuse with access to the WMI and a broad range of other rights.
+    """
     class Spec(Specification):
         title = _("User Management")
         help = _("Manage registered users and their privileges.")
-        _ROLES = (('none', _("Account disabled"), ()),
+        _ROLES = (('none', _("New account"), ()),
+                  ('disa', _("Account disabled"), ()),
                   ('user', _("User"),         (Roles.USER,)),
                   ('cont', _("Contributor"),  (Roles.USER, Roles.CONTRIBUTOR)),
                   ('auth', _("Author"),       (Roles.USER, Roles.CONTRIBUTOR, Roles.AUTHOR)),
@@ -2160,6 +2182,7 @@ class Users(CMSModule):
         filters = (
             pp.Condition(_("Active users"),
                          pd.AND(pd.NE('role', pd.Value(pd.String(), 'none')),
+                                pd.NE('role', pd.Value(pd.String(), 'disa')),
                                 pd.EQ('regexpire', pd.Value(pd.DateTime(), None))),
                          id='active'),
             pp.Condition(_("Unapproved accounts (pending admin approvals)"),
@@ -2169,6 +2192,9 @@ class Users(CMSModule):
             pp.Condition(_("Unfinished registration requests (activation code not confirmed)"),
                          pd.NE('regexpire', pd.Value(pd.DateTime(), None)),
                          id='unconfirmed'),
+            pp.Condition(_("Disabled users"),
+                         pd.EQ('role', pd.Value(pd.String(), 'disa')),
+                         id='disabled'),
             # Translators: Accounts as in user accounts (computer terminology).
             pp.Condition(_("All accounts"), None),
             )

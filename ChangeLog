@@ -1,3 +1,9 @@
+2009-11-11  Hynek Hanke  <hanke@brailcom.org>
+
+	* lib/wiking/cms/cms.py (Users.Spec): Created new role 'disa' Disabled.
+	Role 'none' renamed to "New account". Do not display Disabled users
+	among Active users. Added new filter for Disabled users.
+
 2009-11-06  Hynek Hanke  <hanke@kropacek>
 
 	* lib/wiking/cms/cms.py (Users.send_mail): If role is None, only send emails to
