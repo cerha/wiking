@@ -2180,18 +2180,24 @@ class Users(CMSModule):
         layout = () # Force specific layout definition for each action.
         cb = CodebookSpec(display='user', prefer_display=True)
         filters = (
+            # Translators: Name of group of users who have access to the system, can use it etc.
             pp.Condition(_("Active users"),
                          pd.AND(pd.NE('role', pd.Value(pd.String(), 'none')),
                                 pd.NE('role', pd.Value(pd.String(), 'disa')),
                                 pd.EQ('regexpire', pd.Value(pd.DateTime(), None))),
                          id='active'),
+            # Translators: Name for a group of users accounts, who were not yet approved by the administrator
             pp.Condition(_("Unapproved accounts (pending admin approvals)"),
                          pd.AND(pd.EQ('role', pd.Value(pd.String(), 'none')),
                                 pd.EQ('regexpire', pd.Value(pd.DateTime(), None))),
                          id='inactive'),
+            # Translators: Name for a group of users which did not confirm their registration yet by
+            # replying to an email with an activation code
             pp.Condition(_("Unfinished registration requests (activation code not confirmed)"),
                          pd.NE('regexpire', pd.Value(pd.DateTime(), None)),
                          id='unconfirmed'),
+            # Translators: Name for a group of users who were disabled (made inactive or removed
+            # from the system).
             pp.Condition(_("Disabled users"),
                          pd.EQ('role', pd.Value(pd.String(), 'disa')),
                          id='disabled'),
