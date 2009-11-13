@@ -1571,10 +1571,14 @@ class Attachments(CMSModule):
             """Create and return 'lcg.Resource' instance using given 'lcg.ResourceProvider'."""
             if self.mime_type.startswith('image/'):
                 cls = lcg.Image
+            elif self.filename.lower().endswith('mp3'):
+                cls = lcg.Audio
+            elif self.filename.lower().endswith('flv'):
+                cls = lcg.Video
             else:
                 cls = lcg.Resource
             return cls(self.filename, uri=self.uri, title=self.title, descr=self.descr)
-        
+
     _ACTIONS = (
         #Action(_("New image"), 'insert_image', descr=_("Insert a new image attachment"),
         #       context=None),

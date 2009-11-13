@@ -287,6 +287,13 @@
 	still unclear as Roles contains Role.ANYONE, which I don't understand
 	in this context.
 
+2009-11-13  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/cms/cms.py:
+	Added support for direct playback of MP3 audio and FLV video using a built-in Flash player..
+	
+	Requires recent LCG versions and media player present in resource_path to work.
+
 2009-11-05  Tomas Cerha  <cerha@brailcom.org>
 
 	* resources/css/layout.css:
