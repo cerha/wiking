@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-11-11 16:18+0100\n"
+"POT-Creation-Date: 2009-11-16 16:48+0100\n"
 "PO-Revision-Date: 2009-09-14 14:56+0100\n"
 "Last-Translator: Petr Topiarz <topiarz@post.cz>\n"
 "Language-Team: Slovak <wiking@lists.freebsoft.org>\n"
@@ -230,7 +230,7 @@ msgstr "Akcia vyžaduje prihlásenie"
 #. Translators: Login dialog page title (use a noun).
 #. Translators: Login info label (noun) followed by login name and other info.
 #: ../lib/wiking/util.py:67 ../lib/wiking/util.py:448
-#: ../lib/wiking/util.py:780
+#: ../lib/wiking/util.py:782
 msgid "Login"
 msgstr "Prihlásenie"
 
@@ -383,7 +383,7 @@ msgstr "Platnosť hesla vyprší %(date)s"
 #. user to obtain access to the website/application by submitting his personal
 #. details.
 #. Translators: Webpage link leading to registration form.
-#: ../lib/wiking/util.py:440 ../lib/wiking/util.py:823
+#: ../lib/wiking/util.py:440 ../lib/wiking/util.py:825
 msgid "New user registration"
 msgstr "Registrácia nového používateľa"
 
@@ -403,51 +403,51 @@ msgstr "Akcie:"
 msgid "Help"
 msgstr "Nápoveda"
 
-#: ../lib/wiking/util.py:758
+#: ../lib/wiking/util.py:760
 msgid "Go to your profile"
 msgstr "Prejísť na váš profil"
 
 #. Translators: Logout button label (verb in imperative).
-#: ../lib/wiking/util.py:763
+#: ../lib/wiking/util.py:765
 msgid "log out"
 msgstr "odhlásiť"
 
 #. Translators: Login status info.  If logged, the username is displayed instead.
-#: ../lib/wiking/util.py:766
+#: ../lib/wiking/util.py:768
 msgid "not logged"
 msgstr "neprihlásený"
 
 #. Translators: Login button label (verb in imperative).
-#: ../lib/wiking/util.py:768
+#: ../lib/wiking/util.py:770
 msgid "log in"
 msgstr "prihlásiť"
 
-#: ../lib/wiking/util.py:810
+#: ../lib/wiking/util.py:812
 msgid "Login name"
 msgstr "Prihlasovacie meno"
 
-#: ../lib/wiking/util.py:813
+#: ../lib/wiking/util.py:815
 msgid "Password"
 msgstr "Heslo"
 
 #. Translators: Login button label - verb in imperative.
-#: ../lib/wiking/util.py:819
+#: ../lib/wiking/util.py:821
 msgid "Log in"
 msgstr "prihlásiť"
 
 #. Translators: Login dialog link to password change or password reminder (depends
 #. on configuration).
-#: ../lib/wiking/util.py:826
+#: ../lib/wiking/util.py:828
 msgid "Forgot your password?"
 msgstr "Zabudli ste heslo?"
 
-#: ../lib/wiking/util.py:1390
+#: ../lib/wiking/util.py:1392
 msgid "Invalid format"
 msgstr "Neplatný formát!"
 
 #. Translators: Computer terminology. `gmail.com' is a domain name in email address
 #. `joe@gmail.com'.
-#: ../lib/wiking/util.py:1398 ../lib/wiking/util.py:1405
+#: ../lib/wiking/util.py:1400 ../lib/wiking/util.py:1407
 #, fuzzy
 msgid "Domain not found"
 msgstr "Nič nebolo nájdené."

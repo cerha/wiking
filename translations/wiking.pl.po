@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-11-11 16:18+0100\n"
+"POT-Creation-Date: 2009-11-16 16:48+0100\n"
 "PO-Revision-Date: 2008-10-24 13:02+0200\n"
 "Last-Translator: Pawel Loba <ploba@rogers.com>\n"
 "Language-Team: Polish <wiking@lists.freebsoft.org>\n"
@@ -234,7 +234,7 @@ msgstr "Wymagane potwierdzenie"
 #. Translators: Login dialog page title (use a noun).
 #. Translators: Login info label (noun) followed by login name and other info.
 #: ../lib/wiking/util.py:67 ../lib/wiking/util.py:448
-#: ../lib/wiking/util.py:780
+#: ../lib/wiking/util.py:782
 #, fuzzy
 msgid "Login"
 msgstr "Wlogowanie"
@@ -383,7 +383,7 @@ msgstr ""
 #. user to obtain access to the website/application by submitting his personal
 #. details.
 #. Translators: Webpage link leading to registration form.
-#: ../lib/wiking/util.py:440 ../lib/wiking/util.py:823
+#: ../lib/wiking/util.py:440 ../lib/wiking/util.py:825
 msgid "New user registration"
 msgstr ""
 
@@ -404,51 +404,51 @@ msgstr "Akcje:"
 msgid "Help"
 msgstr "Pomoc"
 
-#: ../lib/wiking/util.py:758
+#: ../lib/wiking/util.py:760
 msgid "Go to your profile"
 msgstr ""
 
 #. Translators: Logout button label (verb in imperative).
-#: ../lib/wiking/util.py:763
+#: ../lib/wiking/util.py:765
 msgid "log out"
 msgstr "wyloguj się"
 
 #. Translators: Login status info.  If logged, the username is displayed instead.
-#: ../lib/wiking/util.py:766
+#: ../lib/wiking/util.py:768
 msgid "not logged"
 msgstr ""
 
 #. Translators: Login button label (verb in imperative).
-#: ../lib/wiking/util.py:768
+#: ../lib/wiking/util.py:770
 msgid "log in"
 msgstr "wloguj się"
 
-#: ../lib/wiking/util.py:810
+#: ../lib/wiking/util.py:812
 msgid "Login name"
 msgstr "Nazwa logująca"
 
-#: ../lib/wiking/util.py:813
+#: ../lib/wiking/util.py:815
 msgid "Password"
 msgstr "Hasło"
 
 #. Translators: Login button label - verb in imperative.
-#: ../lib/wiking/util.py:819
+#: ../lib/wiking/util.py:821
 msgid "Log in"
 msgstr "Wlogowanie"
 
 #. Translators: Login dialog link to password change or password reminder (depends
 #. on configuration).
-#: ../lib/wiking/util.py:826
+#: ../lib/wiking/util.py:828
 msgid "Forgot your password?"
 msgstr ""
 
-#: ../lib/wiking/util.py:1390
+#: ../lib/wiking/util.py:1392
 msgid "Invalid format"
 msgstr ""
 
 #. Translators: Computer terminology. `gmail.com' is a domain name in email address
 #. `joe@gmail.com'.
-#: ../lib/wiking/util.py:1398 ../lib/wiking/util.py:1405
+#: ../lib/wiking/util.py:1400 ../lib/wiking/util.py:1407
 msgid "Domain not found"
 msgstr ""
 
