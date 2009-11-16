@@ -5,9 +5,9 @@ class Reader(lcg.Reader):
 
     def _title(self):
         return "Wiking Configuration Options"
-    
+
     def _content(self):
-        from wiking import cfg
+        from wiking.cms import cfg
         def descr(option):
             content = []
             doc = option.documentation()
@@ -18,8 +18,11 @@ class Reader(lcg.Reader):
             return content
         import lcg
         return lcg.Parser().parse(lcg.unindent_docstring(cfg.__doc__)) + \
-               [lcg.TableOfContents(title="Available options", depth=1)] + \
-               [lcg.Section(title="Option '%s': %s" % (o.name(),o.description()),
-                            anchor=o.name(),
-                            content=descr(o))
-                for o in cfg.options(sort=True) if o.visible()]
+            [lcg.TableOfContents(title="Available options in Wiking", depth=2)] + \
+            # Construct sections according to module and subsections with the config options
+            [lcg.Section(title=title,
+                         content=[lcg.Section(title="Option '%s': %s" % (o.name(),o.description()),
+                                              anchor=o.name(),
+                                              content=descr(o))
+                                  for o in cfg_object.options(sort=True) if o.visible()])
+             for title, cfg_object in [("Wiking", cfg), ("Wiking CMS", cfg.appl)]]
