@@ -1,3 +1,18 @@
+2009-11-16  Hynek Hanke  <hanke@brailcom.org>
+
+	* lib/wiking/cms/configuration.py (CMSConfiguration._Option_display_role_in_login_panel): display_role_in_login_panel -- new option.
+
+	* doc/src/admin/config.py (Reader._content): List also options for Wiking CMS.
+
+	* lib/wiking/util.py (LoginCtrl.export): If the wiking.display_role_in_login_panel
+	option is True, append the user name on login pannel with the description
+	of the current user role.
+
+	* lib/wiking/request.py (User.role()): New method to return the main user role.
+
+	* lib/wiking/cms/cms.py (Users._user_arguments): Return also role as a tuple
+	of main role identifier and main role name.
+
 2009-11-11  Hynek Hanke  <hanke@brailcom.org>
 
 	* lib/wiking/cms/cms.py (Users.Spec): Created new role 'disa' Disabled.
