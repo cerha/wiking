@@ -1,5 +1,10 @@
 2009-11-16  Milan Zamazal  <pdm@brailcom.org>
 
+	* .gitignore:
+	Add some resource files to .gitignore.
+
+2009-11-16  Milan Zamazal  <pdm@brailcom.org>
+
 	* lib/wiking/cms/cms.py:
 	* lib/wiking/handler.py:
 	* lib/wiking/modules.py:

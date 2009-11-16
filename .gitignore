@@ -1,3 +1,6 @@
 *.pyc
 *~
 #*#
+/resources/flash/mediaplayer.swf
+/resources/css/wiking-biblio.css
+/resources/scripts/swfobject.js
