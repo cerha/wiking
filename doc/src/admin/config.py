@@ -17,9 +17,9 @@ class Reader(lcg.Reader):
             content.append(lcg.PreformattedText(option.default_string()))
             return content
         import lcg
+        # Construct sections according to module and subsections with the config options
         return lcg.Parser().parse(lcg.unindent_docstring(cfg.__doc__)) + \
-            [lcg.TableOfContents(title="Available options in Wiking", depth=2)] + \
-            # Construct sections according to module and subsections with the config options
+            [lcg.TableOfContents(title="Available options in Wiking", depth=2)] + \            
             [lcg.Section(title=title,
                          content=[lcg.Section(title="Option '%s': %s" % (o.name(),o.description()),
                                               anchor=o.name(),
