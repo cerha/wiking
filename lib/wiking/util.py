@@ -74,7 +74,7 @@ class PostAuthenticationMessage(RequestError):
     _TITLE = _("Your account")
 
     def message(self, req):
-        return PostLoginDialog(self.args and self.args[0] or None)
+        return PostLoginDialog(req, self.args and self.args[0] or None)
 
 
 class PasswordExpirationError(RequestError):
@@ -857,9 +857,13 @@ class LoginDialog(lcg.Content):
 class PostLoginDialog(lcg.Content):
     """Dialog displaying message."""
     
-    def __init__(self, text_id=None):
-        self._text_id = text_id
+    def __init__(self, req, text_id):
         super(PostLoginDialog, self).__init__()
+        self._text = self._retrieve_text(req, text_id)
+
+    def _retrieve_text(self, req, text_id):
+        texts = cfg.resolver.wiking_module('Texts')
+        return texts.parsed_text(req, text_id, lang=req.prefered_language())
         
     def export(self, context):
         req = context.req()
@@ -868,8 +872,9 @@ class PostLoginDialog(lcg.Content):
         content = (            
             # Translators: Confirmation button
             g.submit(_("OK"), cls='submit'),)
-        result = (g.div(g.escape(self._text_id)) + 
-                  g.form(content, method='POST', action=uri, name='login_form', cls='login-form'))
+        form = g.form(content, method='POST', action=uri, name='login_form', cls='login-form')
+        text = lcg.coerce(self._text).export(context)
+        result = text + form
         return result
 
     

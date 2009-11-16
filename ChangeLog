@@ -1,5 +1,12 @@
 2009-11-16  Milan Zamazal  <pdm@brailcom.org>
 
+	* lib/wiking/cms/texts.py:
+	* lib/wiking/modules.py:
+	* lib/wiking/util.py:
+	Use system texts in post login information displays.
+
+2009-11-16  Milan Zamazal  <pdm@brailcom.org>
+
 	* .gitignore:
 	Add some resource files to .gitignore.
 
