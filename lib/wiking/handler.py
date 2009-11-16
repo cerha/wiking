@@ -85,6 +85,8 @@ class Handler(object):
                     req.user()
                 except AuthenticationError, auth_error:
                     return self._serve_error_document(req, auth_error)
+                except PostAuthenticationMessage, post_message:
+                    return self._serve_error_document(req, post_message)
                 return self._serve_error_document(req, error)
             except ClosedConnection:
                 return req.done()

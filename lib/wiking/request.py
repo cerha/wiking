@@ -717,7 +717,8 @@ class User(object):
     
     def __init__(self, login, uid=None, name=None, roles=(), role=(),
                  email=None, password=None, password_expiration=None, uri=None,
-                 data=None, lang='en', organization_id=None, organization=None):
+                 data=None, lang='en', organization_id=None, organization=None,
+                 account_expiration=None):
         """Initialize the instance.
 
         Arguments:
@@ -737,6 +738,7 @@ class User(object):
           organization -- name of the user's organization as a string or
             unicode; or 'None' if the user doesn't belong to any organization
           lang -- code of the user's preferred language
+          account_expiration -- account expiration date as a Python 'date' instance or None
 
         Please note, that password expiration date has currently no impact on the authentication
         process.  It will just be displayed in the login panel, if defined.
@@ -762,6 +764,7 @@ class User(object):
         self._lang = lang
         self._auto_authentication = False
         self._authentication_method = None
+        self._account_expiration = account_expiration
         
     def login(self):
         """Return user's login name as a string."""
@@ -872,8 +875,26 @@ class User(object):
         if auto is not None:
             assert isinstance(auto, bool)
             self._auto_authentication = auto
+
+    def disabled(self):
+        """Return true iff the user has been disabled."""
+        return self._role[0] == 'disa'
+
+    def preregistered(self):
+        """Return true iff the user hasn't confirmed his registration code yet."""
+        return self._account_expiration is not None
+
+    def active(self):
+        """Return true iff the user is active.
+
+        A user is active if he has completed his registration process, the
+        account has been approved by the administrator and the user is not
+        disabled.
         
-    
+        """
+        return self._role[0] not in ('none', 'disa',) and self._account_expiration is None
+
+        
 class Roles(object):
     """Predefined static user roles.
 

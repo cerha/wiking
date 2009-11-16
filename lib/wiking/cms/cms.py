@@ -2526,7 +2526,8 @@ class Users(CMSModule):
         return dict(login=login, name=record['user'].value(), uid=record['uid'].value(),
                     uri=uri, email=record['email'].value(), data=record,
                     role=(record['role'].value(),self.Spec._ROLE_DICT[record['role'].value()][0]),
-                    roles=self.Spec._roles(record), lang=record['lang'].value())
+                    roles=self.Spec._roles(record), lang=record['lang'].value(),
+                    account_expiration=(record['regexpire'].value() or None))
                     #organization_id=organization_id, organization=organization)
 
     def _make_user(self, kwargs):

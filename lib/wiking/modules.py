@@ -420,6 +420,13 @@ class CookieAuthentication(object):
             session.init(req, user, session_key)
             req.set_cookie(self._LOGIN_COOKIE, login, expires=730*day, secure=secure)
             req.set_cookie(self._SESSION_COOKIE, session_key, secure=secure)
+            # Display info page for users without proper access
+            if user.disabled():
+                raise PostAuthenticationMessage('disabled')
+            if user.preregistered():
+                raise PostAuthenticationMessage('unconfirmed')
+            if not user.active():                
+                raise PostAuthenticationMessage('unapproved')
         else:
             login, session_key = (req.cookie(self._LOGIN_COOKIE), 
                                   req.cookie(self._SESSION_COOKIE))

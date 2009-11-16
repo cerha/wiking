@@ -1,3 +1,12 @@
+2009-11-16  Milan Zamazal  <pdm@brailcom.org>
+
+	* lib/wiking/cms/cms.py:
+	* lib/wiking/handler.py:
+	* lib/wiking/modules.py:
+	* lib/wiking/request.py:
+	* lib/wiking/util.py:
+	Mechanisms for displaying after login information about account state.
+
 2009-11-16  Hynek Hanke  <hanke@brailcom.org>
 
 	* lib/wiking/cms/configuration.py (CMSConfiguration._Option_display_role_in_login_panel): display_role_in_login_panel -- new option.

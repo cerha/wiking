@@ -67,6 +67,16 @@ class AuthenticationRedirect(AuthenticationError):
     _TITLE = _("Login")
     
 
+class PostAuthenticationMessage(RequestError):
+    """Error indicating that authentication is required for the resource."""
+    
+    # Translators: Dialog title
+    _TITLE = _("Your account")
+
+    def message(self, req):
+        return PostLoginDialog(self.args and self.args[0] or None)
+
+
 class PasswordExpirationError(RequestError):
     
     _TITLE = _("Your password expired")
@@ -842,7 +852,25 @@ class LoginDialog(lcg.Content):
             exported = lcg.coerce(added_content).export(context)
             result += "\n" + g.div(exported, cls='login-dialog-content')
         return result
+
+
+class PostLoginDialog(lcg.Content):
+    """Dialog displaying message."""
     
+    def __init__(self, text_id=None):
+        self._text_id = text_id
+        super(PostLoginDialog, self).__init__()
+        
+    def export(self, context):
+        req = context.req()
+        uri = req.uri()
+        g = context.generator()
+        content = (            
+            # Translators: Confirmation button
+            g.submit(_("OK"), cls='submit'),)
+        result = (g.div(g.escape(self._text_id)) + 
+                  g.form(content, method='POST', action=uri, name='login_form', cls='login-form'))
+        return result
 
     
 # ============================================================================
