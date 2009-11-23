@@ -2077,6 +2077,7 @@ class Users(CMSModule):
             md5_passwords = (cfg.password_storage == 'md5')
             return (
             Field('uid', width=8, editable=NEVER),
+            # Translators: Login name for a website. Registration form field.
             Field('login', _("Login name"), width=16, editable=ONCE,
                   type=pd.RegexString(maxlen=16, not_null=True, regex='^[a-zA-Z][0-9a-zA-Z_\.-]*$'),
                   computer=(cfg.login_is_email and computer(lambda r, email: email) or None),
@@ -2093,21 +2094,35 @@ class Users(CMSModule):
                   type=pd.Password(not_null=True),
                   descr=_("Please, write the password into each of the two fields to eliminate "
                           "typos.")),
+            # Translators: Full name of a person. Registration form field.
             Field('fullname', _("Full Name"), virtual=True, editable=NEVER,
                   computer=computer(self._fullname)),
+            # TODO: What does this mean (missing translators note): Translators: 
             Field('user', _("User"), dbcolumn='user_',
                   computer=computer(lambda r, nickname, fullname: nickname or fullname)),
             Field('firstname', _("First name")),
             Field('surname', _("Surname")),
+            # Translators: Name of a user to display on a website if he doesn't want the
+            # default "Name Surname". Registration form field.
             Field('nickname', _("Displayed name"),
                   descr=_("Leave blank if you want to be referred by your full name or enter an "
                           "alternate name, such as nickname or monogram.")),
+            # Translators: E-mail address. Registration form field.
             Field('email', _("E-mail"), width=36, constraints=(self._check_email,)),
+            # Translators: Telephone number. Registration form field.
             Field('phone', _("Phone")),
+            # Translators: Post address. Registration form field.
             Field('address', _("Address"), width=20, height=3),
             # Translators: Do not translate (means Uniform Resource Identifier).
             Field('uri', _("URI"), width=36),
+            # Translators: Generic note for further information. Registration form field.
+            Field('note', _("Note"), width=60, height=6,
+                  descr=(u"If you summarize briefly why you register, what role do you expect in the system or whom have "
+                         "you talked to, this will help the administators to process your request more quickly.")),
+            # Translators: Since when the user is registered. Column heading in a table listing various users.
             Field('since', _("Registered since"), type=DateTime(show_time=False), default=now),
+            # Translators: The role of the user in the system (e.g. Student vs Tutor, Writer
+            # vs. Editor) Column heading in a table listing various users.
             Field('role', _("Role"), display=self._rolename, prefer_display=True, default='none',
                   enumerator=enum([code for code, title, roles in self._ROLES]),
                   style=lambda r: r['role'].value() == 'none' and pp.Style(foreground='#a20') \
@@ -2228,16 +2243,25 @@ class Users(CMSModule):
     _SUPPLY_OWNER = False
     _LAYOUT = {
         # 'insert' and 'passwd' layout is constructed dynamicallly in _layout().
+        # Translators: Personal data -- first name, surname, nickname ...
         'update': (FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname')),
-                   FieldSet(_("Contact information"), ('email', 'phone', 'address', 'uri'))),
-        'view': (FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname',)),
+                   # Translators: Contact information -- email, phone, address...
+                   FieldSet(_("Contact information"), ('email', 'phone', 'address', 'uri')),
+                   # Translators: Others is a label for a group of unspecified form fields
+                   # (as in Personal data, Contact information, Others).
+                   FieldSet(_("Others"), ('note',))),
+        'view': (FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname',)),                 
                  FieldSet(_("Contact information"), ('email', 'phone', 'address','uri')),
+                 FieldSet(_("Others"), ('note',)),
                  FieldSet(_("Access rights"), ('role',)),
                  lambda r: Users.AccountInfo(r['state'].value())),
         'rights': ('role',),
         }
+    # Translators: Button label.
     _INSERT_LABEL = _("New user")
+    # Translators: Button label.
     _UPDATE_LABEL = _("Edit profile")
+    # Translators: Button label. Modify the users data (email, address...)
     _UPDATE_DESCR = _("Modify user's record")
     RIGHTS_insert = (Roles.ANYONE,)
     RIGHTS_update = (Roles.ADMIN, Roles.OWNER)
@@ -2256,6 +2280,7 @@ class Users(CMSModule):
                         FieldSet(_("Contact information"),
                                  ((not cfg.login_is_email) and ('email',) or ()) +
                                  ('phone', 'address', 'uri')),
+                        FieldSet(_("Others"), ('note',)),
                         FieldSet(_("Login information"),
                                  ((cfg.login_is_email and 'email' or 'login'), 'password')))
             elif action == 'passwd' and record is not None:
@@ -2376,7 +2401,7 @@ class Users(CMSModule):
             req.message(_("Failed sending e-mail notification:") +' '+ err, type=req.ERROR)
             return False
         else:
-            # Translators: Follos an email addres, e.g. ``Activation code was sent to joe@brailcom.org''
+            # Translators: Follows an email addres, e.g. ``Activation code was sent to joe@brailcom.org''
             req.message(_("Activation code was sent to %s.", record['email'].value()))
             return True
 

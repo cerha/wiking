@@ -1,5 +1,15 @@
 2009-11-16  Hynek Hanke  <hanke@brailcom.org>
 
+	* sql/wiking.sql: Add a generic note column to the users record.
+
+	* sql/upgrade.13.sql: Update script to add the 'note' column to the table of users.
+
+	* lib/wiking/cms/cms.py (Users): Added new part of the form ``Others'' and new field ''Note''
+	to pass generic note from user to admin during registration.
+	New comments for translators.
+
+2009-11-16  Hynek Hanke  <hanke@brailcom.org>
+	
 	* lib/wiking/cms/configuration.py (CMSConfiguration._Option_display_role_in_login_panel): display_role_in_login_panel -- new option.
 
 	* doc/src/admin/config.py (Reader._content): List also options for Wiking CMS.

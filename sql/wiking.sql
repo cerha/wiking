@@ -40,6 +40,7 @@ create table users (
         regexpire timestamp,
         regcode char(16),
         certauth boolean not null default false,
+        note text,
         organization text, -- free form field just for registration
         organization_id int references organizations
 );
