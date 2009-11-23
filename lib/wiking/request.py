@@ -715,7 +715,7 @@ class User(object):
 
     """
     
-    def __init__(self, login, uid=None, name=None, roles=(), role=(),
+    def __init__(self, login, uid=None, name=None, roles=(),
                  email=None, password=None, password_expiration=None, uri=None,
                  data=None, lang='en', organization_id=None, organization=None):
         """Initialize the instance.
@@ -749,7 +749,6 @@ class User(object):
         self._uid = uid or login
         self._name = name or login
         self._roles = tuple(roles)
-        self._role = role
         self._email = email
         self._password = password
         self._password_expiration = password_expiration
@@ -775,25 +774,18 @@ class User(object):
         """Return user's visible name as a string."""
         return self._name
 
-    def role(self):
-        """Return main user role as a tuple (role_identifier,
-        role_name) where role identifier is the string identifier of
-        the role and role_name is the (already localized) descriptive
-        string for the role.
+    def role_description(self):
+        """Return a users role description as an instance of lcg.TranslatableText
 
-        An example return value might be ('Roles.ADMIN', 'Administrator')
-        """
-        return self._role
+        This description will normally be a short descriptive text such as "Student" or
+        "Administrator" and might serve for example for optional display in LoginPanel."""
+        return None
 
     def roles(self):
-        """Return all valid user's roles (including subroles) as a
-        tuple of unique string identifiers (see 'Roles'). For disabled
-        users or users who don't have any active role, returns an
-        empty touple.
+        """Return all valid user's roles as a tuple of unique string identifiers (see
+        'Roles'). For users who don't have any active role, returns an empty tuple.
 
-        For example, the role Administrator also has permissions for
-        the roles User, Author etc. This function will return a list
-        of all these roles.
+        Example return value: (Roles.ADMIN,)
         """
         return self._roles
     

@@ -2037,8 +2037,8 @@ class Users(CMSModule):
     modules, but he can no longer access the system, doesn't figure in
     the lists of users, doesn't receive any email notifications etc.
 
-    The available user roles are (some roles also implicitly contain
-    other roles, see Spec._Roles):
+    Wiking CMS associates roles to users based on role codes from the database. The defined
+    role codes are:
 
     'none' -- New users who register but do not have any priviledges assigned yet.
     'disa' -- Users who were made devoid of priviledges, such as deleted users, refused registration
@@ -2525,9 +2525,10 @@ class Users(CMSModule):
         #    organization = None
         return dict(login=login, name=record['user'].value(), uid=record['uid'].value(),
                     uri=uri, email=record['email'].value(), data=record,
-                    role=(record['role'].value(),self.Spec._ROLE_DICT[record['role'].value()][0]),
-                    roles=self.Spec._roles(record), lang=record['lang'].value())
+                    roles=self.Spec._roles(record), lang=record['lang'].value(),
+                    role_description=self.Spec._ROLE_DICT[record['role'].value()][0],
                     #organization_id=organization_id, organization=organization)
+                    )
 
     def _make_user(self, kwargs):
         return User(**kwargs)
@@ -3257,3 +3258,12 @@ class EmailSpool(CMSModule):
     RIGHTS_insert = (Roles.ADMIN,)
     RIGHTS_update = ()
     RIGHTS_delete = (Roles.ADMIN,)
+
+class User(wiking.User):
+    def __init__(self, login, role_description=None, **kwargs):
+        # Role description is passed from the Users module according to database codes mapping
+        self._role_description = role_description
+        super(User, self).__init__(login, **kwargs)
+
+    def role_description(self):
+        return self._role_description
