@@ -775,9 +775,12 @@ class User(object):
         return self._name
     
     def roles(self):
-        """Return valid user's roles as a tuple of unique string
-        identifiers (see 'Roles'). For disabled users or users who
-        don't have any active role, returns an empty touple.
+        """Return valid user's roles as a tuple of unique string identifiers.
+
+        Valid role identifiers are defined by 'Roles' class constants. For
+        disabled users or users who don't have any active role, returns
+        an empty tuple.
+        
         """
         return self._roles
     

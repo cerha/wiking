@@ -1,5 +1,10 @@
 2009-11-26  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/request.py:
+	Minor docstring improvement.
+
+2009-11-26  Tomas Cerha  <cerha@brailcom.org>
+
 	* lib/wiking/cms/cms.py:
 	* lib/wiking/cms/configuration.py:
 	* lib/wiking/configuration.py:
