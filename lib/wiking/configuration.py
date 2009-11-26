@@ -386,5 +386,9 @@ class Configuration(pc):
                 "to answer the registration e-mail within the limit given here.")
         _DEFAULT = 2
 
-
-        
+    class _Option_display_role_in_login_panel(pc.BooleanOption):
+        # Translators: Yes/No configuration option label. Should the login panel display user role (as Admin, Student, Tutor etc.)
+        _DESCR = _("Display role in login panel")
+        _DOC = _("If enabled, the login panel on each page will not display only the current "
+                 "username, but also his current role description (e.g. Administrator, User, Student etc.)")
+        _DEFAULT = False

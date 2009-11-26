@@ -715,9 +715,9 @@ class User(object):
 
     """
     
-    def __init__(self, login, uid=None, name=None, roles=(), email=None, password=None, 
-                 password_expiration=None, uri=None, data=None, lang='en',
-                 organization_id=None, organization=None):
+    def __init__(self, login, uid=None, name=None, roles=(), role_description=None,
+                 email=None, password=None, password_expiration=None, uri=None,
+                 data=None, lang='en', organization_id=None, organization=None):
         """Initialize the instance.
 
         Arguments:
@@ -726,6 +726,9 @@ class User(object):
           uid -- user identifier used for ownership determination (see role OWNER)
           name -- visible name as a string (login is used if None)
           roles -- sequence of user roles as unique string identifiers (see 'Roles')
+          role_description -- user's role description as a (translatable) string or None.  If not
+            None and cfg.display_role_in_login_panel is True, the description will be displayed in
+            login panel.
           email -- e-mail address as a string
           password -- user's expected authentication password or None if password authentication is
             not allowed.  The login password will be checked against this value for authentication
@@ -749,6 +752,7 @@ class User(object):
         self._uid = uid or login
         self._name = name or login
         self._roles = tuple(roles)
+        self._role_description = role_description
         self._email = email
         self._password = password
         self._password_expiration = password_expiration
@@ -783,7 +787,16 @@ class User(object):
         
         """
         return self._roles
-    
+
+    def role_description(self):
+        """Return user's role description as a (translatable) string.
+
+        This description will normally be a short descriptive text such as "Student" or
+        "Administrator" and might serve for example for optional display in LoginPanel.
+
+        """
+        return self._role_description
+
     def email(self):
         """Return user's e-mail address as a string or None if not defined."""
         return self._email

@@ -753,6 +753,10 @@ class LoginCtrl(lcg.Content):
         user = req.user()
         if user:
             username = user.name()
+            if cfg.display_role_in_login_panel:
+                role_description = user.role_description()
+                if role_description:
+                    username = lcg.concat(username, " (", role_description, ")")
             uri = user.uri()
             if uri:
                 username = g.link(username, uri, title=_("Go to your profile"))
