@@ -1,5 +1,14 @@
 2009-11-26  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/cms/cms.py:
+	* lib/wiking/cms/configuration.py:
+	* lib/wiking/configuration.py:
+	* lib/wiking/request.py:
+	* lib/wiking/util.py:
+	Revert "Display user role by user name in Login panel (configurable, default off).".
+
+2009-11-26  Tomas Cerha  <cerha@brailcom.org>
+
 	* .gitignore:
 	* translations/.gitignore:
 	Ignore generated translation files..

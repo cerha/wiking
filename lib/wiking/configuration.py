@@ -385,4 +385,6 @@ class Configuration(pc):
         _DOC = ("When registration by e-mail is enabled, each newly registered user is required "
                 "to answer the registration e-mail within the limit given here.")
         _DEFAULT = 2
+
+
         
