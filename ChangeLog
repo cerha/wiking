@@ -1,3 +1,9 @@
+2009-11-26  Tomas Cerha  <cerha@brailcom.org>
+
+	* .gitignore:
+	* translations/.gitignore:
+	Ignore generated translation files..
+
 2009-11-16  Hynek Hanke  <hanke@brailcom.org>
 
 	* sql/wiking.sql: Add a generic note column to the users record.
