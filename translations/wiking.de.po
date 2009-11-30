@@ -7,13 +7,59 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-11-16 16:48+0100\n"
+"POT-Creation-Date: 2009-11-30 15:57+0100\n"
 "PO-Revision-Date: 2009-06-04 09:29+0200\n"
 "Last-Translator: Pavel Vohnout <vohnout@officehouse.cz>\n"
 "Language-Team: German <wiking@lists.freebsoft.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: ../lib/wiking/modules.py:408
+msgid "Enter your login name, please!"
+msgstr "Geben Sie bitte Ihren Benutzernamen ein!"
+
+#: ../lib/wiking/modules.py:410
+msgid "Enter your password, please!"
+msgstr "Geben Sie bitte Ihr Passwort ein!"
+
+#: ../lib/wiking/modules.py:415
+msgid "Invalid login!"
+msgstr ""
+"Der eingegebene Suchbegriff enthält nichts, wonach die Suche möglich ist. "
+
+#: ../lib/wiking/modules.py:513
+msgid "Searching"
+msgstr "Suche"
+
+#: ../lib/wiking/modules.py:514
+msgid "Search results"
+msgstr "Suchergebnis"
+
+#: ../lib/wiking/modules.py:515
+msgid "Given search term doesn't contain any searchable term."
+msgstr ""
+"Der eingegebene Suchbegriff enthält nichts, wonach die Suche möglich ist. "
+
+#: ../lib/wiking/modules.py:519
+msgid "Search words:"
+msgstr "Wörter suchen:"
+
+#: ../lib/wiking/modules.py:520
+msgid "Search"
+msgstr "Wörter suchen"
+
+#: ../lib/wiking/modules.py:576
+msgid "Nothing found."
+msgstr "Kein Ergebnis."
+
+#: ../lib/wiking/modules.py:633
+msgid "The following modules were successfully reloaded:"
+msgstr "Folgende Module wurden erfolgreich eingelesen:"
+
+#: ../lib/wiking/modules.py:635
+msgid "Reload"
+msgstr "Einlesen"
 
 #: ../lib/wiking/db.py:41
 msgid "This value already exists.  Enter a unique value."
@@ -232,7 +278,7 @@ msgstr "Aktion erfordert Anmeldung"
 #. Translators: Login dialog page title (use a noun).
 #. Translators: Login info label (noun) followed by login name and other info.
 #: ../lib/wiking/util.py:67 ../lib/wiking/util.py:448
-#: ../lib/wiking/util.py:782
+#: ../lib/wiking/util.py:784
 msgid "Login"
 msgstr "Anmeldung"
 
@@ -389,7 +435,7 @@ msgstr "Gültigkeit des Passworts läuft ab %(date)s"
 #. user to obtain access to the website/application by submitting his personal
 #. details.
 #. Translators: Webpage link leading to registration form.
-#: ../lib/wiking/util.py:440 ../lib/wiking/util.py:825
+#: ../lib/wiking/util.py:440 ../lib/wiking/util.py:827
 msgid "New user registration"
 msgstr "Registrierung eines neuen Benutzers"
 
@@ -409,45 +455,45 @@ msgstr "Aktion:"
 msgid "Help"
 msgstr "Hilfe"
 
-#: ../lib/wiking/util.py:760
+#: ../lib/wiking/util.py:762
 msgid "Go to your profile"
 msgstr "Gehe zu Ihrem Profil"
 
 #. Translators: Logout button label (verb in imperative).
-#: ../lib/wiking/util.py:765
+#: ../lib/wiking/util.py:767
 msgid "log out"
 msgstr "Abmelden"
 
 #. Translators: Login status info.  If logged, the username is displayed instead.
-#: ../lib/wiking/util.py:768
+#: ../lib/wiking/util.py:770
 msgid "not logged"
 msgstr "abgemeldet"
 
 #. Translators: Login button label (verb in imperative).
-#: ../lib/wiking/util.py:770
+#: ../lib/wiking/util.py:772
 msgid "log in"
 msgstr "Anmelden"
 
-#: ../lib/wiking/util.py:812
+#: ../lib/wiking/util.py:814
 msgid "Login name"
 msgstr "Kennwort"
 
-#: ../lib/wiking/util.py:815
+#: ../lib/wiking/util.py:817
 msgid "Password"
 msgstr "Passwort"
 
 #. Translators: Login button label - verb in imperative.
-#: ../lib/wiking/util.py:821
+#: ../lib/wiking/util.py:823
 msgid "Log in"
 msgstr "Anmelden"
 
 #. Translators: Login dialog link to password change or password reminder (depends
 #. on configuration).
-#: ../lib/wiking/util.py:828
+#: ../lib/wiking/util.py:830
 msgid "Forgot your password?"
 msgstr "Haben sie Ihr paswswort vergessen?"
 
-#: ../lib/wiking/util.py:1392
+#: ../lib/wiking/util.py:1394
 #, fuzzy
 msgid "Invalid format"
 msgstr ""
@@ -455,7 +501,7 @@ msgstr ""
 
 #. Translators: Computer terminology. `gmail.com' is a domain name in email address
 #. `joe@gmail.com'.
-#: ../lib/wiking/util.py:1400 ../lib/wiking/util.py:1407
+#: ../lib/wiking/util.py:1402 ../lib/wiking/util.py:1409
 #, fuzzy
 msgid "Domain not found"
 msgstr "Kein Ergebnis."
@@ -497,52 +543,6 @@ msgstr "Diese Seite kann in einem BELIEBIGEN Browser aufgerufen werden."
 #: ../lib/wiking/application.py:423
 msgid "Contact:"
 msgstr "Kontakt:"
-
-#: ../lib/wiking/modules.py:408
-msgid "Enter your login name, please!"
-msgstr "Geben Sie bitte Ihren Benutzernamen ein!"
-
-#: ../lib/wiking/modules.py:410
-msgid "Enter your password, please!"
-msgstr "Geben Sie bitte Ihr Passwort ein!"
-
-#: ../lib/wiking/modules.py:415
-msgid "Invalid login!"
-msgstr ""
-"Der eingegebene Suchbegriff enthält nichts, wonach die Suche möglich ist. "
-
-#: ../lib/wiking/modules.py:513
-msgid "Searching"
-msgstr "Suche"
-
-#: ../lib/wiking/modules.py:514
-msgid "Search results"
-msgstr "Suchergebnis"
-
-#: ../lib/wiking/modules.py:515
-msgid "Given search term doesn't contain any searchable term."
-msgstr ""
-"Der eingegebene Suchbegriff enthält nichts, wonach die Suche möglich ist. "
-
-#: ../lib/wiking/modules.py:519
-msgid "Search words:"
-msgstr "Wörter suchen:"
-
-#: ../lib/wiking/modules.py:520
-msgid "Search"
-msgstr "Wörter suchen"
-
-#: ../lib/wiking/modules.py:576
-msgid "Nothing found."
-msgstr "Kein Ergebnis."
-
-#: ../lib/wiking/modules.py:633
-msgid "The following modules were successfully reloaded:"
-msgstr "Folgende Module wurden erfolgreich eingelesen:"
-
-#: ../lib/wiking/modules.py:635
-msgid "Reload"
-msgstr "Einlesen"
 
 #~ msgid "Thank you"
 #~ msgstr "Vielen Dank"

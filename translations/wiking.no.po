@@ -7,13 +7,57 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-11-16 16:48+0100\n"
+"POT-Creation-Date: 2009-11-30 15:57+0100\n"
 "PO-Revision-Date: 2009-09-08 16:37+0100\n"
 "Last-Translator: Petr Topiarz <topiarz@post.cz>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: ../lib/wiking/modules.py:408
+msgid "Enter your login name, please!"
+msgstr "Vennligst skriv inn ditt innloggingsnavn!"
+
+#: ../lib/wiking/modules.py:410
+msgid "Enter your password, please!"
+msgstr "Vennligst skriv inn ditt passord!"
+
+#: ../lib/wiking/modules.py:415
+msgid "Invalid login!"
+msgstr "Ugyldig innlogging!"
+
+#: ../lib/wiking/modules.py:513
+msgid "Searching"
+msgstr "Søker"
+
+#: ../lib/wiking/modules.py:514
+msgid "Search results"
+msgstr "Søkeresultat"
+
+#: ../lib/wiking/modules.py:515
+msgid "Given search term doesn't contain any searchable term."
+msgstr "Oppgitt søkeord inneholder ingen søkbare termer."
+
+#: ../lib/wiking/modules.py:519
+msgid "Search words:"
+msgstr "Søk ordene:"
+
+#: ../lib/wiking/modules.py:520
+msgid "Search"
+msgstr "Søk"
+
+#: ../lib/wiking/modules.py:576
+msgid "Nothing found."
+msgstr "Ingenting funnet."
+
+#: ../lib/wiking/modules.py:633
+msgid "The following modules were successfully reloaded:"
+msgstr "Følgende moduler lastet på nytt:"
+
+#: ../lib/wiking/modules.py:635
+msgid "Reload"
+msgstr "Last på nytt"
 
 #: ../lib/wiking/db.py:41
 msgid "This value already exists.  Enter a unique value."
@@ -229,7 +273,7 @@ msgstr "Godkjenning kreves"
 #. Translators: Login dialog page title (use a noun).
 #. Translators: Login info label (noun) followed by login name and other info.
 #: ../lib/wiking/util.py:67 ../lib/wiking/util.py:448
-#: ../lib/wiking/util.py:782
+#: ../lib/wiking/util.py:784
 msgid "Login"
 msgstr "Innlogging"
 
@@ -378,7 +422,7 @@ msgstr "Passordet utløper %(date)s"
 #. user to obtain access to the website/application by submitting his personal
 #. details.
 #. Translators: Webpage link leading to registration form.
-#: ../lib/wiking/util.py:440 ../lib/wiking/util.py:825
+#: ../lib/wiking/util.py:440 ../lib/wiking/util.py:827
 msgid "New user registration"
 msgstr "Registrering av ny bruker"
 
@@ -398,51 +442,51 @@ msgstr "Handlinger:"
 msgid "Help"
 msgstr "Hjelp"
 
-#: ../lib/wiking/util.py:760
+#: ../lib/wiking/util.py:762
 msgid "Go to your profile"
 msgstr "Gå til din profil"
 
 #. Translators: Logout button label (verb in imperative).
-#: ../lib/wiking/util.py:765
+#: ../lib/wiking/util.py:767
 msgid "log out"
 msgstr "logg ut"
 
 #. Translators: Login status info.  If logged, the username is displayed instead.
-#: ../lib/wiking/util.py:768
+#: ../lib/wiking/util.py:770
 msgid "not logged"
 msgstr "ikke logget"
 
 #. Translators: Login button label (verb in imperative).
-#: ../lib/wiking/util.py:770
+#: ../lib/wiking/util.py:772
 msgid "log in"
 msgstr "logg inn"
 
-#: ../lib/wiking/util.py:812
+#: ../lib/wiking/util.py:814
 msgid "Login name"
 msgstr "Innloggingsnavn"
 
-#: ../lib/wiking/util.py:815
+#: ../lib/wiking/util.py:817
 msgid "Password"
 msgstr "Passord"
 
 #. Translators: Login button label - verb in imperative.
-#: ../lib/wiking/util.py:821
+#: ../lib/wiking/util.py:823
 msgid "Log in"
 msgstr "Logg inn"
 
 #. Translators: Login dialog link to password change or password reminder (depends
 #. on configuration).
-#: ../lib/wiking/util.py:828
+#: ../lib/wiking/util.py:830
 msgid "Forgot your password?"
 msgstr "Har du glemt ditt passord?"
 
-#: ../lib/wiking/util.py:1392
+#: ../lib/wiking/util.py:1394
 msgid "Invalid format"
 msgstr "Ugyldig format"
 
 #. Translators: Computer terminology. `gmail.com' is a domain name in email address
 #. `joe@gmail.com'.
-#: ../lib/wiking/util.py:1400 ../lib/wiking/util.py:1407
+#: ../lib/wiking/util.py:1402 ../lib/wiking/util.py:1409
 #, fuzzy
 msgid "Domain not found"
 msgstr "Ingenting funnet."
@@ -484,50 +528,6 @@ msgstr "Dette nettstedet kan ses i ALLE nettlesere."
 #: ../lib/wiking/application.py:423
 msgid "Contact:"
 msgstr "Kontakt:"
-
-#: ../lib/wiking/modules.py:408
-msgid "Enter your login name, please!"
-msgstr "Vennligst skriv inn ditt innloggingsnavn!"
-
-#: ../lib/wiking/modules.py:410
-msgid "Enter your password, please!"
-msgstr "Vennligst skriv inn ditt passord!"
-
-#: ../lib/wiking/modules.py:415
-msgid "Invalid login!"
-msgstr "Ugyldig innlogging!"
-
-#: ../lib/wiking/modules.py:513
-msgid "Searching"
-msgstr "Søker"
-
-#: ../lib/wiking/modules.py:514
-msgid "Search results"
-msgstr "Søkeresultat"
-
-#: ../lib/wiking/modules.py:515
-msgid "Given search term doesn't contain any searchable term."
-msgstr "Oppgitt søkeord inneholder ingen søkbare termer."
-
-#: ../lib/wiking/modules.py:519
-msgid "Search words:"
-msgstr "Søk ordene:"
-
-#: ../lib/wiking/modules.py:520
-msgid "Search"
-msgstr "Søk"
-
-#: ../lib/wiking/modules.py:576
-msgid "Nothing found."
-msgstr "Ingenting funnet."
-
-#: ../lib/wiking/modules.py:633
-msgid "The following modules were successfully reloaded:"
-msgstr "Følgende moduler lastet på nytt:"
-
-#: ../lib/wiking/modules.py:635
-msgid "Reload"
-msgstr "Last på nytt"
 
 #~ msgid ""
 #~ "Please inform the server administrator, %(admin)s if the problem persists."
