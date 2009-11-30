@@ -1,5 +1,10 @@
 2009-11-30  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/configuration.py:
+	Don't mention missleading examples in configuratuion option description.
+
+2009-11-30  Tomas Cerha  <cerha@brailcom.org>
+
 	* lib/wiking/cms/cms.py:
 	Display account state information also for blocked accounts.
 

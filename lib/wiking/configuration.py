@@ -390,5 +390,5 @@ class Configuration(pc):
         # Translators: Yes/No configuration option label. Should the login panel display user role (as Admin, Student, Tutor etc.)
         _DESCR = _("Display role in login panel")
         _DOC = _("If enabled, the login panel on each page will not display only the current "
-                 "username, but also his current role description (e.g. Administrator, User, Student etc.)")
+                 "username, but also his current user role, which affects his permissions.")
         _DEFAULT = False
