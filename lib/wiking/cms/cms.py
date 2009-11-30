@@ -2143,16 +2143,19 @@ class Users(CMSModule):
             )
         def _state(self, record, role, regexpire):
             req = record.req()
-            if role != 'none':
+            if role == 'disa':
+                texts = (_("The account is blocked.  The user is not allowed to log in until the "
+                           "administrator grants him access rights again."),)
+            elif role != 'none':
                 texts = ()
             elif regexpire is None:
                 texts = _("The activation code was succesfully confirmed."),
                 if req.check_roles(Roles.ADMIN):
                     texts = (texts[0] +' '+ \
-                            _("Therefore it was verified that given e-mail address "
-                              "belongs to the person who requested the registration."),)
+                             _("Therefore it was verified that given e-mail address "
+                               "belongs to the person who requested the registration."),)
                     texts += _("The user is now able to log in, but still has no rights "
-                              "(other than an anonymous user)."),
+                               "(other than an anonymous user)."),
                 # Translators: In other words, the administrator needs to approve the account first.
                 texts += _("The account now awaits administrator's action to be given "
                           "access rights."),

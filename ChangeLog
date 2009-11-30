@@ -1,3 +1,8 @@
+2009-11-30  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/cms/cms.py:
+	Display account state information also for blocked accounts.
+
 2009-11-26  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/cms/cms.py:
