@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-11-30 16:02+0100\n"
+"POT-Creation-Date: 2009-12-01 20:03+0100\n"
 "PO-Revision-Date: 2009-09-08 09:23+0100\n"
 "Last-Translator: Jostein Sand Nilsen <nistonasneslin@gmail.com>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
@@ -129,78 +129,6 @@ msgid ""
 "username, but also his current user role, which affects his permissions."
 msgstr ""
 
-#. Translators: Yes/No configuration option label. Should the login panel be visible?
-#: ../lib/wiking/cms/configuration.py:36
-msgid "Allow login panel"
-msgstr "Tillat innloggingspanel"
-
-#: ../lib/wiking/cms/configuration.py:37
-msgid ""
-"If enabled, the information about the currently logged user and login/logout "
-"controls will be present on each page as a separate panel.  This panel will "
-"always be the first panel on the page."
-msgstr ""
-"Hvis aktivert, vil informasjonen om den påloggede brukeren og inn/"
-"utloggingskontrollene finnes på hver side som et eget panel. Dette panelet "
-"vil alltid være det første panelet på siden."
-
-#. Translators: Yes/No configuration option label. Should link to WMI be visible?  "WMI"
-#. stands for Wiking Management Interface.  Don't feel obliged to use an abbreviation.  Use
-#. whatever brief form obviously referning to whatever translation you used for "Wiking
-#. Management Interface".
-#: ../lib/wiking/cms/configuration.py:47
-msgid "Allow WMI link"
-msgstr "Tillat WMI-lenke"
-
-#. Translators: Yes/no configuration label. Can new users register to this
-#. website/application?
-#: ../lib/wiking/cms/configuration.py:55
-msgid "Allow new user registration"
-msgstr "Tillat registreringen av ny bruker"
-
-#: ../lib/wiking/cms/configuration.py:56
-msgid ""
-"If enabled, all visitors are allowed to create a user account.  If disabled, "
-"new user accounts must be created by administrator.  Note, that the newly "
-"created accounts are inactive (at least with the default implementation of "
-"the user management module), so the creation of the account doesn't give the "
-"user any actual privileges."
-msgstr ""
-"Hvis aktivert, kan alle besøkere opprette en brukerkonto. Hvis deaktivert, "
-"må nye brukerkontoer være laget av administrator. Merk at de nyopprettede "
-"kontoene er inaktive (i det minste med standardimplementasjonen av "
-"brukeradministrasjonsmodulen), det vil si at etableringen av kontoen ikke "
-"gir brukeren noen reelle privilegier."
-
-#. Translators: Maximal size an uploaded file can have.
-#: ../lib/wiking/cms/configuration.py:65
-msgid "Maximal upload size"
-msgstr "Maximal opplastinngsstørrelse"
-
-#: ../lib/wiking/cms/configuration.py:66
-msgid ""
-"The maximal size of uploaded files in bytes.  The server needs to be "
-"relaoded for the changes in this option to take effect."
-msgstr ""
-"Den maksimale størrelsen på opplastede filer i byte. Serveren må laste på "
-"nytt for at endringene i denne valgmuligheten trer i kraft."
-
-#: ../lib/wiking/cms/appl.py:58
-msgid "Manage this site"
-msgstr "Administrer dette nettstedet"
-
-#: ../lib/wiking/cms/appl.py:59
-msgid "Enter the Wiking Management Interface"
-msgstr "Angi Wiking Management Interface"
-
-#: ../lib/wiking/cms/appl.py:61
-msgid "Leave the Management Interface"
-msgstr "Forlat Management Interface"
-
-#: ../lib/wiking/cms/appl.py:160
-msgid "Wiking Management Interface"
-msgstr "Wiking Management Interface"
-
 #: ../lib/wiking/cms/cms.py:58
 msgid "formatting manual"
 msgstr "formateringsmanual"
@@ -308,8 +236,8 @@ msgstr ""
 "Vi anbefaler sterkt at du endrer passordet ved første anledning, det har "
 "blitt sendt deg på en ubeskyttet måte."
 
-#: ../lib/wiking/cms/cms.py:255 ../lib/wiking/cms/cms.py:2404
-#: ../lib/wiking/cms/cms.py:2423 ../lib/wiking/cms/cms.py:2470
+#: ../lib/wiking/cms/cms.py:255 ../lib/wiking/cms/cms.py:2405
+#: ../lib/wiking/cms/cms.py:2424 ../lib/wiking/cms/cms.py:2471
 msgid "Failed sending e-mail notification:"
 msgstr "Klarte ikke å sende e-postmelding:"
 
@@ -326,7 +254,7 @@ msgid "No user account for your query."
 msgstr "Ingen brukerkonto svarer til ditt søk."
 
 #. Translators: Heading for an overview when and how the user has accessed the application.
-#: ../lib/wiking/cms/cms.py:523 ../lib/wiking/cms/cms.py:2194
+#: ../lib/wiking/cms/cms.py:523 ../lib/wiking/cms/cms.py:2195
 msgid "Login History"
 msgstr "Innloggingshistorikk"
 
@@ -543,7 +471,7 @@ msgstr "Kode"
 
 #. Translators: Language name: e.g. Czech, Slovak etc.
 #: ../lib/wiking/cms/cms.py:830 ../lib/wiking/cms/cms.py:920
-#: ../lib/wiking/cms/cms.py:2732
+#: ../lib/wiking/cms/cms.py:2733
 msgid "Name"
 msgstr "Navn"
 
@@ -560,8 +488,8 @@ msgstr "Normale sidefarger"
 #: ../lib/wiking/cms/cms.py:855 ../lib/wiking/cms/cms.py:870
 #: ../lib/wiking/cms/cms.py:878 ../lib/wiking/cms/cms.py:885
 #: ../lib/wiking/cms/cms.py:894 ../lib/wiking/cms/cms.py:898
-#: ../lib/wiking/cms/cms.py:902 ../lib/wiking/cms/cms.py:2822
-#: ../lib/wiking/cms/cms.py:3051 ../lib/wiking/cms/cms.py:3239
+#: ../lib/wiking/cms/cms.py:902 ../lib/wiking/cms/cms.py:2823
+#: ../lib/wiking/cms/cms.py:3052 ../lib/wiking/cms/cms.py:3240
 msgid "Text"
 msgstr "Tekst"
 
@@ -990,7 +918,7 @@ msgstr ""
 #. Translators: Button label. Use standard computer terminology.
 #. Translators: Back button label. Standard computer terminology.
 #: ../lib/wiking/cms/cms.py:1199 ../lib/wiking/cms/cms.py:1573
-#: ../lib/wiking/cms/cms.py:2494
+#: ../lib/wiking/cms/cms.py:2495
 msgid "Back"
 msgstr "Tilbake"
 
@@ -1177,7 +1105,7 @@ msgstr "Publiser sidenyheter."
 
 #: ../lib/wiking/cms/cms.py:1757 ../lib/wiking/cms/cms.py:1759
 #: ../lib/wiking/cms/cms.py:1824 ../lib/wiking/cms/cms.py:1831
-#: ../lib/wiking/cms/cms.py:3241
+#: ../lib/wiking/cms/cms.py:3242
 msgid "Date"
 msgstr "Dato"
 
@@ -1420,17 +1348,17 @@ msgstr ""
 "alternativt navn, for eksempel et kallenavn eller et monogram."
 
 #. Translators: E-mail address. Registration form field.
-#: ../lib/wiking/cms/cms.py:2111 ../lib/wiking/cms/cms.py:2734
+#: ../lib/wiking/cms/cms.py:2111 ../lib/wiking/cms/cms.py:2735
 msgid "E-mail"
 msgstr "E-post"
 
 #. Translators: Telephone number. Registration form field.
-#: ../lib/wiking/cms/cms.py:2113 ../lib/wiking/cms/cms.py:2735
+#: ../lib/wiking/cms/cms.py:2113 ../lib/wiking/cms/cms.py:2736
 msgid "Phone"
 msgstr "Telefon"
 
 #. Translators: Post address. Registration form field.
-#: ../lib/wiking/cms/cms.py:2115 ../lib/wiking/cms/cms.py:2736
+#: ../lib/wiking/cms/cms.py:2115 ../lib/wiking/cms/cms.py:2737
 msgid "Address"
 msgstr "Adresse"
 
@@ -1445,53 +1373,60 @@ msgstr "URI"
 msgid "Note"
 msgstr "Notater"
 
+#: ../lib/wiking/cms/cms.py:2120
+msgid ""
+"Optional message for the administrator.  If you summarize briefly why you "
+"register, what role you expect in the system or whom you have talked to, "
+"this may help in processing your request."
+msgstr ""
+
 #. Translators: Since when the user is registered. Column heading in a table listing various users.
-#: ../lib/wiking/cms/cms.py:2123
+#: ../lib/wiking/cms/cms.py:2124
 msgid "Registered since"
 msgstr "Registrert fra"
 
 #. Translators: The role of the user in the system (e.g. Student vs Tutor, Writer
 #. vs. Editor) Column heading in a table listing various users.
-#: ../lib/wiking/cms/cms.py:2126
+#: ../lib/wiking/cms/cms.py:2127
 msgid "Role"
 msgstr "Rolle"
 
-#: ../lib/wiking/cms/cms.py:2130
+#: ../lib/wiking/cms/cms.py:2131
 msgid ""
 "Select one of the predefined roles to grant the user the corresponding "
 "privileges."
 msgstr ""
 "Velg en av de forhåndsdefinerte rollene å gi brukeren tilhørende privilegier."
 
-#: ../lib/wiking/cms/cms.py:2147
+#: ../lib/wiking/cms/cms.py:2148
 msgid ""
 "The account is blocked.  The user is not allowed to log in until the "
 "administrator grants him access rights again."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2152
+#: ../lib/wiking/cms/cms.py:2153
 msgid "The activation code was succesfully confirmed."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2155
+#: ../lib/wiking/cms/cms.py:2156
 msgid ""
 "Therefore it was verified that given e-mail address belongs to the person "
 "who requested the registration."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2157
+#: ../lib/wiking/cms/cms.py:2158
 msgid ""
 "The user is now able to log in, but still has no rights (other than an "
 "anonymous user)."
 msgstr ""
 
 #. Translators: In other words, the administrator needs to approve the account first.
-#: ../lib/wiking/cms/cms.py:2160
+#: ../lib/wiking/cms/cms.py:2161
 msgid ""
 "The account now awaits administrator's action to be given access rights."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2163
+#: ../lib/wiking/cms/cms.py:2164
 msgid ""
 "The activation code was not yet confirmed by the user. Therefore it is not "
 "possible to trust that given e-mail address belongs to the person who "
@@ -1500,45 +1435,45 @@ msgstr ""
 
 #. Translators: %(date)s is replaced by date and time of registration
 #. expiration.
-#: ../lib/wiking/cms/cms.py:2168
+#: ../lib/wiking/cms/cms.py:2169
 #, python-format
 msgid ""
 "The activation code will expire on %(date)s and the user will not be able to "
 "complete the registration anymore."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2172
+#: ../lib/wiking/cms/cms.py:2173
 msgid ""
 "Use the button \"Resend activation code\" below to remind the user of his "
 "pending registration."
 msgstr ""
 
 #. Translators: %(date)s is replaced by date and time of registration expiration.
-#: ../lib/wiking/cms/cms.py:2176
+#: ../lib/wiking/cms/cms.py:2177
 #, python-format
 msgid ""
 "The registration expired on %(date)s.  The user didn't confirm the "
 "activation code sent to the declared e-mail address in time."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2180
+#: ../lib/wiking/cms/cms.py:2181
 msgid ""
 "The account should be deleted automatically if the server maintenence script "
 "is installed correctly.  Otherwise you can delete the account manually."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2187 ../lib/wiking/cms/cms.py:2742
+#: ../lib/wiking/cms/cms.py:2188 ../lib/wiking/cms/cms.py:2743
 #, python-format
 msgid "Invalid e-mail address: %s"
 msgstr "Ugyldig e-postadresse: %s"
 
 #. Translators: Name of group of users who have access to the system, can use it etc.
-#: ../lib/wiking/cms/cms.py:2202 ../lib/wiking/cms/cms.py:2707
+#: ../lib/wiking/cms/cms.py:2203 ../lib/wiking/cms/cms.py:2708
 msgid "Active users"
 msgstr "Aktive brukere"
 
 #. Translators: Name for a group of users accounts, who were not yet approved by the administrator
-#: ../lib/wiking/cms/cms.py:2208
+#: ../lib/wiking/cms/cms.py:2209
 #, fuzzy
 msgid "Unapproved accounts (pending admin approvals)"
 msgstr ""
@@ -1546,121 +1481,121 @@ msgstr ""
 
 #. Translators: Name for a group of users which did not confirm their registration yet by
 #. replying to an email with an activation code
-#: ../lib/wiking/cms/cms.py:2214
+#: ../lib/wiking/cms/cms.py:2215
 #, fuzzy
 msgid "Unfinished registration requests (activation code not confirmed)"
 msgstr "Brukerregistrering allerede bekreftet."
 
 #. Translators: Name for a group of users who were disabled (made inactive or removed
 #. from the system).
-#: ../lib/wiking/cms/cms.py:2219
+#: ../lib/wiking/cms/cms.py:2220
 #, fuzzy
 msgid "Disabled users"
 msgstr "inaktivert"
 
 #. Translators: Accounts as in user accounts (computer terminology).
-#: ../lib/wiking/cms/cms.py:2223
+#: ../lib/wiking/cms/cms.py:2224
 msgid "All accounts"
 msgstr ""
 
 #. Translators: Personal data -- first name, surname, nickname ...
-#: ../lib/wiking/cms/cms.py:2250 ../lib/wiking/cms/cms.py:2256
-#: ../lib/wiking/cms/cms.py:2282
+#: ../lib/wiking/cms/cms.py:2251 ../lib/wiking/cms/cms.py:2257
+#: ../lib/wiking/cms/cms.py:2283
 msgid "Personal data"
 msgstr "Personlige data"
 
 #. Translators: Contact information -- email, phone, address...
-#: ../lib/wiking/cms/cms.py:2252 ../lib/wiking/cms/cms.py:2257
-#: ../lib/wiking/cms/cms.py:2283
+#: ../lib/wiking/cms/cms.py:2253 ../lib/wiking/cms/cms.py:2258
+#: ../lib/wiking/cms/cms.py:2284
 msgid "Contact information"
 msgstr "Kontaktinformasjon"
 
 #. Translators: Others is a label for a group of unspecified form fields
 #. (as in Personal data, Contact information, Others).
-#: ../lib/wiking/cms/cms.py:2255 ../lib/wiking/cms/cms.py:2258
-#: ../lib/wiking/cms/cms.py:2286
+#: ../lib/wiking/cms/cms.py:2256 ../lib/wiking/cms/cms.py:2259
+#: ../lib/wiking/cms/cms.py:2287
 msgid "Others"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2259 ../lib/wiking/cms/cms.py:2347
+#: ../lib/wiking/cms/cms.py:2260 ../lib/wiking/cms/cms.py:2348
 msgid "Access rights"
 msgstr "Adgangsrettigheter"
 
 #. Translators: Button label.
-#: ../lib/wiking/cms/cms.py:2264
+#: ../lib/wiking/cms/cms.py:2265
 msgid "New user"
 msgstr "Ny bruker"
 
 #. Translators: Button label.
-#: ../lib/wiking/cms/cms.py:2266
+#: ../lib/wiking/cms/cms.py:2267
 msgid "Edit profile"
 msgstr "Rediger profil"
 
 #. Translators: Button label. Modify the users data (email, address...)
-#: ../lib/wiking/cms/cms.py:2268
+#: ../lib/wiking/cms/cms.py:2269
 msgid "Modify user's record"
 msgstr "Endre brukerinformasjon"
 
-#: ../lib/wiking/cms/cms.py:2287
+#: ../lib/wiking/cms/cms.py:2288
 msgid "Login information"
 msgstr "Innloggingsinformasjon"
 
-#: ../lib/wiking/cms/cms.py:2313
+#: ../lib/wiking/cms/cms.py:2314
 msgid "Enter your current password."
 msgstr "Skriv inn ditt nåværende passord."
 
-#: ../lib/wiking/cms/cms.py:2317
+#: ../lib/wiking/cms/cms.py:2318
 msgid "Invalid password."
 msgstr "Ugyldig passord."
 
-#: ../lib/wiking/cms/cms.py:2321
+#: ../lib/wiking/cms/cms.py:2322
 msgid "Enter the new password."
 msgstr "Skriv inn det nye passordet."
 
-#: ../lib/wiking/cms/cms.py:2329
+#: ../lib/wiking/cms/cms.py:2330
 msgid "The new password is the same as the old one."
 msgstr "Det nye passordet er det samme som det gamle."
 
-#: ../lib/wiking/cms/cms.py:2347
+#: ../lib/wiking/cms/cms.py:2348
 msgid "Change access rights"
 msgstr "Endre adgangsrettighetene"
 
 #. Translators: Button label. Computer terminology. Use common word and form.
-#: ../lib/wiking/cms/cms.py:2351
+#: ../lib/wiking/cms/cms.py:2352
 msgid "Enable"
 msgstr "Aktiver"
 
-#: ../lib/wiking/cms/cms.py:2351
+#: ../lib/wiking/cms/cms.py:2352
 msgid "Enable this account"
 msgstr "Aktiver denne konto"
 
 #. Translators: Confirm button
-#: ../lib/wiking/cms/cms.py:2357 ../lib/wiking/cms/cms.py:2492
+#: ../lib/wiking/cms/cms.py:2358 ../lib/wiking/cms/cms.py:2493
 msgid "Confirm"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2358
+#: ../lib/wiking/cms/cms.py:2359
 msgid "Confirm the account without checking the activation code"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2361
+#: ../lib/wiking/cms/cms.py:2362
 msgid "Change password"
 msgstr "Bytt passord"
 
-#: ../lib/wiking/cms/cms.py:2361
+#: ../lib/wiking/cms/cms.py:2362
 msgid "Change user's password"
 msgstr "Bytt brukers passord"
 
-#: ../lib/wiking/cms/cms.py:2369
+#: ../lib/wiking/cms/cms.py:2370
 #, fuzzy
 msgid "Resend activation code"
 msgstr "Send registreringskode på nytt"
 
-#: ../lib/wiking/cms/cms.py:2370
+#: ../lib/wiking/cms/cms.py:2371
 msgid "Re-send registration mail"
 msgstr "Send registrerings-e-post på nytt"
 
-#: ../lib/wiking/cms/cms.py:2378
+#: ../lib/wiking/cms/cms.py:2379
 #, python-format
 msgid ""
 "The first step of your registration at %(server_hostname)s was successfully "
@@ -1675,34 +1610,34 @@ msgstr ""
 "For neste trinn gå til følgende URL og følge instruksjonene der:\n"
 "%(uri)s\n"
 
-#: ../lib/wiking/cms/cms.py:2389
+#: ../lib/wiking/cms/cms.py:2390
 msgid "Registration accepted."
 msgstr "Registrering tillatt."
 
-#: ../lib/wiking/cms/cms.py:2390
+#: ../lib/wiking/cms/cms.py:2391
 msgid "Please, check your mailbox for instructions how to proceed."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2394
+#: ../lib/wiking/cms/cms.py:2395
 msgid "Registration cancelled."
 msgstr "Registrering kansellert."
 
-#: ../lib/wiking/cms/cms.py:2400
+#: ../lib/wiking/cms/cms.py:2401
 #, python-format
 msgid "Your registration at %s"
 msgstr "Din registrering på %s"
 
 #. Translators: Follows an email addres, e.g. ``Activation code was sent to joe@brailcom.org''
-#: ../lib/wiking/cms/cms.py:2408
+#: ../lib/wiking/cms/cms.py:2409
 #, python-format
 msgid "Activation code was sent to %s."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2416
+#: ../lib/wiking/cms/cms.py:2417
 msgid "The account was enabled."
 msgstr "Kontoen ble aktivert."
 
-#: ../lib/wiking/cms/cms.py:2417
+#: ../lib/wiking/cms/cms.py:2418
 #, python-format
 msgid ""
 "Your account at %(uri)s has been enabled. Please log in with username '%"
@@ -1711,24 +1646,24 @@ msgstr ""
 "Kontoen din på %(uri)s er aktivert. Vennligst logg inn med brukernavn '%"
 "(login)s ' og passordet ditt."
 
-#: ../lib/wiking/cms/cms.py:2420
+#: ../lib/wiking/cms/cms.py:2421
 msgid "Your account has been enabled."
 msgstr "Din konto ble aktivert."
 
-#: ../lib/wiking/cms/cms.py:2425
+#: ../lib/wiking/cms/cms.py:2426
 msgid "E-mail notification has been sent to:"
 msgstr "E-postmelding ble sendt til:"
 
-#: ../lib/wiking/cms/cms.py:2450
+#: ../lib/wiking/cms/cms.py:2451
 msgid "User registration already confirmed."
 msgstr "Brukerregistrering allerede bekreftet."
 
-#: ../lib/wiking/cms/cms.py:2453
+#: ../lib/wiking/cms/cms.py:2454
 #, fuzzy
 msgid "Invalid activation code."
 msgstr "Ugyldig registreringkode."
 
-#: ../lib/wiking/cms/cms.py:2460
+#: ../lib/wiking/cms/cms.py:2461
 #, python-format
 msgid ""
 "New user %(fullname)s registered at %(server_hostname)s. Please approve the "
@@ -1737,155 +1672,227 @@ msgstr ""
 "Ny bruker %(fullname)s er registrert i %(server_hostname)s. Godkjenn "
 "kontoen: %(uri)s"
 
-#: ../lib/wiking/cms/cms.py:2466
+#: ../lib/wiking/cms/cms.py:2467
 msgid "New user registration:"
 msgstr "Registrering av ny bruker:"
 
-#: ../lib/wiking/cms/cms.py:2473
+#: ../lib/wiking/cms/cms.py:2474
 msgid "E-mail notification has been sent to server administrator."
 msgstr "E-postmelding ble sendt til serveradministrator."
 
-#: ../lib/wiking/cms/cms.py:2479
+#: ../lib/wiking/cms/cms.py:2480
 msgid ""
 "Registration completed successfuly. Your account now awaits administrator's "
 "approval."
 msgstr ""
 "Registrering avsluttet. Din konto nå venter på administratorens godkjenning."
 
-#: ../lib/wiking/cms/cms.py:2488
+#: ../lib/wiking/cms/cms.py:2489
 msgid "The account was confirmed.  Grant the access rights now."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2496
+#: ../lib/wiking/cms/cms.py:2497
 msgid ""
 "Please confirm the account only if you are sure that the e-mail address "
 "belongs to given user."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2510
+#: ../lib/wiking/cms/cms.py:2511
 msgid "Registration confirmed"
 msgstr "Registrering bekreftet"
 
-#: ../lib/wiking/cms/cms.py:2708
+#: ../lib/wiking/cms/cms.py:2709
 msgid "Listing of all active user accounts."
 msgstr "Liste over alle aktive brukerkontoer."
 
-#: ../lib/wiking/cms/cms.py:2727
+#: ../lib/wiking/cms/cms.py:2728
 msgid "Organizations"
 msgstr "Organisasjoner"
 
-#: ../lib/wiking/cms/cms.py:2728
+#: ../lib/wiking/cms/cms.py:2729
 msgid "Manage institutions and other organizations."
 msgstr "Administrer institusjoner og andre organisasjoner."
 
-#: ../lib/wiking/cms/cms.py:2733
+#: ../lib/wiking/cms/cms.py:2734
 msgid "VAT id"
 msgstr "Merverdiavgift"
 
-#: ../lib/wiking/cms/cms.py:2737
+#: ../lib/wiking/cms/cms.py:2738
 msgid "Notes"
 msgstr "Notater"
 
-#: ../lib/wiking/cms/cms.py:2809
+#: ../lib/wiking/cms/cms.py:2810
 msgid "System Texts"
 msgstr "Systemtekster"
 
-#: ../lib/wiking/cms/cms.py:2810
+#: ../lib/wiking/cms/cms.py:2811
 msgid "Edit miscellaneous system texts."
 msgstr "Rediger diverse systemtekster."
 
-#: ../lib/wiking/cms/cms.py:2817 ../lib/wiking/cms/cms.py:3046
+#: ../lib/wiking/cms/cms.py:2818 ../lib/wiking/cms/cms.py:3047
 msgid "Label"
 msgstr "Etikett"
 
-#: ../lib/wiking/cms/cms.py:2820 ../lib/wiking/cms/cms.py:3049
+#: ../lib/wiking/cms/cms.py:2821 ../lib/wiking/cms/cms.py:3050
 msgid "Purpose"
 msgstr "Formål"
 
-#: ../lib/wiking/cms/cms.py:2823 ../lib/wiking/cms/cms.py:3052
-#: ../lib/wiking/cms/cms.py:3240
+#: ../lib/wiking/cms/cms.py:2824 ../lib/wiking/cms/cms.py:3053
+#: ../lib/wiking/cms/cms.py:3241
 msgid ""
 "Edit the given text as needed, in accordance with structured text rules."
 msgstr ""
 "Rediger den gitte teksten etter behov, i samsvar med regler for strukturert "
 "tekst."
 
-#: ../lib/wiking/cms/cms.py:3041
+#: ../lib/wiking/cms/cms.py:3042
 msgid "E-mails"
 msgstr "E-post"
 
-#: ../lib/wiking/cms/cms.py:3042
+#: ../lib/wiking/cms/cms.py:3043
 msgid "Edit e-mail texts."
 msgstr "Rediger e-posttekstene."
 
-#: ../lib/wiking/cms/cms.py:3053 ../lib/wiking/cms/cms.py:3238
+#: ../lib/wiking/cms/cms.py:3054 ../lib/wiking/cms/cms.py:3239
 msgid "Subject"
 msgstr "Emne"
 
-#: ../lib/wiking/cms/cms.py:3054
+#: ../lib/wiking/cms/cms.py:3055
 msgid "Additional recipients"
 msgstr "Ytterligere mottagere"
 
-#: ../lib/wiking/cms/cms.py:3055
+#: ../lib/wiking/cms/cms.py:3056
 msgid "Comma separated list of e-mail addresses."
 msgstr "Kommadelt liste med e-postadresser."
 
 #. Translators: Section title and menu item. Sending emails to multiple recipients.
-#: ../lib/wiking/cms/cms.py:3227
+#: ../lib/wiking/cms/cms.py:3228
 msgid "Bulk E-mails"
 msgstr "Masse-e-post"
 
-#: ../lib/wiking/cms/cms.py:3233
+#: ../lib/wiking/cms/cms.py:3234
 msgid "Sender address"
 msgstr "Avsenderadresse"
 
-#: ../lib/wiking/cms/cms.py:3234
+#: ../lib/wiking/cms/cms.py:3235
 msgid "E-mail address of the sender."
 msgstr "Avsenderens e-postadresse."
 
 #. Translators: List of recipients of an email message
-#: ../lib/wiking/cms/cms.py:3236
+#: ../lib/wiking/cms/cms.py:3237
 msgid "Recipients"
 msgstr "Mottakere"
 
-#: ../lib/wiking/cms/cms.py:3244
+#: ../lib/wiking/cms/cms.py:3245
 msgid "State"
 msgstr "Status"
 
 #. Translators: State of processing of an email message (e.g. New, Sending, Sent)
-#: ../lib/wiking/cms/cms.py:3254
+#: ../lib/wiking/cms/cms.py:3255
 msgid "Sent"
 msgstr "Sendt"
 
 #. Translators: State of processing of an email message (e.g. New, Sending, Sent)
-#: ../lib/wiking/cms/cms.py:3257
+#: ../lib/wiking/cms/cms.py:3258
 msgid "Sending"
 msgstr "Sender"
 
 #. Translators: State of processing of an email message (e.g. New, Sending, Sent)
-#: ../lib/wiking/cms/cms.py:3260
+#: ../lib/wiking/cms/cms.py:3261
 msgid "New"
 msgstr "Ny"
 
 #. Translators: All as in ``all user roles''
-#: ../lib/wiking/cms/cms.py:3269
+#: ../lib/wiking/cms/cms.py:3270
 msgid "All"
 msgstr "Alle"
 
-#: ../lib/wiking/cms/cms.py:3273
+#: ../lib/wiking/cms/cms.py:3274
 #, python-format
 msgid "%(subject)s"
 msgstr "%(subject)s"
 
 #. Translators: Button label meaning save this email text for later repeated usage
-#: ../lib/wiking/cms/cms.py:3277
+#: ../lib/wiking/cms/cms.py:3278
 msgid "Use as a Template"
 msgstr "Bruk som mal"
 
 #. Translators: Description of button for creating a template of an email
-#: ../lib/wiking/cms/cms.py:3279
+#: ../lib/wiking/cms/cms.py:3280
 msgid "Edit this mail for repeated use"
 msgstr "Rediger e-posten for gjentatt bruk"
+
+#. Translators: Yes/No configuration option label. Should the login panel be visible?
+#: ../lib/wiking/cms/configuration.py:36
+msgid "Allow login panel"
+msgstr "Tillat innloggingspanel"
+
+#: ../lib/wiking/cms/configuration.py:37
+msgid ""
+"If enabled, the information about the currently logged user and login/logout "
+"controls will be present on each page as a separate panel.  This panel will "
+"always be the first panel on the page."
+msgstr ""
+"Hvis aktivert, vil informasjonen om den påloggede brukeren og inn/"
+"utloggingskontrollene finnes på hver side som et eget panel. Dette panelet "
+"vil alltid være det første panelet på siden."
+
+#. Translators: Yes/No configuration option label. Should link to WMI be visible?  "WMI"
+#. stands for Wiking Management Interface.  Don't feel obliged to use an abbreviation.  Use
+#. whatever brief form obviously referning to whatever translation you used for "Wiking
+#. Management Interface".
+#: ../lib/wiking/cms/configuration.py:47
+msgid "Allow WMI link"
+msgstr "Tillat WMI-lenke"
+
+#. Translators: Yes/no configuration label. Can new users register to this
+#. website/application?
+#: ../lib/wiking/cms/configuration.py:55
+msgid "Allow new user registration"
+msgstr "Tillat registreringen av ny bruker"
+
+#: ../lib/wiking/cms/configuration.py:56
+msgid ""
+"If enabled, all visitors are allowed to create a user account.  If disabled, "
+"new user accounts must be created by administrator.  Note, that the newly "
+"created accounts are inactive (at least with the default implementation of "
+"the user management module), so the creation of the account doesn't give the "
+"user any actual privileges."
+msgstr ""
+"Hvis aktivert, kan alle besøkere opprette en brukerkonto. Hvis deaktivert, "
+"må nye brukerkontoer være laget av administrator. Merk at de nyopprettede "
+"kontoene er inaktive (i det minste med standardimplementasjonen av "
+"brukeradministrasjonsmodulen), det vil si at etableringen av kontoen ikke "
+"gir brukeren noen reelle privilegier."
+
+#. Translators: Maximal size an uploaded file can have.
+#: ../lib/wiking/cms/configuration.py:65
+msgid "Maximal upload size"
+msgstr "Maximal opplastinngsstørrelse"
+
+#: ../lib/wiking/cms/configuration.py:66
+msgid ""
+"The maximal size of uploaded files in bytes.  The server needs to be "
+"relaoded for the changes in this option to take effect."
+msgstr ""
+"Den maksimale størrelsen på opplastede filer i byte. Serveren må laste på "
+"nytt for at endringene i denne valgmuligheten trer i kraft."
+
+#: ../lib/wiking/cms/appl.py:58
+msgid "Manage this site"
+msgstr "Administrer dette nettstedet"
+
+#: ../lib/wiking/cms/appl.py:59
+msgid "Enter the Wiking Management Interface"
+msgstr "Angi Wiking Management Interface"
+
+#: ../lib/wiking/cms/appl.py:61
+msgid "Leave the Management Interface"
+msgstr "Forlat Management Interface"
+
+#: ../lib/wiking/cms/appl.py:160
+msgid "Wiking Management Interface"
+msgstr "Wiking Management Interface"
 
 #~ msgid "Services"
 #~ msgstr "Tjenester"
