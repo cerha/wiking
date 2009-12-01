@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-11-30 16:02+0100\n"
+"POT-Creation-Date: 2009-12-01 11:37+0100\n"
 "PO-Revision-Date: 2009-09-01 13:56+0100\n"
 "Last-Translator: Hynek Hanke <hanke@brailcom.org>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
@@ -131,80 +131,6 @@ msgid ""
 "If enabled, the login panel on each page will not display only the current "
 "username, but also his current user role, which affects his permissions."
 msgstr ""
-
-#. Translators: Yes/No configuration option label. Should the login panel be visible?
-#: ../lib/wiking/cms/configuration.py:36
-msgid "Allow login panel"
-msgstr "Visualizza il pannello d'accesso"
-
-#: ../lib/wiking/cms/configuration.py:37
-msgid ""
-"If enabled, the information about the currently logged user and login/logout "
-"controls will be present on each page as a separate panel.  This panel will "
-"always be the first panel on the page."
-msgstr ""
-"Se attivato, l'informazione relativa all'utente attualmente connesso e "
-"controlli di login / logout  saranno presenti su ogni pagina come un "
-"pannello separato. Questo pannello sarà sempre il primo pannello della "
-"pagina."
-
-#. Translators: Yes/No configuration option label. Should link to WMI be visible?  "WMI"
-#. stands for Wiking Management Interface.  Don't feel obliged to use an abbreviation.  Use
-#. whatever brief form obviously referning to whatever translation you used for "Wiking
-#. Management Interface".
-#: ../lib/wiking/cms/configuration.py:47
-msgid "Allow WMI link"
-msgstr "Accetta il link WMI"
-
-#. Translators: Yes/no configuration label. Can new users register to this
-#. website/application?
-#: ../lib/wiking/cms/configuration.py:55
-msgid "Allow new user registration"
-msgstr "Permetti la registrazione ai nuovi utenti"
-
-#: ../lib/wiking/cms/configuration.py:56
-msgid ""
-"If enabled, all visitors are allowed to create a user account.  If disabled, "
-"new user accounts must be created by administrator.  Note, that the newly "
-"created accounts are inactive (at least with the default implementation of "
-"the user management module), so the creation of the account doesn't give the "
-"user any actual privileges."
-msgstr ""
-"Se attivato, tutti i visitatori sono autorizzati a creare un account "
-"d'utente. Se disabilitato, tutti i nuovi conti devono essere creati "
-"dall'amministratore. Nota che tutti i nuovi account creati sono inattivi "
-"(almeno con l'implementazione predefinita del modulo di gestione degli "
-"utenti), quindi la creazione del conto non da all'utente eventuali privilegi "
-"reali."
-
-#. Translators: Maximal size an uploaded file can have.
-#: ../lib/wiking/cms/configuration.py:65
-msgid "Maximal upload size"
-msgstr "Massima dimensione per upload"
-
-#: ../lib/wiking/cms/configuration.py:66
-msgid ""
-"The maximal size of uploaded files in bytes.  The server needs to be "
-"relaoded for the changes in this option to take effect."
-msgstr ""
-"Massima dimensione dei file trasmessi al server (in byte). Attenzione, per "
-"validare le modifiche effettuate, bisogna fare il restart del sistema."
-
-#: ../lib/wiking/cms/appl.py:58
-msgid "Manage this site"
-msgstr "Amministrazione del contenuto"
-
-#: ../lib/wiking/cms/appl.py:59
-msgid "Enter the Wiking Management Interface"
-msgstr "Entra nell'interfaccia dell'amministrazione del contenuto"
-
-#: ../lib/wiking/cms/appl.py:61
-msgid "Leave the Management Interface"
-msgstr "Esci dall'interfaccia dell'amministrazione del contenuto"
-
-#: ../lib/wiking/cms/appl.py:160
-msgid "Wiking Management Interface"
-msgstr "Interfaccia dell'amministrazione del contenuto"
 
 #: ../lib/wiking/cms/cms.py:58
 msgid "formatting manual"
@@ -1930,6 +1856,80 @@ msgstr "Usa come modello"
 #: ../lib/wiking/cms/cms.py:3279
 msgid "Edit this mail for repeated use"
 msgstr "Insersci quest'e-mail per l'uso ripetuto"
+
+#. Translators: Yes/No configuration option label. Should the login panel be visible?
+#: ../lib/wiking/cms/configuration.py:36
+msgid "Allow login panel"
+msgstr "Visualizza il pannello d'accesso"
+
+#: ../lib/wiking/cms/configuration.py:37
+msgid ""
+"If enabled, the information about the currently logged user and login/logout "
+"controls will be present on each page as a separate panel.  This panel will "
+"always be the first panel on the page."
+msgstr ""
+"Se attivato, l'informazione relativa all'utente attualmente connesso e "
+"controlli di login / logout  saranno presenti su ogni pagina come un "
+"pannello separato. Questo pannello sarà sempre il primo pannello della "
+"pagina."
+
+#. Translators: Yes/No configuration option label. Should link to WMI be visible?  "WMI"
+#. stands for Wiking Management Interface.  Don't feel obliged to use an abbreviation.  Use
+#. whatever brief form obviously referning to whatever translation you used for "Wiking
+#. Management Interface".
+#: ../lib/wiking/cms/configuration.py:47
+msgid "Allow WMI link"
+msgstr "Accetta il link WMI"
+
+#. Translators: Yes/no configuration label. Can new users register to this
+#. website/application?
+#: ../lib/wiking/cms/configuration.py:55
+msgid "Allow new user registration"
+msgstr "Permetti la registrazione ai nuovi utenti"
+
+#: ../lib/wiking/cms/configuration.py:56
+msgid ""
+"If enabled, all visitors are allowed to create a user account.  If disabled, "
+"new user accounts must be created by administrator.  Note, that the newly "
+"created accounts are inactive (at least with the default implementation of "
+"the user management module), so the creation of the account doesn't give the "
+"user any actual privileges."
+msgstr ""
+"Se attivato, tutti i visitatori sono autorizzati a creare un account "
+"d'utente. Se disabilitato, tutti i nuovi conti devono essere creati "
+"dall'amministratore. Nota che tutti i nuovi account creati sono inattivi "
+"(almeno con l'implementazione predefinita del modulo di gestione degli "
+"utenti), quindi la creazione del conto non da all'utente eventuali privilegi "
+"reali."
+
+#. Translators: Maximal size an uploaded file can have.
+#: ../lib/wiking/cms/configuration.py:65
+msgid "Maximal upload size"
+msgstr "Massima dimensione per upload"
+
+#: ../lib/wiking/cms/configuration.py:66
+msgid ""
+"The maximal size of uploaded files in bytes.  The server needs to be "
+"relaoded for the changes in this option to take effect."
+msgstr ""
+"Massima dimensione dei file trasmessi al server (in byte). Attenzione, per "
+"validare le modifiche effettuate, bisogna fare il restart del sistema."
+
+#: ../lib/wiking/cms/appl.py:58
+msgid "Manage this site"
+msgstr "Amministrazione del contenuto"
+
+#: ../lib/wiking/cms/appl.py:59
+msgid "Enter the Wiking Management Interface"
+msgstr "Entra nell'interfaccia dell'amministrazione del contenuto"
+
+#: ../lib/wiking/cms/appl.py:61
+msgid "Leave the Management Interface"
+msgstr "Esci dall'interfaccia dell'amministrazione del contenuto"
+
+#: ../lib/wiking/cms/appl.py:160
+msgid "Wiking Management Interface"
+msgstr "Interfaccia dell'amministrazione del contenuto"
 
 #~ msgid "Services"
 #~ msgstr "Servizi"

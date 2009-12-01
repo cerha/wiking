@@ -7,57 +7,13 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-11-30 15:57+0100\n"
-"PO-Revision-Date: 2009-09-01 04:12+0100\n"
-"Last-Translator: Martina Wohlmuthova <MItaly@seznam.cz>\n"
+"POT-Creation-Date: 2009-12-01 11:37+0100\n"
+"PO-Revision-Date: 2009-11-30 22:33+0100\n"
+"Last-Translator: kkkk <kkkkkkkkkkk>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-
-#: ../lib/wiking/modules.py:408
-msgid "Enter your login name, please!"
-msgstr "Ti preghiamo d'inserire il tuo nome utente!"
-
-#: ../lib/wiking/modules.py:410
-msgid "Enter your password, please!"
-msgstr "Ti preghiamo d'inserire la tua password!"
-
-#: ../lib/wiking/modules.py:415
-msgid "Invalid login!"
-msgstr "Accesso non valido!"
-
-#: ../lib/wiking/modules.py:513
-msgid "Searching"
-msgstr "Ricerca"
-
-#: ../lib/wiking/modules.py:514
-msgid "Search results"
-msgstr "Risultati della ricerca"
-
-#: ../lib/wiking/modules.py:515
-msgid "Given search term doesn't contain any searchable term."
-msgstr "Espressione cercata non contiene alcun termine per la ricerca."
-
-#: ../lib/wiking/modules.py:519
-msgid "Search words:"
-msgstr "Ricerca parole:"
-
-#: ../lib/wiking/modules.py:520
-msgid "Search"
-msgstr "Ricerca"
-
-#: ../lib/wiking/modules.py:576
-msgid "Nothing found."
-msgstr "Nessuna soluzione trovata."
-
-#: ../lib/wiking/modules.py:633
-msgid "The following modules were successfully reloaded:"
-msgstr "Seguenti moduli sono stati caricati con successo:"
-
-#: ../lib/wiking/modules.py:635
-msgid "Reload"
-msgstr "Ricarica"
 
 #: ../lib/wiking/db.py:41
 msgid "This value already exists.  Enter a unique value."
@@ -102,13 +58,12 @@ msgstr "Cancella la registrazione in modo permanente"
 #. Translators: Record as in `database record' (computer terminology).
 #: ../lib/wiking/db.py:61
 msgid "Please, confirm removing the record permanently."
-msgstr ""
-"Conferma gentilmente la cancellazione della registrazione in modo permanente."
+msgstr "Conferma la cancellazione della registrazione in modo permanente."
 
 #. Translators: Copy button label. Verb. Computer terminology and form common for a webpage button.
 #: ../lib/wiking/db.py:63
 msgid "Copy"
-msgstr "Crea una copia"
+msgstr "Crea una coppia"
 
 #. Translators: Record as in `database record' (computer terminology).
 #: ../lib/wiking/db.py:65
@@ -315,7 +270,7 @@ msgid ""
 "the administrator at %s."
 msgstr ""
 "Se sei sicuro di essersi collegato con l'indirizzo corretto ma pensi che si "
-"tratti di un errore d'impostazione, ti preghiamo di contattare gentilmente "
+"tratti di un errore d'impostazione, ti preghiamo di contattare "
 "l'amministratore di queste pagine all'indirizzo %s."
 
 #. Translators: '%(code)d' is replaced by error number and '%(name)s' by error title.
@@ -344,8 +299,8 @@ msgid ""
 "please contact the administrator at %s."
 msgstr ""
 "Se sei sicuro di aver inserito l'indirizzo corretto ma nonostante ciò "
-"l'errore persiste, ti preghiamo di contattare gentilmente l'amministratore "
-"di queste pagine all'indirizzo %s."
+"l'errore persiste, ti preghiamo di contattare l'amministratore di queste "
+"pagine all'indirizzo %s."
 
 #: ../lib/wiking/util.py:165
 #, python-format
@@ -379,8 +334,8 @@ msgid ""
 "preferences in your browser or contact your system administrator."
 msgstr ""
 "Se vuoi consentire in modo permanente la visualizzazione dei documenti in "
-"altre lingue, modifica gentilmente il settaggio delle lingue nel tuo browser "
-"o contatta l'amministratore del tuo sistema."
+"altre lingue, modifica il settaggio delle lingue nel tuo browser o contatta "
+"l'amministratore del tuo sistema."
 
 #: ../lib/wiking/util.py:195
 msgid "Internal Server Error"
@@ -539,6 +494,50 @@ msgstr "Questa pagina può essere visualizzata in QUALSIASI  browser."
 #: ../lib/wiking/application.py:423
 msgid "Contact:"
 msgstr "Contatto:"
+
+#: ../lib/wiking/modules.py:408
+msgid "Enter your login name, please!"
+msgstr "Ti preghiamo d'inserire il tuo nome utente!"
+
+#: ../lib/wiking/modules.py:410
+msgid "Enter your password, please!"
+msgstr "Ti preghiamo d'inserire la tua password!"
+
+#: ../lib/wiking/modules.py:415
+msgid "Invalid login!"
+msgstr "Accesso non valido!"
+
+#: ../lib/wiking/modules.py:513
+msgid "Searching"
+msgstr "Ricerca"
+
+#: ../lib/wiking/modules.py:514
+msgid "Search results"
+msgstr "Risultati della ricerca"
+
+#: ../lib/wiking/modules.py:515
+msgid "Given search term doesn't contain any searchable term."
+msgstr "Espressione cercata non contiene alcun termine per la ricerca."
+
+#: ../lib/wiking/modules.py:519
+msgid "Search words:"
+msgstr "Ricerca parole:"
+
+#: ../lib/wiking/modules.py:520
+msgid "Search"
+msgstr "Ricerca"
+
+#: ../lib/wiking/modules.py:576
+msgid "Nothing found."
+msgstr "Nessuna soluzione trovata."
+
+#: ../lib/wiking/modules.py:633
+msgid "The following modules were successfully reloaded:"
+msgstr "Seguenti moduli sono stati caricati con successo:"
+
+#: ../lib/wiking/modules.py:635
+msgid "Reload"
+msgstr "Ricarica"
 
 #~ msgid ""
 #~ "Please inform the server administrator, %(admin)s if the problem persists."
