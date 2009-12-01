@@ -2117,8 +2117,9 @@ class Users(CMSModule):
             Field('uri', _("URI"), width=36),
             # Translators: Generic note for further information. Registration form field.
             Field('note', _("Note"), width=60, height=6,
-                  descr=(u"If you summarize briefly why you register, what role do you expect in the system or whom have "
-                         "you talked to, this will help the administators to process your request more quickly.")),
+                  descr=_("Optional message for the administrator.  If you summarize briefly why "
+                          "you register, what role you expect in the system or whom you have "
+                          "talked to, this may help in processing your request.")),
             # Translators: Since when the user is registered. Column heading in a table listing various users.
             Field('since', _("Registered since"), type=DateTime(show_time=False), default=now),
             # Translators: The role of the user in the system (e.g. Student vs Tutor, Writer

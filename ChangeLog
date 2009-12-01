@@ -1,3 +1,8 @@
+2009-12-01  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/cms/cms.py:
+	Make registration Note field description translatable and improve it.
+
 2009-11-30  Tomas Cerha  <cerha@brailcom.org>
 
 	* translations/wiking-cms.cs.po:
