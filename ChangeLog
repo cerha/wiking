@@ -1,3 +1,9 @@
+2009-12-01  Milan Zamazal  <pdm@brailcom.org>
+
+	* lib/wiking/cms/__init__.py:
+	* lib/wiking/cms/texts.py:
+	Fix imports of CMS texts.
+
 2009-11-16  Milan Zamazal  <pdm@brailcom.org>
 
 	* lib/wiking/cms/texts.py:

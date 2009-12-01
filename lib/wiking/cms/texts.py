@@ -17,9 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import wiking.cms
-
-Text = wiking.cms.Text
+from cms import Text
 
 disabled = Text('cms.disabled',
                 # Translators: Web form label

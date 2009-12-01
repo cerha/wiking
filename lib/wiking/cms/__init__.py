@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2006, 2007 Brailcom, o.p.s.
+# Copyright (C) 2006, 2007, 2009 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -26,6 +26,8 @@ cfg.appl = CMSConfiguration()
 
 from appl import *
 from cms import *
+
+import texts
 
 _globals = dict([(k,v) for k,v in globals().items() if not k.startswith('_')])
 import appl, cms
