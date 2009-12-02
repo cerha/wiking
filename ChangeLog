@@ -1,3 +1,13 @@
+2009-12-02  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/cms/__init__.py:
+	* lib/wiking/cms/cms.py:
+	* lib/wiking/cms/texts.py:
+	* lib/wiking/handler.py:
+	* lib/wiking/modules.py:
+	* lib/wiking/util.py:
+	Post login information display reimplemented with respect to Wiking/Wiking CMS separation.
+
 2009-12-01  Tomas Cerha  <cerha@brailcom.org>
 
 	* translations/wiking-cms.cs.po:

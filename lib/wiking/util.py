@@ -67,6 +67,24 @@ class AuthenticationRedirect(AuthenticationError):
     _TITLE = _("Login")
     
 
+class PostAuthenticationMessage(RequestError):
+    """Error indicating that authentication is required for the resource.
+
+    Raising this error leads to displaying a confirmation dialog with arbitrary content and a
+    `Continue' button.
+    
+    The constructor must be called with two arguments:
+      title -- dialog title as a (translatable) string
+      content -- dialog content as an 'lcg.Content' instance
+
+    """
+    def title(self):
+        return self.args[0]
+
+    def message(self, req):
+        return ConfirmationDialog(self.args[1])
+
+
 class PasswordExpirationError(RequestError):
     
     _TITLE = _("Your password expired")
@@ -167,7 +185,13 @@ class Forbidden(HttpError):
 
     
 class NotAcceptable(HttpError):
-    """Error indicating unavailability of the resource in requested language."""
+    """Error indicating unavailability of the resource in the requested language.
+
+    Constructor may be called with a sequence of language codes as its first argument.  This
+    sequence denotes the list of available language variants of the requested
+    page/document/resource.
+
+    """
     ERROR_CODE = 406
     # Translators: Title of a dialog on a webpage
     _TITLE = _("Language selection")
@@ -844,7 +868,18 @@ class LoginDialog(lcg.Content):
             exported = lcg.coerce(added_content).export(context)
             result += "\n" + g.div(exported, cls='login-dialog-content')
         return result
+
+
+class ConfirmationDialog(lcg.Container):
+    """Dialog displaying arbitrary content followed by a `Continue' button."""
     
+    def export(self, context):
+        g = context.generator()
+        return g.div((super(ConfirmationDialog, self).export(context),
+                      # Translators: Confirmation button
+                      g.form(g.submit(_("Continue")),
+                             method='POST', action=context.req().uri(), cls='confirmation-form')),
+                     cls='confirmation-dialog')
 
     
 # ============================================================================

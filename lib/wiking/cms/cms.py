@@ -495,7 +495,21 @@ class Session(PytisModule, wiking.Session):
                                                  last_access=now))
         self._module('SessionLog').log(req, now, row['session_id'].value(),
                                        user.uid(), user.login())
-        
+        # Display info page for users without proper access
+        def msg(title, text_id):
+            texts = self._module('Texts')
+            sections = texts.parsed_text(req, text_id, lang=req.prefered_language())
+            content = lcg.SectionContainer(sections, toc_depth=0)
+            # Translators: Dialog title (account in the meaning of user account).
+            return PostAuthenticationMessage(title, content)
+        import wiking.cms.texts
+        if user.disabled():
+            raise msg(_("Account disabled"), wiking.cms.texts.disabled)
+        if user.preregistered():
+            raise msg(_("Account not activated"), wiking.cms.texts.unconfirmed)
+        if not user.active():                
+            raise msg(_("Account not approved"), wiking.cms.texts.unapproved)
+    
     def failure(self, req, user, login):
         self._module('SessionLog').log(req, mx.DateTime.now().gmtime(), None,
                                        user and user.uid(), login)
@@ -2145,8 +2159,9 @@ class Users(CMSModule):
         def _state(self, record, role, regexpire):
             req = record.req()
             if role == 'disa':
-                texts = (_("The account is blocked.  The user is not allowed to log in until the "
-                           "administrator grants him access rights again."),)
+                texts = (_("The account is blocked.  The user is able to log in, but has no "
+                           "access to protected services until the administrator grants him "
+                           "access rights again."),)
             elif role != 'none':
                 texts = ()
             elif regexpire is None:
@@ -2224,6 +2239,30 @@ class Users(CMSModule):
             pp.Condition(_("All accounts"), None),
             )
         default_filter = 'active'
+        
+    class User(wiking.User):
+        """CMS specific User class."""
+        
+        def disabled(self):
+            """Return true iff the user is currently disabled."""
+            return self._data['role'].value() == 'disa'
+
+        def preregistered(self):
+            """Return true iff the user hasn't confirmed his registration code yet."""
+            return self._data['regexpire'].value() is not None
+
+        def active(self):
+            """Return true iff the user is active.
+            
+            A user is active if he has completed his registration process, the
+            account has been approved by the administrator and the user is not
+            disabled.
+        
+            """
+            record = self._data
+            return record['role'].value() not in ('none', 'disa',) \
+                   and record['regexpire'].value() is None
+        
     class AccountInfo(lcg.Content):
         """Content shown in 'view' layout describing the current account state.
 
@@ -2560,7 +2599,7 @@ class Users(CMSModule):
                     )
 
     def _make_user(self, kwargs):
-        return User(**kwargs)
+        return self.User(**kwargs)
 
     def user(self, req, login=None, uid=None):
         """Return a user for given login name or user id.

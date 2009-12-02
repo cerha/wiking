@@ -417,11 +417,11 @@ class CookieAuthentication(object):
             # Login succesfull
             self._auth_hook(req, login, user, initial=True, success=True)
             session_key = session.session_key()
-            session.init(req, user, session_key)
             req.set_cookie(self._LOGIN_COOKIE, login, expires=730*day, secure=secure)
             req.set_cookie(self._SESSION_COOKIE, session_key, secure=secure)
+            session.init(req, user, session_key)
         else:
-            login, session_key = (req.cookie(self._LOGIN_COOKIE), 
+            login, session_key = (req.cookie(self._LOGIN_COOKIE),
                                   req.cookie(self._SESSION_COOKIE))
             if login and session_key:
                 user = self._auth_user(req, login)
