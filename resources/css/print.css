@@ -1,21 +1,35 @@
 /* Wiking generic print styles (to be used with media="print") */
 
 body {
-  color : #000;
-  background : #fff;
-  font-family : "Times New Roman", Times, serif;
-  font-size : 12pt;
+    color : #000;
+    background : #fff;
+    font-family : "Times New Roman", Times, serif;
+    font-size : 10pt;
 }
+table td, table th, input { font-size: 10pt; }
+
 a {
-  text-decoration : underline;
-  color : #00f;
+    text-decoration : underline;
+    color : #00f;
 }
-a.backref, a:link.backref { 
+a.backref, a:link.backref, h1 a { 
     color: #000 !important; /* important needed for MSIE */
     text-decoration: none;
 }
+form.browse-form table td, form.browse-form table th {
+    border-color: #000;
+}
 
 
-#links, #menu, #submenu, #panels, #language-selection, #bottom {
+h1 { font-size: 1.6em; }
+h2 { font-size: 1.4em; }
+h3 { font-size: 1.3em; }
+h4 { font-size: 1.2em; }
+h5 { font-size: 1.1em; }
+h6 { font-size: 1.1em; }
+h7 { font-size: 1.1em; }
+
+#links, #menu, #submenu, #panels, #language-selection, #bottom, 
+form.list-form-controls .paging-controls {
     display: none;
 }

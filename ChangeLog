@@ -1,3 +1,8 @@
+2009-12-03  Tomas Cerha  <cerha@brailcom.org>
+
+	* resources/css/print.css:
+	Print styles improved.
+
 2009-12-02  Tomas Cerha  <cerha@brailcom.org>
 
 	* translations/wiking-cms.cs.po:
