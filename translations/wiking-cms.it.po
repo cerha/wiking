@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-12-02 19:52+0100\n"
+"POT-Creation-Date: 2009-12-03 12:49+0100\n"
 "PO-Revision-Date: 2009-09-01 13:56+0100\n"
 "Last-Translator: Hynek Hanke <hanke@brailcom.org>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
@@ -1874,6 +1874,52 @@ msgstr "Usa come modello"
 msgid "Edit this mail for repeated use"
 msgstr "Insersci quest'e-mail per l'uso ripetuto"
 
+#. Translators: Web form label (account in the meaning of user account)
+#: ../lib/wiking/cms/texts.py:27
+msgid "Information about a locked account"
+msgstr ""
+
+#. Translators: Text presented to a user in a web page
+#: ../lib/wiking/cms/texts.py:29
+msgid ""
+"Your account is currently disabled.\n"
+"\n"
+"The protected services are not available to you.\n"
+"Contact the application administrator to get the account enabled."
+msgstr ""
+
+#. Translators: Web form label
+#: ../lib/wiking/cms/texts.py:36
+msgid "Information about an account waiting for activation code confirmation"
+msgstr ""
+
+#. Translators: Text presented to a user in a web page
+#: ../lib/wiking/cms/texts.py:38
+msgid ""
+"Your account is unverified since\n"
+"you have not yet entered the activation code sent to you.\n"
+"\n"
+"The protected services are not available until you enter the activation\n"
+"code and the administrator confirms your account."
+msgstr ""
+
+#. Translators: Web form label
+#: ../lib/wiking/cms/texts.py:46
+#, fuzzy
+msgid "Information about an account waiting for admin approval"
+msgstr ""
+"Richieste di registrazione non valide (in attesa della conferma via e-mail)"
+
+#. Translators: Text presented to a user in a web page
+#: ../lib/wiking/cms/texts.py:49
+msgid ""
+"Your account is waiting for approval by the administrator.\n"
+"                  \n"
+"The protected services are not available until the account gets approved.\n"
+"If the account remains unapproved for a long time, contact the application "
+"administrator."
+msgstr ""
+
 #. Translators: Yes/No configuration option label. Should the login panel be visible?
 #: ../lib/wiking/cms/configuration.py:36
 msgid "Allow login panel"
@@ -1947,58 +1993,6 @@ msgstr "Esci dall'interfaccia dell'amministrazione del contenuto"
 #: ../lib/wiking/cms/appl.py:160
 msgid "Wiking Management Interface"
 msgstr "Interfaccia dell'amministrazione del contenuto"
-
-#. Translators: Web form label (account in the meaning of user account)
-#: ../lib/wiking/cms/texts.py:27
-msgid "Information about a locked account"
-msgstr ""
-
-#. Translators: Text presented to a user in a web page
-#: ../lib/wiking/cms/texts.py:29
-msgid ""
-"Your account is currently disabled.\n"
-"\n"
-"The protected services are not available to you.\n"
-"Contact the application administrator to get the account enabled."
-msgstr ""
-
-#. Translators: Web form label
-#: ../lib/wiking/cms/texts.py:36
-#, fuzzy
-msgid "Information about an account waiting for activation code confirmation"
-msgstr ""
-"Richieste di registrazione non valide (in attesa della conferma via e-mail)"
-
-#. Translators: Text presented to a user in a web page
-#: ../lib/wiking/cms/texts.py:38
-msgid ""
-"Your account is unverified since\n"
-"you have not yet entered the activation code sent to you.\n"
-"\n"
-"The protected services are not available until you enter the activation\n"
-"code and the administrator confirms your account."
-msgstr ""
-
-#. Translators: Web form label
-#: ../lib/wiking/cms/texts.py:46
-#, fuzzy
-msgid "Information about an account waiting for admin approval"
-msgstr ""
-"Richieste di registrazione non valide (in attesa della conferma via e-mail)"
-
-#. Translators: Text presented to a user in a web page
-#: ../lib/wiking/cms/texts.py:49
-msgid ""
-"Your account is waiting for approval by the administrator.\n"
-"                  \n"
-"The protected services are not available until the account gets approved.\n"
-"If the account remains unapproved for a long time, contact the application "
-"administrator."
-msgstr ""
-
-#, fuzzy
-#~ msgid "Your account"
-#~ msgstr "Contenuto"
 
 #~ msgid "Services"
 #~ msgstr "Servizi"
