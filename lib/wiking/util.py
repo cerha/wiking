@@ -1043,7 +1043,8 @@ class Binding(pp.Binding):
         """
         form = kwargs.pop('form', None)
         enabled = kwargs.pop('enabled', None)
-        super(Binding, self).__init__(*args, **kwargs)
+        id_ = kwargs.pop('id')
+        super(Binding, self).__init__(id_, *args, **kwargs)
         assert form is None or issubclass(form, pytis.web.BrowseForm), form
         assert enabled is None or callable(enabled), enabled
         self._form = form

@@ -1,3 +1,8 @@
+2009-12-09  Milan Zamazal  <pdm@brailcom.org>
+
+	* lib/wiking/util.py:
+	Make wiking.Binding compatible with pytis.Binding.
+
 2009-12-03  Tomas Cerha  <cerha@brailcom.org>
 
 	* resources/css/print.css:
