@@ -54,6 +54,7 @@ class Request(pytis.web.Request):
     def __init__(self, req, encoding='utf-8'):
         self._req = req
         self._encoding = encoding
+        self._headers_sent = False
         self._cookies = Cookie.SimpleCookie(self.header('Cookie'))
         # Store params and options in real dictionaries (not mod_python's mp_table).
         self._options = self._init_options() 
@@ -232,6 +233,8 @@ class Request(pytis.web.Request):
         self._req.status = status
 
     def send_http_header(self, content_type, lenght=None):
+        if self._headers_sent:
+            raise Exception("HTTP headers were already sent.")
         self._req.content_type = content_type
         if lenght is not None:
             self._req.set_content_length(lenght)
@@ -239,6 +242,7 @@ class Request(pytis.web.Request):
             self._req.send_http_header()
         except IOError, e:
             raise ClosedConnection(str(e))
+        self._headers_sent = True
 
     def write(self, data):
         try:

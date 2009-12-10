@@ -1,5 +1,10 @@
 2009-12-10  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/request.py:
+	Raise exception on attempt to send HTTP headers twice. 
+
+2009-12-10  Tomas Cerha  <cerha@brailcom.org>
+
 	* lib/wiking/handler.py:
 	Indent commented part appropriately.
 
