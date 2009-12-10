@@ -2108,6 +2108,12 @@ class Users(CMSModule):
                   type=pd.Password(not_null=True),
                   descr=_("Please, write the password into each of the two fields to eliminate "
                           "typos.")),
+            # Translators: User account information field label (contains date and time).
+            # TODO: Last password change is currently not displayed anywhere.  It should be only
+            # visible to the admin and to the user himself, so it requires a dynamic 'view' layout.
+            Field('last_password_change', _("Last password change"), type=DateTime(), default=now,
+                  computer=computer(lambda r, password:
+                                    r.field_changed('password') and now() or r['last_password_change'].value())),
             # Translators: Full name of a person. Registration form field.
             Field('fullname', _("Full Name"), virtual=True, editable=NEVER,
                   computer=computer(self._fullname)),

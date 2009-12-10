@@ -35,6 +35,7 @@ create table users (
 	address text,
 	uri text,
 	role char(4) not null default 'none',
+        last_password_change timestamp not null,
 	since timestamp not null default current_timestamp(0),
 	lang char(2) references languages(lang),
         regexpire timestamp,

@@ -1,6 +1,17 @@
 2009-12-10  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/cms/cms.py:
+	* sql/upgrade.14.sql:
+	* sql/wiking.sql:
+	Store information about last password change in DB.
+	
+	The information is currently not displayed anywhere, but as we now have it in the
+	database, CMS can decide to use it in the future.  For now, the value is only
+	used by Wiking Biblio.
+
+2009-12-10  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/cms/cms.py:
 	Respect changed `Filter' and `Binding' argument order in Wiking CMS.
 
 2009-12-10  Tomas Cerha  <cerha@brailcom.org>
