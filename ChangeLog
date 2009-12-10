@@ -1,6 +1,14 @@
 2009-12-10  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/util.py:
+	Don't change the order of `wiking.Binding' compared to its parent class.
+	
+	This change requires changes in most Wiking applications.  Changes in all known
+	applications will follow.
+
+2009-12-10  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/util.py:
 	Update `wiking.Action' documentation and use the same argument names as the parent class.
 
 2009-12-10  Tomas Cerha  <cerha@brailcom.org>
