@@ -1,5 +1,10 @@
 2009-12-10  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/cms/cms.py:
+	Update `last_password_change' during password reset.
+
+2009-12-10  Tomas Cerha  <cerha@brailcom.org>
+
 	* translations/wiking-cms.cs.po:
 	* translations/wiking-cms.de.po:
 	* translations/wiking-cms.es.po:

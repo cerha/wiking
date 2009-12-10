@@ -2701,7 +2701,7 @@ class Users(CMSModule):
         password = self._generate_password()
         value, error = pytis.data.Password(md5=True).validate(password, verify=password)
         assert error is None, error
-        record.update(password=value.value())
+        record.update(password=value.value(), last_password_change=now())
         return password
 
     def send_mail(self, role, *args, **kwargs):
