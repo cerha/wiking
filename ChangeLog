@@ -1,5 +1,19 @@
 2009-12-10  Tomas Cerha  <cerha@brailcom.org>
 
+	* translations/wiking-cms.cs.po:
+	* translations/wiking-cms.de.po:
+	* translations/wiking-cms.es.po:
+	* translations/wiking-cms.fr.po:
+	* translations/wiking-cms.hu.po:
+	* translations/wiking-cms.it.po:
+	* translations/wiking-cms.no.po:
+	* translations/wiking-cms.pl.po:
+	* translations/wiking-cms.sk.po:
+	* translations/wiking.it.po:
+	Translations updated.
+
+2009-12-10  Tomas Cerha  <cerha@brailcom.org>
+
 	* lib/wiking/cms/cms.py:
 	* sql/upgrade.14.sql:
 	* sql/wiking.sql:
