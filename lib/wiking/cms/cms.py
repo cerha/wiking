@@ -356,8 +356,8 @@ class EmbeddableCMSModule(CMSModule, Embeddable):
     
     @classmethod
     def binding(cls):
-        return Binding(cls.title(), cls.name(), cls._EMBED_BINDING_COLUMN,
-                       condition=cls._embed_binding_condition, id='data')
+        return Binding('data', cls.title(), cls.name(), cls._EMBED_BINDING_COLUMN,
+                       condition=cls._embed_binding_condition)
 
     def embed(self, req):
         content = [self.related(req, self.binding(), req.page, req.uri())]
@@ -1082,7 +1082,7 @@ class Pages(CMSModule):
                    'private', 'owner')
         cb = CodebookSpec(display='title_or_identifier', prefer_display=True)
         # Translators: Noun. Such as e-mail attachments (here attachments for a webpage).
-        bindings = (Binding(_("Attachments"), 'Attachments', 'mapping_id', id='attachments'),)
+        bindings = (Binding('attachments', _("Attachments"), 'Attachments', 'mapping_id'),)
 
     _REFERER = 'identifier'
     _EXCEPTION_MATCHERS = (
@@ -2207,7 +2207,7 @@ class Users(CMSModule):
         def _roles(cls, row):
             return cls._ROLE_DICT[row['role'].value()][1]
         def bindings(self):
-            return (Binding(_("Login History"), 'SessionLog', 'uid', id='login-history',
+            return (Binding('login-history', _("Login History"), 'SessionLog', 'uid',
                             enabled=lambda r: r.req().check_roles(Roles.ADMIN)),)
         columns = ('fullname', 'nickname', 'email', 'role', 'since')
         sorting = (('surname', ASC), ('firstname', ASC))
@@ -2215,28 +2215,24 @@ class Users(CMSModule):
         cb = CodebookSpec(display='user', prefer_display=True)
         filters = (
             # Translators: Name of group of users who have access to the system, can use it etc.
-            pp.Condition(_("Active users"),
-                         pd.AND(pd.NE('role', pd.Value(pd.String(), 'none')),
-                                pd.NE('role', pd.Value(pd.String(), 'disa')),
-                                pd.EQ('regexpire', pd.Value(pd.DateTime(), None))),
-                         id='active'),
+            pp.Filter('active', _("Active users"),
+                      pd.AND(pd.NE('role', pd.Value(pd.String(), 'none')),
+                             pd.NE('role', pd.Value(pd.String(), 'disa')),
+                             pd.EQ('regexpire', pd.Value(pd.DateTime(), None)))),
             # Translators: Name for a group of users accounts, who were not yet approved by the administrator
-            pp.Condition(_("Unapproved accounts (pending admin approvals)"),
-                         pd.AND(pd.EQ('role', pd.Value(pd.String(), 'none')),
-                                pd.EQ('regexpire', pd.Value(pd.DateTime(), None))),
-                         id='inactive'),
+            pp.Filter('inactive', _("Unapproved accounts (pending admin approvals)"),
+                      pd.AND(pd.EQ('role', pd.Value(pd.String(), 'none')),
+                             pd.EQ('regexpire', pd.Value(pd.DateTime(), None)))),
             # Translators: Name for a group of users which did not confirm their registration yet by
             # replying to an email with an activation code
-            pp.Condition(_("Unfinished registration requests (activation code not confirmed)"),
-                         pd.NE('regexpire', pd.Value(pd.DateTime(), None)),
-                         id='unconfirmed'),
+            pp.Filter('unconfirmed', _("Unfinished registration requests (activation code not confirmed)"),
+                      pd.NE('regexpire', pd.Value(pd.DateTime(), None))),
             # Translators: Name for a group of users who were disabled (made inactive or removed
             # from the system).
-            pp.Condition(_("Disabled users"),
-                         pd.EQ('role', pd.Value(pd.String(), 'disa')),
-                         id='disabled'),
+            pp.Filter('disabled', _("Disabled users"),
+                      pd.EQ('role', pd.Value(pd.String(), 'disa'))),
             # Translators: Accounts as in user accounts (computer terminology).
-            pp.Condition(_("All accounts"), None),
+            pp.Filter('all', _("All accounts"), None),
             )
         default_filter = 'active'
         

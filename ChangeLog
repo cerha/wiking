@@ -1,5 +1,10 @@
 2009-12-10  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/cms/cms.py:
+	Respect changed `Filter' and `Binding' argument order in Wiking CMS.
+
+2009-12-10  Tomas Cerha  <cerha@brailcom.org>
+
 	* lib/wiking/util.py:
 	Don't change the order of `wiking.Binding' compared to its parent class.
 	
