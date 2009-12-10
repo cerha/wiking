@@ -1,3 +1,8 @@
+2009-12-10  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/handler.py:
+	Indent commented part appropriately.
+
 2009-12-09  Milan Zamazal  <pdm@brailcom.org>
 
 	* lib/wiking/util.py:

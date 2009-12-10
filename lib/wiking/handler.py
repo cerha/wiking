@@ -211,10 +211,10 @@ class ModPythonHandler(object):
             return self._profile_result
         else:
             return self._handler.handle(req)
-        #result, t1, t2 = timeit(self._handler.handle, req)
-        #log(OPR, "Request processed in %.1f ms (%.1f ms wall time):" % \
-        #    (1000*t1, 1000*t2), req.uri())
-        #return result
+            #result, t1, t2 = timeit(self._handler.handle, req)
+            #log(OPR, "Request processed in %.1f ms (%.1f ms wall time):" % \
+            #    (1000*t1, 1000*t2), req.uri())
+            #return result
 
 handler = ModPythonHandler()
 """The instance is callable so this makes it work as a mod_python handler."""
