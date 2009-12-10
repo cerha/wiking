@@ -1,5 +1,10 @@
 2009-12-10  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/util.py:
+	Update `wiking.Action' documentation and use the same argument names as the parent class.
+
+2009-12-10  Tomas Cerha  <cerha@brailcom.org>
+
 	* lib/wiking/request.py:
 	Raise exception on attempt to send HTTP headers twice. 
 

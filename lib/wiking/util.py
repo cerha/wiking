@@ -900,20 +900,20 @@ class Action(pytis.presentation.Action):
     which they appear (for example actions 'update' or 'delete' can be performed in the context of
     one record, 'list' applies to the whole module, etc as defined by Pytis and the parent class).
 
-    One difference between standard Pytis actions and Wiking actions is that Pytis actions must
-    define a handler function which is called when the action is performed.  In Wiking, the action
-    must have a name (string), which determines the action method to be used for handling the
-    action.  A method 'action_<name>' of the Wiking module is then called to perform the action.
-    This method receives the 'req' argument with the instance of the current request and optionally
-    'record' argument with a 'PytisModule.Record' instance if the action context is record (current
-    pytis row).
+    The most notable difference between standard Pytis actions and Wiking actions is that Pytis
+    actions must define a handler function which is called when the action is performed.  In
+    Wiking, the action method is determined automatically by name.  The method named 'action_<id>'
+    of the Wiking module is called to handle the action (id is the id passed to 'Action'
+    constructor).  This method receives the 'req' argument with the instance of the current request
+    and optionally 'record' argument with a 'PytisModule.Record' instance if the action context is
+    record (current pytis row).
 
     """
-    def __init__(self, title, name, handler=None, allow_referer=True, **kwargs):
+    def __init__(self, title, id, handler=None, allow_referer=True, **kwargs):
         """Arguments:
 
-          name -- string identifier determining the Wiking module's method to be used to handle
-            perform the action (see the docstring of this class).
+          id -- string identifier determining the Wiking module's method to be used to handle
+            perform the action (see the docstring of this class for more details).
           allow_referer -- allow using record identifier (referer column value) in the URI of this
             action.  It is not desirable to use full record URI for certain actions -- for example
             'delete' would end up on an invalid URI after the action is performed.
@@ -924,11 +924,10 @@ class Action(pytis.presentation.Action):
         which is the default).
             
         """
-        # name determines the Wiking's action method.
         if not handler:
             handler = lambda r: None
         self._allow_referer = allow_referer
-        super(Action, self).__init__(name, title, handler, **kwargs)
+        super(Action, self).__init__(id, title, handler, **kwargs)
 
     def allow_referer(self):
         return self._allow_referer
