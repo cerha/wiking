@@ -83,7 +83,7 @@ class Handler(object):
             except RequestError, error:
                 try:
                     req.user()
-                except (AuthenticationError, PostAuthenticationMessage), auth_error:
+                except (AuthenticationError, Abort), auth_error:
                     return self._serve_error_document(req, auth_error)
                 return self._serve_error_document(req, error)
             except ClosedConnection:

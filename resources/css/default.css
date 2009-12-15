@@ -396,6 +396,11 @@ div.discussions div.login-info p {
     background-repeat: no-repeat;
 }
 
+form.activation-form {
+    float: left;
+    margin-right: 0.5em;
+}
+
 /* Border-less table:
 form.browse-form.mapping table {
     border-collapse: separate;

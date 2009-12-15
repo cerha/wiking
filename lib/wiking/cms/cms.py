@@ -479,6 +479,40 @@ class CMSExtensionModule(CMSModule):
         return []
 
 
+class ActivationForm(lcg.Content):
+    """Form for entering the registration activation code.
+
+    The form is displayed automatically to users after logging in to an account
+    which was not activated yet.  The activation code is normally entered
+    through the link in the registration email, but the link may not always
+    work (MUA may not interpret it correctly etc.) or the user may try to log
+    in without even attempting to click that link previsously.  So this form
+    will be displayed in such cases prompting the user for the code.
+
+    """
+    def __init__(self, uid, allow_bypass=True):
+        self._uid = uid
+        self._allow_bypass = allow_bypass
+        super(ActivationForm, self).__init__()
+
+    def export(self, context):
+        g = context.generator()
+        req = context.req()
+        uri = req.server_uri() + req.module_uri('Registration')
+        id = 'confirmation-code-field'
+        result = g.form((g.hidden('action', 'confirm'),
+                         # req.user() is None here (still in authentication).
+                         g.hidden('uid', self._uid),
+                         g.label(_("Enter the activation code:"), id=id),
+                         g.field(name='regcode', value=req.param('regcode'), id=id),
+                         g.submit(_("Submit"))),
+                        method='POST', action=uri, cls='activation-form')
+        if self._allow_bypass:
+            result += g.form((g.submit(_("Continue without activation")),),
+                             method='GET', action=req.uri())
+        return result
+    
+
 class Session(PytisModule, wiking.Session):
     """Implement Wiking session management by storing session information in database."""
     class Spec(Specification):
@@ -488,27 +522,29 @@ class Session(PytisModule, wiking.Session):
         # Delete all expired records first...
         data = self._data
         now = mx.DateTime.now().gmtime()
+        uid = user.uid()
         expiration = mx.DateTime.TimeDelta(hours=cfg.session_expiration)
         data.delete_many(pd.LE('last_access', pd.Value(pd.DateTime(), now - expiration)))
-        row, success = data.insert(data.make_row(uid=user.uid(),
-                                                 session_key=session_key,
-                                                 last_access=now))
-        self._module('SessionLog').log(req, now, row['session_id'].value(),
-                                       user.uid(), user.login())
+        row, success = data.insert(data.make_row(uid=uid, session_key=session_key, last_access=now))
+        self._module('SessionLog').log(req, now, row['session_id'].value(), uid, user.login())
         # Display info page for users without proper access
-        def msg(title, text_id):
+        def abort(title, text_id, form=None):
             texts = self._module('Texts')
             sections = texts.parsed_text(req, text_id, lang=req.prefered_language())
             content = lcg.SectionContainer(sections, toc_depth=0)
+            if form:
+                content = (content, form)
+            else:
+                content = ConfirmationDialog(content)
             # Translators: Dialog title (account in the meaning of user account).
-            return PostAuthenticationMessage(title, content)
+            raise Abort(title, content)
         import wiking.cms.texts
         if user.disabled():
-            raise msg(_("Account disabled"), wiking.cms.texts.disabled)
+            abort(_("Account disabled"), wiking.cms.texts.disabled)
         if user.preregistered():
-            raise msg(_("Account not activated"), wiking.cms.texts.unconfirmed)
-        if not user.active():                
-            raise msg(_("Account not approved"), wiking.cms.texts.unapproved)
+            abort(_("Account not activated"), wiking.cms.texts.unconfirmed, ActivationForm(uid))
+        if not user.active():
+            abort(_("Account not approved"), wiking.cms.texts.unapproved)
     
     def failure(self, req, user, login):
         self._module('SessionLog').log(req, mx.DateTime.now().gmtime(), None,
@@ -2420,9 +2456,13 @@ class Users(CMSModule):
         text = _("The first step of your registration at %(server_hostname)s "
                  "was successfully completed.\n\n"
                  "For the next step visit the following URL and follow the instructions there:\n"
-                 "%(uri)s\n",
+                 "%(uri)s\n\n"
+                 "If the above link fails, you will be prompted for your activation code when\n"
+                 "you attempt to log in.\n\n"
+                 "Your activation code is: %(code)s\n",
                  server_hostname=server_hostname,
-                 uri=uri)
+                 uri=uri,
+                 code=record['regcode'].value())
         attachments = ()
         return text, attachments
 
@@ -2492,7 +2532,8 @@ class Users(CMSModule):
             raise BadRequest(_("User registration already confirmed."))
         code = record['regcode'].value()
         if not code or code != req.param('regcode'):
-            raise BadRequest(_("Invalid activation code."))
+            req.message(_("Invalid activation code."), type=req.ERROR)
+            raise Abort(_("Account not activated"), ActivationForm(uid.value(), allow_bypass=False))
         return record
 
     def _send_admin_approval_mail(self, req, record):

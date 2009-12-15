@@ -67,22 +67,22 @@ class AuthenticationRedirect(AuthenticationError):
     _TITLE = _("Login")
     
 
-class PostAuthenticationMessage(RequestError):
-    """Error indicating that authentication is required for the resource.
+class Abort(RequestError):
+    """Error useful for aborting regular request processing and displaying substitutional content.
 
-    Raising this error leads to displaying a confirmation dialog with arbitrary content and a
-    `Continue' button.
-    
+    Raising this error leads to displaying arbitrary substitutional content (such as a
+    'ConfirmationDialog' instance).
+
     The constructor must be called with two arguments:
       title -- dialog title as a (translatable) string
-      content -- dialog content as an 'lcg.Content' instance
+      content -- dialog content as an 'lcg.Content' instance or a sequence of such instances
 
     """
     def title(self):
         return self.args[0]
 
     def message(self, req):
-        return ConfirmationDialog(self.args[1])
+        return self.args[1]
 
 
 class PasswordExpirationError(RequestError):
@@ -878,7 +878,7 @@ class ConfirmationDialog(lcg.Container):
         return g.div((super(ConfirmationDialog, self).export(context),
                       # Translators: Confirmation button
                       g.form(g.submit(_("Continue")),
-                             method='POST', action=context.req().uri(), cls='confirmation-form')),
+                             method='GET', action=context.req().uri(), cls='confirmation-form')),
                      cls='confirmation-dialog')
 
     
