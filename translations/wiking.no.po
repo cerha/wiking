@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-12-02 19:20+0100\n"
+"POT-Creation-Date: 2009-12-14 23:36+0100\n"
 "PO-Revision-Date: 2009-09-08 16:37+0100\n"
 "Last-Translator: Petr Topiarz <topiarz@post.cz>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
@@ -19,18 +19,18 @@ msgstr ""
 msgid "Page heading"
 msgstr "Sideoverskrift"
 
-#: ../lib/wiking/export.py:81 ../lib/wiking/export.py:189
-#: ../lib/wiking/export.py:214 ../lib/wiking/export.py:216
-#: ../lib/wiking/export.py:235
+#: ../lib/wiking/export.py:81 ../lib/wiking/export.py:190
+#: ../lib/wiking/export.py:215 ../lib/wiking/export.py:217
+#: ../lib/wiking/export.py:274
 msgid "Main navigation"
 msgstr "Hovednavigasjon"
 
-#: ../lib/wiking/export.py:82 ../lib/wiking/export.py:191
-#: ../lib/wiking/export.py:229
+#: ../lib/wiking/export.py:82 ../lib/wiking/export.py:192
+#: ../lib/wiking/export.py:268
 msgid "Local navigation"
 msgstr "Lokalnavigasjon"
 
-#: ../lib/wiking/export.py:83 ../lib/wiking/export.py:187
+#: ../lib/wiking/export.py:83 ../lib/wiking/export.py:188
 msgid "Main content"
 msgstr "Innhold"
 
@@ -39,7 +39,7 @@ msgid "Page footer"
 msgstr "Sidefot"
 
 #. Translators: Title of a dialog on a webpage
-#: ../lib/wiking/export.py:85 ../lib/wiking/export.py:193
+#: ../lib/wiking/export.py:85 ../lib/wiking/export.py:194
 #: ../lib/wiking/util.py:197
 msgid "Language selection"
 msgstr "Språkvalg"
@@ -49,42 +49,42 @@ msgstr "Språkvalg"
 msgid "Language:"
 msgstr "Språk:"
 
-#: ../lib/wiking/export.py:197
+#: ../lib/wiking/export.py:198
 msgid "Jump in page"
 msgstr "Gå på siden"
 
 #. Translators: A label followed by location information in webpage navigation
-#: ../lib/wiking/export.py:202
+#: ../lib/wiking/export.py:203
 msgid "You are here:"
 msgstr "Du er her:"
 
-#. Translators: Heding of webpage navigation menu
-#. containing a list of links to pages in this web section
-#: ../lib/wiking/export.py:232
+#. Translators: Heading of webpage navigation menu containing a list
+#. of links to pages in this web section
+#: ../lib/wiking/export.py:271
 msgid "In this section:"
 msgstr "I denne seksjonen:"
 
 #. Translators: Panels are small windows on the side of the page. This is a label
 #. for a link that shows/hides the panels.
-#: ../lib/wiking/export.py:250
+#: ../lib/wiking/export.py:289
 msgid "Show panels"
 msgstr "Vis panelene"
 
-#: ../lib/wiking/export.py:251
+#: ../lib/wiking/export.py:290
 msgid "Hide panels"
 msgstr "Skjul panelene"
 
 #. Translators: ``RSS channel'' is terminology idiom, see Wikipedia
-#: ../lib/wiking/export.py:262
+#: ../lib/wiking/export.py:301
 msgid "RSS channel"
 msgstr "RSS-kanal"
 
-#: ../lib/wiking/export.py:278
+#: ../lib/wiking/export.py:317
 msgid "Warning"
 msgstr "Advarsel"
 
 #. Translators: Information about last change of a webpage (when and who)
-#: ../lib/wiking/export.py:301
+#: ../lib/wiking/export.py:340
 #, python-format
 msgid "Last change: %(date)s, %(user)s"
 msgstr "Sist endret: %(date)s, %(user)s"
@@ -96,13 +96,13 @@ msgstr "Godkjenning kreves"
 
 #. Translators: Login dialog page title (use a noun).
 #. Translators: Login info label (noun) followed by login name and other info.
-#: ../lib/wiking/util.py:67 ../lib/wiking/util.py:472
-#: ../lib/wiking/util.py:808
+#: ../lib/wiking/util.py:67 ../lib/wiking/util.py:505
+#: ../lib/wiking/util.py:849
 msgid "Login"
 msgstr "Innlogging"
 
 #. Translators: Information text on login panel.
-#: ../lib/wiking/util.py:90 ../lib/wiking/util.py:449
+#: ../lib/wiking/util.py:90 ../lib/wiking/util.py:482
 msgid "Your password expired"
 msgstr "Passordet ditt er utløpt"
 
@@ -116,7 +116,7 @@ msgstr ""
 
 #. Translators: This is a link on a webpage
 #. Translators: Link on login panel on the webpage.
-#: ../lib/wiking/util.py:98 ../lib/wiking/util.py:457
+#: ../lib/wiking/util.py:98 ../lib/wiking/util.py:490
 msgid "Change your password"
 msgstr "Endre passordet"
 
@@ -237,7 +237,7 @@ msgid "The system is temporarily down for maintenance."
 msgstr "Systemet er midlertidig nede for vedlikehold."
 
 #. Translators: Login panel info. '%(date)s' is replaced by a concrete date.
-#: ../lib/wiking/util.py:453
+#: ../lib/wiking/util.py:486
 #, python-format
 msgid "Your password expires on %(date)s"
 msgstr "Passordet utløper %(date)s"
@@ -246,76 +246,76 @@ msgstr "Passordet utløper %(date)s"
 #. user to obtain access to the website/application by submitting his personal
 #. details.
 #. Translators: Webpage link leading to registration form.
-#: ../lib/wiking/util.py:464 ../lib/wiking/util.py:851
+#: ../lib/wiking/util.py:497 ../lib/wiking/util.py:892
 msgid "New user registration"
 msgstr "Registrering av ny bruker"
 
-#: ../lib/wiking/util.py:473
+#: ../lib/wiking/util.py:506
 msgid "Login Panel"
 msgstr "Innloggingspanel"
 
 #. Translators: A set of buttons for various actions (edit, delete, atc.) is
 #. prepended with this label.
-#: ../lib/wiking/util.py:737
+#: ../lib/wiking/util.py:778
 msgid "Actions:"
 msgstr "Handlinger:"
 
 #. Translators: Link or button leading to documentation/help. Use usual computer
 #. terminlogy.
-#: ../lib/wiking/util.py:744
+#: ../lib/wiking/util.py:785
 msgid "Help"
 msgstr "Hjelp"
 
-#: ../lib/wiking/util.py:786
+#: ../lib/wiking/util.py:827
 msgid "Go to your profile"
 msgstr "Gå til din profil"
 
 #. Translators: Logout button label (verb in imperative).
-#: ../lib/wiking/util.py:791
+#: ../lib/wiking/util.py:832
 msgid "log out"
 msgstr "logg ut"
 
 #. Translators: Login status info.  If logged, the username is displayed instead.
-#: ../lib/wiking/util.py:794
+#: ../lib/wiking/util.py:835
 msgid "not logged"
 msgstr "ikke logget"
 
 #. Translators: Login button label (verb in imperative).
-#: ../lib/wiking/util.py:796
+#: ../lib/wiking/util.py:837
 msgid "log in"
 msgstr "logg inn"
 
-#: ../lib/wiking/util.py:838
+#: ../lib/wiking/util.py:879
 msgid "Login name"
 msgstr "Innloggingsnavn"
 
-#: ../lib/wiking/util.py:841
+#: ../lib/wiking/util.py:882
 msgid "Password"
 msgstr "Passord"
 
 #. Translators: Login button label - verb in imperative.
-#: ../lib/wiking/util.py:847
+#: ../lib/wiking/util.py:888
 msgid "Log in"
 msgstr "Logg inn"
 
 #. Translators: Login dialog link to password change or password reminder (depends
 #. on configuration).
-#: ../lib/wiking/util.py:854
+#: ../lib/wiking/util.py:895
 msgid "Forgot your password?"
 msgstr "Har du glemt ditt passord?"
 
 #. Translators: Confirmation button
-#: ../lib/wiking/util.py:880
+#: ../lib/wiking/util.py:921
 msgid "Continue"
 msgstr ""
 
-#: ../lib/wiking/util.py:1429
+#: ../lib/wiking/util.py:1469
 msgid "Invalid format"
 msgstr "Ugyldig format"
 
 #. Translators: Computer terminology. `gmail.com' is a domain name in email address
 #. `joe@gmail.com'.
-#: ../lib/wiking/util.py:1437 ../lib/wiking/util.py:1444
+#: ../lib/wiking/util.py:1477 ../lib/wiking/util.py:1484
 #, fuzzy
 msgid "Domain not found"
 msgstr "Ingenting funnet."
