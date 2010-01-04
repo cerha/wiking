@@ -1,3 +1,8 @@
+2010-01-04  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/cms/cms.py:
+	CMS: Pass request handling to the embedded module only if it is a RequestHandler instance.
+
 2009-12-15  Tomas Cerha  <cerha@brailcom.org>
 
 	* translations/wiking-cms.cs.po:

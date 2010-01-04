@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2006-2009 Brailcom, o.p.s.
+# Copyright (C) 2006-2010 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -1370,12 +1370,13 @@ class Pages(CMSModule):
             # Modules with bindings are handled in the parent class method.
             if not binding:
                 module = self._module(modname)
-                try:
-                    return req.forward(module)
-                except NotFound:
-                    if not req.unresolved_path:
+                if isinstance(module, RequestHandler):
+                    try:
+                        return req.forward(module)
+                    except NotFound:
                         # Don't allow further processing if unresolved_path was already consumed. 
-                        raise
+                        if not req.unresolved_path:
+                            raise
         return super(Pages, self).action_subpath(req, record)
 
     def action_rss(self, req, record):
