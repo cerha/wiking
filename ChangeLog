@@ -1,3 +1,10 @@
+2010-01-07  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/db.py:
+	Allow disabling/forcing browse form query search controls through a module constant.
+	
+	This change requires recent version of Pytis.
+
 2010-01-04  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/cms/cms.py:

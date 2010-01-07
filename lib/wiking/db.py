@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2005-2009 Brailcom, o.p.s.
+# Copyright (C) 2005-2010 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -90,6 +90,8 @@ class PytisModule(Module, ActionHandler):
     """Default value to pass to 'pytis.web.BrowseForm' 'limits' constructor argument."""
     _BROWSE_FORM_DEFAULT_LIMIT = 50
     """Default value to pass to 'pytis.web.BrowseForm' 'limit' constructor argument."""
+    _ALLOW_QUERY_SEARCH = None
+    """Default value to pass to 'pytis.web.BrowseForm' 'allow_query_search' constructor argument."""
     
     _ALLOW_COPY = False
     _SUBMIT_BUTTONS = {}
@@ -483,6 +485,7 @@ class PytisModule(Module, ActionHandler):
                 kwargs['limits'] = self._BROWSE_FORM_LIMITS
             if not kwargs.has_key('limit'):
                 kwargs['limit'] = self._BROWSE_FORM_DEFAULT_LIMIT
+            kwargs['allow_query_search'] = self._ALLOW_QUERY_SEARCH
         layout = kwargs.get('layout')
         if layout is not None and not isinstance(layout, pp.GroupSpec):
             kwargs['layout'] = self._layout_instance(layout)
