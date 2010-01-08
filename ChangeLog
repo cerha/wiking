@@ -54,6 +54,11 @@
 
 2010-01-08  Tomas Cerha  <cerha@brailcom.org>
 
+	* resources/scripts/wiking.js:
+	Handle correctly `aria-hidden' attribute on foldable menus.
+
+2010-01-08  Tomas Cerha  <cerha@brailcom.org>
+
 	* lib/wiking/export.py:
 	* resources/scripts/wiking.js:
 	Rewrite wiking.js to a Prototype class and drop panels.
