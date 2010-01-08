@@ -96,8 +96,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
 
     def _body_attr(self, context, **kwargs):
         layout = context.node().layout() or self.Layout.DEFAULT
-        cls =  layout +'-layout'
-        return super(Exporter, self)._body_attr(context, onload='wiking_init();', cls=cls, **kwargs)
+        return super(Exporter, self)._body_attr(context, cls=layout+'-layout', **kwargs)
 
     def _body_content(self, context):
         if context.node().layout() == self.Layout.FRAME:

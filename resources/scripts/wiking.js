@@ -1,6 +1,6 @@
 /* -*- coding: utf-8 -*-
  *
- * Copyright (C) 2008, 2009 Brailcom, o.p.s.
+ * Copyright (C) 2008, 2009, 2010 Brailcom, o.p.s.
  * Author: Tomas Cerha
  *
  * This program is free software; you can redistribute it and/or modify
@@ -17,267 +17,223 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* Definition of available commands */
-var CMD_PARENT = 'parent'; // Go up in the hierarchy.
-var CMD_CHILD  = 'child';  // Go down in the hierarchy.
-var CMD_PREV = 'prev'; // Go to the next item at the same level.
-var CMD_NEXT = 'next'; // Go to the previous item at the same level.
-var CMD_MENU = 'menu';
-var CMD_QUIT = 'quit';
+var WikingHandler = Class.create({
+      initialize: function() {
+	 // WikingHandler constructor (called when the script is loaded).
+	 // Definition of available commands.
+	 this.CMD_PARENT = 'parent'; // Go up in the hierarchy.
+	 this.CMD_CHILD	= 'child';  // Go down in the hierarchy.
+	 this.CMD_PREV = 'prev'; // Go to the next item at the same level.
+	 this.CMD_NEXT = 'next'; // Go to the previous item at the same level.
+	 this.CMD_MENU = 'menu';
+	 this.CMD_QUIT = 'quit';
+	 // Menu navigation keyboard shortcuts mapping to available command identifiers.
+	 this.KEYMAP = {
+	    'Up':	    this.CMD_PREV,
+	    'Down':         this.CMD_NEXT,
+	    'Left':         this.CMD_PARENT,
+	    'Right':        this.CMD_CHILD,
+	    'Ctrl-Shift-m': this.CMD_MENU,
+	    'Escape':	    this.CMD_QUIT
+	 };
+	 // Landmark by HTML element id.
+	 this.LANDMARKS = {
+	    'top':     'banner',
+	    'menu':    'navigation',
+	    'submenu': 'navigation',
+	    'main':    'main',
+	    'bottom':  'contentinfo'
+	 };
+	 // Other (private) attributes. 
+	 this.current_main_menu_item = null;
+	 this.first_menu_item = null;
+	 this.main_heading = null;
+      },
 
-/* Menu navigation keyboard shortcuts */
-var WIKING_KEYMAP = {
-   'Ctrl-Shift-Up':    CMD_PREV,
-   'Ctrl-Shift-Down':  CMD_NEXT,
-   'Ctrl-Shift-Left':  CMD_PARENT,
-   'Ctrl-Shift-Right': CMD_CHILD,
-   'Ctrl-Shift-m':     CMD_MENU,
-   'Escape':           CMD_QUIT
-};
+      init: function() {
+	 // Initialize the loaded page (called from document body onload event).
+	 this.main_heading = $('main-heading');
+	 // Initialize the menus -- assign ARIA roles to HTML tags and bind
+	 // keyboard event handling to support hierarchical keyboard traversal.
+	 var items = [];
+	 this.append_menu(items, $('menu'), null);
+	 if (items.length == 0)
+	    // The main menu is not present.
+	    this.append_menu(items, $('submenu'), null);
+	 this.first_menu_item = items[0];
+	 //Initialize ARIA landmarks;
+	 for (var id in this.LANDMARKS) {
+	    var element = $(id);
+	    if (element != null)
+	       element.setAttribute('role', this.LANDMARKS[id]);
+	 }
+	 // Set up global key handler.
+	 var global_key_handler = (document.all ? document.body : window);
+	 global_key_handler.onkeydown = this.on_key_down.bind(this);
+	 // Move focus to the main content if there is no anchor in the current URL.
+	 if (window.location.href.match("#") == null)
+	    this.set_focus(this.main_heading);
+      },
 
-var WIKING_LANDMARKS = {
-   'top':     'banner',
-   'menu':    'navigation',
-   'submenu': 'navigation',
-   'main':    'main',
-   'bottom':  'contentinfo'
-};
-
-var _current_main_menu_item = null;
-var _first_menu_item = null;
-var _main_heading = null;
-
-function wiking_init() {
-   _main_heading = document.getElementById('main-heading');
-   // Initialize the menus -- assign ARIA roles to HTML tags and bind keyboard event handling to
-   // support hierarchical keyboard traversal.
-   var items = [];
-   append_menu(items, document.getElementById('menu'), null);
-   if (items.length == 0)
-      // The main menu is not present.
-      append_menu(items, document.getElementById('submenu'), null);
-   append_panels_menu(items);
-   append_language_selection_menu(items);
-   _first_menu_item = items[0];
-   //Initialize ARIA landmarks;
-   for (var id in WIKING_LANDMARKS) {
-      var element = document.getElementById(id);
-      if (element != null)
-	 element.setAttribute('role', WIKING_LANDMARKS[id]);
-   }
-   // Set up global key handler.
-   if (document.all)
-      document.body.onkeydown = wiking_onkeydown;
-   else
-      window.onkeydown = wiking_onkeydown;
-   // Move focus to the main content if there is no anchor in the current URL.
-   if (window.location.href.match("#") == null)
-      set_focus(_main_heading);
-}
-
-function wiking_onkeydown(event) {
-   // Handle global Wiking keyboard shortcuts.
-   // Not all browsers invoke onkeypress for arrow keys, so keys must be handled in onkeydown.
-   switch (WIKING_KEYMAP[event_key(event)]) {
-   case CMD_MENU: // Set focus to the first menu item.
-      if (_current_main_menu_item != null)
-	 set_focus(_current_main_menu_item);
-      else
-	 set_focus(_first_menu_item);
-      return false;
-   }
-   return true;
-}
-
-function append_menu(items, node, parent) {
-   if (node != null) {
-      var ul = $(node).down('ul');
-      if (ul != null) {
-	 //ul.setAttribute('role', 'menu');
-	 for (var i = 0; i < ul.childNodes.length; i++) {
-	    var li = $(ul.childNodes[i]);
-	    if (li.nodeName =='LI') {
-	       var item = li.down('a');
-	       li.observe('click', on_menu_click);
-	       //item.setAttribute('role', 'menuitem');
-	       //item.setAttribute('tabindex', '-1');
-	       //item.setAttribute('title', item.innerHTML);
-	       var subitems = [];
-	       append_menu(subitems, li, item);
-	       if (subitems.length == 0 && parent == null && item.hasClassName('current')) {
-		  _current_main_menu_item = item;
-		  append_menu(subitems, $('submenu'), item);
+      append_menu: function (items, node, parent) {
+	 if (node != null) {
+	    var map = $(node).down('map');
+	    if (map != null) {
+	       // Main menu or submenu.
+	       map.setAttribute('role', 'application');
+	       map.setAttribute('tabindex', '0');
+	    }
+	    var ul = $(node).down('ul');
+	    if (ul != null) {
+	       //ul.setAttribute('role', 'menu');
+	       for (var i = 0; i < ul.childNodes.length; i++) {
+		  var li = $(ul.childNodes[i]);
+		  if (li.nodeName =='LI') {
+		     var item = li.down('a');
+		     li.observe('click', this.on_menu_click.bind(this));
+		     //item.setAttribute('role', 'menuitem');
+		     //item.setAttribute('tabindex', '-1');
+		     //item.setAttribute('title', item.innerHTML);
+		     var subitems = [];
+		     this.append_menu(subitems, li, item);
+		     var link = item.childNodes[0];
+		     if (subitems.length == 0 && parent == null && item.hasClassName('current')) {
+			this.current_main_menu_item = item;
+			this.append_menu(subitems, $('submenu'), item);
+		     }
+		     var child = null;
+		     if (subitems.length != 0)
+			child = subitems[0];
+		     //item.setAttribute('aria-haspopup', 'true');
+		     this.append_menu_item(items, item, parent, child);
+		  }
 	       }
-	       var child = null;
-	       if (subitems.length != 0)
-		  child = subitems[0];
-	          //item.setAttribute('aria-haspopup', 'true');
-	       append_menu_item(items, item, parent, child);
 	    }
 	 }
-      }
-   }
-}
+      },
 
-function append_panels_menu(items) {
-   var node = document.getElementById('panels');
-   if (node != null) {
-      var login_panel = null;
-      var headings = node.getElementsByTagName('h3');
-      for (var i = 0; i < headings.length; i++) {
-	 var heading = headings[i];
-	 var panel = heading.parentNode;
-	 panel.setAttribute('role', 'complementary');
-	 var item = heading.getElementsByTagName('a')[0];
-	 if (item != null)
-	    if (panel.getAttribute('id') == 'panel-login')
-	       // Append login panel as the last panel in navigation order.
-	       login_panel = item
-	    else
-	       append_menu_item(items, item, null, null);
-      }
-      if (login_panel != null)
-	 append_menu_item(items, login_panel, null, null);
-   }
-}
+      append_menu_item: function (items, item, parent, child) {
+	 var prev = null;
+	 if (items.length > 0)
+	    prev = items[items.length-1];
+	 //item.setAttribute('role', '');
+	 // Makes the items unroutable when ARIA is not correctly supported.
+	 //item.setAttribute('tabindex', '-1');
+	 var map = {};
+	 map[this.CMD_PARENT] = parent;
+	 map[this.CMD_CHILD] = child;
+	 map[this.CMD_PREV] = prev;
+	 map[this.CMD_NEXT] = null;
+	 map[this.CMD_QUIT] = this.main_heading;
+	 item._menu_navigation_target = map;
+	 if (prev != null)
+	    prev._menu_navigation_target[this.CMD_NEXT] = item;
+	 item.onkeydown = this.on_menu_keydown.bind(this);
+	 items[items.length] = item;
+      },
 
-function append_language_selection_menu(items) {
-   var node = document.getElementById('language-selection');
-   var item = document.getElementById('language-selection-anchor');
-   if (node != null && item != null) {
-      node.setAttribute('role', 'complementary');
-      item.setAttribute('tabindex', '-1');
-      var languages = [];
-      var links = node.getElementsByTagName('a');
-      for (var i = 1; i < links.length; i++)
-	 append_menu_item(languages, links[i], item, null);
-      append_menu_item(items, item, null, languages[0]);
-   }
-}
-
-function append_menu_item(items, item, parent, child) {
-   var prev = null;
-   if (items.length > 0)
-      prev = items[items.length-1];
-   var map = {};
-   map[CMD_PARENT] = parent;
-   map[CMD_CHILD] = child;
-   map[CMD_PREV] = prev;
-   map[CMD_NEXT] = null;
-   map[CMD_QUIT] = _main_heading;
-   item._menu_navigation_target = map;
-   if (prev != null)
-      prev._menu_navigation_target[CMD_NEXT] = item;
-   item.onkeydown = function(event) { return on_menu_keydown(event, this); };
-   items[items.length] = item;
-}
-
-function on_menu_click(event) {
-   var element = event.element();
-   if (element.nodeName == 'A' || element.nodeName == 'LI') {
-      // The inner SPAN has a left margin making space for folding controls.
-      // Then, if the user clicks inside the A or LI element, but not inside
-      // SPAN, folding controls were clicked.  The strange hack with the inner
-      // SPAN is needed to make folding work across browsers (particulartly
-      // MSIE).
-      var span = element.down('span');
-      if (event.pointerX() < span.cumulativeOffset().left) {
-	 var li = span.parentNode.parentNode;
-	 if (li.hasClassName('foldable')) {
-	    if (li.hasClassName('folded'))
-	       li.removeClassName('folded');
-	    else
-	       li.addClassName('folded');
+      on_key_down: function(event) {
+	 // Handle global Wiking keyboard shortcuts.
+	 // Not all browsers invoke onkeypress for arrow keys, so keys must be
+	 // handled in onkeydown.
+	 switch (this.KEYMAP[this.event_key(event)]) {
+	 case this.CMD_MENU: // Set focus to the first menu item.
+	    var item = (this.current_main_menu_item != null ?
+			this.current_main_menu_item : this.first_menu_item);
+	    this.set_focus(item);
+	    return false;
 	 }
-	 event.stop();
+	 return true;
+      },
+      
+      on_menu_keydown: function (event) {
+	 var element = event.element();
+	 var key = this.event_key(event);
+	 var cmd = this.KEYMAP[key];
+	 if (cmd == null)
+	    return true;
+	 var target = element._menu_navigation_target[cmd];
+	 if (target != null) {
+	    var p1 = element.parentNode;
+	    var p2 = target.parentNode;
+	    if (cmd == this.CMD_CHILD && p1.hasClassName('foldable') && p1.hasClassName('folded'))
+	       p1.removeClassName('folded');
+	    if (cmd == this.CMD_PARENT && p2.hasClassName('foldable') && !p2.hasClassName('folded'))
+	       p2.addClassName('folded');
+	    this.set_focus(target);
+	 }
+	 return false;
+      },
+
+      on_menu_click: function (event) {
+	 var element = event.element();
+	 if (element.nodeName == 'A' || element.nodeName == 'LI') {
+	    // The inner SPAN has a left margin making space for folding controls.
+	    // Then, if the user clicks inside the A or LI element, but not inside
+	    // SPAN, folding controls were clicked.  The strange hack with the inner
+	    // SPAN is needed to make folding work across browsers (particulartly
+	    // MSIE).
+	    var span = element.down('span');
+	    if (event.pointerX() < span.cumulativeOffset().left) {
+	       var li = span.parentNode.parentNode;
+	       if (li.hasClassName('foldable')) {
+		  if (li.hasClassName('folded'))
+		     li.removeClassName('folded');
+		  else
+		     li.addClassName('folded');
+	       }
+	       event.stop();
+	    }
+	 }
+      },
+
+      event_key: function (event) {
+	 if (document.all) event = window.event;
+	 var code = document.all ? event.keyCode : event.which;
+	 var map = {
+	    8:  'Backspace',
+	    10: 'Enter',
+	    13: 'Enter',
+	    27: 'Escape',
+	    32: 'Space',
+	    33: 'PageUp',
+	    34: 'PageDown',
+	    35: 'End',
+	    36: 'Home',
+	    37: 'Left',
+	    39: 'Right',
+	    38: 'Up',
+	    40: 'Down'
+	 };
+	 var key = null;
+	 if (code >= 65 && code <= 90) key = String.fromCharCode(code).toLowerCase();
+	 else key = map[code];
+	 if (key != null) {
+	    var modifiers = '';
+	    if (document.all || document.getElementById) {
+	       if (event.ctrlKey) modifiers += 'Ctrl-';
+	       if (event.altKey) modifiers += 'Alt-';
+	       if (event.shiftKey) modifiers += 'Shift-';
+	    } else if (document.layers) {
+	       if (event.modifiers & Event.CONTROL_MASK) modifiers += 'Ctrl-';
+	       if (event.modifiers & Event.ALT_MASK) modifiers += 'Alt-';
+	       if (event.modifiers & Event.SHIFT_MASK) modifiers += 'Shift-';
+	    }
+	    key = modifiers+key;
+	 }
+	 return key;
+      },
+      set_focus: function (element) {
+	 if (element != null) 
+	    setTimeout(function () { try { element.focus(); } catch (e) {} }, 0);
       }
-   }
-}
+      
+   });
 
-function on_menu_keydown(event, link) {
-   var key = event_key(event);
-   var cmd = WIKING_KEYMAP[key];
-   if (cmd != null) {
-      var target = link._menu_navigation_target[cmd];
-      if (target != null) {
-	 if (cmd == CMD_CHILD && link.parentNode.hasClassName('foldable') &&
-	     link.parentNode.hasClassName('folded'))
-	    link.parentNode.removeClassName('folded');
-	 if (cmd == CMD_PARENT && target.parentNode.hasClassName('foldable') &&
-	     !target.parentNode.hasClassName('folded'))
-	    target.parentNode.addClassName('folded');
-	 set_focus(target);
-      }
-      return false;
-   } else if (key == 'Enter' && link.parentNode.nodeName == 'H3') {
-      // Go to the panel when pressing Enter on panel menu item.
-      set_focus(link.parentNode);
-      return false;
-   } else {
-      return true;
-   }
-}
+// Instantiate the handler and register calling `init()' on page load.
+var wiking_handler = new WikingHandler();
+if (window.addEventListener)
+   window.addEventListener("load", wiking_handler.init.bind(wiking_handler), false);
+else
+   window.attachEvent('onload', wiking_handler.init.bind(wiking_handler));
 
-function event_key(event) {
-   if (document.all) event = window.event;
-   var code = document.all ? event.keyCode : event.which;
-   var map = {8:  'Backspace',
-	      10: 'Enter',
-	      13: 'Enter',
-	      27: 'Escape',
-	      32: 'Space',
-	      33: 'PageUp',
-	      34: 'PageDown',
-	      35: 'End',
-	      36: 'Home',
-	      37: 'Left',
-	      39: 'Right',
-	      38: 'Up',
-	      40: 'Down'};
-   var key = null;
-   if (code >= 65 && code <= 90) key = String.fromCharCode(code).toLowerCase();
-   else key = map[code];
-   if (key != null) {
-      var modifiers = '';
-      if (document.all || document.getElementById) {
-	 if (event.ctrlKey) modifiers += 'Ctrl-';
-	 if (event.altKey) modifiers += 'Alt-';
-	 if (event.shiftKey) modifiers += 'Shift-';
-      } else if (document.layers) {
-	 if (event.modifiers & Event.CONTROL_MASK) modifiers += 'Ctrl-';
-	 if (event.modifiers & Event.ALT_MASK) modifiers += 'Alt-';
-	 if (event.modifiers & Event.SHIFT_MASK) modifiers += 'Shift-';
-      }
-      key = modifiers+key;
-      //alert(code+': '+key);
-   }
-   return key;
-}
-
-function add_on_load(func) {
-   if(window.addEventListener) {
-      window.addEventListener("load", func, false);
-   } else {
-      window.attachEvent('onload', func);
-   }
-}
-
-function set_focus(element) {
-   if (element != null) 
-      setTimeout(function () { try { element.focus(); } catch (e) {} }, 0);
-}
-
-function debug(message) {
-   if (!debug.window_ || debug.window_.closed) {
-      var win = window.open("", null, "width=400, height=200, scrollbars=yes, resizable=yes, " +
-			    "status=no, location=no, menubar=no, toolbar=no");
-      if (!win) return;
-      var doc = win.document;
-      doc.write("<html><head><title>Debug Log</title></head><body></body></html>");
-      doc.close();
-      debug.window_ = win;
-   }
-   var line = debug.window_.document.createElement("div");
-   line.appendChild(debug.window_.document.createTextNode(message));
-   debug.window_.document.body.appendChild(line);
-}

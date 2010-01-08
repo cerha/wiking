@@ -52,6 +52,16 @@
 	* resources/css/default.css:
 	Allow entering the registration code by hand.
 
+2010-01-08  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/export.py:
+	* resources/scripts/wiking.js:
+	Rewrite wiking.js to a Prototype class and drop panels.
+	
+	Panels and language selection were also removed from keyboard navigation, since
+	they are now accessible through landmarks and make the navigation a little
+	confusing.
+
 2009-12-10  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/cms/cms.py:
