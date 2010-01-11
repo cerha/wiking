@@ -1,5 +1,5 @@
 # Wiking translations.
-# Copyright (C) 2006-2009 Brailcom, o.p.s.
+# Copyright (C) 2006-2010 Brailcom, o.p.s.
 # This file is distributed under the same license as the Wiking package.
 # Tomas Cerha <cerha@brailcom.org>, 2006.
 #
@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-12-14 23:36+0100\n"
-"PO-Revision-Date: 2009-12-02 19:27+0100\n"
+"POT-Creation-Date: 2010-01-11 23:44+0100\n"
+"PO-Revision-Date: 2010-01-19 16:15+0100\n"
 "Last-Translator: Hynek Hanke <hanke@brailcom.org>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
 "MIME-Version: 1.0\n"
@@ -19,18 +19,18 @@ msgstr ""
 msgid "Page heading"
 msgstr "Záhlaví stránky"
 
-#: ../lib/wiking/export.py:81 ../lib/wiking/export.py:190
-#: ../lib/wiking/export.py:215 ../lib/wiking/export.py:217
-#: ../lib/wiking/export.py:274
+#: ../lib/wiking/export.py:81 ../lib/wiking/export.py:192
+#: ../lib/wiking/export.py:217 ../lib/wiking/export.py:219
+#: ../lib/wiking/export.py:276
 msgid "Main navigation"
 msgstr "Hlavní navigace"
 
-#: ../lib/wiking/export.py:82 ../lib/wiking/export.py:192
-#: ../lib/wiking/export.py:268
+#: ../lib/wiking/export.py:82 ../lib/wiking/export.py:194
+#: ../lib/wiking/export.py:270
 msgid "Local navigation"
 msgstr "Navigace této sekce"
 
-#: ../lib/wiking/export.py:83 ../lib/wiking/export.py:188
+#: ../lib/wiking/export.py:83 ../lib/wiking/export.py:190
 msgid "Main content"
 msgstr "Hlavní obsah"
 
@@ -39,7 +39,7 @@ msgid "Page footer"
 msgstr "Zápatí stránky"
 
 #. Translators: Title of a dialog on a webpage
-#: ../lib/wiking/export.py:85 ../lib/wiking/export.py:194
+#: ../lib/wiking/export.py:85 ../lib/wiking/export.py:196
 #: ../lib/wiking/util.py:197
 msgid "Language selection"
 msgstr "Výběr jazyka"
@@ -60,7 +60,7 @@ msgstr "Nacházíte se zde:"
 
 #. Translators: Heading of webpage navigation menu containing a list
 #. of links to pages in this web section
-#: ../lib/wiking/export.py:271
+#: ../lib/wiking/export.py:273
 msgid "In this section:"
 msgstr "V této sekci:"
 
@@ -75,16 +75,16 @@ msgid "Hide panels"
 msgstr "Skrýt panely"
 
 #. Translators: ``RSS channel'' is terminology idiom, see Wikipedia
-#: ../lib/wiking/export.py:301
+#: ../lib/wiking/export.py:302
 msgid "RSS channel"
 msgstr "RSS kanál"
 
-#: ../lib/wiking/export.py:317
+#: ../lib/wiking/export.py:318
 msgid "Warning"
 msgstr "Varování"
 
 #. Translators: Information about last change of a webpage (when and who)
-#: ../lib/wiking/export.py:340
+#: ../lib/wiking/export.py:341
 #, python-format
 msgid "Last change: %(date)s, %(user)s"
 msgstr "Poslední změna: %(date)s, %(user)s"

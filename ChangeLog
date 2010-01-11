@@ -54,6 +54,11 @@
 
 2010-01-12  Tomas Cerha  <cerha@brailcom.org>
 
+	* translations/wiking.cs.po:
+	Translations updated.
+
+2010-01-12  Tomas Cerha  <cerha@brailcom.org>
+
 	* lib/wiking/export.py:
 	* resources/css/layout.css:
 	* resources/scripts/wiking.js:
