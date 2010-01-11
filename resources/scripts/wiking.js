@@ -26,6 +26,7 @@ var WikingHandler = Class.create({
 	 this.CMD_PREV = 'prev'; // Go to the next item at the same level.
 	 this.CMD_NEXT = 'next'; // Go to the previous item at the same level.
 	 this.CMD_MENU = 'menu';
+	 this.CMD_ACTIVATE = 'activate';
 	 this.CMD_QUIT = 'quit';
 	 // Menu navigation keyboard shortcuts mapping to available command identifiers.
 	 this.KEYMAP = {
@@ -34,7 +35,9 @@ var WikingHandler = Class.create({
 	    'Left':         this.CMD_PARENT,
 	    'Right':        this.CMD_CHILD,
 	    'Ctrl-Shift-m': this.CMD_MENU,
-	    'Escape':	    this.CMD_QUIT
+	    'Escape':	    this.CMD_QUIT,
+	    'Enter':	    this.CMD_ACTIVATE,
+	    'Space':	    this.CMD_ACTIVATE
 	 };
 	 // Landmark by HTML element id.
 	 this.LANDMARKS = {
@@ -153,6 +156,8 @@ var WikingHandler = Class.create({
 	    return true;
 	 if (cmd == this.CMD_QUIT) {
 	    this.set_focus($('main-heading'));
+	 } else if (cmd == this.CMD_ACTIVATE) {
+	    self.location = element.getAttribute('href');
 	 } else {
 	    var target = element._menu_navigation_target[cmd];
 	    if (target != null) {
