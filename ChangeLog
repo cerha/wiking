@@ -52,6 +52,11 @@
 	* resources/css/default.css:
 	Allow entering the registration code by hand.
 
+2010-01-11  Tomas Cerha  <cerha@brailcom.org>
+
+	* resources/scripts/wiking.js:
+	Minor rearrangements.
+
 2010-01-08  Tomas Cerha  <cerha@brailcom.org>
 
 	* resources/scripts/wiking.js:

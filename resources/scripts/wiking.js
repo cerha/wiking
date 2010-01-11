@@ -18,7 +18,7 @@
  */
 
 var WikingHandler = Class.create({
-      initialize: function() {
+      initialize: function () {
 	 // WikingHandler constructor (called when the script is loaded).
 	 // Definition of available commands.
 	 this.CMD_PARENT = 'parent'; // Go up in the hierarchy.
@@ -45,22 +45,18 @@ var WikingHandler = Class.create({
 	    'bottom':  'contentinfo'
 	 };
 	 // Other (private) attributes. 
-	 this.current_main_menu_item = null;
-	 this.first_menu_item = null;
-	 this.main_heading = null;
+	 this.menu = [];
+	 this.active_menu_item = null;
       },
 
-      init: function() {
+      init: function () {
 	 // Initialize the loaded page (called from document body onload event).
-	 this.main_heading = $('main-heading');
-	 // Initialize the menus -- assign ARIA roles to HTML tags and bind
+	 // First initialize the menus -- assign ARIA roles to HTML tags and bind
 	 // keyboard event handling to support hierarchical keyboard traversal.
-	 var items = [];
-	 this.append_menu(items, $('menu'), null);
-	 if (items.length == 0)
+	 this.append_menu(this.menu, $('menu'), null);
+	 if (this.menu.length == 0)
 	    // The main menu is not present.
-	    this.append_menu(items, $('submenu'), null);
-	 this.first_menu_item = items[0];
+	    this.append_menu(this.menu, $('submenu'), null);
 	 //Initialize ARIA landmarks;
 	 for (var id in this.LANDMARKS) {
 	    var element = $(id);
@@ -72,14 +68,14 @@ var WikingHandler = Class.create({
 	 global_key_handler.onkeydown = this.on_key_down.bind(this);
 	 // Move focus to the main content if there is no anchor in the current URL.
 	 if (window.location.href.match("#") == null)
-	    this.set_focus(this.main_heading);
+	    this.set_focus($('main-heading'));
       },
 
       append_menu: function (items, node, parent) {
 	 if (node != null) {
 	    var map = $(node).down('map');
 	    if (map != null) {
-	       // Main menu or submenu.
+	       // Main menu or top level of submenu.
 	       map.setAttribute('role', 'application');
 	       map.setAttribute('tabindex', '0');
 	    }
@@ -95,10 +91,11 @@ var WikingHandler = Class.create({
 		     //item.setAttribute('tabindex', '-1');
 		     //item.setAttribute('title', item.innerHTML);
 		     var subitems = [];
+		     if (item.hasClassName('current'))
+			this.active_menu_item = item;
 		     this.append_menu(subitems, li, item);
-		     var link = item.childNodes[0];
 		     if (subitems.length == 0 && parent == null && item.hasClassName('current')) {
-			this.current_main_menu_item = item;
+			// Add submenu as a child menu of the current main menu item.
 			this.append_menu(subitems, $('submenu'), item);
 		     }
 		     var child = null;
@@ -129,7 +126,6 @@ var WikingHandler = Class.create({
 	 map[this.CMD_CHILD] = child;
 	 map[this.CMD_PREV] = prev;
 	 map[this.CMD_NEXT] = null;
-	 map[this.CMD_QUIT] = this.main_heading;
 	 item._menu_navigation_target = map;
 	 if (prev != null)
 	    prev._menu_navigation_target[this.CMD_NEXT] = item;
@@ -137,15 +133,13 @@ var WikingHandler = Class.create({
 	 items[items.length] = item;
       },
 
-      on_key_down: function(event) {
+      on_key_down: function (event) {
 	 // Handle global Wiking keyboard shortcuts.
 	 // Not all browsers invoke onkeypress for arrow keys, so keys must be
 	 // handled in onkeydown.
-	 switch (this.KEYMAP[this.event_key(event)]) {
-	 case this.CMD_MENU: // Set focus to the first menu item.
-	    var item = (this.current_main_menu_item != null ?
-			this.current_main_menu_item : this.first_menu_item);
-	    this.set_focus(item);
+	 var cmd = this.KEYMAP[this.event_key(event)];
+	 if (cmd == this.CMD_MENU) {
+	    this.set_focus(this.active_menu_item);
 	    return false;
 	 }
 	 return true;
@@ -157,20 +151,24 @@ var WikingHandler = Class.create({
 	 var cmd = this.KEYMAP[key];
 	 if (cmd == null)
 	    return true;
-	 var target = element._menu_navigation_target[cmd];
-	 if (target != null) {
-	    var p1 = element.parentNode;
-	    var p2 = target.parentNode;
-	    if (cmd == this.CMD_CHILD && p1.hasClassName('folded')) {
-	       p1.removeClassName('folded');
-	       p1.down('ul').setAttribute('aria-hidden', 'false');
+	 if (cmd == this.CMD_QUIT) {
+	    this.set_focus($('main-heading'));
+	 } else {
+	    var target = element._menu_navigation_target[cmd];
+	    if (target != null) {
+	       var p1 = element.parentNode;
+	       var p2 = target.parentNode;
+	       if (cmd == this.CMD_CHILD && p1.hasClassName('folded')) {
+		  p1.removeClassName('folded');
+		  p1.down('ul').setAttribute('aria-hidden', 'false');
+	       }
+	       if (cmd == this.CMD_PARENT &&
+		   p2.hasClassName('foldable') && !p2.hasClassName('folded')) {
+		  p2.addClassName('folded');
+		  p2.down('ul').setAttribute('aria-hidden', 'true');
+	       }
+	       this.set_focus(target);
 	    }
-	    if (cmd == this.CMD_PARENT &&
-		p2.hasClassName('foldable') && !p2.hasClassName('folded')) {
-	       p2.addClassName('folded');
-	       p2.down('ul').setAttribute('aria-hidden', 'true');
-	    }
-	    this.set_focus(target);
 	 }
 	 return false;
       },
@@ -236,6 +234,7 @@ var WikingHandler = Class.create({
 	 }
 	 return key;
       },
+
       set_focus: function (element) {
 	 if (element != null) 
 	    setTimeout(function () { try { element.focus(); } catch (e) {} }, 0);
