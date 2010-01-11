@@ -48,24 +48,13 @@ var WikingHandler = Class.create({
 	    'bottom':  'contentinfo'
 	 };
 	 // Other (private) attributes. 
-	 this.menu = [];
-	 this.active_menu_item = null;
+	 this.menu = null;
       },
 
       init: function () {
 	 // Initialize the loaded page (called from document body onload event).
-	 // First initialize the menus -- assign ARIA roles to HTML tags and bind
-	 // keyboard event handling to support hierarchical keyboard traversal.
-	 this.append_menu(this.menu, $('menu'), null);
-	 if (this.menu.length == 0)
-	    // The main menu is not present.
-	    this.append_menu(this.menu, $('submenu'), null);
-	 //Initialize ARIA landmarks;
-	 for (var id in this.LANDMARKS) {
-	    var element = $(id);
-	    if (element != null)
-	       element.setAttribute('role', this.LANDMARKS[id]);
-	 }
+	 this.init_landmarks();
+	 this.init_menus();
 	 // Set up global key handler.
 	 var global_key_handler = (document.all ? document.body : window);
 	 global_key_handler.onkeydown = this.on_key_down.bind(this);
@@ -74,66 +63,89 @@ var WikingHandler = Class.create({
 	    this.set_focus($('main-heading'));
       },
 
-      append_menu: function (items, node, parent) {
-	 if (node != null) {
-	    var map = $(node).down('map');
-	    if (map != null) {
-	       // Main menu or top level of submenu.
-	       map.setAttribute('role', 'application');
-	       map.setAttribute('tabindex', '0');
-	    }
-	    var ul = $(node).down('ul');
-	    if (ul != null) {
-	       //ul.setAttribute('role', 'menu');
-	       for (var i = 0; i < ul.childNodes.length; i++) {
-		  var li = $(ul.childNodes[i]);
-		  if (li.nodeName =='LI') {
-		     var item = li.down('a');
-		     li.observe('click', this.on_menu_click.bind(this));
-		     //item.setAttribute('role', 'menuitem');
-		     //item.setAttribute('tabindex', '-1');
-		     //item.setAttribute('title', item.innerHTML);
-		     var subitems = [];
-		     if (item.hasClassName('current'))
-			this.active_menu_item = item;
-		     this.append_menu(subitems, li, item);
-		     if (subitems.length == 0 && parent == null && item.hasClassName('current')) {
-			// Add submenu as a child menu of the current main menu item.
-			this.append_menu(subitems, $('submenu'), item);
-		     }
-		     var child = null;
-		     if (subitems.length != 0)
-			child = subitems[0];
-		     //item.setAttribute('aria-haspopup', 'true');
-		     if (li.hasClassName('foldable')) {
-			var hidden = (li.hasClassName('folded')?'true':'false');
-			var submenu = li.down('ul');
-			submenu.setAttribute('aria-hidden', hidden);
-		     }
-		     this.append_menu_item(items, item, parent, child);
-		  }
-	       }
-	    }
+      init_landmarks: function () {
+	 //Initialize ARIA landmarks;
+	 for (var id in this.LANDMARKS) {
+	    var element = $(id);
+	    if (element != null)
+	       element.setAttribute('role', this.LANDMARKS[id]);
 	 }
       },
 
-      append_menu_item: function (items, item, parent, child) {
-	 var prev = null;
-	 if (items.length > 0)
-	    prev = items[items.length-1];
-	 //item.setAttribute('role', '');
-	 // Makes the items unroutable when ARIA is not correctly supported.
-	 //item.setAttribute('tabindex', '-1');
-	 var map = {};
-	 map[this.CMD_PARENT] = parent;
-	 map[this.CMD_CHILD] = child;
-	 map[this.CMD_PREV] = prev;
-	 map[this.CMD_NEXT] = null;
-	 item._menu_navigation_target = map;
-	 if (prev != null)
-	    prev._menu_navigation_target[this.CMD_NEXT] = item;
-	 item.onkeydown = this.on_menu_keydown.bind(this);
-	 items[items.length] = item;
+      init_menus: function () {
+	 // Initialize the menus -- assign ARIA roles to HTML tags and bind
+	 // keyboard event handling to support hierarchical keyboard traversal.
+	 var menu = $('menu');
+	 var submenu = $('submenu');
+	 if (menu == null)
+	    // If the main menu is not present, add submenu as the root menu.
+	    menu = $('submenu');
+	 if (menu != null) {
+	    this.menu = menu;
+	    var items = this.init_menu(menu.down('ul'), null);
+	    var active = $(menu.getAttribute('aria-activedescendant'));
+	    if (menu != submenu && submenu != null && active != null) {
+	       // Add submenu as a child menu of the current main menu item.
+	       this.init_menu(submenu.down('ul'), active);
+	       menu.setAttribute('aria-owns', 'submenu');
+	    }
+	    //var map = menu.down('map');
+	    menu.setAttribute('role', 'application');
+	    //menu.setAttribute('tabindex', '0');
+	    // If a submenu item is active, the active item may now be different from above.
+	    var active = $(menu.getAttribute('aria-activedescendant'));
+	    if (active == null && items.length != 0) {
+	       active = items[0];
+	       menu.setAttribute('aria-activedescendant', active.getAttribute('id'));
+	    }
+	    active.setAttribute('tabindex', '0');
+	    
+	 }
+      },
+
+      init_menu: function (ul, parent) {
+	 //ul.setAttribute('role', 'menu');
+	 var items = [];
+	 var base_id = (parent != null ? parent.getAttribute('id') : 'wiking-menu');
+	 for (var i = 0; i < ul.childNodes.length; i++) {
+	    var li = $(ul.childNodes[i]);
+	    if (li.nodeName =='LI') {
+	       li.observe('click', this.on_menu_click.bind(this));
+	       var item = li.down('a');
+	       var id = base_id + '.' + i;
+	       item.setAttribute('id', id);
+	       // Note: tabindex makes the items unroutable when ARIA is not correctly supported.
+	       item.setAttribute('tabindex', '-1');
+	       //item.setAttribute('title', item.innerHTML);
+	       //item.setAttribute('role', 'menuitem');
+	       if (item.hasClassName('current'))
+		  this.menu.setAttribute('aria-activedescendant', id);
+	       var prev = (items.length == 0 ? null : items[items.length-1]);
+	       var map = {};
+	       map[this.CMD_PARENT] = parent;
+	       map[this.CMD_CHILD] = null;
+	       map[this.CMD_PREV] = prev;
+	       map[this.CMD_NEXT] = null;
+	       item._menu_navigation_target = map;
+	       if (prev != null)
+		  prev._menu_navigation_target[this.CMD_NEXT] = item;
+	       if (parent != null && items.length == 0)
+		  parent._menu_navigation_target[this.CMD_CHILD] = item;
+	       item.onkeydown = this.on_menu_keydown.bind(this);
+	       items[items.length] = item;
+	       // Append hierarchical submenu if found.
+	       var submenu = li.down('ul');
+	       if (submenu != null) {
+		  if (li.hasClassName('foldable')) {
+		     var hidden = (li.hasClassName('folded')?'true':'false');
+		     submenu.setAttribute('aria-hidden', hidden);
+		     // ? submenu.setAttribute('aria-expanded', hidden);
+		  }
+		  this.init_menu(submenu, item);
+	       }
+	    }
+	 }
+	 return items;
       },
 
       on_key_down: function (event) {
@@ -142,7 +154,7 @@ var WikingHandler = Class.create({
 	 // handled in onkeydown.
 	 var cmd = this.KEYMAP[this.event_key(event)];
 	 if (cmd == this.CMD_MENU) {
-	    this.set_focus(this.active_menu_item);
+	    this.set_focus($(this.menu.getAttribute('aria-activedescendant')));
 	    return false;
 	 }
 	 return true;
@@ -172,6 +184,13 @@ var WikingHandler = Class.create({
 		  p2.addClassName('folded');
 		  p2.down('ul').setAttribute('aria-hidden', 'true');
 	       }
+	       // This is commented out since it seems better not to change the
+	       // active item item to change during menu navigation.  It is
+	       // only changed when the item is activated and the page
+	       // reloaded.
+	       //element.setAttribute('tabindex', '-1');
+	       //target.setAttribute('tabindex', '0');
+	       //this.menu.setAttribute('aria-activedescendant', target.getAttribute('id'));
 	       this.set_focus(target);
 	    }
 	 }

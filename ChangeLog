@@ -55,6 +55,11 @@
 2010-01-11  Tomas Cerha  <cerha@brailcom.org>
 
 	* resources/scripts/wiking.js:
+	Added support for `aria-owns' and `aria-activedescendant'.
+
+2010-01-11  Tomas Cerha  <cerha@brailcom.org>
+
+	* resources/scripts/wiking.js:
 	Handle menu item activation explicitly.
 
 2010-01-11  Tomas Cerha  <cerha@brailcom.org>
