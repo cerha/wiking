@@ -52,6 +52,13 @@
 	* resources/css/default.css:
 	Allow entering the registration code by hand.
 
+2010-01-12  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/export.py:
+	* resources/css/layout.css:
+	* resources/scripts/wiking.js:
+	Added expand/collapse all button.
+
 2010-01-11  Tomas Cerha  <cerha@brailcom.org>
 
 	* resources/scripts/wiking.js:

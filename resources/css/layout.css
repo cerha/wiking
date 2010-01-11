@@ -190,6 +190,25 @@ a:link:hover, a:visited:hover { color: $color.link-hover; }
 #submenu li.folded ul {
     display: none;
 }
+#toggle-menu-expansion-button {
+    padding: 0;
+    margin: 0;
+    border: none;
+    position: absolute;
+    top: 0.2em;
+    right: 0.2em;
+    background: transparent;
+    background-image: url(/_resources/images/folder-closed.png);
+    background-position: center;
+    background-repeat: no-repeat;
+    width: 1em;
+    height: 1em;
+    
+}
+#toggle-menu-expansion-button.expanded {
+    background-image: url(/_resources/images/folder-open.png);
+}
+
 /* This makes panels to skip in Firefox when page content is too wide...
 #submenu li a:hover {
     outline: solid 1px $color.heading-line;

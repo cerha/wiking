@@ -47,12 +47,16 @@ var WikingHandler = Class.create({
 	    'main':    'main',
 	    'bottom':  'contentinfo'
 	 };
-	 // Other (private) attributes. 
+	 // Other (private) attributes.
 	 this.menu = null;
+	 this.foldable_submenu = false;
+	 this.menu_expanded = false;
+	 this.toggle_menu_expansion_button = null;
       },
 
-      init: function () {
+      init: function (translations) {
 	 // Initialize the loaded page (called from document body onload event).
+	 this.translations = translations;
 	 this.init_landmarks();
 	 this.init_menus();
 	 // Set up global key handler.
@@ -61,6 +65,14 @@ var WikingHandler = Class.create({
 	 // Move focus to the main content if there is no anchor in the current URL.
 	 if (window.location.href.match("#") == null)
 	    this.set_focus($('main-heading'));
+      },
+
+      gettext: function(text) {
+	 translation = this.translations[text];
+	 if (typeof(translation) != 'undefined')
+	    return translation;
+	 else
+	    return text;
       },
 
       init_landmarks: function () {
@@ -99,7 +111,13 @@ var WikingHandler = Class.create({
 	       menu.setAttribute('aria-activedescendant', active.getAttribute('id'));
 	    }
 	    active.setAttribute('tabindex', '0');
-	    
+	    if (this.foldable_submenu) {
+	       var b = new Element('button',
+				   {id: 'toggle-menu-expansion-button',
+				    onclick: 'return wiking_handler.toggle_menu_expansion();',
+				    title: this.gettext("Expand all")});
+	       submenu.down('ul').insert({after: b});
+	    }
 	 }
       },
 
@@ -140,6 +158,7 @@ var WikingHandler = Class.create({
 		     var hidden = (li.hasClassName('folded')?'true':'false');
 		     submenu.setAttribute('aria-hidden', hidden);
 		     // ? submenu.setAttribute('aria-expanded', hidden);
+		     this.foldable_submenu = true;
 		  }
 		  this.init_menu(submenu, item);
 	       }
@@ -148,13 +167,64 @@ var WikingHandler = Class.create({
 	 return items;
       },
 
+      toggle_menu_expansion: function () {
+	 this.toggle_item_expansion(this.menu.down('ul').down('a'));
+	 //this.set_focus(item);
+	 this.menu_expanded = !this.menu_expanded;
+	 var b = $('toggle-menu-expansion-button');
+	 if (this.menu_expanded) {
+	    b.addClassName('expanded');
+	    b.setAttribute('title', this.gettext("Collapse all"));
+	 } else {
+	    b.removeClassName('expanded');
+	    b.setAttribute('title', this.gettext("Expand all"));
+	 }
+      },
+
+      toggle_item_expansion: function (item) {
+	 if (item != null) {
+	    var parent = item.parentNode;
+	    if (this.menu_expanded)
+	       this.collapse_item(item);
+	    else
+	       this.expand_item(item);
+	    var map = item._menu_navigation_target;
+	    this.toggle_item_expansion(map[this.CMD_CHILD]);
+	    this.toggle_item_expansion(map[this.CMD_NEXT]);
+
+	 }
+      },
+
+      expand_item: function (item, recourse) {
+	 var li = item.parentNode;
+	 if (li.hasClassName('folded')) {
+	    li.removeClassName('folded');
+	    li.down('ul').setAttribute('aria-hidden', 'false');
+	 }
+	 if (recourse) {
+	    var parent = item._menu_navigation_target[this.CMD_PARENT];
+	    if (parent != null)
+	       this.expand_item(parent, true);
+	 }
+      },
+
+      collapse_item: function (item) {
+	 var li = item.parentNode;
+	 if (li.hasClassName('foldable') && !li.hasClassName('folded')) {
+	    li.addClassName('folded');
+	    li.down('ul').setAttribute('aria-hidden', 'true');
+	 }
+      },
+
       on_key_down: function (event) {
 	 // Handle global Wiking keyboard shortcuts.
 	 // Not all browsers invoke onkeypress for arrow keys, so keys must be
 	 // handled in onkeydown.
 	 var cmd = this.KEYMAP[this.event_key(event)];
 	 if (cmd == this.CMD_MENU) {
-	    this.set_focus($(this.menu.getAttribute('aria-activedescendant')));
+	    var item = $(this.menu.getAttribute('aria-activedescendant'));
+	    this.expand_item(item, true);
+	    this.set_focus(item);
 	    return false;
 	 }
 	 return true;
@@ -173,17 +243,10 @@ var WikingHandler = Class.create({
 	 } else {
 	    var target = element._menu_navigation_target[cmd];
 	    if (target != null) {
-	       var p1 = element.parentNode;
-	       var p2 = target.parentNode;
-	       if (cmd == this.CMD_CHILD && p1.hasClassName('folded')) {
-		  p1.removeClassName('folded');
-		  p1.down('ul').setAttribute('aria-hidden', 'false');
-	       }
-	       if (cmd == this.CMD_PARENT &&
-		   p2.hasClassName('foldable') && !p2.hasClassName('folded')) {
-		  p2.addClassName('folded');
-		  p2.down('ul').setAttribute('aria-hidden', 'true');
-	       }
+	       if (cmd == this.CMD_CHILD)
+		  this.expand_item(element);
+	       else if (cmd == this.CMD_PARENT)
+		  this.collapse_item(target);
 	       // This is commented out since it seems better not to change the
 	       // active item item to change during menu navigation.  It is
 	       // only changed when the item is activated and the page
@@ -206,17 +269,12 @@ var WikingHandler = Class.create({
 	    // SPAN is needed to make folding work across browsers (particulartly
 	    // MSIE).
 	    var span = element.down('span');
+	    var item = span.parentNode;
 	    if (event.pointerX() < span.cumulativeOffset().left) {
-	       var li = span.parentNode.parentNode;
-	       if (li.hasClassName('foldable')) {
-		  if (li.hasClassName('folded')) {
-		     li.removeClassName('folded');
-		     li.down('ul').setAttribute('aria-hidden', 'false');
-		  } else {
-		     li.addClassName('folded');
-		     li.down('ul').setAttribute('aria-hidden', 'true');
-		  }
-	       }
+	       if (item.parentNode.hasClassName('folded'))
+		  this.expand_item(item);
+	       else
+		  this.collapse_item(item);
 	       event.stop();
 	    }
 	 }
@@ -268,8 +326,3 @@ var WikingHandler = Class.create({
 
 // Instantiate the handler and register calling `init()' on page load.
 var wiking_handler = new WikingHandler();
-if (window.addEventListener)
-   window.addEventListener("load", wiking_handler.init.bind(wiking_handler), false);
-else
-   window.attachEvent('onload', wiking_handler.init.bind(wiking_handler));
-

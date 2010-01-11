@@ -1,4 +1,4 @@
-# Copyright (C) 2006-2009 Brailcom, o.p.s.
+# Copyright (C) 2006-2010 Brailcom, o.p.s.
 # Author: Tomas Cerha <cerha@brailcom.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -95,8 +95,11 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         return self._UNSAFE_CHARS.sub('-', id)
 
     def _body_attr(self, context, **kwargs):
-        layout = context.node().layout() or self.Layout.DEFAULT
-        return super(Exporter, self)._body_attr(context, cls=layout+'-layout', **kwargs)
+        translations = {"Expand all": context.translate(_("Expand all")),
+                        "Collapse all": context.translate(_("Collapse all"))}
+        onload = context.generator().js_call('wiking_handler.init', translations)
+        cls = (context.node().layout() or self.Layout.DEFAULT) + '-layout'
+        return super(Exporter, self)._body_attr(context, onload=onload, cls=cls, **kwargs)
 
     def _body_content(self, context):
         if context.node().layout() == self.Layout.FRAME:
