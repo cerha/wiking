@@ -100,6 +100,7 @@ var WikingHandler = Class.create({
 	       // Add submenu as a child menu of the current main menu item.
 	       this.init_menu(submenu.down('ul'), active);
 	       menu.setAttribute('aria-owns', 'submenu');
+	       submenu.setAttribute('role', 'application');
 	    }
 	    //var map = menu.down('map');
 	    menu.setAttribute('role', 'application');

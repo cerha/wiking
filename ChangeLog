@@ -54,6 +54,11 @@
 
 2010-01-12  Tomas Cerha  <cerha@brailcom.org>
 
+	* resources/scripts/wiking.js:
+	Set application role also to submenu.
+
+2010-01-12  Tomas Cerha  <cerha@brailcom.org>
+
 	* translations/wiking.cs.po:
 	Translations updated.
 
