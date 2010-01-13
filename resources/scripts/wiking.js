@@ -114,9 +114,9 @@ var WikingHandler = Class.create({
 	    if (this.foldable_submenu) {
 	       var b = new Element('button',
 				   {id: 'toggle-menu-expansion-button',
-				    onclick: 'return wiking_handler.toggle_menu_expansion();',
 				    title: this.gettext("Expand all")});
 	       submenu.down('ul').insert({after: b});
+	       b.observe('click', this.toggle_menu_expansion.bind(this));
 	    }
 	    if (submenu != null) {
 	       var panel = submenu.down('.menu-panel');
@@ -175,7 +175,7 @@ var WikingHandler = Class.create({
 	 return items;
       },
 
-      toggle_menu_expansion: function () {
+      toggle_menu_expansion: function (event) {
 	 this.toggle_item_expansion(this.menu.down('ul').down('a'));
 	 //this.set_focus(item);
 	 this.menu_expanded = !this.menu_expanded;

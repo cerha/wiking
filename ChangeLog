@@ -55,6 +55,11 @@
 2010-01-13  Tomas Cerha  <cerha@brailcom.org>
 
 	* resources/scripts/wiking.js:
+	Use prototyle.js key event handling also for "Expand all" button.
+
+2010-01-13  Tomas Cerha  <cerha@brailcom.org>
+
+	* resources/scripts/wiking.js:
 	Use prototyle.js key event handling to prevent cross browser incompatibilities.
 
 2010-01-13  Tomas Cerha  <cerha@brailcom.org>
