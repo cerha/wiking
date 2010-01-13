@@ -67,6 +67,7 @@ var WikingHandler = Class.create({
       },
 
       gettext: function(text) {
+	 // Translations are passed to JavaScript from python when init() is called.
 	 translation = this.translations[text];
 	 if (typeof(translation) != 'undefined')
 	    return translation;
@@ -114,7 +115,8 @@ var WikingHandler = Class.create({
 	    if (this.foldable_submenu) {
 	       var b = new Element('button',
 				   {id: 'toggle-menu-expansion-button',
-				    title: this.gettext("Expand/collapse all menus")});
+				    title: this.gettext("Expand/collapse complete menu hierarchy")}
+				   );
 	       submenu.down('ul').insert({after: b});
 	       b.observe('click', this.toggle_menu_expansion.bind(this));
 	    }

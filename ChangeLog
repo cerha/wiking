@@ -56,6 +56,12 @@
 
 	* lib/wiking/export.py:
 	* resources/scripts/wiking.js:
+	Further improved "Expand all" button label.
+
+2010-01-13  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/export.py:
+	* resources/scripts/wiking.js:
 	Improved "Expand all" button label.
 
 2010-01-13  Tomas Cerha  <cerha@brailcom.org>
