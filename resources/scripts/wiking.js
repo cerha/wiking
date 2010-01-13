@@ -119,16 +119,22 @@ var WikingHandler = Class.create({
 				    title: this.gettext("Expand all")});
 	       submenu.down('ul').insert({after: b});
 	    }
+	    if (submenu != null) {
+	       var panel = submenu.down('.menu-panel');
+	       if (panel != null)
+		  panel.setAttribute('role', 'tree');
+	    }
 	 }
       },
 
       init_menu: function (ul, parent) {
-	 //ul.setAttribute('role', 'menu');
+	 ul.setAttribute('role', 'group');
 	 var items = [];
 	 var base_id = (parent != null ? parent.getAttribute('id') : 'wiking-menu');
 	 for (var i = 0; i < ul.childNodes.length; i++) {
 	    var li = $(ul.childNodes[i]);
 	    if (li.nodeName =='LI') {
+	       li.setAttribute('role', 'presentation');
 	       li.observe('click', this.on_menu_click.bind(this));
 	       var item = li.down('a');
 	       var span = li.down('span');
@@ -137,9 +143,11 @@ var WikingHandler = Class.create({
 	       // Note: tabindex makes the items unroutable when ARIA is not correctly supported.
 	       item.setAttribute('tabindex', '-1');
 	       //item.setAttribute('title', item.innerHTML);
-	       //item.setAttribute('role', 'menuitem');
+	       item.setAttribute('role', 'treeitem');
 	       if (item.hasClassName('current'))
 		  this.menu.setAttribute('aria-activedescendant', id);
+	       if (span != null)
+		  span.setAttribute('role', 'presentation');
 	       var prev = (items.length == 0 ? null : items[items.length-1]);
 	       var map = {};
 	       item._wiking_menu_prev = prev;
