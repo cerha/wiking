@@ -216,7 +216,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         if links:
             title = g.link(_("Main navigation")+':', None, name='main-navigation', hotkey="3")
             return g.map((g.h(title, 3), g.list(links)),
-                         name='menu-map', title=_("Main navigation"))
+                         id='menu-map', name='menu-map', title=_("Main navigation"))
         else:
             return None
 
@@ -278,7 +278,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         return g.map(g.div((g.h(g.link(heading, None, name=name, hotkey="3"), 3),
                             menu(context.node().top())),
                            cls='menu-panel'),
-                     name='submenu-map', title=title)
+                     id='submenu-map', name='submenu-map', title=title)
     
     def _panels(self, context):
         g = self._generator

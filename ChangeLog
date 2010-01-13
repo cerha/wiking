@@ -54,6 +54,12 @@
 
 2010-01-13  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/export.py:
+	* resources/scripts/wiking.js:
+	Fix menu and submenu landmarks.
+
+2010-01-13  Tomas Cerha  <cerha@brailcom.org>
+
 	* resources/scripts/wiking.js:
 	Tree menu keyboard shortcuts redesigned according to standard tree widget behavior.
 

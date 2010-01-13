@@ -41,11 +41,11 @@ var WikingHandler = Class.create({
 	 };
 	 // Landmark by HTML element id.
 	 this.LANDMARKS = {
-	    'top':     'banner',
-	    'menu':    'navigation',
-	    'submenu': 'navigation',
-	    'main':    'main',
-	    'bottom':  'contentinfo'
+	    'top':         'banner',
+	    'menu-map':    'navigation',
+	    'submenu-map': 'navigation',
+	    'main':        'main',
+	    'bottom':      'contentinfo'
 	 };
 	 // Other (private) attributes.
 	 this.menu = null;
