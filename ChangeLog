@@ -54,6 +54,11 @@
 
 2010-01-13  Tomas Cerha  <cerha@brailcom.org>
 
+	* resources/scripts/wiking.js:
+	Added keys for tree menu navigation on the same level.
+
+2010-01-13  Tomas Cerha  <cerha@brailcom.org>
+
 	* translations/wiking.cs.po:
 	* translations/wiking.de.po:
 	* translations/wiking.es.po:

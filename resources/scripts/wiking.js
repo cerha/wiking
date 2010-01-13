@@ -23,15 +23,19 @@ var WikingHandler = Class.create({
 	 // Definition of available commands.
 	 this.CMD_EXPAND = 'expand'; // Unfold the subtree.
 	 this.CMD_COLLAPSE = 'collapse';  // Fold the subtree.
-	 this.CMD_PREV = 'prev'; // Go to the next item.
-	 this.CMD_NEXT = 'next'; // Go to the previous item.
+	 this.CMD_UP = 'up'; // Go to the next item.
+	 this.CMD_DOWN = 'down'; // Go to the previous item.
+	 this.CMD_PREV = 'prev'; // Go to the next item at the same level of hierarchy.
+	 this.CMD_NEXT = 'next'; // Go to the previous item at the same level of hierarchy.
 	 this.CMD_MENU = 'menu';
 	 this.CMD_ACTIVATE = 'activate';
 	 this.CMD_QUIT = 'quit';
 	 // Menu navigation keyboard shortcuts mapping to available command identifiers.
 	 this.KEYMAP = {
-	    'Up':	    this.CMD_PREV,
-	    'Down':         this.CMD_NEXT,
+	    'Up':	    this.CMD_UP,
+	    'Down':         this.CMD_DOWN,
+	    'Shift-Up':	    this.CMD_PREV,
+	    'Shift-Down':   this.CMD_NEXT,
 	    'Right':        this.CMD_EXPAND,
 	    'Left':         this.CMD_COLLAPSE,
 	    'Ctrl-Shift-m': this.CMD_MENU,
@@ -249,7 +253,7 @@ var WikingHandler = Class.create({
 	 var item = event.element();
 	 var key = this.event_key(event);
 	 var cmd = this.KEYMAP[key];
-	 if (cmd == this.CMD_PREV) {
+	 if (cmd == this.CMD_UP) {
 	    var target = null;
 	    if (item._wiking_menu_prev != null) {
 	       target = item._wiking_menu_prev;
@@ -260,13 +264,19 @@ var WikingHandler = Class.create({
 	    }
 	    this.set_focus(target);
 	    event.stop();
-	 } else if (cmd == this.CMD_NEXT) {
+	 } else if (cmd == this.CMD_DOWN) {
 	    var target = null;
 	    if (item._wiking_submenu != null && !item.parentNode.hasClassName('folded'))
 	       target = item._wiking_submenu[0];
 	    else
 	       target = this.next_item(item);
 	    this.set_focus(target);
+	    event.stop();
+	 } else if (cmd == this.CMD_PREV) {
+	    this.set_focus(item._wiking_menu_prev);
+	    event.stop();
+	 } else if (cmd == this.CMD_NEXT) {
+	    this.set_focus(item._wiking_menu_next);
 	    event.stop();
 	 } else if (cmd == this.CMD_EXPAND) {
 	    if (!this.expand_item(item) && item._wiking_submenu != null)
