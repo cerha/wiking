@@ -194,17 +194,16 @@ a:link:hover, a:visited:hover { color: $color.link-hover; }
     padding: 0;
     margin: 0;
     border: none;
+    width: 9px;
+    height: 9px;
     position: absolute;
-    top: 0.2em;
-    right: 0.2em;
-    background: transparent;
+    top: 0.45em;
+    right: 0.3em;
     background-image: url(/_resources/images/folder-closed.png);
     background-position: center;
     background-repeat: no-repeat;
-    width: 1em;
-    height: 1em;
-    
 }
+* html #toggle-menu-expansion-button { right: 0.8em; } /* MSIE hack */
 #toggle-menu-expansion-button.expanded {
     background-image: url(/_resources/images/folder-open.png);
 }

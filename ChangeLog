@@ -54,6 +54,11 @@
 
 2010-01-13  Tomas Cerha  <cerha@brailcom.org>
 
+	* resources/css/layout.css:
+	Tweak "Expand all" buton appearance and apply a MSIE specific hack.
+
+2010-01-13  Tomas Cerha  <cerha@brailcom.org>
+
 	* resources/scripts/wiking.js:
 	Use prototyle.js key event handling also for "Expand all" button.
 
