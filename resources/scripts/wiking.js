@@ -64,7 +64,7 @@ var WikingHandler = Class.create({
 	 // Initialize the loaded page (called from document body onload event).
 	 this.translations = translations;
 	 this.init_landmarks();
-	 this.init_menus();
+	 this.init_menu();
 	 // Set up global key handler.
 	 document.observe('keydown', this.on_keydown.bind(this));
 	 // Move focus to the main content if there is no anchor in the current URL.
@@ -90,51 +90,33 @@ var WikingHandler = Class.create({
 	 }
       },
 
-      init_menus: function () {
-	 // Initialize the menus -- assign ARIA roles to HTML tags and bind
-	 // keyboard event handling to support hierarchical keyboard traversal.
-	 var menu = $('menu');
-	 var submenu = $('submenu');
+      init_menu: function () {
+	 // Initialize the hierarchical menu -- assign ARIA roles to HTML tags
+	 // and bind keyboard event handling to support keyboard menu traversal.
+	 var menu = $('submenu');
 	 if (menu == null)
-	    // If the main menu is not present, add submenu as the root menu.
-	    menu = $('submenu');
-	 if (menu != null) {
-	    this.menu = menu;
-	    var items = this.init_menu(menu.down('ul'), null);
-	    var active = $(menu.getAttribute('aria-activedescendant'));
-	    if (menu != submenu && submenu != null && active != null) {
-	       // Add submenu as a child menu of the current main menu item.
-	       active._wiking_submenu = this.init_menu(submenu.down('ul'), active);
-	       menu.setAttribute('aria-owns', 'submenu');
-	       submenu.setAttribute('role', 'application');
-	    }
-	    //var map = menu.down('map');
-	    menu.setAttribute('role', 'application');
-	    //menu.setAttribute('tabindex', '0');
-	    // If a submenu item is active, the active item may now be different from above.
-	    var active = $(menu.getAttribute('aria-activedescendant'));
-	    if (active == null && items.length != 0) {
-	       active = items[0];
-	       menu.setAttribute('aria-activedescendant', active.getAttribute('id'));
-	    }
-	    active.setAttribute('tabindex', '0');
-	    if (this.foldable_submenu) {
-	       var b = new Element('button',
-				   {id: 'toggle-menu-expansion-button',
-				    title: this.gettext("Expand/collapse complete menu hierarchy")}
-				   );
-	       submenu.down('ul').insert({after: b});
-	       b.observe('click', this.toggle_menu_expansion.bind(this));
-	    }
-	    if (submenu != null) {
-	       var panel = submenu.down('.menu-panel');
-	       if (panel != null)
-		  panel.setAttribute('role', 'tree');
-	    }
+	    return;
+	 this.menu = menu;
+	 menu.setAttribute('role', 'application');
+	 menu.down('.menu-panel').setAttribute('role', 'tree');
+	 var ul = menu.down('ul');
+	 var items = this.init_menu_items(ul, null);
+	 var active = $(menu.getAttribute('aria-activedescendant'));
+	 if (active == null && items.length != 0) {
+	    active = items[0];
+	    menu.setAttribute('aria-activedescendant', active.getAttribute('id'));
+	 }
+	 active.setAttribute('tabindex', '0');
+	 if (this.foldable_submenu) {
+	    var b = new Element('button',
+				{id: 'toggle-menu-expansion-button',
+				 title: this.gettext("Expand/collapse complete menu hierarchy")});
+	    ul.insert({after: b});
+	    b.observe('click', this.toggle_menu_expansion.bind(this));
 	 }
       },
 
-      init_menu: function (ul, parent) {
+      init_menu_items: function (ul, parent) {
 	 ul.setAttribute('role', 'group');
 	 var items = [];
 	 var base_id = (parent != null ? parent.getAttribute('id') : 'wiking-menu');
@@ -174,7 +156,7 @@ var WikingHandler = Class.create({
 		     item.setAttribute('aria-expanded', expanded);
 		     this.foldable_submenu = true;
 		  }
-		  item._wiking_submenu = this.init_menu(submenu, item);
+		  item._wiking_submenu = this.init_menu_items(submenu, item);
 	       } else {
 		  item._wiking_submenu = null;
 	       }

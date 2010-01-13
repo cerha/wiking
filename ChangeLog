@@ -55,6 +55,11 @@
 2010-01-13  Tomas Cerha  <cerha@brailcom.org>
 
 	* resources/scripts/wiking.js:
+	Don't artificially mix main menu and submenu -- only care about the tree menu for now.
+
+2010-01-13  Tomas Cerha  <cerha@brailcom.org>
+
+	* resources/scripts/wiking.js:
 	Allow also Shift-Right/Shift-Left for tree expansion/collapsing.
 
 2010-01-13  Tomas Cerha  <cerha@brailcom.org>
