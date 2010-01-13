@@ -163,7 +163,8 @@ var WikingHandler = Class.create({
 		  if (li.hasClassName('foldable')) {
 		     var hidden = (li.hasClassName('folded') ? 'true' : 'false');
 		     submenu.setAttribute('aria-hidden', hidden);
-		     // ? submenu.setAttribute('aria-expanded', hidden);
+		     var expanded = (li.hasClassName('folded') ? 'false' : 'true' );
+		     item.setAttribute('aria-expanded', expanded);
 		     this.foldable_submenu = true;
 		  }
 		  item._wiking_submenu = this.init_menu(submenu, item);
@@ -208,6 +209,7 @@ var WikingHandler = Class.create({
 	 if (li.hasClassName('folded')) {
 	    li.removeClassName('folded');
 	    li.down('ul').setAttribute('aria-hidden', 'false');
+	    item.setAttribute('aria-expanded', 'true');
 	    expanded = true;
 	 }
 	 if (recourse && item._wiking_menu_parent != null)
@@ -220,6 +222,7 @@ var WikingHandler = Class.create({
 	 if (li.hasClassName('foldable') && !li.hasClassName('folded')) {
 	    li.addClassName('folded');
 	    li.down('ul').setAttribute('aria-hidden', 'true');
+	    item.setAttribute('aria-expanded', 'false');
 	    return true;
 	 }
 	 return false;

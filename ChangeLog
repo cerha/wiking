@@ -55,6 +55,11 @@
 2010-01-13  Tomas Cerha  <cerha@brailcom.org>
 
 	* resources/scripts/wiking.js:
+	Handle the `aria-expanded' state on tree items.
+
+2010-01-13  Tomas Cerha  <cerha@brailcom.org>
+
+	* resources/scripts/wiking.js:
 	Assign ARIA tree widget roles to all tree menu elements.
 
 2010-01-13  Tomas Cerha  <cerha@brailcom.org>
