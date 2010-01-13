@@ -52,6 +52,11 @@
 	* resources/css/default.css:
 	Allow entering the registration code by hand.
 
+2010-01-13  Tomas Cerha  <cerha@brailcom.org>
+
+	* resources/scripts/wiking.js:
+	Tree menu keyboard shortcuts redesigned according to standard tree widget behavior.
+
 2010-01-12  Tomas Cerha  <cerha@brailcom.org>
 
 	* resources/scripts/wiking.js:

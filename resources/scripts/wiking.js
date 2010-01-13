@@ -21,10 +21,10 @@ var WikingHandler = Class.create({
       initialize: function () {
 	 // WikingHandler constructor (called when the script is loaded).
 	 // Definition of available commands.
-	 this.CMD_PARENT = 'parent'; // Go up in the hierarchy.
-	 this.CMD_CHILD	= 'child';  // Go down in the hierarchy.
-	 this.CMD_PREV = 'prev'; // Go to the next item at the same level.
-	 this.CMD_NEXT = 'next'; // Go to the previous item at the same level.
+	 this.CMD_EXPAND = 'expand'; // Unfold the subtree.
+	 this.CMD_COLLAPSE = 'collapse';  // Fold the subtree.
+	 this.CMD_PREV = 'prev'; // Go to the next item.
+	 this.CMD_NEXT = 'next'; // Go to the previous item.
 	 this.CMD_MENU = 'menu';
 	 this.CMD_ACTIVATE = 'activate';
 	 this.CMD_QUIT = 'quit';
@@ -32,8 +32,8 @@ var WikingHandler = Class.create({
 	 this.KEYMAP = {
 	    'Up':	    this.CMD_PREV,
 	    'Down':         this.CMD_NEXT,
-	    'Left':         this.CMD_PARENT,
-	    'Right':        this.CMD_CHILD,
+	    'Right':        this.CMD_EXPAND,
+	    'Left':         this.CMD_COLLAPSE,
 	    'Ctrl-Shift-m': this.CMD_MENU,
 	    'Escape':	    this.CMD_QUIT,
 	    'Enter':	    this.CMD_ACTIVATE,
@@ -98,7 +98,7 @@ var WikingHandler = Class.create({
 	    var active = $(menu.getAttribute('aria-activedescendant'));
 	    if (menu != submenu && submenu != null && active != null) {
 	       // Add submenu as a child menu of the current main menu item.
-	       this.init_menu(submenu.down('ul'), active);
+	       active._wiking_submenu = this.init_menu(submenu.down('ul'), active);
 	       menu.setAttribute('aria-owns', 'submenu');
 	       submenu.setAttribute('role', 'application');
 	    }
@@ -131,6 +131,7 @@ var WikingHandler = Class.create({
 	    if (li.nodeName =='LI') {
 	       li.observe('click', this.on_menu_click.bind(this));
 	       var item = li.down('a');
+	       var span = li.down('span');
 	       var id = base_id + '.' + i;
 	       item.setAttribute('id', id);
 	       // Note: tabindex makes the items unroutable when ARIA is not correctly supported.
@@ -141,27 +142,25 @@ var WikingHandler = Class.create({
 		  this.menu.setAttribute('aria-activedescendant', id);
 	       var prev = (items.length == 0 ? null : items[items.length-1]);
 	       var map = {};
-	       map[this.CMD_PARENT] = parent;
-	       map[this.CMD_CHILD] = null;
-	       map[this.CMD_PREV] = prev;
-	       map[this.CMD_NEXT] = null;
-	       item._menu_navigation_target = map;
+	       item._wiking_menu_prev = prev;
+	       item._wiking_menu_next = null;
+	       item._wiking_menu_parent = parent;
 	       if (prev != null)
-		  prev._menu_navigation_target[this.CMD_NEXT] = item;
-	       if (parent != null && items.length == 0)
-		  parent._menu_navigation_target[this.CMD_CHILD] = item;
+		  prev._wiking_menu_next = item;
 	       item.onkeydown = this.on_menu_keydown.bind(this);
 	       items[items.length] = item;
 	       // Append hierarchical submenu if found.
 	       var submenu = li.down('ul');
 	       if (submenu != null) {
 		  if (li.hasClassName('foldable')) {
-		     var hidden = (li.hasClassName('folded')?'true':'false');
+		     var hidden = (li.hasClassName('folded') ? 'true' : 'false');
 		     submenu.setAttribute('aria-hidden', hidden);
 		     // ? submenu.setAttribute('aria-expanded', hidden);
 		     this.foldable_submenu = true;
 		  }
-		  this.init_menu(submenu, item);
+		  item._wiking_submenu = this.init_menu(submenu, item);
+	       } else {
+		  item._wiking_submenu = null;
 	       }
 	    }
 	 }
@@ -189,24 +188,23 @@ var WikingHandler = Class.create({
 	       this.collapse_item(item);
 	    else
 	       this.expand_item(item);
-	    var map = item._menu_navigation_target;
-	    this.toggle_item_expansion(map[this.CMD_CHILD]);
-	    this.toggle_item_expansion(map[this.CMD_NEXT]);
-
+	    if (item._wiking_submenu != null)
+	       this.toggle_item_expansion(item._wiking_submenu[0]);
+	    this.toggle_item_expansion(item._wiking_menu_next);
 	 }
       },
 
       expand_item: function (item, recourse) {
 	 var li = item.parentNode;
+	 var expanded = false;
 	 if (li.hasClassName('folded')) {
 	    li.removeClassName('folded');
 	    li.down('ul').setAttribute('aria-hidden', 'false');
+	    expanded = true;
 	 }
-	 if (recourse) {
-	    var parent = item._menu_navigation_target[this.CMD_PARENT];
-	    if (parent != null)
-	       this.expand_item(parent, true);
-	 }
+	 if (recourse && item._wiking_menu_parent != null)
+	    this.expand_item(item._wiking_menu_parent, true);
+	 return expanded;
       },
 
       collapse_item: function (item) {
@@ -214,7 +212,18 @@ var WikingHandler = Class.create({
 	 if (li.hasClassName('foldable') && !li.hasClassName('folded')) {
 	    li.addClassName('folded');
 	    li.down('ul').setAttribute('aria-hidden', 'true');
+	    return true;
 	 }
+	 return false;
+      },
+
+      next_item: function (item) {
+	 // Recursively find the next item in sequence by traversing the hierarchy.
+	 if (item._wiking_menu_next != null)
+	    next = item._wiking_menu_next;
+	 else if (item._wiking_menu_parent != null)
+	    next = this.next_item(item._wiking_menu_parent);
+	 return next;
       },
 
       on_key_down: function (event) {
@@ -232,33 +241,44 @@ var WikingHandler = Class.create({
       },
       
       on_menu_keydown: function (event) {
-	 var element = event.element();
+	 var item = event.element();
 	 var key = this.event_key(event);
 	 var cmd = this.KEYMAP[key];
-	 if (cmd == null)
-	    return true;
-	 if (cmd == this.CMD_QUIT) {
-	    this.set_focus($('main-heading'));
-	 } else if (cmd == this.CMD_ACTIVATE) {
-	    self.location = element.getAttribute('href');
-	 } else {
-	    var target = element._menu_navigation_target[cmd];
-	    if (target != null) {
-	       if (cmd == this.CMD_CHILD)
-		  this.expand_item(element);
-	       else if (cmd == this.CMD_PARENT)
-		  this.collapse_item(target);
-	       // This is commented out since it seems better not to change the
-	       // active item item to change during menu navigation.  It is
-	       // only changed when the item is activated and the page
-	       // reloaded.
-	       //element.setAttribute('tabindex', '-1');
-	       //target.setAttribute('tabindex', '0');
-	       //this.menu.setAttribute('aria-activedescendant', target.getAttribute('id'));
-	       this.set_focus(target);
+	 if (cmd == this.CMD_PREV) {
+	    var target = null;
+	    if (item._wiking_menu_prev != null) {
+	       target = item._wiking_menu_prev;
+	       if (target._wiking_submenu != null && !target.parentNode.hasClassName('folded'))
+		  target = target._wiking_submenu[target._wiking_submenu.length-1];
+	    } else {
+	       target = item._wiking_menu_parent;
 	    }
+	    this.set_focus(target);
+	    return false;
+	 } else if (cmd == this.CMD_NEXT) {
+	    var target = null;
+	    if (item._wiking_submenu != null && !item.parentNode.hasClassName('folded'))
+	       target = item._wiking_submenu[0];
+	    else
+	       target = this.next_item(item);
+	    this.set_focus(target);
+	    return false;
+	 } else if (cmd == this.CMD_EXPAND) {
+	    if (!this.expand_item(item) && item._wiking_submenu != null)
+	       this.set_focus(item._wiking_submenu[0]);
+	    return false;
+	 } else if (cmd == this.CMD_COLLAPSE) {
+	    if (!this.collapse_item(item))
+	       this.set_focus(item._wiking_menu_parent);
+	    return false;
+	 } else if (cmd == this.CMD_ACTIVATE) {
+	    self.location = item.getAttribute('href');
+	    return false;
+	 } else if (cmd == this.CMD_QUIT) {
+	    this.set_focus($('main-heading'));
+	    return false;
 	 }
-	 return false;
+	 return true;
       },
 
       on_menu_click: function (event) {
