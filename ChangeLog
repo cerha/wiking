@@ -54,6 +54,12 @@
 
 2010-01-13  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/export.py:
+	* resources/scripts/wiking.js:
+	Improved "Expand all" button label.
+
+2010-01-13  Tomas Cerha  <cerha@brailcom.org>
+
 	* resources/css/layout.css:
 	Tweak "Expand all" buton appearance and apply a MSIE specific hack.
 

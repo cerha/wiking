@@ -114,7 +114,7 @@ var WikingHandler = Class.create({
 	    if (this.foldable_submenu) {
 	       var b = new Element('button',
 				   {id: 'toggle-menu-expansion-button',
-				    title: this.gettext("Expand all")});
+				    title: this.gettext("Expand/collapse all menus")});
 	       submenu.down('ul').insert({after: b});
 	       b.observe('click', this.toggle_menu_expansion.bind(this));
 	    }
@@ -177,16 +177,12 @@ var WikingHandler = Class.create({
 
       toggle_menu_expansion: function (event) {
 	 this.toggle_item_expansion(this.menu.down('ul').down('a'));
-	 //this.set_focus(item);
 	 this.menu_expanded = !this.menu_expanded;
 	 var b = $('toggle-menu-expansion-button');
-	 if (this.menu_expanded) {
+	 if (this.menu_expanded)
 	    b.addClassName('expanded');
-	    b.setAttribute('title', this.gettext("Collapse all"));
-	 } else {
+	 else
 	    b.removeClassName('expanded');
-	    b.setAttribute('title', this.gettext("Expand all"));
-	 }
       },
 
       toggle_item_expansion: function (item) {

@@ -95,8 +95,8 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         return self._UNSAFE_CHARS.sub('-', id)
 
     def _body_attr(self, context, **kwargs):
-        translations = {"Expand all": context.translate(_("Expand all")),
-                        "Collapse all": context.translate(_("Collapse all"))}
+        tr = context.translate
+        translations = {"Expand/collapse all menus": tr(_("Expand/collapse all menus"))}
         onload = context.generator().js_call('wiking_handler.init', translations)
         cls = (context.node().layout() or self.Layout.DEFAULT) + '-layout'
         return super(Exporter, self)._body_attr(context, onload=onload, cls=cls, **kwargs)
