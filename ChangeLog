@@ -55,6 +55,11 @@
 2010-01-13  Tomas Cerha  <cerha@brailcom.org>
 
 	* resources/scripts/wiking.js:
+	Allow also Shift-Right/Shift-Left for tree expansion/collapsing.
+
+2010-01-13  Tomas Cerha  <cerha@brailcom.org>
+
+	* resources/scripts/wiking.js:
 	Added keys for tree menu navigation on the same level.
 
 2010-01-13  Tomas Cerha  <cerha@brailcom.org>

@@ -36,6 +36,8 @@ var WikingHandler = Class.create({
 	    'Down':         this.CMD_DOWN,
 	    'Shift-Up':	    this.CMD_PREV,
 	    'Shift-Down':   this.CMD_NEXT,
+	    'Shift-Right':  this.CMD_EXPAND,
+	    'Shift-Left':   this.CMD_COLLAPSE,
 	    'Right':        this.CMD_EXPAND,
 	    'Left':         this.CMD_COLLAPSE,
 	    'Ctrl-Shift-m': this.CMD_MENU,
