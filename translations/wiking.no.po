@@ -1,5 +1,5 @@
 # Wiking translations.
-# Copyright (C) 2006-2009 Brailcom, o.p.s.
+# Copyright (C) 2006-2010 Brailcom, o.p.s.
 # This file is distributed under the same license as the Wiking package.
 # Tomas Cerha <cerha@brailcom.org>, 2006.
 #
@@ -7,13 +7,189 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-12-14 23:36+0100\n"
-"PO-Revision-Date: 2009-09-08 16:37+0100\n"
+"POT-Creation-Date: 2010-01-13 14:08+0100\n"
+"PO-Revision-Date: 2010-01-19 16:40+0100\n"
 "Last-Translator: Petr Topiarz <topiarz@post.cz>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: ../lib/wiking/modules.py:408
+msgid "Enter your login name, please!"
+msgstr "Vennligst skriv inn ditt innloggingsnavn!"
+
+#: ../lib/wiking/modules.py:410
+msgid "Enter your password, please!"
+msgstr "Vennligst skriv inn ditt passord!"
+
+#: ../lib/wiking/modules.py:415
+msgid "Invalid login!"
+msgstr "Ugyldig innlogging!"
+
+#: ../lib/wiking/modules.py:513
+msgid "Searching"
+msgstr "Søker"
+
+#: ../lib/wiking/modules.py:514
+msgid "Search results"
+msgstr "Søkeresultat"
+
+#: ../lib/wiking/modules.py:515
+msgid "Given search term doesn't contain any searchable term."
+msgstr "Oppgitt søkeord inneholder ingen søkbare termer."
+
+#: ../lib/wiking/modules.py:519
+msgid "Search words:"
+msgstr "Søk ordene:"
+
+#: ../lib/wiking/modules.py:520
+msgid "Search"
+msgstr "Søk"
+
+#: ../lib/wiking/modules.py:576
+msgid "Nothing found."
+msgstr "Ingenting funnet."
+
+#: ../lib/wiking/modules.py:633
+msgid "The following modules were successfully reloaded:"
+msgstr "Følgende moduler lastet på nytt:"
+
+#: ../lib/wiking/modules.py:635
+msgid "Reload"
+msgstr "Last på nytt"
+
+#: ../lib/wiking/db.py:41
+msgid "This value already exists.  Enter a unique value."
+msgstr "Denne verdien finnes allerede. Angi en unik verdi."
+
+#. Translators: This is about an empty (not filled in) value in a web form. Field means a
+#. form field.
+#: ../lib/wiking/db.py:45
+msgid "Empty value.  This field is mandatory."
+msgstr "Tom verdi. Dette feltet er obligatorisk."
+
+#. Translators: Button label. Record as in `database record' (computer terminology).
+#: ../lib/wiking/db.py:49
+msgid "New record"
+msgstr "Ny fortegnelse"
+
+#. Translators: Button label. Record as in `database record' (computer terminology).
+#: ../lib/wiking/db.py:51
+msgid "Create a new record"
+msgstr "Opprett en ny fortegnelse"
+
+#. Translators: Button label. Meaning `Modify the database record' (computer terminology).
+#: ../lib/wiking/db.py:53
+msgid "Edit"
+msgstr "Rediger"
+
+#. Translators: Button label. Record as in `database record' (computer terminology).
+#: ../lib/wiking/db.py:55
+msgid "Modify the record"
+msgstr "Endre fortegnelsen"
+
+#. Translators: Button label. Meaning `Delete the database record' (computer terminology).
+#: ../lib/wiking/db.py:57
+msgid "Remove"
+msgstr "Fjern"
+
+#. Translators: Button label. Record as in `database record' (computer terminology).
+#: ../lib/wiking/db.py:59
+msgid "Remove the record permanently"
+msgstr "Fjern fortegnelsen for godt"
+
+#. Translators: Record as in `database record' (computer terminology).
+#: ../lib/wiking/db.py:61
+msgid "Please, confirm removing the record permanently."
+msgstr "Vennligst bekreft at du vil fjerne fortegnelsen for godt."
+
+#. Translators: Copy button label. Verb. Computer terminology and form common for a webpage button.
+#: ../lib/wiking/db.py:63
+msgid "Copy"
+msgstr "Kopier"
+
+#. Translators: Record as in `database record' (computer terminology).
+#: ../lib/wiking/db.py:65
+msgid "Create new record initialized by values of this record"
+msgstr "Opprett ny fortegnelse ut fra av denne fortegnelsens verdier"
+
+#. Translators: Button label.
+#: ../lib/wiking/db.py:67
+msgid "Back to list"
+msgstr "Tilbake til listen"
+
+#. Translators: Record as in `database record' (computer terminology).
+#: ../lib/wiking/db.py:69
+msgid "Back to the list of all records"
+msgstr "Tilbake til listen over alle fortegnelser."
+
+#. Translators: Record as in `database record' (computer terminology).
+#: ../lib/wiking/db.py:71
+msgid "New record was successfully inserted."
+msgstr "Ny fortegnelse ble satt inn."
+
+#. Translators: Record as in `database record' (computer terminology).
+#: ../lib/wiking/db.py:73
+msgid "The record was successfully updated."
+msgstr "Den nye fortegnelsen ble oppdatert."
+
+#. Translators: Record as in `database record' (computer terminology).
+#: ../lib/wiking/db.py:75
+msgid "The record was deleted."
+msgstr "Fortegnelsen ble fjernet."
+
+#: ../lib/wiking/db.py:264
+msgid "Invalid binding column value."
+msgstr "Ugyldig bindende kolonne verdi."
+
+#: ../lib/wiking/db.py:320
+msgid "Integrity check failed."
+msgstr "Integritets sjekk feilet."
+
+#. Translators: Back button label. Standard computer terminology.
+#: ../lib/wiking/db.py:973
+msgid "Back"
+msgstr "Tilbake"
+
+#. Translators: RSS channel is a computer idiom, see Wikipedia.
+#: ../lib/wiking/db.py:1056
+msgid "An RSS channel is available for this section:"
+msgstr "En RSS-kanal  er tilgjengelig for denne seksjonen:"
+
+#: ../lib/wiking/db.py:1060
+msgid "more about RSS"
+msgstr "mer om RSS"
+
+#. Translators: Record as in `database record'.
+#: ../lib/wiking/db.py:1154
+msgid "No records."
+msgstr "Ingen fortegnelse."
+
+#. Translators: `Item' is intentionally general. Could be webpage, notice or something else.
+#: ../lib/wiking/db.py:1162
+msgid "The item was published."
+msgstr "Elementet ble publisert."
+
+#: ../lib/wiking/db.py:1163
+msgid "The item was unpublished."
+msgstr "Elementet ble avpublisert."
+
+#: ../lib/wiking/db.py:1172
+msgid "Publish"
+msgstr "Publiser"
+
+#: ../lib/wiking/db.py:1175
+msgid "Make the item visible to website visitors"
+msgstr "La elementet være synlig for besøkende på nettstedet"
+
+#: ../lib/wiking/db.py:1176
+msgid "Unpublish"
+msgstr "Avpubliser"
+
+#: ../lib/wiking/db.py:1179
+msgid "Make the item invisible to website visitors"
+msgstr "La elementet være usynlig for besøkende på nettstedet"
 
 #: ../lib/wiking/export.py:80
 msgid "Page heading"
@@ -39,7 +215,7 @@ msgid "Page footer"
 msgstr "Sidefot"
 
 #. Translators: Title of a dialog on a webpage
-#: ../lib/wiking/export.py:85 ../lib/wiking/export.py:194
+#: ../lib/wiking/export.py:85 ../lib/wiking/export.py:196
 #: ../lib/wiking/util.py:197
 msgid "Language selection"
 msgstr "Språkvalg"
@@ -49,18 +225,22 @@ msgstr "Språkvalg"
 msgid "Language:"
 msgstr "Språk:"
 
-#: ../lib/wiking/export.py:198
+#: ../lib/wiking/export.py:99
+msgid "Expand/collapse complete menu hierarchy"
+msgstr ""
+
+#: ../lib/wiking/export.py:200
 msgid "Jump in page"
 msgstr "Gå på siden"
 
 #. Translators: A label followed by location information in webpage navigation
-#: ../lib/wiking/export.py:203
+#: ../lib/wiking/export.py:205
 msgid "You are here:"
 msgstr "Du er her:"
 
 #. Translators: Heading of webpage navigation menu containing a list
 #. of links to pages in this web section
-#: ../lib/wiking/export.py:271
+#: ../lib/wiking/export.py:273
 msgid "In this section:"
 msgstr "I denne seksjonen:"
 
@@ -84,7 +264,7 @@ msgid "Warning"
 msgstr "Advarsel"
 
 #. Translators: Information about last change of a webpage (when and who)
-#: ../lib/wiking/export.py:340
+#: ../lib/wiking/export.py:342
 #, python-format
 msgid "Last change: %(date)s, %(user)s"
 msgstr "Sist endret: %(date)s, %(user)s"
@@ -319,182 +499,6 @@ msgstr "Ugyldig format"
 #, fuzzy
 msgid "Domain not found"
 msgstr "Ingenting funnet."
-
-#: ../lib/wiking/db.py:41
-msgid "This value already exists.  Enter a unique value."
-msgstr "Denne verdien finnes allerede. Angi en unik verdi."
-
-#. Translators: This is about an empty (not filled in) value in a web form. Field means a
-#. form field.
-#: ../lib/wiking/db.py:45
-msgid "Empty value.  This field is mandatory."
-msgstr "Tom verdi. Dette feltet er obligatorisk."
-
-#. Translators: Button label. Record as in `database record' (computer terminology).
-#: ../lib/wiking/db.py:49
-msgid "New record"
-msgstr "Ny fortegnelse"
-
-#. Translators: Button label. Record as in `database record' (computer terminology).
-#: ../lib/wiking/db.py:51
-msgid "Create a new record"
-msgstr "Opprett en ny fortegnelse"
-
-#. Translators: Button label. Meaning `Modify the database record' (computer terminology).
-#: ../lib/wiking/db.py:53
-msgid "Edit"
-msgstr "Rediger"
-
-#. Translators: Button label. Record as in `database record' (computer terminology).
-#: ../lib/wiking/db.py:55
-msgid "Modify the record"
-msgstr "Endre fortegnelsen"
-
-#. Translators: Button label. Meaning `Delete the database record' (computer terminology).
-#: ../lib/wiking/db.py:57
-msgid "Remove"
-msgstr "Fjern"
-
-#. Translators: Button label. Record as in `database record' (computer terminology).
-#: ../lib/wiking/db.py:59
-msgid "Remove the record permanently"
-msgstr "Fjern fortegnelsen for godt"
-
-#. Translators: Record as in `database record' (computer terminology).
-#: ../lib/wiking/db.py:61
-msgid "Please, confirm removing the record permanently."
-msgstr "Vennligst bekreft at du vil fjerne fortegnelsen for godt."
-
-#. Translators: Copy button label. Verb. Computer terminology and form common for a webpage button.
-#: ../lib/wiking/db.py:63
-msgid "Copy"
-msgstr "Kopier"
-
-#. Translators: Record as in `database record' (computer terminology).
-#: ../lib/wiking/db.py:65
-msgid "Create new record initialized by values of this record"
-msgstr "Opprett ny fortegnelse ut fra av denne fortegnelsens verdier"
-
-#. Translators: Button label.
-#: ../lib/wiking/db.py:67
-msgid "Back to list"
-msgstr "Tilbake til listen"
-
-#. Translators: Record as in `database record' (computer terminology).
-#: ../lib/wiking/db.py:69
-msgid "Back to the list of all records"
-msgstr "Tilbake til listen over alle fortegnelser."
-
-#. Translators: Record as in `database record' (computer terminology).
-#: ../lib/wiking/db.py:71
-msgid "New record was successfully inserted."
-msgstr "Ny fortegnelse ble satt inn."
-
-#. Translators: Record as in `database record' (computer terminology).
-#: ../lib/wiking/db.py:73
-msgid "The record was successfully updated."
-msgstr "Den nye fortegnelsen ble oppdatert."
-
-#. Translators: Record as in `database record' (computer terminology).
-#: ../lib/wiking/db.py:75
-msgid "The record was deleted."
-msgstr "Fortegnelsen ble fjernet."
-
-#: ../lib/wiking/db.py:264
-msgid "Invalid binding column value."
-msgstr "Ugyldig bindende kolonne verdi."
-
-#: ../lib/wiking/db.py:320
-msgid "Integrity check failed."
-msgstr "Integritets sjekk feilet."
-
-#. Translators: Back button label. Standard computer terminology.
-#: ../lib/wiking/db.py:973
-msgid "Back"
-msgstr "Tilbake"
-
-#. Translators: RSS channel is a computer idiom, see Wikipedia.
-#: ../lib/wiking/db.py:1056
-msgid "An RSS channel is available for this section:"
-msgstr "En RSS-kanal  er tilgjengelig for denne seksjonen:"
-
-#: ../lib/wiking/db.py:1060
-msgid "more about RSS"
-msgstr "mer om RSS"
-
-#. Translators: Record as in `database record'.
-#: ../lib/wiking/db.py:1154
-msgid "No records."
-msgstr "Ingen fortegnelse."
-
-#. Translators: `Item' is intentionally general. Could be webpage, notice or something else.
-#: ../lib/wiking/db.py:1162
-msgid "The item was published."
-msgstr "Elementet ble publisert."
-
-#: ../lib/wiking/db.py:1163
-msgid "The item was unpublished."
-msgstr "Elementet ble avpublisert."
-
-#: ../lib/wiking/db.py:1172
-msgid "Publish"
-msgstr "Publiser"
-
-#: ../lib/wiking/db.py:1175
-msgid "Make the item visible to website visitors"
-msgstr "La elementet være synlig for besøkende på nettstedet"
-
-#: ../lib/wiking/db.py:1176
-msgid "Unpublish"
-msgstr "Avpubliser"
-
-#: ../lib/wiking/db.py:1179
-msgid "Make the item invisible to website visitors"
-msgstr "La elementet være usynlig for besøkende på nettstedet"
-
-#: ../lib/wiking/modules.py:408
-msgid "Enter your login name, please!"
-msgstr "Vennligst skriv inn ditt innloggingsnavn!"
-
-#: ../lib/wiking/modules.py:410
-msgid "Enter your password, please!"
-msgstr "Vennligst skriv inn ditt passord!"
-
-#: ../lib/wiking/modules.py:415
-msgid "Invalid login!"
-msgstr "Ugyldig innlogging!"
-
-#: ../lib/wiking/modules.py:513
-msgid "Searching"
-msgstr "Søker"
-
-#: ../lib/wiking/modules.py:514
-msgid "Search results"
-msgstr "Søkeresultat"
-
-#: ../lib/wiking/modules.py:515
-msgid "Given search term doesn't contain any searchable term."
-msgstr "Oppgitt søkeord inneholder ingen søkbare termer."
-
-#: ../lib/wiking/modules.py:519
-msgid "Search words:"
-msgstr "Søk ordene:"
-
-#: ../lib/wiking/modules.py:520
-msgid "Search"
-msgstr "Søk"
-
-#: ../lib/wiking/modules.py:576
-msgid "Nothing found."
-msgstr "Ingenting funnet."
-
-#: ../lib/wiking/modules.py:633
-msgid "The following modules were successfully reloaded:"
-msgstr "Følgende moduler lastet på nytt:"
-
-#: ../lib/wiking/modules.py:635
-msgid "Reload"
-msgstr "Last på nytt"
 
 #: ../lib/wiking/application.py:275
 msgid "Unable to perform a database operation."

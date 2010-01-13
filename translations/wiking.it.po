@@ -1,5 +1,5 @@
 # Wiking translations.
-# Copyright (C) 2006-2009 Brailcom, o.p.s.
+# Copyright (C) 2006-2010 Brailcom, o.p.s.
 # This file is distributed under the same license as the Wiking package.
 # Tomas Cerha <cerha@brailcom.org>, 2006.
 #
@@ -7,13 +7,190 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-12-14 23:36+0100\n"
-"PO-Revision-Date: 2009-11-30 22:33+0100\n"
+"POT-Creation-Date: 2010-01-13 14:08+0100\n"
+"PO-Revision-Date: 2010-01-19 16:27+0100\n"
 "Last-Translator: kkkk <kkkkkkkkkkk>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: ../lib/wiking/modules.py:408
+msgid "Enter your login name, please!"
+msgstr "Ti preghiamo d'inserire il tuo nome utente!"
+
+#: ../lib/wiking/modules.py:410
+msgid "Enter your password, please!"
+msgstr "Ti preghiamo d'inserire la tua password!"
+
+#: ../lib/wiking/modules.py:415
+msgid "Invalid login!"
+msgstr "Accesso non valido!"
+
+#: ../lib/wiking/modules.py:513
+msgid "Searching"
+msgstr "Ricerca"
+
+#: ../lib/wiking/modules.py:514
+msgid "Search results"
+msgstr "Risultati della ricerca"
+
+#: ../lib/wiking/modules.py:515
+msgid "Given search term doesn't contain any searchable term."
+msgstr "Espressione cercata non contiene alcun termine per la ricerca."
+
+#: ../lib/wiking/modules.py:519
+msgid "Search words:"
+msgstr "Ricerca parole:"
+
+#: ../lib/wiking/modules.py:520
+msgid "Search"
+msgstr "Ricerca"
+
+#: ../lib/wiking/modules.py:576
+msgid "Nothing found."
+msgstr "Nessuna soluzione trovata."
+
+#: ../lib/wiking/modules.py:633
+msgid "The following modules were successfully reloaded:"
+msgstr "Seguenti moduli sono stati caricati con successo:"
+
+#: ../lib/wiking/modules.py:635
+msgid "Reload"
+msgstr "Ricarica"
+
+#: ../lib/wiking/db.py:41
+msgid "This value already exists.  Enter a unique value."
+msgstr "Questo valore è già esistente. Inserisci un valore unico."
+
+#. Translators: This is about an empty (not filled in) value in a web form. Field means a
+#. form field.
+#: ../lib/wiking/db.py:45
+msgid "Empty value.  This field is mandatory."
+msgstr "Valore nullo. Questa voce è obbligatoria."
+
+#. Translators: Button label. Record as in `database record' (computer terminology).
+#: ../lib/wiking/db.py:49
+msgid "New record"
+msgstr "Nuova registrazione"
+
+#. Translators: Button label. Record as in `database record' (computer terminology).
+#: ../lib/wiking/db.py:51
+msgid "Create a new record"
+msgstr "Crea una nuova registrazione"
+
+#. Translators: Button label. Meaning `Modify the database record' (computer terminology).
+#: ../lib/wiking/db.py:53
+msgid "Edit"
+msgstr "Modifica"
+
+#. Translators: Button label. Record as in `database record' (computer terminology).
+#: ../lib/wiking/db.py:55
+msgid "Modify the record"
+msgstr "Modifica la registrazione"
+
+#. Translators: Button label. Meaning `Delete the database record' (computer terminology).
+#: ../lib/wiking/db.py:57
+msgid "Remove"
+msgstr "Cancella"
+
+#. Translators: Button label. Record as in `database record' (computer terminology).
+#: ../lib/wiking/db.py:59
+msgid "Remove the record permanently"
+msgstr "Cancella la registrazione in modo permanente"
+
+#. Translators: Record as in `database record' (computer terminology).
+#: ../lib/wiking/db.py:61
+msgid "Please, confirm removing the record permanently."
+msgstr "Conferma la cancellazione della registrazione in modo permanente."
+
+#. Translators: Copy button label. Verb. Computer terminology and form common for a webpage button.
+#: ../lib/wiking/db.py:63
+msgid "Copy"
+msgstr "Crea una coppia"
+
+#. Translators: Record as in `database record' (computer terminology).
+#: ../lib/wiking/db.py:65
+msgid "Create new record initialized by values of this record"
+msgstr ""
+"Crea una nuova registrazione con i valori predefiniti di questa registrazione"
+
+#. Translators: Button label.
+#: ../lib/wiking/db.py:67
+msgid "Back to list"
+msgstr "Ritorna all'elenco"
+
+#. Translators: Record as in `database record' (computer terminology).
+#: ../lib/wiking/db.py:69
+msgid "Back to the list of all records"
+msgstr "Ritorna all'elenco di tutte le registrazioni"
+
+#. Translators: Record as in `database record' (computer terminology).
+#: ../lib/wiking/db.py:71
+msgid "New record was successfully inserted."
+msgstr "Nuova registrazione è stata inserita con successo."
+
+#. Translators: Record as in `database record' (computer terminology).
+#: ../lib/wiking/db.py:73
+msgid "The record was successfully updated."
+msgstr "Nuova registrazione è stata aggiornata con successo."
+
+#. Translators: Record as in `database record' (computer terminology).
+#: ../lib/wiking/db.py:75
+msgid "The record was deleted."
+msgstr "Registrazione è stata annullata."
+
+#: ../lib/wiking/db.py:264
+msgid "Invalid binding column value."
+msgstr "Valore della colonna vincolante non è consentito."
+
+#: ../lib/wiking/db.py:320
+msgid "Integrity check failed."
+msgstr "Controllo d'integrità dati fallito."
+
+#. Translators: Back button label. Standard computer terminology.
+#: ../lib/wiking/db.py:973
+msgid "Back"
+msgstr "Indietro"
+
+#. Translators: RSS channel is a computer idiom, see Wikipedia.
+#: ../lib/wiking/db.py:1056
+msgid "An RSS channel is available for this section:"
+msgstr "Per questa sezione è disponibile anche il canale RSS:"
+
+#: ../lib/wiking/db.py:1060
+msgid "more about RSS"
+msgstr "ulteriori informazioni sul RSS"
+
+#. Translators: Record as in `database record'.
+#: ../lib/wiking/db.py:1154
+msgid "No records."
+msgstr "Nessuna registrazione."
+
+#. Translators: `Item' is intentionally general. Could be webpage, notice or something else.
+#: ../lib/wiking/db.py:1162
+msgid "The item was published."
+msgstr "La voce è stata pubblicata."
+
+#: ../lib/wiking/db.py:1163
+msgid "The item was unpublished."
+msgstr "La voce non è stata pubblicata."
+
+#: ../lib/wiking/db.py:1172
+msgid "Publish"
+msgstr "Pubblica"
+
+#: ../lib/wiking/db.py:1175
+msgid "Make the item visible to website visitors"
+msgstr "Rendi accessibile la voce ai visitatori del sito"
+
+#: ../lib/wiking/db.py:1176
+msgid "Unpublish"
+msgstr "Non pubblicato"
+
+#: ../lib/wiking/db.py:1179
+msgid "Make the item invisible to website visitors"
+msgstr "Rendi la voce inaccessibile ai visitatori delle pagine"
 
 #: ../lib/wiking/export.py:80
 msgid "Page heading"
@@ -39,7 +216,7 @@ msgid "Page footer"
 msgstr "Fondo della pagina"
 
 #. Translators: Title of a dialog on a webpage
-#: ../lib/wiking/export.py:85 ../lib/wiking/export.py:194
+#: ../lib/wiking/export.py:85 ../lib/wiking/export.py:196
 #: ../lib/wiking/util.py:197
 msgid "Language selection"
 msgstr "Selezione di lingua"
@@ -49,18 +226,22 @@ msgstr "Selezione di lingua"
 msgid "Language:"
 msgstr "Lingua:"
 
-#: ../lib/wiking/export.py:198
+#: ../lib/wiking/export.py:99
+msgid "Expand/collapse complete menu hierarchy"
+msgstr ""
+
+#: ../lib/wiking/export.py:200
 msgid "Jump in page"
 msgstr "Vai a pagina"
 
 #. Translators: A label followed by location information in webpage navigation
-#: ../lib/wiking/export.py:203
+#: ../lib/wiking/export.py:205
 msgid "You are here:"
 msgstr "Ti trovi qui:"
 
 #. Translators: Heading of webpage navigation menu containing a list
 #. of links to pages in this web section
-#: ../lib/wiking/export.py:271
+#: ../lib/wiking/export.py:273
 msgid "In this section:"
 msgstr "In questa sezione:"
 
@@ -75,16 +256,16 @@ msgid "Hide panels"
 msgstr "Nascondi i pannelli"
 
 #. Translators: ``RSS channel'' is terminology idiom, see Wikipedia
-#: ../lib/wiking/export.py:301
+#: ../lib/wiking/export.py:303
 msgid "RSS channel"
 msgstr "Canale RSS"
 
-#: ../lib/wiking/export.py:317
+#: ../lib/wiking/export.py:319
 msgid "Warning"
 msgstr "Avvertenza"
 
 #. Translators: Information about last change of a webpage (when and who)
-#: ../lib/wiking/export.py:340
+#: ../lib/wiking/export.py:342
 #, python-format
 msgid "Last change: %(date)s, %(user)s"
 msgstr "Ultima modifica: %(date)s, %(user)s"
@@ -328,183 +509,6 @@ msgstr "Formato non valido"
 #, fuzzy
 msgid "Domain not found"
 msgstr "Nessuna soluzione trovata."
-
-#: ../lib/wiking/db.py:41
-msgid "This value already exists.  Enter a unique value."
-msgstr "Questo valore è già esistente. Inserisci un valore unico."
-
-#. Translators: This is about an empty (not filled in) value in a web form. Field means a
-#. form field.
-#: ../lib/wiking/db.py:45
-msgid "Empty value.  This field is mandatory."
-msgstr "Valore nullo. Questa voce è obbligatoria."
-
-#. Translators: Button label. Record as in `database record' (computer terminology).
-#: ../lib/wiking/db.py:49
-msgid "New record"
-msgstr "Nuova registrazione"
-
-#. Translators: Button label. Record as in `database record' (computer terminology).
-#: ../lib/wiking/db.py:51
-msgid "Create a new record"
-msgstr "Crea una nuova registrazione"
-
-#. Translators: Button label. Meaning `Modify the database record' (computer terminology).
-#: ../lib/wiking/db.py:53
-msgid "Edit"
-msgstr "Modifica"
-
-#. Translators: Button label. Record as in `database record' (computer terminology).
-#: ../lib/wiking/db.py:55
-msgid "Modify the record"
-msgstr "Modifica la registrazione"
-
-#. Translators: Button label. Meaning `Delete the database record' (computer terminology).
-#: ../lib/wiking/db.py:57
-msgid "Remove"
-msgstr "Cancella"
-
-#. Translators: Button label. Record as in `database record' (computer terminology).
-#: ../lib/wiking/db.py:59
-msgid "Remove the record permanently"
-msgstr "Cancella la registrazione in modo permanente"
-
-#. Translators: Record as in `database record' (computer terminology).
-#: ../lib/wiking/db.py:61
-msgid "Please, confirm removing the record permanently."
-msgstr "Conferma la cancellazione della registrazione in modo permanente."
-
-#. Translators: Copy button label. Verb. Computer terminology and form common for a webpage button.
-#: ../lib/wiking/db.py:63
-msgid "Copy"
-msgstr "Crea una coppia"
-
-#. Translators: Record as in `database record' (computer terminology).
-#: ../lib/wiking/db.py:65
-msgid "Create new record initialized by values of this record"
-msgstr ""
-"Crea una nuova registrazione con i valori predefiniti di questa registrazione"
-
-#. Translators: Button label.
-#: ../lib/wiking/db.py:67
-msgid "Back to list"
-msgstr "Ritorna all'elenco"
-
-#. Translators: Record as in `database record' (computer terminology).
-#: ../lib/wiking/db.py:69
-msgid "Back to the list of all records"
-msgstr "Ritorna all'elenco di tutte le registrazioni"
-
-#. Translators: Record as in `database record' (computer terminology).
-#: ../lib/wiking/db.py:71
-msgid "New record was successfully inserted."
-msgstr "Nuova registrazione è stata inserita con successo."
-
-#. Translators: Record as in `database record' (computer terminology).
-#: ../lib/wiking/db.py:73
-msgid "The record was successfully updated."
-msgstr "Nuova registrazione è stata aggiornata con successo."
-
-#. Translators: Record as in `database record' (computer terminology).
-#: ../lib/wiking/db.py:75
-msgid "The record was deleted."
-msgstr "Registrazione è stata annullata."
-
-#: ../lib/wiking/db.py:264
-msgid "Invalid binding column value."
-msgstr "Valore della colonna vincolante non è consentito."
-
-#: ../lib/wiking/db.py:320
-msgid "Integrity check failed."
-msgstr "Controllo d'integrità dati fallito."
-
-#. Translators: Back button label. Standard computer terminology.
-#: ../lib/wiking/db.py:973
-msgid "Back"
-msgstr "Indietro"
-
-#. Translators: RSS channel is a computer idiom, see Wikipedia.
-#: ../lib/wiking/db.py:1056
-msgid "An RSS channel is available for this section:"
-msgstr "Per questa sezione è disponibile anche il canale RSS:"
-
-#: ../lib/wiking/db.py:1060
-msgid "more about RSS"
-msgstr "ulteriori informazioni sul RSS"
-
-#. Translators: Record as in `database record'.
-#: ../lib/wiking/db.py:1154
-msgid "No records."
-msgstr "Nessuna registrazione."
-
-#. Translators: `Item' is intentionally general. Could be webpage, notice or something else.
-#: ../lib/wiking/db.py:1162
-msgid "The item was published."
-msgstr "La voce è stata pubblicata."
-
-#: ../lib/wiking/db.py:1163
-msgid "The item was unpublished."
-msgstr "La voce non è stata pubblicata."
-
-#: ../lib/wiking/db.py:1172
-msgid "Publish"
-msgstr "Pubblica"
-
-#: ../lib/wiking/db.py:1175
-msgid "Make the item visible to website visitors"
-msgstr "Rendi accessibile la voce ai visitatori del sito"
-
-#: ../lib/wiking/db.py:1176
-msgid "Unpublish"
-msgstr "Non pubblicato"
-
-#: ../lib/wiking/db.py:1179
-msgid "Make the item invisible to website visitors"
-msgstr "Rendi la voce inaccessibile ai visitatori delle pagine"
-
-#: ../lib/wiking/modules.py:408
-msgid "Enter your login name, please!"
-msgstr "Ti preghiamo d'inserire il tuo nome utente!"
-
-#: ../lib/wiking/modules.py:410
-msgid "Enter your password, please!"
-msgstr "Ti preghiamo d'inserire la tua password!"
-
-#: ../lib/wiking/modules.py:415
-msgid "Invalid login!"
-msgstr "Accesso non valido!"
-
-#: ../lib/wiking/modules.py:513
-msgid "Searching"
-msgstr "Ricerca"
-
-#: ../lib/wiking/modules.py:514
-msgid "Search results"
-msgstr "Risultati della ricerca"
-
-#: ../lib/wiking/modules.py:515
-msgid "Given search term doesn't contain any searchable term."
-msgstr "Espressione cercata non contiene alcun termine per la ricerca."
-
-#: ../lib/wiking/modules.py:519
-msgid "Search words:"
-msgstr "Ricerca parole:"
-
-#: ../lib/wiking/modules.py:520
-msgid "Search"
-msgstr "Ricerca"
-
-#: ../lib/wiking/modules.py:576
-msgid "Nothing found."
-msgstr "Nessuna soluzione trovata."
-
-#: ../lib/wiking/modules.py:633
-msgid "The following modules were successfully reloaded:"
-msgstr "Seguenti moduli sono stati caricati con successo:"
-
-#: ../lib/wiking/modules.py:635
-msgid "Reload"
-msgstr "Ricarica"
 
 #: ../lib/wiking/application.py:275
 msgid "Unable to perform a database operation."

@@ -54,6 +54,19 @@
 
 2010-01-13  Tomas Cerha  <cerha@brailcom.org>
 
+	* translations/wiking.cs.po:
+	* translations/wiking.de.po:
+	* translations/wiking.es.po:
+	* translations/wiking.fr.po:
+	* translations/wiking.hu.po:
+	* translations/wiking.it.po:
+	* translations/wiking.no.po:
+	* translations/wiking.pl.po:
+	* translations/wiking.sk.po:
+	Translations updated.
+
+2010-01-13  Tomas Cerha  <cerha@brailcom.org>
+
 	* lib/wiking/export.py:
 	* resources/scripts/wiking.js:
 	Further improved "Expand all" button label.
