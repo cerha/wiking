@@ -60,8 +60,7 @@ var WikingHandler = Class.create({
 	 this.init_landmarks();
 	 this.init_menus();
 	 // Set up global key handler.
-	 var global_key_handler = (document.all ? document.body : window);
-	 global_key_handler.onkeydown = this.on_key_down.bind(this);
+	 document.observe('keydown', this.on_keydown.bind(this));
 	 // Move focus to the main content if there is no anchor in the current URL.
 	 if (window.location.href.match("#") == null)
 	    this.set_focus($('main-heading'));
@@ -155,7 +154,7 @@ var WikingHandler = Class.create({
 	       item._wiking_menu_parent = parent;
 	       if (prev != null)
 		  prev._wiking_menu_next = item;
-	       item.onkeydown = this.on_menu_keydown.bind(this);
+	       item.observe('keydown', this.on_menu_keydown.bind(this));
 	       items[items.length] = item;
 	       // Append hierarchical submenu if found.
 	       var submenu = li.down('ul');
@@ -237,18 +236,15 @@ var WikingHandler = Class.create({
 	 return next;
       },
 
-      on_key_down: function (event) {
+      on_keydown: function (event) {
 	 // Handle global Wiking keyboard shortcuts.
-	 // Not all browsers invoke onkeypress for arrow keys, so keys must be
-	 // handled in onkeydown.
 	 var cmd = this.KEYMAP[this.event_key(event)];
 	 if (cmd == this.CMD_MENU) {
 	    var item = $(this.menu.getAttribute('aria-activedescendant'));
 	    this.expand_item(item, true);
 	    this.set_focus(item);
-	    return false;
+	    event.stop();
 	 }
-	 return true;
       },
       
       on_menu_keydown: function (event) {
@@ -265,7 +261,7 @@ var WikingHandler = Class.create({
 	       target = item._wiking_menu_parent;
 	    }
 	    this.set_focus(target);
-	    return false;
+	    event.stop();
 	 } else if (cmd == this.CMD_NEXT) {
 	    var target = null;
 	    if (item._wiking_submenu != null && !item.parentNode.hasClassName('folded'))
@@ -273,23 +269,22 @@ var WikingHandler = Class.create({
 	    else
 	       target = this.next_item(item);
 	    this.set_focus(target);
-	    return false;
+	    event.stop();
 	 } else if (cmd == this.CMD_EXPAND) {
 	    if (!this.expand_item(item) && item._wiking_submenu != null)
 	       this.set_focus(item._wiking_submenu[0]);
-	    return false;
+	    event.stop();
 	 } else if (cmd == this.CMD_COLLAPSE) {
 	    if (!this.collapse_item(item))
 	       this.set_focus(item._wiking_menu_parent);
-	    return false;
+	    event.stop();
 	 } else if (cmd == this.CMD_ACTIVATE) {
 	    self.location = item.getAttribute('href');
-	    return false;
+	    event.stop();
 	 } else if (cmd == this.CMD_QUIT) {
 	    this.set_focus($('main-heading'));
-	    return false;
+	    event.stop();
 	 }
-	 return true;
       },
 
       on_menu_click: function (event) {
@@ -313,7 +308,6 @@ var WikingHandler = Class.create({
       },
 
       event_key: function (event) {
-	 if (document.all) event = window.event;
 	 var code = document.all ? event.keyCode : event.which;
 	 var map = {
 	    8:  'Backspace',
