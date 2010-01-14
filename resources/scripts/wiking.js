@@ -17,61 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-var WikingHandler = Class.create({
-      initialize: function () {
-	 // WikingHandler constructor (called when the script is loaded).
-	 // Definition of available commands.
-	 this.CMD_EXPAND = 'expand'; // Unfold the subtree.
-	 this.CMD_COLLAPSE = 'collapse';  // Fold the subtree.
-	 this.CMD_UP = 'up'; // Go to the next item.
-	 this.CMD_DOWN = 'down'; // Go to the previous item.
-	 this.CMD_PREV = 'prev'; // Go to the next item at the same level of hierarchy.
-	 this.CMD_NEXT = 'next'; // Go to the previous item at the same level of hierarchy.
-	 this.CMD_MENU = 'menu';
-	 this.CMD_ACTIVATE = 'activate';
-	 this.CMD_QUIT = 'quit';
-	 // Menu navigation keyboard shortcuts mapping to available command identifiers.
-	 this.KEYMAP = {
-	    'Up':	    this.CMD_UP,
-	    'Down':         this.CMD_DOWN,
-	    'Shift-Up':	    this.CMD_PREV,
-	    'Shift-Down':   this.CMD_NEXT,
-	    'Shift-Right':  this.CMD_EXPAND,
-	    'Shift-Left':   this.CMD_COLLAPSE,
-	    'Right':        this.CMD_EXPAND,
-	    'Left':         this.CMD_COLLAPSE,
-	    'Ctrl-Shift-m': this.CMD_MENU,
-	    'Escape':	    this.CMD_QUIT,
-	    'Enter':	    this.CMD_ACTIVATE,
-	    'Space':	    this.CMD_ACTIVATE
-	 };
-	 // Landmark by HTML element id.
-	 this.LANDMARKS = {
-	    'top':         'banner',
-	    'menu-map':    'navigation',
-	    'submenu-map': 'navigation',
-	    'main':        'main',
-	    'bottom':      'contentinfo'
-	 };
-	 // Other (private) attributes.
-	 this.menu = null;
-	 this.foldable_submenu = false;
-	 this.menu_expanded = false;
-	 this.toggle_menu_expansion_button = null;
-      },
+var WikingBase = Class.create({
 
-      init: function (translations) {
-	 // Initialize the loaded page (called from document body onload event).
+      initialize: function (keymap, translations) {
+	 this.keymap = keymap;
 	 this.translations = translations;
-	 this.init_landmarks();
-	 this.init_menu();
-	 // Set up global key handler.
-	 document.observe('keydown', this.on_keydown.bind(this));
-	 // Move focus to the main content if there is no anchor in the current URL.
-	 if (window.location.href.match("#") == null)
-	    this.set_focus($('main-heading'));
       },
-
+      
       gettext: function(text) {
 	 // Translations are passed to JavaScript from python when init() is called.
 	 translation = this.translations[text];
@@ -79,6 +31,89 @@ var WikingHandler = Class.create({
 	    return translation;
 	 else
 	    return text;
+      },
+
+      event_key: function (event) {
+	 var code = document.all ? event.keyCode : event.which;
+	 var map = {
+	    8:  'Backspace',
+	    10: 'Enter',
+	    13: 'Enter',
+	    27: 'Escape',
+	    32: 'Space',
+	    33: 'PageUp',
+	    34: 'PageDown',
+	    35: 'End',
+	    36: 'Home',
+	    37: 'Left',
+	    39: 'Right',
+	    38: 'Up',
+	    40: 'Down'
+	 };
+	 var key = null;
+	 if (code >= 65 && code <= 90) key = String.fromCharCode(code).toLowerCase();
+	 else key = map[code];
+	 if (key != null) {
+	    var modifiers = '';
+	    if (document.all || document.getElementById) {
+	       if (event.ctrlKey) modifiers += 'Ctrl-';
+	       if (event.altKey) modifiers += 'Alt-';
+	       if (event.shiftKey) modifiers += 'Shift-';
+	    } else if (document.layers) {
+	       if (event.modifiers & Event.CONTROL_MASK) modifiers += 'Ctrl-';
+	       if (event.modifiers & Event.ALT_MASK) modifiers += 'Alt-';
+	       if (event.modifiers & Event.SHIFT_MASK) modifiers += 'Shift-';
+	    }
+	    key = modifiers+key;
+	 }
+	 return key;
+      },
+
+      command: function (event) {
+	 return this.keymap[this.event_key(event)];
+      },
+
+      set_focus: function (element) {
+	 if (element != null) 
+	    setTimeout(function () { try { element.focus(); } catch (e) {} }, 0);
+      }
+
+   });
+
+
+var WikingHandler = Class.create(WikingBase, {
+      // This class is instantiated within the page onload handler.  It is the
+      // main javascript interface of a Wiking application.  It creates
+      // instances of other javascript classes to handle menus etc if the
+      // relevant HTML objects exist..
+
+      LANDMARKS: {
+	 'top':         'banner',
+	 'menu-map':    'navigation',
+	 'submenu-map': 'navigation',
+	 'main':        'main',
+	 'bottom':      'contentinfo'
+      },
+
+      initialize: function ($super, translations) {
+	 // Constructor (called on page load).
+	 this.CMD_MENU = 'menu';
+	 keymap = {
+	    'Ctrl-Shift-m': this.CMD_MENU
+	 };
+	 $super(keymap, translations);
+	 // Landmark by HTML element id.
+	 this.init_landmarks();
+	 var submenu = $('submenu');
+	 if (submenu)
+	    this.menu = new WikingMenu(translations, submenu);
+	 else
+	    this.menu = null;
+	 // Set up global key handler.
+	 document.observe('keydown', this.on_keydown.bind(this));
+	 // Move focus to the main content if there is no anchor in the current URL.
+	 if (window.location.href.match("#") == null)
+	    this.set_focus($('main-heading'));
       },
 
       init_landmarks: function () {
@@ -90,21 +125,62 @@ var WikingHandler = Class.create({
 	 }
       },
 
-      init_menu: function () {
-	 // Initialize the hierarchical menu -- assign ARIA roles to HTML tags
-	 // and bind keyboard event handling to support keyboard menu traversal.
-	 var menu = $('submenu');
-	 if (menu == null)
-	    return;
-	 this.menu = menu;
-	 menu.setAttribute('role', 'application');
-	 menu.down('.menu-panel').setAttribute('role', 'tree');
-	 var ul = menu.down('ul');
+      on_keydown: function (event) {
+	 // Handle global Wiking keyboard shortcuts.
+	 var cmd = this.command(event);
+	 if (cmd == this.CMD_MENU) {
+	    if (this.menu != null)
+	       this.menu.focus();
+	    event.stop();
+	 }
+      }
+
+   });
+
+
+var WikingMenu = Class.create(WikingBase, {
+      // Initialize a hierarchical menu -- assign ARIA roles to HTML tags
+      // and bind keyboard event handling to support keyboard menu traversal.
+
+      initialize: function ($super, translations, node) {
+	 // Definition of available commands.
+	 this.CMD_EXPAND = 'expand'; // Unfold the subtree.
+	 this.CMD_COLLAPSE = 'collapse';  // Fold the subtree.
+	 this.CMD_UP = 'up'; // Go to the next item.
+	 this.CMD_DOWN = 'down'; // Go to the previous item.
+	 this.CMD_PREV = 'prev'; // Go to the next item at the same level of hierarchy.
+	 this.CMD_NEXT = 'next'; // Go to the previous item at the same level of hierarchy.
+	 this.CMD_ACTIVATE = 'activate';
+	 this.CMD_QUIT = 'quit';
+	 // Menu navigation keyboard shortcuts mapping to available command identifiers.
+	 keymap = {
+	    'Up':	    this.CMD_UP,
+	    'Down':         this.CMD_DOWN,
+	    'Shift-Up':	    this.CMD_PREV,
+	    'Shift-Down':   this.CMD_NEXT,
+	    'Shift-Right':  this.CMD_EXPAND,
+	    'Shift-Left':   this.CMD_COLLAPSE,
+	    'Right':        this.CMD_EXPAND,
+	    'Left':         this.CMD_COLLAPSE,
+	    'Escape':	    this.CMD_QUIT,
+	    'Enter':	    this.CMD_ACTIVATE,
+	    'Space':	    this.CMD_ACTIVATE
+	 };
+	 $super(keymap, translations);
+	 // Init attributres.
+	 this.menu = node;
+	 this.foldable_submenu = false;
+	 this.menu_expanded = false;
+	 this.toggle_menu_expansion_button = null;
+	 // Go through the menu and assign aria roles and key handling.
+	 node.setAttribute('role', 'application');
+	 node.down('.menu-panel').setAttribute('role', 'tree');
+	 var ul = node.down('ul');
 	 var items = this.init_menu_items(ul, null);
-	 var active = $(menu.getAttribute('aria-activedescendant'));
+	 var active = $(node.getAttribute('aria-activedescendant'));
 	 if (active == null && items.length != 0) {
 	    active = items[0];
-	    menu.setAttribute('aria-activedescendant', active.getAttribute('id'));
+	    node.setAttribute('aria-activedescendant', active.getAttribute('id'));
 	 }
 	 active.setAttribute('tabindex', '0');
 	 if (this.foldable_submenu) {
@@ -222,21 +298,16 @@ var WikingHandler = Class.create({
 	 return next;
       },
 
-      on_keydown: function (event) {
-	 // Handle global Wiking keyboard shortcuts.
-	 var cmd = this.KEYMAP[this.event_key(event)];
-	 if (cmd == this.CMD_MENU) {
-	    var item = $(this.menu.getAttribute('aria-activedescendant'));
-	    this.expand_item(item, true);
-	    this.set_focus(item);
-	    event.stop();
-	 }
+      focus: function () {
+	 var item = $(this.menu.getAttribute('aria-activedescendant'));
+	 this.expand_item(item, true);
+	 this.set_focus(item);
       },
-      
+
       on_menu_keydown: function (event) {
 	 var item = event.element();
 	 var key = this.event_key(event);
-	 var cmd = this.KEYMAP[key];
+	 var cmd = this.keymap[key];
 	 if (cmd == this.CMD_UP) {
 	    var target = null;
 	    if (item._wiking_menu_prev != null) {
@@ -297,50 +368,6 @@ var WikingHandler = Class.create({
 	       event.stop();
 	    }
 	 }
-      },
-
-      event_key: function (event) {
-	 var code = document.all ? event.keyCode : event.which;
-	 var map = {
-	    8:  'Backspace',
-	    10: 'Enter',
-	    13: 'Enter',
-	    27: 'Escape',
-	    32: 'Space',
-	    33: 'PageUp',
-	    34: 'PageDown',
-	    35: 'End',
-	    36: 'Home',
-	    37: 'Left',
-	    39: 'Right',
-	    38: 'Up',
-	    40: 'Down'
-	 };
-	 var key = null;
-	 if (code >= 65 && code <= 90) key = String.fromCharCode(code).toLowerCase();
-	 else key = map[code];
-	 if (key != null) {
-	    var modifiers = '';
-	    if (document.all || document.getElementById) {
-	       if (event.ctrlKey) modifiers += 'Ctrl-';
-	       if (event.altKey) modifiers += 'Alt-';
-	       if (event.shiftKey) modifiers += 'Shift-';
-	    } else if (document.layers) {
-	       if (event.modifiers & Event.CONTROL_MASK) modifiers += 'Ctrl-';
-	       if (event.modifiers & Event.ALT_MASK) modifiers += 'Alt-';
-	       if (event.modifiers & Event.SHIFT_MASK) modifiers += 'Shift-';
-	    }
-	    key = modifiers+key;
-	 }
-	 return key;
-      },
-
-      set_focus: function (element) {
-	 if (element != null) 
-	    setTimeout(function () { try { element.focus(); } catch (e) {} }, 0);
       }
-      
-   });
 
-// Instantiate the handler and register calling `init()' on page load.
-var wiking_handler = new WikingHandler();
+   });

@@ -52,6 +52,12 @@
 	* resources/css/default.css:
 	Allow entering the registration code by hand.
 
+2010-01-14  Tomas Cerha  <cerha@brailcom.org>
+
+	* lib/wiking/export.py:
+	* resources/scripts/wiking.js:
+	Split WikingHandler to separate classes to prepare for specific ARIA markup on different menus.
+
 2010-01-13  Tomas Cerha  <cerha@brailcom.org>
 
 	* resources/scripts/wiking.js:
