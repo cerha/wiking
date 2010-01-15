@@ -180,7 +180,6 @@ var WikingMenu = Class.create(WikingBase, {
 	       var prev = (items.length == 0 ? null : items[items.length-1]);
 	       var id = base_id + '.' + (items.length+1);
 	       var item = this.init_item(child, id, prev, parent);
-	       item.setAttribute('title', items.length+':'+(prev?prev.getAttribute('id'):'x'));
 	       items[items.length] = item;
 	    }
 	 }
