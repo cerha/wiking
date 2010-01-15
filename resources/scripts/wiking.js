@@ -87,6 +87,7 @@ var WikingHandler = Class.create(WikingBase, {
       // instances of other javascript classes to handle menus etc if the
       // relevant HTML objects exist..
 
+      // Landmarks by HTML element id.
       LANDMARKS: {
 	 'top':         'banner',
 	 'menu-map':    'navigation',
@@ -102,13 +103,20 @@ var WikingHandler = Class.create(WikingBase, {
 	    'Ctrl-Shift-m': this.CMD_MENU
 	 };
 	 $super(keymap, translations);
-	 // Landmark by HTML element id.
 	 this.init_landmarks();
-	 var submenu = $('submenu');
-	 if (submenu)
-	    this.menu = new WikingMenu(translations, submenu);
+	 var menu = $('menu');
+	 if (menu)
+	    this.menu = new WikingFoldersMenu(translations, menu);
 	 else
 	    this.menu = null;
+	 var submenu = $('submenu');
+	 if (submenu) {
+	    this.submenu = new WikingTreeMenu(translations, submenu);
+	    if (menu)
+	       this.menu.bind_submenu(this.submenu);
+	 } else {
+	    this.submenu = null;
+	 }
 	 // Set up global key handler.
 	 document.observe('keydown', this.on_keydown.bind(this));
 	 // Move focus to the main content if there is no anchor in the current URL.
@@ -129,7 +137,9 @@ var WikingHandler = Class.create(WikingBase, {
 	 // Handle global Wiking keyboard shortcuts.
 	 var cmd = this.command(event);
 	 if (cmd == this.CMD_MENU) {
-	    if (this.menu != null)
+	    if (this.submenu != null)
+	       this.submenu.focus();
+	    else if (this.menu != null)
 	       this.menu.focus();
 	    event.stop();
 	 }
@@ -137,10 +147,146 @@ var WikingHandler = Class.create(WikingBase, {
 
    });
 
-
 var WikingMenu = Class.create(WikingBase, {
       // Initialize a hierarchical menu -- assign ARIA roles to HTML tags
       // and bind keyboard event handling to support keyboard menu traversal.
+      
+      initialize: function ($super, keymap, translations, node) {
+	 $super(keymap, translations);
+	 this.node = node;
+	 node.setAttribute('role', 'application');
+	 // Go through the menu and assign aria roles and key bindings.
+	 var ul = node.down('ul');
+	 this.items = this.init_items(ul, null);
+	 // Set the active item.
+	 var active = $(node.getAttribute('aria-activedescendant'));
+	 if (active == null && this.items.length != 0) {
+	    active = this.items[0];
+	    node.setAttribute('aria-activedescendant', active.getAttribute('id'));
+	 }
+	 active.setAttribute('tabindex', '0');
+      },
+
+      init_items: function (ul, parent) {
+	 var items = [];
+	 var base_id;
+	 if (parent == null)
+	    base_id = this.node.getAttribute('id')+'-item';
+	 else
+	    base_id = parent.getAttribute('id');
+	 for (var i = 0; i < ul.childNodes.length; i++) {
+	    var child = $(ul.childNodes[i]);
+	    if (child.nodeName =='LI') {
+	       var prev = (items.length == 0 ? null : items[items.length-1]);
+	       var id = base_id + '.' + (items.length+1);
+	       var item = this.init_item(child, id, prev, parent);
+	       item.setAttribute('title', items.length+':'+(prev?prev.getAttribute('id'):'x'));
+	       items[items.length] = item;
+	    }
+	 }
+	 return items;
+      },
+
+      init_item: function (li, id, prev, parent) {
+	 li.setAttribute('role', 'presentation');
+	 var item = li.down('a');
+	 item.setAttribute('id', id);
+	 // Note: tabindex makes the items unroutable when ARIA is not correctly supported.
+	 item.setAttribute('tabindex', '-1');
+	 if (item.hasClassName('current'))
+	    this.node.setAttribute('aria-activedescendant', id);
+	 item._wiking_menu_prev = prev;
+	 item._wiking_menu_next = null;
+	 item._wiking_menu_parent = parent;
+	 item._wiking_submenu = null;
+	 item._wiking_menu = this;
+	 if (prev != null)
+	    prev._wiking_menu_next = item;
+	 item.observe('keydown', this.on_menu_keydown.bind(this));
+	 return item;
+      },
+
+      on_menu_keydown: function (event) {
+	 // Must be implemented in derived classes.
+      },
+
+      focus: function () {
+	 var item = $(this.node.getAttribute('aria-activedescendant'));
+	 this.expand_item(item, true);
+	 this.set_focus(item);
+      }
+
+   });
+
+
+var WikingFoldersMenu = Class.create(WikingMenu, {
+      // Specific handling of top level folders menu.
+
+      initialize: function ($super, translations, node) {
+	 // Definition of available commands.
+	 this.CMD_PREV = 'prev'; // Go to the next item at the same level of hierarchy.
+	 this.CMD_NEXT = 'next'; // Go to the previous item at the same level of hierarchy.
+	 this.CMD_SUBMENU = 'submenu'; // Go to the submenu.
+	 this.CMD_ACTIVATE = 'activate';
+	 this.CMD_QUIT = 'quit';
+	 // Menu navigation keyboard shortcuts mapping to available command identifiers.
+	 keymap = {
+	    'Left':	    this.CMD_PREV,
+	    'Right':        this.CMD_NEXT,
+	    'Down':         this.CMD_SUBMENU,
+	    'Escape':	    this.CMD_QUIT,
+	    'Enter':	    this.CMD_ACTIVATE,
+	    'Space':	    this.CMD_ACTIVATE
+	 };
+	 $super(keymap, translations, node);
+      },
+
+      init_items: function ($super, ul, parent) {
+	 ul.setAttribute('role', 'tablist');
+	 return $super(ul, parent);
+      },
+
+      init_item: function ($super, li, id, prev, parent) {
+	 var item = $super(li, id, prev, parent);
+	 item.setAttribute('role', 'tab');
+	 return item;
+      },
+
+      bind_submenu: function(menu) {
+	 // Bind given WikingTreeMenu instance as a descendant of this menu in
+	 // keyboard traversal.
+	 var item = $(this.node.getAttribute('aria-activedescendant'));
+	 item._wiking_submenu = menu.items;
+	 menu.bind_parent(item);
+      },
+
+      on_menu_keydown: function (event) {
+	 var item = event.element();
+	 var cmd = this.command(event);
+	 if (cmd == this.CMD_PREV) {
+	    this.set_focus(item._wiking_menu_prev);
+	    event.stop();
+	 } else if (cmd == this.CMD_NEXT) {
+	    this.set_focus(item._wiking_menu_next);
+	    event.stop();
+	 } else if (cmd == this.CMD_SUBMENU) {
+	    if (item._wiking_submenu != null)
+	       this.set_focus(item._wiking_submenu[0]);
+	    event.stop();
+	 } else if (cmd == this.CMD_ACTIVATE) {
+	    self.location = item.getAttribute('href');
+	    event.stop();
+	 } else if (cmd == this.CMD_QUIT) {
+	    this.set_focus($('main-heading'));
+	    event.stop();
+	 }
+      }
+
+   });
+
+
+var WikingTreeMenu = Class.create(WikingMenu, {
+      // Specific handling of foldable tree menu.
 
       initialize: function ($super, translations, node) {
 	 // Definition of available commands.
@@ -166,95 +312,58 @@ var WikingMenu = Class.create(WikingBase, {
 	    'Enter':	    this.CMD_ACTIVATE,
 	    'Space':	    this.CMD_ACTIVATE
 	 };
-	 $super(keymap, translations);
-	 // Init attributres.
-	 this.menu = node;
-	 this.foldable_submenu = false;
-	 this.menu_expanded = false;
-	 this.toggle_menu_expansion_button = null;
-	 // Go through the menu and assign aria roles and key handling.
-	 node.setAttribute('role', 'application');
+	 $super(keymap, translations, node);
 	 node.down('.menu-panel').setAttribute('role', 'tree');
-	 var ul = node.down('ul');
-	 var items = this.init_menu_items(ul, null);
-	 var active = $(node.getAttribute('aria-activedescendant'));
-	 if (active == null && items.length != 0) {
-	    active = items[0];
-	    node.setAttribute('aria-activedescendant', active.getAttribute('id'));
-	 }
-	 active.setAttribute('tabindex', '0');
-	 if (this.foldable_submenu) {
+	 if (this.foldable) {
 	    var b = new Element('button',
 				{id: 'toggle-menu-expansion-button',
 				 title: this.gettext("Expand/collapse complete menu hierarchy")});
-	    ul.insert({after: b});
-	    b.observe('click', this.toggle_menu_expansion.bind(this));
+	    node.down('ul').insert({after: b});
+	    b.observe('click', this.on_toggle_expansion.bind(this));
 	 }
       },
 
-      init_menu_items: function (ul, parent) {
+      init_items: function ($super, ul, parent) {
 	 ul.setAttribute('role', 'group');
-	 var items = [];
-	 var base_id = (parent != null ? parent.getAttribute('id') : 'wiking-menu');
-	 for (var i = 0; i < ul.childNodes.length; i++) {
-	    var li = $(ul.childNodes[i]);
-	    if (li.nodeName =='LI') {
-	       li.setAttribute('role', 'presentation');
-	       li.observe('click', this.on_menu_click.bind(this));
-	       var item = li.down('a');
-	       var span = li.down('span');
-	       var id = base_id + '.' + i;
-	       item.setAttribute('id', id);
-	       // Note: tabindex makes the items unroutable when ARIA is not correctly supported.
-	       item.setAttribute('tabindex', '-1');
-	       //item.setAttribute('title', item.innerHTML);
-	       item.setAttribute('role', 'treeitem');
-	       if (item.hasClassName('current'))
-		  this.menu.setAttribute('aria-activedescendant', id);
-	       if (span != null)
-		  span.setAttribute('role', 'presentation');
-	       var prev = (items.length == 0 ? null : items[items.length-1]);
-	       var map = {};
-	       item._wiking_menu_prev = prev;
-	       item._wiking_menu_next = null;
-	       item._wiking_menu_parent = parent;
-	       if (prev != null)
-		  prev._wiking_menu_next = item;
-	       item.observe('keydown', this.on_menu_keydown.bind(this));
-	       items[items.length] = item;
-	       // Append hierarchical submenu if found.
-	       var submenu = li.down('ul');
-	       if (submenu != null) {
-		  if (li.hasClassName('foldable')) {
-		     var hidden = (li.hasClassName('folded') ? 'true' : 'false');
-		     submenu.setAttribute('aria-hidden', hidden);
-		     var expanded = (li.hasClassName('folded') ? 'false' : 'true' );
-		     item.setAttribute('aria-expanded', expanded);
-		     this.foldable_submenu = true;
-		  }
-		  item._wiking_submenu = this.init_menu_items(submenu, item);
-	       } else {
-		  item._wiking_submenu = null;
-	       }
-	    }
-	 }
-	 return items;
+	 return $super(ul, parent);
       },
 
-      toggle_menu_expansion: function (event) {
-	 this.toggle_item_expansion(this.menu.down('ul').down('a'));
-	 this.menu_expanded = !this.menu_expanded;
-	 var b = $('toggle-menu-expansion-button');
-	 if (this.menu_expanded)
-	    b.addClassName('expanded');
-	 else
-	    b.removeClassName('expanded');
+      init_item: function ($super, li, id, prev, parent) {
+	 li.observe('click', this.on_menu_click.bind(this));
+	 var item = $super(li, id, prev, parent);
+	 //item.setAttribute('title', item.innerHTML);
+	 item.setAttribute('role', 'treeitem');
+	 var span = li.down('span');
+	 if (span != null)
+	    span.setAttribute('role', 'presentation');
+	 // Append hierarchical submenu if found.
+	 var submenu = li.down('ul');
+	 if (submenu != null) {
+	    if (li.hasClassName('foldable')) {
+	       var hidden = (li.hasClassName('folded') ? 'true' : 'false');
+	       submenu.setAttribute('aria-hidden', hidden);
+	       var expanded = (li.hasClassName('folded') ? 'false' : 'true' );
+	       item.setAttribute('aria-expanded', expanded);
+	       this.foldable = true;
+	    }
+	    item._wiking_submenu = this.init_items(submenu, item);
+	 }
+	 return item;
+      },
+
+      bind_parent: function(parent) {
+	 // Bind given WikingFolderMenu item as a parent of this menu in
+	 // keyboard traversal.
+	 for (var i = 0; i < this.items.length; i++) {
+	    var item = this.items[i];
+	    item._wiking_menu_parent = parent;
+	 }
       },
 
       toggle_item_expansion: function (item) {
 	 if (item != null) {
 	    var parent = item.parentNode;
-	    if (this.menu_expanded)
+	    if (this.expanded)
 	       this.collapse_item(item);
 	    else
 	       this.expand_item(item);
@@ -293,21 +402,15 @@ var WikingMenu = Class.create(WikingBase, {
 	 // Recursively find the next item in sequence by traversing the hierarchy.
 	 if (item._wiking_menu_next != null)
 	    next = item._wiking_menu_next;
-	 else if (item._wiking_menu_parent != null)
+	 else if (item._wiking_menu_parent != null
+		  && item._wiking_menu_parent._wiking_menu == this)
 	    next = this.next_item(item._wiking_menu_parent);
 	 return next;
       },
 
-      focus: function () {
-	 var item = $(this.menu.getAttribute('aria-activedescendant'));
-	 this.expand_item(item, true);
-	 this.set_focus(item);
-      },
-
       on_menu_keydown: function (event) {
 	 var item = event.element();
-	 var key = this.event_key(event);
-	 var cmd = this.keymap[key];
+	 var cmd = this.command(event);
 	 if (cmd == this.CMD_UP) {
 	    var target = null;
 	    if (item._wiking_menu_prev != null) {
@@ -348,6 +451,16 @@ var WikingMenu = Class.create(WikingBase, {
 	    this.set_focus($('main-heading'));
 	    event.stop();
 	 }
+      },
+
+      on_toggle_expansion: function (event) {
+	 this.toggle_item_expansion(this.items[0]);
+	 this.expanded = !this.expanded;
+	 var b = $('toggle-menu-expansion-button');
+	 if (this.expanded)
+	    b.addClassName('expanded');
+	 else
+	    b.removeClassName('expanded');
       },
 
       on_menu_click: function (event) {

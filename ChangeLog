@@ -52,6 +52,11 @@
 	* resources/css/default.css:
 	Allow entering the registration code by hand.
 
+2010-01-15  Tomas Cerha  <cerha@brailcom.org>
+
+	* resources/scripts/wiking.js:
+	Mark main menu as ARIA `tablist' and bind it to keyboard traversal hierarchy.
+
 2010-01-14  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/export.py:
