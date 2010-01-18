@@ -1,4 +1,4 @@
-# Copyright (C) 2006, 2007, 2008, 2009 Brailcom, o.p.s.
+# Copyright (C) 2006, 2007, 2008, 2009, 2010 Brailcom, o.p.s.
 # Author: Tomas Cerha <cerha@brailcom.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -175,7 +175,7 @@ class ModPythonHandler(object):
         import config
         config.dblisten = False
         config.log_exclude = [pytis.util.ACTION, pytis.util.EVENT, pytis.util.DEBUG]
-        for option in ('dbname', 'dbhost', 'dbport', 'dbuser', 'dbpass', 'dbsslm'):
+        for option in ('dbname', 'dbhost', 'dbport', 'dbuser', 'dbpass', 'dbsslm', 'dbschemas',):
             setattr(config, option, getattr(cfg, option))
         config.dbconnections = cfg.connections
         config.dbconnection = config.option('dbconnection').default()

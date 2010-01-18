@@ -1,5 +1,11 @@
 2010-01-18  Milan Zamazal  <pdm@brailcom.org>
 
+	* lib/wiking/configuration.py:
+	* lib/wiking/handler.py:
+	New configuration option `dbschemas'.
+
+2010-01-18  Milan Zamazal  <pdm@brailcom.org>
+
 	* lib/wiking/util.py:
 	Add assertion on LoginDialog.__init__ argument.
 
