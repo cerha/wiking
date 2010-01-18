@@ -1,3 +1,8 @@
+2010-01-18  Milan Zamazal  <pdm@brailcom.org>
+
+	* lib/wiking/util.py:
+	Add assertion on LoginDialog.__init__ argument.
+
 2010-01-07  Tomas Cerha  <cerha@brailcom.org>
 
 	* lib/wiking/db.py:

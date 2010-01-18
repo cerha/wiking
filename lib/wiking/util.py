@@ -812,6 +812,7 @@ class LoginCtrl(lcg.Content):
 class LoginDialog(lcg.Content):
     """Login dialog for entering login name and password."""
     def __init__(self, message=None):
+        assert message is None or isinstance(message, basestring)
         self._message = message
         super(LoginDialog, self).__init__()
         
