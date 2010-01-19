@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-01-13 14:08+0100\n"
+"POT-Creation-Date: 2010-01-19 16:52+0100\n"
 "PO-Revision-Date: 2010-01-19 16:40+0100\n"
 "Last-Translator: Petr Topiarz <topiarz@post.cz>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
@@ -139,55 +139,55 @@ msgstr "Den nye fortegnelsen ble oppdatert."
 msgid "The record was deleted."
 msgstr "Fortegnelsen ble fjernet."
 
-#: ../lib/wiking/db.py:264
+#: ../lib/wiking/db.py:266
 msgid "Invalid binding column value."
 msgstr "Ugyldig bindende kolonne verdi."
 
-#: ../lib/wiking/db.py:320
+#: ../lib/wiking/db.py:322
 msgid "Integrity check failed."
 msgstr "Integritets sjekk feilet."
 
 #. Translators: Back button label. Standard computer terminology.
-#: ../lib/wiking/db.py:973
+#: ../lib/wiking/db.py:976
 msgid "Back"
 msgstr "Tilbake"
 
 #. Translators: RSS channel is a computer idiom, see Wikipedia.
-#: ../lib/wiking/db.py:1056
+#: ../lib/wiking/db.py:1059
 msgid "An RSS channel is available for this section:"
 msgstr "En RSS-kanal  er tilgjengelig for denne seksjonen:"
 
-#: ../lib/wiking/db.py:1060
+#: ../lib/wiking/db.py:1063
 msgid "more about RSS"
 msgstr "mer om RSS"
 
 #. Translators: Record as in `database record'.
-#: ../lib/wiking/db.py:1154
+#: ../lib/wiking/db.py:1157
 msgid "No records."
 msgstr "Ingen fortegnelse."
 
 #. Translators: `Item' is intentionally general. Could be webpage, notice or something else.
-#: ../lib/wiking/db.py:1162
+#: ../lib/wiking/db.py:1165
 msgid "The item was published."
 msgstr "Elementet ble publisert."
 
-#: ../lib/wiking/db.py:1163
+#: ../lib/wiking/db.py:1166
 msgid "The item was unpublished."
 msgstr "Elementet ble avpublisert."
 
-#: ../lib/wiking/db.py:1172
+#: ../lib/wiking/db.py:1175
 msgid "Publish"
 msgstr "Publiser"
 
-#: ../lib/wiking/db.py:1175
+#: ../lib/wiking/db.py:1178
 msgid "Make the item visible to website visitors"
 msgstr "La elementet være synlig for besøkende på nettstedet"
 
-#: ../lib/wiking/db.py:1176
+#: ../lib/wiking/db.py:1179
 msgid "Unpublish"
 msgstr "Avpubliser"
 
-#: ../lib/wiking/db.py:1179
+#: ../lib/wiking/db.py:1182
 msgid "Make the item invisible to website visitors"
 msgstr "La elementet være usynlig for besøkende på nettstedet"
 
@@ -195,18 +195,18 @@ msgstr "La elementet være usynlig for besøkende på nettstedet"
 msgid "Page heading"
 msgstr "Sideoverskrift"
 
-#: ../lib/wiking/export.py:81 ../lib/wiking/export.py:190
-#: ../lib/wiking/export.py:215 ../lib/wiking/export.py:217
-#: ../lib/wiking/export.py:274
+#: ../lib/wiking/export.py:81 ../lib/wiking/export.py:192
+#: ../lib/wiking/export.py:217 ../lib/wiking/export.py:219
+#: ../lib/wiking/export.py:276
 msgid "Main navigation"
 msgstr "Hovednavigasjon"
 
-#: ../lib/wiking/export.py:82 ../lib/wiking/export.py:192
-#: ../lib/wiking/export.py:268
+#: ../lib/wiking/export.py:82 ../lib/wiking/export.py:194
+#: ../lib/wiking/export.py:270
 msgid "Local navigation"
 msgstr "Lokalnavigasjon"
 
-#: ../lib/wiking/export.py:83 ../lib/wiking/export.py:188
+#: ../lib/wiking/export.py:83 ../lib/wiking/export.py:190
 msgid "Main content"
 msgstr "Innhold"
 
@@ -246,20 +246,20 @@ msgstr "I denne seksjonen:"
 
 #. Translators: Panels are small windows on the side of the page. This is a label
 #. for a link that shows/hides the panels.
-#: ../lib/wiking/export.py:289
+#: ../lib/wiking/export.py:291
 msgid "Show panels"
 msgstr "Vis panelene"
 
-#: ../lib/wiking/export.py:290
+#: ../lib/wiking/export.py:292
 msgid "Hide panels"
 msgstr "Skjul panelene"
 
 #. Translators: ``RSS channel'' is terminology idiom, see Wikipedia
-#: ../lib/wiking/export.py:301
+#: ../lib/wiking/export.py:303
 msgid "RSS channel"
 msgstr "RSS-kanal"
 
-#: ../lib/wiking/export.py:317
+#: ../lib/wiking/export.py:319
 msgid "Warning"
 msgstr "Advarsel"
 
@@ -426,7 +426,7 @@ msgstr "Passordet utløper %(date)s"
 #. user to obtain access to the website/application by submitting his personal
 #. details.
 #. Translators: Webpage link leading to registration form.
-#: ../lib/wiking/util.py:497 ../lib/wiking/util.py:892
+#: ../lib/wiking/util.py:497 ../lib/wiking/util.py:893
 msgid "New user registration"
 msgstr "Registrering av ny bruker"
 
@@ -465,37 +465,37 @@ msgstr "ikke logget"
 msgid "log in"
 msgstr "logg inn"
 
-#: ../lib/wiking/util.py:879
+#: ../lib/wiking/util.py:880
 msgid "Login name"
 msgstr "Innloggingsnavn"
 
-#: ../lib/wiking/util.py:882
+#: ../lib/wiking/util.py:883
 msgid "Password"
 msgstr "Passord"
 
 #. Translators: Login button label - verb in imperative.
-#: ../lib/wiking/util.py:888
+#: ../lib/wiking/util.py:889
 msgid "Log in"
 msgstr "Logg inn"
 
 #. Translators: Login dialog link to password change or password reminder (depends
 #. on configuration).
-#: ../lib/wiking/util.py:895
+#: ../lib/wiking/util.py:896
 msgid "Forgot your password?"
 msgstr "Har du glemt ditt passord?"
 
 #. Translators: Confirmation button
-#: ../lib/wiking/util.py:921
+#: ../lib/wiking/util.py:922
 msgid "Continue"
 msgstr ""
 
-#: ../lib/wiking/util.py:1469
+#: ../lib/wiking/util.py:1470
 msgid "Invalid format"
 msgstr "Ugyldig format"
 
 #. Translators: Computer terminology. `gmail.com' is a domain name in email address
 #. `joe@gmail.com'.
-#: ../lib/wiking/util.py:1477 ../lib/wiking/util.py:1484
+#: ../lib/wiking/util.py:1478 ../lib/wiking/util.py:1485
 #, fuzzy
 msgid "Domain not found"
 msgstr "Ingenting funnet."

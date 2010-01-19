@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-01-13 14:08+0100\n"
+"POT-Creation-Date: 2010-01-19 16:52+0100\n"
 "PO-Revision-Date: 2010-01-19 16:18+0100\n"
 "Last-Translator: Hynek Hanke <hanke@brailcom.org>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
@@ -141,55 +141,55 @@ msgstr "Záznam byl úspěšně aktualizován."
 msgid "The record was deleted."
 msgstr "Záznam byl odstraněn."
 
-#: ../lib/wiking/db.py:264
+#: ../lib/wiking/db.py:266
 msgid "Invalid binding column value."
 msgstr "Nepřípustná hodnota vazebního sloupce."
 
-#: ../lib/wiking/db.py:320
+#: ../lib/wiking/db.py:322
 msgid "Integrity check failed."
 msgstr "Kontrola integrity dat selhala."
 
 #. Translators: Back button label. Standard computer terminology.
-#: ../lib/wiking/db.py:973
+#: ../lib/wiking/db.py:976
 msgid "Back"
 msgstr "Zpět"
 
 #. Translators: RSS channel is a computer idiom, see Wikipedia.
-#: ../lib/wiking/db.py:1056
+#: ../lib/wiking/db.py:1059
 msgid "An RSS channel is available for this section:"
 msgstr "K dispozici je také RSS kanál pro tuto sekci:"
 
-#: ../lib/wiking/db.py:1060
+#: ../lib/wiking/db.py:1063
 msgid "more about RSS"
 msgstr "více o RSS"
 
 #. Translators: Record as in `database record'.
-#: ../lib/wiking/db.py:1154
+#: ../lib/wiking/db.py:1157
 msgid "No records."
 msgstr "Žádné záznamy"
 
 #. Translators: `Item' is intentionally general. Could be webpage, notice or something else.
-#: ../lib/wiking/db.py:1162
+#: ../lib/wiking/db.py:1165
 msgid "The item was published."
 msgstr "Položka byla zveřejněna."
 
-#: ../lib/wiking/db.py:1163
+#: ../lib/wiking/db.py:1166
 msgid "The item was unpublished."
 msgstr "Zveřejnění položky bylo zrušeno."
 
-#: ../lib/wiking/db.py:1172
+#: ../lib/wiking/db.py:1175
 msgid "Publish"
 msgstr "Zveřejnit"
 
-#: ../lib/wiking/db.py:1175
+#: ../lib/wiking/db.py:1178
 msgid "Make the item visible to website visitors"
 msgstr "Zpřístupnit položku návštěvníkům stránek"
 
-#: ../lib/wiking/db.py:1176
+#: ../lib/wiking/db.py:1179
 msgid "Unpublish"
 msgstr "Zneveřejnit"
 
-#: ../lib/wiking/db.py:1179
+#: ../lib/wiking/db.py:1182
 msgid "Make the item invisible to website visitors"
 msgstr "Učinit položku nedostupnou pro návštěvníky stránek"
 
@@ -236,7 +236,7 @@ msgid "Jump in page"
 msgstr "Přejít ve stránce"
 
 #. Translators: A label followed by location information in webpage navigation
-#: ../lib/wiking/export.py:203
+#: ../lib/wiking/export.py:205
 msgid "You are here:"
 msgstr "Nacházíte se zde:"
 
@@ -434,7 +434,7 @@ msgstr "Platnost hesla vyprší %(date)s"
 #. user to obtain access to the website/application by submitting his personal
 #. details.
 #. Translators: Webpage link leading to registration form.
-#: ../lib/wiking/util.py:497 ../lib/wiking/util.py:892
+#: ../lib/wiking/util.py:497 ../lib/wiking/util.py:893
 msgid "New user registration"
 msgstr "Registrace nového uživatele"
 
@@ -473,37 +473,37 @@ msgstr "nepřihlášen"
 msgid "log in"
 msgstr "přihlásit"
 
-#: ../lib/wiking/util.py:879
+#: ../lib/wiking/util.py:880
 msgid "Login name"
 msgstr "Přihlašovací jméno"
 
-#: ../lib/wiking/util.py:882
+#: ../lib/wiking/util.py:883
 msgid "Password"
 msgstr "Heslo"
 
 #. Translators: Login button label - verb in imperative.
-#: ../lib/wiking/util.py:888
+#: ../lib/wiking/util.py:889
 msgid "Log in"
 msgstr "přihlásit"
 
 #. Translators: Login dialog link to password change or password reminder (depends
 #. on configuration).
-#: ../lib/wiking/util.py:895
+#: ../lib/wiking/util.py:896
 msgid "Forgot your password?"
 msgstr "Zapomenuté heslo?"
 
 #. Translators: Confirmation button
-#: ../lib/wiking/util.py:921
+#: ../lib/wiking/util.py:922
 msgid "Continue"
 msgstr "Pokračovat"
 
-#: ../lib/wiking/util.py:1469
+#: ../lib/wiking/util.py:1470
 msgid "Invalid format"
 msgstr "Neplatný formát"
 
 #. Translators: Computer terminology. `gmail.com' is a domain name in email address
 #. `joe@gmail.com'.
-#: ../lib/wiking/util.py:1477 ../lib/wiking/util.py:1484
+#: ../lib/wiking/util.py:1478 ../lib/wiking/util.py:1485
 msgid "Domain not found"
 msgstr "Doména nenalezena"
 

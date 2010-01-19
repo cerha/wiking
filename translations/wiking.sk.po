@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-01-13 14:08+0100\n"
+"POT-Creation-Date: 2010-01-19 16:52+0100\n"
 "PO-Revision-Date: 2010-01-19 16:43+0100\n"
 "Last-Translator: Petr Topiarz <topiarz@post.cz>\n"
 "Language-Team: Slovak <wiking@lists.freebsoft.org>\n"
@@ -141,55 +141,55 @@ msgstr "Záznam bol úspešne aktualizovaný."
 msgid "The record was deleted."
 msgstr "Záznam bol odstránený."
 
-#: ../lib/wiking/db.py:264
+#: ../lib/wiking/db.py:266
 msgid "Invalid binding column value."
 msgstr "Neplatné záväzné hodnoty stĺpca."
 
-#: ../lib/wiking/db.py:320
+#: ../lib/wiking/db.py:322
 msgid "Integrity check failed."
 msgstr "Kontrola integrity dát zlyhala."
 
 #. Translators: Back button label. Standard computer terminology.
-#: ../lib/wiking/db.py:973
+#: ../lib/wiking/db.py:976
 msgid "Back"
 msgstr "Späť"
 
 #. Translators: RSS channel is a computer idiom, see Wikipedia.
-#: ../lib/wiking/db.py:1056
+#: ../lib/wiking/db.py:1059
 msgid "An RSS channel is available for this section:"
 msgstr "K dispozícii je tiež RSS kanál pre túto sekciu:"
 
-#: ../lib/wiking/db.py:1060
+#: ../lib/wiking/db.py:1063
 msgid "more about RSS"
 msgstr "viac o RSS"
 
 #. Translators: Record as in `database record'.
-#: ../lib/wiking/db.py:1154
+#: ../lib/wiking/db.py:1157
 msgid "No records."
 msgstr "Žiadne záznamy."
 
 #. Translators: `Item' is intentionally general. Could be webpage, notice or something else.
-#: ../lib/wiking/db.py:1162
+#: ../lib/wiking/db.py:1165
 msgid "The item was published."
 msgstr "Položka bola zverejnená."
 
-#: ../lib/wiking/db.py:1163
+#: ../lib/wiking/db.py:1166
 msgid "The item was unpublished."
 msgstr "Zverejnenie položky bolo zrušené."
 
-#: ../lib/wiking/db.py:1172
+#: ../lib/wiking/db.py:1175
 msgid "Publish"
 msgstr "Zverejniť"
 
-#: ../lib/wiking/db.py:1175
+#: ../lib/wiking/db.py:1178
 msgid "Make the item visible to website visitors"
 msgstr "Sprístupniť "
 
-#: ../lib/wiking/db.py:1176
+#: ../lib/wiking/db.py:1179
 msgid "Unpublish"
 msgstr "Nezverejniť"
 
-#: ../lib/wiking/db.py:1179
+#: ../lib/wiking/db.py:1182
 msgid "Make the item invisible to website visitors"
 msgstr "Učiniť položku nedostupnú pre návštevníkov stránok"
 
@@ -433,7 +433,7 @@ msgstr "Platnosť hesla vyprší %(date)s"
 #. user to obtain access to the website/application by submitting his personal
 #. details.
 #. Translators: Webpage link leading to registration form.
-#: ../lib/wiking/util.py:497 ../lib/wiking/util.py:892
+#: ../lib/wiking/util.py:497 ../lib/wiking/util.py:893
 msgid "New user registration"
 msgstr "Registrácia nového používateľa"
 
@@ -472,37 +472,37 @@ msgstr "neprihlásený"
 msgid "log in"
 msgstr "prihlásiť"
 
-#: ../lib/wiking/util.py:879
+#: ../lib/wiking/util.py:880
 msgid "Login name"
 msgstr "Prihlasovacie meno"
 
-#: ../lib/wiking/util.py:882
+#: ../lib/wiking/util.py:883
 msgid "Password"
 msgstr "Heslo"
 
 #. Translators: Login button label - verb in imperative.
-#: ../lib/wiking/util.py:888
+#: ../lib/wiking/util.py:889
 msgid "Log in"
 msgstr "prihlásiť"
 
 #. Translators: Login dialog link to password change or password reminder (depends
 #. on configuration).
-#: ../lib/wiking/util.py:895
+#: ../lib/wiking/util.py:896
 msgid "Forgot your password?"
 msgstr "Zabudli ste heslo?"
 
 #. Translators: Confirmation button
-#: ../lib/wiking/util.py:921
+#: ../lib/wiking/util.py:922
 msgid "Continue"
 msgstr ""
 
-#: ../lib/wiking/util.py:1469
+#: ../lib/wiking/util.py:1470
 msgid "Invalid format"
 msgstr "Neplatný formát!"
 
 #. Translators: Computer terminology. `gmail.com' is a domain name in email address
 #. `joe@gmail.com'.
-#: ../lib/wiking/util.py:1477 ../lib/wiking/util.py:1484
+#: ../lib/wiking/util.py:1478 ../lib/wiking/util.py:1485
 #, fuzzy
 msgid "Domain not found"
 msgstr "Nič nebolo nájdené."
