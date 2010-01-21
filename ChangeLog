@@ -1,5 +1,10 @@
 2010-01-21  Tomas Cerha  <cerha@brailcom.org>
 
+	* lib/wiking/application.py:
+	Include Wiking, LCG and Pytis versions in automatic bug-report e-mails.
+
+2010-01-21  Tomas Cerha  <cerha@brailcom.org>
+
 	* lib/wiking/export.py:
 	Include Wiking, LCG and Pytis versions in "generator" meta tag for all pages.
 

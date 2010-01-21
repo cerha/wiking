@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2006-2009 Brailcom, o.p.s.
+# Copyright (C) 2006-2010 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -268,7 +268,7 @@ class Application(Module):
         logged to server's error log.  'InternalServerError' is then raised.
 
         """
-        import traceback, cgitb
+        import traceback, cgitb, wiking
         from xml.sax import saxutils
         einfo = sys.exc_info()
         if isinstance(exception, pytis.data.DBSystemException):
@@ -303,6 +303,8 @@ class Application(Module):
                                    ("Remote user", user and user.login() or ''),
                                    ("HTTP referrer", req.header('Referer')),
                                    ("User agent", req.header('User-Agent')),
+                                   ('Server software', 'Wiking %s, LCG %s, Pytis %s' %
+                                    (wiking.__version__, lcg.__version__, pytis.__version__)),
                                    ("Query parematers", "\n"+"\n".join(params)),
                                    )])
             text = req_info + "\n\n" + cgitb.text(einfo)
