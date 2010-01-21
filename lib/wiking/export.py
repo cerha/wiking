@@ -28,6 +28,10 @@ class MinimalExporter(lcg.HtmlExporter):
                ['<link rel="stylesheet" type="text/css" href="/_css/%s">' % style
                 for style in ('default.css', 'layout.css')]
     
+    def _meta(self, context):
+        import wiking
+        return (('generator', 'Wiking %s, LCG %s, Pytis %s' %
+                 (wiking.__version__, lcg.__version__, pytis.__version__)),)
     def _main(self, context):
         return (context.generator().h(context.node().title(), 1),
                 super(MinimalExporter, self)._content(context))
@@ -106,6 +110,11 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             return self._content(context)
         else:
             return super(Exporter, self)._body_content(context)
+
+    def _meta(self, context):
+        import wiking
+        return (('generator', 'Wiking %s, LCG %s, Pytis %s' %
+                 (wiking.__version__, lcg.__version__, pytis.__version__)),)
 
     def _wrap(self, context):
         return self._parts(context, self._WRAP_PARTS)
