@@ -1,5 +1,11 @@
 2010-01-21  Tomas Cerha  <cerha@brailcom.org>
 
+	* sql/upgrade.15.sql:
+	* sql/wiking.sql:
+	Add on delete/on update rules to foreign key constraints;
+
+2010-01-21  Tomas Cerha  <cerha@brailcom.org>
+
 	* lib/wiking/application.py:
 	Include Wiking, LCG and Pytis versions in automatic bug-report e-mails.
 

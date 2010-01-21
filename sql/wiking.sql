@@ -37,7 +37,7 @@ create table users (
 	role char(4) not null default 'none',
         last_password_change timestamp not null,
 	since timestamp not null default current_timestamp(0),
-	lang char(2) references languages(lang),
+	lang char(2) references languages(lang) on update cascade on delete set null,
         regexpire timestamp,
         regcode char(16),
         certauth boolean not null default false,
@@ -106,7 +106,7 @@ create table _mapping (
 	parent integer references _mapping,
 	modname text,
 	private boolean not null default false,
-	owner int references users,
+	owner int references users on delete set null,
 	hidden boolean not null,
 	ord int not null,
 	tree_order text
@@ -128,7 +128,7 @@ create or replace view mapping as select * from _mapping;
 
 create table _pages (
        mapping_id integer not null references _mapping on delete cascade,
-       lang char(2) not null references languages(lang),
+       lang char(2) not null references languages(lang) on update cascade,
        published boolean not null default true,
        title text not null,
        description text,
@@ -220,7 +220,7 @@ create table _attachments (
 
 create table _attachment_descr (
        attachment_id int not null references _attachments on delete cascade initially deferred,
-       lang char(2) not null references languages(lang) on delete cascade,
+       lang char(2) not null references languages(lang) on update cascade on delete cascade,
        title text,
        description text,
        unique (attachment_id, lang)
@@ -299,7 +299,7 @@ create or replace rule attachments_delete as
 
 create table news (
 	news_id serial primary key,
-	lang char(2) not null references languages(lang),
+	lang char(2) not null references languages(lang) on update cascade,
 	mapping_id int not null references _mapping on delete cascade,
 	"timestamp" timestamp not null default now(),
 	title text not null,
@@ -311,7 +311,7 @@ create table news (
 
 create table planner (
 	planner_id serial primary key,
-	lang char(2) not null references languages(lang),
+	lang char(2) not null references languages(lang) on update cascade,
 	mapping_id int not null references _mapping on delete cascade,
 	start_date date not null,
 	end_date date,
@@ -326,10 +326,10 @@ create table planner (
 
 create table _panels (
 	panel_id serial primary key,
-	lang char(2) not null references languages(lang),
+	lang char(2) not null references languages(lang) on update cascade,
 	ptitle text,
 	ord int,
-	mapping_id integer references _mapping,
+	mapping_id integer references _mapping on delete set null,
 	size int,
 	content text,
 	_content text,
@@ -436,7 +436,7 @@ $$ language plpgsql;
 
 create table _texts (
         label name not null references text_labels,
-        lang char(2) not null references languages(lang) on delete cascade,
+        lang char(2) not null references languages(lang) on update cascade on delete cascade,
         description text default '',
         content text default '',
         primary key (label, lang)
@@ -472,7 +472,7 @@ $$ language plpgsql;
 
 create table _emails (
         label name not null references email_labels,
-        lang char(2) not null references languages(lang) on delete cascade,
+        lang char(2) not null references languages(lang) on update cascade on delete cascade,
         description text,
         subject text,
         cc text,
@@ -542,7 +542,7 @@ create table config (
         default_sender_address text,
         upload_limit int,
         session_expiration int,
-	default_language char(2) references languages(lang),
+	default_language char(2) references languages(lang) on update cascade,
         certificate_authentication boolean not null default false,
         certificate_expiration int,
         theme_id integer references themes
