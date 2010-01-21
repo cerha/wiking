@@ -1,5 +1,11 @@
 2010-01-21  Tomas Cerha  <cerha@brailcom.org>
 
+	* sql/upgrade.16.sql:
+	* sql/wiking.sql:
+	Drop unused database objects.
+
+2010-01-21  Tomas Cerha  <cerha@brailcom.org>
+
 	* sql/upgrade.15.sql:
 	* sql/wiking.sql:
 	Add on delete/on update rules to foreign key constraints;
