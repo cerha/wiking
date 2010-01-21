@@ -1,5 +1,12 @@
 2010-01-21  Tomas Cerha  <cerha@brailcom.org>
 
+	* INSTALL:
+	* NEWS:
+	* lib/wiking/__init__.py:
+	Released version 1.0.0.
+
+2010-01-21  Tomas Cerha  <cerha@brailcom.org>
+
 	* sql/upgrade.16.sql:
 	* sql/wiking.sql:
 	Drop unused database objects.

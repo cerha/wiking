@@ -1,4 +1,29 @@
--*- mode: Text; fill-column: 80 -*-
+Version 1.0.0 (2010-01-21):
+ 
+ * ARIA support and JavaScript navigation redesigned. 
+
+ * Added support for foldable menus.
+
+ * New features in Wiking CMS:
+
+   - Allow entering the registration code by hand (not just through a link in
+     registration email).
+   
+   - Display account state information after login to blocked accounts or
+     accounts with unfinished registration.
+
+   - New "Discussions" module.
+
+   - WMI menu structure made more intuitive.
+
+ * API documentation improved.
+
+ * Further API cleanup.
+
+ * Bug fixes.
+
+ * Translation updates.
+
 
 Version 0.4.5 (2009-09-21):
  
