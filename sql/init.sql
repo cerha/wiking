@@ -15,8 +15,8 @@ insert into stylesheets (identifier, media, ord) values ('default.css', 'all', 1
 insert into stylesheets (identifier, media, ord) values ('layout.css', 'screen', 20);
 insert into stylesheets (identifier, media, ord) values ('print.css', 'print', 30);
 
-INSERT INTO users (login, password, firstname, surname, nickname, user_, email, role)
-VALUES ('admin', 'wiking', 'Wiking', 'Admin', 'Admin', 'Admin', '-', 'admn');
+INSERT INTO users (login, password, firstname, surname, nickname, user_, email, role, last_password_change)
+VALUES ('admin', 'wiking', 'Wiking', 'Admin', 'Admin', 'Admin', '-', 'admn', '2000-01-01 00:00:00');
 
 INSERT INTO themes ("name", foreground, background, border, heading_fg, heading_bg, heading_line,
     frame_fg, frame_bg, frame_border, link, link_visited, link_hover, meta_fg, meta_bg, help,
