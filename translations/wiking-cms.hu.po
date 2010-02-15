@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-01-19 16:52+0100\n"
-"PO-Revision-Date: 2008-10-14 10:38+0200\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2010-02-15 15:35+0100\n"
+"PO-Revision-Date: 2010-02-04 00:15+0100\n"
+"Last-Translator: Hostomský Károly <khostomsky@gmail.com>\n"
 "Language-Team: Hungarian <wiking@lists.freebsoft.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -17,15 +17,15 @@ msgstr ""
 
 #: ../lib/wiking/configuration.py:186
 msgid "Webmaster's e-mail address"
-msgstr ""
+msgstr "A webmester email címe"
 
 #: ../lib/wiking/configuration.py:197
 msgid "Default sender address"
-msgstr ""
+msgstr "Alapértelmezett küldő email cím"
 
 #: ../lib/wiking/configuration.py:214
 msgid "Force HTTPS login"
-msgstr ""
+msgstr "Fokozott HTTPS bejelentkezés"
 
 #: ../lib/wiking/configuration.py:215
 msgid ""
@@ -34,22 +34,28 @@ msgid ""
 "your server to be setup to accept HTTPS requests for the same virtual host "
 "and pass them to Wiking."
 msgstr ""
+"Ha be van kapcsolva, a bejelentkezési ablak mindig át lesz irányítva egy "
+"HTTPS címre, elősegítendő a felhasználó nagyobb biztonságát. Ehhez "
+"szerverének képesnek kell lennie HTTPS kérést kezelni azonos virtuális "
+"vendég számára és átirányítani a Wikingre."
 
 #. Translators: Site means a webpage or web application.
 #: ../lib/wiking/configuration.py:268
 msgid "Site title"
-msgstr ""
+msgstr "A webhely főcíme"
 
 #: ../lib/wiking/configuration.py:269
 msgid ""
 "Site title is a short and (hopefully) unique title of the whole website. It "
 "will appear at the top of every page."
 msgstr ""
+"A webhely főcíme rövid és (remélhetőleg) egyedi cím az egész webhely "
+"számára. Minden oldal tetején jelenik meg."
 
 #. Translators: Site means a webpage or web application. Subtitle as in ,,title -- subtitle''.
 #: ../lib/wiking/configuration.py:275
 msgid "Site subtitle"
-msgstr ""
+msgstr "A webhely alcíme"
 
 #: ../lib/wiking/configuration.py:276
 msgid ""
@@ -57,15 +63,18 @@ msgid ""
 "appear at the top of every page together with site title, but where brevity "
 "matters, only title will be used."
 msgstr ""
+"A webhely alcíme tetszőleges és pontosabban írja le az oldal tartalmát. Az "
+"oldal tetején a főcímmel együtt jelenik meg, de ahol indokolt a tömörség ott "
+"csak a cím jelenik meg."
 
 #. Translators: Web page or web application specific image.
 #: ../lib/wiking/configuration.py:283
 msgid "Site icon"
-msgstr ""
+msgstr "Weboldal logója"
 
 #: ../lib/wiking/configuration.py:297
 msgid "Default language"
-msgstr ""
+msgstr "Alapbeállított nyelv"
 
 #. Translators: Language negotiation means the process where the server is trying
 #. to find a language that matches with what the users internet browser asks for.
@@ -84,213 +93,176 @@ msgid ""
 "available at least in the default language variant if you want to avoid 606 "
 "errors completely."
 msgstr ""
+"Meghatározza a használandó nyelvet (ISO 639-1 Alpha-2 code), ha a "
+"nyelvfelismerés kudarcot vall. Ha nincs beállítva (ami az alapbeállítás), "
+"akkor a szerver 606 HTTP (Nincs egyezés) hibaüzenetet küld, ha a dokumentum "
+"nem hozzáférhető egyik kívánt nyelven sem. A hibaüzenet tartalmazza a "
+"probléma leírását és egy listát a rendelkezésre álló nyelvekről az adott "
+"dokumentumhoz. A nyelvegyeztetés a böngésző beállításain múlik, a "
+"felhasználó által előnyben részesített nyelv a 'Elfogadott-Nyelv' HTTP "
+"fejlécben. Ha be van állítva, a Wiking automatikusan felajánlja a kívánt "
+"nyelvet a hibaüzenet helyett, ha az adott nyelv rendelkezésre áll. Ha nem "
+"áll rendelkezésre ugyancsak a 606-os hibaüzenet jelenik meg, amennyiben el "
+"szeretné kerülni a ezt a hibaüzenetet, törekednie kell rá, hogy legalább az "
+"alapértelmezett nyelven elérhetőek legyenek a dokumentumok."
 
 #: ../lib/wiking/configuration.py:382
 msgid "Whether to use e-mails as login names"
-msgstr ""
+msgstr "E-mail cím használata bejelentkezési névként"
 
 #: ../lib/wiking/configuration.py:383
 msgid "Iff true, users must use e-mail addresses as their login names."
 msgstr ""
+"Ebben az esetben a felhasználónak az e-mail címét kell használia "
+"felhasználói névként."
 
 #. Translators: Yes/No configuration option label. Should the login panel display user role (as Admin, Student, Tutor etc.)
 #: ../lib/wiking/configuration.py:394
 msgid "Display role in login panel"
-msgstr ""
+msgstr "Felhasználó szerepének kijelzése"
 
 #: ../lib/wiking/configuration.py:395
+#, fuzzy
 msgid ""
 "If enabled, the login panel on each page will not display only the current "
 "username, but also his current user role, which affects his permissions."
 msgstr ""
-
-#. Translators: Yes/No configuration option label. Should the login panel be visible?
-#: ../lib/wiking/cms/configuration.py:36
-msgid "Allow login panel"
-msgstr ""
-
-#: ../lib/wiking/cms/configuration.py:37
-msgid ""
-"If enabled, the information about the currently logged user and login/logout "
-"controls will be present on each page as a separate panel.  This panel will "
-"always be the first panel on the page."
-msgstr ""
-
-#. Translators: Yes/No configuration option label. Should link to WMI be visible?  "WMI"
-#. stands for Wiking Management Interface.  Don't feel obliged to use an abbreviation.  Use
-#. whatever brief form obviously referning to whatever translation you used for "Wiking
-#. Management Interface".
-#: ../lib/wiking/cms/configuration.py:47
-msgid "Allow WMI link"
-msgstr ""
-
-#. Translators: Yes/no configuration label. Can new users register to this
-#. website/application?
-#: ../lib/wiking/cms/configuration.py:55
-msgid "Allow new user registration"
-msgstr ""
-
-#: ../lib/wiking/cms/configuration.py:56
-msgid ""
-"If enabled, all visitors are allowed to create a user account.  If disabled, "
-"new user accounts must be created by administrator.  Note, that the newly "
-"created accounts are inactive (at least with the default implementation of "
-"the user management module), so the creation of the account doesn't give the "
-"user any actual privileges."
-msgstr ""
-
-#. Translators: Maximal size an uploaded file can have.
-#: ../lib/wiking/cms/configuration.py:65
-msgid "Maximal upload size"
-msgstr ""
-
-#: ../lib/wiking/cms/configuration.py:66
-msgid ""
-"The maximal size of uploaded files in bytes.  The server needs to be "
-"relaoded for the changes in this option to take effect."
-msgstr ""
-
-#: ../lib/wiking/cms/appl.py:58
-msgid "Manage this site"
-msgstr ""
-
-#: ../lib/wiking/cms/appl.py:59
-msgid "Enter the Wiking Management Interface"
-msgstr ""
-
-#: ../lib/wiking/cms/appl.py:61
-msgid "Leave the Management Interface"
-msgstr ""
-
-#: ../lib/wiking/cms/appl.py:160
-msgid "Wiking Management Interface"
-msgstr ""
+"Ha be van kapcsolva a bejelentkezési panel nem lesz minden oldalon látható, "
+"csak a felhasználói név és a személy szerepe (pl. Rendszergazda, Diák, Tanár "
+"stb.)"
 
 #: ../lib/wiking/cms/cms.py:58
 msgid "formatting manual"
-msgstr ""
+msgstr "formázó kézikönyv"
 
 #: ../lib/wiking/cms/cms.py:56
 #, python-format
 msgid ""
 "The content should be formatted as LCG structured text. See the %(manual)s."
 msgstr ""
+"A tartalmat LCG szerkesztett szövegként kell formázni. Lásd a %(manual)s."
 
 #: ../lib/wiking/cms/cms.py:75
 msgid "unknown"
-msgstr ""
+msgstr "ismeretlen"
 
 #. Translators: Heading and menu title. Computer idiom meaning configuration of appearance
 #. (colors, sizes, positions, graphical presentation...).
 #: ../lib/wiking/cms/cms.py:95
 msgid "Look &amp; Feel"
-msgstr ""
+msgstr "Lásd &amp; Keres"
 
 #: ../lib/wiking/cms/cms.py:96
 msgid "Customize the appearance of your site."
-msgstr ""
+msgstr "A weblap megjelenésének beállításai."
 
 #. Translators: Heading and menu title.
 #: ../lib/wiking/cms/cms.py:98
 msgid "Users"
-msgstr ""
+msgstr "Felhasználók"
 
 #: ../lib/wiking/cms/cms.py:99
 msgid "Manage user accounts, privileges and perform other user related tasks."
 msgstr ""
+"Felhasználói fiókok, jogkörök és egyéb felhasználói beállítások kezelése."
 
 #. Translators: Heading and menu title for configuration.
 #: ../lib/wiking/cms/cms.py:101
 msgid "Setup"
-msgstr ""
+msgstr "Beállítások"
 
 #: ../lib/wiking/cms/cms.py:102
 msgid "Edit global properties of your web site."
-msgstr ""
+msgstr "A webhely globális tulajdonságainak szerkesztése."
 
 #. Translators: Heading and menu title for website content management.
 #. Translators: Content of a page (text or something else)
 #: ../lib/wiking/cms/cms.py:137 ../lib/wiking/cms/cms.py:818
 #: ../lib/wiking/cms/cms.py:1058 ../lib/wiking/cms/cms.py:2046
 msgid "Content"
-msgstr ""
+msgstr "Tartalom"
 
 #: ../lib/wiking/cms/cms.py:138 ../lib/wiking/cms/cms.py:1044
 msgid "Manage available pages and their content."
-msgstr ""
+msgstr "Az elérhető oldalak és tartalmuk kezelése."
 
 #: ../lib/wiking/cms/cms.py:168
 msgid "Enter your login name or e-mail address"
-msgstr ""
+msgstr "Add meg a felhasználóneved vagy e-mail címed"
 
 #. Translators: Button name. Computer terminology. Use an appropriate term common
 #. for submitting forms in a computer application.
 #: ../lib/wiking/cms/cms.py:172 ../lib/wiking/cms/cms.py:508
 msgid "Submit"
-msgstr ""
+msgstr "Elküld"
 
 #: ../lib/wiking/cms/cms.py:210
 msgid "Password reminder"
-msgstr ""
+msgstr "Jelszó emlékeztető"
 
 #: ../lib/wiking/cms/cms.py:223
 msgid "Multiple user accounts found for given email address."
-msgstr ""
+msgstr "Több felhasználói fiók tartozik a megadott e-mail címhez."
 
 #: ../lib/wiking/cms/cms.py:224
 msgid "Please, select the account for which you want to remind:"
-msgstr ""
+msgstr "Kérem válassza ki a fiókot, amelyhez emlékeztetőt kér:"
 
 #. Translators: Credentials such as password...
 #: ../lib/wiking/cms/cms.py:237
 msgid "Your credentials were reset to:"
-msgstr ""
+msgstr "Az Ön bejelentkezési adatai vissza lettek állítva a következőre:"
 
 #. Translators: Credentials such as password...
 #: ../lib/wiking/cms/cms.py:241
 msgid "Your credentials are:"
-msgstr ""
+msgstr "Az Ön bejelentkezési adatai:"
 
 #: ../lib/wiking/cms/cms.py:243
 #, python-format
 msgid "A password reminder request has been made at %(server_uri)s."
-msgstr ""
+msgstr "A jelszóemlékeztető kérés a %(server_uri)s-n történt."
 
 #. Translators: Login name for a website. Registration form field.
 #: ../lib/wiking/cms/cms.py:247 ../lib/wiking/cms/cms.py:2136
 msgid "Login name"
-msgstr ""
+msgstr "Felhasználói név"
 
 #: ../lib/wiking/cms/cms.py:248 ../lib/wiking/cms/cms.py:2141
 msgid "Password"
-msgstr ""
+msgstr "Jelszó"
 
 #: ../lib/wiking/cms/cms.py:250
 msgid ""
 "We strongly recommend you change your password at nearest occassion, since "
 "it has been exposed to an unsecure channel."
 msgstr ""
+"Erősen javasoljuk, hogy amint lehet változtassa meg a jelszavát, mivel "
+"veszélyes csatorna környékezte."
 
 #: ../lib/wiking/cms/cms.py:255 ../lib/wiking/cms/cms.py:2491
 #: ../lib/wiking/cms/cms.py:2510 ../lib/wiking/cms/cms.py:2558
 msgid "Failed sending e-mail notification:"
-msgstr ""
+msgstr "E-mail figyelmeztetés küldése sikertelen:"
 
 #: ../lib/wiking/cms/cms.py:256
 msgid "Please try repeating your request later or contact the administrator!"
 msgstr ""
+"Kérem, próbálja meg a kérését megismételni, vagy lépjen érintkezésbe az "
+"adminisztátorral!"
 
 #: ../lib/wiking/cms/cms.py:258
 msgid "E-mail information has been sent to your email address."
-msgstr ""
+msgstr "E-mail információ el lett küldve az e-mail címére."
 
 #: ../lib/wiking/cms/cms.py:261
 msgid "No user account for your query."
-msgstr ""
+msgstr "Az Ön kérésének nem felel meg egy felhasználói fiók sem."
 
 #: ../lib/wiking/cms/cms.py:506
+#, fuzzy
 msgid "Enter the activation code:"
-msgstr ""
+msgstr "Aktivációs kód újraküldése"
 
 #: ../lib/wiking/cms/cms.py:511
 msgid "Continue without activation"
@@ -298,102 +270,104 @@ msgstr ""
 
 #: ../lib/wiking/cms/cms.py:543 ../lib/wiking/cms/cms.py:2110
 msgid "Account disabled"
-msgstr ""
+msgstr "Fiók kikapcsolva"
 
 #: ../lib/wiking/cms/cms.py:545 ../lib/wiking/cms/cms.py:2541
+#, fuzzy
 msgid "Account not activated"
-msgstr ""
+msgstr "Fiók kikapcsolva"
 
 #: ../lib/wiking/cms/cms.py:547
+#, fuzzy
 msgid "Account not approved"
-msgstr ""
+msgstr "Fiók kikapcsolva"
 
 #. Translators: Heading for an overview when and how the user has accessed the application.
 #: ../lib/wiking/cms/cms.py:573 ../lib/wiking/cms/cms.py:2257
 msgid "Login History"
-msgstr ""
+msgstr "Bejelentkezési napló"
 
 #: ../lib/wiking/cms/cms.py:574
 msgid "History of successful login sessions and unsuccessful login attempts."
-msgstr ""
+msgstr "A sikeres belépések és sikertelen próbálkozások naplója."
 
 #: ../lib/wiking/cms/cms.py:578 ../lib/wiking/cms/cms.py:2111
 #: ../lib/wiking/cms/cms.py:2162
 msgid "User"
-msgstr ""
+msgstr "Felhasználó"
 
 #. Translators: Login name.
 #: ../lib/wiking/cms/cms.py:580
 msgid "Login"
-msgstr ""
+msgstr "Felhasználói név"
 
 #. Translators: Form field saying whether the users attempt was succesful. Values are Yes/No.
 #: ../lib/wiking/cms/cms.py:582
 msgid "Success"
-msgstr ""
+msgstr "Belépés"
 
 #. Translators: Table column heading. Time of the start of user session, followed by a date and time.
 #: ../lib/wiking/cms/cms.py:584
 msgid "Start time"
-msgstr ""
+msgstr "Belépés ideje"
 
 #. Translators: Table column heading. The length of user session. Contains time.
 #: ../lib/wiking/cms/cms.py:586
 msgid "Duration"
-msgstr ""
+msgstr "Eltöltött idő"
 
 #. Translators: Table column heading. Whether the account is active. Values are yes/no.
 #: ../lib/wiking/cms/cms.py:588 ../lib/wiking/cms/cms.py:971
 #: ../lib/wiking/cms/cms.py:2035
 msgid "Active"
-msgstr ""
+msgstr "Aktív"
 
 #: ../lib/wiking/cms/cms.py:589
 msgid "IP address"
-msgstr ""
+msgstr "IP cím"
 
 #. Translators: Internet name of the remote computer (computer terminology).
 #: ../lib/wiking/cms/cms.py:591
 msgid "Hostname"
-msgstr ""
+msgstr "Hostnév"
 
 #. Translators: "User agent" is a generalized name for browser or more precisely the
 #. software which produced the HTTP request (was used to access the website).
 #: ../lib/wiking/cms/cms.py:594
 msgid "User agent"
-msgstr ""
+msgstr "User agent"
 
 #. Translators: Meaning where the user came from. Computer terminology. Do not translate
 #. "HTTP" and if unsure, don't translate at all (it is a very technical term).
 #: ../lib/wiking/cms/cms.py:597
 msgid "HTTP Referer"
-msgstr ""
+msgstr "HTTP Referer"
 
 #: ../lib/wiking/cms/cms.py:652
 msgid "enabled"
-msgstr ""
+msgstr "bekapcsolva"
 
 #: ../lib/wiking/cms/cms.py:652
 msgid "disabled"
-msgstr ""
+msgstr "kikapcsolva"
 
 #: ../lib/wiking/cms/cms.py:654
 msgid "undefined"
-msgstr ""
+msgstr "meghatározatlan"
 
 #: ../lib/wiking/cms/cms.py:655
 #, python-format
 msgid "The default value is %s."
-msgstr ""
+msgstr "Az alapértelmezett érték: %s."
 
 #. Translators: Website heading and menu item
 #: ../lib/wiking/cms/cms.py:667 ../lib/wiking/cms/cms.py:692
 msgid "Basic Configuration"
-msgstr ""
+msgstr "Alapbeállítás"
 
 #: ../lib/wiking/cms/cms.py:668
 msgid "Edit site configuration."
-msgstr ""
+msgstr "Hálózati beállítások szerkesztése."
 
 #: ../lib/wiking/cms/cms.py:675
 msgid ""
@@ -402,6 +376,10 @@ msgid ""
 "on.  Please make sure that this address is valid (e-mail sent to it is "
 "delivered to a responsible person)."
 msgstr ""
+"Ez a cím az nyilvános kontaktusként működik az oldalához. Minden oldal alján "
+"megjelenik, hibaüzenetekben, RSS üzenetekben, stb. Kérem, bizonyosodjon meg "
+"afelől, hogy a e-mail cím érvényes (az erre a címre elküldött e-mailek "
+"eljutnak a címzetthez)."
 
 #: ../lib/wiking/cms/cms.py:680
 msgid ""
@@ -410,6 +388,10 @@ msgid ""
 "make sure that this address is valid, since users may reply to such messages "
 "if they encounter problems."
 msgstr ""
+"A rendszer által küldött e-mailek, mint az automatikus értesítések, jelszó "
+"emlékeztetők, hibaüzeneket, stb. ezt a címet fogják fogják használni. Kérem "
+"bizonyosodjon meg afelől, hogy a cím érvényes, mivel a felhasználók "
+"válaszolhatnak az egyes mailekre, ha problémát tapasztalnak."
 
 #. Translators: Panels are small windows containing different things (such as recent news,
 #. application specific controls, sponsorship reference etc.) displayed by the side of a
@@ -417,16 +399,17 @@ msgstr ""
 #. etc. which all have their specific meaning in computer terminology.
 #: ../lib/wiking/cms/cms.py:785
 msgid "Panels"
-msgstr ""
+msgstr "Panelok"
 
 #: ../lib/wiking/cms/cms.py:786
 msgid "Manage panels – the small windows shown by the side of every page."
 msgstr ""
+"Kezelő panelok - kis ablakok, melyek az oldalak szélén helyezkednek el."
 
 #: ../lib/wiking/cms/cms.py:790 ../lib/wiking/cms/cms.py:1053
 #: ../lib/wiking/cms/cms.py:1502 ../lib/wiking/cms/cms.py:1810
 msgid "Language"
-msgstr ""
+msgstr "Nyelv"
 
 #. Translators: Title in the meaning of a heading
 #: ../lib/wiking/cms/cms.py:793 ../lib/wiking/cms/cms.py:797
@@ -434,55 +417,60 @@ msgstr ""
 #: ../lib/wiking/cms/cms.py:1517 ../lib/wiking/cms/cms.py:1817
 #: ../lib/wiking/cms/cms.py:1887
 msgid "Title"
-msgstr ""
+msgstr "Cím"
 
 #: ../lib/wiking/cms/cms.py:794
 msgid ""
 "Panel title – you may leave the field blank to use the menu title of the "
 "selected module."
 msgstr ""
+"Panel cím - hagyja üresen a mezőt a menü cím használatához a kiválasztott "
+"modulban."
 
 #. Translators: Order in the meaning of sequence. A noun, not verb.
 #. Translators: Order as a position in sequence. E.g. first, second...
 #: ../lib/wiking/cms/cms.py:801 ../lib/wiking/cms/cms.py:2043
 msgid "Order"
-msgstr ""
+msgstr "Sorrend"
 
 #: ../lib/wiking/cms/cms.py:802
 msgid "Number denoting the order of the panel on the page."
-msgstr ""
+msgstr "A panel az oldalon levő sorrendjét jelző szám."
 
 #. Translators: List items can be news, webpages, names of users. Intentionally general.
 #: ../lib/wiking/cms/cms.py:804
 msgid "List items"
-msgstr ""
+msgstr "Elemek listája"
 
 #: ../lib/wiking/cms/cms.py:805
 msgid ""
 "The items of the extension module used by the selected page will be shown by "
 "the panel.  Leave blank for a text content panel."
 msgstr ""
+"Az oldal által használt kiterjesztett modul elemei a panel mellett jelennek "
+"meg. Hagyja üresen a szöveges panelhez."
 
 #. Translators: Computer term for a part of application.
 #. Translators: "Module" is an independent reusable part of a computer program (here a
 #. module of Wiking CMS).
 #: ../lib/wiking/cms/cms.py:811 ../lib/wiking/cms/cms.py:1063
 msgid "Module"
-msgstr ""
+msgstr "Modul"
 
 #. Translators: As number of items in a table.
 #: ../lib/wiking/cms/cms.py:814
 msgid "Items count"
-msgstr ""
+msgstr "Elemek száma"
 
 #: ../lib/wiking/cms/cms.py:815
 msgid ""
 "Number of items from the selected module, which will be shown by the panel."
 msgstr ""
+"A kiválasztott modul elemeinek száma, melyek a panel mellett jelennek meg."
 
 #: ../lib/wiking/cms/cms.py:819
 msgid "Additional text content displayed on the panel."
-msgstr ""
+msgstr "További szöveg, amely a panelen megjelenik."
 
 #. Translators: Yes/no configuration of whether the page is
 #. published. Followed by a checkbox.
@@ -490,41 +478,41 @@ msgstr ""
 #. (passive form of publish).  The label may be followed by a checkbox.
 #: ../lib/wiking/cms/cms.py:823 ../lib/wiking/cms/cms.py:1076
 msgid "Published"
-msgstr ""
+msgstr "Közzétesz"
 
 #: ../lib/wiking/cms/cms.py:824
 msgid "Controls whether the panel is actually displayed."
-msgstr ""
+msgstr "Ellenőrzi, hogy a panel meg van-e jelenítve."
 
 #. Translators: Heading and menu item for language configuration section.
 #: ../lib/wiking/cms/cms.py:872
 msgid "Languages"
-msgstr ""
+msgstr "Nyelvek"
 
 #: ../lib/wiking/cms/cms.py:873
 msgid "Manage available languages."
-msgstr ""
+msgstr "Rendelkezésre álló nevek kezelése."
 
 #. Translators: Language code, e.g. 'cs', 'sk' etc.
 #: ../lib/wiking/cms/cms.py:877
 msgid "Code"
-msgstr ""
+msgstr "Kód"
 
 #. Translators: Language name: e.g. Czech, Slovak etc.
 #: ../lib/wiking/cms/cms.py:880 ../lib/wiking/cms/cms.py:970
 #: ../lib/wiking/cms/cms.py:2820
 msgid "Name"
-msgstr ""
+msgstr "Név"
 
 #. Translators: Do not translate this.
 #: ../lib/wiking/cms/cms.py:889
 #, python-format
 msgid "%(name)s"
-msgstr ""
+msgstr "%(name)s"
 
 #: ../lib/wiking/cms/cms.py:904
 msgid "Normal page colors"
-msgstr ""
+msgstr "Közönséges oldalszínek"
 
 #: ../lib/wiking/cms/cms.py:905 ../lib/wiking/cms/cms.py:920
 #: ../lib/wiking/cms/cms.py:928 ../lib/wiking/cms/cms.py:935
@@ -532,7 +520,7 @@ msgstr ""
 #: ../lib/wiking/cms/cms.py:952 ../lib/wiking/cms/cms.py:2910
 #: ../lib/wiking/cms/cms.py:3139 ../lib/wiking/cms/cms.py:3327
 msgid "Text"
-msgstr ""
+msgstr "Szöveg"
 
 #. Translators: Website background (e.g. color)
 #: ../lib/wiking/cms/cms.py:907 ../lib/wiking/cms/cms.py:921
@@ -540,49 +528,51 @@ msgstr ""
 #: ../lib/wiking/cms/cms.py:945 ../lib/wiking/cms/cms.py:949
 #: ../lib/wiking/cms/cms.py:953
 msgid "Background"
-msgstr ""
+msgstr "Háttér"
 
 #: ../lib/wiking/cms/cms.py:908
 msgid "Highlight background"
-msgstr ""
+msgstr "Háttér kiemelése"
 
 #: ../lib/wiking/cms/cms.py:909
 msgid ""
 "Background highlighting may be used for emphasizing the current language, "
 "etc."
-msgstr ""
+msgstr "Háttér kiemelése az adott nyelv hangsúlyozása miatt, stb."
 
 #: ../lib/wiking/cms/cms.py:911
 msgid "Link"
-msgstr ""
+msgstr "Link"
 
 #: ../lib/wiking/cms/cms.py:912
 msgid "Visited link"
-msgstr ""
+msgstr "Látogatott link"
 
 #. Translators: Computer terminology. Term for how a website hyperlink changes when
 #. you move mouse cursor over it.
 #: ../lib/wiking/cms/cms.py:915
 msgid "Hover link"
-msgstr ""
+msgstr "Hover link"
 
 #: ../lib/wiking/cms/cms.py:916
 msgid ""
 "Used for changing the link color when the user moves the mouse pointer over "
 "it."
 msgstr ""
+"A link színének megváltoztatására szolgál, ha a felhasználó elhalad fölötte "
+"az egérkurzorral."
 
 #: ../lib/wiking/cms/cms.py:918
 msgid "Borders"
-msgstr ""
+msgstr "Szegélyek"
 
 #: ../lib/wiking/cms/cms.py:919
 msgid "Heading colors"
-msgstr ""
+msgstr "Címek színei"
 
 #: ../lib/wiking/cms/cms.py:922
 msgid "Underline"
-msgstr ""
+msgstr "Aláhúz"
 
 #: ../lib/wiking/cms/cms.py:923
 msgid ""
@@ -591,25 +581,31 @@ msgid ""
 "distinguished by a different background color and others may be just "
 "underlined."
 msgstr ""
+"Színes címek a fejezetek címeihez, panelek címeihez és egyéb címszerű "
+"elemeknél használatosak. Stíluslaptól függően némely címeknek különbözik a "
+"színük a háttértől, mások csak alá vannak húzva."
 
 #: ../lib/wiking/cms/cms.py:927
 msgid "Frames"
-msgstr ""
+msgstr "Keretek"
 
 #: ../lib/wiking/cms/cms.py:930 ../lib/wiking/cms/cms.py:937
 #: ../lib/wiking/cms/cms.py:946 ../lib/wiking/cms/cms.py:950
 msgid "Border"
-msgstr ""
+msgstr "Szegély"
 
 #: ../lib/wiking/cms/cms.py:931
 msgid ""
 "Frames are generally used for distinguishing separate areas of the page, "
 "such as forms, tables of contents, etc.  The usage may vary by stylesheet."
 msgstr ""
+"A keretek általánosan az oldal különböző részeinek elkülönítéséhez "
+"szolgálnak, mint az űrlapok, tartalomjegyzékek, stb. Használatuk az adott "
+"stíluslaptól függ."
 
 #: ../lib/wiking/cms/cms.py:934
 msgid "Page surrounding colors"
-msgstr ""
+msgstr "Az oldal színkörnyezete"
 
 #: ../lib/wiking/cms/cms.py:938
 msgid ""
@@ -618,97 +614,103 @@ msgid ""
 "is the page header and footer which usually remain unchanged throughout the "
 "whole website."
 msgstr ""
+"Hogy mi az \"oldal környezet\" a stíluslaptól függ. Általában az oldal "
+"része, ami nem foglalja magába az aktuális tartalmat. Leggyakrabban a fejléc "
+"és ... , amelyek általában az egész weboldalon keresztül változatlanok "
+"maradnak."
 
 #: ../lib/wiking/cms/cms.py:943
 msgid "Error messages"
-msgstr ""
+msgstr "Hibaüzenetek"
 
 #: ../lib/wiking/cms/cms.py:947
 msgid "Informational messages"
-msgstr ""
+msgstr "Tájékoztató üzenetek"
 
 #: ../lib/wiking/cms/cms.py:951
 msgid "Record meta data"
-msgstr ""
+msgstr "Meta adatok felvétele"
 
 #: ../lib/wiking/cms/cms.py:954
 msgid ""
 "These colors are used for additional items printed listings, such as date "
 "and author of a message in news, etc."
 msgstr ""
+"Ez a szín kiegészítő elemeknél használatos, mint nyomtatási listáknál a "
+"dátum, egy cikk szerzője a hírekben, stb."
 
 #: ../lib/wiking/cms/cms.py:956
 msgid "Misc"
-msgstr ""
+msgstr "Egyéb"
 
 #: ../lib/wiking/cms/cms.py:957
 msgid "Table cell"
-msgstr ""
+msgstr "Táblázat cella"
 
 #: ../lib/wiking/cms/cms.py:958
 msgid "Shaded table cell"
-msgstr ""
+msgstr "Árnyékolt táblázat cella"
 
 #: ../lib/wiking/cms/cms.py:959
 msgid "Form help text"
-msgstr ""
+msgstr "Súgó szöveg szerkesztése"
 
 #: ../lib/wiking/cms/cms.py:960
 msgid "Inactive folder"
-msgstr ""
+msgstr "Inaktív mappa"
 
 #. Translators: "Color Themes" is computer terminology.  Predefined sets of colors to be
 #. used for changing the visual appearance of a web page/application.  Similar to color
 #. styles.
 #: ../lib/wiking/cms/cms.py:965
 msgid "Color Themes"
-msgstr ""
+msgstr "Színsémák"
 
 #. Translators: Describes more precisely the meaing of "Color Themes" section.
 #: ../lib/wiking/cms/cms.py:967
 msgid "Manage available color themes."
-msgstr ""
+msgstr "Elérhető színsémák szerkesztése."
 
 #: ../lib/wiking/cms/cms.py:978
 msgid "Yes"
-msgstr ""
+msgstr "Igen"
 
 #. Translators: Button label
 #: ../lib/wiking/cms/cms.py:989
 msgid "Activate"
-msgstr ""
+msgstr "Beállít"
 
 #: ../lib/wiking/cms/cms.py:989
 msgid "Activate this color theme"
-msgstr ""
+msgstr "Ezen színtéma beállítása"
 
 #. Translators: Button label
 #: ../lib/wiking/cms/cms.py:992
 msgid "Activate default"
-msgstr ""
+msgstr "Alapértelmezett beállítása"
 
 #: ../lib/wiking/cms/cms.py:993
 msgid "Activate the default color theme"
-msgstr ""
+msgstr "Alapértelmezett színtéma beállítása"
 
 #: ../lib/wiking/cms/cms.py:1017
 msgid "Default"
-msgstr ""
+msgstr "Alapértelmezett"
 
 #: ../lib/wiking/cms/cms.py:1021
 #, python-format
 msgid "The color theme \"%s\" has been activated."
-msgstr ""
+msgstr "A \"%s\" színséma aktiválva lett."
 
 #. Translators: Heading and menu item. Meaning web pages.
 #: ../lib/wiking/cms/cms.py:1043
 msgid "Pages"
-msgstr ""
+msgstr "Oldalak"
 
 #. Translators: Unique identifier of a stylesheet.
 #: ../lib/wiking/cms/cms.py:1048 ../lib/wiking/cms/cms.py:2033
 msgid "Identifier"
-msgstr ""
+msgstr "Azonosító"
 
 #: ../lib/wiking/cms/cms.py:1050
 msgid ""
@@ -716,103 +718,118 @@ msgid ""
 "other pages. A valid identifier can only contain letters, digits, dashes and "
 "underscores.  It must start with a letter."
 msgstr ""
+"Az azonosító ehhez az oldalhoz való hivatkozásként működik egyéb oldalakról. "
+"Az érvényes azonosító csak betűket, számjegyeket, kötőjelet és aláhúzójelet "
+"tartalmazhat. Betűvel kell, hogy kezdődjön."
 
 #: ../lib/wiking/cms/cms.py:1056 ../lib/wiking/cms/cms.py:1520
 #: ../lib/wiking/cms/cms.py:2034
 msgid "Description"
-msgstr ""
+msgstr "Leírás"
 
 #: ../lib/wiking/cms/cms.py:1057
 msgid "Brief page description (shown as a tooltip and in site map)."
-msgstr ""
+msgstr "Tömör oldalleírás (buboréksúgóként megjelenik az oldaltérképen)."
 
 #: ../lib/wiking/cms/cms.py:1066
 msgid ""
 "Select the extension module to embed into the page.  Leave blank for an "
 "ordinary text page."
 msgstr ""
+"Válaszd ki a bővítési modult, az oldalba való beágyazáshoz. Hagyd üresen ha "
+"szöveges mező szükségeltetik."
 
 #. Translators: "Parent item" has the meaning of hierarchical position.  More precise
 #. term might be "Superordinate item" but doesn't sound that nice in English.  The term
 #. "item" represents a page, but also a menu item.
 #: ../lib/wiking/cms/cms.py:1071
 msgid "Parent item"
-msgstr ""
+msgstr "Fölötte álló elem"
 
 #: ../lib/wiking/cms/cms.py:1072
 msgid ""
 "Select the superordinate item in page hierarchy.  Leave blank for a top-"
 "level page."
 msgstr ""
+"Válaszd ki a fölérendelt elemet az oldalhierarchiában. Hagyd üresen a "
+"legfelsőbb szintű oldalnál."
 
 #: ../lib/wiking/cms/cms.py:1077
 msgid ""
 "Allows you to control the availability of this page in each of the supported "
 "languages (switch language to control the availability in other languages)"
 msgstr ""
+"Engedélyezi a felügyeletet az oldal különbőző nyelveken való "
+"hozzáférhetőségéről (válts nyelvet, a másik nyelven való elérhetőség "
+"ellenőrzéséhez)"
 
 #: ../lib/wiking/cms/cms.py:1080
 msgid "Private"
-msgstr ""
+msgstr "Bizalmas"
 
 #: ../lib/wiking/cms/cms.py:1081
 msgid "Make the item available only to logged-in users."
-msgstr ""
+msgstr "Az elem legyen elérhető csak belépett felhasználóknak."
 
 #: ../lib/wiking/cms/cms.py:1082
 msgid "Status"
-msgstr ""
+msgstr "Állapot"
 
 #: ../lib/wiking/cms/cms.py:1083
 msgid "Hidden"
-msgstr ""
+msgstr "Rejtve"
 
 #: ../lib/wiking/cms/cms.py:1084
 msgid "Check if you don't want this page to appear in the menu."
-msgstr ""
+msgstr "Jelöld be, ha nem akarod, hogy ez az oldal megjelenjen a menüben."
 
 #. Translators: Page configuration option followed by an input field. Means order in the
 #. sense of sequence. What is first and what next.
 #: ../lib/wiking/cms/cms.py:1087
 msgid "Menu order"
-msgstr ""
+msgstr "Menü sorrend"
 
 #: ../lib/wiking/cms/cms.py:1088
 msgid ""
 "Enter a number denoting the order of the page in the menu.  Leave blank if "
 "you want to put the page automatically to the end."
 msgstr ""
+"Írd be a az adott oldal sorszámát a menüben. Hagyd üresen, ha automatikusan "
+"a végén akarod elhelyezni."
 
 #: ../lib/wiking/cms/cms.py:1093
 msgid "Owner"
-msgstr ""
+msgstr "Tulajdonos"
 
 #: ../lib/wiking/cms/cms.py:1094
 msgid ""
 "Set the ownership if you want a particular user to have full control of the "
 "page even if his normal privileges are lower."
 msgstr ""
+"Állítsd be a tulajdonjogot, ha az adott felhasználónak maximális hatáskört "
+"akarsz adni az oldalhoz, még ha ő alapvetően kevesebb jogkörrel rendelkezik "
+"is."
 
 #: ../lib/wiking/cms/cms.py:1099
 msgid "Not published"
-msgstr ""
+msgstr "Nincs közzétéve"
 
 #: ../lib/wiking/cms/cms.py:1101
 msgid "Ok"
-msgstr ""
+msgstr "Ok"
 
 #: ../lib/wiking/cms/cms.py:1103
 msgid "Changed"
-msgstr ""
+msgstr "Megváltoztatva"
 
 #: ../lib/wiking/cms/cms.py:1109 ../lib/wiking/cms/cms.py:1133
 msgid "Page Text (for the current language)"
-msgstr ""
+msgstr "Oldalszöveg (az adott nyelvhez)"
 
 #. Translators: Options meaning page configuration settings.
 #: ../lib/wiking/cms/cms.py:1112 ../lib/wiking/cms/cms.py:1135
 msgid "Global Options (for all languages)"
-msgstr ""
+msgstr "Globális beállítások (minden nyelvhez)"
 
 #. Translators: Noun. Such as e-mail attachments (here attachments for a webpage).
 #. Translators: Section title. Attachments as in email attachments.
@@ -820,173 +837,184 @@ msgstr ""
 #: ../lib/wiking/cms/cms.py:1351 ../lib/wiking/cms/cms.py:1403
 #: ../lib/wiking/cms/cms.py:1492
 msgid "Attachments"
-msgstr ""
+msgstr "Csatolmány"
 
 #: ../lib/wiking/cms/cms.py:1126
 msgid "The page already exists in given language."
-msgstr ""
+msgstr "Az oldal már létezik az adott nyelven."
 
 #: ../lib/wiking/cms/cms.py:1128
 msgid "Duplicate menu order at this level of hierarchy."
-msgstr ""
+msgstr "Dupla menüsorrend ezen a hierarchikus szinten."
 
 #: ../lib/wiking/cms/cms.py:1142
 msgid "Save"
-msgstr ""
+msgstr "Elment"
 
 #: ../lib/wiking/cms/cms.py:1142
 msgid "Save and publish"
-msgstr ""
+msgstr "Elment és közzétesz"
 
 #: ../lib/wiking/cms/cms.py:1145
 msgid "New page"
-msgstr ""
+msgstr "Új oldal"
 
 #: ../lib/wiking/cms/cms.py:1146
 msgid "Edit Text"
-msgstr ""
+msgstr "Szöveg szerkesztése"
 
 #: ../lib/wiking/cms/cms.py:1147
 msgid "Edit title, description and content for the current language"
-msgstr ""
+msgstr "Cím, leírás és tartalom szerkesztése az aktuális nyelven"
 
 #. Translators: Button label. Page configuration options.
 #: ../lib/wiking/cms/cms.py:1150
 msgid "Options"
-msgstr ""
+msgstr "Beállítások"
 
 #: ../lib/wiking/cms/cms.py:1151
 msgid "Edit global (language independent) page options and menu position"
 msgstr ""
+"Add meg a globális (nyelvtől független) oldalbeállításokat és menüfelépítést"
 
 #: ../lib/wiking/cms/cms.py:1152
 msgid "Publish"
-msgstr ""
+msgstr "Közzétesz"
 
 #: ../lib/wiking/cms/cms.py:1152
 msgid "Publish the page in its current state"
-msgstr ""
+msgstr "Az oldal jelenlegi állapotának közzététele"
 
 #: ../lib/wiking/cms/cms.py:1155
 msgid "Unpublish"
-msgstr ""
+msgstr "Nem tesz közzé"
 
 #: ../lib/wiking/cms/cms.py:1155
 msgid "Make the page invisible from outside"
-msgstr ""
+msgstr "Oldal kívülállók számára láthatatlanná tétele"
 
 #: ../lib/wiking/cms/cms.py:1157
 msgid "Revert"
-msgstr ""
+msgstr "Visszaállítás"
 
 #: ../lib/wiking/cms/cms.py:1157
 msgid "Revert last modifications"
-msgstr ""
+msgstr "Utolsó változtatások visszaállítása"
 
 #: ../lib/wiking/cms/cms.py:1159
 msgid "Preview"
-msgstr ""
+msgstr "Előnézet"
 
 #: ../lib/wiking/cms/cms.py:1159
 msgid "Display the page in its current state"
-msgstr ""
+msgstr "Jelenítsd meg az oldalt a jelenlegi helyzetében"
 
 #: ../lib/wiking/cms/cms.py:1161
 msgid "Manage this page's attachments"
-msgstr ""
+msgstr "Kezeld az oldal csatolmányait"
 
 #: ../lib/wiking/cms/cms.py:1210
 msgid "You don't have sufficient privilegs for this action."
-msgstr ""
+msgstr "Nincs elégséges jogköröd a művelet végrehajtásához."
 
 #: ../lib/wiking/cms/cms.py:1211
 msgid ""
 "Save the page without publishing and ask the administrator to publish your "
 "changes."
 msgstr ""
+"Mentsd el az oldalat közzététel nélkül és kérd a rendszergazdát az oldal "
+"közzétételére."
 
 #: ../lib/wiking/cms/cms.py:1219
 msgid ""
 "Page content was modified, however the changes remain unpublished. Don't "
 "forget to publish the changes when you are done."
 msgstr ""
+"Az oldal tartalma megváltozozz, de a változtatások nem lettek közzétéve. Ne "
+"feledd közzétenni, miután elkészültél."
 
 #: ../lib/wiking/cms/cms.py:1224
 msgid "New page was successfully created and published."
-msgstr ""
+msgstr "Az új oldal sikeresen elkészült és közzététetett."
 
 #: ../lib/wiking/cms/cms.py:1226
 msgid ""
 "New page was successfully created, but was not published yet. Publish it "
 "when you are done."
 msgstr ""
+"Az új oldal sikeresen elkészült, de nem lett közzétéve. Tedd közzé, ha "
+"elkészült."
 
 #. Translators: Button label. Use standard computer terminology.
 #. Translators: Back button label. Standard computer terminology.
 #: ../lib/wiking/cms/cms.py:1249 ../lib/wiking/cms/cms.py:1628
 #: ../lib/wiking/cms/cms.py:2582
 msgid "Back"
-msgstr ""
+msgstr "Vissza"
 
 #: ../lib/wiking/cms/cms.py:1298
 msgid "Registration"
-msgstr ""
+msgstr "Regisztráció"
 
 #. Translators: Label for section with user manuals, help pages etc.
 #: ../lib/wiking/cms/cms.py:1300
 msgid "Documentation"
-msgstr ""
+msgstr "Dokumentáció"
 
 #: ../lib/wiking/cms/cms.py:1418
 msgid "Content for this page already exists!"
-msgstr ""
+msgstr "Az oldal tartalma már létezik!"
 
 #: ../lib/wiking/cms/cms.py:1425
 msgid "Content for this page does not exist in any language."
-msgstr ""
+msgstr "Az oldal tartalma nem létezik egyetlen nyelven sem."
 
 #: ../lib/wiking/cms/cms.py:1428
 msgid "Choose source language"
-msgstr ""
+msgstr "Válassz forrás nyelvet"
 
 #: ../lib/wiking/cms/cms.py:1431
 msgid "Translate"
-msgstr ""
+msgstr "Fordítás"
 
 #: ../lib/wiking/cms/cms.py:1449
 msgid "Can't publish untitled page."
-msgstr ""
+msgstr "Cím nélküli oldalak nem tehetők közzé."
 
 #: ../lib/wiking/cms/cms.py:1456
 msgid "The changes were published."
-msgstr ""
+msgstr "A változtatások közzététettek."
 
 #: ../lib/wiking/cms/cms.py:1466
 msgid "The page contents was reverted to its previous state."
-msgstr ""
+msgstr "Az oldal tartalma az előző állapotra lett visszállítva."
 
 #: ../lib/wiking/cms/cms.py:1476
 msgid "The page was unpublished."
-msgstr ""
+msgstr "A oldal nincs közzétéve."
 
 #: ../lib/wiking/cms/cms.py:1493
 msgid "Manage page attachments. Go to a page to create new attachments."
 msgstr ""
+"Oldal csatolmányok kezelése. Menj az oldalra új csatolmány létrehozásához."
 
 #: ../lib/wiking/cms/cms.py:1499 ../lib/wiking/cms/cms.py:1809
 msgid "Page"
-msgstr ""
+msgstr "Oldal"
 
 #: ../lib/wiking/cms/cms.py:1500
 msgid ""
 "Select the page where you want to move this attachment.  Don't forget to "
 "update all explicit links to this attachment within page text(s)."
 msgstr ""
+"Válaszd ki az oldalat, amelyhez a csatolmányt szeretnéd elhelyezni. Ne "
+"feledd el frissíteni az összes hivatkozást a csatolmányhoz az oldal "
+"szövegében."
 
 #. Translators: Noun. File on disk. Computer terminology.
 #: ../lib/wiking/cms/cms.py:1504
 msgid "File"
-msgstr ""
+msgstr "Fájl"
 
 #: ../lib/wiking/cms/cms.py:1506
 msgid ""
@@ -996,122 +1024,132 @@ msgid ""
 "characters.  Letters, digits, underscores, dashes and dots are safe.  You "
 "risk problems with most other characters."
 msgstr ""
+"Töltsd fel a fájlt a saját rendszeredről. A fájlnév lesz a hivatkozás a "
+"csatolmányra a oldalon. Kérlek tudatosítsd, hogy a fájl az interneten lesz "
+"elérhető, ezért ne használj semmilyen extra karaktert a fájl nevében. Betűk, "
+"számjegyek,  kötőjelek, aláhúzóvonalak és pontok biztonságosak. Minden egyéb "
+"jel, problémát okozhat."
 
 #: ../lib/wiking/cms/cms.py:1512
 msgid "Filename"
-msgstr ""
+msgstr "Fájlnév"
 
 #: ../lib/wiking/cms/cms.py:1515
 msgid "Mime-type"
-msgstr ""
+msgstr "MIME-típus"
 
 #: ../lib/wiking/cms/cms.py:1518
 msgid ""
 "The name of the attachment (e.g. the full name of the document). If empty, "
 "the file name will be used instead."
 msgstr ""
+"A csatolmány neve (pl. az fájl egész neve). Ha üresen van hagyva, a fájlnév "
+"lesz használatos."
 
 #: ../lib/wiking/cms/cms.py:1521
 msgid "Optional description used for the listing of attachments (see below)."
-msgstr ""
+msgstr "Választható leírás a csatolmányok listájához (lásd lent)."
 
 #. Translators: Size of a file, in number of bytes, kilobytes etc.
 #: ../lib/wiking/cms/cms.py:1524
 msgid "Size"
-msgstr ""
+msgstr "Méret"
 
 #: ../lib/wiking/cms/cms.py:1526
 msgid "Listed"
-msgstr ""
+msgstr "Felsorolva"
 
 #: ../lib/wiking/cms/cms.py:1527
 msgid ""
 "Check if you want the item to appear in the listing of attachments at the "
 "bottom of the page."
 msgstr ""
+"Jelöld be, ha az elem megjelenjen az oldal alján levő csatolmányok "
+"listájában."
 
 #. Translators: Button label
 #: ../lib/wiking/cms/cms.py:1586
 msgid "Move"
-msgstr ""
+msgstr "Áthelyez"
 
 #: ../lib/wiking/cms/cms.py:1586
 msgid "Move the attachment to another page."
-msgstr ""
+msgstr "Helyezd át a csatolmányt más oldalhoz."
 
 #: ../lib/wiking/cms/cms.py:1589 ../lib/wiking/cms/cms.py:1779
 msgid "New attachment"
-msgstr ""
+msgstr "Új csatolmány"
 
 #: ../lib/wiking/cms/cms.py:1596
 msgid "Attachment of the same file name already exists for this page."
-msgstr ""
+msgstr "Azonos nevű csatolmány már létezik az oldalhoz."
 
 #: ../lib/wiking/cms/cms.py:1628
 msgid "Display the page"
-msgstr ""
+msgstr "Oldal megjelenítése"
 
 #: ../lib/wiking/cms/cms.py:1703
 msgid "Image title.  If empty, the file name will be used instead."
-msgstr ""
+msgstr "Képcím. Ha üres, a fájlnév lesz a cím."
 
 #: ../lib/wiking/cms/cms.py:1705
 msgid "Optional image description."
-msgstr ""
+msgstr "Választható képleírás."
 
 #: ../lib/wiking/cms/cms.py:1706
 msgid "In galery"
-msgstr ""
+msgstr "Galériában"
 
 #: ../lib/wiking/cms/cms.py:1707
 msgid ""
 "Check if you want the image to appear an automatically generated galery."
 msgstr ""
+"Jelöld be ha a kép jelenjen meg egy automatikusan generált képgalériában."
 
 #: ../lib/wiking/cms/cms.py:1718 ../lib/wiking/cms/cms.py:1823
 #: ../lib/wiking/cms/cms.py:2113
 msgid "Author"
-msgstr ""
+msgstr "Szerző"
 
 #: ../lib/wiking/cms/cms.py:1719
 msgid "Location"
-msgstr ""
+msgstr "Helyszín"
 
 #: ../lib/wiking/cms/cms.py:1720
 msgid "Width"
-msgstr ""
+msgstr "Szélesség"
 
 #: ../lib/wiking/cms/cms.py:1722
 msgid "Height"
-msgstr ""
+msgstr "Magasság"
 
 #. Translators: Section title and menu item
 #: ../lib/wiking/cms/cms.py:1804
 msgid "News"
-msgstr ""
+msgstr "Hírek"
 
 #. Translators: Help string describing more precisely the meaning of the "News" section.
 #: ../lib/wiking/cms/cms.py:1806
 msgid "Publish site news."
-msgstr ""
+msgstr "Hírek közlése."
 
 #: ../lib/wiking/cms/cms.py:1812 ../lib/wiking/cms/cms.py:1814
 #: ../lib/wiking/cms/cms.py:1879 ../lib/wiking/cms/cms.py:1886
 #: ../lib/wiking/cms/cms.py:3329
 msgid "Date"
-msgstr ""
+msgstr "Dátum"
 
 #: ../lib/wiking/cms/cms.py:1816
 msgid "Date of the news item creation."
-msgstr ""
+msgstr "Új elem létrejöttének időpontja."
 
 #: ../lib/wiking/cms/cms.py:1817 ../lib/wiking/cms/cms.py:1819
 msgid "Message"
-msgstr ""
+msgstr "Üzenet"
 
 #: ../lib/wiking/cms/cms.py:1818
 msgid "The item brief summary."
-msgstr ""
+msgstr "Az elem tömör összefoglalója."
 
 #: ../lib/wiking/cms/cms.py:1820
 msgid ""
@@ -1119,20 +1157,22 @@ msgid ""
 "the item may be also published through an RSS channel, which does not "
 "support formatting."
 msgstr ""
+"Ajánlott a lehető legegyszerűbb formátumot használni, mivel az elem "
+"publikálva lehet RSS-kanálison keresztül is, ami nem támogatja a formázást."
 
 #. Translators: Button label for creating a new message in "News".
 #: ../lib/wiking/cms/cms.py:1842
 msgid "New message"
-msgstr ""
+msgstr "Új üzenet"
 
 #. Translators: Section heading and menu item
 #: ../lib/wiking/cms/cms.py:1875
 msgid "Planner"
-msgstr ""
+msgstr "Tervező"
 
 #: ../lib/wiking/cms/cms.py:1876
 msgid "Announce future events by date in a callendar-like listing."
-msgstr ""
+msgstr "Jelentsd a jövőbeli eseményeket dátum szerint, a naptárszerű listában."
 
 #: ../lib/wiking/cms/cms.py:1881
 #, python-format
@@ -1140,50 +1180,56 @@ msgid ""
 "The date when the planned event begins. Enter the date including year. "
 "Example: %(date)s"
 msgstr ""
+"Az időpont, amikor a tervezett esemény kezdődik. Adja meg a dátumot a "
+"évszámmal együtt. Például: %(date)s"
 
 #: ../lib/wiking/cms/cms.py:1883
 msgid "End date"
-msgstr ""
+msgstr "Záró dátum"
 
 #: ../lib/wiking/cms/cms.py:1884
 msgid ""
 "The date when the event ends if it is not the same as the start date (for "
 "events which last several days)."
 msgstr ""
+"Az esemény záródátuma, abban az esetben, ha nem egyezik a kezdődátummal "
+"(több napos események esetében)."
 
 #: ../lib/wiking/cms/cms.py:1887
 msgid "Event"
-msgstr ""
+msgstr "Esemény"
 
 #: ../lib/wiking/cms/cms.py:1888
 msgid "The event brief summary."
-msgstr ""
+msgstr "Az esemény tömör összefoglalója."
 
 #: ../lib/wiking/cms/cms.py:1898
 msgid "Date in the past"
-msgstr ""
+msgstr "Múltbeli dátum"
 
 #: ../lib/wiking/cms/cms.py:1907
 msgid "End date precedes start date"
-msgstr ""
+msgstr "A záródátum megelőzi a kezdődátumot"
 
 #. Translators: Name of the extension module for simple forum-like discussions.
 #: ../lib/wiking/cms/cms.py:1923
 msgid "Discussions"
-msgstr ""
+msgstr "Fórum"
 
 #: ../lib/wiking/cms/cms.py:1924
 msgid "Allow logged in users to post messages as in a simple forum."
 msgstr ""
+"A bejelentkezett felhasználók küldhetnek üzeneteket, mint egy egyszerű "
+"fórumba."
 
 #. Translators: Field label for posting a message to the discussion.
 #: ../lib/wiking/cms/cms.py:1930
 msgid "Your comment"
-msgstr ""
+msgstr "Saját hozzászólás"
 
 #: ../lib/wiking/cms/cms.py:1976
 msgid "Your comment was posted to the discussion."
-msgstr ""
+msgstr "A hozzászólásod el lett küldve a fórumba."
 
 #. Translators: The square brackets mark a link.  Please leave the brackets and the
 #. link target '?command=login' untouched and traslate 'log in' to fit into the
@@ -1191,106 +1237,109 @@ msgstr ""
 #: ../lib/wiking/cms/cms.py:1985
 msgid "Note: You need to [?command=login log in] before you can post messages."
 msgstr ""
+"Megjegyzés: [?command=login Be kell jelentkeznie] mielőtt üzenetet hagyna."
 
 #. Translators: Section heading and menu item. Computer terminology idiom.
 #: ../lib/wiking/cms/cms.py:1994
 msgid "Site Map"
-msgstr ""
+msgstr "Honlaptérkép"
 
 #. Translators: Section heading and menu item. Meaning the visual appearance. Computer
 #. terminology.
 #: ../lib/wiking/cms/cms.py:2026
 msgid "Stylesheets"
-msgstr ""
+msgstr "Stíluslapok"
 
 #. Translators: Help string. Cascading Style Sheet (CSS) is computer terminology idiom.
 #: ../lib/wiking/cms/cms.py:2029
 msgid "Manage available Cascading Style Sheets."
-msgstr ""
+msgstr "Elérhető CSS kezelése."
 
 #. Translators: Heading of a form field determining in
 #. which media the page is displayed. E.g. web, print,
 #. Braille, speech.
 #: ../lib/wiking/cms/cms.py:2039
 msgid "Media"
-msgstr ""
+msgstr "Média típusa"
 
 #. Translators: Precedence meaning position in a sequence of importance or priority.
 #: ../lib/wiking/cms/cms.py:2045
 msgid "Number denoting the style sheet precedence."
-msgstr ""
+msgstr "A stíluslap (fontossági) sorrendjét jelző szám."
 
 #: ../lib/wiking/cms/cms.py:2051
 msgid "All types"
-msgstr ""
+msgstr "Minden típus"
 
 #. Translators: Braille as a type of media
 #: ../lib/wiking/cms/cms.py:2053
 msgid "Braille"
-msgstr ""
+msgstr "Braille sajtó"
 
 #. Translators: Handheld device. Small computer.
 #: ../lib/wiking/cms/cms.py:2056
 msgid "Handheld"
-msgstr ""
+msgstr "Kéziszámítógép"
 
 #. Translators: Print as a type of media (print, speech...)
 #: ../lib/wiking/cms/cms.py:2058
 msgid "Print"
-msgstr ""
+msgstr "Nyomtatott sajtó"
 
 #. Translators: Meaning computer screen
 #: ../lib/wiking/cms/cms.py:2061
 msgid "Screen"
-msgstr ""
+msgstr "Képernyő"
 
 #. Translators: Speech as a type of media (print, speech...)
 #: ../lib/wiking/cms/cms.py:2063
 msgid "Speech"
-msgstr ""
+msgstr "Élőbeszéd"
 
 #: ../lib/wiking/cms/cms.py:2107
 msgid "User Management"
-msgstr ""
+msgstr "Felhasználók kezelése"
 
 #: ../lib/wiking/cms/cms.py:2108
 msgid "Manage registered users and their privileges."
-msgstr ""
+msgstr "Regisztrált felhasználók és jogaik kezelése."
 
 #: ../lib/wiking/cms/cms.py:2109
 msgid "New account"
-msgstr ""
+msgstr "Új fiók"
 
 #: ../lib/wiking/cms/cms.py:2112
 msgid "Contributor"
-msgstr ""
+msgstr "Munkatárs"
 
 #: ../lib/wiking/cms/cms.py:2114
 msgid "Administrator"
-msgstr ""
+msgstr "Rendszergazda"
 
 #: ../lib/wiking/cms/cms.py:2139
 msgid ""
 "A valid login name can only contain letters, digits, underscores, dashes and "
 "dots and must start with a letter."
 msgstr ""
+"Az érvényes felhasználói név csak betűket, számjegyeket, aláhúzást, "
+"kötőjelet és pontot tartalmazat, miközben betűvel kell kezdődnie."
 
 #: ../lib/wiking/cms/cms.py:2143 ../lib/wiking/cms/cms.py:2150
 msgid ""
 "Please, write the password into each of the two fields to eliminate typos."
-msgstr ""
+msgstr "Kérem, írd be a jelszót mindkét mezőbe az elírások elkerülése végett."
 
 #: ../lib/wiking/cms/cms.py:2145
 msgid "Old password"
-msgstr ""
+msgstr "Régi jelszó"
 
 #: ../lib/wiking/cms/cms.py:2147
 msgid "Verify your identity by entering your original (current) password."
-msgstr ""
+msgstr "Igazold kilétedet a (aktuális) jelszavad beütésével."
 
 #: ../lib/wiking/cms/cms.py:2148
 msgid "New password"
-msgstr ""
+msgstr "Új jelszó"
 
 #. Translators: User account information field label (contains date and time).
 #. TODO: Last password change is currently not displayed anywhere.  It should be only
@@ -1302,52 +1351,54 @@ msgstr ""
 #. Translators: Full name of a person. Registration form field.
 #: ../lib/wiking/cms/cms.py:2159
 msgid "Full Name"
-msgstr ""
+msgstr "Teljes név"
 
 #: ../lib/wiking/cms/cms.py:2164
 msgid "First name"
-msgstr ""
+msgstr "Keresztnév"
 
 #: ../lib/wiking/cms/cms.py:2165
 msgid "Surname"
-msgstr ""
+msgstr "Vezetéknév"
 
 #. Translators: Name of a user to display on a website if he doesn't want the
 #. default "Name Surname". Registration form field.
 #: ../lib/wiking/cms/cms.py:2168
 msgid "Displayed name"
-msgstr ""
+msgstr "Megjelenítendő név"
 
 #: ../lib/wiking/cms/cms.py:2169
 msgid ""
 "Leave blank if you want to be referred by your full name or enter an "
 "alternate name, such as nickname or monogram."
 msgstr ""
+"Hagyd üresen, ha a teljes nevedet szeretnéd használni, vagy írj be egy "
+"alternatív nevet, mint a becenév vagy monogram."
 
 #. Translators: E-mail address. Registration form field.
 #: ../lib/wiking/cms/cms.py:2172 ../lib/wiking/cms/cms.py:2822
 msgid "E-mail"
-msgstr ""
+msgstr "E-mail"
 
 #. Translators: Telephone number. Registration form field.
 #: ../lib/wiking/cms/cms.py:2174 ../lib/wiking/cms/cms.py:2823
 msgid "Phone"
-msgstr ""
+msgstr "Telefon"
 
 #. Translators: Post address. Registration form field.
 #: ../lib/wiking/cms/cms.py:2176 ../lib/wiking/cms/cms.py:2824
 msgid "Address"
-msgstr ""
+msgstr "Postacím"
 
 #. Translators: Do not translate (means Uniform Resource Identifier).
 #: ../lib/wiking/cms/cms.py:2178
 msgid "URI"
-msgstr ""
+msgstr "URI"
 
 #. Translators: Generic note for further information. Registration form field.
 #: ../lib/wiking/cms/cms.py:2180
 msgid "Note"
-msgstr ""
+msgstr "Megjegyzés"
 
 #: ../lib/wiking/cms/cms.py:2181
 msgid ""
@@ -1359,19 +1410,21 @@ msgstr ""
 #. Translators: Since when the user is registered. Column heading in a table listing various users.
 #: ../lib/wiking/cms/cms.py:2185
 msgid "Registered since"
-msgstr ""
+msgstr "Regisztráció ideje"
 
 #. Translators: The role of the user in the system (e.g. Student vs Tutor, Writer
 #. vs. Editor) Column heading in a table listing various users.
 #: ../lib/wiking/cms/cms.py:2188
 msgid "Role"
-msgstr ""
+msgstr "Szerep"
 
 #: ../lib/wiking/cms/cms.py:2192
 msgid ""
 "Select one of the predefined roles to grant the user the corresponding "
 "privileges."
 msgstr ""
+"Válassz egyet az előre meghatározott szerepekből, a felhasználónak megfelelő "
+"jogok megadásához."
 
 #: ../lib/wiking/cms/cms.py:2209
 msgid ""
@@ -1381,25 +1434,29 @@ msgstr ""
 
 #: ../lib/wiking/cms/cms.py:2215
 msgid "The activation code was succesfully confirmed."
-msgstr ""
+msgstr "Az aktivációs kód igazolása sikeresen megtörtént."
 
 #: ../lib/wiking/cms/cms.py:2218
 msgid ""
 "Therefore it was verified that given e-mail address belongs to the person "
 "who requested the registration."
 msgstr ""
+"Ellenőrízve lett, hogy az adott e-mail cím tulajdonosa már kervényezte a "
+"regisztrációt."
 
 #: ../lib/wiking/cms/cms.py:2220
 msgid ""
 "The user is now able to log in, but still has no rights (other than an "
 "anonymous user)."
 msgstr ""
+"A felhasználó már be tud lépni, de még mindig nincsenek jogai (több, mint "
+"bármely anonym felhasználónak)."
 
 #. Translators: In other words, the administrator needs to approve the account first.
 #: ../lib/wiking/cms/cms.py:2223
 msgid ""
 "The account now awaits administrator's action to be given access rights."
-msgstr ""
+msgstr "A fiók a rendszergazda lépésére vár, a belépési jogok megadására."
 
 #: ../lib/wiking/cms/cms.py:2226
 msgid ""
@@ -1407,6 +1464,9 @@ msgid ""
 "possible to trust that given e-mail address belongs to the person who "
 "requested the registration."
 msgstr ""
+"Az aktivációs kód nem lett megerősítve a felhasználó által. Így nem lehet "
+"megállapítani, hogy az adott e-mail cím a regisztrálódó személyhez tartozik-"
+"e."
 
 #. Translators: %(date)s is replaced by date and time of registration
 #. expiration.
@@ -1416,12 +1476,16 @@ msgid ""
 "The activation code will expire on %(date)s and the user will not be able to "
 "complete the registration anymore."
 msgstr ""
+"Az aktivációs kód %(date)s -án elveszti érvényét, és a felhasználó ezután "
+"nem tudja befejezni a regisztrációját."
 
 #: ../lib/wiking/cms/cms.py:2235
 msgid ""
 "Use the button \"Resend activation code\" below to remind the user of his "
 "pending registration."
 msgstr ""
+"Használd a \"Aktivációs kód újraküldése\" gombot a felhasználó "
+"emlékeztetésére a függőben levő regisztrációjáról."
 
 #. Translators: %(date)s is replaced by date and time of registration expiration.
 #: ../lib/wiking/cms/cms.py:2239
@@ -1430,143 +1494,148 @@ msgid ""
 "The registration expired on %(date)s.  The user didn't confirm the "
 "activation code sent to the declared e-mail address in time."
 msgstr ""
+"A regisztráció ekkor veszti érvényét: %(date)s. A felhasználó nem hagyta "
+"jóvá az aktivációs kódot, amelyet a megadott e-mail címére küldtünk."
 
 #: ../lib/wiking/cms/cms.py:2243
 msgid ""
 "The account should be deleted automatically if the server maintenence script "
 "is installed correctly.  Otherwise you can delete the account manually."
 msgstr ""
+"A fiók automatikusan törlődik, ha a szerver karbantartási szkript helyesen "
+"van instalálva. Máskülönben manuálisan törölhető."
 
 #: ../lib/wiking/cms/cms.py:2250 ../lib/wiking/cms/cms.py:2830
 #, python-format
 msgid "Invalid e-mail address: %s"
-msgstr ""
+msgstr "Érvénytelen e-mail cím: %s"
 
 #. Translators: Name of group of users who have access to the system, can use it etc.
 #: ../lib/wiking/cms/cms.py:2265 ../lib/wiking/cms/cms.py:2795
 msgid "Active users"
-msgstr ""
+msgstr "Aktív felhasználók"
 
 #. Translators: Name for a group of users accounts, who were not yet approved by the administrator
 #: ../lib/wiking/cms/cms.py:2270
 msgid "Unapproved accounts (pending admin approvals)"
-msgstr ""
+msgstr "Nem jóváhagyott fiókok (függőben levő jóváhagyások az adminnál)"
 
 #. Translators: Name for a group of users which did not confirm their registration yet by
 #. replying to an email with an activation code
 #: ../lib/wiking/cms/cms.py:2275
 msgid "Unfinished registration requests (activation code not confirmed)"
 msgstr ""
+"Befejezetlen regisztrációs kérelmek (aktivációs kód nem lett megerősítve)"
 
 #. Translators: Name for a group of users who were disabled (made inactive or removed
 #. from the system).
 #: ../lib/wiking/cms/cms.py:2279
 msgid "Disabled users"
-msgstr ""
+msgstr "Felfüggesztett felhasználók"
 
 #. Translators: Accounts as in user accounts (computer terminology).
 #: ../lib/wiking/cms/cms.py:2282
 msgid "All accounts"
-msgstr ""
+msgstr "Összes regisztráció"
 
 #. Translators: Personal data -- first name, surname, nickname ...
 #: ../lib/wiking/cms/cms.py:2333 ../lib/wiking/cms/cms.py:2339
 #: ../lib/wiking/cms/cms.py:2365
 msgid "Personal data"
-msgstr ""
+msgstr "Személyes adatok"
 
 #. Translators: Contact information -- email, phone, address...
 #: ../lib/wiking/cms/cms.py:2335 ../lib/wiking/cms/cms.py:2340
 #: ../lib/wiking/cms/cms.py:2366
 msgid "Contact information"
-msgstr ""
+msgstr "Elérhetőségek"
 
 #. Translators: Others is a label for a group of unspecified form fields
 #. (as in Personal data, Contact information, Others).
 #: ../lib/wiking/cms/cms.py:2338 ../lib/wiking/cms/cms.py:2341
 #: ../lib/wiking/cms/cms.py:2369
 msgid "Others"
-msgstr ""
+msgstr "Egyéb"
 
 #: ../lib/wiking/cms/cms.py:2342 ../lib/wiking/cms/cms.py:2430
 msgid "Access rights"
-msgstr ""
+msgstr "Belépési jogok"
 
 #. Translators: Button label.
 #: ../lib/wiking/cms/cms.py:2347
 msgid "New user"
-msgstr ""
+msgstr "Új felhasználó"
 
 #. Translators: Button label.
 #: ../lib/wiking/cms/cms.py:2349
 msgid "Edit profile"
-msgstr ""
+msgstr "Profil szerkesztése"
 
 #. Translators: Button label. Modify the users data (email, address...)
 #: ../lib/wiking/cms/cms.py:2351
 msgid "Modify user's record"
-msgstr ""
+msgstr "Személyes adatok módosítása"
 
 #: ../lib/wiking/cms/cms.py:2370
 msgid "Login information"
-msgstr ""
+msgstr "Belépési információk"
 
 #: ../lib/wiking/cms/cms.py:2396
 msgid "Enter your current password."
-msgstr ""
+msgstr "Írd be az érvényes jelszavat."
 
 #: ../lib/wiking/cms/cms.py:2400
 msgid "Invalid password."
-msgstr ""
+msgstr "Érvénytelen jelszó."
 
 #: ../lib/wiking/cms/cms.py:2404
 msgid "Enter the new password."
-msgstr ""
+msgstr "Írd be az új jelszavat."
 
 #: ../lib/wiking/cms/cms.py:2412
 msgid "The new password is the same as the old one."
-msgstr ""
+msgstr "Az új jelszó megegyezik a régivel."
 
 #: ../lib/wiking/cms/cms.py:2430
 msgid "Change access rights"
-msgstr ""
+msgstr "Belépési jogok módosítása"
 
 #. Translators: Button label. Computer terminology. Use common word and form.
 #: ../lib/wiking/cms/cms.py:2434
 msgid "Enable"
-msgstr ""
+msgstr "Bekapcsolva"
 
 #: ../lib/wiking/cms/cms.py:2434
 msgid "Enable this account"
-msgstr ""
+msgstr "Fiók beindítása"
 
 #. Translators: Confirm button
 #: ../lib/wiking/cms/cms.py:2440 ../lib/wiking/cms/cms.py:2580
 msgid "Confirm"
-msgstr ""
+msgstr "Megerősít"
 
 #: ../lib/wiking/cms/cms.py:2441
 msgid "Confirm the account without checking the activation code"
-msgstr ""
+msgstr "Fiók megerősítése aktivációs kód ellenőrzése nélkül"
 
 #: ../lib/wiking/cms/cms.py:2444
 msgid "Change password"
-msgstr ""
+msgstr "Jelszó megváltoztatása"
 
 #: ../lib/wiking/cms/cms.py:2444
 msgid "Change user's password"
-msgstr ""
+msgstr "A felhasználó jelszavának megváltoztatása"
 
 #: ../lib/wiking/cms/cms.py:2452
 msgid "Resend activation code"
-msgstr ""
+msgstr "Aktivációs kód újraküldése"
 
 #: ../lib/wiking/cms/cms.py:2453
 msgid "Re-send registration mail"
-msgstr ""
+msgstr "Regisztrációs e-mail újraküldése"
 
 #: ../lib/wiking/cms/cms.py:2461
-#, python-format
+#, fuzzy, python-format
 msgid ""
 "The first step of your registration at %(server_hostname)s was successfully "
 "completed.\n"
@@ -1580,33 +1649,40 @@ msgid ""
 "\n"
 "Your activation code is: %(code)s\n"
 msgstr ""
+"Az első lépése a regisztrációjának a %(server_hostname)s sikeresen "
+"végbement.\n"
+"\n"
+"A következő lépésben látogasson el a következő oldalra és járjon el az "
+"utasítások szerint:\n"
+"%(uri)s\n"
 
 #: ../lib/wiking/cms/cms.py:2476
 msgid "Registration accepted."
-msgstr ""
+msgstr "Regisztráció elfogadva."
 
 #: ../lib/wiking/cms/cms.py:2477
 msgid "Please, check your mailbox for instructions how to proceed."
 msgstr ""
+"Kérem a további lépésekhez járjon el a mailben kapott utasítások szerint."
 
 #: ../lib/wiking/cms/cms.py:2481
 msgid "Registration cancelled."
-msgstr ""
+msgstr "Regisztráció érvénytelenítve."
 
 #: ../lib/wiking/cms/cms.py:2487
 #, python-format
 msgid "Your registration at %s"
-msgstr ""
+msgstr "Az Ön regisztrációja %s"
 
 #. Translators: Follows an email addres, e.g. ``Activation code was sent to joe@brailcom.org''
 #: ../lib/wiking/cms/cms.py:2495
 #, python-format
 msgid "Activation code was sent to %s."
-msgstr ""
+msgstr "Aktivációs kód elküldve: %s."
 
 #: ../lib/wiking/cms/cms.py:2503
 msgid "The account was enabled."
-msgstr ""
+msgstr "A fiók megnyílt."
 
 #: ../lib/wiking/cms/cms.py:2504
 #, python-format
@@ -1614,22 +1690,24 @@ msgid ""
 "Your account at %(uri)s has been enabled. Please log in with username '%"
 "(login)s' and your password."
 msgstr ""
+"Az Ön fiókja a %(uri)s-n elindult. Kérem jelentkezzen be a felhasználói "
+"nevével '%(login)s' és jelszavával."
 
 #: ../lib/wiking/cms/cms.py:2507
 msgid "Your account has been enabled."
-msgstr ""
+msgstr "Az Ön felhasználói fiókja létrejött."
 
 #: ../lib/wiking/cms/cms.py:2512
 msgid "E-mail notification has been sent to:"
-msgstr ""
+msgstr "E-mail értesítő el lett küldve:"
 
 #: ../lib/wiking/cms/cms.py:2537
 msgid "User registration already confirmed."
-msgstr ""
+msgstr "A regisztráció sikeresen meg lett erősítve."
 
 #: ../lib/wiking/cms/cms.py:2540
 msgid "Invalid activation code."
-msgstr ""
+msgstr "Hibás aktivációs kód."
 
 #: ../lib/wiking/cms/cms.py:2548
 #, python-format
@@ -1637,153 +1715,161 @@ msgid ""
 "New user %(fullname)s registered at %(server_hostname)s. Please approve the "
 "account: %(uri)s"
 msgstr ""
+"Új felhasználó %(fullname)s regisztrálva lett a %(server_hostname)s. Kérem "
+"hagyja jóvá a fiókot: %(uri)s"
 
 #: ../lib/wiking/cms/cms.py:2554
 msgid "New user registration:"
-msgstr ""
+msgstr "Új felhasználó regisztrációja:"
 
 #: ../lib/wiking/cms/cms.py:2561
 msgid "E-mail notification has been sent to server administrator."
-msgstr ""
+msgstr "E-mailes értesítés elküldve az szerveradminisztrátorhoz."
 
 #: ../lib/wiking/cms/cms.py:2567
 msgid ""
 "Registration completed successfuly. Your account now awaits administrator's "
 "approval."
 msgstr ""
+"A regisztráció sikeresen befejeződött. A fiókja most a rendszergazda "
+"jóváhagyását várja."
 
 #: ../lib/wiking/cms/cms.py:2576
 msgid "The account was confirmed.  Grant the access rights now."
-msgstr ""
+msgstr "A fiók jóvá lett hagyva. Belépési jogok biztosítva."
 
 #: ../lib/wiking/cms/cms.py:2584
 msgid ""
 "Please confirm the account only if you are sure that the e-mail address "
 "belongs to given user."
 msgstr ""
+"Kérem csak abban az esetben hagyja jóvá a fiókot, ha biztos benne, hogy az e-"
+"mail cím az adott felhasználóhoz tartozik."
 
 #: ../lib/wiking/cms/cms.py:2598
 msgid "Registration confirmed"
-msgstr ""
+msgstr "Regisztráció megerősítve"
 
 #: ../lib/wiking/cms/cms.py:2796
 msgid "Listing of all active user accounts."
-msgstr ""
+msgstr "Az összes aktív felhasználói fiók listája."
 
 #: ../lib/wiking/cms/cms.py:2815
 msgid "Organizations"
-msgstr ""
+msgstr "Szervezetek"
 
 #: ../lib/wiking/cms/cms.py:2816
 msgid "Manage institutions and other organizations."
-msgstr ""
+msgstr "Intézmények és egyéb szervezetek irányítása."
 
 #: ../lib/wiking/cms/cms.py:2821
 msgid "VAT id"
-msgstr ""
+msgstr "ÁFA azonosító"
 
 #: ../lib/wiking/cms/cms.py:2825
 msgid "Notes"
-msgstr ""
+msgstr "Megjegyzések"
 
 #: ../lib/wiking/cms/cms.py:2897
 msgid "System Texts"
-msgstr ""
+msgstr "Rendszerüzenetek"
 
 #: ../lib/wiking/cms/cms.py:2898
 msgid "Edit miscellaneous system texts."
-msgstr ""
+msgstr "Különféle rendszerüzenetek szerkesztése."
 
 #: ../lib/wiking/cms/cms.py:2905 ../lib/wiking/cms/cms.py:3134
 msgid "Label"
-msgstr ""
+msgstr "Címke"
 
 #: ../lib/wiking/cms/cms.py:2908 ../lib/wiking/cms/cms.py:3137
 msgid "Purpose"
-msgstr ""
+msgstr "Cél"
 
 #: ../lib/wiking/cms/cms.py:2911 ../lib/wiking/cms/cms.py:3140
 #: ../lib/wiking/cms/cms.py:3328
 msgid ""
 "Edit the given text as needed, in accordance with structured text rules."
 msgstr ""
+"Szerkeszd az adott szöveget az elvárások szerint, a szövegszerkesztés "
+"szabályai szerint."
 
 #: ../lib/wiking/cms/cms.py:3129
 msgid "E-mails"
-msgstr ""
+msgstr "E-mailek"
 
 #: ../lib/wiking/cms/cms.py:3130
 msgid "Edit e-mail texts."
-msgstr ""
+msgstr "E-mail szöveg szerkesztése."
 
 #: ../lib/wiking/cms/cms.py:3141 ../lib/wiking/cms/cms.py:3326
 msgid "Subject"
-msgstr ""
+msgstr "Tárgy"
 
 #: ../lib/wiking/cms/cms.py:3142
 msgid "Additional recipients"
-msgstr ""
+msgstr "További címzettek"
 
 #: ../lib/wiking/cms/cms.py:3143
 msgid "Comma separated list of e-mail addresses."
-msgstr ""
+msgstr "Vesszővel elválasztott e-mail címek listája."
 
 #. Translators: Section title and menu item. Sending emails to multiple recipients.
 #: ../lib/wiking/cms/cms.py:3315
 msgid "Bulk E-mails"
-msgstr ""
+msgstr "Tömeges emailek"
 
 #: ../lib/wiking/cms/cms.py:3321
 msgid "Sender address"
-msgstr ""
+msgstr "A küldő címe"
 
 #: ../lib/wiking/cms/cms.py:3322
 msgid "E-mail address of the sender."
-msgstr ""
+msgstr "A küldő email címe."
 
 #. Translators: List of recipients of an email message
 #: ../lib/wiking/cms/cms.py:3324
 msgid "Recipients"
-msgstr ""
+msgstr "Címzettek"
 
 #: ../lib/wiking/cms/cms.py:3332
 msgid "State"
-msgstr ""
+msgstr "Állapot"
 
 #. Translators: State of processing of an email message (e.g. New, Sending, Sent)
 #: ../lib/wiking/cms/cms.py:3342
 msgid "Sent"
-msgstr ""
+msgstr "Elküldött"
 
 #. Translators: State of processing of an email message (e.g. New, Sending, Sent)
 #: ../lib/wiking/cms/cms.py:3345
 msgid "Sending"
-msgstr ""
+msgstr "Küldés"
 
 #. Translators: State of processing of an email message (e.g. New, Sending, Sent)
 #: ../lib/wiking/cms/cms.py:3348
 msgid "New"
-msgstr ""
+msgstr "Új"
 
 #. Translators: All as in ``all user roles''
 #: ../lib/wiking/cms/cms.py:3357
 msgid "All"
-msgstr ""
+msgstr "Mind"
 
 #: ../lib/wiking/cms/cms.py:3361
 #, python-format
 msgid "%(subject)s"
-msgstr ""
+msgstr "%(subject)s"
 
 #. Translators: Button label meaning save this email text for later repeated usage
 #: ../lib/wiking/cms/cms.py:3365
 msgid "Use as a Template"
-msgstr ""
+msgstr "Mentsd el sablonként"
 
 #. Translators: Description of button for creating a template of an email
 #: ../lib/wiking/cms/cms.py:3367
 msgid "Edit this mail for repeated use"
-msgstr ""
+msgstr "Mentsd el a mailt sablonként"
 
 #. Translators: Web form label (account in the meaning of user account)
 #: ../lib/wiking/cms/texts.py:27
@@ -1801,8 +1887,9 @@ msgstr ""
 
 #. Translators: Web form label
 #: ../lib/wiking/cms/texts.py:36
+#, fuzzy
 msgid "Information about an account waiting for activation code confirmation"
-msgstr ""
+msgstr "Fiók megerősítése aktivációs kód ellenőrzése nélkül"
 
 #. Translators: Text presented to a user in a web page
 #: ../lib/wiking/cms/texts.py:38
@@ -1819,8 +1906,9 @@ msgstr ""
 
 #. Translators: Web form label
 #: ../lib/wiking/cms/texts.py:49
+#, fuzzy
 msgid "Information about an account waiting for admin approval"
-msgstr ""
+msgstr "Nem jóváhagyott fiókok (függőben levő jóváhagyások az adminnál)"
 
 #. Translators: Text presented to a user in a web page
 #: ../lib/wiking/cms/texts.py:52
@@ -1831,3 +1919,75 @@ msgid ""
 "If the account remains unapproved for a long time, contact the application "
 "administrator."
 msgstr ""
+
+#. Translators: Yes/No configuration option label. Should the login panel be visible?
+#: ../lib/wiking/cms/configuration.py:36
+msgid "Allow login panel"
+msgstr "Látható a bejelentkezési panel"
+
+#: ../lib/wiking/cms/configuration.py:37
+msgid ""
+"If enabled, the information about the currently logged user and login/logout "
+"controls will be present on each page as a separate panel.  This panel will "
+"always be the first panel on the page."
+msgstr ""
+"Ha be van kapcsolva, az éppen bejelentkezett felhasználó információi és a be/"
+"kijelentkezési ablak minden oldalon külön táblában megjelenik. Ez a "
+"dialógusablak mindig az oldal első eleme lesz."
+
+#. Translators: Yes/No configuration option label. Should link to WMI be visible?  "WMI"
+#. stands for Wiking Management Interface.  Don't feel obliged to use an abbreviation.  Use
+#. whatever brief form obviously referning to whatever translation you used for "Wiking
+#. Management Interface".
+#: ../lib/wiking/cms/configuration.py:47
+msgid "Allow WMI link"
+msgstr "WMI link mutatása"
+
+#. Translators: Yes/no configuration label. Can new users register to this
+#. website/application?
+#: ../lib/wiking/cms/configuration.py:55
+msgid "Allow new user registration"
+msgstr "Új felhasználó regisztrációjának engedélyezése"
+
+#: ../lib/wiking/cms/configuration.py:56
+msgid ""
+"If enabled, all visitors are allowed to create a user account.  If disabled, "
+"new user accounts must be created by administrator.  Note, that the newly "
+"created accounts are inactive (at least with the default implementation of "
+"the user management module), so the creation of the account doesn't give the "
+"user any actual privileges."
+msgstr ""
+"Ha be van kapcsolva, minden látogató létrehozhat felhasználói fiókot. Ha ki "
+"van kapcsolva, az új felhasználói fiókokat a rendszergazda hozza létre. Az "
+"újonnan létesült felhasználói fiókok inaktívak (a felhasználói irányítómodul "
+"alapbeállításai alapján), így új fiók létrehozása nem ad azonnal a "
+"felhasználónak semmilyen plusz kiváltságot."
+
+#. Translators: Maximal size an uploaded file can have.
+#: ../lib/wiking/cms/configuration.py:65
+msgid "Maximal upload size"
+msgstr "Maximálisan feltölthető fájl mérete"
+
+#: ../lib/wiking/cms/configuration.py:66
+msgid ""
+"The maximal size of uploaded files in bytes.  The server needs to be "
+"relaoded for the changes in this option to take effect."
+msgstr ""
+"A maximális nagyságú feltölthető állomány nagysága bájtban. A szerver "
+"újraindítást igényel a változtatások életbelépéséhez."
+
+#: ../lib/wiking/cms/appl.py:58
+msgid "Manage this site"
+msgstr "Karbantartani a weboldalt"
+
+#: ../lib/wiking/cms/appl.py:59
+msgid "Enter the Wiking Management Interface"
+msgstr "Belépés a Wiking kezelőfelületbe"
+
+#: ../lib/wiking/cms/appl.py:61
+msgid "Leave the Management Interface"
+msgstr "Kilépés a Wiking kezelőfelületből"
+
+#: ../lib/wiking/cms/appl.py:160
+msgid "Wiking Management Interface"
+msgstr "Wiking kezelőfelület"
