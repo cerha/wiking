@@ -204,6 +204,7 @@ class ModPythonHandler(object):
                 stats.sort_stats('cumulative')
                 debug("Profile statistics for %s:" % req.uri())
                 stats.stream = sys.stderr
+                sys.stderr.write('   ')
                 stats.print_stats()
                 sys.stderr.flush()
             finally:
