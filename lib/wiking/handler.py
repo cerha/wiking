@@ -191,7 +191,7 @@ class ModPythonHandler(object):
                        dict([(o, opt[o]) for o in opt.keys()]),
                        request.server.server_admin)
         req = WikingRequest(request, self._application)
-        if False:
+        if False: #not req.uri().startswith('/_'):
             import cProfile as profile, pstats, tempfile
             self._profile_req = req
             tmpfile = tempfile.NamedTemporaryFile().name
