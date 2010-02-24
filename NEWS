@@ -6,6 +6,9 @@ Version 1.0.0 (2010-01-21):
 
  * New features in Wiking CMS:
 
+   - Video and audio attachments can now be embeded into CMS pages shoothly
+     when media player is installed thanks to upstream support in LCG.
+
    - Allow entering the registration code by hand (not just through a link in
      registration email).
    
