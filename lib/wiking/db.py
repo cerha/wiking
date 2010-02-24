@@ -120,13 +120,13 @@ class PytisModule(Module, ActionHandler):
             """Return the value of record's key for data operations."""
             return (self[self._data.key()[0].id()],)
 
-        def reload(self):
+        def reload(self, transaction=None):
             """Reload record data from the database."""
-            self.set_row(self._data.row(self.key()))
+            self.set_row(self._data.row(self.key(), transaction=transaction))
 
-        def update(self, **kwargs):
+        def update(self, transaction=None, **kwargs):
             """Update the record in the database by values of given keyword args."""
-            self._data.update(self.key(), self._data.make_row(**kwargs))
+            self._data.update(self.key(), self._data.make_row(**kwargs), transaction=transaction)
             self.reload()
     
         def rowdata(self):
