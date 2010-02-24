@@ -1905,6 +1905,8 @@ class Planner(News):
             end = record['end_date'].value()
             if end and end <= record['start_date'].value():
                 return ('end_date', _("End date precedes start date"))
+    # Translators: Button label for creating a new event in "Planner".
+    _INSERT_LABEL = _("New event")
     _RSS_TITLE_COLUMN = 'date_title'
     _RSS_DATE_COLUMN = None
     def _condition(self, req, **kwargs):
