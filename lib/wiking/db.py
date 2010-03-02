@@ -92,6 +92,10 @@ class PytisModule(Module, ActionHandler):
     """Default value to pass to 'pytis.web.BrowseForm' 'limit' constructor argument."""
     _ALLOW_QUERY_SEARCH = None
     """Default value to pass to 'pytis.web.BrowseForm' 'allow_query_search' constructor argument."""
+    _ACTION_MENU_FIRST = False
+    "If true, action menu is put above forms."
+    _ACTION_MENU_LAST = True
+    "If true, action menu is put below forms."
     
     _ALLOW_COPY = False
     _SUBMIT_BUTTONS = {}
@@ -422,6 +426,14 @@ class PytisModule(Module, ActionHandler):
         if uri is None:
             uri = self._current_base_uri(req, record)
         return ActionMenu(uri, actions, self._referer, self.name(), record, **kwargs)
+
+    def _add_action_menu(self, content, req, *args, **kwargs):
+        action_menu = self._action_menu(req, *args, **kwargs)
+        if action_menu and self._ACTION_MENU_FIRST:
+            content = (action_menu,) + content
+        if action_menu and self._ACTION_MENU_LAST:
+            content = content + (action_menu,)
+        return content
 
     def _link_provider(self, req, uri, record, cid, **kwargs):
         if cid is None:
@@ -833,9 +845,9 @@ class PytisModule(Module, ActionHandler):
             return result
         # If this is not a binding forwarded request, display the listing.
         lang = req.prefered_language()
-        content = (self._form(pw.ListView, req, condition=self._condition(req, lang=lang),
-                              columns=self._columns(req), filters=self._filters(req)),
-                   self._action_menu(req))
+        form = self._form(pw.ListView, req, condition=self._condition(req, lang=lang),
+                          columns=self._columns(req), filters=self._filters(req))
+        content = self._add_action_menu((form,), req)
         return self._document(req, content, lang=lang)
 
     def _binding_parent_uri(self, req):
@@ -879,10 +891,10 @@ class PytisModule(Module, ActionHandler):
     def action_view(self, req, record, err=None, msg=None):
         # The arguments `msg' and `err' are DEPRECATED!  Please don't use.
         # They are currently still used in Eurochance LMS.
-        content = [self._form(pw.ShowForm, req, record=record,
-                              layout=self._layout(req, 'view', record)),
-                   self._action_menu(req, record)] + \
-                   self._related_content(req, record)
+        form = self._form(pw.ShowForm, req, record=record,
+                          layout=self._layout(req, 'view', record))
+        content = (list(self._add_action_menu((form,), req, record)) +
+                   self._related_content(req, record))
         return self._document(req, content, record, err=err, msg=msg)
 
     def action_subpath(self, req, record):
@@ -975,7 +987,7 @@ class PytisModule(Module, ActionHandler):
                    # Translators: Back button label. Standard computer terminology.
                    Action(_("Back"), 'view'))
         req.message(self._delete_prompt(req, record))
-        return self._document(req, (form, self._action_menu(req, record, actions)), record,
+        return self._document(req, self._add_action_menu((form,), req, record, actions), record,
                               subtitle=self._delete_subtitle(req, record))
         
     def _insert_subtitle(self, req):
