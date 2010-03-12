@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2006, 2007, 2008, 2009 Brailcom, o.p.s.
+# Copyright (C) 2006, 2007, 2008, 2009, 2010 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -22,18 +22,59 @@ The CMS application is defined as an implementation of Wiking Application Interf
 
 """
 
+import wiking
 from wiking.cms import *
 
 _ = lcg.TranslatableTextFactory('wiking-cms')
 
-class Roles(Roles):
-    """CMS specific user roles."""
-    
-    CONTRIBUTOR = 'CONTRIBUTOR'
-    """A user hwo has contribution privilegs for certain types of content."""
-    AUTHOR = 'AUTHOR'
-    """Any user who has the authoring privileges."""
 
+class Roles(wiking.Roles):
+    """Additional roles used by Wiking CMS and Wiking CMS applications.
+    
+    The class defines the following extensions:
+    
+     - New predefined user roles (see class constants).
+     
+     - It reads user roles from the database, thus enabling access to user
+       defined application roles.  User defined roles are roles additional
+       roles defined by the administrator of the application.  They are not
+       specifically supported in the application but they can be used for
+       combining role based access rights or grouping users for messaging
+       purposes etc.  User roles can be edited using L{ApplicationRoles}
+       module.
+
+     - Roles assigned explicitly to particular users.  L{wiking.Roles} roles
+       are special purpose roles.  Whether a user belongs to any such roles is
+       determined only by application code and users can't be assigned to those
+       roles explicitly.  This class introduces user roles that are (usually)
+       assigned to users by application administrator.  Starting with this
+       class all predefined roles are explicitly assigned roles unless their
+       documentation says otherwise; applications should follow this
+       convention.  User defined roles are always explicitly assigned roles.
+
+    """
+    USER = Role()
+    """Any authenticated user who is fully enabled in the application.
+    I{Fully enabled} means the user registration process is fully completed and
+    the user access to the application is not blocked.
+    
+    This is a special purpose role, you can't assign users to this role explicitly.    
+    """
+    CMS_USER_ADMIN = Role()
+    """CMS user administrator."""
+    CMS_CONTENT_ADMIN = Role()
+    """CMS content administrator."""
+    CMS_SETTINGS_ADMIN = Role()
+    """CMS settings administrator."""
+    CMS_MAIL_ADMIN = Role()
+    """CMS bulk mailing user and administrator."""
+    CMS_ADMIN = GroupRole()
+    """CMS administrator, containing all CMS administration roles."""
+
+
+class ApplicationRoles(wiking.PytisModule):
+    """Form for listing and editing application roles."""
+    
 
 class Application(CookieAuthentication, wiking.Application):
     
@@ -215,6 +256,22 @@ class Application(CookieAuthentication, wiking.Application):
         return password == record['password'].value()
 
     def authorize(self, req, module, action=None, record=None, **kwargs):
+        """Authorization of CMS modules.
+
+        The method defines basic authorization mechanism based on L{user
+        roles<wiking.Role>}.  If C{module} defines constant of the form
+        C{RIGHTS_}I{ACTION} where I{ACTION} is C{action} value then the
+        constant is used for determining user roles which are allowed to
+        perform the action.  The constant must be a tuple of L{Role} instances.
+        The user is allowed to perform the action iff one of his roles is among
+        the roles listed in the constant.  Note that special roles such as
+        I{OWNER} or I{USER} can be used in the list.  See L{Roles} for
+        information about standard and special roles.
+        
+        """
+        # Am I the only who thinks this method is a gross hack?  The method
+        # shouldn't handle specific requirements of the particular modules, the
+        # modules should.  -pdm
         if req.path and req.path[0] == '_registration' and module.name() == 'Users':
             # This hack redirects action authorization back to Registration after redirection to
             # Users.

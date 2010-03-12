@@ -1,4 +1,4 @@
-# Copyright (C) 2006-2009 Brailcom, o.p.s.
+# Copyright (C) 2006-2010 Brailcom, o.p.s.
 # Author: Tomas Cerha <cerha@brailcom.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -882,38 +882,123 @@ class User(object):
         if auto is not None:
             assert isinstance(auto, bool)
             self._auto_authentication = auto
+
+
+class Role(object):
+    """Representation of a user role.
+    
+    Every user can have assigned any number of roles.  The roles can serve
+    various purposes, for instance:
+
+     - Determining user access rights.
+     - Changing presentation of forms based on the user roles.
+     - Defining groups of users for any reason, e.g. for sending notifications.
+
+    There are no strict rules on usage of user roles in an application.  The
+    application can check assignments of roles to the user using
+    L{WikingRequest.check_roles} method.  Refer to documentation of particular
+    modules using roles for interpretation of user roles in them.  See
+    L{wiking.cms.Application.authorize} for standard handling of role based
+    access rights in Wiking CMS applications.
+
+    Each role is defined by its unique identifier, returned by L{role_id}
+    method.  It identifies the role in application and databases.  Additionally
+    there is a human readable name of the role for presentation in user
+    interfaces.
+
+    Roles can be primitive, represented by instances of this class.  Mechanism
+    for defining roles composed of other roles is provided by L{GroupRole}
+    class.
+
+    User roles available in an application are defined by L{Roles} class.
+
+    """
+    def role_id(self):
+        """
+        @rtype: string
+        @return: Unique identifier of the role.
+        """
+
+    def name(self):
+        """
+        @rtype: string or unicode
+        @return: Human readable name of the role.
+        """
+
+class GroupRole(Role):
+    """Role defined as a combination of other roles.
+    Such roles serve as shorthands for typical combinations of other roles,
+    those may be any L{Role} instances, including L{GroupRole} and possibly
+    other L{Role} subclasses.
+
+    @invariant: There may be no cycles in role memberships, i.e. no role may
+      contain itself, including transitive relations.  For instance, group role
+      I{foo} may not contain I{foo}; or if I{foo} contains I{bar} and I{bar}
+      contains I{baz} then I{baz} may not contain I{foo} nor I{bar} nor I{baz}.
+
+    """
+    def roles(self):
+        """
+        @rtype: sequence of L{Role}s
+        @return: All the roles contained in this role.
+        """
         
     
 class Roles(object):
-    """Predefined static user roles.
+    """Complete set of available user roles.
 
-    Wiking applications may use the roles defined here, extend this class to define additional
-    static roles or use application specific dynamic roles.  In any case, all valid roles are
-    represented by string identifiers and the application must take care to use unique identifiers
-    for all its roles.
+    This particular class defines a very limited set of special purpose Wiking
+    roles.  Wiking applications may use the roles defined here, extend this
+    class to define additional predefined roles or use application specific and
+    user defined roles.  Roles are represented by L{Role} instances.
 
-    Static roles are defined as public constants of this class below.
+    Predefined roles are defined as public constants of the class.
 
     """
     ANYONE = 'ANYONE'
     """Anyone, even a user who is not logged-in."""
-    USER = 'USER'
-    """Any logged-in user who is at least enabled."""
-    ADMIN = 'ADMIN'
-    """Administrator (usually with unlimited privileges)."""
+    AUTHENTICATED = 'USER'
+    """Any authenticated user."""
     OWNER = 'OWNER'
     """The owner of the item being operated.
-    
-    Wiking application is responsible for providing owner checking in its authorization checking
-    routines (it it wants to make use of this role).  Wiking CMS, for example, implements this
-    through the method `PytisModule.check_owner()' for pytis based modules (each record may have
-    its owner).
-
+    Interpretation of the term I{owner} is on the particular application.
+    Standard way of owner identification is implemented in
+    L{PytisModule.check_owner}, based on the owner of the processed database
+    record.  Applications may redefine this method or implement their own
+    L{Application.authorize} method to change the concept of owner when needed.
     """
+    AUTHOR = 'AUTHOR'
+    "@deprecated: Don't use anymore, introduce your own application specific role if really needed."
+    CONTRIBUTOR = 'CONTRIBUTOR'
+    "@deprecated: Don't use anymore, introduce your own application specific role if really needed."
+    ADMIN = 'ADMIN'
+    """@deprecated: Use L{wiking.cms.Roles} C{CMS_*_ADMIN} constants instead.
+    Define your own additional application specific administrator roles if needed.
+    """
+    USER = 'USER'
+    "@deprecated: Use L{wiking.cms.Roles.USER} instead."
+
+    def __getitem__(self, role_id):
+        """
+        @type role_id: string
+        @param role_id: Unique identifier of the role to be returned.
+        
+        @rtype: L{Role}
+        @return: The role identified by C{role_id}.
+
+        @raise KeyError: There is no role with C{role_id} as its unique
+          identifier.
+        """
+
+    def all_roles(self):
+        """
+        @rtype: sequence of L{Role}s
+        @return: All the roles available in the application.
+        """
 
     @classmethod
     def check(cls, req, roles):
-        """DEPRECATED!  Use 'Request.check_roles()' instead."""
+        """@deprecated: Use L{WikingRequest.check_roles} instead."""
         if cls.ANYONE in roles:
             return True
         user = req.user()
