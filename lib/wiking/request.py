@@ -901,10 +901,9 @@ class Role(object):
     L{wiking.cms.Application.authorize} for standard handling of role based
     access rights in Wiking CMS applications.
 
-    Each role is defined by its unique identifier, returned by L{role_id}
-    method.  It identifies the role in application and databases.  Additionally
-    there is a human readable name of the role for presentation in user
-    interfaces.
+    Each role is defined by its unique identifier, returned by L{id} method.
+    It identifies the role in application and databases.  Additionally there is
+    a human readable name of the role for presentation in user interfaces.
 
     Roles can be primitive, represented by instances of this class.  Mechanism
     for defining roles composed of other roles is provided by L{GroupRole}
@@ -913,7 +912,7 @@ class Role(object):
     User roles available in an application are defined by L{Roles} class.
 
     """
-    def role_id(self):
+    def id(self):
         """
         @rtype: string
         @return: Unique identifier of the role.
@@ -945,20 +944,27 @@ class GroupRole(Role):
         
     
 class Roles(object):
-    """Complete set of available user roles.
+    """Set of available user roles.
 
     This particular class defines a very limited set of special purpose Wiking
-    roles.  Wiking applications may use the roles defined here, extend this
+    roles.  Wiking applications may use the roles defined here, subclass this
     class to define additional predefined roles or use application specific and
     user defined roles.  Roles are represented by L{Role} instances.
 
     Predefined roles are defined as public constants of the class.
 
+    You can get complete set of roles defined by an application by calling
+    L{all_roles} method.
+
     """
     ANYONE = 'ANYONE'
     """Anyone, even a user who is not logged-in."""
     AUTHENTICATED = 'USER'
-    """Any authenticated user."""
+    """Any authenticated user.
+    Note that authenticated users may be further split into more specific
+    groups of authenticated users, based on their actual level of access to the
+    application.  See L{wiking.cms.Roles} for examples of such more specific roles.
+    """
     OWNER = 'OWNER'
     """The owner of the item being operated.
     Interpretation of the term I{owner} is on the particular application.
@@ -972,7 +978,7 @@ class Roles(object):
     CONTRIBUTOR = 'CONTRIBUTOR'
     "@deprecated: Don't use anymore, introduce your own application specific role if really needed."
     ADMIN = 'ADMIN'
-    """@deprecated: Use L{wiking.cms.Roles} C{CMS_*_ADMIN} constants instead.
+    """@deprecated: Use L{wiking.cms.Roles} C{*_ADMIN} constants instead.
     Define your own additional application specific administrator roles if needed.
     """
     USER = 'USER'

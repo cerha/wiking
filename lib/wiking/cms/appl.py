@@ -36,21 +36,21 @@ class Roles(wiking.Roles):
      - New predefined user roles (see class constants).
      
      - It reads user roles from the database, thus enabling access to user
-       defined application roles.  User defined roles are roles additional
-       roles defined by the administrator of the application.  They are not
+       defined application roles.  I{User defined roles} are additional roles
+       defined by the administrator of the application.  They are not
        specifically supported in the application but they can be used for
        combining role based access rights or grouping users for messaging
        purposes etc.  User roles can be edited using L{ApplicationRoles}
        module.
 
-     - Roles assigned explicitly to particular users.  L{wiking.Roles} roles
-       are special purpose roles.  Whether a user belongs to any such roles is
-       determined only by application code and users can't be assigned to those
-       roles explicitly.  This class introduces user roles that are (usually)
-       assigned to users by application administrator.  Starting with this
-       class all predefined roles are explicitly assigned roles unless their
-       documentation says otherwise; applications should follow this
-       convention.  User defined roles are always explicitly assigned roles.
+     - User roles that are assigned to users explicitly by application
+       administrator.  The roles defined by the base class L{wiking.Roles} are
+       all special purpose roles.  Whether a user belongs to any such special
+       role is determined only by application code and users can't be assigned
+       to those roles explicitly.  In this subclass all predefined roles are
+       explicitly assigned roles unless their documentation says otherwise;
+       applications should follow this convention.  User defined roles are
+       always explicitly assigned roles.
 
     """
     USER = Role()
@@ -60,16 +60,28 @@ class Roles(wiking.Roles):
     
     This is a special purpose role, you can't assign users to this role explicitly.    
     """
-    CMS_USER_ADMIN = Role()
-    """CMS user administrator."""
-    CMS_CONTENT_ADMIN = Role()
-    """CMS content administrator."""
-    CMS_SETTINGS_ADMIN = Role()
-    """CMS settings administrator."""
-    CMS_MAIL_ADMIN = Role()
-    """CMS bulk mailing user and administrator."""
-    CMS_ADMIN = GroupRole()
-    """CMS administrator, containing all CMS administration roles."""
+    REGISTERED = Role()
+    """Authenticated user who is not yet fully enabled in the application.
+    In Wiking CMS these are new users who have registered themselves and wait
+    for approval by the application administrator.
+    
+    This is a special purpose role, you can't assign users to this role explicitly.    
+    """
+    USER_ADMIN = Role()
+    """User administrator."""
+    CONTENT_ADMIN = Role()
+    """Content administrator."""
+    SETTINGS_ADMIN = Role()
+    """Settings administrator."""
+    MAIL_ADMIN = Role()
+    """Bulk mailing user and administrator."""
+    STYLE_ADMIN = Role()
+    """Administrator of stylesheets, color themes and other web design related settings."""
+    ADMIN = GroupRole()
+    """Administrator containing all administration roles.
+    This constant may be redefined in subclasses to include additional
+    administration roles.
+    """
 
 
 class ApplicationRoles(wiking.PytisModule):
