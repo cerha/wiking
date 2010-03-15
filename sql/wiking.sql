@@ -22,6 +22,18 @@ create table organizations (
 
 -------------------------------------------------------------------------------
 
+create table roles (
+       role_id name primary_key,
+       description text,
+       system boolean not null default 'f'
+);
+
+create table role_members (
+       role_id name references roles,
+       member name references roles,
+       unique (role_id, member)
+);
+
 create table users (
 	uid serial primary key,
 	login varchar(32) unique not null,
@@ -34,7 +46,7 @@ create table users (
 	phone text,
 	address text,
 	uri text,
-	role char(4) not null default 'none',
+	role char(4) not null default 'none',  -- obsolete
         last_password_change timestamp not null,
 	since timestamp not null default current_timestamp(0),
 	lang char(2) references languages(lang) on update cascade on delete set null,
@@ -47,6 +59,12 @@ create table users (
 );
 alter table users alter column since 
 set default current_timestamp(0) at time zone 'GMT';
+
+create table role_users (
+       role_id name references roles,
+       uid int references users,
+       unique (role_id, uid)
+);
 
 create table session (
        session_id serial primary key,

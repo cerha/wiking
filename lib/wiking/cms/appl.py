@@ -22,6 +22,9 @@ The CMS application is defined as an implementation of Wiking Application Interf
 
 """
 
+import pytis.data as pd
+import pytis.presentation as pp
+import pytis.util
 import wiking
 from wiking.cms import *
 
@@ -53,40 +56,113 @@ class Roles(wiking.Roles):
        always explicitly assigned roles.
 
     """
-    USER = Role()
+    # Translators: Short description of a user group purpose.
+    USER = Role('user', _("Authenticated approved user"))
     """Any authenticated user who is fully enabled in the application.
     I{Fully enabled} means the user registration process is fully completed and
     the user access to the application is not blocked.
     
     This is a special purpose role, you can't assign users to this role explicitly.    
     """
-    REGISTERED = Role()
+    # Translators: Short description of a user group purpose.
+    REGISTERED = Role('registered', _("Authenticated new user"))
     """Authenticated user who is not yet fully enabled in the application.
     In Wiking CMS these are new users who have registered themselves and wait
     for approval by the application administrator.
     
     This is a special purpose role, you can't assign users to this role explicitly.    
     """
-    USER_ADMIN = Role()
+    # Translators: Short description of a user group purpose.
+    USER_ADMIN = Role('user_admin', _("User administrator"))
     """User administrator."""
-    CONTENT_ADMIN = Role()
+    # Translators: Short description of a user group purpose.
+    CONTENT_ADMIN = Role('content_admin', _("Content administrator"))
     """Content administrator."""
-    SETTINGS_ADMIN = Role()
+    # Translators: Short description of a user group purpose.
+    SETTINGS_ADMIN = Role('settings_admin', _("Settings administrator"))
     """Settings administrator."""
-    MAIL_ADMIN = Role()
+    # Translators: Short description of a user group purpose.
+    MAIL_ADMIN = Role('mail_admin', _("Mail administrator"))
     """Bulk mailing user and administrator."""
-    STYLE_ADMIN = Role()
+    # Translators: Short description of a user group purpose.
+    STYLE_ADMIN = Role('style_admin', _("Style administrator"))
     """Administrator of stylesheets, color themes and other web design related settings."""
-    ADMIN = GroupRole()
+    # Translators: Short description of a user group purpose.
+    ADMIN = Role('admin', _("Administrator"),
+                 members=(USER_ADMIN, CONTENT_ADMIN, SETTINGS_ADMIN,
+                          MAIL_ADMIN, STYLE_ADMIN,))
     """Administrator containing all administration roles.
     This constant may be redefined in subclasses to include additional
     administration roles.
     """
-
+    def all_roles(self):
+        standard_roles = super(Roles, self).all_roles()
+        user_defined_roles = ApplicationRoles(pytis.util.resolver()).user_defined_roles()
+        return standard_roles + user_defined_roles
 
 class ApplicationRoles(wiking.PytisModule):
-    """Form for listing and editing application roles."""
+    """Accessor and editor of application roles.
+
+    This class can read roles from and store them to the database.  Its main
+    purpose is to handle user defined roles.
+
+    """
+    class Spec(wiking.Specification):
+        table = 'roles'
+        # Translators: Form title.
+        title = _("Application Roles")
+        fields = (pp.Field('role'),
+                  # Translators: Form field label.
+                  pp.Field('name', _("Group")),
+                  )
+    def user_defined_roles(self):
+        """
+        @rtype: sequence of L{Role}s
+        @return: All user defined roles, i.e. roles defined by the application
+          administrators and not the application code.
+        """
+        role_members = RoleMembers.member_dictionary()
+        def make_role(row):
+            role_id = row['role_id'].value()
+            name = row['name'].value()
+            members = tuple(role_members.get(role_id, ()))
+            return Role(role_id, name, members=members)
+        condition = pd.EQ('system', pd.Value(pd.Boolean(), False))
+        return self._data.select_map(make_role, condition=condition)
+        
+class RoleMembers(wiking.PytisModule):
+    """Accessor of role membership information stored in the database.
+
+    @see: L{wiking.cms.Role} for explanation of I{role members}.
     
+    """
+    class Spec(wiking.Specification):
+        table = 'role_members'
+        fields = (pp.Field('role_id'),
+                  pp.Field('member'),
+                  )
+    def member_dictionary(self):
+        """
+        @rtype: dictionary of strings as keys and sequences of strings as values
+        @return: Role membership information in the form of dictionary with
+          role identifiers as keys and sequences of identifiers of their
+          corresponding member roles.
+
+        @note: The dictionary contains only roles contained in other roles.  It
+          doesn't contain any information about users.
+          
+        """
+        dictionary = {}
+        def add(row):
+            role_id = row['role_id'].value()
+            member = row['member'].value()
+            role_members = dictionary.get(role_id)
+            if role_members is None:
+                role_members = dictionary[role_id] = []
+            role_members.append(member)
+        self._data.select_map(add)
+        return dictionary
+        
 
 class Application(CookieAuthentication, wiking.Application):
     

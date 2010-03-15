@@ -15,6 +15,13 @@ insert into stylesheets (identifier, media, ord) values ('default.css', 'all', 1
 insert into stylesheets (identifier, media, ord) values ('layout.css', 'screen', 20);
 insert into stylesheets (identifier, media, ord) values ('print.css', 'print', 30);
 
+insert into roles (role_id, system) values ('user_admin', 't');
+insert into roles (role_id, system) values ('content_admin', 't');
+insert into roles (role_id, system) values ('settings_admin', 't');
+insert into roles (role_id, system) values ('mail_admin', 't');
+insert into roles (role_id, system) values ('style_admin', 't');
+insert into roles (role_id, system) values ('admin', 't');
+
 INSERT INTO users (login, password, firstname, surname, nickname, user_, email, role, last_password_change)
 VALUES ('admin', 'wiking', 'Wiking', 'Admin', 'Admin', 'Admin', '-', 'admn', '2000-01-01 00:00:00');
 

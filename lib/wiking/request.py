@@ -15,6 +15,8 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+import string
+
 from wiking import *
 
 try:
@@ -905,30 +907,11 @@ class Role(object):
     It identifies the role in application and databases.  Additionally there is
     a human readable name of the role for presentation in user interfaces.
 
-    Roles can be primitive, represented by instances of this class.  Mechanism
-    for defining roles composed of other roles is provided by L{GroupRole}
-    class.
-
     User roles available in an application are defined by L{Roles} class.
 
-    """
-    def id(self):
-        """
-        @rtype: string
-        @return: Unique identifier of the role.
-        """
-
-    def name(self):
-        """
-        @rtype: string or unicode
-        @return: Human readable name of the role.
-        """
-
-class GroupRole(Role):
-    """Role defined as a combination of other roles.
-    Such roles serve as shorthands for typical combinations of other roles,
-    those may be any L{Role} instances, including L{GroupRole} and possibly
-    other L{Role} subclasses.
+    Roles can contain other roles.  Such roles serve as shorthands for typical
+    combinations of other roles, those may be any L{Role} instances, including
+    L{Role} subclasses.
 
     @invariant: There may be no cycles in role memberships, i.e. no role may
       contain itself, including transitive relations.  For instance, group role
@@ -936,12 +919,52 @@ class GroupRole(Role):
       contains I{baz} then I{baz} may not contain I{foo} nor I{bar} nor I{baz}.
 
     """
-    def roles(self):
+    def __init__(self, role_id, name, members=()):
+        """
+        @type role_id: string
+        @param role_id: Unique identifier of the role.  It may contain only
+          English letters, digits, underscores and dots.  Dots are reserved for
+          separating identifier components, e.g. to add prefixes to user
+          defined roles to avoid name conflicts with standard application roles.
+        @type name: string or unicode
+        @param name: Human readable name of the role.
+        @type members: tuple of L{Role}s
+        @param members: Roles contained in this role.
+        """
+        self._id = role_id
+        self._name = name
+        self._members = members
+
+    def __cmp__(self, other):
+        """
+        Two roles are equal if their unique identifiers are equal.
+        """
+        if isinstance(other, Role):
+            result = cmp(self.id(), other.id())
+        else:
+            result = cmp(id(self), id(other))
+        return result
+    
+    def id(self):
+        """
+        @rtype: string
+        @return: Unique identifier of the role.
+        """
+        return self._id
+
+    def name(self):
+        """
+        @rtype: string or unicode
+        @return: Human readable name of the role.
+        """
+        return self._name
+        
+    def members(self):
         """
         @rtype: sequence of L{Role}s
         @return: All the roles contained in this role.
         """
-        
+        return self._members
     
 class Roles(object):
     """Set of available user roles.
@@ -957,15 +980,18 @@ class Roles(object):
     L{all_roles} method.
 
     """
-    ANYONE = 'ANYONE'
+    # Translators: Short description of a user group purpose.
+    ANYONE = Role('anyone', _("Anybody"))
     """Anyone, even a user who is not logged-in."""
-    AUTHENTICATED = 'USER'
+    # Translators: Short description of a user group purpose.
+    AUTHENTICATED = Role('authenticated', _("Any authenticated user"))
     """Any authenticated user.
     Note that authenticated users may be further split into more specific
     groups of authenticated users, based on their actual level of access to the
     application.  See L{wiking.cms.Roles} for examples of such more specific roles.
     """
-    OWNER = 'OWNER'
+    # Translators: Short description of a user group purpose.
+    OWNER = Role('owner', _("Current record owner"))
     """The owner of the item being operated.
     Interpretation of the term I{owner} is on the particular application.
     Standard way of owner identification is implemented in
@@ -973,15 +999,15 @@ class Roles(object):
     record.  Applications may redefine this method or implement their own
     L{Application.authorize} method to change the concept of owner when needed.
     """
-    AUTHOR = 'AUTHOR'
+    AUTHOR = Role('author', "Author")
     "@deprecated: Don't use anymore, introduce your own application specific role if really needed."
-    CONTRIBUTOR = 'CONTRIBUTOR'
+    CONTRIBUTOR = Role('contributor', "Contributor")
     "@deprecated: Don't use anymore, introduce your own application specific role if really needed."
-    ADMIN = 'ADMIN'
+    ADMIN = Role('admin', "Admin")
     """@deprecated: Use L{wiking.cms.Roles} C{*_ADMIN} constants instead.
     Define your own additional application specific administrator roles if needed.
     """
-    USER = 'USER'
+    USER = Role('user', "User")
     "@deprecated: Use L{wiking.cms.Roles.USER} instead."
 
     def __getitem__(self, role_id):
@@ -995,12 +1021,21 @@ class Roles(object):
         @raise KeyError: There is no role with C{role_id} as its unique
           identifier.
         """
+        for role in self.all_roles():
+            if role.id() == role_id:
+                return role
+        raise KeyError(role_id)
 
     def all_roles(self):
         """
         @rtype: sequence of L{Role}s
         @return: All the roles available in the application.
         """
+        roles = []
+        for name, value in self.__dict__.items():
+            if name[0] in string.ascii_uppercase and isinstance(value, Role):
+                roles.append(value)
+        return tuple(roles)
 
     @classmethod
     def check(cls, req, roles):
