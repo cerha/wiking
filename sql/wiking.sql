@@ -23,8 +23,8 @@ create table organizations (
 -------------------------------------------------------------------------------
 
 create table roles (
-       role_id name primary_key,
-       description text,
+       role_id name primary key,
+       name text,
        system boolean not null default 'f'
 );
 
@@ -46,7 +46,7 @@ create table users (
 	phone text,
 	address text,
 	uri text,
-	role char(4) not null default 'none',  -- obsolete
+	state char(4) not null default 'none',
         last_password_change timestamp not null,
 	since timestamp not null default current_timestamp(0),
 	lang char(2) references languages(lang) on update cascade on delete set null,

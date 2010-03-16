@@ -97,7 +97,7 @@ class Roles(wiking.Roles):
     """
     def all_roles(self):
         standard_roles = super(Roles, self).all_roles()
-        user_defined_roles = ApplicationRoles(pytis.util.resolver()).user_defined_roles()
+        user_defined_roles = ApplicationRoles(cfg.resolver).user_defined_roles()
         return standard_roles + user_defined_roles
 
 class ApplicationRoles(wiking.PytisModule):
@@ -111,9 +111,10 @@ class ApplicationRoles(wiking.PytisModule):
         table = 'roles'
         # Translators: Form title.
         title = _("Application Roles")
-        fields = (pp.Field('role'),
+        fields = (pp.Field('role_id'),
                   # Translators: Form field label.
                   pp.Field('name', _("Group")),
+                  pp.Field('system'),
                   )
     def user_defined_roles(self):
         """
@@ -121,14 +122,14 @@ class ApplicationRoles(wiking.PytisModule):
         @return: All user defined roles, i.e. roles defined by the application
           administrators and not the application code.
         """
-        role_members = RoleMembers.member_dictionary()
+        role_members = RoleMembers(cfg.resolver).member_dictionary()
         def make_role(row):
             role_id = row['role_id'].value()
             name = row['name'].value()
             members = tuple(role_members.get(role_id, ()))
             return Role(role_id, name, members=members)
         condition = pd.EQ('system', pd.Value(pd.Boolean(), False))
-        return self._data.select_map(make_role, condition=condition)
+        return tuple(self._data.select_map(make_role, condition=condition))
         
 class RoleMembers(wiking.PytisModule):
     """Accessor of role membership information stored in the database.
@@ -162,7 +163,69 @@ class RoleMembers(wiking.PytisModule):
             role_members.append(member)
         self._data.select_map(add)
         return dictionary
-        
+
+    def member_ids(self, role):
+        """
+        @type role: L{Role}
+        @param role: Role whose members should be returned.
+
+        @rtype: sequence of strings
+        @return: Sequence of role identifiers belonging to the given role,
+          including the identifier of the role itself.
+          
+        """
+        membership = self.member_dictionary()
+        role_ids = []
+        queue = [role.id()]
+        while queue:
+            r_id = queue.pop()
+            if r_id not in role_ids:
+                role_ids.append(r_id)
+            queue += list(membership.get(r_id, []))
+        return role_ids
+
+class RoleUsers(wiking.PytisModule):
+    """Accessor of role users information stored in the database.
+    """
+    class Spec(wiking.Specification):
+        table = 'role_users'
+        fields = (pp.Field('role_id'),
+                  pp.Field('uid'),
+                  )
+    def user_ids(self, role):
+        """
+        @type role: L{Role}
+        @param role: Role whose users should be returned.
+
+        @rtype: sequence of strings
+        @return: Sequence of identifiers of the users belonging to the given
+          role, including all member roles.
+          
+        """
+        member_ids = self._module('RoleMembers').member_ids(role)
+        S = pd.String()
+        condition = pd.OR(*[pd.EQ('role_id', pd.Value(S, m_id)) for m_id in member_ids])
+        user_ids = []
+        def add_user_id(row):
+            uid = row['uid'].value()
+            if uid not in user_ids:
+                user_ids.append(uid)
+        self._data.select_map(add_user_id, condition=condition)
+        return user_ids
+
+    def user_role_ids(self, uid):
+        """
+        @type uid: integer
+        @param uid: User id of the user to get the roles for.
+
+        @rtype: sequence of strings
+        @return: Identifiers of all the roles explicitly assigned to the given user.
+        """
+        condition = pd.EQ('uid', pd.Value(pd.Integer(), uid))
+        def role_id(row):
+            return row['role_id'].value()
+        return self._data.select_map(role_id, condition=condition)
+
 
 class Application(CookieAuthentication, wiking.Application):
     

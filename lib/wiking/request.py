@@ -641,8 +641,7 @@ class WikingRequest(Request):
         """Return true, iff the current user belongs to at least one of given roles.
 
         Arguments may be roles or nested sequences of roles, which will be unpacked.  Roles are
-        represented by unique string identifiers as described in documentation of the class
-        'Roles'.
+        represented by 'Role' instances.
 
         Authentication will be performed only if needed.  In other words, if 'args' contain
         ANYONE, True will be returned without an attempt to authenticate the user.
@@ -727,7 +726,7 @@ class User(object):
 
     """
     
-    def __init__(self, login, uid=None, name=None, roles=(), role_description=None,
+    def __init__(self, login, uid=None, name=None, roles=(), state=None, state_description=None,
                  email=None, password=None, password_expiration=None, uri=None,
                  data=None, lang='en', organization_id=None, organization=None):
         """Initialize the instance.
@@ -737,8 +736,9 @@ class User(object):
           login -- user's login name as a string
           uid -- user identifier used for ownership determination (see role OWNER)
           name -- visible name as a string (login is used if None)
-          roles -- sequence of user roles as unique string identifiers (see 'Roles')
-          role_description -- user's role description as a (translatable) string or None.  If not
+          roles -- sequence of user roles as 'Role' instances
+          state -- user's account state as a string
+          state_description -- user's state description as a (translatable) string or None.  If not
             None and cfg.display_role_in_login_panel is True, the description will be displayed in
             login panel.
           email -- e-mail address as a string
@@ -764,7 +764,8 @@ class User(object):
         self._uid = uid or login
         self._name = name or login
         self._roles = tuple(roles)
-        self._role_description = role_description
+        self._state = state
+        self._state_description = state_description
         self._email = email
         self._password = password
         self._password_expiration = password_expiration
@@ -791,23 +792,26 @@ class User(object):
         return self._name
     
     def roles(self):
-        """Return valid user's roles as a tuple of unique string identifiers.
+        """Return valid user's roles as a tuple of 'Role' instances.
 
-        Valid role identifiers are defined by 'Roles' class constants. For
-        disabled users or users who don't have any active role, returns
-        an empty tuple.
+        For disabled users or users who don't have any active role, return an
+        empty tuple.
         
         """
         return self._roles
 
-    def role_description(self):
-        """Return user's role description as a (translatable) string.
+    def state(self):
+        """Return user's account state as string."""
+        return self._state
 
-        This description will normally be a short descriptive text such as "Student" or
-        "Administrator" and might serve for example for optional display in LoginPanel.
+    def state_description(self):
+        """Return user's state description as a (translatable) string.
+
+        This description will normally be a short descriptive text and might
+        serve for example for optional display in LoginPanel.
 
         """
-        return self._role_description
+        return self._state_description
 
     def email(self):
         """Return user's e-mail address as a string or None if not defined."""
@@ -1032,9 +1036,11 @@ class Roles(object):
         @return: All the roles available in the application.
         """
         roles = []
-        for name, value in self.__dict__.items():
-            if name[0] in string.ascii_uppercase and isinstance(value, Role):
-                roles.append(value)
+        for name in dir(self):
+            if name[0] in string.ascii_uppercase:
+                value = getattr(self, name)
+                if isinstance(value, Role):
+                    roles.append(value)
         return tuple(roles)
 
     @classmethod

@@ -23,6 +23,7 @@ is stored in database and can be managed using a web browser.
 
 """
 
+import wiking
 from wiking.cms import *
 
 import cStringIO
@@ -2094,28 +2095,32 @@ class Users(CMSModule):
     modules, but he can no longer access the system, doesn't figure in
     the lists of users, doesn't receive any email notifications etc.
 
-    Wiking CMS associates roles to users based on role codes from the database. The defined
-    role codes are:
+    A state is assigned to every user.  The state determines the level of
+    access to the application.  The following state codes, as used in the
+    database table, are defined:
 
-    'none' -- New users who register but do not have any priviledges assigned yet.
-    'disa' -- Users who were made devoid of priviledges, such as deleted users, refused registration
-    requests etc.
-    'user' -- ?
-    'contributor' -- ?
-    'auth' -- ?
-    'admn' -- Administrator. The superuse with access to the WMI and a broad range of other rights.
+     - C{none}: New users who are registered but haven't been confirmed by the
+       user administrator yet.
+     - C{disa}: Users blocked from access to the application, such as deleted
+       users, refused registration requests etc.
+     - C{user}: Users with full access to the applications.
+
+    Note the difference between user states and user roles.  User states define
+    overall access to the application, e.g. whether the user may access the
+    application at all.  User roles are independent of user states and define
+    (among other) access rights to various parts of the application.  When you
+    need to block a user from access to the application completely, you set his
+    state to C{disa}.  When you need to enable or disable user access to a
+    particular application feature, you change his roles.
+
     """
     class Spec(Specification):
         title = _("User Management")
         help = _("Manage registered users and their privileges.")
-        _ROLES = (('none', _("New account"), ()),
-                  ('disa', _("Account disabled"), ()),
-                  ('user', _("User"),         (Roles.USER,)),
-                  ('cont', _("Contributor"),  (Roles.USER, Roles.CONTRIBUTOR)),
-                  ('auth', _("Author"),       (Roles.USER, Roles.CONTRIBUTOR, Roles.AUTHOR)),
-                  ('admn', _("Administrator"), (Roles.USER, Roles.CONTRIBUTOR, Roles.AUTHOR,
-                                                Roles.ADMIN)))
-        _ROLE_DICT = dict([(_code, (_title, _roles)) for _code, _title, _roles in _ROLES])
+        _STATES = (('none', _("New account")),
+                   ('disa', _("Account disabled")),
+                   ('user', _("Regular account")),)
+        _STATE_DICT = dict([(_code, _title,) for _code, _title in _STATES])
 
         def _fullname(self, record, firstname, surname, login):
             if firstname and surname:
@@ -2185,14 +2190,14 @@ class Users(CMSModule):
                           "talked to, this may help in processing your request.")),
             # Translators: Since when the user is registered. Column heading in a table listing various users.
             Field('since', _("Registered since"), type=DateTime(show_time=False), default=now),
-            # Translators: The role of the user in the system (e.g. Student vs Tutor, Writer
-            # vs. Editor) Column heading in a table listing various users.
-            Field('role', _("Role"), display=self._rolename, prefer_display=True, default='none',
-                  enumerator=enum([code for code, title, roles in self._ROLES]),
-                  style=lambda r: r['role'].value() == 'none' and pp.Style(foreground='#a20') \
+            # Translators: The state of the user in the system (e.g. Enabled vs Disabled, Registered
+            # vs. Confirmed) Column heading in a table listing various users.
+            Field('state', _("State"), display=self._state_name, prefer_display=True, default='none',
+                  enumerator=enum([code for code, title in self._STATES]),
+                  style=lambda r: r['state'].value() == 'none' and pp.Style(foreground='#a20') \
                         or None,
-                  descr=_("Select one of the predefined roles to grant the user "
-                          "the corresponding privileges.")),
+                  descr=_("Select one of the predefined states to grant or retract the user "
+                          "access to the application.")),
             Field('lang'),
             Field('regexpire', default=self._registration_expiry, type=DateTime()),
             Field('regcode', default=self._generate_registration_code),
@@ -2203,15 +2208,15 @@ class Users(CMSModule):
             #Field('organization_id', _("Organization"), codebook='Organizations', not_null=False),
             # The value of the following field is a sequence even though its pytis type is
             # string...  But it is only used in AccountInfo.
-            Field('state', virtual=True, computer=computer(self._state)),
+            Field('xstate', virtual=True, computer=computer(self._state)),
             )
-        def _state(self, record, role, regexpire):
+        def _state(self, record, state, regexpire):
             req = record.req()
-            if role == 'disa':
+            if state == 'disa':
                 texts = (_("The account is blocked.  The user is able to log in, but has no "
                            "access to protected services until the administrator grants him "
                            "access rights again."),)
-            elif role != 'none':
+            elif state != 'none':
                 texts = ()
             elif regexpire is None:
                 texts = _("The activation code was succesfully confirmed."),
@@ -2250,27 +2255,27 @@ class Users(CMSModule):
             result = wiking.validate_email_address(email)
             if not result[0]:
                 return _("Invalid e-mail address: %s", result[1])
-        def _rolename(self, code):
-            return self._ROLE_DICT[code][0]
+        def _state_name(self, code):
+            return self._STATE_DICT[code][0]
         @classmethod
-        def _roles(cls, row):
-            return cls._ROLE_DICT[row['role'].value()][1]
+        def _states(cls, row):
+            return cls._STATE_DICT[row['state'].value()][1]
         def bindings(self):
             return (Binding('login-history', _("Login History"), 'SessionLog', 'uid',
                             enabled=lambda r: r.req().check_roles(Roles.ADMIN)),)
-        columns = ('fullname', 'nickname', 'email', 'role', 'since')
+        columns = ('fullname', 'nickname', 'email', 'state', 'since')
         sorting = (('surname', ASC), ('firstname', ASC))
         layout = () # Force specific layout definition for each action.
         cb = CodebookSpec(display='user', prefer_display=True)
         filters = (
             # Translators: Name of group of users who have access to the system, can use it etc.
             pp.Filter('active', _("Active users"),
-                      pd.AND(pd.NE('role', pd.Value(pd.String(), 'none')),
-                             pd.NE('role', pd.Value(pd.String(), 'disa')),
+                      pd.AND(pd.NE('state', pd.Value(pd.String(), 'none')),
+                             pd.NE('state', pd.Value(pd.String(), 'disa')),
                              pd.EQ('regexpire', pd.Value(pd.DateTime(), None)))),
             # Translators: Name for a group of users accounts, who were not yet approved by the administrator
             pp.Filter('inactive', _("Unapproved accounts (pending admin approvals)"),
-                      pd.AND(pd.EQ('role', pd.Value(pd.String(), 'none')),
+                      pd.AND(pd.EQ('state', pd.Value(pd.String(), 'none')),
                              pd.EQ('regexpire', pd.Value(pd.DateTime(), None)))),
             # Translators: Name for a group of users which did not confirm their registration yet by
             # replying to an email with an activation code
@@ -2279,7 +2284,7 @@ class Users(CMSModule):
             # Translators: Name for a group of users who were disabled (made inactive or removed
             # from the system).
             pp.Filter('disabled', _("Disabled users"),
-                      pd.EQ('role', pd.Value(pd.String(), 'disa'))),
+                      pd.EQ('state', pd.Value(pd.String(), 'disa'))),
             # Translators: Accounts as in user accounts (computer terminology).
             pp.Filter('all', _("All accounts"), None),
             )
@@ -2290,7 +2295,7 @@ class Users(CMSModule):
         
         def disabled(self):
             """Return true iff the user is currently disabled."""
-            return self._data['role'].value() == 'disa'
+            return self._data['state'].value() == 'disa'
 
         def preregistered(self):
             """Return true iff the user hasn't confirmed his registration code yet."""
@@ -2305,7 +2310,7 @@ class Users(CMSModule):
         
             """
             record = self._data
-            return record['role'].value() not in ('none', 'disa',) \
+            return record['state'].value() not in ('none', 'disa',) \
                    and record['regexpire'].value() is None
         
     class AccountInfo(lcg.Content):
@@ -2341,9 +2346,9 @@ class Users(CMSModule):
         'view': (FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname',)),                 
                  FieldSet(_("Contact information"), ('email', 'phone', 'address','uri')),
                  FieldSet(_("Others"), ('note',)),
-                 FieldSet(_("Access rights"), ('role',)),
+                 FieldSet(_("Account state"), ('state',)),
                  lambda r: Users.AccountInfo(r['state'].value())),
-        'rights': ('role',),
+        'rights': ('state',),
         }
     # Translators: Button label.
     _INSERT_LABEL = _("New user")
@@ -2356,10 +2361,11 @@ class Users(CMSModule):
     RIGHTS_delete = (Roles.ADMIN,) #, Roles.OWNER)
     WMI_SECTION = WikingManagementInterface.SECTION_USERS
     WMI_ORDER = 100
+    ROLES = Roles()
 
     @staticmethod
     def _embed_binding_condition(row):
-        return pd.NE('role', pd.Value(pd.String(), 'none'))
+        return pd.NE('state', pd.Value(pd.String(), 'none'))
 
     def _layout(self, req, action, record=None):
         if not self._LAYOUT.has_key(action): # Allow overriding this layout in derived classes.
@@ -2431,7 +2437,7 @@ class Users(CMSModule):
         actions = super(Users, self)._default_actions_first(req, record) + \
                   (Action(_("Access rights"), 'rights', descr=_("Change access rights"),
                           enabled=lambda r: r['regexpire'].value() is None),)
-        if record and record['role'].value() == 'none':
+        if record and record['state'].value() == 'none':
             # Translators: Button label. Computer terminology. Use common word and form.
             actions = (Action(_("Enable"), 'enable', descr=_("Enable this account"),
                               enabled=lambda r: r['regexpire'].value() is None),
@@ -2500,7 +2506,7 @@ class Users(CMSModule):
     def _redirect_after_update(self, req, record):
         orig_row = record.original_row()
         if record['regexpire'].value() is None \
-               and (orig_row['role'].value() == 'none' and record['role'].value() != 'none' \
+               and (orig_row['state'].value() == 'none' and record['state'].value() != 'none' \
                     or orig_row['regexpire'].value() is not None):
             req.message(_("The account was enabled."))
             text = _("Your account at %(uri)s has been enabled. "
@@ -2535,7 +2541,7 @@ class Users(CMSModule):
             record = self._record(req, row)
         if record is None:
             raise BadRequest()
-        if not record['regexpire'].value() and record['role'] == 'none':
+        if not record['regexpire'].value() and record['state'] == 'none':
             raise BadRequest(_("User registration already confirmed."))
         code = record['regcode'].value()
         if not code or code != req.param('regcode'):
@@ -2602,11 +2608,11 @@ class Users(CMSModule):
     RIGHTS_confirm = (Roles.ANYONE,)
 
     def action_enable(self, req, record):
-        role = record['role'].value()
-        if role == 'none':
-            role = 'user'
+        state = record['state'].value()
+        if state == 'none':
+            state = 'user'
         try:
-            record.update(role=role, regexpire=None)
+            record.update(state=state, regexpire=None)
         except pd.DBException, e:
             req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
         return self._redirect_after_update(req, record)
@@ -2641,10 +2647,19 @@ class Users(CMSModule):
         #    organization = organization_record['name'].value()
         #else:
         #    organization = None
-        return dict(login=login, name=record['user'].value(), uid=record['uid'].value(),
-                    uri=uri, email=record['email'].value(), data=record,
-                    roles=self.Spec._roles(record), lang=record['lang'].value(),
-                    role_description=self.Spec._ROLE_DICT[record['role'].value()][0],
+        uid = record['uid'].value()
+        role_ids = self._module('RoleUsers').user_role_ids(uid)
+        role_members = self._module('RoleMembers')
+        roles = []
+        for role_id in role_ids:
+            role = self.ROLES[role_id]
+            for member_id in role_members.member_ids(role):
+                if member_id not in roles:
+                    roles.append(self.ROLES[member_id])
+        return dict(login=login, name=record['user'].value(), uid=uid,
+                    uri=uri, email=record['email'].value(), data=record, roles=roles,
+                    state=record['state'].value(), lang=record['lang'].value(),
+                    state_description=self.Spec._STATE_DICT[record['state'].value()][0],
                     #organization_id=organization_id, organization=organization)
                     )
 
@@ -2699,7 +2714,7 @@ class Users(CMSModule):
         else:
             return None
 
-    def find_users(self, req, email=None, role=None):
+    def find_users(self, req, email=None, state=None, role=None):
         """Return a list of 'User' instances corresponding to given criteria.
 
         Arguments:
@@ -2707,32 +2722,40 @@ class Users(CMSModule):
           req -- wiking request
           email -- if not 'None', only users registered with given e-mail
             address (string) are returned
-          role -- if not 'None', only users belonging to given role (one of the
-            role string codes) are returned
+          state -- if not 'None', only users with the given state (one of the
+            state string codes) are returned
+          role -- if not 'None', only users belonging to the given role ('Role'
+            instance) are returned
 
         If all the criteria arguments are 'None', all users are returned.
 
         """
+        if role is not None:
+            role_user_ids = self._module('RoleUsers').user_ids(role)
         def make_user(row):
+            if role is not None and row['uid'].value() not in role_user_ids:
+                return None
             kwargs = self._user_arguments(req, row['login'].value(), row)
             return self._make_user(kwargs)
         kwargs = {}
         if email is not None:
             kwargs['email'] = email
+        if state is not None:
+            kwargs['state'] = state
+        users = [make_user(row) for row in self._data.get_rows(**kwargs)]
         if role is not None:
-            kwargs['role'] = role
-        return [make_user(row) for row in self._data.get_rows(**kwargs)]
+            users = [u for u in users if u is not None]
+        return users
 
-    def all_roles(self):
-        """Return information about all user roles.
+    def all_states(self):
+        """Return information about all user states.
 
         The returned value is a sequence of tuples.  Each of the tuples is of
-        the form '(CODE, TITLE, ROLES)' where CODE is the role code (as stored
-        in the database data), TITLE human readable role description, and ROLES
-        sequence of member roles.
+        the form '(CODE, TITLE,)' where CODE is the state code (as stored
+        in the database data) and TITLE human readable state description.
 
         """
-        return self.Spec._ROLES
+        return self.Spec._STATES
     
     def _generate_password(self):
         characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01233456789'
@@ -2753,31 +2776,30 @@ class Users(CMSModule):
         return password
 
     def send_mail(self, role, *args, **kwargs):
-        """Send mail to all users of given 'role'.
+        """Send mail to all active users of given C{role}.
+        
+        @type role: L{wiking.Role} or C{None}
+        @param role: Destination role to send the mail to, all active users
+          belonging to the role will receive the mail.  If C{None}, the mail is
+          sent to all active users.
+        @param args, kwargs: Just forwarded to L{wiking.send_mail} call.
 
-        Arguments:
-
-          role -- destination role as one of 'Roles' class role
-            constants, such as 'Roles.USER', 'Roles.ADMIN', etc. or
-            'None' in which case the mail is sent to all active (not
-            disabled) users
-          args, kwargs -- just forwarded to 'wiking.send_mail' call
+        @note: The mail is sent only to active users, i.e. users with the state
+          C{user}.  There is no way to sent bulk e-mail to inactive (i.e. new,
+          disabled) users using this method.
 
         """
         assert role is None or isinstance(role, basestring)
         String = pd.String()
-        if role is None:
-            # Get all users who have an active role (their accounts are not Disabled)
-            role_codes = [code for code, title, roles in self.Spec._ROLES if len(roles)>0]
-        else:
-            # Construct wiking codes of roles which contain the requested 'role'
-            role_codes = [code for code, title, roles in self.Spec._ROLES if role in roles]
-        # Get user records for the selected roles
-        condition = pd.OR(*[pd.EQ('role', pd.Value(String, code)) for code in role_codes])        
-        user_rows = self._data.get_rows(condition=condition)
+        condition = pd.EQ('state', pd.Value(String, 'user'))
+        if role is not None:
+            user_ids = self._module('RoleUsers').user_ids(role)
+        user_rows = self._data.get_rows()
         import copy
         kwargs = copy.copy(kwargs)
         for row in user_rows:
+            if role is not None and row['uid'].value() not in user_ids:
+                continue
             email = row['email'].value()
             language = row['lang'].value()
             kwargs['lang'] = language
@@ -2796,7 +2818,7 @@ class ActiveUsers(Users, EmbeddableCMSModule):
         table = 'users'
         title = _("Active users")
         help = _("Listing of all active user accounts.")
-        condition = pd.AND(pd.NE('role', pd.Value(pd.String(), 'none')),
+        condition = pd.AND(pd.NE('state', pd.Value(pd.String(), 'none')),
                            pd.EQ('regexpire', pd.Value(pd.DateTime(), None)))
         filters = ()
         default_filter = None
@@ -3274,8 +3296,9 @@ class TextReferrer(object):
           text -- 'EmailText' instance identifying the predefined e-mail
           recipients -- sequence of e-mail recipients, it can contain three
             kinds of elements: 1. string containing '@' representing an e-mail
-            address, 2. string without '@' representing a user role, 3. 'None'
-            representing all registered users including disabled users
+            address, 2. 'Role' instance representing a user role,
+            3. 'None' representing all registered users including disabled
+            users            
           lang -- two-character string identifying the preferred language of
             the text
           args -- dictionary of formatting arguments for the text; if
@@ -3297,7 +3320,7 @@ class TextReferrer(object):
             return email_args
         addr = []
         for r in recipients:
-            if r is None or r.find('@') == -1:
+            if r is None or isinstance(r, wiking.Role):
                 users = self._module.find_users(role=r)
                 for u in users:
                     send_mail(u.email(), **lang_email_args(u.lang()))
@@ -3316,15 +3339,15 @@ class EmailSpool(CMSModule):
         # Translators: Section title and menu item. Sending emails to multiple recipients.
         title = _("Bulk E-mails")
 
-        _ROLES = UNDEFINED
+        _ROLES = Roles()
         
         def fields(self): return (
             Field('id', editable=NEVER),
             Field('sender_address', _("Sender address"), default=wiking.cfg.default_sender_address,
                   descr=_("E-mail address of the sender.")),
             # Translators: List of recipients of an email message
-            Field('role', _("Recipients"), display=self._rolename, prefer_display=True, default='_all',
-                  enumerator=enum([code for code, title, roles in self._ROLES])),
+            Field('role', _("Recipients"), display=self._role_name, prefer_display=True, default='_all',
+                  enumerator=enum([role.id() for role in self._ROLES.all_roles()])),
             Field('subject', _("Subject")),
             Field('content', _("Text"), width=80, height=10,
                   descr=_("Edit the given text as needed, in accordance with structured text rules.")),
@@ -3335,8 +3358,8 @@ class EmailSpool(CMSModule):
                   virtual=True, computer=computer(self._state_computer)),
             )
         
-        def _rolename(self, code):
-            return self._ROLE_DICT[code][0]
+        def _role_name(self, code):
+            self._ROLES[code]
 
         def _state_computer(self, row, pid, finished):
             if finished:
@@ -3353,12 +3376,6 @@ class EmailSpool(CMSModule):
         columns = ('id', 'subject', 'date', 'state',)
         sorting = (('date', DESC,),)
         layout = ('role', 'sender_address', 'subject', 'content', 'date', 'state',)
-        
-    def _spec(self, resolver):
-        # Translators: All as in ``all user roles''
-        self.Spec._ROLES = roles = (('_all', _("All"), (),),) + self._module('Users').all_roles()
-        self.Spec._ROLE_DICT = dict([(code, (title, roles)) for code, title, roles in roles])
-        return super(EmailSpool, self)._spec(resolver)
     
     _TITLE_TEMPLATE = _('%(subject)s')
     _LAYOUT = {'insert': ('role', 'sender_address', 'subject', 'content',)}
