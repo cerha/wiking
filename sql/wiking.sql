@@ -29,8 +29,8 @@ create table roles (
 );
 
 create table role_members (
-       role_id name references roles,
-       member name references roles,
+       role_id name references roles on update cascade on delete cascade,
+       member name references roles on update cascade on delete cascade,
        unique (role_id, member)
 );
 
@@ -61,10 +61,14 @@ alter table users alter column since
 set default current_timestamp(0) at time zone 'GMT';
 
 create table role_users (
-       role_id name references roles,
-       uid int references users,
+       role_id name references roles on update cascade on delete cascade,
+       uid int references users on update cascade on delete cascade,
        unique (role_id, uid)
 );
+
+create view user_roles as
+select role_users.uid, roles.role_id, roles.name, roles.system
+from role_users join roles on role_users.role_id = roles.role_id;
 
 create table session (
        session_id serial primary key,

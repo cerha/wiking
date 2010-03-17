@@ -812,6 +812,13 @@ class User(object):
 
         """
         return self._state_description
+    
+    def role_description(self):
+        """
+        @deprecated: If information like this is useful at all, use
+        L{state_description}.
+        """
+        return self.state_description()
 
     def email(self):
         """Return user's e-mail address as a string or None if not defined."""

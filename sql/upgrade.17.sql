@@ -25,6 +25,10 @@ insert into roles (role_id, system) values ('mail_admin', 't');
 insert into roles (role_id, system) values ('style_admin', 't');
 insert into roles (role_id, system) values ('admin', 't');
 
+create view user_roles as
+select role_users.uid, roles.role_id, roles.name, roles.system
+from role_users join roles on role_users.role_id = roles.role_id;
+
 create function upgrade17() returns void as $$
 declare
   row record;

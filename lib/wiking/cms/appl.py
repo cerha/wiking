@@ -100,37 +100,6 @@ class Roles(wiking.Roles):
         user_defined_roles = ApplicationRoles(cfg.resolver).user_defined_roles()
         return standard_roles + user_defined_roles
 
-class ApplicationRoles(wiking.PytisModule):
-    """Accessor and editor of application roles.
-
-    This class can read roles from and store them to the database.  Its main
-    purpose is to handle user defined roles.
-
-    """
-    class Spec(wiking.Specification):
-        table = 'roles'
-        # Translators: Form title.
-        title = _("Application Roles")
-        fields = (pp.Field('role_id'),
-                  # Translators: Form field label.
-                  pp.Field('name', _("Group")),
-                  pp.Field('system'),
-                  )
-    def user_defined_roles(self):
-        """
-        @rtype: sequence of L{Role}s
-        @return: All user defined roles, i.e. roles defined by the application
-          administrators and not the application code.
-        """
-        role_members = RoleMembers(cfg.resolver).member_dictionary()
-        def make_role(row):
-            role_id = row['role_id'].value()
-            name = row['name'].value()
-            members = tuple(role_members.get(role_id, ()))
-            return Role(role_id, name, members=members)
-        condition = pd.EQ('system', pd.Value(pd.Boolean(), False))
-        return tuple(self._data.select_map(make_role, condition=condition))
-        
 class RoleMembers(wiking.PytisModule):
     """Accessor of role membership information stored in the database.
 
@@ -188,10 +157,20 @@ class RoleUsers(wiking.PytisModule):
     """Accessor of role users information stored in the database.
     """
     class Spec(wiking.Specification):
-        table = 'role_users'
-        fields = (pp.Field('role_id'),
-                  pp.Field('uid'),
-                  )
+        _ROLES = Roles()
+        table = 'user_roles'
+        title = _("User Roles")
+        def fields(self):
+            return (pp.Field('role_id', _("Group id")),
+                    pp.Field('uid', _("User id")),
+                    pp.Field('name', _("Group")),
+                    pp.Field('xname', _("Group"), type=pd.String(),
+                             virtual=True, computer=pp.computer(self._xname_computer)),
+                    )
+        columns = ('xname',)
+        cb = pp.CodebookSpec(display='xname', prefer_display=True)
+        def _xname_computer(self, row, role_id, name):
+            return name or self._ROLES[role_id].name()
     def user_ids(self, role):
         """
         @type role: L{Role}
@@ -241,7 +220,9 @@ class Application(CookieAuthentication, wiking.Application):
                'Resources': (Roles.ANYONE,),
                'SiteMap': (Roles.ANYONE,),
                'SiteIcon': (Roles.ANYONE,),
-               'WikingManagementInterface': (Roles.AUTHOR, )}
+               'WikingManagementInterface': (Roles.USER_ADMIN, Roles.CONTENT_ADMIN,
+                                             Roles.SETTINGS_ADMIN, Roles.STYLE_ADMIN,
+                                             Roles.MAIL_ADMIN,)}
 
     class WMILink(lcg.Content):
         # Used in login panel or bottom bar.

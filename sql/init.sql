@@ -25,6 +25,8 @@ insert into roles (role_id, system) values ('admin', 't');
 INSERT INTO users (login, password, firstname, surname, nickname, user_, email, state, last_password_change)
 VALUES ('admin', 'wiking', 'Wiking', 'Admin', 'Admin', 'Admin', '-', 'user', '2000-01-01 00:00:00');
 
+insert into role_users (role_id, uid) values ('admin', 1);
+
 INSERT INTO themes ("name", foreground, background, border, heading_fg, heading_bg, heading_line,
     frame_fg, frame_bg, frame_border, link, link_visited, link_hover, meta_fg, meta_bg, help,
     error_fg, error_bg, error_border, message_fg, message_bg, message_border,

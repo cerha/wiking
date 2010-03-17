@@ -23,6 +23,7 @@ is stored in database and can be managed using a web browser.
 
 """
 
+import pytis.presentation as pp
 import wiking
 from wiking.cms import *
 
@@ -2256,12 +2257,14 @@ class Users(CMSModule):
             if not result[0]:
                 return _("Invalid e-mail address: %s", result[1])
         def _state_name(self, code):
-            return self._STATE_DICT[code][0]
+            return self._STATE_DICT[code]
         @classmethod
         def _states(cls, row):
             return cls._STATE_DICT[row['state'].value()][1]
         def bindings(self):
-            return (Binding('login-history', _("Login History"), 'SessionLog', 'uid',
+            return (Binding('roles', _("User's Groups"), 'RoleUsers',
+                            condition=(lambda row: pd.EQ('uid', row['uid']))),
+                    Binding('login-history', _("Login History"), 'SessionLog', 'uid',
                             enabled=lambda r: r.req().check_roles(Roles.ADMIN)),)
         columns = ('fullname', 'nickname', 'email', 'state', 'since')
         sorting = (('surname', ASC), ('firstname', ASC))
@@ -2312,6 +2315,16 @@ class Users(CMSModule):
             record = self._data
             return record['state'].value() not in ('none', 'disa',) \
                    and record['regexpire'].value() is None
+
+        def roles(self):
+            if self.disabled() or (not self.active() and not self.preregistered()):
+                return ()
+            roles = wiking.User.roles(self)
+            if self.preregistered():
+                roles = roles + (Roles.REGISTERED,)
+            elif self.active():
+                roles = roles + (Roles.USER,)
+            return roles
         
     class AccountInfo(lcg.Content):
         """Content shown in 'view' layout describing the current account state.
@@ -2347,7 +2360,7 @@ class Users(CMSModule):
                  FieldSet(_("Contact information"), ('email', 'phone', 'address','uri')),
                  FieldSet(_("Others"), ('note',)),
                  FieldSet(_("Account state"), ('state',)),
-                 lambda r: Users.AccountInfo(r['state'].value())),
+                 lambda r: Users.AccountInfo((r['state'].value(),))),
         'rights': ('state',),
         }
     # Translators: Button label.
@@ -2649,13 +2662,17 @@ class Users(CMSModule):
         #    organization = None
         uid = record['uid'].value()
         role_ids = self._module('RoleUsers').user_role_ids(uid)
-        role_members = self._module('RoleMembers')
+        role_members_module = self._module('RoleMembers')
         roles = []
         for role_id in role_ids:
             role = self.ROLES[role_id]
-            for member_id in role_members.member_ids(role):
-                if member_id not in roles:
-                    roles.append(self.ROLES[member_id])
+            for r in role.members():
+                if r not in roles:
+                    roles.append(r)                
+            for member_id in role_members_module.member_ids(role):
+                r = self.ROLES[member_id]
+                if r not in roles:
+                    roles.append(r)
         return dict(login=login, name=record['user'].value(), uid=uid,
                     uri=uri, email=record['email'].value(), data=record, roles=roles,
                     state=record['state'].value(), lang=record['lang'].value(),
@@ -2866,6 +2883,51 @@ class Organizations(CMSModule):
     WMI_ORDER = 500
 
     _TITLE_COLUMN = 'name'
+
+
+class ApplicationRoles(wiking.PytisModule):
+    """Accessor and editor of application roles.
+
+    This class can read roles from and store them to the database.  Its main
+    purpose is to handle user defined roles.
+
+    """
+    class Spec(wiking.Specification):
+        table = 'roles'
+        # Translators: Form heading.
+        title = _("Application Groups")
+        fields = (# Translators: Form field label.
+                  pp.Field('role_id', _("Identifier")),
+                  # Translators: Form field label, noun.
+                  pp.Field('name', _("Name")),
+                  # Translators: Form field label, adjective.
+                  pp.Field('system', _("System"), editable=pp.Editable.NEVER),
+                  )
+        layout = ('role_id', 'name',)
+        
+    def user_defined_roles(self):
+        """
+        @rtype: sequence of L{Role}s
+        @return: All user defined roles, i.e. roles defined by the application
+          administrators and not the application code.
+        """
+        role_members = RoleMembers(cfg.resolver).member_dictionary()
+        def make_role(row):
+            role_id = row['role_id'].value()
+            name = row['name'].value()
+            members = tuple(role_members.get(role_id, ()))
+            return Role(role_id, name, members=members)
+        condition = pd.EQ('system', pd.Value(pd.Boolean(), False))
+        return tuple(self._data.select_map(make_role, condition=condition))
+    
+    WMI_SECTION = WikingManagementInterface.SECTION_USERS
+    WMI_ORDER = 1500
+    
+    RIGHTS_list = (Roles.USER,)
+    RIGHTS_view = (Roles.USER,)
+    RIGHTS_insert = (Roles.USER_ADMIN,)
+    RIGHTS_update = (Roles.USER_ADMIN,)
+    RIGHTS_delete = (Roles.USER_ADMIN,)
 
 
 class Text(Structure):
@@ -3346,7 +3408,7 @@ class EmailSpool(CMSModule):
             Field('sender_address', _("Sender address"), default=wiking.cfg.default_sender_address,
                   descr=_("E-mail address of the sender.")),
             # Translators: List of recipients of an email message
-            Field('role', _("Recipients"), display=self._role_name, prefer_display=True, default='_all',
+            Field('role', _("Recipients"), display=self._role_name, prefer_display=True,
                   enumerator=enum([role.id() for role in self._ROLES.all_roles()])),
             Field('subject', _("Subject")),
             Field('content', _("Text"), width=80, height=10,
@@ -3359,7 +3421,7 @@ class EmailSpool(CMSModule):
             )
         
         def _role_name(self, code):
-            self._ROLES[code]
+            return self._ROLES[code].name()
 
         def _state_computer(self, row, pid, finished):
             if finished:
