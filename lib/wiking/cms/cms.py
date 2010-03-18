@@ -2895,7 +2895,7 @@ class ApplicationRoles(wiking.PytisModule):
     class Spec(wiking.Specification):
         table = 'roles'
         # Translators: Form heading.
-        title = _("Application Groups")
+        title = _("User Groups")
         fields = (# Translators: Form field label.
                   pp.Field('role_id', _("Identifier")),
                   # Translators: Form field label, noun.
