@@ -170,7 +170,10 @@ class RoleUsers(wiking.PytisModule):
         columns = ('xname',)
         cb = pp.CodebookSpec(display='xname', prefer_display=True)
         def _xname_computer(self, row, role_id, name):
-            return name or self._ROLES[role_id].name()
+            if name is None and role_id is not None:
+                name = self._ROLES[role_id].name()
+            return name
+        
     def user_ids(self, role):
         """
         @type role: L{Role}
