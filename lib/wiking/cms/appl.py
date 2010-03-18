@@ -204,6 +204,10 @@ class RoleUsers(wiking.PytisModule):
         def role_id(row):
             return row['role_id'].value()
         return self._data.select_map(role_id, condition=condition)
+    
+    RIGHTS_insert = (Roles.USER_ADMIN,)
+    RIGHTS_update = (Roles.USER_ADMIN,)
+    RIGHTS_delete = (Roles.USER_ADMIN,)
 
 
 class Application(CookieAuthentication, wiking.Application):
