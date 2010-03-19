@@ -1,6 +1,6 @@
 create table roles (
        role_id name primary key,
-       description text,
+       name text,
        system boolean not null default 'f'
 );
 
