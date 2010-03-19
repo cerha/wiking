@@ -231,7 +231,20 @@ class ApplicationRoles(wiking.PytisModule):
                   pp.Field('system', _("System"), editable=pp.Editable.NEVER),
                   )
         layout = ('role_id', 'name',)
-        
+        def cb(self):
+            return pp.CodebookSpec(display=self._xname_computer, prefer_display=True)
+        _ROLES = None
+        def _xname_computer(self, row):
+            name = row['name'].value()
+            role_id = row['role_id'].value()
+            if name is None and role_id is not None and self._ROLES is not None:
+                name = self._ROLES[role_id].name()
+            return name
+
+    def __init__(self, *args, **kwargs):
+        super(ApplicationRoles, self).__init__(*args, **kwargs)
+        self.Spec._ROLES = self._module('Users').ROLES
+    
     def user_defined_roles(self):
         """
         @rtype: sequence of L{Role}s
