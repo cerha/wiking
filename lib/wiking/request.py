@@ -726,7 +726,7 @@ class User(object):
 
     """
     
-    def __init__(self, login, uid=None, name=None, roles=(), state=None, state_description=None,
+    def __init__(self, login, uid=None, name=None, roles=(),
                  email=None, password=None, password_expiration=None, uri=None,
                  data=None, lang='en', organization_id=None, organization=None):
         """Initialize the instance.
@@ -737,10 +737,6 @@ class User(object):
           uid -- user identifier used for ownership determination (see role OWNER)
           name -- visible name as a string (login is used if None)
           roles -- sequence of user roles as 'Role' instances
-          state -- user's account state as a string
-          state_description -- user's state description as a (translatable) string or None.  If not
-            None and cfg.display_role_in_login_panel is True, the description will be displayed in
-            login panel.
           email -- e-mail address as a string
           password -- user's expected authentication password or None if password authentication is
             not allowed.  The login password will be checked against this value for authentication
@@ -764,8 +760,6 @@ class User(object):
         self._uid = uid or login
         self._name = name or login
         self._roles = tuple(roles)
-        self._state = state
-        self._state_description = state_description
         self._email = email
         self._password = password
         self._password_expiration = password_expiration
@@ -799,26 +793,6 @@ class User(object):
         
         """
         return self._roles
-
-    def state(self):
-        """Return user's account state as string."""
-        return self._state
-
-    def state_description(self):
-        """Return user's state description as a (translatable) string.
-
-        This description will normally be a short descriptive text and might
-        serve for example for optional display in LoginPanel.
-
-        """
-        return self._state_description
-    
-    def role_description(self):
-        """
-        @deprecated: If information like this is useful at all, use
-        L{state_description}.
-        """
-        return self.state_description()
 
     def email(self):
         """Return user's e-mail address as a string or None if not defined."""

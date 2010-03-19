@@ -228,8 +228,10 @@ class Users(CMSModule):
     access to the application.  The following state codes, as used in the
     database table, are defined:
 
-     - C{none}: New users who are registered but haven't been confirmed by the
-       user administrator yet.
+     - C{none}: New users who are registered but haven't confirmed their
+       registration yet.
+     - C{unconfirmed}: New users who are registered, have confirmed their
+       registration, but haven't been confirmed by the user administrator yet.
      - C{disa}: Users blocked from access to the application, such as deleted
        users, refused registration requests etc.
      - C{user}: Users with full access to the applications.
@@ -247,6 +249,7 @@ class Users(CMSModule):
         title = _("User Management")
         help = _("Manage registered users and their privileges.")
         _STATES = (('none', _("New account")),
+                   ('unconfirmed', _("Unapproved account")),
                    ('disa', _("Account disabled")),
                    ('user', _("Regular account")),)
         _STATE_DICT = dict([(_code, _title,) for _code, _title in _STATES])
@@ -423,6 +426,14 @@ class Users(CMSModule):
         
     class User(wiking.User):
         """CMS specific User class."""
+
+        def __init__(self, login, state=None, **kwargs):
+            """
+            @type state: string
+            @param state: User's account state.
+            """
+            wiking.User.__init__(self, login, **kwargs)
+            self._state = state
         
         def disabled(self):
             """Return true iff the user is currently disabled.
@@ -451,7 +462,21 @@ class Users(CMSModule):
             elif self.active():
                 roles = roles + (Roles.USER,)
             return roles
-        
+
+        def state(self):
+            """
+            @rtype: string
+            @return: User's account state.
+            """
+            return self._state
+
+        def role_description(self):
+            """
+            @deprecated: This facility is not available anymore, use other
+              information instead, such as list of user roles.
+            """
+            return ''
+
     class AccountInfo(lcg.Content):
         """Content shown in 'view' layout describing the current account state.
 
@@ -802,7 +827,6 @@ class Users(CMSModule):
         return dict(login=login, name=record['user'].value(), uid=uid,
                     uri=uri, email=record['email'].value(), data=record, roles=roles,
                     state=record['state'].value(), lang=record['lang'].value(),
-                    state_description=self.Spec._STATE_DICT[record['state'].value()][0],
                     #organization_id=organization_id, organization=organization)
                     )
 
