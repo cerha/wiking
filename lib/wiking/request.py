@@ -920,17 +920,8 @@ class Role(object):
 
     User roles available in an application are defined by L{Roles} class.
 
-    Roles can contain other roles.  Such roles serve as shorthands for typical
-    combinations of other roles, those may be any L{Role} instances, including
-    L{Role} subclasses.
-
-    @invariant: There may be no cycles in role memberships, i.e. no role may
-      contain itself, including transitive relations.  For instance, group role
-      I{foo} may not contain I{foo}; or if I{foo} contains I{bar} and I{bar}
-      contains I{baz} then I{baz} may not contain I{foo} nor I{bar} nor I{baz}.
-
     """
-    def __init__(self, role_id, name, members=()):
+    def __init__(self, role_id, name):
         """
         @type role_id: string
         @param role_id: Unique identifier of the role.  It may contain only
@@ -939,12 +930,9 @@ class Role(object):
           defined roles to avoid name conflicts with standard application roles.
         @type name: string or unicode
         @param name: Human readable name of the role.
-        @type members: tuple of L{Role}s
-        @param members: Roles contained in this role.
         """
         self._id = role_id
         self._name = name
-        self._members = members
 
     def __cmp__(self, other):
         """
@@ -969,13 +957,6 @@ class Role(object):
         @return: Human readable name of the role.
         """
         return self._name
-        
-    def members(self):
-        """
-        @rtype: sequence of L{Role}s
-        @return: All the roles contained in this role.
-        """
-        return self._members
     
 class Roles(object):
     """Set of available user roles.

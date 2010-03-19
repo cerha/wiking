@@ -4,10 +4,10 @@ create table roles (
        system boolean not null default 'f'
 );
 
-create table role_members (
-       role_id name references roles references roles on update cascade on delete cascade,
-       member name references roles references roles on update cascade on delete cascade,
-       unique (role_id, member)
+create table role_sets (
+       role_id name references roles on update cascade on delete cascade,
+       member_role_id name references roles on update cascade on delete cascade,
+       unique (role_id, member_role_id)
 );
  
 create table role_users (
@@ -24,6 +24,12 @@ insert into roles (role_id, system) values ('settings_admin', 't');
 insert into roles (role_id, system) values ('mail_admin', 't');
 insert into roles (role_id, system) values ('style_admin', 't');
 insert into roles (role_id, system) values ('admin', 't');
+
+insert into role_sets (role_id, member_role_id) values ('admin', 'user_admin');
+insert into role_sets (role_id, member_role_id) values ('admin', 'content_admin');
+insert into role_sets (role_id, member_role_id) values ('admin', 'settings_admin');
+insert into role_sets (role_id, member_role_id) values ('admin', 'mail_admin');
+insert into role_sets (role_id, member_role_id) values ('admin', 'style_admin');
 
 create view user_roles as
 select role_users.uid, roles.role_id, roles.name, roles.system

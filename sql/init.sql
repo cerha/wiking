@@ -22,6 +22,12 @@ insert into roles (role_id, system) values ('mail_admin', 't');
 insert into roles (role_id, system) values ('style_admin', 't');
 insert into roles (role_id, system) values ('admin', 't');
 
+insert into role_sets (role_id, member_role_id) values ('admin', 'user_admin');
+insert into role_sets (role_id, member_role_id) values ('admin', 'content_admin');
+insert into role_sets (role_id, member_role_id) values ('admin', 'settings_admin');
+insert into role_sets (role_id, member_role_id) values ('admin', 'mail_admin');
+insert into role_sets (role_id, member_role_id) values ('admin', 'style_admin');
+
 INSERT INTO users (login, password, firstname, surname, nickname, user_, email, state, last_password_change)
 VALUES ('admin', 'wiking', 'Wiking', 'Admin', 'Admin', 'Admin', '-', 'user', '2000-01-01 00:00:00');
 

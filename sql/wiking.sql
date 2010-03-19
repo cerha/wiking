@@ -28,10 +28,10 @@ create table roles (
        system boolean not null default 'f'
 );
 
-create table role_members (
+create table role_sets (
        role_id name references roles on update cascade on delete cascade,
-       member name references roles on update cascade on delete cascade,
-       unique (role_id, member)
+       member_role_id name references roles on update cascade on delete cascade,
+       unique (role_id, member_role_id)
 );
 
 create table users (

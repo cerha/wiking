@@ -29,95 +29,34 @@ The most important class here is L{Users}.  It defines all the basic
 functionality regarding user management in Wiking CMS and Wiking CMS based
 applications.
 
-Class L{Roles} defines Wiking CMS specific roles.
-
 Wiking CMS, unlike plain Wiking, can store role related data in a database.
 There are several classes for manipulation with role database data:
-L{RoleMembers}, L{RoleUsers}, L{ApplicationRoles}.
+L{RoleSets}, L{RoleUsers}, L{ApplicationRoles}.
 
 """
 
-class Roles(wiking.Roles):
-    """Additional roles used by Wiking CMS and Wiking CMS applications.
-    
-    The class defines the following extensions:
-    
-     - New predefined user roles (see class constants).
-     
-     - It reads user roles from the database, thus enabling access to user
-       defined application roles.  I{User defined roles} are additional roles
-       defined by the administrator of the application.  They are not
-       specifically supported in the application but they can be used for
-       combining role based access rights or grouping users for messaging
-       purposes etc.  User roles can be edited using L{ApplicationRoles}
-       module.
-
-     - User roles that are assigned to users explicitly by application
-       administrator.  The roles defined by the base class L{wiking.Roles} are
-       all special purpose roles.  Whether a user belongs to any such special
-       role is determined only by application code and users can't be assigned
-       to those roles explicitly.  In this subclass all predefined roles are
-       explicitly assigned roles unless their documentation says otherwise;
-       applications should follow this convention.  User defined roles are
-       always explicitly assigned roles.
-
-    """
-    # Translators: Short description of a user group purpose.
-    USER = Role('user', _("Authenticated approved user"))
-    """Any authenticated user who is fully enabled in the application.
-    I{Fully enabled} means the user registration process is fully completed and
-    the user access to the application is not blocked.
-    
-    This is a special purpose role, you can't assign users to this role explicitly.    
-    """
-    # Translators: Short description of a user group purpose.
-    REGISTERED = Role('registered', _("Authenticated new user"))
-    """Authenticated user who is not yet fully enabled in the application.
-    In Wiking CMS these are new users who have registered themselves and wait
-    for approval by the application administrator.
-    
-    This is a special purpose role, you can't assign users to this role explicitly.    
-    """
-    # Translators: Short description of a user group purpose.
-    USER_ADMIN = Role('user_admin', _("User administrator"))
-    """User administrator."""
-    # Translators: Short description of a user group purpose.
-    CONTENT_ADMIN = Role('content_admin', _("Content administrator"))
-    """Content administrator."""
-    # Translators: Short description of a user group purpose.
-    SETTINGS_ADMIN = Role('settings_admin', _("Settings administrator"))
-    """Settings administrator."""
-    # Translators: Short description of a user group purpose.
-    MAIL_ADMIN = Role('mail_admin', _("Mail administrator"))
-    """Bulk mailing user and administrator."""
-    # Translators: Short description of a user group purpose.
-    STYLE_ADMIN = Role('style_admin', _("Style administrator"))
-    """Administrator of stylesheets, color themes and other web design related settings."""
-    # Translators: Short description of a user group purpose.
-    ADMIN = Role('admin', _("Administrator"),
-                 members=(USER_ADMIN, CONTENT_ADMIN, SETTINGS_ADMIN,
-                          MAIL_ADMIN, STYLE_ADMIN,))
-    """Administrator containing all administration roles.
-    This constant may be redefined in subclasses to include additional
-    administration roles.
-    """
-    def all_roles(self):
-        standard_roles = super(Roles, self).all_roles()
-        user_defined_roles = ApplicationRoles(cfg.resolver).user_defined_roles()
-        return standard_roles + user_defined_roles
-
-class RoleMembers(wiking.PytisModule):
+class RoleSets(wiking.PytisModule):
     """Accessor of role membership information stored in the database.
+
+    Roles can contain other roles.  Such roles serve as shorthands for typical
+    combinations of other roles, those may be any L{Role} instances, including
+    L{Role} subclasses.
+
+    @invariant: There may be no cycles in role memberships, i.e. no role may
+      contain itself, including transitive relations.  For instance, group role
+      I{foo} may not contain I{foo}; or if I{foo} contains I{bar} and I{bar}
+      contains I{baz} then I{baz} may not contain I{foo} nor I{bar} nor I{baz}.
 
     @see: L{wiking.cms.Role} for explanation of I{role members}.
     
     """
     class Spec(wiking.Specification):
-        table = 'role_members'
+        table = 'role_sets'
         fields = (pp.Field('role_id'),
-                  pp.Field('member'),
+                  pp.Field('member_role_id'),
                   )
-    def member_dictionary(self):
+    
+    def _dictionary(self):
         """
         @rtype: dictionary of strings as keys and sequences of strings as values
         @return: Role membership information in the form of dictionary with
@@ -131,7 +70,7 @@ class RoleMembers(wiking.PytisModule):
         dictionary = {}
         def add(row):
             role_id = row['role_id'].value()
-            member = row['member'].value()
+            member = row['member_role_id'].value()
             role_members = dictionary.get(role_id)
             if role_members is None:
                 role_members = dictionary[role_id] = []
@@ -139,17 +78,18 @@ class RoleMembers(wiking.PytisModule):
         self._data.select_map(add)
         return dictionary
 
-    def member_ids(self, role):
+    def included_role_ids(self, role):
         """
         @type role: L{Role}
-        @param role: Role whose members should be returned.
+        @param role: Role whose member roles should be returned.
 
         @rtype: sequence of strings
-        @return: Sequence of role identifiers belonging to the given role,
-          including the identifier of the role itself.
+        @return: Sequence of role identifiers included in the given role,
+          including the identifier of C{role} itself.
           
         """
-        membership = self.member_dictionary()
+        assert isinstance(role, wiking.Role), role
+        membership = self._dictionary()
         role_ids = []
         queue = [role.id()]
         while queue:
@@ -183,9 +123,9 @@ class RoleUsers(wiking.PytisModule):
           role, including all member roles.
           
         """
-        member_ids = self._module('RoleMembers').member_ids(role)
+        included_role_ids = self._module('RoleSets').included_role_ids(role)
         S = pd.String()
-        condition = pd.OR(*[pd.EQ('role_id', pd.Value(S, m_id)) for m_id in member_ids])
+        condition = pd.OR(*[pd.EQ('role_id', pd.Value(S, m_id)) for m_id in included_role_ids])
         user_ids = []
         def add_user_id(row):
             uid = row['uid'].value()
@@ -243,7 +183,7 @@ class ApplicationRoles(wiking.PytisModule):
 
     def __init__(self, *args, **kwargs):
         super(ApplicationRoles, self).__init__(*args, **kwargs)
-        self.Spec._ROLES = self._module('Users').ROLES
+        self.Spec._ROLES = self._module('Users').Roles()
     
     def user_defined_roles(self):
         """
@@ -251,12 +191,11 @@ class ApplicationRoles(wiking.PytisModule):
         @return: All user defined roles, i.e. roles defined by the application
           administrators and not the application code.
         """
-        role_members = RoleMembers(cfg.resolver).member_dictionary()
+        role_sets = RoleSets(cfg.resolver)
         def make_role(row):
             role_id = row['role_id'].value()
             name = row['name'].value()
-            members = tuple(role_members.get(role_id, ()))
-            return Role(role_id, name, members=members)
+            return Role(role_id, name)
         condition = pd.EQ('system', pd.Value(pd.Boolean(), False))
         return tuple(self._data.select_map(make_role, condition=condition))
     
@@ -273,6 +212,10 @@ class ApplicationRoles(wiking.PytisModule):
 class Users(CMSModule):
     """
     TODO: General description
+
+    This module defines several inner classes closely related to user
+    management.  By subclassing this module and its inner classes you can
+    extend or change behavior of user management in your application.
     
     There is no easy way to delete a particular user, since that could
     have many unexpected consequences to other content in the
@@ -527,6 +470,9 @@ class Users(CMSModule):
                 g = context.generator()
                 return g.div([g.p(p) for p in self._texts], cls='account-info')
 
+    class Roles(Roles):
+        pass
+
     _REFERER = 'login'
     _PANEL_FIELDS = ('fullname',)
     _ALLOW_TABLE_LAYOUT_IN_FORMS = False
@@ -559,7 +505,6 @@ class Users(CMSModule):
     RIGHTS_delete = (Roles.ADMIN,) #, Roles.OWNER)
     WMI_SECTION = WikingManagementInterface.SECTION_USERS
     WMI_ORDER = 100
-    ROLES = Roles()
 
     @staticmethod
     def _embed_binding_condition(row):
@@ -847,15 +792,13 @@ class Users(CMSModule):
         #    organization = None
         uid = record['uid'].value()
         role_ids = self._module('RoleUsers').user_role_ids(uid)
-        role_members_module = self._module('RoleMembers')
+        role_members_module = self._module('RoleSets')
         roles = []
+        Roles = self.Roles()
         for role_id in role_ids:
-            role = self.ROLES[role_id]
-            for r in role.members():
-                if r not in roles:
-                    roles.append(r)                
-            for member_id in role_members_module.member_ids(role):
-                r = self.ROLES[member_id]
+            role = Roles[role_id]
+            for member_id in role_members_module.included_role_ids(role):
+                r = Roles[member_id]
                 if r not in roles:
                     roles.append(r)
         return dict(login=login, name=record['user'].value(), uid=uid,
@@ -1068,3 +1011,190 @@ class Organizations(CMSModule):
     WMI_ORDER = 500
 
     _TITLE_COLUMN = 'name'
+
+
+class Registration(Module, ActionHandler):
+    """User registration and account management.
+
+    This module is statically mapped by Wiking CMS to the reserved `_registration' URI to always
+    provide an interface for new user registration, password reminder, password change and other
+    user account related operations.
+    
+    All these operations are in fact provided by the 'Users' module.  The 'Users' module, however,
+    may not be reachable from outside unless used as an extension module for an existing page.  If
+    that's not the case, the 'Registration' module provides the needed operations (by proxying the
+    requests to the 'Users' module).
+    
+    """
+    class ReminderForm(lcg.Content):
+        def export(self, context):
+            g = context.generator()
+            req = context.req()
+            controls = (
+                g.label(_("Enter your login name or e-mail address")+':', id='query'),
+                g.field(name='query', value=req.param('query'), id='query', tabindex=0, size=32),
+                # Translators: Button name. Computer terminology. Use an appropriate term common
+                # for submitting forms in a computer application.
+                g.submit(_("Submit"), cls='submit'),)
+            return g.form(controls, method='POST', cls='password-reminder-form') #+ \
+                   #g.p(_(""))
+    
+    def _default_action(self, req, **kwargs):
+        return 'view'
+
+    def _action(self, req):
+        if len(req.unresolved_path) > 1:
+            return 'subpath'
+        else:
+            return super(Registration, self)._action(req)
+        
+    def action_subpath(self, req):
+        user = req.user()
+        if req.unresolved_path and req.unresolved_path[0] == user.login():
+            del req.unresolved_path[0]
+            return self._module('Users').action_subpath(req, user.data())
+        else:
+            raise Forbidden()
+    RIGHTS_subpath = (Roles.USER,)
+
+    def action_view(self, req):
+        if req.user():
+            return self._module('Users').action_view(req, req.user().data())
+        elif req.param('command') == 'logout':
+            return req.redirect('/')
+        else:
+            raise AuthenticationError()
+    RIGHTS_view = (Roles.ANYONE,)
+    
+    def action_insert(self, req):
+        if not cfg.appl.allow_registration:
+            raise Forbidden()
+        return self._module('Users').action_insert(req)
+    RIGHTS_insert = (Roles.ANYONE,)
+    
+    def action_remind(self, req):
+        title = _("Password reminder")
+        query = req.param('query')
+        if query:
+            users_module = self._module('Users')
+            if query.find('@') == -1:
+                user = users_module.user(req, query)
+            else:
+                users = users_module.find_users(req, query)
+                if not users:
+                    user = None
+                elif len(users) == 1:
+                    user = users[0]
+                else:
+                    content = (lcg.p(_("Multiple user accounts found for given email address.")),
+                               lcg.p(_("Please, select the account for which you want to remind:")),
+                               lcg.ul([lcg.link(make_uri(req.uri(), action='remind',
+                                                         query=u.login()), u.name())
+                                       for u in users]))
+                    return Document(title, content)
+            if user:
+                if cfg.password_storage == 'md5':
+                    try:
+                        password = users_module.reset_password(user)
+                    except Exception, e:
+                        req.message(unicode(e.exception()), type=req.ERROR)
+                        return Document(title, self.ReminderForm())
+                    # Translators: Credentials such as password...
+                    intro_text = _("Your credentials were reset to:")
+                else:
+                    password = user.data()['password'].value()
+                    # Translators: Credentials such as password...
+                    intro_text = _("Your credentials are:")
+                text = concat(
+                    _("A password reminder request has been made at %(server_uri)s.",
+                      server_uri=req.server_uri()),
+                    '',
+                    intro_text,
+                    '   '+_("Login name") +': '+ user.login(),
+                    '   '+_("Password") +': '+ password,
+                    '',
+                    _("We strongly recommend you change your password at nearest occassion, "
+                      "since it has been exposed to an unsecure channel."),
+                    '', separator='\n')
+                err = send_mail(user.email(), title, text, lang=req.prefered_language())
+                if err:
+                    req.message(_("Failed sending e-mail notification:") +' '+ err, type=req.ERROR)
+                    msg = _("Please try repeating your request later or contact the administrator!")
+                else:
+                    msg = _("E-mail information has been sent to your email address.")
+                content = lcg.p(msg)
+            else:
+                req.message(_("No user account for your query."), type=req.ERROR)
+                content = self.ReminderForm()
+        else:
+            content = self.ReminderForm()
+        return Document(title, content)
+    RIGHTS_remind = (Roles.ANYONE,)
+
+    def action_update(self, req):
+        return self._module('Users').action_update(req, req.user().data())
+    RIGHTS_update = (Roles.USER,)
+    
+    def action_passwd(self, req):
+        return self._module('Users').action_passwd(req, req.user().data())
+    RIGHTS_passwd = (Roles.USER,)
+    
+    def action_confirm(self, req):
+        return self._module('Users').action_confirm(req)
+    RIGHTS_confirm = (Roles.ANYONE,)
+
+
+class SessionLog(PytisModule):
+    class Spec(Specification):
+        # Translators: Heading for an overview when and how the user has accessed the application.
+        title = _("Login History")
+        help = _("History of successful login sessions and unsuccessful login attempts.")
+        def fields(self): return (
+            Field('log_id'),
+            Field('session_id'),
+            Field('uid', _('User'), codebook='Users'),
+            # Translators: Login name.
+            Field('login', _("Login")),
+            # Translators: Form field saying whether the users attempt was succesful. Values are Yes/No.
+            Field('success', _("Success")),
+            # Translators: Table column heading. Time of the start of user session, followed by a date and time.
+            Field('start_time', _("Start time"), type=DateTime(exact=True, not_null=True)),
+            # Translators: Table column heading. The length of user session. Contains time.
+            Field('duration', _("Duration"), type=Time(exact=True)),
+            # Translators: Table column heading. Whether the account is active. Values are yes/no.
+            Field('active', _("Active")),
+            Field('ip_address', _("IP address")),
+            # Translators: Internet name of the remote computer (computer terminology).
+            Field('hostname', _("Hostname"), virtual=True, computer=computer(self._hostname)),
+            # Translators: "User agent" is a generalized name for browser or more precisely the
+            # software which produced the HTTP request (was used to access the website).
+            Field('user_agent', _("User agent")),
+            # Translators: Meaning where the user came from. Computer terminology. Do not translate
+            # "HTTP" and if unsure, don't translate at all (it is a very technical term).
+            Field('referer', _("HTTP Referer")))
+        def _hostname(self, row, ip_address):
+            try:
+                return socket.gethostbyaddr(ip_address)[0]
+            except:
+                return None # _("Unknown")
+        def row_style(self, row):
+            if row['success'].value():
+                return None
+            else:
+                return pp.Style(foreground='#f00')
+        layout = ('start_time', 'duration', 'active', 'success', 'uid', 'login', 'ip_address',
+                  'hostname', 'user_agent', 'referer')
+        columns = ('start_time', 'duration', 'active', 'success', 'uid', 'login', 'ip_address')
+        sorting = (('start_time', DESC),)
+        
+    def log(self, req, time, session_id, uid, login):
+        row = self._data.make_row(session_id=session_id, uid=uid, login=login,
+                                  success=session_id is not None, start_time=time,
+                                  ip_address=req.header('X-Forwarded-For') or req.remote_host(),
+                                  referer=req.header('Referer'),
+                                  user_agent=req.header('User-Agent'))
+        self._data.insert(row)
+    WMI_SECTION = WikingManagementInterface.SECTION_USERS
+    WMI_ORDER = 1000
+    RIGHTS_view = (Roles.ADMIN,)
+    RIGHTS_list = (Roles.ADMIN,)
