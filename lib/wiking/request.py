@@ -918,7 +918,27 @@ class Role(object):
     It identifies the role in application and databases.  Additionally there is
     a human readable name of the role for presentation in user interfaces.
 
-    User roles available in an application are defined by L{Roles} class.
+    We distinguish the following basic kinds of roles:
+
+     - Predefined special roles.  These roles are determined automatically for
+       each user by the application (typically its authorization process).  It
+       is not possible to assign users to these roles explicitly.  They are
+       typically omitted from role listings in codebooks, with the exception of
+       access rights assignments.
+
+     - Predefined application roles.  These roles are defined by the
+       application for various purposes.  These roles may be stored in the
+       database and an application administrator can assign them to users in
+       Wiking CMS.
+
+     - User defined roles.  These are roles defined by an application
+       administrator in Wiking CMS.  These roles are not used by the
+       application directly.  They are typically used to create roles grouping
+       several application roles into a single application role, see
+       L{wiking.cms.RoleSets} for more information.  User defined roles are not
+       defined in the application code, they are stored in the database.
+
+    Predefined application roles are defined by L{Roles} class.
 
     """
     def __init__(self, role_id, name):
@@ -970,6 +990,8 @@ class Roles(object):
 
     You can get complete set of roles defined by an application by calling
     L{all_roles} method.
+
+    @see: L{Role} for information about various kinds of roles.
 
     """
     # Translators: Short description of a user group purpose.
