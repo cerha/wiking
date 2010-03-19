@@ -46,7 +46,7 @@ create table users (
 	phone text,
 	address text,
 	uri text,
-	state char(4) not null default 'none',
+	state text not null default 'none',
         last_password_change timestamp not null,
 	since timestamp not null default current_timestamp(0),
 	lang char(2) references languages(lang) on update cascade on delete set null,

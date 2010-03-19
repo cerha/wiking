@@ -16,7 +16,9 @@ create table role_users (
        unique (role_id, uid)
 );
 
-alter table users rename column role to state;
+alter table users add column state text not null default 'none';
+update users set state=role;
+alter table users drop column role;
 
 insert into roles (role_id, system) values ('user_admin', 't');
 insert into roles (role_id, system) values ('content_admin', 't');
