@@ -389,9 +389,6 @@ class Users(CMSModule):
                 return _("Invalid e-mail address: %s", result[1])
         def _state_name(self, code):
             return self._STATE_DICT[code]
-        @classmethod
-        def _states(cls, row):
-            return cls._STATE_DICT[row['state'].value()][1]
         def bindings(self):
             return (Binding('roles', _("User's Groups"), 'RoleUsers',
                             condition=(lambda row: pd.EQ('uid', row['uid']))),
@@ -907,16 +904,6 @@ class Users(CMSModule):
             users = [u for u in users if u is not None]
         return users
 
-    def all_states(self):
-        """Return information about all user states.
-
-        The returned value is a sequence of tuples.  Each of the tuples is of
-        the form '(CODE, TITLE,)' where CODE is the state code (as stored
-        in the database data) and TITLE human readable state description.
-
-        """
-        return self.Spec._STATES
-    
     def _generate_password(self):
         characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01233456789'
         random.seed()
