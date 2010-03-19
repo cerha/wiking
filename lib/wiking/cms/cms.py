@@ -2556,15 +2556,14 @@ class EmailSpool(CMSModule):
         # Translators: Section title and menu item. Sending emails to multiple recipients.
         title = _("Bulk E-mails")
 
-        _ROLES = Roles()
-        
         def fields(self): return (
             Field('id', editable=NEVER),
             Field('sender_address', _("Sender address"), default=wiking.cfg.default_sender_address,
                   descr=_("E-mail address of the sender.")),
             # Translators: List of recipients of an email message
-            Field('role', _("Recipients"), display=self._role_name, prefer_display=True,
-                  enumerator=enum([role.id() for role in self._ROLES.all_roles()])),
+            Field('role_id', _("Recipients"), not_null=False,
+                  # Translators: All users are intended recipients of an email message
+                  codebook='ApplicationRoles', null_display=_("All users")),
             Field('subject', _("Subject")),
             Field('content', _("Text"), width=80, height=10,
                   descr=_("Edit the given text as needed, in accordance with structured text rules.")),
@@ -2574,9 +2573,6 @@ class EmailSpool(CMSModule):
             Field('state', _("State"), type=pytis.data.String(), editable=NEVER,
                   virtual=True, computer=computer(self._state_computer)),
             )
-        
-        def _role_name(self, code):
-            return self._ROLES[code].name()
 
         def _state_computer(self, row, pid, finished):
             if finished:
@@ -2592,10 +2588,10 @@ class EmailSpool(CMSModule):
         
         columns = ('id', 'subject', 'date', 'state',)
         sorting = (('date', DESC,),)
-        layout = ('role', 'sender_address', 'subject', 'content', 'date', 'state',)
+        layout = ('role_id', 'sender_address', 'subject', 'content', 'date', 'state',)
     
     _TITLE_TEMPLATE = _('%(subject)s')
-    _LAYOUT = {'insert': ('role', 'sender_address', 'subject', 'content',)}
+    _LAYOUT = {'insert': ('role_id', 'sender_address', 'subject', 'content',)}
     _ALLOW_COPY = True
     # Translators: Button label meaning save this email text for later repeated usage
     _COPY_LABEL = _("Use as a Template")

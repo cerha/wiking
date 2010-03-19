@@ -163,22 +163,15 @@ class RoleUsers(wiking.PytisModule):
     """Accessor of role users information stored in the database.
     """
     class Spec(wiking.Specification):
-        _ROLES = Roles()
         table = 'user_roles'
         title = _("User Roles")
         def fields(self):
             return (pp.Field('role_id', _("Group id")),
                     pp.Field('uid', _("User id")),
-                    pp.Field('name', _("Group")),
-                    pp.Field('xname', _("Group"), type=pd.String(),
-                             virtual=True, computer=pp.computer(self._xname_computer)),
+                    pp.Field('name', _("Group"), codebook='ApplicationRoles'),
                     )
-        columns = ('xname',)
-        cb = pp.CodebookSpec(display='xname', prefer_display=True)
-        def _xname_computer(self, row, role_id, name):
-            if name is None and role_id is not None:
-                name = self._ROLES[role_id].name()
-            return name
+        columns = ('name',)
+        cb = pp.CodebookSpec(display='name', prefer_display=True)
         
     def user_ids(self, role):
         """

@@ -538,7 +538,7 @@ create table email_attachments (
 create table email_spool (
        id serial primary key,
        sender_address text,
-       role char(4), -- recipient role, if NULL then all users
+       role_id name references roles on update cascade on delete cascade, -- recipient role, if NULL then all users
        subject text unique, -- unique to prevent inadvertent multiple insertion
        content text, -- body of the e-mail
        date timestamp default now (), -- time of insertion

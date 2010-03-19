@@ -51,3 +51,7 @@ end;
 $$ language plpgsql;
 select upgrade17();
 drop function upgrade17();
+
+alter table email_spool add column role_id name references roles on update cascade on delete cascade;
+update email_spool set role_id=role;
+alter table email_spool drop column role;
