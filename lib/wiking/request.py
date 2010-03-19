@@ -304,12 +304,18 @@ class Request(pytis.web.Request):
         """Send an HTTP redirection response to the browser.
 
         Arguments:
-          uri -- redirection target URI as a string.  May be relative to the current request server
-            address or absolute if it begins with 'http://' or 'https://'.
-          permanent -- boolean flag indicatnig whether this is a permanent (moved
-            permanently) or temporary (moved temporarily) redirect according HTTP specs.
+          uri -- redirection target URI as a string.  May be relative to the
+            current request server address or absolute if it begins with
+            'http://' or 'https://'.  Relative URI is automatically prepended
+            by current server URI, since HTTP specification requires absolute
+            URIs.
+          permanent -- boolean flag indicatnig whether this is a permanent
+            (moved permanently) or temporary (moved temporarily) redirect
+            according to HTTP specification.
 
-        This call ends the request processing by instructing the user agent to go to another URI.
+        Calling this method directly from application code is deprecated.
+        Redirection should be now triggered by raising the `Redirect'
+        exception.
             
         """
         self._req.content_type = "text/html"

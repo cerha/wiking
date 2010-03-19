@@ -1,4 +1,4 @@
-# Copyright (C) 2006, 2007, 2008, 2009 Brailcom, o.p.s.
+# Copyright (C) 2006, 2007, 2008, 2009, 2010 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -258,6 +258,53 @@ class MaintenanceModeError(ServiceUnavailable):
 
 # Keep the misspelled name for backwards compatibility...
 MaintananceModeError = MaintenanceModeError
+
+class Redirect(Exception):
+    """Exception class for HTTP redirection.
+
+    Raising an exception of this class at any point of Wiking request
+    processing will lead to HTTP redirection to the URI given to the exception
+    instance constructor.  Wiking handler will automatically send the correct
+    redirection response to the client (setting the appropriate HTTP headers
+    and return codes).
+
+    """
+    def __init__(self, uri, permanent=False):
+        """Arguments:
+          uri -- redirection target URI as a string.  May be relative to the
+            current request server address or absolute (beginning with
+            'http://' or 'https://').  Relative URI is automatically prepended
+            by current server URI, since HTTP specification requires absolute
+            URIs.
+          permanent -- boolean flag indicatnig whether this is a permanent (moved
+            permanently) or temporary (moved temporarily) redirect according HTTP specs.
+            
+        """
+        self._uri = uri
+        self._permanent = permanent
+
+    def uri(self):
+        return self._uri
+    
+    def permanent(self):
+        return self._permanent
+
+        
+class Done(Exception):
+    """Exception class for finishing request processing.
+
+    Wiking request handling usually results in a page (a 'Document' instance
+    which is in turn exported to HTML) or data directly sent to the client.
+    These result types are returned by request handling code
+    ('RequestHandler.handle()' methods) and further processed by Wiking
+    handler.  Some requests may, however, require custom processing (such as
+    streaming data directly to the client).  The request handling code may use
+    methods, such as 'req.write()', directly and raise this exception when
+    handling is finished.  This will prevent Wiking handler from attempting to
+    process the return value of request handling methods.
+
+    """
+    pass
 
 
 # ============================================================================
