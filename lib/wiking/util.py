@@ -518,6 +518,14 @@ class LoginPanel(Panel):
             result = LoginCtrl().export(context)
             appl = req.application()
             if user:
+                if cfg.display_role_in_login_panel:
+                    # TODO: show only explicitly assigned roles, not special
+                    # roles, such as wiking.Roles.AUTHENTICATED.  Also for
+                    # compound roles, show only the top level role.  This
+                    # information is, however, currnetly not available.
+                    role_names = [role.name() for role in user.roles()]
+                    if role_names:
+                        result += g.br()+'\n' + lcg.concat(role_names, separator=', ')
                 organization = user.organization()
                 if organization:
                     result += g.br()+'\n' + organization
@@ -865,10 +873,6 @@ class LoginCtrl(lcg.Content):
         user = req.user()
         if user:
             username = user.name()
-            if cfg.display_role_in_login_panel:
-                role_description = user.role_description()
-                if role_description:
-                    username = lcg.concat(username, " (", role_description, ")")
             uri = user.uri()
             if uri:
                 username = g.link(username, uri, title=_("Go to your profile"))

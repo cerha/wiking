@@ -470,13 +470,6 @@ class Users(CMSModule):
             """
             return self._state
 
-        def role_description(self):
-            """
-            @deprecated: This facility is not available anymore, use other
-              information instead, such as list of user roles.
-            """
-            return ''
-
     class AccountInfo(lcg.Content):
         """Content shown in 'view' layout describing the current account state.
 
