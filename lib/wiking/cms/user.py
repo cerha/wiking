@@ -252,8 +252,6 @@ class Users(CMSModule):
                    ('unconfirmed', _("Unapproved account")),
                    ('disa', _("Account disabled")),
                    ('user', _("Regular account")),)
-        _STATE_DICT = dict([(_code, _title,) for _code, _title in _STATES])
-
         def _fullname(self, record, firstname, surname, login):
             if firstname and surname:
                 return firstname + " " + surname
@@ -388,7 +386,7 @@ class Users(CMSModule):
             if not result[0]:
                 return _("Invalid e-mail address: %s", result[1])
         def _state_name(self, code):
-            return self._STATE_DICT[code]
+            return dict(self._STATES)[code]
         def bindings(self):
             return (Binding('roles', _("User's Groups"), 'RoleUsers',
                             condition=(lambda row: pd.EQ('uid', row['uid']))),
