@@ -425,24 +425,22 @@ class Users(CMSModule):
         """CMS specific User class."""
         
         def disabled(self):
-            """Return true iff the user is currently disabled."""
-            return self._data['state'].value() == 'disa'
+            """Return true iff the user is currently disabled.
+            @deprecated: Use L{state} and compare the resulting value with C{'disa'}.
+            """
+            return self.state() == 'disa'
 
         def preregistered(self):
-            """Return true iff the user hasn't confirmed his registration code yet."""
-            return self._data['regexpire'].value() is not None
+            """Return true iff the user hasn't confirmed his registration code yet.
+            @deprecated: Use L{state} and compare the resulting value with C{'none'}.
+            """
+            return self.state() == 'none'
 
         def active(self):
             """Return true iff the user is active.
-            
-            A user is active if he has completed his registration process, the
-            account has been approved by the administrator and the user is not
-            disabled.
-        
+            @deprecated: Use L{state} and compare the resulting value with C{'user'}.
             """
-            record = self._data
-            return record['state'].value() not in ('none', 'disa',) \
-                   and record['regexpire'].value() is None
+            return self.state() == 'user'
 
         def roles(self):
             if self.disabled() or (not self.active() and not self.preregistered()):
