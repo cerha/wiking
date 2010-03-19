@@ -5,13 +5,13 @@ create table roles (
 );
 
 create table role_members (
-       role_id name references roles,
-       member name references roles,
+       role_id name references roles references roles on update cascade on delete cascade,
+       member name references roles references roles on update cascade on delete cascade,
        unique (role_id, member)
 );
  
 create table role_users (
-       role_id name references roles,
+       role_id name references roles references roles on update cascade on delete cascade,
        uid int references users,
        unique (role_id, uid)
 );
