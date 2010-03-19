@@ -736,7 +736,8 @@ class User(object):
           login -- user's login name as a string
           uid -- user identifier used for ownership determination (see role OWNER)
           name -- visible name as a string (login is used if None)
-          roles -- sequence of user roles as 'Role' instances
+          roles -- sequence of user roles as 'Role' instances.  Since every user must be
+            authenticated, roles must always contain at least the role 'Roles.AUTHENTICATED'.
           email -- e-mail address as a string
           password -- user's expected authentication password or None if password authentication is
             not allowed.  The login password will be checked against this value for authentication
@@ -756,6 +757,7 @@ class User(object):
         assert isinstance(login, (unicode, str))
         assert name is None or isinstance(name, (unicode, str))
         assert isinstance(roles, (tuple, list))
+        assert Roles.AUTHENTICATED in roles
         self._login = login
         self._uid = uid or login
         self._name = name or login
@@ -786,12 +788,7 @@ class User(object):
         return self._name
     
     def roles(self):
-        """Return valid user's roles as a tuple of 'Role' instances.
-
-        For disabled users or users who don't have any active role, return an
-        empty tuple.
-        
-        """
+        """Return valid user's roles as a tuple of 'Role' instances."""
         return self._roles
 
     def email(self):

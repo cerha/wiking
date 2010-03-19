@@ -183,10 +183,15 @@ class Roles(wiking.Roles):
     This is a special purpose role, you can't assign users to this role explicitly.    
     """
     # Translators: Short description of a user group purpose.
-    REGISTERED = Role('registered', _("Authenticated new user"))
-    """Authenticated user who is not yet fully enabled in the application.
-    In Wiking CMS these are new users who have registered themselves and wait
-    for approval by the application administrator.
+    REGISTERED = Role('registered', _("Successfuly registered user"))
+    """Authenticated user who has at least completed registration succesfully.
+    
+    Users with this role must have at least successfully confirmed the registration activation
+    code.  They may not yet be fully enabled in the application (approved by the administator).
+    Approved accounts as well as blocked accounts also belong to this role.  This role may be used
+    for very weak authorization checks.  It is stronger than L{wiking.Roles.AUTHENTICATED}
+    (contains also users who registered, but didn't confirm the activation code yet), but weaker
+    than L{wiking.cms.Roles.USER} (contains only users approved by the administrator).
 
     This is a special purpose role, you can't assign users to this role explicitly.    
     """

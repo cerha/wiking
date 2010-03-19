@@ -804,12 +804,16 @@ class Users(CMSModule):
         uid = record['uid'].value()
         role_ids = self._module('RoleUsers').user_role_ids(uid)
         role_members_module = self._module('RoleSets')
-        roles = []
-        Roles = self.Roles()
+        roles = [Roles.AUTHENTICATED]
+        if record['state'].value() != 'none':
+            roles.append(Roles.REGISTERED)
+        if record['state'].value() == 'user':
+            roles.append(Roles.USER)
+        roles_instance = self.Roles()
         for role_id in role_ids:
-            role = Roles[role_id]
+            role = roles_instance[role_id]
             for member_id in role_members_module.included_role_ids(role):
-                r = Roles[member_id]
+                r = roles_instance[member_id]
                 if r not in roles:
                     roles.append(r)
         return dict(login=login, name=record['user'].value(), uid=uid,
