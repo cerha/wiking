@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2006, 2007, 2009 Brailcom, o.p.s.
+# Copyright (C) 2006-2010 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -24,8 +24,9 @@ from wiking import *
 from configuration import *
 cfg.appl = CMSConfiguration()
 
-from appl import *
 from cms import *
+from user import *
+from appl import *
 
 import texts
 
