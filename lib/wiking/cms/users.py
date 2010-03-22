@@ -203,7 +203,7 @@ class ApplicationRoles(wiking.PytisModule):
         return tuple(self._data.select_map(make_role, condition=condition))
     
     WMI_SECTION = WikingManagementInterface.SECTION_USERS
-    WMI_ORDER = 1500
+    WMI_ORDER = 200
     
     RIGHTS_list = (Roles.USER,)
     RIGHTS_view = (Roles.USER,)
