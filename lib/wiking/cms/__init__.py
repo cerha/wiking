@@ -25,7 +25,7 @@ from configuration import *
 cfg.appl = CMSConfiguration()
 
 from cms import *
-from user import *
+from users import *
 from appl import *
 
 import texts
