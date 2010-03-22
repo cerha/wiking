@@ -17,12 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import pytis.data as pd
-import pytis.presentation as pp
-import pytis.util
-import wiking
-from wiking.cms import *
-
 """Wiking CMS users and roles.
 
 The most important class here is L{Users}.  It defines all the basic
@@ -34,6 +28,15 @@ There are several classes for manipulation with role database data:
 L{RoleSets}, L{RoleUsers}, L{ApplicationRoles}.
 
 """
+
+import pytis.data as pd
+import pytis.presentation as pp
+import pytis.util
+import wiking
+from wiking.cms import *
+
+_ = lcg.TranslatableTextFactory('wiking-cms')
+
 
 class RoleSets(wiking.PytisModule):
     """Accessor of role membership information stored in the database.
