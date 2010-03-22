@@ -42,11 +42,15 @@ declare
   row record;
   role_id name;
 begin
-  for row in select uid, state from users where state not in ('none', 'disa', 'user') loop
+  for row in select uid, state from users where state not in ('none', 'disa', 'user', 'cont') loop
     if row.state = 'admn' then
       role_id := 'admin';
     else
-      role_id := row.state;
+	if row.state = 'auth' then
+	  role_id := 'content_admin';
+	else
+	  role_id := row.state;
+	end if;
     end if;
     begin
       execute 'insert into roles (role_id, system) values ($1, True)' using role_id;
@@ -59,6 +63,8 @@ end;
 $$ language plpgsql;
 select upgrade17();
 drop function upgrade17();
+
+update users set state='user' where state='cont';
 
 alter table email_spool add column role_id name references roles on update cascade on delete cascade;
 update email_spool set role_id=role;
