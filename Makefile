@@ -37,6 +37,9 @@ translations:
 doc:
 	lcgmake doc/src doc/html
 
+api-doc:
+	PYTHONPATH=lib epydoc -o doc/html/api --name Wiking --inheritance=included --graph classtree wiking
+
 install-links: link-lib link-share $(cfgfile) $(storage)
 
 install: $(share)/wiking copy-files $(cfgfile) $(storage)
