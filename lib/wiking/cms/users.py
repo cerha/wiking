@@ -25,7 +25,7 @@ applications.
 
 Wiking CMS, unlike plain Wiking, can store role related data in a database.
 There are several classes for manipulation with role database data:
-L{RoleSets}, L{RoleUsers}, L{ApplicationRoles}.
+L{RoleSets}, L{RoleMembers}, L{ApplicationRoles}.
 
 """
 
@@ -39,19 +39,17 @@ _ = lcg.TranslatableTextFactory('wiking-cms')
 
 
 class RoleSets(wiking.PytisModule):
-    """Accessor of role membership information stored in the database.
+    """Accessor of role containment information stored in the database.
 
     Roles can contain other roles.  Such roles serve as shorthands for typical
     combinations of other roles, those may be any L{Role} instances, including
     L{Role} subclasses.
 
-    @invariant: There may be no cycles in role memberships, i.e. no role may
+    @invariant: There may be no cycles in role containment, i.e. no role may
       contain itself, including transitive relations.  For instance, group role
       I{foo} may not contain I{foo}; or if I{foo} contains I{bar} and I{bar}
       contains I{baz} then I{baz} may not contain I{foo} nor I{bar} nor I{baz}.
 
-    @see: L{wiking.cms.Role} for explanation of I{role members}.
-    
     """
     class Spec(wiking.Specification):
         table = 'role_sets'
@@ -62,9 +60,9 @@ class RoleSets(wiking.PytisModule):
     def _dictionary(self):
         """
         @rtype: dictionary of strings as keys and sequences of strings as values
-        @return: Role membership information in the form of dictionary with
+        @return: Role containment information in the form of dictionary with
           role identifiers as keys and sequences of identifiers of their
-          corresponding member roles.
+          corresponding contained roles.
 
         @note: The dictionary contains only roles contained in other roles.  It
           doesn't contain any information about users.
@@ -73,18 +71,18 @@ class RoleSets(wiking.PytisModule):
         dictionary = {}
         def add(row):
             role_id = row['role_id'].value()
-            member = row['member_role_id'].value()
-            role_members = dictionary.get(role_id)
-            if role_members is None:
-                role_members = dictionary[role_id] = []
-            role_members.append(member)
+            contained_role_id = row['member_role_id'].value()
+            contained_roles = dictionary.get(role_id)
+            if contained_roles is None:
+                contained_roles = dictionary[role_id] = []
+            contained_roles.append(contained_role_id)
         self._data.select_map(add)
         return dictionary
 
     def included_role_ids(self, role):
         """
         @type role: L{Role}
-        @param role: Role whose member roles should be returned.
+        @param role: Role whose contained roles should be returned.
 
         @rtype: sequence of strings
         @return: Sequence of role identifiers included in the given role,
@@ -92,18 +90,19 @@ class RoleSets(wiking.PytisModule):
           
         """
         assert isinstance(role, wiking.Role), role
-        membership = self._dictionary()
+        containment = self._dictionary()
         role_ids = []
         queue = [role.id()]
         while queue:
             r_id = queue.pop()
             if r_id not in role_ids:
                 role_ids.append(r_id)
-            queue += list(membership.get(r_id, []))
+            queue += list(containment.get(r_id, []))
         return role_ids
 
-class RoleUsers(wiking.PytisModule):
-    """Accessor of role users information stored in the database.
+
+class RoleMembers(wiking.PytisModule):
+    """Accessor of user role membership information stored in the database.
     """
     class Spec(wiking.Specification):
         table = 'user_roles'
@@ -123,7 +122,7 @@ class RoleUsers(wiking.PytisModule):
 
         @rtype: sequence of strings
         @return: Sequence of identifiers of the users belonging to the given
-          role, including all member roles.
+          role, including all contained roles.
           
         """
         included_role_ids = self._module('RoleSets').included_role_ids(role)
@@ -391,7 +390,7 @@ class Users(CMSModule):
         def _state_name(self, code):
             return dict(self._STATES)[code]
         def bindings(self):
-            return (Binding('roles', _("User's Groups"), 'RoleUsers',
+            return (Binding('roles', _("User's Groups"), 'RoleMembers',
                             condition=(lambda row: pd.EQ('uid', row['uid']))),
                     Binding('login-history', _("Login History"), 'SessionLog', 'uid',
                             enabled=lambda r: r.req().check_roles(Roles.ADMIN)),)
@@ -805,8 +804,8 @@ class Users(CMSModule):
         #else:
         #    organization = None
         uid = record['uid'].value()
-        role_ids = self._module('RoleUsers').user_role_ids(uid)
-        role_members_module = self._module('RoleSets')
+        role_ids = self._module('RoleMembers').user_role_ids(uid)
+        role_sets_module = self._module('RoleSets')
         roles = [Roles.AUTHENTICATED]
         if record['state'].value() != 'none':
             roles.append(Roles.REGISTERED)
@@ -815,8 +814,8 @@ class Users(CMSModule):
         roles_instance = self.Roles()
         for role_id in role_ids:
             role = roles_instance[role_id]
-            for member_id in role_members_module.included_role_ids(role):
-                r = roles_instance[member_id]
+            for contained_role_id in role_sets_module.included_role_ids(role):
+                r = roles_instance[contained_role_id]
                 if r not in roles:
                     roles.append(r)
         return dict(login=login, name=record['user'].value(), uid=uid,
@@ -893,7 +892,7 @@ class Users(CMSModule):
 
         """
         if role is not None:
-            role_user_ids = self._module('RoleUsers').user_ids(role)
+            role_user_ids = self._module('RoleMembers').user_ids(role)
         def make_user(row):
             if role is not None and row['uid'].value() not in role_user_ids:
                 return None
@@ -945,7 +944,7 @@ class Users(CMSModule):
         String = pd.String()
         condition = pd.EQ('state', pd.Value(String, 'user'))
         if role is not None:
-            user_ids = self._module('RoleUsers').user_ids(role)
+            user_ids = self._module('RoleMembers').user_ids(role)
         user_rows = self._data.get_rows()
         import copy
         kwargs = copy.copy(kwargs)

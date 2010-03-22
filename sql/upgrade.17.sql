@@ -10,7 +10,7 @@ create table role_sets (
        unique (role_id, member_role_id)
 );
  
-create table role_users (
+create table role_members (
        role_id name not null references roles on update cascade on delete cascade,
        uid int not null references users on update cascade on delete cascade,
        unique (role_id, uid)
