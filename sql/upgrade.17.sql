@@ -5,14 +5,14 @@ create table roles (
 );
 
 create table role_sets (
-       role_id name references roles on update cascade on delete cascade,
-       member_role_id name references roles on update cascade on delete cascade,
+       role_id name not null references roles on update cascade on delete cascade,
+       member_role_id name not null references roles on update cascade on delete cascade,
        unique (role_id, member_role_id)
 );
  
 create table role_users (
-       role_id name references roles references roles on update cascade on delete cascade,
-       uid int references users,
+       role_id name not null references roles on update cascade on delete cascade,
+       uid int not null references users on update cascade on delete cascade,
        unique (role_id, uid)
 );
 
