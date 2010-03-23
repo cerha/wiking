@@ -600,7 +600,7 @@ class PytisModule(Module, ActionHandler):
             # If no error was raised, the path was resolved.
             del req.unresolved_path[0]
             return row
-        elif req.has_param(self._key):
+        elif req.has_param(self._key) and req.param('action') != 'insert':
             return self._get_row_by_key(req, req.param(self._key))
         else:
             return None
