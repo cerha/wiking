@@ -127,6 +127,16 @@ class RoleSets(wiking.PytisModule):
     RIGHTS_delete = (Roles.USER_ADMIN,)
 
 class ContainingRoles(RoleSets):
+    """UI customization of the L{RoleSets} module for listing of containing roles.
+
+    Containing roles are the opposite view of the L{RoleSets} relationship used
+    in the role's bindings.  The modifications are actually implemented in the
+    parent class and the attribute L{_TITLE_COLUMN} is used to control the
+    final presentation (apart from its primary purpose).  See the
+    implementation of parent class methods L{_layout()}, L{_link_provider()}
+    and L{_form()}.
+
+    """
     _TITLE_COLUMN = 'role_id'
     _INSERT_LABEL = _("Add into group")
     
