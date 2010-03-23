@@ -925,6 +925,9 @@ class Role(object):
         self._id = role_id
         self._name = name
 
+    def __repr__(self):
+        return "<role '%s'>" % self._id
+    
     def __cmp__(self, other):
         """
         Two roles are equal if their unique identifiers are equal.
