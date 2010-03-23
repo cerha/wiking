@@ -142,24 +142,40 @@ class ContainingRoles(RoleSets):
     
 
 class RoleMembers(wiking.PytisModule):
-    """Accessor of user role membership information stored in the database.
-    """
+    """Accessor of user role membership information stored in the database."""
     class Spec(wiking.Specification):
         title = _("User Roles")
+        table = 'role_members'
         def fields(self):
             return (pp.Field('role_member_id'),
                     pp.Field('role_id', _("Group"), codebook='ApplicationRoles'),
                     pp.Field('uid', _("User"), codebook='Users'),
+                    pp.Field('delete', virtual=True, computer=computer(lambda r: _("Delete"))),
                     )
         columns = layout = ('role_id', 'uid',)
         
-    def _link_provider(self, req, uri, record, cid, **kwargs):
-        # Hack: Links are needed in two contexts - in bindings of Users and ApplicationRoles
-        if uri and uri.endswith('/members'):
-            return self._module('Users').link(req, record['uid'])
-        else:
-            return self._module('ApplicationRoles').link(req, record['role_id'])
+    _TITLE_COLUMN = 'uid'
+    _INSERT_LABEL = _("Add member")
+        
+    def _layout(self, req, action, record=None):
+        return (self._TITLE_COLUMN,)
     
+    def _form(self, form, req, *args, **kwargs):
+        if issubclass(form, pw.ItemizedView) and req.check_roles(Roles.USER_ADMIN):
+            kwargs['template'] = lcg.TranslatableText("%("+ self._TITLE_COLUMN +")s [%(delete)s]")
+        return super(RoleMembers, self)._form(form, req, *args, **kwargs)
+    
+    def _link_provider(self, req, uri, record, cid, **kwargs):
+        if cid is None:
+            if self._TITLE_COLUMN == 'uid':
+                return self._module('Users').link(req, record['uid'])
+            else:
+                return self._module('ApplicationRoles').link(req, record['role_id'])
+        elif cid == 'delete':
+            return make_uri(uri, role_member_id=record['role_member_id'].value(), action='delete')
+        else:
+            return super(RoleMembers, self)._link_provider(req, uri, record, cid, **kwargs)
+
     def user_ids(self, role):
         """
         @type role: L{Role}
@@ -197,6 +213,21 @@ class RoleMembers(wiking.PytisModule):
     RIGHTS_insert = (Roles.USER_ADMIN,)
     RIGHTS_update = (Roles.USER_ADMIN,)
     RIGHTS_delete = (Roles.USER_ADMIN,)
+
+
+class UserRoles(RoleMembers):
+    """UI customization of the L{RoleMembers} module for listing of user's roles.
+
+    User's roles are the opposite view of the L{RoleMembers} relationship used
+    in the user's bindings.  The modifications are actually implemented in the
+    parent class and the attribute L{_TITLE_COLUMN} is used to control the
+    final presentation (apart from its primary purpose).  See the
+    implementation of parent class methods L{_layout()}, L{_link_provider()}
+    and L{_form()}.
+
+    """
+    _TITLE_COLUMN = 'role_id'
+    _INSERT_LABEL = _("Add to group")
 
 
 class ApplicationRoles(wiking.PytisModule):
@@ -452,7 +483,7 @@ class Users(CMSModule):
         def _state_name(self, code):
             return dict(self._STATES)[code]
         def bindings(self):
-            return (Binding('roles', _("User's Groups"), 'RoleMembers', 'uid',
+            return (Binding('roles', _("User's Groups"), 'UserRoles', 'uid',
                             form=pw.ItemizedView),
                     Binding('login-history', _("Login History"), 'SessionLog', 'uid',
                             enabled=lambda r: r.req().check_roles(Roles.ADMIN)),)
