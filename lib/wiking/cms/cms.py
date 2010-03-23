@@ -224,7 +224,7 @@ class Roles(wiking.Roles):
 
 
 class CMSModule(PytisModule, RssModule, Panelizable):
-    "Base class for all CMS modules."""
+    """Base class for all CMS modules."""
     RIGHTS_view = (Roles.ANYONE,)
     RIGHTS_list = (Roles.ANYONE,)
     RIGHTS_rss  = (Roles.ANYONE,)
