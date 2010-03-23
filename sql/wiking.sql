@@ -10,18 +10,6 @@ create table languages (
 
 -------------------------------------------------------------------------------
 
-create table organizations (
-       organization_id serial primary key,
-       name varchar(128) not null unique,
-       vatid varchar(16) not null unique,
-       phone text,
-       email text,
-       address text,
-       notes text
-);
-
--------------------------------------------------------------------------------
-
 create table roles (
        role_id name primary key,
        name text,
@@ -54,9 +42,7 @@ create table users (
         regexpire timestamp,
         regcode char(16),
         certauth boolean not null default false,
-        note text,
-        organization text, -- free form field just for registration
-        organization_id int references organizations
+        note text
 );
 alter table users alter column since 
 set default current_timestamp(0) at time zone 'GMT';

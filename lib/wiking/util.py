@@ -526,9 +526,6 @@ class LoginPanel(Panel):
                     role_names = [role.name() for role in user.roles()]
                     if role_names:
                         result += g.br()+'\n' + lcg.concat(role_names, separator=', ')
-                organization = user.organization()
-                if organization:
-                    result += g.br()+'\n' + organization
                 expiration = user.password_expiration()
                 if expiration:
                     import datetime

@@ -67,3 +67,7 @@ update users set state='user' where state='cont';
 alter table email_spool add column role_id name references roles on update cascade on delete cascade;
 update email_spool set role_id=role;
 alter table email_spool drop column role;
+
+alter table users drop column organization;
+alter table users drop column organization_id;
+drop table organizations;

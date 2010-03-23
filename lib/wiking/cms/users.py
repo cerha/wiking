@@ -412,13 +412,6 @@ class Users(UserManagementModule):
             Field('lang'),
             Field('regexpire', default=self._registration_expiry, type=DateTime()),
             Field('regcode', default=self._generate_registration_code),
-            #Field('organization', _("Organization"), editable=ONCE,
-            #      descr=_(("If you are a member of an organization registered in the application "
-            #               "write the name of the organization here. "
-            #               "Otherwise leave the field empty."))),
-            #Field('organization_id', _("Organization"), codebook='Organizations', not_null=False),
-            # The value of the following field is a sequence even though its pytis type is
-            # string...  But it is only used in AccountInfo.
             Field('state_info', virtual=True, computer=computer(self._state)),
             )
         def _state(self, record, state, regexpire):
@@ -872,14 +865,6 @@ class Users(UserManagementModule):
             uri = base_uri +'/'+ login
         else:
             uri = req.module_uri('Registration')
-        #organization_id_value = record['organization_id']
-        #organization_id = organization_id_value.value()
-        #if organization_id:
-        #    organizations = self._module('Organizations')
-        #    organization_record = organizations.record(req, organization_id_value)
-        #    organization = organization_record['name'].value()
-        #else:
-        #    organization = None
         uid = record['uid'].value()
         role_ids = self._module('RoleMembers').user_role_ids(uid)
         role_sets_module = self._module('RoleSets')
@@ -897,9 +882,7 @@ class Users(UserManagementModule):
                     roles.append(r)
         return dict(login=login, name=record['user'].value(), uid=uid,
                     uri=uri, email=record['email'].value(), data=record, roles=roles,
-                    state=record['state'].value(), lang=record['lang'].value(),
-                    #organization_id=organization_id, organization=organization)
-                    )
+                    state=record['state'].value(), lang=record['lang'].value())
 
     def _make_user(self, kwargs):
         return self.User(**kwargs)
@@ -1051,40 +1034,6 @@ class ActiveUsers(Users, EmbeddableCMSModule):
         filters = ()
         default_filter = None
     _INSERT_LABEL = lcg.TranslatableText("New user registration", _domain='wiking')
-
-
-class Organizations(UserManagementModule):
-    """Codebook of organization users can belong to.
-
-    This module/table may play important role in determining user actions as it
-    can define common users groups sharing the same data.
-
-    """
-    class Spec(Specification):
-        
-        title = _("Organizations")
-        help = _("Manage institutions and other organizations.")
-
-        def fields(self): return (
-            Field('organization_id', width=8, editable=NEVER),
-            Field('name', _("Name"), width=32),
-            Field('vatid', _("VAT id")),
-            Field('email', _("E-mail"), width=36, constraints=(self._check_email,)),
-            Field('phone', _("Phone")),
-            Field('address', _("Address"), width=20, height=3),
-            Field('notes', _("Notes"), width=20, height=3),
-            )
-        def _check_email(self, email):
-            result = wiking.validate_email_address(email)
-            if not result[0]:
-                return _("Invalid e-mail address: %s", result[1])
-        cb = CodebookSpec(display='name', prefer_display=True)
-
-        columns = ('name', 'vatid',)
-        sorting = (('name', ASC,),)
-        layout = ('name', 'vatid', 'email', 'phone', 'address', 'notes',)
-    
-    _TITLE_COLUMN = 'name'
 
 
 class Registration(Module, ActionHandler):

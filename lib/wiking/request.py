@@ -728,7 +728,7 @@ class User(object):
     
     def __init__(self, login, uid=None, name=None, roles=(),
                  email=None, password=None, password_expiration=None, uri=None,
-                 data=None, lang='en', organization_id=None, organization=None):
+                 data=None, lang='en'):
         """Initialize the instance.
 
         Arguments:
@@ -745,9 +745,6 @@ class User(object):
           password_expiration -- password expiration date as a Python 'date' instance or None
           uri -- user's profile URI or None
           data -- application specific data
-          organization_id -- id of the user's organization as an Integer
-          organization -- name of the user's organization as a string or
-            unicode; or 'None' if the user doesn't belong to any organization
           lang -- code of the user's preferred language
 
         Please note, that password expiration date has currently no impact on the authentication
@@ -767,10 +764,6 @@ class User(object):
         self._password_expiration = password_expiration
         self._uri = uri
         self._data = data
-        self._organization_id = organization_id
-        if organization is not None:
-            organization = unicode(organization)
-        self._organization = organization
         self._lang = lang
         self._auto_authentication = False
         self._authentication_method = None
@@ -810,22 +803,6 @@ class User(object):
     def data(self):
         """Return application specific data passed to the constructor."""
         return self._data
-
-    def organization_id(self):
-        """Return user's organization id as an integer.
-
-        If the user doesn't belong to any organization, return 'None'.
-
-        """
-        return self._organization_id
-
-    def organization(self):
-        """Return user's organization as a unicode.
-
-        If the user doesn't belong to any organization, return 'None'.
-
-        """
-        return self._organization
 
     def lang(self):
         """Return code of the user's preferred language."""
