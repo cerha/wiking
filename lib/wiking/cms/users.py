@@ -138,7 +138,7 @@ class ContainingRoles(RoleSets):
 
     """
     _TITLE_COLUMN = 'role_id'
-    _INSERT_LABEL = _("Add into group")
+    _INSERT_LABEL = _("Add to group")
     
 
 class RoleMembers(wiking.PytisModule):
