@@ -5,12 +5,14 @@ create table roles (
 );
 
 create table role_sets (
+       role_set_id serial primary key,
        role_id name not null references roles on update cascade on delete cascade,
        member_role_id name not null references roles on update cascade on delete cascade,
        unique (role_id, member_role_id)
 );
  
 create table role_members (
+       role_member_id serial primary key,
        role_id name not null references roles on update cascade on delete cascade,
        uid int not null references users on update cascade on delete cascade,
        unique (role_id, uid)
@@ -32,10 +34,6 @@ insert into role_sets (role_id, member_role_id) values ('admin', 'content_admin'
 insert into role_sets (role_id, member_role_id) values ('admin', 'settings_admin');
 insert into role_sets (role_id, member_role_id) values ('admin', 'mail_admin');
 insert into role_sets (role_id, member_role_id) values ('admin', 'style_admin');
-
-create view user_roles as
-select role_users.uid, roles.role_id, roles.name, roles.system
-from role_users join roles on role_users.role_id = roles.role_id;
 
 create function upgrade17() returns void as $$
 declare

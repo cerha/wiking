@@ -53,10 +53,19 @@ class RoleSets(wiking.PytisModule):
     """
     class Spec(wiking.Specification):
         table = 'role_sets'
-        fields = (pp.Field('role_id'),
-                  pp.Field('member_role_id'),
+        fields = (pp.Field('role_set_id'),
+                  pp.Field('role_id', _("Group"), codebook='ApplicationRoles'),
+                  pp.Field('member_role_id', _("Contained group"), codebook='ApplicationRoles'),
                   )
+        columns = layout = ('role_id', 'member_role_id')
     
+    def _link_provider(self, req, uri, record, cid, **kwargs):
+        # Hack: Links are needed in two contexts - as contained and containing roles.
+        if uri and uri.endswith('/contained'):
+            return self._module('ApplicationRoles').link(req, record['member_role_id'])
+        else:
+            return self._module('ApplicationRoles').link(req, record['role_id'])
+        
     def _dictionary(self):
         """
         @rtype: dictionary of strings as keys and sequences of strings as values
@@ -100,21 +109,30 @@ class RoleSets(wiking.PytisModule):
             queue += list(containment.get(r_id, []))
         return role_ids
 
+    RIGHTS_insert = (Roles.USER_ADMIN,)
+    RIGHTS_update = (Roles.USER_ADMIN,)
+    RIGHTS_delete = (Roles.USER_ADMIN,)
+
 
 class RoleMembers(wiking.PytisModule):
     """Accessor of user role membership information stored in the database.
     """
     class Spec(wiking.Specification):
-        table = 'user_roles'
         title = _("User Roles")
         def fields(self):
-            return (pp.Field('role_id', _("Group id")),
-                    pp.Field('uid', _("User id")),
-                    pp.Field('name', _("Group"), codebook='ApplicationRoles'),
+            return (pp.Field('role_member_id'),
+                    pp.Field('role_id', _("Group"), codebook='ApplicationRoles'),
+                    pp.Field('uid', _("User"), codebook='Users'),
                     )
-        columns = ('name',)
-        cb = pp.CodebookSpec(display='name', prefer_display=True)
+        columns = layout = ('role_id', 'uid',)
         
+    def _link_provider(self, req, uri, record, cid, **kwargs):
+        # Hack: Links are needed in two contexts - in bindings of Users and ApplicationRoles
+        if uri and uri.endswith('/members'):
+            return self._module('Users').link(req, record['uid'])
+        else:
+            return self._module('ApplicationRoles').link(req, record['role_id'])
+    
     def user_ids(self, role):
         """
         @type role: L{Role}
@@ -165,28 +183,45 @@ class ApplicationRoles(wiking.PytisModule):
         table = 'roles'
         # Translators: Form heading.
         title = _("User Groups")
-        fields = (# Translators: Form field label.
-                  pp.Field('role_id', _("Identifier")),
-                  # Translators: Form field label, noun.
-                  pp.Field('name', _("Name")),
-                  # Translators: Form field label, adjective.
-                  pp.Field('system', _("System"), editable=pp.Editable.NEVER),
-                  )
-        layout = ('role_id', 'name',)
+        def fields(self): return (
+            # Translators: Form field label.
+            pp.Field('role_id', _("Identifier"), editable=computer(self._editable)),
+            # Translators: Form field label, noun.
+            pp.Field('name', _("Name"), editable=computer(self._editable)),
+            pp.Field('xname', _("Name"), computer=computer(self._xname_computer), virtual=True),
+            # Translators: Form field label, adjective.
+            pp.Field('system', _("System"), default=False, editable=pp.Editable.NEVER),
+            )
+        def _editable(self, record, system):
+            return not system
+        def _xname_computer(self, record, role_id, name):
+            return name or role_id and self._xname(role_id) # 'role_id' is None in a new record.
+        def _xname_display(self, row):
+            return row['name'].value() or self._xname(row['role_id'].value())
+        def _xname(self, role_id):
+            if self._ROLES is not None:
+                return self._ROLES[role_id].name()
+            else:
+                return None
+        columns = ('role_id', 'xname', 'system')
+        layout = ('role_id', 'name', 'system')
         def cb(self):
-            return pp.CodebookSpec(display=self._xname_computer, prefer_display=True)
+            return pp.CodebookSpec(display=self._xname_display, prefer_display=True)
+        def bindings(self):
+            return (Binding('contained', _("Contained Groups"), 'RoleSets', 'role_id',
+                            form=pw.ItemizedView),
+                    Binding('containing', _("Contained in Groups"), 'RoleSets', 'member_role_id',
+                            form=pw.ItemizedView),
+                    Binding('members', _("Members"), 'RoleMembers', 'role_id',
+                            form=pw.ItemizedView))
         _ROLES = None
-        def _xname_computer(self, row):
-            name = row['name'].value()
-            role_id = row['role_id'].value()
-            if name is None and role_id is not None and self._ROLES is not None:
-                name = self._ROLES[role_id].name()
-            return name
+    _LAYOUT = {'view': ('xname', 'role_id', 'system')}
+    _TITLE_COLUMN = 'xname'
 
     def __init__(self, *args, **kwargs):
         super(ApplicationRoles, self).__init__(*args, **kwargs)
         self.Spec._ROLES = self._module('Users').Roles()
-    
+
     def user_defined_roles(self):
         """
         @rtype: sequence of L{Role}s
@@ -209,6 +244,7 @@ class ApplicationRoles(wiking.PytisModule):
     RIGHTS_insert = (Roles.USER_ADMIN,)
     RIGHTS_update = (Roles.USER_ADMIN,)
     RIGHTS_delete = (Roles.USER_ADMIN,)
+    RIGHTS_subpath = (Roles.USER_ADMIN,)
 
 
 class Users(CMSModule):
@@ -390,8 +426,8 @@ class Users(CMSModule):
         def _state_name(self, code):
             return dict(self._STATES)[code]
         def bindings(self):
-            return (Binding('roles', _("User's Groups"), 'RoleMembers',
-                            condition=(lambda row: pd.EQ('uid', row['uid']))),
+            return (Binding('roles', _("User's Groups"), 'RoleMembers', 'uid',
+                            form=pw.ItemizedView),
                     Binding('login-history', _("Login History"), 'SessionLog', 'uid',
                             enabled=lambda r: r.req().check_roles(Roles.ADMIN)),)
         columns = ('fullname', 'nickname', 'email', 'state', 'since')
