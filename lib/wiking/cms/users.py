@@ -56,16 +56,29 @@ class RoleSets(wiking.PytisModule):
         fields = (pp.Field('role_set_id'),
                   pp.Field('role_id', _("Group"), codebook='ApplicationRoles'),
                   pp.Field('member_role_id', _("Contained group"), codebook='ApplicationRoles'),
+                  pp.Field('delete', virtual=True, computer=computer(lambda r: _("Delete"))),
                   )
         columns = layout = ('role_id', 'member_role_id')
+        
+    _TITLE_COLUMN = 'member_role_id'
+    _INSERT_LABEL = _("Add contained group")
+    
+    def _layout(self, req, action, record=None):
+        return (self._TITLE_COLUMN,)
+    
+    def _form(self, form, req, *args, **kwargs):
+        if issubclass(form, pw.ItemizedView):
+            kwargs['template'] = lcg.TranslatableText("%("+ self._TITLE_COLUMN +")s [%(delete)s]")
+        return super(RoleSets, self)._form(form, req, *args, **kwargs)
     
     def _link_provider(self, req, uri, record, cid, **kwargs):
-        # Hack: Links are needed in two contexts - as contained and containing roles.
-        if uri and uri.endswith('/contained'):
-            return self._module('ApplicationRoles').link(req, record['member_role_id'])
+        if cid == 'delete':
+            return make_uri(uri, role_set_id=record['role_set_id'].value(), action='delete')
+        elif cid is None:
+            return self._module('ApplicationRoles').link(req, record[self._TITLE_COLUMN])
         else:
-            return self._module('ApplicationRoles').link(req, record['role_id'])
-        
+            return super(RoleSets, self)._link_provider(req, uri, record, cid, **kwargs)
+
     def _dictionary(self):
         """
         @rtype: dictionary of strings as keys and sequences of strings as values
@@ -113,6 +126,10 @@ class RoleSets(wiking.PytisModule):
     RIGHTS_update = (Roles.USER_ADMIN,)
     RIGHTS_delete = (Roles.USER_ADMIN,)
 
+class ContainingRoles(RoleSets):
+    _TITLE_COLUMN = 'role_id'
+    _INSERT_LABEL = _("Add into group")
+    
 
 class RoleMembers(wiking.PytisModule):
     """Accessor of user role membership information stored in the database.
@@ -208,12 +225,12 @@ class ApplicationRoles(wiking.PytisModule):
         def cb(self):
             return pp.CodebookSpec(display=self._xname_display, prefer_display=True)
         def bindings(self):
-            return (Binding('contained', _("Contained Groups"), 'RoleSets', 'role_id',
-                            form=pw.ItemizedView),
-                    Binding('containing', _("Contained in Groups"), 'RoleSets', 'member_role_id',
-                            form=pw.ItemizedView),
-                    Binding('members', _("Members"), 'RoleMembers', 'role_id',
-                            form=pw.ItemizedView))
+            return (Binding('contained', _("Contained Groups"), 'RoleSets',
+                            'role_id', form=pw.ItemizedView),
+                    Binding('containing', _("Contained in Groups"), 'ContainingRoles',
+                            'member_role_id', form=pw.ItemizedView),
+                    Binding('members', _("Members"), 'RoleMembers',
+                            'role_id', form=pw.ItemizedView))
         _ROLES = None
     _LAYOUT = {'view': ('xname', 'role_id', 'system')}
     _TITLE_COLUMN = 'xname'
