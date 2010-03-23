@@ -826,7 +826,7 @@ class Users(CMSModule):
 
     def _user_arguments(self, req, login, row):
         record = self._record(req, row)
-        base_uri = req.module_uri(self.name())
+        base_uri = req.module_uri('ActiveUsers')
         if base_uri:
             uri = base_uri +'/'+ login
         else:
