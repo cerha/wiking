@@ -220,7 +220,7 @@ class ApplicationRoles(wiking.PytisModule):
                 return self._ROLES[role_id].name()
             else:
                 return None
-        columns = ('role_id', 'xname', 'system')
+        columns = ('xname', 'role_id', 'system')
         layout = ('role_id', 'name', 'system')
         def cb(self):
             return pp.CodebookSpec(display=self._xname_display, prefer_display=True)
