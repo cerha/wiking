@@ -38,7 +38,7 @@ from wiking.cms import *
 _ = lcg.TranslatableTextFactory('wiking-cms')
 
 
-class RoleSets(wiking.PytisModule):
+class RoleSets(UserManagementModule):
     """Accessor of role containment information stored in the database.
 
     Roles can contain other roles.  Such roles serve as shorthands for typical
@@ -122,9 +122,6 @@ class RoleSets(wiking.PytisModule):
             queue += list(containment.get(r_id, []))
         return role_ids
 
-    RIGHTS_insert = (Roles.USER_ADMIN,)
-    RIGHTS_update = (Roles.USER_ADMIN,)
-    RIGHTS_delete = (Roles.USER_ADMIN,)
 
 class ContainingRoles(RoleSets):
     """UI customization of the L{RoleSets} module for listing of containing roles.
@@ -141,7 +138,7 @@ class ContainingRoles(RoleSets):
     _INSERT_LABEL = _("Add to group")
     
 
-class RoleMembers(wiking.PytisModule):
+class RoleMembers(UserManagementModule):
     """Accessor of user role membership information stored in the database."""
     class Spec(wiking.Specification):
         title = _("User Roles")
@@ -210,10 +207,6 @@ class RoleMembers(wiking.PytisModule):
             return row['role_id'].value()
         return self._data.select_map(role_id, condition=condition)
     
-    RIGHTS_insert = (Roles.USER_ADMIN,)
-    RIGHTS_update = (Roles.USER_ADMIN,)
-    RIGHTS_delete = (Roles.USER_ADMIN,)
-
 
 class UserRoles(RoleMembers):
     """UI customization of the L{RoleMembers} module for listing of user's roles.
@@ -230,7 +223,7 @@ class UserRoles(RoleMembers):
     _INSERT_LABEL = _("Add to group")
 
 
-class ApplicationRoles(wiking.PytisModule):
+class ApplicationRoles(UserManagementModule):
     """Accessor and editor of application roles.
 
     This class can read roles from and store them to the database.  Its main
@@ -295,13 +288,9 @@ class ApplicationRoles(wiking.PytisModule):
     
     RIGHTS_list = (Roles.USER,)
     RIGHTS_view = (Roles.USER,)
-    RIGHTS_insert = (Roles.USER_ADMIN,)
-    RIGHTS_update = (Roles.USER_ADMIN,)
-    RIGHTS_delete = (Roles.USER_ADMIN,)
-    RIGHTS_subpath = (Roles.USER_ADMIN,)
 
 
-class Users(CMSModule):
+class Users(UserManagementModule):
     """
     TODO: General description
 
@@ -442,7 +431,7 @@ class Users(CMSModule):
                 texts = ()
             elif regexpire is None:
                 texts = _("The activation code was succesfully confirmed."),
-                if req.check_roles(Roles.ADMIN):
+                if req.check_roles(Roles.USER_ADMIN):
                     texts = (texts[0] +' '+ \
                              _("Therefore it was verified that given e-mail address "
                                "belongs to the person who requested the registration."),)
@@ -460,7 +449,7 @@ class Users(CMSModule):
                         _("The activation code will expire on %(date)s and the user will not be "
                           "able to complete the registration anymore.",
                           date=record['regexpire'].export()))
-                if req.check_roles(Roles.ADMIN):
+                if req.check_roles(Roles.USER_ADMIN):
                     texts += _("Use the button \"Resend activation code\" below to remind the "
                               "user of his pending registration."),
             else:
@@ -468,7 +457,7 @@ class Users(CMSModule):
                 texts = _("The registration expired on %(date)s.  The user didn't confirm the "
                           "activation code sent to the declared e-mail address in time.",
                          date=record['regexpire'].export()),
-                if req.check_roles(Roles.ADMIN):
+                if req.check_roles(Roles.USER_ADMIN):
                     texts += _("The account should be deleted automatically if the server "
                                "maintenence script is installed correctly.  Otherwise you can "
                                "delete the account manually."),
@@ -483,7 +472,7 @@ class Users(CMSModule):
             return (Binding('roles', _("User's Groups"), 'UserRoles', 'uid',
                             form=pw.ItemizedView),
                     Binding('login-history', _("Login History"), 'SessionLog', 'uid',
-                            enabled=lambda r: r.req().check_roles(Roles.ADMIN)),)
+                            enabled=lambda r: r.req().check_roles(Roles.USER_ADMIN)),)
         columns = ('fullname', 'nickname', 'email', 'state', 'since')
         sorting = (('surname', ASC), ('firstname', ASC))
         layout = () # Force specific layout definition for each action.
@@ -604,8 +593,8 @@ class Users(CMSModule):
     # Translators: Button label. Modify the users data (email, address...)
     _UPDATE_DESCR = _("Modify user's record")
     RIGHTS_insert = (Roles.ANYONE,)
-    RIGHTS_update = (Roles.ADMIN, Roles.OWNER)
-    RIGHTS_delete = (Roles.ADMIN,) #, Roles.OWNER)
+    RIGHTS_update = (Roles.USER_ADMIN, Roles.OWNER)
+    RIGHTS_delete = ()
 
     @staticmethod
     def _embed_binding_condition(row):
@@ -623,7 +612,7 @@ class Users(CMSModule):
                                  ((cfg.login_is_email and 'email' or 'login'), 'password')))
             elif action == 'passwd' and record is not None:
                 layout = ['new_password']
-                if not req.check_roles(Roles.ADMIN) or req.user().uid() == record['uid'].value():
+                if not req.check_roles(Roles.USER_ADMIN) or req.user().uid() == record['uid'].value():
                     # Don't require old password for admin, unless he is changing his own password.
                     layout.insert(0, 'old_password')
                 if not cfg.login_is_email:
@@ -642,7 +631,7 @@ class Users(CMSModule):
             record['lang'] = pd.Value(record['lang'].type(), req.prefered_language())
         errors = []
         if 'old_password' in layout.order():
-            #if not req.check_roles(Roles.ADMIN): Too dangerous?
+            #if not req.check_roles(Roles.USER_ADMIN): Too dangerous?
             old_password = req.param('old_password')
             if not old_password:
                 errors.append(('old_password', _(u"Enter your current password.")))
@@ -836,7 +825,7 @@ class Users(CMSModule):
             req.message(_("Please confirm the account only if you are sure that "
                           "the e-mail address belongs to given user."))
             return self._document(req, (form, action_menu), record)
-    RIGHTS_admin_confirm = () #Roles.ADMIN,)
+    RIGHTS_admin_confirm = () #Roles.USER_ADMIN,)
 
     def action_confirm(self, req):
         """Confirm the activation code sent by e-mail to make user registration valid.
@@ -860,16 +849,16 @@ class Users(CMSModule):
         except pd.DBException, e:
             req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
         return self._redirect_after_update(req, record)
-    RIGHTS_enable = (Roles.ADMIN,)
+    RIGHTS_enable = (Roles.USER_ADMIN,)
     
     def action_rights(self, req, record):
         # TODO: Enable table layout for this form.
         return self.action_update(req, record, action='rights')
-    RIGHTS_rights = (Roles.ADMIN,)
+    RIGHTS_rights = (Roles.USER_ADMIN,)
     
     def action_passwd(self, req, record):
         return self.action_update(req, record, action='passwd')
-    RIGHTS_passwd = (Roles.ADMIN, Roles.OWNER)
+    RIGHTS_passwd = (Roles.USER_ADMIN, Roles.OWNER)
 
     def action_regreminder(self, req, record):
         self._send_registration_email(req, record)
@@ -1064,7 +1053,7 @@ class ActiveUsers(Users, EmbeddableCMSModule):
     _INSERT_LABEL = lcg.TranslatableText("New user registration", _domain='wiking')
 
 
-class Organizations(CMSModule):
+class Organizations(UserManagementModule):
     """Codebook of organization users can belong to.
 
     This module/table may play important role in determining user actions as it
@@ -1095,10 +1084,6 @@ class Organizations(CMSModule):
         sorting = (('name', ASC,),)
         layout = ('name', 'vatid', 'email', 'phone', 'address', 'notes',)
     
-    RIGHTS_insert = (Roles.ADMIN,)
-    RIGHTS_update = (Roles.ADMIN,)
-    RIGHTS_delete = (Roles.ADMIN,)
-
     _TITLE_COLUMN = 'name'
 
 
@@ -1222,18 +1207,18 @@ class Registration(Module, ActionHandler):
 
     def action_update(self, req):
         return self._module('Users').action_update(req, req.user().data())
-    RIGHTS_update = (Roles.USER,)
+    RIGHTS_update = (Roles.REGISTERED,)
     
     def action_passwd(self, req):
         return self._module('Users').action_passwd(req, req.user().data())
-    RIGHTS_passwd = (Roles.USER,)
+    RIGHTS_passwd = (Roles.REGISTERED,)
     
     def action_confirm(self, req):
         return self._module('Users').action_confirm(req)
     RIGHTS_confirm = (Roles.ANYONE,)
 
 
-class SessionLog(PytisModule):
+class SessionLog(UserManagementModule):
     class Spec(Specification):
         # Translators: Heading for an overview when and how the user has accessed the application.
         title = _("Login History")
@@ -1283,5 +1268,3 @@ class SessionLog(PytisModule):
                                   referer=req.header('Referer'),
                                   user_agent=req.header('User-Agent'))
         self._data.insert(row)
-    RIGHTS_view = (Roles.ADMIN,)
-    RIGHTS_list = (Roles.ADMIN,)

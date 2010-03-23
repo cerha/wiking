@@ -84,7 +84,7 @@ class WikingManagementInterface(Module, RequestHandler):
         # Translators: Heading and menu title for website content management.
         (_("Content"),
          _("Manage available pages and their content."),
-         ['Pages']),
+         ['Pages', 'Panels']),
         # Translators: Heading and menu title. Computer idiom meaning configuration of appearance
         # (colors, sizes, positions, graphical presentation...).
         (_("Look &amp; Feel"),
@@ -97,7 +97,7 @@ class WikingManagementInterface(Module, RequestHandler):
         # Translators: Heading and menu title for configuration.
         (_("Setup"),
          _("Edit global properties of your web site."),
-         ['Config', 'Languages', 'Panels', 'Texts', 'Emails']),
+         ['Config', 'Languages', 'Texts', 'Emails']),
         )
     
     def _handle(self, req):
@@ -238,6 +238,47 @@ class CMSModule(PytisModule, RssModule, Panelizable):
             result = lcg.Container((lcg.p(help), result))
         return result
 
+class ContentManagementModule(CMSModule):
+    """Base class for WMI modules managed by L{Roles.CONTENT_ADMIN}."""
+    RIGHTS_insert    = (Roles.CONTENT_ADMIN,)
+    RIGHTS_update    = (Roles.CONTENT_ADMIN, Roles.OWNER)
+    RIGHTS_update    = (Roles.CONTENT_ADMIN,)
+    RIGHTS_delete    = (Roles.CONTENT_ADMIN,)
+    RIGHTS_publish   = (Roles.CONTENT_ADMIN,)
+    RIGHTS_unpublish = (Roles.CONTENT_ADMIN,)
+    
+class SettingsManagementModule(CMSModule):
+    """Base class for WMI modules managed by L{Roles.SETTINGS_ADMIN}."""
+    RIGHTS_insert    = (Roles.SETTINGS_ADMIN,)
+    RIGHTS_update    = (Roles.SETTINGS_ADMIN,)
+    RIGHTS_delete    = (Roles.SETTINGS_ADMIN,)
+    RIGHTS_publish   = (Roles.SETTINGS_ADMIN,)
+    RIGHTS_unpublish = (Roles.SETTINGS_ADMIN,)
+
+class UserManagementModule(CMSModule):
+    """Base class for WMI modules managed by L{Roles.USER_ADMIN}."""
+    RIGHTS_insert    = (Roles.USER_ADMIN,)
+    RIGHTS_update    = (Roles.USER_ADMIN,)
+    RIGHTS_delete    = (Roles.USER_ADMIN,)
+    RIGHTS_publish   = (Roles.USER_ADMIN,)
+    RIGHTS_unpublish = (Roles.USER_ADMIN,)
+    
+class StyleManagementModule(CMSModule):
+    """Base class for WMI modules managed by L{Roles.STYLE_ADMIN}."""
+    RIGHTS_insert    = (Roles.STYLE_ADMIN,)
+    RIGHTS_update    = (Roles.STYLE_ADMIN,)
+    RIGHTS_delete    = (Roles.STYLE_ADMIN,)
+    RIGHTS_publish   = (Roles.STYLE_ADMIN,)
+    RIGHTS_unpublish = (Roles.STYLE_ADMIN,)
+    
+class MailManagementModule(CMSModule):
+    """Base class for WMI modules managed by L{Roles.MAIL_ADMIN}."""
+    RIGHTS_insert    = (Roles.MAIL_ADMIN,)
+    RIGHTS_update    = (Roles.MAIL_ADMIN,)
+    RIGHTS_delete    = (Roles.MAIL_ADMIN,)
+    RIGHTS_publish   = (Roles.MAIL_ADMIN,)
+    RIGHTS_unpublish = (Roles.MAIL_ADMIN,)
+    
     
 class Embeddable(object):
     """Mix-in class for modules which may be embedded into page content.
@@ -495,7 +536,7 @@ class Session(PytisModule, wiking.Session):
                                       pd.EQ('session_key', pd.Value(pd.DateTime(), session_key))))
 
 
-class Config(CMSModule):
+class Config(SettingsManagementModule):
     """Site specific configuration provider.
 
     This implementation stores the configuration variables as one row in a
@@ -599,7 +640,7 @@ class Config(CMSModule):
             return self._error_message(*self._analyze_exception(e))
     
 
-class PageTitles(CMSModule):
+class PageTitles(ContentManagementModule):
     """Simplified version of the 'Pages' module for 'Mapping' enumerator.
 
     This module is needed to prevent recursive enumerator definition in 'Mapping'.
@@ -610,7 +651,7 @@ class PageTitles(CMSModule):
         fields = [Field(_f) for _f in ('page_id', 'mapping_id', 'lang', 'title')]
 
         
-class Mapping(CMSModule):
+class Mapping(ContentManagementModule):
     """Provide a set of available URIs -- page identifiers bound to particular pages.
 
     This mapping contains unique record for each page identifier.  Pages define the content for
@@ -640,7 +681,7 @@ class Mapping(CMSModule):
             return pp.CodebookSpec(display=self._translate, prefer_display=True)
 
 
-class Panels(CMSModule, Publishable):
+class Panels(ContentManagementModule, Publishable):
     """Provide a set of side panels.
 
     The panels are stored in a Pytis data object to allow their management through WMI.
@@ -725,9 +766,9 @@ class Panels(CMSModule, Publishable):
             content = lcg.SectionContainer(content, toc_depth=0)
             panels.append(Panel(panel_id, title, content, channel=channel))
         return panels
-                
-                
-class Languages(CMSModule):
+
+
+class Languages(SettingsManagementModule):
     """List all languages available for given site.
 
     This implementation stores the list of available languages in a Pytis data
@@ -759,7 +800,7 @@ class Languages(CMSModule):
         return [str(r['lang'].value()) for r in self._data.get_rows()]
 
     
-class Themes(CMSModule):
+class Themes(StyleManagementModule):
     class Spec(Specification):
         class _Field(Field):
             def __init__(self, id, label, descr=None):
@@ -886,7 +927,7 @@ class Themes(CMSModule):
             req.message(err, type=req.ERROR)
         req.set_param('search', theme_id)
         return self.action_list(req)
-    RIGHTS_activate = (Roles.ADMIN,)
+    RIGHTS_activate = (Roles.STYLE_ADMIN,)
     
 
 # ==============================================================================
@@ -894,7 +935,7 @@ class Themes(CMSModule):
 # The modules above are system modules used internally by Wiking.
 # ==============================================================================
 
-class Pages(CMSModule):
+class Pages(ContentManagementModule):
     """Define available pages and their content and allow their management.
 
     This module implements the key CMS functionality.  Pages, their hierarchy, content and other
@@ -990,7 +1031,7 @@ class Pages(CMSModule):
          _("The page already exists in given language.")),
         ('duplicate key (value )?violates unique constraint "_mapping_unique_tree_(?P<id>ord)er"',
          _("Duplicate menu order at this level of hierarchy.")),) + \
-         CMSModule._EXCEPTION_MATCHERS
+         ContentManagementModule._EXCEPTION_MATCHERS
     _LIST_BY_LANGUAGE = True
     _OWNER_COLUMN = 'owner'
     _SUPPLY_OWNER = False
@@ -1028,8 +1069,6 @@ class Pages(CMSModule):
         #       enabled=lambda r: r['_content'].value() is None),
         )
     _SEPARATOR = re.compile('^====+\s*$', re.MULTILINE)
-    RIGHTS_insert = (Roles.AUTHOR,)
-    RIGHTS_update = (Roles.AUTHOR, Roles.OWNER)
 
     def _handle(self, req, action, **kwargs):
         # TODO: This is a hack to find out the parent page in the embedded
@@ -1265,15 +1304,15 @@ class Pages(CMSModule):
                                                       uri=self._current_record_uri(req, record))
         # Translators: Section title. Attachments as in email attachments.
         return self._document(req, content, record, subtitle=_("Attachments"))
-    RIGHTS_attachments = (Roles.AUTHOR, Roles.OWNER)
+    RIGHTS_attachments = (Roles.CONTENT_ADMIN, Roles.OWNER)
         
     def action_preview(self, req, record):
         return self.action_view(req, record, preview=True)
-    RIGHTS_preview = (Roles.AUTHOR, Roles.OWNER)
+    RIGHTS_preview = (Roles.CONTENT_ADMIN, Roles.OWNER)
 
     def action_options(self, req, record):
         return self.action_update(req, record, action='options')
-    RIGHTS_options = (Roles.AUTHOR, Roles.OWNER)
+    RIGHTS_options = (Roles.CONTENT_ADMIN, Roles.OWNER)
     
     def action_translate(self, req, record):
         lang = req.param('src_lang')
@@ -1299,7 +1338,7 @@ class Pages(CMSModule):
             for k in ('_content','title'):
                 req.set_param(k, row[k].value())
             return self.action_update(req, record)
-    RIGHTS_translate = (Roles.AUTHOR, Roles.OWNER)
+    RIGHTS_translate = (Roles.CONTENT_ADMIN, Roles.OWNER)
 
     def action_commit(self, req, record):
         values = dict(content=record['_content'].value(), published=True)
@@ -1319,7 +1358,7 @@ class Pages(CMSModule):
         else:
             req.message(_("The changes were published."))
         return self.action_view(req, record)
-    RIGHTS_commit = (Roles.AUTHOR, Roles.OWNER)
+    RIGHTS_commit = (Roles.CONTENT_ADMIN, Roles.OWNER)
 
     def action_revert(self, req, record):
         try:
@@ -1329,7 +1368,7 @@ class Pages(CMSModule):
         else:
             req.message(_("The page contents was reverted to its previous state."))
         return self.action_view(req, record)
-    RIGHTS_revert = (Roles.ADMIN, Roles.OWNER)
+    RIGHTS_revert = (Roles.CONTENT_ADMIN, Roles.OWNER)
     
     def action_unpublish(self, req, record):
         try:
@@ -1339,10 +1378,10 @@ class Pages(CMSModule):
         else:
             req.message(_("The page was unpublished."))
         return self.action_view(req, record)
-    RIGHTS_unpublish = (Roles.ADMIN, Roles.OWNER)
+    RIGHTS_unpublish = (Roles.CONTENT_ADMIN, Roles.OWNER)
 
     
-class Attachments(CMSModule):
+class Attachments(ContentManagementModule):
     """Attachments are external files (documents, images, media, ...) attached to CMS pages.
 
     Pytis supports storing binary data types directly in the database, however the current
@@ -1458,10 +1497,7 @@ class Attachments(CMSModule):
     _EXCEPTION_MATCHERS = (
         ('duplicate key (value )?violates unique constraint "_attachments_mapping_id_key"',
          ('file', _("Attachment of the same file name already exists for this page."))),)
-    RIGHTS_view   = (Roles.AUTHOR, Roles.OWNER)
-    RIGHTS_insert = (Roles.AUTHOR, Roles.OWNER)
-    RIGHTS_update = (Roles.AUTHOR, Roles.OWNER)
-    RIGHTS_delete = (Roles.AUTHOR, Roles.OWNER)
+    RIGHTS_view   = (Roles.CONTENT_ADMIN, Roles.OWNER)
 
     def _default_action(self, req, record=None):
         if record is None:
@@ -1544,7 +1580,7 @@ class Attachments(CMSModule):
     
     def action_move(self, req, record):
         return self.action_update(req, record, action='move')
-    RIGHTS_move = (Roles.AUTHOR,)
+    RIGHTS_move = (Roles.CONTENT_ADMIN,)
 
     def action_download(self, req, record, **kwargs):
         return (str(record['mime_type'].value()), record['file'].value().buffer())
@@ -1553,7 +1589,7 @@ class Attachments(CMSModule):
     def action_insert_image(self, req):
         req.set_param('action', 'insert')
         return self._module('Images').action_insert(req)
-    RIGHTS_insert_image  = (Roles.AUTHOR, Roles.OWNER)
+    RIGHTS_insert_image  = (Roles.CONTENT_ADMIN, Roles.OWNER)
 
 
 class Images(Attachments):
@@ -1662,7 +1698,7 @@ class Images(Attachments):
     #RIGHTS_thumbnail = (Roles.ANYONE,)
 
     
-class News(EmbeddableCMSModule):
+class News(ContentManagementModule, EmbeddableCMSModule):
     class Spec(Specification):
         # Translators: Section title and menu item
         title = _("News")
@@ -1707,9 +1743,6 @@ class News(EmbeddableCMSModule):
     _RSS_TITLE_COLUMN = 'title'
     _RSS_DESCR_COLUMN = 'content'
     _RSS_DATE_COLUMN = 'timestamp'
-    RIGHTS_insert = (Roles.CONTRIBUTOR,)
-    RIGHTS_update = (Roles.ADMIN, Roles.OWNER)
-    RIGHTS_delete = (Roles.ADMIN,)
     _mapping_identifier_cache = BoundCache()
 
     def _record_uri(self, req, record, *args, **kwargs):
@@ -1884,7 +1917,7 @@ class Stylesheets(Stylesheets):
             return super(Stylesheets, self)._stylesheet(path)
 
    
-class Styles(CMSModule):
+class Styles(StyleManagementModule):
     """Manage available Cascading Style Sheets through a Pytis data object."""
     class Spec(Specification):
         # Translators: Section heading and menu item. Meaning the visual appearance. Computer
@@ -1971,7 +2004,7 @@ class Text(Structure):
         self._module_class().register_text(self)
 
     
-class CommonTexts(CMSModule):
+class CommonTexts(SettingsManagementModule):
     """Management of predefined texts editable by administrators.
 
     Predefined texts may be used for various purposes in applications,
@@ -2030,7 +2063,6 @@ class CommonTexts(CMSModule):
     _LIST_BY_LANGUAGE = True
     _TEXT_REGISTRAR = None
     RIGHTS_insert = ()
-    RIGHTS_update = (Roles.ADMIN,)
     RIGHTS_delete = ()
 
     def _delayed_init(self):
@@ -2244,10 +2276,6 @@ class Emails(CommonTexts):
         columns = ('label', 'descr',)
         sorting = (('label', ASC,),)
         layout = ('label', 'descr', 'subject', 'cc', 'content',)
-        
-    RIGHTS_insert = (Roles.ADMIN,)
-    RIGHTS_update = (Roles.ADMIN,)
-    RIGHTS_delete = (Roles.ADMIN,)
 
     def _is_text(self, object):
         return isinstance(object, EmailText)
@@ -2401,7 +2429,7 @@ class TextReferrer(object):
             send_mail(addr, **lang_email_args(lang))
 
 
-class EmailSpool(CMSModule):
+class EmailSpool(MailManagementModule):
     """Storage and archive for bulk e-mails sent to application users.
     """
     class Spec(Specification):
@@ -2451,9 +2479,5 @@ class EmailSpool(CMSModule):
     _COPY_LABEL = _("Use as a Template")
     # Translators: Description of button for creating a template of an email
     _COPY_DESCR = _("Edit this mail for repeated use")
-        
-    RIGHTS_list = (Roles.ADMIN,)
-    RIGHTS_view = (Roles.ADMIN,)
-    RIGHTS_insert = (Roles.ADMIN,)
+    
     RIGHTS_update = ()
-    RIGHTS_delete = (Roles.ADMIN,)

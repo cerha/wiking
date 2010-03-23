@@ -987,16 +987,6 @@ class Roles(object):
     record.  Applications may redefine this method or implement their own
     L{Application.authorize} method to change the concept of owner when needed.
     """
-    AUTHOR = Role('author', "Author")
-    "@deprecated: Don't use anymore, introduce your own application specific role if really needed."
-    CONTRIBUTOR = Role('contributor', "Contributor")
-    "@deprecated: Don't use anymore, introduce your own application specific role if really needed."
-    ADMIN = Role('admin', "Admin")
-    """@deprecated: Use L{wiking.cms.Roles} C{*_ADMIN} constants instead.
-    Define your own additional application specific administrator roles if needed.
-    """
-    USER = Role('user', "User")
-    "@deprecated: Use L{wiking.cms.Roles.USER} instead."
 
     def __getitem__(self, role_id):
         """
