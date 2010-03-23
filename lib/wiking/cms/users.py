@@ -67,7 +67,7 @@ class RoleSets(wiking.PytisModule):
         return (self._TITLE_COLUMN,)
     
     def _form(self, form, req, *args, **kwargs):
-        if issubclass(form, pw.ItemizedView):
+        if issubclass(form, pw.ItemizedView) and req.check_roles(Roles.USER_ADMIN):
             kwargs['template'] = lcg.TranslatableText("%("+ self._TITLE_COLUMN +")s [%(delete)s]")
         return super(RoleSets, self)._form(form, req, *args, **kwargs)
     
