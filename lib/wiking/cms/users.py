@@ -293,9 +293,6 @@ class ApplicationRoles(wiking.PytisModule):
         condition = pd.EQ('system', pd.Value(pd.Boolean(), False))
         return tuple(self._data.select_map(make_role, condition=condition))
     
-    WMI_SECTION = WikingManagementInterface.SECTION_USERS
-    WMI_ORDER = 200
-    
     RIGHTS_list = (Roles.USER,)
     RIGHTS_view = (Roles.USER,)
     RIGHTS_insert = (Roles.USER_ADMIN,)
@@ -609,8 +606,6 @@ class Users(CMSModule):
     RIGHTS_insert = (Roles.ANYONE,)
     RIGHTS_update = (Roles.ADMIN, Roles.OWNER)
     RIGHTS_delete = (Roles.ADMIN,) #, Roles.OWNER)
-    WMI_SECTION = WikingManagementInterface.SECTION_USERS
-    WMI_ORDER = 100
 
     @staticmethod
     def _embed_binding_condition(row):
@@ -1067,8 +1062,6 @@ class ActiveUsers(Users, EmbeddableCMSModule):
         filters = ()
         default_filter = None
     _INSERT_LABEL = lcg.TranslatableText("New user registration", _domain='wiking')
-    WMI_SECTION = None
-    WMI_ORDER = None
 
 
 class Organizations(CMSModule):
@@ -1105,9 +1098,6 @@ class Organizations(CMSModule):
     RIGHTS_insert = (Roles.ADMIN,)
     RIGHTS_update = (Roles.ADMIN,)
     RIGHTS_delete = (Roles.ADMIN,)
-
-    WMI_SECTION = None #WikingManagementInterface.SECTION_USERS
-    WMI_ORDER = 500
 
     _TITLE_COLUMN = 'name'
 
@@ -1293,7 +1283,5 @@ class SessionLog(PytisModule):
                                   referer=req.header('Referer'),
                                   user_agent=req.header('User-Agent'))
         self._data.insert(row)
-    WMI_SECTION = WikingManagementInterface.SECTION_USERS
-    WMI_ORDER = 1000
     RIGHTS_view = (Roles.ADMIN,)
     RIGHTS_list = (Roles.ADMIN,)

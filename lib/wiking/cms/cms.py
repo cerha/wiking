@@ -59,27 +59,19 @@ _STRUCTURED_TEXT_DESCR = \
       manual=('<a target="help" href="/_doc/lcg/structured-text">' + \
               _("formatting manual") + "</a>"))
 
-def _modcls(name):
-    try:
-        return cfg.resolver.wiking_module_cls(name)
-    except:
-        None
-
 def _modtitle(name, default=None):
     """Return a localizable module title by module name."""
     if name is None:
         title = ''
     else:
-        cls = _modcls(name)
-        if cls:
-            title = cls.title()
-        else:
+        try:
+            cls = cfg.resolver.wiking_module_cls(name)
+        except:
             title = default or concat(name,' (',_("unknown"),')')
+        else:
+            title = cls.title()
     return title
 
-def _modules():
-    return cfg.resolver.available_modules()
-    
 
 class WikingManagementInterface(Module, RequestHandler):
     """Wiking Management Interface.
@@ -88,63 +80,51 @@ class WikingManagementInterface(Module, RequestHandler):
     module name is part of the request URI.
 
     """
-    SECTION_USERS = 'users'
-    SECTION_STYLE = 'style'
-    SECTION_SETUP = 'setup'
-    
-    # Translators: Heading and menu title. Computer idiom meaning configuration of appearance
-    # (colors, sizes, positions, graphical presentation...).
-    _SECTIONS = ((SECTION_STYLE,   _("Look &amp; Feel"),
-                  _("Customize the appearance of your site.")),
-                 # Translators: Heading and menu title. 
-                 (SECTION_USERS,   _("Users"),
-                  _("Manage user accounts, privileges and perform other user related tasks.")),
-                 # Translators: Heading and menu title for configuration.
-                 (SECTION_SETUP,   _("Setup"),
-                  _("Edit global properties of your web site.")),
-                 )
-    
-    def _wmi_modules(self, modules, section):
-        return [m for m in modules if hasattr(m, 'WMI_SECTION') and 
-                getattr(m, 'WMI_SECTION') == section]
-    
-    def _wmi_order(self, module):
-        if hasattr(module, 'WMI_ORDER'):
-            return getattr(module, 'WMI_ORDER')
-        else:
-            return None
+    _MENU = (
+        # Translators: Heading and menu title for website content management.
+        (_("Content"),
+         _("Manage available pages and their content."),
+         ['Pages']),
+        # Translators: Heading and menu title. Computer idiom meaning configuration of appearance
+        # (colors, sizes, positions, graphical presentation...).
+        (_("Look &amp; Feel"),
+         _("Customize the appearance of your site."),
+         ['Styles', 'Themes']),
+        # Translators: Heading and menu title. 
+        (_("Users"),
+         _("Manage user accounts, privileges and perform other user related tasks."),
+         ['Users', 'ApplicationRoles', 'SessionLog', 'EmailSpool']),
+        # Translators: Heading and menu title for configuration.
+        (_("Setup"),
+         _("Edit global properties of your web site."),
+         ['Config', 'Languages', 'Panels', 'Texts', 'Emails']),
+        )
     
     def _handle(self, req):
-        req.wmi = True # Switch to WMI only after successful authorization.
+        req.wmi = True # Switch to WMI only after successful authorization!
         if not req.unresolved_path:
             return req.redirect('/'+req.path[0]+'/Pages')
-        try:
-            module = self._module(req.unresolved_path[0])
-        except AttributeError:
-            for section, title, descr in self._SECTIONS:
-                if req.unresolved_path[0] == section:
-                    modules = self._wmi_modules(_modules(), section)
-                    if modules:
-                        modules.sort(lambda a, b: cmp(self._wmi_order(a), self._wmi_order(b)))
-                        return req.redirect('/'+req.path[0]+'/'+modules[0].name())
-            raise NotFound(req)
-        else:
-            del req.unresolved_path[0]
-            return req.forward(module)
+        if req.unresolved_path[0].startswith('sec'):
+            # Redirect to the first module of given section.
+            try:
+                n = int(req.unresolved_path[0][3:])
+                modname = self._MENU[n-1][2][0]
+            except (ValueError, IndexError):
+                raise NotFound
+            else:
+                return req.redirect(req.path[0]+'/'+modname)
+        module = self._module(req.unresolved_path[0])
+        del req.unresolved_path[0]
+        return req.forward(module)
 
     def menu(self, req):
-        modules = _modules()
         variants = self._application.languages()
-        # Translators: Heading and menu title for website content management.
-        return [MenuItem(req.path[0] + '/Pages', _("Content"),
-                         descr=_("Manage available pages and their content."),
-                         variants=variants)] + \
-               [MenuItem(req.path[0] + '/' + section, title, descr=descr, variants=variants,
-                         submenu=[MenuItem(req.path[0] + '/' + m.name(), m.title(),
-                                           descr=m.descr(), order=self._wmi_order(m),
+        uri = req.path[0]
+        return [MenuItem(uri + '/sec%d' % (i+1), title, descr=descr, variants=variants,
+                         submenu=[MenuItem(uri + '/' + m.name(), m.title(), descr=m.descr(),
                                            variants=variants)
-                                  for m in self._wmi_modules(modules, section)])
-                for section, title, descr in self._SECTIONS] + \
+                                  for m in [self._module(modname) for modname in modnames]])
+                for i, (title, descr, modnames) in enumerate(self._MENU)] + \
                [MenuItem('__site_menu__', '', hidden=True, variants=variants,
                          submenu=self._module('Pages').menu(req))]
 
@@ -236,7 +216,10 @@ class CMSModule(PytisModule, RssModule, Panelizable):
     RIGHTS_unpublish = (Roles.ADMIN,)
 
     def _embed_binding(self, modname):
-        cls = _modcls(modname)
+        try:
+            cls = cfg.resolver.wiking_module_cls(modname)
+        except:
+            cls = None
         if cls and issubclass(cls, EmbeddableCMSModule):
             binding = cls.binding()
         else:
@@ -578,8 +561,6 @@ class Config(CMSModule):
         layout = ('site_title', 'site_subtitle', 'webmaster_address', 'default_sender_address',
                   'allow_login_panel', 'allow_registration', 'force_https_login', 'upload_limit')
     _TITLE_TEMPLATE = _("Basic Configuration")
-    WMI_SECTION = WikingManagementInterface.SECTION_SETUP
-    WMI_ORDER = 100
 
     def _resolve(self, req):
         # We always work with just one record.
@@ -716,8 +697,6 @@ class Panels(CMSModule, Publishable):
         columns = ('title', 'ord', 'modtitle', 'size', 'published', 'content')
         layout = ('ptitle', 'ord', 'mapping_id', 'size', 'content', 'published')
     _LIST_BY_LANGUAGE = True
-    WMI_SECTION = WikingManagementInterface.SECTION_SETUP
-    WMI_ORDER = 500
 
     def panels(self, req, lang):
         panels = []
@@ -775,8 +754,6 @@ class Languages(CMSModule):
     _REFERER = 'lang'
     # Translators: Do not translate this.
     _TITLE_TEMPLATE = _('%(name)s')
-    WMI_SECTION = WikingManagementInterface.SECTION_SETUP
-    WMI_ORDER = 200
 
     def languages(self):
         return [str(r['lang'].value()) for r in self._data.get_rows()]
@@ -871,8 +848,6 @@ class Themes(CMSModule):
                                       for label, fields in self._FIELDS])
         columns = ('name', 'active')
         cb = CodebookSpec(display='name', prefer_display=True)
-    WMI_SECTION = WikingManagementInterface.SECTION_STYLE
-    WMI_ORDER = 100
     # Translators: Button label
     _ACTIONS = (Action(_("Activate"), 'activate', descr=_("Activate this color theme"),
                        enabled=lambda r: r['active'].value() is None, allow_referer=False),
@@ -949,7 +924,8 @@ class Pages(CMSModule):
             # Translators: "Module" is an independent reusable part of a computer program (here a
             # module of Wiking CMS).
             Field('modname', _("Module"), display=_modtitle, prefer_display=True, not_null=False,
-                  enumerator=enum([_m.name() for _m in _modules() if issubclass(_m, Embeddable) \
+                  enumerator=enum([_m.name() for _m in cfg.resolver.available_modules()
+                                   if issubclass(_m, Embeddable) \
                                    and _m not in (EmbeddableCMSModule, CMSExtension)]),
                   descr=_("Select the extension module to embed into the page.  Leave blank for "
                           "an ordinary text page.")),
@@ -1955,8 +1931,6 @@ class Styles(CMSModule):
                   #('tv', _(""))), # television-type devices
                   )
     _REFERER = 'identifier'
-    WMI_SECTION = WikingManagementInterface.SECTION_STYLE
-    WMI_ORDER = 200
 
     def stylesheets(self, req):
         return [lcg.Stylesheet(r['identifier'].value(), uri='/_css/'+r['identifier'].value(),
@@ -2133,9 +2107,6 @@ class Texts(CommonTexts):
     """
     _TEXT_REGISTRAR = 'add_text_label'
     _DB_FUNCTIONS = {'add_text_label': (('1', pd.String(),),)}
-    
-    WMI_SECTION = WikingManagementInterface.SECTION_SETUP
-    WMI_ORDER = 900
 
     def _auto_filled_fields(self):
         def content(req, record, field_id):
@@ -2273,9 +2244,6 @@ class Emails(CommonTexts):
         columns = ('label', 'descr',)
         sorting = (('label', ASC,),)
         layout = ('label', 'descr', 'subject', 'cc', 'content',)
-        
-    WMI_SECTION = WikingManagementInterface.SECTION_SETUP
-    WMI_ORDER = 910
         
     RIGHTS_insert = (Roles.ADMIN,)
     RIGHTS_update = (Roles.ADMIN,)
@@ -2484,9 +2452,6 @@ class EmailSpool(CMSModule):
     # Translators: Description of button for creating a template of an email
     _COPY_DESCR = _("Edit this mail for repeated use")
         
-    WMI_SECTION = WikingManagementInterface.SECTION_USERS
-    WMI_ORDER = 2000
-    
     RIGHTS_list = (Roles.ADMIN,)
     RIGHTS_view = (Roles.ADMIN,)
     RIGHTS_insert = (Roles.ADMIN,)

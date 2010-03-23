@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2006-2009 Brailcom, o.p.s.
+# Copyright (C) 2006-2010 Brailcom, o.p.s.
 # Author: Milan Zamazal
 #
 # This program is free software; you can redistribute it and/or modify
@@ -210,10 +210,8 @@ class CACertificates(Certificates):
                 return ('file', _("This is not a CA certificate."))
         
     _LAYOUT = {'insert': ('file',)}
-    
-    #WMI_SECTION = WikingManagementInterface.SECTION_CERTIFICATES
-    WMI_ORDER = 100
 
+    
 class UserCertificates(Certificates):
     """Management of user certificates, especially for the purpose of authentication."""
 
@@ -254,9 +252,6 @@ class UserCertificates(Certificates):
             if subject is None:
                 return ''
             return subject.email
-            
-    #WMI_SECTION = WikingManagementInterface.SECTION_CERTIFICATES
-    WMI_ORDER = 200
 
     def authentication_certificate(self, uid):
         """Return authentication certificate row of the given user.
