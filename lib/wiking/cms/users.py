@@ -375,7 +375,7 @@ class Users(CMSModule):
             #Field('organization_id', _("Organization"), codebook='Organizations', not_null=False),
             # The value of the following field is a sequence even though its pytis type is
             # string...  But it is only used in AccountInfo.
-            Field('xstate', virtual=True, computer=computer(self._state)),
+            Field('state_info', virtual=True, computer=computer(self._state)),
             )
         def _state(self, record, state, regexpire):
             req = record.req()
@@ -539,7 +539,7 @@ class Users(CMSModule):
                  FieldSet(_("Contact information"), ('email', 'phone', 'address','uri')),
                  FieldSet(_("Others"), ('note',)),
                  FieldSet(_("Account state"), ('state',)),
-                 lambda r: Users.AccountInfo((r['state'].value(),))),
+                 lambda r: Users.AccountInfo(r['state_info'].value())),
         'rights': ('state',),
         }
     # Translators: Button label.
