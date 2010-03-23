@@ -228,7 +228,6 @@ class ApplicationRoles(wiking.PytisModule):
         @return: All user defined roles, i.e. roles defined by the application
           administrators and not the application code.
         """
-        role_sets = RoleSets(cfg.resolver)
         def make_role(row):
             role_id = row['role_id'].value()
             name = row['name'].value()
