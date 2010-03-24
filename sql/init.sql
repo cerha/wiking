@@ -29,7 +29,7 @@ insert into role_sets (role_id, member_role_id) values ('admin', 'mail_admin');
 insert into role_sets (role_id, member_role_id) values ('admin', 'style_admin');
 
 INSERT INTO users (login, password, firstname, surname, nickname, user_, email, state, last_password_change)
-VALUES ('admin', 'wiking', 'Wiking', 'Admin', 'Admin', 'Admin', '-', 'user', '2000-01-01 00:00:00');
+VALUES ('admin', 'wiking', 'Wiking', 'Admin', 'Admin', 'Admin', '-', 'enabled', '2000-01-01 00:00:00');
 
 insert into role_members (role_id, uid) values ('admin', 1);
 
