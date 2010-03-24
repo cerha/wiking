@@ -18,7 +18,7 @@ create table role_members (
        unique (role_id, uid)
 );
 
-alter table users add column state text not null default 'none';
+alter table users add column state text not null default 'new';
 update users set state=role;
 alter table users drop column role;
 
@@ -55,14 +55,17 @@ begin
     exception when unique_violation then
     end;
     execute 'insert into role_users (role_id, uid) values ($1, $2)' using role_id, row.uid;
-    execute 'update users set state=''user'' where uid=$1' using row.uid;
+    execute 'update users set state=''enabled'' where uid=$1' using row.uid;
   end loop;
 end;
 $$ language plpgsql;
 select upgrade17();
 drop function upgrade17();
 
-update users set state='user' where state='cont';
+update users set state='new' where state='none' and regexpire is not null;
+update users set state='unapproved' where state='none';
+update users set state='enabled' where state in ('cont', 'user');
+update users set state='disabled' where state='disa';
 
 alter table email_spool add column role_id name references roles on update cascade on delete cascade;
 update email_spool set role_id=role;

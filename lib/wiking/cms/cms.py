@@ -508,11 +508,12 @@ class Session(PytisModule, wiking.Session):
             # Translators: Dialog title (account in the meaning of user account).
             raise Abort(title, content)
         import wiking.cms.texts
-        if user.disabled():
+        state = user.state()
+        if state == Users.AccountState.DISABLED:
             abort(_("Account disabled"), wiking.cms.texts.disabled)
-        if user.preregistered():
+        elif state == Users.AccountState.NEW:
             abort(_("Account not activated"), wiking.cms.texts.unconfirmed, ActivationForm(uid))
-        if not user.active():
+        elif state == Users.AccountState.UNAPPROVED:
             abort(_("Account not approved"), wiking.cms.texts.unapproved)
     
     def failure(self, req, user, login):

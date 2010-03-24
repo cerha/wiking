@@ -298,41 +298,26 @@ class Users(UserManagementModule):
     management.  By subclassing this module and its inner classes you can
     extend or change behavior of user management in your application.
     
-    There is no easy way to delete a particular user, since that could
-    have many unexpected consequences to other content in the
-    system. Instead, to remove a user from the system, his role is
-    changed to Disabled. His history is thus preserved in other
-    modules, but he can no longer access the system, doesn't figure in
+    There is no easy way to delete a particular user, since that could have
+    unexpected consequences to other content in the system.  Instead, to
+    remove a user from the system, his account is disabled.  User related data
+    are preserved, but he can no longer access the system, doesn't figure in
     the lists of users, doesn't receive any email notifications etc.
 
-    A state is assigned to every user.  The state determines the level of
-    access to the application.  The following state codes, as used in the
-    database table, are defined:
-
-     - C{none}: New users who are registered but haven't confirmed their
-       registration yet.
-     - C{unconfirmed}: New users who are registered, have confirmed their
-       registration, but haven't been confirmed by the user administrator yet.
-     - C{disa}: Users blocked from access to the application, such as deleted
-       users, refused registration requests etc.
-     - C{user}: Users with full access to the applications.
-
-    Note the difference between user states and user roles.  User states define
-    overall access to the application, e.g. whether the user may access the
-    application at all.  User roles are independent of user states and define
-    (among other) access rights to various parts of the application.  When you
-    need to block a user from access to the application completely, you set his
-    state to C{disa}.  When you need to enable or disable user access to a
-    particular application feature, you change his roles.
+    A state is assigned to every user according to L{AccountState} enumeration
+    class.  Note the difference between user states and user roles.  User
+    states define overall access to the application, e.g. whether the user may
+    access the application at all.  User roles are independent of user states
+    and define (among other) access rights to various parts of the
+    application.  When you need to block a user from access to the application
+    completely, you set his state to C{Users.AccountState.DISABLED}.  When you
+    need to enable or disable user access to a particular application feature,
+    you change his roles.
 
     """
     class Spec(Specification):
         title = _("User Management")
         help = _("Manage registered users and their privileges.")
-        _STATES = (('none', _("New account")),
-                   ('unconfirmed', _("Unapproved account")),
-                   ('disa', _("Account disabled")),
-                   ('user', _("Regular account")),)
         def _fullname(self, record, firstname, surname, login):
             if firstname and surname:
                 return firstname + " " + surname
@@ -399,30 +384,45 @@ class Users(UserManagementModule):
                   descr=_("Optional message for the administrator.  If you summarize briefly why "
                           "you register, what role you expect in the system or whom you have "
                           "talked to, this may help in processing your request.")),
-            # Translators: Since when the user is registered. Column heading in a table listing various users.
+            # Translators: Since when the user is registered. Table column heading
+            # and field label for a date/time value.
             Field('since', _("Registered since"), type=DateTime(show_time=False), default=now),
-            # Translators: The state of the user in the system (e.g. Enabled vs Disabled, Registered
-            # vs. Confirmed) Column heading in a table listing various users.
-            Field('state', _("State"), display=self._state_name, prefer_display=True, default='none',
-                  enumerator=enum([code for code, title in self._STATES]),
-                  style=lambda r: r['state'].value() == 'none' and pp.Style(foreground='#a20') \
-                        or None,
-                  descr=_("Select one of the predefined states to grant or retract the user "
-                          "access to the application.")),
+            # Translators: The state of the user account (e.g. Enabled vs Disabled).  Column
+            # heading and field label.
+            Field('state', _("State"), default=self._module.AccountState.NEW,
+                  enumerator=enum(self._module.AccountState.states()),
+                  display=self._module.AccountState.label, prefer_display=True,
+                  style=self._state_style),
             Field('lang'),
             Field('regexpire', default=self._registration_expiry, type=DateTime()),
             Field('regcode', default=self._generate_registration_code),
-            Field('state_info', virtual=True, computer=computer(self._state)),
+            Field('state_info', virtual=True, computer=computer(self._state_info)),
             )
-        def _state(self, record, state, regexpire):
+        def _state_info(self, record, state, regexpire):
             req = record.req()
-            if state == 'disa':
-                texts = (_("The account is blocked.  The user is able to log in, but has no "
-                           "access to protected services until the administrator grants him "
-                           "access rights again."),)
-            elif state != 'none':
-                texts = ()
-            elif regexpire is None:
+            if state == Users.AccountState.NEW:
+                if regexpire > mx.DateTime.now().gmtime():
+                    texts = (_("The activation code was not yet confirmed by the user. Therefore "
+                               "it is not possible to trust that given e-mail address belongs to "
+                               "the person who requested the registration."),
+                             # Translators: %(date)s is replaced by date and time of registration
+                             # expiration.
+                             _("The activation code will expire on %(date)s and the user will "
+                               "not be able to complete the registration anymore.",
+                               date=record['regexpire'].export()))
+                    if req.check_roles(Roles.USER_ADMIN):
+                        texts += _("Use the button \"Resend activation code\" below to remind the "
+                                   "user of his pending registration."),
+                else:
+                    # Translators: %(date)s is replaced by date and time of registration expiration.
+                    texts = _("The registration expired on %(date)s.  The user didn't confirm the "
+                              "activation code sent to the declared e-mail address in time.",
+                              date=record['regexpire'].export()),
+                    if req.check_roles(Roles.USER_ADMIN):
+                        texts += _("The account should be deleted automatically if the server "
+                                   "maintenence script is installed correctly.  Otherwise you can "
+                                   "delete the account manually."),
+            elif state == Users.AccountState.UNAPPROVED:
                 texts = _("The activation code was succesfully confirmed."),
                 if req.check_roles(Roles.USER_ADMIN):
                     texts = (texts[0] +' '+ \
@@ -430,37 +430,23 @@ class Users(UserManagementModule):
                                "belongs to the person who requested the registration."),)
                     texts += _("The user is now able to log in, but still has no rights "
                                "(other than an anonymous user)."),
-                # Translators: In other words, the administrator needs to approve the account first.
-                texts += _("The account now awaits administrator's action to be given "
-                          "access rights."),
-            elif regexpire > mx.DateTime.now().gmtime():
-                texts = (_("The activation code was not yet confirmed by the user. Therefore "
-                           "it is not possible to trust that given e-mail address belongs to "
-                           "the person who requested the registration."),
-                        # Translators: %(date)s is replaced by date and time of registration
-                        # expiration.
-                        _("The activation code will expire on %(date)s and the user will not be "
-                          "able to complete the registration anymore.",
-                          date=record['regexpire'].export()))
-                if req.check_roles(Roles.USER_ADMIN):
-                    texts += _("Use the button \"Resend activation code\" below to remind the "
-                              "user of his pending registration."),
+                texts += _("The account now awaits administrator's action to be approved."),
+            elif state == Users.AccountState.DISABLED:
+                texts = (_("The account is blocked.  The user is able to log in, but has no "
+                           "access to protected services until the administrator enables the "
+                           "account again."),)
             else:
-                # Translators: %(date)s is replaced by date and time of registration expiration.
-                texts = _("The registration expired on %(date)s.  The user didn't confirm the "
-                          "activation code sent to the declared e-mail address in time.",
-                         date=record['regexpire'].export()),
-                if req.check_roles(Roles.USER_ADMIN):
-                    texts += _("The account should be deleted automatically if the server "
-                               "maintenence script is installed correctly.  Otherwise you can "
-                               "delete the account manually."),
+                texts = ()
             return texts
+        def _state_style(self, record):
+            if record['state'].value() in (Users.AccountState.NEW, Users.AccountState.UNAPPROVED):
+                return pp.Style(foreground='#a20')
+            else:
+                return None
         def _check_email(self, email):
             result = wiking.validate_email_address(email)
             if not result[0]:
                 return _("Invalid e-mail address: %s", result[1])
-        def _state_name(self, code):
-            return dict(self._STATES)[code]
         def bindings(self):
             return (Binding('roles', _("User's Groups"), 'UserRoles', 'uid',
                             form=pw.ItemizedView),
@@ -470,28 +456,71 @@ class Users(UserManagementModule):
         sorting = (('surname', ASC), ('firstname', ASC))
         layout = () # Force specific layout definition for each action.
         cb = CodebookSpec(display='user', prefer_display=True)
-        filters = (
-            # Translators: Name of group of users who have access to the system, can use it etc.
-            pp.Filter('active', _("Active users"),
-                      pd.AND(pd.NE('state', pd.Value(pd.String(), 'none')),
-                             pd.NE('state', pd.Value(pd.String(), 'disa')),
-                             pd.EQ('regexpire', pd.Value(pd.DateTime(), None)))),
-            # Translators: Name for a group of users accounts, who were not yet approved by the administrator
-            pp.Filter('inactive', _("Unapproved accounts (pending admin approvals)"),
-                      pd.AND(pd.EQ('state', pd.Value(pd.String(), 'none')),
-                             pd.EQ('regexpire', pd.Value(pd.DateTime(), None)))),
-            # Translators: Name for a group of users which did not confirm their registration yet by
-            # replying to an email with an activation code
-            pp.Filter('unconfirmed', _("Unfinished registration requests (activation code not confirmed)"),
-                      pd.NE('regexpire', pd.Value(pd.DateTime(), None))),
-            # Translators: Name for a group of users who were disabled (made inactive or removed
-            # from the system).
+        def filters(self): return (
+            # Translators: Name of group of users who have full access to the system.
+            pp.Filter('enabled', _("Active users"),
+                      pd.EQ('state', pd.Value(pd.String(), Users.AccountState.ENABLED))),
+            # Translators: Name for a group of users accounts, who were not yet approved by the
+            # administrator.
+            pp.Filter('unapproved', _("Unapproved accounts (pending admin approvals)"),
+                      pd.EQ('state', pd.Value(pd.String(), Users.AccountState.UNAPPROVED))),
+            # Translators: Name for a group of users which did not confirm their registration yet
+            # by replying to an email with an activation code.
+            pp.Filter('new', _("Unfinished registration requests (activation code not confirmed)"),
+                      pd.EQ('state', pd.Value(pd.String(), Users.AccountState.NEW))),
+            # Translators: Name for a group of users whose accounts were blocked.
             pp.Filter('disabled', _("Disabled users"),
-                      pd.EQ('state', pd.Value(pd.String(), 'disa'))),
+                      pd.EQ('state', pd.Value(pd.String(), Users.AccountState.DISABLED))),
             # Translators: Accounts as in user accounts (computer terminology).
             pp.Filter('all', _("All accounts"), None),
             )
-        default_filter = 'active'
+        default_filter = 'enabled'
+        actions = (
+            Action(_("Change password"), 'passwd', descr=_("Change user's password")),
+            # Translators: Button label. Computer terminology. Use common word and form.
+            Action(_("Enable"), 'enable', descr=_("Enable this account"),
+                   enabled=lambda r: r['state'].value() != Users.AccountState.ENABLED),
+            # Translators: Button label. Computer terminology. Use common word and form.
+            Action(_("Disable"), 'disable', descr=_("Disable this account"),
+                   enabled=lambda r: r['state'].value() == Users.AccountState.ENABLED),
+            Action(_("Resend activation code"), 'regreminder', descr=_("Re-send registration mail"),
+                   visible=lambda r: r['state'].value() == Users.AccountState.NEW),
+            Action(_("Remove"), 'delete', descr=_("Remove the account completely"),
+                   allow_referer=False,
+                   visible=lambda r: r['state'].value() in (Users.AccountState.NEW,
+                                                            Users.AccountState.UNAPPROVED)),
+            )
+        
+    class AccountState(object):
+        """Available user accout states enumeration.
+        
+        A state is assigned to every user account.  The available account
+        state codes are defined by this class's public constants.
+        
+        """
+        NEW = 'new'
+        """New users who are registered but haven't confirmed their registration yet."""
+        UNAPPROVED = 'unapproved'
+        """New users who are registered, have confirmed their registration,
+           but haven't been approved by the user administrator yet."""
+        DISABLED = 'disabled'
+        """Users blocked from access to the application, such as deleted
+           users, refused registration requests etc."""
+        ENABLED = 'enabled'
+        """Users with full access to the application."""
+        
+        _STATES = {NEW: _("New account"),
+                   UNAPPROVED: _("Unapproved account"),
+                   DISABLED: _("Account disabled"),
+                   ENABLED: _("Active account")}
+        
+        @classmethod
+        def states(cls):
+            return cls._STATES.keys()
+
+        @classmethod
+        def label(cls, state):
+            return cls._STATES[state]
         
     class User(wiking.User):
         """CMS specific User class."""
@@ -504,38 +533,10 @@ class Users(UserManagementModule):
             wiking.User.__init__(self, login, **kwargs)
             self._state = state
         
-        def disabled(self):
-            """Return true iff the user is currently disabled.
-            @deprecated: Use L{state} and compare the resulting value with C{'disa'}.
-            """
-            return self.state() == 'disa'
-
-        def preregistered(self):
-            """Return true iff the user hasn't confirmed his registration code yet.
-            @deprecated: Use L{state} and compare the resulting value with C{'none'}.
-            """
-            return self.state() == 'none'
-
-        def active(self):
-            """Return true iff the user is active.
-            @deprecated: Use L{state} and compare the resulting value with C{'user'}.
-            """
-            return self.state() == 'user'
-
-        def roles(self):
-            if self.disabled() or (not self.active() and not self.preregistered()):
-                return ()
-            roles = wiking.User.roles(self)
-            if self.preregistered():
-                roles = roles + (Roles.REGISTERED,)
-            elif self.active():
-                roles = roles + (Roles.USER,)
-            return roles
-
         def state(self):
             """
             @rtype: string
-            @return: User's account state.
+            @return: User's account state; one of L{Users.AccountState} constans.
             """
             return self._state
 
@@ -577,7 +578,6 @@ class Users(UserManagementModule):
                  FieldSet(_("Others"), ('note',)),
                  FieldSet(_("Account state"), ('state',)),
                  lambda r: Users.AccountInfo(r['state_info'].value())),
-        'rights': ('state',),
         }
     # Translators: Button label.
     _INSERT_LABEL = _("New user")
@@ -587,11 +587,6 @@ class Users(UserManagementModule):
     _UPDATE_DESCR = _("Modify user's record")
     RIGHTS_insert = (Roles.ANYONE,)
     RIGHTS_update = (Roles.USER_ADMIN, Roles.OWNER)
-    RIGHTS_delete = ()
-
-    @staticmethod
-    def _embed_binding_condition(row):
-        return pd.NE('state', pd.Value(pd.String(), 'none'))
 
     def _layout(self, req, action, record=None):
         if not self._LAYOUT.has_key(action): # Allow overriding this layout in derived classes.
@@ -649,6 +644,11 @@ class Users(UserManagementModule):
         else:
             return super(Users, self)._validate(req, record, layout)
         
+    def _default_actions_last(self, req, record):
+        # Omit the default `delete' action to allow its redefinition in Spec.actions.
+        return tuple([a for a in super(Users, self)._default_actions_last(req, record)
+                      if a.name() != 'delete'])
+    
     def _base_uri(self, req):
         if req.path[0] == '_registration':
             return '_registration'
@@ -659,34 +659,6 @@ class Users(UserManagementModule):
             return None
         return super(Users, self)._insert_subtitle(req)
         
-    def _default_actions_first(self, req, record):
-        actions = super(Users, self)._default_actions_first(req, record) + \
-                  (Action(_("Access rights"), 'rights', descr=_("Change access rights"),
-                          enabled=lambda r: r['regexpire'].value() is None),)
-        if record and record['state'].value() == 'none':
-            # Translators: Button label. Computer terminology. Use common word and form.
-            actions = (Action(_("Enable"), 'enable', descr=_("Enable this account"),
-                              enabled=lambda r: r['regexpire'].value() is None),
-                       ) + actions
-        if record and record['regexpire'].value() is not None:
-            # Currently inactive due to limited access rights (is this action really needed?).
-            # Translators: Confirm button
-            actions = (Action(_("Confirm"), 'admin_confirm',
-                              descr=_("Confirm the account without checking the activation code")),
-                       ) + actions
-        if req.user():
-            actions += (Action(_("Change password"), 'passwd', descr=_("Change user's password")),)
-        return actions
-    
-    def _actions(self, req, record):
-        actions = list(super(Users, self)._actions(req, record))
-        if req.path[0] == '_registration':
-            actions = [a for a in actions if a.name() != 'list']
-        if record is not None and record['regexpire'].value() is not None:
-            actions.append(Action(_("Resend activation code"), 'regreminder',
-                                  descr=_("Re-send registration mail")))
-        return actions
-
     def _make_registration_email(self, req, record):
         base_uri = req.module_uri('Registration') or '/_wmi/'+ self.name()
         server_hostname = req.server_hostname()
@@ -729,25 +701,6 @@ class Users(UserManagementModule):
             req.message(_("Activation code was sent to %s.", record['email'].value()))
             return True
 
-    def _redirect_after_update(self, req, record):
-        orig_row = record.original_row()
-        if record['regexpire'].value() is None \
-               and (orig_row['state'].value() == 'none' and record['state'].value() != 'none' \
-                    or orig_row['regexpire'].value() is not None):
-            req.message(_("The account was enabled."))
-            text = _("Your account at %(uri)s has been enabled. "
-                     "Please log in with username '%(login)s' and your password.",
-                     uri=req.server_uri(), login=record['login'].value()) + "\n"
-            err = send_mail(record['email'].value(), _("Your account has been enabled."),
-                            text, lang=record['lang'].value())
-            if err:
-                req.message(_("Failed sending e-mail notification:") +' '+ err, type=req.ERROR)
-            else:
-                req.message(_("E-mail notification has been sent to:")+' '+record['email'].value())
-            return self.action_view(req, record)
-        else:
-            return super(Users, self)._redirect_after_update(req, record)
-    
     def _check_registration_code(self, req):
         """Check whether given request contains valid login and activation code.
 
@@ -767,7 +720,7 @@ class Users(UserManagementModule):
             record = self._record(req, row)
         if record is None:
             raise BadRequest()
-        if not record['regexpire'].value() and record['state'] == 'none':
+        if not record['state'] == Users.AccountState.NEW:
             raise BadRequest(_("User registration already confirmed."))
         code = record['regcode'].value()
         if not code or code != req.param('regcode'):
@@ -802,24 +755,6 @@ class Users(UserManagementModule):
                            "Your account now awaits administrator's approval."))]
         return content
     
-
-    def action_admin_confirm(self, req, record):
-        """Force registration confirmation without checking activation code."""
-        if req.param('submit'):
-            record.update(regexpire=None)
-            req.message(_("The account was confirmed.  Grant the access rights now."))
-            return self.action_view(req, record)
-        else:
-            form = self._form(pw.ShowForm, req, record, layout=self._layout(req, 'view', record))
-            actions = (Action(_("Confirm"), 'admin_confirm', submit=1),
-                       # Translators: Back button label. Standard computer terminology.
-                       Action(_("Back"), 'view'))
-            action_menu = self._action_menu(req, record, actions)
-            req.message(_("Please confirm the account only if you are sure that "
-                          "the e-mail address belongs to given user."))
-            return self._document(req, (form, action_menu), record)
-    RIGHTS_admin_confirm = () #Roles.USER_ADMIN,)
-
     def action_confirm(self, req):
         """Confirm the activation code sent by e-mail to make user registration valid.
 
@@ -827,27 +762,54 @@ class Users(UserManagementModule):
         
         """
         record = self._check_registration_code(req)
-        record.update(regexpire=None)
+        record.update(state=self.AccountState.UNAPPROVED)
         self._send_admin_approval_mail(req, record)
         return Document(_("Registration confirmed"),
                         content=self._confirmation_success_content(req, record))
     RIGHTS_confirm = (Roles.ANYONE,)
 
-    def action_enable(self, req, record):
-        state = record['state'].value()
-        if state == 'none':
-            state = 'user'
+    def _change_state(self, req, record, state):
         try:
-            record.update(state=state, regexpire=None)
+            record.update(state=state)
         except pd.DBException, e:
             req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
-        return self._redirect_after_update(req, record)
-    RIGHTS_enable = (Roles.USER_ADMIN,)
+        else:
+            if state == self.AccountState.ENABLED:
+                req.message(_("The account was enabled."))
+                email = record['email'].value()
+                text = _("Your account at %(uri)s has been enabled. "
+                         "Please log in with username '%(login)s' and your password.",
+                         uri=req.server_uri(), login=record['login'].value()) + "\n"
+                err = send_mail(email, _("Your account has been enabled."),
+                                text, lang=record['lang'].value())
+                if err:
+                    req.message(_("Failed sending e-mail notification:") +' '+ err, type=req.ERROR)
+                else:
+                    req.message(_("E-mail notification has been sent to:") +' '+ email)
+            elif state == self.AccountState.DISABLED:
+                req.message(_("The account was disabled."))
+        return self.action_view(req, record)
     
-    def action_rights(self, req, record):
-        # TODO: Enable table layout for this form.
-        return self.action_update(req, record, action='rights')
-    RIGHTS_rights = (Roles.USER_ADMIN,)
+    def action_enable(self, req, record):
+        if record['state'].value() == self.AccountState.NEW and not req.param('submit'):
+            if record['regexpire'].value() <= mx.DateTime.now().gmtime():
+                req.message(_("The registration expired on %(date)s.",
+                              date=record['regexpire'].export()), type=req.WARNING)
+            form = self._form(pw.ShowForm, req, record, layout=self._layout(req, 'view', record))
+            actions = (Action(_("Continue"), 'enable', submit=1),
+                       # Translators: Back button label. Standard computer terminology.
+                       Action(_("Back"), 'view'))
+            action_menu = self._action_menu(req, record, actions)
+            req.message(_("The registration code was not confirmed by the user!"))
+            req.message(_("Please enable the account only if you are sure that "
+                          "the e-mail address belongs to given user."))
+            return self._document(req, (form, action_menu), record)
+        return self._change_state(req, record, self.AccountState.ENABLED)
+    RIGHTS_enable = (Roles.USER_ADMIN,)
+
+    def action_disable(self, req, record):
+        return self._change_state(req, record, self.AccountState.DISABLED)
+    RIGHTS_disable = (Roles.USER_ADMIN,)
     
     def action_passwd(self, req, record):
         return self.action_update(req, record, action='passwd')
@@ -869,9 +831,9 @@ class Users(UserManagementModule):
         role_ids = self._module('RoleMembers').user_role_ids(uid)
         role_sets_module = self._module('RoleSets')
         roles = [Roles.AUTHENTICATED]
-        if record['state'].value() != 'none':
+        if record['state'].value() != self.AccountState.NEW:
             roles.append(Roles.REGISTERED)
-        if record['state'].value() == 'user':
+        if record['state'].value() == self.AccountState.ENABLED:
             roles.append(Roles.USER)
         roles_instance = self.Roles()
         for role_id in role_ids:
@@ -944,7 +906,7 @@ class Users(UserManagementModule):
           email -- if not 'None', only users registered with given e-mail
             address (string) are returned
           state -- if not 'None', only users with the given state (one of the
-            state string codes) are returned
+            state codes defined by L{Users.AccountState}) are returned
           role -- if not 'None', only users belonging to the given role ('Role'
             instance) are returned
 
@@ -1002,7 +964,7 @@ class Users(UserManagementModule):
         """
         assert role is None or isinstance(role, basestring)
         String = pd.String()
-        condition = pd.EQ('state', pd.Value(String, 'user'))
+        condition = pd.EQ('state', pd.Value(String, self.AccountState.ENABLED))
         if role is not None:
             user_ids = self._module('RoleMembers').user_ids(role)
         user_rows = self._data.get_rows()
@@ -1029,11 +991,12 @@ class ActiveUsers(Users, EmbeddableCMSModule):
         table = 'users'
         title = _("Active users")
         help = _("Listing of all active user accounts.")
-        condition = pd.AND(pd.NE('state', pd.Value(pd.String(), 'none')),
-                           pd.EQ('regexpire', pd.Value(pd.DateTime(), None)))
+        condition = pd.EQ('state', pd.Value(pd.String(), Users.AccountState.ENABLED))
         filters = ()
+        columns = ('fullname', 'nickname', 'email', 'since')
         default_filter = None
     _INSERT_LABEL = lcg.TranslatableText("New user registration", _domain='wiking')
+
 
 
 class Registration(Module, ActionHandler):
@@ -1061,6 +1024,7 @@ class Registration(Module, ActionHandler):
                 g.submit(_("Submit"), cls='submit'),)
             return g.form(controls, method='POST', cls='password-reminder-form') #+ \
                    #g.p(_(""))
+    RIGHTS_list = ()
     
     def _default_action(self, req, **kwargs):
         return 'view'

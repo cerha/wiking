@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2008 Brailcom, o.p.s.
+# Copyright (C) 2008, 2010 Brailcom, o.p.s.
 #
 # COPYRIGHT NOTICE
 #
@@ -37,7 +37,7 @@ def open_database():
 def delete_expired_registrations():
     db_connection = open_database()
     db_cursor = db_connection.cursor()
-    sql_query = "delete from users where regexpire < now()"
+    sql_query = "delete from users where state='new' and regexpire < now()"
     db_cursor.execute(sql_query)
 
 def run():
