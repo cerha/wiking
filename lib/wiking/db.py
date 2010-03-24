@@ -708,7 +708,15 @@ class PytisModule(Module, ActionHandler):
             return pd.AND(*conds)
         else:
             return None
-    
+        
+    def _binding_arguments(self, binding, record):
+        function = binding.arguments()
+        if function:
+            arguments = function(record)
+        else:
+            arguments = None
+        return arguments
+        
     def _rows(self, req, lang=None, condition=None, limit=None):
         return self._data.get_rows(sorting=self._sorting, limit=limit,
                                    condition=self._condition(req, lang=lang, condition=condition))
@@ -827,7 +835,8 @@ class PytisModule(Module, ActionHandler):
             binding_uri = ''
         content = self._form(form, req, uri=uri, columns=columns, binding_uri=binding_uri,
                              condition=self._condition(req, condition=condition, lang=lang),
-                             filters=self._filters(req))
+                             filters=self._filters(req),
+                             arguments=self._binding_arguments(binding, record))
         if binding_uri:
             menu = self._action_menu(req, uri=binding_uri)
             if menu:
