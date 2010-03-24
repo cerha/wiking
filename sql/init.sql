@@ -31,7 +31,7 @@ insert into role_sets (role_id, member_role_id) values ('admin', 'style_admin');
 INSERT INTO users (login, password, firstname, surname, nickname, user_, email, state, last_password_change)
 VALUES ('admin', 'wiking', 'Wiking', 'Admin', 'Admin', 'Admin', '-', 'user', '2000-01-01 00:00:00');
 
-insert into role_users (role_id, uid) values ('admin', 1);
+insert into role_members (role_id, uid) values ('admin', 1);
 
 INSERT INTO themes ("name", foreground, background, border, heading_fg, heading_bg, heading_line,
     frame_fg, frame_bg, frame_border, link, link_visited, link_hover, meta_fg, meta_bg, help,
