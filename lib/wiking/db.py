@@ -419,8 +419,9 @@ class PytisModule(Module, ActionHandler):
 
     def _action_menu(self, req, record=None, actions=None, uri=None, **kwargs):
         actions = [action for action in actions or self._actions(req, record)
-                   if isinstance(action, Action) and action.name() is not None and \
-                   self._application.authorize(req, self, action=action.name(), record=record)]
+                   if isinstance(action, Action) and action.name() is not None \
+                   and (action.visible() is None or record is None or action.visible()(record)) \
+                   and self._application.authorize(req, self, action=action.name(), record=record)]
         if not actions:
             return None
         if uri is None:

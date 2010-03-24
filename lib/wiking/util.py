@@ -998,8 +998,11 @@ class Action(pytis.presentation.Action):
     and optionally 'record' argument with a 'PytisModule.Record' instance if the action context is
     record (current pytis row).
 
+    Apart from that, Wiking actions also define additional constructor arguments to support a few
+    extended features.  See L{__init__()} for more details.
+
     """
-    def __init__(self, title, id, handler=None, allow_referer=True, **kwargs):
+    def __init__(self, title, id, handler=None, allow_referer=True, visible=None, **kwargs):
         """Arguments:
 
           id -- string identifier determining the Wiking module's method to be used to handle
@@ -1007,6 +1010,10 @@ class Action(pytis.presentation.Action):
           allow_referer -- allow using record identifier (referer column value) in the URI of this
             action.  It is not desirable to use full record URI for certain actions -- for example
             'delete' would end up on an invalid URI after the action is performed.
+          visible -- function of one argument determining action visibility in the current
+            context.  The function receives a record as argument and returns True iff the action
+            should be visible.  This is the same as the `enabled' argument defined by the parent
+            class, but `enabled' makes the action only inactive, but still visible.
 
         All other arguments have the same meaning as in the parent class.  The argument 'handler'
         is currently not supported by Wiking and the argument `context' can currently only be set
@@ -1017,10 +1024,14 @@ class Action(pytis.presentation.Action):
         if not handler:
             handler = lambda r: None
         self._allow_referer = allow_referer
+        self._visible = visible
         super(Action, self).__init__(id, title, handler, **kwargs)
 
     def allow_referer(self):
         return self._allow_referer
+
+    def visible(self):
+        return self._visible
 
 
 from pytis.data.dbapi import DBAPIData
