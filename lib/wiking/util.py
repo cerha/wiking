@@ -1115,6 +1115,7 @@ class Specification(pp.Specification):
         return instance
 
     def __init__(self, module, resolver):
+        self._module = module
         if self.table is None:
             self.table = pytis.util.camel_case_to_lower(module.name(), '_')
         actions = list(self.actions)
