@@ -238,7 +238,7 @@ class ApplicationRoles(UserManagementModule):
             # Translators: Form field label.
             pp.Field('role_id', _("Identifier"), editable=computer(self._editable)),
             # Translators: Form field label, noun.
-            pp.Field('name', _("Name"), editable=computer(self._editable)),
+            pp.Field('name', _("Name"), not_null=True, editable=computer(self._editable)),
             pp.Field('xname', _("Name"), computer=computer(self._xname_computer), virtual=True),
             # Translators: Form field label, adjective.
             pp.Field('system', _("System"), default=False, editable=pp.Editable.NEVER),
@@ -251,7 +251,10 @@ class ApplicationRoles(UserManagementModule):
             return row['name'].value() or self._xname(row['role_id'].value())
         def _xname(self, role_id):
             if self._ROLES is not None:
-                return self._ROLES[role_id].name()
+                try:
+                    return self._ROLES[role_id].name()
+                except KeyError:
+                    return None
             else:
                 return None
         columns = ('xname', 'role_id', 'system')
