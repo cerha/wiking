@@ -68,12 +68,12 @@ begin
   end loop;
   return;
 end;
-$$ language plpgsql;
+$$ language plpgsql stable;
 
 create or replace function unrelated_roles (role_id name) returns setof roles as $$
 select * from roles where roles.role_id not in (select expanded_role($1)) and
                           $1 not in (select expanded_role(roles.role_id));
-$$ language sql;
+$$ language sql stable;
 
 create table users (
 	uid serial primary key,
