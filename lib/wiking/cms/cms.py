@@ -208,7 +208,6 @@ class CMSModule(PytisModule, RssModule, Panelizable):
     RIGHTS_view = (Roles.ANYONE,)
     RIGHTS_list = (Roles.ANYONE,)
     RIGHTS_rss  = (Roles.ANYONE,)
-    RIGHTS_subpath = (Roles.ANYONE,)
     RIGHTS_insert    = (Roles.ADMIN,)
     RIGHTS_update    = (Roles.ADMIN,)
     RIGHTS_delete    = (Roles.ADMIN,)
@@ -1077,6 +1076,22 @@ class Pages(ContentManagementModule):
         req.page = kwargs.get('record')
         return super(Pages, self)._handle(req, action, **kwargs)
         
+    def _handle_subpath(self, req, record):
+        modname = record['modname'].value()
+        if modname is not None:
+            binding = self._embed_binding(modname)
+            # Modules with bindings are handled in the parent class method.
+            if not binding:
+                module = self._module(modname)
+                if isinstance(module, RequestHandler):
+                    try:
+                        return req.forward(module)
+                    except NotFound:
+                        # Don't allow further processing if unresolved_path was already consumed. 
+                        if not req.unresolved_path:
+                            raise
+        return super(Pages, self)._handle_subpath(req, record)
+
     def _resolve(self, req):
         if req.wmi:
             return super(Pages, self)._resolve(req)
@@ -1266,22 +1281,6 @@ class Pages(ContentManagementModule):
         content.append(self._action_menu(req, record, help='/_doc/wiking/cms/pages', cls='actions separate'))
         resources = [a.resource() for a in attachments]
         return self._document(req, content, record, resources=resources)
-
-    def action_subpath(self, req, record):
-        modname = record['modname'].value()
-        if modname is not None:
-            binding = self._embed_binding(modname)
-            # Modules with bindings are handled in the parent class method.
-            if not binding:
-                module = self._module(modname)
-                if isinstance(module, RequestHandler):
-                    try:
-                        return req.forward(module)
-                    except NotFound:
-                        # Don't allow further processing if unresolved_path was already consumed. 
-                        if not req.unresolved_path:
-                            raise
-        return super(Pages, self).action_subpath(req, record)
 
     def action_rss(self, req, record):
         modname = record['modname'].value()

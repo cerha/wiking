@@ -572,12 +572,6 @@ class PytisModule(Module, ActionHandler):
         """
         return None
     
-    def _action(self, req, record=None):
-        if record is not None and req.unresolved_path:
-            return 'subpath'
-        else:
-            return super(PytisModule, self)._action(req, record=record)
-
     def _default_action(self, req, record=None):
         if record is None:
             return 'list'
@@ -725,6 +719,7 @@ class PytisModule(Module, ActionHandler):
     def _handle(self, req, action, **kwargs):
         record = kwargs.get('record')
         if record is not None:
+            # Handle Pytis redirection.
             redirect = self._view.redirect()
             if redirect:
                 module = redirect(record)
@@ -736,7 +731,27 @@ class PytisModule(Module, ActionHandler):
                     else:
                         req.unresolved_path = list(req.path)
                     return req.forward(self._module(module), pytis_redirect=True)
+            # Handle request to a subpath (pytis bindings are represented by request uri paths).
+            if req.unresolved_path:
+                return self._handle_subpath(req, record)
         return super(PytisModule, self)._handle(req, action, **kwargs)
+
+    def _handle_subpath(self, req, record):
+        for binding in self._bindings(req, record):
+            if req.unresolved_path[0] == binding.id():
+                del req.unresolved_path[0]
+                # TODO: respect the binding condition in the forwarded module.
+                module = self._module(binding.name())
+                return req.forward(module, binding=binding, record=record,
+                                   title=self._document_title(req, record))
+        if req.unresolved_path[0] in [b.id() for b in self._view.bindings()]:
+            # If a binding is present in `view.bindings()', but not in
+            # self._bindings(), it is disabled (its `enabled' function
+            # returns False.  Thus the URI is valid, but not accessible
+            # for some reason.
+            raise Forbidden()
+        else:
+            raise NotFound()
 
     def _binding_enabled(self, binding, record):
         return 
@@ -906,19 +921,6 @@ class PytisModule(Module, ActionHandler):
         content = (list(self._add_action_menu((form,), req, record)) +
                    self._related_content(req, record))
         return self._document(req, content, record, err=err, msg=msg)
-
-    def action_subpath(self, req, record):
-        for binding in self._bindings(req, record):
-            if req.unresolved_path[0] == binding.id():
-                del req.unresolved_path[0]
-                # TODO: respect the binding condition in the forwarded module.
-                module = self._module(binding.name())
-                return req.forward(module, binding=binding, record=record,
-                                   title=self._document_title(req, record))
-        if req.unresolved_path[0] in [b.id() for b in self._view.bindings()]:
-            raise Forbidden()
-        else:
-            raise NotFound()
 
     # ===== Action handlers which modify the database =====
 
