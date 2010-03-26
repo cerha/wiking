@@ -58,6 +58,23 @@ $$ language plpgsql;
 create trigger role_sets_trigger_after after insert or update or delete on role_sets
 for each statement execute procedure role_sets_trigger_after();
 
+create or replace function expanded_role (role_id name) returns setof name as $$
+declare
+  row record;
+begin
+  return next role_id;
+  for row in select member_role_id from role_sets where role_sets.role_id=role_id loop
+    return query select expanded_role (row.member_role_id);
+  end loop;
+  return;
+end;
+$$ language plpgsql;
+
+create or replace function unrelated_roles (role_id name) returns setof roles as $$
+select * from roles where roles.role_id not in (select expanded_role($1)) and
+                          $1 not in (select expanded_role(roles.role_id));
+$$ language sql;
+
 create table users (
 	uid serial primary key,
 	login varchar(32) unique not null,
@@ -137,18 +154,6 @@ create or replace rule session_log_insert as
             returning log_id, session_id, uid, login, success, NULL::boolean,
 	    	      start_time, NULL::interval, ip_address, user_agent, referer;
 );
-
-create or replace function expanded_role (role_id name) returns setof name as $$
-declare
-  row record;
-begin
-  return next role_id;
-  for row in select member_role_id from role_sets where role_sets.role_id=role_id loop
-    return query select expanded_role (row.member_role_id);
-  end loop;
-  return;
-end;
-$$ language plpgsql;
 
 -------------------------------------------------------------------------------
 
