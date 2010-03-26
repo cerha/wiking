@@ -10,6 +10,58 @@ create table role_sets (
        member_role_id name not null references roles on update cascade on delete cascade,
        unique (role_id, member_role_id)
 );
+create or replace function role_sets_cycle_check () returns bool
+as '    connections = {}
+    unvisited = {}
+    for row in plpy.execute("select role_id, member_role_id from role_sets"):
+        role_id, member_role_id = row[''role_id''], row[''member_role_id'']
+        edges = connections.get(role_id)
+        if edges is None:
+            edges = connections[role_id] = []
+            unvisited[role_id] = True
+        edges.append(member_role_id)
+    def dfs(node):
+        unvisited[node] = False
+        for next in connections[node]:
+            status = unvisited.get(next)
+            if status is None:
+                continue
+            if status is False or not dfs(next):
+                return False
+        del unvisited[node]
+        return True
+    while unvisited:
+        if not dfs(unvisited.keys()[0]):
+            return False
+    return True
+' language plpythonu;
+create or replace function role_sets_trigger_after() returns trigger as $$
+begin
+  if tg_op != 'DELETE' and not role_sets_cycle_check() then
+    raise exception 'cycle in role sets';
+  end if;
+  return null;
+end;
+$$ language plpgsql;
+create trigger role_sets_trigger_after after insert or update or delete on role_sets
+for each statement execute procedure role_sets_trigger_after();
+
+create or replace function expanded_role (role_id name) returns setof name as $$
+declare
+  row record;
+begin
+  return next role_id;
+  for row in select member_role_id from role_sets where role_sets.role_id=role_id loop
+    return query select expanded_role (row.member_role_id);
+  end loop;
+  return;
+end;
+$$ language plpgsql;
+
+create or replace function unrelated_roles (role_id name) returns setof roles as $$
+select * from roles where roles.role_id not in (select expanded_role($1)) and
+                          $1 not in (select expanded_role(roles.role_id));
+$$ language sql;
  
 create table role_members (
        role_member_id serial primary key,
