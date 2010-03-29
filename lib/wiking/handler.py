@@ -91,7 +91,7 @@ class Handler(object):
             except Done:
                 return req.done()
             except Redirect, r:
-                return req.redirect(r.uri(), permanent=r.permanent())
+                return req.redirect(r.uri(), args=r.args(), permanent=r.permanent())
             except Exception, e:
                 # Try to return a nice error document produced by the exporter.
                 try:
@@ -103,7 +103,7 @@ class Handler(object):
         except Done:
             return req.done()
         except Redirect, r:
-            return req.redirect(r.uri(), permanent=r.permanent())
+            return req.redirect(r.uri(), args=r.args(), permanent=r.permanent())
         except Exception, e:
             # If error document export fails, return a minimal error page.  It is reasonable to
             # assume, that if RequestError handling fails, somethong is wrong with the exporter and

@@ -268,27 +268,49 @@ class Redirect(Exception):
     redirection response to the client (setting the appropriate HTTP headers
     and return codes).
 
+    This class results in temporary redirection.  See 'PermanentRedirect' if
+    you need a permanent redirection.
+
     """
-    def __init__(self, uri, permanent=False):
+    _PERMANENT = False
+    
+    def __init__(self, uri, **kwargs):
         """Arguments:
+        
           uri -- redirection target URI as a string.  May be relative to the
             current request server address or absolute (beginning with
             'http://' or 'https://').  Relative URI is automatically prepended
             by current server URI, since HTTP specification requires absolute
-            URIs.
-          permanent -- boolean flag indicatnig whether this is a permanent (moved
-            permanently) or temporary (moved temporarily) redirect according HTTP specs.
+            URIs.  The URI should not contain any encoded query arguments.  If
+            needed, they should be passed separately as additional keyword
+            arguments to the constructor call.
             
         """
         self._uri = uri
-        self._permanent = permanent
+        self._args = kwargs
 
     def uri(self):
+        """Return the redirection target URI."""
         return self._uri
     
-    def permanent(self):
-        return self._permanent
+    def args(self):
+        """Return the dictionary of query arguments to be encoded to the URI."""
+        return self._args
 
+    def permanent(self):
+        """Return true if the redirection is permanent according to HTTP specification."""
+        return self._PERMANENT
+
+    
+class PermanentRedirect(Redirect):
+    """Exception class for permanent HTTP redirection.
+
+    Same as the parent class, but results in permanent redirection according to
+    HTTP specification.
+    
+    """
+    _PERMANENT = True
+    
         
 class Done(Exception):
     """Exception class for finishing request processing.
@@ -1551,27 +1573,7 @@ def cmp_versions(v1, v2):
 _ABS_URI_MATCHER = re.compile(r'^((https?|ftp)://[^/]+)(.*)$')
 
 def make_uri(base, *args, **kwargs):
-    """Return a URI constructed from given base URI and args.
-
-    Arguments:
-    
-      base -- base URI.  May be a relative path, such as '/xx/yy', absolute URI, such as
-        'http://host.domain.com/xx/yy' or a mailto URI, such as 'mailto:name@domain.com'.
-
-      *args -- pairs (NAME, VALUE) representing arguments appended to base uri in the order in
-         which they appear.
-         
-      **kwargs -- keyword arguments representing additional arguments to append to the URI.  Use
-        'kwargs' if you don't care about the order of arguments in the returned URI, otherwise use
-        'args'.
-
-    The URI and the arguments may be unicode strings.  All strings are properly encoded in the
-    returned URI.
-
-    """
-    # TODO: The string passed to urllib.quote must be already encoded, but we don't know which
-    # encoding will be used in the context, where the URI is used.  We just rely on the fact, thet
-    # LCG uses UTF-8.
+    """Deprecated: Use 'Request.make_uri()' instead."""
     if base.startswith('mailto:'):
         uri = base
     else:

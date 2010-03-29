@@ -52,6 +52,7 @@ class Request(pytis.web.Request):
     """Mod_python request wrapper implementing the pytis request interface."""
     
     _UNIX_NEWLINE = re.compile("(?<!\r)\n")
+    _ABS_URI_MATCHER = re.compile(r'^((https?|ftp)://[^/]+)(.*)$')
     
     def __init__(self, req, encoding='utf-8'):
         self._req = req
@@ -302,7 +303,7 @@ class Request(pytis.web.Request):
             f.close()
         return apache.OK        
 
-    def redirect(self, uri, permanent=False):
+    def redirect(self, uri, args=(), permanent=False):
         """Send an HTTP redirection response to the browser.
 
         Arguments:
@@ -310,7 +311,13 @@ class Request(pytis.web.Request):
             current request server address or absolute if it begins with
             'http://' or 'https://'.  Relative URI is automatically prepended
             by current server URI, since HTTP specification requires absolute
-            URIs.
+            URIs.  The uri may not include any query arguments encoded within
+            it.  If needed, the arguments must be passed separately using the
+            'args' argument.
+          args -- URI arguments to be encoded to the final redirection URI.
+            The value may by a tuple of (NAME, VALUE) pairs or a dictionary.
+            All conditions defined by 'make_uri()' apply for uri argument
+            encoding.
           permanent -- boolean flag indicatnig whether this is a permanent
             (moved permanently) or temporary (moved temporarily) redirect
             according to HTTP specification.
@@ -331,11 +338,58 @@ class Request(pytis.web.Request):
             if not uri.startswith('/'):
                 uri = '/' + uri
             uri = self.server_uri(current=True) + uri
+        if isinstance(args, tuple):
+            uri = self.make_uri(uri, *args)
+        else:
+            uri = self.make_uri(uri, **args)
         self.set_header('Location', uri)
         self.write("<html><head><title>Redirected</title></head>"
                    "<body>Your request has been redirected to "
                    "<a href='"+uri+"'>"+uri+"</a>.</body></html>")
         return apache.OK
+
+    def make_uri(self, base_uri, *args, **kwargs):
+        """Return a URI constructed from given base URI and args.
+
+        Arguments:
+        
+          base_uri -- base URI.  May be a relative path, such as '/xx/yy', absolute
+            URI, such as 'http://host.domain.com/xx/yy' or a mailto URI, such
+            as 'mailto:name@domain.com'.
+
+          *args -- pairs (NAME, VALUE) representing arguments appended to
+            'base_uri' in the order in which they appear.  The first positional
+            argument may also be a string representing an anchor name.  If
+            that's the case, the anchor is appended to 'base_uri' after a '#'
+            sign and the first argument is not considered to be a (NAME, VALUE)
+            pair.
+          
+          **kwargs -- keyword arguments representing additional arguments to
+            append to the URI.  Use 'kwargs' if you don't care about the order
+            of arguments in the returned URI, otherwise use 'args'.
+
+        If any of 'args' or 'kwargs' VALUE is None, the argument is omitted.
+            
+        The URI and the arguments may be unicode strings.  All strings are
+        properly encoded in the returned URI.
+
+        """
+        if base_uri.startswith('mailto:'):
+            uri = base_uri
+        else:
+            match = self._ABS_URI_MATCHER.match(base_uri)
+            if match:
+                uri = match.group(1) + urllib.quote(match.group(3).encode(self._encoding))
+            else:
+                uri = urllib.quote(base_uri.encode(self._encoding))
+        if args and isinstance(args[0], basestring):
+            uri += '#'+ urllib.quote(unicode(args[0]).encode(self._encoding))
+            args = args[1:]
+        query = ';'.join([k +"="+ urllib.quote_plus(unicode(v).encode(self._encoding))
+                          for k, v in args + tuple(kwargs.items()) if v is not None])
+        if query:
+            uri += '?'+ query
+        return uri
 
 
 class WikingRequest(Request):
