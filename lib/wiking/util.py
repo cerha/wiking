@@ -839,7 +839,8 @@ class ActionCtrl(lcg.Content):
                     args = dict(args, search=self._row[key].export(), form_name=self._name)
                 else:
                     args = dict(args, **{key: self._row[key].export()})
-        content = [g.hidden(name, value) for name, value in args.items()] + \
+        content = [g.hidden(name, value is True and 'true' or value)
+                   for name, value in args.items()] + \
                   [g.submit(action.title(), title=action.descr(), disabled=not enabled)]
         return g.form(['  '+x for x in content], action=uri)
 
