@@ -977,6 +977,7 @@ class ConfirmationDialog(lcg.Container):
 # ============================================================================
 
 class FieldSet(pp.GroupSpec):
+    """Deprecated: Use pytis.presentation.FieldSpec instead."""
     def __init__(self, label, fields, horizontal=False):
         orientation = horizontal and pp.Orientation.HORIZONTAL or pp.Orientation.VERTICAL
         super(FieldSet, self).__init__(fields, label=label, orientation=orientation)
