@@ -419,9 +419,9 @@ class PytisModule(Module, ActionHandler):
 
     def _action_menu(self, req, record=None, actions=None, uri=None, **kwargs):
         actions = [action for action in actions or self._actions(req, record)
-                   if isinstance(action, Action) and action.name() is not None \
+                   if isinstance(action, Action) and action.id() is not None \
                    and (action.visible() is None or record is None or action.visible()(record)) \
-                   and self._application.authorize(req, self, action=action.name(), record=record)]
+                   and self._application.authorize(req, self, action=action.id(), record=record)]
         if not actions:
             return None
         if uri is None:
@@ -1007,7 +1007,7 @@ class PytisModule(Module, ActionHandler):
         
     def _update_subtitle(self, req, record, action):
         for a in self._actions(req, record):
-            if a.name() == action:
+            if a.id() == action:
                 return a.title()
         return self._UPDATE_LABEL
         

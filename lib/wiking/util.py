@@ -804,7 +804,7 @@ class ActionCtrl(lcg.Content):
         if callable(enabled):
             enabled = enabled(self._row)
         uri = self._uri
-        args = dict(action=action.name(), **action.kwargs())
+        args = dict(action=action.id(), **action.kwargs())
         if self._row and action.context() == pp.ActionContext.CURRENT_ROW:
             if self._referer is not None and action.allow_referer():
                 if not uri.endswith('/'):
@@ -812,7 +812,7 @@ class ActionCtrl(lcg.Content):
                 uri += self._row[self._referer].export()
             else:
                 key = self._row.data().key()[0].id()
-                if action.name() == 'list':
+                if action.id() == 'list':
                     args = dict(args, search=self._row[key].export(), form_name=self._name)
                 else:
                     args = dict(args, **{key: self._row[key].export()})

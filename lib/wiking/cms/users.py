@@ -650,7 +650,7 @@ class Users(UserManagementModule):
     def _default_actions_last(self, req, record):
         # Omit the default `delete' action to allow its redefinition in Spec.actions.
         return tuple([a for a in super(Users, self)._default_actions_last(req, record)
-                      if a.name() != 'delete'])
+                      if a.id() != 'delete'])
     
     def _base_uri(self, req):
         if req.path[0] == '_registration':

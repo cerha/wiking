@@ -1171,7 +1171,7 @@ class Pages(ContentManagementModule):
             else:
                 # TODO: Unpublish doesn't work outside WMI.
                 exclude = ('unpublish', 'preview', 'delete', 'list')
-            actions = tuple([a for a in actions if a.name() not in exclude])
+            actions = tuple([a for a in actions if a.id() not in exclude])
         return actions
 
     # Public methods
@@ -2283,7 +2283,7 @@ class Emails(CommonTexts):
     def _actions(self, req, record):
         actions = super(Emails, self)._actions(req, record)
         if record is not None and not record['label'].value().startswith('_'):
-            actions = [a for a in actions if a.name() != 'delete']
+            actions = [a for a in actions if a.id() != 'delete']
         return actions
     
     def _auto_filled_fields(self):
