@@ -826,7 +826,7 @@ class ActionMenu(lcg.Container):
     """A set of action controls."""
     
     def __init__(self, uri, actions, referer, name, row=None,
-                 # Translators: A set of buttons for various actions (edit, delete, atc.) is
+                 # Translators: A set of buttons for various actions (edit, delete, etc.) is
                  # prepended with this label.
                  title=_("Actions:"), help=None, cls='actions'):
         ctrls = [ActionCtrl(uri, a, referer, name, row) for a in actions]
