@@ -787,7 +787,7 @@ class ActionCtrl(lcg.Content):
     def __init__(self, uri, action, referer, name, row=None):
         super(ActionCtrl, self).__init__()
         assert isinstance(uri, (str, unicode)), uri
-        assert isinstance(action, Action), action
+        assert isinstance(action, pp.Action), action
         assert isinstance(referer, str), referer
         assert isinstance(name, str), name
         assert row is None or isinstance(row, pp.PresentedRow), row
@@ -806,7 +806,8 @@ class ActionCtrl(lcg.Content):
         uri = self._uri
         args = dict(action=action.id(), **action.kwargs())
         if self._row and action.context() == pp.ActionContext.RECORD:
-            if self._referer is not None and action.allow_referer():
+            if self._referer is not None and (not isinstance(action, Action)
+                                              or action.allow_referer()):
                 if not uri.endswith('/'):
                     uri += '/'
                 uri += self._row[self._referer].export()
@@ -828,9 +829,7 @@ class ActionMenu(lcg.Container):
                  # Translators: A set of buttons for various actions (edit, delete, atc.) is
                  # prepended with this label.
                  title=_("Actions:"), help=None, cls='actions'):
-        # Only Wiking's actions are considered, not all `pytis.presentation.Action'.
-        ctrls = [ActionCtrl(uri, a, referer, name, row)
-                 for a in actions]
+        ctrls = [ActionCtrl(uri, a, referer, name, row) for a in actions]
         if help:
             # Translators: Link or button leading to documentation/help. Use usual computer
             # terminlogy.
@@ -983,56 +982,19 @@ class FieldSet(pp.GroupSpec):
         super(FieldSet, self).__init__(fields, label=label, orientation=orientation)
         
 class Action(pytis.presentation.Action):
-    """User action specification.
+    """Deprecated: Use the parent class which now includes all the necessary methods.
 
-    User actions are user visible actions available in the user interface of modules derived from
-    'PytisModule'.  Actions typically appear in the user interface as action buttons and instances
-    of this class define their properties, such as label, identifier, description, context, in
-    which they appear (for example actions 'update' or 'delete' can be performed in the context of
-    one record, 'list' applies to the whole module, etc as defined by Pytis and the parent class).
-
-    The most notable difference between standard Pytis actions and Wiking actions is that Pytis
-    actions must define a handler function which is called when the action is performed.  In
-    Wiking, the action method is determined automatically by name.  The method named 'action_<id>'
-    of the Wiking module is called to handle the action (id is the id passed to 'Action'
-    constructor).  This method receives the 'req' argument with the instance of the current request
-    and optionally 'record' argument with a 'PytisModule.Record' instance if the action context is
-    record (current pytis row).
-
-    Apart from that, Wiking actions also define additional constructor arguments to support a few
-    extended features.  See L{__init__()} for more details.
+    The only argument not present in the parent class is 'allow_referer'.  This argument should not
+    be necessary if the action handler uses proper redirection after action completion (when the
+    original URI is not available anymore).
 
     """
-    def __init__(self, title, id, handler=None, allow_referer=True, visible=None, **kwargs):
-        """Arguments:
-
-          id -- string identifier determining the Wiking module's method to be used to handle
-            perform the action (see the docstring of this class for more details).
-          allow_referer -- allow using record identifier (referer column value) in the URI of this
-            action.  It is not desirable to use full record URI for certain actions -- for example
-            'delete' would end up on an invalid URI after the action is performed.
-          visible -- function of one argument determining action visibility in the current
-            context.  The function receives a record as argument and returns True iff the action
-            should be visible.  This is the same as the `enabled' argument defined by the parent
-            class, but `enabled' makes the action only inactive, but still visible.
-
-        All other arguments have the same meaning as in the parent class.  The argument 'handler'
-        is currently not supported by Wiking and the argument `context' can currently only be set
-        to None (all records) or 'pytis.presentation.ActionContext.CURRENT_ROW' (current record,
-        which is the default).
-            
-        """
-        if not handler:
-            handler = lambda r: None
+    def __init__(self, title, id, allow_referer=True, **kwargs):
         self._allow_referer = allow_referer
-        self._visible = visible
-        super(Action, self).__init__(id, title, handler, **kwargs)
+        super(Action, self).__init__(id, title, **kwargs)
 
     def allow_referer(self):
         return self._allow_referer
-
-    def visible(self):
-        return self._visible
 
 
 from pytis.data.dbapi import DBAPIData

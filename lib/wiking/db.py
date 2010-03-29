@@ -419,9 +419,19 @@ class PytisModule(Module, ActionHandler):
         return tuple([a for a in actions if a.context() == context])
 
     def _action_menu(self, req, record=None, actions=None, uri=None, **kwargs):
-        actions = [action for action in actions or self._actions(req, record)
-                   if isinstance(action, Action) and action.id() is not None \
-                   and (action.visible() is None or record is None or action.visible()(record)) \
+        def visible(action):
+            result = action.visible()
+            if callable(result):
+                context = action.context()
+                if context == pp.ActionContext.RECORD:
+                    args = (record,)
+                elif context == pp.ActionContext.GLOBAL:
+                    args = ()
+                else:
+                    raise Exception("Unsupported action context:", context)
+                result = result(*args, **action.kwargs())
+            return result
+        actions = [action for action in actions or self._actions(req, record) if visible(action) \
                    and self._application.authorize(req, self, action=action.id(), record=record)]
         if not actions:
             return None
