@@ -805,7 +805,7 @@ class ActionCtrl(lcg.Content):
             enabled = enabled(self._row)
         uri = self._uri
         args = dict(action=action.id(), **action.kwargs())
-        if self._row and action.context() == pp.ActionContext.CURRENT_ROW:
+        if self._row and action.context() == pp.ActionContext.RECORD:
             if self._referer is not None and action.allow_referer():
                 if not uri.endswith('/'):
                     uri += '/'

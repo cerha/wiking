@@ -393,7 +393,8 @@ class PytisModule(Module, ActionHandler):
         return Document(title, content, lang=lang, **kwargs)
 
     def _default_actions_first(self, req, record):
-        return (Action(self._INSERT_LABEL, 'insert', descr=self._INSERT_DESCR, context=None),
+        return (Action(self._INSERT_LABEL, 'insert', descr=self._INSERT_DESCR,
+                       context=pp.ActionContext.GLOBAL),
                 Action(self._UPDATE_LABEL, 'update', descr=self._UPDATE_DESCR),)
 
     def _default_actions_last(self, req, record):
@@ -412,9 +413,9 @@ class PytisModule(Module, ActionHandler):
                   self._view.actions() + \
                   self._default_actions_last(req, record)
         if record is not None:
-            context = pp.ActionContext.CURRENT_ROW
+            context = pp.ActionContext.RECORD
         else:
-            context = None
+            context = pp.ActionContext.GLOBAL
         return tuple([a for a in actions if a.context() == context])
 
     def _action_menu(self, req, record=None, actions=None, uri=None, **kwargs):

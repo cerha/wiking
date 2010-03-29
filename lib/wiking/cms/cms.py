@@ -893,7 +893,7 @@ class Themes(StyleManagementModule):
     _ACTIONS = (Action(_("Activate"), 'activate', descr=_("Activate this color theme"),
                        enabled=lambda r: r['active'].value() is None, allow_referer=False),
                 # Translators: Button label
-                Action(_("Activate default"), 'activate', context=None,
+                Action(_("Activate default"), 'activate', context=pp.ActionContext.GLOBAL,
                        descr=_("Activate the default color theme"),
                        enabled=lambda r: isinstance(cfg.theme, Themes.Theme)),)
     _ALLOW_COPY = True
@@ -1484,7 +1484,7 @@ class Attachments(ContentManagementModule):
 
     _ACTIONS = (
         #Action(_("New image"), 'insert_image', descr=_("Insert a new image attachment"),
-        #       context=None),
+        #       context=pp.ActionContext.GLOBAL),
         # Translators: Button label
         Action(_("Move"), 'move', descr=_("Move the attachment to another page.")),
         )
@@ -1525,7 +1525,8 @@ class Attachments(ContentManagementModule):
         actions = super(Attachments, self)._actions(req, record)
         if record is None and not req.wmi:
             # Translators: Button label. Use standard computer terminology.
-            actions += (Action(_("Back"), 'list', context=None, descr=_("Display the page")),)
+            actions += (Action(_("Back"), 'list', context=pp.ActionContext.GLOBAL,
+                               descr=_("Display the page")),)
         return actions
 
     def _binding_parent_redirect(self, req, **kwargs):
