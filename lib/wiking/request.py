@@ -529,23 +529,19 @@ class WikingRequest(Request):
 
     def _init_messages(self):
         # Attempt to unpack the messages previously stored before request
-        # redirection (if this is the redirected request).
+        # redirection (if this is a redirected request).
         stored = self.cookie(self._MESSAGES_COOKIE)
         if stored:
-            # Unpickling a cookie may be a security risk, so we restrict the
-            # unpicklable objects types to the below defined list.  Storing the
-            # messages in database would be safer, but application dependent.
-            # It might be a good idea to add this optionally.
-            SAFE = {'copy_reg': ('_reconstructor',), # Needed by unpickler.
-                    '__builtin__': ('str', 'unicode'),
-                    'lcg.i18n': ('TranslatableText', 'SelfTranslatableText',
-                                 'TranslatablePluralForms', 'LocalizableDateTime',
-                                 'LocalizableTime', 'Decimal', 'Monetary', 'Concatenation')}
             import cPickle, StringIO, copy_reg
             unpickler = cPickle.Unpickler(StringIO.StringIO(str(stored)))
             def find_global(module, name):
-                if not module in SAFE or not name in SAFE[module]:
-                    raise cPickle.UnpicklingError('Attempting to unpickle unsafe object %s.%s' %
+                # Unpickling a cookie may be a security risk, so we restrict the
+                # unpicklable objects the minimal set of needed types.  Storing
+                # the messages in the database (server side) would be even
+                # safer, but application dependent.  It might be a good idea to
+                # add this possibility as optional in future, however.
+                if module+'.'+name not in ('copy_reg._reconstructor', '__builtin__.unicode'):
+                    raise cPickle.UnpicklingError('Attempting to unpickle unsafe object %s.%s.' %
                                                   (module, name))
                 return getattr(sys.modules[module], name)
             unpickler.find_global = find_global
@@ -603,13 +599,19 @@ class WikingRequest(Request):
 
     def _redirect(self, uri, permanent=False):
         if self._messages:
+            import cPickle
             # Store the current list of interactive messages in browsers cookie
             # to allow loading the same messages within the redirected request.
             # Store them together with the target URI to recognize for which
             # request they should be loaded.  Of course, this will not work,
             # when the redirection target is outside the current wiking host.
-            import cPickle
-            self.set_cookie(self._MESSAGES_COOKIE, cPickle.dumps((uri, self._messages)))
+            translate = translator(self.prefered_language()).translate
+            # Translate the messages before pickling to avoid security issues
+            # with unpickling lcg.Localizable objects.  We make the assumption,
+            # that the redirected request's locale will be the same as for this
+            # request, but that seems quite unprobable, that it ever is a problem.
+            messages = [(translate(message), type) for message, type  in self._messages]
+            self.set_cookie(self._MESSAGES_COOKIE, cPickle.dumps((uri, messages)))
         return super(WikingRequest, self)._redirect(uri, permanent=False)
 
     def forward(self, handler, **kwargs):
