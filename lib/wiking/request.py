@@ -53,7 +53,7 @@ class Request(pytis.web.Request):
     
     _UNIX_NEWLINE = re.compile("(?<!\r)\n")
     _ABS_URI_MATCHER = re.compile(r'^((https?|ftp)://[^/]+)(.*)$')
-    
+
     def __init__(self, req, encoding='utf-8'):
         self._req = req
         self._encoding = encoding
@@ -327,13 +327,6 @@ class Request(pytis.web.Request):
         exception.
             
         """
-        self._req.content_type = "text/html"
-        try:
-            self._req.send_http_header()
-        except IOError, e:
-            raise ClosedConnection(str(e))
-        self._req.status = permanent and apache.HTTP_MOVED_PERMANENTLY or \
-                           apache.HTTP_MOVED_TEMPORARILY
         if not (uri.startswith('http://') or uri.startswith('https://')):
             if not uri.startswith('/'):
                 uri = '/' + uri
@@ -342,6 +335,17 @@ class Request(pytis.web.Request):
             uri = self.make_uri(uri, *args)
         else:
             uri = self.make_uri(uri, **args)
+        return self._redirect(uri, permanent=permanent)
+
+    def _redirect(self, uri, permanent=False):
+        """Implement the actual request redirection for the already completed absolute URI."""
+        self._req.content_type = "text/html"
+        try:
+            self._req.send_http_header()
+        except IOError, e:
+            raise ClosedConnection(str(e))
+        self._req.status = permanent and apache.HTTP_MOVED_PERMANENTLY or \
+                           apache.HTTP_MOVED_TEMPORARILY
         self.set_header('Location', uri)
         self.write("<html><head><title>Redirected</title></head>"
                    "<body>Your request has been redirected to "
@@ -451,6 +455,7 @@ class WikingRequest(Request):
 
     _LANG_COOKIE = 'wiking_prefered_language'
     _PANELS_COOKIE = 'wiking_show_panels'
+    _MESSAGES_COOKIE = 'wiking_messages'
     _UNDEFINED = object()
     
     INFO = 'INFO'
@@ -459,12 +464,13 @@ class WikingRequest(Request):
     """Message type constant for warning messages."""
     ERROR = 'ERROR'
     """Message type constant for error messages."""
-            
+    _MESSAGE_TYPES = (INFO, WARNING, ERROR)
+
     def __init__(self, req, application, **kwargs):
         super(WikingRequest, self).__init__(req, **kwargs)
         self._application = application
         self._forwards = []
-        self._messages = []
+        self._messages = self._init_messages()
         self._prefered_languages = self._init_prefered_languages()
         self._module_uri = {}
         self.unresolved_path = list(self.path)
@@ -521,6 +527,44 @@ class WikingRequest(Request):
             raise Forbidden()
         return path
 
+    def _init_messages(self):
+        # Attempt to unpack the messages previously stored before request
+        # redirection (if this is the redirected request).
+        stored = self.cookie(self._MESSAGES_COOKIE)
+        if stored:
+            # Unpickling a cookie may be a security risk, so we restrict the
+            # unpicklable objects types to the below defined list.  Storing the
+            # messages in database would be safer, but application dependent.
+            # It might be a good idea to add this optionally.
+            SAFE = {'copy_reg': ('_reconstructor',), # Needed by unpickler.
+                    '__builtin__': ('str', 'unicode'),
+                    'lcg.i18n': ('TranslatableText', 'SelfTranslatableText',
+                                 'TranslatablePluralForms', 'LocalizableDateTime',
+                                 'LocalizableTime', 'Decimal', 'Monetary', 'Concatenation')}
+            import cPickle, StringIO, copy_reg
+            unpickler = cPickle.Unpickler(StringIO.StringIO(str(stored)))
+            def find_global(module, name):
+                if not module in SAFE or not name in SAFE[module]:
+                    raise cPickle.UnpicklingError('Attempting to unpickle unsafe object %s.%s' %
+                                                  (module, name))
+                return getattr(sys.modules[module], name)
+            unpickler.find_global = find_global
+            try:
+                uri, messages = unpickler.load()
+                if not isinstance(messages, list):
+                    raise ValueError("Invalid data in stored messages.")
+                for message, type in messages:
+                    if type not in self._MESSAGE_TYPES or not isinstance(message, basestring):
+                        raise ValueError("Invalid message data in stored messages.")
+            except (ValueError, cPickle.UnpicklingError), e:
+                log(OPR, "Unable to unpack stored messages:", e)
+                self.set_cookie(self._MESSAGES_COOKIE, None)
+            else:
+                if uri == self.server_uri(current=True) + self._req.unparsed_uri:
+                    self.set_cookie(self._MESSAGES_COOKIE, None)
+                    return messages
+        return []
+
     def _init_prefered_languages(self):
         accepted = []
         prefered = self._prefered_language # The prefered language setting from cookie or param.
@@ -556,6 +600,17 @@ class WikingRequest(Request):
 
     def _cookie_path(self):
         return self._uri_prefix or '/'
+
+    def _redirect(self, uri, permanent=False):
+        if self._messages:
+            # Store the current list of interactive messages in browsers cookie
+            # to allow loading the same messages within the redirected request.
+            # Store them together with the target URI to recognize for which
+            # request they should be loaded.  Of course, this will not work,
+            # when the redirection target is outside the current wiking host.
+            import cPickle
+            self.set_cookie(self._MESSAGES_COOKIE, cPickle.dumps((uri, self._messages)))
+        return super(WikingRequest, self)._redirect(uri, permanent=False)
 
     def forward(self, handler, **kwargs):
         """Pass the request on to another handler keeping track of the forwarding history.
@@ -759,7 +814,7 @@ class WikingRequest(Request):
         The stacked messages can be later retrieved using the 'messages()' method.
 
         """
-        assert type in (None, self.INFO, self.WARNING, self.ERROR)
+        assert type is None or type in self._MESSAGE_TYPES
         self._messages.append((message, type or self.INFO))
 
     def messages(self):
