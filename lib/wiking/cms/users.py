@@ -965,7 +965,7 @@ class Users(UserManagementModule):
           disabled) users using this method.
 
         """
-        assert role is None or isinstance(role, basestring)
+        assert role is None or isinstance(role, wiking.Role)
         String = pd.String()
         condition = pd.EQ('state', pd.Value(String, self.AccountState.ENABLED))
         if role is not None:
