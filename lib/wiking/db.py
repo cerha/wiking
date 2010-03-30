@@ -378,12 +378,6 @@ class PytisModule(Module, ActionHandler):
         title = self._document_title(req, record)
         if record and lang is None and self._LIST_BY_LANGUAGE:
             lang = str(record['lang'].value())
-        # msg and err may be passed as request params on redirection (see action_list()).
-        # Maybe we could do this directly in the request constructor?
-        if req.has_param('msg'):
-            req.message(req.param('msg'))
-        if req.has_param('err'):
-            req.message(req.param('err'), type=req.ERROR)
         # Messages should be now stacked using the req.message() method directly, but they were
         # passed as _document arguments before, so this is just for backwards compatibility.
         if msg:
@@ -875,10 +869,7 @@ class PytisModule(Module, ActionHandler):
     def action_list(self, req):
         # Don't display the listing alone, but display the original main form,
         # when this list is accessed through bindings as a related form.
-        result = self._binding_parent_redirect(req, search=req.param('search'),
-                                               form_name=self.name())
-        if result is not None:
-            return result
+        self._binding_parent_redirect(req, search=req.param('search'), form_name=self.name())
         # If this is not a binding forwarded request, display the listing.
         lang = req.prefered_language()
         form = self._form(pw.ListView, req, condition=self._condition(req, lang=lang),
@@ -897,20 +888,7 @@ class PytisModule(Module, ActionHandler):
     def _binding_parent_redirect(self, req, **kwargs):
         uri = self._binding_parent_uri(req)
         if uri is not None:
-            err = []
-            msg = []
-            translate = translator(req.prefered_language()).translate
-            for text, type in req.messages():
-                if type == req.ERROR:
-                    err.append(translate(text))
-                else:
-                    msg.append(translate(text))
-            if err:
-                kwargs['err'] = '\n'.join(err)
-            if msg:
-                kwargs['msg'] = '\n'.join(msg)
-            return req.redirect(make_uri(uri, **kwargs))
-        return None
+            raise Redirect(uri, **kwargs)
         
     def _related_content(self, req, record):
         # Return content related to given record to be displayed within the view action under the

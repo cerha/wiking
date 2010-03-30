@@ -1536,7 +1536,7 @@ class Attachments(ContentManagementModule):
             # record view page outside WMI, but use the default page action (view) when the
             # _("Back") button (defined above) is pressed in the 'attachments' listing.
             kwargs['action'] = 'attachments'
-        return super(Attachments, self)._binding_parent_redirect(req, **kwargs)
+        super(Attachments, self)._binding_parent_redirect(req, **kwargs)
 
     def _save_files(self, record):
         if not os.path.exists(cfg.storage) \
