@@ -530,36 +530,29 @@ class WikingRequest(Request):
     def _init_messages(self):
         # Attempt to unpack the messages previously stored before request
         # redirection (if this is a redirected request).
+        messages = []
         stored = self.cookie(self._MESSAGES_COOKIE)
         if stored:
-            import cPickle, StringIO, copy_reg
-            unpickler = cPickle.Unpickler(StringIO.StringIO(str(stored)))
-            def find_global(module, name):
-                # Unpickling a cookie may be a security risk, so we restrict the
-                # unpicklable objects the minimal set of needed types.  Storing
-                # the messages in the database (server side) would be even
-                # safer, but application dependent.  It might be a good idea to
-                # add this possibility as optional in future, however.
-                if module+'.'+name not in ('copy_reg._reconstructor', '__builtin__.unicode'):
-                    raise cPickle.UnpicklingError('Attempting to unpickle unsafe object %s.%s.' %
-                                                  (module, name))
-                return getattr(sys.modules[module], name)
-            unpickler.find_global = find_global
-            try:
-                uri, messages = unpickler.load()
-                if not isinstance(messages, list):
-                    raise ValueError("Invalid data in stored messages.")
-                for message, type in messages:
-                    if type not in self._MESSAGE_TYPES or not isinstance(message, basestring):
-                        raise ValueError("Invalid message data in stored messages.")
-            except (ValueError, cPickle.UnpicklingError), e:
-                log(OPR, "Unable to unpack stored messages:", e)
+            lines = stored.splitlines()
+            if lines[0] == self.server_uri(current=True) + self._req.unparsed_uri:
+                # Storing data on client side is always problematic.  In case of
+                # messages there is not much danger in it, but still it may
+                # allow interesting tricks.  Storing the messages in the
+                # database (server side) might be more appropriate, but would be
+                # application dependent.  It might be a good idea to add this
+                # possibility as optional in future.
+                for line in lines[1:]:
+                    try:
+                        type, quoted = line.split(':', 1)
+                        if type not in self._MESSAGE_TYPES:
+                            raise ValueError("Invalid type:", type)
+                        message = urllib.unquote(quoted).decode(self._encoding)
+                    except Exception, e:
+                        log(OPR, "Error unpacking stored messages:", e)
+                    else:
+                        messages.append((message, type))
                 self.set_cookie(self._MESSAGES_COOKIE, None)
-            else:
-                if uri == self.server_uri(current=True) + self._req.unparsed_uri:
-                    self.set_cookie(self._MESSAGES_COOKIE, None)
-                    return messages
-        return []
+        return messages
 
     def _init_prefered_languages(self):
         accepted = []
@@ -599,19 +592,19 @@ class WikingRequest(Request):
 
     def _redirect(self, uri, permanent=False):
         if self._messages:
-            import cPickle
             # Store the current list of interactive messages in browsers cookie
             # to allow loading the same messages within the redirected request.
             # Store them together with the target URI to recognize for which
             # request they should be loaded.  Of course, this will not work,
             # when the redirection target is outside the current wiking host.
             translate = translator(self.prefered_language()).translate
-            # Translate the messages before pickling to avoid security issues
-            # with unpickling lcg.Localizable objects.  We make the assumption,
-            # that the redirected request's locale will be the same as for this
-            # request, but that seems quite unprobable, that it ever is a problem.
-            messages = [(translate(message), type) for message, type  in self._messages]
-            self.set_cookie(self._MESSAGES_COOKIE, cPickle.dumps((uri, messages)))
+            # Translate the messages before quoting, since the resulting strings
+            # wil not be translatable enymore.  We make the assumption, that the
+            # redirected request's locale will be the same as for this request,
+            # but that seems quite appropriate assumption.
+            lines = [uri] + [type +':'+ urllib.quote(translate(message).encode(self._encoding))
+                             for message, type  in self._messages]
+            self.set_cookie(self._MESSAGES_COOKIE,  "\n".join(lines))
         return super(WikingRequest, self)._redirect(uri, permanent=False)
 
     def forward(self, handler, **kwargs):
