@@ -954,7 +954,7 @@ class Users(UserManagementModule):
     def send_mail(self, role, *args, **kwargs):
         """Send mail to all active users of given C{role}.
         
-        @type role: L{wiking.Role} or C{None}
+        @type role: L{wiking.Role} or sequence of L{wiking.Role}s or C{None}
         @param role: Destination role to send the mail to, all active users
           belonging to the role will receive the mail.  If C{None}, the mail is
           sent to all active users.
@@ -965,11 +965,16 @@ class Users(UserManagementModule):
           disabled) users using this method.
 
         """
-        assert role is None or isinstance(role, wiking.Role)
+        assert (role is None or isinstance(role, wiking.Role) or
+                (is_sequence(role) and all([isinstance(r, wiking.Role) for r in role]))), role
         String = pd.String()
         condition = pd.EQ('state', pd.Value(String, self.AccountState.ENABLED))
         if role is not None:
-            user_ids = self._module('RoleMembers').user_ids(role)
+            if not is_sequence(role):
+                role = (role,)
+            user_ids = []
+            for r in role:
+                user_ids += self._module('RoleMembers').user_ids(r)
         user_rows = self._data.get_rows()
         import copy
         kwargs = copy.copy(kwargs)
