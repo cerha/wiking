@@ -30,13 +30,15 @@ _ = lcg.TranslatableTextFactory('wiking')
 class RequestError(Exception):
     """Base class for predefined error states within request handling.
 
-    Exceptions of this class represent typical situations in request handling.  In most situations
-    they don't represent an error in the application, but rater an invalid state in request
-    processing, such as unauthorized access, request for an invalid URI etc.  Such errors are
-    normally handled by displaying an error message within the content part of the page.  The
-    overall page layout, including navigation and other static page content is displayed as on any
-    other page.  Most error types are not logged neither emailed, since they are caused by an
-    invalid request, not a bug in the application.
+    Exceptions of this class represent unexpected situations in request
+    handling.  They typically don't represent an error in the application, but
+    rater an invalid state in request processing, such as unauthorized access,
+    request for an invalid URI etc.  Such errors are normally handled by
+    displaying an error message within the content part of the page.  The
+    overall page layout, including navigation and other static page content is
+    displayed as on any other page.  Most error types are not logged neither
+    emailed, since they are caused by an invalid request, not a bug in the
+    application.
 
     """
     _TITLE = None
