@@ -657,10 +657,10 @@ class Users(UserManagementModule):
             return '_registration'
         return super(Users, self)._base_uri(req)
 
-    def _insert_subtitle(self, req):
-        if req.path[0] == '_registration':
+    def _action_subtitle(self, req, action, record=None):
+        if action == 'insert' and req.path[0] == '_registration':
             return None
-        return super(Users, self)._insert_subtitle(req)
+        return super(Users, self)._action_subtitle(req, action, record=record)
         
     def _make_registration_email(self, req, record):
         base_uri = req.module_uri('Registration') or '/_wmi/'+ self.name()
@@ -1052,10 +1052,10 @@ class Registration(Module, ActionHandler):
             raise AuthenticationError()
     RIGHTS_view = (Roles.ANYONE,)
     
-    def action_insert(self, req):
+    def action_insert(self, req, record=None, action='insert'):
         if not cfg.appl.allow_registration:
             raise Forbidden()
-        return self._module('Users').action_insert(req)
+        return self._module('Users').action_insert(req, record=record, action=action)
     RIGHTS_insert = (Roles.ANYONE,)
     
     def action_remind(self, req):

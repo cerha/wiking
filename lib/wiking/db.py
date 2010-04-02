@@ -913,9 +913,9 @@ class PytisModule(Module, ActionHandler):
 
     # ===== Action handlers which modify the database =====
 
-    def action_insert(self, req, record=None):
+    def action_insert(self, req, record=None, action='insert'):
         # 'record' is passed when copying an existing record.
-        layout = self._layout_instance(self._layout(req, 'insert'))
+        layout = self._layout_instance(self._layout(req, action))
         if req.param('submit'):
             if self._OWNER_COLUMN and self._SUPPLY_OWNER and req.user():
                 prefill = {self._OWNER_COLUMN: req.user().uid()}
@@ -948,10 +948,10 @@ class PytisModule(Module, ActionHandler):
                     computer = field.computer()
                     if not computer or key not in computer.depends():
                         prefill[fid] = record[fid].export()
-        form = self._form(pw.EditForm, req, new=True, action='insert',
+        form = self._form(pw.EditForm, req, new=True, action=action,
                           prefill=prefill, layout=layout, errors=errors,
-                          submit=self._SUBMIT_BUTTONS.get('insert'))
-        return self._document(req, form, subtitle=self._insert_subtitle(req))
+                          submit=self._SUBMIT_BUTTONS.get(action))
+        return self._document(req, form, subtitle=self._action_subtitle(req, action))
             
     def action_update(self, req, record, action='update'):
         layout = self._layout_instance(self._layout(req, action, record))
@@ -972,8 +972,8 @@ class PytisModule(Module, ActionHandler):
         form = self._form(pw.EditForm, req, record=record, action=action, layout=layout,
                           submit=self._SUBMIT_BUTTONS.get(action),
                           prefill=self._prefill(req), errors=errors)
-        subtitle = self._update_subtitle(req, record, action)
-        return self._document(req, form, record, subtitle=subtitle)
+        return self._document(req, form, record,
+                              subtitle=self._action_subtitle(req, action, record=record))
 
     def action_delete(self, req, record):
         if req.param('submit'):
@@ -989,20 +989,17 @@ class PytisModule(Module, ActionHandler):
                    Action(_("Back"), 'view'))
         req.message(self._delete_prompt(req, record))
         return self._document(req, self._add_action_menu((form,), req, record, actions), record,
-                              subtitle=self._delete_subtitle(req, record))
+                              subtitle=self._action_subtitle(req, 'delete', record))
         
-    def _insert_subtitle(self, req):
-        return self._INSERT_LABEL
-        
-    def _update_subtitle(self, req, record, action):
+    def _action_subtitle(self, req, action, record=None):
         for a in self._actions(req, record):
             if a.id() == action:
                 return a.title()
-        return self._UPDATE_LABEL
+        map = {'insert':self._INSERT_LABEL,
+               'update': self._UPDATE_LABEL,
+               'delete': self._UPDATE_LABEL}
+        return map.get(action)
         
-    def _delete_subtitle(self, req, record):
-        return self._DELETE_LABEL
-    
     def _delete_prompt(self, req, record):
         return self._DELETE_PROMPT
     
