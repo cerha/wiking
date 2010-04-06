@@ -1016,6 +1016,9 @@ class Action(pytis.presentation.Action):
     """
     def __init__(self, title, id, allow_referer=True, **kwargs):
         self._allow_referer = allow_referer
+        if kwargs.has_key('context') and kwargs['context'] is None:
+            # Make context specification in applications backwards compatible.
+            kwargs['context'] = pp.ActionContext.GLOBAL
         super(Action, self).__init__(id, title, **kwargs)
 
     def allow_referer(self):
