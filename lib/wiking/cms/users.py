@@ -1038,11 +1038,12 @@ class Registration(Module, ActionHandler):
         return 'view'
 
     def _handle(self, req, action, **kwargs):
-        if req.unresolved_path > 1 and req.user() and req.unresolved_path[0] == req.user().login():
+        if len(req.unresolved_path) > 1 and req.user() \
+                and req.unresolved_path[0] == req.user().login():
             return self._module('Users').handle(req)
         else:
             return super(Registration, self)._handle(req, action, **kwargs)
-        
+
     def action_view(self, req):
         if req.user():
             return self._module('Users').action_view(req, req.user().data())
