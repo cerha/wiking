@@ -261,7 +261,7 @@ class PytisModule(Module, ActionHandler):
         # TODO: This should go to pytis.web....
         errors = []
         if record.new():
-            # Suppply the value of the binding column (if this is a binding forwarded request).
+            # Supply the value of the binding column (if this is a binding forwarded request).
             binding_column, value = self._binding_column(req)
             if binding_column:
                 if req.param(binding_column) == record[binding_column].type().export(value):
@@ -303,8 +303,21 @@ class PytisModule(Module, ActionHandler):
                 value = "F"
             else:
                 value = ""
-            if isinstance(type, (Date, Time, DateTime)):
-                kwargs['format'] = type.locale_format(self._locale_data(req))
+            if isinstance(type, pd.DateTime):
+                locale_data = self._locale_data(req)
+                if isinstance(type, pd.Date):
+                    format = locale_data.date_format
+                else:
+                    if not isinstance(type, (DateTime, Time)) or type.exact():
+                        # wiking.Time and wiking.DateTime allow locale independent format options.
+                        time_format = locale_data.exact_time_format
+                    else:
+                        time_format = locale_data.time_format
+                    if isinstance(type, pd.Time):
+                        format = time_format
+                    else:
+                        format = locale_data.date_format +' '+ time_format
+                kwargs['format'] = format
             if isinstance(type, (pd.Binary, pd.Password)) and not value and not record.new():
                 continue # Keep the original file if no file is uploaded.
             if isinstance(type, pd.Password) and kwargs.get('verify') is None:
@@ -568,7 +581,7 @@ class PytisModule(Module, ActionHandler):
     def _filters(self, req):
         """Return a list of dynamic filters as 'pytis.presentation.Filter' instances or None.
 
-        'None' means to use the default list of columns defined by specification.
+        'None' means to use the default list of filters defined by specification.
 
         Override this metod to dynamically change the list of user visible filters in the
         BrowseForm/ListView form.  The default implementation returns 'None' (to use the default

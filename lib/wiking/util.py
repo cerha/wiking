@@ -1233,12 +1233,8 @@ class DateTime(pytis.data.DateTime):
             format += ':%S'
         super(DateTime, self).__init__(format=format, **kwargs)
 
-    def locale_format(self, locale_data):
-        if self._exact:
-            time_format = locale_data.exact_time_format
-        else:
-            time_format = locale_data.time_format
-        return locale_data.date_format +' '+ time_format
+    def exact(self):
+        return self._exact
         
     def _export(self, value, show_weekday=False, show_time=None, **kwargs):
         result = super(DateTime, self)._export(value, **kwargs)
@@ -1257,9 +1253,6 @@ class Date(pytis.data.Date):
         self._leading_zeros = leading_zeros
         super(Date, self).__init__(format='%Y-%m-%d', **kwargs)
 
-    def locale_format(self, locale_data):
-        return locale_data.date_format
-        
     def _export(self, value, show_weekday=False, **kwargs):
         result = super(Date, self)._export(value, **kwargs)
         return lcg.LocalizableDateTime(result, show_weekday=show_weekday,
@@ -1275,11 +1268,8 @@ class Time(pytis.data.Time):
             format += ':%S'
         super(Time, self).__init__(format=format, **kwargs)
     
-    def locale_format(self, locale_data):
-        if self._exact:
-            return locale_data.exact_time_format
-        else:
-            return locale_data.time_format
+    def exact(self):
+        return self._exact
         
     def _export(self, value, **kwargs):
         return lcg.LocalizableTime(super(Time, self)._export(value, **kwargs))
