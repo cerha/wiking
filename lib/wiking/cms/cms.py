@@ -1869,11 +1869,9 @@ class Discussions(News):
             except pd.DBException, e:
                 req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
             else:
-                # Redirect the POST request to GET to avoid double postings on reload.
-                # Ouha: We can't redirect from 'related()'...
-                #return req.redirect(make_uri(req.uri(), posted=1))
-                #elif req.param('posted') == '1':
                 req.message(_("Your comment was posted to the discussion."))
+                # Redirect to prevent multiple submissions (Post/Redirect/Get paradigm).
+                raise Redirect(req.uri())
         content = [super(Discussions, self).related(req, binding, record, uri)]
         if not req.wmi:
             if req.check_roles(Roles.USER):
