@@ -1,4 +1,4 @@
-# Copyright (C) 2005, 2006, 2007, 2008, 2009 Brailcom, o.p.s.
+# Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -74,8 +74,43 @@ class RequestHandler(object):
         """
         return req.module_uri(self.name())
 
+    def _authorized(self, req, **kwargs):
+        """Return true iff the remote user is authorized to perform an action.
+        
+        The performed action is determined by 'kwargs'.  Their meaning,
+        however, is not further specified in this class (it only defines the
+        common interface).  Derived classes may define the meaning of `kwargs'
+        more exactly.
+
+        This class passes no 'kwargs', so it only allows checking of access to
+        the module itself (calling its 'handle()' method), with no further
+        resolution.
+
+        The base implementation of this method postpones the authorization to
+        the current wiking application by calling
+        'wiking.Application.authorize()'.  This allows implementation of a
+        custom authorization mechanism by an application without overriding all
+        modules.  The application, however, may still choose to override this
+        method in its modules to implement authorization checking for them
+        directly (making it not possible to override this behavior by
+        overriding the application).
+
+        """
+        return self._application.authorize(req, self, **kwargs)
+    
     def _authorize(self, req, **kwargs):
-        if not self._application.authorize(req, self, **kwargs):
+        """Check authorization and raise error if the user has no rights to perform the action.
+
+        Raises: `AuthenticationError' if the user is not authenticated (logged
+        in) and authentication is required for given action or
+        `AuthorizationError' if the user is logged in, but his rights are not
+        sufficient for the action.
+
+        The meaning of keyword arguments is the same as in the '_authorized()'
+        method.
+        
+        """
+        if not self._authorized(req, **kwargs):
             if not req.user():
                 raise AuthenticationError()
             else:

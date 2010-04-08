@@ -425,8 +425,8 @@ class PytisModule(Module, ActionHandler):
                     raise Exception("Unsupported action context:", context)
                 result = result(*args, **action.kwargs())
             return result
-        actions = [action for action in actions or self._actions(req, record) if visible(action) \
-                   and self._application.authorize(req, self, action=action.id(), record=record)]
+        actions = [action for action in actions or self._actions(req, record)
+                   if visible(action) and self._authorized(req, action=action.id(), record=record)]
         if not actions:
             return None
         if uri is None:
