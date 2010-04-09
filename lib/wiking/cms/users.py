@@ -56,7 +56,7 @@ class RoleSets(UserManagementModule):
         fields = (pp.Field('role_set_id'),
                   pp.Field('role_id', _("Group"), codebook='ApplicationRoles'),
                   pp.Field('member_role_id', _("Contained group"), codebook='ApplicationRoles'),
-                  pp.Field('delete', virtual=True, computer=computer(lambda r: _("Delete"))),
+                  pp.Field('delete', virtual=True, computer=computer(lambda r: _("Remove"))),
                   )
         columns = layout = ('role_id', 'member_role_id')
         
@@ -147,7 +147,7 @@ class RoleMembers(UserManagementModule):
             return (pp.Field('role_member_id'),
                     pp.Field('role_id', _("Group"), codebook='ApplicationRoles'),
                     pp.Field('uid', _("User"), codebook='Users'),
-                    pp.Field('delete', virtual=True, computer=computer(lambda r: _("Delete"))),
+                    pp.Field('delete', virtual=True, computer=computer(lambda r: _("Remove"))),
                     )
         columns = layout = ('role_id', 'uid',)
         
@@ -240,7 +240,8 @@ class ApplicationRoles(UserManagementModule):
             # Translators: Form field label, noun.
             pp.Field('name', _("Name"), not_null=True, editable=computer(self._editable)),
             pp.Field('xname', _("Name"), computer=computer(self._xname_computer), virtual=True),
-            # Translators: Form field label, adjective.
+            # Translators: Form field label, adjective related to a "User group" (use the
+            # appropriate gender.
             pp.Field('system', _("System"), default=False, editable=pp.Editable.NEVER),
             )
         def _editable(self, record, system):
@@ -488,7 +489,7 @@ class Users(UserManagementModule):
                    enabled=lambda r: r['state'].value() == Users.AccountState.ENABLED),
             Action(_("Resend activation code"), 'regreminder', descr=_("Re-send registration mail"),
                    visible=lambda r: r['state'].value() == Users.AccountState.NEW),
-            Action(_("Remove"), 'delete', descr=_("Remove the account completely"),
+            Action(_("Delete"), 'delete', descr=_("Remove the account completely"),
                    allow_referer=False,
                    visible=lambda r: r['state'].value() in (Users.AccountState.NEW,
                                                             Users.AccountState.UNAPPROVED)),
