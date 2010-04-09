@@ -666,7 +666,7 @@ class PytisModule(Module, ActionHandler):
 
         """
         values = self._refered_row_values(req, value)
-        row = self._data.get_row(**values)
+        row = self._data.get_row(arguments=self._arguments(req), **values)
         if row is None:
             raise NotFound()
         return row
@@ -723,7 +723,7 @@ class PytisModule(Module, ActionHandler):
             return None
         
     def _arguments(self, req):
-        """Return runtime database ``function'' table arguments.
+        """Return runtime database table function arguments.
 
         Return None or a dictionary of 'pytis.data.Value' instances.  The dictionary is passed as
         'arguments' to 'pytis.data.DBData.select()' call.  Note that you must define the arguments
@@ -855,7 +855,7 @@ class PytisModule(Module, ActionHandler):
     def link(self, req, key, *args, **kwargs):
         """Return a uri for given key value."""
         if isinstance(key, dict):
-            row = self._data.get_row(**key)
+            row = self._data.get_row(arguments=self._arguments(req), **key)
         else:
             row = self._data.row(key)
         if row:
