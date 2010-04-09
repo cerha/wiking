@@ -154,7 +154,7 @@ class Roles(wiking.Roles):
        always explicitly assigned roles.
 
     """
-    # Translators: Short description of a user group purpose.
+    # Translators: Name of a special purpose user group.
     USER = Role('user', _("Authenticated approved user"))
     """Any authenticated user who is fully enabled in the application.
     I{Fully enabled} means the user registration process is fully completed and
@@ -162,7 +162,7 @@ class Roles(wiking.Roles):
 
     This is a special purpose role, you can't assign users to this role explicitly.    
     """
-    # Translators: Short description of a user group purpose.
+    # Translators: Name of a special purpose user group.
     REGISTERED = Role('registered', _("Successfuly registered user"))
     """Authenticated user who has at least completed registration succesfully.
     
@@ -175,22 +175,22 @@ class Roles(wiking.Roles):
 
     This is a special purpose role, you can't assign users to this role explicitly.    
     """
-    # Translators: Short description of a user group purpose.
+    # Translators: Name of a predefined user group.
     USER_ADMIN = Role('user_admin', _("User administrator"))
     """User administrator."""
-    # Translators: Short description of a user group purpose.
+    # Translators: Name of a predefined user group.
     CONTENT_ADMIN = Role('content_admin', _("Content administrator"))
     """Content administrator."""
-    # Translators: Short description of a user group purpose.
+    # Translators: Name of a predefined user group.
     SETTINGS_ADMIN = Role('settings_admin', _("Settings administrator"))
     """Settings administrator."""
-    # Translators: Short description of a user group purpose.
+    # Translators: Name of a predefined user group.
     MAIL_ADMIN = Role('mail_admin', _("Mail administrator"))
     """Bulk mailing user and administrator."""
-    # Translators: Short description of a user group purpose.
+    # Translators: Name of a predefined user group.
     STYLE_ADMIN = Role('style_admin', _("Style administrator"))
     """Administrator of stylesheets, color themes and other web design related settings."""
-    # Translators: Short description of a user group purpose.
+    # Translators: Name of a predefined user group.
     ADMIN = Role('admin', _("Administrator"))
     """Administrator containing all administration roles.
     This is a container role, including all the C{*_ADMIN} roles defined here.
