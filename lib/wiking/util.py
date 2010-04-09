@@ -1051,13 +1051,13 @@ class WikingDefaultDataClass(DBAPIData):
     def _row_data(self, **kwargs):
         return [(k, pd.Value(self.find_column(k).type(), v)) for k, v in kwargs.items()]
     
-    def get_rows(self, skip=None, limit=None, sorting=(), condition=None, **kwargs):
+    def get_rows(self, skip=None, limit=None, sorting=(), condition=None, arguments=None, **kwargs):
         if kwargs:
             conds = [pd.EQ(k,v) for k,v in self._row_data(**kwargs)]
             if condition:
                 conds.append(condition)
             condition = pd.AND(*conds)
-        self.select(condition=condition, sort=sorting)
+        self.select(condition=condition, sort=sorting, arguments=arguments)
         rows = []
         if skip:
             self.skip(skip)

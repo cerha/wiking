@@ -722,6 +722,16 @@ class PytisModule(Module, ActionHandler):
         else:
             return None
         
+    def _arguments(self, req):
+        """Return runtime database ``function'' table arguments.
+
+        Return None or a dictionary of 'pytis.data.Value' instances.  The dictionary is passed as
+        'arguments' to 'pytis.data.DBData.select()' call.  Note that you must define the arguments
+        in the specification, to get them used for the data object.
+
+        """
+        return None
+        
     def _binding_arguments(self, binding, record):
         function = binding.arguments()
         if function:
@@ -732,7 +742,8 @@ class PytisModule(Module, ActionHandler):
         
     def _rows(self, req, lang=None, condition=None, limit=None):
         return self._data.get_rows(sorting=self._sorting, limit=limit,
-                                   condition=self._condition(req, lang=lang, condition=condition))
+                                   condition=self._condition(req, lang=lang, condition=condition),
+                                   arguments=self._arguments(req))
 
     def _handle(self, req, action, **kwargs):
         record = kwargs.get('record')
@@ -869,8 +880,8 @@ class PytisModule(Module, ActionHandler):
             binding_uri = ''
         content = self._form(form, req, uri=uri, columns=columns, binding_uri=binding_uri,
                              condition=self._condition(req, condition=condition, lang=lang),
-                             filters=self._filters(req),
-                             arguments=self._binding_arguments(binding, record))
+                             arguments=self._binding_arguments(binding, record),
+                             filters=self._filters(req))
         if binding_uri:
             menu = self._action_menu(req, uri=binding_uri)
             if menu:
@@ -885,8 +896,11 @@ class PytisModule(Module, ActionHandler):
         self._binding_parent_redirect(req, search=req.param('search'), form_name=self.name())
         # If this is not a binding forwarded request, display the listing.
         lang = req.prefered_language()
-        form = self._form(pw.ListView, req, condition=self._condition(req, lang=lang),
-                          columns=self._columns(req), filters=self._filters(req))
+        form = self._form(pw.ListView, req,
+                          columns=self._columns(req),
+                          condition=self._condition(req, lang=lang),
+                          arguments=self._arguments(req),
+                          filters=self._filters(req))
         content = self._add_action_menu((form,), req)
         return self._document(req, content, lang=lang)
 
