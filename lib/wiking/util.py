@@ -1109,7 +1109,10 @@ class Specification(pp.Specification):
         self._module = module
         if self.table is None:
             self.table = pytis.util.camel_case_to_lower(module.name(), '_')
-        actions = list(self.actions)
+        actions = self.actions
+        if callable(actions):
+            actions = actions()
+        actions = list(actions)
         for base in module.__bases__ + (module,):
             if hasattr(base, '_ACTIONS'):
                 for action in base._ACTIONS:
