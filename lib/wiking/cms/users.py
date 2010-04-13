@@ -724,7 +724,7 @@ class Users(UserManagementModule):
             record = self._record(req, row)
         if record is None:
             raise BadRequest()
-        if not record['state'] == Users.AccountState.NEW:
+        if not record['state'].value() == Users.AccountState.NEW:
             raise BadRequest(_("User registration already confirmed."))
         code = record['regcode'].value()
         if not code or code != req.param('regcode'):
