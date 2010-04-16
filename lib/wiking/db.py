@@ -354,7 +354,9 @@ class PytisModule(Module, ActionHandler):
                         return (match.group('id'), msg)
                     else:
                         return (None, msg)
-        return (None, unicode(e.exception()))
+            return (None, unicode(e.exception()))
+        else:
+            return (None, _("Unable to perform a database operation."))
 
     def _error_message(self, fid, error):
         # Return an error message string out of _analyze_exception() result.
