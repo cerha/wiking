@@ -220,14 +220,22 @@ class InternalServerError(HttpError):
     ERROR_CODE = 500
     _TITLE = _("Internal Server Error")
 
+    def __init__(self, message, einfo=None):
+        self._message = message
+        self._einfo = einfo
+    
     def message(self, req):
         # TODO: Even though the admin address is in a formatted paragraph, it is not formatted as a
-        # link by the during internal server error export.  It works well in all other cases.
-        return (lcg.p(_("The server was unable to complete your request.")),
-                lcg.p(_("Please inform the server administrator, %s if the problem "
-                        "persists.", cfg.webmaster_address), formatted=True),
-                lcg.p(_("The error message was:")),
-                lcg.PreformattedText(self.args[0]))
+        # link during internal server error export.  It works well in all other cases.
+        if self._einfo and cfg.debug:
+            import cgitb
+            return HtmlContent(cgitb.html(self._einfo))
+        else:
+            return (lcg.p(_("The server was unable to complete your request.")),
+                    lcg.p(_("Please inform the server administrator, %s if the problem "
+                            "persists.", cfg.webmaster_address), formatted=True),
+                    lcg.p(_("The error message was:")),
+                    lcg.PreformattedText(self._message))
     
 
 class ServiceUnavailable(HttpError):
@@ -994,6 +1002,19 @@ class ConfirmationDialog(lcg.Container):
                       g.form(g.submit(_("Continue")),
                              method='GET', action=context.req().uri(), cls='confirmation-form')),
                      cls='confirmation-dialog')
+
+
+class HtmlContent(lcg.TextContent):
+    """LCG content class for wrapping already exported HTML text.
+
+    This class allows embedding HTML content into the LCG content hierarchy.
+    Its export is a noop.  It denies all the advantages of the LCG's export
+    separation, so use only when there is no other choice and with caution.
+    
+    """
+    def export(self, context):
+        return self._text
+
 
     
 # ============================================================================

@@ -175,6 +175,14 @@ class Configuration(pc):
                 "through DNS")
         _DEFAULT = True
         
+    class _Option_debug(pc.BooleanOption):
+        _DESCR = "Debugging mode"
+        _DOC = ("Turn on the debugging mode to allow sending detailed exception tracebacks to "
+                "the browser rather than logging it to servers error log.  Note, that tracebacks "
+                "may contain sensitive information, so this mode should never be on in a "
+                "production environment.  It is only intended for developers.")
+        _DEFAULT = False
+        
     class _Option_bug_report_address(pc.StringOption):
         _DESCR = "E-mail address where bug reports will be sent"
         _DOC = ("Tracebacks of uncaught exceptions are sent automatically by e-mail to the "

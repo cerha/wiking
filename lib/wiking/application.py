@@ -308,7 +308,14 @@ class Application(Module):
                                    ("Query parematers", "\n"+"\n".join(params)),
                                    )])
             text = req_info + "\n\n" + cgitb.text(einfo)
-            log(OPR, "\n"+ text)
+            if not cfg.debug:
+                # When debug is on, the exception goes to the browser window
+                # and it is better to leave the error log for printing
+                # debugging information (the exception makes too much noise
+                # there...).  If this is not always desired, it might be better
+                # to add another configuration option to control exception
+                # logging independently.
+                log(OPR, "\n"+ text)
             address = cfg.bug_report_address
             if address is not None:
                 tb = einfo[2]
@@ -329,7 +336,7 @@ class Application(Module):
             log(OPR, "Error in exception handling:",
                 "".join(traceback.format_exception(*sys.exc_info())))
             log(OPR, "The original exception was", ''.join(traceback.format_exception(*einfo)))
-        raise InternalServerError(message)
+        raise InternalServerError(message, einfo=einfo)
 
     def registration_uri(self, req):
         """Return the URI for new user registration or None if registration is not allowed."""
