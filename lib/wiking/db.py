@@ -824,28 +824,28 @@ class PytisModule(Module, ActionHandler):
 
     # ===== Methods which modify the database =====
     
-    def _insert(self, record):
+    def _insert(self, record, transaction=None):
         """Insert new row into the database and return a Record instance."""
         for key, seq in self._SEQUENCE_FIELDS:
             if record[key].value() is None:
                 counter = pd.DBCounterDefault(seq, self._dbconnection,
                                               connection_name=self.Spec.connection)
-                value = counter.next()
+                value = counter.next(transaction=transaction)
                 record[key] = pd.Value(record[key].type(), value)
-        new_row, success = self._data.insert(record.rowdata())
+        new_row, success = self._data.insert(record.rowdata(), transaction=transaction)
         #debug(":::", success, new_row and [(k, new_row[k].value()) for k in new_row.keys()])
         if success and new_row is not None:
-            # We can't use set_row(), since it would destroy file fields (they are virtual).
+            # We can't use set_row(), since it would destroy virtual file fields (used in CMS).
             for key in new_row.keys():
                 record[key] = new_row[key]
         
-    def _update(self, record):
+    def _update(self, record, transaction=None):
         """Update the record data in the database."""
-        self._data.update(record.key(), record.rowdata())
+        self._data.update(record.key(), record.rowdata(), transaction=transaction)
 
-    def _delete(self, record):
+    def _delete(self, record, transaction=None):
         """Delete the record from the database."""
-        self._data.delete(record.key())
+        self._data.delete(record.key(), transaction=transaction)
         
     # ===== Public methods =====
     
