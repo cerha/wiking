@@ -647,21 +647,60 @@ class Document(object):
         self._globals = globals
         self._layout = layout
 
+    def title(self):
+        """Return the 'title' passed to the constructor."""
+        return self._title
+
+    def subtitle(self):
+        """Return the 'subtitle' passed to the constructor."""
+        return self._subtitle
+
+    def content(self):
+        """Return the 'content' passed to the constructor."""
+        return self._content
+
+    def lang(self):
+        """Return the 'lang' passed to the constructor."""
+        return self._lang
+
+    def sec_lang(self):
+        """Return the 'sec_lang' passed to the constructor."""
+        return self._sec_lang
+
+    def variants(self):
+        """Return the 'variants' passed to the constructor."""
+        return self._variants
+
+    def resources(self):
+        """Return the 'resources' passed to the constructor."""
+        return self._resources
+        
+    def globals(self):
+        """Return the 'globals' passed to the constructor."""
+        return self._globals
+        
+    def layout(self):
+        """Return the 'layout' passed to the constructor."""
+        return self._layout
+        
     def clone(self, **kwargs):
         """Return an instance identical with this one, except for arguments passed to this method.
 
-        Keyword arguments are the same as in the constructor.  Their values override the properties
-        of the original instance (original constructor arguments).
+        Keyword arguments are the same as in the constructor.  Their values
+        override the properties of the original instance (original constructor
+        arguments).
 
         """
         args = [(k[1:], v) for k, v in self.__dict__.items() if k.startswith('_')]
         return self.__class__(**dict(args, **kwargs))
 
-    def content(self):
-        """Return the 'content' passed to the constructor."""
-        return self._content
-        
     def build(self, req, application):
+        """Return the 'WikingNode' instance representing the document.
+
+        As 'WikingNode' is derived from 'lcg.ContentNode', its construction
+        mainly means that the whole application menu structure must be built.
+        
+        """
         id = '/'.join(req.path)
         lang = self._lang or req.prefered_language(raise_error=False) or 'en'
         nodes = {}
@@ -670,8 +709,8 @@ class Document(object):
             if isinstance(x, basestring):
                 x = lcg.Stylesheet(x, uri=x)
             styles.append(x)
-        resource_provider = lcg.ResourceProvider(resources=tuple(styles)+self._resources,
-                                                 dirs=cfg.resource_path)
+        resources = tuple(styles) + self._resources
+        resource_provider = lcg.ResourceProvider(resources=resources, dirs=cfg.resource_path)
         def mknode(item):
             if item.id() == id:
                 heading = self._title or item.title()
