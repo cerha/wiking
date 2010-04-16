@@ -7,27 +7,27 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-04-09 18:37+0200\n"
-"PO-Revision-Date: 2010-04-09 18:37+0200\n"
+"POT-Creation-Date: 2010-04-17 00:27+0200\n"
+"PO-Revision-Date: 2010-04-17 00:27+0200\n"
 "Last-Translator: Hynek Hanke <hanke@brailcom.org>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../lib/wiking/configuration.py:186
+#: ../lib/wiking/configuration.py:194
 msgid "Webmaster's e-mail address"
 msgstr "E-mailová adresa správce"
 
-#: ../lib/wiking/configuration.py:197
+#: ../lib/wiking/configuration.py:205
 msgid "Default sender address"
 msgstr "Výchozí adresa odesílatele"
 
-#: ../lib/wiking/configuration.py:214
+#: ../lib/wiking/configuration.py:222
 msgid "Force HTTPS login"
 msgstr "Vynutit HTTPS pro přihlášení"
 
-#: ../lib/wiking/configuration.py:215
+#: ../lib/wiking/configuration.py:223
 msgid ""
 "If enabled, the login form will always be redirected to an HTTPS address to "
 "ensure the security of the submitted credentials.  This, however, requires "
@@ -40,11 +40,11 @@ msgstr ""
 "stejný virtuální server a aby tyto požadavky byly předávány systému Wiking."
 
 #. Translators: Site means a webpage or web application.
-#: ../lib/wiking/configuration.py:268
+#: ../lib/wiking/configuration.py:276
 msgid "Site title"
 msgstr "Název portálu"
 
-#: ../lib/wiking/configuration.py:269
+#: ../lib/wiking/configuration.py:277
 msgid ""
 "Site title is a short and (hopefully) unique title of the whole website. It "
 "will appear at the top of every page."
@@ -53,11 +53,11 @@ msgstr ""
 "Název bude zobrazen v záhlaví každé stránky."
 
 #. Translators: Site means a webpage or web application. Subtitle as in ,,title -- subtitle''.
-#: ../lib/wiking/configuration.py:275
+#: ../lib/wiking/configuration.py:283
 msgid "Site subtitle"
 msgstr "Podtitul portálu"
 
-#: ../lib/wiking/configuration.py:276
+#: ../lib/wiking/configuration.py:284
 msgid ""
 "Site subtitle is an optional more descriptive title of the website.  It will "
 "appear at the top of every page together with site title, but where brevity "
@@ -67,17 +67,17 @@ msgstr ""
 "záhlaví každé stránky, ale v situacích, kde je nutná stručnost bude vynechán."
 
 #. Translators: Web page or web application specific image.
-#: ../lib/wiking/configuration.py:283
+#: ../lib/wiking/configuration.py:291
 msgid "Site icon"
 msgstr "Ikona portálu"
 
-#: ../lib/wiking/configuration.py:297
+#: ../lib/wiking/configuration.py:305
 msgid "Default language"
 msgstr "Výchozí jazyk"
 
 #. Translators: Language negotiation means the process where the server is trying
 #. to find a language that matches with what the users internet browser asks for.
-#: ../lib/wiking/configuration.py:300
+#: ../lib/wiking/configuration.py:308
 msgid ""
 "Defines the language (lowercase ISO 639-1 Alpha-2 code) to be used when "
 "content language negotiation fails. If not set (which is the default), the "
@@ -105,22 +105,22 @@ msgstr ""
 "dojde stejně. Pokud se tedy chybě 606 chcete úplně vyhnout, ujistěte se, že "
 "jsou všechny dokumenty dostupné alespoň v defaultním jazyku."
 
-#: ../lib/wiking/configuration.py:382
+#: ../lib/wiking/configuration.py:390
 msgid "Whether to use e-mails as login names"
 msgstr "Použít e-mailové adresy jako přihlašovací jméno"
 
-#: ../lib/wiking/configuration.py:383
+#: ../lib/wiking/configuration.py:391
 msgid "Iff true, users must use e-mail addresses as their login names."
 msgstr ""
 "Je-li nastaveno, uživatelé musí jako svá přihlašovací jména používat e-"
 "mailové adresy."
 
 #. Translators: Yes/No configuration option label. Should the login panel display user role (as Admin, Student, Tutor etc.)
-#: ../lib/wiking/configuration.py:394
+#: ../lib/wiking/configuration.py:402
 msgid "Display role in login panel"
 msgstr "Zobrazit roli v panelu přihlášení"
 
-#: ../lib/wiking/configuration.py:395
+#: ../lib/wiking/configuration.py:403
 msgid ""
 "If enabled, the login panel on each page will not display only the current "
 "username, but also his current user role, which affects his permissions."
@@ -1477,9 +1477,9 @@ msgstr "Odstranit"
 msgid "Add contained group"
 msgstr "Přidat obsaženou skupinu"
 
-#: ../lib/wiking/cms/users.py:138 ../lib/wiking/cms/users.py:223
-msgid "Add to group"
-msgstr "Přidat do skupiny"
+#: ../lib/wiking/cms/users.py:138
+msgid "Add to another group"
+msgstr "Přidat do jiné skupiny"
 
 #: ../lib/wiking/cms/users.py:144
 msgid "User Roles"
@@ -1493,6 +1493,10 @@ msgstr "Uživatel"
 #: ../lib/wiking/cms/users.py:155
 msgid "Add member"
 msgstr "Přidat člena"
+
+#: ../lib/wiking/cms/users.py:223
+msgid "Add to group"
+msgstr "Přidat do skupiny"
 
 #. Translators: Form heading.
 #: ../lib/wiking/cms/users.py:236
