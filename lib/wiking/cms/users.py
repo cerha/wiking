@@ -135,7 +135,7 @@ class ContainingRoles(RoleSets):
 
     """
     _TITLE_COLUMN = 'role_id'
-    _INSERT_LABEL = _("Add to group")
+    _INSERT_LABEL = _("Add to another group")
     
 
 class RoleMembers(UserManagementModule):
