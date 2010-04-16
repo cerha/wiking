@@ -928,7 +928,8 @@ class PytisModule(Module, ActionHandler):
             module = self._module(binding.name())
             content = module.related(req, binding, record,
                                      uri=self._current_record_uri(req, record))
-            result.append(lcg.Section(title=binding.title(), content=content))
+            if content:
+                result.append(lcg.Section(title=binding.title(), content=content))
         return result
     
     def action_view(self, req, record, err=None, msg=None):
