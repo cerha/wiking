@@ -403,3 +403,9 @@ class Configuration(pc):
         _DOC = _("If enabled, the login panel on each page will not display only the current "
                  "username, but also his current user role, which affects his permissions.")
         _DEFAULT = False
+
+    class _Option_sql_dir(pc.StringOption):
+        _DESCR = "SQL directory"
+        _DOC = ("The directory where Wiking CMS database initialization/upgrade scripts "
+                "can be found.")
+        _DEFAULT = '/usr/local/share/wiking/sql'
