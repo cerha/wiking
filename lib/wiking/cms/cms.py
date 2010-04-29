@@ -199,7 +199,8 @@ class Roles(wiking.Roles):
     """
     def all_roles(self):
         standard_roles = super(Roles, self).all_roles()
-        user_defined_roles = ApplicationRoles(cfg.resolver).user_defined_roles()
+        module = cfg.resolver.wiking_module('ApplicationRoles')
+        user_defined_roles = module.user_defined_roles()
         return standard_roles + user_defined_roles
 
 
