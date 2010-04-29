@@ -73,7 +73,7 @@ class RoleSets(UserManagementModule):
     
     def _link_provider(self, req, uri, record, cid, **kwargs):
         if cid == 'delete':
-            return make_uri(uri, role_set_id=record['role_set_id'].value(), action='delete')
+            return req.make_uri(uri, role_set_id=record['role_set_id'].value(), action='delete')
         elif cid is None:
             return self._module('ApplicationRoles').link(req, record[self._TITLE_COLUMN])
         else:
@@ -169,7 +169,7 @@ class RoleMembers(UserManagementModule):
             else:
                 return self._module('ApplicationRoles').link(req, record['role_id'])
         elif cid == 'delete':
-            return make_uri(uri, role_member_id=record['role_member_id'].value(), action='delete')
+            return req.make_uri(uri, role_member_id=record['role_member_id'].value(), action='delete')
         else:
             return super(RoleMembers, self)._link_provider(req, uri, record, cid, **kwargs)
 
@@ -664,10 +664,9 @@ class Users(UserManagementModule):
         return super(Users, self)._action_subtitle(req, action, record=record)
         
     def _make_registration_email(self, req, record):
-        base_uri = req.module_uri('Registration') or '/_wmi/'+ self.name()
-        server_hostname = req.server_hostname()
-        uri = req.server_uri() + make_uri(base_uri, action='confirm', uid=record['uid'].value(),
-                                          regcode=record['regcode'].value())
+        base_uri = req.server_uri() + (req.module_uri('Registration') or '/_wmi/'+ self.name())
+        uri = req.make_uri(base_uri, action='confirm', uid=record['uid'].value(),
+                           regcode=record['regcode'].value())
         text = _("The first step of your registration at %(server_hostname)s "
                  "was successfully completed.\n\n"
                  "For the next step visit the following URL and follow the instructions there:\n"
@@ -675,7 +674,7 @@ class Users(UserManagementModule):
                  "If the above link fails, you will be prompted for your activation code when\n"
                  "you attempt to log in.\n\n"
                  "Your activation code is: %(code)s\n",
-                 server_hostname=server_hostname,
+                 server_hostname=req.server_hostname(),
                  uri=uri,
                  code=record['regcode'].value())
         attachments = ()
@@ -1076,8 +1075,8 @@ class Registration(Module, ActionHandler):
                 else:
                     content = (lcg.p(_("Multiple user accounts found for given email address.")),
                                lcg.p(_("Please, select the account for which you want to remind:")),
-                               lcg.ul([lcg.link(make_uri(req.uri(), action='remind',
-                                                         query=u.login()), u.name())
+                               lcg.ul([lcg.link(req.make_uri(req.uri(), action='remind',
+                                                             query=u.login()), u.name())
                                        for u in users]))
                     return Document(title, content)
             if user:

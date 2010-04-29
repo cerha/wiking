@@ -249,11 +249,11 @@ class Application(CookieAuthentication, wiking.Application):
         
     def registration_uri(self, req):
         if cfg.appl.allow_registration:
-            return make_uri(req.uri_prefix() + req.module_uri('Registration'), action='insert')
+            return req.make_uri(req.module_uri('Registration'), action='insert')
         return None
         
     def password_reminder_uri(self, req):
-        return make_uri(req.uri_prefix() + req.module_uri('Registration'), action='remind')
+        return req.make_uri(req.module_uri('Registration'), action='remind')
 
     def login_panel_content(self, req):
         if self.authorize(req, WikingManagementInterface):

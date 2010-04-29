@@ -458,7 +458,7 @@ class PytisModule(Module, ActionHandler):
 
     def _link_provider(self, req, uri, record, cid, **kwargs):
         if cid is None:
-            return uri and make_uri(uri +'/'+ record[self._referer].export(), **kwargs)
+            return uri and req.make_uri(uri +'/'+ record[self._referer].export(), **kwargs)
         if self._links.has_key(cid):
             value_column, link = self._links[cid]
             try:
@@ -480,7 +480,7 @@ class PytisModule(Module, ActionHandler):
         # Use the method '_current_record_uri()' to get URI in the context of the current request.
         uri = self._base_uri(req)
         if uri:
-            return make_uri(uri +'/'+ record[self._referer].export(), *args, **kwargs)
+            return req.make_uri(uri +'/'+ record[self._referer].export(), *args, **kwargs)
         else:
             return None
 

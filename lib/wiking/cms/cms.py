@@ -1262,7 +1262,7 @@ class Pages(ContentManagementModule):
         amod = self._module('Attachments')
         attachments = amod.attachments(record['mapping_id'].value(), record['lang'].value(),
                                        '/'+ record['identifier'].export() + '/attachments')
-        items = [(lcg.link(make_uri(a.uri), a.title),
+        items = [(lcg.link(req.make_uri(a.uri), a.title),
                   ' ('+ a.bytesize +') ', lcg.WikiText(a.descr or ''))
                  for a in attachments if a.listed]
         if items:
@@ -1753,7 +1753,7 @@ class News(ContentManagementModule, EmbeddableCMSModule):
         uri = '/'+ self._mapping_identifier_cache.get(req, record['mapping_id'].value(), get)
         #if args or kwargs:
         #    uri += '/data/' + record[self._referer].export()
-        #    return make_uri(uri, *args, **kwargs)
+        #    return req.make_uri(uri, *args, **kwargs)
         anchor = 'item-'+ record[self._referer].export()
         return make_uri(uri, anchor)
             
