@@ -764,6 +764,7 @@ class PytisModule(Module, ActionHandler):
                     return req.forward(self._module(module), pytis_redirect=True)
             # Handle request to a subpath (pytis bindings are represented by request uri paths).
             if req.unresolved_path:
+                self._authorize(req, action='view', record=record)
                 return self._handle_subpath(req, record)
         return super(PytisModule, self)._handle(req, action, **kwargs)
 
