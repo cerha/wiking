@@ -821,7 +821,7 @@ class PytisModule(Module, ActionHandler):
         tr = translator(req.prefered_language())
         response = pw.EditForm.ajax_response(req, record, layout, errors, tr)
         req.set_header('X-Json', response)
-        return ('text/plain', '')
+        raise Done()
 
     # ===== Methods which modify the database =====
     
