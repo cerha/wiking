@@ -600,6 +600,10 @@ class PytisModule(Module, ActionHandler):
 
         """
         return self._columns(req)
+
+    def _export_filename(self, req):
+        """Return the filename (string) of the CSV export download (action 'export')."""
+        return 'export.csv'
     
     def _filters(self, req):
         """Return a list of dynamic filters as 'pytis.presentation.Filter' instances or None.
@@ -1044,7 +1048,6 @@ class PytisModule(Module, ActionHandler):
                               subtitle=self._action_subtitle(req, 'delete', record))
         
     def action_export(self, req):
-        req.send_http_header('text/plain; charset=utf-8')
         record = self._record(req, None)
         columns = [(cid, isinstance(record[cid].type(), pytis.data.Float)
                     and dict(locale_format=False) or {})
@@ -1054,6 +1057,9 @@ class PytisModule(Module, ActionHandler):
             condition = self._binding_condition(fw.arg('binding'), fw.arg('record'))
         else:
             condition = None
+        req.set_header('Content-disposition',
+                       'attachment; filename=%s' % self._export_filename(req))
+        req.send_http_header('text/plain; charset=utf-8')
         for row in self._rows(req, condition=condition, lang=req.prefered_language()):
             record.set_row(row)
             data = []
