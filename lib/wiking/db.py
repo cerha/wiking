@@ -45,38 +45,43 @@ class PytisModule(Module, ActionHandler):
          _("Empty value.  This field is mandatory.")),
         )
 
-    # Translators: Button label. Record as in `database record' (computer terminology).
+    # Translators: Button label for new database record creation (computer terminology).
     _INSERT_LABEL = _("New record")
-    # Translators: Button label. Record as in `database record' (computer terminology).
+    # Translators: Tooltip of new database record creation button (computer terminology).
     _INSERT_DESCR = _("Create a new record")
-    # Translators: Button label. Meaning `Modify the database record' (computer terminology).
+    # Translators: Button label for database record modification (verb in imperative,
+    # computer terminology).
     _UPDATE_LABEL = _("Edit")
-    # Translators: Button label. Record as in `database record' (computer terminology).
+    # Translators: Tooltip of database record modification button (computer terminology)
     _UPDATE_DESCR = _("Modify the record")
-    # Translators: Button label. Meaning `Delete the database record' (computer terminology).
+    # Translators: Button label for database record deletion (verb in imperative,
+    # computer terminology).
     _DELETE_LABEL = _("Remove")
-    # Translators: Button label. Record as in `database record' (computer terminology).
+    # Translators: Tooltip of database record deletion button (computer terminology).
     _DELETE_DESCR = _("Remove the record permanently")
-    # Translators: Record as in `database record' (computer terminology).
+    # Translators: Prompt before database record deletion (computer terminology).
     _DELETE_PROMPT = _("Please, confirm removing the record permanently.")
-    # Translators: Copy button label. Verb. Computer terminology and form common for a webpage button.
+    # Translators: Button label for database record copying (verb in imperative,
+    # computer terminology).
     _COPY_LABEL = _("Copy")
-    # Translators: Record as in `database record' (computer terminology).
+    # Translators: Tooltip of database record copy button (computer terminology).
     _COPY_DESCR = _("Create new record initialized by values of this record")
-    # Translators: Button label.
+    # Translators: Button label for returning from a single record view to the listing of all
+    # database records (computer terminology).
     _LIST_LABEL = _("Back to list")
-    # Translators: Record as in `database record' (computer terminology).
+    # Translators: Tooltip of a button for returning from a single record view to the
+    # listing of all records (computer terminology).
     _LIST_DESCR = _("Back to the list of all records")
-    # Translators: Record as in `database record' (computer terminology).
     # Translators: Button label (verb in imperative, computer terminology).
     _EXPORT_LABEL = _("Export")
     # Translators: Button tooltip.  Don't translate `CSV', it is an
     # internationally recognized computer abbreviation.
     _EXPORT_DESCR = _("Export the listing into a CSV format")
+    # Translators: Message displayed after new database record creation (computer terminology).
     _INSERT_MSG = _("New record was successfully inserted.")
-    # Translators: Record as in `database record' (computer terminology).
+    # Translators: Message displayed after a database record modification (computer terminology).
     _UPDATE_MSG = _("The record was successfully updated.")
-    # Translators: Record as in `database record' (computer terminology).
+    # Translators: Message displayed after a database record deletion (computer terminology).
     _DELETE_MSG = _("The record was deleted.")
     
     _OWNER_COLUMN = None
