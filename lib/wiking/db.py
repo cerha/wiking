@@ -1049,7 +1049,12 @@ class PytisModule(Module, ActionHandler):
         columns = [(cid, isinstance(record[cid].type(), pytis.data.Float)
                     and dict(locale_format=False) or {})
                    for cid in self._exported_columns(req)]
-        for row in self._rows(req, lang=req.prefered_language()):
+        fw = self._binding_forward(req)
+        if fw:
+            condition = self._binding_condition(fw.arg('binding'), fw.arg('record'))
+        else:
+            condition = None
+        for row in self._rows(req, condition=condition, lang=req.prefered_language()):
             record.set_row(row)
             data = []
             for cid, kwargs in columns:
