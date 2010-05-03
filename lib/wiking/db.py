@@ -68,6 +68,11 @@ class PytisModule(Module, ActionHandler):
     # Translators: Record as in `database record' (computer terminology).
     _LIST_DESCR = _("Back to the list of all records")
     # Translators: Record as in `database record' (computer terminology).
+    # Translators: Button label (verb in imperative, computer terminology).
+    _EXPORT_LABEL = _("Export")
+    # Translators: Button tooltip.  Don't translate `CSV', it is an
+    # internationally recognized computer abbreviation.
+    _EXPORT_DESCR = _("Export the listing into a CSV format")
     _INSERT_MSG = _("New record was successfully inserted.")
     # Translators: Record as in `database record' (computer terminology).
     _UPDATE_MSG = _("The record was successfully updated.")
@@ -404,6 +409,8 @@ class PytisModule(Module, ActionHandler):
     def _default_actions_first(self, req, record):
         return (Action(self._INSERT_LABEL, 'insert', descr=self._INSERT_DESCR,
                        context=pp.ActionContext.GLOBAL),
+                Action(self._EXPORT_LABEL, 'export', descr=self._EXPORT_DESCR,
+                       context=pp.ActionContext.GLOBAL),
                 Action(self._UPDATE_LABEL, 'update', descr=self._UPDATE_DESCR),)
 
     def _default_actions_last(self, req, record):
@@ -570,16 +577,25 @@ class PytisModule(Module, ActionHandler):
         return self._LAYOUT.get(action)
 
     def _columns(self, req):
-        """Return a list of BrowseForm columns or None.
+        """Return a sequence of BrowseForm columns.
 
-        'None' means to use the default list of columns defined by specification.
-
-        Override this metod to dynamically change the list of visible BrowseForm columns.  The
-        default implementation returns 'None'.
+        Override this metod to dynamically change the list of visible
+        BrowseForm columns.  The default implementation returns the list of
+        columns defined by the specification.
 
         """
-        return None
+        return self._view.columns()
 
+    def _exported_columns(self, req):
+        """Return a list of columns present in CSV export (action 'export').
+        
+        Override this metod to dynamically change the list of columns present
+        in exported data.  The default implementation returns the same as
+        '_columns()'.
+
+        """
+        return self._columns(req)
+    
     def _filters(self, req):
         """Return a list of dynamic filters as 'pytis.presentation.Filter' instances or None.
 
@@ -873,8 +889,7 @@ class PytisModule(Module, ActionHandler):
         else:
             form = pw.ListView
         condition = self._binding_condition(binding, record)
-        columns = [c for c in self._columns(req) or self._view.columns()
-                   if c != binding.binding_column()]
+        columns = [c for c in self._columns(req) if c != binding.binding_column()]
         lang = req.prefered_language(raise_error=False)
         if binding.id():
             binding_uri = uri +'/'+ binding.id()
@@ -1022,6 +1037,22 @@ class PytisModule(Module, ActionHandler):
         req.message(self._delete_prompt(req, record))
         return self._document(req, self._add_action_menu((form,), req, record, actions), record,
                               subtitle=self._action_subtitle(req, 'delete', record))
+        
+    def action_export(self, req):
+        req.send_http_header('text/plain; charset=utf-8')
+        record = self._record(req, None)
+        columns = [(cid, isinstance(record[cid].type(), pytis.data.Float)
+                    and dict(locale_format=False) or {})
+                   for cid in self._exported_columns(req)]
+        for row in self._rows(req, lang=req.prefered_language()):
+            record.set_row(row)
+            data = []
+            for cid, kwargs in columns:
+                value = record.display(cid) or record[cid].export(**kwargs)
+                singleline = ';'.join(value.split('\n'))
+                data.append(singleline.replace('\t', '\\t'))
+            req.write('\t'.join(data).encode('utf-8') + '\n')
+        raise Done()
         
     def _action_subtitle(self, req, action, record=None):
         for a in self._actions(req, record):

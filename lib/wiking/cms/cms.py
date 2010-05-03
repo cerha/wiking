@@ -208,6 +208,7 @@ class CMSModule(PytisModule, RssModule, Panelizable):
     """Base class for all CMS modules."""
     RIGHTS_view = (Roles.ANYONE,)
     RIGHTS_list = (Roles.ANYONE,)
+    RIGHTS_export = () # Denied by default.  Enable explicitly for concrete modules.
     RIGHTS_rss  = (Roles.ANYONE,)
     RIGHTS_insert    = (Roles.ADMIN,)
     RIGHTS_update    = (Roles.ADMIN,)
