@@ -109,7 +109,9 @@ class PytisModule(Module, ActionHandler):
     
     _ALLOW_COPY = False
     _SUBMIT_BUTTONS = {}
+    "Dictionary of form buttons keyed by action name (see '_submit_buttons()' method)."
     _LAYOUT = {}
+    "Dictionary of form layouts keyed by action name (see '_layout()' method)."
 
     class Record(pp.PresentedRow):
         """An abstraction of one record within the module's data object.
@@ -558,28 +560,60 @@ class PytisModule(Module, ActionHandler):
     def _layout(self, req, action, record=None):
         """Return the form layout for given action and record.
 
-        This method may be overriden to change form layout dynamically based on the combination of
-        record, action and current request properties.  You may, for example, determine the layout
-        according to field values or the currently logged in user.
+        This method may be overriden to change form layout dynamically based on
+        the combination of record, action and current request properties.  You
+        may, for example, determine the layout according to field values or the
+        currently logged in user.
 
         Arguments:
           req -- current request
-          action -- name of the action as a string (determines also the form type)
-          record -- the current record instance or None (for actions which don't work on an
-            existing record, such as 'insert')
+          action -- name of the action as a string (determines also the form
+            type)
+          record -- the current record instance or None (for actions which
+            don't work on an existing record, such as 'insert')
 
-        The returned value may be a 'pytis.presentation.GroupSpec' instance, a sequence of field
-        identifiers or 'pytis.presentation.GroupSpec' instances or 'None' to use the default layout
-        defined by specification.  If you ever need to call this method (you most often just define
-        it), use the '_layout_instance()' method to convert the returned value into a
-        'pytis.presentation.GroupSpec' instance.
+        The returned value may be a 'pytis.presentation.GroupSpec' instance, a
+        sequence of field identifiers or 'pytis.presentation.GroupSpec'
+        instances or 'None' to use the default layout defined by specification.
+        If you ever need to call this method (you most often just define it),
+        use the '_layout_instance()' method to convert the returned value into
+        a 'pytis.presentation.GroupSpec' instance.
 
-        The default implementation returns one of (statical) layouts defined in '_LAYOUTS'
-        (dictionary keyed by action name) or None if no specific layout is defined for given action
-        (to use the default layout from specification).
+        The default implementation returns one of (statical) layouts defined in
+        '_LAYOUTS' (dictionary keyed by action name) or None if no specific
+        layout is defined for given action (to use the default layout from
+        specification).
 
         """
         return self._LAYOUT.get(action)
+
+    def _submit_buttons(self, req, action, record=None):
+        """Return the sequence of form submit buttons as pairs (LABEL, NAME).
+
+        This method may be overriden to change form buttons dynamically based
+        on the combination of record, action and current request properties.
+
+        Arguments:
+          req -- current request
+          action -- name of the action as a string (determines also the form
+            type)
+          record -- the current record instance or None (for actions which
+            don't work on an existing record, such as 'insert')
+
+        The returned value is a sequence of pairs (LABEL, NAME), where LABEL is
+        the button label and NAME is the name of the corresponding request
+        parameter, which will be submitted along with the form when the button
+        is pressed.  The parameter's value is the button LABEL, but you will
+        not want to check against the label if your application is
+        internationalized (you get different labels for different languages).
+
+        The default implementation returns one of (statical) button
+        specifications defined by in '_SUBMIT_BUTTONS' constant (dictionary
+        keyed by action name) or None if no specific buttons are defined for
+        given action (to use the default from buttons).
+
+        """
+        return self._SUBMIT_BUTTONS.get(action)
 
     def _columns(self, req):
         """Return a sequence of BrowseForm columns.
@@ -1005,7 +1039,7 @@ class PytisModule(Module, ActionHandler):
                         prefill[fid] = record[fid].export()
         form = self._form(pw.EditForm, req, new=True, action=action,
                           prefill=prefill, layout=layout, errors=errors,
-                          submit=self._SUBMIT_BUTTONS.get(action))
+                          submit=self._submit_buttons(req, action))
         return self._document(req, form, subtitle=self._action_subtitle(req, action))
             
     def action_update(self, req, record, action='update'):
@@ -1025,7 +1059,7 @@ class PytisModule(Module, ActionHandler):
             else:
                 return self._redirect_after_update(req, record)
         form = self._form(pw.EditForm, req, record=record, action=action, layout=layout,
-                          submit=self._SUBMIT_BUTTONS.get(action),
+                          submit=self._submit_buttons(req, action, record),
                           prefill=self._prefill(req), errors=errors)
         return self._document(req, form, record,
                               subtitle=self._action_subtitle(req, action, record=record))
