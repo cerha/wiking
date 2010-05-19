@@ -41,17 +41,35 @@ class RequestError(Exception):
     emailed, since they are caused by an invalid request, not a bug in the
     application.
 
-    """
+    The return value of the status_code() function determines the HTTP
+    error code that should be sent to the client. If None, no HTTP error
+    is set.
+
+    This class is abstract.  The error code and error message must be defined
+    by a derived class.  The error message may also require certain constructor
+    arguments passed when raising the error."""
     _TITLE = None
-    
-    def title(self):
-        """Return the error name as a string.""" 
-        return self._TITLE
+    ERROR_CODE = 200
     
     def message(self, req):
         """Return the error message as an 'lcg.Content' element structure.""" 
         return None
 
+    def status_code(self, req):
+        """Return the HTTP Error code to be sent to the client.
+
+        By default, the value of the variable ERROR_CODE is returned.
+        Override this function if you want to determine the HTTP error code
+        dynamically."""
+        return self.ERROR_CODE
+
+    def title(self, req):
+        if self._TITLE is not None:
+            return self._TITLE
+        else:
+            name = " ".join(pp.split_camel_case(self.__class__.__name__))
+            # Translators: '%(code)d' is replaced by error number and '%(name)s' by error title.
+            return _("Error %(code)d: %(name)s", code=self.status_code(req), name=name)
 
 class AuthenticationError(RequestError):
     """Error indicating that authentication is required for the resource."""
@@ -115,30 +133,6 @@ class AuthorizationError(RequestError):
                         "please contact the administrator at %s.", cfg.webmaster_address),
                       formatted=True))
 
-
-class HttpError(RequestError):
-    """Exception representing en HTTP error.
-
-    This exception should be handled by returning the appropriate HTTP error
-    code to the client.  This code is available as the public constant
-    'ERROR_CODE' of the class.
-
-    This class is abstract.  The error code and error message must be defined
-    by a derived class.  The error message may also require certain constructor
-    arguments passed when raising the error.
-    
-    """
-    ERROR_CODE = None
-    
-    def title(self):
-        if self._TITLE is not None:
-            return self._TITLE
-        else:
-            name = " ".join(pp.split_camel_case(self.__class__.__name__))
-            # Translators: '%(code)d' is replaced by error number and '%(name)s' by error title.
-            return _("Error %(code)d: %(name)s", code=self.ERROR_CODE, name=name)
-
-
 class BadRequest(HttpError):
     """Error indicating invalid request argument values or their combination.
 
@@ -162,7 +156,7 @@ class BadRequest(HttpError):
             return lcg.p(_("Invalid request arguments."))
 
         
-class NotFound(HttpError):
+class NotFound(RequestError):
     """Error indicating invalid request target."""
     ERROR_CODE = 404
     
@@ -178,7 +172,7 @@ class NotFound(HttpError):
     #return lcg.coerce([lcg.p(p) for p in msg])
 
     
-class Forbidden(HttpError):
+class Forbidden(RequestError):
     """Error indicating unavailable request target."""
     ERROR_CODE = 403
     
@@ -187,7 +181,7 @@ class Forbidden(HttpError):
                 lcg.p(_("The item exists on the server, but can not be accessed.")))
 
     
-class NotAcceptable(HttpError):
+class NotAcceptable(RequestError):
     """Error indicating unavailability of the resource in the requested language.
 
     Constructor may be called with a sequence of language codes as its first argument.  This
@@ -216,7 +210,7 @@ class NotAcceptable(HttpError):
         return msg
 
 
-class InternalServerError(HttpError):
+class InternalServerError(RequestError):
     """General error in application -- error message is required as an argument."""
     ERROR_CODE = 500
     _TITLE = _("Internal Server Error")
@@ -239,7 +233,7 @@ class InternalServerError(HttpError):
                     lcg.PreformattedText(self._message))
     
 
-class ServiceUnavailable(HttpError):
+class ServiceUnavailable(RequestError):
     """Error indicating a temporary problem, which may not appaper in further requests."""
     ERROR_CODE = 503
     _TITLE = _("Service Unavailable")

@@ -667,8 +667,7 @@ class PytisModule(Module, ActionHandler):
         Pytis module resolves to 'record' argument if the URI corresponds to a
         particular record through the referer column or to no arguments if the
         URI is just a base URI of the modue (no subpath).  'NotFound' is raised
-        when the URI contains a subpath which does not map to an existing
-        record.
+        when the URI refers to an inexistent record.
 
         """
         row = self._resolve(req)
@@ -694,7 +693,7 @@ class PytisModule(Module, ActionHandler):
             return 'view'
 
     def _resolve(self, req):
-        # Returns Row, None or raises HttpError.
+        # Returns Row, None or raises RequestError.
         if req.unresolved_path:
             row = self._refered_row(req, req.unresolved_path[0])
             # If no error was raised, the path was resolved.

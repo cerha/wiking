@@ -43,17 +43,15 @@ class Handler(object):
 
     def _serve_error_document(self, req, error):
         """Serve an error page using the Wiking exporter."""
-        if isinstance(error, HttpError):
-            req.set_status(error.ERROR_CODE)
-        document = Document(error.title(), error.message(req))
+        req.set_status(error.status_code(req))
+        document = Document(error.title(req), error.message(req))
         return self._serve_document(req, document)
 
     def _serve_minimal_error_document(self, req, error):
         """Serve a minimal error page using the minimalistic exporter."""
-        if isinstance(error, HttpError):
-            req.set_status(error.ERROR_CODE)
+        req.set_status(error.status_code(req))
         node = lcg.ContentNode(req.uri().encode('utf-8'),
-                               title=error.title(),
+                               title=error.title(req),
                                content=error.message(req))
         exporter = MinimalExporter(translations=cfg.translation_path)
         try:
