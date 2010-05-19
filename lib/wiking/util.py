@@ -61,6 +61,11 @@ class RequestError(Exception):
         By default, the value of the variable ERROR_CODE is returned.
         Override this function if you want to determine the HTTP error code
         dynamically."""
+        # TODO: This is a hack, we should not have this as a side effect here
+        if req.param('http_auth', default=False):
+            # If requested, ask for HTTP Basic authentication
+            req.set_header('WWW-Authenticate', 'Basic realm="%s"' % cfg.site_title)
+
         return self.ERROR_CODE
 
     def title(self, req):
@@ -76,6 +81,7 @@ class AuthenticationError(RequestError):
     
     # Translators: This is a warning on a webpage which is only accessible for logged in users
     _TITLE = _("Authentication required")
+    ERROR_CODE = 401
 
     def message(self, req):
         return LoginDialog(self.args and self.args[0] or None)
@@ -133,7 +139,7 @@ class AuthorizationError(RequestError):
                         "please contact the administrator at %s.", cfg.webmaster_address),
                       formatted=True))
 
-class BadRequest(HttpError):
+class BadRequest(RequestError):
     """Error indicating invalid request argument values or their combination.
 
     Wiking applications usually ignore request arguments which they don't

@@ -700,14 +700,30 @@ class WikingRequest(Request):
             return None
 
     def credentials(self):
-        """Return the login name and password entered in the login form.
+        """Return the login name and password as given by the user.
 
-        The returned value does not indicate anything about authentication.  The credentials are
-        returned even if login was not successful.  The returned value is a pair of strings (login,
-        password) or None if no authentication was performed for this request.
+        The return value is either a pair of strings (user, password) or None 
+        if no authentication was performed for this requests. The method
+        considers the self-tailored Wiking cookie authentication (through the
+        Wiking Login form) and HTTP Basic authentication in this order
+        of priority.
 
+        The return value does not indicate anything about authentication.  The
+        credentials are returned even if login was not successful.
         """
-        return self._credentials
+        credentials = None
+
+        if self._credentials:
+            # Return Wiking auth mechanism credentials (cookie)
+            credentials = self._credentials
+        else:
+            # Return HTTP Basic auth credentials if available
+            auth_header = self.header('Authorization')
+            if auth_header:
+                auth_str = auth_header.split()
+                if auth_str[0] == 'Basic':
+                    credentials = auth_str[1].decode("base64").split(":")
+        return credentials
 
     def user(self, require=False):
         """Return 'User' instance describing the logged-in user.
