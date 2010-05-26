@@ -268,18 +268,10 @@ class PytisModule(Module, ActionHandler):
                 col = self._type[binding_column].enumerator().value_column()
                 return (binding_column, fw.arg('record')[col].value())
         return None, None
-        
+    
     def _validate(self, req, record, layout):
         # TODO: This should go to pytis.web....
         errors = []
-        if record.new():
-            # Supply the value of the binding column (if this is a binding forwarded request).
-            binding_column, value = self._binding_column(req)
-            if binding_column:
-                if req.param(binding_column) == record[binding_column].type().export(value):
-                    record[binding_column] = pd.Value(record[binding_column].type(), value)
-                else:
-                    errors.append((binding_column, _("Invalid binding column value.")))
         order = layout.order()
         # Validate the changed field last (for AJAX update request) to invoke computers correctly.
         changed_field = req.param('_pytis_form_update_request')
@@ -739,11 +731,12 @@ class PytisModule(Module, ActionHandler):
         return False
         
     def _prefill(self, req, new=False):
+        # Note, this method is only used for prefilling the fields in a
+        # displayed form.  It has no effect on the 'prefill' passed to the
+        # created 'Record' instances.  The dictionary values must be strings.
+        # These strings will be validated after form submission.
         prefill = dict([(key, req.param(key)) for key, type in self._type.items()
                         if req.has_param(key) and not isinstance(type, (pd.Binary, pd.Password))])
-        binding_column, value = self._binding_column(req)
-        if binding_column:
-            prefill[binding_column] = self._type[binding_column].export(value)
         if new and not prefill.has_key('lang') and self._LIST_BY_LANGUAGE:
             lang = req.prefered_language(raise_error=False)
             if lang:
@@ -1006,10 +999,26 @@ class PytisModule(Module, ActionHandler):
         # 'record' is passed when copying an existing record.
         layout = self._layout_instance(self._layout(req, action))
         if req.param('submit'):
-            if self._OWNER_COLUMN and self._SUPPLY_OWNER and req.user():
-                prefill = {self._OWNER_COLUMN: req.user().uid()}
-            else:
-                prefill = None
+            # TODO: The same prefill should also be used by the form when
+            # initializing it's `Record' instance, since visible form fields
+            # may depend on this prefill too.
+            fw = self._binding_forward(req)
+            if fw:
+                # Supply the value of the binding column (if this is a binding
+                # forwarded request).
+                binding = fw.arg('binding')
+                binding_record = fw.arg('record')
+                if binding.prefill():
+                    prefill = binding.prefill()(binding_record)
+                elif binding.binding_column():
+                    binding_column = binding.binding_column()
+                    main_form_column = self._type[binding_column].enumerator().value_column()
+                    prefill = {binding_column: binding_record[main_form_column].value()}
+                else:
+                    prefill = {}
+            if self._OWNER_COLUMN and self._SUPPLY_OWNER and req.user() \
+                    and not prefill.has_key(self._OWNER_COLUMN):
+                prefill[self._OWNER_COLUMN] = req.user().uid()
             record = self._record(req, None, new=True, prefill=prefill)
             errors = self._validate(req, record, layout)
             if req.param('_pytis_form_update_request'):
