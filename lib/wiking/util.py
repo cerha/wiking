@@ -61,10 +61,6 @@ class RequestError(Exception):
         By default, the value of the variable ERROR_CODE is returned.
         Override this function if you want to determine the HTTP error code
         dynamically."""
-        # TODO: This is a hack, we should not have this as a side effect here
-        if req.param('http_auth', default=False):
-            # If requested, ask for HTTP Basic authentication
-            req.set_header('WWW-Authenticate', 'Basic realm="%s"' % cfg.site_title)
 
         return self.ERROR_CODE
 
@@ -81,7 +77,20 @@ class AuthenticationError(RequestError):
     
     # Translators: This is a warning on a webpage which is only accessible for logged in users
     _TITLE = _("Authentication required")
-    ERROR_CODE = 401
+
+    def status_code(self, req):
+        """Return authentication error page status code.
+
+        If asked_for http authentication, set the appropriate HTTP
+        header and return 401, otherwise return code 200 and rely on
+        Wiking authentication mechanism."""
+        if req.param('http_auth', default=False):
+            # If requested, ask for HTTP Basic authentication
+            req.set_header('WWW-Authenticate', 'Basic realm="%s"' % cfg.site_title)
+            err_code = 401
+        else:
+            err_code = 200
+        return err_code
 
     def message(self, req):
         return LoginDialog(self.args and self.args[0] or None)
