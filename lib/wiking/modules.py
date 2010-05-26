@@ -432,7 +432,7 @@ class CookieAuthentication(object):
     def authenticate(self, req):
         try:
             session = self._module('Session')
-        except MaintananceModeError:
+        except MaintenanceModeError:
             return None
         credentials = req.credentials()
         secure = self._SECURE_AUTH_COOKIES

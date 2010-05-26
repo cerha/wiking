@@ -1263,7 +1263,7 @@ class WikingResolver(pytis.util.Resolver):
         except KeyError:
             cls = self.wiking_module_cls(name)
             if issubclass(cls, PytisModule) and cfg.maintenance:
-                raise MaintananceModeError()
+                raise MaintenanceModeError()
             module = cls(self, **kwargs)
             self._wiking_module_cache[key] = module
         return module

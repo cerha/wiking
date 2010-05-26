@@ -60,7 +60,7 @@ class Application(CookieAuthentication, wiking.Application):
         req.wmi = False # Will be set to True by `WikingManagementInterface' if needed.
         try:
             self._module('Config').configure(req)
-        except MaintananceModeError:
+        except MaintenanceModeError:
             pass
         if req.unresolved_path:
             try:
@@ -146,7 +146,7 @@ class Application(CookieAuthentication, wiking.Application):
                             parent = module.parent()
                             if parent is not None:
                                 uri = parent.submodule_uri(req, modname)
-                except MaintananceModeError:
+                except MaintenanceModeError:
                     pass
         return uri
 
@@ -166,7 +166,7 @@ class Application(CookieAuthentication, wiking.Application):
         module = req.wmi and 'WikingManagementInterface' or 'Pages'
         try:
             return self._module(module).menu(req)
-        except MaintananceModeError:
+        except MaintenanceModeError:
             return ()
     
     def panels(self, req, lang):
@@ -176,25 +176,25 @@ class Application(CookieAuthentication, wiking.Application):
             panels = []
         try:
             return panels + self._module('Panels').panels(req, lang)
-        except MaintananceModeError:
+        except MaintenanceModeError:
             return []
         
     def languages(self):
         try:
             return self._module('Languages').languages()
-        except MaintananceModeError:
+        except MaintenanceModeError:
             return ('en', 'cs')
         
     def stylesheets(self, req):
         try:
             return self._module('Styles').stylesheets(req)
-        except MaintananceModeError:
+        except MaintenanceModeError:
             return super(Application, self).stylesheets(req)
 
     def _auth_user(self, req, login):
         try:
             return self._module('Users').user(req, login)
-        except MaintananceModeError:
+        except MaintenanceModeError:
             return None
     
     def _auth_check_password(self, user, password):

@@ -1910,7 +1910,7 @@ class Stylesheets(Stylesheets):
         if len(path) == 1:
             try:
                 content = self._module('Styles').stylesheet(path[0])
-            except MaintananceModeError:
+            except MaintenanceModeError:
                 pass
         if content is not None:
             return content
