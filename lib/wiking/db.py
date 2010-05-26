@@ -29,8 +29,26 @@ class PytisModule(Module, ActionHandler):
     Each instance is then bound to a pytis data object, which is automatically
     created on module instantiation.
     
+    Most actions (such as 'view', 'update', 'delete') in this class work with a
+    pytis record and expect a 'PytisModule.Record' instance as the 'record'
+    argument of the action handler method.  Some actions (such as 'list') don't
+    expect any arguments since they don't operate on a particular record.
+    
     """
     _REFERER = None
+    """If of the referer column as one of the id's defined by 'Spec.fields' or None.
+
+    The Pytis module maps data records to URIs through so called 'referer'
+    column.  This should be a unique column with values, which may be used in
+    URI (don't contain special characters, etc.).  If not defined, the key
+    column is used by default.  As the key is typically a number, the records
+    URI will typically look like '/module-uri/123'.  This URI will be resolved
+    automatically to calling an action method with 'record' argument holding a
+    'PytisModule.Record' instance corresponding to the data row with 123 in the
+    key value.  Referer column values are converted to strings and back through
+    standard pytis value export/validation according to referer column type.
+       
+    """
     _TITLE_COLUMN = None
     _TITLE_TEMPLATE = None
     _HONOUR_SPEC_TITLE = False
@@ -643,15 +661,16 @@ class PytisModule(Module, ActionHandler):
         """
         return None
     
-    def _default_action(self, req, record=None):
-        if record is None:
-            return 'list'
-        else:
-            return 'view'
-
     def _action_args(self, req):
-        # The request path may resolve to a 'record' argument, no arguments or
-        # raise one of HttpError exceptions.
+        """Resolve request path and/or parameters into action method arguments.
+
+        Pytis module resolves to 'record' argument if the URI corresponds to a
+        particular record through the referer column or to no arguments if the
+        URI is just a base URI of the modue (no subpath).  'NotFound' is raised
+        when the URI contains a subpath which does not map to an existing
+        record.
+
+        """
         row = self._resolve(req)
         if row is not None:
             args = dict(record=self._record(req, row))
@@ -659,6 +678,21 @@ class PytisModule(Module, ActionHandler):
             args = dict()
         return args
     
+    def _default_action(self, req, record=None):
+        """Return the name of the action to perform if 'action' request parameter was not passed.
+
+        If you ever override this method in a derived class, it should accept
+        all arguments which may be returned by '_action_args()'.  This
+        practically means, that if you want to stay forward compatible with
+        possible additions to this class, you should accept ANY arguments
+        through '**kwargs' and only inspect the arguments of your interest.
+
+        """
+        if record is None:
+            return 'list'
+        else:
+            return 'view'
+
     def _resolve(self, req):
         # Returns Row, None or raises HttpError.
         if req.unresolved_path:
