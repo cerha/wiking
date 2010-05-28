@@ -508,12 +508,6 @@ class WikingRequest(Request):
         return params
 
     def _init_path(self, uri):
-        if uri.endswith('.rss'):
-            self._params['action'] = 'rss'
-            uri = uri[:-4]
-            if len(uri) > 3 and uri[-3] == '.' and uri[-2:].isalpha():
-                self._prefered_language = str(uri[-2:])
-                uri = uri[:-3]
         prefix = self._uri_prefix
         if prefix and uri.startswith(prefix):
             uri = uri[len(prefix):]
