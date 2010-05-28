@@ -434,6 +434,18 @@ class CookieAuthentication(object):
             session = self._module('Session')
         except MaintenanceModeError:
             return None
+        # When HTTP authentication is used, req.credentials() returns the
+        # credentials for every subsequent request (for cookie authentication
+        # the credentials are sent just once on login form submission).  This
+        # is quite unfortunate, since it results in new session initialization
+        # for each request.  This should be solved if HTTP authentication is
+        # used seriously.  Probably there should be two separate methods to
+        # return login form credentials and HTTP authentication credentials.
+        # HTTP authentication should probably not interfer with session at all
+        # and should be implemented in a separate class.  The question is how
+        # to combine the two methods nicely together.  It is important to
+        # support login hooks for HTTP authentication too, otherwise the users
+        # would be able to use HTTP authentication to make unnoticed logins.
         credentials = req.credentials()
         secure = self._SECURE_AUTH_COOKIES
         day = 24*3600
