@@ -36,7 +36,7 @@ class PytisModule(Module, ActionHandler):
     
     """
     _REFERER = None
-    """If of the referer column as one of the id's defined by 'Spec.fields' or None.
+    """Id of the referer column as one of the id's defined by 'Spec.fields' or None.
 
     The Pytis module maps data records to URIs through so called 'referer'
     column.  This should be a unique column with values, which may be used in
@@ -803,6 +803,11 @@ class PytisModule(Module, ActionHandler):
         if values:
             for k, v in values.items():
                 conds.append(pd.EQ(k, pd.Value(self._type[k], v)))
+        fw = self._binding_forward(req)
+        if fw:
+            binding = fw.arg('binding')
+            record = fw.arg('record')
+            conds.append(self._binding_condition(binding, record))
         if lang and self._LIST_BY_LANGUAGE:
             conds.append(pd.EQ('lang', pd.Value(pd.String(), lang)))
         if conds:
@@ -828,8 +833,8 @@ class PytisModule(Module, ActionHandler):
             arguments = None
         return arguments
         
-    def _rows(self, req, lang=None, condition=None, limit=None):
-        return self._data.get_rows(sorting=self._sorting, limit=limit,
+    def _rows(self, req, lang=None, condition=None, limit=None, sorting=None):
+        return self._data.get_rows(sorting=sorting or self._sorting, limit=limit,
                                    condition=self._condition(req, lang=lang, condition=condition),
                                    arguments=self._arguments(req))
 
@@ -1191,7 +1196,7 @@ class PytisModule(Module, ActionHandler):
 
 
 class RssModule(object):
-    
+    """Deprecated in favour od PytisRssModule defined below."""
     _RSS_TITLE_COLUMN = None
     _RSS_DESCR_COLUMN = None
     _RSS_DATE_COLUMN = None
@@ -1262,6 +1267,7 @@ class RssModule(object):
         return self._RSS_TITLE_COLUMN is not None
 
     def action_rss(self, req, relation=None):
+        import wiking
         if not self._RSS_TITLE_COLUMN:
             raise NotFound
         lang = req.prefered_language()
@@ -1273,7 +1279,14 @@ class RssModule(object):
         base_uri = req.server_uri(current=True)
         record = self._record(req, None)
         translate = translator(str(lang)).translate
-        items = []
+        writer = RssWriter(req)
+        req.send_http_header('application/xml')
+        writer.start(base_uri,
+                     translate(cfg.site_title +' - '+ self._rss_channel_title(req)),
+                     description=translate(cfg.site_subtitle),
+                     webmaster=cfg.webmaster_address,
+                     generator='Wiking %s' % wiking.__version__,
+                     language=lang)
         for row in rows:
             record.set_row(row)
             title = translate(self._rss_title(req, record))
@@ -1285,13 +1298,116 @@ class RssModule(object):
                 description = translate(description)
             date = self._rss_date(req, record)
             author = self._rss_author(req, record)
-            items.append((title, uri, description, date, author))
-        title = cfg.site_title +' - '+ translate(self._rss_channel_title(req))
-        result = rss(title, base_uri, items, cfg.site_subtitle,
-                     lang=lang, webmaster=cfg.webmaster_address)
-        return ('application/xml', result)
+            writer.item(link=uri,
+                        title=title,
+                        description=description,
+                        author=author,
+                        pubdate=date)
+        writer.finish()
+        raise Done()
 
     
+
+class PytisRssModule(PytisModule):
+    """Pytis module with RSS support."""
+
+    def channels(self, req):
+        return ()
+    
+    def _action_args(self, req):
+        # Resolves to 'channel' and 'lang' arguments if the URI corrensponds to
+        # an existing RSS channel.  Otherwise postpones the resolution to the
+        # parent class.
+        if req.param('action') == 'rss':
+            channel_id = req.param('channel')
+            if not channel_id:
+                raise BadRequest('Channel not specified.')
+            for channel in self.channels(req):
+                if channel.id() == channel_id:
+                    lang = req.param('lang') or req.prefered_language()
+                    return dict(channel=channel, lang=lang)
+            else:
+                raise BadRequest('Unknown channel: %s' % channel_id)
+        elif len(req.unresolved_path) == 1 and req.unresolved_path[0].endswith('.rss'):
+            # Convert RSS path in form '<channel-id>.<lang>.rss' to args 'channel' and 'lang'.
+            channel_id = req.unresolved_path[0][:-4]
+            if len(channel_id) > 3 and channel_id[-3] == '.' and channel_id[-2:].isalpha():
+                lang = str(channel_id[-2:])
+                channel_id = channel_id[:-3]
+            else:
+                lang = req.prefered_language()
+            for channel in self.channels(req):
+                if channel.id() == channel_id:
+                    return dict(channel=channel, lang=lang)
+            # If there is no matching channel, try to resolve the URI as a
+            # record referer, since the referer actually may contain values
+            # ending with '.rss'.  The developer must only care not to define a
+            # channel with a possibly conflicting URI.  This is actually quite
+            # a theoretical problem, since referer columns are often numeric.
+        return super(PytisRssModule, self)._action_args(req)
+
+    def _default_action(self, req, channel=None, lang=None, **kwargs):
+        if channel is not None:
+            return 'rss'
+        else:
+            return super(PytisRssModule, self)._default_action(req, **kwargs)
+
+
+    def action_rss(self, req, channel, lang):
+        tr = translator(str(lang))
+        def translate(value):
+            if value is None:
+                return value
+            else:
+                return tr.translate(value)
+        def func(spec, default=None, raw=False):
+            # Return a function of one argument (record) returning the channel
+            # item value according to specification.
+            if spec is None:
+                if default:
+                    return default
+                else:
+                    return lambda record: None
+            elif callable(spec):
+                return lambda record: translate(spec(req, record))
+            elif raw:
+                return lambda record: translate(record[spec].value())
+            else:
+                return lambda record: translate(record[spec].export())
+        import wiking
+        spec = channel.content()
+        # Create anonymous functions for each channel item field to save
+        # repetitive specification processing in the cycle.
+        link = func(spec.link(),
+                    default=lambda r: base_uri + self._record_uri(req, r, setlang=lang))
+        title = func(spec.title())
+        descr = func(spec.descr())
+        author = func(spec.author())
+        date = func(spec.date(), raw=True)
+        #
+        rows = self._rows(req, lang=lang, limit=channel.limit(), sorting=channel.sorting(),
+                          condition=channel.condition())
+        base_uri = req.server_uri(current=True)
+        record = self._record(req, None)
+        writer = RssWriter(req)
+        req.send_http_header('application/xml')
+        writer.start(base_uri,
+                     translate(cfg.site_title +' - '+ channel.title()),
+                     description=translate(channel.descr() or cfg.site_subtitle),
+                     webmaster=channel.webmaster() or cfg.webmaster_address,
+                     generator='Wiking %s' % wiking.__version__,
+                     language=lang)
+        for row in rows:
+            record.set_row(row)
+            writer.item(link=link(record),
+                        title=title(record),
+                        description=descr(record),
+                        author=author(record),
+                        pubdate=date(record))
+        writer.finish()
+        raise Done()
+
+        
 # Mixin module classes
 
 class Panelizable(object):

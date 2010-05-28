@@ -208,7 +208,7 @@ class CMSModule(PytisModule, RssModule, Panelizable):
     """Base class for all CMS modules."""
     RIGHTS_view = (Roles.ANYONE,)
     RIGHTS_list = (Roles.ANYONE,)
-    RIGHTS_export = () # Denied by default.  Enable explicitly for concrete modules.
+    RIGHTS_export = () # Denied by default.  Enable explicitly when needed.
     RIGHTS_rss  = (Roles.ANYONE,)
     RIGHTS_insert    = (Roles.ADMIN,)
     RIGHTS_update    = (Roles.ADMIN,)
@@ -761,8 +761,7 @@ class Panels(ContentManagementModule, Publishable):
                 content = tuple(module.panelize(req, lang, row['size'].value(),
                                                 relation=binding and (binding, row)))
                 if module.has_channel():
-                    uri = '/'+'.'.join((row['identifier'].value(), lang, 'rss'))
-                    channel = Channel(row['mtitle'].value(), uri)
+                    channel = '/'+'.'.join((row['identifier'].value(), lang, 'rss'))
             if row['content'].value():
                 content += tuple(parser.parse(row['content'].value()))
             content = lcg.SectionContainer(content, toc_depth=0)

@@ -171,7 +171,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         context.node().resource('wiking.js')
         result = super(Exporter, self)._head(context)
         channels = [('<link rel="alternate" type="application/rss+xml" '
-                     'title="'+ p.channel().title() +'" href="'+ p.channel().uri() +'">')
+                     'title="'+ p.title() +'" href="'+ p.channel() +'">')
                     for p in context.node().panels() if p.channel() is not None]
         return lcg.concat(result, channels, separator="\n  ")
     
@@ -309,10 +309,9 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
                 icon = context.node().resource('feed-icon-small.png')
                 if icon:
                     # Translators: ``RSS channel'' is terminology idiom, see Wikipedia
-                    channel_title = channel.title() +' ('+ _("RSS channel") +')'
+                    channel_title = panel.title() +' ('+ _("RSS channel") +')'
                     img = g.img(context.uri(icon), align='right', alt=channel_title)
-                    link = g.link(img, channel.uri(), title=channel_title,
-                                  type='application/rss+xml')
+                    link = g.link(img, channel, title=channel_title, type='application/rss+xml')
                     title = link +' '+ title
             result.append(g.div((g.h(title, 3),
                                  g.div(content.export(context), cls='panel-content')),

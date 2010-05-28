@@ -18,6 +18,7 @@
 from wiking import *
 
 import email.Header
+from xml.sax import saxutils
 
 DBG = pytis.util.DEBUG
 EVT = pytis.util.EVENT
@@ -495,11 +496,45 @@ class MenuItem(object):
 
 
 class Panel(object):
-    """Panel representation to be passed to 'Document.build()'."""
-    
+    """Panel representation to be passed to 'Document.build()'.
+
+    Panels are small applet windows displayed by the right side of the page (in
+    the default style).  They can hold arbitrary content defined by the
+    application and optionally link to RSS channels.
+
+    """
     def __init__(self, id, title, content, accessible_title=None, channel=None):
-        assert isinstance(content, lcg.Content)
-        assert channel is None or isinstance(channel, Channel)
+        """
+        @type id: basestring
+        @param id: Panel unique identifier.  This identifier is included in
+        the output and thus may be used for panel specific styling.
+        
+        @type title: basestring
+        @param title: Title displayed in panel heading.
+        
+        @type content: L{lcg.Content}
+        @param content: Content displayed within the panel area.
+        
+        @type accessible_title: basestring
+        @param accessible_title: Panel title for assistive technologies or
+        None.  Panel is by default represented by its 'title' to assistive
+        technologies.  If you need to use a more descriptive title for this
+        purpose than it is desirable to display in panel heading, use this
+        argument to pass an alternative title.
+
+        @type channel: basestring
+        @param channel: RSS channel URI if this panel represents an RSS
+        channel.  If not None, the panel will indicate a channel icon with a
+        link to the channel.  Channels of all panels present on a page will
+        also be automatically included in <link> tags within the page header.
+        
+        """
+        assert isinstance(id, basestring), id
+        assert isinstance(title, basestring), title
+        assert isinstance(content, lcg.Content), content
+        assert accessible_title is None or isinstance(accessible_title, basestring), \
+            accessible_title
+        assert channel is None or isinstance(channel, basestring), channel
         self._id = id
         self._title = title
         self._content = content
@@ -523,21 +558,6 @@ class Panel(object):
     def channel(self):
         return self._channel
 
-
-class Channel(object):
-    """RSS channel specification."""
-    def __init__(self, title, uri):
-        assert isinstance(title, (str, unicode))
-        assert isinstance(uri, (str, unicode))
-        self._title = title
-        self._uri = uri
-        
-    def title(self):
-        return self._title
-    
-    def uri(self):
-        return self._uri
-    
 
 class LoginPanel(Panel):
     """Displays login/logout controls and other relevant information."""
@@ -795,7 +815,181 @@ class BoundCache(object):
             result = self._cache[key] = func()
         return result
 
+
+class Channel(object):
+    """RSS channel specification."""
+    class Content(object):
+        """Defines how PytisModule records map to RSS channel items.
+        
+        The constructor arguments correspond to the supported channel item
+        fields and given values define how to get the field value from the
+        module's record.  Each value is either string, function (callable
+        object) or None.  In case of a string, the field value is taken
+        directly from the record's exported field value of the same name.  A
+        callable object allows more flexibility.  Given function is called with
+        two arguments ('req' and 'record') and the returned value is used
+        directly.  The function must return a string, unicode,
+        L{lcg.TranslatableText} or None.  If the specification value is None or
+        if the resulting field value is None, the field is not included in the
+        output or a default value is used (as documented for each field).
+
+        """
+        def __init__(self, title, link=None, descr=None, date=None, author=None):
+            """
+            @type title: str or callable
+            @param title: Item title field specification.
+            
+            @type link: str, callable or None
+            @param link: Item link field specification.  If None, the default
+            item link is determined automatically as the module's record URL.
+
+            @type descr: str, callable or None
+            @param descr: Item description field specification.
+            
+            @type date: str, callable or None
+            @param date: Item date field specification.  The result must be
+            'mx.DateTime' instance.  If column name is used, its type must be
+            'pytis.data.DateTime'.  If function is used, it must return an
+            'mx.DateTime' instance.
+            
+            @type author: str, callable or None
+            @param author: Item author field specification.
+
+            See the class docstring for common details about field
+            specifications.
+
+            """
+            assert isinstance(title, str) or callable(title), title
+            assert isinstance(link, str) or callable(link), link
+            assert isinstance(descr, str) or callable(descr), descr
+            assert isinstance(date, str) or callable(date), date
+            assert isinstance(author, str) or callable(author), author
+            self._title = title
+            self._link = link
+            self._descr = descr
+            self._date = date
+            self._author = author
+        def title(self):
+            return self._title
+        def link(self):
+            return self._link
+        def descr(self):
+            return self._descr
+        def date(self):
+            return self._date
+        def author(self):
+            return self._author
     
+    def __init__(self, id, title, descr, content, limit=None, sorting=None, condition=None,
+                 webmaster=None):
+        """
+        @type id: basestring
+        @param id: Channel identifier unique within one module's channels.  The
+        identifier is used as a part of channel URL, so it should not contain
+        special characters.
+        
+        @type title: basestring
+        @param title: Channel title
+        
+        @type descr: basestring
+        @param descr: Channel description/subtitle
+
+        @type content: L{Channel.Content}
+        @param content: Channel content data specification (defines the structure of items).
+
+        @type limit: int
+        @param limit: Maximum number of items present in the channel.
+
+        @type sorting: tuple of pairs (COLUMN_ID, DIRECTION)
+        @param sorting: Pytis data sorting specification.
+
+        @type condition: L{pytis.data.Operator}
+        @param condition: Pytis data condition filtering the items present in
+        the channel (appended to any other conditions imposed by the underlying
+        module).
+        
+        @type webmaster: basestring
+        @param webmaster: Channel webmaster e-mail address.  If None,
+        'cfg.webmaster_address' is used.
+
+        """
+        assert isinstance(id, basestring)
+        assert isinstance(title, basestring)
+        assert isinstance(descr, basestring)
+        assert isinstance(content, Channel.Content)
+        self._id = id
+        self._title = title
+        self._descr = descr
+        self._content = content
+        self._limit = limit
+        self._sorting = sorting
+        self._condition = condition
+        self._webmaster = webmaster
+
+    def id(self):
+        return self._id
+    def title(self):
+        return self._title
+    def descr(self):
+        return self._descr
+    def content(self):
+        return self._content
+    def limit(self):
+        return self._limit
+    def sorting(self):
+        return self._sorting
+    def condition(self):
+        return self._condition
+    def webmaster(self):
+        return self._webmaster
+    
+    
+class RssWriter(object):
+    """Simple RSS stream writer."""
+    
+    def __init__(self, stream):
+        self._stream = stream
+
+    def _write_tag(self, tag, value, escape=True):
+        if value is not None:
+            if escape:
+                value = saxutils.escape(value)
+            data = '<%s>%s</%s>\n' % (tag, value, tag)
+            self._stream.write(data.encode('utf-8'))
+            
+    def start(self, link, title, description, language=None, webmaster=None, generator=None,
+              ttl=60):
+        """Call exactly once to write channel meta data into the stream."""
+        self._stream.write('<?xml version="1.0" encoding="UTF-8"?>\n' +
+                           '<rss version="2.0">\n' +
+                           '<channel>\n')
+        self._write_tag('title', title)
+        self._write_tag('link', link, escape=False)
+        self._write_tag('description', description)
+        self._write_tag('language', language)
+        self._write_tag('webMaster', webmaster, escape=False)
+        self._write_tag('generator', generator)
+        self._write_tag('ttl', ttl, escape=False)
+
+    def item(self, link, title, guid=None, description=None, pubdate=None, author=None):
+        """Call repeatedly to write a single channel item."""
+        if pubdate:
+            import mx.DateTime
+            pubdate = mx.DateTime.ARPA.str(pubdate.localtime())
+        self._stream.write('<item>\n')
+        self._write_tag('title', title or '')
+        self._write_tag('guid', guid or link or '', escape=False)
+        self._write_tag('link', link or '', escape=False)
+        self._write_tag('description', description)
+        self._write_tag('pubDate', pubdate)
+        self._write_tag('author', author)
+        self._stream.write('</item>\n')
+
+    def finish(self):
+        """Call exactly once to write the final data into the stream."""
+        self._stream.write('</channel>\n</rss>\n')
+
+
 # ============================================================================
 # Classes derived from LCG components
 # ============================================================================
@@ -1355,32 +1549,6 @@ def timeit(func, *args, **kwargs):
     t1, t2 = time.clock(), time.time()
     result = func(*args, **kwargs)
     return result,  time.clock() - t1, time.time() - t2
-
-def rss(title, url, items, descr, lang=None, webmaster=None, ttl=60):
-    from xml.sax.saxutils import escape
-    import wiking
-    items = ['''<item>
-       <title>'''+ escape(ititle) +'''</title>
-       <guid>'''+ (iurl or '') +'''</guid>
-       <link>'''+ (iurl or '') +'''</link>''' + (idescr and '''
-       <description>'''+ escape(idescr) +'''</description>''' or '') + (idate and '''
-       <pubDate>'''+ escape(idate) +'''</pubDate>''' or '') + (iauthor and '''
-       <author>'''+ iauthor +'''</author>''' or '') + '''
-    </item>''' for ititle, iurl, idescr, idate, iauthor in items]
-    return '''<?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0">
-  <channel>
-    <title>%s</title>
-    <link>%s</link>
-    <description>%s</description>''' % (escape(title), url, escape(descr or '')) + \
-    (lang and '''
-    <language>%s</language>''' % lang or '') + (webmaster and '''
-    <webMaster>%s</webMaster>''' % webmaster or '') + '''
-    <generator>Wiking %s</generator>''' % wiking.__version__ + '''
-    <ttl>%d</ttl>''' % ttl + '''
-    ''' + '\n    '.join(items) + '''
-  </channel>
-</rss>'''
 
 
 class MailAttachment(object):
