@@ -43,13 +43,13 @@ class Handler(object):
 
     def _serve_error_document(self, req, error):
         """Serve an error page using the Wiking exporter."""
-        req.set_status(error.status_code(req))
+        error.set_status(req)
         document = Document(error.title(req), error.message(req))
         return self._serve_document(req, document)
 
     def _serve_minimal_error_document(self, req, error):
         """Serve a minimal error page using the minimalistic exporter."""
-        req.set_status(error.status_code(req))
+        error.set_status(req)
         node = lcg.ContentNode(req.uri().encode('utf-8'),
                                title=error.title(req),
                                content=error.message(req))

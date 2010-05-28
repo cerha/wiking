@@ -41,8 +41,11 @@ class RequestError(Exception):
     emailed, since they are caused by an invalid request, not a bug in the
     application.
 
-    The return value of the 'status_code()' method determines the HTTP status
-    code that should be sent to the client.
+    The Wiking handler is responsible for handling these errors approprietly.
+    This usually means to output a page with title and body content as returned
+    by the methods 'title()' and 'message()' and calling the method
+    'set_status()' to set the appropriate HTTP status code and/or other
+    necessary response properties.
 
     This class is abstract.  The error code and error message must be defined
     by a derived class.  The error message may also require certain constructor
@@ -68,37 +71,35 @@ class RequestError(Exception):
         """Return the error message as an 'lcg.Content' element structure.""" 
         return None
 
-    def status_code(self, req):
-        """Return the HTTP Error code to be sent to the client.
+    def set_status(self, req):
+        """Set the appropriate HTTP response status code to be sent to the client.
 
-        By default, the value of the variable '_STATUS_CODE' is returned.
-        Override this function if you want to determine the HTTP error code
-        dynamically.
+        By default, the status code determined by the variable '_STATUS_CODE'
+        set.  Override this method if something more complex is needed.
 
         """
-        return self._STATUS_CODE
+        req.set_status(self._STATUS_CODE)
 
 class AuthenticationError(RequestError):
     """Error indicating that authentication is required for the resource."""
     
     # Translators: This is a warning on a webpage which is only accessible for logged in users
     _TITLE = _("Authentication required")
-
-    def status_code(self, req):
+    def set_status(self, req):
         """Return authentication error page status code.
 
-        If asked for HTTP authentication, set the appropriate HTTP
-        header and return 401, otherwise return code 200 and rely on
-        Wiking authentication mechanism.
-
+        If HTTP authentication was requested, set the appropriate HTTP header
+        and status code 401, otherwise set status code 200 and rely on cookie
+        based authentication mechanism.
+        
         """
         if req.param('http_auth', default=False):
             # If requested, ask for HTTP Basic authentication
+            code = 401
             req.set_header('WWW-Authenticate', 'Basic realm="%s"' % cfg.site_title)
-            err_code = 401
         else:
-            err_code = 200
-        return err_code
+            code = self._STATUS_CODE
+        req.set_status(code)
 
     def message(self, req):
         return LoginDialog(self.args and self.args[0] or None)
