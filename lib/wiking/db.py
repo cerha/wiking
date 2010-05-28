@@ -1247,11 +1247,9 @@ class RssModule(object):
         
     def _rss_date(self, req, record):
         if self._RSS_DATE_COLUMN:
-            import mx.DateTime
-            v = record[self._RSS_DATE_COLUMN].value()
-            return mx.DateTime.ARPA.str(v.localtime())
+            return record[self._RSS_DATE_COLUMN].value()
         else:
-            date = None
+            return None
         
     def _rss_author(self, req, record):
         if self._RSS_AUTHOR_COLUMN:
