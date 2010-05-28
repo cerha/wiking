@@ -503,7 +503,14 @@ class WikingRequest(Request):
                 del params['password']
             self._credentials = (login, password)
         else:
-            self._credentials = None
+            # Return HTTP Basic auth credentials if available
+            auth_header = self.header('Authorization')
+            if auth_header and auth_header.startswith('Basic '):
+                encoded_credentials = auth_header.split()[1]
+                credentials = encoded_credentials.decode("base64").split(":")
+            else:
+                credentials = None
+            self._credentials = credentials
         self._user = self._UNDEFINED
         return params
 
@@ -702,28 +709,21 @@ class WikingRequest(Request):
     def credentials(self):
         """Return the login name and password as given by the user.
 
-        The return value is either a pair of strings (user, password) or None 
-        if no authentication was performed for this requests. The method
-        considers the self-tailored Wiking cookie authentication (through the
-        Wiking Login form) and HTTP Basic authentication in this order
-        of priority.
+        The return value is either a pair of strings (user, password) or None
+        if no credentials were passed with the request. The method supports
+        both, the cookie based authentication mechanism (through the Wiking
+        Login form) and standard HTTP Basic authentication in this order of
+        priority.  The difference is that HTTP authentication credentials are
+        sent repetitively for all subsequent requests, however with cookie
+        authentication, the credentials are sent just once (after login form
+        submission).  HTTP authentication also doesnt support logout (there is
+        no way to tell the user agent to drop the cached credentials).
 
         The return value does not indicate anything about authentication.  The
-        credentials are returned even if login was not successful.
+        credentials are returned even if login is not successful.
+        
         """
-        credentials = None
-
-        if self._credentials:
-            # Return Wiking auth mechanism credentials (cookie)
-            credentials = self._credentials
-        else:
-            # Return HTTP Basic auth credentials if available
-            auth_header = self.header('Authorization')
-            if auth_header:
-                auth_str = auth_header.split()
-                if auth_str[0] == 'Basic':
-                    credentials = auth_str[1].decode("base64").split(":")
-        return credentials
+        return self._credentials
 
     def user(self, require=False):
         """Return 'User' instance describing the logged-in user.
