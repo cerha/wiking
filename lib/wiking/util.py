@@ -41,16 +41,29 @@ class RequestError(Exception):
     emailed, since they are caused by an invalid request, not a bug in the
     application.
 
-    The return value of the status_code() function determines the HTTP
-    error code that should be sent to the client. If None, no HTTP error
-    is set.
+    The return value of the 'status_code()' method determines the HTTP status
+    code that should be sent to the client.
 
     This class is abstract.  The error code and error message must be defined
     by a derived class.  The error message may also require certain constructor
-    arguments passed when raising the error."""
+    arguments passed when raising the error.
+
+    """
     _TITLE = None
-    ERROR_CODE = 200
+    _STATUS_CODE = 200
     
+    def title(self, req):
+        if self._TITLE is not None:
+            return self._TITLE
+        else:
+            code = self._STATUS_CODE
+            name = " ".join(pp.split_camel_case(self.__class__.__name__))
+            if code == 200:
+                return name
+            else:
+                # Translators: '%(code)d' is replaced by error number and '%(name)s' by error title.
+                return _("Error %(code)d: %(name)s", code=code, name=name)
+
     def message(self, req):
         """Return the error message as an 'lcg.Content' element structure.""" 
         return None
@@ -58,19 +71,12 @@ class RequestError(Exception):
     def status_code(self, req):
         """Return the HTTP Error code to be sent to the client.
 
-        By default, the value of the variable ERROR_CODE is returned.
+        By default, the value of the variable '_STATUS_CODE' is returned.
         Override this function if you want to determine the HTTP error code
-        dynamically."""
+        dynamically.
 
-        return self.ERROR_CODE
-
-    def title(self, req):
-        if self._TITLE is not None:
-            return self._TITLE
-        else:
-            name = " ".join(pp.split_camel_case(self.__class__.__name__))
-            # Translators: '%(code)d' is replaced by error number and '%(name)s' by error title.
-            return _("Error %(code)d: %(name)s", code=self.status_code(req), name=name)
+        """
+        return self._STATUS_CODE
 
 class AuthenticationError(RequestError):
     """Error indicating that authentication is required for the resource."""
@@ -81,9 +87,11 @@ class AuthenticationError(RequestError):
     def status_code(self, req):
         """Return authentication error page status code.
 
-        If asked_for http authentication, set the appropriate HTTP
+        If asked for HTTP authentication, set the appropriate HTTP
         header and return 401, otherwise return code 200 and rely on
-        Wiking authentication mechanism."""
+        Wiking authentication mechanism.
+
+        """
         if req.param('http_auth', default=False):
             # If requested, ask for HTTP Basic authentication
             req.set_header('WWW-Authenticate', 'Basic realm="%s"' % cfg.site_title)
@@ -162,7 +170,7 @@ class BadRequest(RequestError):
     separate paragraph. 
 
     """
-    ERROR_CODE = 400
+    _STATUS_CODE = 400
     
     def message(self, req):
         if self.args:
@@ -173,7 +181,7 @@ class BadRequest(RequestError):
         
 class NotFound(RequestError):
     """Error indicating invalid request target."""
-    ERROR_CODE = 404
+    _STATUS_CODE = 404
     
     def message(self, req):
         # Translators: The word 'item' is intentionaly very generic, since it may mean a page,
@@ -189,7 +197,7 @@ class NotFound(RequestError):
     
 class Forbidden(RequestError):
     """Error indicating unavailable request target."""
-    ERROR_CODE = 403
+    _STATUS_CODE = 403
     
     def message(self, req):
         return (lcg.p(_("The item '%s' is not available.", req.uri())),
@@ -204,7 +212,7 @@ class NotAcceptable(RequestError):
     page/document/resource.
 
     """
-    ERROR_CODE = 406
+    _STATUS_CODE = 406
     # Translators: Title of a dialog on a webpage
     _TITLE = _("Language selection")
     
@@ -227,7 +235,7 @@ class NotAcceptable(RequestError):
 
 class InternalServerError(RequestError):
     """General error in application -- error message is required as an argument."""
-    ERROR_CODE = 500
+    _STATUS_CODE = 500
     _TITLE = _("Internal Server Error")
 
     def __init__(self, message, einfo=None):
@@ -250,7 +258,7 @@ class InternalServerError(RequestError):
 
 class ServiceUnavailable(RequestError):
     """Error indicating a temporary problem, which may not appaper in further requests."""
-    ERROR_CODE = 503
+    _STATUS_CODE = 503
     _TITLE = _("Service Unavailable")
 
     def message(self, req):
