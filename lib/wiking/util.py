@@ -85,16 +85,36 @@ class AuthenticationError(RequestError):
     
     # Translators: This is a warning on a webpage which is only accessible for logged in users
     _TITLE = _("Authentication required")
+    _HTTP_AUTH_MATCHER = re.compile('.*Thunderbird.*')
+    """Regular expression matching user agents for which HTTP authentication is used automatically.
+
+    HTTP authentication is normally requested by client through the special
+    request argument '__http_auth'.  But sometimes it is more practical to
+    avoid such argument in the URL.  For example we want to publish a URL of an
+    RSS channel.  Some RSS readers do support cookie based authentication and
+    we don't want to force them to use HTTP authentication for its lack of
+    logout possibility and other drawbacks.  However, other RSS readers don't
+    support cookie based authentication and we don't want to publish two
+    distinct URLs and explain which to choose in which case.  Thus we are a
+    little brave and guess the appropriate authentication method from the User
+    Agent header.
+
+    The only currently recognized user agent is Thunderbird mail reader for its
+    built in RSS support.
+    
+    """
     def set_status(self, req):
         """Return authentication error page status code.
 
-        If HTTP authentication was requested, set the appropriate HTTP header
-        and status code 401, otherwise set status code 200 and rely on cookie
-        based authentication mechanism.
+        If HTTP authentication is active (either requested explicitly or turned
+        on automatically -- see '_HTTP_AUTH_MATCHER'), set the appropriate HTTP
+        header and status code 401, otherwise set status code 200 and rely on
+        cookie based authentication mechanism.
         
         """
-        if req.param('http_auth', default=False):
-            # If requested, ask for HTTP Basic authentication
+        agent = req.header('User-Agent')
+        if req.param('__http_auth') or agent is None or self._HTTP_AUTH_MATCHER.match(agent):
+            # Ask for HTTP Basic authentication.
             code = 401
             req.set_header('WWW-Authenticate', 'Basic realm="%s"' % cfg.site_title)
         else:
