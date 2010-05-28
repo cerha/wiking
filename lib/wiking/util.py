@@ -856,68 +856,6 @@ class BoundCache(object):
 
 class Channel(object):
     """RSS channel specification."""
-    class Content(object):
-        """Defines how PytisModule records map to RSS channel items.
-        
-        The constructor arguments correspond to the supported channel item
-        fields and given values define how to get the field value from the
-        module's record.  Each value is either string, function (callable
-        object) or None.  In case of a string, the field value is taken
-        directly from the record's exported field value of the same name.  A
-        callable object allows more flexibility.  Given function is called with
-        two arguments ('req' and 'record') and the returned value is used
-        directly.  The function must return a string, unicode,
-        L{lcg.TranslatableText} or None.  If the specification value is None or
-        if the resulting field value is None, the field is not included in the
-        output or a default value is used (as documented for each field).
-
-        """
-        def __init__(self, title, link=None, descr=None, date=None, author=None):
-            """
-            @type title: str or callable
-            @param title: Item title field specification.
-            
-            @type link: str, callable or None
-            @param link: Item link field specification.  If None, the default
-            item link is determined automatically as the module's record URL.
-
-            @type descr: str, callable or None
-            @param descr: Item description field specification.
-            
-            @type date: str, callable or None
-            @param date: Item date field specification.  The result must be
-            'mx.DateTime' instance.  If column name is used, its type must be
-            'pytis.data.DateTime'.  If function is used, it must return an
-            'mx.DateTime' instance.
-            
-            @type author: str, callable or None
-            @param author: Item author field specification.
-
-            See the class docstring for common details about field
-            specifications.
-
-            """
-            assert isinstance(title, str) or callable(title), title
-            assert isinstance(link, str) or callable(link), link
-            assert isinstance(descr, str) or callable(descr), descr
-            assert isinstance(date, str) or callable(date), date
-            assert isinstance(author, str) or callable(author), author
-            self._title = title
-            self._link = link
-            self._descr = descr
-            self._date = date
-            self._author = author
-        def title(self):
-            return self._title
-        def link(self):
-            return self._link
-        def descr(self):
-            return self._descr
-        def date(self):
-            return self._date
-        def author(self):
-            return self._author
-    
     def __init__(self, id, title, descr, content, limit=None, sorting=None, condition=None,
                  webmaster=None):
         """
@@ -932,7 +870,7 @@ class Channel(object):
         @type descr: basestring
         @param descr: Channel description/subtitle
 
-        @type content: L{Channel.Content}
+        @type content: L{ChannelContent}
         @param content: Channel content data specification (defines the structure of items).
 
         @type limit: int
@@ -954,7 +892,7 @@ class Channel(object):
         assert isinstance(id, basestring)
         assert isinstance(title, basestring)
         assert isinstance(descr, basestring)
-        assert isinstance(content, Channel.Content)
+        assert isinstance(content, ChannelContent)
         self._id = id
         self._title = title
         self._descr = descr
@@ -981,6 +919,71 @@ class Channel(object):
     def webmaster(self):
         return self._webmaster
     
+
+class ChannelContent(object):
+    """Defines how PytisModule records map to RSS channel items.
+
+    Used for 'Channel' 'content' constructor argument.
+
+    The constructor arguments correspond to the supported channel item
+    fields and given values define how to get the field value from the
+    module's record.  Each value is either string, function (callable
+    object) or None.  In case of a string, the field value is taken
+    directly from the record's exported field value of the same name.  A
+    callable object allows more flexibility.  Given function is called with
+    two arguments ('req' and 'record') and the returned value is used
+    directly.  The function must return a string, unicode,
+    L{lcg.TranslatableText} or None.  If the specification value is None or
+    if the resulting field value is None, the field is not included in the
+    output or a default value is used (as documented for each field).
+
+    """
+    def __init__(self, title, link=None, descr=None, date=None, author=None):
+        """
+        @type title: str or callable
+        @param title: Item title field specification.
+        
+        @type link: str, callable or None
+        @param link: Item link field specification.  If None, the default
+        item link is determined automatically as the module's record URL.
+
+        @type descr: str, callable or None
+        @param descr: Item description field specification.
+        
+        @type date: str, callable or None
+        @param date: Item date field specification.  The result must be
+        'mx.DateTime' instance.  If column name is used, its type must be
+        'pytis.data.DateTime'.  If function is used, it must return an
+        'mx.DateTime' instance.
+        
+        @type author: str, callable or None
+        @param author: Item author field specification.
+
+        See the class docstring for common details about field
+        specifications.
+
+        """
+        assert isinstance(title, str) or callable(title), title
+        assert link is None or isinstance(link, str) or callable(link), link
+        assert descr is None or isinstance(descr, str) or callable(descr), descr
+        assert date is None or isinstance(date, str) or callable(date), date
+        assert author is None or isinstance(author, str) or callable(author), author
+        self._title = title
+        self._link = link
+        self._descr = descr
+        self._date = date
+        self._author = author
+    def title(self):
+        return self._title
+    def link(self):
+        return self._link
+    def descr(self):
+        return self._descr
+    def date(self):
+        return self._date
+    def author(self):
+        return self._author
+
     
 class RssWriter(object):
     """Simple RSS stream writer."""
