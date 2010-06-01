@@ -1102,6 +1102,16 @@ class Pages(ContentManagementModule):
                 del req.unresolved_path[0]
             return row
         identifier = req.unresolved_path[0]
+        # Recognize special path of RSS channel as '<identifier>.<lang>.rss'. 
+        if identifier.endswith('.rss'):
+            req.set_param('action', 'rss')
+            identifier = identifier[:-4]
+            if len(identifier) > 3 and identifier[-3] == '.' and identifier[-2:].isalpha():
+                lang = str(identifier[-2:])
+                row = self._data.get_row(identifier=identifier[:-3], lang=lang, published=True)
+                if row:
+                    del req.unresolved_path[0]
+                    return row
         rows = self._data.get_rows(identifier=identifier, published=True)
         if rows:
             variants = [str(row['lang'].value()) for row in rows]
