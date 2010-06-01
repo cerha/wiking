@@ -1308,7 +1308,8 @@ class RssModule(object):
 class PytisRssModule(PytisModule):
     """Pytis module with RSS support."""
 
-    def channels(self, req):
+    def _channels(self, req):
+        """Define available channels as a sequence of 'Channel' instances."""
         return ()
     
     def _action_args(self, req):
@@ -1319,7 +1320,7 @@ class PytisRssModule(PytisModule):
             channel_id = req.param('channel')
             if not channel_id:
                 raise BadRequest('Channel not specified.')
-            for channel in self.channels(req):
+            for channel in self._channels(req):
                 if channel.id() == channel_id:
                     lang = req.param('lang') or req.prefered_language()
                     return dict(channel=channel, lang=lang)
@@ -1333,7 +1334,7 @@ class PytisRssModule(PytisModule):
                 channel_id = channel_id[:-3]
             else:
                 lang = req.prefered_language()
-            for channel in self.channels(req):
+            for channel in self._channels(req):
                 if channel.id() == channel_id:
                     return dict(channel=channel, lang=lang)
             # If there is no matching channel, try to resolve the URI as a
