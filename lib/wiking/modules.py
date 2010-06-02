@@ -232,7 +232,18 @@ class Documentation(Module, RequestHandler):
         variants = [lang for lang in self._application.languages()
                     if os.path.exists('.'.join((basename, lang, 'txt')))]
         if not variants:
-            raise NotFound()
+            # HACK: Try fallback to English if no application language variants
+            # are available.  In fact, the application should never return
+            # content in any other language, than what is defined by
+            # `Application.languages()', but default Wiking documentation is
+            # often not translated to application languages and users get a
+            # confusing error.  This should avoid the confusion, but a proper
+            # solution would be to have all documentation files translated at
+            # least to one application language.
+            if os.path.exists('.'.join((basename, 'en', 'txt'))):
+                variants = ['en']
+            else:
+                raise NotFound()
         lang = req.prefered_language(variants)
         filename = '.'.join((basename, lang, 'txt'))
         f = codecs.open(filename, encoding='utf-8')
