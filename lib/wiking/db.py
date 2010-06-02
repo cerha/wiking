@@ -1040,20 +1040,20 @@ class PytisModule(Module, ActionHandler):
             # TODO: The same prefill should also be used by the form when
             # initializing it's `Record' instance, since visible form fields
             # may depend on this prefill too.
+            prefill = {}
             fw = self._binding_forward(req)
             if fw:
                 # Supply the value of the binding column (if this is a binding
                 # forwarded request).
                 binding = fw.arg('binding')
                 binding_record = fw.arg('record')
-                if binding.prefill():
-                    prefill = binding.prefill()(binding_record)
+                binding_prefill = binding.prefill()
+                if binding_prefill:
+                    prefill = binding_prefill(binding_record)
                 elif binding.binding_column():
                     binding_column = binding.binding_column()
                     main_form_column = self._type[binding_column].enumerator().value_column()
-                    prefill = {binding_column: binding_record[main_form_column].value()}
-                else:
-                    prefill = {}
+                    prefill[binding_column] = binding_record[main_form_column].value()
             if self._OWNER_COLUMN and self._SUPPLY_OWNER and req.user() \
                     and not prefill.has_key(self._OWNER_COLUMN):
                 prefill[self._OWNER_COLUMN] = req.user().uid()
