@@ -449,7 +449,7 @@ class WikingRequest(Request):
             except KeyError:
                 return None
 
-    _LANG_COOKIE = 'wiking_prefered_language'
+    _LANG_COOKIE = 'wiking_preferred_language'
     _PANELS_COOKIE = 'wiking_show_panels'
     _MESSAGES_COOKIE = 'wiking_messages'
     _UNDEFINED = object()
@@ -467,7 +467,7 @@ class WikingRequest(Request):
         self._application = application
         self._forwards = []
         self._messages = self._init_messages()
-        self._prefered_languages = self._init_prefered_languages()
+        self._preferred_languages = self._init_preferred_languages()
         self._module_uri = {}
         self.unresolved_path = list(self.path)
 
@@ -479,11 +479,11 @@ class WikingRequest(Request):
     def _init_params(self):
         params = super(WikingRequest, self)._init_params()
         if params.has_key('setlang'):
-            self._prefered_language = lang = str(params['setlang'])
+            self._preferred_language = lang = str(params['setlang'])
             del params['setlang']
             self.set_cookie(self._LANG_COOKIE, lang)
         else:
-            self._prefered_language = str(self.cookie(self._LANG_COOKIE))
+            self._preferred_language = str(self.cookie(self._LANG_COOKIE))
         if params.has_key('hide_panels'):
             self.set_cookie(self._PANELS_COOKIE, 'no')
             self._show_panels = False
@@ -551,16 +551,16 @@ class WikingRequest(Request):
                 self.set_cookie(self._MESSAGES_COOKIE, None)
         return messages
 
-    def _init_prefered_languages(self):
+    def _init_preferred_languages(self):
         accepted = []
-        prefered = self._prefered_language # The prefered language setting from cookie or param.
+        preferred = self._preferred_language # The preferred language setting from cookie or param.
         for item in self.header('Accept-Language', '').lower().split(','):
             if item:
                 x = item.split(';')
                 # For now we ignore the country part and recognize just the core languages.
                 lang = x[0].split('-')[0]
-                if lang == prefered:
-                    prefered = None
+                if lang == preferred:
+                    preferred = None
                     q = 2.0
                 elif len(x) == 1:
                     q = 1.0
@@ -576,8 +576,8 @@ class WikingRequest(Request):
         accepted.sort()
         accepted.reverse()
         languages = [lang for q, lang in accepted]
-        if prefered:
-            languages.insert(0, prefered)
+        if preferred:
+            languages.insert(0, preferred)
         default = cfg.default_language_by_domain.get(self.server_hostname(current=True),
                                                      cfg.default_language)
         if default and default not in languages:
@@ -594,7 +594,7 @@ class WikingRequest(Request):
             # Store them together with the target URI to recognize for which
             # request they should be loaded.  Of course, this will not work,
             # when the redirection target is outside the current wiking host.
-            translate = translator(self.prefered_language()).translate
+            translate = translator(self.preferred_language()).translate
             # Translate the messages before quoting, since the resulting strings
             # wil not be translatable enymore.  We make the assumption, that the
             # redirected request's locale will be the same as for this request,
@@ -671,21 +671,21 @@ class WikingRequest(Request):
     def show_panels(self):
         return self._show_panels
     
-    def prefered_languages(self):
+    def preferred_languages(self):
         """Return a sequence of language codes in the order of client's preference.
 
-        The result is based on the Accept-Language HTTP header, prefered language set previously
+        The result is based on the Accept-Language HTTP header, preferred language set previously
         through 'setlang' parameter (stored in a cookie) and default language configured for the
         server (see 'default_language' and 'default_language_by_domain' configuration options).
         
         """
-        return self._prefered_languages
+        return self._preferred_languages
 
-    def prefered_language(self, variants=None, raise_error=True):
-        """Return the prefered variant from the list of available variants.
+    def preferred_language(self, variants=None, raise_error=True):
+        """Return the preferred variant from the list of available variants.
 
         The preference is determined by the order of acceptable languages
-        returned by 'prefered_languages()'.
+        returned by 'preferred_languages()'.
 
         Arguments:
 
@@ -698,13 +698,18 @@ class WikingRequest(Request):
         """
         if variants is None:
             variants = self._application.languages()
-        for lang in self.prefered_languages():
+        for lang in self.preferred_languages():
             if lang in variants:
                 return lang
         if raise_error:
             raise NotAcceptable(variants)
         else:
             return None
+
+    prefered_languages = preferred_languages
+    """Misspelled method name kept for backwards compatibility. Use 'preferred_languages()'."""
+    prefered_language = preferred_language
+    """Misspelled method name kept for backwards compatibility. Use 'preferred_language()'."""
 
     def credentials(self):
         """Return the login name and password as given by the user.
