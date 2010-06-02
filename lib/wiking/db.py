@@ -908,7 +908,7 @@ class PytisModule(Module, ActionHandler):
         return result
 
     def _ajax_handler(self, req, record, layout, errors):
-        tr = translator(req.prefered_language())
+        tr = translator(req.prefered_language(raise_error=False))
         response = pw.EditForm.ajax_response(req, record, layout, errors, tr)
         req.set_header('X-Json', response)
         raise Done()
@@ -1138,10 +1138,11 @@ class PytisModule(Module, ActionHandler):
             condition = self._binding_condition(fw.arg('binding'), fw.arg('record'))
         else:
             condition = None
+        lang = req.prefered_language()
         req.set_header('Content-disposition',
                        'attachment; filename=%s' % self._export_filename(req))
         req.send_http_header('text/plain; charset=utf-8')
-        for row in self._rows(req, condition=condition, lang=req.prefered_language()):
+        for row in self._rows(req, condition=condition, lang=lang):
             record.set_row(row)
             data = []
             for cid, kwargs in columns:
@@ -1322,7 +1323,7 @@ class PytisRssModule(PytisModule):
                 raise BadRequest('Channel not specified.')
             for channel in self._channels(req):
                 if channel.id() == channel_id:
-                    lang = req.param('lang') or req.prefered_language()
+                    lang = req.param('lang') or req.prefered_language(raise_error=False)
                     return dict(channel=channel, lang=lang)
             else:
                 raise BadRequest('Unknown channel: %s' % channel_id)
@@ -1333,7 +1334,7 @@ class PytisRssModule(PytisModule):
                 lang = str(channel_id[-2:])
                 channel_id = channel_id[:-3]
             else:
-                lang = req.prefered_language()
+                lang = req.prefered_language(raise_error=False)
             for channel in self._channels(req):
                 if channel.id() == channel_id:
                     return dict(channel=channel, lang=lang)
@@ -1352,6 +1353,7 @@ class PytisRssModule(PytisModule):
 
 
     def action_rss(self, req, channel, lang):
+        # TODO: 'lang' may be None here.
         tr = translator(str(lang))
         def translate(value):
             if value is None:
