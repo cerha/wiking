@@ -23,7 +23,7 @@ check-lib:
            echo 'WARNING: $(lib) not in Python path!'
 
 check-user:
-	@if [ ~$(webuser) == '~$(webuser)' ]; then \
+	@if [ ~$(webuser) = '~$(webuser)' ]; then \
 	   echo 'Error: $(webuser) is not a valid user!' && exit 1; fi
 
 compile:
