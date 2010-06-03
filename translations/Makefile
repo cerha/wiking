@@ -19,7 +19,7 @@ include $(domains:%=%.d)
 	msgfmt -v $< -o $@
 
 %.po:
-	msgmerge -q --update $@ $< && touch $@
+	msgmerge --backup=none -q --update $@ $< && touch $@
 
 %.pot:
 	xgettext $^ --add-comments=Translators: --from-code=utf-8 -o $@
