@@ -1,6 +1,6 @@
 domains := wiking wiking-cms
 mo_files := $(shell ls *.po | sed 's/\(.*\)\.\(.*\)\.po/\2\/LC_MESSAGES\/\1.mo/')
-src_files := python -m lcg/i18n ../lib
+src_files := python -m lcg.i18n ../lib
 
 all: $(mo_files)
 
