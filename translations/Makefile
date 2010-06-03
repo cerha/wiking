@@ -8,7 +8,7 @@ include $(domains:%=%.d)
 
 %.d: $(shell $(src_files))
 	@echo "Updating rules for domain $*."
-	@echo -n "$*.pot: " > $@ && $(src_files) $* >> $@
+	@printf "$*.pot: " > $@ && $(src_files) $* >> $@
 	@echo "$(wildcard $*.*.po): $*.%.po: $*.pot" >> $@
 	@echo "$(filter %/$*.mo,$(mo_files)): %/LC_MESSAGES/$*.mo: $*.%.po %/LC_MESSAGES" >> $@
 
