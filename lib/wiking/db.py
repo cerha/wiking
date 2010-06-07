@@ -525,7 +525,7 @@ class PytisModule(Module, ActionHandler):
     def _form(self, form, req, record=None, action=None, hidden=(), new=False, prefill=None,
               handler=None, binding_uri=None, **kwargs):
         if binding_uri is not None:
-            uri = binding_uri or None
+            uri = binding_uri
         else:
             uri = self._current_base_uri(req, record)
         def uri_provider(record_, cid, type=pw.UriType.LINK):
@@ -965,11 +965,7 @@ class PytisModule(Module, ActionHandler):
         condition = self._binding_condition(binding, record)
         columns = [c for c in self._columns(req) if c != binding.binding_column()]
         lang = req.prefered_language(raise_error=False)
-        if binding.id():
-            binding_uri = uri +'/'+ binding.id()
-        else:
-            # Special value indicating that this is a related form, but uri is not available.
-            binding_uri = ''
+        binding_uri = uri +'/'+ binding.id()
         content = self._form(form, req, uri=uri, columns=columns, binding_uri=binding_uri,
                              condition=self._condition(req, condition=condition, lang=lang),
                              arguments=self._binding_arguments(binding, record),
