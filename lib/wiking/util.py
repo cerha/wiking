@@ -54,6 +54,42 @@ class RequestError(Exception):
     """
     _TITLE = None
     _STATUS_CODE = 200
+    _LOG = True
+    """Indicates whether this kind of error should be logged on the server.
+
+    This attribute is True by default, but some derived classes may set it to
+    False if logging is not appropriate for given error type.
+
+    """
+    
+    _LOG_FORMAT = "%(error)s: %(server_hostname)s%(uri)s [%(user)s@%(remote_host)s] (%(stack)s)\n"
+    """Python format string used for printing error message to the system log.
+    
+    The format string may use the following format variables:
+       error -- error class name string (the class derived from 'RequestError'),
+       server_hostname -- requested server host name (virtual host),
+       uri -- URI of the request,
+       user -- current user's login name ('User.login()') or 'anonymous' when
+         user is not logged,
+       remote_host -- IP adress of the client's host as a string,
+       referrer -- HTTP referer (URI of the page linking to this request's
+         URI),
+       user_agent -- client software identification from the 'User-Agent' HTTP
+         header,
+       server_software -- server software identification (current versions of
+         Wiking, LCG and Pytis)
+    
+    """
+    # TODO: The 'req' object should be required as constructor argument and
+    # avoided in all public methods.  This change requires changes in
+    # applications, so it must be done carefully...
+
+    def __init__(self, *args, **kwargs):
+        import inspect
+        # Ignore this frame and few last frames (they are inside mod_python).
+        self._stack = reversed(inspect.stack()[1:-4])
+        self._already_logged = False
+        super(RequestError, self).__init__(*args, **kwargs)
     
     def title(self, req):
         if self._TITLE is not None:
@@ -80,6 +116,25 @@ class RequestError(Exception):
         """
         req.set_status(self._STATUS_CODE)
 
+    def log(self, req):
+        """Currently used only for debugging, but in future it should be used for proper logging."""
+        # Prevent double logging when handling exception in exception (see handler.py).
+        import wiking
+        if self._LOG and not self._already_logged:
+            message = self._LOG_FORMAT % dict(
+                error=self.__class__.__name__,
+                server_hostname = req.server_hostname(),
+                uri=req.uri(),
+                user=(req.user() and req.user().login() or 'anonymous'),
+                remote_host=req.remote_host(),
+                referrer=req.header('Referer'),
+                user_agent=req.header('User-Agent'),
+                server_software='Wiking %s, LCG %s, Pytis %s' % \
+                    (wiking.__version__, lcg.__version__, pytis.__version__),
+                stack=", ".join(['%s:%d:%s()' % tuple(frame[1:4]) for frame in self._stack]))
+            log(OPR, message)
+
+
 class AuthenticationError(RequestError):
     """Error indicating that authentication is required for the resource."""
     
@@ -103,6 +158,8 @@ class AuthenticationError(RequestError):
     built in RSS support.
     
     """
+    _LOG = False
+    
     def set_status(self, req):
         """Return authentication error page status code.
 
@@ -143,6 +200,8 @@ class Abort(RequestError):
       content -- dialog content as an 'lcg.Content' instance or a sequence of such instances
 
     """
+    _LOG = False
+
     def title(self):
         return self.args[0]
 
@@ -259,9 +318,16 @@ class InternalServerError(RequestError):
     _STATUS_CODE = 500
     _TITLE = _("Internal Server Error")
 
+    # Avoid logging of this errror as it is now done in
+    # 'Application.handle_exception()'.  It would probably make sense to move
+    # logging here from there completely, but this change would require some
+    # extra work and thought.
+    _LOG = False
+
     def __init__(self, message, einfo=None):
         self._message = message
         self._einfo = einfo
+        super(InternalServerError, self).__init__()
     
     def message(self, req):
         # TODO: Even though the admin address is in a formatted paragraph, it is not formatted as a
@@ -276,7 +342,7 @@ class InternalServerError(RequestError):
                     lcg.p(_("The error message was:")),
                     lcg.PreformattedText(self._message))
     
-
+        
 class ServiceUnavailable(RequestError):
     """Error indicating a temporary problem, which may not appaper in further requests."""
     _STATUS_CODE = 503
@@ -299,6 +365,7 @@ class MaintenanceModeError(ServiceUnavailable):
     
     """
     _TITLE = _("Maintenance mode")
+    _LOG = False
 
     def message(self, req):
         # Translators: Meaning that the system (webpage) does not work now because we are
