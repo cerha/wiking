@@ -472,14 +472,6 @@ class PytisModule(Module, ActionHandler):
             uri = self._current_base_uri(req, record)
         return ActionMenu(uri, actions, self._referer, self.name(), record, **kwargs)
 
-    def _add_action_menu(self, content, req, *args, **kwargs):
-        action_menu = self._action_menu(req, *args, **kwargs)
-        if action_menu and self._ACTION_MENU_FIRST:
-            content = (action_menu,) + content
-        if action_menu and self._ACTION_MENU_LAST:
-            content = content + (action_menu,)
-        return content
-
     def _link_provider(self, req, uri, record, cid, **kwargs):
         if cid is None:
             return uri and req.make_uri(uri +'/'+ record[self._referer].export(), **kwargs)
@@ -524,6 +516,26 @@ class PytisModule(Module, ActionHandler):
 
     def _form(self, form, req, record=None, action=None, hidden=(), new=False, prefill=None,
               handler=None, binding_uri=None, **kwargs):
+        """Form instance creation wrapper.
+
+        You may override this method if you need to tweek form constructor
+        arguments or override the default form classes used by built-in
+        actions.  You should, however, not modify it to return anything else
+        than a 'pytis.web.Form' instance compatible with the original set of
+        arguments.
+
+        You should use this method for creation of 'pytis.web.Form' instances
+        instead of calling their arguments directly.
+
+        TODO: Note, that the definition of this method was not clear in the past
+        and some applications (namely Wiking Biblio) return arbitrary content
+        rather than a form instance.  Thus it is not possible to rely on the
+        return type unless we make an incompatible change.  It should be doable
+        to make this change on next Wiking Biblio development cycle.  Methods
+        like `_list_form_content()' (and simalar for other actions) should be
+        used instead of _form() to append additional content.
+
+        """
         if binding_uri is not None:
             uri = binding_uri
         else:
@@ -913,6 +925,22 @@ class PytisModule(Module, ActionHandler):
         req.set_header('X-Json', response)
         raise Done()
 
+    def _list_form_content(self, req, form, uri=None):
+        """Return the page content for the 'list' action form as a list of 'lcg.Content' instances.
+
+        You may override this method to modify page content for the list form
+        in derived classes.
+
+        """
+        content = [form]
+        action_menu = self._action_menu(req, )
+        if action_menu:
+            if self._ACTION_MENU_FIRST:
+                content.insert(0, action_menu) 
+            if self._ACTION_MENU_LAST:
+                content.append(action_menu) 
+        return content
+    
     # ===== Methods which modify the database =====
     
     def _insert(self, record, transaction=None):
@@ -959,22 +987,18 @@ class PytisModule(Module, ActionHandler):
     def related(self, req, binding, record, uri):
         """Return the listing of records related to other module's record by given binding."""
         if isinstance(binding, Binding) and binding.form() is not None:
-            form = binding.form()
+            form_cls = binding.form()
         else:
-            form = pw.ListView
+            form_cls = pw.ListView
         condition = self._binding_condition(binding, record)
         columns = [c for c in self._columns(req) if c != binding.binding_column()]
         lang = req.prefered_language(raise_error=False)
         binding_uri = uri +'/'+ binding.id()
-        content = self._form(form, req, uri=uri, columns=columns, binding_uri=binding_uri,
-                             condition=self._condition(req, condition=condition, lang=lang),
-                             arguments=self._binding_arguments(binding, record),
-                             filters=self._filters(req))
-        if binding_uri:
-            menu = self._action_menu(req, uri=binding_uri)
-            if menu:
-                content = lcg.Container((content, menu))
-        return content
+        form = self._form(form_cls, req, uri=uri, columns=columns, binding_uri=binding_uri,
+                          condition=self._condition(req, condition=condition, lang=lang),
+                          arguments=self._binding_arguments(binding, record),
+                          filters=self._filters(req))
+        return lcg.Container(self._list_form_content(req, form, uri=binding_uri))
 
     # ===== Action handlers =====
     
@@ -989,7 +1013,7 @@ class PytisModule(Module, ActionHandler):
                           condition=self._condition(req, lang=lang),
                           arguments=self._arguments(req),
                           filters=self._filters(req))
-        content = self._add_action_menu((form,), req)
+        content = self._list_form_content(req, form)
         return self._document(req, content, lang=lang)
 
     def _binding_parent_uri(self, req):
@@ -1023,8 +1047,11 @@ class PytisModule(Module, ActionHandler):
         # They are currently still used in Eurochance LMS.
         form = self._form(pw.ShowForm, req, record=record,
                           layout=self._layout(req, 'view', record))
-        content = (list(self._add_action_menu((form,), req, record)) +
-                   self._related_content(req, record))
+        content = [form]
+        action_menu = self._action_menu(req, record)
+        if action_menu:
+            content.append(action_menu)
+        content.extend(self._related_content(req, record))
         return self._document(req, content, record, err=err, msg=msg)
 
     # ===== Action handlers which modify the database =====
@@ -1117,11 +1144,12 @@ class PytisModule(Module, ActionHandler):
                 return self._redirect_after_delete(req, record)
         form = self._form(pw.ShowForm, req, record=record,
                           layout=self._layout(req, 'delete', record))
+        req.message(self._delete_prompt(req, record))
         actions = (Action(self._DELETE_LABEL, 'delete', allow_referer=False, submit=1),
                    # Translators: Back button label. Standard computer terminology.
                    Action(_("Back"), 'view'))
-        req.message(self._delete_prompt(req, record))
-        return self._document(req, self._add_action_menu((form,), req, record, actions), record,
+        action_menu = self._action_menu(req, record, actions)
+        return self._document(req, [form, action_menu], record,
                               subtitle=self._action_subtitle(req, 'delete', record))
         
     def action_export(self, req):
@@ -1347,7 +1375,29 @@ class PytisRssModule(PytisModule):
         else:
             return super(PytisRssModule, self)._default_action(req, **kwargs)
 
-
+    def _rss_channel_uri(self, req, channel, uri):
+        if uri is None:
+            uri = self._current_base_uri(req)
+        return uri +'/'+ channel.id() +'.rss'
+        
+    def _list_form_content(self, req, form, uri=None):
+        content = super(PytisRssModule, self)._list_form_content(req, form, uri=uri)
+        channel_links = [lcg.link(self._rss_channel_uri(req, ch, uri), ch.title(),
+                                  descr=_('RSS channel "%s"', ch.title()),
+                                  type='application/rss+xml')
+                         for ch in self._channels(req)]
+        if channel_links:
+            # Translators: RSS channel is a computer idiom, see Wikipedia.  Don't translate 'RSS'.
+            doc_link = lcg.link('/_doc/wiking/user/rss', _("more about RSS"))
+            if len(channel_links) == 1:
+                rss_info = lcg.p(_("An RSS channel is available for this section:"), ' ',
+                                 channel_links[0], " (", doc_link, ")")
+            else:
+                rss_info = lcg.p(_("RSS channels are available for this section"),
+                                 " (", doc_link, "):", lcg.ul(channel_links))
+            content.append(rss_info)
+        return content
+        
     def action_rss(self, req, channel, lang):
         # TODO: 'lang' may be None here.
         tr = translator(str(lang))
@@ -1374,6 +1424,7 @@ class PytisRssModule(PytisModule):
         spec = channel.content()
         # Create anonymous functions for each channel item field to save
         # repetitive specification processing in the cycle.
+        base_uri = req.server_uri(current=True)
         link = func(spec.link(),
                     default=lambda r: base_uri + self._record_uri(req, r, setlang=lang))
         title = func(spec.title())
@@ -1383,7 +1434,6 @@ class PytisRssModule(PytisModule):
         #
         rows = self._rows(req, lang=lang, limit=channel.limit(), sorting=channel.sorting(),
                           condition=channel.condition())
-        base_uri = req.server_uri(current=True)
         record = self._record(req, None)
         writer = RssWriter(req)
         req.send_http_header('application/xml')

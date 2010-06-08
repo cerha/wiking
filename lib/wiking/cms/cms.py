@@ -228,16 +228,22 @@ class CMSModule(PytisModule, RssModule, Panelizable):
         return binding
 
     def _form(self, form, req, *args, **kwargs):
-        help = None
         if req.wmi and form == pw.ListView:
+            # Force to BrowseForm in WMI.
             form = pw.BrowseForm
-            # HACK: Disable help for related forms (binding side forms).
-            if not kwargs.has_key('uri'): 
-                help = self._view.help()
-        result = super(CMSModule, self)._form(form, req, *args, **kwargs)
-        if help:
-            result = lcg.Container((lcg.p(help), result))
-        return result
+        return super(CMSModule, self)._form(form, req, *args, **kwargs)
+    
+    def _list_form_content(self, req, form, uri=None):
+        # Add short module help text above the list form in WMI.
+        content = super(CMSModule, self)._list_form_content(req, form, uri=uri)
+        # HACK: Test 'uri' to recognize related forms (binding side forms)
+        # where we suppress help.
+        if req.wmi and not uri: 
+            help = self._view.help()
+            if help:
+                content.insert(0, lcg.p(help))
+        return content
+
 
 class ContentManagementModule(CMSModule):
     """Base class for WMI modules managed by L{Roles.CONTENT_ADMIN}."""
