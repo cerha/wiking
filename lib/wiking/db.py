@@ -933,7 +933,7 @@ class PytisModule(Module, ActionHandler):
 
         """
         content = [form]
-        action_menu = self._action_menu(req, )
+        action_menu = self._action_menu(req, uri=uri)
         if action_menu:
             if self._ACTION_MENU_FIRST:
                 content.insert(0, action_menu) 
