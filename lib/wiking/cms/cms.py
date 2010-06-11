@@ -1596,6 +1596,10 @@ class Attachments(ContentManagementModule):
             if os.path.exists(fname):
                 os.unlink(fname)
 
+    def _redirect_after_update_uri(self, req, record, **kwargs):
+        return super(Attachments, self)._redirect_after_update_uri(req, record,
+                                                                   action='view', **kwargs)
+
     def attachments(self, mapping_id, lang, uri):
         return [self.Attachment(record, uri) for record in
                 self._data.get_rows(mapping_id=mapping_id, lang=lang)]
@@ -1783,7 +1787,8 @@ class News(ContentManagementModule, EmbeddableCMSModule):
             return super(News, self)._redirect_after_insert(req, record)
         else:
             req.message(self._insert_msg(req, record))
-            return self._module('Pages').action_view(req, req.page)
+            identifier = record.cb_value('mapping_id', 'identifier').value()
+            raise Redirect('/'+identifier)
         
     def _rss_author(self, req, record):
         return record.cb_value('author', 'email').export()

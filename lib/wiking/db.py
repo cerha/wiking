@@ -1293,18 +1293,65 @@ class PytisModule(Module, ActionHandler):
         return self._DELETE_MSG
     
     # ===== Request redirection after successful data operations =====
+    # HTTP redirect is used to prevent multiple submissions (see
+    # http://en.wikipedia.org/wiki/Post/Redirect/Get).
 
+    def _redirect_after_insert_uri(self, req, record, **kwargs):
+        """Return the URI for HTTP redirection after succesful record insertion.
+
+        The default redirection URI leads to the list action of the
+        same module.
+        
+        @rtype: tuple of (basestring, dict)
+        @return: Pair (uri, kwargs), where 'uri' is the base URI and
+        'kwargs' is the dictionary of URI parameters to encoded into
+        the final redirection URI.
+    
+        """
+        return self._current_base_uri(req, record), kwargs
+        
+    def _redirect_after_update_uri(self, req, record, **kwargs):
+        """Return the URI for HTTP redirection after succesful record insertion.
+
+        The default redirection URI leads to the view action of the
+        same record.
+
+        @rtype: tuple of (basestring, dict)
+        @return: Pair (uri, kwargs), where 'uri' is the base URI and
+        'kwargs' is the dictionary of URI parameters to encoded into
+        the final redirection URI.
+    
+        """
+        return self._current_record_uri(req, record), kwargs
+        
+    def _redirect_after_delete_uri(self, req, record, **kwargs):
+        """Return the URI for HTTP redirection after succesful record insertion.
+
+        The default redirection URI leads to the list action of the
+        same module.
+
+        @rtype: tuple of (basestring, dict)
+        @return: Pair (uri, kwargs), where 'uri' is the base URI and
+        'kwargs' is the dictionary of URI parameters to encoded into
+        the final redirection URI.
+    
+        """
+        return self._current_base_uri(req, record), kwargs
+    
     def _redirect_after_insert(self, req, record):
         req.message(self._insert_msg(req, record))
-        return self.action_list(req)
+        uri, kwargs = self._redirect_after_insert_uri(req, record)
+        raise Redirect(uri, **kwargs)
         
     def _redirect_after_update(self, req, record):
         req.message(self._update_msg(req, record))
-        return self.action_view(req, record)
+        uri, kwargs = self._redirect_after_update_uri(req, record)
+        raise Redirect(uri, **kwargs)
         
     def _redirect_after_delete(self, req, record):
         req.message(self._delete_msg(req, record))
-        return self.action_list(req)
+        uri, kwargs = self._redirect_after_delete_uri(req, record)
+        raise Redirect(uri, **kwargs)
 
         
 # ==============================================================================
