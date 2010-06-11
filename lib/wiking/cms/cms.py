@@ -1572,14 +1572,23 @@ class Attachments(ContentManagementModule):
                 log(OPR, "Saving file:", (fname, pp.format_byte_size(len(buf))))
                 buf.save(fname)
         
+    def _insert_transaction(self, req, record):
+        return self._transaction()
+    
     def _insert(self, req, record, transaction):
         super(Attachments, self)._insert(req, record, transaction)
         self._save_files(record)
         
+    def _update_transaction(self, req, record):
+        return self._transaction()
+    
     def _update(self, req, record, transaction):
         super(Attachments, self)._update(req, record, transaction)
         self._save_files(record)
         
+    def _delete_transaction(self, req, record):
+        return self._transaction()
+    
     def _delete(self, req, record, transaction):
         super(Attachments, self)._delete(req, record, transaction)
         for id, filename_id in self._STORED_FIELDS:

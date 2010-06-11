@@ -946,24 +946,83 @@ class PytisModule(Module, ActionHandler):
         return pd.DBTransactionDefault(self._dbconnection, connection_name=self.Spec.connection)
 
     def _in_transaction(self, transaction, operation, *args, **kwargs):
-        try:
-            result = operation(*args, **kwargs)
-        except:
-            if transaction:
+        """Perform operation within given transaction and return the result.
+
+        @type transaction: C{pytis.data.DBTransactionDefault} or C{None}.
+        @param transaction: transaction object encapsulating the database
+            operation environment or 'None' (meaning default environment).
+        @type operation: callable
+        @param transaction: function or method to be called with given *args and **kwargs.
+
+        If transaction is not None, exceptions during operation execution are handled and
+        transaction is rolled back if any exception occurs.  If no exception occurs, the
+        transaction is commited and result is returned.
+        
+        If transaction is None, the operation is simply called and result is returned.
+
+        """
+        if transaction is None:
+            return operation(*args, **kwargs)
+        else:
+            try:
+                result = operation(*args, **kwargs)
+            except:
                 try:
                     transaction.rollback()
                 except:
                     pass
-            raise
-        else:
-            if transaction:
+                raise
+            else:
                 transaction.commit()
-            return result
+                return result
+
+    def _insert_transaction(self, req, record):
+        """Return the transaction for the 'insert' action operation.
+
+        This method returns None in the base class, but if a derived class needs to enclose the
+        '_insert()' method execution (invoked within the default 'action_insert()' handler) in a
+        transaction, the method may be overriden to return a transaction instance.  In other words,
+        the result of this method is passed as 'transaction' argument to the '_insert()' method in
+        'action_insert()' handler.
+
+        """
+        return None
+            
+    def _update_transaction(self, req, record):
+        """Return the transaction for the 'update' action operation.
+
+        This method returns None in the base class, but if a derived class needs to enclose the
+        '_update()' method execution (invoked within the default 'action_update()' handler) in a
+        transaction, the method may be overriden to return a transaction instance.  In other words,
+        the result of this method is passed as 'transaction' argument to the '_update()' method in
+        'action_update()' handler.
+
+        """
+        return None
+            
+    def _delete_transaction(self, req, record):
+        """Return the transaction for the 'delete' action operation.
+
+        This method returns None in the base class, but if a derived class needs to enclose the
+        '_delete()' method execution (invoked within the default 'action_delete()' handler) in a
+        transaction, the method may be overriden to return a transaction instance.  In other words,
+        the result of this method is passed as 'transaction' argument to the '_delete()' method in
+        'action_delete()' handler.
+
+        """
+        return None
+            
     
     # ===== Methods which modify the database =====
     
     def _insert(self, req, record, transaction):
-        """Insert new row into the database and return a Record instance."""
+        """Insert new row into the database and return a Record instance.
+
+        The 'transaction' is C{None} in the base class.  Override '_insert_transaction()' if you
+        want the operation to be enclosed in a transaction (typically when you override this method
+        to perform additional operations.
+
+        """
         for key, seq in self._SEQUENCE_FIELDS:
             if record[key].value() is None:
                 counter = pd.DBCounterDefault(seq, self._dbconnection,
@@ -978,11 +1037,23 @@ class PytisModule(Module, ActionHandler):
                 record[key] = new_row[key]
         
     def _update(self, req, record, transaction):
-        """Update the record data in the database."""
+        """Update the record data in the database.
+
+        The 'transaction' is C{None} in the base class.  Override '_update_transaction()' if you
+        want the operation to be enclosed in a transaction (typically when you override this method
+        to perform additional operations.
+
+        """
         self._data.update(record.key(), record.rowdata(), transaction=transaction)
 
     def _delete(self, req, record, transaction):
-        """Delete the record from the database."""
+        """Delete the record from the database.
+
+        The 'transaction' is C{None} in the base class.  Override '_delete_transaction()' if you
+        want the operation to be enclosed in a transaction (typically when you override this method
+        to perform additional operations.
+
+        """
         self._data.delete(record.key(), transaction=transaction)
         
     # ===== Public methods =====
@@ -1105,7 +1176,7 @@ class PytisModule(Module, ActionHandler):
                 return self._ajax_handler(req, record, layout, errors)
             if not errors:
                 try:
-                    transaction = self._transaction()
+                    transaction = self._insert_transaction(req, record)
                     self._in_transaction(transaction, self._insert, req, record, transaction)
                 except pd.DBException, e:
                     errors = (self._analyze_exception(e),)
@@ -1142,7 +1213,7 @@ class PytisModule(Module, ActionHandler):
             errors = ()
         if req.param('submit') and not errors:
             try:
-                transaction = self._transaction()
+                transaction = self._update_transaction(req, record)
                 self._in_transaction(transaction, self._update, req, record, transaction)
                 record.reload()
             except pd.DBException, e:
@@ -1158,7 +1229,7 @@ class PytisModule(Module, ActionHandler):
     def action_delete(self, req, record):
         if req.param('submit'):
             try:
-                transaction = self._transaction()
+                transaction = self._delete_transaction(req, record)
                 self._in_transaction(transaction, self._delete, req, record, transaction)
             except pd.DBException, e:
                 req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
