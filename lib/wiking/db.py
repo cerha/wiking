@@ -927,7 +927,7 @@ class PytisModule(Module, ActionHandler):
 
     def _list_form_content(self, req, form, uri=None):
         """Return the page content for the 'list' action form as a list of 'lcg.Content' instances.
-
+        
         You may override this method to modify page content for the list form
         in derived classes.
 
@@ -941,9 +941,28 @@ class PytisModule(Module, ActionHandler):
                 content.append(action_menu) 
         return content
     
+    def _transaction(self):
+        """Create a new transaction and return it as 'pd.DBTransactionDefault' instance."""
+        return pd.DBTransactionDefault(self._dbconnection, connection_name=self.Spec.connection)
+
+    def _in_transaction(self, transaction, operation, *args, **kwargs):
+        try:
+            result = operation(*args, **kwargs)
+        except:
+            if transaction:
+                try:
+                    transaction.rollback()
+                except:
+                    pass
+            raise
+        else:
+            if transaction:
+                transaction.commit()
+            return result
+    
     # ===== Methods which modify the database =====
     
-    def _insert(self, record, transaction=None):
+    def _insert(self, req, record, transaction):
         """Insert new row into the database and return a Record instance."""
         for key, seq in self._SEQUENCE_FIELDS:
             if record[key].value() is None:
@@ -958,11 +977,11 @@ class PytisModule(Module, ActionHandler):
             for key in new_row.keys():
                 record[key] = new_row[key]
         
-    def _update(self, record, transaction=None):
+    def _update(self, req, record, transaction):
         """Update the record data in the database."""
         self._data.update(record.key(), record.rowdata(), transaction=transaction)
 
-    def _delete(self, record, transaction=None):
+    def _delete(self, req, record, transaction):
         """Delete the record from the database."""
         self._data.delete(record.key(), transaction=transaction)
         
@@ -1086,7 +1105,8 @@ class PytisModule(Module, ActionHandler):
                 return self._ajax_handler(req, record, layout, errors)
             if not errors:
                 try:
-                    self._insert(record)
+                    transaction = self._transaction()
+                    self._in_transaction(transaction, self._insert, req, record, transaction)
                 except pd.DBException, e:
                     errors = (self._analyze_exception(e),)
                 else:
@@ -1122,7 +1142,8 @@ class PytisModule(Module, ActionHandler):
             errors = ()
         if req.param('submit') and not errors:
             try:
-                self._update(record)
+                transaction = self._transaction()
+                self._in_transaction(transaction, self._update, req, record, transaction)
                 record.reload()
             except pd.DBException, e:
                 errors = (self._analyze_exception(e),)
@@ -1137,7 +1158,8 @@ class PytisModule(Module, ActionHandler):
     def action_delete(self, req, record):
         if req.param('submit'):
             try:
-                self._delete(record)
+                transaction = self._transaction()
+                self._in_transaction(transaction, self._delete, req, record, transaction)
             except pd.DBException, e:
                 req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
             else:

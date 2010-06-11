@@ -1572,21 +1572,16 @@ class Attachments(ContentManagementModule):
                 log(OPR, "Saving file:", (fname, pp.format_byte_size(len(buf))))
                 buf.save(fname)
         
-    def _insert(self, record):
-        super(Attachments, self)._insert(record)
-        try:
-            self._save_files(record)
-        except:
-            # TODO: Rollback the transaction instead of deleting the record.
-            self._delete(record)
-            raise
-        
-    def _update(self, record):
-        super(Attachments, self)._update(record)
+    def _insert(self, req, record, transaction):
+        super(Attachments, self)._insert(req, record, transaction)
         self._save_files(record)
         
-    def _delete(self, record):
-        super(Attachments, self)._delete(record)
+    def _update(self, req, record, transaction):
+        super(Attachments, self)._update(req, record, transaction)
+        self._save_files(record)
+        
+    def _delete(self, req, record, transaction):
+        super(Attachments, self)._delete(req, record, transaction)
         for id, filename_id in self._STORED_FIELDS:
             fname = record[filename_id].value()
             if os.path.exists(fname):
@@ -1882,7 +1877,8 @@ class Discussions(News):
                            content=req.param('content'))
             new_record = self._record(req, None, new=True, prefill=prefill)
             try:
-                self._insert(new_record)
+                transaction = self._transaction()
+                self._in_transaction(transaction, self._insert, req, record, transaction)
             except pd.DBException, e:
                 req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
             else:
