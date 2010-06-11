@@ -621,7 +621,7 @@ class Config(SettingsManagementModule):
     def _redirect_after_update(self, req, record):
         self._configure(record.row())
         req.set_param('submit', None) # Avoid recursion.
-        req.message(self._update_msg(record))
+        req.message(self._update_msg(req, record))
         return self.action_update(req, record)
     
     def _configure(self, row):
@@ -1148,14 +1148,14 @@ class Pages(ContentManagementModule):
                              "to publish your changes."))]
         return errors
 
-    def _update_msg(self, record):
+    def _update_msg(self, req, record):
         if record['content'].value() == record['_content'].value():
-            return super(Pages, self)._update_msg(record)
+            return super(Pages, self)._update_msg(req, record)
         else:
             return _("Page content was modified, however the changes remain unpublished. Don't "
                      "forget to publish the changes when you are done.")
 
-    def _insert_msg(self, record):
+    def _insert_msg(self, req, record):
         if record['published'].value():
             return _("New page was successfully created and published.")
         else:
@@ -1168,12 +1168,12 @@ class Pages(ContentManagementModule):
         return super(Pages, self)._link_provider(req, uri, record, cid, **kwargs)
 
     def _redirect_after_insert(self, req, record):
-        req.message(self._insert_msg(record))
+        req.message(self._insert_msg(req, record))
         return self.action_view(req, record)
         
     def _redirect_after_update(self, req, record):
         if not req.wmi:
-            req.message(self._update_msg(record))
+            req.message(self._update_msg(req, record))
             return self.action_preview(req, record)
         else:
             return super(Pages, self)._redirect_after_update(req, record)
@@ -1782,7 +1782,7 @@ class News(ContentManagementModule, EmbeddableCMSModule):
         if req.wmi:
             return super(News, self)._redirect_after_insert(req, record)
         else:
-            req.message(self._insert_msg(record))
+            req.message(self._insert_msg(req, record))
             return self._module('Pages').action_view(req, req.page)
         
     def _rss_author(self, req, record):

@@ -1281,29 +1281,29 @@ class PytisModule(Module, ActionHandler):
     def _delete_prompt(self, req, record):
         return self._DELETE_PROMPT
     
-    # ===== Request redirection after successful data operations =====
+    # ===== Feedback messages after successful data operations =====
 
-    def _insert_msg(self, record):
+    def _insert_msg(self, req, record):
         return self._INSERT_MSG
         
-    def _update_msg(self, record):
+    def _update_msg(self, req, record):
         return self._UPDATE_MSG
         
-    def _delete_msg(self, record):
+    def _delete_msg(self, req, record):
         return self._DELETE_MSG
     
     # ===== Request redirection after successful data operations =====
 
     def _redirect_after_insert(self, req, record):
-        req.message(self._insert_msg(record))
+        req.message(self._insert_msg(req, record))
         return self.action_list(req)
         
     def _redirect_after_update(self, req, record):
-        req.message(self._update_msg(record))
+        req.message(self._update_msg(req, record))
         return self.action_view(req, record)
         
     def _redirect_after_delete(self, req, record):
-        req.message(self._delete_msg(record))
+        req.message(self._delete_msg(req, record))
         return self.action_list(req)
 
         
