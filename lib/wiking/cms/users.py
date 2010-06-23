@@ -384,7 +384,7 @@ class Users(UserManagementModule):
             # Translators: Do not translate (means Uniform Resource Identifier).
             Field('uri', _("URI"), width=36),
             # Translators: Generic note for further information. Registration form field.
-            Field('note', _("Note"), width=60, height=6,
+            Field('note', _("Note"), width=60, height=6, compact=True,
                   descr=_("Optional message for the administrator.  If you summarize briefly why "
                           "you register, what role you expect in the system or whom you have "
                           "talked to, this may help in processing your request.")),
@@ -565,7 +565,6 @@ class Users(UserManagementModule):
 
     _REFERER = 'login'
     _PANEL_FIELDS = ('fullname',)
-    _ALLOW_TABLE_LAYOUT_IN_FORMS = False
     _OWNER_COLUMN = 'uid'
     _SUPPLY_OWNER = False
     _LAYOUT = {
@@ -599,9 +598,9 @@ class Users(UserManagementModule):
                         FieldSet(_("Contact information"),
                                  ((not cfg.login_is_email) and ('email',) or ()) +
                                  ('phone', 'address', 'uri')),
-                        FieldSet(_("Others"), ('note',)),
                         FieldSet(_("Login information"),
-                                 ((cfg.login_is_email and 'email' or 'login'), 'password')))
+                                 ((cfg.login_is_email and 'email' or 'login'), 'password')),
+                        FieldSet(_("Others"), ('note',)))
             elif action == 'passwd' and record is not None:
                 layout = ['new_password']
                 if not req.check_roles(Roles.USER_ADMIN) or req.user().uid() == record['uid'].value():

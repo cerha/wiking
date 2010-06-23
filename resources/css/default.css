@@ -65,12 +65,13 @@ form.pytis-form fieldset.outer {
 }
 form.pytis-form legend.empty { display: none; }
 
-form.pytis-form table.horizontal-group { width: 100%; }
+form.pytis-form table.horizontal-group.expanded { width: 100%; }
 form.pytis-form .horizontal-group fieldset.group {
     margin: 0 0 0.4em 0;
     /* margin-bottom: 100%; ** this breaks fieldset border. */
 }
-form.pytis-form .horizontal-group td.spaced {
+form.pytis-form .horizontal-group td.spaced,
+form.pytis-form .horizontal-group th.spaced {
     padding-left: 0.6em;
 }
 

@@ -112,8 +112,6 @@ class PytisModule(Module, ActionHandler):
     function arguments and their pytis data types.
     
     """
-    _ALLOW_TABLE_LAYOUT_IN_FORMS = True
-    """Default value to pass to 'pytis.web.EditForm' 'allow_table_layout' constructor argument."""
     _BROWSE_FORM_LIMITS = (50, 100, 200, 500)
     """Default value to pass to 'pytis.web.BrowseForm' 'limits' constructor argument."""
     _BROWSE_FORM_DEFAULT_LIMIT = 50
@@ -546,9 +544,7 @@ class PytisModule(Module, ActionHandler):
             elif type == pw.UriType.IMAGE:
                 method = self._image_provider
             return method(req, uri, record_, cid)
-        if issubclass(form, pw.EditForm):
-            kwargs['allow_table_layout'] = self._ALLOW_TABLE_LAYOUT_IN_FORMS
-        elif issubclass(form, pw.BrowseForm):
+        if issubclass(form, pw.BrowseForm):
             kwargs['req'] = req
             if not kwargs.has_key('limits'):
                 kwargs['limits'] = self._BROWSE_FORM_LIMITS
@@ -1133,7 +1129,7 @@ class PytisModule(Module, ActionHandler):
         columns = [c for c in self._columns(req) if c != binding.binding_column()]
         lang = req.prefered_language(raise_error=False)
         binding_uri = uri +'/'+ binding.id()
-        form = self._form(form_cls, req, uri=uri, columns=columns, binding_uri=binding_uri,
+        form = self._form(form_cls, req, columns=columns, binding_uri=binding_uri,
                           condition=self._condition(req, condition=condition, lang=lang),
                           arguments=self._binding_arguments(binding, record),
                           filters=self._filters(req))
