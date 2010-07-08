@@ -61,6 +61,9 @@ class PytisModule(Module, ActionHandler):
          # Translators: This is about an empty (not filled in) value in a web form. Field means a
          # form field.
          _("Empty value.  This field is mandatory.")),
+        ('update or delete on table .* violates foreign key constraint .*',
+         # Translators: This is delete action failure message in a web page.
+         _("Record couldn't be deleted because other records refer to it.")),
         )
 
     # Translators: Button label for new database record creation (computer terminology).
