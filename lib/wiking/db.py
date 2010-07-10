@@ -970,7 +970,7 @@ class PytisModule(Module, ActionHandler):
     def _ajax_handler(self, req, record, layout, errors):
         tr = translator(req.prefered_language(raise_error=False))
         response = pw.EditForm.ajax_response(req, record, layout, errors, tr)
-        req.set_header('X-Json', response)
+        req.result(response, content_type='application/json')
         raise Done()
 
     def _list_form_content(self, req, form, uri=None):
