@@ -293,7 +293,7 @@ class PytisModule(Module, ActionHandler):
         errors = []
         order = layout.order()
         # Validate the changed field last (for AJAX update request) to invoke computers correctly.
-        changed_field = req.param('_pytis_form_update_request')
+        changed_field = req.param('_pytis_form_changed_field')
         if changed_field:
             order = [id for id in order if id != changed_field] + [str(changed_field)]
         for id in order:
@@ -967,11 +967,18 @@ class PytisModule(Module, ActionHandler):
             result = None
         return result
 
-    def _ajax_handler(self, req, record, layout, errors):
-        tr = translator(req.prefered_language(raise_error=False))
-        response = pw.EditForm.ajax_response(req, record, layout, errors, tr)
-        req.result(response, content_type='application/json')
-        raise Done()
+    def _try_ajax_handler(self, req, record, layout, errors):
+        """Handle the request if it is an AJAX request, otherwise return.
+
+        If the current request is a pytis form update request, handle it and
+        raise 'Done'.  If not, let the caller continue by returning.
+        
+        """
+        if req.param('_pytis_form_update_request'):
+            tr = translator(req.prefered_language(raise_error=False))
+            response = pw.EditForm.ajax_response(req, record, layout, errors, tr)
+            req.result(response, content_type='application/json')
+            raise Done()
 
     def _list_form_content(self, req, form, uri=None):
         """Return the page content for the 'list' action form as a list of 'lcg.Content' instances.
@@ -1200,8 +1207,7 @@ class PytisModule(Module, ActionHandler):
         if req.param('submit'):
             record = self._record(req, None, new=True, prefill=self._prefill(req))
             errors = self._validate(req, record, layout)
-            if req.param('_pytis_form_update_request'):
-                return self._ajax_handler(req, record, layout, errors)
+            self._try_ajax_handler(req, record, layout, errors)
             if not errors:
                 try:
                     transaction = self._insert_transaction(req, record)
@@ -1235,8 +1241,7 @@ class PytisModule(Module, ActionHandler):
         layout = self._layout_instance(self._layout(req, action, record))
         if req.param('submit'):
             errors = self._validate(req, record, layout)
-            if req.param('_pytis_form_update_request'):
-                return self._ajax_handler(req, record, layout, errors)
+            self._try_ajax_handler(req, record, layout, errors)
         else:
             errors = ()
         if req.param('submit') and not errors:
