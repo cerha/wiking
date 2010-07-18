@@ -65,6 +65,38 @@ class PytisModule(Module, ActionHandler):
          # Translators: This is delete action failure message in a web page.
          _("Record couldn't be deleted because other records refer to it.")),
         )
+    """Specification of error messages for different database exceptions.
+
+    The purpose of this specification is to provide user readable error messages
+    for known database exceptions through matching the exception string and
+    possibly also identify the form field, which caused the error.
+
+    The specification is a tuple of 2-tuples.  
+
+    The first element of the 2-tuple is a regular expression that matches the
+    database exception string.  The regular expression may include a group named
+    'id' which is the name of database table/view column (or any other
+    identifier) to which the error relates.
+
+    The second element of the 2-tuple defines the custom error message displayed
+    in the user interface when the exception occurs during a database operation.
+    This can be the error message directly, or a 2-tuple of field_id and error
+    message.  In the second case, the field_id determines the form field which
+    caused the error.  When field_id is not defined, the value of the group
+    named 'id' in the regular expression (if present) is used for the same
+    purpose.  When field_id is defined, it must be a valid identifier of a field
+    present in the specification.  If field_id is not defined, it means that the
+    error message is either not related to a particular form field or that it is
+    not possible to determine which field it is.
+
+    See also '_analyze_exception()' and '_error_message()' methods for more
+    details.
+
+    Note, that the error messages are usually specific per database backend and
+    handling exceptions at this level is not portable.  It should be used as a
+    last resort when it is not possible to catch the problem during validation.
+
+    """
     _UNIQUE_CONSTRAINT_FIELD_MAPPING = {}
     """Mapping of database unique constraint ids to real field_ids.
 
@@ -379,6 +411,20 @@ class PytisModule(Module, ActionHandler):
             return []
 
     def _analyze_exception(self, e):
+        """Translate exception error string to a custom error message.
+
+        Uses _EXCEPTION_MATCHERS to match error string reported by
+        'e.exception()'.  Returns a pair of field_id and error message, where
+        field_id determines the form field which caused the error.  It should
+        be one of field identifiers defined by the specification, but the caller
+        should not rely on that, since the id is not always determined precisely
+        (when matching database exception strings).
+        
+        If field_id is None, it means that the error message is either not
+        related to a particular form field or that it is not possible to
+        determine which field it is.
+
+        """
         if e.exception():
             for matcher, msg in self._exception_matchers:
                 match = matcher.match(str(e.exception()).strip())
