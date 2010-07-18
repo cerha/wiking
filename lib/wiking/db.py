@@ -100,14 +100,16 @@ class PytisModule(Module, ActionHandler):
     _UNIQUE_CONSTRAINT_FIELD_MAPPING = {}
     """Mapping of database unique constraint ids to real field_ids.
 
-    Database errors caused by unique constraint violations are detected by wiking through
-    `_EXCEPTION_MATCHERS'.  The errorr contains the name of the unique index (in PostgreSQL),
-    typically something like `<table_name>_<column_name>_key'.  If <column_name> is one of
-    specification's fields, the message printed to the user will contain the (translated) form
-    field label and an explanation.  If the index name doesn't contain a field name directly (which
-    may happen for several valid reasons), you should define an entry in this mapping to indicate
-    which form field caused the error.  This will result in a more understandable error message for
-    the users.
+    Database errors caused by unique constraint violations are detected by
+    wiking through `_EXCEPTION_MATCHERS'.  The errorr contains the name of the
+    unique index (in PostgreSQL), typically something like
+    `<table_name>_<column_name>_key'.  If <column_name> is one of
+    specification's fields, the message printed to the user will contain the
+    (translated) form field label and an explanation.  If the index name doesn't
+    contain a field name directly (which may happen for several valid reasons),
+    you should define an entry in this mapping to indicate which form field
+    caused the error.  This will result in a more understandable error message
+    for the users.
     
     """
     # Translators: Button label for new database record creation (computer terminology).
@@ -415,14 +417,10 @@ class PytisModule(Module, ActionHandler):
 
         Uses _EXCEPTION_MATCHERS to match error string reported by
         'e.exception()'.  Returns a pair of field_id and error message, where
-        field_id determines the form field which caused the error.  It should
-        be one of field identifiers defined by the specification, but the caller
-        should not rely on that, since the id is not always determined precisely
-        (when matching database exception strings).
-        
-        If field_id is None, it means that the error message is either not
-        related to a particular form field or that it is not possible to
-        determine which field it is.
+        field_id determines the form field which caused the error (one of field
+        identifiers defined by the specification).  If field_id is None, it
+        means that the error message is either not related to a particular form
+        field or that it is not possible to determine which field it is.
 
         """
         if e.exception():
@@ -430,26 +428,34 @@ class PytisModule(Module, ActionHandler):
                 match = matcher.match(str(e.exception()).strip())
                 if match:
                     if isinstance(msg, tuple):
-                        return msg
+                        field_id, msg = msg
                     elif match.groupdict().has_key('id'):
-                        field_id = match.group('id')
-                        if field_id.endswith('_key'):
-                            # The identifier is a name of a PostgreSQL UNIQUE index.
+                        matched_id = match.group('id')
+                        if matched_id.endswith('_key'):
+                            # The identifier is (maybe) a name of a PostgreSQL UNIQUE index.
                             try:
                                 # The corresponding field id is either defined explicitly.
-                                field_id = self._UNIQUE_CONSTRAINT_FIELD_MAPPING[field_id]
+                                field_id = self._UNIQUE_CONSTRAINT_FIELD_MAPPING[matched_id]
                             except KeyError:
                                 # Or we will try to guess it from the PostgreSQL index name,
                                 # relying on its default naming "<table>_<column-id>_key".
-                                words = field_id[:-4].split('_')
+                                words = matched_id[:-4].split('_')
                                 for i in range(len(words)):
                                     maybe_field_id = '_'.join(words[i:])
                                     if self._view.field(maybe_field_id):
-                                        field_id = maybe_field_id
-                                        break
-                        return (field_id, msg)
+                                        return (maybe_field_id, msg)
+                        if self._view.field(matched_id):
+                            field_id = matched_id
+                        else:
+                            field_id = None
+                            # If the matched id doesn't belong to any existing
+                            # field, just add it to the end of the error
+                            # message.  It will be usually quite cryptic for the
+                            # user, but it may provide a hint.
+                            msg += ' (%s)' % matched_id
                     else:
-                        return (None, msg)
+                        field_id = None
+                    return (field_id, msg)
             return (None, unicode(e.exception()))
         else:
             return (None, _("Unable to perform a database operation."))
@@ -461,6 +467,9 @@ class PytisModule(Module, ActionHandler):
             if f:
                 label = f.label()
             else:
+                # TODO: This should not happen anymore, since
+                # _analyze_exception() should now always return a valid
+                # field_id.
                 label = fid
             error = label + ": " + error
         return error
