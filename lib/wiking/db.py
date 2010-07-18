@@ -55,7 +55,7 @@ class PytisModule(Module, ActionHandler):
     _USE_BINDING_PARENT_TITLE = True
     _LIST_BY_LANGUAGE = False
     _EXCEPTION_MATCHERS = (
-        ('duplicate key (value )?violates unique constraint "_?[a-z]+_(?P<id>[a-z_]+)_key"',
+        ('duplicate key (value )?violates unique constraint "(?P<id>[a-z_]+)"',
          _("This value already exists.  Enter a unique value.")),
         ('null value in column "(?P<id>[a-z_]+)" violates not-null constraint',
          # Translators: This is about an empty (not filled in) value in a web form. Field means a
@@ -65,7 +65,19 @@ class PytisModule(Module, ActionHandler):
          # Translators: This is delete action failure message in a web page.
          _("Record couldn't be deleted because other records refer to it.")),
         )
+    _UNIQUE_CONSTRAINT_FIELD_MAPPING = {}
+    """Mapping of database unique constraint ids to real field_ids.
 
+    Database errors caused by unique constraint violations are detected by wiking through
+    `_EXCEPTION_MATCHERS'.  The errorr contains the name of the unique index (in PostgreSQL),
+    typically something like `<table_name>_<column_name>_key'.  If <column_name> is one of
+    specification's fields, the message printed to the user will contain the (translated) form
+    field label and an explanation.  If the index name doesn't contain a field name directly (which
+    may happen for several valid reasons), you should define an entry in this mapping to indicate
+    which form field caused the error.  This will result in a more understandable error message for
+    the users.
+    
+    """
     # Translators: Button label for new database record creation (computer terminology).
     _INSERT_LABEL = _("New record")
     # Translators: Tooltip of new database record creation button (computer terminology).
@@ -374,7 +386,22 @@ class PytisModule(Module, ActionHandler):
                     if isinstance(msg, tuple):
                         return msg
                     elif match.groupdict().has_key('id'):
-                        return (match.group('id'), msg)
+                        field_id = match.group('id')
+                        if field_id.endswith('_key'):
+                            # The identifier is a name of a PostgreSQL UNIQUE index.
+                            try:
+                                # The corresponding field id is either defined explicitly.
+                                field_id = self._UNIQUE_CONSTRAINT_FIELD_MAPPING[field_id]
+                            except KeyError:
+                                # Or we will try to guess it from the PostgreSQL index name,
+                                # relying on its default naming "<table>_<column-id>_key".
+                                words = field_id[:-4].split('_')
+                                for i in range(len(words)):
+                                    maybe_field_id = '_'.join(words[i:])
+                                    if self._view.field(maybe_field_id):
+                                        field_id = maybe_field_id
+                                        break
+                        return (field_id, msg)
                     else:
                         return (None, msg)
             return (None, unicode(e.exception()))
