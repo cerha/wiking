@@ -277,11 +277,20 @@ class Request(pytis.web.Request):
         
         """
         try:
-            size = os.stat(filename).st_size
+            info = os.stat(filename)
         except OSError:
             log(OPR, "File not found:", filename)
-            raise NotFound
-        self.send_http_header(content_type, size)
+            raise NotFound()
+        import mx.DateTime
+        mtime = mx.DateTime.localtime(info.st_mtime)
+        since_header = self.header('If-Modified-Since')
+        if since_header:
+            since = mx.DateTime.ARPA.ParseDateTime(since_header)
+            if mtime == since:
+                self.set_status(304)
+                return apache.OK
+        self.set_header('Last-Modified', mx.DateTime.ARPA.str(mtime))
+        self.send_http_header(content_type, info.st_size)
         f = file(filename)
         if lock:
             import fcntl
