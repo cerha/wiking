@@ -202,7 +202,7 @@ class Abort(RequestError):
     """
     _LOG = False
 
-    def title(self):
+    def title(self, req):
         return self.args[0]
 
     def message(self, req):
