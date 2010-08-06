@@ -197,6 +197,17 @@ class Roles(wiking.Roles):
     Applications may include their own administration roles into this role by
     adding corresponding entries to the database table C{role_sets}.
     """
+    
+    def __getitem__(self, role_id):
+        try:
+            return super(Roles, self).__getitem__(role_id)
+        except KeyError:
+            module = cfg.resolver.wiking_module('ApplicationRoles')
+            role = module.get_role(role_id)
+            if role is None:
+                raise KeyError
+            return role
+    
     def all_roles(self):
         standard_roles = super(Roles, self).all_roles()
         module = cfg.resolver.wiking_module('ApplicationRoles')

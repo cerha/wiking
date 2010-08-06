@@ -277,18 +277,33 @@ class ApplicationRoles(UserManagementModule):
         super(ApplicationRoles, self).__init__(*args, **kwargs)
         self.Spec._ROLES = self._module('Users').Roles()
 
+    def _make_role(row):
+        role_id = row['role_id'].value()
+        name = row['name'].value()
+        return Role(role_id, name)
+
     def user_defined_roles(self):
         """
         @rtype: sequence of L{Role}s
         @return: All user defined roles, i.e. roles defined by the application
           administrators and not the application code.
         """
-        def make_role(row):
-            role_id = row['role_id'].value()
-            name = row['name'].value()
-            return Role(role_id, name)
         condition = pd.EQ('system', pd.Value(pd.Boolean(), False))
-        return tuple(self._data.select_map(make_role, condition=condition))
+        return tuple(self._data.select_map(self._make_role, condition=condition))
+
+    def get_role(self, role_id):
+        """
+        @type role_id: string
+        @param role_id: Role id.
+
+        @rtype: L{Role}
+        @return: Role instance corresponding to given role_id.
+        """
+        row = self._data.row(role_id)
+        if row:
+            return self._make_role(row)
+        else:
+            return None
     
     RIGHTS_list = (Roles.USER,)
     RIGHTS_view = (Roles.USER,)

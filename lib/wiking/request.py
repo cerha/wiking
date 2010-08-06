@@ -1060,6 +1060,8 @@ class Roles(object):
     roles.  Wiking applications may use the roles defined here, subclass this
     class to define additional predefined roles or use application specific and
     user defined roles.  Roles are represented by L{Role} instances.
+    Subclasses which define additional roles must override the methods
+    L{__getitem__} and L{all_roles()} to return the appropriate results.
 
     Predefined roles are defined as public constants of the class.
 
@@ -1089,6 +1091,20 @@ class Roles(object):
     L{Application.authorize} method to change the concept of owner when needed.
     """
 
+    @classmethod
+    def _predefined_roles(self):
+        """
+        @rtype: tuple of L{Role}s
+        @return: All roles statically predefined as public constants of this class.
+        """
+        roles = []
+        for name in dir(self):
+            if name[0] in string.ascii_uppercase:
+                value = getattr(self, name)
+                if isinstance(value, Role):
+                    roles.append(value)
+        return tuple(roles)
+
     def __getitem__(self, role_id):
         """
         @type role_id: string
@@ -1100,7 +1116,7 @@ class Roles(object):
         @raise KeyError: There is no role with C{role_id} as its unique
           identifier.
         """
-        for role in self.all_roles():
+        for role in self._predefined_roles():
             if role.id() == role_id:
                 return role
         raise KeyError(role_id)
@@ -1110,13 +1126,7 @@ class Roles(object):
         @rtype: sequence of L{Role}s
         @return: All the roles available in the application.
         """
-        roles = []
-        for name in dir(self):
-            if name[0] in string.ascii_uppercase:
-                value = getattr(self, name)
-                if isinstance(value, Role):
-                    roles.append(value)
-        return tuple(roles)
+        return self._predefined_roles()
 
     @classmethod
     def check(cls, req, roles):
