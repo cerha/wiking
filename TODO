@@ -8,10 +8,9 @@ Core features:
  * Disable table layout per layout spec, not per module
  * Delete stray attachment files after deletion triggered in database (cascade)
  * Serve robots.txt
- * Image alignment and link title in the LCG formatting manual
  * Locking
- * Change log and Last-Modified HTTP header support
- * Recode HTML attachments
+ * Save page changes history
+ * Recode HTML attachments (or set the encoding headers properly)
  * Cache exported HTML for structured text content in DB?
  * Support multithreaded Apache MPM (currently broken)
 
@@ -19,7 +18,6 @@ Cleaning:
  * Remove deprecated method Roles.check().
  * Move RssModule and Panelizable from CMSModule to EmbeddableCMSModule
  * Remove `req.page' hack in CMS
- * Handle redirection by raising exception.
  * Get rid of config.wiking_dir and lcg.config.default_resource_dir.
 
 Minor:
