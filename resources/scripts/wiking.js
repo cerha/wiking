@@ -213,6 +213,10 @@ var WikingMenu = Class.create(WikingBase, {
 	 var item = $(this.node.getAttribute('aria-activedescendant'));
 	 this.expand_item(item, true);
 	 this.set_focus(item);
+      },
+
+      expand_item: function (item, recourse) {
+	 return false;
       }
 
    });
