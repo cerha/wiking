@@ -277,7 +277,7 @@ class ApplicationRoles(UserManagementModule):
         super(ApplicationRoles, self).__init__(*args, **kwargs)
         self.Spec._ROLES = self._module('Users').Roles()
 
-    def _make_role(row):
+    def _make_role(self, row):
         role_id = row['role_id'].value()
         name = row['name'].value()
         return Role(role_id, name)
@@ -299,7 +299,7 @@ class ApplicationRoles(UserManagementModule):
         @rtype: L{Role}
         @return: Role instance corresponding to given role_id.
         """
-        row = self._data.row(role_id)
+        row = self._data.row(pd.Value(pd.String(), role_id))
         if row:
             return self._make_role(row)
         else:
