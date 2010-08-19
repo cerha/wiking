@@ -576,6 +576,13 @@ class Users(UserManagementModule):
                 return g.div([g.p(p) for p in self._texts], cls='account-info')
 
     class Roles(Roles):
+        """Definition of the 'Roles' class used by the application.
+
+        You may define a custom class derived from L{wiking.Roles} here.  It is
+        nested within the 'Users' module so that the application is able to
+        locate the right class to use.
+        
+        """
         pass
 
     _REFERER = 'login'
@@ -845,20 +852,20 @@ class Users(UserManagementModule):
         else:
             uri = req.module_uri('Registration')
         uid = record['uid'].value()
-        role_ids = self._module('RoleMembers').user_role_ids(uid)
-        role_sets_module = self._module('RoleSets')
         roles = [Roles.AUTHENTICATED]
         if record['state'].value() != self.AccountState.NEW:
             roles.append(Roles.REGISTERED)
         if record['state'].value() == self.AccountState.ENABLED:
             roles.append(Roles.USER)
-        roles_instance = self.Roles()
-        for role_id in role_ids:
-            role = roles_instance[role_id]
-            for contained_role_id in role_sets_module.included_role_ids(role):
-                r = roles_instance[contained_role_id]
-                if r not in roles:
-                    roles.append(r)
+            role_ids = self._module('RoleMembers').user_role_ids(uid)
+            role_sets_module = self._module('RoleSets')
+            roles_instance = self.Roles()
+            for role_id in role_ids:
+                role = roles_instance[role_id]
+                for contained_role_id in role_sets_module.included_role_ids(role):
+                    r = roles_instance[contained_role_id]
+                    if r not in roles:
+                        roles.append(r)
         return dict(login=login, name=record['user'].value(), uid=uid,
                     uri=uri, email=record['email'].value(), data=record, roles=roles,
                     state=record['state'].value(), lang=record['lang'].value())
