@@ -234,6 +234,9 @@ class ApplicationRoles(UserManagementModule):
         table = 'roles'
         # Translators: Form heading.
         title = _("User Groups")
+        def __init__(self, *args, **kwargs):
+            super(ApplicationRoles.Spec, self).__init__(*args, **kwargs)
+            self._roles = cfg.resolver.wiking_module('Users').Roles()
         def fields(self): return (
             # Translators: Form field label.
             pp.Field('role_id', _("Identifier"), editable=computer(self._editable)),
@@ -251,13 +254,12 @@ class ApplicationRoles(UserManagementModule):
         def _xname_display(self, row):
             return row['name'].value() or self._xname(row['role_id'].value())
         def _xname(self, role_id):
-            if self._ROLES is not None:
-                try:
-                    return self._ROLES[role_id].name()
-                except KeyError:
-                    return None
-            else:
+            try:
+                role = self._roles[role_id]
+            except KeyError:
                 return None
+            else:
+                return role.name()
         columns = ('xname', 'role_id', 'system')
         layout = ('role_id', 'name', 'system')
         def cb(self):
@@ -269,13 +271,9 @@ class ApplicationRoles(UserManagementModule):
                             'member_role_id', form=pw.ItemizedView),
                     Binding('members', _("Members"), 'RoleMembers',
                             'role_id', form=pw.ItemizedView))
-        _ROLES = None
     _LAYOUT = {'view': ('xname', 'role_id', 'system')}
     _TITLE_COLUMN = 'xname'
 
-    def __init__(self, *args, **kwargs):
-        super(ApplicationRoles, self).__init__(*args, **kwargs)
-        self.Spec._ROLES = self._module('Users').Roles()
 
     def _make_role(self, row):
         role_id = row['role_id'].value()
