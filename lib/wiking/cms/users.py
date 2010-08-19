@@ -494,12 +494,23 @@ class Users(UserManagementModule):
         default_filter = 'enabled'
         actions = (
             Action(_("Change password"), 'passwd', descr=_("Change user's password")),
+            # Translators: Button label.  Used to approve user's account by the administrator.
+            Action(_("Approve"), 'enable', descr=_("Aprove this account"),
+                   # Note: We use "Approve" just for consistency of the
+                   # terminology in the user interface.  Technically it is the
+                   # same as "Enable" (changes state to enabled).
+                   visible=lambda r: r['state'].value() in (Users.AccountState.NEW,
+                                                            Users.AccountState.UNAPPROVED)),
             # Translators: Button label. Computer terminology. Use common word and form.
             Action(_("Enable"), 'enable', descr=_("Enable this account"),
-                   enabled=lambda r: r['state'].value() != Users.AccountState.ENABLED),
+                   enabled=lambda r: r['state'].value() != Users.AccountState.ENABLED,
+                   visible=lambda r: r['state'].value() not in (Users.AccountState.NEW,
+                                                                Users.AccountState.UNAPPROVED)),
             # Translators: Button label. Computer terminology. Use common word and form.
             Action(_("Disable"), 'disable', descr=_("Disable this account"),
-                   enabled=lambda r: r['state'].value() == Users.AccountState.ENABLED),
+                   enabled=lambda r: r['state'].value() == Users.AccountState.ENABLED,
+                   visible=lambda r: r['state'].value() not in (Users.AccountState.NEW,
+                                                                Users.AccountState.UNAPPROVED)),
             Action(_("Resend activation code"), 'regreminder', descr=_("Re-send registration mail"),
                    visible=lambda r: r['state'].value() == Users.AccountState.NEW),
             Action(_("Delete"), 'delete', descr=_("Remove the account completely"),
