@@ -49,6 +49,7 @@ class Module(object):
           resolver -- a 'WikingResolver' instance.
 
         """
+        assert isinstance(resolver, WikingResolver), resolver
         self._resolver = resolver
         #log(OPR, 'New module instance: %s[%x]' % (self.name(), lcg.positive_id(self)))
         super(Module, self).__init__(**kwargs)
