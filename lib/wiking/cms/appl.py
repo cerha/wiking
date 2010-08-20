@@ -234,8 +234,13 @@ class Application(CookieAuthentication, wiking.Application):
             roles = getattr(module, 'RIGHTS_'+action)
         else:
             roles = self._RIGHTS.get(module.name(), ())
-        if module.name() == 'Pages' and record and record['private'].value():
-            roles = tuple([r == Roles.ANYONE and Roles.USER or r for r in roles])
+        if module.name() == 'Pages' and record and action in \
+                ('view', 'edit', 'rss', 'update', 'commit'):
+            if action in ('update', 'commit'):
+                role_id = record['write_role_id'].value()
+            else:
+                role_id = record['read_role_id'].value()
+            roles = (self._module('Users').Roles()[role_id],)
         #debug("***:", module.name(), action, record.__class__, roles, hasattr(req, 'page'))
         if req.check_roles(roles):
             return True

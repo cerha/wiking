@@ -246,6 +246,7 @@ class ApplicationRoles(UserManagementModule):
             # Translators: Form field label, adjective related to a "User group" (use the
             # appropriate gender.
             pp.Field('system', _("System"), default=False, editable=pp.Editable.NEVER),
+            pp.Field('auto', _("Automatic"), default=False, editable=pp.Editable.NEVER),
             )
         def _editable(self, record, system):
             return not system
@@ -271,6 +272,7 @@ class ApplicationRoles(UserManagementModule):
                             'member_role_id', form=pw.ItemizedView),
                     Binding('members', _("Members"), 'RoleMembers',
                             'role_id', form=pw.ItemizedView))
+        condition = pd.EQ('auto', pd.Value(pd.Boolean(), False))
     _LAYOUT = {'view': ('xname', 'role_id', 'system')}
     _TITLE_COLUMN = 'xname'
 
@@ -305,6 +307,23 @@ class ApplicationRoles(UserManagementModule):
     
     RIGHTS_list = (Roles.USER,)
     RIGHTS_view = (Roles.USER,)
+
+
+class AllRoles(ApplicationRoles):
+    """Codebook of all application roles including automatically assigned roles.
+
+    The L{ApplicationRoles} module is filtered to contain only roles where
+    users are assigned explicitly by the administrator.  This module in
+    addition includes the automatically assigned special roles, such as
+    L{Roles.ANYONE}, L{Roles.AUTHENTICATED}.  Users are assigned these roles
+    automatically by the system according to their state or other conditions.
+
+    This module is typically used as a codebook for access rights assignment,
+    since the special roles are needed there.
+
+    """
+    class Spec(ApplicationRoles.Spec):
+        condition = None
 
 
 class Users(UserManagementModule):

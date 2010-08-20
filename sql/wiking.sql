@@ -127,11 +127,11 @@ create table _mapping (
 	identifier varchar(32) unique not null,
 	parent integer references _mapping,
 	modname text,
-	private boolean not null default false,
-	owner int references users on delete set null,
 	hidden boolean not null,
 	ord int not null,
-	tree_order text
+	tree_order text,
+	read_role_id name not null default 'anyone' references roles on update cascade,
+	write_role_id name not null default 'content_admin' references roles on update cascade on delete set default
 );
 create unique index _mapping_unique_tree_order on _mapping (ord, coalesce(parent, 0));
 
@@ -164,7 +164,7 @@ create table _pages (
 create or replace view pages as 
 select m.mapping_id ||'.'|| l.lang as page_id, l.lang, 
        m.mapping_id, m.identifier, m.parent, m.modname, 
-       m.private, m.owner, m.hidden, m.ord, m.tree_order,
+       m.hidden, m.ord, m.tree_order, m.read_role_id, m.write_role_id,
        coalesce(p.published, false) as published,
        coalesce(p.title, m.identifier) as title_or_identifier, 
        p.title, p.description, p.content, p._title, p._description, p._content
@@ -173,8 +173,8 @@ from _mapping m cross join languages l
 
 create or replace rule pages_insert as
   on insert to pages do instead (
-     insert into _mapping (identifier, parent, modname, private, owner, hidden, ord)
-     values (new.identifier, new.parent, new.modname, new.private, new.owner, new.hidden, 
+     insert into _mapping (identifier, parent, modname, read_role_id, write_role_id, hidden, ord)
+     values (new.identifier, new.parent, new.modname, new.read_role_id, new.write_role_id, new.hidden, 
              coalesce(new.ord, (select max(ord)+100 from _mapping 
                                 where coalesce(parent, 0)=coalesce(new.parent, 0)), 100));
      update _mapping set tree_order = _mapping_tree_order(mapping_id);
@@ -184,8 +184,9 @@ create or replace rule pages_insert as
             new.lang, new.published, 
             new.title, new.description, new.content, new._title, new._description, new._content
      returning mapping_id ||'.'|| lang, 
-       lang, mapping_id, null::varchar(32), null::int, null::text, null::boolean, null::int,
-       null::boolean, null::int, null::text, published, title, title, description, content, _title,
+       lang, mapping_id, null::varchar(32), null::int, null::text, null::boolean, null::int, 
+       null::text, null::name, null::name,
+       published, title, title, description, content, _title,
        _description, _content
 );
 
@@ -195,8 +196,8 @@ create or replace rule pages_update as
         identifier = new.identifier,
         parent = new.parent,
         modname = new.modname,
-        private = new.private,
-        owner = new.owner,
+        read_role_id = new.read_role_id,
+        write_role_id = new.write_role_id,
         hidden = new.hidden,
         ord = new.ord
     where _mapping.mapping_id = old.mapping_id;
@@ -358,10 +359,11 @@ create table _panels (
 	published boolean not null default false
 );
 
-create or replace view panels as 
-select _panels.*, _mapping.modname, _mapping.identifier, _mapping.private, _pages.title as mtitle
-from _panels 
-     left outer join _mapping using (mapping_id) 
+create or replace view panels as
+select _panels.*, _mapping.modname, _mapping.identifier, _mapping.read_role_id,
+       _pages.title as mtitle
+from _panels
+     left outer join _mapping using (mapping_id)
      left outer join _pages using (mapping_id, lang);
 
 create or replace rule panels_insert as

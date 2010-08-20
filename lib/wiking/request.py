@@ -1072,7 +1072,7 @@ class Roles(object):
 
     """
     # Translators: Short description of a user group purpose.
-    ANYONE = Role('anyone', _("Anybody"))
+    ANYONE = Role('anyone', _("Anyone"))
     """Anyone, even a user who is not logged-in."""
     # Translators: Short description of a user group purpose.
     AUTHENTICATED = Role('authenticated', _("Any authenticated user"))

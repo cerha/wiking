@@ -15,12 +15,17 @@ insert into stylesheets (identifier, media, ord) values ('default.css', 'all', 1
 insert into stylesheets (identifier, media, ord) values ('layout.css', 'screen', 20);
 insert into stylesheets (identifier, media, ord) values ('print.css', 'print', 30);
 
-insert into roles (role_id, system) values ('user_admin', 't');
-insert into roles (role_id, system) values ('content_admin', 't');
-insert into roles (role_id, system) values ('settings_admin', 't');
-insert into roles (role_id, system) values ('mail_admin', 't');
-insert into roles (role_id, system) values ('style_admin', 't');
-insert into roles (role_id, system) values ('admin', 't');
+insert into roles (role_id, system, auto) values ('anyone', 't', 't');
+insert into roles (role_id, system, auto) values ('authenticated', 't', 't');
+insert into roles (role_id, system, auto) values ('owner', 't', 't');
+insert into roles (role_id, system, auto) values ('user', 't', 't');
+insert into roles (role_id, system, auto) values ('registered', 't', 't');
+insert into roles (role_id, system, auto) values ('user_admin', 't', 'f');
+insert into roles (role_id, system, auto) values ('content_admin', 't', 'f');
+insert into roles (role_id, system, auto) values ('settings_admin', 't', 'f');
+insert into roles (role_id, system, auto) values ('mail_admin', 't', 'f');
+insert into roles (role_id, system, auto) values ('style_admin', 't', 'f');
+insert into roles (role_id, system, auto) values ('admin', 't', 'f');
 
 insert into role_sets (role_id, member_role_id) values ('admin', 'user_admin');
 insert into role_sets (role_id, member_role_id) values ('admin', 'content_admin');

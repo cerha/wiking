@@ -38,7 +38,8 @@ from mx.DateTime import today, TimeDelta
 
 from pytis.util import *
 import pytis.data
-from pytis.presentation import computer, Computer, CbComputer, Fields, HGroup, CodebookSpec, Field
+from pytis.presentation import computer, Computer, CbComputer, Fields, HGroup, CodebookSpec, \
+    Field, ColumnLayout
 from lcg import log as debug
 
 CHOICE = pp.SelectionType.CHOICE
@@ -683,8 +684,9 @@ class Mapping(ContentManagementModule):
         fields = (Field('mapping_id', enumerator='PageTitles'),
                   Field('identifier'),
                   Field('modname'),
-                  Field('private'),
                   Field('tree_order'),
+                  Field('read_role_id'),
+                  Field('write_role_id'),
                   )
         sorting = (('tree_order', ASC), ('identifier', ASC),)
         def _translate(self, row):
@@ -735,7 +737,7 @@ class Panels(ContentManagementModule, Publishable):
                           "shown by the panel.  Leave blank for a text content panel.")),
             Field('identifier', editable=NEVER),
             Field('modname'),
-            Field('private'),
+            Field('read_role_id'),
             # Translators: Computer term for a part of application.
             Field('modtitle', _("Module"), virtual=True,
                   computer=computer(lambda r, modname: _modtitle(modname))),
@@ -761,10 +763,10 @@ class Panels(ContentManagementModule, Publishable):
     def panels(self, req, lang):
         panels = []
         parser = lcg.Parser()
-
         #TODO: tady uvidim prirazenou stranku, navigable
+        roles = self._module('Users').Roles()
         for row in self._data.get_rows(lang=lang, published=True, sorting=self._sorting):
-            if row['private'].value() is True and not req.check_roles(Roles.USER):
+            if not req.check_roles(roles[row['read_role_id'].value()]):
                 continue
             panel_id = row['identifier'].value() or str(row['panel_id'].value())
             title = row['ptitle'].value() or row['mtitle'].value() or \
@@ -1000,8 +1002,6 @@ class Pages(ContentManagementModule):
                   descr=_("Allows you to control the availability of this page in each of the "
                           "supported languages (switch language to control the availability in "
                           "other languages)")),
-            Field('private', _("Private"), default=False,
-                  descr=_("Make the item available only to logged-in users.")),
             Field('status', _("Status"), virtual=True, computer=computer(self._status)),
             Field('hidden', _("Hidden"),
                   descr=_("Check if you don't want this page to appear in the menu.")),
@@ -1011,11 +1011,14 @@ class Pages(ContentManagementModule):
                   descr=_("Enter a number denoting the order of the page in the menu.  Leave "
                           "blank if you want to put the page automatically to the end.")),
             Field('tree_order', type=pd.TreeOrder()),
-            #Field('group', virtual=True,
+            #Field('grouping', virtual=True,
             #      computer=computer(lambda r, tree_order: tree_order.split('.')[1])),
-            Field('owner', _("Owner"), codebook='Users', not_null=False,
-                  descr=_("Set the ownership if you want a particular user to have full control "
-                          "of the page even if his normal privileges are lower.")),
+            Field('read_role_id', _("Readable by"), codebook='AllRoles',
+                  default=Roles.ANYONE.id(),
+                  descr=_("Select the role allowed to visit the page and read its contents.")),
+            Field('write_role_id', _("Editable by"), codebook='AllRoles',
+                  default=Roles.CONTENT_ADMIN.id(),
+                  descr=_("Select the role allowed to edit the page contents.")),
             )
         def _status(self, record, published, _content, content):
             if not published:
@@ -1027,18 +1030,21 @@ class Pages(ContentManagementModule):
         def row_style(self, record):
             return not record['published'].value() and pp.Style(foreground='#777') or None
         sorting = (('tree_order', ASC), ('identifier', ASC),)
-        #grouping = 'group'
+        #grouping = 'grouping'
         #group_heading = 'title'
-        layout = (FieldSet(_("Page Text (for the current language)"),
-                           ('title', 'description', 'status', '_content')),
-                  # Translators: Options meaning page configuration settings.
-                  FieldSet(_("Global Options (for all languages)"),
-                           (('identifier', 'parent',),
-                            ('hidden', 'ord'),
-                            ('private', 'owner')),
-                           horizontal=True))
-        columns = ('title_or_identifier', 'identifier', 'modname', 'status', 'hidden', 'ord',
-                   'private', 'owner')
+        layout = (
+            FieldSet(_("Page Text (for the current language)"),
+                     ('title', 'description', 'status', '_content')),
+            # Translators: Options meaning page configuration settings.
+            FieldSet(_("Global Options (for all languages)"),
+                     (ColumnLayout(
+                        FieldSet(_("Basic Options"), ('identifier', 'modname',)),
+                        FieldSet(_("Menu position"), ('parent', 'ord', 'hidden',)),
+                        FieldSet(_("Access Rights"), ('read_role_id', 'write_role_id'))),),
+                     ),
+            )
+        columns = ('title_or_identifier', 'identifier', 'modname', 'status', 'ord', 'hidden',
+                   'read_role_id', 'write_role_id')
         cb = CodebookSpec(display='title_or_identifier', prefer_display=True)
         # Translators: Noun. Such as e-mail attachments (here attachments for a webpage).
         bindings = (Binding('attachments', _("Attachments"), 'Attachments', 'mapping_id'),)
@@ -1051,16 +1057,22 @@ class Pages(ContentManagementModule):
          _("Duplicate menu order at this level of hierarchy.")),) + \
          ContentManagementModule._EXCEPTION_MATCHERS
     _LIST_BY_LANGUAGE = True
-    _OWNER_COLUMN = 'owner'
-    _SUPPLY_OWNER = False
-    _LAYOUT = {'insert': (FieldSet(_("Page Text (for the current language)"),
-                                   ('title', 'description', '_content')),
-                          FieldSet(_("Global Options (for all languages)"),
-                                   ('identifier', 'modname', 'parent', 'hidden', 'ord',
-                                    'private', 'owner'),
-                                   horizontal=True)),
+    #_OWNER_COLUMN = 'owner'
+    #_SUPPLY_OWNER = False
+    _LAYOUT = {'insert':
+                   (FieldSet(_("Page Text (for the current language)"),
+                             ('title', 'description', '_content')),
+                    FieldSet(_("Global Options (for all languages)"),
+                             ('identifier', 'modname',
+                              FieldSet(_("Menu position"), ('parent', 'ord', 'hidden',)),
+                              FieldSet(_("Access Rights"), ('read_role_id', 'write_role_id',)),
+                              ))),
                'update': ('title', 'description', '_content'),
-               'options': ('identifier', 'modname', 'parent', 'hidden', 'ord', 'private', 'owner'),
+               'options':
+                   (FieldSet(_("Basic Options"), ('identifier', 'modname',)),
+                    FieldSet(_("Menu position"), ('parent', 'ord', 'hidden',)),
+                    FieldSet(_("Access Rights"), ('read_role_id', 'write_role_id')),
+                    )
                }
     _SUBMIT_BUTTONS_ = ((_("Save"), None), (_("Save and publish"), 'commit'))
     _SUBMIT_BUTTONS = {'update': _SUBMIT_BUTTONS_,
@@ -1150,13 +1162,15 @@ class Pages(ContentManagementModule):
     def _validate(self, req, record, layout):
         errors = super(Pages, self)._validate(req, record, layout)
         if not errors and req.has_param('commit'):
-            if req.check_roles(self.RIGHTS_commit) or self.check_owner(req.user(), record):
+            if self._application.authorize(req, self, action='commit', record=record):
                 record['content'] = record['_content']
                 record['published'] = pytis.data.Value(pytis.data.Boolean(), True)
             else:
+                # This will actually never happen, since the 'edit' and
+                # 'commit' rights always the same now.
                 errors = [(None, _("You don't have sufficient privilegs for this action.") +' '+ \
-                           _("Save the page without publishing and ask the administrator "
-                             "to publish your changes."))]
+                               _("Save the page without publishing and ask the administrator "
+                                 "to publish your changes."))]
         return errors
 
     def _update_msg(self, req, record):
@@ -1332,15 +1346,15 @@ class Pages(ContentManagementModule):
                                                       uri=self._current_record_uri(req, record))
         # Translators: Section title. Attachments as in email attachments.
         return self._document(req, content, record, subtitle=_("Attachments"))
-    RIGHTS_attachments = (Roles.CONTENT_ADMIN, Roles.OWNER)
+    RIGHTS_attachments = (Roles.CONTENT_ADMIN,)
         
     def action_preview(self, req, record):
         return self.action_view(req, record, preview=True)
-    RIGHTS_preview = (Roles.CONTENT_ADMIN, Roles.OWNER)
+    RIGHTS_preview = (Roles.CONTENT_ADMIN,)
 
     def action_options(self, req, record):
         return self.action_update(req, record, action='options')
-    RIGHTS_options = (Roles.CONTENT_ADMIN, Roles.OWNER)
+    RIGHTS_options = (Roles.CONTENT_ADMIN,)
     
     def action_translate(self, req, record):
         lang = req.param('src_lang')
@@ -1366,7 +1380,7 @@ class Pages(ContentManagementModule):
             for k in ('_content','title'):
                 req.set_param(k, row[k].value())
             return self.action_update(req, record)
-    RIGHTS_translate = (Roles.CONTENT_ADMIN, Roles.OWNER)
+    RIGHTS_translate = (Roles.CONTENT_ADMIN,)
 
     def action_commit(self, req, record):
         values = dict(content=record['_content'].value(), published=True)
@@ -1386,7 +1400,7 @@ class Pages(ContentManagementModule):
         else:
             req.message(_("The changes were published."))
         return self.action_view(req, record)
-    RIGHTS_commit = (Roles.CONTENT_ADMIN, Roles.OWNER)
+    RIGHTS_commit = (Roles.CONTENT_ADMIN,)
 
     def action_revert(self, req, record):
         try:
@@ -1396,7 +1410,7 @@ class Pages(ContentManagementModule):
         else:
             req.message(_("The page contents was reverted to its previous state."))
         return self.action_view(req, record)
-    RIGHTS_revert = (Roles.CONTENT_ADMIN, Roles.OWNER)
+    RIGHTS_revert = (Roles.CONTENT_ADMIN,)
     
     def action_unpublish(self, req, record):
         try:
@@ -1406,7 +1420,7 @@ class Pages(ContentManagementModule):
         else:
             req.message(_("The page was unpublished."))
         return self.action_view(req, record)
-    RIGHTS_unpublish = (Roles.CONTENT_ADMIN, Roles.OWNER)
+    RIGHTS_unpublish = (Roles.CONTENT_ADMIN,)
 
     
 class Attachments(ContentManagementModule):
@@ -1525,7 +1539,7 @@ class Attachments(ContentManagementModule):
     _EXCEPTION_MATCHERS = (
         ('duplicate key (value )?violates unique constraint "_attachments_mapping_id_key"',
          ('file', _("Attachment of the same file name already exists for this page."))),)
-    RIGHTS_view   = (Roles.CONTENT_ADMIN, Roles.OWNER)
+    RIGHTS_view   = (Roles.CONTENT_ADMIN,)
 
     def _default_action(self, req, record=None):
         if record is None:
@@ -1626,7 +1640,7 @@ class Attachments(ContentManagementModule):
     def action_insert_image(self, req):
         req.set_param('action', 'insert')
         return self._module('Images').action_insert(req)
-    RIGHTS_insert_image  = (Roles.CONTENT_ADMIN, Roles.OWNER)
+    RIGHTS_insert_image  = (Roles.CONTENT_ADMIN,)
 
 
 class Images(Attachments):
