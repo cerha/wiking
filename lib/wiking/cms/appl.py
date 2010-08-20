@@ -234,13 +234,20 @@ class Application(CookieAuthentication, wiking.Application):
             roles = getattr(module, 'RIGHTS_'+action)
         else:
             roles = self._RIGHTS.get(module.name(), ())
-        if module.name() == 'Pages' and record and action in \
-                ('view', 'edit', 'rss', 'update', 'commit'):
-            if action in ('update', 'commit'):
-                role_id = record['write_role_id'].value()
-            else:
+        if module.name() == 'Pages' and record:
+            if action in ('view', 'rss'):
                 role_id = record['read_role_id'].value()
-            roles = (self._module('Users').Roles()[role_id],)
+                roles = (self._module('Users').Roles()[role_id],)
+            elif action in ('update', 'commit', 'revert', 'attachments'):
+                role_id = record['write_role_id'].value()
+                roles = (self._module('Users').Roles()[role_id], Roles.CONTENT_ADMIN)
+        if module.name() == 'Attachments' and req.page:
+            if action in ('view', 'list'):
+                role_id = req.page['read_role_id'].value()
+                roles = (self._module('Users').Roles()[role_id],)
+            elif action in ('insert', 'update', 'delete'):
+                role_id = req.page['write_role_id'].value()
+                roles = (self._module('Users').Roles()[role_id], Roles.CONTENT_ADMIN)
         #debug("***:", module.name(), action, record.__class__, roles, hasattr(req, 'page'))
         if req.check_roles(roles):
             return True
