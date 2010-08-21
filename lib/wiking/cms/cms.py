@@ -206,7 +206,7 @@ class Roles(wiking.Roles):
             module = cfg.resolver.wiking_module('ApplicationRoles')
             role = module.get_role(role_id)
             if role is None:
-                raise KeyError
+                raise KeyError(role_id)
             return role
     
     def all_roles(self):
