@@ -5,12 +5,10 @@ Dependencies:
   * python >= 2.3 (2.4 suggested)
   * apache >= 2.0 (prefork MPM!)
   * mod_python >= 3.2.10
-  * postgresql >= 8.3
   * lcg >= 0.4.0
-  * pytis >= 1.0.0
+  * pytis >= 1.0.0 (please check it's own dependencies)
   * python-dnspython - DNS client module for Python
   * python-egenix-mxdatetime - Python date/time manipulation routines
-  * python-psycopg2 - Python DBAPI 2 implementation for PostgreSQL
   * python-imaging - Python Imaging Library (needed only when using Image galeries)  
 
 Multithreaded Apache MPM is currently not supported.  Since it is the default
