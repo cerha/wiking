@@ -766,7 +766,8 @@ class Panels(ContentManagementModule, Publishable):
         #TODO: tady uvidim prirazenou stranku, navigable
         roles = self._module('Users').Roles()
         for row in self._data.get_rows(lang=lang, published=True, sorting=self._sorting):
-            if not req.check_roles(roles[row['read_role_id'].value()]):
+            role_id = row['read_role_id'].value()
+            if role_id is not None and not req.check_roles(roles[role_id]):
                 continue
             panel_id = row['identifier'].value() or str(row['panel_id'].value())
             title = row['ptitle'].value() or row['mtitle'].value() or \
