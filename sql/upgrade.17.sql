@@ -106,7 +106,7 @@ begin
       execute 'insert into roles (role_id, system) values ($1, True)' using role_id;
     exception when unique_violation then
     end;
-    execute 'insert into role_users (role_id, uid) values ($1, $2)' using role_id, row.uid;
+    execute 'insert into role_members (role_id, uid) values ($1, $2)' using role_id, row.uid;
     execute 'update users set state=''enabled'' where uid=$1' using row.uid;
   end loop;
 end;
