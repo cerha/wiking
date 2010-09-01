@@ -13,7 +13,8 @@ create table languages (
 create table roles (
        role_id name primary key,
        name text,
-       system boolean not null default 'f'
+       system boolean not null default 'f',
+       auto boolean not null default false
 );
 
 create table role_sets (
