@@ -843,7 +843,7 @@ class Document(object):
                     heading = lcg.concat(heading, ' :: ', self._subtitle)
                 content = self._content
                 if isinstance(content, (list, tuple)):
-                    content = lcg.SectionContainer([c for c in content if c is not None], toc_depth=0)
+                    content = lcg.Container([c for c in content if c is not None])
                 panels = application.panels(req, lang)
                 variants = self._variants
                 if variants is None:
@@ -1777,7 +1777,7 @@ def send_mail(addr, subject, text, sender=None, html=None, export=False, lang=No
     # The html section.
     if export:
         assert html is None
-        content = lcg.SectionContainer(lcg.Parser().parse(text), toc_depth=0)
+        content = lcg.Container(lcg.Parser().parse(text))
         exporter = lcg.HtmlExporter(translations=cfg.translation_path)
         node = lcg.ContentNode('mail', title=subject, content=content)
         context = exporter.context(node, str(lang))

@@ -519,7 +519,7 @@ class Session(PytisModule, wiking.Session):
         def abort(title, text_id, form=None):
             texts = self._module('Texts')
             sections = texts.parsed_text(req, text_id, lang=req.prefered_language())
-            content = lcg.SectionContainer(sections, toc_depth=0)
+            content = lcg.Container(sections)
             if form:
                 content = (content, form)
             else:
@@ -784,7 +784,7 @@ class Panels(ContentManagementModule, Publishable):
                     channel = '/'+'.'.join((row['identifier'].value(), lang, 'rss'))
             if row['content'].value():
                 content += tuple(parser.parse(row['content'].value()))
-            content = lcg.SectionContainer(content, toc_depth=0)
+            content = lcg.Container(content)
             panels.append(Panel(panel_id, title, content, channel=channel))
         return panels
 
@@ -1300,7 +1300,7 @@ class Pages(ContentManagementModule):
                 pre, post = text, ''
             parser = lcg.Parser()
             sections = parser.parse(pre) + content + parser.parse(post)
-            content = [lcg.SectionContainer(sections, toc_depth=0)]
+            content = [lcg.Container(sections)]
         # Attachment list
         amod = self._module('Attachments')
         attachments = amod.attachments(record['mapping_id'].value(), record['lang'].value(),

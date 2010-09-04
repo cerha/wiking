@@ -302,7 +302,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         for panel in panels:
             content = panel.content()
             # Add a fake container to force the heading level start at 4.
-            container = lcg.SectionContainer(lcg.Section('', lcg.Section('', content)))
+            container = lcg.Container(lcg.Section('', lcg.Section('', content)))
             title = g.link(panel.title(), None, name='panel-'+panel.id()+'-anchor', tabindex=0)
             channel = panel.channel()
             if channel:

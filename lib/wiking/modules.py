@@ -253,7 +253,7 @@ class Documentation(Module, RequestHandler):
         content = lcg.Parser().parse(text)
         if len(content) == 1 and isinstance(content[0], lcg.Section):
             title = content[0].title()
-            content = lcg.SectionContainer(content[0].content(), toc_depth=0)
+            content = lcg.Container(content[0].content())
         else:
             title = ' :: '.join(req.unresolved_path)
         return Document(title, content, lang=lang, variants=variants)
