@@ -518,8 +518,7 @@ class Session(PytisModule, wiking.Session):
         # Display info page for users without proper access
         def abort(title, text_id, form=None):
             texts = self._module('Texts')
-            sections = texts.parsed_text(req, text_id, lang=req.prefered_language())
-            content = lcg.Container(sections)
+            content = texts.parsed_text(req, text_id, lang=req.prefered_language())
             if form:
                 content = (content, form)
             else:
@@ -2240,18 +2239,17 @@ class Texts(CommonTexts):
         """Return parsed text corresponding to 'text'.
 
         This method is the same as 'text()' but instead of returning LCG
-        structured text, it returns its parsed form, as a sequence of
-        'lcg.Content' instances.  If the given text doesn't exist, an empty
-        sequence is returned.
+        structured text, it returns its parsed form, as an 'lcg.Content'
+        instance.  If the given text doesn't exist, 'None' is returned.
         
         """
         assert isinstance(text, Text)
         retrieved_text = self.text(req, text, lang=lang, args=args)
         if retrieved_text:
-            sections = lcg.Parser().parse(retrieved_text)
+            content = lcg.Container(lcg.Parser().parse(retrieved_text))
         else:
-            sections = ()
-        return sections
+            content = None
+        return content
 
 
 class EmailText(Structure):
@@ -2425,11 +2423,10 @@ class TextReferrer(object):
     def _parsed_text(self, req, text, args=None, lang='en'):
         """Return parsed text corresponding to 'text'.
 
-        This method is the same as 'text()' but instead of returning LCG
-        structured text, it returns its parsed form, as a sequence of
-        'lcg.Content' instances.  If the given text doesn't exist, an empty
-        sequence is returned.
-        
+        This method is the same as '_text()' but instead of returning LCG
+        structured text string, it returns its parsed form, as an 'lcg.Content'
+        instance.  If the given text doesn't exist, 'None' is returned.
+
         """
         assert isinstance(text, Text)
         return self._text(req, text, lang=lang, args=args, _method=Texts.parsed_text)

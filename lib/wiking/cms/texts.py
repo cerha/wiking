@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2009 Brailcom, o.p.s.
+# Copyright (C) 2009, 2010 Brailcom, o.p.s.
 #
 # COPYRIGHT NOTICE
 #
@@ -53,3 +53,13 @@ unapproved = Text('cms.unapproved',
                   
 The protected services are not available until the account gets approved.
 If the account remains unapproved for a long time, contact the application administrator."""))
+
+regintro = Text('cms.regintro',
+                _("Introductory text displayed to users in the registration form"),
+                None)
+
+regsuccess = Text('cms.regsuccess',
+                  _("Text displayed after successful user registration"),
+                  _("Registration completed successfuly. "
+                    "Your account now awaits administrator's approval."))
+

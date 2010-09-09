@@ -644,7 +644,8 @@ class Users(UserManagementModule):
     def _layout(self, req, action, record=None):
         if not self._LAYOUT.has_key(action): # Allow overriding this layout in derived classes.
             if action == 'insert':
-                return (FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname',)),
+                return (self._registration_form_intro,
+                        FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname',)),
                         FieldSet(_("Contact information"),
                                  ((not cfg.login_is_email) and ('email',) or ()) +
                                  ('phone', 'address', 'uri')),
@@ -800,13 +801,18 @@ class Users(UserManagementModule):
                 req.message(_("E-mail notification has been sent to server administrator."))
                 return True
 
-    def _confirmation_success_content(self, req, record):
-        # TODO: This method allows overriding the text in applications.
-        # Better would be to use the `Texts' module.
-        content = [lcg.p(_("Registration completed successfuly. "
-                           "Your account now awaits administrator's approval."))]
+    def _registration_form_intro(self, record):
+        req = record.req()
+        texts = self._module('Texts')
+        content = texts.parsed_text(req, wiking.cms.texts.regintro, lang=req.prefered_language())
+        if content is None:
+            content = lcg.Content()
         return content
     
+    def _confirmation_success_content(self, req, record):
+        texts = self._module('Texts')
+        return texts.parsed_text(req, wiking.cms.texts.regsuccess, lang=req.prefered_language())
+
     def action_confirm(self, req):
         """Confirm the activation code sent by e-mail to make user registration valid.
 
