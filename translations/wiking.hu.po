@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-02-15 15:36+0100\n"
+"POT-Creation-Date: 2010-09-11 16:10+0200\n"
 "PO-Revision-Date: 2010-02-04 00:17+0100\n"
 "Last-Translator: Hostomský Károly <khostomsky@gmail.com>\n"
 "Language-Team: Hungarian <wiking@lists.freebsoft.org>\n"
@@ -15,135 +15,227 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../lib/wiking/db.py:41
+#. Translators: Short description of a user group purpose.
+#: ../lib/wiking/request.py:1075
+msgid "Anyone"
+msgstr ""
+
+#. Translators: Short description of a user group purpose.
+#: ../lib/wiking/request.py:1078
+#, fuzzy
+msgid "Any authenticated user"
+msgstr "Hitelesítés kötelező"
+
+#. Translators: Short description of a user group purpose.
+#: ../lib/wiking/request.py:1085
+msgid "Current record owner"
+msgstr ""
+
+#: ../lib/wiking/modules.py:467
+msgid "Enter your login name, please!"
+msgstr "Kérem, üsse be a felhasználói nevét!"
+
+#: ../lib/wiking/modules.py:469
+msgid "Enter your password, please!"
+msgstr "Kérem, üsse be a jelszavát!"
+
+#: ../lib/wiking/modules.py:474
+msgid "Invalid login!"
+msgstr "Érvénytelen bejelentkezés!"
+
+#: ../lib/wiking/modules.py:572
+msgid "Searching"
+msgstr "Keresés"
+
+#: ../lib/wiking/modules.py:573
+msgid "Search results"
+msgstr "Keresési eredmények"
+
+#: ../lib/wiking/modules.py:574
+msgid "Given search term doesn't contain any searchable term."
+msgstr "A keresett karakterek nem tartalmaznak kereshető kifejezést."
+
+#: ../lib/wiking/modules.py:578
+msgid "Search words:"
+msgstr "Keresett szavak:"
+
+#: ../lib/wiking/modules.py:579
+msgid "Search"
+msgstr "Keresés"
+
+#: ../lib/wiking/modules.py:635
+msgid "Nothing found."
+msgstr "Nincs találat."
+
+#: ../lib/wiking/modules.py:692
+msgid "The following modules were successfully reloaded:"
+msgstr "A következő modulok sikeresen újratöltve:"
+
+#: ../lib/wiking/modules.py:694
+msgid "Reload"
+msgstr "Frissít"
+
+#: ../lib/wiking/db.py:59
 msgid "This value already exists.  Enter a unique value."
 msgstr "Ez az érték már létezik. Válasszon egyedi értéket."
 
 #. Translators: This is about an empty (not filled in) value in a web form. Field means a
 #. form field.
-#: ../lib/wiking/db.py:45
+#: ../lib/wiking/db.py:63
 msgid "Empty value.  This field is mandatory."
 msgstr "Üres mező. A mező kitöltése kötelező."
 
-#. Translators: Button label. Record as in `database record' (computer terminology).
-#: ../lib/wiking/db.py:49
+#. Translators: This is delete action failure message in a web page.
+#: ../lib/wiking/db.py:66
+msgid "Record couldn't be deleted because other records refer to it."
+msgstr ""
+
+#. Translators: Button label for new database record creation (computer terminology).
+#: ../lib/wiking/db.py:116
 msgid "New record"
 msgstr "Új elem"
 
-#. Translators: Button label. Record as in `database record' (computer terminology).
-#: ../lib/wiking/db.py:51
+#. Translators: Tooltip of new database record creation button (computer terminology).
+#: ../lib/wiking/db.py:118
 msgid "Create a new record"
 msgstr "Új elem létrehozása"
 
-#. Translators: Button label. Meaning `Modify the database record' (computer terminology).
-#: ../lib/wiking/db.py:53
+#. Translators: Button label for database record modification (verb in imperative,
+#. computer terminology).
+#: ../lib/wiking/db.py:121
 msgid "Edit"
 msgstr "Szerkeszt"
 
-#. Translators: Button label. Record as in `database record' (computer terminology).
-#: ../lib/wiking/db.py:55
+#. Translators: Tooltip of database record modification button (computer terminology)
+#: ../lib/wiking/db.py:123
 msgid "Modify the record"
 msgstr "Elem szerkesztése"
 
-#. Translators: Button label. Meaning `Delete the database record' (computer terminology).
-#: ../lib/wiking/db.py:57
+#. Translators: Button label for database record deletion (verb in imperative,
+#. computer terminology).
+#: ../lib/wiking/db.py:126
 msgid "Remove"
 msgstr "Töröl"
 
-#. Translators: Button label. Record as in `database record' (computer terminology).
-#: ../lib/wiking/db.py:59
+#. Translators: Tooltip of database record deletion button (computer terminology).
+#: ../lib/wiking/db.py:128
 msgid "Remove the record permanently"
 msgstr "Elem végleges törlése"
 
-#. Translators: Record as in `database record' (computer terminology).
-#: ../lib/wiking/db.py:61
+#. Translators: Prompt before database record deletion (computer terminology).
+#: ../lib/wiking/db.py:130
 msgid "Please, confirm removing the record permanently."
 msgstr "Kérem, erősítse meg az elem végleges törlését."
 
-#. Translators: Copy button label. Verb. Computer terminology and form common for a webpage button.
-#: ../lib/wiking/db.py:63
+#. Translators: Button label for database record copying (verb in imperative,
+#. computer terminology).
+#: ../lib/wiking/db.py:133
 msgid "Copy"
 msgstr "Másol"
 
-#. Translators: Record as in `database record' (computer terminology).
-#: ../lib/wiking/db.py:65
+#. Translators: Tooltip of database record copy button (computer terminology).
+#: ../lib/wiking/db.py:135
 msgid "Create new record initialized by values of this record"
 msgstr "Új elem létrehozása ezen rekord értékei szerint iniciálva"
 
-#. Translators: Button label.
-#: ../lib/wiking/db.py:67
+#. Translators: Button label for returning from a single record view to the listing of all
+#. database records (computer terminology).
+#: ../lib/wiking/db.py:138
 msgid "Back to list"
 msgstr "Vissza a listához"
 
-#. Translators: Record as in `database record' (computer terminology).
-#: ../lib/wiking/db.py:69
+#. Translators: Tooltip of a button for returning from a single record view to the
+#. listing of all records (computer terminology).
+#: ../lib/wiking/db.py:141
 msgid "Back to the list of all records"
 msgstr "Vissz a elemek listájához"
 
-#. Translators: Record as in `database record' (computer terminology).
-#: ../lib/wiking/db.py:71
+#. Translators: Button label (verb in imperative, computer terminology).
+#: ../lib/wiking/db.py:143
+msgid "Export"
+msgstr ""
+
+#. Translators: Button tooltip.  Don't translate `CSV', it is an
+#. internationally recognized computer abbreviation.
+#: ../lib/wiking/db.py:146
+msgid "Export the listing into a CSV format"
+msgstr ""
+
+#. Translators: Message displayed after new database record creation (computer terminology).
+#: ../lib/wiking/db.py:148
 msgid "New record was successfully inserted."
 msgstr "Az új elem sikeresen be lett szúrva."
 
-#. Translators: Record as in `database record' (computer terminology).
-#: ../lib/wiking/db.py:73
+#. Translators: Message displayed after a database record modification (computer terminology).
+#: ../lib/wiking/db.py:150
 msgid "The record was successfully updated."
 msgstr "Az elemet sikeresen frissítette."
 
-#. Translators: Record as in `database record' (computer terminology).
-#: ../lib/wiking/db.py:75
+#. Translators: Message displayed after a database record deletion (computer terminology).
+#: ../lib/wiking/db.py:152
 msgid "The record was deleted."
 msgstr "Az elem törlődött."
 
-#: ../lib/wiking/db.py:266
-msgid "Invalid binding column value."
-msgstr "Helytelen kötelező mező érték."
-
-#: ../lib/wiking/db.py:322
+#: ../lib/wiking/db.py:408
 msgid "Integrity check failed."
 msgstr "Integritás ellenőrzés sikertelen."
 
+#: ../lib/wiking/db.py:461 ../lib/wiking/application.py:291
+msgid "Unable to perform a database operation."
+msgstr "A művelet végrehajtása az adatbázisban sikertelen."
+
 #. Translators: Back button label. Standard computer terminology.
-#: ../lib/wiking/db.py:976
+#: ../lib/wiking/db.py:1358
 msgid "Back"
 msgstr "Vissza"
 
 #. Translators: RSS channel is a computer idiom, see Wikipedia.
-#: ../lib/wiking/db.py:1059
+#: ../lib/wiking/db.py:1509 ../lib/wiking/db.py:1648
 msgid "An RSS channel is available for this section:"
 msgstr "RSS csatorna elérhető a következő szekcióhoz:"
 
-#: ../lib/wiking/db.py:1063
+#. Translators: RSS channel is a computer idiom, see Wikipedia.  Don't translate 'RSS'.
+#: ../lib/wiking/db.py:1513 ../lib/wiking/db.py:1646
 msgid "more about RSS"
 msgstr "több információ az RSS-ről"
 
+#: ../lib/wiking/db.py:1641
+#, fuzzy, python-format
+msgid "RSS channel \"%s\""
+msgstr "RSS csatorna"
+
+#: ../lib/wiking/db.py:1651
+#, fuzzy
+msgid "RSS channels are available for this section"
+msgstr "RSS csatorna elérhető a következő szekcióhoz:"
+
 #. Translators: Record as in `database record'.
-#: ../lib/wiking/db.py:1157
+#: ../lib/wiking/db.py:1740
 msgid "No records."
 msgstr "Nincsenek elemek."
 
 #. Translators: `Item' is intentionally general. Could be webpage, notice or something else.
-#: ../lib/wiking/db.py:1165
+#: ../lib/wiking/db.py:1748
 msgid "The item was published."
 msgstr "Elem megjelenítve."
 
-#: ../lib/wiking/db.py:1166
+#: ../lib/wiking/db.py:1749
 msgid "The item was unpublished."
 msgstr "Az elem eltávolítva."
 
-#: ../lib/wiking/db.py:1175
+#: ../lib/wiking/db.py:1758
 msgid "Publish"
 msgstr "Megjelenít"
 
-#: ../lib/wiking/db.py:1178
+#: ../lib/wiking/db.py:1761
 msgid "Make the item visible to website visitors"
 msgstr "Elem láthatóvá tétele a weboldal látogatóinak"
 
-#: ../lib/wiking/db.py:1179
+#: ../lib/wiking/db.py:1762
 msgid "Unpublish"
 msgstr "Nem "
 
-#: ../lib/wiking/db.py:1182
+#: ../lib/wiking/db.py:1765
 msgid "Make the item invisible to website visitors"
 msgstr "Elem elrejtése a weboldal látogatói elől"
 
@@ -172,7 +264,7 @@ msgstr "Lábjegyzet"
 
 #. Translators: Title of a dialog on a webpage
 #: ../lib/wiking/export.py:89 ../lib/wiking/export.py:205
-#: ../lib/wiking/util.py:197
+#: ../lib/wiking/util.py:297
 msgid "Language selection"
 msgstr "Nyelv választás"
 
@@ -215,34 +307,40 @@ msgstr "Ablakok elrejtése"
 msgid "RSS channel"
 msgstr "RSS csatorna"
 
-#: ../lib/wiking/export.py:328
+#: ../lib/wiking/export.py:327
 msgid "Warning"
 msgstr "Figyelmeztetés"
 
 #. Translators: Information about last change of a webpage (when and who)
-#: ../lib/wiking/export.py:351
+#: ../lib/wiking/export.py:350
 #, python-format
 msgid "Last change: %(date)s, %(user)s"
 msgstr "Utólsó változtatások: %(date)s, %(user)s"
 
+#. Translators: '%(code)d' is replaced by error number and '%(name)s' by error title.
+#: ../lib/wiking/util.py:104
+#, python-format
+msgid "Error %(code)d: %(name)s"
+msgstr "Hiba %(code)d: %(name)s"
+
 #. Translators: This is a warning on a webpage which is only accessible for logged in users
-#: ../lib/wiking/util.py:57
+#: ../lib/wiking/util.py:142
 msgid "Authentication required"
 msgstr "Hitelesítés kötelező"
 
 #. Translators: Login dialog page title (use a noun).
 #. Translators: Login info label (noun) followed by login name and other info.
-#: ../lib/wiking/util.py:67 ../lib/wiking/util.py:505
-#: ../lib/wiking/util.py:849
+#: ../lib/wiking/util.py:189 ../lib/wiking/util.py:714
+#: ../lib/wiking/util.py:1270
 msgid "Login"
 msgstr "Bejelentkezés"
 
 #. Translators: Information text on login panel.
-#: ../lib/wiking/util.py:90 ../lib/wiking/util.py:482
+#: ../lib/wiking/util.py:214 ../lib/wiking/util.py:691
 msgid "Your password expired"
 msgstr "A jelszava lejárt"
 
-#: ../lib/wiking/util.py:93
+#: ../lib/wiking/util.py:217
 msgid ""
 "Your password expired.  Access to the application is now blocked for "
 "security reasons until you change your password."
@@ -252,20 +350,20 @@ msgstr ""
 
 #. Translators: This is a link on a webpage
 #. Translators: Link on login panel on the webpage.
-#: ../lib/wiking/util.py:98 ../lib/wiking/util.py:490
+#: ../lib/wiking/util.py:222 ../lib/wiking/util.py:699
 msgid "Change your password"
 msgstr "Jelszó megváltoztatása"
 
 #. Translators: An error message
-#: ../lib/wiking/util.py:106
+#: ../lib/wiking/util.py:230
 msgid "Access Denied"
 msgstr "Belépés megtagadva"
 
-#: ../lib/wiking/util.py:109
+#: ../lib/wiking/util.py:233
 msgid "You don't have sufficient privilegs for this action."
 msgstr "Nincs jogosultsága a művelet végrehajtásához."
 
-#: ../lib/wiking/util.py:110
+#: ../lib/wiking/util.py:234
 #, python-format
 msgid ""
 "If you are sure that you are logged in under the right account and you "
@@ -276,24 +374,18 @@ msgstr ""
 "a probléma a belépési jogokkal van, kérem lépjen kapcsolatba a "
 "rendszergazdával %s."
 
-#. Translators: '%(code)d' is replaced by error number and '%(name)s' by error title.
-#: ../lib/wiking/util.py:136
-#, python-format
-msgid "Error %(code)d: %(name)s"
-msgstr "Hiba %(code)d: %(name)s"
-
-#: ../lib/wiking/util.py:159
+#: ../lib/wiking/util.py:259
 msgid "Invalid request arguments."
 msgstr "Hibás kérési feltételek."
 
 #. Translators: The word 'item' is intentionaly very generic, since it may mean a page,
 #. image, streaming video, RSS channel or anything else.
-#: ../lib/wiking/util.py:169
+#: ../lib/wiking/util.py:269
 #, python-format
 msgid "The item '%s' does not exist on this server or cannot be served."
 msgstr "A '%s' elem nem létezik vagy nem elérhető a szerveren."
 
-#: ../lib/wiking/util.py:171
+#: ../lib/wiking/util.py:271
 #, python-format
 msgid ""
 "If you are sure the web address is correct, but are encountering this error, "
@@ -302,16 +394,16 @@ msgstr ""
 "Ha biztos benne, hogy a webcím helyes, de ennek ellenére tapasztalja a "
 "hibát, kérem lépjen kapcsolatba a rendszergazdával %s."
 
-#: ../lib/wiking/util.py:183
+#: ../lib/wiking/util.py:283
 #, python-format
 msgid "The item '%s' is not available."
 msgstr "A '%s' elem nem elérhető."
 
-#: ../lib/wiking/util.py:184
+#: ../lib/wiking/util.py:284
 msgid "The item exists on the server, but can not be accessed."
 msgstr "Az elem létezik a szerveren, de nem hozzáférhető."
 
-#: ../lib/wiking/util.py:200
+#: ../lib/wiking/util.py:300
 #, python-format
 msgid ""
 "The resource '%s' is not available in either of the requested languages."
@@ -319,15 +411,15 @@ msgstr "A forrás '%s' nem elérhető egyik kívánt nyelven sem."
 
 #. Translators: Meaning language variants. A selection of links to various language
 #. versions follows.
-#: ../lib/wiking/util.py:205
+#: ../lib/wiking/util.py:305
 msgid "The available variants are:"
 msgstr "A lehetséges variációk a következők:"
 
-#: ../lib/wiking/util.py:209
+#: ../lib/wiking/util.py:309
 msgid "Your browser is configured to accept only the following languages:"
 msgstr "Az Ön böngészője a következő nyelvekkel tud együttmüködni:"
 
-#: ../lib/wiking/util.py:211
+#: ../lib/wiking/util.py:311
 msgid ""
 "If you want to accept other languages permanently, setup the language "
 "preferences in your browser or contact your system administrator."
@@ -335,47 +427,47 @@ msgstr ""
 "Ha egyéb nyelveket is szeretne használni, állítsa be a böngészője nyelvi "
 "beállításaiban, vagy keresse fel a rendszergazdáját."
 
-#: ../lib/wiking/util.py:219
+#: ../lib/wiking/util.py:319
 msgid "Internal Server Error"
 msgstr "Belső szerverhiba"
 
-#: ../lib/wiking/util.py:224
+#: ../lib/wiking/util.py:339
 msgid "The server was unable to complete your request."
 msgstr "A szerver nem volt képes végrehajtani kérését."
 
-#: ../lib/wiking/util.py:225 ../lib/wiking/util.py:239
+#: ../lib/wiking/util.py:340 ../lib/wiking/util.py:354
 #, python-format
 msgid "Please inform the server administrator, %s if the problem persists."
 msgstr ""
 "Kérem tájékoztassa a szerver rendszergazdát %s ha a probléma továbbra is "
 "fennáll."
 
-#: ../lib/wiking/util.py:227
+#: ../lib/wiking/util.py:342
 msgid "The error message was:"
 msgstr "A következő hibaüzenet:"
 
-#: ../lib/wiking/util.py:234
+#: ../lib/wiking/util.py:349
 msgid "Service Unavailable"
 msgstr "A szolgáltatás nem elérhető"
 
-#: ../lib/wiking/util.py:237
+#: ../lib/wiking/util.py:352
 msgid ""
 "The requested function is currently unavailable. Try repeating your request "
 "later."
 msgstr "A kért művelet jelenleg nem elérhető. Próbálja megismételni később."
 
-#: ../lib/wiking/util.py:252
+#: ../lib/wiking/util.py:367
 msgid "Maintenance mode"
 msgstr "Karbantartási mód"
 
 #. Translators: Meaning that the system (webpage) does not work now because we are
 #. updating/fixing something but will work again after the maintaince is finished.
-#: ../lib/wiking/util.py:257
+#: ../lib/wiking/util.py:373
 msgid "The system is temporarily down for maintenance."
 msgstr "A rendszer karbantartás miatt ideiglenesen nem üzemel."
 
 #. Translators: Login panel info. '%(date)s' is replaced by a concrete date.
-#: ../lib/wiking/util.py:486
+#: ../lib/wiking/util.py:695
 #, python-format
 msgid "Your password expires on %(date)s"
 msgstr "Jelszava ekkor veszti érvényét: %(date)s"
@@ -384,155 +476,110 @@ msgstr "Jelszava ekkor veszti érvényét: %(date)s"
 #. user to obtain access to the website/application by submitting his personal
 #. details.
 #. Translators: Webpage link leading to registration form.
-#: ../lib/wiking/util.py:497 ../lib/wiking/util.py:893
+#: ../lib/wiking/util.py:706 ../lib/wiking/util.py:1314
 msgid "New user registration"
 msgstr "Új felhasználó regisztrációja"
 
-#: ../lib/wiking/util.py:506
+#: ../lib/wiking/util.py:715
 msgid "Login Panel"
 msgstr "Bejelentkezési ablak"
 
-#. Translators: A set of buttons for various actions (edit, delete, atc.) is
+#. Translators: A set of buttons for various actions (edit, delete, etc.) is
 #. prepended with this label.
-#: ../lib/wiking/util.py:778
+#: ../lib/wiking/util.py:1205
 msgid "Actions:"
 msgstr "Műveletek:"
 
 #. Translators: Link or button leading to documentation/help. Use usual computer
 #. terminlogy.
-#: ../lib/wiking/util.py:785
+#: ../lib/wiking/util.py:1210
 msgid "Help"
 msgstr "Súgó"
 
-#: ../lib/wiking/util.py:827
+#: ../lib/wiking/util.py:1248
 msgid "Go to your profile"
 msgstr "Menj a profilomhoz"
 
 #. Translators: Logout button label (verb in imperative).
-#: ../lib/wiking/util.py:832
+#: ../lib/wiking/util.py:1253
 msgid "log out"
 msgstr "lépj ki!"
 
 #. Translators: Login status info.  If logged, the username is displayed instead.
-#: ../lib/wiking/util.py:835
+#: ../lib/wiking/util.py:1256
 msgid "not logged"
 msgstr "nincs bejelentkezve"
 
 #. Translators: Login button label (verb in imperative).
-#: ../lib/wiking/util.py:837
+#: ../lib/wiking/util.py:1258
 msgid "log in"
 msgstr "lépj be!"
 
-#: ../lib/wiking/util.py:880
+#: ../lib/wiking/util.py:1301
 msgid "Login name"
 msgstr "Felhasználói név"
 
-#: ../lib/wiking/util.py:883
+#: ../lib/wiking/util.py:1304
 msgid "Password"
 msgstr "Jelszó"
 
 #. Translators: Login button label - verb in imperative.
-#: ../lib/wiking/util.py:889
+#: ../lib/wiking/util.py:1310
 msgid "Log in"
 msgstr "Lépj be!"
 
 #. Translators: Login dialog link to password change or password reminder (depends
 #. on configuration).
-#: ../lib/wiking/util.py:896
+#: ../lib/wiking/util.py:1317
 msgid "Forgot your password?"
 msgstr "Elfelejtette a jelszavát?"
 
 #. Translators: Confirmation button
-#: ../lib/wiking/util.py:922
+#: ../lib/wiking/util.py:1343
 msgid "Continue"
 msgstr ""
 
-#: ../lib/wiking/util.py:1470
+#: ../lib/wiking/util.py:1852
 msgid "Invalid format"
 msgstr "Érvénytelen formátum"
 
 #. Translators: Computer terminology. `gmail.com' is a domain name in email address
 #. `joe@gmail.com'.
-#: ../lib/wiking/util.py:1478 ../lib/wiking/util.py:1485
+#: ../lib/wiking/util.py:1860 ../lib/wiking/util.py:1867
 msgid "Domain not found"
 msgstr "Domain nem található"
 
-#: ../lib/wiking/application.py:275
-msgid "Unable to perform a database operation."
-msgstr "A művelet végrehajtása az adatbázisban sikertelen."
-
 #. Translators: Website idiom. This is followed by information on the underlying software
 #. tools.  Means: This website runs on [...this and that software...].
-#: ../lib/wiking/application.py:366
+#: ../lib/wiking/application.py:389
 msgid "Powered by"
 msgstr "Powered by"
 
 #. Translators: The document named "Section 508" contains accessibility
 #. guidelines and was issued by the US government.
-#: ../lib/wiking/application.py:406
+#: ../lib/wiking/application.py:429
 msgid "US Government Section 508 Accessibility Guidelines."
 msgstr "Az USA kormánya által kiadott Section 508 hozzáférhetőségi irányelvek."
 
-#: ../lib/wiking/application.py:413
+#: ../lib/wiking/application.py:436
 msgid "Accessibility Statement"
 msgstr "Hozzáférési nyilatkozat"
 
 #. Translators: "Site" means a website.
-#: ../lib/wiking/application.py:419
+#: ../lib/wiking/application.py:442
 msgid "This site conforms to the following standards:"
 msgstr "Az oldal megfelel a következő normáknak:"
 
 #. Translators: "Site" means a website. "Browser" is an internet browser (software
 #. used to access internet, such as Firefox, MSIE or Safari).  Leave the translation
 #. for ``any'' in capitals.
-#: ../lib/wiking/application.py:424
+#: ../lib/wiking/application.py:447
 msgid "This site can be viewed in ANY browser."
 msgstr "Ez az oldal BÁRMELY böngészővel megtekinthető."
 
-#: ../lib/wiking/application.py:425
+#: ../lib/wiking/application.py:448
 msgid "Contact:"
 msgstr "Kapcsolat:"
 
-#: ../lib/wiking/modules.py:408
-msgid "Enter your login name, please!"
-msgstr "Kérem, üsse be a felhasználói nevét!"
-
-#: ../lib/wiking/modules.py:410
-msgid "Enter your password, please!"
-msgstr "Kérem, üsse be a jelszavát!"
-
-#: ../lib/wiking/modules.py:415
-msgid "Invalid login!"
-msgstr "Érvénytelen bejelentkezés!"
-
-#: ../lib/wiking/modules.py:513
-msgid "Searching"
-msgstr "Keresés"
-
-#: ../lib/wiking/modules.py:514
-msgid "Search results"
-msgstr "Keresési eredmények"
-
-#: ../lib/wiking/modules.py:515
-msgid "Given search term doesn't contain any searchable term."
-msgstr "A keresett karakterek nem tartalmaznak kereshető kifejezést."
-
-#: ../lib/wiking/modules.py:519
-msgid "Search words:"
-msgstr "Keresett szavak:"
-
-#: ../lib/wiking/modules.py:520
-msgid "Search"
-msgstr "Keresés"
-
-#: ../lib/wiking/modules.py:576
-msgid "Nothing found."
-msgstr "Nincs találat."
-
-#: ../lib/wiking/modules.py:633
-msgid "The following modules were successfully reloaded:"
-msgstr "A következő modulok sikeresen újratöltve:"
-
-#: ../lib/wiking/modules.py:635
-msgid "Reload"
-msgstr "Frissít"
+#~ msgid "Invalid binding column value."
+#~ msgstr "Helytelen kötelező mező érték."
