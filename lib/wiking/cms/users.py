@@ -478,7 +478,10 @@ class Users(UserManagementModule):
                            "account again."),)
             else:
                 texts = ()
-            return texts
+            if texts:
+                return lcg.Container([lcg.p(text) for text in texts], name='wiking-info-bar')
+            else:
+                return lcg.Content()
         def _state_style(self, record):
             if record['state'].value() in (Users.AccountState.NEW, Users.AccountState.UNAPPROVED):
                 return pp.Style(foreground='#a20')
@@ -592,22 +595,6 @@ class Users(UserManagementModule):
             """
             return self._state
 
-    class AccountInfo(lcg.Content):
-        """Content shown in 'view' layout describing the current account state.
-
-        Exports to a series of paragraphs or to an empty string if the sequence of texts passed to
-        the constructor is empty.
-
-        """
-        def __init__(self, texts):
-            self._texts = texts
-        def export(self, context):
-            if not self._texts:
-                return ''
-            else:
-                g = context.generator()
-                return g.div([g.p(p) for p in self._texts], cls='account-info')
-
     class Roles(Roles):
         """Definition of the 'Roles' class used by the application.
 
@@ -635,7 +622,8 @@ class Users(UserManagementModule):
                  FieldSet(_("Contact information"), ('email', 'phone', 'address','uri')),
                  FieldSet(_("Others"), ('note',)),
                  FieldSet(_("Account state"), ('state',)),
-                 lambda r: Users.AccountInfo(r['state_info'].value())),
+                 lambda r: r['state_info'].value() # Returns lcg.Content element.
+                 )
         }
     # Translators: Button label.
     _INSERT_LABEL = _("New user")

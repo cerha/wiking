@@ -345,8 +345,8 @@ div.table-of-contents ul {
     margin-bottom: 0;
 }
 
-form.pytis-form .account-info { 
-    margin: 1em 0;
+.wiking-info-bar { 
+    margin: 1em 0 0.5em 0;
     padding: .3em;
     padding-left: 28px;
     border: dotted 2px $color.message-border;
