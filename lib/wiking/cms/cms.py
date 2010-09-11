@@ -1013,10 +1013,12 @@ class Pages(ContentManagementModule):
             Field('tree_order', type=pd.TreeOrder()),
             #Field('grouping', virtual=True,
             #      computer=computer(lambda r, tree_order: tree_order.split('.')[1])),
-            Field('read_role_id', _("Readable by"), codebook='AllRoles',
+            # Translators: Label of a selector of a group allowed to access the page read only.
+            Field('read_role_id', _("Read only access"), codebook='AllRoles',
                   default=Roles.ANYONE.id(),
-                  descr=_("Select the role allowed to visit the page and read its contents.")),
-            Field('write_role_id', _("Editable by"), codebook='AllRoles',
+                  descr=_("Select the role allowed to view the page contents.")),
+            # Translators: Label of a selector of a group allowed to edit the page.
+            Field('write_role_id', _("Read/write access"), codebook='AllRoles',
                   default=Roles.CONTENT_ADMIN.id(),
                   descr=_("Select the role allowed to edit the page contents.")),
             )

@@ -58,7 +58,7 @@ If the account remains unapproved for a long time, contact the application admin
 
 regintro = Text(
     'cms.regintro',
-    _("Introductory text displayed to users above the registration form"),
+    _("Introductory text displayed above the registration form"),
     None)
 
 regsuccess = Text(
@@ -69,6 +69,6 @@ regsuccess = Text(
 
 regconfirm = Text(
     'cms.regconfirm',
-    _("Registration form confirmation checkbox description (if empty, "
-      "no confirmation is required)."),
+    _("Information displayed above the checkbox for confirmation of site specific "
+      "conditions during registration (if empty, no confirmation is required)"),
     None)
