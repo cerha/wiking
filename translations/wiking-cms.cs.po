@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-11 16:10+0200\n"
-"PO-Revision-Date: 2010-04-17 00:27+0200\n"
+"POT-Creation-Date: 2010-09-11 15:56+0200\n"
+"PO-Revision-Date: 2010-09-11 16:13+0200\n"
 "Last-Translator: Hynek Hanke <hanke@brailcom.org>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
 "MIME-Version: 1.0\n"
@@ -783,20 +783,20 @@ msgstr ""
 #. Translators: Label of a selector of a group allowed to access the page read only.
 #: ../lib/wiking/cms/cms.py:1017
 msgid "Read only access"
-msgstr ""
+msgstr "Přístup pouze pro čtení"
 
 #: ../lib/wiking/cms/cms.py:1019
 msgid "Select the role allowed to view the page contents."
-msgstr ""
+msgstr "Zvolte skupinu, která má mít právo zobrazit obsah stránky."
 
 #. Translators: Label of a selector of a group allowed to edit the page.
 #: ../lib/wiking/cms/cms.py:1021
 msgid "Read/write access"
-msgstr ""
+msgstr "Přístup pro čtení i zápis"
 
 #: ../lib/wiking/cms/cms.py:1023
 msgid "Select the role allowed to edit the page contents."
-msgstr ""
+msgstr "Zvolte skupinu, která má mít právo měnit obsah stránky."
 
 #: ../lib/wiking/cms/cms.py:1027
 msgid "Not published"
@@ -820,9 +820,8 @@ msgid "Global Options (for all languages)"
 msgstr "Globální vlastnosti (pro všechny jazyky)"
 
 #: ../lib/wiking/cms/cms.py:1043 ../lib/wiking/cms/cms.py:1074
-#, fuzzy
 msgid "Basic Options"
-msgstr "Vlastnosti"
+msgstr "Obecné vlastnosti"
 
 #: ../lib/wiking/cms/cms.py:1044 ../lib/wiking/cms/cms.py:1069
 #: ../lib/wiking/cms/cms.py:1075
@@ -831,7 +830,6 @@ msgstr ""
 
 #: ../lib/wiking/cms/cms.py:1045 ../lib/wiking/cms/cms.py:1070
 #: ../lib/wiking/cms/cms.py:1076
-#, fuzzy
 msgid "Access Rights"
 msgstr "Oprávnění"
 
