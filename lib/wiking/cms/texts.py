@@ -58,7 +58,7 @@ If the account remains unapproved for a long time, contact the application admin
 
 regintro = Text(
     'cms.regintro',
-    _("Introductory text displayed to users in the registration form"),
+    _("Introductory text displayed to users above the registration form"),
     None)
 
 regsuccess = Text(
