@@ -67,27 +67,43 @@ class Application(Module):
     def handle(self, req):
         """Handle the request.
 
-        The Wiking Handler passes the request to the current application for further processing.
-        All errors are handled by the handler.
+        The Wiking Handler passes the request to the current application for
+        further processing.  All errors are handled by the handler.
 
         The return value may be one of three types:
            * 'Document' instance.
-           * The result of `Request.done()' to indicate that the request was already handled.
-           * A sequence of two values (MIME_TYPE, CONTENT), where MIME_TYPE is a string determining
-             the mime type of the content and CONTENT is the actual output data as an 8-bit string
-             or buffer.
+           * A sequence of two values (MIME_TYPE, CONTENT), where MIME_TYPE is
+             a string determining the mime type of the content and CONTENT is
+             the actual output data as an 8-bit string or buffer.
+           * Integer (DEPRECATED).  Raise exceptions defined in 'wiking.util',
+             such as ('Redirect', 'Done' or one of 'RequestError' subclasses)
+             to abort normal request processing.
 
-        The default implementation uses static mapping defined by the class constant '\_MAPPING' to
-        determine which module is responsible for processing the request and passes the request
-        along to an instance of this module.  'NotFound' is raised if the mapping doesn't define an
-        item for the current request URI.  You may re-implement this method if a different logic is
-        more suitable for your application.
+        The default implementation uses static mapping defined by the class
+        constant '\_MAPPING' to determine which module is responsible for
+        processing the request and passes the request along to an instance of
+        this module.  'NotFound' is raised if the mapping doesn't define an
+        item for the current request URI.  You may re-implement this method if
+        a different logic is more suitable for your application.
 
         """
         if not req.unresolved_path:
-            menu = self.menu(req)
+            # The request to the server's root URI is automatically redirected
+            # to the first menu item's URI.  Redirection to hidden items is
+            # avoided particularly because of default items added automatically
+            # to the menu in CMS, such as _registration.  If the real menu is
+            # empty, we don't want these items to be used for redirection.
+            menu = [item for item in self.menu(req) if not item.hidden()]
             if menu:
-                return req.redirect(menu[0].id())
+                raise Redirect(menu[0].id())
+            elif not req.user():
+                # Here we handle the common case, that the menu is empty for
+                # non-authenticated users and will be non-empty after the user
+                # authenticates.  This presumption may not be theoretically
+                # valid in all cases, but it typically works as expected.  If
+                # the application doesn't want this behavior, it should not
+                # return an empty menu.
+                raise AuthenticationError()
             else:
                 raise Forbidden()
         identifier = req.unresolved_path[0]
