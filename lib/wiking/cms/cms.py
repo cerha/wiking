@@ -104,7 +104,7 @@ class WikingManagementInterface(Module, RequestHandler):
     def _handle(self, req):
         req.wmi = True # Switch to WMI only after successful authorization!
         if not req.unresolved_path:
-            return req.redirect('/'+req.path[0]+'/Pages')
+            raise Redirect('/'+req.path[0]+'/Pages')
         if req.unresolved_path[0].startswith('sec'):
             # Redirect to the first module of given section.
             try:
@@ -113,7 +113,7 @@ class WikingManagementInterface(Module, RequestHandler):
             except (ValueError, IndexError):
                 raise NotFound
             else:
-                return req.redirect(req.path[0]+'/'+modname)
+                raise Redirect(req.path[0]+'/'+modname)
         module = self._module(req.unresolved_path[0])
         del req.unresolved_path[0]
         return req.forward(module)
@@ -421,7 +421,7 @@ class CMSExtension(Module, Embeddable, RequestHandler):
     
     def embed(self, req):
         uri = self.submenu(req)[0].id()
-        return req.redirect(uri)
+        raise Redirect(uri)
 
     def submenu(self, req):
         def menu_item(item):
@@ -436,7 +436,7 @@ class CMSExtension(Module, Embeddable, RequestHandler):
     def handle(self, req):
         if not req.unresolved_path:
             uri = self.submenu(req)[0].id()
-            return req.redirect(uri)
+            raise Redirect(uri)
         try:
             modname = self._mapping[req.unresolved_path[0]]
         except KeyError:
@@ -1318,7 +1318,7 @@ class Pages(ContentManagementModule):
                                               pd.EQ('published', pd.Value(pd.Boolean(), True))),
                                        sorting=self._sorting)
             if rows:
-                return req.redirect('/'+rows[0]['identifier'].value())
+                raise Redirect('/'+rows[0]['identifier'].value())
         # Action menu
         content.append(self._action_menu(req, record, help='/_doc/wiking/cms/pages', cls='actions separate'))
         resources = [a.resource() for a in attachments]
