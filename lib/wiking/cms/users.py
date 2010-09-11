@@ -145,7 +145,7 @@ class RoleMembers(UserManagementModule):
         table = 'role_members'
         def fields(self):
             return (pp.Field('role_member_id'),
-                    pp.Field('role_id', _("Group"), codebook='ApplicationRoles'),
+                    pp.Field('role_id', _("Group"), codebook='UserGroups'),
                     pp.Field('uid', _("User"), codebook='Users'),
                     pp.Field('delete', virtual=True, computer=computer(lambda r: _("Remove"))),
                     )
@@ -247,6 +247,7 @@ class ApplicationRoles(UserManagementModule):
             # appropriate gender.
             pp.Field('system', _("System"), default=False, editable=pp.Editable.NEVER),
             pp.Field('auto', _("Automatic"), default=False, editable=pp.Editable.NEVER),
+            pp.Field('role_info', computer=computer(self._role_info), virtual=True),
             )
         def _editable(self, record, system):
             return not system
@@ -261,6 +262,22 @@ class ApplicationRoles(UserManagementModule):
                 return None
             else:
                 return role.name()
+        def _role_info(self, record, role_id, system, auto):
+            if auto:
+                info = _("This is a special system group where the system decides "
+                         "automatically which users belong there. Thus you can not "
+                         "manage their membership manually. You can, however, "
+                         "still manage containment with other groups")
+            elif system:
+                info = _("This is a system group defined by one of the installed "
+                         "applications. You can not change or delete this group, "
+                         "but you can manage membership of users and other roles "
+                         "in it.")
+            else:
+                info = _("This is a user defined group. You can manage membership "
+                         "of users and other roles in it as well as modify or "
+                         "delete the group itself.")
+            return info
         columns = ('xname', 'role_id', 'system')
         layout = ('role_id', 'name', 'system')
         def cb(self):
@@ -271,11 +288,20 @@ class ApplicationRoles(UserManagementModule):
                     Binding('containing', _("Contained in Groups"), 'ContainingRoles',
                             'member_role_id', form=pw.ItemizedView),
                     Binding('members', _("Members"), 'RoleMembers',
-                            'role_id', form=pw.ItemizedView))
-        condition = pd.EQ('auto', pd.Value(pd.Boolean(), False))
-    _LAYOUT = {'view': ('xname', 'role_id', 'system')}
+                            'role_id', form=pw.ItemizedView,
+                            enabled=lambda r: not r['auto'].value()))
+    _LAYOUT = {'view': (('role_id', 'xname', 'system'),
+                        lambda r: lcg.Container(lcg.coerce(r['role_info'].value()),
+                                                name='wiking-info-bar')),
+               }
     _TITLE_COLUMN = 'xname'
-
+    
+    def _authorized(self, req, action, record=None):
+        if action in ('update', 'delete') and record['auto'].value():
+            return False
+        if action == 'delete' and record['system'].value():
+            return False
+        return super(ApplicationRoles, self)._authorized(req, action=action, record=record)
 
     def _make_role(self, row):
         role_id = row['role_id'].value()
@@ -309,23 +335,25 @@ class ApplicationRoles(UserManagementModule):
     RIGHTS_view = (Roles.USER,)
 
 
-class AllRoles(ApplicationRoles):
-    """Codebook of all application roles including automatically assigned roles.
+class UserGroups(ApplicationRoles):
+    """Codebook of user roles where users are explicitly assigned.
 
-    The L{ApplicationRoles} module is filtered to contain only roles where
-    users are assigned explicitly by the administrator.  This module in
-    addition includes the automatically assigned special roles, such as
-    L{Roles.ANYONE}, L{Roles.AUTHENTICATED}.  Users are assigned these roles
-    automatically by the system according to their state or other conditions.
+    The L{ApplicationRoles} module contains all roles, including special roles
+    that are not explicitly assigned to users, such as L{Roles.ANYONE},
+    L{Roles.AUTHENTICATED} (also called automatically assigned roles, as users
+    are assigned to them automatically by the system according to the current
+    state or other conditions).
 
-    This module is typically used as a codebook for access rights assignment,
-    since the special roles are needed there.
+    This module is filtered to contain only roles where users are assigned
+    explicitly by the administrator.  It is typically used as a codebook in
+    situations, where roles are used to refer to a particular group of users
+    (role members).
 
     """
     class Spec(ApplicationRoles.Spec):
-        condition = None
+        condition = pd.EQ('auto', pd.Value(pd.Boolean(), False))
 
-
+        
 class Users(UserManagementModule):
     """
     TODO: General description

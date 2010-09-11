@@ -1014,11 +1014,11 @@ class Pages(ContentManagementModule):
             #Field('grouping', virtual=True,
             #      computer=computer(lambda r, tree_order: tree_order.split('.')[1])),
             # Translators: Label of a selector of a group allowed to access the page read only.
-            Field('read_role_id', _("Read only access"), codebook='AllRoles',
+            Field('read_role_id', _("Read only access"), codebook='ApplicationRoles',
                   default=Roles.ANYONE.id(),
                   descr=_("Select the role allowed to view the page contents.")),
             # Translators: Label of a selector of a group allowed to edit the page.
-            Field('write_role_id', _("Read/write access"), codebook='AllRoles',
+            Field('write_role_id', _("Read/write access"), codebook='ApplicationRoles',
                   default=Roles.CONTENT_ADMIN.id(),
                   descr=_("Select the role allowed to edit the page contents.")),
             )
@@ -2496,7 +2496,7 @@ class EmailSpool(MailManagementModule):
             # Translators: List of recipients of an email message
             Field('role_id', _("Recipients"), not_null=False,
                   # Translators: All users are intended recipients of an email message
-                  codebook='ApplicationRoles', null_display=_("All users")),
+                  codebook='UserGroups', null_display=_("All users")),
             Field('subject', _("Subject")),
             Field('content', _("Text"), width=80, height=10,
                   descr=_("Edit the given text as needed, in accordance with structured text rules.")),
