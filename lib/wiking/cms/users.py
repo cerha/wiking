@@ -420,6 +420,11 @@ class Users(UserManagementModule):
                   descr=_("Optional message for the administrator.  If you summarize briefly why "
                           "you register, what role you expect in the system or whom you have "
                           "talked to, this may help in processing your request.")),
+            # Translators: Label of a checkbox to confirm usage conditions or a
+            # similar kind of agreement specific for given website.
+            Field('confirm', _("I agree"), type=pd.Boolean,
+                  descr=_("Please check if (and only if) you have read the conditions above "
+                          "and you agree with them.")),
             # Translators: Since when the user is registered. Table column heading
             # and field label for a date/time value.
             Field('since', _("Registered since"), type=DateTime(show_time=False), default=now),
@@ -644,14 +649,21 @@ class Users(UserManagementModule):
     def _layout(self, req, action, record=None):
         if not self._LAYOUT.has_key(action): # Allow overriding this layout in derived classes.
             if action == 'insert':
-                return (self._registration_form_intro,
-                        FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname',)),
-                        FieldSet(_("Contact information"),
-                                 ((not cfg.login_is_email) and ('email',) or ()) +
-                                 ('phone', 'address', 'uri')),
-                        FieldSet(_("Login information"),
-                                 ((cfg.login_is_email and 'email' or 'login'), 'password')),
-                        FieldSet(_("Others"), ('note',)))
+                layout = [
+                    self._registration_form_intro,
+                    FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname',)),
+                    FieldSet(_("Contact information"),
+                             ((not cfg.login_is_email) and ('email',) or ()) +
+                             ('phone', 'address', 'uri')),
+                    FieldSet(_("Login information"),
+                             ((cfg.login_is_email and 'email' or 'login'), 'password')),
+                    FieldSet(_("Others"), ('note',))]
+                texts = self._module('Texts')
+                regconfirm = texts.parsed_text(req, wiking.cms.texts.regconfirm,
+                                               lang=req.prefered_language())
+                if regconfirm:
+                    layout.append(FieldSet("Confirmation", (regconfirm, 'confirm',)))
+                return tuple(layout)
             elif action == 'passwd' and record is not None:
                 layout = ['new_password']
                 if not req.check_roles(Roles.USER_ADMIN) or req.user().uid() == record['uid'].value():

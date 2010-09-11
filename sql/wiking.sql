@@ -60,7 +60,8 @@ create table users (
         regexpire timestamp,
         regcode char(16),
         certauth boolean not null default false,
-        note text
+        note text,
+        confirm boolean not null default false
 );
 alter table users alter column since 
 set default current_timestamp(0) at time zone 'GMT';

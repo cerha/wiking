@@ -66,3 +66,9 @@ regsuccess = Text(
     _("Text displayed after successful user registration"),
     _("Registration completed successfuly. "
       "Your account now awaits administrator's approval."))
+
+regconfirm = Text(
+    'cms.regconfirm',
+    _("Registration form confirmation checkbox description (if empty, "
+      "no confirmation is required)."),
+    None)
