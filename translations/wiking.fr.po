@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-11 16:10+0200\n"
+"POT-Creation-Date: 2010-09-12 20:55+0200\n"
 "PO-Revision-Date: 2010-02-02 15:44+0100\n"
 "Last-Translator: Petr Topiarz <topiarz@post.cz>\n"
 "Language-Team: French <wiking@lists.freebsoft.org>\n"
@@ -15,65 +15,83 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#. Translators: Short description of a user group purpose.
-#: ../lib/wiking/request.py:1075
-msgid "Anyone"
+#: ../lib/wiking/export.py:84
+msgid "Page heading"
+msgstr "L'en-tête de la page"
+
+#: ../lib/wiking/export.py:85 ../lib/wiking/export.py:201
+#: ../lib/wiking/export.py:226 ../lib/wiking/export.py:228
+#: ../lib/wiking/export.py:285
+msgid "Main navigation"
+msgstr "Navigation principale"
+
+#: ../lib/wiking/export.py:86 ../lib/wiking/export.py:203
+#: ../lib/wiking/export.py:279
+msgid "Local navigation"
+msgstr "Navigation locale"
+
+#: ../lib/wiking/export.py:87 ../lib/wiking/export.py:199
+msgid "Main content"
+msgstr "Contenu principal"
+
+#: ../lib/wiking/export.py:88
+msgid "Page footer"
+msgstr "Le pied de la page"
+
+#. Translators: Title of a dialog on a webpage
+#: ../lib/wiking/export.py:89 ../lib/wiking/export.py:205
+#: ../lib/wiking/util.py:297
+msgid "Language selection"
+msgstr "Sélection de la langue"
+
+#. Translators: Label for language selection followed by list of languages
+#: ../lib/wiking/export.py:92
+msgid "Language:"
+msgstr "Langue :"
+
+#: ../lib/wiking/export.py:103
+msgid "Expand/collapse complete menu hierarchy"
 msgstr ""
 
-#. Translators: Short description of a user group purpose.
-#: ../lib/wiking/request.py:1078
-#, fuzzy
-msgid "Any authenticated user"
-msgstr "Authentification requise"
+#: ../lib/wiking/export.py:209
+msgid "Jump in page"
+msgstr "Aller à la page"
 
-#. Translators: Short description of a user group purpose.
-#: ../lib/wiking/request.py:1085
-msgid "Current record owner"
-msgstr ""
+#. Translators: A label followed by location information in webpage navigation
+#: ../lib/wiking/export.py:214
+msgid "You are here:"
+msgstr "Vous êtes ici :"
 
-#: ../lib/wiking/modules.py:467
-msgid "Enter your login name, please!"
-msgstr "Veuillez entrer votre nom d'utilisateur."
+#. Translators: Heading of webpage navigation menu containing a list
+#. of links to pages in this web section
+#: ../lib/wiking/export.py:282
+msgid "In this section:"
+msgstr "Dans cette section :"
 
-#: ../lib/wiking/modules.py:469
-msgid "Enter your password, please!"
-msgstr "Veuillez entrer votre mot de passe, s'il vous plaît !"
+#. Translators: Panels are small windows on the side of the page. This is a label
+#. for a link that shows/hides the panels.
+#: ../lib/wiking/export.py:300
+msgid "Show panels"
+msgstr "Afficher les panneaux"
 
-#: ../lib/wiking/modules.py:474
-msgid "Invalid login!"
-msgstr "Identifiant non valide !"
+#: ../lib/wiking/export.py:301
+msgid "Hide panels"
+msgstr "Masquer les panneaux"
 
-#: ../lib/wiking/modules.py:572
-msgid "Searching"
-msgstr "La recherche"
+#. Translators: ``RSS channel'' is terminology idiom, see Wikipedia
+#: ../lib/wiking/export.py:312
+msgid "RSS channel"
+msgstr "Le canal RSS"
 
-#: ../lib/wiking/modules.py:573
-msgid "Search results"
-msgstr "Résultats de recherche"
+#: ../lib/wiking/export.py:327
+msgid "Warning"
+msgstr "Le message d'avertissement"
 
-#: ../lib/wiking/modules.py:574
-msgid "Given search term doesn't contain any searchable term."
-msgstr "Le mot recherché ne correspond à aucun terme trouvable."
-
-#: ../lib/wiking/modules.py:578
-msgid "Search words:"
-msgstr "Mots de recherche :"
-
-#: ../lib/wiking/modules.py:579
-msgid "Search"
-msgstr "Recherche"
-
-#: ../lib/wiking/modules.py:635
-msgid "Nothing found."
-msgstr "Rien de trouvé."
-
-#: ../lib/wiking/modules.py:692
-msgid "The following modules were successfully reloaded:"
-msgstr "Les modules suivants ont été rechargés avec succès :"
-
-#: ../lib/wiking/modules.py:694
-msgid "Reload"
-msgstr "Recharger"
+#. Translators: Information about last change of a webpage (when and who)
+#: ../lib/wiking/export.py:350
+#, python-format
+msgid "Last change: %(date)s, %(user)s"
+msgstr "Dernier changement : %(date)s, %(user)s"
 
 #: ../lib/wiking/db.py:59
 msgid "This value already exists.  Enter a unique value."
@@ -180,7 +198,7 @@ msgstr "Le dossier a été supprimé."
 msgid "Integrity check failed."
 msgstr "Contrôle d'intégrité a échoué."
 
-#: ../lib/wiking/db.py:461 ../lib/wiking/application.py:291
+#: ../lib/wiking/db.py:461 ../lib/wiking/application.py:313
 msgid "Unable to perform a database operation."
 msgstr "Impossible d'effectuer une opération de base de données."
 
@@ -239,83 +257,21 @@ msgstr "Ne pas publier"
 msgid "Make the item invisible to website visitors"
 msgstr "Rendre l'élément invisible aux visiteurs du site"
 
-#: ../lib/wiking/export.py:84
-msgid "Page heading"
-msgstr "L'en-tête de la page"
-
-#: ../lib/wiking/export.py:85 ../lib/wiking/export.py:201
-#: ../lib/wiking/export.py:226 ../lib/wiking/export.py:228
-#: ../lib/wiking/export.py:285
-msgid "Main navigation"
-msgstr "Navigation principale"
-
-#: ../lib/wiking/export.py:86 ../lib/wiking/export.py:203
-#: ../lib/wiking/export.py:279
-msgid "Local navigation"
-msgstr "Navigation locale"
-
-#: ../lib/wiking/export.py:87 ../lib/wiking/export.py:199
-msgid "Main content"
-msgstr "Contenu principal"
-
-#: ../lib/wiking/export.py:88
-msgid "Page footer"
-msgstr "Le pied de la page"
-
-#. Translators: Title of a dialog on a webpage
-#: ../lib/wiking/export.py:89 ../lib/wiking/export.py:205
-#: ../lib/wiking/util.py:297
-msgid "Language selection"
-msgstr "Sélection de la langue"
-
-#. Translators: Label for language selection followed by list of languages
-#: ../lib/wiking/export.py:92
-msgid "Language:"
-msgstr "Langue :"
-
-#: ../lib/wiking/export.py:103
-msgid "Expand/collapse complete menu hierarchy"
+#. Translators: Short description of a user group purpose.
+#: ../lib/wiking/request.py:1081
+msgid "Anyone"
 msgstr ""
 
-#: ../lib/wiking/export.py:209
-msgid "Jump in page"
-msgstr "Aller à la page"
+#. Translators: Short description of a user group purpose.
+#: ../lib/wiking/request.py:1084
+#, fuzzy
+msgid "Any authenticated user"
+msgstr "Authentification requise"
 
-#. Translators: A label followed by location information in webpage navigation
-#: ../lib/wiking/export.py:214
-msgid "You are here:"
-msgstr "Vous êtes ici :"
-
-#. Translators: Heading of webpage navigation menu containing a list
-#. of links to pages in this web section
-#: ../lib/wiking/export.py:282
-msgid "In this section:"
-msgstr "Dans cette section :"
-
-#. Translators: Panels are small windows on the side of the page. This is a label
-#. for a link that shows/hides the panels.
-#: ../lib/wiking/export.py:300
-msgid "Show panels"
-msgstr "Afficher les panneaux"
-
-#: ../lib/wiking/export.py:301
-msgid "Hide panels"
-msgstr "Masquer les panneaux"
-
-#. Translators: ``RSS channel'' is terminology idiom, see Wikipedia
-#: ../lib/wiking/export.py:312
-msgid "RSS channel"
-msgstr "Le canal RSS"
-
-#: ../lib/wiking/export.py:327
-msgid "Warning"
-msgstr "Le message d'avertissement"
-
-#. Translators: Information about last change of a webpage (when and who)
-#: ../lib/wiking/export.py:350
-#, python-format
-msgid "Last change: %(date)s, %(user)s"
-msgstr "Dernier changement : %(date)s, %(user)s"
+#. Translators: Short description of a user group purpose.
+#: ../lib/wiking/request.py:1091
+msgid "Current record owner"
+msgstr ""
 
 #. Translators: '%(code)d' is replaced by error number and '%(name)s' by error title.
 #: ../lib/wiking/util.py:104
@@ -556,36 +512,80 @@ msgstr "Format invalide"
 msgid "Domain not found"
 msgstr "Le domaine n'a pas été trouvé."
 
+#: ../lib/wiking/modules.py:467
+msgid "Enter your login name, please!"
+msgstr "Veuillez entrer votre nom d'utilisateur."
+
+#: ../lib/wiking/modules.py:469
+msgid "Enter your password, please!"
+msgstr "Veuillez entrer votre mot de passe, s'il vous plaît !"
+
+#: ../lib/wiking/modules.py:474
+msgid "Invalid login!"
+msgstr "Identifiant non valide !"
+
+#: ../lib/wiking/modules.py:572
+msgid "Searching"
+msgstr "La recherche"
+
+#: ../lib/wiking/modules.py:573
+msgid "Search results"
+msgstr "Résultats de recherche"
+
+#: ../lib/wiking/modules.py:574
+msgid "Given search term doesn't contain any searchable term."
+msgstr "Le mot recherché ne correspond à aucun terme trouvable."
+
+#: ../lib/wiking/modules.py:578
+msgid "Search words:"
+msgstr "Mots de recherche :"
+
+#: ../lib/wiking/modules.py:579
+msgid "Search"
+msgstr "Recherche"
+
+#: ../lib/wiking/modules.py:635
+msgid "Nothing found."
+msgstr "Rien de trouvé."
+
+#: ../lib/wiking/modules.py:692
+msgid "The following modules were successfully reloaded:"
+msgstr "Les modules suivants ont été rechargés avec succès :"
+
+#: ../lib/wiking/modules.py:694
+msgid "Reload"
+msgstr "Recharger"
+
 #. Translators: Website idiom. This is followed by information on the underlying software
 #. tools.  Means: This website runs on [...this and that software...].
-#: ../lib/wiking/application.py:389
+#: ../lib/wiking/application.py:411
 msgid "Powered by"
 msgstr "Propulsé par"
 
 #. Translators: The document named "Section 508" contains accessibility
 #. guidelines and was issued by the US government.
-#: ../lib/wiking/application.py:429
+#: ../lib/wiking/application.py:451
 msgid "US Government Section 508 Accessibility Guidelines."
 msgstr ""
 "Lignes directrices de la Section 508 du gouvernement fédéral des Etats-Unis."
 
-#: ../lib/wiking/application.py:436
+#: ../lib/wiking/application.py:458
 msgid "Accessibility Statement"
 msgstr "Déclaration d'accessibilité"
 
 #. Translators: "Site" means a website.
-#: ../lib/wiking/application.py:442
+#: ../lib/wiking/application.py:464
 msgid "This site conforms to the following standards:"
 msgstr "Ce site respecte les normes suivantes :"
 
 #. Translators: "Site" means a website. "Browser" is an internet browser (software
 #. used to access internet, such as Firefox, MSIE or Safari).  Leave the translation
 #. for ``any'' in capitals.
-#: ../lib/wiking/application.py:447
+#: ../lib/wiking/application.py:469
 msgid "This site can be viewed in ANY browser."
 msgstr "Ce site peut être visionné avec TOUT navigateur."
 
-#: ../lib/wiking/application.py:448
+#: ../lib/wiking/application.py:470
 msgid "Contact:"
 msgstr "Contact :"
 
