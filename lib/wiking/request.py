@@ -781,8 +781,14 @@ class WikingRequest(Request):
             return True
         user = self.user()
         if user is None:
-            return False
-        user_roles = user.roles()
+            try:
+                user_roles = self._anonymous_roles
+            except AttributeError:
+                # Determine the roles just once per request (may be used many times).
+                user_roles = self._anonymous_roles = \
+                             self._application.contained_roles(self, Roles.ANYONE)
+        else:
+            user_roles = user.roles()
         for role in roles:
             if role in user_roles:
                 return True

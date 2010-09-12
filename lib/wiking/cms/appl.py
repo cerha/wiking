@@ -259,6 +259,12 @@ class Application(CookieAuthentication, wiking.Application):
         else:
             return False
         
+    def contained_roles(self, req, role):
+        role_sets = cfg.resolver.wiking_module('RoleSets')
+        role_ids = role_sets.included_role_ids(role)
+        roles_instance = self._module('Users').Roles()
+        return tuple([roles_instance[role_id] for role_id in role_ids])
+    
     def registration_uri(self, req):
         if cfg.appl.allow_registration:
             return req.make_uri(req.module_uri('Registration'), action='insert')

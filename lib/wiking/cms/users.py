@@ -919,13 +919,10 @@ class Users(UserManagementModule):
             roles.append(Roles.REGISTERED)
         if record['state'].value() == self.AccountState.ENABLED:
             roles.append(Roles.USER)
-            role_ids = self._module('RoleMembers').user_role_ids(uid)
-            role_sets_module = self._module('RoleSets')
             roles_instance = self.Roles()
-            for role_id in role_ids:
+            for role_id in self._module('RoleMembers').user_role_ids(uid):
                 role = roles_instance[role_id]
-                for contained_role_id in role_sets_module.included_role_ids(role):
-                    r = roles_instance[contained_role_id]
+                for r in self._application.contained_roles(req, role):
                     if r not in roles:
                         roles.append(r)
         return dict(login=login, name=record['user'].value(), uid=uid,

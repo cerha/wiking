@@ -216,6 +216,28 @@ class Application(Module):
         
         """
         return True
+
+    def contained_roles(self, req, role):
+        """Return the sequence of user roles contained in given role.
+
+        Arguments:
+          req -- Current request as a 'Request' instance.
+          role -- User role as a 'Role' instance.
+
+        In general, user roles may be contained in each other.  This means that user's membersip in
+        one role (let's say role A) may automatically imply his membership in other roles (B and C
+        for example).  Roles B and C are contained in role A in this example.  If role containment
+        is supported by the application, this method must be implemented and must return the list
+        of all contained roles (including the given role itself and also transitively contained
+        roles).
+
+        In any case there may be no cycles in role containment, i.e. no role may contain itself,
+        including transitive relations.  For instance, role A may not contain A; or if A contains B
+        and B contains C then C may not contain A nor B nor C.
+
+        
+        """
+        return ()
     
     def panels(self, req, lang):
         """Return a list of 'Panel' instances representing panels displayed on the page.
