@@ -554,7 +554,7 @@ create table email_spool (
 
 create table config (
         config_id int primary key default 0 check (config_id = 0),
-        site_title text not null,
+        site_title text,
         site_subtitle text,
         allow_login_panel boolean not null default true,
         allow_registration boolean not null default true,
