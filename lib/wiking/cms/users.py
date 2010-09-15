@@ -914,7 +914,7 @@ class Users(UserManagementModule):
         else:
             uri = req.module_uri('Registration')
         uid = record['uid'].value()
-        roles = [Roles.AUTHENTICATED]
+        roles = [Roles.ANYONE, Roles.AUTHENTICATED]
         if record['state'].value() != self.AccountState.NEW:
             roles.append(Roles.REGISTERED)
         if record['state'].value() == self.AccountState.ENABLED:
