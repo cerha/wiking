@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-09-15 20:23+0200\n"
-"PO-Revision-Date: 2010-09-15 20:08+0200\n"
+"PO-Revision-Date: 2010-09-15 23:35+0200\n"
 "Last-Translator: Hynek Hanke <hanke@brailcom.org>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
 "MIME-Version: 1.0\n"
@@ -264,7 +264,7 @@ msgstr "Kdokoliv"
 #. Translators: Short description of a user group purpose.
 #: ../lib/wiking/request.py:1084
 msgid "Any authenticated user"
-msgstr "Jakýkoliv autentifikovaný uživatel"
+msgstr "Jakýkoliv autentizovaný uživatel"
 
 #. Translators: Short description of a user group purpose.
 #: ../lib/wiking/request.py:1091
