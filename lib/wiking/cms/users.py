@@ -922,9 +922,14 @@ class Users(UserManagementModule):
             roles_instance = self.Roles()
             for role_id in self._module('RoleMembers').user_role_ids(uid):
                 role = roles_instance[role_id]
-                for r in self._application.contained_roles(req, role):
-                    if r not in roles:
-                        roles.append(r)
+                if role not in roles:
+                    roles.append(role)
+        # Resolve contained roles here to also count with roles contained in
+        # AUTHENTICATED, and REGISTERED.
+        for role in roles:
+            for r in self._application.contained_roles(req, role):
+                if r not in roles:
+                    roles.append(r)
         return dict(login=login, name=record['user'].value(), uid=uid,
                     uri=uri, email=record['email'].value(), data=record, roles=roles,
                     state=record['state'].value(), lang=record['lang'].value())
