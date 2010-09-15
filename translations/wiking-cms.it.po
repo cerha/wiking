@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-12 20:55+0200\n"
+"POT-Creation-Date: 2010-09-15 20:23+0200\n"
 "PO-Revision-Date: 2009-09-01 13:56+0100\n"
 "Last-Translator: Hynek Hanke <hanke@brailcom.org>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
@@ -384,7 +384,7 @@ msgstr "Invia di nuovo il codice di registrazione"
 
 #. Translators: Button name. Computer terminology. Use an appropriate term common
 #. for submitting forms in a computer application.
-#: ../lib/wiking/cms/cms.py:496 ../lib/wiking/cms/users.py:1124
+#: ../lib/wiking/cms/cms.py:496 ../lib/wiking/cms/users.py:1129
 msgid "Submit"
 msgstr "Invia"
 
@@ -744,7 +744,7 @@ msgstr "Gestisci i motivi colorati disponibili."
 
 #. Translators: Table column heading. Whether the account is active. Values are yes/no.
 #: ../lib/wiking/cms/cms.py:897 ../lib/wiking/cms/cms.py:1987
-#: ../lib/wiking/cms/users.py:1244
+#: ../lib/wiking/cms/users.py:1249
 msgid "Active"
 msgstr "Attivo"
 
@@ -1545,7 +1545,7 @@ msgid "User Roles"
 msgstr "Utenti"
 
 #: ../lib/wiking/cms/users.py:149 ../lib/wiking/cms/users.py:429
-#: ../lib/wiking/cms/users.py:1234
+#: ../lib/wiking/cms/users.py:1239
 msgid "User"
 msgstr "Utente"
 
@@ -1615,7 +1615,7 @@ msgid "Manage registered users and their privileges."
 msgstr "Gestisci gli utenti registrati e le loro autorizzazioni."
 
 #. Translators: Login name for a website. Registration form field.
-#: ../lib/wiking/cms/users.py:403 ../lib/wiking/cms/users.py:1192
+#: ../lib/wiking/cms/users.py:403 ../lib/wiking/cms/users.py:1197
 msgid "Login name"
 msgstr "Nome utente"
 
@@ -1627,7 +1627,7 @@ msgstr ""
 "Un nome utente valido può contenere solo lettere, cifre, underscore, "
 "trattini e punti e deve iniziare con una lettera."
 
-#: ../lib/wiking/cms/users.py:408 ../lib/wiking/cms/users.py:1193
+#: ../lib/wiking/cms/users.py:408 ../lib/wiking/cms/users.py:1198
 msgid "Password"
 msgstr "Password"
 
@@ -1812,12 +1812,12 @@ msgid "User's Groups"
 msgstr ""
 
 #. Translators: Heading for an overview when and how the user has accessed the application.
-#: ../lib/wiking/cms/users.py:525 ../lib/wiking/cms/users.py:1229
+#: ../lib/wiking/cms/users.py:525 ../lib/wiking/cms/users.py:1234
 msgid "Login History"
 msgstr "Storia degli accessi"
 
 #. Translators: Name of group of users who have full access to the system.
-#: ../lib/wiking/cms/users.py:533 ../lib/wiking/cms/users.py:1092
+#: ../lib/wiking/cms/users.py:533 ../lib/wiking/cms/users.py:1097
 msgid "Active users"
 msgstr "Utenti attivi"
 
@@ -2016,7 +2016,7 @@ msgid "Your registration at %s"
 msgstr "La tua registrazione su %s"
 
 #: ../lib/wiking/cms/users.py:778 ../lib/wiking/cms/users.py:826
-#: ../lib/wiking/cms/users.py:872 ../lib/wiking/cms/users.py:1200
+#: ../lib/wiking/cms/users.py:872 ../lib/wiking/cms/users.py:1205
 msgid "Failed sending e-mail notification:"
 msgstr "Invio dell'e-mail fallito:"
 
@@ -2103,46 +2103,46 @@ msgid ""
 "belongs to given user."
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:1093
+#: ../lib/wiking/cms/users.py:1098
 msgid "Listing of all active user accounts."
 msgstr "Lista di tutti gli utenti attivi."
 
-#: ../lib/wiking/cms/users.py:1120
+#: ../lib/wiking/cms/users.py:1125
 msgid "Enter your login name or e-mail address"
 msgstr "Digita il tuo nome utente oppure il tuo indirizzo e-mail."
 
-#: ../lib/wiking/cms/users.py:1155
+#: ../lib/wiking/cms/users.py:1160
 msgid "Password reminder"
 msgstr "Aiuto per la password dimenticata."
 
-#: ../lib/wiking/cms/users.py:1168
+#: ../lib/wiking/cms/users.py:1173
 msgid "Multiple user accounts found for given email address."
 msgstr "Per questo indirizzo e-mail sono stati trovati altri utenti."
 
-#: ../lib/wiking/cms/users.py:1169
+#: ../lib/wiking/cms/users.py:1174
 msgid "Please, select the account for which you want to remind:"
 msgstr ""
 "Ti preghiamo di selezionare l'account per il quale vuoi usufruire della "
 "funzione di reminder:"
 
 #. Translators: Credentials such as password...
-#: ../lib/wiking/cms/users.py:1182
+#: ../lib/wiking/cms/users.py:1187
 msgid "Your credentials were reset to:"
 msgstr "I tuoi dati d'accesso sono stato predefiniti a:"
 
 #. Translators: Credentials such as password...
-#: ../lib/wiking/cms/users.py:1186
+#: ../lib/wiking/cms/users.py:1191
 msgid "Your credentials are:"
 msgstr "I tuoi dati d'acccesso sono:"
 
-#: ../lib/wiking/cms/users.py:1188
+#: ../lib/wiking/cms/users.py:1193
 #, python-format
 msgid "A password reminder request has been made at %(server_uri)s."
 msgstr ""
 "Al server %(server_uri)s è stata inviata la richiesta d'invio della password "
 "dimenticata."
 
-#: ../lib/wiking/cms/users.py:1195
+#: ../lib/wiking/cms/users.py:1200
 msgid ""
 "We strongly recommend you change your password at nearest occassion, since "
 "it has been exposed to an unsecure channel."
@@ -2150,62 +2150,62 @@ msgstr ""
 "Ti consigliamo fortemente di cambiare la tua password al più presto "
 "possibile, dal momento che è stata esposta a un canale non protetto."
 
-#: ../lib/wiking/cms/users.py:1201
+#: ../lib/wiking/cms/users.py:1206
 msgid "Please try repeating your request later or contact the administrator!"
 msgstr ""
 "Ti preghiamo di riprovare più tardi oppure di contattare l'amministratore "
 "del server!"
 
-#: ../lib/wiking/cms/users.py:1203
+#: ../lib/wiking/cms/users.py:1208
 msgid "E-mail information has been sent to your email address."
 msgstr "E-mail di notifica è stato inviato al tuo indirizzo e-mail."
 
-#: ../lib/wiking/cms/users.py:1206
+#: ../lib/wiking/cms/users.py:1211
 msgid "No user account for your query."
 msgstr "Alcun account corrisponde alla tua richiesta."
 
-#: ../lib/wiking/cms/users.py:1230
+#: ../lib/wiking/cms/users.py:1235
 msgid "History of successful login sessions and unsuccessful login attempts."
 msgstr "Storia degli accessi con sucesso e dei tentativi d'accesso falliti."
 
 #. Translators: Login name.
-#: ../lib/wiking/cms/users.py:1236
+#: ../lib/wiking/cms/users.py:1241
 msgid "Login"
 msgstr "Nome utente"
 
 #. Translators: Form field saying whether the users attempt was succesful. Values are Yes/No.
-#: ../lib/wiking/cms/users.py:1238
+#: ../lib/wiking/cms/users.py:1243
 msgid "Success"
 msgstr "Successo"
 
 #. Translators: Table column heading. Time of the start of user session, followed by a date and time.
-#: ../lib/wiking/cms/users.py:1240
+#: ../lib/wiking/cms/users.py:1245
 msgid "Start time"
 msgstr "Inizio"
 
 #. Translators: Table column heading. The length of user session. Contains time.
-#: ../lib/wiking/cms/users.py:1242
+#: ../lib/wiking/cms/users.py:1247
 msgid "Duration"
 msgstr "Durata"
 
-#: ../lib/wiking/cms/users.py:1245
+#: ../lib/wiking/cms/users.py:1250
 msgid "IP address"
 msgstr "Indirizzo IP"
 
 #. Translators: Internet name of the remote computer (computer terminology).
-#: ../lib/wiking/cms/users.py:1247
+#: ../lib/wiking/cms/users.py:1252
 msgid "Hostname"
 msgstr "Nome del computer"
 
 #. Translators: "User agent" is a generalized name for browser or more precisely the
 #. software which produced the HTTP request (was used to access the website).
-#: ../lib/wiking/cms/users.py:1250
+#: ../lib/wiking/cms/users.py:1255
 msgid "User agent"
 msgstr "Browser"
 
 #. Translators: Meaning where the user came from. Computer terminology. Do not translate
 #. "HTTP" and if unsure, don't translate at all (it is a very technical term).
-#: ../lib/wiking/cms/users.py:1253
+#: ../lib/wiking/cms/users.py:1258
 msgid "HTTP Referer"
 msgstr "Origine"
 
