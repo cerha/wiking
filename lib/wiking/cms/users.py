@@ -299,14 +299,13 @@ class ApplicationRoles(UserManagementModule):
                                                 name='wiking-info-bar')),
                }
     _TITLE_COLUMN = 'xname'
-    
-    def _authorized(self, req, action, record=None):
-        if action in ('update', 'delete') and record['auto'].value():
-            return False
-        if action == 'delete' and record['system'].value():
-            return False
-        return super(ApplicationRoles, self)._authorized(req, action=action, record=record)
 
+    def _update_enabled(self, req, record):
+        return not record['system'].value()
+    
+    def _delete_enabled(self, req, record):
+        return not record['system'].value()
+    
     def _make_role(self, row):
         role_id = row['role_id'].value()
         name = row['name'].value()
