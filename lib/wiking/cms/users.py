@@ -284,9 +284,13 @@ class ApplicationRoles(UserManagementModule):
             return pp.CodebookSpec(display=self._xname_display, prefer_display=True)
         def bindings(self):
             return (Binding('contained', _("Contained Groups"), 'RoleSets',
-                            'role_id', form=pw.ItemizedView),
+                            'role_id', form=pw.ItemizedView,
+                            descr=_("Users of this group automatically gain "
+                                    "membersip in the following groups:")),
                     Binding('containing', _("Contained in Groups"), 'ContainingRoles',
-                            'member_role_id', form=pw.ItemizedView),
+                            'member_role_id', form=pw.ItemizedView,
+                            descr=_("Users of the following groups automatically gain "
+                                    "membersip in this group:")),
                     Binding('members', _("Members"), 'RoleMembers',
                             'role_id', form=pw.ItemizedView,
                             enabled=lambda r: not r['auto'].value()))
