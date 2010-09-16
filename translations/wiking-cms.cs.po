@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-09-16 18:15+0200\n"
-"PO-Revision-Date: 2010-09-16 14:01+0200\n"
+"PO-Revision-Date: 2010-09-16 18:19+0200\n"
 "Last-Translator: Hynek Hanke <hanke@brailcom.org>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
 "MIME-Version: 1.0\n"
@@ -1606,7 +1606,7 @@ msgstr "Obsažené skupiny"
 #: ../lib/wiking/cms/users.py:288
 msgid ""
 "Users of this group automatically gain membersip in the following groups:"
-msgstr ""
+msgstr "Uživatelé této skupiny automaticky získávají členství v následujících skupinách:"
 
 #: ../lib/wiking/cms/users.py:290
 msgid "Contained in Groups"
@@ -1615,7 +1615,7 @@ msgstr "Obsaženo ve skupinách"
 #: ../lib/wiking/cms/users.py:292
 msgid ""
 "Users of the following groups automatically gain membersip in this group:"
-msgstr ""
+msgstr "Uživatelé následujících skupin automaticky získávají členství v této skupině:"
 
 #: ../lib/wiking/cms/users.py:294
 msgid "Members"
