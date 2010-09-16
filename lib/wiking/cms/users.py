@@ -55,7 +55,7 @@ class RoleSets(UserManagementModule):
         table = 'role_sets'
         fields = (pp.Field('role_set_id'),
                   pp.Field('role_id', _("Group"), codebook='ApplicationRoles'),
-                  pp.Field('member_role_id', _("Contained group"), codebook='ApplicationRoles'),
+                  pp.Field('member_role_id', _("Contained group"), codebook='UserGroups'),
                   pp.Field('delete', virtual=True, computer=computer(lambda r: _("Remove"))),
                   )
         columns = layout = ('role_id', 'member_role_id')
@@ -264,10 +264,11 @@ class ApplicationRoles(UserManagementModule):
                 return role.name()
         def _role_info(self, record, role_id, system, auto):
             if auto:
-                info = _("This is a special system group where the system decides "
-                         "automatically which users belong there. Thus you can not "
-                         "manage their membership manually. You can, however, "
-                         "still manage containment with other groups")
+                info = _("This is a special system group with no explicit "
+                         "members. The system decides automatically which "
+                         "users belong into the group. Thus you can not "
+                         "manage their membership manually. You can, "
+                         "however, still manage the contained groups.")
             elif system:
                 info = _("This is a system group defined by one of the installed "
                          "applications. You can not change or delete this group, "
@@ -290,7 +291,8 @@ class ApplicationRoles(UserManagementModule):
                     Binding('containing', _("Contained in Groups"), 'ContainingRoles',
                             'member_role_id', form=pw.ItemizedView,
                             descr=_("Users of the following groups automatically gain "
-                                    "membersip in this group:")),
+                                    "membersip in this group:"),
+                            enabled=lambda r: not r['auto'].value()),
                     Binding('members', _("Members"), 'RoleMembers',
                             'role_id', form=pw.ItemizedView,
                             enabled=lambda r: not r['auto'].value()))
