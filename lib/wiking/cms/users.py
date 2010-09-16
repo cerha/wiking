@@ -813,15 +813,19 @@ class Users(UserManagementModule):
         addr = cfg.webmaster_address
         if addr:
             base_uri = req.module_uri(self.name()) or '/_wmi/'+ self.name()
-            text = _("New user %(fullname)s registered at %(server_hostname)s. "
-                     "Please approve the account: %(uri)s",
-                     fullname=record['fullname'].value(), server_hostname=req.server_hostname(),
-                     uri=req.server_uri() + base_uri +'/'+ record['login'].value()) + "\n"
-            # TODO: The admin email is translated to users language.  It would be more approppriate
-            # to subscribe admin messages from admin accounts and set the language for each admin.
+            text = _("New user %(fullname)s registered at %(server_hostname)s.",
+                     fullname=record['fullname'].value(), server_hostname=req.server_hostname()
+                     ) + '\n\n'
+            if cfg.autoapprove_new_users:
+                text += _("The account was approved automatically according to server setup.")
+            else:
+                uri = req.server_uri() + base_uri +'/'+ record['login'].value()
+                text += _("Please approve the account:") + '\n' + uri + '\n'
+            # TODO: The admin email is translated to users language.  It would
+            # be more approppriate to subscribe admin messages from admin
+            # accounts and set the language for each admin.
             err = send_mail(addr, _("New user registration:") +' '+ record['fullname'].value(),
                             text, lang=record['lang'].value())
-            
             if err:
                 req.message(_("Failed sending e-mail notification:") +' '+ err, type=req.ERROR)
                 return False
@@ -848,6 +852,10 @@ class Users(UserManagementModule):
         
         """
         record = self._check_registration_code(req)
+        if cfg.autoapprove_new_users:
+            state = self.AccountState.ENABLED
+        else:
+            state = self.AccountState.UNAPPROVED
         record.update(state=self.AccountState.UNAPPROVED)
         self._send_admin_approval_mail(req, record)
         return Document(_("Registration confirmed"),

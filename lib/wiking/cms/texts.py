@@ -19,6 +19,7 @@
 
 import lcg
 from cms import Text
+from wiking import cfg
 
 _ = lcg.TranslatableTextFactory('wiking-cms')
 
@@ -64,9 +65,15 @@ regintro = Text(
 regsuccess = Text(
     'cms.regsuccess',
     _("Text displayed after successful user registration"),
-    _("Registration completed successfuly. "
-      "Your account now awaits administrator's approval."))
-
+    (cfg.autoapprove_new_users and
+     _("Registration completed successfuly. "
+       "Your account is now fully functional but you may need "
+       "to get futher privileges by the administrator to access "
+       "certain restricted services.")
+     or
+     _("Registration completed successfuly. "
+       "Your account now awaits administrator's approval.")))
+    
 regconfirm = Text(
     'cms.regconfirm',
     _("Information displayed above the checkbox for confirmation of site specific "
