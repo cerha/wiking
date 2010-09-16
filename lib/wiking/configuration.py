@@ -373,6 +373,13 @@ class Configuration(pc):
                 "optional, but an instance of class derived from 'pytis.util.Configuration' is "
                 "recommended.")
 
+    class _Option_display_role_in_login_panel(pc.BooleanOption):
+        # Translators: Yes/No configuration option label. Should the login panel display user role (as Admin, Student, Tutor etc.)
+        _DESCR = _("Display role in login panel")
+        _DOC = _("If enabled, the login panel on each page will not display only the current "
+                 "username, but also his current user role, which affects his permissions.")
+        _DEFAULT = False
+        
     # The following options are actually Wiking CMS specific, but we have them here to allow their
     # setting through a configuration file.  As soon as the support for application specific
     # configuration files is ready, the options should be moved to CMS configuration.  The options
@@ -397,12 +404,6 @@ class Configuration(pc):
                 "to answer the registration e-mail within the limit given here.")
         _DEFAULT = 2
 
-    class _Option_display_role_in_login_panel(pc.BooleanOption):
-        # Translators: Yes/No configuration option label. Should the login panel display user role (as Admin, Student, Tutor etc.)
-        _DESCR = _("Display role in login panel")
-        _DOC = _("If enabled, the login panel on each page will not display only the current "
-                 "username, but also his current user role, which affects his permissions.")
-        _DEFAULT = False
 
     class _Option_sql_dir(pc.StringOption):
         _DESCR = "SQL directory"
