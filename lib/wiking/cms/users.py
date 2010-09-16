@@ -856,7 +856,7 @@ class Users(UserManagementModule):
             state = self.AccountState.ENABLED
         else:
             state = self.AccountState.UNAPPROVED
-        record.update(state=self.AccountState.UNAPPROVED)
+        record.update(state=state)
         self._send_admin_approval_mail(req, record)
         return Document(_("Registration confirmed"),
                         content=self._confirmation_success_content(req, record))
