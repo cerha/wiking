@@ -1248,7 +1248,11 @@ class PytisModule(Module, ActionHandler):
                           condition=self._condition(req, condition=condition, lang=lang),
                           arguments=self._binding_arguments(binding, record),
                           filters=self._filters(req))
-        return lcg.Container(self._list_form_content(req, form, uri=binding_uri))
+        content = self._list_form_content(req, form, uri=binding_uri)
+        descr = binding.descr()
+        if descr:
+            content.insert(0, lcg.p(descr))
+        return lcg.Container(content)
 
     # ===== Action handlers =====
     
