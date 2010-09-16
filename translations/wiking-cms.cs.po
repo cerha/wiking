@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-09-16 19:35+0200\n"
-"PO-Revision-Date: 2010-09-16 18:19+0200\n"
+"PO-Revision-Date: 2010-09-16 19:37+0200\n"
 "Last-Translator: Hynek Hanke <hanke@brailcom.org>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
 "MIME-Version: 1.0\n"
@@ -1572,16 +1572,12 @@ msgid "Automatic"
 msgstr "Auomatická"
 
 #: ../lib/wiking/cms/users.py:267
-#, fuzzy
 msgid ""
 "This is a special system group with no explicit members. The system decides "
 "automatically which users belong into the group. Thus you can not manage "
 "their membership manually. You can, however, still manage the contained "
 "groups."
-msgstr ""
-"Toto je speciální systémová skupina, pro kterou systém automaticky rozhoduje "
-"kteří uživatelé do ní patří. Proto není možné členství uživatelů spravovat "
-"ručně. Nicméně je stále možné spravoat obsažení s ostatními skupinami."
+msgstr "Toto je speciální systémová skupina, která nemá žádné přímé členy. Systém automaticky rozhoduje kteří uživatelé do ní patří. Proto není možné členství uživatelů spravovat ručně. Nicméně je možné určit obsažené skupiny."
 
 #: ../lib/wiking/cms/users.py:273
 msgid ""
