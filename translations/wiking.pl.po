@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-15 20:23+0200\n"
+"POT-Creation-Date: 2010-09-16 18:15+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Petr Topiarz <topiarz@post.cz>\n"
 "Language-Team: \n"
@@ -200,57 +200,57 @@ msgid "Unable to perform a database operation."
 msgstr "Nie można wykonać operacji bazy danych."
 
 #. Translators: Back button label. Standard computer terminology.
-#: ../lib/wiking/db.py:1358
+#: ../lib/wiking/db.py:1385
 msgid "Back"
 msgstr "Cofnij"
 
 #. Translators: RSS channel is a computer idiom, see Wikipedia.
-#: ../lib/wiking/db.py:1509 ../lib/wiking/db.py:1648
+#: ../lib/wiking/db.py:1536 ../lib/wiking/db.py:1675
 msgid "An RSS channel is available for this section:"
 msgstr "RSS kanał jest dostępny dla tego rozdziału:"
 
 #. Translators: RSS channel is a computer idiom, see Wikipedia.  Don't translate 'RSS'.
-#: ../lib/wiking/db.py:1513 ../lib/wiking/db.py:1646
+#: ../lib/wiking/db.py:1540 ../lib/wiking/db.py:1673
 msgid "more about RSS"
 msgstr "więcej o RSS"
 
-#: ../lib/wiking/db.py:1641
+#: ../lib/wiking/db.py:1668
 #, fuzzy, python-format
 msgid "RSS channel \"%s\""
 msgstr "RSS kanał"
 
-#: ../lib/wiking/db.py:1651
+#: ../lib/wiking/db.py:1678
 #, fuzzy
 msgid "RSS channels are available for this section"
 msgstr "RSS kanał jest dostępny dla tego rozdziału:"
 
 #. Translators: Record as in `database record'.
-#: ../lib/wiking/db.py:1740
+#: ../lib/wiking/db.py:1767
 msgid "No records."
 msgstr "Brak nagrań."
 
 #. Translators: `Item' is intentionally general. Could be webpage, notice or something else.
-#: ../lib/wiking/db.py:1748
+#: ../lib/wiking/db.py:1775
 msgid "The item was published."
 msgstr "Pozycja została opublikowana."
 
-#: ../lib/wiking/db.py:1749
+#: ../lib/wiking/db.py:1776
 msgid "The item was unpublished."
 msgstr "Pozycja nie została opublikowana."
 
-#: ../lib/wiking/db.py:1758
+#: ../lib/wiking/db.py:1785
 msgid "Publish"
 msgstr "Opublikuj"
 
-#: ../lib/wiking/db.py:1761
+#: ../lib/wiking/db.py:1788
 msgid "Make the item visible to website visitors"
 msgstr "Dodaj do pozycji widocznych dla odwiedzających"
 
-#: ../lib/wiking/db.py:1762
+#: ../lib/wiking/db.py:1789
 msgid "Unpublish"
 msgstr "Nieopublikowany"
 
-#: ../lib/wiking/db.py:1765
+#: ../lib/wiking/db.py:1792
 msgid "Make the item invisible to website visitors"
 msgstr "Dodaj do pozycji nie widocznych dla odwiedzających"
 
