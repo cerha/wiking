@@ -511,7 +511,9 @@ class PytisModule(Module, ActionHandler):
                        context=pp.ActionContext.GLOBAL),
                 Action(self._EXPORT_LABEL, 'export', descr=self._EXPORT_DESCR,
                        context=pp.ActionContext.GLOBAL),
-                Action(self._UPDATE_LABEL, 'update', descr=self._UPDATE_DESCR),)
+                Action(self._UPDATE_LABEL, 'update', descr=self._UPDATE_DESCR,
+                       enabled=lambda r: self._update_enabled(r.req(), r)),
+                )
 
     def _default_actions_last(self, req, record):
         if self._ALLOW_COPY:
@@ -520,6 +522,7 @@ class PytisModule(Module, ActionHandler):
         else:
             actions = ()
         actions += (Action(self._DELETE_LABEL, 'delete', descr=self._DELETE_DESCR,
+                           enabled=lambda r: self._delete_enabled(r.req(), r),
                            allow_referer=False),
                     Action(self._LIST_LABEL, 'list', descr=self._LIST_DESCR, allow_referer=False))
         return actions
@@ -555,6 +558,26 @@ class PytisModule(Module, ActionHandler):
             uri = self._current_base_uri(req, record)
         return ActionMenu(uri, actions, self._referer, self.name(), record, **kwargs)
 
+    def _update_enabled(self, req, record):
+        """Return true iff the default 'update' action is enabled for given record.
+
+        Please, note the difference between disabled actions and actions
+        unavailable due to insuffucient access rights as described in User
+        Interface Design Guidelines in Wiking Developers Documentation.
+        
+        """
+        return True
+    
+    def _delete_enabled(self, req, record):
+        """Return true iff the default 'delete' action is enabled for given record.
+
+        Please, note the difference between disabled actions and actions
+        unavailable due to insuffucient access rights as described in User
+        Interface Design Guidelines in Wiking Developers Documentation.
+        
+        """
+        return True
+    
     def _link_provider(self, req, uri, record, cid, **kwargs):
         if cid is None:
             return uri and req.make_uri(uri +'/'+ record[self._referer].export(), **kwargs)
