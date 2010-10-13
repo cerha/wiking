@@ -1336,9 +1336,6 @@ class LoginDialog(lcg.Content):
 class ConfirmationDialog(lcg.Container):
     """Dialog displaying arbitrary content followed by a `Continue' button."""
     
-    def _export_element_type(self):
-        return lcg.Container
-    
     def export(self, context):
         g = context.generator()
         return g.div((super(ConfirmationDialog, self).export(context),
