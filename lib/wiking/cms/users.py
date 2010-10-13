@@ -1049,13 +1049,19 @@ class Users(UserManagementModule):
         record.update(password=value.value(), last_password_change=now())
         return password
 
-    def send_mail(self, role, *args, **kwargs):
+    def send_mail(self, role, include_uids=(), exclude_uids=(), *args, **kwargs):
         """Send mail to all active users of given C{role}.
         
         @type role: L{wiking.Role} or sequence of L{wiking.Role}s or C{None}
         @param role: Destination role to send the mail to, all active users
           belonging to the role will receive the mail.  If C{None}, the mail is
           sent to all active users.
+        @type include_uids: iterable of L{wiking.User} uid values.
+        @param include_uids: uid of users that must receive the email even if
+          not members of C{role}.  Must be disjunct with C{exclude_uids}
+        @type exclude_uids: iterable of L{wiking.User} uid values.
+        @param exclude_uids: uid of users that must not receive the email even
+          if members of C{role}.  Must be disjunct with C{include_uids}
         @param args, kwargs: Just forwarded to L{wiking.send_mail} call.
 
         @note: The mail is sent only to active users, i.e. users with the state
@@ -1075,9 +1081,13 @@ class Users(UserManagementModule):
         if role is not None:
             if not is_sequence(role):
                 role = (role,)
-            user_ids = []
+            user_ids = set()
             for r in role:
-                user_ids += self._module('RoleMembers').user_ids(r)
+                user_ids |= set(self._module('RoleMembers').user_ids(r))
+            include_uids = set(include_uids)
+            exclude_uids = set(exclude_uids)
+            user_ids |= include_uids
+            user_ids -= exclude_uids
         user_rows = self._data.get_rows()
         import copy
         kwargs = copy.copy(kwargs)
