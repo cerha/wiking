@@ -998,7 +998,7 @@ class Users(UserManagementModule):
         else:
             return None
 
-    def find_users(self, req, email=None, state=None, role=None):
+    def find_users(self, req, email=None, state=None, role=None, confirm=None):
         """Return a list of 'User' instances corresponding to given criteria.
 
         Arguments:
@@ -1010,6 +1010,8 @@ class Users(UserManagementModule):
             state codes defined by L{Users.AccountState}) are returned
           role -- if not 'None', only users belonging to the given role ('Role'
             instance) are returned
+          confirm -- if not 'None', only users with this value of 'confirm' flag
+            (boolean) are returned
 
         If all the criteria arguments are 'None', all users are returned.
 
@@ -1026,6 +1028,8 @@ class Users(UserManagementModule):
             kwargs['email'] = email
         if state is not None:
             kwargs['state'] = state
+        if confirm is not None:
+            kwargs['confirm'] = confirm
         users = [make_user(row) for row in self._data.get_rows(**kwargs)]
         if role is not None:
             users = [u for u in users if u is not None]
@@ -1126,6 +1130,15 @@ class ActiveUsers(Users, EmbeddableCMSModule):
     _INSERT_LABEL = lcg.TranslatableText("New user registration", _domain='wiking')
 
 
+class ConfirmActiveUsersCb(Users):
+    class Spec(Users.Spec):
+        table = 'users'
+        title = _("Users who have `confirm' flag set")
+        condition = pd.AND(pd.EQ('state', pd.Value(pd.String(), Users.AccountState.ENABLED)),
+                           pd.EQ('confirm', pd.Value(pd.Boolean(), True)))
+        filters = ()
+        default_filter = None
+    
 
 class Registration(Module, ActionHandler):
     """User registration and account management.
