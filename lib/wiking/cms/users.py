@@ -786,10 +786,10 @@ class Users(UserManagementModule):
             req.message(_("Failed sending e-mail notification:") +' '+ err, type=req.ERROR)
             return False
         else:
-            # Translators: Follows an email addres, e.g. ``Activation code was sent to joe@brailcom.org''
+            # Translators: Follows an email addres, e.g. ``... was sent to your email address at joe@brailcom.org''
             req.message(_("To finish registration, please confirm the "
                                "activation code that was sent to your email "
-                               "address at %(email)s.", record['email'].value()))
+                               "address at %s.", record['email'].value()))
             return True
 
     def _check_registration_code(self, req):

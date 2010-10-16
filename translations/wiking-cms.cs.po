@@ -1899,14 +1899,14 @@ msgstr "Vaše registrace na %s"
 msgid "Failed sending e-mail notification:"
 msgstr "Nepodařilo se odeslat e-mailové upozornění:"
 
-#. Translators: Follows an email addres, e.g. ``Activation code was sent to joe@brailcom.org''
+#. Translators: Follows an email addres, e.g. ``... was sent to your email address at joe@brailcom.org''
 #: ../lib/wiking/cms/users.py:790
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "To finish registration, please confirm the activation code that was sent to "
-"your email address at %(email)s."
+"your email address at %s."
 msgstr ""
-"Pro dokončení registrace prosím potvrďte aktivační kód zaslaný na Vaši emailovou adresu %(email)s."
+"Pro dokončení registrace prosím potvrďte aktivační kód zaslaný na Vaši emailovou adresu %s."
 
 #: ../lib/wiking/cms/users.py:815
 msgid "User registration already confirmed."
