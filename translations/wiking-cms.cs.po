@@ -1881,6 +1881,9 @@ msgid ""
 "%(uri)s\n"
 "\n"
 msgstr ""
+"Pro dokončení Vaší registrace na %(server_hostname)s klikněte na následující odkaz:\n"
+"%(uri)s\n"
+"\n"
 
 #: ../lib/wiking/cms/users.py:776
 msgid "Registration cancelled."
@@ -1903,8 +1906,7 @@ msgid ""
 "To finish registration, please confirm the activation code that was sent to "
 "your email address at %(email)s."
 msgstr ""
-"Registrace vypršela k %(date)s.  Uživatel včas nepotvrdil aktivační kód "
-"odeslaný na zadanou e-mailovou adresu."
+"Pro dokončení registrace prosím potvrďte aktivační kód zaslaný na Vaši emailovou adresu %(email)s."
 
 #: ../lib/wiking/cms/users.py:815
 msgid "User registration already confirmed."
