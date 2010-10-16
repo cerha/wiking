@@ -760,13 +760,8 @@ class Users(UserManagementModule):
         base_uri = req.server_uri() + (req.module_uri('Registration') or '/_wmi/'+ self.name())
         uri = req.make_uri(base_uri, action='confirm', uid=record['uid'].value(),
                            regcode=record['regcode'].value())
-        text = _("The first step of your registration at %(server_hostname)s "
-                 "was successfully completed.\n\n"
-                 "For the next step visit the following URL and follow the instructions there:\n"
-                 "%(uri)s\n\n"
-                 "If the above link fails, you will be prompted for your activation code when\n"
-                 "you attempt to log in.\n\n"
-                 "Your activation code is: %(code)s\n",
+        text = _("To finish your registration at %(server_hostname)s, click on the following link:\n"
+                 "%(uri)s\n\n",
                  server_hostname=req.server_hostname(),
                  uri=uri,
                  code=record['regcode'].value())
@@ -775,8 +770,9 @@ class Users(UserManagementModule):
 
     def _redirect_after_insert(self, req, record):
         if self._send_registration_email(req, record):
-            content = (lcg.p(_("Registration accepted.")),
-                       lcg.p(_("Please, check your mailbox for instructions how to proceed.")))
+            content = (lcg.p(_("To finish registration, please confirm the "
+                               "activation code that was sent to your email "
+                               "address.")),)
             
         else:
             self._data.delete(record['uid'])
