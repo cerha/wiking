@@ -613,13 +613,16 @@ class Users(UserManagementModule):
     class User(wiking.User):
         """CMS specific User class."""
 
-        def __init__(self, login, state=None, **kwargs):
+        def __init__(self, login, state=None, confirm=None, **kwargs):
             """
             @type state: string
             @param state: User's account state.
+            @type confirm: boolean
+            @param confirm: Value of the user's 'confirm' flag.
             """
             wiking.User.__init__(self, login, **kwargs)
             self._state = state
+            self._confirm = confirm
         
         def state(self):
             """
@@ -627,6 +630,13 @@ class Users(UserManagementModule):
             @return: User's account state; one of L{Users.AccountState} constans.
             """
             return self._state
+
+        def confirm(self):
+            """
+            @rtype: boolean or 'None'
+            @return: Value of the user's 'confirm' flag.
+            """
+            return self._confirm
 
     class Roles(Roles):
         """Definition of the 'Roles' class used by the application.
@@ -945,7 +955,8 @@ class Users(UserManagementModule):
                     roles.append(r)
         return dict(login=login, name=record['user'].value(), uid=uid,
                     uri=uri, email=record['email'].value(), data=record, roles=roles,
-                    state=record['state'].value(), lang=record['lang'].value())
+                    state=record['state'].value(), lang=record['lang'].value(),
+                    confirm=record['confirm'].value())
 
     def _make_user(self, kwargs):
         return self.User(**kwargs)
