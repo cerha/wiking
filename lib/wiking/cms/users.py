@@ -770,10 +770,7 @@ class Users(UserManagementModule):
 
     def _redirect_after_insert(self, req, record):
         if self._send_registration_email(req, record):
-            content = (lcg.p(_("To finish registration, please confirm the "
-                               "activation code that was sent to your email "
-                               "address.")),)
-            
+            content = ()
         else:
             self._data.delete(record['uid'])
             content = lcg.p(_("Registration cancelled."))
@@ -790,7 +787,9 @@ class Users(UserManagementModule):
             return False
         else:
             # Translators: Follows an email addres, e.g. ``Activation code was sent to joe@brailcom.org''
-            req.message(_("Activation code was sent to %s.", record['email'].value()))
+            req.message(_("To finish registration, please confirm the "
+                               "activation code that was sent to your email "
+                               "address at %(email)s.", record['email'].value()))
             return True
 
     def _check_registration_code(self, req):
