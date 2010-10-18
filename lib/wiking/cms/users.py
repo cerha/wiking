@@ -1286,7 +1286,7 @@ class SessionLog(UserManagementModule):
             # Translators: Table column heading. Time of the start of user session, followed by a date and time.
             Field('start_time', _("Start time"), type=DateTime(exact=True, not_null=True)),
             # Translators: Table column heading. The length of user session. Contains time.
-            Field('duration', _("Duration"), type=Time(exact=True)),
+            Field('duration', _("Duration"), type=pytis.data.TimeInterval()),
             # Translators: Table column heading. Whether the account is active. Values are yes/no.
             Field('active', _("Active")),
             Field('ip_address', _("IP address")),
