@@ -29,6 +29,9 @@ L{RoleSets}, L{RoleMembers}, L{ApplicationRoles}.
 
 """
 
+import time
+import weakref
+
 import pytis.data as pd
 import pytis.presentation as pp
 import pytis.util
@@ -677,6 +680,11 @@ class Users(UserManagementModule):
     RIGHTS_insert = (Roles.ANYONE,)
     RIGHTS_update = (Roles.USER_ADMIN, Roles.OWNER)
 
+    def __init__(self, *args, **kwargs):
+        self._user_cache = weakref.WeakKeyDictionary()
+        self._find_users_cache = weakref.WeakKeyDictionary()
+        super(Users, self).__init__(*args, **kwargs)
+        
     def _layout(self, req, action, record=None):
         if not self._LAYOUT.has_key(action): # Allow overriding this layout in derived classes.
             if action == 'insert':
@@ -969,6 +977,12 @@ class Users(UserManagementModule):
         Returns a 'User' instance (defined in request.py) or None.
 
         """
+        key = (login, uid,)
+        user_cache = self._user_cache.get(req)
+        if user_cache is None:
+            user_cache = self._user_cache[req] = {}
+        elif user_cache.has_key(key):
+            return user_cache[key]
         # Get the user data from db
         if login is not None and uid is None:
             row = self._data.get_row(login=login)
@@ -977,10 +991,12 @@ class Users(UserManagementModule):
         else:
             raise Exception("Invalid 'user()' arguments.")
         if row is None:
-            return None
-        # Convert user data into a User instance
-        kwargs = self._user_arguments(req, row['login'].value(), row)
-        user = self._make_user(kwargs)
+            user = None
+        else:
+            # Convert user data into a User instance
+            kwargs = self._user_arguments(req, row['login'].value(), row)
+            user = self._make_user(kwargs)
+        user_cache[key] = user
         return user
 
     def find_user(self, req, query):
@@ -1022,6 +1038,12 @@ class Users(UserManagementModule):
         If all the criteria arguments are 'None', all users are returned.
 
         """
+        key = (email, state, role.id(), confirm,)
+        user_cache = self._find_users_cache.get(req)
+        if user_cache is None:
+            user_cache = self._find_users_cache[req] = {}
+        elif user_cache.has_key(key):
+            return user_cache[key]
         if role is not None:
             role_user_ids = self._module('RoleMembers').user_ids(role)
         def make_user(row):
@@ -1039,6 +1061,7 @@ class Users(UserManagementModule):
         users = [make_user(row) for row in self._data.get_rows(**kwargs)]
         if role is not None:
             users = [u for u in users if u is not None]
+        user_cache[key] = users
         return users
 
     def _generate_password(self):
