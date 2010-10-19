@@ -32,6 +32,7 @@ import os
 import random
 import re
 import string
+import time
 
 import mx.DateTime
 from mx.DateTime import today, TimeDelta
@@ -815,9 +816,15 @@ class Languages(SettingsManagementModule):
     _REFERER = 'lang'
     # Translators: Do not translate this.
     _TITLE_TEMPLATE = _('%(name)s')
-
+    _language_list = None
+    _language_list_time = None
+    
     def languages(self):
-        return [str(r['lang'].value()) for r in self._data.get_rows()]
+        if (self._language_list_time is None or
+            time.time() - self._language_list_time > 30):
+            Languages._language_list = [str(r['lang'].value()) for r in self._data.get_rows()]
+            Languages._language_list_time = time.time()
+        return self._language_list
 
     
 class Themes(StyleManagementModule):
