@@ -27,6 +27,7 @@ from wiking.cms import *
 
 _ = lcg.TranslatableTextFactory('wiking-cms')
 
+import time
 
 class Application(CookieAuthentication, wiking.Application):
     
@@ -45,6 +46,8 @@ class Application(CookieAuthentication, wiking.Application):
                'WikingManagementInterface': (Roles.USER_ADMIN, Roles.CONTENT_ADMIN,
                                              Roles.SETTINGS_ADMIN, Roles.STYLE_ADMIN,
                                              Roles.MAIL_ADMIN,)}
+
+    _roles_instance = None
 
     class WMILink(lcg.Content):
         # Used in login panel or bottom bar.
@@ -262,8 +265,11 @@ class Application(CookieAuthentication, wiking.Application):
     def contained_roles(self, req, role):
         role_sets = cfg.resolver.wiking_module('RoleSets')
         role_ids = role_sets.included_role_ids(role)
-        roles_instance = self._module('Users').Roles()
-        return tuple([roles_instance[role_id] for role_id in role_ids])
+        if self._roles_instance is None:
+            self._roles_instance = self._module('Users').Roles()
+        roles_instance = self._roles_instance
+        result = tuple([roles_instance[role_id] for role_id in role_ids])
+        return result
     
     def registration_uri(self, req):
         if cfg.appl.allow_registration:
