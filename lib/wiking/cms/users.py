@@ -65,6 +65,9 @@ class RoleSets(UserManagementModule):
         
     _TITLE_COLUMN = 'member_role_id'
     _INSERT_LABEL = _("Add contained group")
+
+    _cached_dictionary = None
+    _cached_dictionary_time = None
     
     def _layout(self, req, action, record=None):
         return (self._TITLE_COLUMN,)
@@ -82,6 +85,18 @@ class RoleSets(UserManagementModule):
         else:
             return super(RoleSets, self)._link_provider(req, uri, record, cid, **kwargs)
 
+    def _make_dictionary(self):
+        dictionary = {}
+        def add(row):
+            role_id = row['role_id'].value()
+            contained_role_id = row['member_role_id'].value()
+            contained_roles = dictionary.get(role_id)
+            if contained_roles is None:
+                contained_roles = dictionary[role_id] = []
+            contained_roles.append(contained_role_id)
+        self._data.select_map(add)
+        return dictionary
+        
     def _dictionary(self):
         """
         @rtype: dictionary of strings as keys and sequences of strings as values
@@ -93,16 +108,11 @@ class RoleSets(UserManagementModule):
           doesn't contain any information about users.
           
         """
-        dictionary = {}
-        def add(row):
-            role_id = row['role_id'].value()
-            contained_role_id = row['member_role_id'].value()
-            contained_roles = dictionary.get(role_id)
-            if contained_roles is None:
-                contained_roles = dictionary[role_id] = []
-            contained_roles.append(contained_role_id)
-        self._data.select_map(add)
-        return dictionary
+        if (self._cached_dictionary is None or
+            time.time() - self._cached_dictionary_time > 30):
+            self._cached_dictionary = self._make_dictionary()
+            self._cached_dictionary_time = time.time()
+        return self._cached_dictionary
 
     def included_role_ids(self, role):
         """
@@ -305,6 +315,9 @@ class ApplicationRoles(UserManagementModule):
                }
     _TITLE_COLUMN = 'xname'
 
+    _roles_cache = None
+    _roles_cache_time = None
+
     def _update_enabled(self, req, record):
         return not record['system'].value()
     
@@ -325,6 +338,18 @@ class ApplicationRoles(UserManagementModule):
         condition = pd.EQ('system', pd.Value(pd.Boolean(), False))
         return tuple(self._data.select_map(self._make_role, condition=condition))
 
+    def _read_roles(self):
+        roles = {}
+        self._data.select()
+        while True:
+            row = self._data.fetchone()
+            if row is None:
+                break
+            role = self._make_role(row)
+            roles[role.id()] = role
+        self._data.close()
+        return roles
+
     def get_role(self, role_id):
         """
         @type role_id: string
@@ -333,6 +358,11 @@ class ApplicationRoles(UserManagementModule):
         @rtype: L{Role}
         @return: Role instance corresponding to given role_id.
         """
+        if (self._roles_cache is None or
+            time.time() - self._roles_cache_time > 30):
+            self._roles_cache = self._read_roles()
+            self._roles_cache_time = time.time()
+        return self._roles_cache.get(role_id)
         row = self._data.row(pd.Value(pd.String(), role_id))
         if row:
             return self._make_role(row)
