@@ -685,22 +685,6 @@ class Users(UserManagementModule):
     _PANEL_FIELDS = ('fullname',)
     _OWNER_COLUMN = 'uid'
     _SUPPLY_OWNER = False
-    _LAYOUT = {
-        # 'insert' and 'passwd' layout is constructed dynamicallly in _layout().
-        # Translators: Personal data -- first name, surname, nickname ...
-        'update': (FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname')),
-                   # Translators: Contact information -- email, phone, address...
-                   FieldSet(_("Contact information"), ('email', 'phone', 'address', 'uri')),
-                   # Translators: Others is a label for a group of unspecified form fields
-                   # (as in Personal data, Contact information, Others).
-                   FieldSet(_("Others"), ('note',))),
-        'view': (FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname',)),                 
-                 FieldSet(_("Contact information"), ('email', 'phone', 'address','uri')),
-                 FieldSet(_("Others"), ('note',)),
-                 FieldSet(_("Account state"), ('state',)),
-                 lambda r: r['state_info'].value() # Returns lcg.Content element.
-                 )
-        }
     # Translators: Button label.
     _INSERT_LABEL = _("New user")
     # Translators: Button label.
@@ -716,7 +700,28 @@ class Users(UserManagementModule):
         super(Users, self).__init__(*args, **kwargs)
         
     def _layout(self, req, action, record=None):
+        def cms_text(cms_text):
+            texts = self._module('Texts')
+            return texts.parsed_text(req, cms_text, lang=req.prefered_language())
         if not self._LAYOUT.has_key(action): # Allow overriding this layout in derived classes.
+            if action == 'view':
+                # Translators: Personal data -- first name, surname, nickname ...
+                layout = [FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname',)),
+                          FieldSet(_("Contact information"), ('email', 'phone', 'address','uri')),
+                          FieldSet(_("Others"), ('note',)),
+                          ]
+                regconfirm = cms_text(wiking.cms.texts.regconfirm)
+                account_state = ['state']
+                if regconfirm:
+                    if record['confirm'].value():
+                        account_state.append(cms_text(wiking.cms.texts.regconfirm_confirmed))
+                    else:
+                        account_state.append(regconfirm)
+                # Hack: FieldSet with only text is not possible in this case, so we
+                # append the confirmation information into Account state
+                layout.append([FieldSet(_("Account state"), account_state),
+                               lambda r: r['state_info'].value()]) # Returns lcg.Content element.
+                return layout
             if action == 'insert':
                 layout = [
                     self._registration_form_intro,
@@ -727,12 +732,26 @@ class Users(UserManagementModule):
                     FieldSet(_("Login information"),
                              ((cfg.login_is_email and 'email' or 'login'), 'password')),
                     FieldSet(_("Others"), ('note',))]
-                texts = self._module('Texts')
-                regconfirm = texts.parsed_text(req, wiking.cms.texts.regconfirm,
-                                               lang=req.prefered_language())
+                regconfirm = cms_text(wiking.cms.texts.regconfirm)
                 if regconfirm:
-                    layout.append(FieldSet("Confirmation", (regconfirm, 'confirm',)))
+                    # Translators: Confirmation of website terms&conditions. Form label.
+                    layout.append(FieldSet(_("Confirmation"), (regconfirm, 'confirm',)))
                 return tuple(layout)
+            elif action == 'update':
+                layout =  [FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname')),
+                           # Translators: Contact information -- email, phone, address...
+                           FieldSet(_("Contact information"), ('email', 'phone', 'address', 'uri')),
+                           # Translators: Others is a label for a group of unspecified form fields
+                           # (as in Personal data, Contact information, Others).
+                           FieldSet(_("Others"), ('note',))]
+                regconfirm = cms_text(wiking.cms.texts.regconfirm)
+                if regconfirm:
+                    if not record['confirm'].value():
+                        regconfirm_fields = (regconfirm, 'confirm')
+                    else:
+                        regconfirm_fields = (cms_text(wiking.cms.texts.regconfirm_confirmed),)
+                    layout.append(FieldSet(_("Confirmation"), regconfirm_fields))
+                return layout
             elif action == 'passwd' and record is not None:
                 layout = ['new_password']
                 if not req.check_roles(Roles.USER_ADMIN) or req.user().uid() == record['uid'].value():
@@ -745,7 +764,7 @@ class Users(UserManagementModule):
                     layout.insert(0, 'login') # Don't include email, since it is editable.
                 return layout
         return super(Users, self)._layout(req, action, record=record)
-                
+
     def _validate(self, req, record, layout):
         if record.new():
             # This language is used for translation of email messages sent to the user.  This way

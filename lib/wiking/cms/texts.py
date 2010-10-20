@@ -77,5 +77,11 @@ regsuccess = Text(
 regconfirm = Text(
     'cms.regconfirm',
     _("Information displayed above the checkbox for confirmation of site specific "
-      "conditions during registration (if empty, no confirmation is required)"),
+      "conditions during registration and in profile edit form (if empty, no confirmation "
+      "is required)"),
     None)
+
+regconfirm_confirmed = Text(
+    'cms.regconfirm_confirmed',
+    _("Information displayed to users who have already confirmed the site specific conditions"),
+    _("You have agreed to the site conditions."))
