@@ -283,7 +283,7 @@ class PytisModule(Module, ActionHandler):
         # record at the same time, so we create a record here just to save the data types of all
         # fields for future use.
         record = pp.PresentedRow(fields, self._data, None, resolver=self._resolver)
-        self._type = dict([(key, record[key].type()) for key in record.keys()])
+        self._type = dict([(key, record.type(key)) for key in record.keys()])
         self._links = {}
         def cb_link(field):
             e = self._type[field.id()].enumerator()
@@ -346,7 +346,7 @@ class PytisModule(Module, ActionHandler):
             f = self._view.field(id)
             if not record.editable(id):
                 continue
-            type = record[id].type()
+            type = record.type(id)
             kwargs = {}
             if req.has_param(id):
                 value = req.param(id)
@@ -400,7 +400,7 @@ class PytisModule(Module, ActionHandler):
         else:
             if record.new() and self._LIST_BY_LANGUAGE and record['lang'].value() is None:
                 lang = req.prefered_language(raise_error=False)
-                record['lang'] = pd.Value(record['lang'].type(), lang)
+                record['lang'] = pd.Value(record.type('lang'), lang)
             for check in self._view.check():
                 result = check(record)
                 if result:
@@ -1188,7 +1188,7 @@ class PytisModule(Module, ActionHandler):
                 counter = pd.DBCounterDefault(seq, self._dbconnection,
                                               connection_name=self.Spec.connection)
                 value = counter.next(transaction=transaction)
-                record[key] = pd.Value(record[key].type(), value)
+                record[key] = pd.Value(record.type(key), value)
         new_row, success = self._data.insert(record.rowdata(), transaction=transaction)
         #debug(":::", success, new_row and [(k, new_row[k].value()) for k in new_row.keys()])
         if success and new_row is not None:
@@ -1389,7 +1389,7 @@ class PytisModule(Module, ActionHandler):
         
     def action_export(self, req):
         record = self._record(req, None)
-        columns = [(cid, isinstance(record[cid].type(), pytis.data.Float)
+        columns = [(cid, isinstance(record.type(cid), pytis.data.Float)
                     and dict(locale_format=False) or {})
                    for cid in self._exported_columns(req)]
         fw = self._binding_forward(req)

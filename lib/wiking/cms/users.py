@@ -770,7 +770,7 @@ class Users(UserManagementModule):
             # This language is used for translation of email messages sent to the user.  This way
             # it is set only once during registration.  It would make sense to change it on each
             # change of user interface language by that user.
-            record['lang'] = pd.Value(record['lang'].type(), req.prefered_language())
+            record['lang'] = pd.Value(record.type('lang'), req.prefered_language())
         errors = []
         if 'old_password' in layout.order():
             #if not req.check_roles(Roles.USER_ADMIN): Too dangerous?
