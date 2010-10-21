@@ -1250,6 +1250,8 @@ class PytisModule(Module, ActionHandler):
                 (not isinstance(key, dict) or key.keys() == [self._key])):
                 if isinstance(key, dict):
                     key = key[self._key]
+                if isinstance(key, pd.Value):
+                    key = key.value()
                 uri = self._base_uri(req)
                 if uri:
                     return req.make_uri('%s/%s' % (uri, key,))
