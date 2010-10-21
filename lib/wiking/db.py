@@ -1239,8 +1239,11 @@ class PytisModule(Module, ActionHandler):
                 cache_key = tuple(key.items())
             else:
                 cache_key = key
-            if self._link_cache.has_key(cache_key):
-                return self._link_cache[cache_key]
+            try:
+                if self._link_cache.has_key(cache_key):
+                    return self._link_cache[cache_key]
+            except TypeError:           # catch unhashable keys
+                pass
             # TODO: The following is an important optimization hack.  It is an
             # incorrect hack because if a successor redefines _record_uri
             # method, the redefined method doesn't get called.  At least we
@@ -1266,7 +1269,10 @@ class PytisModule(Module, ActionHandler):
         else:
             result = None
         if not args and not kwargs:
-            self._link_cache[cache_key] = result
+            try:
+                self._link_cache[cache_key] = result
+            except TypeError:           # catch unhashable keys
+                pass
         return result
         
     def related(self, req, binding, record, uri):
