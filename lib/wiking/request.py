@@ -511,6 +511,7 @@ class WikingRequest(Request):
                 password = params['password']
                 del params['password']
             self._credentials = (login, password)
+            self._fresh_login = True
         else:
             # Return HTTP Basic auth credentials if available
             auth_header = self.header('Authorization')
@@ -520,8 +521,12 @@ class WikingRequest(Request):
             else:
                 credentials = None
             self._credentials = credentials
+            self._fresh_login = False
         self._user = self._UNDEFINED
         return params
+
+    def fresh_login(self):
+        return self._fresh_login
 
     def _init_path(self, uri):
         prefix = self._uri_prefix
