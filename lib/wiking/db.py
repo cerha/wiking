@@ -178,6 +178,10 @@ class PytisModule(Module, ActionHandler):
     _LAYOUT = {}
     "Dictionary of form layouts keyed by action name (see '_layout()' method)."
 
+    # Just a hack, see its use.  If you redefine _record_uri method, set it the
+    # flag value to False.
+    _OPTIMIZE_LINKS = True
+
     class Record(pp.PresentedRow):
         """An abstraction of one record within the module's data object.
 
@@ -250,6 +254,8 @@ class PytisModule(Module, ActionHandler):
     # Instance methods
     
     def __init__(self, resolver, **kwargs):
+        self._link_cache = {}
+        self._link_cache_req = None
         super(PytisModule, self).__init__(resolver, **kwargs)
         import config
         self._dbconnection = config.dbconnection.select(self.Spec.connection)
@@ -1225,14 +1231,41 @@ class PytisModule(Module, ActionHandler):
         
     def link(self, req, key, *args, **kwargs):
         """Return a uri for given key value."""
+        if self._link_cache_req is not req:
+            self._link_cache = {}
+            self._link_cache_req = req
+        if not args and not kwargs:
+            if isinstance(key, dict):
+                cache_key = tuple(key.items())
+            else:
+                cache_key = key
+            if self._link_cache.has_key(cache_key):
+                return self._link_cache[cache_key]
+            # TODO: The following is an important optimization hack.  It is an
+            # incorrect hack because if a successor redefines _record_uri
+            # method, the redefined method doesn't get called.  At least we
+            # provide escape path by the _OPTIMIZE_LINKS flag.
+            if (self._OPTIMIZE_LINKS and
+                self._key == self._referer and
+                (not isinstance(key, dict) or key.keys() == [self._key])):
+                if isinstance(key, dict):
+                    key = key[self._key]
+                uri = self._base_uri(req)
+                if uri:
+                    return req.make_uri('%s/%s' % (uri, key,))
+                else:
+                    return None
         if isinstance(key, dict):
             row = self._data.get_row(arguments=self._arguments(req), **key)
         else:
             row = self._data.row(key)
         if row:
-            return self._record_uri(req, self._record(req, row), *args, **kwargs)
+            result = self._record_uri(req, self._record(req, row), *args, **kwargs)
         else:
-            return None
+            result = None
+        if not args and not kwargs:
+            self._link_cache[cache_key] = result
+        return result
         
     def related(self, req, binding, record, uri):
         """Return the listing of records related to other module's record by given binding."""
