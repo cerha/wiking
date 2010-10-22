@@ -502,6 +502,14 @@ class PytisModule(Module, ActionHandler):
                     title = fw.arg('title')
         messages = req.messages(heading=True)
         if messages:
+            if title is None:
+                # Hm, why to construct the title sometimes here and sometimes
+                # in Document.build?  I'm not going to copy the code from
+                # there, so is it worse to change the title or omit the filter
+                # information?  I guess that in most cases the menu title is
+                # (or should be) equal to view specification title, so we
+                # should be relatively safe by using it.
+                title = self._view.title()
             # A bit complicated in order to preserve translations
             extra_title = messages[0][0]
             for m in messages[1:]:
