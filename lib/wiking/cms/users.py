@@ -1087,7 +1087,11 @@ class Users(UserManagementModule):
         If all the criteria arguments are 'None', all users are returned.
 
         """
-        key = (email, state, role.id(), confirm,)
+        if role is None:
+            role_id = None
+        else:
+            role_id = role.id()
+        key = (email, state, role_id, confirm,)
         user_cache = self._find_users_cache.get(req)
         if user_cache is None:
             user_cache = self._find_users_cache[req] = {}
