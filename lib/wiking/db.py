@@ -16,6 +16,8 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+import string
+
 from wiking import *
 
 _ = lcg.TranslatableTextFactory('wiking')
@@ -498,6 +500,10 @@ class PytisModule(Module, ActionHandler):
                     title = fw.arg('title') +' :: '+ title
                 else:
                     title = fw.arg('title')
+        messages = req.messages(heading=True)
+        if messages:
+            extra_title = string.join([m[0] for m in messages], '; ')
+            title = '%s (%s)' % (title, extra_title,)
         return title
         
     def _document(self, req, content, record=None, lang=None, err=None, msg=None, **kwargs):
@@ -1108,6 +1114,11 @@ class PytisModule(Module, ActionHandler):
             if self._ACTION_MENU_LAST:
                 content.append(action_menu) 
         return content
+
+    def _add_form_messages(self, req, form):
+        message = form.heading_info()
+        if message:
+            req.message(message, req.HEADING)
     
     def _transaction(self):
         """Create a new transaction and return it as 'pd.DBTransactionDefault' instance."""
@@ -1178,8 +1189,7 @@ class PytisModule(Module, ActionHandler):
         'action_delete()' handler.
 
         """
-        return None
-            
+        return None            
     
     # ===== Methods which modify the database =====
     
@@ -1310,6 +1320,7 @@ class PytisModule(Module, ActionHandler):
                           condition=self._condition(req, lang=lang),
                           arguments=self._arguments(req),
                           filters=self._filters(req))
+        self._add_form_messages(req, form)
         content = self._list_form_content(req, form)
         return self._document(req, content, lang=lang)
 
@@ -1349,6 +1360,7 @@ class PytisModule(Module, ActionHandler):
         if action_menu:
             content.append(action_menu)
         content.extend(self._related_content(req, record))
+        self._add_form_messages(req, form)
         return self._document(req, content, record, err=err, msg=msg)
 
     # ===== Action handlers which modify the database =====
@@ -1387,6 +1399,7 @@ class PytisModule(Module, ActionHandler):
         form = self._form(pw.EditForm, req, new=True, action=action,
                           prefill=prefill, layout=layout, errors=errors,
                           submit=self._submit_buttons(req, action))
+        self._add_form_messages(req, form)
         return self._document(req, form, subtitle=self._action_subtitle(req, action))
             
     def action_update(self, req, record, action='update'):
@@ -1408,6 +1421,7 @@ class PytisModule(Module, ActionHandler):
         form = self._form(pw.EditForm, req, record=record, action=action, layout=layout,
                           submit=self._submit_buttons(req, action, record),
                           prefill=self._form_field_prefill(req), errors=errors)
+        self._add_form_messages(req, form)
         return self._document(req, form, record,
                               subtitle=self._action_subtitle(req, action, record=record))
 
@@ -1427,6 +1441,7 @@ class PytisModule(Module, ActionHandler):
                    # Translators: Back button label. Standard computer terminology.
                    Action(_("Back"), 'view'))
         action_menu = self._action_menu(req, record, actions)
+        self._add_form_messages(req, form)
         return self._document(req, [form, action_menu], record,
                               subtitle=self._action_subtitle(req, 'delete', record))
         

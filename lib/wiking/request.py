@@ -469,7 +469,9 @@ class WikingRequest(Request):
     """Message type constant for warning messages."""
     ERROR = 'ERROR'
     """Message type constant for error messages."""
-    _MESSAGE_TYPES = (INFO, WARNING, ERROR)
+    HEADING = 'HEADING'
+    """Message type constant for messages to be put into document heading."""
+    _MESSAGE_TYPES = (INFO, WARNING, ERROR, HEADING,)
 
     def __init__(self, req, application, **kwargs):
         super(WikingRequest, self).__init__(req, **kwargs)
@@ -834,8 +836,8 @@ class WikingRequest(Request):
 
         Arguments:
           message -- message text as a string.
-          type -- message text as one of INFO, WARNING, ERROR constatns of the class.  If None, the
-            default is INFO.
+          type -- message text as one of INFO, WARNING, ERROR, HEADING constants
+            of the class.  If None, the default is INFO.
 
         The stacked messages can be later retrieved using the 'messages()' method.
 
@@ -843,10 +845,24 @@ class WikingRequest(Request):
         assert type is None or type in self._MESSAGE_TYPES
         self._messages.append((message, type or self.INFO))
 
-    def messages(self):
-        """Return the current stack of messages as a tuple of pairs (MESSAGE, TYPE)."""
-        return tuple(self._messages)
-    
+    def messages(self, heading=False):
+        """Return the current stack of messages as a tuple of pairs (MESSAGE, TYPE).
+
+        Arguments:
+
+          heading -- if 'None', return all messages; if 'False', return all
+            messages except for heading messages; if 'True', return only
+            heading messages
+
+        """
+        if heading is None:
+            messages = tuple(self._messages)
+        elif heading:
+            messages = [m for m in self._messages if m[1] == self.HEADING]
+        else:
+            messages = [m for m in self._messages if m[1] != self.HEADING]
+        return tuple(messages)
+
 
 class User(object):
     """Representation of the logged in user.
