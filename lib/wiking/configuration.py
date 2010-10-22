@@ -420,3 +420,7 @@ class Configuration(pc):
         _DOC = ("The directory where Wiking CMS database initialization/upgrade scripts "
                 "can be found.")
         _DEFAULT = '/usr/local/share/wiking/sql'
+        
+    class _Option_immediate_filters(pc.BooleanOption, pc.HiddenOption):
+        _DESCR = _("Whether to apply filtering combobox selection immediately.")
+        _DEFAULT = True

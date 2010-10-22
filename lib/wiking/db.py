@@ -665,6 +665,8 @@ class PytisModule(Module, ActionHandler):
             if not kwargs.has_key('limit'):
                 kwargs['limit'] = self._BROWSE_FORM_DEFAULT_LIMIT
             kwargs['allow_query_search'] = self._ALLOW_QUERY_SEARCH
+            if not kwargs.has_key('immediate_filters'):
+                kwargs['immediate_filters'] = cfg.immediate_filters
         layout = kwargs.get('layout')
         if layout is not None and not isinstance(layout, pp.GroupSpec):
             kwargs['layout'] = self._layout_instance(layout)
