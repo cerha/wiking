@@ -502,9 +502,10 @@ class PytisModule(Module, ActionHandler):
                     title = fw.arg('title')
         messages = req.messages(heading=True)
         if messages:
+            # A bit complicated in order to preserve translations
             extra_title = messages[0][0]
-            for i in range(1, len(messages)):
-                extra_title = extra_title + u'; ' + messages[i][0]
+            for m in messages[1:]:
+                extra_title = extra_title + u'; ' + m[0]
             def interpolate(key, title=title, extra=extra_title):
                 return dict(title=title, extra=extra)[key]
             title = _('%(title)s (%(extra)s)').interpolate(interpolate)
