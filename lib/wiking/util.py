@@ -1241,6 +1241,7 @@ class LoginCtrl(lcg.Content):
         g = context.generator()
         req = context.req()
         user = req.user()
+        target_uri = req.uri()
         if user:
             username = user.name()
             uri = user.uri()
@@ -1256,10 +1257,12 @@ class LoginCtrl(lcg.Content):
             username = _("not logged")
             # Translators: Login button label (verb in imperative).
             cmd, label = ('login', _("log in"))
+            if req.uri().endswith('_registration'):
+                target_uri = '/' # Redirect logins from the registration forms to site root
         if cmd is None:
             result = username
         else:
-            link = g.link(label, g.uri(req.uri(), command=cmd), cls='login-ctrl')
+            link = g.link(label, g.uri(target_uri, command=cmd), cls='login-ctrl')
             if self._inline:
                 link = lcg.concat('[', link, ']')
             else:
