@@ -213,6 +213,11 @@ form.show-form td.ctrl, form.list-view td.ctrl {
     line-height: 1.4em;
 }
 
+form.show-form td.ctrl a.print-field-link { 
+    float: right;
+    display: block;
+}
+
 form.pytis-form .group span.color-display { 
     padding: 0 0.5em;
     border: 1px solid $color.border;

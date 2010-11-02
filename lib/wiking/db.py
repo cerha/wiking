@@ -622,6 +622,12 @@ class PytisModule(Module, ActionHandler):
     def _image_provider(self, req, record, cid, uri):
         return None
 
+    def _print_uri_provider(self, req, uri, record, cid):
+        if self._authorized(req, action='print_field', record=record):
+            return self._link_provider(req, uri, record, None, action='print_field', field=cid)
+        else:
+            return None
+    
     def _record_uri(self, req, record, *args, **kwargs):
         # Return the absolute URI of module's record if a direct mapping of the module exists.  
         # Use the method '_current_record_uri()' to get URI in the context of the current request.
@@ -676,6 +682,8 @@ class PytisModule(Module, ActionHandler):
                 method = self._link_provider
             elif type == pw.UriType.IMAGE:
                 method = self._image_provider
+            elif type == pw.UriType.PRINT:
+                method = self._print_uri_provider
             return method(req, uri, record_, cid)
         if issubclass(form, pw.BrowseForm):
             kwargs['req'] = req
@@ -1132,6 +1140,19 @@ class PytisModule(Module, ActionHandler):
         message = form.heading_info()
         if message:
             req.message(message, req.HEADING)
+
+    def _print_field_title(self, req, record, field):
+        return field.label()
+        
+    def _print_field_filename(self, req, record, field):
+        return record[self._referer].export() +'-'+ field.id() +'.pdf'
+        
+    def _print_field_content(self, req, record, field):
+        text = record[field.id()].value()
+        tr = translator(str(req.prefered_language()))
+        parser = lcg.Parser()
+        content = parser.parse(tr.translate(text))
+        return lcg.Container(content)
     
     def _transaction(self):
         """Create a new transaction and return it as 'pd.DBTransactionDefault' instance."""
@@ -1481,7 +1502,25 @@ class PytisModule(Module, ActionHandler):
                 data.append(singleline.replace('\t', '\\t'))
             req.write('\t'.join(data).encode('utf-8') + '\n')
         raise Done()
-        
+
+    def action_print_field(self, req, record):
+        field = self._view.field(req.param('field'))
+        if not field:
+            raise BadRequest()
+        if not field.printable():
+            raise AuthorizationError()
+        exporter = lcg.pdf.PDFExporter(translations=cfg.translation_path)
+        node = lcg.ContentNode(req.uri().encode('utf-8'),
+                               title=self._print_field_title(req, record, field),
+                               content=self._print_field_content(req, record, field))
+        context = exporter.context(node, req.prefered_language())
+        result = exporter.export(context)
+        req.set_header('Content-disposition',
+                       'attachment; filename=%s' % self._print_field_filename(req, record, field))
+        req.send_http_header('application/pdf')
+        req.write(result)
+        raise Done()
+    
     def _action_subtitle(self, req, action, record=None):
         for a in self._actions(req, record):
             if a.id() == action:
