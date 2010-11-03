@@ -719,14 +719,18 @@ class PytisModule(Module, ActionHandler):
         form_instance = form(self._view, form_record, handler=handler or req.uri(),
                              name=self.name(), hidden=hidden, prefill=prefill,
                              uri_provider=uri_provider, **kwargs)
-        heading_info = form_instance.heading_info()
-        if heading_info:
-            # TODO: Am I the only one who thinks that passing the heading info through
-            # req.message() is an ugly hack?  What about creating a generic mechanism to pass
-            # internal processing data through request instance (since it is available everywhere).
-            # Some other hacks to achieve the same exist, such as passing data through
-            # req.set_param().
-            req.message(heading_info, req.HEADING)
+        if binding_uri is None:
+            # We use heading_info only for main form, not for binding side
+            # forms.  That's why we test binding_uri here (not very nice...).
+            heading_info = form_instance.heading_info()
+            if heading_info:
+                # TODO: Am I the only one who thinks that passing the heading
+                # info through req.message() is an ugly hack?  What about
+                # creating a generic mechanism to pass internal processing data
+                # through request instance (since it is available everywhere).
+                # Some other hacks to achieve the same exist, such as passing
+                # data through req.set_param().
+                req.message(heading_info, req.HEADING)
         return form_instance
 
     def _layout_instance(self, layout):
