@@ -659,18 +659,26 @@ class PytisModule(Module, ActionHandler):
         arguments or override the default form classes used by built-in
         actions.  You should, however, not modify it to return anything else
         than a 'pytis.web.Form' instance compatible with the original set of
-        arguments.
+        arguments (but see the TODO below).  Methods like
+        '_list_form_content()' (and simalar for other actions) should be used
+        to append additional content to the form instance returned by this
+        method.
 
         You should use this method for creation of 'pytis.web.Form' instances
         instead of calling their arguments directly.
 
-        TODO: Note, that the definition of this method was not clear in the past
-        and some applications (namely Wiking Biblio) return arbitrary content
-        rather than a form instance.  Thus it is not possible to rely on the
-        return type unless we make an incompatible change.  It should be doable
-        to make this change on next Wiking Biblio development cycle.  Methods
-        like `_list_form_content()' (and simalar for other actions) should be
-        used instead of _form() to append additional content.
+        When overriding this method, you will typically tweek the arguments
+        passed to the base method, do something on the returned value, but you
+        are supposed to call the base method.  If not, you are responsible to
+        take care of all the processing implemented by the base method
+        yourself.
+
+        TODO: Note, that the definition of this method was not clear in the
+        past and some applications (namely Wiking Biblio and WPB Intranet)
+        return arbitrary content rather than a form instance.  Thus it is not
+        possible to rely on the return type unless we make an incompatible
+        change.  It should be doable to make this change on next Wiking Biblio
+        development cycle.
 
         """
         if binding_uri is not None:
@@ -708,8 +716,18 @@ class PytisModule(Module, ActionHandler):
                 if not error:
                     valid_prefill[key] = value
         form_record = self._record(req, record and record.row(), prefill=valid_prefill, new=new)
-        return form(self._view, form_record, handler=handler or req.uri(), name=self.name(),
-                    hidden=hidden, prefill=prefill, uri_provider=uri_provider, **kwargs)
+        form_instance = form(self._view, form_record, handler=handler or req.uri(),
+                             name=self.name(), hidden=hidden, prefill=prefill,
+                             uri_provider=uri_provider, **kwargs)
+        heading_info = form_instance.heading_info()
+        if heading_info:
+            # TODO: Am I the only one who thinks that passing the heading info through
+            # req.message() is an ugly hack?  What about creating a generic mechanism to pass
+            # internal processing data through request instance (since it is available everywhere).
+            # Some other hacks to achieve the same exist, such as passing data through
+            # req.set_param().
+            req.message(heading_info, req.HEADING)
+        return form_instance
 
     def _layout_instance(self, layout):
         if layout is None:
@@ -1136,11 +1154,6 @@ class PytisModule(Module, ActionHandler):
                 content.append(action_menu) 
         return content
 
-    def _add_form_messages(self, req, form):
-        message = form.heading_info()
-        if message:
-            req.message(message, req.HEADING)
-
     def _print_field_title(self, req, record, field):
         return field.label()
         
@@ -1354,7 +1367,6 @@ class PytisModule(Module, ActionHandler):
                           condition=self._condition(req, lang=lang),
                           arguments=self._arguments(req),
                           filters=self._filters(req))
-        self._add_form_messages(req, form)
         content = self._list_form_content(req, form)
         return self._document(req, content, lang=lang)
 
@@ -1394,7 +1406,6 @@ class PytisModule(Module, ActionHandler):
         if action_menu:
             content.append(action_menu)
         content.extend(self._related_content(req, record))
-        self._add_form_messages(req, form)
         return self._document(req, content, record, err=err, msg=msg)
 
     # ===== Action handlers which modify the database =====
@@ -1433,7 +1444,6 @@ class PytisModule(Module, ActionHandler):
         form = self._form(pw.EditForm, req, new=True, action=action,
                           prefill=prefill, layout=layout, errors=errors,
                           submit=self._submit_buttons(req, action))
-        self._add_form_messages(req, form)
         return self._document(req, form, subtitle=self._action_subtitle(req, action))
             
     def action_update(self, req, record, action='update'):
@@ -1455,7 +1465,6 @@ class PytisModule(Module, ActionHandler):
         form = self._form(pw.EditForm, req, record=record, action=action, layout=layout,
                           submit=self._submit_buttons(req, action, record),
                           prefill=self._form_field_prefill(req), errors=errors)
-        self._add_form_messages(req, form)
         return self._document(req, form, record,
                               subtitle=self._action_subtitle(req, action, record=record))
 
@@ -1475,7 +1484,6 @@ class PytisModule(Module, ActionHandler):
                    # Translators: Back button label. Standard computer terminology.
                    Action(_("Back"), 'view'))
         action_menu = self._action_menu(req, record, actions)
-        self._add_form_messages(req, form)
         return self._document(req, [form, action_menu], record,
                               subtitle=self._action_subtitle(req, 'delete', record))
         
