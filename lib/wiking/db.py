@@ -1155,15 +1155,66 @@ class PytisModule(Module, ActionHandler):
         return content
 
     def _print_field_title(self, req, record, field):
+        """Return the document title used by the 'print_field' action.
+        
+        @type req: C{wiking.Request}
+        @param req: current request object
+        @type record: C{wiking.PytisModule.Record}
+        @param record: the record containing the field data to be printed
+        @type field: C{pytis.presentation.Field}
+        @param field: the field to be printed (exported into a PDF document)
+        @rtype: basestring
+        @return: Main heading of the PDF document containing the exported field
+           content.
+
+        The default title is the label of the printed field.
+
+        """
         return field.label()
         
     def _print_field_filename(self, req, record, field):
+        """Return the file name of the PDF document produced by the 'print_field' action.
+        
+        @type req: C{wiking.Request}
+        @param req: current request object
+        @type record: C{wiking.PytisModule.Record}
+        @param record: the record containing the field data to be printed
+        @type field: C{pytis.presentation.Field}
+        @param field: the field to be printed (exported into a PDF document)
+        @rtype: basestring
+        @return: File name sent within the 'Content-disposition' HTTP response
+          header.
+
+        The default file name is '<record id>-<field id>.pdf', where record id
+        is the value of the referer field (see L{PytisModule._REFERER}).
+
+        """
         return record[self._referer].export() +'-'+ field.id() +'.pdf'
         
     def _print_field_content(self, req, record, field):
+        """Build the content to export into PDF for the 'print_field' action.
+        
+        @type req: C{wiking.Request}
+        @param req: current request object
+        @type record: C{wiking.PytisModule.Record}
+        @param record: the record containing the field data to be printed
+        @type field: C{pytis.presentation.Field}
+        @param field: the field to be printed (exported into a PDF document)
+        @rtype: C{lcg.Content}
+        @return: Full content of the document
+
+        The default implementation returns an 'lcg.Container' containing the
+        result of parsing the string value of the printed field by LCG.  You
+        may override this method to wrap its result in additional content or do
+        any such tweaks.
+
+        """
         text = record[field.id()].value()
         tr = translator(str(req.prefered_language()))
         parser = lcg.Parser()
+        # Translation is needed before parsing, because the text may contain 'lcg.Translatable'
+        # instances, which would be destroyed during parsing (think of virtual fields with text
+        # constructed in runtime).
         content = parser.parse(tr.translate(text))
         return lcg.Container(content)
     
