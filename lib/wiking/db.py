@@ -1542,30 +1542,57 @@ class PytisModule(Module, ActionHandler):
         return self._document(req, [form, action_menu], record,
                               subtitle=self._action_subtitle(req, 'delete', record))
         
-    def action_export(self, req):
+    def _export(self, req, export_row, content_type, headers=()):
         record = self._record(req, None)
-        columns = [(cid, isinstance(record.type(cid), pytis.data.Float)
-                    and dict(locale_format=False) or {})
-                   for cid in self._exported_columns(req)]
         fw = self._binding_forward(req)
         if fw:
             condition = self._binding_condition(fw.arg('binding'), fw.arg('record'))
         else:
             condition = None
         lang = req.prefered_language()
-        req.set_header('Content-disposition',
-                       'attachment; filename=%s' % self._export_filename(req))
-        req.send_http_header('text/plain; charset=utf-8')
+        for header, content in headers:
+            req.set_header(header, content)
+        req.send_http_header(content_type)
         for row in self._rows(req, condition=condition, lang=lang):
             record.set_row(row)
+            export_row(record)
+
+    def action_export(self, req):
+        columns = self._exported_columns(req)
+        export_kwargs = dict([(cid, isinstance(self._type[cid], pytis.data.Float)
+                               and dict(locale_format=False) or {}) for cid in columns])
+        def export_row(record):
             data = []
-            for cid, kwargs in columns:
-                value = record.display(cid) or record[cid].export(**kwargs)
+            for cid in columns:
+                value = record.display(cid) or record[cid].export(**export_kwargs[cid])
                 singleline = ';'.join(value.split('\n'))
                 data.append(singleline.replace('\t', '\\t'))
             req.write('\t'.join(data).encode('utf-8') + '\n')
+        self._export(req, export_row, 'text/plain; charset=utf-8',
+                     headers=(('Content-disposition',
+                               'attachment; filename=%s' % self._export_filename(req)),))
         raise Done()
 
+    def action_jsondata(self, req):
+        import simplejson as json
+        columns = self._columns(req)
+        # Inspect column types in advance as it is cheaper than calling
+        # isinstance for all exported values.
+        datetime_columns = [cid for cid in columns if isinstance(self._type[cid], pd.DateTime)]
+        def export_value(record, cid):
+            value = record[cid]
+            if cid in datetime_columns:
+                result = value.export()
+            else:
+                result = value.value()
+            return result
+        data = []
+        def export_row(record):
+            return data.append(dict([(cid, export_value(record, cid)) for cid in columns]))
+        self._export(req, export_row, 'application/json')
+        req.write(json.dumps(data))
+        raise Done()
+                
     def action_print_field(self, req, record):
         field = self._view.field(req.param('field'))
         if not field:
