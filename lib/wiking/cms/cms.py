@@ -1500,7 +1500,7 @@ class Attachments(ContentManagementModule):
                 #log(OPR, "Loading file:", record['_filename'].value())
                 return value.type().Buffer(record['_filename'].value(),
                                            type=str(record['mime_type'].value()),
-                                           filename=str(record['filename'].value()))
+                                           filename=unicode(record['filename'].value()))
         def _filename_computer(self, append=''):
             """Return a computer computing filename for storing the file."""
             def func(record, attachment_id, ext):
