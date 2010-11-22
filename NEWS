@@ -1,3 +1,55 @@
+Version 1.1.0 (2010-11-22):
+
+ * New features in Wiking CMS:
+   - Dynamic user group management.
+   - Account states now managed separately from user privileges (groups).
+   - Page access now controlled through  user groups.
+   - New configuration option to automatically approve new CMS users.
+   - Optional confirmation checkbox in the registration form with site specific
+     description.
+   - Improved user interface terminology, consistency and descriptions added
+     where necessary.
+
+ * More significant Wiking API changes:
+   - Allow table data retrieval in JSON format.
+   - Display binding descriptions if defined.
+   - Allow setting `site_title' from the configuration file.
+   - Support Last-Modified/If-Modified-Since HTTP headers when serving files.
+   - Send JSON data in response body, not in X-Json header.
+   - Make HTTP redirect after default insert/update/delete operations
+     (Post/Redirect/Get paradigm).
+   - Pass request argument to `_insert_msg()', `_update_msg()' and
+     `_delete_msg()'.
+   - Allow logging of `RequestError' exceptions.
+   - Avoid 406 HTTP error (language selection) where appropriate.
+   - Rename misspelled method `Request.prefered_language' to
+     `preferred_language'.
+   - Added support for HTTP Basic authentication method.
+   - RSS support improved (including some incompatible changes in RSS request
+     handling).
+   - Allow dynamic redefinition of form submit buttons.
+   - Implemented CVS export for pytis modules.
+   - Allow `wiking.Document' cloning.
+   - Added support for transactions to all relevant PytisModule methods.
+   - New config option `debug' for displaying tracebacks directly in browser
+     window.
+   - Overriding module's authorization mechanism made possible using the method
+     `authorized()'.
+   - Display interactive messages also after request redirection.
+   - `wiking.FieldSet' deprecated in favour of `pytis.presentation.FieldSet'.
+   - Handle subpath through a special method `_handle_subpath()', not as an
+     action.
+   - Add support for table function arguments to pytis forms.
+   - Use special exceptions for HTTP redirection and signalling finished
+     request processing.
+   - Many docstring improvements. 
+
+ * Now depends on LCG 0.5.0
+
+ * Bug fixes.
+
+ * New and updated translations.
+
 Version 1.0.0 (2010-01-21):
  
  * ARIA support and JavaScript navigation redesigned. 
