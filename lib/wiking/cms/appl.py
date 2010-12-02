@@ -149,7 +149,7 @@ class Application(CookieAuthentication, wiking.Application):
         uri = super(Application, self).module_uri(req, modname)
         if uri is None:
             if req.wmi:
-                uri = req.uri_prefix() + '/_wmi/'+ modname
+                uri = '/_wmi/'+ modname
             else:
                 try:
                     # Try if the module is directly embedded in a page.

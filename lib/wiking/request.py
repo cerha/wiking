@@ -82,8 +82,6 @@ class Request(pytis.web.Request):
     def _init_path(self, uri):
         return [item for item in uri.split('/')[1:] if item]
 
-    def _cookie_path(self):
-        return '/'
 
     # Methods implementing the pytis Request interface:
     
@@ -123,7 +121,7 @@ class Request(pytis.web.Request):
         c = Cookie.SimpleCookie()
         c[name] = value or ''
         #c[name]['domain'] = self._req.connection.local_host
-        c[name]['path'] = self._cookie_path()
+        c[name]['path'] = ''
         if expires is not None:
             c[name]['expires'] = expires
         if secure:
@@ -482,11 +480,6 @@ class WikingRequest(Request):
         self._module_uri = {}
         self.unresolved_path = list(self.path)
 
-    def _init_options(self):
-        options = super(WikingRequest, self)._init_options()
-        self._uri_prefix = options.pop('PrefixPath', None)
-        return options
-    
     def _init_params(self):
         params = super(WikingRequest, self)._init_params()
         if params.has_key('setlang'):
@@ -531,10 +524,7 @@ class WikingRequest(Request):
         return self._fresh_login
 
     def _init_path(self, uri):
-        prefix = self._uri_prefix
-        if prefix and uri.startswith(prefix):
-            uri = uri[len(prefix):]
-        path = super(WikingRequest, self)._init_path(uri)
+        path = super(Request, self)._init_path(uri)
         if '..' in path:
             # Prevent directory traversal attacs globally (no need to handle them all around).
             raise Forbidden()
@@ -600,9 +590,6 @@ class WikingRequest(Request):
             languages.append(default)
         return tuple(languages)
 
-    def _cookie_path(self):
-        return self._uri_prefix or '/'
-
     def _redirect(self, uri, permanent=False):
         if self._messages:
             # Store the current list of interactive messages in browsers cookie
@@ -653,36 +640,8 @@ class WikingRequest(Request):
         return tuple(self._forwards)
 
     def uri_prefix(self):
-        """Return the URI prefix as a string or empty string if no prefix is set.
-
-        URI prefix is the fixed part of request URI, which is ignored by Wiking URI resolution
-        process.  It may be typically useful when you want to run multiple Wiking applications on
-        one virtual host.
-
-        Examples:
-
-          Application 1:
-            URI = http://www.yourserver.org/appl1/news
-            req.uri() = '/appl1/news'
-            req.uri_prefix() = '/appl1'
-            req.path = ('news',)
-
-          Application 2:
-            URI = http://www.yourserver.org/appl2/xyz
-            req.uri() = '/appl2/xyz'
-            req.uri_prefix() = '/appl2'
-            req.path = ('xyz',)
-
-        It is especially important to respect the prefix when constructing URIs, however this
-        feature is now in experimantal state and it is not guaranteeed that it is correctly
-        handled by Wiking itself yet.
-
-        In the mod_python environment it can be set by the PythonOption PrefixPath to the value of
-        the prefix string and also by setting the appropriate Python interpretter isolation level
-        e.g. by the PythonInterpreter directive.
-
-        """
-        return self._uri_prefix or ''
+        """Deprecated."""
+        return ''
         
     def show_panels(self):
         return self._show_panels
@@ -827,8 +786,6 @@ class WikingRequest(Request):
             uri = self._module_uri[modname]
         except KeyError:
             uri = self._module_uri[modname] = self._application.module_uri(self, modname)
-        if uri is not None:
-            uri = self.uri_prefix() + uri
         return uri
         
     def message(self, message, type=None):
