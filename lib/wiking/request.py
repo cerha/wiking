@@ -799,10 +799,6 @@ class Request(ServerInterface):
         return tuple(messages)
 
     
-# Just for backwards compatibility.
-WikingRequest = Request
-
-
 class User(object):
     """Representation of the logged in user.
 
