@@ -15,125 +15,83 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-import string
-
-from wiking import *
-
-try:
-    # We need to be able to import the module if mod_python is not loaded.
-    from mod_python import apache
-    import mod_python.util
-except:
-    pass
-
-import Cookie
+import os, string, Cookie, re, urllib, mx.DateTime
+import wiking, lcg, pytis
+from wiking import log, OPR
 
 _ = lcg.TranslatableTextFactory('wiking')
 
-DAY = 86400
-
-class FileUpload(pytis.web.FileUpload):
-    """Mod_python specific implementation of pytis FileUpload interface."""
-    def __init__(self, field, encoding):
-        self._field = field
-        self._filename = re.split(r'[\\/:]', unicode(field.filename, encoding))[-1]
-    def file(self):
-        return self._field.file
-    def filename(self):
-        return self._filename
-    def type(self):
-        return self._field.type
-
-
 class ClosedConnection(Exception):
     """Exception raised when the client closes the connection during communication."""
+
+class FileUpload(pytis.web.FileUpload):
+    """Generic representation of uploaded file.
+
+    The interface is defined by the 'pytis.web.FileUpload' class with no Wiking
+    specific extensions.
     
-class Request(pytis.web.Request):
-    """Mod_python request wrapper implementing the pytis request interface."""
+    """
+
+class ServerInterface(pytis.web.Request):
+    """Generic HTTP server interface specification.
+
+    The interface is derived from 'pytis.web.Request' class with additional
+    Wiking specific extensions.  This generic interface must be implemented by
+    particular web server interface drivers.
+
+    The goal of the interface it to provide access the HTTP request -- querying
+    and manipulating incoming request headers, outgoing response headers, and
+    other HTTP parameters.
+
+    The class 'Request' then defines additional methods to be used by wiking
+    applications.  The web server interface methods are defined here separately
+    just for the clarity's sake.  The web server interface drivers should be
+    derived from 'Request', not from this class directly.
     
-    _UNIX_NEWLINE = re.compile("(?<!\r)\n")
-    _ABS_URI_MATCHER = re.compile(r'^((https?|ftp)://[^/]+)(.*)$')
-
-    def __init__(self, req, encoding='utf-8'):
-        self._req = req
-        self._encoding = encoding
-        self._cookies = Cookie.SimpleCookie(self.header('Cookie'))
-        # Store params and options in real dictionaries (not mod_python's mp_table).
-        self._options = self._init_options() 
-        self._params = self._init_params()
-        self._uri = uri = unicode(req.uri, encoding)
-        self.path = self._init_path(uri)
-
-    def _init_options(self):
-        options = self._req.get_options()
-        return dict([(o, options[o]) for o in options.keys()])
-        
-    def _init_params(self):
-        def init_value(value):
-            if isinstance(value, (tuple, list)):
-                return tuple([init_value(v) for v in value])
-            elif isinstance(value, mod_python.util.Field):
-                return FileUpload(value, self._encoding)
-            else:
-                return unicode(value, self._encoding)
-        fields = mod_python.util.FieldStorage(self._req)
-        return dict([(k, init_value(fields[k])) for k in fields.keys()])
-
-    def _init_path(self, uri):
-        return [item for item in uri.split('/')[1:] if item]
-
-
-    # Methods implementing the pytis Request interface:
-    
-    def has_param(self, name):
-        return self._params.has_key(name)
-        
-    def param(self, name, default=None):
-        return self._params.get(name, default)
-        
-    def cookie(self, name, default=None):
-        """Get the value of given cookie as unicode or return DEFAULT if cookie was not set."""
-        if self._cookies.has_key(name):
-            try:
-                return unicode(self._cookies[name].value, self._encoding)
-            except UnicodeDecodeError:
-                return default
-        else:
-            return default
-        
-    def set_cookie(self, name, value, expires=None, secure=False):
-        """Set given value as a cookie with given name.
-
-        Arguments:
-          name -- cookie name as a string.
-          value -- unicode value to store or None to remove the cookie.
-          expires -- cookie expiration time in seconds or None for unlimited cookie.
-          secure -- if True, the cookie will only be returned by the browser on secure connections.
-
-        """
-        if value is None:
-            if self._cookies.has_key(name):
-                del self._cookies[name]
-        else:
-            if isinstance(value, unicode):
-                value = value.encode(self._encoding)
-            self._cookies[name] = value
-        c = Cookie.SimpleCookie()
-        c[name] = value or ''
-        #c[name]['domain'] = self._req.connection.local_host
-        c[name]['path'] = ''
-        if expires is not None:
-            c[name]['expires'] = expires
-        if secure:
-            c[name]['secure'] = True
-        cookie = c[name].OutputString()
-        self._req.headers_out.add("Set-Cookie", cookie)
-
-    # Additional methods:
+    """
+    HTTP_MOVED_PERMANENTLY = 301
+    HTTP_MOVED_TEMPORARILY = 302
+    HTTP_NOT_MODIFIED      = 304
+    DONE = 0
 
     def uri(self):
-        return self._uri
+        """Return the relative request URI.
+
+        The returned URI is a string, which normally starts with a slash and
+        continues with
         
+        """
+        pass
+
+    def unparsed_uri(self):
+        pass
+
+    def param(self, name, default=None):
+        """Return the value of request parameter `name'.
+
+        The returned value is a unicode string (with HTTP escapes decoded) for
+        ordinary parameters, a 'FileUpload' instance for uploaded multipart
+        data or a sequence of such values when multiple values of the parameter
+        were sent with the request.
+
+        """
+        pass
+        
+    def params(self):
+        """"""
+        pass
+
+    def has_param(self, name):
+        """Return true if the parameter 'name' was sent with the request.
+        
+        Parameters can originate from URL encoded parameters (e.g.
+        in http://host.com/app.py?param=value, `param' is a parameter name
+        and `value' its value), or from the HTML form data submitted in the
+        body of the request. FIXME which takes precedence when both present?
+        
+        """
+        pass
+
     def set_param(self, name, value):
         """Set given request parameter value.
 
@@ -142,271 +100,72 @@ class Request(pytis.web.Request):
           value -- unicode value to set or None to remove the parameter.
 
         """
-        if value is None:
-            if self._params.has_key(name):
-                del self._params[name]
-        else:
-            self._params[name] = value
-        
-    def params(self):
-        return self._params.keys()
-    
-    def option(self, name, default=None):
-        return self._options.get(name, default)
+        pass
 
     def header(self, name, default=None):
-        try:
-            return self._req.headers_in[name]
-        except KeyError:
-            return default
+        """"""
+        pass
 
     def set_header(self, name, value):
-        self._req.headers_out.add(name, value)
+        """Set the value of HTTP (outgoing) response header."""
+        pass
+
+    def port(self):
+        """"""
+        pass
         
     def https(self):
         """Return true if https is on."""
-        return self._req.connection.local_addr[1] == cfg.https_port
-    
+        pass
+
     def remote_host(self):
-        return self._req.get_remote_host()
+        """Return the remote host address.
+
+        Returns the HTTP client address, in the form of fully-qualified domain
+        name if it can be resolved, or its IP address otherwise.
+
+        """
+        pass
 
     def server_hostname(self, current=False):
         """Return the server's fully qualified domain name as a string.
 
-        Each virtual server may have several names through which it can be accessed, such as
-        'www.yourdomain.com' and 'www.yourdomain.org'.  One of them is the main one (i.e. as
-        defined in web server configuration).  The main name is returned by default, but if
-        'current' is True, the name used in the current request URI is returned.
+        Each virtual server may have several names through which it can be
+        accessed, such as 'www.yourdomain.com' and 'www.yourdomain.org'.  One
+        of them is the main one (i.e. as defined in web server configuration).
+        The main name is returned by default, but if 'current' is True, the
+        name used in the current request URI is returned.
 
         """
-        if current:
-            hostname = self._req.hostname
-            # Should not be None by definition, but it happens.  We were not able to reproduce it,
-            # but we have tracebacks, where server_hostname(True) returned None.
-            if hostname:
-                return self._req.hostname
-        return self._req.server.server_hostname
-
-    def server_uri(self, force_https=False, current=False):
-        """Return full server URI as a string.
-
-        Arguments:
-          force_https -- If True, the uri will point to an HTTPS address even if the current
-            request is not on HTTPS.  This may be useful for redirection of links or form
-            submissions to a secure channel.
-          current -- controls which server domain name to use.  Corrensponds to the same argument
-            of 'server_hostname()'.
-        
-        The URI in the form 'http://www.yourdomain.com' is constructed including port and scheme
-        specification.  If current request port corresponds to 'https_port' configuration option
-        (443 by default), the scheme is set to 'https'.  The port is also included in the uri if
-        it is not the current scheme's default port (80 or 443).
-
-        """
-        if force_https:
-            port = cfg.https_port
-        else:
-            port = self._req.connection.local_addr[1]
-        if port == cfg.https_port:
-            scheme = 'https'
-            default_port = 443
-        else:
-            scheme = 'http'
-            default_port = 80
-        result = scheme + '://'+ self.server_hostname(current=current)
-        if port != default_port:
-            result += ':'+ str(port)
-        return result
-
-    def certificate(self):
-        """Return verified client TLS/SSL certificate.
-
-        If no client certificate was provided or it wasn't verified by the web
-        server, return 'None'."""
-        if self._req.ssl_var_lookup('SSL_CLIENT_VERIFY') == 'SUCCESS':
-            certificate = self._req.ssl_var_lookup('SSL_CLIENT_CERT')
-        else:
-            certificate = None
-        return certificate
+        pass
 
     def set_status(self, status):
-        self._req.status = status
+        pass
 
     def send_http_header(self, content_type, lenght=None):
-        self._req.content_type = content_type
-        if lenght is not None:
-            self._req.set_content_length(lenght)
-        try:
-            self._req.send_http_header()
-        except IOError, e:
-            raise ClosedConnection(str(e))
+        pass
 
     def write(self, data):
-        try:
-            self._req.write(data)
-        except IOError, e:
-            raise ClosedConnection(str(e))
-        
-    def done(self):
-        return apache.OK
-    
-    def result(self, data, content_type="text/html"):
-        if content_type in ("text/html", "application/xml", "text/css", "text/plain") \
-               and isinstance(data, unicode):
-            content_type += "; charset=%s" % self._encoding
-            #data = self._UNIX_NEWLINE.sub("\r\n", data)
-            data = data.encode(self._encoding)
-        self.send_http_header(content_type, len(data))
-        self.write(data)
-        return apache.OK
+        """Write data to the client through the network socket.
 
-    def serve_file(self, filename, content_type, lock=False):
-        """Send the contents of given file to the remote host.
-
-        Arguments:
-          filename -- full path to the file
-          content_type -- Content-Type header as a string
-          lock -- iff True, shared lock will be aquired on the file while it is served.
-
-        'NotFound' exception is raised if the file does not exist.
-
-        Important note: The file size is read in advance to determine the Content-Lenght header.
-        If the file is changed before it gets sent, the result may be incorrect.
+        Raise 'ClosedConnection' if the client closes the connection during
+        writing.
         
         """
-        try:
-            info = os.stat(filename)
-        except OSError:
-            log(OPR, "File not found:", filename)
-            raise NotFound()
-        import mx.DateTime
-        mtime = mx.DateTime.localtime(info.st_mtime)
-        since_header = self.header('If-Modified-Since')
-        if since_header:
-            since = mx.DateTime.ARPA.ParseDateTime(since_header)
-            if mtime == since:
-                self.set_status(304)
-                return apache.OK
-        self.set_header('Last-Modified', mx.DateTime.ARPA.str(mtime))
-        self.send_http_header(content_type, info.st_size)
-        f = file(filename)
-        if lock:
-            import fcntl
-            fcntl.lockf(f, fcntl.LOCK_SH)
-        try:
-            while True:
-                # Read the file in 0.5MB chunks.
-                data = f.read(524288)
-                if not data:
-                    break
-                self.write(data)
-        finally:
-            if lock:
-                fcntl.lockf(f, fcntl.LOCK_UN)
-            f.close()
-        return apache.OK        
-
-    def redirect(self, uri, args=(), permanent=False):
-        """Send an HTTP redirection response to the browser.
-
-        Arguments:
-          uri -- redirection target URI as a string.  May be relative to the
-            current request server address or absolute if it begins with
-            'http://' or 'https://'.  Relative URI is automatically prepended
-            by current server URI, since HTTP specification requires absolute
-            URIs.  The uri may not include any query arguments encoded within
-            it.  If needed, the arguments must be passed separately using the
-            'args' argument.
-          args -- URI arguments to be encoded to the final redirection URI.
-            The value may by a tuple of (NAME, VALUE) pairs or a dictionary.
-            All conditions defined by 'make_uri()' apply for uri argument
-            encoding.
-          permanent -- boolean flag indicatnig whether this is a permanent
-            (moved permanently) or temporary (moved temporarily) redirect
-            according to HTTP specification.
-
-        Calling this method directly from application code is deprecated.
-        Redirection should be now triggered by raising the `Redirect'
-        exception.
-            
-        """
-        if not (uri.startswith('http://') or uri.startswith('https://')):
-            if not uri.startswith('/'):
-                uri = '/' + uri
-            uri = self.server_uri(current=True) + uri
-        if isinstance(args, tuple):
-            uri = self.make_uri(uri, *args)
-        else:
-            uri = self.make_uri(uri, **args)
-        return self._redirect(uri, permanent=permanent)
-
-    def _redirect(self, uri, permanent=False):
-        """Implement the actual request redirection for the already completed absolute URI."""
-        self._req.content_type = "text/html"
-        try:
-            self._req.send_http_header()
-        except IOError, e:
-            raise ClosedConnection(str(e))
-        self._req.status = permanent and apache.HTTP_MOVED_PERMANENTLY or \
-                           apache.HTTP_MOVED_TEMPORARILY
-        self.set_header('Location', uri)
-        self.write("<html><head><title>Redirected</title></head>"
-                   "<body>Your request has been redirected to "
-                   "<a href='"+uri+"'>"+uri+"</a>.</body></html>")
-        return apache.OK
-
-    def make_uri(self, base_uri, *args, **kwargs):
-        """Return a URI constructed from given base URI and args.
-
-        Arguments:
+        pass
         
-          base_uri -- base URI.  May be a relative path, such as '/xx/yy', absolute
-            URI, such as 'http://host.domain.com/xx/yy' or a mailto URI, such
-            as 'mailto:name@domain.com'.
 
-          *args -- pairs (NAME, VALUE) representing arguments appended to
-            'base_uri' in the order in which they appear.  The first positional
-            argument may also be a string representing an anchor name.  If
-            that's the case, the anchor is appended to 'base_uri' after a '#'
-            sign and the first argument is not considered to be a (NAME, VALUE)
-            pair.
-          
-          **kwargs -- keyword arguments representing additional arguments to
-            append to the URI.  Use 'kwargs' if you don't care about the order
-            of arguments in the returned URI, otherwise use 'args'.
+class Request(ServerInterface):
+    """Wiking HTTP request representation.
 
-        If any of 'args' or 'kwargs' VALUE is None, the argument is omitted.
-            
-        The URI and the arguments may be unicode strings.  All strings are
-        properly encoded in the returned URI.
-
-        """
-        if base_uri.startswith('mailto:'):
-            uri = base_uri
-        else:
-            match = self._ABS_URI_MATCHER.match(base_uri)
-            if match:
-                uri = match.group(1) + urllib.quote(match.group(3).encode(self._encoding))
-            else:
-                uri = urllib.quote(base_uri.encode(self._encoding))
-        if args and isinstance(args[0], basestring):
-            uri += '#'+ urllib.quote(unicode(args[0]).encode(self._encoding))
-            args = args[1:]
-        query = ';'.join([k +"="+ urllib.quote_plus(unicode(v).encode(self._encoding))
-                          for k, v in args + tuple(kwargs.items()) if v is not None])
-        if query:
-            uri += '?'+ query
-        return uri
-
-
-class WikingRequest(Request):
-    """Wiking application specific request object.
-
-    This class adds some features which are quite specific for the Wiking request handling
-    process.  See the Wiking Developer's Documentation for an overview.
+    This class relies on the methods defined by the 'ServerInterface'
+    class to access HTTP request data and additional implements methods
+    specific for the Wiking request handling process on top of the server
+    interface methods.  See the Wiking Developer's Documentation for an
+    overview.
     
     """
-    
+
     class ForwardInfo(object):
         """Request forwarding information.
 
@@ -471,42 +230,46 @@ class WikingRequest(Request):
     """Message type constant for messages to be put into document heading."""
     _MESSAGE_TYPES = (INFO, WARNING, ERROR, HEADING,)
 
-    def __init__(self, req, application, **kwargs):
-        super(WikingRequest, self).__init__(req, **kwargs)
-        self._application = application
-        self._forwards = []
-        self._messages = self._init_messages()
-        self._preferred_languages = self._init_preferred_languages()
-        self._module_uri = {}
-        self.unresolved_path = list(self.path)
+    _ABS_URI_MATCHER = re.compile(r'^((https?|ftp)://[^/]+)(.*)$')
 
-    def _init_params(self):
-        params = super(WikingRequest, self)._init_params()
-        if params.has_key('setlang'):
-            self._preferred_language = lang = str(params['setlang'])
-            del params['setlang']
-            self.set_cookie(self._LANG_COOKIE, lang)
-        else:
-            self._preferred_language = str(self.cookie(self._LANG_COOKIE))
-        if params.has_key('hide_panels'):
+    def __init__(self, encoding):
+        super(Request, self).__init__()
+        self._encoding = encoding
+        self._forwards = []
+        self._module_uri = {}
+        self._user = self._UNDEFINED
+        self._fresh_login = False
+        self._application = wiking.cfg.resolver.wiking_module('Application')
+        self._cookies = Cookie.SimpleCookie(self.header('Cookie'))
+        self._preferred_languages = self._init_preferred_languages()
+        self._credentials = self._init_credentials()
+        self._messages = self._init_messages()
+        if self.has_param('hide_panels'):
             self.set_cookie(self._PANELS_COOKIE, 'no')
             self._show_panels = False
-        elif params.has_key('show_panels'):
+        elif self.has_param('show_panels'):
             self.set_cookie(self._PANELS_COOKIE, 'yes')
             self._show_panels = True
         else:
             self._show_panels = self.cookie(self._PANELS_COOKIE) != 'no'
-        if params.has_key('__log_in'):
-            del params['__log_in']
+        self.path = [item for item in self.uri().split('/')[1:] if item]
+        if '..' in self.path:
+            # Prevent directory traversal attacs globally (no need to handle them all around).
+            raise wiking.Forbidden()
+        self.unresolved_path = list(self.path)
+
+    def _init_credentials(self):
+        if self.has_param('__log_in'):
+            self.set_param('__log_in', None)
             login, password = (None, None)
-            if params.has_key('login'):
-                login = params['login']
-                del params['login']
-            if params.has_key('password'):
-                password = params['password']
-                del params['password']
-            self._credentials = (login, password)
+            if self.has_param('login'):
+                login = self.param('login')
+                self.set_param('login', None)
+            if self.has_param('password'):
+                password = self.param('password')
+                self.set_param('password', None)
             self._fresh_login = True
+            credentials = (login, password)
         else:
             # Return HTTP Basic auth credentials if available
             auth_header = self.header('Authorization')
@@ -515,20 +278,47 @@ class WikingRequest(Request):
                 credentials = encoded_credentials.decode("base64").split(":")
             else:
                 credentials = None
-            self._credentials = credentials
-            self._fresh_login = False
-        self._user = self._UNDEFINED
-        return params
-
-    def fresh_login(self):
-        return self._fresh_login
-
-    def _init_path(self, uri):
-        path = super(Request, self)._init_path(uri)
-        if '..' in path:
-            # Prevent directory traversal attacs globally (no need to handle them all around).
-            raise Forbidden()
-        return path
+        return credentials
+        
+    def _init_preferred_languages(self):
+        accepted = []
+        if self.has_param('setlang'):
+            preferred = str(self.param('setlang'))
+            self.set_param('setlang', None)
+            self.set_cookie(self._LANG_COOKIE, preferred)
+        else:
+            preferred = self.cookie(self._LANG_COOKIE)
+            if preferred:
+                preferred = str(preferred)
+        for item in self.header('Accept-Language', '').lower().split(','):
+            if item:
+                x = item.split(';')
+                # For now we ignore the country part and recognize just the core languages.
+                lang = x[0].split('-')[0]
+                if lang == preferred and prefered is not None:
+                    preferred = None
+                    q = 2.0
+                elif len(x) == 1:
+                    q = 1.0
+                elif x[1].startswith('q='):
+                    try:
+                        q = float(x[1][2:])
+                    except ValueError:
+                        continue
+                else:
+                    continue
+                if lang not in [l for _q, l in accepted]:
+                    accepted.append((q, lang))
+        accepted.sort()
+        accepted.reverse()
+        languages = [lang for q, lang in accepted]
+        if preferred:
+            languages.insert(0, preferred)
+        default = wiking.cfg.default_language_by_domain.get(self.server_hostname(current=True),
+                                                            wiking.cfg.default_language)
+        if default and default not in languages:
+            languages.append(default)
+        return tuple(languages)
 
     def _init_messages(self):
         # Attempt to unpack the messages previously stored before request
@@ -537,7 +327,7 @@ class WikingRequest(Request):
         stored = self.cookie(self._MESSAGES_COOKIE)
         if stored:
             lines = stored.splitlines()
-            if lines[0] == self.server_uri(current=True) + self._req.unparsed_uri:
+            if lines[0] == self.server_uri(current=True) + self.unparsed_uri():
                 # Storing data on client side is always problematic.  In case of
                 # messages there is not much danger in it, but still it may
                 # allow interesting tricks.  Storing the messages in the
@@ -557,40 +347,134 @@ class WikingRequest(Request):
                 self.set_cookie(self._MESSAGES_COOKIE, None)
         return messages
 
-    def _init_preferred_languages(self):
-        accepted = []
-        preferred = self._preferred_language # The preferred language setting from cookie or param.
-        for item in self.header('Accept-Language', '').lower().split(','):
-            if item:
-                x = item.split(';')
-                # For now we ignore the country part and recognize just the core languages.
-                lang = x[0].split('-')[0]
-                if lang == preferred:
-                    preferred = None
-                    q = 2.0
-                elif len(x) == 1:
-                    q = 1.0
-                elif x[1].startswith('q='):
-                    try:
-                        q = float(x[1][2:])
-                    except ValueError:
-                        continue
-                else:
-                    continue
-                if lang not in [l for _q, l in accepted]:
-                    accepted.append((q, lang))
-        accepted.sort()
-        accepted.reverse()
-        languages = [lang for q, lang in accepted]
-        if preferred:
-            languages.insert(0, preferred)
-        default = cfg.default_language_by_domain.get(self.server_hostname(current=True),
-                                                     cfg.default_language)
-        if default and default not in languages:
-            languages.append(default)
-        return tuple(languages)
+    def cookie(self, name, default=None):
+        """Get the value of given cookie as unicode or return DEFAULT if cookie was not set."""
+        if self._cookies.has_key(name):
+            try:
+                return unicode(self._cookies[name].value, self._encoding)
+            except UnicodeDecodeError:
+                return default
+        else:
+            return default
+        
+    def set_cookie(self, name, value, expires=None, secure=False):
+        """Set given value as a cookie with given name.
+
+        Arguments:
+          name -- cookie name as a string.
+          value -- unicode value to store or None to remove the cookie.
+          expires -- cookie expiration time in seconds or None for unlimited cookie.
+          secure -- if True, the cookie will only be returned by the browser on secure connections.
+
+        """
+        if value is None:
+            if self._cookies.has_key(name):
+                del self._cookies[name]
+        else:
+            if isinstance(value, unicode):
+                value = value.encode(self._encoding)
+            self._cookies[name] = value
+        c = Cookie.SimpleCookie()
+        c[name] = value or ''
+        #c[name]['domain'] = self._req.connection.local_host
+        c[name]['path'] = '/'
+        if expires is not None:
+            c[name]['expires'] = expires
+        if secure:
+            c[name]['secure'] = True
+        cookie = c[name].OutputString()
+        self.set_header('Set-Cookie', cookie)
+
+    def server_uri(self, force_https=False, current=False):
+        """Return full server URI as a string.
+
+        Arguments:
+          force_https -- If True, the uri will point to an HTTPS address even if the current
+            request is not on HTTPS.  This may be useful for redirection of links or form
+            submissions to a secure channel.
+          current -- controls which server domain name to use.  Corrensponds to the same argument
+            of 'server_hostname()'.
+        
+        The URI in the form 'http://www.yourdomain.com' is constructed including port and scheme
+        specification.  If current request port corresponds to 'https_port' configuration option
+        (443 by default), the scheme is set to 'https'.  The port is also included in the uri if
+        it is not the current scheme's default port (80 or 443).
+
+        """
+        if force_https:
+            port = wiking.cfg.https_port
+        else:
+            port = self.port()
+        if port == wiking.cfg.https_port:
+            scheme = 'https'
+            default_port = 443
+        else:
+            scheme = 'http'
+            default_port = 80
+        result = scheme + '://'+ self.server_hostname(current=current)
+        if port != default_port:
+            result += ':'+ str(port)
+        return result
+
+    def done(self):
+        return self.DONE
+    
+    def result(self, data, content_type="text/html"):
+        if content_type in ("text/html", "application/xml", "text/css", "text/plain") \
+               and isinstance(data, unicode):
+            content_type += "; charset=%s" % self._encoding
+            data = data.encode(self._encoding)
+        self.send_http_header(content_type, len(data))
+        self.write(data)
+        return self.DONE
+
+    def serve_file(self, filename, content_type, lock=False):
+        """Send the contents of given file to the remote host.
+
+        Arguments:
+          filename -- full path to the file
+          content_type -- Content-Type header as a string
+          lock -- iff True, shared lock will be aquired on the file while it is served.
+
+        'wiking.NotFound' exception is raised if the file does not exist.
+
+        Important note: The file size is read in advance to determine the Content-Lenght header.
+        If the file is changed before it gets sent, the result may be incorrect.
+        
+        """
+        try:
+            info = os.stat(filename)
+        except OSError:
+            log(OPR, "File not found:", filename)
+            raise wiking.NotFound()
+        mtime = mx.DateTime.localtime(info.st_mtime)
+        since_header = self.header('If-Modified-Since')
+        if since_header:
+            since = mx.DateTime.ARPA.ParseDateTime(since_header)
+            if mtime == since:
+                self.set_status(self.HTTP_NOT_MODIFIED)
+                return self.DONE
+        self.set_header('Last-Modified', mx.DateTime.ARPA.str(mtime))
+        self.send_http_header(content_type, info.st_size)
+        f = file(filename)
+        if lock:
+            import fcntl
+            fcntl.lockf(f, fcntl.LOCK_SH)
+        try:
+            while True:
+                # Read the file in 0.5MB chunks.
+                data = f.read(524288)
+                if not data:
+                    break
+                self.write(data)
+        finally:
+            if lock:
+                fcntl.lockf(f, fcntl.LOCK_UN)
+            f.close()
+        return self.DONE
 
     def _redirect(self, uri, permanent=False):
+        """Implement the actual request redirection for the already completed absolute URI."""
         if self._messages:
             # Store the current list of interactive messages in browsers cookie
             # to allow loading the same messages within the redirected request.
@@ -605,13 +489,104 @@ class WikingRequest(Request):
             lines = [uri] + [type +':'+ urllib.quote(translate(message).encode(self._encoding))
                              for message, type  in self._messages]
             self.set_cookie(self._MESSAGES_COOKIE,  "\n".join(lines))
-        return super(WikingRequest, self)._redirect(uri, permanent=False)
+        self.send_http_header("text/html")
+        if permanent:
+            status = self.HTTP_MOVED_PERMANENTLY
+        else:
+            status = self.HTTP_MOVED_TEMPORARILY
+        self.set_status(status)
+        self.set_header('Location', uri)
+        self.write("<html><head><title>Redirected</title></head>"
+                   "<body>Your request has been redirected to "
+                   "<a href='"+uri+"'>"+uri+"</a>.</body></html>")
+        return self.DONE
+
+    def redirect(self, uri, args=(), permanent=False):
+        """Send an HTTP redirection response to the browser.
+
+        Arguments:
+          uri -- redirection target URI as a string.  May be relative to the
+            current request server address or absolute if it begins with
+            'http://' or 'https://'.  Relative URI is automatically prepended
+            by current server URI, since HTTP specification requires absolute
+            URIs.  The uri may not include any query arguments encoded within
+            it.  If needed, the arguments must be passed separately using the
+            'args' argument.
+          args -- URI arguments to be encoded to the final redirection URI.
+            The value may by a tuple of (NAME, VALUE) pairs or a dictionary.
+            All conditions defined by 'make_uri()' apply for uri argument
+            encoding.
+          permanent -- boolean flag indicatnig whether this is a permanent
+            (moved permanently) or temporary (moved temporarily) redirect
+            according to HTTP specification.
+
+        Calling this method directly from application code is deprecated.
+        Redirection should be now triggered by raising the `wiking.Redirect'
+        exception.
+            
+        """
+        if not (uri.startswith('http://') or uri.startswith('https://')):
+            if not uri.startswith('/'):
+                uri = '/' + uri
+            uri = self.server_uri(current=True) + uri
+        if isinstance(args, tuple):
+            uri = self.make_uri(uri, *args)
+        else:
+            uri = self.make_uri(uri, **args)
+        return self._redirect(uri, permanent=permanent)
+
+    def make_uri(self, base_uri, *args, **kwargs):
+        """Return a URI constructed from given base URI and args.
+
+        Arguments:
+        
+          base_uri -- base URI.  May be a relative path, such as '/xx/yy', absolute
+            URI, such as 'http://host.domain.com/xx/yy' or a mailto URI, such
+            as 'mailto:name@domain.com'.
+
+          *args -- pairs (NAME, VALUE) representing arguments appended to
+            'base_uri' in the order in which they appear.  The first positional
+            argument may also be a string representing an anchor name.  If
+            that's the case, the anchor is appended to 'base_uri' after a '#'
+            sign and the first argument is not considered to be a (NAME, VALUE)
+            pair.
+          
+          **kwargs -- keyword arguments representing additional arguments to
+            append to the URI.  Use 'kwargs' if you don't care about the order
+            of arguments in the returned URI, otherwise use 'args'.
+
+        If any of 'args' or 'kwargs' VALUE is None, the argument is omitted.
+            
+        The URI and the arguments may be unicode strings.  All strings are
+        properly encoded in the returned URI.
+
+        """
+        if base_uri.startswith('mailto:'):
+            uri = base_uri
+        else:
+            match = self._ABS_URI_MATCHER.match(base_uri)
+            if match:
+                uri = match.group(1) + urllib.quote(match.group(3).encode(self._encoding))
+            else:
+                uri = urllib.quote(base_uri.encode(self._encoding))
+        if args and isinstance(args[0], basestring):
+            uri += '#'+ urllib.quote(unicode(args[0]).encode(self._encoding))
+            args = args[1:]
+        query = ';'.join([k +"="+ urllib.quote_plus(unicode(v).encode(self._encoding))
+                          for k, v in args + tuple(kwargs.items()) if v is not None])
+        if query:
+            uri += '?'+ query
+        return uri
+
+
+    def fresh_login(self):
+        return self._fresh_login
 
     def forward(self, handler, **kwargs):
         """Pass the request on to another handler keeping track of the forwarding history.
 
         Arguments:
-          handler -- 'RequestHandler' instance to handle request.
+          handler -- 'wiking.RequestHandler' instance to handle request.
           kwargs -- all keyword arguments are passed to the 'ForwardInfo' instance created for
             this forward (later available in forward history using the method 'forwards()').
   
@@ -640,7 +615,7 @@ class WikingRequest(Request):
         return tuple(self._forwards)
 
     def uri_prefix(self):
-        """Deprecated."""
+        """Deprecated.  Now always returns an empty string."""
         return ''
         
     def show_panels(self):
@@ -677,7 +652,7 @@ class WikingRequest(Request):
             if lang in variants:
                 return lang
         if raise_error:
-            raise NotAcceptable(variants)
+            raise wiking.NotAcceptable(variants)
         else:
             return None
 
@@ -724,7 +699,7 @@ class WikingRequest(Request):
         if require and self._user is None:
             #if session_timed_out:
             #      raise AuthenticationError(_("Session expired. Please log in again."))
-            raise AuthenticationError()
+            raise wiking.AuthenticationError()
         return self._user
 
     def check_roles(self, *args):
@@ -769,17 +744,20 @@ class WikingRequest(Request):
 
         The argument 'modname' is the Wiking module name as a string.
         
-        If the module has no definite global path within the application, None may be returned.
+        If the module has no definite global path within the application, None
+        may be returned.
         
-        The URI is actually obtained from 'Application.module_uri()', but is cached at this level
-        for performance reasons.  The Application may often need to access the database to
-        determine the answer, so using this method instead of 'Application.module_uri()' is highly
-        recommended unless you have a special reason not to do so.
+        The URI is actually obtained from 'Application.module_uri()', but is
+        cached at this level for performance reasons.  The Application may
+        often need to access the database to determine the answer, so using
+        this method instead of 'Application.module_uri()' is highly recommended
+        unless you have a special reason not to do so.
 
-        Implementation note: Caching is done at the level of the request instance, since global
-        caching would not allow invalidation of cached items after mapping changes in the
-        multiprocess server invironment.  This method can be implemented using a global cache if
-        this limitation doesn't apply in another environment.
+        Implementation note: Caching is done at the level of the request
+        instance, since global caching would not allow invalidation of cached
+        items after mapping changes in the multiprocess server invironment.
+        This method can be implemented using a global cache if this limitation
+        doesn't apply in another environment.
         
         """
         try:
@@ -819,6 +797,10 @@ class WikingRequest(Request):
         else:
             messages = [m for m in self._messages if m[1] != self.HEADING]
         return tuple(messages)
+
+    
+# Just for backwards compatibility.
+WikingRequest = Request
 
 
 class User(object):
@@ -965,7 +947,7 @@ class Role(object):
 
     There are no strict rules on usage of user roles in an application.  The
     application can check assignments of roles to the user using
-    L{WikingRequest.check_roles} method.  Refer to documentation of particular
+    L{Request.check_roles} method.  Refer to documentation of particular
     modules using roles for interpretation of user roles in them.  See
     L{wiking.cms.Application.authorize} for standard handling of role based
     access rights in Wiking CMS applications.
@@ -1114,7 +1096,7 @@ class Roles(object):
 
     @classmethod
     def check(cls, req, roles):
-        """@deprecated: Use L{WikingRequest.check_roles} instead."""
+        """@deprecated: Use L{wiking.Request.check_roles} instead."""
         if cls.ANYONE in roles:
             return True
         user = req.user()

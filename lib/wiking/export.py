@@ -57,7 +57,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             super(Exporter.Context, self)._init_kwargs(**kwargs)
 
         def req(self):
-            """Return the current request as a 'WikingRequest' instance.
+            """Return the current request as a 'wiking.Request' instance.
 
             This method is the official Wiking extension of LCG export context.
 
@@ -90,9 +90,9 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
     }
     # Translators: Label for language selection followed by list of languages
     _LANGUAGE_SELECTION_LABEL = _("Language:")
-    _MESSAGE_TYPE_CLASS = {WikingRequest.INFO: 'info',
-                           WikingRequest.WARNING: 'warning',
-                           WikingRequest.ERROR: 'error'}
+    _MESSAGE_TYPE_CLASS = {Request.INFO: 'info',
+                           Request.WARNING: 'warning',
+                           Request.ERROR: 'error'}
     _UNSAFE_CHARS = re.compile(r"[^a-zA-Z0-9_-]")
 
     def _safe_css_id(self, id):
@@ -336,7 +336,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         messages = context.req().messages()
         if messages:
             g = self._generator
-            return g.div([g.div((type == WikingRequest.WARNING and _("Warning")+': 'or '') + \
+            return g.div([g.div((type == Request.WARNING and _("Warning")+': 'or '') + \
                                 g.escape(message),
                                 cls=self._MESSAGE_TYPE_CLASS[type])
                           for message, type in messages],

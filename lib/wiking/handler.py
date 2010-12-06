@@ -76,6 +76,7 @@ class Handler(object):
                     req.user()
                     return self._serve_document(req, result)
                 elif isinstance(result, int):
+                    # Deprecated! Just for backwards compatibility.  
                     return result
                 else:
                     content_type, data = result
@@ -116,127 +117,5 @@ class Handler(object):
                 return application.handle_exception(req, e)
             except RequestError, error:
                 return self._serve_minimal_error_document(req, error)
-
-
-class ModPythonHandler(object):
-    """The main Apache/mod_python handler interface.
-
-    This class implements a mod_python specific wrapper.  The actual processing of requests is
-    redirected to the 'Handler' instance, which does not depend on the web server environment.
-    
-    Mod_python instances are isolated by default, so Apache will create one instance of this class
-    for each virtual host.  Moreover, there will be a separate set of mod_python instances for each
-    web server instance.
-
-    """
-    def __init__(self):
-        self._application = None
-        self._handler = None
-        self._initialized = False
-
-    def _init(self, hostname, options, webmaster_address):
-        # The initialization is postponed until the first request, since we need the information
-        # from the request instance to initialize the configuration and the handler instance.
-        def split(value):
-            separator = value.find(':') != -1 and ':' or ','
-            return tuple([d.strip() for d in value.split(separator)])
-        # Read the configuration file first, so that the Apache options have a higher priority.
-        if options.has_key('config_file'):
-            cfg.user_config_file = options.pop('config_file')
-        for name, value in options.items():
-            if name == 'translation_path':
-                cfg.translation_path = tuple(cfg.translation_path) + split(value)
-            elif name == 'resource_path':
-                cfg.resource_path = split(value) + tuple(cfg.resource_path)
-            elif name == 'modules':
-                cfg.modules = split(value)
-            elif name == 'database':
-                cfg.dbname = value # For backwards compatibility...
-            elif hasattr(cfg, name):
-                option = cfg.option(name)
-                if isinstance(option, cfg.StringOption):
-                    setattr(cfg, name, value)
-                elif isinstance(option, cfg.NumericOption):
-                    if value.isdigit():
-                        setattr(cfg, name, value)
-                    else:
-                        log(OPR, "Invalid numeric value for '%s':" % name, value)
-                elif isinstance(option, cfg.BooleanOption):
-                    if value.lower() in ('yes', 'no', 'true', 'false', 'on', 'off'):
-                        setattr(cfg, name, value.lower() in ('yes', 'true', 'on'))
-                    else:
-                        log(OPR, "Invalid boolean value for '%s':" % name, value)
-                else:
-                    log(OPR, "Unable to set '%s' through Apache configuration. "
-                        "PythonOption ignored." % name)
-        domain = hostname
-        if domain.startswith('www.'):
-            domain = domain[4:]
-        if cfg.webmaster_address is None:
-            if webmaster_address is None or webmaster_address == '[no address given]':
-                webmaster_address = 'webmaster@' + domain
-            cfg.webmaster_address = webmaster_address
-        if cfg.default_sender_address is None:
-            cfg.default_sender_address = 'wiking@' + domain
-        if cfg.dbname is None:
-           cfg.dbname = hostname
-        if cfg.resolver is None:
-            cfg.resolver = WikingResolver()
-        # Modify pytis configuration.
-        import config
-        config.dblisten = False
-        config.log_exclude = [pytis.util.ACTION, pytis.util.EVENT, pytis.util.DEBUG]
-        for option in ('dbname', 'dbhost', 'dbport', 'dbuser', 'dbpass', 'dbsslm', 'dbschemas',):
-            setattr(config, option, getattr(cfg, option))
-        config.dbconnections = cfg.connections
-        config.dbconnection = config.option('dbconnection').default()
-        del config
-        self._application = cfg.resolver.wiking_module('Application')
-        self._handler = Handler(hostname)
-        self._initialized = True
-        
-    def __call__(self, request):
-        if not self._initialized:
-            opt = request.get_options()
-            self._init(request.server.server_hostname,
-                       dict([(o, opt[o]) for o in opt.keys()]),
-                       request.server.server_admin)
-        req = WikingRequest(request, self._application)
-        if False: #not req.uri().startswith('/_'):
-            import cProfile as profile, pstats, tempfile
-            self._profile_req = req
-            tmpfile = tempfile.NamedTemporaryFile().name
-            profile.run('from wiking.handler import handler as h; '
-                        'h._profile_result = h._handler.handle(h._profile_req)',
-                        tmpfile)
-            try:
-                stats = pstats.Stats(tmpfile)
-                stats.strip_dirs()
-                stats.sort_stats('cumulative')
-                debug("Profile statistics for %s:" % req.uri())
-                stats.stream = sys.stderr
-                sys.stderr.write('   ')
-                stats.print_stats()
-                sys.stderr.flush()
-            finally:
-                os.remove(tmpfile)
-            return self._profile_result
-        else:
-            return self._handler.handle(req)
-            #result, t1, t2 = timeit(self._handler.handle, req)
-            #log(OPR, "Request processed in %.1f ms (%.1f ms wall time):" % \
-            #    (1000*t1, 1000*t2), req.uri())
-            #return result
-
-handler = ModPythonHandler()
-"""The instance is callable so this makes it work as a mod_python handler."""
-
-# def authenhandler(req):
-#      pw = req.get_basic_auth_pw()
-#      user = req.user
-#      u = authStore.fetch_object(session, user)
-#      if (u and u.password == crypt.crypt(pw, pw[:2])):
-#          return apache.OK
-#      else:
-#          return apache.HTTP_UNAUTHORIZED
+            
 

@@ -122,7 +122,7 @@ class Application(CookieAuthentication, wiking.Application):
          conflicts with user defined URIs (identifiers) of CMS pages (which are
          dynamic from this perspective — the user may change them).
 
-         Examples (calling through 'WikingRequest.module_uri()'):
+         Examples (calling through 'wiking.Request.module_uri()'):
 
            req.module_uri('Documentation')
 

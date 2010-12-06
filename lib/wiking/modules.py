@@ -70,7 +70,7 @@ class RequestHandler(object):
 
         The URI is the full path to the module relative to server root.  If the module has no
         definite global path within the application, None is returned.  This method is actually
-        just a shortcut to 'WikingRequest.module_uri()'.  See its documentation for more details.
+        just a shortcut to 'wiking.Request.module_uri()'.  See its documentation for more details.
 
         """
         return req.module_uri(self.name())
@@ -142,7 +142,7 @@ class ActionHandler(RequestHandler):
     The actions are handled by implementing public methods named `action_*',
     where the asterisk is replaced by the action name.  The request parameter
     'action' denotes which action will be used to handle the request.  Each
-    action must accept the 'WikingRequest' instance as the first argument, but
+    action must accept the 'wiking.Request' instance as the first argument, but
     it may also require additional arguments.  The dictionary of additional
     arguments is constructed by the method '_action_args()' depending on the
     request.  When the request doesn't provide the information needed to

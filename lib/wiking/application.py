@@ -132,7 +132,7 @@ class Application(Module):
         item for the same module (which is also legal).
 
         This method should not be called directly by application code.  Use
-        'WikingRequest.module_uri()' instead (which calls this method internally if necessary).
+        'wiking.Request.module_uri()' instead (which calls this method internally if necessary).
         
         """
         identitier = self._reverse_mapping.get(modname)
