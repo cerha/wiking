@@ -147,7 +147,7 @@ class ModPythonHandler(object):
     of requests is redirected to the 'wiking.Handler' instance, which does not
     depend on the web server environment.
 
-    The instance of this class is created below to serve as mod_python entry
+    An instance of this class is created below to serve as mod_python entry
     point.  The instance is callable and will be called to serve the request.
     
     Mod_python instances are isolated by default, so Apache will create one
@@ -158,96 +158,16 @@ class ModPythonHandler(object):
     def __init__(self):
         self._handler = None
 
-    def _init(self, server_hostname, options, webmaster_address):
-        # The initialization is postponed until the first request, since we need the information
-        # from the request instance to initialize the configuration and the handler instance.
-        def split(value):
-            separator = value.find(':') != -1 and ':' or ','
-            return tuple([d.strip() for d in value.split(separator)])
-        cfg = wiking.cfg
-        # Read the configuration file first, so that the Apache options have a higher priority.
-        if options.has_key('config_file'):
-            cfg.user_config_file = options.pop('config_file')
-        for name, value in options.items():
-            if name == 'translation_path':
-                cfg.translation_path = tuple(cfg.translation_path) + split(value)
-            elif name == 'resource_path':
-                cfg.resource_path = split(value) + tuple(cfg.resource_path)
-            elif name == 'modules':
-                cfg.modules = split(value)
-            elif name == 'database':
-                cfg.dbname = value # For backwards compatibility...
-            elif hasattr(cfg, name):
-                option = cfg.option(name)
-                if isinstance(option, cfg.StringOption):
-                    setattr(cfg, name, value)
-                elif isinstance(option, cfg.NumericOption):
-                    if value.isdigit():
-                        setattr(cfg, name, value)
-                    else:
-                        log(OPR, "Invalid numeric value for '%s':" % name, value)
-                elif isinstance(option, cfg.BooleanOption):
-                    if value.lower() in ('yes', 'no', 'true', 'false', 'on', 'off'):
-                        setattr(cfg, name, value.lower() in ('yes', 'true', 'on'))
-                    else:
-                        log(OPR, "Invalid boolean value for '%s':" % name, value)
-                else:
-                    log(OPR, "Unable to set '%s' through Apache configuration. "
-                        "PythonOption ignored." % name)
-        domain = server_hostname
-        if domain.startswith('www.'):
-            domain = domain[4:]
-        if cfg.webmaster_address is None:
-            if webmaster_address is None or webmaster_address == '[no address given]':
-                webmaster_address = 'webmaster@' + domain
-            cfg.webmaster_address = webmaster_address
-        if cfg.default_sender_address is None:
-            cfg.default_sender_address = 'wiking@' + domain
-        if cfg.dbname is None:
-           cfg.dbname = server_hostname
-        if cfg.resolver is None:
-            cfg.resolver = wiking.WikingResolver()
-        # Modify pytis configuration.
-        import config
-        config.dblisten = False
-        config.log_exclude = [pytis.util.ACTION, pytis.util.EVENT, pytis.util.DEBUG]
-        for option in ('dbname', 'dbhost', 'dbport', 'dbuser', 'dbpass', 'dbsslm', 'dbschemas',):
-            setattr(config, option, getattr(cfg, option))
-        config.dbconnections = cfg.connections
-        config.dbconnection = config.option('dbconnection').default()
-        del config
-        self._handler = wiking.Handler(server_hostname)
-        
     def __call__(self, request):
         if self._handler is None:
+            # The initialization is postponed until the first request, since we
+            # need the information from the request instance to initialize the the
+            # handler instance.
             opt = request.get_options()
-            self._init(request.server.server_hostname,
-                       dict([(o, opt[o]) for o in opt.keys()]),
-                       request.server.server_admin)
-        req = ModPythonRequest(request)
-        if False: #not req.uri().startswith('/_'):
-            import cProfile as profile, pstats, tempfile
-            self._profile_req = req
-            tmpfile = tempfile.NamedTemporaryFile().name
-            profile.run('from wiking.mod_python_interface import handler as h; '
-                        'h._profile_result = h._handler.handle(h._profile_req)',
-                        tmpfile)
-            try:
-                stats = pstats.Stats(tmpfile)
-                stats.strip_dirs()
-                stats.sort_stats('cumulative')
-                debug("Profile statistics for %s:" % req.uri())
-                stats.stream = sys.stderr
-                sys.stderr.write('   ')
-                stats.print_stats()
-                sys.stderr.flush()
-            finally:
-                os.remove(tmpfile)
-        else:
-            self._handler.handle(req)
-            #result, t1, t2 = wiking.timeit(self._handler.handle, req)
-            #log(OPR, "Request processed in %.1f ms (%.1f ms wall time):" % \
-            #    (1000*t1, 1000*t2), req.uri())
+            self._handler = wiking.Handler(request.server.server_hostname,
+                                           request.server.server_admin,
+                                           dict([(o, opt[o]) for o in opt.keys()]))
+        self._handler.handle(ModPythonRequest(request))
         return mod_python.apache.OK
 
 handler = ModPythonHandler()
