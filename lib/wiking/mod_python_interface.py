@@ -243,13 +243,12 @@ class ModPythonHandler(object):
                 sys.stderr.flush()
             finally:
                 os.remove(tmpfile)
-            return self._profile_result
         else:
-            return self._handler.handle(req)
+            self._handler.handle(req)
             #result, t1, t2 = wiking.timeit(self._handler.handle, req)
             #log(OPR, "Request processed in %.1f ms (%.1f ms wall time):" % \
             #    (1000*t1, 1000*t2), req.uri())
-            #return result
+        return mod_python.apache.OK
 
 handler = ModPythonHandler()
 """The callable object expected to exist by mod_python (entry point)."""

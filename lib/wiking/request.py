@@ -52,7 +52,6 @@ class ServerInterface(pytis.web.Request):
     HTTP_MOVED_PERMANENTLY = 301
     HTTP_MOVED_TEMPORARILY = 302
     HTTP_NOT_MODIFIED      = 304
-    DONE = 0
 
     def uri(self):
         """Return the relative request URI.
@@ -417,16 +416,16 @@ class Request(ServerInterface):
         return result
 
     def done(self):
-        return self.DONE
+        """Deprecated.  Raise 'wiking.Done' exception instead."""
+        return None
     
     def result(self, data, content_type="text/html"):
         if content_type in ("text/html", "application/xml", "text/css", "text/plain") \
-               and isinstance(data, unicode):
+                and isinstance(data, unicode):
             content_type += "; charset=%s" % self._encoding
             data = data.encode(self._encoding)
         self.send_http_header(content_type, len(data))
         self.write(data)
-        return self.DONE
 
     def serve_file(self, filename, content_type, lock=False):
         """Send the contents of given file to the remote host.
@@ -453,7 +452,7 @@ class Request(ServerInterface):
             since = mx.DateTime.ARPA.ParseDateTime(since_header)
             if mtime == since:
                 self.set_status(self.HTTP_NOT_MODIFIED)
-                return self.DONE
+                return
         self.set_header('Last-Modified', mx.DateTime.ARPA.str(mtime))
         self.send_http_header(content_type, info.st_size)
         f = file(filename)
@@ -471,7 +470,6 @@ class Request(ServerInterface):
             if lock:
                 fcntl.lockf(f, fcntl.LOCK_UN)
             f.close()
-        return self.DONE
 
     def _redirect(self, uri, permanent=False):
         """Implement the actual request redirection for the already completed absolute URI."""
@@ -499,7 +497,6 @@ class Request(ServerInterface):
         self.write("<html><head><title>Redirected</title></head>"
                    "<body>Your request has been redirected to "
                    "<a href='"+uri+"'>"+uri+"</a>.</body></html>")
-        return self.DONE
 
     def redirect(self, uri, args=(), permanent=False):
         """Send an HTTP redirection response to the browser.
@@ -533,7 +530,7 @@ class Request(ServerInterface):
             uri = self.make_uri(uri, *args)
         else:
             uri = self.make_uri(uri, **args)
-        return self._redirect(uri, permanent=permanent)
+        self._redirect(uri, permanent=permanent)
 
     def make_uri(self, base_uri, *args, **kwargs):
         """Return a URI constructed from given base URI and args.

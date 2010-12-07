@@ -39,14 +39,14 @@ class Handler(object):
         node = document.build(req, self._application)
         context = self._exporter.context(node, node.lang(), sec_lang=node.sec_lang(), req=req)
         exported = self._exporter.export(context)
-        return req.result(context.translate(exported))
+        req.result(context.translate(exported))
 
     def _serve_error_document(self, req, error):
         """Serve an error page using the Wiking exporter."""
         error.log(req)
         error.set_status(req)
         document = Document(error.title(req), error.message(req))
-        return self._serve_document(req, document)
+        self._serve_document(req, document)
 
     def _serve_minimal_error_document(self, req, error):
         """Serve a minimal error page using the minimalistic exporter."""
@@ -63,7 +63,7 @@ class Handler(object):
                                                       cfg.default_language) or 'en'
         context = exporter.context(node, lang=lang)
         exported = exporter.export(context)
-        return req.result(context.translate(exported))
+        req.result(context.translate(exported))
 
     def handle(self, req):
         application = self._application
@@ -74,13 +74,13 @@ class Handler(object):
                     # Always perform authentication (if it was not performed before) to handle
                     # authentication exceptions here and prevent them in export time.
                     req.user()
-                    return self._serve_document(req, result)
-                elif isinstance(result, int):
-                    # Deprecated! Just for backwards compatibility.  
-                    return result
-                else:
+                    self._serve_document(req, result)
+                elif isinstance(result, (tuple, list)):
                     content_type, data = result
-                    return req.result(data, content_type=content_type)
+                    req.result(data, content_type=content_type)
+                else:
+                    # int is deprecated! Just for backwards compatibility.  
+                    assert result is None or isinstance(result, int)
             except RequestError, error:
                 try:
                     req.user()
@@ -88,14 +88,10 @@ class Handler(object):
                     # Ignore all errors within authentication except for AuthenticationError.
                     pass
                 except AuthenticationError, auth_error:
-                    return self._serve_error_document(req, auth_error)
-                return self._serve_error_document(req, error)
-            except ClosedConnection:
-                return req.done()
-            except Done:
-                return req.done()
-            except Redirect, r:
-                return req.redirect(r.uri(), args=r.args(), permanent=r.permanent())
+                    self._serve_error_document(req, auth_error)
+                self._serve_error_document(req, error)
+            except (ClosedConnection, Done, Redirect):
+                raise
             except Exception, e:
                 # Try to return a nice error document produced by the exporter.
                 try:
@@ -103,19 +99,19 @@ class Handler(object):
                 except RequestError, error:
                     return self._serve_error_document(req, error)
         except ClosedConnection:
-            return req.done()
+            pass
         except Done:
-            return req.done()
+            pass
         except Redirect, r:
-            return req.redirect(r.uri(), args=r.args(), permanent=r.permanent())
+            req.redirect(r.uri(), args=r.args(), permanent=r.permanent())
         except Exception, e:
             # If error document export fails, return a minimal error page.  It is reasonable to
             # assume, that if RequestError handling fails, somethong is wrong with the exporter and
             # error document export will fail too, so it is ok, to have them handled both at the
             # same level above.
             try:
-                return application.handle_exception(req, e)
+                application.handle_exception(req, e)
             except RequestError, error:
-                return self._serve_minimal_error_document(req, error)
+                self._serve_minimal_error_document(req, error)
             
 
