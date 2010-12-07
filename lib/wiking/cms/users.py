@@ -44,9 +44,9 @@ _ = lcg.TranslatableTextFactory('wiking-cms')
 class RoleSets(UserManagementModule):
     """Accessor of role containment information stored in the database.
 
-    Roles can contain other roles.  Such roles serve as shorthands for typical
-    combinations of other roles, those may be any L{Role} instances, including
-    L{Role} subclasses.
+    Roles can contain other roles.  Those may be any L{Role} instances,
+    including L{Role} subclasses.  Semantic interpretation of the contained
+    roles is undefined here, it's completely up to the application.
 
     @invariant: There may be no cycles in role containment, i.e. no role may
       contain itself, including transitive relations.  For instance, group role
