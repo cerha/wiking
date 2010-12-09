@@ -489,16 +489,17 @@ class Request(ServerInterface):
             lines = [uri] + [type +':'+ urllib.quote(translate(message).encode(self._encoding))
                              for message, type  in self._messages]
             self.set_cookie(self._MESSAGES_COOKIE,  "\n".join(lines))
-        self.send_http_header("text/html")
+        html = ("<html><head><title>Redirected</title></head>"
+                "<body>Your request has been redirected to "
+                "<a href='"+uri+"'>"+uri+"</a>.</body></html>").encode(self._encoding)
         if permanent:
             status = self.HTTP_MOVED_PERMANENTLY
         else:
             status = self.HTTP_MOVED_TEMPORARILY
         self.set_status(status)
         self.set_header('Location', uri)
-        self.write("<html><head><title>Redirected</title></head>"
-                   "<body>Your request has been redirected to "
-                   "<a href='"+uri+"'>"+uri+"</a>.</body></html>")
+        self.send_http_header("text/html")
+        self.write(html)
 
     def redirect(self, uri, args=(), permanent=False):
         """Send an HTTP redirection response to the browser.
