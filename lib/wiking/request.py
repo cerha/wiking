@@ -481,7 +481,7 @@ class Request(ServerInterface):
             # Store them together with the target URI to recognize for which
             # request they should be loaded.  Of course, this will not work,
             # when the redirection target is outside the current wiking host.
-            translate = translator(self.preferred_language()).translate
+            translate = wiking.translator(self.preferred_language()).translate
             # Translate the messages before quoting, since the resulting strings
             # wil not be translatable enymore.  We make the assumption, that the
             # redirected request's locale will be the same as for this request,
