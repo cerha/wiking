@@ -129,6 +129,9 @@ class ModPythonRequest(wiking.Request):
         except IOError, e:
             raise wiking.ClosedConnection(str(e))
         
+    def option(self, name, default=None):
+        return self._options.get(name, default)
+    
     def certificate(self):
         if self._req.ssl_var_lookup('SSL_CLIENT_VERIFY') == 'SUCCESS':
             certificate = self._req.ssl_var_lookup('SSL_CLIENT_CERT')
@@ -136,8 +139,6 @@ class ModPythonRequest(wiking.Request):
             certificate = None
         return certificate
 
-    def option(self, name, default=None):
-        return self._options.get(name, default)
 
 
 class ModPythonHandler(object):

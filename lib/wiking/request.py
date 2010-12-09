@@ -152,6 +152,9 @@ class ServerInterface(pytis.web.Request):
         """
         pass
         
+    def option(self, name, default=None):
+        pass
+
 
 class Request(ServerInterface):
     """Wiking HTTP request representation.
