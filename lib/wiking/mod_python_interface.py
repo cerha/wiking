@@ -16,13 +16,13 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 import sys, re, os
-import wiking, pytis
+import wiking
 from wiking import debug, log, OPR
 
 import mod_python, mod_python.util, mod_python.apache
 
 class ModPythonFileUpload(wiking.FileUpload):
-    """Mod_python specific implementation of pytis FileUpload interface."""
+    """Mod_python specific implementation of the FileUpload interface."""
     def __init__(self, field, encoding):
         self._field = field
         self._filename = re.split(r'[\\/:]', unicode(field.filename, encoding))[-1]
