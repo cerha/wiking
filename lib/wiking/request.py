@@ -54,19 +54,25 @@ class ServerInterface(pytis.web.Request):
     HTTP_NOT_MODIFIED      = 304
 
     def uri(self):
-        """Return the relative request URI.
+        """Return request URI path relative to server's root.
 
-        The returned URI is a string, which normally starts with a slash and
-        continues with
+        The returned URI is a unicode value, which normally starts with a slash
+        and continues with an arbitrary numper of path elements separated by
+        slashes.  Transfer encoding and HTTP escapes are decoded.
         
         """
         pass
 
     def unparsed_uri(self):
+        """Return URI path including any request parameters (query string).
+
+        Transfer encoding and HTTP escapes are not decoded.
+        
+        """
         pass
 
     def param(self, name, default=None):
-        """Return the value of request parameter `name'.
+        """Return the value of request parameter 'name' or 'default' if not present.
 
         The returned value is a unicode string (with HTTP escapes decoded) for
         ordinary parameters, a 'FileUpload' instance for uploaded multipart
@@ -77,22 +83,15 @@ class ServerInterface(pytis.web.Request):
         pass
         
     def params(self):
-        """"""
+        """Return the names of all request parameters."""
         pass
 
     def has_param(self, name):
-        """Return true if the parameter 'name' was sent with the request.
-        
-        Parameters can originate from URL encoded parameters (e.g.
-        in http://host.com/app.py?param=value, `param' is a parameter name
-        and `value' its value), or from the HTML form data submitted in the
-        body of the request. FIXME which takes precedence when both present?
-        
-        """
+        """Return true if the parameter 'name' was sent with the request."""
         pass
 
     def set_param(self, name, value):
-        """Set given request parameter value.
+        """Set the value of given request parameter as if it was passed.
 
         Arguments:
           name -- parameter name as a string.
@@ -102,19 +101,19 @@ class ServerInterface(pytis.web.Request):
         pass
 
     def header(self, name, default=None):
-        """"""
+        """Return the value of given (incomming) request HTTP header or 'default' if unset."""
         pass
 
     def set_header(self, name, value):
-        """Set the value of HTTP (outgoing) response header."""
+        """Set the value of given (outgoing) response HTTP header."""
         pass
 
     def port(self):
-        """"""
+        """Return the current connection server port id as int."""
         pass
         
     def https(self):
-        """Return true if https is on."""
+        """Return True if the current connection is secured by HTTPS."""
         pass
 
     def remote_host(self):
