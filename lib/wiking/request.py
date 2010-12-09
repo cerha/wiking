@@ -141,7 +141,7 @@ class ServerInterface(pytis.web.Request):
     def set_status(self, status):
         pass
 
-    def send_http_header(self, content_type, lenght=None):
+    def send_http_header(self, content_type, length=None):
         pass
 
     def write(self, data):

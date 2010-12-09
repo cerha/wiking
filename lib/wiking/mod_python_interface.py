@@ -114,10 +114,10 @@ class ModPythonRequest(wiking.Request):
     def set_status(self, status):
         self._req.status = status
 
-    def send_http_header(self, content_type, lenght=None):
+    def send_http_header(self, content_type, length=None):
         self._req.content_type = content_type
-        if lenght is not None:
-            self._req.set_content_length(lenght)
+        if length is not None:
+            self._req.set_content_length(length)
         try:
             self._req.send_http_header()
         except IOError, e:
