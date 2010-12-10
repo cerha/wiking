@@ -66,7 +66,7 @@ class ModPythonRequest(wiking.Request):
         return self._uri
     
     def unparsed_uri(self):
-        self._req.unparsed_uri
+        return self._req.unparsed_uri
         
     def param(self, name, default=None):
         return self._params.get(name, default)
