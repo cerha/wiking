@@ -108,6 +108,7 @@ a:link:hover, a:visited:hover { color: $color.link-hover; }
 #menu li {
     display: inline;
     white-space: nowrap;
+    margin-right: 0.3em;
 }
 #menu a.navigation-link {
     border: solid $color.top-border 1px;

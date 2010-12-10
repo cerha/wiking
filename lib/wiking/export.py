@@ -224,7 +224,8 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
                  if not item.hidden()]
         if links:
             title = g.link(_("Main navigation")+':', None, name='main-navigation', hotkey="3")
-            return g.map((g.h(title, 3), g.list(links)),
+            style = "width: %d%%" % (100/len(links))
+            return g.map((g.h(title, 3), g.ul(*[g.li(l, style=style) for l in links])),
                          id='menu-map', name='menu-map', title=_("Main navigation"))
         else:
             return None
