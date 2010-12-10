@@ -197,3 +197,13 @@ class Handler(object):
             #log(OPR, "Request processed in %.1f ms (%.1f ms wall time):" % (1000*t1, 1000*t2), req.uri())
             self._handle(req)
             
+try:
+    # Only for backwards compatibility with older Apache/mod_python
+    # configurations which relied on the entry point to be located in this
+    # module (which is no longer specific to mod_python).  If
+    # mod_python_interface faild to import, we are not running under
+    # mod_python.
+    import mod_python_interface
+    handler = mod_python_interface.ModPythonHandler()
+except:
+    pass
