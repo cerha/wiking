@@ -726,6 +726,7 @@ class Panels(ContentManagementModule, Publishable):
             # Translators: Stylesheet is a computer term (CSS), make sure you use the usual
             # translation.
             Field('identifier', _("Identifier"), width=30,
+                  type=pd.RegexString(maxlen=32, not_null=False, regex='^[a-zA-Z][0-9a-zA-Z_-]*$'),
                   descr=_("Assign an optional unique panel identifier if you need to refer "
                           "to this panel in the stylesheet.")),
             # Translators: Order in the meaning of sequence. A noun, not verb.
