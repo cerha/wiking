@@ -314,9 +314,12 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
                     img = g.img(context.uri(icon), align='right', alt=channel_title)
                     link = g.link(img, channel, title=channel_title, type='application/rss+xml')
                     title = link +' '+ title
+            cls = 'panel'
+            if panel.id() == 'login' and context.req().user():
+                cls += ' logged'
             result.append(g.div((g.h(title, 3),
                                  g.div(content.export(context), cls='panel-content')),
-                                id='panel-'+self._safe_css_id(panel.id()), cls='panel',
+                                id='panel-'+self._safe_css_id(panel.id()), cls=cls,
                                 title=panel.accessible_title()))
         result.append(g.br())
         return result
