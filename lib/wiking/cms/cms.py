@@ -722,13 +722,12 @@ class Panels(ContentManagementModule, Publishable):
             Field('lang', _("Language"), codebook='Languages', editable=ONCE,
                   selection_type=CHOICE, value_column='lang'),
             # Translators: Title in the meaning of a heading
-            Field('ptitle', _("Title"), width=30,
-                  descr=_(u"Panel title – you may leave the field blank to "
-                          "use the menu title of the selected module.")),
-            Field('mtitle'),
-            Field('title', _("Title"), virtual=True, width=30, 
-                  computer=computer(lambda r, ptitle, mtitle, modname:
-                                    ptitle or mtitle or _modtitle(modname))),
+            Field('title', _("Title"), width=30, not_null=True),
+            # Translators: Stylesheet is a computer term (CSS), make sure you use the usual
+            # translation.
+            Field('identifier', _("Identifier"), width=30,
+                  descr=_("Assign an optional unique panel identifier if you need to refer "
+                          "to this panel in the stylesheet.")),
             # Translators: Order in the meaning of sequence. A noun, not verb.
             Field('ord', _("Order"), width=5,
                   descr=_("Number denoting the order of the panel on the page.")),
@@ -736,7 +735,6 @@ class Panels(ContentManagementModule, Publishable):
             Field('mapping_id', _("List items"), width=5, not_null=False, codebook='Mapping',
                   descr=_("The items of the extension module used by the selected page will be "
                           "shown by the panel.  Leave blank for a text content panel.")),
-            Field('identifier', editable=NEVER),
             Field('modname'),
             Field('read_role_id'),
             # Translators: Computer term for a part of application.
@@ -757,8 +755,8 @@ class Panels(ContentManagementModule, Publishable):
                   ),
             )
         sorting = (('ord', ASC),)
-        columns = ('title', 'ord', 'modtitle', 'size', 'published', 'content')
-        layout = ('ptitle', 'ord', 'mapping_id', 'size', 'content', 'published')
+        columns = ('title', 'identifier', 'ord', 'modtitle', 'size', 'published', 'content')
+        layout = ('title', 'identifier', 'ord', 'mapping_id', 'size', 'content', 'published')
     _LIST_BY_LANGUAGE = True
 
     def panels(self, req, lang):
@@ -771,8 +769,7 @@ class Panels(ContentManagementModule, Publishable):
             if role_id is not None and not req.check_roles(roles[role_id]):
                 continue
             panel_id = row['identifier'].value() or str(row['panel_id'].value())
-            title = row['ptitle'].value() or row['mtitle'].value() or \
-                    _modtitle(row['modname'].value())
+            title = row['title'].value()
             content = ()
             channel = None
             modname = row['modname'].value()

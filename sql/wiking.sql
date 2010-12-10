@@ -352,28 +352,29 @@ create table planner (
 create table _panels (
 	panel_id serial primary key,
 	lang char(2) not null references languages(lang) on update cascade,
-	ptitle text,
+	identifier varchar(32) UNIQUE,
+	title text not null,
 	ord int,
 	mapping_id integer references _mapping on delete set null,
 	size int,
 	content text,
 	_content text,
 	published boolean not null default false
+	UNIQUE (identifier, lang)
 );
 
 create or replace view panels as
-select _panels.*, _mapping.modname, _mapping.identifier, _mapping.read_role_id,
-       _pages.title as mtitle
+select _panels.*, _mapping.modname, _mapping.read_role_id
 from _panels
      left outer join _mapping using (mapping_id)
      left outer join _pages using (mapping_id, lang);
 
 create or replace rule panels_insert as
   on insert to panels do instead (
-     insert into _panels 
-        (lang, ptitle, ord, mapping_id, size, content, _content, published)
+     insert into _panels
+        (lang, identifier, title, ord, mapping_id, size, content, _content, published)
      VALUES
-        (new.lang, new.ptitle, new.ord, new.mapping_id, new.size, 
+        (new.lang, new.identifier, new.title, new.ord, new.mapping_id, new.size,
 	 new.content, new._content, new.published)
 );
 
@@ -381,7 +382,8 @@ create or replace rule panels_update as
   on UPDATE to panels do instead (
     UPDATE _panels SET
 	lang = new.lang,
-	ptitle = new.ptitle,
+	identifier = new.identifier,
+	title = new.title,
 	ord = new.ord,
 	mapping_id = new.mapping_id,
 	size = new.size,
