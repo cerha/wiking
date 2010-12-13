@@ -304,7 +304,8 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             content = panel.content()
             # Add a fake container to force the heading level start at 4.
             container = lcg.Container(lcg.Section('', lcg.Section('', content)))
-            title = g.link(panel.title(), None, name='panel-'+panel.id()+'-anchor', tabindex=0)
+            title = g.a(panel.title(), name='panel-'+panel.id()+'-anchor', tabindex=0,
+                        cls='panel-anchor')
             channel = panel.channel()
             if channel:
                 icon = context.node().resource('feed-icon-small.png')
@@ -312,7 +313,8 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
                     # Translators: ``RSS channel'' is terminology idiom, see Wikipedia
                     channel_title = panel.title() +' ('+ _("RSS channel") +')'
                     img = g.img(context.uri(icon), align='right', alt=channel_title)
-                    link = g.link(img, channel, title=channel_title, type='application/rss+xml')
+                    link = g.a(img, href=channel, title=channel_title, type='application/rss+xml',
+                               cls='feed-icon-link')
                     title = link +' '+ title
             cls = 'panel'
             if panel.id() == 'login' and context.req().user():
