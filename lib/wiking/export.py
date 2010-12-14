@@ -225,7 +225,10 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         if links:
             title = g.link(_("Main navigation")+':', None, name='main-navigation', hotkey="3")
             style = "width: %d%%" % (100/len(links))
-            return g.map((g.h(title, 3), g.ul(*[g.li(l, style=style) for l in links])),
+            last_style = "width: %d%%" % (100 - (100 / len(links) * (len(links)-1)))
+            last = links[-1]
+            return g.map((g.h(title, 3), g.ul(*[g.li(l, style=(l==last and last_style or style))
+                                                for l in links])),
                          id='menu-map', name='menu-map', title=_("Main navigation"))
         else:
             return None
