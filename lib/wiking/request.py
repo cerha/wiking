@@ -328,7 +328,8 @@ class Request(ServerInterface):
         stored = self.cookie(self._MESSAGES_COOKIE)
         if stored:
             lines = stored.splitlines()
-            if lines[0] == self.server_uri(current=True) + self.unparsed_uri():
+            uri = urllib.unquote(lines[0]).decode(self._encoding)
+            if uri == self.server_uri(current=True) + self.unparsed_uri():
                 # Storing data on client side is always problematic.  In case of
                 # messages there is not much danger in it, but still it may
                 # allow interesting tricks.  Storing the messages in the
@@ -486,8 +487,9 @@ class Request(ServerInterface):
             # wil not be translatable enymore.  We make the assumption, that the
             # redirected request's locale will be the same as for this request,
             # but that seems quite appropriate assumption.
-            lines = [uri] + [type +':'+ urllib.quote(translate(message).encode(self._encoding))
-                             for message, type  in self._messages]
+            lines = [urllib.quote(uri.encode(self._encoding))] + \
+                [type +':'+ urllib.quote(translate(message).encode(self._encoding))
+                 for message, type  in self._messages]
             self.set_cookie(self._MESSAGES_COOKIE,  "\n".join(lines))
         html = ("<html><head><title>Redirected</title></head>"
                 "<body>Your request has been redirected to "
