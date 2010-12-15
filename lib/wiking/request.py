@@ -296,7 +296,7 @@ class Request(ServerInterface):
                 x = item.split(';')
                 # For now we ignore the country part and recognize just the core languages.
                 lang = x[0].split('-')[0]
-                if lang == preferred and prefered is not None:
+                if lang == preferred and preferred is not None:
                     preferred = None
                     q = 2.0
                 elif len(x) == 1:
