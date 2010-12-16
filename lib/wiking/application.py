@@ -79,12 +79,13 @@ class Application(Module):
              calling the Request methods directly (normally
              'req.send_http_header()' and 'req.write()').
 
-        The default implementation uses static mapping defined by the class
-        constant '\_MAPPING' to determine which module is responsible for
-        processing the request and passes the request along to an instance of
-        this module.  'NotFound' is raised if the mapping doesn't define an
-        item for the current request URI.  You may re-implement this method if
-        a different logic is more suitable for your application.
+        The default implementation uses static mapping of request paths (URI)
+        to wiking modules defined by the class constant '\_MAPPING' to
+        determine which module is responsible for processing the request and
+        passes the request along to an instance of this module.  'NotFound' is
+        raised if the mapping doesn't define an item for the current request
+        URI.  You may re-implement this method if a different logic is more
+        suitable for your application.
 
         """
         if not req.unresolved_path:
