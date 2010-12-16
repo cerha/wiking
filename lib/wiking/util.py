@@ -426,24 +426,6 @@ class PermanentRedirect(Redirect):
     
     """
     _PERMANENT = True
-    
-        
-class Done(Exception):
-    """Exception class for finishing request processing.
-
-    Wiking request handling usually results in a page (a 'Document' instance
-    which is in turn exported to HTML) or data directly sent to the client.
-    These result types are returned by request handling code
-    ('RequestHandler.handle()' methods) and further processed by Wiking
-    handler.  Some requests may, however, require custom processing (such as
-    streaming data directly to the client).  The request handling code may use
-    methods, such as 'req.write()', directly and raise this exception when
-    handling is finished.  This will prevent Wiking handler from attempting to
-    process the return value of request handling methods.
-
-    """
-    pass
-
 
 # ============================================================================
 

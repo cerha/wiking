@@ -419,7 +419,7 @@ class Request(ServerInterface):
         return result
 
     def done(self):
-        """Deprecated.  Raise 'wiking.Done' exception instead."""
+        """Deprecated.  Return None instead."""
         return None
     
     def result(self, data, content_type="text/html"):

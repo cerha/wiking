@@ -1180,14 +1180,19 @@ class PytisModule(Module, ActionHandler):
         """Handle the request if it is an AJAX request, otherwise return.
 
         If the current request is a pytis form update request, handle it and
-        raise 'Done'.  If not, let the caller continue by returning.
+        return True -- the calling side should stop processing the request
+        (return None from the handler function) in this case.  If False is
+        returned, this is not an AJAX request and the calling side can continue
+        processing it.
         
         """
         if req.param('_pytis_form_update_request'):
             tr = translator(req.prefered_language(raise_error=False))
             response = pw.EditForm.ajax_response(req, record, layout, errors, tr)
             req.result(response, content_type='application/json')
-            raise Done()
+            return True
+        else:
+            return False
 
     def _list_form_content(self, req, form, uri=None):
         """Return the page content for the 'list' action form as a list of 'lcg.Content' instances.
@@ -1554,7 +1559,8 @@ class PytisModule(Module, ActionHandler):
         if req.param('submit'):
             record = self._record(req, None, new=True, prefill=self._prefill(req))
             errors = self._validate(req, record, layout)
-            self._try_ajax_handler(req, record, layout, errors)
+            if self._try_ajax_handler(req, record, layout, errors):
+                return None
             if not errors:
                 try:
                     transaction = self._insert_transaction(req, record)
@@ -1588,7 +1594,8 @@ class PytisModule(Module, ActionHandler):
         layout = self._layout_instance(self._layout(req, action, record))
         if req.param('submit'):
             errors = self._validate(req, record, layout)
-            self._try_ajax_handler(req, record, layout, errors)
+            if self._try_ajax_handler(req, record, layout, errors):
+                return None
         else:
             errors = ()
         if req.param('submit') and not errors:
@@ -1654,7 +1661,7 @@ class PytisModule(Module, ActionHandler):
         self._export(req, export_row, 'text/plain; charset=utf-8',
                      headers=(('Content-disposition',
                                'attachment; filename=%s' % self._export_filename(req)),))
-        raise Done()
+        return None
 
     def action_jsondata(self, req):
         try:
@@ -1677,7 +1684,6 @@ class PytisModule(Module, ActionHandler):
             return data.append(dict([(cid, export_value(record, cid)) for cid in columns]))
         self._export(req, export_row, 'application/json')
         req.write(json.dumps(data))
-        raise Done()
                 
     def action_print_field(self, req, record):
         field = self._view.field(req.param('field'))
@@ -1695,7 +1701,6 @@ class PytisModule(Module, ActionHandler):
                        'attachment; filename=%s' % self._print_field_filename(req, record, field))
         req.send_http_header('application/pdf')
         req.write(result)
-        raise Done()
     
     def _action_subtitle(self, req, action, record=None):
         for a in self._actions(req, record):
@@ -1894,9 +1899,7 @@ class RssModule(object):
                         author=author,
                         pubdate=date)
         writer.finish()
-        raise Done()
 
-    
 
 class PytisRssModule(PytisModule):
     """Pytis module with RSS support."""
@@ -2019,8 +2022,6 @@ class PytisRssModule(PytisModule):
                         author=author(record),
                         pubdate=date(record))
         writer.finish()
-        raise Done()
-
         
 # Mixin module classes
 

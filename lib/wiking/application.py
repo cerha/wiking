@@ -75,9 +75,9 @@ class Application(Module):
            * A sequence of two values (MIME_TYPE, CONTENT), where MIME_TYPE is
              a string determining the mime type of the content and CONTENT is
              the actual output data as an 8-bit string or buffer.
-           * Integer (DEPRECATED).  Raise exceptions defined in 'wiking.util',
-             such as ('Redirect', 'Done' or one of 'RequestError' subclasses)
-             to abort normal request processing.
+           * None to indicate, that the request has already been served by
+             calling the Request methods directly (normally
+             'req.send_http_header()' and 'req.write()').
 
         The default implementation uses static mapping defined by the class
         constant '\_MAPPING' to determine which module is responsible for

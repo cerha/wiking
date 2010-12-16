@@ -148,7 +148,7 @@ class Handler(object):
                 except AuthenticationError, auth_error:
                     self._serve_error_document(req, auth_error)
                 self._serve_error_document(req, error)
-            except (ClosedConnection, Done, Redirect):
+            except (ClosedConnection, Redirect):
                 raise
             except Exception, e:
                 # Try to return a nice error document produced by the exporter.
@@ -157,8 +157,6 @@ class Handler(object):
                 except RequestError, error:
                     return self._serve_error_document(req, error)
         except ClosedConnection:
-            pass
-        except Done:
             pass
         except Redirect, r:
             req.redirect(r.uri(), args=r.args(), permanent=r.permanent())
