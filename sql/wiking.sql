@@ -359,7 +359,7 @@ create table _panels (
 	size int,
 	content text,
 	_content text,
-	published boolean not null default false
+	published boolean not null default false,
 	UNIQUE (identifier, lang)
 );
 
