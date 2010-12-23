@@ -1574,7 +1574,10 @@ class PytisModule(Module, ActionHandler):
         raise Done()
 
     def action_jsondata(self, req):
-        import simplejson as json
+        try:
+            import json
+        except:
+            import simplejson as json
         columns = self._columns(req)
         # Inspect column types in advance as it is cheaper than calling
         # isinstance for all exported values.
