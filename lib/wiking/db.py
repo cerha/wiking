@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2005-2010 Brailcom, o.p.s.
+# Copyright (C) 2005-2011 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -156,6 +156,26 @@ class PytisModule(Module, ActionHandler):
     _OWNER_COLUMN = None
     _SUPPLY_OWNER = True
     _SEQUENCE_FIELDS = ()
+    _ARRAY_FIELDS = ()
+    """Specification of array fields with automatically updated linking tables.
+
+    Tuple of tuples where the inner tuples consist of (FIELD_ID, SPEC_NAME,
+    LINKING_COLUMN, VALUE_COLUMN).  FIELD_ID is the id of the array field
+    (type=pytis.data.Array), SPEC_NAME is the name of the linking table
+    specification, LINKING_COLUMN is the id of the column in the linking table
+    which refers to the key column of this module (where the array field is
+    used) and VALUE_COLUMN is the id of the column in the linking table, which
+    contains the array values.
+
+    The purpose of the whole thing is to implement automatic linking table
+    updates on the Wiking side, since Pytis data operations don't know how to
+    handle Array values.  The array field will usually be virtual to prevent
+    passing it to Pytis data operations and Wiking will attempt to
+    automatically update the linking table on insert/update operations and will
+    also read the field values when displaying a form (pytis web forms can
+    handle array fields).
+    
+    """
     _DB_FUNCTIONS = {}
     """Specification of available DB functions and their arguments.
 
@@ -244,7 +264,7 @@ class PytisModule(Module, ActionHandler):
             else:
                 roles = user.roles()
             return roles
-    
+            
     @classmethod
     def title(cls):
         return cls.Spec.title
@@ -286,6 +306,11 @@ class PytisModule(Module, ActionHandler):
         if self._sorting is None:
             self._sorting = ((key, pytis.data.ASCENDENT),)
         self._referer = self._REFERER or key
+        self._array_fields = []
+        for fid, spec_name, linking_column, value_column in self._ARRAY_FIELDS:
+            data_spec = self._resolver.get(spec_name, 'data_spec')
+            data = data_spec.create(connection_data=self._dbconnection)
+            self._array_fields.append((fid, data, linking_column, value_column))
         fields = self._view.fields()
         # We sometimes need to know the data type of certain field without having access to the
         # record at the same time, so we create a record here just to save the data types of all
@@ -361,7 +386,7 @@ class PytisModule(Module, ActionHandler):
                 if isinstance(value, tuple):
                     if len(value) == 2 and isinstance(type, pd.Password):
                         value, kwargs['verify'] = value
-                    else:
+                    elif not isinstance(type, pd.Array):
                         value = value[-1]
                 elif isinstance(value, FileUpload):
                     if isinstance(type, pd.Binary):
@@ -374,6 +399,8 @@ class PytisModule(Module, ActionHandler):
                             value = None
                     else:
                         value = value.filename()
+                elif isinstance(type, pd.Array):
+                    value = pytis.util.xtuple(value)
             elif isinstance(type, pd.Binary):
                 value = None
             elif isinstance(type, pd.Boolean):
@@ -716,6 +743,10 @@ class PytisModule(Module, ActionHandler):
                 if not error:
                     valid_prefill[key] = value
         form_record = self._record(req, record and record.row(), prefill=valid_prefill, new=new)
+        for fid, data, linking_column, value_column in self._array_fields:
+            rows = data.get_rows(condition=pd.EQ(linking_column, form_record[self._key]))
+            values = [r[value_column] for r in rows]
+            form_record[fid] = pd.Value(form_record.type(fid), values)
         form_instance = form(self._view, form_record, handler=handler or req.uri(),
                              name=self.name(), hidden=hidden, prefill=prefill,
                              uri_provider=uri_provider, **kwargs)
@@ -1267,7 +1298,10 @@ class PytisModule(Module, ActionHandler):
         'action_insert()' handler.
 
         """
-        return None
+        if self._array_fields:
+            return self._transaction()
+        else:
+            return None
             
     def _update_transaction(self, req, record):
         """Return the transaction for the 'update' action operation.
@@ -1279,7 +1313,10 @@ class PytisModule(Module, ActionHandler):
         'action_update()' handler.
 
         """
-        return None
+        if self._array_fields:
+            return self._transaction()
+        else:
+            return None
             
     def _delete_transaction(self, req, record):
         """Return the transaction for the 'delete' action operation.
@@ -1294,6 +1331,22 @@ class PytisModule(Module, ActionHandler):
         return None            
     
     # ===== Methods which modify the database =====
+
+    def _update_linking_tables(self, req, record, transaction):
+        for fid, data, linking_column, value_column in self._array_fields:
+            values = record[fid].value() or ()
+            key = record.key()[0]
+            data.delete_many(condition=pd.AND(pd.EQ(linking_column, key),
+                                              *[pd.NE(value_column, v) for v in values]),
+                             transaction=transaction)
+            for value in values:
+                count = data.select(condition=pd.AND(pd.EQ(linking_column, key),
+                                                     pd.EQ(value_column, value)),
+                                    transaction=transaction)
+                data.close()
+                if count != 1:
+                    row = pd.Row([(linking_column, key), (value_column, value)])
+                    data.insert(row, transaction=transaction)
     
     def _insert(self, req, record, transaction):
         """Insert new row into the database and return a Record instance.
@@ -1315,6 +1368,7 @@ class PytisModule(Module, ActionHandler):
             # We can't use set_row(), since it would destroy virtual file fields (used in CMS).
             for key in new_row.keys():
                 record[key] = new_row[key]
+            self._update_linking_tables(req, record, transaction)
         
     def _update(self, req, record, transaction):
         """Update the record data in the database.
@@ -1325,6 +1379,7 @@ class PytisModule(Module, ActionHandler):
 
         """
         self._data.update(record.key(), record.rowdata(), transaction=transaction)
+        self._update_linking_tables(req, record, transaction)
 
     def _delete(self, req, record, transaction):
         """Delete the record from the database.
