@@ -379,6 +379,10 @@ class PytisModule(Module, ActionHandler):
             f = self._view.field(id)
             if not record.editable(id):
                 continue
+            if changed_field and f.computer() and changed_field in f.computer().depends():
+                # Ignore fields which depend on the field currently changed by
+                # the user during AJAX form updates.
+                continue
             type = record.type(id)
             kwargs = {}
             if req.has_param(id):
