@@ -121,8 +121,8 @@ class WikingManagementInterface(Module, RequestHandler):
 
     def menu(self, req):
         variants = self._application.languages()
-        return [MenuItem('/_wmi/sec%d' % (i+1), title, descr=descr, variants=variants,
-                         submenu=[MenuItem('/_wmi/' + m.name(), m.title(), descr=m.descr(),
+        return [MenuItem('_wmi/sec%d' % (i+1), title, descr=descr, variants=variants,
+                         submenu=[MenuItem('_wmi/' + m.name(), m.title(), descr=m.descr(),
                                            variants=variants)
                                   for m in [self._module(modname) for modname in modnames]])
                 for i, (title, descr, modnames) in enumerate(self._MENU)] + \
