@@ -1217,16 +1217,6 @@ class ActiveUsers(Users, EmbeddableCMSModule):
     _INSERT_LABEL = lcg.TranslatableText("New user registration", _domain='wiking')
 
 
-class ConfirmActiveUsersCb(Users):
-    class Spec(Users.Spec):
-        table = 'users'
-        title = _("Users who have `confirm' flag set")
-        condition = pd.AND(pd.EQ('state', pd.Value(pd.String(), Users.AccountState.ENABLED)),
-                           pd.EQ('confirm', pd.Value(pd.Boolean(), True)))
-        filters = ()
-        default_filter = None
-    
-
 class Registration(Module, ActionHandler):
     """User registration and account management.
 
