@@ -81,36 +81,46 @@ class Application(CookieAuthentication, wiking.Application):
     def module_uri(self, req, modname):
         """Return the base URI of given Wiking module (relative to server root).
 
-        This method implements the interface defined by 'wiking.Application.module_uri()'
-        specifically for the Wiking CMS application.
+        This method implements the interface defined by
+        'wiking.Application.module_uri()' specifically for the Wiking CMS
+        application.
 
 
         The method bahaves as follows:
 
-          1. Static mapping as defined by the parent class (see 'wiking.application._MAPPING') is
-             searched first.  If the module is found there, the corresponding path is returned.
-          2. Otherwise, if the application is currently in the Wiking Management Interface mode,
-             the WMI path is returned as '/_wmi/<modname>' (any module is accessible through this
-             path in WMI).
-          3. If the above fails, the module is searched within CMS pages as their extension module.
-             If the module is found as an extension module of a particular page, the path to that
-             page (including the subpath to the module) is returned.  Beware that if the same
-             module had been used as an extension module for more than one page, there would be no
-             way to distinguish which page to use to form the path and thus None is returned in
-             such cases.
-          4. If the above fails and the module is derived from 'CMSExtensionModule', its parent
-             module is searched according to 3. and if found, the corresponding path plus the path
-             to the submodule is returned.
-          5. If all the above fails, None is returned.  Particularly, this happens for modules,
-             which are not directly associated with any page, which may also be the case for
-             modules accessible through bindings to other modules.
+          1. Static mapping as defined by the parent class (see
+             'wiking.application._MAPPING') is searched first.  If the module
+             is found there, the corresponding path is returned.
+          2. Otherwise, if the application is currently in the Wiking
+             Management Interface mode, the WMI path is returned as
+             '/_wmi/<modname>' (any module is accessible through this path in
+             WMI).
+          3. If the above fails, the module is searched within CMS pages as
+             their extension module.  If the module is found as an extension
+             module of a particular page, the path to that page (including the
+             subpath to the module) is returned.  Beware that if the same
+             module had been used as an extension module for more than one
+             page, there would be no way to distinguish which page to use to
+             form the path and thus None is returned in such cases.
+          4. If the above fails and the module is derived from
+             'CMSExtensionModule', its parent module is searched according to
+             3. and if found, the corresponding path plus the path to the
+             submodule is returned.
+          5. If the above fails and the module is accessible through WMI menu,
+             the WMI uri is returned (not that as opposed to 2, this happend
+             also when we are currently not within WMI).
+          6. If all the above fails, None is returned.  Particularly, this
+             happens for modules, which are not directly associated with any
+             page, which may also be the case for modules accessible through
+             bindings to other modules.
 
-         The mapping used in step 1. is called static, because it is a hardcoded assignment of URIs
-         of modules needed for Wiking CMS to run (such as 'Stylesheets', 'Documentation',
-         'Resources', etc).  The user is not able to change this mapping.  The convention is, that
-         URIs in the static mapping in Wiking CMS start with an underscore to prevent conflicts
-         with user defined URIs (identifiers) of CMS pages (which are dynamic from this perspective
-         — the user may change them).
+         The mapping used in step 1. is called static, because it is a
+         hardcoded assignment of URIs of modules needed for Wiking CMS to run
+         (such as 'Stylesheets', 'Documentation', 'Resources', etc).  The user
+         is not able to change this mapping.  The convention is, that URIs in
+         the static mapping in Wiking CMS start with an underscore to prevent
+         conflicts with user defined URIs (identifiers) of CMS pages (which are
+         dynamic from this perspective — the user may change them).
 
          Examples (calling through 'WikingRequest.module_uri()'):
 
@@ -120,16 +130,18 @@ class Application(CookieAuthentication, wiking.Application):
            
            req.module_uri('Planner')
 
-         Returns '/_wmi/Planner' in WMI or '/planner' outside WMI if the module 'Planner' is used
-         in a page with an identifier 'planner' or None if the module 'Planner' is not used in any
-         CMS page or if it is used more than once.  The identifier, of course, may be any string
-         the user decides to use, not just 'planner'.
+         Returns '/_wmi/Planner' in WMI or '/planner' outside WMI if the module
+         'Planner' is used in a page with an identifier 'planner' or None if
+         the module 'Planner' is not used in any CMS page or if it is used more
+         than once.  The identifier, of course, may be any string the user
+         decides to use, not just 'planner'.
          
            req.module_uri('BugComments')
 
-         Returns '/_wmi/BugComments' in WMI or '/bts/bug-comments' outside WMI if the module
-         'WikingBTS' is used in a page with an identifier 'bts' ('BugComments' is a submodule of
-         'WikingBTS' with a static subpath 'bug-comments').
+         Returns '/_wmi/BugComments' in WMI or '/bts/bug-comments' outside WMI
+         if the module 'WikingBTS' is used in a page with an identifier 'bts'
+         ('BugComments' is a submodule of 'WikingBTS' with a static subpath
+         'bug-comments').
         
         """
         
