@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2006-2010 Brailcom, o.p.s.
+# Copyright (C) 2006-2011 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -404,20 +404,40 @@ class Application(Module):
         """
         return None
         
-    def _powered_by_wiking(self):
+    def _powered_by_wiking(self, req):
         import wiking
         # Translators: Website idiom. This is followed by information on the underlying software
         # tools.  Means: This website runs on [...this and that software...].
         return (_("Powered by"), ' ',
                 lcg.link('http://www.freebsoft.org/wiking', 'Wiking'), ' ', wiking.__version__)
-        
+    
+    def _accessibility_statement_link(self, req):
+        """Return lcg.Content containing a link to the Wiking Accessibility Statement or None.
+
+        None is returned when the Documentation module (which normally serves
+        the accessibility statement text) is not available (not mapped to a
+        valid URI by the application).
+
+        """
+        doc = req.module_uri('Documentation')
+        if doc:
+            uri = doc + '/wiking/user/accessibility'
+            class A11yStatementLink(lcg.Content):
+                # A11y statement link with a hotkey (not supported by generic lcg links).
+                def export(self, context):
+                    return context.generator().link(_("Accessibility Statement"), uri, hotkey='0')
+            return A11yStatementLink()
+        else:
+            return None
+
+    
     def bottom_bar_left_content(self, req):
         """Return the content displayed on the left side of the bottom bar above the page footer.
 
         Any content acceptable by 'lcg.coerce()' may be returned.
 
         """
-        return None
+        return self._powered_by_wiking(req)
 
     def bottom_bar_right_content(self, req):
         """Return the content displayed on the right side of the bottom bar above the page footer.
@@ -425,7 +445,7 @@ class Application(Module):
         Any content acceptable by 'lcg.coerce()' may be returned.
 
         """
-        return self._powered_by_wiking()
+        return self._accessibility_statement_link(req)
 
     def footer_content(self, req):
         """Return the content displayed in page footer as 'lcg.Content' element(s).
@@ -433,39 +453,6 @@ class Application(Module):
         Any content acceptable by 'lcg.coerce()' may be returned.
 
         """
-        links = [lcg.link(uri, label, descr=descr)
-                 for label, uri, descr in
-                 (("HTML 4.01",
-                   "http://validator.w3.org/check/referer",
-                   None),
-                  ("CSS2",
-                   "http://jigsaw.w3.org/css-validator/check/referer",
-                   None),
-                  ("WCAG 1.0",
-                   "http://www.w3.org/WAI/WCAG1AAA-Conformance",
-                   "W3C-WAI Web Content Accessibility Guidelines."),
-                  ("Section 508",
-                   "http://www.section508.gov",
-                   # Translators: The document named "Section 508" contains accessibility
-                   # guidelines and was issued by the US government.
-                   _("US Government Section 508 Accessibility Guidelines.")))]
-        doc = req.module_uri('Documentation')
-        class A11yStatement(lcg.Content):
-            # A11y statement link with a hotkey (not supported by generic lcg links).
-            def export(self, context):
-                if doc:
-                    g = context.generator()
-                    return ' ' + g.link(_("Accessibility Statement"),
-                                        doc+'/wiking/user/accessibility', hotkey='0')
-                else:
-                    return ''
-        contact = cfg.webmaster_address
-        # Translators: "Site" means a website.
-        return (lcg.p(_("This site conforms to the following standards:"), ' ',
-                      lcg.join(links, separator=', ')),
-                # Translators: "Site" means a website. "Browser" is an internet browser (software
-                # used to access internet, such as Firefox, MSIE or Safari).  Leave the translation
-                # for ``any'' in capitals.
-                lcg.p(_("This site can be viewed in ANY browser."), A11yStatement()),              
-                lcg.p(_("Contact:"), ' ', lcg.link("mailto:"+ contact, contact)))
+        return lcg.p(_("Contact:"), ' ',
+                     lcg.link("mailto:"+cfg.webmaster_address, cfg.webmaster_address))
     

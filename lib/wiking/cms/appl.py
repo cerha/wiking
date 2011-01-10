@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2006, 2007, 2008, 2009, 2010 Brailcom, o.p.s.
+# Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -286,11 +286,16 @@ class Application(CookieAuthentication, wiking.Application):
             return None
 
     def bottom_bar_left_content(self, req):
-        return self._powered_by_wiking()
+        result = self._powered_by_wiking(req)
+        if not cfg.appl.allow_login_panel:
+            link = self._accessibility_statement_link(req)
+            if link:
+                result = (result, ' | ', link)
+        return result
     
     def bottom_bar_right_content(self, req):
         if cfg.appl.allow_login_panel:
-            return None
+            return self._accessibility_statement_link(req)
         elif req.user() is None:
             return self.WMILink()
         elif self.authorize(req, WikingManagementInterface):
@@ -298,6 +303,12 @@ class Application(CookieAuthentication, wiking.Application):
         else:
             return LoginCtrl(inline=True)
 
+    def footer_content(self, req):
+        texts = self._module('Texts')
+        text = texts.text(req, wiking.cms.texts.footer, lang=req.prefered_language())
+        text = text.replace('$webmaster_address', cfg.webmaster_address)
+        return lcg.Parser().parse(text)
+    
     def _maybe_install(self, req, errstr):
         """Check a DB error string and try to set it up if it is the problem."""
         def _button(label, action='/', **params):

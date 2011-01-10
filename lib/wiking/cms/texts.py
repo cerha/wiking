@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2009, 2010 Brailcom, o.p.s.
+# Copyright (C) 2009, 2010, 2011 Brailcom, o.p.s.
 #
 # COPYRIGHT NOTICE
 #
@@ -85,3 +85,10 @@ regconfirm_confirmed = Text(
     'cms.regconfirm_confirmed',
     _("Information displayed to users who have already confirmed the site specific conditions"),
     _("You have agreed to the site conditions."))
+
+footer = Text(
+    'cms.footer',
+    _("Text displayed at the very bottom of every page"),
+    # Translators: Label followed by an email address link.
+    _("Contact:") + ' $webmaster_address')
+    
