@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2006-2010 Brailcom, o.p.s.
+# Copyright (C) 2006-2011 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -105,7 +105,7 @@ class WikingManagementInterface(Module, RequestHandler):
     def _handle(self, req):
         req.wmi = True # Switch to WMI only after successful authorization!
         if not req.unresolved_path:
-            raise Redirect('/'+req.path[0]+'/Pages')
+            raise Redirect('/_wmi/Pages')
         if req.unresolved_path[0].startswith('sec'):
             # Redirect to the first module of given section.
             try:
@@ -114,22 +114,28 @@ class WikingManagementInterface(Module, RequestHandler):
             except (ValueError, IndexError):
                 raise NotFound
             else:
-                raise Redirect(req.path[0]+'/'+modname)
+                raise Redirect('/_wmi/'+modname)
         module = self._module(req.unresolved_path[0])
         del req.unresolved_path[0]
         return req.forward(module)
 
     def menu(self, req):
         variants = self._application.languages()
-        uri = req.path[0]
-        return [MenuItem(uri + '/sec%d' % (i+1), title, descr=descr, variants=variants,
-                         submenu=[MenuItem(uri + '/' + m.name(), m.title(), descr=m.descr(),
+        return [MenuItem('/_wmi/sec%d' % (i+1), title, descr=descr, variants=variants,
+                         submenu=[MenuItem('/_wmi/' + m.name(), m.title(), descr=m.descr(),
                                            variants=variants)
                                   for m in [self._module(modname) for modname in modnames]])
                 for i, (title, descr, modnames) in enumerate(self._MENU)] + \
                [MenuItem('__site_menu__', '', hidden=True, variants=variants,
                          submenu=self._module('Pages').menu(req))]
 
+    def module_uri(self, req, modname):
+        """Return the WMI URI of given module or None if it is not available through WMI."""
+        for title, descr, modnames in self._MENU:
+            if modname in modnames:
+                return '/_wmi/' + modname
+        return None
+            
 
 class Roles(wiking.Roles):
     """Additional roles used by Wiking CMS and Wiking CMS applications.

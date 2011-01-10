@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2006-2010 Brailcom, o.p.s.
+# Copyright (C) 2006-2011 Brailcom, o.p.s.
 #
 # COPYRIGHT NOTICE
 #
@@ -390,6 +390,11 @@ class UserGroups(ApplicationRoles):
     """
     class Spec(ApplicationRoles.Spec):
         condition = pd.EQ('auto', pd.Value(pd.Boolean(), False))
+        
+    def _base_uri(self, req):
+        # The available codebook values are limited, but the links refer to the
+        # unlimited list of all ApplicationRoles.
+        return req.module_uri('ApplicationRoles')
 
         
 class Users(UserManagementModule):

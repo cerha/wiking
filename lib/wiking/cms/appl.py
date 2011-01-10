@@ -149,6 +149,8 @@ class Application(CookieAuthentication, wiking.Application):
                             parent = module.parent()
                             if parent is not None:
                                 uri = parent.submodule_uri(req, modname)
+                        if uri is None:
+                            uri = self._module('WikingManagementInterface').module_uri(req, modname)
                 except MaintenanceModeError:
                     pass
         return uri
