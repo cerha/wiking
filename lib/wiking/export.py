@@ -1,4 +1,4 @@
-# Copyright (C) 2006-2010 Brailcom, o.p.s.
+# Copyright (C) 2006-2011 Brailcom, o.p.s.
 # Author: Tomas Cerha <cerha@brailcom.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -126,12 +126,15 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         return self._parts(context, self._PAGE_PARTS)
 
     def _page_attr(self, context):
-        cls = 'node-id-' + self._safe_css_id(context.node().id())
+        node = context.node()
+        cls = 'node-id-' + self._safe_css_id(node.id())
+        cls += ''.join([' parent-node-id-' + self._safe_css_id(n.id())
+                        for n in node.path()[1:-1]])
         if context.has_menu:
             cls += ' with-menu'
         if context.has_submenu:
             cls += ' with-submenu'
-        if context.node().panels() and context.req().show_panels():
+        if node.panels() and context.req().show_panels():
             cls += ' with-panels'
         return dict(cls=cls)
 
