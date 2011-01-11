@@ -1179,6 +1179,13 @@ class PytisModule(Module, ActionHandler):
 
     def _list_form_content(self, req, form, uri=None):
         """Return the page content for the 'list' action form as a list of 'lcg.Content' instances.
+
+        Arguments:
+          req -- current 'Request' instance.
+          form -- 'pytis.web.BrowseForm' instance.
+          uri -- binding URI if the 'form' is a side form or None if 'form' is
+            a main form.  The URI normally has the form
+            '<main_form_uri>/<binding_id>'.
         
         You may override this method to modify page content for the list form
         in derived classes.
