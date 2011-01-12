@@ -267,7 +267,7 @@ form.pytis-form.list-view div.summary {
     margin: 1em 0;
     line-height: 1.5em;
 }
-.actions.separate { 
+.cms-page-actions { 
     margin: 1em 0 0 0;
     position: relative;
     top: 0.2em;

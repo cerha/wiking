@@ -1334,7 +1334,8 @@ class Pages(ContentManagementModule):
             if rows:
                 raise Redirect('/'+rows[0]['identifier'].value())
         # Action menu
-        content.append(self._action_menu(req, record, help='/_doc/wiking/cms/pages', cls='actions separate'))
+        content.append(self._action_menu(req, record, help='/_doc/wiking/cms/pages',
+                                         cls='cms-page-actions'))
         resources = [a.resource() for a in attachments]
         return self._document(req, content, record, resources=resources)
 

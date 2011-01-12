@@ -1,4 +1,4 @@
-# Copyright (C) 2006, 2007, 2008, 2009, 2010 Brailcom, o.p.s.
+# Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -1203,7 +1203,7 @@ class ActionMenu(lcg.Container):
     def __init__(self, uri, actions, referer, name, row=None,
                  # Translators: A set of buttons for various actions (edit, delete, etc.) is
                  # prepended with this label.
-                 title=_("Actions:"), help=None, cls='actions'):
+                 title=_("Actions:"), help=None, cls=None):
         ctrls = [ActionCtrl(uri, a, referer, name, row) for a in actions]
         if help:
             # Translators: Link or button leading to documentation/help. Use usual computer
@@ -1211,11 +1211,14 @@ class ActionMenu(lcg.Container):
             ctrls.append(lcg.link(help, _("Help")))
         super(ActionMenu, self).__init__(ctrls)
         self._title = title
+        self._name = name
         self._cls = cls
 
     def export(self, context):
         g = context.generator()
-        return g.div(concat([ctrl.export(context) for ctrl in self._content]), cls=self._cls)
+        cls = self._cls
+        return g.div(concat([ctrl.export(context) for ctrl in self._content]),
+                     cls='actions module-actions-' + self._name + (cls and ' ' + cls or ''))
 
     
 class PanelItem(lcg.Content):
