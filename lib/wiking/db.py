@@ -731,6 +731,7 @@ class PytisModule(Module, ActionHandler):
             if not kwargs.has_key('limit'):
                 kwargs['limit'] = self._BROWSE_FORM_DEFAULT_LIMIT
             kwargs['allow_query_search'] = self._ALLOW_QUERY_SEARCH
+            kwargs['filter_fields'] = self._filter_fields(req)
             if not kwargs.has_key('immediate_filters'):
                 kwargs['immediate_filters'] = cfg.immediate_filters
         layout = kwargs.get('layout')
@@ -868,6 +869,17 @@ class PytisModule(Module, ActionHandler):
 
         """
         return None
+
+    def _filter_fields(self, req):
+        """Return the list of editable fitler field specifications.
+
+        The returned value is passed to 'pytis.web.BrowseForm'
+        'filter_fields' constructor argument.  See 'pytis.web.BrowseForm'
+        documentation for exact specification.
+
+        """
+        return None
+        
     
     def _action_args(self, req):
         """Resolve request path and/or parameters into action method arguments.
