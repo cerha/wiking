@@ -254,6 +254,17 @@ form.pytis-form.list-view div.summary {
     margin: 0;
     padding: 0;
 }
+.actions button { 
+    width: auto; /* fix MSIE size */
+    overflow: visible; /* fix MSIE size */
+    line-height: 1.3em;
+    padding: 1px 0;
+}
+.actions button span { 
+    background-position: center left;
+    background-repeat: no-repeat;
+    padding: 0.3em;
+}
 .actions a { 
     vertical-align: top;
     padding-left: 0.5em;
@@ -349,6 +360,27 @@ div.table-of-contents ul {
     padding-top: 0.2em;
     border-top: 1px solid $color.border;
 }
+.cms-page-actions button span { 
+    padding-left: 18px;
+}
+.cms-page-actions button.disabled span { 
+    color: $color.foreground;
+    opacity: 0.4;
+}
+.cms-page-actions button.action-update span { 
+    background-image: url(/_resources/images/edit.png);
+}
+.cms-page-actions button.action-options span { 
+    background-image: url(/_resources/images/properties.png);
+}
+.cms-page-actions button.action-commit span { 
+    background-image: url(/_resources/images/publish.png);
+}
+.cms-page-actions button.action-revert span { 
+    background-image: url(/_resources/images/undo.png);
+}
+.cms-page-actions button.action-attachments span { 
+    background-image: url(/_resources/images/attachment.png);
 }
 
 div.discussions form.list-view.discussions .summary { display: none; }

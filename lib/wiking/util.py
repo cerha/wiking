@@ -1192,8 +1192,8 @@ class ActionCtrl(lcg.Content):
                     args = dict(args, **{key: self._row[key].export()})
         content = [g.hidden(name, value is True and 'true' or value)
                    for name, value in args.items()] + \
-                  [g.submit(action.title(), title=action.descr(), disabled=not enabled,
-                            cls='action-'+action.id())]
+                  [g.button(g.span(action.title()), title=action.descr(), disabled=not enabled,
+                            cls='action-'+action.id() + (not enabled and ' disabled' or ''))]
         return g.form(['  '+x for x in content], action=uri)
 
 
