@@ -275,7 +275,7 @@ div.panel form { margin: 0.3em 0; }
     white-space: nowrap;
     margin: 0 0.3em;
     background-image: url(/_resources/images/login.png);
-    background-position: 1px 0;
+    background-position: 1px center;
     background-repeat: no-repeat;
 }
 #panel-login a.login-ctrl:hover {
@@ -284,8 +284,6 @@ div.panel form { margin: 0.3em 0; }
 #panel-login.logged a.login-ctrl {
     background-image: url(/_resources/images/logout.png);
 }
-
-
 #panel-login div.panel-content {
     padding: 0.3em;
     line-height: 1.3em;
