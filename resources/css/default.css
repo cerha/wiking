@@ -254,23 +254,42 @@ form.pytis-form.list-view div.summary {
     margin: 0;
     padding: 0;
 }
-.actions button { 
-    width: auto; /* fix MSIE size */
-    overflow: visible; /* fix MSIE size */
-    line-height: 1.3em;
-    padding: 1px 0;
-}
-.actions button span { 
-    background-position: center left;
-    background-repeat: no-repeat;
-    padding: 0.3em;
-}
-.actions a { 
+.actions a {
     vertical-align: top;
     padding-left: 0.5em;
 }
 
-.wiking-info-bar { 
+.actions button, form.list-form-controls button {
+    width: auto; /* fix MSIE size */
+    overflow: visible; /* fix MSIE size */
+    line-height: 1.3em;
+    padding: 0;
+}
+.actions button span, form.list-form-controls button span {
+    background-position: center left;
+    background-repeat: no-repeat;
+    padding: 0 0.2em;
+}
+.actions button[disabled] span, form.list-form-controls button[disabled] span {
+    opacity: 0.5;
+    color: $color.foreground;
+}
+
+form.list-form-controls button.prev-page-button span {
+    background-image: url(/_resources/images/previous.png);
+    padding-left: 18px;
+}
+form.list-form-controls button.next-page-button span {
+    background-image: url(/_resources/images/next.png);
+    padding-right: 20px;
+    background-position: right center;
+}
+form.list-form-controls button.search-button span {
+    background-image: url(/_resources/images/search.png);
+    padding-left: 18px;
+}
+
+.wiking-info-bar {
     margin: 1em 0 0.5em 0;
     padding: .3em;
     padding-left: 28px;
