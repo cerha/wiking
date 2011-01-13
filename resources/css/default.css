@@ -263,7 +263,7 @@ form.pytis-form.list-view div.summary {
     width: auto; /* fix MSIE size */
     overflow: visible; /* fix MSIE size */
     line-height: 1.3em;
-    padding: 1px 0 0 0;
+    padding: 1px 0;
 }
 .actions button span, form.list-form-controls button span {
     background-position: center left;
