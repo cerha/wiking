@@ -263,12 +263,12 @@ form.pytis-form.list-view div.summary {
     width: auto; /* fix MSIE size */
     overflow: visible; /* fix MSIE size */
     line-height: 1.3em;
-    padding: 0;
+    padding: 1px 0 0 0;
 }
 .actions button span, form.list-form-controls button span {
     background-position: center left;
     background-repeat: no-repeat;
-    padding: 0 0.2em;
+    padding: 3px;
 }
 .actions button[disabled] span, form.list-form-controls button[disabled] span {
     opacity: 0.5;
@@ -380,7 +380,8 @@ div.table-of-contents ul {
     border-top: 1px solid $color.border;
 }
 .cms-page-actions button span { 
-    padding-left: 18px;
+    padding: 3px;
+    padding-left: 19px;
 }
 .cms-page-actions button.disabled span { 
     color: $color.foreground;
