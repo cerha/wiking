@@ -18,26 +18,8 @@ div.errors, #messages .error, #messages .warning {
 }
 
 img { position: relative; } /* MSIE float workaround */
-
-a.backref, a:link.backref { 
-    color: $color.foreground !important; /* important needed for MSIE */
-    text-decoration: none;
-}
-
 .hidden { display: none; }
-
-/* Links to unpublished pages */
-.unpublished { text-decoration: line-through; }
-
-.not-null { 
-    color: #f00;
-}
-
-/* Specific styles for Wiking modules */
-
-div.item span.panel-field-date { 
-    font-weight: bold;
-}
+.not-null { color: #f00; }
 
 /* Generic pytis forms styles */
 
@@ -267,13 +249,6 @@ form.pytis-form.list-view div.summary {
     margin: 1em 0;
     line-height: 1.5em;
 }
-.cms-page-actions { 
-    margin: 1em 0 0 0;
-    position: relative;
-    top: 0.2em;
-    padding-top: 0.2em;
-    border-top: 1px solid $color.border;
-}
 .actions form { 
     display: inline;
     margin: 0;
@@ -282,6 +257,17 @@ form.pytis-form.list-view div.summary {
 .actions a { 
     vertical-align: top;
     padding-left: 0.5em;
+}
+
+.wiking-info-bar { 
+    margin: 1em 0 0.5em 0;
+    padding: .3em;
+    padding-left: 28px;
+    border: dotted 2px $color.message-border;
+    /* background-color: $color.background; */
+    background-image: url(/_resources/images/info.png);
+    background-position: left center;
+    background-repeat: no-repeat;
 }
 
 /* LCG Formatter styles */
@@ -293,6 +279,10 @@ ul {
 li {
     margin-top: 0; 
     margin-bottom: 0; 
+}
+a.backref, a:link.backref { 
+    color: $color.foreground !important; /* important needed for MSIE */
+    text-decoration: none;
 }
 
 .citation, .quotation { 
@@ -350,15 +340,15 @@ div.table-of-contents ul {
     margin-bottom: 0;
 }
 
-.wiking-info-bar { 
-    margin: 1em 0 0.5em 0;
-    padding: .3em;
-    padding-left: 28px;
-    border: dotted 2px $color.message-border;
-    /* background-color: $color.background; */
-    background-image: url(/_resources/images/info.png);
-    background-position: left center;
-    background-repeat: no-repeat;
+
+/* Wiking CMS specific styles */
+.cms-page-actions { 
+    margin: 1em 0 0 0;
+    position: relative;
+    top: 0.2em;
+    padding-top: 0.2em;
+    border-top: 1px solid $color.border;
+}
 }
 
 div.discussions form.list-view.discussions .summary { display: none; }
@@ -406,6 +396,13 @@ form.activation-form {
     float: left;
     margin-right: 0.5em;
 }
+
+div.item span.panel-field-date { 
+    font-weight: bold;
+}
+
+/* Links to unpublished pages */
+.unpublished { text-decoration: line-through; }
 
 /* Border-less table:
 form.browse-form.mapping table {
