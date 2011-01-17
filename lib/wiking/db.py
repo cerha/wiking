@@ -547,7 +547,7 @@ class PytisModule(Module, ActionHandler):
                 extra_title = extra_title + u'; ' + m[0]
             def interpolate(key, title=title, extra=extra_title):
                 return dict(title=title, extra=extra)[key]
-            title = _('%(title)s (%(extra)s)').interpolate(interpolate)
+            title = lcg.TranslatableText('%(title)s (%(extra)s)').interpolate(interpolate)
         return title
         
     def _document(self, req, content, record=None, lang=None, err=None, msg=None, **kwargs):

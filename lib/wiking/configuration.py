@@ -1,4 +1,4 @@
-# Copyright (C) 2006, 2007, 2008, 2009, 2010 Brailcom, o.p.s.
+# Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 Brailcom, o.p.s.
 # Author: Tomas Cerha <cerha@brailcom.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -422,5 +422,5 @@ class Configuration(pc):
         _DEFAULT = '/usr/local/share/wiking/sql'
         
     class _Option_immediate_filters(pc.BooleanOption, pc.HiddenOption):
-        _DESCR = _("Whether to apply filtering combobox selection immediately.")
+        _DESCR = ("Whether to apply filtering combobox selection immediately.")
         _DEFAULT = True
