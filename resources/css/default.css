@@ -292,11 +292,11 @@ form.list-form-controls button.search-button span {
 .wiking-info-bar {
     margin: 1em 0 0.5em 0;
     padding: .3em;
-    padding-left: 28px;
+    padding-left: 32px;
     border: dotted 2px $color.message-border;
     /* background-color: $color.background; */
     background-image: url(/_resources/images/info.png);
-    background-position: left center;
+    background-position: 2px center;
     background-repeat: no-repeat;
 }
 
