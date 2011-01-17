@@ -5,8 +5,8 @@ Dependencies:
   * python >= 2.3 (2.4 suggested)
   * apache >= 2.0 (prefork MPM!)
   * mod_python >= 3.2.10
-  * lcg >= 0.5.0
-  * pytis >= 1.0.0 (please check it's own dependencies)
+  * lcg >= 0.5.1
+  * pytis >= 1.1.1 (please check it's own dependencies)
   * python-dnspython - DNS client module for Python
   * python-egenix-mxdatetime - Python date/time manipulation routines
   * python-imaging - Python Imaging Library (needed only when using Image galeries)  

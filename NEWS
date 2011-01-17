@@ -1,3 +1,44 @@
+Version 1.2.0 (2010-01-17):
+
+ * New features:
+   - Login panel styling can now reflect the current login status.
+   - Added styles to allow equal division of space between the top menu items.
+   - Page styling according to page hierarchy made possible (CSS selectors can
+     refer also parent page identifiers).
+   - Improved action buttons styling possiblities (allow action specific icons)
+   - Default icon set created for:  
+      * Pytis BrowseForm navigation buttons
+      * CMS page management action buttons
+      * login/logout control
+      * Rss feed link
+   - Default page footers simplified (browser supoport and standards compliance
+     statements removed).
+
+ * New features in Wiking CMS:
+   - Side panels can now have explicit identifiers assigned to allow their
+     styling through CSS.
+   - Side panel titles are now always assigned explicitly (the field is now
+     mandatory) as the implicit tile logic was too confusing with a little
+     reason.
+   - Application roles are now clickable when they are refered within a
+     Wiking CMS based application.
+   - The module 'ConfirmActiveUsersCb' was removed (use a validity_condition
+     instead).
+
+ * More significant Wiking API changes:
+   - Experimental support for pytis Array fields with automatic linking table
+     updates done by the Wiking module (see PytisModule._ARRAY_FIELDS).
+   - Added support for editable filter fields (see PytisModule._filter_fields).
+
+ * Documentation updates and additions.
+
+ * Now depends on LCG 0.5.1 and Pytis 1.1.1.
+
+ * Bug fixes.
+
+ * New and updated translations.
+
+
 Version 1.1.0 (2010-11-22):
 
  * New features in Wiking CMS:
