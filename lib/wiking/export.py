@@ -314,7 +314,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
                         cls='panel-anchor')
             channel = panel.channel()
             if channel:
-                icon = context.node().resource('feed-icon-small.png')
+                icon = context.node().resource('rss.png')
                 if icon:
                     # Translators: ``RSS channel'' is terminology idiom, see Wikipedia
                     channel_title = panel.title() +' ('+ _("RSS channel") +')'
