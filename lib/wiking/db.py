@@ -1363,10 +1363,12 @@ class PytisModule(Module, ActionHandler):
                                               *[pd.NE(value_column, v) for v in values]),
                              transaction=transaction)
             for value in values:
-                count = data.select(condition=pd.AND(pd.EQ(linking_column, key),
-                                                     pd.EQ(value_column, value)),
-                                    transaction=transaction)
-                data.close()
+                try:
+                    count = data.select(condition=pd.AND(pd.EQ(linking_column, key),
+                                                  pd.EQ(value_column, value)),
+                                        transaction=transaction)
+                finally:
+                    data.close()
                 if count != 1:
                     row = pd.Row([(linking_column, key), (value_column, value)])
                     data.insert(row, transaction=transaction)

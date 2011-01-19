@@ -340,14 +340,16 @@ class ApplicationRoles(UserManagementModule):
 
     def _read_roles(self):
         roles = {}
-        self._data.select()
-        while True:
-            row = self._data.fetchone()
-            if row is None:
-                break
-            role = self._make_role(row)
-            roles[role.id()] = role
-        self._data.close()
+        try:
+            self._data.select()
+            while True:
+                row = self._data.fetchone()
+                if row is None:
+                    break
+                role = self._make_role(row)
+                roles[role.id()] = role
+        finally:
+            self._data.close()
         return roles
 
     def get_role(self, role_id):

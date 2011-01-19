@@ -1427,19 +1427,21 @@ class WikingDefaultDataClass(DBAPIData):
             if condition:
                 conds.append(condition)
             condition = pd.AND(*conds)
-        self.select(condition=condition, sort=sorting, arguments=arguments, columns=columns,
-                    transaction=transaction)
-        rows = []
-        if skip:
-            self.skip(skip)
-        while True:
-            row = self.fetchone(transaction=transaction)
-            if row is None:
-                break
-            rows.append(row)
-            if limit is not None and len(rows) > limit:
-                break
-        self.close()
+        try:
+            self.select(condition=condition, sort=sorting, arguments=arguments, columns=columns,
+                        transaction=transaction)
+            rows = []
+            if skip:
+                self.skip(skip)
+            while True:
+                row = self.fetchone(transaction=transaction)
+                if row is None:
+                    break
+                rows.append(row)
+                if limit is not None and len(rows) > limit:
+                    break
+        finally:
+            self.close()
         return rows
 
     def get_row(self, **kwargs):
