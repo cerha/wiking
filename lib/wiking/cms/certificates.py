@@ -275,7 +275,10 @@ class UserCertificates(Certificates):
             self._data.select(pd.AND(pd.EQ('uid', uid_value), pd.EQ('purpose', purpose_value)))
             row = self._data.fetchone()
         finally:
-            self._data.close()
+            try:
+                self._data.close()
+            except:
+                pass
         return row
 
     def certificate_user(self, req, certificate):

@@ -349,7 +349,10 @@ class ApplicationRoles(UserManagementModule):
                 role = self._make_role(row)
                 roles[role.id()] = role
         finally:
-            self._data.close()
+            try:
+                self._data.close()
+            except:
+                pass
         return roles
 
     def get_role(self, role_id):

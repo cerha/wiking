@@ -1441,7 +1441,10 @@ class WikingDefaultDataClass(DBAPIData):
                 if limit is not None and len(rows) > limit:
                     break
         finally:
-            self.close()
+            try:
+                self.close()
+            except:
+                pass
         return rows
 
     def get_row(self, **kwargs):

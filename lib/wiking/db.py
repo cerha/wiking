@@ -1368,7 +1368,10 @@ class PytisModule(Module, ActionHandler):
                                                   pd.EQ(value_column, value)),
                                         transaction=transaction)
                 finally:
-                    data.close()
+                    try:
+                        data.close()
+                    except:
+                        pass
                 if count != 1:
                     row = pd.Row([(linking_column, key), (value_column, value)])
                     data.insert(row, transaction=transaction)
