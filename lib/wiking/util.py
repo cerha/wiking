@@ -1497,6 +1497,10 @@ class Specification(pp.Specification):
         self.actions = tuple(actions)
         super(Specification, self).__init__(resolver)
 
+    def _action_spec_name(self):
+        # Mainly to indicate the module name in specification error messages...
+        return self._module.__module__ + '.' + self._module.name()
+    
 
 class Binding(pp.Binding):
     """Extension of Pytis 'Binding' with web specific parameters.""" 
