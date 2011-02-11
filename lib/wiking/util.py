@@ -15,9 +15,8 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-from wiking import *
-
-import email.Header
+import lcg, pytis
+import sys, email.Header, httplib
 from xml.sax import saxutils
 
 DBG = pytis.util.DEBUG
@@ -26,6 +25,8 @@ OPR = pytis.util.OPERATIONAL
 log = pytis.util.StreamLogger(sys.stderr).log
 
 _ = lcg.TranslatableTextFactory('wiking')
+
+from wiking import *
 
 
 class RequestError(Exception):
@@ -53,10 +54,10 @@ class RequestError(Exception):
     """
     _TITLE = None
     
-    _STATUS_CODE = 200
+    _STATUS_CODE = httplib.OK
     """Relevant HTTP status code.
 
-    The code may be 200 (HTTP_OK) for errors which don't map to HTTP errors.
+    The code may be 200 (OK) for errors which don't map to HTTP errors.
 
     """
     _LOG = True
@@ -101,7 +102,7 @@ class RequestError(Exception):
         else:
             code = self.status_code(req)
             name = " ".join(pp.split_camel_case(self.__class__.__name__))
-            if code == 200:
+            if code == httplib.OK:
                 return name
             else:
                 # Translators: '%(code)d' is replaced by error number and '%(name)s' by error title.
@@ -168,16 +169,16 @@ class AuthenticationError(RequestError):
 
         If HTTP authentication is active (either requested explicitly or turned
         on automatically -- see '_HTTP_AUTH_MATCHER'), the status code 401
-        (HTTP_UNAUTHORIZED) is returned, otherwise the code is 200 (HTTP_OK)
+        (UNAUTHORIZED) is returned, otherwise the code is 200 (OK)
         and cookie based authentication mechanism will be used.
         
         """
         agent = req.header('User-Agent')
         if req.param('__http_auth') or agent is None or self._HTTP_AUTH_MATCHER.match(agent):
             # Ask for HTTP Basic authentication.
-            return 401
+            return httplib.UNAUTHORIZED
         else:
-            return 200
+            return httplib.OK
 
     def message(self, req):
         return LoginDialog(self.args and self.args[0] or None)
@@ -251,7 +252,7 @@ class BadRequest(RequestError):
     separate paragraph. 
 
     """
-    _STATUS_CODE = 400
+    _STATUS_CODE = httplib.BAD_REQUEST
     
     def message(self, req):
         if self.args:
@@ -262,7 +263,7 @@ class BadRequest(RequestError):
         
 class NotFound(RequestError):
     """Error indicating invalid request target."""
-    _STATUS_CODE = 404
+    _STATUS_CODE = httplib.NOT_FOUND
     
     def message(self, req):
         # Translators: The word 'item' is intentionaly very generic, since it may mean a page,
@@ -278,7 +279,7 @@ class NotFound(RequestError):
     
 class Forbidden(RequestError):
     """Error indicating unavailable request target."""
-    _STATUS_CODE = 403
+    _STATUS_CODE = httplib.FORBIDDEN
     
     def message(self, req):
         return (lcg.p(_("The item '%s' is not available.", req.uri())),
@@ -295,7 +296,7 @@ class NotAcceptable(RequestError):
     """
     # Translators: Title of a dialog on a webpage
     _TITLE = _("Language selection")
-    _STATUS_CODE = 406
+    _STATUS_CODE = httplib.NOT_ACCEPTABLE
     
     def message(self, req):
         msg = (lcg.p(_("The resource '%s' is not available in either of the requested languages.",
@@ -317,7 +318,7 @@ class NotAcceptable(RequestError):
 class InternalServerError(RequestError):
     """General error in application -- error message is required as an argument."""
     _TITLE = _("Internal Server Error")
-    _STATUS_CODE = 500
+    _STATUS_CODE = httplib.INTERNAL_SERVER_ERROR
 
     # Avoid logging of this errror as it is now done in
     # 'Application.handle_exception()'.  It would probably make sense to move
@@ -347,7 +348,7 @@ class InternalServerError(RequestError):
 class ServiceUnavailable(RequestError):
     """Error indicating a temporary problem, which may not appaper in further requests."""
     _TITLE = _("Service Unavailable")
-    _STATUS_CODE = 503
+    _STATUS_CODE = httplib.SERVICE_UNAVAILABLE
     
     def message(self, req):
         return (lcg.p(_("The requested function is currently unavailable. "

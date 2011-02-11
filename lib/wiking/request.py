@@ -15,7 +15,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-import os, string, Cookie, re, urllib, mx.DateTime
+import os, string, Cookie, re, urllib, mx.DateTime, httplib
 import wiking, lcg, pytis
 from wiking import log, OPR
 
@@ -49,11 +49,7 @@ class ServerInterface(pytis.web.Request):
     derived from 'Request', not from this class directly.
     
     """
-    HTTP_OK = 200
-    HTTP_MOVED_PERMANENTLY = 301
-    HTTP_MOVED_TEMPORARILY = 302
-    HTTP_NOT_MODIFIED      = 304
-
+    
     def uri(self):
         """Return request URI path relative to server's root.
 
@@ -433,15 +429,15 @@ class Request(ServerInterface):
         """Deprecated.  Use 'start_response()' instead."""
         self.start_response(content_type=content_type, content_length=length)
 
-    def start_response(self, status_code=ServerInterface.HTTP_OK,
-                       content_type=None, content_length=None):
+    def start_response(self, status_code=httplib.OK, content_type=None, content_length=None):
         """Set some common HTTP response attributes and send the HTTP headers.
 
         Arguments:
           status_code -- HTTP response status code (default is OK).  See the
             notes below concerning HTTP authentication.  This argment may be
             used as positional (it is guaranteed to be the first argument in
-            future versions), altough it is still optional.
+            future versions), altough it is still optional.  It is recommended
+            to use 'httplib' constants for the status codes.
           content_type -- equivalent to calling "set_header('Content-Type', ...)"
             prior to this call.
           content_type -- equivalent to calling "set_header('Content-Length', ...)"
@@ -474,7 +470,7 @@ class Request(ServerInterface):
         """Deprecated.  Return None instead."""
         return None
     
-    def send_response(self, data, content_type="text/html", status_code=ServerInterface.HTTP_OK):
+    def send_response(self, data, content_type="text/html", status_code=httplib.OK):
         if content_type in ("text/html", "application/xml", "text/css", "text/plain") \
                 and isinstance(data, unicode):
             content_type += "; charset=%s" % self._encoding
@@ -510,7 +506,7 @@ class Request(ServerInterface):
         if since_header:
             since = mx.DateTime.ARPA.ParseDateTime(since_header)
             if mtime == since:
-                self.start_response(self.HTTP_NOT_MODIFIED)
+                self.start_response(httplib.NOT_MODIFIED)
                 return
         self.set_header('Last-Modified', mx.DateTime.ARPA.str(mtime))
         self.start_response(content_type=content_type, content_length=info.st_size)
@@ -552,11 +548,10 @@ class Request(ServerInterface):
                 "<a href='"+uri+"'>"+uri+"</a>.</body></html>").encode(self._encoding)
         self.set_header('Location', uri)
         if permanent:
-            status = self.HTTP_MOVED_PERMANENTLY
+            status_code = httplib.MOVED_PERMANENTLY
         else:
-            status = self.HTTP_MOVED_TEMPORARILY
-        self.start_response(status, content_type="text/html")
-        self.write(html)
+            status_code = httplib.FOUND
+        self.send_response(html, status_code=status_code, content_type="text/html")
 
     def redirect(self, uri, args=(), permanent=False):
         """Send an HTTP redirection response to the browser.
