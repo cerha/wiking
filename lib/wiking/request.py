@@ -425,10 +425,6 @@ class Request(ServerInterface):
             result += ':'+ str(port)
         return result
 
-    def send_http_header(self, content_type, length=None):
-        """Deprecated.  Use 'start_response()' instead."""
-        self.start_response(content_type=content_type, content_length=length)
-
     def start_response(self, status_code=httplib.OK, content_type=None, content_length=None):
         """Set some common HTTP response attributes and send the HTTP headers.
 
@@ -466,10 +462,6 @@ class Request(ServerInterface):
             req.set_header('WWW-Authenticate', 'Basic realm="%s"' % cfg.site_title)
         self.start_http_response(status_code)
 
-    def done(self):
-        """Deprecated.  Return None instead."""
-        return None
-    
     def send_response(self, data, content_type="text/html", status_code=httplib.OK):
         if content_type in ("text/html", "application/xml", "text/css", "text/plain") \
                 and isinstance(data, unicode):
@@ -478,10 +470,6 @@ class Request(ServerInterface):
         self.start_response(status_code, content_type=content_type, content_length=len(data))
         self.write(data)
 
-    def result(self, data, content_type="text/html"):
-        """Deprecated.  Use 'send_response()' instead."""
-        self.send_response(data, content_type=content_type)
-        
     def serve_file(self, filename, content_type, lock=False):
         """Send the contents of given file to the remote host.
 
@@ -666,10 +654,6 @@ class Request(ServerInterface):
         """
         return tuple(self._forwards)
 
-    def uri_prefix(self):
-        """Deprecated.  Now always returns an empty string."""
-        return ''
-        
     def show_panels(self):
         return self._show_panels
     
@@ -849,6 +833,22 @@ class Request(ServerInterface):
         else:
             messages = [m for m in self._messages if m[1] != self.HEADING]
         return tuple(messages)
+
+    def send_http_header(self, content_type, length=None):
+        """Deprecated.  Use 'start_response()' instead."""
+        self.start_response(content_type=content_type, content_length=length)
+
+    def done(self):
+        """Deprecated.  Return None instead."""
+        return None
+    
+    def result(self, data, content_type="text/html"):
+        """Deprecated.  Use 'send_response()' instead."""
+        self.send_response(data, content_type=content_type)
+        
+    def uri_prefix(self):
+        """Deprecated.  Now always returns an empty string."""
+        return ''
 
     
 class User(object):
