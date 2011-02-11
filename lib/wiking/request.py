@@ -141,6 +141,10 @@ class ServerInterface(pytis.web.Request):
         called before any 'write()' calls and must be called just once for each
         request.  Any 'set_header()' calls after calling this method are
         ignored.
+
+        This is a low level server interface method.  See also
+        'Request.start_response()' for a more convenient application interface
+        method.
         
         Raise 'ClosedConnection' if the client closes the connection during the
         operation.
@@ -429,11 +433,12 @@ class Request(ServerInterface):
         """Set some common HTTP response attributes and send the HTTP headers.
 
         Arguments:
-          status_code -- HTTP response status code (default is OK).  See the
-            notes below concerning HTTP authentication.  This argment may be
-            used as positional (it is guaranteed to be the first argument in
-            future versions), altough it is still optional.  It is recommended
-            to use 'httplib' constants for the status codes.
+          status_code -- integer number denoting the HTTP response status code
+            (default is 'httplib.OK').  See the notes below concerning HTTP
+            authentication.  This argument may be used as positional (it is
+            guaranteed to be the first argument in future versions), altough it
+            is still optional.  It is recommended to use 'httplib' constants
+            for the status codes.
           content_type -- equivalent to calling "set_header('Content-Type', ...)"
             prior to this call.
           content_type -- equivalent to calling "set_header('Content-Length', ...)"
@@ -463,19 +468,36 @@ class Request(ServerInterface):
         self.start_http_response(status_code)
 
     def send_response(self, data, content_type="text/html", status_code=httplib.OK):
-        if content_type in ("text/html", "application/xml", "text/css", "text/plain") \
-                and isinstance(data, unicode):
-            content_type += "; charset=%s" % self._encoding
+        """Start the HTTP response and send response data to the client.
+
+        Arguments:
+          data -- respnse data as a string or unicode.  Unicode data will be
+            automatically encoded to string using the current encoding.
+          content_type -- same as in 'start_response()', but the current
+            encoding will be automatically appended for types "text/html",
+            "application/xml", "text/css" and "text/plain".  So for example
+            "text/plain" will be converted to "text/plain; charset=UTF-8".
+          status_code -- same as in 'start_response()'.
+          
+        This method is actually just a shorthand for calling 'start_response()'
+        and 'write()' in one step with additional unicode handling.  The
+        'Content-Length' HTTP header is automatically set according to the
+        length of 'data'.
+
+        """
+        if isinstance(data, unicode):
             data = data.encode(self._encoding)
+            if content_type in ("text/html", "application/xml", "text/css", "text/plain"):
+                content_type += "; charset=%s" % self._encoding
         self.start_response(status_code, content_type=content_type, content_length=len(data))
         self.write(data)
 
     def serve_file(self, filename, content_type, lock=False):
-        """Send the contents of given file to the remote host.
+        """Send the contents of given file to the client.
 
         Arguments:
-          filename -- full path to the file
-          content_type -- Content-Type header as a string
+          filename -- full path to the file in server's filesystem.
+          content_type -- same as in 'start_response()', but mandatory for this method.
           lock -- iff True, shared lock will be aquired on the file while it is served.
 
         'wiking.NotFound' exception is raised if the file does not exist.
@@ -576,7 +598,7 @@ class Request(ServerInterface):
         self._redirect(uri, permanent=permanent)
 
     def make_uri(self, base_uri, *args, **kwargs):
-        """Return a URI constructed from given base URI and args.
+        """Return a URI constructed from given base URI and arguments.
 
         Arguments:
         
@@ -620,6 +642,12 @@ class Request(ServerInterface):
 
 
     def fresh_login(self):
+        """Return True iff this is a fresh login.
+
+        The login is fresh when authentication was initialized witin the
+        current request (credentials were passed).
+
+        """
         return self._fresh_login
 
     def forward(self, handler, **kwargs):
@@ -655,6 +683,12 @@ class Request(ServerInterface):
         return tuple(self._forwards)
 
     def show_panels(self):
+        """Return True if Wiking panels are currently on.
+
+        The Request instance tracks the state of side panels (shown/hidden) and
+        uses cookies to make this setting persistent.
+
+        """
         return self._show_panels
     
     def preferred_languages(self):
