@@ -13,21 +13,18 @@ modules.
 
 The handler's responsibilities are:
 
-  * Interfacing the HTTP server environment (currently Apache/mod_python is
-    implemented).
-  * Instantiating the 'Application' module and passing the request processing
-    to it's [application#handle] method (the instance is cached for future
-    requests).
+  * Instantiating the 'Application' module (or picking one from the cache) and
+    passing the request processing to it's [application#handle] method.
   * Processing any exceptions raised during application's request processing.
   * Rendering the result of request processing to the client (typically by
     exporting the LCG content structure using the Wiking Exporter, but also
     arbitrary content data may be sent to the client).
 
 
-== The WikingRequest Class ==
+== The Request Class ==
 
 The argument 'req' which appears in all request handling methods is an
-instance of the WikingRequest class.  This class, apart from the generic
+instance of the Request class.  This class, apart from the generic
 features, such as retrieving request parameters, cookies etc., implements some
 features specific for the Wiking request handling process.
 
@@ -35,7 +32,7 @@ The following sections provide an overview of these additional features and
 their typical usage in the request handling process.  See the docstrings of the
 corresponding methods for more specific reference.
 
-WikingRequest specific features: @TOC@
+Request specific features: @TOC@
 
 === Request Resolution ===
 
@@ -95,13 +92,13 @@ once and the 'User' instance is kept for the duration of the request (if
 authentication was successful)
 
 
-=== Prefered Languages ===
+=== Preferred Languages ===
 
-The prefered language is determined using the HTTP Accept-Language headers and
+The preferred language is determined using the HTTP Accept-Language headers and
 Wiking specific cookies (which may override the Accept-Language settings).  The
 selection of languages is additionally restricted by the available languages
 determined by the current application (see Application.[application#languages]).
 
-The methods 'prefered_languages()' and 'prefered_language()' provide an
+The methods 'preferred_languages()' and 'preferred_language()' provide an
 interface for determining the user's language preferences and selection of the
 most appropriate language from a list of available language variants.
