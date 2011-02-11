@@ -77,7 +77,7 @@ class Application(Module):
              the actual output data as an 8-bit string or buffer.
            * None to indicate, that the request has already been served by
              calling the Request methods directly (normally
-             'req.send_http_header()' and 'req.write()').
+             'req.start_response()' and 'req.write()').
 
         The default implementation uses static mapping of request paths (URI)
         to wiking modules defined by the class constant '\_MAPPING' to

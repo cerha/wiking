@@ -1,4 +1,4 @@
-# Copyright (C) 2006-2010 Brailcom, o.p.s.
+# Copyright (C) 2006-2011 Brailcom, o.p.s.
 # Author: Tomas Cerha <cerha@brailcom.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -91,7 +91,12 @@ class ModPythonRequest(wiking.Request):
             return default
 
     def set_header(self, name, value):
-        self._req.headers_out.add(name, value)
+        if name.lower() == 'content-type':
+            self._req.content_type = value
+        elif name.lower() == 'content-length':
+            self._req.set_content_length(int(value))
+        else:
+            self._req.headers_out.add(name, value)
         
     def port(self):
         return self._req.connection.local_addr[1]
@@ -111,13 +116,8 @@ class ModPythonRequest(wiking.Request):
                 return self._req.hostname
         return self._req.server.server_hostname
 
-    def set_status(self, status):
-        self._req.status = status
-
-    def send_http_header(self, content_type, length=None):
-        self._req.content_type = content_type
-        if length is not None:
-            self._req.set_content_length(length)
+    def start_http_response(self, status_code):
+        self._req.status = status_code
         try:
             self._req.send_http_header()
         except IOError, e:

@@ -43,9 +43,8 @@ class RequestError(Exception):
 
     The Wiking handler is responsible for handling these errors approprietly.
     This usually means to output a page with title and body content as returned
-    by the methods 'title()' and 'message()' and calling the method
-    'set_status()' to set the appropriate HTTP status code and/or other
-    necessary response properties.
+    by the methods 'title()' and 'message()' and setting the HTTP response
+    status code according to 'status_code()'.
 
     This class is abstract.  The error code and error message must be defined
     by a derived class.  The error message may also require certain constructor
@@ -53,7 +52,13 @@ class RequestError(Exception):
 
     """
     _TITLE = None
+    
     _STATUS_CODE = 200
+    """Relevant HTTP status code.
+
+    The code may be 200 (HTTP_OK) for errors which don't map to HTTP errors.
+
+    """
     _LOG = True
     """Indicates whether this kind of error should be logged on the server.
 
@@ -61,7 +66,6 @@ class RequestError(Exception):
     False if logging is not appropriate for given error type.
 
     """
-    
     _LOG_FORMAT = "%(error)s: %(server_hostname)s%(uri)s [%(user)s@%(remote_host)s] (%(stack)s)\n"
     """Python format string used for printing error message to the system log.
     
@@ -95,7 +99,7 @@ class RequestError(Exception):
         if self._TITLE is not None:
             return self._TITLE
         else:
-            code = self._STATUS_CODE
+            code = self.status_code(req)
             name = " ".join(pp.split_camel_case(self.__class__.__name__))
             if code == 200:
                 return name
@@ -107,15 +111,14 @@ class RequestError(Exception):
         """Return the error message as an 'lcg.Content' element structure.""" 
         return None
 
-    def set_status(self, req):
-        """Set the appropriate HTTP response status code to be sent to the client.
+    def status_code(self, req):
+        """Return the HTTP response status code corresponding to this request error.
 
-        By default, the status code determined by the variable '_STATUS_CODE'
-        set.  Override this method if something more complex is needed.
+        The code is 200 (OK) for errors which don't map to HTTP errors.
 
         """
-        req.set_status(self._STATUS_CODE)
-
+        return self._STATUS_CODE
+        
     def log(self, req):
         """Currently used only for debugging, but in future it should be used for proper logging."""
         # Prevent double logging when handling exception in exception (see handler.py).
@@ -160,23 +163,21 @@ class AuthenticationError(RequestError):
     """
     _LOG = False
     
-    def set_status(self, req):
+    def status_code(self, req):
         """Return authentication error page status code.
 
         If HTTP authentication is active (either requested explicitly or turned
-        on automatically -- see '_HTTP_AUTH_MATCHER'), set the appropriate HTTP
-        header and status code 401, otherwise set status code 200 and rely on
-        cookie based authentication mechanism.
+        on automatically -- see '_HTTP_AUTH_MATCHER'), the status code 401
+        (HTTP_UNAUTHORIZED) is returned, otherwise the code is 200 (HTTP_OK)
+        and cookie based authentication mechanism will be used.
         
         """
         agent = req.header('User-Agent')
         if req.param('__http_auth') or agent is None or self._HTTP_AUTH_MATCHER.match(agent):
             # Ask for HTTP Basic authentication.
-            code = 401
-            req.set_header('WWW-Authenticate', 'Basic realm="%s"' % cfg.site_title)
+            return 401
         else:
-            code = self._STATUS_CODE
-        req.set_status(code)
+            return 200
 
     def message(self, req):
         return LoginDialog(self.args and self.args[0] or None)
@@ -292,9 +293,9 @@ class NotAcceptable(RequestError):
     page/document/resource.
 
     """
-    _STATUS_CODE = 406
     # Translators: Title of a dialog on a webpage
     _TITLE = _("Language selection")
+    _STATUS_CODE = 406
     
     def message(self, req):
         msg = (lcg.p(_("The resource '%s' is not available in either of the requested languages.",
@@ -315,8 +316,8 @@ class NotAcceptable(RequestError):
 
 class InternalServerError(RequestError):
     """General error in application -- error message is required as an argument."""
-    _STATUS_CODE = 500
     _TITLE = _("Internal Server Error")
+    _STATUS_CODE = 500
 
     # Avoid logging of this errror as it is now done in
     # 'Application.handle_exception()'.  It would probably make sense to move
@@ -345,9 +346,9 @@ class InternalServerError(RequestError):
         
 class ServiceUnavailable(RequestError):
     """Error indicating a temporary problem, which may not appaper in further requests."""
-    _STATUS_CODE = 503
     _TITLE = _("Service Unavailable")
-
+    _STATUS_CODE = 503
+    
     def message(self, req):
         return (lcg.p(_("The requested function is currently unavailable. "
                         "Try repeating your request later.")),

@@ -1,4 +1,4 @@
-# Copyright (C) 2010 Brailcom, o.p.s.
+# Copyright (C) 2010, 2011 Brailcom, o.p.s.
 # Author: Tomas Cerha <cerha@brailcom.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -54,7 +54,6 @@ class WsgiRequest(wiking.Request):
         self._response_headers = wsgiref.headers.Headers(self._response_headers_storage)
         self._params = self._init_params(encoding)
         self._response_started = False
-        self._status_code = 200
         self._data = []
         self._uri = unicode(environ['PATH_INFO'], encoding)
         super(WsgiRequest, self).__init__(encoding=encoding)
@@ -122,22 +121,13 @@ class WsgiRequest(wiking.Request):
         else:
             return self._environ['SERVER_NAME']
 
-    def set_status(self, status):
-        self._status_code = status
-
-    def send_http_header(self, content_type, length=None):
+    def start_http_response(self, status_code):
         if True: #not self._response_started:
-            wiking.debug("===", content_type, length)
-
             self._response_started = True
-            self._response_headers.add_header('Content-Type', content_type)
-            if length is not None:
-                self._response_headers.add_header('Content-Length', str(length))
-            response_text = httplib.responses[self._status_code]
-            self._start_response('%d %s' % (self._status_code, response_text),
-                                 self._response_headers_storage)
+            response = '%d %s' % (status_code, httplib.responses[status_code])
+            self._start_response(response, self._response_headers_storage)
         else:
-            raise RuntimeError("send_http_header() can only be called once!")
+            raise RuntimeError("start_http_response() can only be called once!")
 
     def write(self, data):
         # TODO: send data to wsgi directly as they are written!

@@ -1642,7 +1642,7 @@ class PytisModule(Module, ActionHandler):
         lang = req.prefered_language()
         for header, content in headers:
             req.set_header(header, content)
-        req.send_http_header(content_type)
+        req.start_response(content_type=content_type)
         for row in self._rows(req, condition=condition, lang=lang):
             record.set_row(row)
             export_row(record)
@@ -1699,7 +1699,7 @@ class PytisModule(Module, ActionHandler):
         result = exporter.export(context)
         req.set_header('Content-disposition',
                        'attachment; filename=%s' % self._print_field_filename(req, record, field))
-        req.send_http_header('application/pdf')
+        req.start_response(content_type='application/pdf')
         req.write(result)
     
     def _action_subtitle(self, req, action, record=None):
@@ -1875,7 +1875,7 @@ class RssModule(object):
         record = self._record(req, None)
         translate = translator(str(lang)).translate
         writer = RssWriter(req)
-        req.send_http_header('application/xml')
+        req.start_response(content_type='application/xml')
         writer.start(base_uri,
                      translate(cfg.site_title +' - '+ self._rss_channel_title(req)),
                      description=translate(cfg.site_subtitle),
@@ -2007,7 +2007,7 @@ class PytisRssModule(PytisModule):
                           condition=channel.condition())
         record = self._record(req, None)
         writer = RssWriter(req)
-        req.send_http_header('application/xml')
+        req.start_response(content_type='application/xml')
         writer.start(base_uri,
                      translate(cfg.site_title +' - '+ channel.title()),
                      description=translate(channel.descr() or cfg.site_subtitle),

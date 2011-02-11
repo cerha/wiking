@@ -1,4 +1,4 @@
-# Copyright (C) 2006-2010 Brailcom, o.p.s.
+# Copyright (C) 2006-2011 Brailcom, o.p.s.
 # Author: Tomas Cerha <cerha@brailcom.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -49,6 +49,7 @@ class ServerInterface(pytis.web.Request):
     derived from 'Request', not from this class directly.
     
     """
+    HTTP_OK = 200
     HTTP_MOVED_PERMANENTLY = 301
     HTTP_MOVED_TEMPORARILY = 302
     HTTP_NOT_MODIFIED      = 304
@@ -137,14 +138,24 @@ class ServerInterface(pytis.web.Request):
         """
         pass
 
-    def set_status(self, status):
-        pass
+    def start_http_response(self, status_code):
+        """Start the HTTP response.
 
-    def send_http_header(self, content_type, length=None):
+        HTTP response headers will be sent to the client.  This method must be
+        called before any 'write()' calls and must be called just once for each
+        request.  Any 'set_header()' calls after calling this method are
+        ignored.
+        
+        Raise 'ClosedConnection' if the client closes the connection during the
+        operation.
+        
+        """
         pass
-
+        
     def write(self, data):
         """Write data to the client through the network socket.
+
+        This method may only be called after 'start_http_response()'.
 
         Raise 'ClosedConnection' if the client closes the connection during
         writing.
@@ -418,18 +429,63 @@ class Request(ServerInterface):
             result += ':'+ str(port)
         return result
 
+    def send_http_header(self, content_type, length=None):
+        """Deprecated.  Use 'start_response()' instead."""
+        self.start_response(content_type=content_type, content_length=length)
+
+    def start_response(self, status_code=ServerInterface.HTTP_OK,
+                       content_type=None, content_length=None):
+        """Set some common HTTP response attributes and send the HTTP headers.
+
+        Arguments:
+          status_code -- HTTP response status code (default is OK).  See the
+            notes below concerning HTTP authentication.  This argment may be
+            used as positional (it is guaranteed to be the first argument in
+            future versions), altough it is still optional.
+          content_type -- equivalent to calling "set_header('Content-Type', ...)"
+            prior to this call.
+          content_type -- equivalent to calling "set_header('Content-Length', ...)"
+            prior to this call.
+
+        This is actually just a little more convenient way of calling
+        'start_http_response()' defined by the low level server API.  This
+        method must be called before any 'write()' calls and must be called
+        just once for each request.  Any 'set_header()' calls after calling
+        this method are ignored.
+
+        If 'status_code' is set to 401 (UNAUTHORIZED), the 'WWW-Authenticate'
+        header is automatically set to 'Basic realm="<cfg.site_title>"'.  Use
+        the lower level method 'start_http_response()' if you want to avoid
+        this side effect.
+        
+        Raise 'ClosedConnection' if the client closes the connection during the
+        operation.
+
+        """
+        if content_type is not None:
+            self.set_header('Content-Type', content_type)
+        if content_length is not None:
+            self.set_header('Content-Length', str(content_length))
+        if status_code == 401:
+            req.set_header('WWW-Authenticate', 'Basic realm="%s"' % cfg.site_title)
+        self.start_http_response(status_code)
+
     def done(self):
         """Deprecated.  Return None instead."""
         return None
     
-    def result(self, data, content_type="text/html"):
+    def send_response(self, data, content_type="text/html", status_code=ServerInterface.HTTP_OK):
         if content_type in ("text/html", "application/xml", "text/css", "text/plain") \
                 and isinstance(data, unicode):
             content_type += "; charset=%s" % self._encoding
             data = data.encode(self._encoding)
-        self.send_http_header(content_type, len(data))
+        self.start_response(status_code, content_type=content_type, content_length=len(data))
         self.write(data)
 
+    def result(self, data, content_type="text/html"):
+        """Deprecated.  Use 'send_response()' instead."""
+        self.send_response(data, content_type=content_type)
+        
     def serve_file(self, filename, content_type, lock=False):
         """Send the contents of given file to the remote host.
 
@@ -454,10 +510,10 @@ class Request(ServerInterface):
         if since_header:
             since = mx.DateTime.ARPA.ParseDateTime(since_header)
             if mtime == since:
-                self.set_status(self.HTTP_NOT_MODIFIED)
+                self.start_response(self.HTTP_NOT_MODIFIED)
                 return
         self.set_header('Last-Modified', mx.DateTime.ARPA.str(mtime))
-        self.send_http_header(content_type, info.st_size)
+        self.start_response(content_type=content_type, content_length=info.st_size)
         f = file(filename)
         if lock:
             import fcntl
@@ -494,13 +550,12 @@ class Request(ServerInterface):
         html = ("<html><head><title>Redirected</title></head>"
                 "<body>Your request has been redirected to "
                 "<a href='"+uri+"'>"+uri+"</a>.</body></html>").encode(self._encoding)
+        self.set_header('Location', uri)
         if permanent:
             status = self.HTTP_MOVED_PERMANENTLY
         else:
             status = self.HTTP_MOVED_TEMPORARILY
-        self.set_status(status)
-        self.set_header('Location', uri)
-        self.send_http_header("text/html")
+        self.start_response(status, content_type="text/html")
         self.write(html)
 
     def redirect(self, uri, args=(), permanent=False):

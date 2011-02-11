@@ -1,4 +1,4 @@
-# Copyright (C) 2006, 2007, 2008, 2009, 2010 Brailcom, o.p.s.
+# Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 Brailcom, o.p.s.
 # Author: Tomas Cerha <cerha@brailcom.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -92,24 +92,22 @@ class Handler(object):
         self._application = cfg.resolver.wiking_module('Application')
         self._exporter = cfg.exporter(translations=cfg.translation_path)
 
-    def _serve_document(self, req, document):
+    def _serve_document(self, req, document, status_code=200):
         """Serve a document using the Wiking exporter."""
         node = document.build(req, self._application)
         context = self._exporter.context(node, node.lang(), sec_lang=node.sec_lang(), req=req)
         exported = self._exporter.export(context)
-        req.result(context.translate(exported))
+        req.send_response(context.translate(exported), status_code=status_code)
 
     def _serve_error_document(self, req, error):
         """Serve an error page using the Wiking exporter."""
         error.log(req)
-        error.set_status(req)
         document = Document(error.title(req), error.message(req))
-        self._serve_document(req, document)
+        self._serve_document(req, document, status_code=error.status_code(req))
 
     def _serve_minimal_error_document(self, req, error):
         """Serve a minimal error page using the minimalistic exporter."""
         error.log(req)
-        error.set_status(req)
         node = lcg.ContentNode(req.uri().encode('utf-8'),
                                title=error.title(req),
                                content=error.message(req))
@@ -121,7 +119,7 @@ class Handler(object):
                                                       cfg.default_language) or 'en'
         context = exporter.context(node, lang=lang)
         exported = exporter.export(context)
-        req.result(context.translate(exported))
+        req.send_response(context.translate(exported), status_code=error.status_code(req))
 
     def _handle(self, req):
         application = self._application
