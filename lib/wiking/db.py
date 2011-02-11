@@ -1189,7 +1189,7 @@ class PytisModule(Module, ActionHandler):
         if req.param('_pytis_form_update_request'):
             tr = translator(req.prefered_language(raise_error=False))
             response = pw.EditForm.ajax_response(req, record, layout, errors, tr)
-            req.result(response, content_type='application/json')
+            req.send_response(response, content_type='application/json')
             return True
         else:
             return False

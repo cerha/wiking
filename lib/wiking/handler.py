@@ -133,7 +133,7 @@ class Handler(object):
                     self._serve_document(req, result)
                 elif isinstance(result, (tuple, list)):
                     content_type, data = result
-                    req.result(data, content_type=content_type)
+                    req.send_response(data, content_type=content_type)
                 else:
                     # int is deprecated! Just for backwards compatibility.  
                     assert result is None or isinstance(result, int)
