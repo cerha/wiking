@@ -21,7 +21,7 @@ import sys, os, time, string, re, copy, urllib, imp
 
 # TODO: this can be removed once it is solved in Pytis...
 imp.reload(sys)
-sys.setdefaultencoding('iso-8859-2')
+sys.setdefaultencoding('utf-8')
 
 import pytis, pytis.util
 import pytis.data as pd
