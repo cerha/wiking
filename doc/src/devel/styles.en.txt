@@ -146,10 +146,14 @@ repetition.
 -----
 
 Of course, this requires that the images can be accessed through given URLs.
-This can be achieved by uploading the images as page attachments in Wiking CMS,
-by configuring your web server to serve those images outside Wiking (as
-described in [apache#non-wiking-uris]) or
-programming Wiking to serve them in your own Wiking application.
+
+This can be achieved by:
+  a) uploading the images as page attachments in Wiking CMS,
+  b) making the images available as wiking resources (see
+     [config#resource_path]),
+  c) configuring your web server to serve those images outside Wiking (as
+     described in [apache#non-wiking-urls]),
+  d) programming Wiking to serve them in your own Wiking application.
 
 It is recommended to style the site title text to be drawn across the logo
 (text can be enlarged, copied, accessed by users of assistive technologies,

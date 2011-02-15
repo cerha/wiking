@@ -9,13 +9,16 @@ Index: @TOC@
 Wiking is written in Python and makes use of two other important components:
 
  * *LCG* ... provides content abstraction, internationalization support and HTML
-   generation (see [http://www.freebsoft.org/lcg|LCG project website]).
+   generation.  See the [http://www.freebsoft.org/lcg|LCG project website].
 
- * *Pytis* ... provides data abstraction, modularization and database access.
+ * *Pytis* ... provides data abstraction, modularization and database access
+   (the current implementation uses the PostgreSQL database backend).  See the
+   [http://www.freebsoft.org/pytis|Pytis project website].
 
-The current implementation runs on Apache web server (over mod_python) and
-stores its data in the PostgreSQL database.  Thanks to a high level of
-abstraction, these components could be replaced, however.
+Apache/mod_python and WSGI web server interfaces are supported, so any WSGI
+compliant server environment should work (although only Apache/mod_python and
+Apache/mod_wsgi are tested).
+
 
 == What Wiking provides ==
 

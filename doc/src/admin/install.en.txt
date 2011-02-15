@@ -1,25 +1,101 @@
 # -*- coding: utf-8; mode: structured-text -*-
 
-== Installation Instructions ==
+= Installation Instructions =
 
-Dependencies:
+== External Dependencies ==
 
   * python >= 2.3 (2.4 suggested)
-  * apache >= 2.0 (prefork MPM!)
-  * mod_python >= 3.2.10
-  * postgresql >= (8.1 or later)
-  * lcg >= 0.3.5
-  * pytis >= 0.1.0
+  * apache >= 2.0
+  * mod_python >= 3.2.10 or mod_wsgi >= 3.3
+  * python-dnspython - DNS client module for Python
   * python-egenix-mxdatetime - Python date/time manipulation routines
-  * python-psycopg2 - Python DBAPI 2 implementation for PostgreSQL
-  * python-imaging - Python Imaging Library (needed only when using Image galeries)  
+  * python-imaging - Python Imaging Library (needed only when using Image
+    galeries)
 
-Multithreaded Apache MPM is currently not supported.  Since it is the default
-in many distributions, please check and switch to prefork MPM to be able to run
-Wiking.
+Apart from that, you also need two external components, which are developed
+within the Free(b)soft project as Wiking itself and all their dependencies:
 
-When you have all the above installed, run "make install" in the package root
-directory.  You need to have GNU make to be able to run the automatic
+  * lcg >= 0.5.1 (from http://www.freebsoft.org/lcg)
+  * pytis >= 1.1.1 (from http://www.freebsoft.org/pytis)
+
+The way of installation of these components depends on how you decide to
+install Wiking itself.  The following sections describe the options.
+
+
+== System Wide Installation ==
+
+The system wide installation option may be used if you plan to have all sites
+on a particular web server running on the same version of Wiking and its
+libraries.  As this may cause troubles on upgrades (you need to synchronize the
+upgrades of databases and the code for multiple hosts) a per site installation
+described below is usually easier to maintain.  The system wide installation
+also requires write access to the system directories, such as /usr/local/lib or
+/usr/local/share.
+
+When you have all the dependencies installed, run "make install" in the package
+root directory.  You need to have GNU make to be able to run the automatic
 installation.  You may also wish to change some variables at the beginning of
-the Makefile to customize the installation.
+the Makefile to customize the installation paths.
+
+You will also need to install LCG and Pytis (see dependencies) in the same way.
+
+There is also an option of running Wiking (and it applies for LCG and Pytis
+too) directly out of the tree checked out from the git version control system.
+It allows you to check out newer versions at any time.  The Makefile supports
+this setup by linking the necessary directories into your checked out tree
+instead of copying the files to their destinations.  You need to run "make &&
+make install-links" for the first time, and then just "make all" after each
+checkout (together with restarting the web server).  Please note, that Wiking,
+Pytis and LCG versions often depend on each other, so when upgrading, you will
+mostly need to upgrade all three components at once.
+
+== Per Site Installation ==
+
+This is useful when you want to have a separate installation for each virtual
+host.  It is often the only solution for running Wiking applications on a
+public hosting, where you don't have write access to system wide installation
+directories.
+
+You copy the unpacked source packages of Wiking, LCG, Pytis, Wiking
+applications, extensions and any other modules not installed in the base
+system into your site's directory, such as '\/var/www/sites/site1234/src'.
+
+So for Wiking CMS with no extensons you will have the following directories:
+ * \/var/www/sites/site1234/src/wiking
+ * \/var/www/sites/site1234/src/lcg
+ * \/var/www/sites/site1234/src/pytis
+
+Then you need to set the Python path to (see [apache] for information how to do
+that depending on your web server environment) to include all 'lib'
+directories of all installed components.  So for the above example the Python
+path should contain:
+ * \/var/www/sites/site1234/src/wiking/lib
+ * \/var/www/sites/site1234/src/lcg/lib
+ * \/var/www/sites/site1234/src/pytis/lib
+
+Finally you need to set the wiking configuration options to point to the right
+directories too (the files are not located in the default directories).  More
+exactly you need to set the following options:
+ * Resource search path (see [config#resource_path]).
+ * Translation path (see [config#translation_path]).
+ * Documentation directories (see [config#doc_dirs]).
+
+Example site specific configuration file for Wiking CMS:
+-----
+resource_path = ('/var/www/sites/site1234/src/wiking/resources',
+                 '/var/www/sites/site1234/src/lcg/resources',
+                 '/var/www/sites/site1234/src/pytis/resources')
+translation_path = ('/var/www/sites/site1234/src/wiking/translations',
+                    '/var/www/sites/site1234/src/lcg/translations',
+                    '/var/www/sites/site1234/src/pytis/translations')
+doc_dirs = {'wiking': '/var/www/sites/site1234/src/wiking/doc/src',
+            'lcg': '/var/www/sites/site1234/src/lcg/doc/src'}
+-----
+
+This way, you can actually run your applications directly out of the tree
+checked out from the git version control system.  It allows you to check out
+newer versions at any time.  You will need to run "make" in the Wiking source
+directory after each new checkout.  Please note, that Wiking, Pytis and LCG
+versions often depend on each other, so you will mostly need to upgrade all
+three components at once.
 

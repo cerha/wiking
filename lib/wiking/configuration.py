@@ -50,35 +50,45 @@ class Configuration(pc):
     through a site specific configuration file.
 
     The global configuration file is searched in the following locations:
-
-      * /etc/wiking/config.py
-      * /etc/wiking.py
-      * /usr/local/etc/wiking/config.py
-      * /usr/local/etc/wiking.py
+    
+      * \/etc/wiking/config.py
+      * \/etc/wiking.py
+      * \/usr/local/etc/wiking/config.py
+      * \/usr/local/etc/wiking.py
 
     First of the named files which exists is used.
 
-    Site specific configuration file must be set through the web server's virtual host
-    configuration.  In the Apache mod_python environment this is usually done by the following
-    directive:
+    Site specific configuration file must be set through the web server's
+    configiration and the particular syntax depends on the web server
+    environment being used.  Examples for Apache/mod_python and Apache/mod_wsgi
+    follow.
 
+    Apache/mod_python (inside the VirtualHost directive):
     -----
       PythonOption config_file /etc/wiking/sites/mysite.py
+    -----
+    
+    Apache/mod_wsgi (inside the VirtualHost directive):
+    -----
+      SetEnv wiking.config_file /etc/wiking/sites/mysite.py
     -----
 
     See [apache] for more details.
     
-    The configuration file uses Python syntax to assign values to configuration options.  The
-    supported options are described below.  Options, which are not found in one of the
-    configuration files will retain their default value (listed below for each option).
+    Once the configuration file is set, its actual content is independent of
+    the web server environment.  The configuration file uses Python syntax to
+    assign values to configuration options.  The supported options are
+    described below.  Options, which are not found in one of the configuration
+    files will retain their default value (listed below for each option).
 
-    The configuration files are re-read automatically in runtime whenever the file is modified so
-    in general you should not need to reload the server for the changes to take effect.  Some
-    options, however, initialize persistent objects and you may need to reload the server in order
-    to reload these persistent objects.
+    The configuration files are re-read automatically in runtime whenever the
+    file is modified so in general you should not need to reload the server for
+    the changes to take effect.  Some options, however, initialize persistent
+    objects and you may need to reload the server in order to reload these
+    persistent objects.
 
-    Please note, that Wiking CMS will override many of the configuration options by values set
-    through the Wiking Management Interface.
+    Please note, that Wiking CMS will override many of the configuration
+    options by values set through the Wiking Management Interface.
 
     """
     class _Option_config_file(pc.StringOption, pc.HiddenOption):

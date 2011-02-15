@@ -73,3 +73,12 @@ implemented and integrated within the system.
 == Licence ==
 
 The Wiking CMS is Free Software licensed under GPL.
+
+== Getting started ==
+
+After installation and basic setup described in [admin], you should be ready to
+run Wiking CMS right away.  Just point your browser to the corresponding URL.
+When you come to your site for the first time, the database will need be
+initialized.  Wiking will detect that and guide you through the database
+initialization process.
+

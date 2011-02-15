@@ -2,151 +2,155 @@
 
 = Apache Configuration =
 
+When Wiking is installed successfully, you must configure your web server to
+use it for serving a particular site.  How to do it depends on the web server
+environment you use.
+
 Table Of Contents: @TOC@
 
-== Basic Setup ==
+== The supported web server environments ==
 
-When Wiking is installed successfully, you must configure Apache to use it for
-serving your site.  This can be as simple as adding four lines into your site's
-=VirtualHost= section.  An example follows:
+Thanks to the WSGI interface, it should be possible to configure Wiking for any
+WSGI compliant web server.  This manual, however, only describes the
+environments listed below.
+
+=== Apache/mod_wsgi ===
+
+A typical mod_wsgi Apache configuration file looks like:
+
+-----
+<VirtualHost *>
+  ServerName www.yoursite.com
+  WSGIScriptAlias / /var/www/yoursite/lib/wiking/wsgi_interface.py
+  WSGIDaemonProcess yoursite display-name=%{GROUP} threads=1 python-path=/var/www/yoursite/lib
+  WSGIProcessGroup yoursite
+  SetEnv wiking.config_file /var/www/yoursite/config.py
+</VirtualHost>
+-----
+
+  * The =WSGIScriptAlias= directive points mod_wsgi to the Wiking's
+    'wsgi_interface' module which contains the WSGI entry point (the
+    'application' object).  Set the path to where your Wiking files are
+    installed.
+
+  * The =WSGIDaemonProcess= directive sets the basic WSGI options, where the
+    most important ones are 'threads' (always keep to 1) and the 'python-path'
+    (set to where your Wiking files are installed).  You will most likely want
+    to have also LCG and Pytis library files in your python path, plus any
+    Wiking extensions or applications.  See
+    http://code.google.com/p/modwsgi/wiki/ConfigurationDirectives#WSGIDaemonProcess
+    for more information about other =WSGIDaemonProcess= options.
+
+  * The =WSGIProcessGroup= line sets the WSGI daemon process group your Wiking
+    application will be executed in.  The typical setting is one process group
+    per virtual host.
+
+  * The =SetEnv= line may be used to set any Wiking configuration options (as
+    described in [config].  The option name must be prefixed with 'wiking.').
+    Options set directly through =SetEnv= always take precedence over any
+    global or site specific options defined in wiking configuration files.  The
+    typical use, however, is to set just the site specific configuration file
+    (the option 'config_file') and set all the other options there.
+
+See also http://code.google.com/p/modwsgi/wiki/ConfigurationDirectives for more
+information about other mod_wsgi configuration directives.
+
+
+=== Apache/mod_python ===
+
+/Important note:/ When running Wiking with mod_python, you need to run the
+prefork MPM version of the Apache server.  The Multithreaded Apache MPM is not
+supported.  Since it is the default in some distributions, please check and
+switch to prefork MPM to be able to run Wiking!
+
+A typical mod_python Apache configuration file looks like:
 
 -----
 <VirtualHost *>
   ServerName www.yourdomain.com
   AddHandler mod_python .py
-  PythonHandler wiking.handler
+  PythonHandler wiking.mod_python_interface
   ScriptAliasMatch .* wiking.py
-  PythonOption dbname yourdbname
+  PythonPath "['/usr/local/myproject/lib] + sys.path"
+  PythonOption config_file /var/www/yoursite/config.py
 </VirtualHost>
 -----
 
-  * The =AddHandler= line says Apache to use mod_python to execute *.py files.
+  * The =AddHandler= line instructs Apache to use mod_python to execute *.py
+    files.
 
-  * The =PythonHandler= directive instructs mod_python to use the module
-    'wiking.handler' to handle all requests.  The module must be available in
-    Python path.  See below how to set your python path.
+  * The =PythonHandler= directive points mod_python to the python module
+    'wiking.mod_python_interface' which contains the mod_python's entry point
+    (the 'handler' object).  The module must be available in Python path.  See
+    below how to set your python path.
 
-  * The =ScriptAliasMatch= line says Apache to handle all URIs using
+  * The =ScriptAliasMatch= line says Apache to handle all URLs using
     'wiking.py'.  The file 'wiking.py' does not actually exist, but still
     causes Apache to use mod_python as set in =AddHandler=.
 
-  * The =PythonOption= line sets the Wiking configuration option =dbname= to
-    the name of the database used for www.yourdomain.com (you normally have a
-    separate database for each Wiking site).  See below for more details about
-    setting Wiking configuration options.
+  * The =PythonPath= defines where the Python interpreter embedded in your web
+    server searches for python libraries.  Set it to the path where Wiking
+    libraries are located (if it is not in the system default path).  You will
+    also most likely want to have LCG and Pytis library files in your python
+    path, plus any Wiking extensions or applications.
 
-This basic setup should be sufficient for running the [cms].  Just reload
-Apache and try pointing your browser to the corresponding URI.  On the first
-try, the database will not be initialized, but Wiking will detect that and
-guide you through the database initialization process.  This way you can
-configure as many VirtualHosts as you wish.
-
-If you want to run a different Wiking application instead of Wiking CMS or want
-to customize Wiking CMS, you will also need to set the =modules= configuration
-option (see below).
-
+  * The =PythonOption= line may be used to set any Wiking configuration options
+    (as described in [config].  Options set directly through =PythonOption=
+    always take precedence over any global or site specific options defined in
+    wiking configuration files.  The typical use, however, is to set just the
+    site specific configuration file (the option 'config_file') and set all the
+    other options there.
 
 == Wiking Configuration Options ==
 
-The chapter [config] describes the available options.  You can set each option
-globally, you can use a site specific configuration file or you can pass the
-values directly from the =VirtualHost= section of your Apache configuration using
-the =PythonOption= directive.
+When you have your web server set to run a Wiking site as describe above, you
+will often need to further configure Wiking itself.  The chapter [config]
+describes the available options.  
 
-The option =config_file= will set the name of the site specific configuration
-file:
------
-  PythonOption config_file /etc/wiking/sites/yourdomain.py
------
+You can set each option globally, you can use a site specific configuration
+file or you can set the values directly from within the Apache configuration
+file using =SetEnv= (mod_wsgi) or =PythonOption= (mod_python) directives (see
+above for more details on syntax).  These options take precedence over the
+options set through Wiking configuration files.  However, Apache configuration
+is not Python, so this approach has some limitations and special rules.
 
-This way you can set all options specific for given site in the file
-=\/etc/wiking/sites/yourdomain.py=.  They will take precedence over the values
-defined in the global configuration file (such as =\/etc/wiking/config.py=) or
-over the default values for options not set in the global file.
-
-You may also override most options directly from the Apache configuration file
-using the =PythonOption= directive.  These options will take the /highest
-precedence/.  You can't, however, pass Python objects that way, so only
-primitive types, such as strings, numbers, boolean values and sequences of
-these types are supported.  
-
-Examples:
------
-  PythonOption dbhost 10.0.0.122
-  PythonOption dbport 5433
-  PythonOption maintenance False
-  PythonOption modules "wiking.biblio, wiking.cms, wiking.bts"
-  PythonOption translation_path /usr/local/wiking-biblio/translations:/usr/local/wiking-bts/translations
-  PythonOption resource_path /usr/local/wiking-biblio/resources
------
-
-/Important notes/:
+  * You can not pass Python objects — only primitive types, such as strings,
+    numbers, boolean values and sequences of these types are supported.
   * The allowed values for boolean options are 'Yes', 'No', 'True', 'False',
     'On', 'Off' and are case insensitive.
   * String values must be enclosed in double quotes if they contain a space.
   * Sequence values may use a comma or colon to separate the items. Spaces
-    betwen items are allowed, but remember to put quotes around.
+    between items are allowed, but remember to put quotes around.
   * =translation_path= defined in Apache config is /appended/ to the path defined
     by Wiking configuration files (or the default path).
-  * =resource_path= defined in Apache config is /prepended/ to the path defined
-    by Wiking configuration files (or the default path).
+  * =resource_path= defined in Apache config is /added in front/ of the path
+    defined by Wiking configuration files (or the default path).
 
+Examples:
+-----
+  SetEnv wiking.dbhost 10.0.0.122
+  SetEnv wiking.dbport 5433
+  SetEnv wiking.maintenance False
+  SetEnv wiking.modules "wiking.biblio, wiking.cms, wiking.bts"
+  SetEnv wiking.translation_path /usr/local/wiking-biblio/translations:/usr/local/wiking-bts/translations
+  SetEnv wiking.resource_path /usr/local/wiking-biblio/resources
+-----
 
-== Non-Wiking URIs == non-wiking-uris
+== Non-Wiking URLs == non-wiking-urls
 
-You may wish to redirect certain URIs to ordinary files and directories.
+You may wish to redirect certain URLs to ordinary files and directories.  To do
+that, you need to put an =Alias= directive /above/ the =WSGIScriptAlias=
+(mod_wsgi) or =ScriptAliasMatch= (mod_python) directive.
 
+Example:
 -----
   Alias /img/ /var/www/mysite/img
 -----
 
-If you put this line prior to the =ScriptAliasMatch= line, all requests
-beginning with =\/img\/= will be served by Apache directly and the request will
-not be passed to Wiking.
+All requests beginning with =\/img\/= in this example will be served by Apache
+directly and thus the requests will not be passed to Wiking at all.  This can
+decrease the load processed by Python (Apache will always serve static files
+faster), but Wiking looses the chance to track what is served (so for example
+Wiking can not control access rights etc.).
 
 
-== Modifying Python Path ==
-
-You may need to modify the path used by Python to search for available modules
-if your modules are in non-standard directories.  Python path may be specified
-specifically for each virtual host:
-
------
-  PythonPath "['/usr/local/myproject/lib] + sys.path"
------
-
-== Running Wiking on a Public Hosting ==
-
-In this special case you typically don't have privileges to write into the
-system directories.  You have just one directory where you can upload your
-files.  Thus you can't make a system-wide installation of Wiking or any of its
-components.
-
-You put all needed Python libraries (wiking, lcg, pytis and any other modules
-not installed in the base system) into one directory
-('\/var/www/sites/site1234/lib' in the example below) and set =PythonPath= to
-this directory.  Then you need to upload other files needed by Wiking and
-configure Wiking to use the appropriate directories (see [config] for
-description of all options).
-
-Typical public hosting configuration example:
------
-<VirtualHost 100.10.20.30:80>
-
-  ServerName www.yourdomain.com
-  ServerAlias www.yourdomain.org
-
-  Alias /data /var/www/sites/site1234/data
-
-  AddHandler mod_python .py
-  PythonHandler wiking.handler
-  ScriptAliasMatch .* wiking.py
-
-  PythonOption config_file /var/www/sites/site1234/config.py
-  PythonPath "['/var/www/sites/site1234/lib]+sys.path"
-  
-</VirtualHost>
------
-
-This setup requires the webmaster to create the configuration just once and all
-further setup can be done with privileges limited to the host's directory.
