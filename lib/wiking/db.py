@@ -16,6 +16,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+import collections
 import string
 
 from wiking import *
@@ -466,7 +467,7 @@ class PytisModule(Module, ActionHandler):
                 if match:
                     if isinstance(msg, tuple):
                         field_id, msg = msg
-                    elif match.groupdict().has_key('id'):
+                    elif 'id' in match.groupdict():
                         matched_id = match.group('id')
                         if matched_id.endswith('_key'):
                             # The identifier is (maybe) a name of a PostgreSQL UNIQUE index.
@@ -594,7 +595,7 @@ class PytisModule(Module, ActionHandler):
     def _action_menu(self, req, record=None, actions=None, uri=None, **kwargs):
         def visible(action):
             result = action.visible()
-            if callable(result):
+            if isinstance(result, collections.Callable):
                 context = action.context()
                 if context == pp.ActionContext.RECORD:
                     args = (record,)
@@ -679,7 +680,7 @@ class PytisModule(Module, ActionHandler):
         """
         if cid is None:
             return uri and req.make_uri(uri +'/'+ record[self._referer].export(), **kwargs)
-        if self._links.has_key(cid):
+        if cid in self._links:
             value_column, link = self._links[cid]
             try:
                 module = self._module(link.name())
@@ -756,13 +757,13 @@ class PytisModule(Module, ActionHandler):
             uri = self._current_base_uri(req, record)
         if issubclass(form, pw.BrowseForm):
             kwargs['req'] = req
-            if not kwargs.has_key('limits'):
+            if 'limits' not in kwargs:
                 kwargs['limits'] = self._BROWSE_FORM_LIMITS
-            if not kwargs.has_key('limit'):
+            if 'limit' not in kwargs:
                 kwargs['limit'] = self._BROWSE_FORM_DEFAULT_LIMIT
             kwargs['allow_query_search'] = self._ALLOW_QUERY_SEARCH
             kwargs['filter_fields'] = self._filter_fields(req)
-            if not kwargs.has_key('immediate_filters'):
+            if 'immediate_filters' not in kwargs:
                 kwargs['immediate_filters'] = cfg.immediate_filters
         layout = kwargs.get('layout')
         if layout is not None and not isinstance(layout, pp.GroupSpec):
@@ -1061,9 +1062,9 @@ class PytisModule(Module, ActionHandler):
                 main_form_column = self._type[binding_column].enumerator().value_column()
                 prefill[binding_column] = binding_record[main_form_column].value()
         if self._OWNER_COLUMN and self._SUPPLY_OWNER and req.user() \
-               and not prefill.has_key(self._OWNER_COLUMN):
+               and self._OWNER_COLUMN not in prefill:
             prefill[self._OWNER_COLUMN] = req.user().uid()
-        if self._LIST_BY_LANGUAGE and not prefill.has_key('lang'):
+        if self._LIST_BY_LANGUAGE and 'lang' not in prefill:
             lang = req.prefered_language(raise_error=False)
             if lang:
                 prefill['lang'] = lang
@@ -1083,7 +1084,7 @@ class PytisModule(Module, ActionHandler):
             if not isinstance(type, (pd.Binary, pd.Password)):
                 if req.has_param(key):
                     result[key] = req.param(key)
-                elif prefill.has_key(key):
+                elif key in prefill:
                     result[key] = type.export(prefill[key])
         return result
 
@@ -1486,7 +1487,7 @@ class PytisModule(Module, ActionHandler):
             else:
                 cache_key = key
             try:
-                if self._link_cache.has_key(cache_key):
+                if cache_key in self._link_cache:
                     return self._link_cache[cache_key]
             except TypeError:           # catch unhashable keys
                 pass
@@ -1635,7 +1636,7 @@ class PytisModule(Module, ActionHandler):
                 try:
                     transaction = self._insert_transaction(req, record)
                     self._in_transaction(transaction, self._insert, req, record, transaction)
-                except pd.DBException, e:
+                except pd.DBException as e:
                     errors = (self._analyze_exception(e),)
                 else:
                     return self._redirect_after_insert(req, record)
@@ -1675,7 +1676,7 @@ class PytisModule(Module, ActionHandler):
                 transaction = self._update_transaction(req, record)
                 self._in_transaction(transaction, self._update, req, record, transaction)
                 record.reload()
-            except pd.DBException, e:
+            except pd.DBException as e:
                 errors = (self._analyze_exception(e),)
             else:
                 return self._redirect_after_update(req, record)
@@ -1690,7 +1691,7 @@ class PytisModule(Module, ActionHandler):
             try:
                 transaction = self._delete_transaction(req, record)
                 self._in_transaction(transaction, self._delete, req, record, transaction)
-            except pd.DBException, e:
+            except pd.DBException as e:
                 req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
             else:
                 return self._redirect_after_delete(req, record)
@@ -2071,7 +2072,7 @@ class PytisRssModule(PytisModule):
                     return default
                 else:
                     return lambda record: None
-            elif callable(spec):
+            elif isinstance(spec, collections.Callable):
                 return lambda record: translate(spec(req, record))
             elif raw:
                 return lambda record: translate(record[spec].value())
@@ -2177,7 +2178,7 @@ class Publishable(object):
             if publish != record['published'].value():
                 Publishable._change_published(record)
                 record.reload()
-        except pd.DBException, e:
+        except pd.DBException as e:
             req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
         else:
             req.message(publish and self._MSG_PUBLISHED or self._MSG_UNPUBLISHED)

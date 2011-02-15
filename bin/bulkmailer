@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright (C) 2009 Brailcom, o.p.s.
+# Copyright (C) 2009, 2011 Brailcom, o.p.s.
 #
 # COPYRIGHT NOTICE
 #
@@ -30,7 +30,7 @@ The script must be invoked with the database name as its argument:
 """
 
 import os
-import popen2
+import subprocess
 import sys
 
 import psycopg2 as dbapi
@@ -46,13 +46,8 @@ def open_database(database):
 
 def pid_dead(pid):
     my_name = sys.argv[0]
-    child_output, child_input = popen2.popen2(['/usr/bin/pgrep', '-f', '-x', my_name])
-    output = ''
-    while True:
-        next_output = child_output.read()
-        if not next_output:
-            break
-        output = output + next_output
+    command = ['/usr/bin/pgrep', '-f', '-x', my_name]
+    output = subprocess.Popen(command, stdout=subprocess.PIPE).communicate()[0]
     return pid not in output.split()
     
 def check_obsolete_pids(connection):

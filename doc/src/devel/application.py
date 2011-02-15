@@ -1,3 +1,4 @@
+import collections
 import lcg, inspect, re
 
 class Reader(lcg.Reader):
@@ -19,7 +20,7 @@ class Reader(lcg.Reader):
                   [lcg.TableOfContents(title="Application methods:", depth=1)]
         for name, method in sorted(Application.__dict__.items()):
             if name.startswith('_') or name.startswith('action_') \
-                   or not callable(method) or not method.__doc__:
+                   or not isinstance(method, collections.Callable) or not method.__doc__:
                 continue
             args, varargs, varkw, defaults = inspect.getargspec(method)
             title = name + inspect.formatargspec(args[1:], varargs, varkw, defaults)

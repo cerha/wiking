@@ -15,6 +15,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+import collections
 import lcg, pytis
 import sys, email.Header, httplib
 from xml.sax import saxutils
@@ -506,7 +507,7 @@ class Theme(object):
                                       for key in self._colors.keys()])}
         
     def _color(self, key, colors):
-        if colors.has_key(key):
+        if key in colors:
             return colors[key]
         else:
             inherit = self._colors[key].inherit()
@@ -860,10 +861,10 @@ class Document(object):
         parent = None
         for i in range(len(req.path)-1):
             key = '/'.join(req.path[:len(req.path)-i-1])
-            if nodes.has_key(key):
+            if key in nodes:
                 parent = nodes[key]
                 break
-        if nodes.has_key(id):
+        if id in nodes:
             node = nodes[id]
         else: 
             # Create the current document's node if it was not created with the menu.
@@ -1016,11 +1017,11 @@ class ChannelContent(object):
         specifications.
 
         """
-        assert isinstance(title, str) or callable(title), title
-        assert link is None or isinstance(link, str) or callable(link), link
-        assert descr is None or isinstance(descr, str) or callable(descr), descr
-        assert date is None or isinstance(date, str) or callable(date), date
-        assert author is None or isinstance(author, str) or callable(author), author
+        assert isinstance(title, str) or isinstance(title, collections.Callable), title
+        assert link is None or isinstance(link, str) or isinstance(link, collections.Callable), link
+        assert descr is None or isinstance(descr, str) or isinstance(descr, collections.Callable), descr
+        assert date is None or isinstance(date, str) or isinstance(date, collections.Callable), date
+        assert author is None or isinstance(author, str) or isinstance(author, collections.Callable), author
         self._title = title
         self._link = link
         self._descr = descr
@@ -1160,7 +1161,7 @@ class ActionCtrl(lcg.Content):
         g = context.generator()
         action = self._action
         enabled = action.enabled()
-        if callable(enabled):
+        if isinstance(enabled, collections.Callable):
             enabled = enabled(self._row)
         uri = self._uri
         args = dict(action=action.id(), **action.kwargs())
@@ -1371,7 +1372,7 @@ class Action(pytis.presentation.Action):
     """
     def __init__(self, title, id, allow_referer=True, **kwargs):
         self._allow_referer = allow_referer
-        if kwargs.has_key('context') and kwargs['context'] is None:
+        if 'context' in kwargs and kwargs['context'] is None:
             # Make context specification in applications backwards compatible.
             kwargs['context'] = pp.ActionContext.GLOBAL
         super(Action, self).__init__(id, title, **kwargs)
@@ -1472,7 +1473,7 @@ class Specification(pp.Specification):
         if self.table is None:
             self.table = pytis.util.camel_case_to_lower(module.name(), '_')
         actions = self.actions
-        if callable(actions):
+        if isinstance(actions, collections.Callable):
             actions = actions()
         actions = list(actions)
         for base in module.__bases__ + (module,):
@@ -1506,7 +1507,7 @@ class Binding(pp.Binding):
         enabled = kwargs.pop('enabled', None)
         super(Binding, self).__init__(*args, **kwargs)
         assert form is None or issubclass(form, pytis.web.BrowseForm), form
-        assert enabled is None or callable(enabled), enabled
+        assert enabled is None or isinstance(enabled, collections.Callable), enabled
         self._form = form
         self._enabled = enabled
 
@@ -1534,7 +1535,7 @@ class WikingResolver(pytis.util.Resolver):
         for python_module_name in cfg.modules:
             python_module = self._import_python_module(python_module_name)
             for name, mod in python_module.__dict__.items():
-                if not modules.has_key(name) and type(mod) == type(Module) \
+                if name not in modules and type(mod) == type(Module) \
                        and issubclass(mod, Module):
                     modules[name] = mod
         return tuple(modules.values())
@@ -1820,7 +1821,7 @@ def send_mail(addr, subject, text, sender=None, html=None, export=False, lang=No
             out.close()
             server.quit()
         return None
-    except Exception, e:
+    except Exception as e:
         return str(e)
 
 def validate_email_address(address, helo=None):
@@ -1860,14 +1861,14 @@ def validate_email_address(address, helo=None):
         # Translators: Computer terminology. `gmail.com' is a domain name in email address
         # `joe@gmail.com'.
         return False, _("Domain not found")
-    except Exception, e:
+    except Exception as e:
         return False, str(e) or e.__class__.__name__
     if mxhosts is None:
         try:
             ahosts = dns.resolver.query(domain, 'A')
         except dns.resolver.NoAnswer:
             return False, _("Domain not found")
-        except Exception, e:
+        except Exception as e:
             return False, str(e) or e.__class__.__name__
         hosts = [h.to_text() for h in ahosts]
     else:
@@ -1888,7 +1889,7 @@ def validate_email_address(address, helo=None):
                     raise Exception('SMTP command RCPT failed', code, message)
                 smtp.quit()
                 break
-            except Exception, e:
+            except Exception as e:
                 reasons += ('%s: %s; ' % (host, e,))
         else:
             return False, reasons

@@ -37,7 +37,7 @@ class Handler(object):
             separator = value.find(':') != -1 and ':' or ','
             return tuple([d.strip() for d in value.split(separator)])
         # Read the configuration file first, so that the Apache options have a higher priority.
-        if options.has_key('config_file'):
+        if 'config_file' in options:
             cfg.user_config_file = options.pop('config_file')
         for name, value in options.items():
             if name == 'translation_path':
@@ -137,35 +137,35 @@ class Handler(object):
                 else:
                     # int is deprecated! Just for backwards compatibility.  
                     assert result is None or isinstance(result, int)
-            except RequestError, error:
+            except RequestError as error:
                 try:
                     req.user()
                 except RequestError:
                     # Ignore all errors within authentication except for AuthenticationError.
                     pass
-                except AuthenticationError, auth_error:
+                except AuthenticationError as auth_error:
                     self._serve_error_document(req, auth_error)
                 self._serve_error_document(req, error)
             except (ClosedConnection, Redirect):
                 raise
-            except Exception, e:
+            except Exception as e:
                 # Try to return a nice error document produced by the exporter.
                 try:
                     return application.handle_exception(req, e)
-                except RequestError, error:
+                except RequestError as error:
                     return self._serve_error_document(req, error)
         except ClosedConnection:
             pass
-        except Redirect, r:
+        except Redirect as r:
             req.redirect(r.uri(), args=r.args(), permanent=r.permanent())
-        except Exception, e:
+        except Exception as e:
             # If error document export fails, return a minimal error page.  It is reasonable to
             # assume, that if RequestError handling fails, somethong is wrong with the exporter and
             # error document export will fail too, so it is ok, to have them handled both at the
             # same level above.
             try:
                 application.handle_exception(req, e)
-            except RequestError, error:
+            except RequestError as error:
                 self._serve_minimal_error_document(req, error)
             
     def handle(self, req):

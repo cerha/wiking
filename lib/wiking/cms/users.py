@@ -713,7 +713,7 @@ class Users(UserManagementModule):
         def cms_text(cms_text):
             texts = self._module('Texts')
             return texts.parsed_text(req, cms_text, lang=req.prefered_language())
-        if not self._LAYOUT.has_key(action): # Allow overriding this layout in derived classes.
+        if action not in self._LAYOUT: # Allow overriding this layout in derived classes.
             if action == 'view':
                 # Translators: Personal data -- first name, surname, nickname ...
                 layout = [FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname',)),
@@ -942,7 +942,7 @@ class Users(UserManagementModule):
     def _change_state(self, req, record, state):
         try:
             record.update(state=state)
-        except pd.DBException, e:
+        except pd.DBException as e:
             req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
         else:
             if state == self.AccountState.ENABLED:
@@ -1040,7 +1040,7 @@ class Users(UserManagementModule):
         user_cache = self._user_cache.get(req)
         if user_cache is None:
             user_cache = self._user_cache[req] = {}
-        elif user_cache.has_key(key):
+        elif key in user_cache:
             return user_cache[key]
         # Get the user data from db
         if login is not None and uid is None:
@@ -1105,7 +1105,7 @@ class Users(UserManagementModule):
         user_cache = self._find_users_cache.get(req)
         if user_cache is None:
             user_cache = self._find_users_cache[req] = {}
-        elif user_cache.has_key(key):
+        elif key in user_cache:
             return user_cache[key]
         if role is not None:
             role_user_ids = self._module('RoleMembers').user_ids(role)
@@ -1298,7 +1298,7 @@ class Registration(Module, ActionHandler):
                 if cfg.password_storage == 'md5':
                     try:
                         password = users_module.reset_password(user)
-                    except Exception, e:
+                    except Exception as e:
                         req.message(unicode(e.exception()), type=req.ERROR)
                         return Document(title, self.ReminderForm())
                     # Translators: Credentials such as password...

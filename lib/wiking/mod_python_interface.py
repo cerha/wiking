@@ -66,11 +66,11 @@ class ModPythonRequest(wiking.Request):
         return self._params.keys()
         
     def has_param(self, name):
-        return self._params.has_key(name)
+        return name in self._params
     
     def set_param(self, name, value):
         if value is None:
-            if self._params.has_key(name):
+            if name in self._params:
                 del self._params[name]
         else:
             self._params[name] = value
@@ -111,13 +111,13 @@ class ModPythonRequest(wiking.Request):
         self._req.status = status_code
         try:
             self._req.send_http_header()
-        except IOError, e:
+        except IOError as e:
             raise wiking.ClosedConnection(str(e))
 
     def write(self, data):
         try:
             self._req.write(data)
-        except IOError, e:
+        except IOError as e:
             raise wiking.ClosedConnection(str(e))
         
     def option(self, name, default=None):

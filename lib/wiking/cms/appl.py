@@ -399,7 +399,7 @@ class Application(CookieAuthentication, wiking.Application):
                 conn.commit()
             finally:
                 conn.close()
-        except dbapi.ProgrammingError, e:
+        except dbapi.ProgrammingError as e:
             return e.args[0]
 
     def handle_exception(self, req, exception):

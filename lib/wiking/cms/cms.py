@@ -23,6 +23,7 @@ is stored in database and can be managed using a web browser.
 
 """
 
+import collections
 import pytis.presentation as pp
 import wiking
 from wiking.cms import *
@@ -403,7 +404,7 @@ class CMSExtension(Module, Embeddable, RequestHandler):
             """
             if __debug__:
                 assert isinstance(modname, (str, unicode)), modname
-                assert enabled is None or callable(enabled), enabled
+                assert enabled is None or isinstance(enabled, collections.Callable), enabled
                 for item in submenu:
                     assert isinstance(item, CMSExtension.MenuItem), item
             self.modname = modname
@@ -658,7 +659,7 @@ class Config(SettingsManagementModule):
         record = self._record(req, row)
         try:
             record.update(theme_id=theme_id)
-        except pd.DBException, e:
+        except pd.DBException as e:
             return self._error_message(*self._analyze_exception(e))
     
 
@@ -1253,9 +1254,9 @@ class Pages(ContentManagementModule):
                             variants=titles.keys(), submenu=submenu)
         for row in self._data.get_rows(sorting=self._sorting, published=True):
             mapping_id = row['mapping_id'].value()
-            if not translations.has_key(mapping_id):
+            if mapping_id not in translations:
                 parent = row['parent'].value()
-                if not children.has_key(parent):
+                if parent not in children:
                     children[parent] = []
                 children[parent].append(row)
                 translations[mapping_id] = ({}, {})
@@ -1405,7 +1406,7 @@ class Pages(ContentManagementModule):
                 raise Redirect(self._current_record_uri(req, record))
         try:
             record.update(**values)
-        except pd.DBException, e:
+        except pd.DBException as e:
             req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
         else:
             req.message(_("The changes were published."))
@@ -1415,7 +1416,7 @@ class Pages(ContentManagementModule):
     def action_revert(self, req, record):
         try:
             record.update(_content=record['content'].value())
-        except pd.DBException, e:
+        except pd.DBException as e:
             req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
         else:
             req.message(_("The page contents was reverted to its previous state."))
@@ -1425,7 +1426,7 @@ class Pages(ContentManagementModule):
     def action_unpublish(self, req, record):
         try:
             record.update(published=False)
-        except pd.DBException, e:
+        except pd.DBException as e:
             req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
         else:
             req.message(_("The page was unpublished."))
@@ -1929,7 +1930,7 @@ class Discussions(News):
             try:
                 transaction = self._transaction()
                 self._in_transaction(transaction, self._insert, req, record, transaction)
-            except pd.DBException, e:
+            except pd.DBException as e:
                 req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
             else:
                 req.message(_("Your comment was posted to the discussion."))
@@ -2153,7 +2154,7 @@ class CommonTexts(SettingsManagementModule):
         """
         texts = class_.Spec._texts
         label = text.label()
-        if not texts.has_key(label):
+        if label not in texts:
             texts[label] = text
 
     def _select_language(self, req, lang):
@@ -2473,7 +2474,7 @@ class TextReferrer(object):
                 email_args = self._email_args(req, text, lang=lang, args=args)
                 email_args['cc'] = list(email_args['cc']) + list(kwargs.get('cc', []))
                 for k, v in kwargs.items():
-                    if not email_args.has_key(k):
+                    if k not in email_args:
                         email_args[k] = v
                 lang_args[lang] = email_args
             return email_args

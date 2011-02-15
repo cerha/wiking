@@ -145,7 +145,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
                 attr = getattr(self, '_'+name+'_attr')(context)
             else:
                 attr = {}
-            if self._PART_TITLE.has_key(name):
+            if name in self._PART_TITLE:
                 attr['title'] = self._PART_TITLE[name]
             return self._generator.div(content, id=name.replace('_', '-'), **attr)
         else:

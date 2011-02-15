@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2006-2010 Brailcom, o.p.s.
+# Copyright (C) 2006-2011 Brailcom, o.p.s.
 # Author: Milan Zamazal
 #
 # This program is free software; you can redistribute it and/or modify
@@ -145,7 +145,7 @@ class Certificates(CMSModule):
                 return None
             try:
                 x509 = gnutls.crypto.X509Certificate(certificate)
-            except Exception, e:
+            except Exception as e:
                 raise Exception(_("Invalid certificate"), e)
             if not x509.has_issuer(x509) and not x509.has_issuer(self._ca_x509):
                 x509 = None

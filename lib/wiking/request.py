@@ -363,7 +363,7 @@ class Request(ServerInterface):
                         if type not in self._MESSAGE_TYPES:
                             raise ValueError("Invalid type:", type)
                         message = urllib.unquote(quoted).decode(self._encoding)
-                    except Exception, e:
+                    except Exception as e:
                         log(OPR, "Error unpacking stored messages:", e)
                     else:
                         messages.append((message, type))
@@ -372,7 +372,7 @@ class Request(ServerInterface):
 
     def cookie(self, name, default=None):
         """Get the value of given cookie as unicode or return DEFAULT if cookie was not set."""
-        if self._cookies.has_key(name):
+        if name in self._cookies:
             try:
                 return unicode(self._cookies[name].value, self._encoding)
             except UnicodeDecodeError:
@@ -391,7 +391,7 @@ class Request(ServerInterface):
 
         """
         if value is None:
-            if self._cookies.has_key(name):
+            if name in self._cookies:
                 del self._cookies[name]
         else:
             if isinstance(value, unicode):

@@ -17,10 +17,10 @@
 
 __version__ = '1.2.0'
 
-import sys, os, time, string, re, copy, urllib
+import sys, os, time, string, re, copy, urllib, imp
 
 # TODO: this can be removed once it is solved in Pytis...
-reload(sys)
+imp.reload(sys)
 sys.setdefaultencoding('iso-8859-2')
 
 import pytis, pytis.util
