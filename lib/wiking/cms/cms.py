@@ -23,20 +23,18 @@ is stored in database and can be managed using a web browser.
 
 """
 
-import collections
 import pytis.presentation as pp
 import wiking
 from wiking.cms import *
 
 import cStringIO
+import collections
+import datetime
 import os
 import random
 import re
 import string
 import time
-
-import mx.DateTime
-from mx.DateTime import today, TimeDelta
 
 from pytis.util import *
 import pytis.data
@@ -518,9 +516,9 @@ class Session(PytisModule, wiking.Session):
     def init(self, req, user, session_key):
         # Delete all expired records first...
         data = self._data
-        now = mx.DateTime.now().gmtime()
+        now = pytis.data.DateTime.current_gmtime()
         uid = user.uid()
-        expiration = mx.DateTime.TimeDelta(hours=cfg.session_expiration)
+        expiration = datetime.timedelta(hours=cfg.session_expiration)
         data.delete_many(pd.LE('last_access', pd.Value(pd.DateTime(), now - expiration)))
         row, success = data.insert(data.make_row(uid=uid, session_key=session_key, last_access=now))
         self._module('SessionLog').log(req, now, row['session_id'].value(), uid, user.login())
@@ -544,14 +542,14 @@ class Session(PytisModule, wiking.Session):
             abort(_("Account not approved"), wiking.cms.texts.unapproved)
     
     def failure(self, req, user, login):
-        self._module('SessionLog').log(req, mx.DateTime.now().gmtime(), None,
+        self._module('SessionLog').log(req, pytis.data.DateTime.current_gmtime(), None,
                                        user and user.uid(), login)
         
     def check(self, req, user, session_key):
         row = self._data.get_row(uid=user.uid(), session_key=session_key)
         if row:
-            now = mx.DateTime.now().gmtime()
-            expiration = mx.DateTime.TimeDelta(hours=cfg.session_expiration)
+            now = pytis.data.DateTime.current_gmtime()
+            expiration = datetime.datetime.timedelta(hours=cfg.session_expiration)
             if row['last_access'].value() > now - expiration:
                 self._data.update((row['session_id'],), self._data.make_row(last_access=now))
                 return True
@@ -1855,7 +1853,7 @@ class Planner(News):
         list_layout = pp.ListLayout('date_title', meta=('author', 'timestamp'), content='content',
                                     anchor="item-%s")
         def _check_date(self, date):
-            if date < today():
+            if date < datetime.datetime.today().replace(hour=0, minute=0, second=0, microsecond=0):
                 return _("Date in the past")
         def _date(self, record, start_date, end_date):
             date = record['start_date'].export(show_weekday=True)
@@ -1872,6 +1870,7 @@ class Planner(News):
     _RSS_DATE_COLUMN = None
     def _condition(self, req, **kwargs):
         scondition = super(Planner, self)._condition(req, **kwargs)
+        today = datetime.datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
         condition = pd.OR(pd.GE('start_date', pd.Value(pd.Date(), today())),
                           pd.GE('end_date', pd.Value(pd.Date(), today())))
         if scondition:

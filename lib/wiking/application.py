@@ -20,7 +20,6 @@
 
 from wiking import *
 
-import mx.DateTime
 from pytis.presentation import Computer, CbComputer
 
 _ = lcg.TranslatableTextFactory('wiking')

@@ -27,9 +27,9 @@ in the version control system history.
 from wiking.cms import *
 
 import cStringIO
+import datetime
 import os
 import subprocess
-import mx.DateTime
 
 import pytis.data
 from pytis.presentation import computer, Computer, Fields, Field
@@ -173,8 +173,8 @@ class Certificates(CMSModule):
                     (x509.subject, x509.issuer, x509.serial_number, x509.version, time.ctime(x509.activation_time), time.ctime(x509.expiration_time),))
         def _convert_x509_timestamp(self, timestamp):
             time_tuple = time.gmtime(timestamp)
-            mx_time = mx.DateTime.DateTime(*time_tuple[:6])
-            return mx_time
+            dt = datetime.datetime(*time_tuple[:6])
+            return dt
             
         def check(self, record):
             x509 = record['x509'].value()

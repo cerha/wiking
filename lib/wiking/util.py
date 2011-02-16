@@ -15,9 +15,8 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-import collections
 import lcg, pytis
-import sys, email.Header, httplib
+import sys, email.Header, httplib, collections, datetime
 from xml.sax import saxutils
 
 DBG = pytis.util.DEBUG
@@ -1006,9 +1005,9 @@ class ChannelContent(object):
         
         @type date: str, callable or None
         @param date: Item date field specification.  The result must be
-        'mx.DateTime' instance.  If column name is used, its type must be
-        'pytis.data.DateTime'.  If function is used, it must return an
-        'mx.DateTime' instance.
+        'datetime.datetime' instance.  If column name is used, its type must be
+        'pytis.data.DateTime'.  If function is used, it must return a
+        'datetime.datetime' instance.
         
         @type author: str, callable or None
         @param author: Item author field specification.
@@ -1069,8 +1068,7 @@ class RssWriter(object):
     def item(self, link, title, guid=None, description=None, pubdate=None, author=None):
         """Call repeatedly to write a single channel item."""
         if pubdate:
-            import mx.DateTime
-            pubdate = mx.DateTime.ARPA.str(pubdate.localtime())
+            pubdate = format_http_string(pubdate)
         self._stream.write('<item>\n')
         self._write_tag('title', title or '')
         self._write_tag('guid', guid or link or '', escape=False)
@@ -1936,3 +1934,57 @@ def translator(lang):
         return lcg.GettextTranslator(str(lang), path=cfg.translation_path, fallback=True)
     else:
         return lcg.NullTranslator()
+
+_WKDAY = ('Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun',)
+_MONTH = ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',)
+    
+def format_http_date(dt):
+    """Return datetime as a basestring in the RFC 1123 format.
+
+    Arguments:
+
+      dt -- 'datetime.datetime' instance to be formatted
+
+    """
+    formatted = dt.strftime('%%s, %d %%s %Y %H:%M:%S GMT')
+    formatted = formatted % (_WKDAY[dt.weekday()], _MONTH[dt.month-1],)
+    return formatted
+
+def parse_http_date(date_string):
+    """Return datetime corresponding to RFC 2616 date_string.
+
+    Arguments:
+    
+      date_string -- basestring representing date and time in one of the
+        formats supported by RFC 2616
+
+    Return corresponding 'datetime.datetime' instance.
+    
+    """
+    date_string.strip()
+    # Remove weekday
+    pos = date_string.find(' ')
+    if pos < 0:
+        raise Exception("Invalid date format")
+    date_string = date_string[pos+1:].lstrip()
+    # Remove GMT
+    if date_string[-3:] == 'GMT':
+        date_string = date_string[:-3].rstrip()
+    # Replace month name by a number
+    for i in range(len(_MONTH)):
+        m = _MONTH[i]
+        pos = date_string.find(m)
+        if pos >= 0:
+            date_string = '%s%02d%s' % (date_string[:pos], i+1, date_string[pos+3:],)
+            break
+    # Parse the date
+    dt = None
+    for format_ in ('%d %m %Y %H:%M:%S', '%d-%m-%y %H:%M:%S', '%m %d %H:%M:%S %Y',):
+        try:
+            dt = datetime.datetime.strptime(date_string, format_)
+            break
+        except ValueError:
+            pass
+    if dt is None:
+        raise Exception("Invalid date format")
+    return dt

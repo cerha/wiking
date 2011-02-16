@@ -15,7 +15,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-import os, string, Cookie, re, urllib, mx.DateTime, httplib
+import os, string, Cookie, re, urllib, datetime, httplib
 import wiking, lcg, pytis
 from wiking import log, OPR
 
@@ -521,14 +521,15 @@ class Request(ServerInterface):
         except OSError:
             log(OPR, "File not found:", filename)
             raise wiking.NotFound()
-        mtime = mx.DateTime.localtime(info.st_mtime)
+        mtime = datetime.datetime.utcfromtimestamp(info.st_mtime)
         since_header = self.header('If-Modified-Since')
+        date_format = ''
         if since_header:
-            since = mx.DateTime.ARPA.ParseDateTime(since_header)
+            since = parse_http_date(since_header)
             if mtime == since:
                 self.start_response(httplib.NOT_MODIFIED)
                 return
-        self.set_header('Last-Modified', mx.DateTime.ARPA.str(mtime))
+        self.set_header('Last-Modified', format_http_date(mtime))
         self.start_response(content_type=content_type, content_length=info.st_size)
         f = file(filename)
         if lock:
