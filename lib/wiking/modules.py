@@ -1,4 +1,4 @@
-# Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Brailcom, o.p.s.
+# Copyright (C) 2005-2011 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+import pytis.data
 
 from wiking import *
 
@@ -506,7 +508,7 @@ class CookieAuthentication(object):
             password_expiration = user.password_expiration()
             if password_expiration is not None and req.uri() != self.password_change_uri(req):
                 import datetime
-                if password_expiration <= datetime.date.today():
+                if password_expiration <= pytis.data.Date.datetime():
                     raise PasswordExpirationError()
         return user
 

@@ -50,7 +50,7 @@ NEVER = pp.Editable.NEVER
 ALWAYS = pp.Editable.ALWAYS
 ASC = pd.ASCENDENT
 DESC = pd.DESCENDANT
-now = pytis.data.DateTime.current_gmtime
+now = pytis.data.DateTime.datetime
 enum = lambda seq: pd.FixedEnumerator(seq)
 
 _ = lcg.TranslatableTextFactory('wiking-cms')
@@ -516,12 +516,12 @@ class Session(PytisModule, wiking.Session):
     def init(self, req, user, session_key):
         # Delete all expired records first...
         data = self._data
-        now = pytis.data.DateTime.current_gmtime()
+        now_ = now()
         uid = user.uid()
         expiration = datetime.timedelta(hours=cfg.session_expiration)
-        data.delete_many(pd.LE('last_access', pd.Value(pd.DateTime(), now - expiration)))
-        row, success = data.insert(data.make_row(uid=uid, session_key=session_key, last_access=now))
-        self._module('SessionLog').log(req, now, row['session_id'].value(), uid, user.login())
+        data.delete_many(pd.LE('last_access', pd.Value(pd.DateTime(), now_ - expiration)))
+        row, success = data.insert(data.make_row(uid=uid, session_key=session_key, last_access=now_))
+        self._module('SessionLog').log(req, now_, row['session_id'].value(), uid, user.login())
         # Display info page for users without proper access
         def abort(title, text_id, form=None):
             texts = self._module('Texts')
@@ -542,16 +542,16 @@ class Session(PytisModule, wiking.Session):
             abort(_("Account not approved"), wiking.cms.texts.unapproved)
     
     def failure(self, req, user, login):
-        self._module('SessionLog').log(req, pytis.data.DateTime.current_gmtime(), None,
+        self._module('SessionLog').log(req, pytis.data.DateTime.datetime(), None,
                                        user and user.uid(), login)
         
     def check(self, req, user, session_key):
         row = self._data.get_row(uid=user.uid(), session_key=session_key)
         if row:
-            now = pytis.data.DateTime.current_gmtime()
+            now_ = now()
             expiration = datetime.datetime.timedelta(hours=cfg.session_expiration)
-            if row['last_access'].value() > now - expiration:
-                self._data.update((row['session_id'],), self._data.make_row(last_access=now))
+            if row['last_access'].value() > now_ - expiration:
+                self._data.update((row['session_id'],), self._data.make_row(last_access=now_))
                 return True
         return False
 
@@ -1853,7 +1853,7 @@ class Planner(News):
         list_layout = pp.ListLayout('date_title', meta=('author', 'timestamp'), content='content',
                                     anchor="item-%s")
         def _check_date(self, date):
-            if date < datetime.datetime.today().replace(hour=0, minute=0, second=0, microsecond=0):
+            if date < pd.Date.datetime():
                 return _("Date in the past")
         def _date(self, record, start_date, end_date):
             date = record['start_date'].export(show_weekday=True)
@@ -1870,9 +1870,9 @@ class Planner(News):
     _RSS_DATE_COLUMN = None
     def _condition(self, req, **kwargs):
         scondition = super(Planner, self)._condition(req, **kwargs)
-        today = datetime.datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
-        condition = pd.OR(pd.GE('start_date', pd.Value(pd.Date(), today())),
-                          pd.GE('end_date', pd.Value(pd.Date(), today())))
+        today = pd.Date.datetime()
+        condition = pd.OR(pd.GE('start_date', pd.Value(pd.Date(), today)),
+                          pd.GE('end_date', pd.Value(pd.Date(), today)))
         if scondition:
             return pd.AND(scondition, condition)
         else:

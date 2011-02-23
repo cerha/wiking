@@ -438,7 +438,7 @@ class Users(UserManagementModule):
                 return firstname or surname or login
         def _registration_expiry(self):
             expiry_days = cfg.registration_expiry_days
-            return pd.DateTime.current_gmtime() + datetime.timedelta(days=expiry_days)
+            return pd.DateTime.datetime() + datetime.timedelta(days=expiry_days)
         @staticmethod
         def _generate_registration_code():
             import random
@@ -519,7 +519,7 @@ class Users(UserManagementModule):
         def _state_info(self, record, state, regexpire):
             req = record.req()
             if state == Users.AccountState.NEW:
-                if regexpire > pd.DateTime.current_gmtime():
+                if regexpire > pd.DateTime.datetime():
                     texts = (_("The activation code was not yet confirmed by the user. Therefore "
                                "it is not possible to trust that given e-mail address belongs to "
                                "the person who requested the registration."),
@@ -964,7 +964,7 @@ class Users(UserManagementModule):
     
     def action_enable(self, req, record):
         if record['state'].value() == self.AccountState.NEW and not req.param('submit'):
-            if record['regexpire'].value() <= pd.DateTime.current_gmtime():
+            if record['regexpire'].value() <= pd.DateTime.datetime():
                 req.message(_("The registration expired on %(date)s.",
                               date=record['regexpire'].export()), type=req.WARNING)
             form = self._form(pw.ShowForm, req, record, layout=self._layout(req, 'view', record))
