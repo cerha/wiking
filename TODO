@@ -1,29 +1,26 @@
-Core features:
+This TODO are just notes which didn't make it to the Issue Tracking System at
+http://its.freebsoft.org yet.  Please use the ITS if you have your own
+suggestions.
+
+Core:
  * Handle Computer exceptions
  * Calling 'constraints' of a virtual field
  * The default check() method in base Specification class
+ * Disable table layout per layout spec, not per module
+
+CMS:
  * Force HTTPS also for registration form (see note at PytisModule.action_insert())
  * Create an admin account during site installation
- * Allow extension module management to page owner
- * Disable table layout per layout spec, not per module
+ * Allow extension module management to page roles
  * Delete stray attachment files after deletion triggered in database (cascade)
  * Serve robots.txt
  * Locking
  * Save page changes history
  * Recode HTML attachments (or set the encoding headers properly)
  * Cache exported HTML for structured text content in DB?
- * Support multithreaded Apache MPM (currently broken)
+ * Show original page in attachment move form.
 
 Cleaning:
  * Remove deprecated method Roles.check().
  * Move RssModule and Panelizable from CMSModule to EmbeddableCMSModule
- * Remove `req.page' hack in CMS
- * Get rid of config.wiking_dir and lcg.config.default_resource_dir.
-
-Minor:
- * Show original page in attachment move form.
-
-Extensions:
- * Image galeries
- * Blog
- * Articles
+ * Get rid of config.wiking_dir.
