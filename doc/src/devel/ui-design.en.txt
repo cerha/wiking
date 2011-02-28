@@ -74,12 +74,56 @@ consistent throughout the application and the user is able to locate and
 identify them easily.
 
 Handler methods performing user actions will typically validate the input,
-perform a database operation and on its success call `req.message()' providing
-the feedback.  After that, another handler method is typically called to render
-the main page contents.  For example after record deletion,
-`PytisModule.action_delete()' ends up calling `PytisModule.action_list()' to
-render the list of remaining records.  All built in action methods respect this
-principle.  The methods `PytisModule.\_redirect_after_insert()',
+perform a database operation, provide feedback using `req.message()' depending
+on the result of the database operation and display the resulting page.
+
+For example after record update, `PytisModule.action_update()' normally
+redirects to action `view' of the edited record showing the feedback message
+"The record was successfully updated".  After record deletion,
+`PytisModule.action_delete()' normally redirects to action `list' to display
+the remaining records showing the feedback message "The record was successfully
+deleted".
+
+All built in action methods respect this principle.  The methods
+`PytisModule.\_redirect_after_insert()',
 `PytisModule.\_redirect_after_update()' and
-`PytisModule.\_redirect_after_delete()' may override the default
-behavior for the respective PytisModule subclass.
+`PytisModule.\_redirect_after_delete()' may override the default behavior for
+the respective PytisModule subclass.
+
+It is recommended to use HTTP redirection to display the resulting page in a
+separate request according to the Post/Redirect/Get paradigm (see
+http://en.wikipedia.org/wiki/Post/Redirect/Get).  The `Redirect' exception is
+used for HTTP redirection in Wiking.
+
+Example of redirection to the `view' action of the operated record:
+
+-----
+   raise wiking.Redirect(self._current_record_uri(req, record))
+-----
+
+Example of redirection to the `list' action:
+
+-----
+   raise wiking.Redirect(self._current_base_uri(req, record))
+-----
+
+A big help for this to work as expected is the Wiking's ability to
+automatically pass the messages written using `req.message()' to the redirected
+request, so that they will appear in the resulting page.
+
+So a typical action performing a database operation and displaying a result may
+look like:
+
+-----
+def action_subscribe(self, req, record):
+    try:
+        # Perform the database operation.
+	self._subscribe(req, record)
+    except pytis.data.DBException, e:
+        # Display database error message.
+        req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
+    else:
+        # Display success message.
+        req.message(_("You have been subscribed to receive all further notifications."))
+    raise wiking.Redirect(self._current_record_uri(req, record))
+-----
