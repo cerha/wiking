@@ -638,19 +638,14 @@ class Config(SettingsManagementModule):
         return 'update'
         
     def _redirect_after_update(self, req, record):
-        self._configure(record.row())
-        req.set_param('submit', None) # Avoid recursion.
         req.message(self._update_msg(req, record))
-        return self.action_update(req, record)
-    
-    def _configure(self, row):
-        for f in self._view.fields():
-            f.configure(row[f.id()].value())
+        raise Redirect(req.uri())
     
     def configure(self, req):
         # Called by the application prior to handling any request.
         row = self._data.get_row(config_id=0)
-        self._configure(row)
+        for f in self._view.fields():
+            f.configure(row[f.id()].value())
         theme_id = row['theme_id'].value()
         if theme_id is None:
             if isinstance(cfg.theme, Themes.Theme):
@@ -958,7 +953,7 @@ class Themes(StyleManagementModule):
         else:
             req.message(err, type=req.ERROR)
         req.set_param('search', theme_id)
-        return self.action_list(req)
+        raise wiking.Redirect(self._current_base_uri(req, record))
     RIGHTS_activate = (Roles.STYLE_ADMIN,)
     
 
@@ -1208,14 +1203,14 @@ class Pages(ContentManagementModule):
 
     def _redirect_after_insert(self, req, record):
         req.message(self._insert_msg(req, record))
-        return self.action_view(req, record)
+        raise Redirect(self._current_record_uri(req, record))
         
     def _redirect_after_update(self, req, record):
         if not req.wmi:
             req.message(self._update_msg(req, record))
-            return self.action_preview(req, record)
+            raise Redirect(req.uri(), action='preview')
         else:
-            return super(Pages, self)._redirect_after_update(req, record)
+            super(Pages, self)._redirect_after_update(req, record)
 
     def _actions(self, req, record):
         actions = super(Pages, self)._actions(req, record)
@@ -1376,7 +1371,7 @@ class Pages(ContentManagementModule):
         if not lang:
             if record['_content'].value() is not None:
                 req.message(_("Content for this page already exists!"), type=req.ERROR)
-                return self.action_view(req, record)
+                raise Redirect(self._current_record_uri(req, record))
             cond = pd.AND(pd.NE('_content', pd.Value(pd.String(), None)),
                           pd.NE('lang', record['lang']))
             langs = [(str(row['lang'].value()), lcg.language_name(row['lang'].value())) for row in 
@@ -1384,7 +1379,7 @@ class Pages(ContentManagementModule):
             if not langs:
                 req.message(_("Content for this page does not exist in any language."),
                             type=req.ERROR)
-                return self.action_view(req, record)
+                raise Redirect(self._current_record_uri(req, record))
             d = pw.SelectionDialog('src_lang', _("Choose source language"), langs,
                                    action='translate', hidden=\
                                    [(id, record[id].value()) for id in ('mapping_id', 'lang')])
@@ -1407,14 +1402,14 @@ class Pages(ContentManagementModule):
                 values['title'] = tr.translate(module.title())
             else:
                 req.message(_("Can't publish untitled page."), type=req.ERROR)
-                return self.action_view(req, record)
+                raise Redirect(self._current_record_uri(req, record))
         try:
             record.update(**values)
         except pd.DBException, e:
             req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
         else:
             req.message(_("The changes were published."))
-        return self.action_view(req, record)
+        raise Redirect(self._current_record_uri(req, record))
     RIGHTS_commit = (Roles.CONTENT_ADMIN,)
 
     def action_revert(self, req, record):
@@ -1424,7 +1419,7 @@ class Pages(ContentManagementModule):
             req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
         else:
             req.message(_("The page contents was reverted to its previous state."))
-        return self.action_view(req, record)
+        raise Redirect(self._current_record_uri(req, record))
     RIGHTS_revert = (Roles.CONTENT_ADMIN,)
     
     def action_unpublish(self, req, record):
@@ -1434,7 +1429,7 @@ class Pages(ContentManagementModule):
             req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
         else:
             req.message(_("The page was unpublished."))
-        return self.action_view(req, record)
+        raise Redirect(self._current_record_uri(req, record))
     RIGHTS_unpublish = (Roles.CONTENT_ADMIN,)
 
     

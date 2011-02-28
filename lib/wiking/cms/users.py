@@ -959,7 +959,7 @@ class Users(UserManagementModule):
                     req.message(_("E-mail notification has been sent to:") +' '+ email)
             elif state == self.AccountState.DISABLED:
                 req.message(_("The account was disabled."))
-        return self.action_view(req, record)
+        raise wiking.Redirect(self._current_record_uri(req, record))
     
     def action_enable(self, req, record):
         if record['state'].value() == self.AccountState.NEW and not req.param('submit'):
@@ -975,11 +975,11 @@ class Users(UserManagementModule):
             req.message(_("Please enable the account only if you are sure that "
                           "the e-mail address belongs to given user."))
             return self._document(req, (form, action_menu), record)
-        return self._change_state(req, record, self.AccountState.ENABLED)
+        self._change_state(req, record, self.AccountState.ENABLED)
     RIGHTS_enable = (Roles.USER_ADMIN,)
 
     def action_disable(self, req, record):
-        return self._change_state(req, record, self.AccountState.DISABLED)
+        self._change_state(req, record, self.AccountState.DISABLED)
     RIGHTS_disable = (Roles.USER_ADMIN,)
     
     def action_passwd(self, req, record):
@@ -988,7 +988,7 @@ class Users(UserManagementModule):
 
     def action_regreminder(self, req, record):
         self._send_registration_email(req, record)
-        return self.action_view(req, record)
+        raise Redirect(self._current_record_uri(req, record))
     RIGHTS_regreminder = (Roles.ANYONE,)
 
     def _user_arguments(self, req, login, row):

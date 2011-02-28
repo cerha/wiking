@@ -2092,7 +2092,7 @@ class Publishable(object):
             req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
         else:
             req.message(publish and self._MSG_PUBLISHED or self._MSG_UNPUBLISHED)
-        return self.action_view(req, record)
+        raise Redirect(self._current_record_uri(req, record))
 
     def action_unpublish(self, req, record):
         return self.action_publish(req, record, publish=False)
