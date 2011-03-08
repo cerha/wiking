@@ -635,6 +635,45 @@ class PytisModule(Module, ActionHandler):
         return True
     
     def _link_provider(self, req, uri, record, cid, **kwargs):
+        """Return a link target for given form field.
+
+        Arguments:
+          req -- current request as 'Request' instance
+          uri -- base URI of the form requesting the field link
+          record -- form record as a 'PytisModule.Record' instance
+          cid -- string identifier of the field for which the link is requested
+            or None if the URI of the whole record is requested.
+          kwargs -- dictionary of request parameters to encode into the
+            returned URI.  When '_link_provider() is called by a pytis form,
+            the parameters are always empty.  However if passed, the default
+            implementation respects them and encodes them to the returned URI.
+            So the typical use of these parameters from the perspective of an
+            application developer is passing additional parameters when calling
+            '_link_provider()' from within application code.  For example
+            "self._link_provider(req, uri, record, None, action='update')" will
+            return the link to the update action of the current record.  If you
+            override this method to define an URI for a certain field, you may
+            choose to ignore or use those arguments because you (should) know
+            whether the application makes use of them in given context.
+
+        The return value may be None for fields which don't link anywhere,
+        string URI if the field links to that URI or a 'pytis.web.Link'
+        instance if it is necessary to specify also some extended link
+        attributes, such as title (tooltip text) or target (such as _blank).
+
+        The default implementation automatically generates links for codebook
+        fields (as returned by the codebook module's 'link()' method), fields
+        with 'pp.CbComputer' (as if they were codebook fields) and for fields
+        with 'links' specification, where only the first item in 'links' is
+        taken into account (just one link for each field is supported here).
+        Override this method if you want to add links to other fields or
+        suppress or change the default links.
+
+        This method is primarily used by web forms to create links from field
+        values, but it is also legal to call the method from within application
+        code.
+
+        """
         if cid is None:
             return uri and req.make_uri(uri +'/'+ record[self._referer].export(), **kwargs)
         if self._links.has_key(cid):
