@@ -687,11 +687,7 @@ class PytisModule(Module, ActionHandler):
                 module = self._module(link.name())
             except AttributeError:
                 return None
-            uri = module.link(req, {link.column(): record[value_column].value()}, **kwargs)
-            if link.label():
-                return pw.Link(uri, title=link.label())
-            else:
-                return uri
+            return module.link(req, {link.column(): record[value_column].value()}, **kwargs)
         return None
 
     def _image_provider(self, req, record, cid, uri):
