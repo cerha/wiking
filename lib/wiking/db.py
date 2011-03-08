@@ -756,14 +756,6 @@ class PytisModule(Module, ActionHandler):
             uri = binding_uri
         else:
             uri = self._current_base_uri(req, record)
-        def uri_provider(record_, cid, type=pw.UriType.LINK):
-            if type == pw.UriType.LINK:
-                method = self._link_provider
-            elif type == pw.UriType.IMAGE:
-                method = self._image_provider
-            elif type == pw.UriType.PRINT:
-                method = self._print_uri_provider
-            return method(req, uri, record_, cid)
         if issubclass(form, pw.BrowseForm):
             kwargs['req'] = req
             if not kwargs.has_key('limits'):
@@ -794,7 +786,7 @@ class PytisModule(Module, ActionHandler):
             form_record[fid] = pd.Value(form_record.type(fid), values)
         form_instance = form(self._view, form_record, handler=handler or req.uri(),
                              name=self.name(), hidden=hidden, prefill=prefill,
-                             uri_provider=uri_provider, **kwargs)
+                             uri_provider=self._uri_provider(req, uri), **kwargs)
         if binding_uri is None:
             # We use heading_info only for main form, not for binding side
             # forms.  That's why we test binding_uri here (not very nice...).
@@ -809,6 +801,18 @@ class PytisModule(Module, ActionHandler):
                 req.message(heading_info, req.HEADING)
         return form_instance
 
+    def _uri_provider(self, req, uri):
+        """Return the uri_provider function to pass the pytis form."""
+        def uri_provider(record, cid, type=pw.UriType.LINK):
+            if type == pw.UriType.LINK:
+                method = self._link_provider
+            elif type == pw.UriType.IMAGE:
+                method = self._image_provider
+            elif type == pw.UriType.PRINT:
+                method = self._print_uri_provider
+            return method(req, uri, record, cid)
+        return uri_provider
+    
     def _layout_instance(self, layout):
         if layout is None:
             layout = self._view.layout().group()
@@ -1228,7 +1232,9 @@ class PytisModule(Module, ActionHandler):
         """
         if req.param('_pytis_form_update_request'):
             tr = translator(req.prefered_language(raise_error=False))
-            response = pw.EditForm.ajax_response(req, record, layout, errors, tr)
+            uri = self._current_base_uri(req, record)
+            response = pw.EditForm.ajax_response(req, record, layout, errors, tr,
+                                                 uri_provider=self._uri_provider(req, uri))
             req.send_response(response, content_type='application/json')
             return True
         else:
