@@ -641,8 +641,8 @@ class PytisModule(Module, ActionHandler):
           req -- current request as 'Request' instance
           uri -- base URI of the form requesting the field link
           record -- form record as a 'PytisModule.Record' instance
-          cid -- string identifier of the field for which the link is requested
-            or None if the URI of the whole record is requested.
+          cid -- string identifier of the form field/column for which the link
+            is requested or None if the URI of the whole record is requested.
           kwargs -- dictionary of request parameters to encode into the
             returned URI.  When '_link_provider() is called by a pytis form,
             the parameters are always empty.  However if passed, the default
@@ -660,6 +660,11 @@ class PytisModule(Module, ActionHandler):
         string URI if the field links to that URI or a 'pytis.web.Link'
         instance if it is necessary to specify also some extended link
         attributes, such as title (tooltip text) or target (such as _blank).
+        For array fields (when 'cid' belongs to a field of type
+        'pytis.data.Array'), the return value must be a function of one
+        argument -- the internal python value of the field's inner type.  The
+        function will return an URI or Link instance as above for given array
+        value.
 
         The default implementation automatically generates links for codebook
         fields (as returned by the codebook module's 'link()' method), fields
