@@ -434,9 +434,7 @@ class PytisModule(Module, ActionHandler):
             #log(OPR, "Validation:", (id, value, kwargs, error))
             if error:
                 errors.append((id, error.message()))
-        if errors:
-            return errors
-        else:
+        if not errors:
             if record.new() and self._LIST_BY_LANGUAGE and record['lang'].value() is None:
                 lang = req.prefered_language(raise_error=False)
                 record['lang'] = pd.Value(record.type('lang'), lang)
@@ -447,9 +445,9 @@ class PytisModule(Module, ActionHandler):
                         result = (result, _("Integrity check failed."))
                     else:
                         assert isinstance(result, tuple) and len(result) == 2, \
-                               ('Invalid check() result:', e, result)
-                    return [result]
-            return []
+                            ('Invalid check() result:', e, result)
+                    errors.append(result)
+        return errors
 
     def _analyze_exception(self, e):
         """Translate exception error string to a custom error message.
