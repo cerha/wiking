@@ -1747,10 +1747,13 @@ class PytisModule(Module, ActionHandler):
         req.write(result)
     
     def _action_subtitle(self, req, action, record=None):
-        for a in self._actions(req, record):
+        actions = sorted(self._actions(req, record), key=lambda a: len(a.kwargs()), reverse=True)
+        for a in actions:
             if a.id() == action:
-                return a.title()
-        map = {'insert':self._INSERT_LABEL,
+                kwargs = a.kwargs()
+                if not kwargs or kwargs == dict([(key, req.param(key)) for key in kwargs.keys()]):
+                    return a.title()
+        map = {'insert': self._INSERT_LABEL,
                'update': self._UPDATE_LABEL,
                'delete': self._UPDATE_LABEL}
         return map.get(action)
