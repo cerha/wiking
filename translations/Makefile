@@ -1,15 +1,15 @@
 domains := wiking wiking-cms
 mo_files := $(shell ls *.po | sed 's/\(.*\)\.\(.*\)\.po/\2\/LC_MESSAGES\/\1.mo/')
-src_files := python -m lcg.i18n ../lib
 
 all: $(mo_files)
+wiking.pot: $(shell find ../lib -name "*.py" -not -path "*/cms/*")
+wiking-cms.pot: $(shell find ../lib/wiking/cms -name "*.py")
 
 include $(domains:%=%.d)
 
-%.d: $(shell $(src_files))
+%.d: $(shell find ../lib -name "*.py")
 	@echo "Updating rules for domain $*."
-	@printf "$*.pot: " > $@ && $(src_files) $* >> $@
-	@echo "$(wildcard $*.*.po): $*.%.po: $*.pot" >> $@
+	@echo "$(wildcard $*.*.po): $*.%.po: $*.pot" > $@
 	@echo "$(filter %/$*.mo,$(mo_files)): %/LC_MESSAGES/$*.mo: $*.%.po %/LC_MESSAGES" >> $@
 
 %/LC_MESSAGES:
