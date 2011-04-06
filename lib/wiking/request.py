@@ -464,7 +464,7 @@ class Request(ServerInterface):
         if content_length is not None:
             self.set_header('Content-Length', str(content_length))
         if status_code == 401:
-            self.set_header('WWW-Authenticate', 'Basic realm="%s"' % cfg.site_title)
+            self.set_header('WWW-Authenticate', 'Basic realm="%s"' % wiking.cfg.site_title)
         self.start_http_response(status_code)
 
     def send_response(self, data, content_type="text/html", status_code=httplib.OK):
