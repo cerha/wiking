@@ -244,8 +244,14 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         while current is not None and current.hidden():
             current = current.parent()
         path = current.path()
+        def is_foldable(node):
+            if node.foldable():
+                for item in node.children():
+                    if not item.hidden():
+                        return True
+            return False
         def li_cls(node):
-            if node.children() and node.foldable():
+            if is_foldable(node):
                 cls = 'foldable'
                 if node not in path:
                     cls += ' folded'
@@ -263,7 +269,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             # trees in the same manner for consistency.  The CSS class 'bullet' represents either
             # fixed tree items or leaves in foldable trees (where no further folding is possible).
             content = g.span(node.title(),
-                             cls=not (node.children() and node.foldable()) and 'bullet' or None)
+                             cls=not is_foldable(node) and 'bullet' or None)
             return g.link(content, context.uri(node), title=node.descr(),
                           cls=' '.join(cls) or None)
         def menu(node, indent=0):
