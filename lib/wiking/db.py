@@ -1582,17 +1582,22 @@ class PytisModule(Module, ActionHandler):
             if content:
                 result.append(lcg.Section(title=binding.title(), content=content))
         return result
+
+    def _view_form_content(self, req, form, record):
+        """Adjust (and return) content produced by default by action_view."""
+        content = [form]
+        action_menu = self._action_menu(req, record)
+        if action_menu:
+            content.append(action_menu)
+        content.extend(self._related_content(req, record))
+        return content
     
     def action_view(self, req, record, err=None, msg=None):
         # The arguments `msg' and `err' are DEPRECATED!  Please don't use.
         # They are currently still used in Eurochance LMS.
         form = self._form(pw.ShowForm, req, record=record,
                           layout=self._layout(req, 'view', record))
-        content = [form]
-        action_menu = self._action_menu(req, record)
-        if action_menu:
-            content.append(action_menu)
-        content.extend(self._related_content(req, record))
+        content = self._view_form_content(req, form, record)
         return self._document(req, content, record, err=err, msg=msg)
 
     # ===== Action handlers which modify the database =====
