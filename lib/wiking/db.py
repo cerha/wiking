@@ -1571,9 +1571,18 @@ class PytisModule(Module, ActionHandler):
             raise Redirect(uri, **kwargs)
         
     def _related_content(self, req, record):
-        # Return content related to given record to be displayed within the view action under the
-        # record details.  Returns a list of lcg.Content instances.  Binding forms are displayed by
-        # default (may be overriden in derived classes).
+        """Return the content related to given record as a list of 'lcg.Content' instances.
+
+        Arguments:
+          req -- current 'Request' instance.
+          record -- the current record of the form as 'PytisModule.Record'.
+
+        The returned content is displayed within the 'view' action under the
+        record details.  The default implementadion returns a list of forms
+        according to the 'bindings' specification.  You may override this
+        method to adjust this default behavior.
+
+        """
         result = []
         for binding in self._bindings(req, record):
             module = self._module(binding.name())
