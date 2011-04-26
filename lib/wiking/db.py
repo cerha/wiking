@@ -1584,7 +1584,19 @@ class PytisModule(Module, ActionHandler):
         return result
 
     def _view_form_content(self, req, form, record):
-        """Adjust (and return) content produced by default by action_view."""
+        """Return the page content for the 'view' action form as a list of 'lcg.Content' instances.
+
+        Arguments:
+          req -- current 'Request' instance.
+          form -- 'pytis.web.ShowForm' instance.
+          record -- the current record of the form as 'PytisModule.Record'.
+        
+        You may override this method to modify page content for the view form
+        in derived classes.  The default implementation returns the form
+        itself, action menu and the result of '_related_content()' packed in
+        one list.
+
+        """
         content = [form]
         action_menu = self._action_menu(req, record)
         if action_menu:
