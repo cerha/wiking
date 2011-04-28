@@ -271,6 +271,7 @@ class Request(ServerInterface):
         self.unresolved_path = list(self.path)
 
     def _init_credentials(self):
+        credentials = None
         if self.has_param('__log_in'):
             self.set_param('__log_in', None)
             login, password = (None, None)
@@ -282,14 +283,12 @@ class Request(ServerInterface):
                 self.set_param('password', None)
             self._fresh_login = True
             credentials = (login, password)
-        else:
+        elif wiking.cfg.allow_http_authentication:
             # Return HTTP Basic auth credentials if available
             auth_header = self.header('Authorization')
             if auth_header and auth_header.startswith('Basic '):
                 encoded_credentials = auth_header.split()[1]
                 credentials = encoded_credentials.decode("base64").split(":")
-            else:
-                credentials = None
         return credentials
         
     def _init_preferred_languages(self):

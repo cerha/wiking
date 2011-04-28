@@ -174,7 +174,9 @@ class AuthenticationError(RequestError):
         
         """
         agent = req.header('User-Agent')
-        if req.param('__http_auth') or agent is None or self._HTTP_AUTH_MATCHER.match(agent):
+        if cfg.allow_http_authentication and \
+                (req.param('__http_auth') or
+                 agent is None or self._HTTP_AUTH_MATCHER.match(agent)):
             # Ask for HTTP Basic authentication.
             return httplib.UNAUTHORIZED
         else:

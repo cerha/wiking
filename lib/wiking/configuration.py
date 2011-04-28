@@ -236,6 +236,14 @@ class Configuration(pc):
                  "pass them to Wiking.")
         _DEFAULT = False
 
+    class _Option_allow_http_authentication(pc.BooleanOption):
+        # Translation: ``Force'' means ,,do not allow otherwise'', sentence in imperative followed by a checkbox.
+        _DESCR = _("Allow HTTP authentication")
+        _DOC = ("Wiking supports HTTP Basic authentication scheme.  You may need to "
+                "disable it if you want to perform HTTP authentication outside Wiking "
+                "(Apache) or disable it alltogether due to its insufficient security.")
+        _DEFAULT = True
+
     class _Option_translation_path(pc.Option):
         _DESCR = "Translation search path"
         _DOC = ("The value is a sequence of directory names (strings), where locale data are "
