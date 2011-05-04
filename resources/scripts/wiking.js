@@ -1,6 +1,6 @@
 /* -*- coding: utf-8 -*-
  *
- * Copyright (C) 2008, 2009, 2010 Brailcom, o.p.s.
+ * Copyright (C) 2008-2011 Brailcom, o.p.s.
  * Author: Tomas Cerha
  *
  * This program is free software; you can redistribute it and/or modify
@@ -19,23 +19,23 @@
 
 var WikingBase = Class.create({
 
-      initialize: function (keymap, translations) {
-	 this.keymap = keymap;
-	 this.translations = translations;
-      },
+    initialize: function (keymap, translations) {
+	this.keymap = keymap;
+	this.translations = translations;
+    },
       
-      gettext: function(text) {
-	 // Translations are passed to JavaScript from python when init() is called.
-	 translation = this.translations[text];
-	 if (typeof(translation) != 'undefined')
+    gettext: function(text) {
+	// Translations are passed to JavaScript from python when init() is called.
+	translation = this.translations[text];
+	if (typeof(translation) != 'undefined')
 	    return translation;
-	 else
+	else
 	    return text;
-      },
-
-      event_key: function (event) {
-	 var code = document.all ? event.keyCode : event.which;
-	 var map = {
+    },
+    
+    event_key: function (event) {
+	var code = document.all ? event.keyCode : event.which;
+	var map = {
 	    8:  'Backspace',
 	    10: 'Enter',
 	    13: 'Enter',
@@ -49,243 +49,243 @@ var WikingBase = Class.create({
 	    39: 'Right',
 	    38: 'Up',
 	    40: 'Down'
-	 };
-	 var key = null;
-	 if (code >= 65 && code <= 90) key = String.fromCharCode(code).toLowerCase();
-	 else key = map[code];
-	 if (key != null) {
+	};
+	var key = null;
+	if (code >= 65 && code <= 90) key = String.fromCharCode(code).toLowerCase();
+	else key = map[code];
+	if (key != null) {
 	    var modifiers = '';
 	    if (document.all || document.getElementById) {
-	       if (event.ctrlKey) modifiers += 'Ctrl-';
-	       if (event.altKey) modifiers += 'Alt-';
-	       if (event.shiftKey) modifiers += 'Shift-';
+		if (event.ctrlKey) modifiers += 'Ctrl-';
+		if (event.altKey) modifiers += 'Alt-';
+		if (event.shiftKey) modifiers += 'Shift-';
 	    } else if (document.layers) {
-	       if (event.modifiers & Event.CONTROL_MASK) modifiers += 'Ctrl-';
-	       if (event.modifiers & Event.ALT_MASK) modifiers += 'Alt-';
-	       if (event.modifiers & Event.SHIFT_MASK) modifiers += 'Shift-';
+		if (event.modifiers & Event.CONTROL_MASK) modifiers += 'Ctrl-';
+		if (event.modifiers & Event.ALT_MASK) modifiers += 'Alt-';
+		if (event.modifiers & Event.SHIFT_MASK) modifiers += 'Shift-';
 	    }
 	    key = modifiers+key;
-	 }
-	 return key;
-      },
+	}
+	return key;
+    },
 
-      command: function (event) {
-	 return this.keymap[this.event_key(event)];
-      },
-
-      set_focus: function (element) {
-	 if (element != null) 
+    command: function (event) {
+	return this.keymap[this.event_key(event)];
+    },
+    
+    set_focus: function (element) {
+	if (element != null) 
 	    setTimeout(function () { try { element.focus(); } catch (e) {} }, 0);
-      }
-
-   });
+    }
+    
+});
 
 
 var WikingHandler = Class.create(WikingBase, {
-      // This class is instantiated within the page onload handler.  It is the
-      // main javascript interface of a Wiking application.  It creates
-      // instances of other javascript classes to handle menus etc if the
-      // relevant HTML objects exist..
-
-      // Landmarks by HTML element id.
-      LANDMARKS: {
-	 'top':         'banner',
-	 'menu-map':    'navigation',
-	 'submenu-map': 'navigation',
-	 'main':        'main',
-	 'bottom':      'contentinfo'
-      },
-
-      initialize: function ($super, translations) {
-	 // Constructor (called on page load).
-	 this.CMD_MENU = 'menu';
-	 keymap = {
+    // This class is instantiated within the page onload handler.  It is the
+    // main javascript interface of a Wiking application.  It creates
+    // instances of other javascript classes to handle menus etc if the
+    // relevant HTML objects exist..
+    
+    // Landmarks by HTML element id.
+    LANDMARKS: {
+	'top':         'banner',
+	'menu-map':    'navigation',
+	'submenu-map': 'navigation',
+	'main':        'main',
+	'bottom':      'contentinfo'
+    },
+    
+    initialize: function ($super, translations) {
+	// Constructor (called on page load).
+	this.CMD_MENU = 'menu';
+	keymap = {
 	    'Ctrl-Shift-m': this.CMD_MENU
-	 };
-	 $super(keymap, translations);
-	 this.init_landmarks();
-	 var menu = $('menu');
-	 if (menu)
+	};
+	$super(keymap, translations);
+	this.init_landmarks();
+	var menu = $('menu');
+	if (menu)
 	    this.menu = new WikingFoldersMenu(translations, menu);
-	 else
+	else
 	    this.menu = null;
-	 var submenu = $('submenu');
-	 if (submenu) {
+	var submenu = $('submenu');
+	if (submenu) {
 	    this.submenu = new WikingTreeMenu(translations, submenu);
 	    if (menu)
-	       this.menu.bind_submenu(this.submenu);
-	 } else {
+		this.menu.bind_submenu(this.submenu);
+	} else {
 	    this.submenu = null;
-	 }
-	 // Set up global key handler.
-	 document.observe('keydown', this.on_keydown.bind(this));
-	 // Move focus to the main content if there is no anchor in the current URL.
-	 if (window.location.href.match("#") == null)
+	}
+	// Set up global key handler.
+	document.observe('keydown', this.on_keydown.bind(this));
+	// Move focus to the main content if there is no anchor in the current URL.
+	if (window.location.href.match("#") == null)
 	    this.set_focus($('main-heading'));
-      },
-
-      init_landmarks: function () {
-	 //Initialize ARIA landmarks;
-	 for (var id in this.LANDMARKS) {
+    },
+    
+    init_landmarks: function () {
+	//Initialize ARIA landmarks;
+	for (var id in this.LANDMARKS) {
 	    var element = $(id);
 	    if (element != null)
-	       element.setAttribute('role', this.LANDMARKS[id]);
-	 }
-      },
-
-      on_keydown: function (event) {
-	 // Handle global Wiking keyboard shortcuts.
-	 var cmd = this.command(event);
-	 if (cmd == this.CMD_MENU) {
+		element.setAttribute('role', this.LANDMARKS[id]);
+	}
+    },
+    
+    on_keydown: function (event) {
+	// Handle global Wiking keyboard shortcuts.
+	var cmd = this.command(event);
+	if (cmd == this.CMD_MENU) {
 	    if (this.submenu != null)
-	       this.submenu.focus();
+		this.submenu.focus();
 	    else if (this.menu != null)
-	       this.menu.focus();
+		this.menu.focus();
 	    event.stop();
-	 }
-      }
-
-   });
+	}
+    }
+    
+});
 
 var WikingMenu = Class.create(WikingBase, {
-      // Initialize a hierarchical menu -- assign ARIA roles to HTML tags
-      // and bind keyboard event handling to support keyboard menu traversal.
-      
-      initialize: function ($super, keymap, translations, node) {
-	 $super(keymap, translations);
-	 this.node = node;
-	 node.setAttribute('role', 'application');
-	 // Go through the menu and assign aria roles and key bindings.
-	 var ul = node.down('ul');
-	 this.items = this.init_items(ul, null);
-	 // Set the active item.
-	 var active = $(node.getAttribute('aria-activedescendant'));
-	 if (active == null && this.items.length != 0) {
+    // Initialize a hierarchical menu -- assign ARIA roles to HTML tags
+    // and bind keyboard event handling to support keyboard menu traversal.
+    
+    initialize: function ($super, keymap, translations, node) {
+	$super(keymap, translations);
+	this.node = node;
+	node.setAttribute('role', 'application');
+	// Go through the menu and assign aria roles and key bindings.
+	var ul = node.down('ul');
+	this.items = this.init_items(ul, null);
+	// Set the active item.
+	var active = $(node.getAttribute('aria-activedescendant'));
+	if (active == null && this.items.length != 0) {
 	    active = this.items[0];
 	    node.setAttribute('aria-activedescendant', active.getAttribute('id'));
-	 }
-	 active.setAttribute('tabindex', '0');
-      },
-
-      init_items: function (ul, parent) {
-	 var items = [];
-	 var base_id;
-	 if (parent == null)
+	}
+	active.setAttribute('tabindex', '0');
+    },
+    
+    init_items: function (ul, parent) {
+	var items = [];
+	var base_id;
+	if (parent == null)
 	    base_id = this.node.getAttribute('id')+'-item';
-	 else
+	else
 	    base_id = parent.getAttribute('id');
-	 for (var i = 0; i < ul.childNodes.length; i++) {
+	for (var i = 0; i < ul.childNodes.length; i++) {
 	    var child = $(ul.childNodes[i]);
 	    if (child.nodeName =='LI') {
-	       var prev = (items.length == 0 ? null : items[items.length-1]);
-	       var id = base_id + '.' + (items.length+1);
-	       var item = this.init_item(child, id, prev, parent);
-	       items[items.length] = item;
+		var prev = (items.length == 0 ? null : items[items.length-1]);
+		var id = base_id + '.' + (items.length+1);
+		var item = this.init_item(child, id, prev, parent);
+		items[items.length] = item;
 	    }
-	 }
-	 return items;
-      },
-
-      init_item: function (li, id, prev, parent) {
-	 li.setAttribute('role', 'presentation');
-	 var item = li.down('a');
-	 item.setAttribute('id', id);
-	 // Note: tabindex makes the items unroutable when ARIA is not correctly supported.
-	 item.setAttribute('tabindex', '-1');
-	 if (item.hasClassName('current'))
+	}
+	return items;
+    },
+    
+    init_item: function (li, id, prev, parent) {
+	li.setAttribute('role', 'presentation');
+	var item = li.down('a');
+	item.setAttribute('id', id);
+	// Note: tabindex makes the items unroutable when ARIA is not correctly supported.
+	item.setAttribute('tabindex', '-1');
+	if (item.hasClassName('current'))
 	    this.node.setAttribute('aria-activedescendant', id);
-	 item._wiking_menu_prev = prev;
-	 item._wiking_menu_next = null;
-	 item._wiking_menu_parent = parent;
-	 item._wiking_submenu = null;
-	 item._wiking_menu = this;
-	 if (prev != null)
+	item._wiking_menu_prev = prev;
+	item._wiking_menu_next = null;
+	item._wiking_menu_parent = parent;
+	item._wiking_submenu = null;
+	item._wiking_menu = this;
+	if (prev != null)
 	    prev._wiking_menu_next = item;
-	 item.observe('keydown', this.on_menu_keydown.bind(this));
-	 return item;
-      },
-
-      on_menu_keydown: function (event) {
-	 // Must be implemented in derived classes.
-      },
-
-      focus: function () {
-	 var item = $(this.node.getAttribute('aria-activedescendant'));
-	 this.expand_item(item, true);
-	 this.set_focus(item);
-      },
-
-      expand_item: function (item, recourse) {
-	 return false;
-      }
-
-   });
+	item.observe('keydown', this.on_menu_keydown.bind(this));
+	return item;
+    },
+    
+    on_menu_keydown: function (event) {
+	// Must be implemented in derived classes.
+    },
+    
+    focus: function () {
+	var item = $(this.node.getAttribute('aria-activedescendant'));
+	this.expand_item(item, true);
+	this.set_focus(item);
+    },
+    
+    expand_item: function (item, recourse) {
+	return false;
+    }
+    
+});
 
 
 var WikingFoldersMenu = Class.create(WikingMenu, {
-      // Specific handling of top level folders menu.
-
-      initialize: function ($super, translations, node) {
-	 // Definition of available commands.
-	 this.CMD_PREV = 'prev'; // Go to the next item at the same level of hierarchy.
-	 this.CMD_NEXT = 'next'; // Go to the previous item at the same level of hierarchy.
-	 this.CMD_SUBMENU = 'submenu'; // Go to the submenu.
-	 this.CMD_ACTIVATE = 'activate';
-	 this.CMD_QUIT = 'quit';
-	 // Menu navigation keyboard shortcuts mapping to available command identifiers.
-	 keymap = {
+    // Specific handling of top level folders menu.
+    
+    initialize: function ($super, translations, node) {
+	// Definition of available commands.
+	this.CMD_PREV = 'prev'; // Go to the next item at the same level of hierarchy.
+	this.CMD_NEXT = 'next'; // Go to the previous item at the same level of hierarchy.
+	this.CMD_SUBMENU = 'submenu'; // Go to the submenu.
+	this.CMD_ACTIVATE = 'activate';
+	this.CMD_QUIT = 'quit';
+	// Menu navigation keyboard shortcuts mapping to available command identifiers.
+	keymap = {
 	    'Left':	    this.CMD_PREV,
 	    'Right':        this.CMD_NEXT,
 	    'Down':         this.CMD_SUBMENU,
 	    'Escape':	    this.CMD_QUIT,
 	    'Enter':	    this.CMD_ACTIVATE,
 	    'Space':	    this.CMD_ACTIVATE
-	 };
-	 $super(keymap, translations, node);
-      },
+	};
+	$super(keymap, translations, node);
+    },
+    
+    init_items: function ($super, ul, parent) {
+	ul.setAttribute('role', 'tablist');
+	return $super(ul, parent);
+    },
 
-      init_items: function ($super, ul, parent) {
-	 ul.setAttribute('role', 'tablist');
-	 return $super(ul, parent);
-      },
-
-      init_item: function ($super, li, id, prev, parent) {
-	 var item = $super(li, id, prev, parent);
-	 item.setAttribute('role', 'tab');
-	 return item;
-      },
-
-      bind_submenu: function(menu) {
-	 // Bind given WikingTreeMenu instance as a descendant of this menu in
-	 // keyboard traversal.
-	 var item = $(this.node.getAttribute('aria-activedescendant'));
-	 item._wiking_submenu = menu.items;
-	 menu.bind_parent(item);
-      },
-
-      on_menu_keydown: function (event) {
-	 var item = event.element();
-	 var cmd = this.command(event);
-	 if (cmd == this.CMD_PREV) {
+    init_item: function ($super, li, id, prev, parent) {
+	var item = $super(li, id, prev, parent);
+	item.setAttribute('role', 'tab');
+	return item;
+    },
+    
+    bind_submenu: function(menu) {
+	// Bind given WikingTreeMenu instance as a descendant of this menu in
+	// keyboard traversal.
+	var item = $(this.node.getAttribute('aria-activedescendant'));
+	item._wiking_submenu = menu.items;
+	menu.bind_parent(item);
+    },
+    
+    on_menu_keydown: function (event) {
+	var item = event.element();
+	var cmd = this.command(event);
+	if (cmd == this.CMD_PREV) {
 	    this.set_focus(item._wiking_menu_prev);
 	    event.stop();
-	 } else if (cmd == this.CMD_NEXT) {
+	} else if (cmd == this.CMD_NEXT) {
 	    this.set_focus(item._wiking_menu_next);
 	    event.stop();
-	 } else if (cmd == this.CMD_SUBMENU) {
+	} else if (cmd == this.CMD_SUBMENU) {
 	    if (item._wiking_submenu != null)
-	       this.set_focus(item._wiking_submenu[0]);
+		this.set_focus(item._wiking_submenu[0]);
 	    event.stop();
-	 } else if (cmd == this.CMD_ACTIVATE) {
+	} else if (cmd == this.CMD_ACTIVATE) {
 	    self.location = item.getAttribute('href');
 	    event.stop();
-	 } else if (cmd == this.CMD_QUIT) {
+	} else if (cmd == this.CMD_QUIT) {
 	    this.set_focus($('main-heading'));
 	    event.stop();
-	 }
-      }
-
-   });
+	}
+    }
+    
+});
 
 
 var WikingTreeMenu = Class.create(WikingMenu, {
