@@ -100,7 +100,8 @@ var WikingHandler = Class.create(WikingBase, {
 	// Constructor (called on page load).
 	this.CMD_MENU = 'menu';
 	keymap = {
-	    'Ctrl-Shift-m': this.CMD_MENU
+	    'Ctrl-Shift-m': this.CMD_MENU,
+	    'Ctrl-Shift-Up': this.CMD_MENU
 	};
 	$super(keymap, translations);
 	this.init_landmarks();
@@ -179,30 +180,29 @@ var WikingMenu = Class.create(WikingBase, {
 	    if (child.nodeName =='LI') {
 		var prev = (items.length == 0 ? null : items[items.length-1]);
 		var id = base_id + '.' + (items.length+1);
-		var item = this.init_item(child, id, prev, parent);
-		items[items.length] = item;
+		this.init_item(child, id, prev, parent);
+		items[items.length] = child;
 	    }
 	}
 	return items;
     },
     
     init_item: function (li, id, prev, parent) {
-	li.setAttribute('role', 'presentation');
-	var item = li.down('a');
-	item.setAttribute('id', id);
-	// Note: tabindex makes the items unroutable when ARIA is not correctly supported.
-	item.setAttribute('tabindex', '-1');
-	if (item.hasClassName('current'))
+	if (li.down('a').hasClassName('current'))
 	    this.node.setAttribute('aria-activedescendant', id);
-	item._wiking_menu_prev = prev;
-	item._wiking_menu_next = null;
-	item._wiking_menu_parent = parent;
-	item._wiking_submenu = null;
-	item._wiking_menu = this;
+	li.setAttribute('role', 'presentation');
+	li.setAttribute('id', id);
+	// Note: tabindex makes the items unroutable when ARIA is not correctly supported.
+	li.setAttribute('tabindex', '-1');
+	li._wiking_menu_prev = prev;
+	li._wiking_menu_next = null;
+	li._wiking_menu_parent = parent;
+	li._wiking_submenu = null;
+	li._wiking_menu = this;
 	if (prev != null)
-	    prev._wiking_menu_next = item;
-	item.observe('keydown', this.on_menu_keydown.bind(this));
-	return item;
+	    prev._wiking_menu_next = li;
+	li.observe('keydown', this.on_menu_keydown.bind(this));
+	return li;
     },
     
     on_menu_keydown: function (event) {
@@ -250,9 +250,8 @@ var WikingFoldersMenu = Class.create(WikingMenu, {
     },
 
     init_item: function ($super, li, id, prev, parent) {
-	var item = $super(li, id, prev, parent);
-	item.setAttribute('role', 'tab');
-	return item;
+	$super(li, id, prev, parent);
+	li.setAttribute('role', 'tab');
     },
     
     bind_submenu: function(menu) {
@@ -277,7 +276,7 @@ var WikingFoldersMenu = Class.create(WikingMenu, {
 		this.set_focus(item._wiking_submenu[0]);
 	    event.stop();
 	} else if (cmd == this.CMD_ACTIVATE) {
-	    self.location = item.getAttribute('href');
+	    self.location = item.down('a').getAttribute('href');
 	    event.stop();
 	} else if (cmd == this.CMD_QUIT) {
 	    this.set_focus($('main-heading'));
@@ -289,20 +288,20 @@ var WikingFoldersMenu = Class.create(WikingMenu, {
 
 
 var WikingTreeMenu = Class.create(WikingMenu, {
-      // Specific handling of foldable tree menu.
-
-      initialize: function ($super, translations, node) {
-	 // Definition of available commands.
-	 this.CMD_EXPAND = 'expand'; // Unfold the subtree.
-	 this.CMD_COLLAPSE = 'collapse';  // Fold the subtree.
-	 this.CMD_UP = 'up'; // Go to the next item.
-	 this.CMD_DOWN = 'down'; // Go to the previous item.
-	 this.CMD_PREV = 'prev'; // Go to the next item at the same level of hierarchy.
-	 this.CMD_NEXT = 'next'; // Go to the previous item at the same level of hierarchy.
-	 this.CMD_ACTIVATE = 'activate';
-	 this.CMD_QUIT = 'quit';
-	 // Menu navigation keyboard shortcuts mapping to available command identifiers.
-	 keymap = {
+    // Specific handling of foldable tree menu.
+    
+    initialize: function ($super, translations, node) {
+	// Definition of available commands.
+	this.CMD_EXPAND = 'expand'; // Unfold the subtree.
+	this.CMD_COLLAPSE = 'collapse';  // Fold the subtree.
+	this.CMD_UP = 'up'; // Go to the next item.
+	this.CMD_DOWN = 'down'; // Go to the previous item.
+	this.CMD_PREV = 'prev'; // Go to the next item at the same level of hierarchy.
+	this.CMD_NEXT = 'next'; // Go to the previous item at the same level of hierarchy.
+	this.CMD_ACTIVATE = 'activate';
+	this.CMD_QUIT = 'quit';
+	// Menu navigation keyboard shortcuts mapping to available command identifiers.
+	keymap = {
 	    'Up':	    this.CMD_UP,
 	    'Down':         this.CMD_DOWN,
 	    'Shift-Up':	    this.CMD_PREV,
@@ -314,176 +313,174 @@ var WikingTreeMenu = Class.create(WikingMenu, {
 	    'Escape':	    this.CMD_QUIT,
 	    'Enter':	    this.CMD_ACTIVATE,
 	    'Space':	    this.CMD_ACTIVATE
-	 };
-	 $super(keymap, translations, node);
-	 node.down('.menu-panel').setAttribute('role', 'tree');
-	 if (this.foldable) {
+	};
+	$super(keymap, translations, node);
+	node.down('.menu-panel').setAttribute('role', 'tree');
+	if (this.foldable) {
 	    var b = new Element('button',
 				{id: 'toggle-menu-expansion-button',
 				 title: this.gettext("Expand/collapse complete menu hierarchy")});
 	    node.down('ul').insert({after: b});
 	    b.observe('click', this.on_toggle_expansion.bind(this));
-	 }
-      },
-
-      init_items: function ($super, ul, parent) {
-	 ul.setAttribute('role', 'group');
-	 return $super(ul, parent);
-      },
-
-      init_item: function ($super, li, id, prev, parent) {
-	 li.observe('click', this.on_menu_click.bind(this));
-	 var item = $super(li, id, prev, parent);
-	 //item.setAttribute('title', item.innerHTML);
-	 item.setAttribute('role', 'treeitem');
-	 var span = li.down('span');
-	 if (span != null)
+	}
+    },
+    
+    init_items: function ($super, ul, parent) {
+	ul.setAttribute('role', 'group');
+	return $super(ul, parent);
+    },
+    
+    init_item: function ($super, li, id, prev, parent) {
+	$super(li, id, prev, parent);
+	li.down('a').setAttribute('role', 'presentation');
+	li.observe('click', this.on_menu_click.bind(this));
+	li.setAttribute('role', 'treeitem');
+	var span = li.down('span');
+	if (span != null)
 	    span.setAttribute('role', 'presentation');
-	 // Append hierarchical submenu if found.
-	 var submenu = li.down('ul');
-	 if (submenu != null) {
+	// Append hierarchical submenu if found.
+	var submenu = li.down('ul');
+	if (submenu != null) {
 	    if (li.hasClassName('foldable')) {
-	       var hidden = (li.hasClassName('folded') ? 'true' : 'false');
-	       submenu.setAttribute('aria-hidden', hidden);
-	       var expanded = (li.hasClassName('folded') ? 'false' : 'true' );
-	       item.setAttribute('aria-expanded', expanded);
-	       this.foldable = true;
+		var hidden = (li.hasClassName('folded') ? 'true' : 'false');
+		submenu.setAttribute('aria-hidden', hidden);
+		var expanded = (li.hasClassName('folded') ? 'false' : 'true' );
+		li.setAttribute('aria-expanded', expanded);
+		this.foldable = true;
 	    }
-	    item._wiking_submenu = this.init_items(submenu, item);
-	 }
-	 return item;
-      },
-
-      bind_parent: function(parent) {
-	 // Bind given WikingFolderMenu item as a parent of this menu in
-	 // keyboard traversal.
-	 for (var i = 0; i < this.items.length; i++) {
+	    li._wiking_submenu = this.init_items(submenu, li);
+	}
+    },
+    
+    bind_parent: function(parent) {
+	// Bind given WikingFolderMenu item as a parent of this menu in
+	// keyboard traversal.
+	for (var i = 0; i < this.items.length; i++) {
 	    var item = this.items[i];
 	    item._wiking_menu_parent = parent;
-	 }
-      },
-
-      toggle_item_expansion: function (item) {
-	 if (item != null) {
-	    var parent = item.parentNode;
+	}
+    },
+    
+    toggle_item_expansion: function (item) {
+	if (item != null) {
 	    if (this.expanded)
-	       this.collapse_item(item);
+		this.collapse_item(item);
 	    else
-	       this.expand_item(item);
+		this.expand_item(item);
 	    if (item._wiking_submenu != null)
-	       this.toggle_item_expansion(item._wiking_submenu[0]);
+		this.toggle_item_expansion(item._wiking_submenu[0]);
 	    this.toggle_item_expansion(item._wiking_menu_next);
-	 }
-      },
-
-      expand_item: function (item, recourse) {
-	 var li = item.parentNode;
-	 var expanded = false;
-	 if (li.hasClassName('folded')) {
-	    li.removeClassName('folded');
-	    li.down('ul').setAttribute('aria-hidden', 'false');
+	}
+    },
+    
+    expand_item: function (item, recourse) {
+	var expanded = false;
+	if (item.hasClassName('folded')) {
+	    item.removeClassName('folded');
+	    item.down('ul').setAttribute('aria-hidden', 'false');
 	    item.setAttribute('aria-expanded', 'true');
 	    expanded = true;
-	 }
-	 if (recourse && item._wiking_menu_parent != null)
+	}
+	if (recourse && item._wiking_menu_parent != null)
 	    this.expand_item(item._wiking_menu_parent, true);
-	 return expanded;
-      },
-
-      collapse_item: function (item) {
-	 var li = item.parentNode;
-	 if (li.hasClassName('foldable') && !li.hasClassName('folded')) {
-	    li.addClassName('folded');
-	    li.down('ul').setAttribute('aria-hidden', 'true');
+	return expanded;
+    },
+    
+    collapse_item: function (item) {
+	if (item.hasClassName('foldable') && !item.hasClassName('folded')) {
+	    item.addClassName('folded');
+	    item.down('ul').setAttribute('aria-hidden', 'true');
 	    item.setAttribute('aria-expanded', 'false');
 	    return true;
-	 }
-	 return false;
-      },
-
-      next_item: function (item) {
-	 // Recursively find the next item in sequence by traversing the hierarchy.
-	 if (item._wiking_menu_next != null)
+	}
+	return false;
+    },
+    
+    next_item: function (item) {
+	// Recursively find the next item in sequence by traversing the hierarchy.
+	if (item._wiking_menu_next != null)
 	    next = item._wiking_menu_next;
-	 else if (item._wiking_menu_parent != null
-		  && item._wiking_menu_parent._wiking_menu == this)
+	else if (item._wiking_menu_parent != null
+		 && item._wiking_menu_parent._wiking_menu == this)
 	    next = this.next_item(item._wiking_menu_parent);
-	 return next;
-      },
-
-      on_menu_keydown: function (event) {
-	 var item = event.element();
-	 var cmd = this.command(event);
-	 if (cmd == this.CMD_UP) {
+	return next;
+    },
+    
+    on_menu_keydown: function (event) {
+	var item = event.element();
+	var cmd = this.command(event);
+	console.log("**", cmd, item)
+	if (cmd == this.CMD_UP) {
 	    var target = null;
 	    if (item._wiking_menu_prev != null) {
-	       target = item._wiking_menu_prev;
-	       if (target._wiking_submenu != null && !target.parentNode.hasClassName('folded'))
-		  target = target._wiking_submenu[target._wiking_submenu.length-1];
+		target = item._wiking_menu_prev;
+		if (target._wiking_submenu != null && !target.hasClassName('folded'))
+		    target = target._wiking_submenu[target._wiking_submenu.length-1];
 	    } else {
-	       target = item._wiking_menu_parent;
+		target = item._wiking_menu_parent;
 	    }
 	    this.set_focus(target);
 	    event.stop();
-	 } else if (cmd == this.CMD_DOWN) {
+	} else if (cmd == this.CMD_DOWN) {
 	    var target = null;
-	    if (item._wiking_submenu != null && !item.parentNode.hasClassName('folded'))
-	       target = item._wiking_submenu[0];
+	    if (item._wiking_submenu != null && !item.hasClassName('folded'))
+		target = item._wiking_submenu[0];
 	    else
-	       target = this.next_item(item);
+		target = this.next_item(item);
+	    console.log(">>", target)
 	    this.set_focus(target);
 	    event.stop();
-	 } else if (cmd == this.CMD_PREV) {
+	} else if (cmd == this.CMD_PREV) {
 	    this.set_focus(item._wiking_menu_prev);
 	    event.stop();
-	 } else if (cmd == this.CMD_NEXT) {
+	} else if (cmd == this.CMD_NEXT) {
 	    this.set_focus(item._wiking_menu_next);
 	    event.stop();
-	 } else if (cmd == this.CMD_EXPAND) {
+	} else if (cmd == this.CMD_EXPAND) {
 	    if (!this.expand_item(item) && item._wiking_submenu != null)
-	       this.set_focus(item._wiking_submenu[0]);
+		this.set_focus(item._wiking_submenu[0]);
 	    event.stop();
-	 } else if (cmd == this.CMD_COLLAPSE) {
+	} else if (cmd == this.CMD_COLLAPSE) {
 	    if (!this.collapse_item(item))
-	       this.set_focus(item._wiking_menu_parent);
+		this.set_focus(item._wiking_menu_parent);
 	    event.stop();
-	 } else if (cmd == this.CMD_ACTIVATE) {
-	    self.location = item.getAttribute('href');
+	} else if (cmd == this.CMD_ACTIVATE) {
+	    self.location = item.down('a').getAttribute('href');
 	    event.stop();
-	 } else if (cmd == this.CMD_QUIT) {
+	} else if (cmd == this.CMD_QUIT) {
 	    this.set_focus($('main-heading'));
 	    event.stop();
-	 }
-      },
-
-      on_toggle_expansion: function (event) {
-	 this.toggle_item_expansion(this.items[0]);
-	 this.expanded = !this.expanded;
-	 var b = $('toggle-menu-expansion-button');
-	 if (this.expanded)
+	}
+    },
+    
+    on_toggle_expansion: function (event) {
+	this.toggle_item_expansion(this.items[0]);
+	this.expanded = !this.expanded;
+	var b = $('toggle-menu-expansion-button');
+	if (this.expanded)
 	    b.addClassName('expanded');
-	 else
+	else
 	    b.removeClassName('expanded');
-      },
-
-      on_menu_click: function (event) {
-	 var element = event.element();
-	 if (element.nodeName == 'A' || element.nodeName == 'LI') {
+    },
+    
+    on_menu_click: function (event) {
+	var element = event.element();
+	if (element.nodeName == 'A' || element.nodeName == 'LI') {
 	    // The inner SPAN has a left margin making space for folding controls.
 	    // Then, if the user clicks inside the A or LI element, but not inside
 	    // SPAN, folding controls were clicked.  The strange hack with the inner
 	    // SPAN is needed to make folding work across browsers (particulartly
 	    // MSIE).
 	    var span = element.down('span');
-	    var item = span.parentNode;
+	    var item = span.parentNode.parentNode;
 	    if (event.pointerX() < span.cumulativeOffset().left) {
-	       if (item.parentNode.hasClassName('folded'))
-		  this.expand_item(item);
-	       else
-		  this.collapse_item(item);
-	       event.stop();
+		if (item.hasClassName('folded'))
+		    this.expand_item(item);
+		else
+		    this.collapse_item(item);
+		event.stop();
 	    }
-	 }
-      }
-
-   });
+	}
+    }
+    
+});
