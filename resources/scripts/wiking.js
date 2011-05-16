@@ -188,11 +188,12 @@ var WikingMenu = Class.create(WikingBase, {
     },
     
     init_item: function (li, id, prev, parent) {
-	if (li.down('a').hasClassName('current'))
+	var link = li.down('a');
+	link.setAttribute('tabindex', '-1');
+	if (link.hasClassName('current'))
 	    this.node.setAttribute('aria-activedescendant', id);
 	li.setAttribute('role', 'presentation');
 	li.setAttribute('id', id);
-	// Note: tabindex makes the items unroutable when ARIA is not correctly supported.
 	li.setAttribute('tabindex', '-1');
 	li._wiking_menu_prev = prev;
 	li._wiking_menu_next = null;
@@ -202,7 +203,6 @@ var WikingMenu = Class.create(WikingBase, {
 	if (prev != null)
 	    prev._wiking_menu_next = li;
 	li.observe('keydown', this.on_menu_keydown.bind(this));
-	return li;
     },
     
     on_menu_keydown: function (event) {
