@@ -230,9 +230,8 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             style = "width: %d%%" % (100/len(links))
             last_style = "width: %d%%" % (100 - (100 / len(links) * (len(links)-1)))
             last = links[-1]
-            return g.map((g.h(title, 3), g.ul(*[g.li(l, style=(l==last and last_style or style))
-                                                for l in links])),
-                         id='menu-map', name='menu-map', title=_("Main navigation"))
+            return concat(g.h(title, 3),
+                          g.ul(*[g.li(l, style=(l==last and last_style or style)) for l in links]))
         else:
             return None
 
@@ -297,10 +296,9 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         else:
             title = heading = _("Main navigation")
             name = 'main-navigation'
-        return g.map(g.div((g.h(g.link(heading, None, name=name, hotkey="3"), 3),
-                            menu(context.node().top())),
-                           cls='menu-panel'),
-                     id='submenu-map', name='submenu-map', title=title)
+        return g.div((g.h(g.link(heading, None, name=name, hotkey="3"), 3),
+                      menu(context.node().top())),
+                     cls='menu-panel')
     
     def _panels(self, context):
         g = self._generator
