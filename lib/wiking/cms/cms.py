@@ -1777,7 +1777,8 @@ class News(ContentManagementModule, EmbeddableCMSModule):
                   descr=_("Date of the news item creation.")),
             Field('title', _("Title"), column_label=_("Message"), width=32,
                   descr=_("The item brief summary.")),
-            Field('content', _("Message"), height=6, width=80, descr=_STRUCTURED_TEXT_DESCR + ' ' + \
+            Field('content', _("Message"), height=6, width=80, type=pd.StructuredText,
+                  descr=_STRUCTURED_TEXT_DESCR + ' ' + \
                   _("It is, however, recommened to use the simplest possible formatting, since "
                     "the item may be also published through an RSS channel, which does not "
                     "support formatting.")),

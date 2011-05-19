@@ -1911,8 +1911,19 @@ class RssModule(object):
         return self._record_uri(req, record, setlang=lang)
 
     def _rss_description(self, req, record):
+        def format(text):
+            parser = lcg.Parser()
+            content = lcg.Container(parser.parse(text))
+            node = lcg.ContentNode('', content=content)
+            exporter = lcg.HtmlExporter()
+            context = exporter.context(node, None)
+            return node.content().export(context)
         if self._RSS_DESCR_COLUMN:
-            return record[self._RSS_DESCR_COLUMN].export()
+            value = record[self._RSS_DESCR_COLUMN]
+            result = value.export()
+            if isinstance(value.type(), pytis.data.StructuredText):
+                result = format(result)
+            return result
         else:
             return None
         
@@ -2062,6 +2073,9 @@ class PytisRssModule(PytisModule):
                 return lambda record: translate(spec(req, record))
             elif raw:
                 return lambda record: translate(record[spec].value())
+            # TODO: allow HTML formatting as in the old RssModule (hopefully more efficient).
+            #elif isinstance(self._type[spec], pytis.data.StructuredText()):
+            #    return lambda record: format(translate(record[spec].export()))
             else:
                 return lambda record: translate(record[spec].export())
         import wiking
