@@ -21,18 +21,6 @@ from wiking import debug, log, OPR
 
 import mod_python, mod_python.util, mod_python.apache
 
-class ModPythonFileUpload(wiking.FileUpload):
-    """Mod_python specific implementation of the FileUpload interface."""
-    def __init__(self, field, encoding):
-        self._field = field
-        self._filename = re.split(r'[\\/:]', unicode(field.filename, encoding))[-1]
-    def file(self):
-        return self._field.file
-    def filename(self):
-        return self._filename
-    def type(self):
-        return self._field.type
-
 
 class ModPythonRequest(wiking.Request):
     """Mod_python server interface implementing the 'wiking.Request' interface."""
@@ -56,7 +44,7 @@ class ModPythonRequest(wiking.Request):
             if isinstance(value, (tuple, list)):
                 return tuple([init_value(v) for v in value])
             elif isinstance(value, mod_python.util.Field):
-                return ModPythonFileUpload(value, encoding)
+                return wiking.FileUpload(value, encoding)
             else:
                 return unicode(value, encoding)
         try:

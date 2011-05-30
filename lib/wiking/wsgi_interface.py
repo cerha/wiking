@@ -18,19 +18,6 @@
 import wsgiref.util, wsgiref.headers, cgi, httplib
 import wiking
 
-
-class WsgiFileUpload(wiking.Request):
-    # TODO: This is just copied from mod_python_interface.  Needs to be implemented for WSGI!
-    def __init__(self, field, encoding):
-        self._field = field
-        self._filename = re.split(r'[\\/:]', unicode(field.filename, encoding))[-1]
-    def file(self):
-        return self._field.file
-    def filename(self):
-        return self._filename
-    def type(self):
-        return self._field.type
-
     
 class WsgiRequest(wiking.Request):
     """Wiking server interface implementation for WSGI.
@@ -62,8 +49,8 @@ class WsgiRequest(wiking.Request):
         def init_value(value):
             if isinstance(value, (tuple, list)):
                 return tuple([init_value(v) for v in value])
-            elif value.file:
-                return WsgiFileUpload(value, encoding)
+            elif value.filename:
+                return wiking.FileUpload(value, encoding)
             else:
                 return unicode(value.value, encoding)
         fields = cgi.FieldStorage(fp=self._environ['wsgi.input'],

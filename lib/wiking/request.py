@@ -28,10 +28,21 @@ class FileUpload(pytis.web.FileUpload):
     """Generic representation of uploaded file.
 
     The interface is defined by the 'pytis.web.FileUpload' class with no Wiking
-    specific extensions.
+    specific extensions.  The implementation relies on receiving a field object
+    compatible with cgi.FieldStorage class.
     
     """
+    def __init__(self, field, encoding):
+        self._field = field
+        self._filename = re.split(r'[\\/:]', unicode(field.filename, encoding))[-1]
+    def file(self):
+        return self._field.file
+    def filename(self):
+        return self._filename
+    def type(self):
+        return self._field.type
 
+    
 class ServerInterface(pytis.web.Request):
     """Generic HTTP server interface specification.
 
