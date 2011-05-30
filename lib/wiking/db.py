@@ -1646,15 +1646,17 @@ class PytisModule(Module, ActionHandler):
         # same would apply for action_edit.
         prefill = self._form_field_prefill(req, new=True)
         if record is not None:
-            # Copy values of the existing record as prefill values for the new record.  Exclude
-            # key column, computed columns depending on key column and fields with 'nocopy'.
+            # Copy values of the existing record as prefill values for the new
+            # record.  Exclude Password and Binary values, key column, computed
+            # columns depending on key column and fields with 'nocopy'.
             key = self._data.key()[0].id()
             for fid in layout.order():
-                field = self._view.field(fid)
-                if fid != key and not field.nocopy():
-                    computer = field.computer()
-                    if not computer or key not in computer.depends():
-                        prefill[fid] = record[fid].export()
+                if not isinstance(self._type[fid], (pd.Password, pd.Binary)):
+                    field = self._view.field(fid)
+                    if fid != key and not field.nocopy():
+                        computer = field.computer()
+                        if not computer or key not in computer.depends():
+                            prefill[fid] = record[fid].export()
         form = self._form(pw.EditForm, req, new=True, action=action,
                           prefill=prefill, layout=layout, errors=errors,
                           submit=self._submit_buttons(req, action))
