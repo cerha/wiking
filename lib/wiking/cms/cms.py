@@ -1838,7 +1838,8 @@ class Planner(News):
             Field('start_date', _("Date"), width=10,
                   type=Date(not_null=True, constraints=(self._check_date,)),
                   descr=_("The date when the planned event begins. Enter the date including year. "
-                          "Example: %(date)s", date=lcg.LocalizableDateTime((now()+7).date))),
+                          "Example: %(date)s",
+                          date=lcg.LocalizableDateTime((datetime.datetime.today()+datetime.timedelta(weeks=1)).date().isoformat()))),
             Field('end_date', _("End date"), width=10, type=Date(), editable=NEVER,
                   descr=_("The date when the event ends if it is not the same as the start date "
                           "(for events which last several days).")),
