@@ -549,7 +549,7 @@ class Session(PytisModule, wiking.Session):
         row = self._data.get_row(uid=user.uid(), session_key=session_key)
         if row:
             now_ = now()
-            expiration = datetime.datetime.timedelta(hours=cfg.session_expiration)
+            expiration = datetime.timedelta(hours=cfg.session_expiration)
             if row['last_access'].value() > now_ - expiration:
                 self._data.update((row['session_id'],), self._data.make_row(last_access=now_))
                 return True
