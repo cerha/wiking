@@ -1068,7 +1068,7 @@ class RssWriter(object):
     def item(self, link, title, guid=None, description=None, pubdate=None, author=None):
         """Call repeatedly to write a single channel item."""
         if pubdate:
-            pubdate = format_http_string(pubdate)
+            pubdate = format_http_date(pubdate)
         self._stream.write('<item>\n')
         self._write_tag('title', title or '')
         self._write_tag('guid', guid or link or '', escape=False)
