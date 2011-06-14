@@ -17,7 +17,7 @@
 
 import os, string, Cookie, re, urllib, datetime, httplib
 import wiking, lcg, pytis
-from wiking import log, OPR
+from wiking import log, OPR, format_http_date
 
 _ = lcg.TranslatableTextFactory('wiking')
 
