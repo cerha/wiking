@@ -1927,7 +1927,7 @@ class Discussions(News):
             new_record = self._record(req, None, new=True, prefill=prefill)
             try:
                 transaction = self._transaction()
-                self._in_transaction(transaction, self._insert, req, record, transaction)
+                self._in_transaction(transaction, self._insert, req, new_record, transaction)
             except pd.DBException as e:
                 req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
             else:
