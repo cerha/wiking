@@ -1914,22 +1914,20 @@ class RssModule(object):
         return self._record_uri(req, record, setlang=lang)
 
     def _rss_description(self, req, record):
-        def format(text):
-            parser = lcg.Parser()
-            content = lcg.Container(parser.parse(text))
-            node = lcg.ContentNode('', content=content)
-            exporter = lcg.HtmlExporter()
-            context = exporter.context(node, None)
-            return node.content().export(context)
-        if self._RSS_DESCR_COLUMN:
-            value = record[self._RSS_DESCR_COLUMN]
-            result = value.export()
-            if isinstance(value.type(), pytis.data.StructuredText):
-                result = format(result)
-            return result
-        else:
-            return None
+        return None
         
+    def _rss_structured_text_description(self, req, record):
+        text = self._rss_column_description(req, record)
+        parser = lcg.Parser()
+        content = lcg.Container(parser.parse(text))
+        node = lcg.ContentNode('', content=content)
+        exporter = lcg.HtmlExporter()
+        context = exporter.context(node, None)
+        return node.content().export(context)
+        
+    def _rss_column_description(self, req, record):
+        return record[self._RSS_DESCR_COLUMN].export()
+
     def _rss_date(self, req, record):
         if self._RSS_DATE_COLUMN:
             return record[self._RSS_DATE_COLUMN].value()
@@ -1952,6 +1950,13 @@ class RssModule(object):
         import wiking
         if not self._RSS_TITLE_COLUMN:
             raise NotFound
+        descr_column = self._RSS_DESCR_COLUMN
+        if descr_column is None:
+            get_description = self._rss_description
+        elif self._view.field(descr_column).text_format() == pp.TextFormat.LCG:
+            get_description = self._rss_structured_text_description
+        else:
+            get_description = self._rss_column_description
         lang = req.prefered_language()
         if relation:
             condition = self._binding_condition(*relation)
@@ -1975,7 +1980,7 @@ class RssModule(object):
             uri = self._rss_uri(req, record, lang=lang)
             if uri:
                 uri = base_uri + uri
-            description = self._rss_description(req, record)
+            description = get_description(req, record)
             if description:
                 description = translate(description)
             date = self._rss_date(req, record)
@@ -2077,7 +2082,7 @@ class PytisRssModule(PytisModule):
             elif raw:
                 return lambda record: translate(record[spec].value())
             # TODO: allow HTML formatting as in the old RssModule (hopefully more efficient).
-            #elif isinstance(self._type[spec], pytis.data.StructuredText()):
+            #elif ...:
             #    return lambda record: format(translate(record[spec].export()))
             else:
                 return lambda record: translate(record[spec].export())

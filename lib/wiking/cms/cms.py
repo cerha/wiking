@@ -746,9 +746,9 @@ class Panels(ContentManagementModule, Publishable):
                   descr=_("Number of items from the selected module, which "
                           "will be shown by the panel.")),
             # Translators: Content of a page (text or something else)
-            Field('content', _("Content"), height=10, width=80,
-                  descr=_("Additional text content displayed on the panel.")+\
-                  ' '+_STRUCTURED_TEXT_DESCR),
+            Field('content', _("Content"), height=10, width=80, text_format=pp.TextFormat.LCG,
+                  descr=(_("Additional text content displayed on the panel.") + ' ' +
+                         _STRUCTURED_TEXT_DESCR)),
             # Translators: Yes/no configuration of whether the page is
             # published. Followed by a checkbox.
             Field('published', _("Published"), default=True,
@@ -986,8 +986,12 @@ class Pages(ContentManagementModule):
             Field('description', _("Description"), width=64,
                   descr=_("Brief page description (shown as a tooltip and in site map).")),
             Field('_content', _("Content"), compact=True, height=20, width=80,
-                  descr=_STRUCTURED_TEXT_DESCR), #type=pd.StructuredText()),
-            Field('content'),
+                  # We need to be able to force max height of the field in
+                  #ShowForm to be able to show it formatted (plain text fields
+                  #get scrolled automatically, but structured text fields not).
+                  #text_format=pp.TextFormat.LCG,
+                  descr=_STRUCTURED_TEXT_DESCR),
+            Field('content', text_format=pp.TextFormat.LCG, descr=_STRUCTURED_TEXT_DESCR),
             # Translators: "Module" is an independent reusable part of a computer program (here a
             # module of Wiking CMS).
             Field('modname', _("Module"), display=_modtitle, prefer_display=True, not_null=False,
@@ -1776,18 +1780,15 @@ class News(ContentManagementModule, EmbeddableCMSModule):
                   descr=_("Date of the news item creation.")),
             Field('title', _("Title"), column_label=_("Message"), width=32,
                   descr=_("The item brief summary.")),
-            Field('content', _("Message"), height=6, width=80, type=pd.StructuredText,
-                  descr=_STRUCTURED_TEXT_DESCR + ' ' + \
-                  _("It is, however, recommened to use the simplest possible formatting, since "
-                    "the item may be also published through an RSS channel, which does not "
-                    "support formatting.")),
+            Field('content', _("Message"), height=6, width=80, text_format=pp.TextFormat.LCG,
+                  descr=_STRUCTURED_TEXT_DESCR),
             Field('author', _("Author"), codebook='Users'),
             Field('date_title', virtual=True,
                   computer=Computer(self._date_title, depends=('date', 'title'))))
         sorting = (('timestamp', DESC),)
         columns = ('title', 'timestamp', 'author')
         layout = ('timestamp', 'title', 'content')
-        list_layout = pp.ListLayout('title', meta=('timestamp', 'author'),  content='content',
+        list_layout = pp.ListLayout('title', meta=('timestamp', 'author'),  content=('content',),
                                     anchor="item-%s")
         def _date(self, record):
             return record['timestamp'].export(show_time=False)
@@ -1887,14 +1888,11 @@ class Discussions(News):
         help = _("Allow logged in users to post messages as in a simple forum.")
         table = 'news'
         def fields(self):
-            fields = pp.Fields([f for f in super(Discussions.Spec, self).fields() 
-                                if f.id() not in ('date', 'date_title')])
             # Translators: Field label for posting a message to the discussion.
-            overridden = (Field(inherit=fields['content'], label=_("Your comment"),
-                                compact=True, descr=_STRUCTURED_TEXT_DESCR),)
-            return tuple(fields.fields(override=overridden))
-            
-            return fields
+            override = (Field('content', label=_("Your comment"), compact=True,
+                              text_format=pp.TextFormat.PLAIN),)
+            return self._inherited_fields(Discussions.Spec, override=override,
+                                          exclude=('date', 'date_title'))
         sorting = (('timestamp', ASC),)
         columns = ('timestamp', 'author')
         layout = ('content',)
@@ -2105,7 +2103,7 @@ class CommonTexts(SettingsManagementModule):
             Field('descr', _("Purpose"), type=pytis.data.String(), width=64, virtual=True,
                   computer=computer(self._description)),
             Field('content', _("Text"), width=80, height=10,
-                  descr=_("Edit the given text as needed, in accordance with structured text rules.")),
+                  text_format=pp.TextFormat.LCG, descr=_STRUCTURED_TEXT_DESCR),
             )
 
         columns = ('label', 'descr',)
@@ -2329,7 +2327,7 @@ class Emails(CommonTexts):
             Field('descr', _("Purpose"), width=64,
                   virtual=True, computer=computer(self._description)),
             Field('content', _("Text"), width=80, height=10,
-                  descr=_("Edit the given text as needed, in accordance with structured text rules.")),
+                  text_format=pp.TextFormat.LCG, descr=_STRUCTURED_TEXT_DESCR),
             Field('subject', _("Subject")),
             Field('cc', _("Additional recipients"),
                   descr=_("Comma separated list of e-mail addresses.")),
@@ -2509,7 +2507,7 @@ class EmailSpool(MailManagementModule):
                   codebook='UserGroups', null_display=_("All users")),
             Field('subject', _("Subject")),
             Field('content', _("Text"), width=80, height=10,
-                  descr=_("Edit the given text as needed, in accordance with structured text rules.")),
+                  text_format=pp.TextFormat.LCG, descr=_STRUCTURED_TEXT_DESCR),
             Field('date', _("Date"), type=DateTime(), default=now, editable=NEVER),
             Field('pid', editable=NEVER),
             Field('finished', editable=NEVER),
