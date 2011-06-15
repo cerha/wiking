@@ -38,7 +38,7 @@ import time
 
 from pytis.util import *
 import pytis.data
-from pytis.presentation import computer, Computer, CbComputer, Fields, HGroup, CodebookSpec, \
+from pytis.presentation import computer, Computer, CbComputer, HGroup, CodebookSpec, \
     Field, ColumnLayout
 from lcg import log as debug
 
@@ -1660,17 +1660,15 @@ class Images(Attachments):
     class Spec(Attachments.Spec):
         table = 'attachments'
         def fields(self):
-            fields = pp.Fields(super(Images.Spec, self).fields())
-            overridden = (
-                #Field(inherit=fields['mime_type'], check=),
-                Field(inherit=fields['title'], 
+            overridde = (
+                Field('title',
                       descr=_("Image title.  If empty, the file name will be used instead.")),
-                Field(inherit=fields['description'], maxlen=512,
+                Field('description', maxlen=512,
                       descr=_("Optional image description.")),
-                Field(inherit=fields['listed'], label=_("In galery"),
+                Field('listed', _("In galery"),
                       descr=_("Check if you want the image to appear an automatically generated "
                               "galery.")),
-                Field(inherit=fields['is_image'], default=True),
+                Field('is_image', default=True),
                 )
             extra = (
                 Field('image', virtual=True, editable=ALWAYS, computer=computer(self._image),
@@ -1695,7 +1693,7 @@ class Images(Attachments):
                 Field('_resized_filename', virtual=True,
                       computer=self._filename_computer('-resized')),
                 )
-            return tuple(fields.fields(override=overridden)) + extra
+            return self._inherited_fields(Images, override=overridde) + extra
         def _image(self, record):
             # Use lazy get to prevent running the computer (to find out, whether a new file was
             # uploaded and prevent loading the previously saved file in that case).

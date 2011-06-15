@@ -32,7 +32,7 @@ import os
 import subprocess
 
 import pytis.data
-from pytis.presentation import computer, Computer, Fields, Field
+from pytis.presentation import computer, Computer, Field
 from lcg import log as debug
 
 ONCE = pp.Editable.ONCE
