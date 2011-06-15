@@ -362,7 +362,7 @@ class Request(ServerInterface):
                         type, quoted = line.split(':', 1)
                         if type not in self._MESSAGE_TYPES:
                             raise ValueError("Invalid type:", type)
-                        message = urllib.unquote(quoted).decode(self._encoding)
+                        message = urllib.unquote(str(quoted)).decode(self._encoding)
                     except Exception as e:
                         log(OPR, "Error unpacking stored messages:", e)
                     else:
