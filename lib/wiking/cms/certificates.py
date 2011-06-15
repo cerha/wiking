@@ -320,12 +320,11 @@ class CertificateRequest(UserCertificates):
             self._serial_number_counter = pd.DBCounterDefault('certificate_serial_number', dbconnection)
             
         def fields(self):
-            fields = pp.Fields(UserCertificates.Spec.fields(self))
-            overridden = [Field(inherit=fields['file'], descr=_("Upload a PEM file containing the certificate request")),
-                          Field(inherit=fields['purpose'], default=self._PURPOSE_AUTHENTICATION)]
+            overridden = (Field('file', descr=_("Upload a PEM file containing the certificate request")),
+                          Field('purpose', default=self._PURPOSE_AUTHENTICATION))
             # We add some fields to propagate last form values to the new request
-            extra = [Field('regcode', type=pytis.data.String(), virtual=True)]
-            return fields.fields(override=overridden) + extra            
+            extra = (Field('regcode', type=pytis.data.String(), virtual=True),)
+            return self._inherited_fields(CertificateRequest, override=overridden) + extra
 
         def _certificate_computation(self, buffer):
             serial_number = self._serial_number_counter.next()
