@@ -351,6 +351,16 @@ class Resources(Module, RequestHandler):
                     return req.serve_file(src_file, mime_type or 'application/octet-stream')
         raise NotFound()
 
+    def resource(self, filename):
+        """Obtain a resource instance from the global resource provider.
+        
+        This method may be useful when you need to search resources in wiking
+        module's code.  Otherwise the resource provider is only available in
+        export time through the export context.
+        
+        """
+        return self._provider.resource(filename)
+
 
 class SiteIcon(Module, RequestHandler):
     """Serve site icon according to the configuration option 'site_icon'.
