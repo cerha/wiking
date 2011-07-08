@@ -328,11 +328,22 @@ class Resources(Module, RequestHandler):
 
     def _handle(self, req):
         """Serve the resource from a file."""
-        if len(req.unresolved_path) > 1 and '..' not in req.unresolved_path:
-            subdir = req.unresolved_path[0]
-            filename = os.path.join(*req.unresolved_path[1:])
+        if len(req.unresolved_path) >= 1:
+            if '..' in req.unresolved_path:
+                # Avoid direcory traversal attacks.
+                raise Forbidden()
+            if req.unresolved_path[0] in ('images', 'css', 'scripts', 'media', 'flash'):
+                # This is just a temporary hack to allow backward compatibility
+                # with resource URIs using type specific subdirectories.
+                # Wiking no longer generates such URIs and applications should
+                # avoid them too as this hack will be removed in future.
+                subdir = req.unresolved_path[0]
+                del req.unresolved_path[0]
+            else:
+                subdir = None
+            filename = os.path.join(*req.unresolved_path)
             resource = self._provider.resource(filename)
-            if resource is not None and resource.SUBDIR == subdir:
+            if resource is not None and (subdir is None or resource.SUBDIR == subdir):
                 src_file = resource.src_file()
                 if src_file:
                     import mimetypes

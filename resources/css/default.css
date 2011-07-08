@@ -273,16 +273,16 @@ form.pytis-form.list-view div.summary {
 }
 
 form.list-form-controls button.prev-page-button span {
-    background-image: url(/_resources/images/previous.png);
+    background-image: url(/_resources/previous.png);
     padding-left: 18px;
 }
 form.list-form-controls button.next-page-button span {
-    background-image: url(/_resources/images/next.png);
+    background-image: url(/_resources/next.png);
     padding-right: 20px;
     background-position: right center;
 }
 form.list-form-controls button.search-button span {
-    background-image: url(/_resources/images/search.png);
+    background-image: url(/_resources/search.png);
     padding-left: 18px;
 }
 
@@ -292,7 +292,7 @@ form.list-form-controls button.search-button span {
     padding-left: 32px;
     border: dotted 2px $color.message-border;
     /* background-color: $color.background; */
-    background-image: url(/_resources/images/info.png);
+    background-image: url(/_resources/info.png);
     background-position: 2px center;
     background-repeat: no-repeat;
 }
@@ -385,19 +385,19 @@ div.table-of-contents ul {
     opacity: 0.4;
 }
 .cms-page-actions button.action-update span { 
-    background-image: url(/_resources/images/edit.png);
+    background-image: url(/_resources/edit.png);
 }
 .cms-page-actions button.action-options span { 
-    background-image: url(/_resources/images/properties.png);
+    background-image: url(/_resources/properties.png);
 }
 .cms-page-actions button.action-commit span { 
-    background-image: url(/_resources/images/publish.png);
+    background-image: url(/_resources/publish.png);
 }
 .cms-page-actions button.action-revert span { 
-    background-image: url(/_resources/images/undo.png);
+    background-image: url(/_resources/undo.png);
 }
 .cms-page-actions button.action-attachments span { 
-    background-image: url(/_resources/images/attachment.png);
+    background-image: url(/_resources/attachment.png);
 }
 
 div.discussions form.list-view.discussions .summary { display: none; }
@@ -436,7 +436,7 @@ div.discussions div.login-info p {
     padding-left: 28px;
     border: dotted 2px $color.message-border;
     /* background-color: $color.background; */
-    background-image: url(/_resources/images/info.png);
+    background-image: url(/_resources/info.png);
     background-position: left center;
     background-repeat: no-repeat;
 }
