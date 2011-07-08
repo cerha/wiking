@@ -20,14 +20,7 @@ __version__ = '1.2.0'
 import sys, os, time, string, re, copy, urllib, imp
 
 # TODO: this can be removed once it is solved in Pytis...
-# TODO: built-in reload is supposed to be present in python2*,
-#       but imp.reload here was added explicitely with note of
-#       supporting Python 2.6, so I will leave it so for 2.6+
-#       and fix only <=2.5 where imp.reload is not present
-if sys.version_info[0]==2 and sys.version_info[1]<=5:
-    reload(sys)
-else:
-    imp.reload(sys)
+imp.reload(sys)
 sys.setdefaultencoding('utf-8')
 
 import pytis, pytis.util
