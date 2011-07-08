@@ -258,13 +258,13 @@ class Configuration(pc):
     class _Option_resource_path(pc.Option):
         _DESCR = "Resource search path"
         _DOC = ("The value is a sequence of directory names (strings), where resource files, "
-                "such as images, media or scripts are searched.  Each resource type is searched "
-                "within the resource specific subdirectory so you should only specify the list "
-                "of the base directories.  The directories are searched in given order and "
-                "the LCG resource directory (as set in LCG package configuration) is always "
-                "used automatically as the last resort.  Setting this option only makes sense "
-                "if you are using the 'Resources' module.  Beware that all files located within "
-                "the named directories will be directly exposed to the Internet!")
+                "such as images, media or scripts are searched.  The directories are searched "
+                "in given order.  Files may be put into type specific subdirectories (jpegs and "
+                "pngs into 'images', stylesheets into 'css', javascripts into 'scripts') or to "
+                "the resource direcotries directly.  Wiking will return a 404 error and log the "
+                "exact list of directories where a particular file is searched when it is unable "
+                "to locate it.  Beware that all files located within the named directories will "
+                "be directly exposed to the Internet!")
         def default(self):
             return ('/usr/local/share/wiking/resources',
                     '/usr/local/share/lcg/resources',
