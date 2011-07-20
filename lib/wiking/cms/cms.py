@@ -226,14 +226,15 @@ class CMSModule(PytisModule, RssModule, Panelizable):
     """Base class for all CMS modules."""
     RIGHTS_view = (Roles.ANYONE,)
     RIGHTS_list = (Roles.ANYONE,)
-    RIGHTS_print_field = (Roles.ANYONE,)
-    RIGHTS_export = () # Denied by default.  Enable explicitly when needed.
     RIGHTS_rss  = (Roles.ANYONE,)
     RIGHTS_insert    = (Roles.ADMIN,)
     RIGHTS_update    = (Roles.ADMIN,)
     RIGHTS_delete    = (Roles.ADMIN,)
+    RIGHTS_export    = () # Denied by default.  Enable explicitly when needed.
+    RIGHTS_copy      = () # Denied by default.  Enable explicitly when needed.
     RIGHTS_publish   = (Roles.ADMIN,)
     RIGHTS_unpublish = (Roles.ADMIN,)
+    RIGHTS_print_field = (Roles.ANYONE,)
 
     def _embed_binding(self, modname):
         try:
@@ -922,7 +923,7 @@ class Themes(StyleManagementModule):
                 Action(_("Activate default"), 'activate', context=pp.ActionContext.GLOBAL,
                        descr=_("Activate the default color theme"),
                        enabled=lambda r: isinstance(cfg.theme, Themes.Theme)),)
-    _ALLOW_COPY = True
+    RIGHTS_copy = (Roles.STYLE_ADMIN,)
     
     class Theme(Theme):
         def __init__(self, row):
@@ -2531,10 +2532,10 @@ class EmailSpool(MailManagementModule):
     
     _TITLE_TEMPLATE = _('%(subject)s')
     _LAYOUT = {'insert': ('role_id', 'sender_address', 'subject', 'content',)}
-    _ALLOW_COPY = True
     # Translators: Button label meaning save this email text for later repeated usage
     _COPY_LABEL = _("Use as a Template")
     # Translators: Description of button for creating a template of an email
     _COPY_DESCR = _("Edit this mail for repeated use")
     
     RIGHTS_update = ()
+    RIGHTS_copy = MailManagementModule.RIGHTS_insert

@@ -195,7 +195,6 @@ class PytisModule(Module, ActionHandler):
     _ACTION_MENU_LAST = True
     "If true, action menu is put below forms."
     
-    _ALLOW_COPY = False
     _SUBMIT_BUTTONS = {}
     "Dictionary of form buttons keyed by action name (see '_submit_buttons()' method)."
     _LAYOUT = {}
@@ -571,16 +570,13 @@ class PytisModule(Module, ActionHandler):
                 )
 
     def _default_actions_last(self, req, record):
-        if self._ALLOW_COPY:
-            actions = (Action(self._COPY_LABEL, 'insert', descr=self._COPY_DESCR,
-                              allow_referer=False),)
-        else:
-            actions = ()
-        actions += (Action(self._DELETE_LABEL, 'delete', descr=self._DELETE_DESCR,
-                           enabled=lambda r: self._delete_enabled(r.req(), r),
-                           allow_referer=False),
-                    Action(self._LIST_LABEL, 'list', descr=self._LIST_DESCR, allow_referer=False))
-        return actions
+        return (Action(self._COPY_LABEL, 'copy', descr=self._COPY_DESCR,
+                       allow_referer=False),
+                Action(self._DELETE_LABEL, 'delete', descr=self._DELETE_DESCR,
+                       enabled=lambda r: self._delete_enabled(r.req(), r),
+                       allow_referer=False),
+                Action(self._LIST_LABEL, 'list', descr=self._LIST_DESCR, allow_referer=False),
+                )
     
     def _actions(self, req, record):
         actions = self._default_actions_first(req, record) + \
@@ -1624,7 +1620,7 @@ class PytisModule(Module, ActionHandler):
 
     # ===== Action handlers which modify the database =====
 
-    def action_insert(self, req, record=None, action='insert'):
+    def action_insert(self, req, prefill=None, action='insert'):
         # 'record' is passed when copying an existing record.
         layout = self._layout_instance(self._layout(req, action))
         if req.param('submit'):
@@ -1645,23 +1641,29 @@ class PytisModule(Module, ActionHandler):
         # TODO: Redirect handler to HTTPS if cfg.force_https_login is true?
         # The primary motivation is to protect registration form data.  The
         # same would apply for action_edit.
-        prefill = self._form_field_prefill(req, new=True)
-        if record is not None:
-            # Copy values of the existing record as prefill values for the new
-            # record.  Exclude Password and Binary values, key column, computed
-            # columns depending on key column and fields with 'nocopy'.
-            key = self._data.key()[0].id()
-            for fid in layout.order():
-                if not isinstance(self._type[fid], (pd.Password, pd.Binary)):
-                    field = self._view.field(fid)
-                    if fid != key and not field.nocopy():
-                        computer = field.computer()
-                        if not computer or key not in computer.depends():
-                            prefill[fid] = record[fid].export()
+        form_prefill = self._form_field_prefill(req, new=True)
+        if prefill is not None:
+            form_prefill.update(prefill)
         form = self._form(pw.EditForm, req, new=True, action=action,
-                          prefill=prefill, layout=layout, errors=errors,
+                          prefill=form_prefill, layout=layout, errors=errors,
                           submit=self._submit_buttons(req, action))
         return self._document(req, form, subtitle=self._action_subtitle(req, action))
+
+
+    def action_copy(self, req, record):
+        # Copy values of the existing record as prefill values for the new
+        # record.  Exclude Password and Binary values, key column, computed
+        # columns depending on key column and fields with 'nocopy'.
+        prefill = {}
+        key = self._data.key()[0].id()
+        for fid in layout.order():
+            if not isinstance(self._type[fid], (pd.Password, pd.Binary)):
+                field = self._view.field(fid)
+                if fid != key and not field.nocopy():
+                    computer = field.computer()
+                    if not computer or key not in computer.depends():
+                        prefill[fid] = record[fid].export()
+        return self.action_insert(req, prefill=prefill)
             
     def action_update(self, req, record, action='update'):
         layout = self._layout_instance(self._layout(req, action, record))
