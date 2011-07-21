@@ -1680,13 +1680,13 @@ class PytisModule(Module, ActionHandler):
                           submit=self._submit_buttons(req, action))
         return self._document(req, form, subtitle=self._action_subtitle(req, action))
 
-
-    def action_copy(self, req, record):
+    def action_copy(self, req, record, action='insert')):
         # Copy values of the existing record as prefill values for the new
         # record.  Exclude Password and Binary values, key column, computed
         # columns depending on key column and fields with 'nocopy'.
         prefill = {}
-        key = self._data.key()[0].id()
+        key = self._key
+        layout = self._layout_instance(self._layout(req, action))
         for fid in layout.order():
             if not isinstance(self._type[fid], (pd.Password, pd.Binary)):
                 field = self._view.field(fid)
@@ -1694,7 +1694,7 @@ class PytisModule(Module, ActionHandler):
                     computer = field.computer()
                     if not computer or key not in computer.depends():
                         prefill[fid] = record[fid].export()
-        return self.action_insert(req, prefill=prefill)
+        return self.action_insert(req, prefill=prefill, action=action)
             
     def action_update(self, req, record, action='update'):
         layout = self._layout_instance(self._layout(req, action, record))
