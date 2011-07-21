@@ -1774,10 +1774,9 @@ class PytisModule(Module, ActionHandler):
             import json
         except:
             import simplejson as json
-        columns = self._columns(req)
-        pkey = self._data.key()[0].id()
-        if pkey not in columns:
-            columns.insert(0, pkey)
+        columns = list(self._columns(req))
+        if self._key not in columns:
+            columns.insert(0, self._key)
         # Inspect column types in advance as it is cheaper than calling
         # isinstance for all exported values.
         datetime_columns = [cid for cid in columns if isinstance(self._type[cid], pd.DateTime)]
