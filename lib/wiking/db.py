@@ -897,14 +897,45 @@ class PytisModule(Module, ActionHandler):
         """Return the filename (string) of the CSV export download (action 'export')."""
         return 'export.csv'
     
+    def _profiles(self, req):
+        """Return dynamically created profiles.
+
+        'None' means to use the default list of form profiles defined by the
+        specification.  Otherwise a sequence 'pytis.presentation.Profile'
+        instances or a 'pytis.presentation.Profiles' instance is expected.
+
+        Override this metod to dynamically change the list of user visible form
+        profiles in the BrowseForm/ListView form.  The default implementation
+        returns 'None' (to use the default static list from specification).
+
+        """
+        return None
+
+    def _filter_sets(self, req):
+        """Return dynamically created filter sets.
+
+        'None' means to use the default list of filter sets defined by the
+        specification.  Otherwise a sequence 'pytis.presentation.FilterSet'
+        instances is expected.
+
+        Override this metod to dynamically change the list of user visible
+        filter sets in the BrowseForm/ListView form.  The default
+        implementation returns 'None' (to use the default static list from
+        specification).
+
+        """
+        filters = self._filters(req)
+        if filters:
+            return (pp.FilterSet('filter', _("Filter"), filters),)
+        else:
+            return None
+
     def _filters(self, req):
         """Return a list of dynamic filters as 'pytis.presentation.Filter' instances or None.
 
-        'None' means to use the default list of filters defined by specification.
-
-        Override this metod to dynamically change the list of user visible filters in the
-        BrowseForm/ListView form.  The default implementation returns 'None' (to use the default
-        static list from specification).
+        This is just a more convenient filter set definition for cases when
+        there is just one set of filters.  Use '_filter_sets()' in all other
+        cases.
 
         """
         return None
@@ -1531,7 +1562,7 @@ class PytisModule(Module, ActionHandler):
         form = self._form(form_cls, req, columns=columns, binding_uri=binding_uri,
                           condition=self._condition(req, condition=condition, lang=lang),
                           arguments=self._binding_arguments(binding, record),
-                          filters=self._filters(req))
+                          profiles=self._profiles(req), filter_sets=self._filter_sets(req))
         content = self._list_form_content(req, form, uri=binding_uri)
         descr = binding.descr()
         if descr:
@@ -1550,7 +1581,7 @@ class PytisModule(Module, ActionHandler):
                           columns=self._columns(req),
                           condition=self._condition(req, lang=lang),
                           arguments=self._arguments(req),
-                          filters=self._filters(req))
+                          profiles=self._profiles(req), filter_sets=self._filter_sets(req))
         content = self._list_form_content(req, form)
         return self._document(req, content, lang=lang)
 
