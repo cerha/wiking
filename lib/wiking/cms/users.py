@@ -1269,10 +1269,10 @@ class Registration(Module, ActionHandler):
             raise AuthenticationError()
     RIGHTS_view = (Roles.ANYONE,)
     
-    def action_insert(self, req, record=None, action='insert'):
+    def action_insert(self, req, prefill=None, action='insert'):
         if not cfg.appl.allow_registration:
             raise Forbidden()
-        return self._module('Users').action_insert(req, record=record, action=action)
+        return self._module('Users').action_insert(req, prefill=prefill, action=action)
     RIGHTS_insert = (Roles.ANYONE,)
     
     def action_remind(self, req):
