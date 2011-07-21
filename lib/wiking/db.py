@@ -1680,7 +1680,7 @@ class PytisModule(Module, ActionHandler):
                           submit=self._submit_buttons(req, action))
         return self._document(req, form, subtitle=self._action_subtitle(req, action))
 
-    def action_copy(self, req, record, action='insert')):
+    def action_copy(self, req, record, action='insert'):
         # Copy values of the existing record as prefill values for the new
         # record.  Exclude Password and Binary values, key column, computed
         # columns depending on key column and fields with 'nocopy'.
