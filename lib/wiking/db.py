@@ -17,6 +17,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 import collections
+import re
 import string
 
 from wiking import *
@@ -1761,7 +1762,7 @@ class PytisModule(Module, ActionHandler):
             data = []
             for cid in columns:
                 value = record.display(cid) or record[cid].export(**export_kwargs[cid])
-                singleline = ';'.join(value.split('\n'))
+                singleline = ';'.join(re.split('\r?\n', value))
                 data.append(singleline.replace('\t', '\\t'))
             req.write('\t'.join(data).encode('utf-8') + '\n')
         self._export(req, export_row, 'text/plain; charset=utf-8',
