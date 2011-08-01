@@ -1958,21 +1958,32 @@ def parse_http_date(date_string):
       date_string -- basestring representing date and time in one of the
         formats supported by RFC 2616
 
-    Return corresponding 'datetime.datetime' instance.
+    Return corresponding 'datetime.datetime' instance in UTC.
     
     """
-    date_string.strip()
+    date_string = date_string.strip()
+    tz_offset = None
     # Remove weekday
-    pos = date_string.find(' ')
-    if pos < 0:
-        raise Exception("Invalid date format")
-    date_string = date_string[pos+1:].lstrip()
-    # Remove GMT
+    for d in _WKDAY:
+        if date_string.startswith(d):
+            date_string = date_string[len(d):].lstrip()
+            if date_string.startswith(','):
+                date_string = date_string[1:].lstrip()
+            break
     if date_string[-3:] == 'GMT':
+        # Remove GMT
         date_string = date_string[:-3].rstrip()
+    elif date_string[-5] in ('+', '-') and date_string[-4:].isdigit():
+        # Numeric timezone is not officially supported by RFC 2616, but is
+        # sometimes used by user agents (for example in If-Modified-Since
+        # header).
+        tz_hours, tz_minutes = int(date_string[-4:-2]), int(date_string[-2:])
+        if date_string[-5] == '-':
+            tz_hours, tz_minutes = tz_hours * -1, tz_minutes * -1
+        date_string = date_string[:-5].rstrip()
+        tz_offset = datetime.timedelta(hours=tz_hours, minutes=tz_minutes)
     # Replace month name by a number
-    for i in range(len(_MONTH)):
-        m = _MONTH[i]
+    for i, m in enumerate(_MONTH):
         pos = date_string.find(m)
         if pos >= 0:
             date_string = '%s%02d%s' % (date_string[:pos], i+1, date_string[pos+3:],)
@@ -1987,4 +1998,6 @@ def parse_http_date(date_string):
             pass
     if dt is None:
         raise Exception("Invalid date format")
+    if tz_offset is not None:
+        dt -= tz_offset
     return dt
