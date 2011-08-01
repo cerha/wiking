@@ -523,12 +523,17 @@ class Request(ServerInterface):
             raise wiking.NotFound()
         mtime = datetime.datetime.utcfromtimestamp(info.st_mtime)
         since_header = self.header('If-Modified-Since')
-        date_format = ''
         if since_header:
-            since = parse_http_date(since_header)
-            if mtime == since:
-                self.start_response(httplib.NOT_MODIFIED)
-                return
+            try:
+                since = parse_http_date(since_header)
+            except:
+                # Ignore the 'If-Modified-Since' header if the date format is
+                # invalid.
+                pass
+            else:
+                if mtime == since:
+                    self.start_response(httplib.NOT_MODIFIED)
+                    return
         self.set_header('Last-Modified', format_http_date(mtime))
         self.start_response(content_type=content_type, content_length=info.st_size)
         f = file(filename)
