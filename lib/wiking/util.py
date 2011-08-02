@@ -668,7 +668,7 @@ class LoginPanel(Panel):
                     # information is, however, currnetly not available.
                     role_names = [role.name() for role in user.roles()]
                     if role_names:
-                        result += g.br()+'\n' + lcg.concat(role_names, separator=', ')
+                        result += g.br() + '\n' + lcg.concat(role_names, separator=', ')
                 expiration = user.password_expiration()
                 if expiration:
                     import datetime
@@ -1236,11 +1236,8 @@ class LoginCtrl(lcg.Content):
             uri = user.uri()
             if uri:
                 username = g.link(username, uri, title=_("Go to your profile"))
-            if user.auto_authentication():
-                cmd = label = None
-            else:
-                # Translators: Logout button label (verb in imperative).
-                cmd, label = ('logout', _("log out"))
+            # Translators: Logout button label (verb in imperative).
+            cmd, label = ('logout', _("log out"))
         else:
             # Translators: Login status info.  If logged, the username is displayed instead. 
             username = _("not logged")
@@ -1248,18 +1245,15 @@ class LoginCtrl(lcg.Content):
             cmd, label = ('login', _("log in"))
             if req.uri().endswith('_registration'):
                 target_uri = '/' # Redirect logins from the registration forms to site root
-        if cmd is None:
-            result = username
+        link = g.link(label, g.uri(target_uri, command=cmd), cls='login-ctrl')
+        if self._inline:
+            link = '[' + link + ']'
         else:
-            link = g.link(label, g.uri(target_uri, command=cmd), cls='login-ctrl')
-            if self._inline:
-                link = lcg.concat('[', link, ']')
-            else:
-                link = lcg.concat(g.span('[', cls="hidden"), link, g.span(']',cls="hidden"))
-            result = lcg.concat(username, ' ', link)
+            link = g.span('[', cls="hidden") + link + g.span(']',cls="hidden")
+        result = username + ' ' + link
         if self._inline:
             # Translators: Login info label (noun) followed by login name and other info.
-            result = lcg.concat(_("Login"), ': ', result)
+            result = _("Login") + ': ' + result
         return result
 
 

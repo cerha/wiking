@@ -523,7 +523,6 @@ class CookieAuthentication(object):
         elif req.param('command') == 'login' and not user:
             raise AuthenticationRedirect()
         if user is not None:
-            user.set_authentication_parameters(method='password', auto=False)
             password_expiration = user.password_expiration()
             if password_expiration is not None and req.uri() != self.password_change_uri(req):
                 import datetime

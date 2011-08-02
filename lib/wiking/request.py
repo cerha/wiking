@@ -953,8 +953,6 @@ class User(object):
         self._uri = uri
         self._data = data
         self._lang = lang
-        self._auto_authentication = False
-        self._authentication_method = None
         
     def login(self):
         """Return user's login name as a string."""
@@ -995,42 +993,6 @@ class User(object):
     def lang(self):
         """Return code of the user's preferred language."""
         return self._lang
-
-    def auto_authentication(self):
-        """Return true iff the user was authenticated automatically."""
-        return self._auto_authentication
-
-    def authentication_method(self):
-        """Return authentication method of the user.
-
-        It may be one of the string 'password' and 'certificate'.  If the user
-        wasn't authenticated, return 'None'.
-
-        """
-        return self._authentication_method
-    
-    def set_authentication_parameters(self, method=None, auto=None):
-        """Set authentication parameters of the user instance.
-
-        Arguments:
-
-          method -- authentication method used in the current request, one of
-            the strings 'password', 'certificate'
-          auto -- whether the user was initially authenticated
-            non-interactively, e.g. by using a certificate; boolean
-
-        If any of the arguments is unspecified, the corresponding parameter
-        retains its value.
-        
-        """
-        # TODO: Wouldn't it be possible to pass these parameters to the constructor as all other
-        # parameters?
-        if method is not None:
-            assert method in ('password', 'certificate')
-            self._authentication_method = method
-        if auto is not None:
-            assert isinstance(auto, bool)
-            self._auto_authentication = auto
 
 
 class Role(object):
