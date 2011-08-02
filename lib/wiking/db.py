@@ -446,7 +446,7 @@ class PytisModule(Module, ActionHandler):
                         result = (result, _("Integrity check failed."))
                     else:
                         assert isinstance(result, tuple) and len(result) == 2, \
-                            ('Invalid check() result:', e, result)
+                            ('Invalid check() result:', result)
                     errors.append(result)
         return errors
 
