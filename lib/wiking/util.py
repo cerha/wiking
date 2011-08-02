@@ -671,8 +671,8 @@ class LoginPanel(Panel):
                         result += g.br()+'\n' + lcg.concat(role_names, separator=', ')
                 expiration = user.password_expiration()
                 if expiration:
-                    import pytis.data
-                    if pytis.data.Date.datetime() >= expiration:
+                    import datetime
+                    if datetime.date.today() >= expiration:
                         # Translators: Information text on login panel.
                         result += g.br() +'\n'+ _("Your password expired")
                     else:

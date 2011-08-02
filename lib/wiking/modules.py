@@ -15,8 +15,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-import pytis.data
-
 from wiking import *
 
 """Definition of the basic Wiking module classes."""
@@ -529,7 +527,7 @@ class CookieAuthentication(object):
             password_expiration = user.password_expiration()
             if password_expiration is not None and req.uri() != self.password_change_uri(req):
                 import datetime
-                if password_expiration <= pytis.data.Date.datetime():
+                if password_expiration <= datetime.date.today():
                     raise PasswordExpirationError()
         return user
 
