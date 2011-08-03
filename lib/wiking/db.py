@@ -1780,7 +1780,12 @@ class PytisModule(Module, ActionHandler):
             columns.insert(0, self._key)
         # Inspect column types in advance as it is cheaper than calling
         # isinstance for all exported values.
-        datetime_columns = [cid for cid in columns if isinstance(self._type[cid], pd.DateTime)]
+        export_types = (pd.DateTime, pd.Time,)
+        def is_export_column(cid):
+            def column_is_instance(type_):
+                return isinstance(self._type[cid], type_)
+            return any(map(column_is_instance, export_types))
+        datetime_columns = filter(is_export_column, columns)
         def export_value(record, cid):
             value = record[cid]
             if cid in datetime_columns:
