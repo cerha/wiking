@@ -266,6 +266,7 @@ class Request(ServerInterface):
         self._cookies = Cookie.SimpleCookie(self.header('Cookie'))
         self._preferred_languages = self._init_preferred_languages()
         self._credentials = self._init_credentials()
+        self._decryption_password = self._init_decryption_password()
         self._messages = self._init_messages()
         if self.has_param('hide_panels'):
             self.set_cookie(self._PANELS_COOKIE, 'no')
@@ -301,6 +302,13 @@ class Request(ServerInterface):
                 encoded_credentials = auth_header.split()[1]
                 credentials = encoded_credentials.decode("base64").split(":")
         return credentials
+
+    def _init_decryption_password(self):
+        password = None
+        if self.has_param('__decryption_password'):
+            password = self.param('__decryption_password')
+            self.set_param('__decryption_password', None)
+        return password
         
     def _init_preferred_languages(self):
         accepted = []
@@ -765,6 +773,10 @@ class Request(ServerInterface):
         
         """
         return self._credentials
+
+    def decryption_password(self):
+        """Return decryption password as given by the user."""
+        return self._decryption_password
 
     def user(self, require=False):
         """Return 'User' instance describing the logged-in user.

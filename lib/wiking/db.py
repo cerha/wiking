@@ -18,7 +18,6 @@
 
 import collections
 import re
-import string
 
 from wiking import *
 
@@ -180,7 +179,13 @@ class PytisModule(Module, ActionHandler):
     handle array fields).
     
     """
-    _DB_FUNCTIONS = {}
+    _DB_FUNCTIONS = {'enc_lock_passwords': (('uid', pd.Integer(),),),
+                     'enc_unlock_passwords': (('uid', pd.Integer(),),
+                                              ('password', pd.String(),),
+                                              ('cookie', pd.String(),),),
+                     'enc_cook_passwords': (('uid', pd.Integer(),),
+                                            ('cookie', pd.String(),),),
+                     }
     """Specification of available DB functions and their arguments.
 
     Dictionary keyed by function name, where values are sequences of pairs (NAME, TYPE) describing
@@ -206,6 +211,8 @@ class PytisModule(Module, ActionHandler):
     # Just a hack, see its use.  If you redefine _record_uri method, set it the
     # flag value to False.
     _OPTIMIZE_LINKS = True
+    
+    _ENCRYPTION_COOKIE = 'wiking_crypto'
 
     class Record(pp.PresentedRow):
         """An abstraction of one record within the module's data object.
@@ -1221,7 +1228,7 @@ class PytisModule(Module, ActionHandler):
         return [b for b in self._view.bindings()
                 if not isinstance(b, Binding) or b.enabled() is None or b.enabled()(record)]
 
-    def _call_db_function(self, name, *args):
+    def _call_rows_db_function(self, name, *args):
         """Call database function NAME with given arguments and return the result.
 
         Arguments are Python values wich will be automatically wrapped into 'pytis.data.Value'
@@ -1238,8 +1245,19 @@ class PytisModule(Module, ActionHandler):
         assert len(args) == len(arg_spec), \
                "Wrong number of arguments for '%s': %r" % (name, args)
         arg_data = [(spec[0], pd.Value(spec[1], value)) for spec, value in zip(arg_spec, args)]
-        row = function.call(pytis.data.Row(arg_data))[0]
-        #debug("**", name, result[0][0].value())
+        return function.call(pytis.data.Row(arg_data))
+
+    def _call_db_function(self, name, *args):
+        """Call database function NAME with given arguments and return the first result.
+
+        If the result and its first row are non-empty, return the first value
+        of the first row; otherwise return 'None'.
+
+        Arguments are Python values wich will be automatically wrapped into 'pytis.data.Value'
+        instances.
+        
+        """
+        row = self._call_rows_db_function(name, *args)[0]
         if row:
             result = row[0].value()
         else:
@@ -1428,8 +1446,47 @@ class PytisModule(Module, ActionHandler):
         'action_delete()' handler.
 
         """
-        return None            
-    
+        return None
+
+    def _authorize(self, req, **kwargs):
+        self._maybe_clear_crypto_passwords(req)
+        super(PytisModule, self)._authorize(req, **kwargs)
+        self._check_crypto_passwords(req)
+
+    def _maybe_clear_crypto_passwords(self, req):
+        user = req.user()
+        if user is None:
+            return
+        if req.param('command') == 'logout':
+            req.set_cookie(self._ENCRYPTION_COOKIE, None, secure=True)
+            self._call_db_function('enc_lock_passwords', user.uid())
+
+    def _check_crypto_passwords(self, req):
+        encrypted_names = set([c.type().encrypted() for c in self._data.columns()
+                               if c.type().encrypted() is not None])
+        if not encrypted_names:
+            return
+        user = req.user()
+        if user is None:
+            return
+        uid = user.uid()
+        encryption_cookie = req.cookie(self._ENCRYPTION_COOKIE)
+        if not encryption_cookie:
+            encryption_cookie = self._generate_encryption_cookie()
+            req.set_cookie(self._ENCRYPTION_COOKIE, encryption_cookie, secure=True)
+        password = req.decryption_password()
+        if password is not None:
+            self._call_db_function('enc_unlock_passwords', uid, password, encryption_cookie)
+        available_names = set([row[0].value()
+                               for row in self._call_rows_db_function('enc_cook_passwords',
+                                                                      uid, encryption_cookie)])
+        unavailable_names = encrypted_names - available_names
+        if unavailable_names:
+            raise DecryptionError(unavailable_names.pop())
+
+    def _generate_encryption_cookie(self):
+        return self._module('Session').session_key()
+        
     # ===== Methods which modify the database =====
 
     def _update_linking_tables(self, req, record, transaction):

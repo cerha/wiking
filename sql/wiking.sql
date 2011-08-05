@@ -580,3 +580,130 @@ create table config (
         certificate_expiration int,
         theme_id integer references themes
 );
+
+-------------------------------------------------------------------------------
+
+create table enc_names (
+       name text primary key,
+       description text
+);
+grant all on enc_names to "www-data";
+
+create table enc_passwords (
+       password_id serial primary key,
+       name text not null references enc_names on update cascade on delete cascade,
+       uid int not null references users on update cascade on delete cascade,
+       password bytea not null
+);
+grant all on enc_passwords to "www-data";
+
+create or replace function enc_extract_key (encrypted bytea, psw text) returns text as $$
+declare
+  key text := pgp_sym_decrypt(encrypted, psw);
+begin
+  if substring(key for 7) != 'wiking:' then
+    return null;
+  end if;
+  return substring(key from 8);
+end;
+$$ language plpgsql immutable;
+
+create or replace function enc_store_key (key text, psw text) returns bytea as $$
+  select pgp_sym_encrypt('wiking:'||$1, $2);
+$$ language sql immutable;
+
+create or replace function enc_insert_password (name_ text, uid_ int, key text, psw text) returns bool as $$
+begin
+  lock enc_passwords in exclusive mode;
+  if (select count(*) from enc_passwords where name=name_ and uid=uid_) > 0 then
+    return False;
+  end if;
+  insert into enc_passwords (name, uid, password) values (name_, uid_, enc_store_key(key, psw));
+  return True;
+end;
+$$ language plpgsql;
+
+create or replace function enc_change_password (id_ int, old_psw text, new_psw text) returns bool as $$
+declare
+  key text;
+begin
+  lock enc_passwords in exclusive mode;
+  select enc_extract_key(password, $2) into key from enc_passwords where password_id=$1;
+  if key is null then
+    return False;
+  end if;
+  update enc_passwords set password=enc_store_key(key, $3) where password_id=$1;
+  return True;
+end;
+$$ language plpgsql;
+
+create or replace function enc_copy_password (name_ text, from_uid int, to_uid int, from_psw text, to_psw text) returns bool as $$
+declare
+  key text;
+begin
+  lock enc_passwords in exclusive mode;
+  select enc_extract_key(password, from_psw) into key from enc_passwords where name=name_ and uid=from_uid;
+  if key is null then
+    return False;
+  end if;
+  delete from enc_passwords where name=name_ and uid=to_uid;
+  insert into enc_passwords (name, uid, password) values (name_, to_uid, enc_store_key(key, to_psw));
+end;
+$$ language plpgsql;
+
+create or replace function delete_password (name_ text, uid_ int, force bool) returns bool as $$
+begin
+  lock enc_passwords in exclusive mode;
+  if not force and (select count(*) from enc_passwords where name=name_) <= 1 then
+    return False;
+  end if;
+  delete from enc_passwords where name=name_ and uid=uid_;
+  return True;
+end;
+$$ language plpgsql;
+
+--
+
+create table enc_unlocked_passwords (
+       password_id int not null references enc_passwords on update cascade on delete cascade,
+       password bytea
+);
+grant all on enc_unlocked_passwords to "www-data";
+create or replace function enc_unlocked_passwords_insert_trigger () returns trigger as $$
+begin
+  delete from enc_unlocked_passwords where password_id=new.password_id;
+  return new;
+end;
+$$ language plpgsql;
+create trigger enc_unlocked_passwords_insert_trigger_before before insert on enc_unlocked_passwords
+for each row execute procedure enc_unlocked_passwords_insert_trigger();
+
+create or replace function enc_unlock_passwords (uid_ int, psw text, cookie text) returns void as $$
+  insert into enc_unlocked_passwords
+         (select password_id, enc_store_key(enc_extract_key(password, $2), $3)
+                 from enc_passwords
+                 where uid=$1 and enc_extract_key(password, $2) is not null);
+$$ language sql;
+
+create or replace function enc_lock_passwords (uid_ int) returns void as $$
+  delete from enc_unlocked_passwords where password_id in (select password_id from enc_passwords where uid=$1);
+$$ language sql;
+
+create or replace function enc_cook_passwords (uid_ int, cookie text) returns setof text as $$
+begin
+  lock enc_passwords in exclusive mode;
+  delete from enc_unlocked_passwords
+         where password_id in (select password_id from enc_passwords where uid=$1) and
+               enc_extract_key(password, cookie) is null;
+  begin
+    delete from t_pytis_passwords;
+  exception
+    when undefined_table then
+      create temp table t_pytis_passwords (name text, password text);
+  end;
+  insert into t_pytis_passwords
+         (select name, enc_extract_key(enc_unlocked_passwords.password, cookie)
+                 from enc_passwords join enc_unlocked_passwords using (password_id) where uid=uid_);
+  return query select name from t_pytis_passwords;
+end;
+$$ language plpgsql;

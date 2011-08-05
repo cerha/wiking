@@ -2238,7 +2238,7 @@ class Texts(CommonTexts):
     
     """
     _TEXT_REGISTRAR = 'add_text_label'
-    _DB_FUNCTIONS = {'add_text_label': (('1', pd.String(),),)}
+    _DB_FUNCTIONS = dict(CommonTexts._DB_FUNCTIONS.items() + [('add_text_label', (('1', pd.String(),),),)])
 
     def _auto_filled_fields(self):
         def content(req, record, field_id):
@@ -2344,7 +2344,7 @@ class Emails(CommonTexts):
 
     """
     _TEXT_REGISTRAR = 'add_email_label'
-    _DB_FUNCTIONS = {'add_email_label': (('1', pd.String(),),)}
+    _DB_FUNCTIONS = dict(CommonTexts._DB_FUNCTIONS.items() + [('add_email_label', (('1', pd.String(),),),)])
 
     class LabelType(pytis.data.String):
         def _validate(self, obj, **kwargs):

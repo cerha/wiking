@@ -240,6 +240,15 @@ class AuthorizationError(RequestError):
                         "please contact the administrator at %s.", cfg.webmaster_address),
                       formatted=True))
 
+class DecryptionError(RequestError):
+    """Error signalling that a decryption key is missing.
+
+    Its argument is the name of the inaccessible encryption area.
+    
+    """
+    def message(self, req):
+        return DecryptionDialog(self.args[0])
+    
 class BadRequest(RequestError):
     """Error indicating invalid request argument values or their combination.
 
@@ -1317,6 +1326,36 @@ class LoginDialog(lcg.Content):
         if added_content:
             exported = lcg.coerce(added_content).export(context)
             result += "\n" + g.div(exported, cls='login-dialog-content')
+        return result
+
+
+class DecryptionDialog(lcg.Content):
+    """Password dialog for entering a decryption password."""
+    def __init__(self, name):
+        assert isinstance(name, basestring)
+        self._decryption_name = name
+        super(DecryptionDialog, self).__init__()
+        
+    def export(self, context):
+        g = context.generator()
+        req = context.req()
+        # Translators: Web form label and message
+        message = _("Decryption password for ") + self._decryption_name
+        content = (
+            g.label(message+':', id='__decryption_password') + g.br(),
+            g.field(name='__decryption_password', id='__decryption_password', password=True, size=18, maxlength=32),
+            g.br(),
+            # Translators: Web form button.
+            g.submit(_("Send password"), cls='submit'),)
+        if req.https():
+            uri = req.uri()
+        else:
+            uri = req.server_uri(force_https=True) + req.uri()
+        result = (message and g.div(g.escape(message), cls='errors') or '') + \
+                 g.form(content, method='POST', action=uri, name='decryption_form', cls='login-form') +\
+                 g.script("onload_ = window.onload; window.onload = function() { "
+                          "if (onload_) onload_(); "
+                          "setTimeout(function () { document.decryption_form.__decryption_password.focus() }, 0); };")
         return result
 
 
