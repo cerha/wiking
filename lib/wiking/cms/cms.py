@@ -1772,7 +1772,7 @@ class News(ContentManagementModule, EmbeddableCMSModule):
             Field('mapping_id', _("Page"), codebook='Mapping', editable=ONCE),
             Field('lang', _("Language"), codebook='Languages', editable=ONCE,
                   selection_type=CHOICE, value_column='lang'),
-            Field('timestamp', _("Date"), width=19,
+            Field('timestamp', _("Date"),
                   type=DateTime(not_null=True), default=now),
             Field('date', _("Date"), virtual=True,
                   computer=Computer(self._date, depends=('timestamp',)),
