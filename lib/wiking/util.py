@@ -1340,7 +1340,7 @@ class DecryptionDialog(lcg.Content):
         g = context.generator()
         req = context.req()
         # Translators: Web form label and message
-        message = _("Decryption password for ") + self._decryption_name
+        message = _("Decryption password for '%s'", self._decryption_name)
         content = (
             g.label(message+':', id='__decryption_password') + g.br(),
             g.field(name='__decryption_password', id='__decryption_password', password=True, size=18, maxlength=32),
