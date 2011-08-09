@@ -1343,7 +1343,8 @@ class DecryptionDialog(lcg.Content):
         message = _("Decryption password for '%s'", self._decryption_name)
         content = (
             g.label(message+':', id='__decryption_password') + g.br(),
-            g.field(name='__decryption_password', id='__decryption_password', password=True, size=18, maxlength=32),
+            g.field(name='__decryption_password', id='__decryption_password', password=True,
+                    size=18, maxlength=32),
             g.br(),
             # Translators: Web form button.
             g.submit(_("Send password"), cls='submit'),)
@@ -1351,11 +1352,12 @@ class DecryptionDialog(lcg.Content):
             uri = req.uri()
         else:
             uri = req.server_uri(force_https=True) + req.uri()
-        result = (message and g.div(g.escape(message), cls='errors') or '') + \
-                 g.form(content, method='POST', action=uri, name='decryption_form', cls='login-form') +\
-                 g.script("onload_ = window.onload; window.onload = function() { "
-                          "if (onload_) onload_(); "
-                          "setTimeout(function () { document.decryption_form.__decryption_password.focus() }, 0); };")
+        result = (g.form(content, method='POST', action=uri, name='decryption_form',
+                         cls='login-form') +
+                  g.script("onload_ = window.onload; window.onload = function() { "
+                           "if (onload_) onload_(); "
+                           "setTimeout(function () { "
+                           "document.decryption_form.__decryption_password.focus() }, 0); };"))
         return result
 
 
