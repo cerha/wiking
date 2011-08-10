@@ -1473,13 +1473,16 @@ class PytisModule(Module, ActionHandler):
                 record[key] = pd.Value(record.type(key), value)
         result, success = self._data.insert(record.rowdata(), transaction=transaction)
         #debug(":::", success, result)
-        if success and result is not None:
-            # We can't use set_row(), since it would destroy virtual file fields (used in CMS).
+        if not success:
+            raise pd.DBException(result)
+        elif result is not None:
+            # The resul;t is typically None, when inserting into a view which
+            # has no "returning" statement in the insert rule.
+            # We can't use set_row(), since it would destroy virtual file
+            # fields (used in CMS).
             for key in result.keys():
                 record[key] = result[key]
             self._update_linking_tables(req, record, transaction)
-        else:
-            raise pd.DBException(result)
         
     def _update(self, req, record, transaction):
         """Update the record data in the database.
