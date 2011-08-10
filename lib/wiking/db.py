@@ -59,6 +59,8 @@ class PytisModule(Module, ActionHandler):
     _USE_BINDING_PARENT_TITLE = True
     _LIST_BY_LANGUAGE = False
     _EXCEPTION_MATCHERS = (
+        ('Row with this key already exists',
+         _("Row with this key already exists.")),
         ('duplicate key (value )?violates unique constraint "(?P<id>[a-z_]+)"',
          _("This value already exists.  Enter a unique value.")),
         ('null value in column "(?P<id>[a-z_]+)" violates not-null constraint',
@@ -462,41 +464,42 @@ class PytisModule(Module, ActionHandler):
 
         """
         if e.exception():
-            for matcher, msg in self._exception_matchers:
-                match = matcher.match(str(e.exception()).strip())
-                if match:
-                    if isinstance(msg, tuple):
-                        field_id, msg = msg
-                    elif 'id' in match.groupdict():
-                        matched_id = match.group('id')
-                        if matched_id.endswith('_key'):
-                            # The identifier is (maybe) a name of a PostgreSQL UNIQUE index.
-                            try:
-                                # The corresponding field id is either defined explicitly.
-                                field_id = self._UNIQUE_CONSTRAINT_FIELD_MAPPING[matched_id]
-                            except KeyError:
-                                # Or we will try to guess it from the PostgreSQL index name,
-                                # relying on its default naming "<table>_<column-id>_key".
-                                words = matched_id[:-4].split('_')
-                                for i in range(len(words)):
-                                    maybe_field_id = '_'.join(words[i:])
-                                    if self._view.field(maybe_field_id):
-                                        return (maybe_field_id, msg)
-                        if self._view.field(matched_id):
-                            field_id = matched_id
-                        else:
-                            field_id = None
-                            # If the matched id doesn't belong to any existing
-                            # field, just add it to the end of the error
-                            # message.  It will be usually quite cryptic for the
-                            # user, but it may provide a hint.
-                            msg += ' (%s)' % matched_id
+            error = str(e.exception()).strip()
+        else:
+            error = e.message()
+        for matcher, msg in self._exception_matchers:
+            match = matcher.match(error)
+            if match:
+                if isinstance(msg, tuple):
+                    field_id, msg = msg
+                elif 'id' in match.groupdict():
+                    matched_id = match.group('id')
+                    if matched_id.endswith('_key'):
+                        # The identifier is (maybe) a name of a PostgreSQL UNIQUE index.
+                        try:
+                            # The corresponding field id is either defined explicitly.
+                            field_id = self._UNIQUE_CONSTRAINT_FIELD_MAPPING[matched_id]
+                        except KeyError:
+                            # Or we will try to guess it from the PostgreSQL index name,
+                            # relying on its default naming "<table>_<column-id>_key".
+                            words = matched_id[:-4].split('_')
+                            for i in range(len(words)):
+                                maybe_field_id = '_'.join(words[i:])
+                                if self._view.field(maybe_field_id):
+                                    return (maybe_field_id, msg)
+                    if self._view.field(matched_id):
+                        field_id = matched_id
                     else:
                         field_id = None
-                    return (field_id, msg)
-            return (None, unicode(e.exception()))
-        else:
-            return (None, _("Unable to perform a database operation."))
+                        # If the matched id doesn't belong to any existing
+                        # field, just add it to the end of the error
+                        # message.  It will be usually quite cryptic for the
+                        # user, but it may provide a hint.
+                        msg += ' (%s)' % matched_id
+                else:
+                    field_id = None
+                return (field_id, msg)
+        return (None, _("Unable to perform a database operation:") +' '+ error)
 
     def _error_message(self, fid, error):
         # Return an error message string out of _analyze_exception() result.
@@ -1468,13 +1471,15 @@ class PytisModule(Module, ActionHandler):
                                               connection_name=self.Spec.connection)
                 value = counter.next(transaction=transaction)
                 record[key] = pd.Value(record.type(key), value)
-        new_row, success = self._data.insert(record.rowdata(), transaction=transaction)
-        #debug(":::", success, new_row and [(k, new_row[k].value()) for k in new_row.keys()])
-        if success and new_row is not None:
+        result, success = self._data.insert(record.rowdata(), transaction=transaction)
+        #debug(":::", success, result)
+        if success and result is not None:
             # We can't use set_row(), since it would destroy virtual file fields (used in CMS).
-            for key in new_row.keys():
-                record[key] = new_row[key]
+            for key in result.keys():
+                record[key] = result[key]
             self._update_linking_tables(req, record, transaction)
+        else:
+            raise pd.DBException(result)
         
     def _update(self, req, record, transaction):
         """Update the record data in the database.
