@@ -94,7 +94,7 @@ class WikingManagementInterface(Module, RequestHandler):
         # Translators: Heading and menu title. 
         (_("Users"),
          _("Manage user accounts, privileges and perform other user related tasks."),
-         ['Users', 'ApplicationRoles', 'SessionLog', 'EmailSpool']),
+         ['Users', 'ApplicationRoles', 'SessionLog', 'EmailSpool', 'CryptoNames']),
         # Translators: Heading and menu title for configuration.
         (_("Setup"),
          _("Edit global properties of your web site."),
