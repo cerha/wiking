@@ -725,7 +725,7 @@ class PytisModule(Module, ActionHandler):
         actions.  You should, however, not modify it to return anything else
         than a 'pytis.web.Form' instance compatible with the original set of
         arguments (but see the TODO below).  Methods like
-        '_list_form_content()' (and simalar for other actions) should be used
+        '_list_form_content()' (and similar for other actions) should be used
         to append additional content to the form instance returned by this
         method.
 
