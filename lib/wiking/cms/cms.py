@@ -224,6 +224,16 @@ class Roles(wiking.Roles):
 
 class CMSModule(PytisModule, RssModule, Panelizable):
     """Base class for all CMS modules."""
+    
+    _DB_FUNCTIONS = dict(PytisModule._DB_FUNCTIONS,
+                         crypto_lock_passwords=(('uid', pd.Integer(),),),
+                         crypto_unlock_passwords=(('uid', pd.Integer(),),
+                                                  ('password', pd.String(),),
+                                                  ('cookie', pd.String(),),),
+                         crypto_cook_passwords=(('uid', pd.Integer(),),
+                                                ('cookie', pd.String(),),),
+                         )
+    
     RIGHTS_view = (Roles.ANYONE,)
     RIGHTS_list = (Roles.ANYONE,)
     RIGHTS_rss  = (Roles.ANYONE,)
@@ -235,6 +245,11 @@ class CMSModule(PytisModule, RssModule, Panelizable):
     RIGHTS_publish   = (Roles.ADMIN,)
     RIGHTS_unpublish = (Roles.ADMIN,)
     RIGHTS_print_field = (Roles.ANYONE,)
+
+    def __init__(self, *args, **kwargs):
+        super(CMSModule, self).__init__(*args, **kwargs)
+        self._crypto_names = set([f.crypto_name() for f in self._view.fields()
+                                  if f.crypto_name() is not None])
 
     def _embed_binding(self, modname):
         try:
@@ -263,6 +278,45 @@ class CMSModule(PytisModule, RssModule, Panelizable):
             if help:
                 content.insert(0, lcg.p(help))
         return content
+
+    _CRYPTO_COOKIE = 'wiking_cms_crypto'
+
+    def _authorize(self, req, **kwargs):
+        self._maybe_clear_crypto_passwords(req)
+        super(CMSModule, self)._authorize(req, **kwargs)
+        self._check_crypto_passwords(req)
+
+    def _maybe_clear_crypto_passwords(self, req):
+        user = req.user()
+        if user is None:
+            return
+        if req.param('command') == 'logout':
+            req.set_cookie(self._CRYPTO_COOKIE, None, secure=True)
+            self._call_db_function('cms_crypto_lock_passwords', user.uid())
+
+    def _check_crypto_passwords(self, req):
+        if not self._crypto_names:
+            return
+        user = req.user()
+        if user is None:
+            return
+        uid = user.uid()
+        crypto_cookie = req.cookie(self._CRYPTO_COOKIE)
+        if not crypto_cookie:
+            crypto_cookie = self._generate_crypto_cookie()
+            req.set_cookie(self._CRYPTO_COOKIE, crypto_cookie, secure=True)
+        password = req.decryption_password()
+        if password is not None:
+            self._call_db_function('cms_unlock_passwords', uid, password, crypto_cookie)
+        available_names = set([row[0].value()
+                               for row in self._call_rows_db_function('cms_cook_passwords',
+                                                                      uid, crypto_cookie)])
+        unavailable_names = self._crypto_names - available_names
+        if unavailable_names:
+            raise DecryptionError(unavailable_names.pop())
+
+    def _generate_crypto_cookie(self):
+        return self._module('Session').session_key()
 
 
 class ContentManagementModule(CMSModule):
