@@ -593,7 +593,8 @@ create table cms_crypto_keys (
        key_id serial primary key,
        name text not null references cms_crypto_names on update cascade on delete cascade,
        uid int not null references users on update cascade on delete cascade,
-       key bytea not null
+       key bytea not null,
+       unique (name, uid)
 );
 grant all on cms_crypto_keys to "www-data";
 
@@ -648,6 +649,7 @@ begin
   end if;
   delete from cms_crypto_keys where name=name_ and uid=to_uid;
   insert into cms_crypto_keys (name, uid, key) values (name_, to_uid, cms_crypto_store_key(key_, to_psw));
+  return True;
 end;
 $$ language plpgsql;
 
