@@ -23,222 +23,222 @@ img { position: relative; } /* MSIE float workaround */
 
 /* Generic pytis forms styles */
 
-form.pytis-form .group, form.pytis-form div.submit, form.list-form-controls .paging-controls { 
+.pytis-form .group, .pytis-form div.submit, .pytis-form.list-form-controls .paging-controls { 
     background-color: $color.frame-bg;
     border: 1px solid $color.frame-border;
     border-width: 1px 0;
     margin: 0.4em 0;
     padding: 0.4em 0.6em;
 }
-form.pytis-form .group div.group {
+.pytis-form .group div.group {
     border-width: 0;
     margin: 0;
     padding: 0;
 }
-form.pytis-form .group fieldset.group {
+.pytis-form .group fieldset.group {
     border-width: 1px;
 }
 
-form.pytis-form fieldset.outer {
+.pytis-form fieldset.outer {
     border: none;
     margin: 0;
     padding: 0;
     position: relative;
 }
-form.pytis-form legend.empty { display: none; }
+.pytis-form legend.empty { display: none; }
 
-form.pytis-form table.horizontal-group.expanded { width: 100%; }
-form.pytis-form .horizontal-group fieldset.group {
+.pytis-form table.horizontal-group.expanded { width: 100%; }
+.pytis-form .horizontal-group fieldset.group {
     margin: 0 0 0.4em 0;
     /* margin-bottom: 100%; ** this breaks fieldset border. */
 }
-form.pytis-form .horizontal-group td.spaced,
-form.pytis-form .horizontal-group th.spaced {
+.pytis-form .horizontal-group td.spaced,
+.pytis-form .horizontal-group th.spaced {
     padding-left: 0.6em;
 }
 
 
 /* Fix MSIE fieldset background */
-* html form.pytis-form table.horizontal-group { position: relative; }
-* html form.pytis-form fieldset.group { position: relative; margin: 1em 0; padding-top: 0.7em; }
-* html form.pytis-form .horizontal-group fieldset.group { margin: 0 0 1em 0; }
-* html form.pytis-form fieldset.group legend { color: $color.foreground; position: absolute; top: -0.6em; left: 0.2em; }
+* html .pytis-form table.horizontal-group { position: relative; }
+* html .pytis-form fieldset.group { position: relative; margin: 1em 0; padding-top: 0.7em; }
+* html .pytis-form .horizontal-group fieldset.group { margin: 0 0 1em 0; }
+* html .pytis-form fieldset.group legend { color: $color.foreground; position: absolute; top: -0.6em; left: 0.2em; }
 
-form.pytis-form div.submit {
+.pytis-form div.submit {
     margin-top: 0.5em;
     padding: 0.5em;
     text-align: center;
 }
-form.pytis-form div.submit input { 
+.pytis-form div.submit input { 
     padding: 0.1em 0.5em;
     margin: 0 1em;
 }
 
-form.browse-form table {
+.pytis-form.browse-form table {
     border-collapse: collapse;
     border: 1px solid $color.border;
     margin-top: .3em;
 }
-form.browse-form table td, form.browse-form table th {
+.pytis-form.browse-form table td, .pytis-form.browse-form table th {
     padding: 2pt;
     vertical-align: top;
     border: 1px solid $color.border;
 }
-form.browse-form table td .tree-node {
+.pytis-form.browse-form table td .tree-node {
     white-space: nowrap;
 }
 
-form.browse-form table tr { background-color: $color.table-cell; }
-form.browse-form table tr.even { background-color: $color.table-cell2; }
-form.browse-form table tr.group-heading th { text-align: left; }
-form.browse-form table th { background-color: $color.heading-bg; }
-form.browse-form table td pre {
+.pytis-form.browse-form table tr { background-color: $color.table-cell; }
+.pytis-form.browse-form table tr.even { background-color: $color.table-cell2; }
+.pytis-form.browse-form table tr.group-heading th { text-align: left; }
+.pytis-form.browse-form table th { background-color: $color.heading-bg; }
+.pytis-form.browse-form table td pre {
     background-color: transparent;
     border: none;
 }
-form.browse-form table span.tree-indent {
+.pytis-form.browse-form table span.tree-indent {
     padding-left: 0.6em;
 }
-form.browse-form table tfoot td {
+.pytis-form.browse-form table tfoot td {
     background-color: $color.frame-bg;
     border: 1px solid $color.frame-border;
     padding: 0;
     text-align: right;
 }
 
-form.list-form-controls {
+.pytis-form.list-form-controls {
     margin: 0.8em 0;
     padding: .2em;
 }
-form.list-form-controls .results {
+.pytis-form.list-form-controls .results {
     font-weight: bold;
 }
-form.list-form-controls .filter,
-form.list-form-controls .paging-controls.one-page {
+.pytis-form.list-form-controls .filter,
+.pytis-form.list-form-controls .paging-controls.one-page {
     text-align: right;
 }
-form.list-form-controls span.offset,
-form.list-form-controls span.buttons,
-form.list-form-controls span.limit {
+.pytis-form.list-form-controls span.offset,
+.pytis-form.list-form-controls span.buttons,
+.pytis-form.list-form-controls span.limit {
     white-space: nowrap;
 }
-form.list-form-controls div.index-search-controls {
+.pytis-form.list-form-controls div.index-search-controls {
     padding-bottom: 0.4em;
 }
-form.list-form-controls div.index-search-controls div {
+.pytis-form.list-form-controls div.index-search-controls div {
     padding-bottom: 0.2em;
 }
-form.list-form-controls span.limit,
-form.list-form-controls span.buttons input.prev,
-form.list-form-controls span.buttons input.search {
+.pytis-form.list-form-controls span.limit,
+.pytis-form.list-form-controls span.buttons input.prev,
+.pytis-form.list-form-controls span.buttons input.search {
     margin-left: 1em;
 }
 
-form.browse-form #found-record {
+.pytis-form.browse-form .found-record {
     background-color: $color.highlight-bg !important;
 }
 
-form.list-view div.list-item {
+.pytis-form.list-view div.list-item {
     margin-bottom: 1.1em;
 }
-form.list-view #found-record h3 {
+.pytis-form.list-view .found-record h3 {
     background-color: $color.highlight-bg;
 }
 
-form.list-view div.list-item h3 {
+.pytis-form.list-view div.list-item h3 {
     margin-bottom: 0.2em;
     font-size: 1.2em;
 }
-form.list-view div.list-item img.list-layout-image {
+.pytis-form.list-view div.list-item img.list-layout-image {
     float: right;
     margin-left: .6em;
     margin-bottom: 1.1em;
 } 
-form.list-view div.list-item div.meta {
+.pytis-form.list-view div.list-item div.meta {
     font-style: italic;
     margin: 0.2em 0;
     color: $color.meta-fg;
     padding: 0.1em 0;
     background-color: $color.meta-bg;
 }
-form.list-view table.grid {
+.pytis-form.list-view table.grid {
     border-collapse: separate;
     border-spacing: 0.6em;
 }
-form.list-view table.grid td {
+.pytis-form.list-view table.grid td {
 }
-form.list-view table.grid h3 {
+.pytis-form.list-view table.grid h3 {
     margin-top: 0;
 }
-form.pytis-form fieldset.body div.field { 
+.pytis-form fieldset.body div.field { 
     margin: 0.2em 0;
 }
-form.pytis-form label { 
+.pytis-form label { 
     white-space: nowrap;
     font-weight: bold;
 }
-form.pytis-form div.radio-group label { 
+.pytis-form div.radio-group label { 
     font-weight: normal;
 }
-form.pytis-form .group table { 
+.pytis-form .group table { 
     border-collapse: collapse;
 }
-form.pytis-form th.label { 
+.pytis-form th.label { 
     padding-right: 0.3em;
     line-height: 1.4em;
     white-space: nowrap;
 }
-form.show-form td.ctrl, form.list-view td.ctrl { 
+.pytis-form.show-form td.ctrl, .pytis-form.list-view td.ctrl { 
     line-height: 1.4em;
 }
 
-form.show-form a.print-field-link { 
+.pytis-form.show-form a.print-field-link { 
     float: right;
     display: block;
 }
 
-form.pytis-form .group span.color-display { 
+.pytis-form .group span.color-display { 
     padding: 0 0.5em;
     border: 1px solid $color.border;
 }
-form.pytis-form .group span.color-value { 
+.pytis-form .group span.color-value { 
     float: left;
     width: 6em;
 }
-form.show-form .group textarea, form.list-view .group textarea {
+.pytis-form.show-form .group textarea, .pytis-form.list-view .group textarea {
     background-color: $color.frame-bg;
     border: 0px;
     font-size: 1em;
 }
-form.show-form, form.edit-form { 
+.pytis-form.show-form, .pytis-form.edit-form { 
     margin: 0;
     padding: 0;
 }
-form.edit-form div.help { 
+.pytis-form.edit-form div.help { 
     color: $color.help;
     margin-bottom: 0.4em;
 }
-form.edit-form .group input.text,
-form.edit-form .group input.password,
-form.edit-form .group input.file,
-form.edit-form .group input.text,
-form.edit-form textarea,
-form.edit-form select, #login, #password { 
+.pytis-form.edit-form .group input.text,
+.pytis-form.edit-form .group input.password,
+.pytis-form.edit-form .group input.file,
+.pytis-form.edit-form .group input.text,
+.pytis-form.edit-form textarea,
+.pytis-form.edit-form select, #login, #password { 
     border: 1px solid $color.border;
 }
-form.pytis-form textarea.fullsize {
+.pytis-form textarea.fullsize {
     width: 100%;
 }
-form.pytis-form input.button.selection-invocation { 
+.pytis-form input.button.selection-invocation { 
     margin-left: 2px;
     padding: 0;
 }
 
-form.pytis-form.list-view div.summary {
+.pytis-form.list-view div.summary {
     margin-top: 1.2em;
     border-top: 1px solid $color.frame-border;
 }
-/*form.pytis-form .invalid {
+/*.pytis-form .invalid {
     background-color: $color.error-bg;
 }*/
 
@@ -256,32 +256,32 @@ form.pytis-form.list-view div.summary {
     padding-left: 0.5em;
 }
 
-.actions button, form.list-form-controls button {
+.actions button, .pytis-form.list-form-controls button {
     width: auto; /* fix MSIE size */
     overflow: visible; /* fix MSIE size */
     line-height: 1.3em;
     padding: 1px 0;
 }
-.actions button span, form.list-form-controls button span {
+.actions button span, .pytis-form.list-form-controls button span {
     background-position: center left;
     background-repeat: no-repeat;
     padding: 3px;
 }
-.actions button[disabled] span, form.list-form-controls button[disabled] span {
+.actions button[disabled] span, .pytis-form.list-form-controls button[disabled] span {
     opacity: 0.5;
     color: $color.foreground;
 }
 
-form.list-form-controls button.prev-page-button span {
+.pytis-form.list-form-controls button.prev-page-button span {
     background-image: url(/_resources/previous.png);
     padding-left: 18px;
 }
-form.list-form-controls button.next-page-button span {
+.pytis-form.list-form-controls button.next-page-button span {
     background-image: url(/_resources/next.png);
     padding-right: 20px;
     background-position: right center;
 }
-form.list-form-controls button.search-button span {
+.pytis-form.list-form-controls button.search-button span {
     background-image: url(/_resources/search.png);
     padding-left: 18px;
 }
@@ -400,36 +400,36 @@ div.table-of-contents ul {
     background-image: url(/_resources/attachment.png);
 }
 
-div.discussions form.list-view.discussions .summary { display: none; }
-div.discussions form.list-view.discussions h3 { 
+div.discussions .pytis-form.list-view.discussions .summary { display: none; }
+div.discussions .pytis-form.list-view.discussions h3 { 
     font-weight: normal;
     font-size: 1em;
     background-color: #eee;
     border-width: 1px 0;
 }
 
-div.discussions form.edit-form.discussions { 
+div.discussions .pytis-form.edit-form.discussions { 
     margin: 1.2em 0;
     background-color: $color.frame-bg;
     border: 1px solid $color.frame-border;
     border-width: 1px 0;
     padding: 0.3em;
 }
-div.discussions form.edit-form.discussions div.group,
-div.discussions form.edit-form.discussions div.submit { 
+div.discussions .pytis-form.edit-form.discussions div.group,
+div.discussions .pytis-form.edit-form.discussions div.submit { 
     margin: 0;
     padding: 0;
     background: none;
     border: none;
 }
-div.discussions form.edit-form.discussions div.submit { 
+div.discussions .pytis-form.edit-form.discussions div.submit { 
     padding: 0;
     text-align: right;
 }
-div.discussions form.edit-form.discussions div.submit input { 
+div.discussions .pytis-form.edit-form.discussions div.submit input { 
     margin: 0;
 }
-div.discussions form.edit-form.discussions div.footer { display: none; }
+div.discussions .pytis-form.edit-form.discussions div.footer { display: none; }
 div.discussions div.login-info p {
     margin: 1em 0;
     padding: 0.5em;
@@ -454,14 +454,14 @@ div.item span.panel-field-date {
 .unpublished { text-decoration: line-through; }
 
 /* Border-less table:
-form.browse-form.mapping table {
+.pytis-form.browse-form.mapping table {
     border-collapse: separate;
     border-spacing: 0;
     border-width: 0;
 }
-form.browse-form.mapping table tbody td {
+.pytis-form.browse-form.mapping table tbody td {
     border-width: 0;
 }
-form.browse-form.mapping table th {
+.pytis-form.browse-form.mapping table th {
     border-width: 1px 0;
 } */
