@@ -695,8 +695,8 @@ create or replace function cms_crypto_cook_passwords (uid_ int, cookie text) ret
 begin
   lock cms_crypto_keys in exclusive mode;
   delete from cms_crypto_unlocked_passwords
-         where key_id in (select key_id from cms_crypto_keys where uid=$1) and
-               cms_crypto_extract_key(key, cookie) is null;
+         where key_id in (select key_id from cms_crypto_keys where uid=uid_) and
+               cms_crypto_extract_key(password, cookie) is null;
   begin
     delete from t_pytis_passwords;
   exception
