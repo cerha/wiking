@@ -1449,16 +1449,9 @@ class WikingDefaultDataClass(DBAPIData):
 
 
 class Specification(pp.Specification):
-    _instance_cache = {}
     help = None # Default value needed by CMSModule.descr()
     actions = []
     data_cls = WikingDefaultDataClass
-    def __new__(cls, module, resolver):
-        try:
-            instance = cls._instance_cache[module]
-        except KeyError:
-            instance = cls._instance_cache[module] = pp.Specification.__new__(cls, resolver)
-        return instance
 
     def __init__(self, module, resolver):
         self._module = module
@@ -1513,6 +1506,8 @@ class Binding(pp.Binding):
 class WikingResolver(pytis.util.Resolver):
     """A custom resolver of Wiking modules."""
     _wiking_module_cache = {}
+    _wiking_module_cls_cache = {}
+    _wiking_module_specification_cache = {}
 
     def _import_python_module(self, name):
         mod = __import__(name)
@@ -1534,13 +1529,21 @@ class WikingResolver(pytis.util.Resolver):
     
     def wiking_module_cls(self, name):
         """Return the Wiking module class of given 'name'."""
-        for python_module_name in cfg.modules:
-            python_module = self._import_python_module(python_module_name)
-            try:
-                return getattr(python_module, name)
-            except AttributeError:
-                continue
-        raise AttributeError("Wiking module not found!", name, cfg.modules)
+        try:
+            module_cls = self._wiking_module_cls_cache[name]
+        except KeyError:
+            for python_module_name in cfg.modules:
+                python_module = self._import_python_module(python_module_name)
+                try:
+                    module_cls = getattr(python_module, name)
+                except AttributeError:
+                    continue
+                else:
+                    break
+            else:
+                raise AttributeError("Wiking module not found!", name, cfg.modules)
+            self._wiking_module_cls_cache[name] = module_cls
+        return module_cls
 
     def wiking_module(self, name, **kwargs):
         """Return the instance of a Wiking module given by 'name'.
@@ -1567,16 +1570,19 @@ class WikingResolver(pytis.util.Resolver):
     
     def get(self, name, spec_name):
         try:
-            module_cls = self.wiking_module_cls(name)
-        except AttributeError:
-            return super(WikingResolver, self).get(name, spec_name)
-        else:
-            spec = module_cls.Spec(module_cls, self)
+            specification = self._wiking_module_specification_cache[name]
+        except KeyError:
             try:
-                method = getattr(spec, spec_name)
+                module_cls = self.wiking_module_cls(name)
             except AttributeError:
-                raise pytis.util.ResolverSpecError(name, spec_name)
-            return method()
+                return super(WikingResolver, self).get(name, spec_name)
+            specification = module_cls.Spec(module_cls, self)
+            self._wiking_module_specification_cache[name] = specification
+        try:
+            method = getattr(specification, spec_name)
+        except AttributeError:
+            raise pytis.util.ResolverSpecError(name, spec_name)
+        return method()
 
     
 class WikingFileResolver(WikingResolver, pytis.util.FileResolver):
