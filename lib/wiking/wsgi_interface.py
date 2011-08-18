@@ -127,6 +127,12 @@ class WsgiRequest(wiking.Request):
         # The Wiking applications which need streaming would need to be changed
         # to use generators instead of req.write() than, but there's not so
         # much code like that (one example is wiking.Request.send_file()).
+        if isinstance(data, buffer):
+            # WSGI doesn't accept buffer, while mod_python's write() does so
+            # this is necessary for backwards compatibility.  It would be
+            # probably good, however, to deprecate passing python buffer
+            # instances to wiking.Request.write().
+            data = str(data)
         self._response_data.append(data)
 
     def option(self, name, default=None):
