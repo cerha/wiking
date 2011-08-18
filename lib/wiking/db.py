@@ -285,9 +285,8 @@ class PytisModule(Module, ActionHandler):
         import config
         self._dbconnection = config.dbconnection.select(self.Spec.connection)
         del config
-        spec = self._spec(resolver)
-        self._data_spec = spec.data_spec()
-        self._view = spec.view_spec()
+        self._data_spec = resolver.get(self.name(), 'data_spec')
+        self._view = resolver.get(self.name(), 'view_spec')
         self._exception_matchers = [(re.compile(regex), msg)
                                     for regex, msg in self._EXCEPTION_MATCHERS]
         self._db_function = {}
@@ -336,9 +335,6 @@ class PytisModule(Module, ActionHandler):
                 link = cb_link(self._view.field(cb_field))
                 if link: # and link.name() not in [x[1].name() for x in self._links.values()]:
                     self._links[f.id()] = (cb_field, link)
-
-    def _spec(self, resolver):
-        return self.__class__.Spec(self.__class__, resolver)
 
     def _record(self, req, row, new=False, prefill=None):
         """Return the Record instance initialized by given data row."""
