@@ -96,8 +96,7 @@ class WsgiRequest(wiking.Request):
         return int(self._environ['SERVER_PORT'])
         
     def https(self):
-        #TODO: what about self._environ['HTTPS']? isn't it by definition correct, if present?
-        return self.port() == wiking.cfg.https_port
+        return self._environ['wsgi.url_scheme'] == 'https'
 
     def remote_host(self):
         return self._environ.get('REMOTE_HOST', self._environ.get('REMOTE_ADDR'))
