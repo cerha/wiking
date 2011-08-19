@@ -93,7 +93,7 @@ class WsgiRequest(wiking.Request):
         self._response_headers.add_header(name, value.encode(self._encoding), **params)
 
     def port(self):
-        return self._environ['SERVER_PORT']
+        return int(self._environ['SERVER_PORT'])
         
     def https(self):
         #TODO: what about self._environ['HTTPS']? isn't it by definition correct, if present?
