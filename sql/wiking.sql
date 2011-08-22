@@ -8,6 +8,11 @@ create table languages (
 	lang char(2) unique not null
 );
 
+create table countries (
+	country_id serial primary key,
+	country char(2) unique not null
+);
+
 -------------------------------------------------------------------------------
 
 create table roles (

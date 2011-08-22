@@ -98,7 +98,7 @@ class WikingManagementInterface(Module, RequestHandler):
         # Translators: Heading and menu title for configuration.
         (_("Setup"),
          _("Edit global properties of your web site."),
-         ['Config', 'Languages', 'Texts', 'Emails']),
+         ['Config', 'Languages', 'Countries', 'Texts', 'Emails']),
         )
     
     def _handle(self, req):
@@ -800,10 +800,12 @@ class Languages(SettingsManagementModule):
         # Translators: Heading and menu item for language configuration section.
         title = _("Languages")
         help = _("Manage available languages.")
+        table = 'languages'
         fields = (
             Field('lang_id'),
             # Translators: Language code, e.g. 'cs', 'sk' etc.
             Field('lang', _("Code"), width=2, column_width=6,
+                  descr=_("Lower case alphanumeric ISO 639-1 two letter language code."),
                   filter=ALPHANUMERIC, post_process=LOWER, fixed=True),
             # Translators: Language name: e.g. Czech, Slovak etc.
             Field('name', _("Name"), virtual=True,
@@ -825,6 +827,43 @@ class Languages(SettingsManagementModule):
             Languages._language_list = [str(r['lang'].value()) for r in self._data.get_rows()]
             Languages._language_list_time = time.time()
         return self._language_list
+
+
+class Countries(SettingsManagementModule):
+    """Codebook of countries.
+
+    The codebook of countries is currently not used by Wiking CMS itself, but
+    may be practical for extension applications.  It is also planned to make
+    use of it in Wiking CMS for definition of applicable locales.  Locales are
+    combinations of language/country, such as en-US, en-GB, de-DE, de-AT.
+    Wiking and Wiking CMS currently ignore countries and only care about
+    languages.  This is quite restricting when it is necessary to care about
+    country specifics.
+
+    """
+    class Spec(Specification):
+        # Translators: Heading and menu item for language configuration section.
+        title = _("Countries")
+        table = 'countries'
+        fields = (
+            Field('country_id'),
+            # Translators: Language code, e.g. 'cs', 'sk' etc.
+            Field('country', _("Code"), width=2, column_width=6,
+                  descr=_("Upper case alphanumeric ISO 3166-1 two letter country code."),
+                  filter=ALPHANUMERIC, post_process=LOWER, fixed=True),
+            # Translators: Language name: e.g. Czech, Slovak etc.
+            Field('name', _("Name"), virtual=True,
+                  computer=computer(lambda r, country: lcg.country_name(country))),
+            )
+        sorting = (('country', ASC),)
+        cb = CodebookSpec(display=lcg.country_name, prefer_display=True)
+        layout = ('country',)
+        columns = ('country', 'name')
+    _REFERER = 'country'
+    # Translators: Do not translate this.
+    _TITLE_TEMPLATE = _('%(name)s')
+    _language_list = None
+    _language_list_time = None
 
     
 class Themes(StyleManagementModule):
