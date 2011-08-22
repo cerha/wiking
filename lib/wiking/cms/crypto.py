@@ -21,7 +21,7 @@ import lcg
 import wiking
 from wiking.cms import CMSExtensionModule, Roles
 import pytis.data as pd
-from pytis.presentation import Action, Binding, Field, computer
+from pytis.presentation import Field, computer
 import pytis.web as pw
 
 _ = lcg.TranslatableTextFactory('wiking')
@@ -44,7 +44,8 @@ class CryptoNames(CMSExtensionModule):
             )
         sorting = (('name', pd.ASCENDENT,),
                    )
-        bindings = (Binding('keys', _("Users and Keys"), 'CryptoKeys', 'name'),
+        bindings = (wiking.Binding('keys', _("Users and Keys"), 'CryptoKeys', 'name',
+                                   form=pw.ItemizedView),
                     )
 
     RIGHTS_list = (Roles.ADMIN,)
@@ -88,10 +89,12 @@ class CryptoKeys(CMSExtensionModule):
                   type=pd.Password, virtual=True),
             Field('new_password', _("New password"),
                   type=pd.Password, virtual=True),
+            Field('delete', virtual=True, computer=computer(lambda row: _("Remove"))),
             )
         sorting = (('uid', pd.ASCENDENT,),
                    )
-        columns = ('uid',)
+        columns = ('uid', 'delete',)
+    _SEQUENCE_FIELDS = (('key_id', 'cms_crypto_keys_key_id_seq'),)
 
     _DB_FUNCTIONS = dict(CMSExtensionModule._DB_FUNCTIONS,
                          cms_crypto_delete_key=(('name_', pd.String(),),
@@ -110,132 +113,86 @@ class CryptoKeys(CMSExtensionModule):
                                                      ('old_psw', pd.String(),),
                                                      ('new_psw', pd.String(),),),
                          )
+
+    _TITLE_COLUMN = 'uid'
+    _INSERT_LABEL = _("Create key")
+    _COPY_LABEL = _("Add user")
     
-    _ACTIONS = (wiking.Action(_("Create key"), 'insert_key', descr=_("Create new key")),
-                wiking.Action(_("Add user"), 'copy_key', descr=_("Add another user of the key")),
-                wiking.Action(_("Remove user"), 'delete_key', descr=_("Delete the key from the user")),
-                wiking.Action(_("Change password"), 'change_password', descr=_("Change key password")),
+    _ACTIONS = (wiking.Action(_("Change password"), 'password', descr=_("Change key password")),
                 )
 
     _OWNER_COLUMN = 'uid'
 
     RIGHTS_list = (Roles.ADMIN,)
     RIGHTS_view = (Roles.ADMIN,)
-    RIGHTS_insert = ()
+    RIGHTS_insert = (Roles.ADMIN,)
     RIGHTS_update = ()
-    RIGHTS_delete = ()
-    RIGHTS_insert_key = (Roles.ADMIN,)
-    RIGHTS_copy_key = (Roles.ADMIN,)
-    RIGHTS_delete_key = (Roles.ADMIN,)
-    RIGHTS_change_password = (Roles.OWNER,)
+    RIGHTS_delete = (Roles.ADMIN,)
+    RIGHTS_copy = (Roles.ADMIN,)
+    RIGHTS_password = (Roles.ADMIN,)
 
     def _layout(self, req, action, record=None):
-        if action == 'insert_key':
+        if action == 'insert':
             layout = ('name', 'uid', 'new_password',)
-        elif action == 'copy_key':
+        elif action == 'copy':
             layout = ('name', 'uid', 'new_uid', 'old_password', 'new_password',)
-        elif action == 'change_password':
-            layout = ('name', 'uid', 'old_password', 'new_password',)
+        elif action == 'password':
+            layout = ('key_id', 'name', 'uid', 'old_password', 'new_password',)
         else:
             layout = ('name', 'uid',)
         return layout
+    
+    def _link_provider(self, req, uri, record, cid, **kwargs):
+        if cid == 'delete':
+            return req.make_uri(uri, key_id=record['key_id'].value(), action='delete')
+        else:
+            return super(CryptoKeys, self)._link_provider(req, uri, record, cid, **kwargs)
         
-    def action_insert_key(self, req, record):
-        if req.param('submit'):
-            try:
-                result = self._insert_key(req, record['name'], record['uid'], record['new_password'])
-            except pd.DBException, e:
-                req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
-            else:
-                if result:
-                    message = _("Key inserted.")
-                else:
-                    message = _("Key already inserted, use copy action to add users.")
-                req.message(message)
-                raise wiking.Redirect(self._current_base_uri(req, record))
-        form = self._form(pw.EditForm, req, record=record,
-                          layout=('key_id', 'name', 'uid', 'new_password',))
-        actions = (Action('insert_key', _("Insert"), submit=1),)
-        action_menu = self._action_menu(req, record, actions)
-        return self._document(req, [form, action_menu], record,
-                              subtitle=self._action_subtitle(req, 'insert', record))
+    def _form(self, form, req, *args, **kwargs):
+        if issubclass(form, pw.ItemizedView) and req.check_roles(Roles.USER_ADMIN):
+            kwargs['template'] = lcg.TranslatableText("%("+ self._TITLE_COLUMN +")s [%(delete)s]")
+        return super(CryptoKeys, self)._form(form, req, *args, **kwargs)
 
-    def _insert_key(self, req, name, uid, new_password):
-        key = self._module('Session').session_key(length=128)
-        return self._call_db_function('cms_crypto_insert_key', name.value(), uid.value(), key,
-                                      new_password.value())
-        
-    def action_copy_key(self, req, record):
-        if req.param('submit'):
-            try:
-                result = self._copy_key(req, record['name'], record['uid'], record['to_uid'],
-                                        record['old_password'], record['new_password'])
-            except pd.DBException, e:
-                req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
-            else:
-                if result:
-                    message = _("Key copied.")
-                else:
-                    message = _("Copy failed.")
-                req.message(message)
-                raise wiking.Redirect(self._current_base_uri(req, record))
-        form = self._form(pw.EditForm, req, record=record,
-                          layout=('key_id', 'name', 'uid', 'to_uid', 'old_password', 'new_password',))
-        actions = (Action('copy_key', _("Copy"), submit=1),)
-        action_menu = self._action_menu(req, record, actions)
-        return self._document(req, [form, action_menu], record,
-                              subtitle=self._action_subtitle(req, 'copy', record))
+    # TODO: Don't display insert action when key is already present.
 
-    def _copy_key(self, req, name, uid, to_uid, old_password, new_password):
-        return self._call_db_function('cms_crypto_copy_key', name.value(),
-                                      uid.value(), to_uid.value(),
-                                      old_password.value(), new_password.value())
+    def _insert(self, req, record, transaction):
+        # TODO: Signals success on failure.
+        # TODO: Fix success messages.
+        # TODO: Honor transaction.
+        action = req.param('action')
+        if action == 'insert':
+            key = self._module('Session').session_key(length=128)
+            result = self._call_db_function('cms_crypto_insert_key',
+                                            record['name'].value(),
+                                            record['uid'].value(),
+                                            key,
+                                            record['new_password'].value())
+        elif action == 'copy':
+            result = self._call_db_function('cms_crypto_copy_key',
+                                            record['name'].value(),
+                                            record['uid'].value(),
+                                            record['to_uid'].value(),
+                                            record['old_password'].value(),
+                                            record['new_password'].value())
+        else:
+            raise Exception('Unexpected action', action)
+        return result
+    
+    def _update(self, req, record, transaction):
+        # TODO: Signals success on failure.
+        # TODO: Fix success messages.
+        # TODO: Only single original password field in password action.
+        # TODO: Honor transaction.
+        return self._call_db_function('cms_crypto_change_password',
+                                      record['key_id'].value(),
+                                      record['old_password'].value(),
+                                      record['new_password'].value())
 
-    def action_delete_key(self, req, record):
-        if req.param('submit'):
-            try:
-                result = self._delete_key(req, record['name'], record['uid'])
-            except pd.DBException, e:
-                req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
-            else:
-                if result:
-                    message = _("User removed.")
-                else:
-                    message = _("This is the last key occurrence, user not removed.")
-                req.message(message)
-                raise wiking.Redirect(self._current_base_uri(req, record))
-        form = self._form(pw.ShowForm, req, record=record,
-                          layout=('key_id', 'name', 'uid',))
-        req.message(_("Please, confirm user removal."))
-        actions = (Action('delete_key', _("Remove"), submit=1),)
-        action_menu = self._action_menu(req, record, actions)
-        return self._document(req, [form, action_menu], record,
-                              subtitle=self._action_subtitle(req, 'delete', record))
+    def _delete(self, req, record, transaction):
+        # TODO: Signals success on failure.
+        # TODO: Honor transaction.
+        return self._call_db_function('cms_crypto_delete_key', record['name'].value(),
+                                      record['uid'].value(), False)
 
-    def _delete_key(self, req, name, uid):
-        return self._call_db_function('cms_crypto_delete_key', name.value(), uid.value(), False)
-
-    def action_change_password(self, req, record):
-        if req.param('submit'):
-            try:
-                result = self._change_password(req, record['key_id'],
-                                               record['old_password'], record['new_password'])
-            except pd.DBException, e:
-                req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
-            else:
-                if result:
-                    message = _("Password changed.")
-                else:
-                    message = _("Password change failed.")
-                req.message(message)
-                raise wiking.Redirect(self._current_base_uri(req, record))
-        form = self._form(pw.EditForm, req, record=record,
-                          layout=('key_id', 'name', 'uid', 'old_password', 'new_password',))
-        actions = (Action('change_password', _("Change password"), submit=1),)
-        action_menu = self._action_menu(req, record, actions)
-        return self._document(req, [form, action_menu], record,
-                              subtitle=self._action_subtitle(req, 'change_password', record))
-
-    def _change_password(self, req, id_, old_password, new_password):
-        return self._call_db_function('cms_crypto_change_password', id_.value(),
-                                      old_password.value(), new_password.value())
+    def action_password(self, req, record=None):
+        return self.action_update(req, record=record, action='password')
