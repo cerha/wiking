@@ -44,8 +44,7 @@ class CryptoNames(CMSExtensionModule):
             )
         sorting = (('name', pd.ASCENDENT,),
                    )
-        bindings = (Binding('keys', _("Users and Keys"), 'CryptoKeys',
-                            binding_column='name'),
+        bindings = (Binding('keys', _("Users and Keys"), 'CryptoKeys', 'name'),
                     )
 
     RIGHTS_list = (Roles.ADMIN,)
@@ -79,7 +78,7 @@ class CryptoKeys(CMSExtensionModule):
         title = _("Users and Encryption Keys")
         def fields(self): return (
             Field('key_id', _("Id")),
-            Field('name', _("Name")),
+            Field('name', _("Name"), codebook='CryptoNames'),
             Field('uid', _("User"), codebook='Users'),
             Field('new_uid', _("User"), codebook='Users', virtual=True),
             Field('key', _("Key")),
