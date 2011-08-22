@@ -597,6 +597,7 @@ create table cms_crypto_keys (
        unique (name, uid)
 );
 grant all on cms_crypto_keys to "www-data";
+grant all on cms_crypto_keys_key_id_seq to "www-data";
 
 create or replace function cms_crypto_extract_key (encrypted bytea, psw text) returns text as $$
 declare
@@ -630,7 +631,7 @@ declare
 begin
   lock cms_crypto_keys in exclusive mode;
   select cms_crypto_extract_key(key, $2) into key_ from cms_crypto_keys where key_id=$1;
-  if key is null then
+  if key_ is null then
     return False;
   end if;
   update cms_crypto_keys set key=cms_crypto_store_key(key_, $3) where key_id=$1;
