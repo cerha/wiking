@@ -1417,13 +1417,14 @@ class Pages(ContentManagementModule):
                 raise Redirect(self._current_record_uri(req, record))
             cond = pd.AND(pd.NE('_content', pd.Value(pd.String(), None)),
                           pd.NE('lang', record['lang']))
-            langs = [(str(row['lang'].value()), lcg.language_name(row['lang'].value())) for row in 
+            langs = [str(row['lang'].value()) for row in
                      self._data.get_rows(mapping_id=record['mapping_id'].value(), condition=cond)]
             if not langs:
                 req.message(_("Content for this page does not exist in any language."),
                             type=req.ERROR)
                 raise Redirect(self._current_record_uri(req, record))
-            d = pw.SelectionDialog('src_lang', _("Choose source language"), langs,
+            d = pw.SelectionDialog('src_lang', _("Choose source language"),
+                                   [(lang, lcg.language_name(lang) or lang) for lang in langs],
                                    action='translate', hidden=\
                                    [(id, record[id].value()) for id in ('mapping_id', 'lang')])
             return self._document(req, d, record, subtitle=_("Translate"))

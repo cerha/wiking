@@ -306,12 +306,13 @@ class NotAcceptable(RequestError):
         if self.args:
             # Translators: Meaning language variants. A selection of links to various language
             # versions follows.
-            msg += (lcg.p(_("The available variants are:")), 
-                    lcg.ul([lcg.link("%s?setlang=%s" % (req.uri(), l), label=lcg.language_name(l))
+            msg += (lcg.p(_("The available variants are:")),
+                    lcg.ul([lcg.link("%s?setlang=%s" % (req.uri(), l),
+                                     label=lcg.language_name(l) or l)
                             for l in self.args[0]]))
         msg += (lcg.HorizontalSeparator(),
                 lcg.p(_("Your browser is configured to accept only the following languages:")),
-                lcg.ul([lcg.language_name(l) for l in req.prefered_languages()]),
+                lcg.ul([lcg.language_name(l) or l for l in req.prefered_languages()]),
                 lcg.p(_("If you want to accept other languages permanently, setup the language "
                         "preferences in your browser or contact your system administrator.")))
         return msg
