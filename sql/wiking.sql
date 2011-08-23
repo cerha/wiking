@@ -630,7 +630,12 @@ declare
   key_ text;
 begin
   lock cms_crypto_keys in exclusive mode;
-  select cms_crypto_extract_key(key, $2) into key_ from cms_crypto_keys where key_id=$1;
+  begin
+    select cms_crypto_extract_key(key, $2) into key_ from cms_crypto_keys where key_id=$1;
+  exception
+    when OTHERS then
+      key_ := null;
+  end;
   if key_ is null then
     return False;
   end if;
@@ -644,7 +649,12 @@ declare
   key_ text;
 begin
   lock cms_crypto_keys in exclusive mode;
-  select cms_crypto_extract_key(key, from_psw) into key_ from cms_crypto_keys where name=name_ and uid=from_uid;
+  begin
+    select cms_crypto_extract_key(key, from_psw) into key_ from cms_crypto_keys where name=name_ and uid=from_uid;
+  exception
+    when OTHERS then
+      key_ := null;
+  end;
   if key_ is null then
     return False;
   end if;

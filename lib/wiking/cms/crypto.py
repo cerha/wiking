@@ -79,9 +79,10 @@ class CryptoKeys(CMSExtensionModule):
         title = _("Users and Encryption Keys")
         def fields(self): return (
             Field('key_id', _("Id"), editable=Editable.NEVER),
-            Field('name', _("Name"), codebook='CryptoNames'),
-            Field('uid', _("User"), codebook='Users'),
-            Field('new_uid', _("New user"), codebook='Users', type=pd.Integer, virtual=True),
+            Field('name', _("Name"), codebook='CryptoNames', editable=Editable.NEVER),
+            Field('uid', _("User"), codebook='Users', editable=Editable.ONCE),
+            Field('new_uid', _("New user"), codebook='Users', type=pd.Integer, virtual=True,
+                  runtime_filter=computer(self._new_uid_filter)),
             Field('key', _("Key")),
             Field('remove', _("Action"), virtual=True,
                   computer=computer(lambda r: _("Remove"))),
@@ -91,6 +92,9 @@ class CryptoKeys(CMSExtensionModule):
                   type=pd.Password, virtual=True),
             Field('delete', virtual=True, computer=computer(lambda row: _("Remove"))),
             )
+        def _new_uid_filter(self, row, name):
+            assigned_users = self._module(self._resolver).assigned_users(row['name'])
+            return pd.AND(*[pd.NE('uid', u) for u in assigned_users])
         sorting = (('uid', pd.ASCENDENT,),
                    )
         columns = ('uid', 'delete',)
@@ -118,7 +122,7 @@ class CryptoKeys(CMSExtensionModule):
     _INSERT_LABEL = _("Create key")
     
     _ACTIONS = (wiking.Action(_("Change password"), 'password', descr=_("Change key password")),
-                wiking.Action(_("Add user"), 'adduser', descr=_("Add another user of the key")),
+                wiking.Action(_("Copy to user"), 'adduser', descr=_("Add another user of the key")),
                 )
 
     _OWNER_COLUMN = 'uid'
@@ -154,48 +158,65 @@ class CryptoKeys(CMSExtensionModule):
             kwargs['template'] = lcg.TranslatableText("%("+ self._TITLE_COLUMN +")s [%(delete)s]")
         return super(CryptoKeys, self)._form(form, req, *args, **kwargs)
 
-    # TODO: Don't display insert action when key is already present.
+    def _actions(self, req, record):
+        actions = super(CryptoKeys, self)._actions(req, record)
+        if record is None:
+            try:
+                count = self._data.select(self._condition(req))
+            finally:
+                try:
+                    self._data.close()
+                except:
+                    pass
+            if count > 0:
+                actions = [a for a in actions if a.id() != 'insert']
+        return actions
 
     def _insert(self, req, record, transaction):
-        # TODO: Signals success on failure.
-        # TODO: Fix success messages.
-        # TODO: Honor transaction.
         key = self._module('Session').session_key(length=128)
-        return self._call_db_function('cms_crypto_insert_key',
-                                      record['name'].value(),
-                                      record['uid'].value(),
-                                      key,
-                                      record['new_password'].value())
+        if not self._in_transaction(transaction, self._call_db_function,
+                                    'cms_crypto_insert_key',
+                                    record['name'].value(),
+                                    record['uid'].value(),
+                                    key,
+                                    record['new_password'].value()):
+            raise pd.DBException(_("New key not created. Maybe it already exists?"))
     
     def _update(self, req, record, transaction):
-        # TODO: Signals success on failure.
-        # TODO: Fix success messages.
-        # TODO: Only single original password field in password action.
-        # TODO: Honor transaction.
         action = req.param('action')
-        if action == 'insert':
-            result = self._call_db_function('cms_crypto_change_password',
-                                            record['key_id'].value(),
-                                            record['old_password'].value(),
-                                            record['new_password'].value())
+        if action == 'password':
+            if not self._in_transaction(transaction, self._call_db_function,
+                                        'cms_crypto_change_password',
+                                        record['key_id'].value(),
+                                        record['old_password'].value(),
+                                        record['new_password'].value()):
+                raise pd.DBException(_("Password not changed. Maybe invalid old password?"))
         elif action == 'adduser':
-            result = self._call_db_function('cms_crypto_copy_key',
-                                            record['name'].value(),
-                                            record['uid'].value(),
-                                            record['new_uid'].value(),
-                                            record['old_password'].value(),
-                                            record['new_password'].value())
+            if not self._in_transaction(transaction, self._call_db_function,
+                                        'cms_crypto_copy_key',
+                                        record['name'].value(),
+                                        record['uid'].value(),
+                                        record['new_uid'].value(),
+                                        record['old_password'].value(),
+                                        record['new_password'].value()):
+                raise pd.DBException(_("User not added. Maybe invalid old password?"))
         else:
             raise Exception('Unexpected action', action)
 
     def _delete(self, req, record, transaction):
-        # TODO: Signals success on failure.
-        # TODO: Honor transaction.
-        return self._call_db_function('cms_crypto_delete_key', record['name'].value(),
-                                      record['uid'].value(), False)
+        if not self._in_transaction(transaction, self._call_db_function,
+                                    'cms_crypto_delete_key',
+                                    record['name'].value(),
+                                    record['uid'].value(),
+                                    False):
+            raise pd.DBException(_("The user couldn't be deleted. Maybe he is the last key holder?"))
 
     def action_adduser(self, req, record, action='adduser'):
         return super(CryptoKeys, self).action_update(req, record, action=action)
     
     def action_password(self, req, record=None):
         return self.action_update(req, record=record, action='password')
+
+    def assigned_users(self, name):
+        # Internal method for Spec class, don't use it elsewhere
+        return self._data.select_map(lambda row: row['uid'], condition=pd.EQ('name', name))
