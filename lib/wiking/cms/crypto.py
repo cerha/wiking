@@ -86,7 +86,7 @@ class CryptoKeys(CMSExtensionModule):
             Field('remove', _("Action"), virtual=True,
                   computer=computer(lambda r: _("Remove"))),
             Field('old_password', _("Current password"),
-                  type=pd.Password, virtual=True),
+                  type=pd.Password, verify=False, virtual=True),
             Field('new_password', _("New password"),
                   type=pd.Password, virtual=True),
             Field('delete', virtual=True, computer=computer(lambda row: _("Remove"))),
