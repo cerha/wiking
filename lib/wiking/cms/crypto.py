@@ -21,7 +21,7 @@ import lcg
 import wiking
 from wiking.cms import CMSExtensionModule, Roles
 import pytis.data as pd
-from pytis.presentation import Field, computer
+from pytis.presentation import Editable, Field, computer
 import pytis.web as pw
 
 _ = lcg.TranslatableTextFactory('wiking')
@@ -78,10 +78,10 @@ class CryptoKeys(CMSExtensionModule):
         table = 'cms_crypto_keys'
         title = _("Users and Encryption Keys")
         def fields(self): return (
-            Field('key_id', _("Id")),
+            Field('key_id', _("Id"), editable=Editable.NEVER),
             Field('name', _("Name"), codebook='CryptoNames'),
             Field('uid', _("User"), codebook='Users'),
-            Field('new_uid', _("User"), codebook='Users', virtual=True),
+            Field('new_uid', _("New user"), codebook='Users', type=pd.Integer, virtual=True),
             Field('key', _("Key")),
             Field('remove', _("Action"), virtual=True,
                   computer=computer(lambda r: _("Remove"))),
@@ -116,9 +116,9 @@ class CryptoKeys(CMSExtensionModule):
 
     _TITLE_COLUMN = 'uid'
     _INSERT_LABEL = _("Create key")
-    _COPY_LABEL = _("Add user")
     
     _ACTIONS = (wiking.Action(_("Change password"), 'password', descr=_("Change key password")),
+                wiking.Action(_("Add user"), 'adduser', descr=_("Add another user of the key")),
                 )
 
     _OWNER_COLUMN = 'uid'
@@ -128,14 +128,15 @@ class CryptoKeys(CMSExtensionModule):
     RIGHTS_insert = (Roles.ADMIN,)
     RIGHTS_update = ()
     RIGHTS_delete = (Roles.ADMIN,)
-    RIGHTS_copy = (Roles.ADMIN,)
+    RIGHTS_copy = ()
     RIGHTS_password = (Roles.ADMIN,)
+    RIGHTS_adduser = (Roles.ADMIN,)
 
     def _layout(self, req, action, record=None):
         if action == 'insert':
             layout = ('name', 'uid', 'new_password',)
-        elif action == 'copy':
-            layout = ('name', 'uid', 'new_uid', 'old_password', 'new_password',)
+        elif action == 'adduser':
+            layout = ('key_id', 'name', 'uid', 'new_uid', 'old_password', 'new_password',)
         elif action == 'password':
             layout = ('key_id', 'name', 'uid', 'old_password', 'new_password',)
         else:
@@ -159,34 +160,33 @@ class CryptoKeys(CMSExtensionModule):
         # TODO: Signals success on failure.
         # TODO: Fix success messages.
         # TODO: Honor transaction.
-        action = req.param('action')
-        if action == 'insert':
-            key = self._module('Session').session_key(length=128)
-            result = self._call_db_function('cms_crypto_insert_key',
-                                            record['name'].value(),
-                                            record['uid'].value(),
-                                            key,
-                                            record['new_password'].value())
-        elif action == 'copy':
-            result = self._call_db_function('cms_crypto_copy_key',
-                                            record['name'].value(),
-                                            record['uid'].value(),
-                                            record['to_uid'].value(),
-                                            record['old_password'].value(),
-                                            record['new_password'].value())
-        else:
-            raise Exception('Unexpected action', action)
-        return result
+        key = self._module('Session').session_key(length=128)
+        return self._call_db_function('cms_crypto_insert_key',
+                                      record['name'].value(),
+                                      record['uid'].value(),
+                                      key,
+                                      record['new_password'].value())
     
     def _update(self, req, record, transaction):
         # TODO: Signals success on failure.
         # TODO: Fix success messages.
         # TODO: Only single original password field in password action.
         # TODO: Honor transaction.
-        return self._call_db_function('cms_crypto_change_password',
-                                      record['key_id'].value(),
-                                      record['old_password'].value(),
-                                      record['new_password'].value())
+        action = req.param('action')
+        if action == 'insert':
+            result = self._call_db_function('cms_crypto_change_password',
+                                            record['key_id'].value(),
+                                            record['old_password'].value(),
+                                            record['new_password'].value())
+        elif action == 'adduser':
+            result = self._call_db_function('cms_crypto_copy_key',
+                                            record['name'].value(),
+                                            record['uid'].value(),
+                                            record['new_uid'].value(),
+                                            record['old_password'].value(),
+                                            record['new_password'].value())
+        else:
+            raise Exception('Unexpected action', action)
 
     def _delete(self, req, record, transaction):
         # TODO: Signals success on failure.
@@ -194,5 +194,8 @@ class CryptoKeys(CMSExtensionModule):
         return self._call_db_function('cms_crypto_delete_key', record['name'].value(),
                                       record['uid'].value(), False)
 
+    def action_adduser(self, req, record, action='adduser'):
+        return super(CryptoKeys, self).action_update(req, record, action=action)
+    
     def action_password(self, req, record=None):
         return self.action_update(req, record=record, action='password')
