@@ -246,11 +246,6 @@ class CMSModule(PytisModule, RssModule, Panelizable):
     RIGHTS_unpublish = (Roles.ADMIN,)
     RIGHTS_print_field = (Roles.ANYONE,)
 
-    def __init__(self, *args, **kwargs):
-        super(CMSModule, self).__init__(*args, **kwargs)
-        self._crypto_names = set([f.crypto_name() for f in self._view.fields()
-                                  if f.crypto_name() is not None])
-
     def _embed_binding(self, modname):
         try:
             cls = cfg.resolver.wiking_module_cls(modname)
@@ -295,7 +290,8 @@ class CMSModule(PytisModule, RssModule, Panelizable):
             self._call_db_function('cms_crypto_lock_passwords', user.uid())
 
     def _check_crypto_passwords(self, req):
-        if not self._crypto_names:
+        crypto_names = self._data.crypto_names()
+        if not crypto_names:
             return
         user = req.user()
         if user is None:
@@ -311,7 +307,7 @@ class CMSModule(PytisModule, RssModule, Panelizable):
         available_names = set([row[0].value()
                                for row in self._call_rows_db_function('cms_crypto_cook_passwords',
                                                                       uid, crypto_cookie)])
-        unavailable_names = self._crypto_names - available_names
+        unavailable_names = set(crypto_names) - available_names
         if unavailable_names:
             raise DecryptionError(unavailable_names.pop())
 
