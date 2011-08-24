@@ -1220,13 +1220,15 @@ class PytisModule(Module, ActionHandler):
         return [b for b in self._view.bindings()
                 if not isinstance(b, Binding) or b.enabled() is None or b.enabled()(record)]
 
-    def _call_rows_db_function(self, name, *args):
+    def _call_rows_db_function(self, name, *args, **kwargs):
         """Call database function NAME with given arguments and return the result.
 
-        Arguments are Python values wich will be automatically wrapped into 'pytis.data.Value'
-        instances.
+        'args' are Python values wich will be automatically wrapped into
+        'pytis.data.Value' instances.  'kwargs' may contain 'transaction'
+        argument to be passed to the database function.
         
         """
+        transaction = kwargs.get('transaction')
         try:
             function, arg_spec = self._db_function[name]
         except KeyError:
@@ -1237,19 +1239,21 @@ class PytisModule(Module, ActionHandler):
         assert len(args) == len(arg_spec), \
                "Wrong number of arguments for '%s': %r" % (name, args)
         arg_data = [(spec[0], pd.Value(spec[1], value)) for spec, value in zip(arg_spec, args)]
-        return function.call(pytis.data.Row(arg_data))
+        return function.call(pytis.data.Row(arg_data), transaction=transaction)
 
-    def _call_db_function(self, name, *args):
+    def _call_db_function(self, name, *args, **kwargs):
         """Call database function NAME with given arguments and return the first result.
 
         If the result and its first row are non-empty, return the first value
         of the first row; otherwise return 'None'.
 
-        Arguments are Python values wich will be automatically wrapped into 'pytis.data.Value'
-        instances.
+        'args' are Python values wich will be automatically wrapped into
+        'pytis.data.Value' instances.  'kwargs' may contain 'transaction'
+        argument to be passed to the database function.
         
         """
-        row = self._call_rows_db_function(name, *args)[0]
+        transaction = kwargs.get('transaction')
+        row = self._call_rows_db_function(name, *args, transaction=transaction)[0]
         if row:
             result = row[0].value()
         else:
@@ -1381,6 +1385,10 @@ class PytisModule(Module, ActionHandler):
         transaction is commited and result is returned.
         
         If transaction is None, the operation is simply called and result is returned.
+
+        @note: All this method basically does is handling commit/rollback
+        operations of C{transaction}.  You are still responsible for passing
+        the transaction argument to database operations inside C{operation}.
 
         """
         if transaction is None:

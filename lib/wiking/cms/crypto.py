@@ -98,7 +98,6 @@ class CryptoKeys(CMSExtensionModule):
         sorting = (('uid', pd.ASCENDENT,),
                    )
         columns = ('uid', 'delete',)
-    _SEQUENCE_FIELDS = (('key_id', 'cms_crypto_keys_key_id_seq'),)
 
     _DB_FUNCTIONS = dict(CMSExtensionModule._DB_FUNCTIONS,
                          cms_crypto_delete_key=(('name_', pd.String(),),
@@ -174,41 +173,41 @@ class CryptoKeys(CMSExtensionModule):
 
     def _insert(self, req, record, transaction):
         key = self._module('Session').session_key(length=128)
-        if not self._in_transaction(transaction, self._call_db_function,
-                                    'cms_crypto_insert_key',
-                                    record['name'].value(),
-                                    record['uid'].value(),
-                                    key,
-                                    record['new_password'].value()):
+        if not self._call_db_function('cms_crypto_insert_key',
+                                      record['name'].value(),
+                                      record['uid'].value(),
+                                      key,
+                                      record['new_password'].value(),
+                                      transaction=transaction):
             raise pd.DBException(_("New key not created. Maybe it already exists?"))
     
     def _update(self, req, record, transaction):
         action = req.param('action')
         if action == 'password':
-            if not self._in_transaction(transaction, self._call_db_function,
-                                        'cms_crypto_change_password',
-                                        record['key_id'].value(),
-                                        record['old_password'].value(),
-                                        record['new_password'].value()):
+            if not self._call_db_function('cms_crypto_change_password',
+                                          record['key_id'].value(),
+                                          record['old_password'].value(),
+                                          record['new_password'].value(),
+                                          transaction=transaction):
                 raise pd.DBException(_("Password not changed. Maybe invalid old password?"))
         elif action == 'adduser':
-            if not self._in_transaction(transaction, self._call_db_function,
-                                        'cms_crypto_copy_key',
-                                        record['name'].value(),
-                                        record['uid'].value(),
-                                        record['new_uid'].value(),
-                                        record['old_password'].value(),
-                                        record['new_password'].value()):
+            if not self._call_db_function('cms_crypto_copy_key',
+                                          record['name'].value(),
+                                          record['uid'].value(),
+                                          record['new_uid'].value(),
+                                          record['old_password'].value(),
+                                          record['new_password'].value(),
+                                          transaction=transaction):
                 raise pd.DBException(_("User not added. Maybe invalid old password?"))
         else:
             raise Exception('Unexpected action', action)
 
     def _delete(self, req, record, transaction):
-        if not self._in_transaction(transaction, self._call_db_function,
-                                    'cms_crypto_delete_key',
-                                    record['name'].value(),
-                                    record['uid'].value(),
-                                    False):
+        if not self._call_db_function('cms_crypto_delete_key',
+                                      record['name'].value(),
+                                      record['uid'].value(),
+                                      False,
+                                      transaction=transaction):
             raise pd.DBException(_("The user couldn't be deleted. Maybe he is the last key holder?"))
 
     def action_adduser(self, req, record, action='adduser'):
