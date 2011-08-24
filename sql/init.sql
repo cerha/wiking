@@ -13,6 +13,7 @@ insert into roles (role_id, system, auto) values ('owner', 't', 't');
 insert into roles (role_id, system, auto) values ('user', 't', 't');
 insert into roles (role_id, system, auto) values ('registered', 't', 't');
 insert into roles (role_id, system, auto) values ('user_admin', 't', 'f');
+insert into roles (role_id, system, auto) values ('crypto_admin', 't', 'f');
 insert into roles (role_id, system, auto) values ('content_admin', 't', 'f');
 insert into roles (role_id, system, auto) values ('settings_admin', 't', 'f');
 insert into roles (role_id, system, auto) values ('mail_admin', 't', 'f');
@@ -20,6 +21,7 @@ insert into roles (role_id, system, auto) values ('style_admin', 't', 'f');
 insert into roles (role_id, system, auto) values ('admin', 't', 'f');
 
 insert into role_sets (role_id, member_role_id) values ('admin', 'user_admin');
+insert into role_sets (role_id, member_role_id) values ('admin', 'crypto_admin');
 insert into role_sets (role_id, member_role_id) values ('admin', 'content_admin');
 insert into role_sets (role_id, member_role_id) values ('admin', 'settings_admin');
 insert into role_sets (role_id, member_role_id) values ('admin', 'mail_admin');

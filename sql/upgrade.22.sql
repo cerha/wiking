@@ -142,3 +142,6 @@ begin
   return query select name from t_pytis_passwords;
 end;
 $$ language plpgsql;
+
+insert into roles (role_id, system, auto) values ('crypto_admin', 't', 'f');
+insert into role_sets (role_id, member_role_id) values ('admin', 'crypto_admin');

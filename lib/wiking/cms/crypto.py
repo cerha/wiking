@@ -48,8 +48,8 @@ class CryptoNames(CMSExtensionModule):
                                    form=pw.ItemizedView),
                     )
 
-    RIGHTS_list = (Roles.ADMIN,)
-    RIGHTS_view = (Roles.ADMIN,)
+    RIGHTS_list = (Roles.CRYPTO_ADMIN,)
+    RIGHTS_view = (Roles.CRYPTO_ADMIN,)
     RIGHTS_insert = ()
     RIGHTS_update = ()
     RIGHTS_delete = ()
@@ -126,14 +126,14 @@ class CryptoKeys(CMSExtensionModule):
 
     _OWNER_COLUMN = 'uid'
 
-    RIGHTS_list = (Roles.ADMIN,)
-    RIGHTS_view = (Roles.ADMIN,)
-    RIGHTS_insert = (Roles.ADMIN,)
+    RIGHTS_list = (Roles.CRYPTO_ADMIN,)
+    RIGHTS_view = (Roles.CRYPTO_ADMIN, Roles.OWNER,)
+    RIGHTS_insert = (Roles.CRYPTO_ADMIN,)
     RIGHTS_update = ()
-    RIGHTS_delete = (Roles.ADMIN,)
+    RIGHTS_delete = (Roles.CRYPTO_ADMIN,)
     RIGHTS_copy = ()
     RIGHTS_password = (Roles.OWNER,)
-    RIGHTS_adduser = (Roles.ADMIN,)
+    RIGHTS_adduser = (Roles.CRYPTO_ADMIN,)
 
     def _layout(self, req, action, record=None):
         if action == 'insert':

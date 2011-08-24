@@ -186,6 +186,9 @@ class Roles(wiking.Roles):
     USER_ADMIN = Role('user_admin', _("User administrator"))
     """User administrator."""
     # Translators: Name of a predefined user group.
+    CRYPTO_ADMIN = Role('crypto_admin', _("Crypto administrator"))
+    """Crypto stuff administrator."""
+    # Translators: Name of a predefined user group.
     CONTENT_ADMIN = Role('content_admin', _("Content administrator"))
     """Content administrator."""
     # Translators: Name of a predefined user group.
