@@ -21,7 +21,7 @@ import lcg
 import wiking
 from wiking.cms import CMSExtensionModule, Roles
 import pytis.data as pd
-from pytis.presentation import Editable, Field, computer
+from pytis.presentation import Editable, Field, Action, computer
 import pytis.web as pw
 
 _ = lcg.TranslatableTextFactory('wiking-cms')
@@ -120,8 +120,8 @@ class CryptoKeys(CMSExtensionModule):
     _TITLE_COLUMN = 'uid'
     _INSERT_LABEL = _("Create key")
     
-    _ACTIONS = (wiking.Action(_("Change password"), 'password', descr=_("Change key password")),
-                wiking.Action(_("Copy to user"), 'adduser', descr=_("Add another user of the key")),
+    _ACTIONS = (Action('password', _("Change password"), descr=_("Change key password")),
+                Action('adduser', _("Copy to user"), descr=_("Add another user of the key")),
                 )
 
     _OWNER_COLUMN = 'uid'
