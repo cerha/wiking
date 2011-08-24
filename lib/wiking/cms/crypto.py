@@ -133,7 +133,7 @@ class CryptoKeys(CMSExtensionModule):
     RIGHTS_update = ()
     RIGHTS_delete = (Roles.ADMIN,)
     RIGHTS_copy = ()
-    RIGHTS_password = (Roles.ADMIN,)
+    RIGHTS_password = (Roles.OWNER,)
     RIGHTS_adduser = (Roles.ADMIN,)
 
     def _layout(self, req, action, record=None):
