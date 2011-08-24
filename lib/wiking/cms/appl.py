@@ -232,6 +232,7 @@ class Application(CookieAuthentication, wiking.Application):
         return password == record['password'].value()
     
     def _logout_hook(self, req, user):
+        super(Application, self)._logout_hook(req, user)
         if user is None:
             return
         self._module('CryptoKeys').clear_crypto_passwords(req, user)
