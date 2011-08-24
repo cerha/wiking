@@ -572,7 +572,10 @@ class Users(UserManagementModule):
             return (Binding('roles', _("User's Groups"), 'UserRoles', 'uid',
                             form=pw.ItemizedView),
                     Binding('login-history', _("Login History"), 'SessionLog', 'uid',
-                            enabled=lambda r: r.req().check_roles(Roles.USER_ADMIN)),)
+                            enabled=lambda r: r.req().check_roles(Roles.USER_ADMIN)),
+                    Binding('crypto', _("Crypto Keys"), 'CryptoKeys', 'uid',
+                            enabled=self._crypto_user),
+                    )
         columns = ('fullname', 'nickname', 'email', 'state', 'since')
         sorting = (('surname', ASC), ('firstname', ASC))
         layout = () # Force specific layout definition for each action.
@@ -622,6 +625,15 @@ class Users(UserManagementModule):
                    visible=lambda r: r['state'].value() in (Users.AccountState.NEW,
                                                             Users.AccountState.UNAPPROVED)),
             )
+        def _crypto_user(self, record):
+            uid = record.req().user().uid()
+            if uid is None:
+                return None
+            crypto_keys = self._module(self._resolver)._module('CryptoKeys')
+            if crypto_keys.assigned_names(uid):
+                return True
+            else:
+                return False
         
     class AccountState(object):
         """Available user accout states enumeration.

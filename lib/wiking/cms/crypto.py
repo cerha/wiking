@@ -96,8 +96,9 @@ class CryptoKeys(CMSExtensionModule):
             assigned_users = self._module(self._resolver).assigned_users(row['name'])
             return pd.AND(*[pd.NE('uid', u) for u in assigned_users])
         sorting = (('uid', pd.ASCENDENT,),
+                   ('name', pd.ASCENDENT,),
                    )
-        columns = ('uid', 'delete',)
+        columns = ('uid', 'name', 'delete',)
 
     _DB_FUNCTIONS = dict(CMSExtensionModule._DB_FUNCTIONS,
                          cms_crypto_delete_key=(('name_', pd.String(),),
@@ -145,6 +146,12 @@ class CryptoKeys(CMSExtensionModule):
         else:
             layout = ('name', 'uid',)
         return layout
+
+    def _columns(self, req):
+        columns = super(CryptoKeys, self)._columns(req)
+        if not req.has_param('_crypto_name'):
+            columns = [c for c in columns if c != 'delete']
+        return columns
     
     def _link_provider(self, req, uri, record, cid, **kwargs):
         if cid == 'delete':
@@ -158,12 +165,13 @@ class CryptoKeys(CMSExtensionModule):
         return super(CryptoKeys, self)._form(form, req, *args, **kwargs)
 
     def related(self, req, binding, record, uri):
-        req.set_param('_crypto_name', record['name'])
+        if record.has_key('name'):
+            req.set_param('_crypto_name', record['name'])
         return super(CryptoKeys, self).related(req, binding, record, uri)
     
     def _actions(self, req, record):
         actions = super(CryptoKeys, self)._actions(req, record)
-        if record is None:
+        if record is None and req.has_param('_crypto_name'):
             condition = pd.EQ('name', req.param('_crypto_name'))
             try:
                 count = self._data.select(condition)
@@ -224,6 +232,16 @@ class CryptoKeys(CMSExtensionModule):
     def assigned_users(self, name):
         # Internal method for Spec class, don't use it elsewhere
         return self._data.select_map(lambda row: row['uid'], condition=pd.EQ('name', name))
+
+    def assigned_names(self, uid):
+        """Return sequence of crypto names assigned to user identified by uid.
+
+        Arguments:
+
+          uid -- user uid, integer
+
+        """
+        return self._data.select_map(lambda row: row['name'], condition=pd.EQ('uid', pd.ival(uid)))
 
     def clear_crypto_passwords(self, req, user):
         # Just a hack to allow clearing passwords on logout
