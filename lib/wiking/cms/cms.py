@@ -277,17 +277,8 @@ class CMSModule(PytisModule, RssModule, Panelizable):
     _CRYPTO_COOKIE = 'wiking_cms_crypto'
 
     def _authorize(self, req, **kwargs):
-        self._maybe_clear_crypto_passwords(req)
         super(CMSModule, self)._authorize(req, **kwargs)
         self._check_crypto_passwords(req)
-
-    def _maybe_clear_crypto_passwords(self, req):
-        user = req.user()
-        if user is None:
-            return
-        if req.param('command') == 'logout':
-            req.set_cookie(self._CRYPTO_COOKIE, None, secure=True)
-            self._call_db_function('cms_crypto_lock_passwords', user.uid())
 
     def _check_crypto_passwords(self, req):
         crypto_names = self._data.crypto_names()

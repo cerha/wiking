@@ -518,8 +518,8 @@ class CookieAuthentication(object):
                 user = None
         if req.param('command') == 'logout' and user:
             session.close(req, user, session_key)
+            self._logout_hook(req, user)
             user = None
-            req.set_cookie(self._SESSION_COOKIE, None, secure=secure)
         elif req.param('command') == 'login' and not user:
             raise AuthenticationRedirect()
         if user is not None:
@@ -529,6 +529,9 @@ class CookieAuthentication(object):
                 if password_expiration <= datetime.date.today():
                     raise PasswordExpirationError()
         return user
+
+    def _logout_hook(self, req, user):
+        req.set_cookie(self._SESSION_COOKIE, None, secure=self._SECURE_AUTH_COOKIES)
 
     
 class Session(Module):

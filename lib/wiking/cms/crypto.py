@@ -220,3 +220,8 @@ class CryptoKeys(CMSExtensionModule):
     def assigned_users(self, name):
         # Internal method for Spec class, don't use it elsewhere
         return self._data.select_map(lambda row: row['uid'], condition=pd.EQ('name', name))
+
+    def clear_crypto_passwords(self, req, user):
+        # Just a hack to allow clearing passwords on logout
+        req.set_cookie(self._CRYPTO_COOKIE, None, secure=True)
+        self._call_db_function('cms_crypto_lock_passwords', user.uid())

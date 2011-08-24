@@ -230,6 +230,11 @@ class Application(CookieAuthentication, wiking.Application):
         else:
             raise Exception("Invalid password storage option", password_storage)
         return password == record['password'].value()
+    
+    def _logout_hook(self, req, user):
+        if user is None:
+            return
+        self._module('CryptoKeys').clear_crypto_passwords(req, user)
 
     def authorize(self, req, module, action=None, record=None, **kwargs):
         """Authorization of CMS modules.
