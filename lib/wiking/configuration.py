@@ -442,3 +442,9 @@ class Configuration(pc):
     class _Option_immediate_filters(pc.BooleanOption, pc.HiddenOption):
         _DESCR = ("Whether to apply filtering combobox selection immediately.")
         _DEFAULT = True
+
+    class _Option_ignored_crypto_names(pc.Option):
+        _DESCR = "Sequence of ignored crypto names"
+        _DOC = ("Ignored crypto names don't raise decryption password dialog and "
+                "show obfuscated data instead.")
+        _DEFAULT = ()

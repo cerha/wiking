@@ -298,7 +298,7 @@ class CMSModule(PytisModule, RssModule, Panelizable):
         available_names = set([row[0].value()
                                for row in self._call_rows_db_function('cms_crypto_cook_passwords',
                                                                       uid, crypto_cookie)])
-        unavailable_names = set(crypto_names) - available_names
+        unavailable_names = set(crypto_names) - available_names - set(cfg.ignored_crypto_names)
         if unavailable_names:
             raise DecryptionError(unavailable_names.pop())
 
