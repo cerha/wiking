@@ -226,12 +226,12 @@ class CMSModule(PytisModule, RssModule, Panelizable):
     """Base class for all CMS modules."""
     
     _DB_FUNCTIONS = dict(PytisModule._DB_FUNCTIONS,
-                         crypto_lock_passwords=(('uid', pd.Integer(),),),
-                         crypto_unlock_passwords=(('uid', pd.Integer(),),
-                                                  ('password', pd.String(),),
-                                                  ('cookie', pd.String(),),),
-                         crypto_cook_passwords=(('uid', pd.Integer(),),
-                                                ('cookie', pd.String(),),),
+                         cms_crypto_lock_passwords=(('uid', pd.Integer(),),),
+                         cms_crypto_unlock_passwords=(('uid', pd.Integer(),),
+                                                      ('password', pd.String(),),
+                                                      ('cookie', pd.String(),),),
+                         cms_crypto_cook_passwords=(('uid', pd.Integer(),),
+                                                    ('cookie', pd.String(),),),
                          )
     
     RIGHTS_view = (Roles.ANYONE,)
@@ -307,9 +307,9 @@ class CMSModule(PytisModule, RssModule, Panelizable):
             req.set_cookie(self._CRYPTO_COOKIE, crypto_cookie, secure=True)
         password = req.decryption_password()
         if password is not None:
-            self._call_db_function('cms_unlock_passwords', uid, password, crypto_cookie)
+            self._call_db_function('cms_crypto_unlock_passwords', uid, password, crypto_cookie)
         available_names = set([row[0].value()
-                               for row in self._call_rows_db_function('cms_cook_passwords',
+                               for row in self._call_rows_db_function('cms_crypto_cook_passwords',
                                                                       uid, crypto_cookie)])
         unavailable_names = self._crypto_names - available_names
         if unavailable_names:

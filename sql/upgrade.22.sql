@@ -16,8 +16,14 @@ grant all on cms_crypto_keys_key_id_seq to "www-data";
 
 create or replace function cms_crypto_extract_key (encrypted bytea, psw text) returns text as $$
 declare
-  key text := pgp_sym_decrypt(encrypted, psw);
+  key text;
 begin
+  begin
+    key := pgp_sym_decrypt(encrypted, psw);
+  exception
+    when OTHERS then
+      return null;
+  end;
   if substring(key for 7) != 'wiking:' then
     return null;
   end if;
@@ -76,7 +82,8 @@ begin
   delete from cms_crypto_keys where name=name_ and uid=to_uid;
   insert into cms_crypto_keys (name, uid, key) values (name_, to_uid, cms_crypto_store_key(key_, to_psw));
   return True;
-end;
+
+  end;
 $$ language plpgsql;
 
 create or replace function cms_crypto_delete_key (name_ text, uid_ int, force bool) returns bool as $$

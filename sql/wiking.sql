@@ -601,8 +601,14 @@ grant all on cms_crypto_keys_key_id_seq to "www-data";
 
 create or replace function cms_crypto_extract_key (encrypted bytea, psw text) returns text as $$
 declare
-  key text := pgp_sym_decrypt(encrypted, psw);
+  key text;
 begin
+  begin
+    key := pgp_sym_decrypt(encrypted, psw);
+  exception
+    when OTHERS then
+      return null;
+  end;
   if substring(key for 7) != 'wiking:' then
     return null;
   end if;
