@@ -23,7 +23,7 @@ img { position: relative; } /* MSIE float workaround */
 
 /* Generic pytis forms styles */
 
-.pytis-form .group, .pytis-form div.submit, .pytis-form.list-form-controls .paging-controls { 
+.pytis-form .group, .pytis-form div.submit, .list-form-controls .paging-controls { 
     background-color: $color.frame-bg;
     border: 1px solid $color.frame-border;
     border-width: 1px 0;
@@ -106,31 +106,31 @@ img { position: relative; } /* MSIE float workaround */
     text-align: right;
 }
 
-.pytis-form.list-form-controls {
+.list-form-controls {
     margin: 0.8em 0;
     padding: .2em;
 }
-.pytis-form.list-form-controls .results {
+.list-form-controls .results {
     font-weight: bold;
 }
-.pytis-form.list-form-controls .filter,
-.pytis-form.list-form-controls .paging-controls.one-page {
+.list-form-controls .filter,
+.list-form-controls .paging-controls.one-page {
     text-align: right;
 }
-.pytis-form.list-form-controls span.offset,
-.pytis-form.list-form-controls span.buttons,
-.pytis-form.list-form-controls span.limit {
+.list-form-controls span.offset,
+.list-form-controls span.buttons,
+.list-form-controls span.limit {
     white-space: nowrap;
 }
-.pytis-form.list-form-controls div.index-search-controls {
+.list-form-controls div.index-search-controls {
     padding-bottom: 0.4em;
 }
-.pytis-form.list-form-controls div.index-search-controls div {
+.list-form-controls div.index-search-controls div {
     padding-bottom: 0.2em;
 }
-.pytis-form.list-form-controls span.limit,
-.pytis-form.list-form-controls span.buttons input.prev,
-.pytis-form.list-form-controls span.buttons input.search {
+.list-form-controls span.limit,
+.list-form-controls span.buttons input.prev,
+.list-form-controls span.buttons input.search {
     margin-left: 1em;
 }
 
@@ -149,11 +149,6 @@ img { position: relative; } /* MSIE float workaround */
     margin-bottom: 0.2em;
     font-size: 1.2em;
 }
-.pytis-form.list-view div.list-item img.list-layout-image {
-    float: right;
-    margin-left: .6em;
-    margin-bottom: 1.1em;
-} 
 .pytis-form.list-view div.list-item div.meta {
     font-style: italic;
     margin: 0.2em 0;
@@ -256,32 +251,32 @@ img { position: relative; } /* MSIE float workaround */
     padding-left: 0.5em;
 }
 
-.actions button, .pytis-form.list-form-controls button {
+.actions button, .list-form-controls button {
     width: auto; /* fix MSIE size */
     overflow: visible; /* fix MSIE size */
     line-height: 1.3em;
     padding: 1px 0;
 }
-.actions button span, .pytis-form.list-form-controls button span {
+.actions button span, .list-form-controls button span {
     background-position: center left;
     background-repeat: no-repeat;
     padding: 3px;
 }
-.actions button[disabled] span, .pytis-form.list-form-controls button[disabled] span {
+.actions button[disabled] span, .list-form-controls button[disabled] span {
     opacity: 0.5;
     color: $color.foreground;
 }
 
-.pytis-form.list-form-controls button.prev-page-button span {
+.list-form-controls button.prev-page-button span {
     background-image: url(/_resources/previous.png);
     padding-left: 18px;
 }
-.pytis-form.list-form-controls button.next-page-button span {
+.list-form-controls button.next-page-button span {
     background-image: url(/_resources/next.png);
     padding-right: 20px;
     background-position: right center;
 }
-.pytis-form.list-form-controls button.search-button span {
+.list-form-controls button.search-button span {
     background-image: url(/_resources/search.png);
     padding-left: 18px;
 }
