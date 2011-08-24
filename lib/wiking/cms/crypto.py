@@ -157,11 +157,16 @@ class CryptoKeys(CMSExtensionModule):
             kwargs['template'] = lcg.TranslatableText("%("+ self._TITLE_COLUMN +")s [%(delete)s]")
         return super(CryptoKeys, self)._form(form, req, *args, **kwargs)
 
+    def related(self, req, binding, record, uri):
+        req.set_param('_crypto_name', record['name'])
+        return super(CryptoKeys, self).related(req, binding, record, uri)
+    
     def _actions(self, req, record):
         actions = super(CryptoKeys, self)._actions(req, record)
         if record is None:
+            condition = pd.EQ('name', req.param('_crypto_name'))
             try:
-                count = self._data.select(self._condition(req))
+                count = self._data.select(condition)
             finally:
                 try:
                     self._data.close()
