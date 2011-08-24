@@ -24,7 +24,7 @@ import pytis.data as pd
 from pytis.presentation import Editable, Field, computer
 import pytis.web as pw
 
-_ = lcg.TranslatableTextFactory('wiking')
+_ = lcg.TranslatableTextFactory('wiking-cms')
 
 class CryptoNames(CMSExtensionModule):
     """Management of encryption passwords.
