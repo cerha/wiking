@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-01-17 08:50+0100\n"
+"POT-Creation-Date: 2011-08-25 17:37+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Petr Topiarz <topiarz@post.cz>\n"
 "Language-Team: \n"
@@ -10,129 +10,6 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-
-#: ../lib/wiking/configuration.py:194
-msgid "Webmaster's e-mail address"
-msgstr "Webmaster's e-mail address"
-
-#: ../lib/wiking/configuration.py:205
-msgid "Default sender address"
-msgstr "Domyślny adres nadawcy"
-
-#: ../lib/wiking/configuration.py:222
-#, fuzzy
-msgid "Force HTTPS login"
-msgstr "Force HTTPS login"
-
-#: ../lib/wiking/configuration.py:223
-msgid ""
-"If enabled, the login form will always be redirected to an HTTPS address to "
-"ensure the security of the submitted credentials.  This, however, requires "
-"your server to be setup to accept HTTPS requests for the same virtual host "
-"and pass them to Wiking."
-msgstr ""
-"Jeśli opcja jest włączona, formularz logowania zawsze będzie przekierowany "
-"na adres HTTPS w celu zapewnienia bezpieczeństwa środkom weryfikacji "
-"tożsamości. To jednak wymaga, aby serwer jest ustawiony tak, aby akceptować "
-"żądań HTTPS na tym samym serwerze wirtualnym i przekazać je do Wiking."
-
-#. Translators: Site means a webpage or web application.
-#: ../lib/wiking/configuration.py:276
-msgid "Site title"
-msgstr "nAZWA STRONY"
-
-#: ../lib/wiking/configuration.py:277
-msgid ""
-"Site title is a short and (hopefully) unique title of the whole website. It "
-"will appear at the top of every page."
-msgstr ""
-"Nazwa strony jest krótka  i (miejmy nadzieję) unikalnym tytułem całej strony "
-"internetowej. Będzie on wyświetlany na górze każdej strony."
-
-#. Translators: Site means a webpage or web application. Subtitle as in ,,title -- subtitle''.
-#: ../lib/wiking/configuration.py:283
-msgid "Site subtitle"
-msgstr "Podtytuł witryny"
-
-#: ../lib/wiking/configuration.py:284
-#, fuzzy
-msgid ""
-"Site subtitle is an optional more descriptive title of the website.  It will "
-"appear at the top of every page together with site title, but where brevity "
-"matters, only title will be used."
-msgstr ""
-"Podtytuł jest alternatywnym bardziej opisowym tytułem strony internetowej. "
-"Będzie on wyświetlany na górze każdej strony wraz z tytułem strony, ale "
-"generalnie, używany będzie tylko tytuł."
-
-#. Translators: Web page or web application specific image.
-#: ../lib/wiking/configuration.py:291
-msgid "Site icon"
-msgstr "Ikona na stronie"
-
-#: ../lib/wiking/configuration.py:305
-msgid "Default language"
-msgstr "Domyślny język"
-
-#. Translators: Language negotiation means the process where the server is trying
-#. to find a language that matches with what the users internet browser asks for.
-#: ../lib/wiking/configuration.py:308
-msgid ""
-"Defines the language (lowercase ISO 639-1 Alpha-2 code) to be used when "
-"content language negotiation fails. If not set (which is the default), the "
-"server will issue a 606 HTTP error (Not acceptable) when the document is not "
-"available in any of the requested languages. The error page will contain a "
-"description of the problem and a list of available language variants of the "
-"requested document. The negotiation is based on the browser setting of "
-"user's language preference passed through the 'Accept-Language' HTTP header. "
-"If set, Wiking will automatically serve given language variant instead of "
-"issuing the error if that variant is available.  If unavailable, the 606 "
-"error is raised anyway, so you need to make sure that all documents are "
-"available at least in the default language variant if you want to avoid 606 "
-"errors completely."
-msgstr ""
-"Definiuje język (małe ISO 639-1 Alfa-2 kod)do użycia kiedy serwer nie "
-"potrafi znaleźć odpowiedniego języka. Jeśli nie zostało ustwanione, (co jest "
-"domyślnie), serwer będzie miał problem HTTP 606 (Niedozwolony), gdy dokument "
-"nie jest dostępny w żadnym z wymaganych języków. Strona błędu może zawierać "
-"opis problemu i listę dostępnych wariantów językowych wymaganych dokumentów. "
-"Poszukiwania są oparte na ustawieniach  przeglądarki użytkownika języka "
-"przejdź do \"Accept-Language header\" HTTP. Jeśli jest ustawiona, Wiking "
-"automatycznie ustawi język zamiast pokazywać błąd, jeśli ten wariant jest "
-"dostępny. Jeśli jest to  niemożliwe, błąd  606 będzie występował tak czy "
-"inaczej, tak, więc trzeba się upewnić, że wszystkie dokumenty są dostępne  w "
-"wariancie języka domyślnego, jeżeli chcesz uniknąć błędów 606 całkowicie."
-
-#. Translators: Yes/No configuration option label. Should the login panel display user role (as Admin, Student, Tutor etc.)
-#: ../lib/wiking/configuration.py:378
-msgid "Display role in login panel"
-msgstr "Pokaż pozycje użytkownika"
-
-#: ../lib/wiking/configuration.py:379
-#, fuzzy
-msgid ""
-"If enabled, the login panel on each page will not display only the current "
-"username, but also his current user role, which affects his permissions."
-msgstr ""
-"Po włączeniu, panel logowania będzie wyświetlać zarówno obeceną nazwe "
-"użytkownika, ale również jego role (np. administrator, użytkownik, student "
-"itd.)"
-
-#: ../lib/wiking/configuration.py:397
-msgid "Whether to use e-mails as login names"
-msgstr "Czy używać e-mailu jako loginu"
-
-#: ../lib/wiking/configuration.py:398
-msgid "Iff true, users must use e-mail addresses as their login names."
-msgstr "Jeśli prawdziwy, użytkownicy muszą użyć adresu e-mail jako loginu."
-
-#: ../lib/wiking/configuration.py:412
-msgid ""
-"If set, the newly registered users will be automatically approved without "
-"any administrator's action.  The adminstrator may still need to asign users "
-"to groups to grant them further privileges, but the accounts are enabled "
-"right after the user confirms the registration code."
-msgstr ""
 
 #: ../lib/wiking/cms/appl.py:56
 msgid "Manage this site"
@@ -149,6 +26,123 @@ msgstr "Zostaw Management Interface"
 #: ../lib/wiking/cms/appl.py:172
 msgid "Wiking Management Interface"
 msgstr "Wiking Management Interface"
+
+#: ../lib/wiking/cms/certificates.py:49
+msgid ""
+"To generate the request, you can use the OpenSSL package and the attached "
+"OpenSSL configuration file.\n"
+"In such a case use the following command to generate the certificate "
+"request, assuming your private key is stored in a file named `key.pem':"
+msgstr ""
+
+#: ../lib/wiking/cms/certificates.py:106
+#, fuzzy
+msgid "PEM file"
+msgstr "Edytuj profil"
+
+#: ../lib/wiking/cms/certificates.py:108
+msgid "Upload a PEM file containing the certificate"
+msgstr ""
+
+#: ../lib/wiking/cms/certificates.py:109 ../lib/wiking/cms/certificates.py:115
+msgid "Certificate"
+msgstr ""
+
+#: ../lib/wiking/cms/certificates.py:111
+msgid "X509 structure"
+msgstr ""
+
+#: ../lib/wiking/cms/certificates.py:113
+msgid "Serial number"
+msgstr ""
+
+#: ../lib/wiking/cms/certificates.py:117
+msgid "Certification Authority"
+msgstr ""
+
+#: ../lib/wiking/cms/certificates.py:119
+msgid "Valid from"
+msgstr ""
+
+#: ../lib/wiking/cms/certificates.py:121
+msgid "Valid until"
+msgstr ""
+
+#: ../lib/wiking/cms/certificates.py:123
+#, fuzzy
+msgid "Trusted"
+msgstr "Wymieniony"
+
+#: ../lib/wiking/cms/certificates.py:124
+msgid ""
+"When this is checked, certificates signed by this root certificate are "
+"considered valid."
+msgstr ""
+
+#: ../lib/wiking/cms/certificates.py:149
+#, fuzzy
+msgid "Invalid certificate"
+msgstr "Nie ważny kod aktywacji."
+
+#: ../lib/wiking/cms/certificates.py:163
+msgid "Unprocessable serial number"
+msgstr ""
+
+#: ../lib/wiking/cms/certificates.py:182
+msgid "The certificate is not valid"
+msgstr ""
+
+#: ../lib/wiking/cms/certificates.py:201
+msgid "CA Certificates"
+msgstr ""
+
+#: ../lib/wiking/cms/certificates.py:202
+msgid "Manage trusted root certificates."
+msgstr ""
+
+#: ../lib/wiking/cms/certificates.py:210
+msgid "This is not a CA certificate."
+msgstr ""
+
+#: ../lib/wiking/cms/certificates.py:220
+msgid "User Certificates"
+msgstr ""
+
+#: ../lib/wiking/cms/certificates.py:221
+#, fuzzy
+msgid "Manage user and other kinds of certificates."
+msgstr "Zarządzanie instytucjami i innymi organizacjami."
+
+#: ../lib/wiking/cms/certificates.py:228 ../lib/wiking/cms/cms.py:2416
+#: ../lib/wiking/cms/cms.py:2593
+msgid "Subject"
+msgstr "Temat"
+
+#. Translators: Language name: e.g. Czech, Slovak etc.
+#. Translators: Form field label, noun.
+#: ../lib/wiking/cms/certificates.py:230 ../lib/wiking/cms/cms.py:855
+#: ../lib/wiking/cms/cms.py:899 ../lib/wiking/cms/cms.py:986
+#: ../lib/wiking/cms/users.py:258 ../lib/wiking/cms/users.py:259
+#: ../lib/wiking/cms/crypto.py:42 ../lib/wiking/cms/crypto.py:82
+msgid "Name"
+msgstr "Nazwa"
+
+#. Translators: E-mail address. Registration form field.
+#: ../lib/wiking/cms/certificates.py:232 ../lib/wiking/cms/users.py:488
+msgid "E-mail"
+msgstr "E-mail"
+
+#: ../lib/wiking/cms/certificates.py:323
+msgid "Upload a PEM file containing the certificate request"
+msgstr ""
+
+#: ../lib/wiking/cms/certificates.py:349
+msgid "Certificate request could not be processed"
+msgstr ""
+
+#: ../lib/wiking/cms/certificates.py:371
+msgid "Certificate upload"
+msgstr ""
 
 #. Translators: Yes/No configuration option label. Should the login panel be visible?
 #: ../lib/wiking/cms/configuration.py:36
@@ -207,6 +201,1213 @@ msgid ""
 msgstr ""
 "Maksymalny rozmiar przesłanych plików w bajtach. Serwer musi być załadowany "
 "ponownie aby zmiany zostały zatwierdzone."
+
+#: ../lib/wiking/cms/cms.py:61
+msgid "formatting manual"
+msgstr "Instrukcja formatowania"
+
+#: ../lib/wiking/cms/cms.py:59
+#, python-format
+msgid ""
+"The content should be formatted as LCG structured text. See the %(manual)s."
+msgstr "Treść powinna być w formacie LCG skonstruowany. Patrz %(manual)s."
+
+#: ../lib/wiking/cms/cms.py:71
+msgid "unknown"
+msgstr "nieznany"
+
+#. Translators: Heading and menu title for website content management.
+#. Translators: Content of a page (text or something else)
+#: ../lib/wiking/cms/cms.py:86 ../lib/wiking/cms/cms.py:794
+#: ../lib/wiking/cms/cms.py:1072 ../lib/wiking/cms/cms.py:2089
+msgid "Content"
+msgstr "Zawartość"
+
+#: ../lib/wiking/cms/cms.py:87 ../lib/wiking/cms/cms.py:1058
+msgid "Manage available pages and their content."
+msgstr "Zarządzanie dostępnymi witrynami i ich zawartością."
+
+#. Translators: Heading and menu title. Computer idiom meaning configuration of appearance
+#. (colors, sizes, positions, graphical presentation...).
+#: ../lib/wiking/cms/cms.py:91
+#, fuzzy
+msgid "Look &amp; Feel"
+msgstr "Wygląd &amp, Uczucie"
+
+#: ../lib/wiking/cms/cms.py:92
+msgid "Customize the appearance of your site."
+msgstr "Dostosowywanie wyglądu witryny."
+
+#. Translators: Heading and menu title.
+#: ../lib/wiking/cms/cms.py:95
+msgid "Users"
+msgstr "Użytkownicy"
+
+#: ../lib/wiking/cms/cms.py:96
+msgid "Manage user accounts, privileges and perform other user related tasks."
+msgstr ""
+"Zarządzanie kontami użytkowników, przywilejami i wykonywanie innych zadań "
+"związanych z użytkownikiem."
+
+#. Translators: Heading and menu title for configuration.
+#: ../lib/wiking/cms/cms.py:99
+msgid "Setup"
+msgstr "Ustawienie"
+
+#: ../lib/wiking/cms/cms.py:100
+msgid "Edit global properties of your web site."
+msgstr "Edycja właściwości globalne witryny internetowej."
+
+#. Translators: Name of a special purpose user group.
+#: ../lib/wiking/cms/cms.py:165
+msgid "Authenticated approved user"
+msgstr ""
+
+#. Translators: Name of a special purpose user group.
+#: ../lib/wiking/cms/cms.py:173
+msgid "Successfuly registered user"
+msgstr ""
+
+#. Translators: Name of a predefined user group.
+#: ../lib/wiking/cms/cms.py:186
+#, fuzzy
+msgid "User administrator"
+msgstr "Administrator"
+
+#. Translators: Name of a predefined user group.
+#: ../lib/wiking/cms/cms.py:189
+#, fuzzy
+msgid "Crypto administrator"
+msgstr "Administrator"
+
+#. Translators: Name of a predefined user group.
+#: ../lib/wiking/cms/cms.py:192
+#, fuzzy
+msgid "Content administrator"
+msgstr "Administrator"
+
+#. Translators: Name of a predefined user group.
+#: ../lib/wiking/cms/cms.py:195
+#, fuzzy
+msgid "Settings administrator"
+msgstr "Administrator"
+
+#. Translators: Name of a predefined user group.
+#: ../lib/wiking/cms/cms.py:198
+#, fuzzy
+msgid "Mail administrator"
+msgstr "Administrator"
+
+#. Translators: Name of a predefined user group.
+#: ../lib/wiking/cms/cms.py:201
+#, fuzzy
+msgid "Style administrator"
+msgstr "Administrator"
+
+#. Translators: Name of a predefined user group.
+#: ../lib/wiking/cms/cms.py:204
+msgid "Administrator"
+msgstr "Administrator"
+
+#: ../lib/wiking/cms/cms.py:546
+#, fuzzy
+msgid "Enter the activation code:"
+msgstr "Wyślij ponownie kod aktywacji"
+
+#. Translators: Button name. Computer terminology. Use an appropriate term common
+#. for submitting forms in a computer application.
+#: ../lib/wiking/cms/cms.py:548 ../lib/wiking/cms/users.py:1260
+msgid "Submit"
+msgstr "Przesyłanie"
+
+#: ../lib/wiking/cms/cms.py:551
+msgid "Continue without activation"
+msgstr ""
+
+#: ../lib/wiking/cms/cms.py:583 ../lib/wiking/cms/users.py:658
+msgid "Account disabled"
+msgstr "Konto wyłączone"
+
+#: ../lib/wiking/cms/cms.py:585 ../lib/wiking/cms/users.py:899
+#, fuzzy
+msgid "Account not activated"
+msgstr "Konto wyłączone"
+
+#: ../lib/wiking/cms/cms.py:587
+#, fuzzy
+msgid "Account not approved"
+msgstr "Konto wyłączone"
+
+#: ../lib/wiking/cms/cms.py:635
+msgid "enabled"
+msgstr "włączone"
+
+#: ../lib/wiking/cms/cms.py:635
+msgid "disabled"
+msgstr "wyłączony"
+
+#: ../lib/wiking/cms/cms.py:637
+msgid "undefined"
+msgstr "nieokreślony"
+
+#: ../lib/wiking/cms/cms.py:638
+#, python-format
+msgid "The default value is %s."
+msgstr "Wartość domyślna jest %s."
+
+#. Translators: Website heading and menu item
+#: ../lib/wiking/cms/cms.py:650 ../lib/wiking/cms/cms.py:675
+msgid "Basic Configuration"
+msgstr "Podstawowa konfiguracja"
+
+#: ../lib/wiking/cms/cms.py:651
+msgid "Edit site configuration."
+msgstr "Edycja konfiguracji witryny."
+
+#: ../lib/wiking/cms/cms.py:658
+msgid ""
+"This address is used as public contact address for your site. It is "
+"displayed at the bottom of each page, in error messages, RSS feeds and so "
+"on.  Please make sure that this address is valid (e-mail sent to it is "
+"delivered to a responsible person)."
+msgstr ""
+"Adres ten jest wykorzystywany jako publiczny adres kontaktowy dla Twojej "
+"witryny. Jest on wyświetlany na dole każdej strony, komunikaty o błędach, "
+"kanały RSS. Upewnij się, że ten adres jest ważny (e-mail, jest dostarczony "
+"do osoby odpowiedzialnej)."
+
+#: ../lib/wiking/cms/cms.py:663
+msgid ""
+"E-mail messages sent by the system, such as automatic notifications, "
+"password reminders, bug-reports etc. will use this sender address. Please "
+"make sure that this address is valid, since users may reply to such messages "
+"if they encounter problems."
+msgstr ""
+"E-maile wysłane przez system, takie jak automatyczne powiadomienia, "
+"przypomnienia hasła, błędów itp. raporty będą korzystać z tego adresu. "
+"Upewnij się, że ten adres jest ważny, ponieważ użytkownicy mogą odpowiadać "
+"na takie wiadomości, jeśli napotkają problemy."
+
+#. Translators: Panels are small windows containing different things (such as recent news,
+#. application specific controls, sponsorship reference etc.) displayed by the side of a
+#. webpage.  To avoid confusion, we should avoid terms such as "windows", "frames"
+#. etc. which all have their specific meaning in computer terminology.
+#: ../lib/wiking/cms/cms.py:762
+msgid "Panels"
+msgstr "Panele"
+
+#: ../lib/wiking/cms/cms.py:763
+#, fuzzy
+msgid "Manage panels – the small windows shown by the side of every page."
+msgstr "Zarządzanie panelami, małe okienka wyświetlane obok każdej strony."
+
+#: ../lib/wiking/cms/cms.py:767 ../lib/wiking/cms/cms.py:1067
+#: ../lib/wiking/cms/cms.py:1545 ../lib/wiking/cms/cms.py:1857
+msgid "Language"
+msgstr "Język"
+
+#. Translators: Title in the meaning of a heading
+#: ../lib/wiking/cms/cms.py:770 ../lib/wiking/cms/cms.py:1068
+#: ../lib/wiking/cms/cms.py:1069 ../lib/wiking/cms/cms.py:1560
+#: ../lib/wiking/cms/cms.py:1864 ../lib/wiking/cms/cms.py:1931
+msgid "Title"
+msgstr "Nazwa"
+
+#. Translators: Stylesheet is a computer term (CSS), make sure you use the usual
+#. translation.
+#. Translators: Unique identifier of a stylesheet.
+#. Translators: Form field label.
+#: ../lib/wiking/cms/cms.py:773 ../lib/wiking/cms/cms.py:1062
+#: ../lib/wiking/cms/cms.py:2076 ../lib/wiking/cms/users.py:256
+msgid "Identifier"
+msgstr "Identyfikator"
+
+#: ../lib/wiking/cms/cms.py:775
+msgid ""
+"Assign an optional unique panel identifier if you need to refer to this "
+"panel in the stylesheet."
+msgstr ""
+
+#. Translators: Order in the meaning of sequence. A noun, not verb.
+#. Translators: Order as a position in sequence. E.g. first, second...
+#: ../lib/wiking/cms/cms.py:778 ../lib/wiking/cms/cms.py:2086
+msgid "Order"
+msgstr "Kolejność"
+
+#: ../lib/wiking/cms/cms.py:779
+msgid "Number denoting the order of the panel on the page."
+msgstr "Liczba wskazująa kolejność panelu na stronie."
+
+#. Translators: List items can be news, webpages, names of users. Intentionally general.
+#: ../lib/wiking/cms/cms.py:781
+msgid "List items"
+msgstr "Lista pozycji"
+
+#: ../lib/wiking/cms/cms.py:782
+msgid ""
+"The items of the extension module used by the selected page will be shown by "
+"the panel.  Leave blank for a text content panel."
+msgstr ""
+"Pozycje modułu rozszerzenia wykorzystywane przez wybrane strony będą "
+"wyświetlane w panelu. Pozostaw puste pole dla  zawartości tekstowej panelu."
+
+#. Translators: Computer term for a part of application.
+#. Translators: "Module" is an independent reusable part of a computer program (here a
+#. module of Wiking CMS).
+#: ../lib/wiking/cms/cms.py:787 ../lib/wiking/cms/cms.py:1081
+msgid "Module"
+msgstr "Moduł"
+
+#. Translators: As number of items in a table.
+#: ../lib/wiking/cms/cms.py:790
+msgid "Items count"
+msgstr "Ilość pozycji w tabeli"
+
+#: ../lib/wiking/cms/cms.py:791
+msgid ""
+"Number of items from the selected module, which will be shown by the panel."
+msgstr ""
+"Liczba przedmiotów z wybranych modułów, które będą wyświetlane w panelu."
+
+#: ../lib/wiking/cms/cms.py:795
+msgid "Additional text content displayed on the panel."
+msgstr "Dodatkowa zawartość tekstu wyświetlana na panelu."
+
+#. Translators: Yes/no configuration of whether the page is
+#. published. Followed by a checkbox.
+#. Translators: Configuration option determining whether the page is published or not
+#. (passive form of publish).  The label may be followed by a checkbox.
+#: ../lib/wiking/cms/cms.py:799 ../lib/wiking/cms/cms.py:1095
+msgid "Published"
+msgstr "Opublikowany"
+
+#: ../lib/wiking/cms/cms.py:800
+msgid "Controls whether the panel is actually displayed."
+msgstr "Określa, czy panel jest obecnie widoczna."
+
+#. Translators: Heading and menu item for language configuration section.
+#: ../lib/wiking/cms/cms.py:845
+msgid "Languages"
+msgstr "Języki"
+
+#: ../lib/wiking/cms/cms.py:846
+msgid "Manage available languages."
+msgstr "Zarządzaj dostępnymi językami."
+
+#. Translators: Language code, e.g. 'cs', 'sk' etc.
+#: ../lib/wiking/cms/cms.py:851 ../lib/wiking/cms/cms.py:895
+msgid "Code"
+msgstr "Kod"
+
+#: ../lib/wiking/cms/cms.py:852
+msgid "Lower case alphanumeric ISO 639-1 two letter language code."
+msgstr ""
+
+#. Translators: Do not translate this.
+#: ../lib/wiking/cms/cms.py:864 ../lib/wiking/cms/cms.py:908
+#, fuzzy, python-format
+msgid "%(name)s"
+msgstr "%(name)s"
+
+#. Translators: Heading and menu item for language configuration section.
+#: ../lib/wiking/cms/cms.py:890
+#, fuzzy
+msgid "Countries"
+msgstr "Współpracownik"
+
+#: ../lib/wiking/cms/cms.py:896
+msgid "Upper case alphanumeric ISO 3166-1 two letter country code."
+msgstr ""
+
+#: ../lib/wiking/cms/cms.py:920
+msgid "Normal page colors"
+msgstr "Normalne kolory strony"
+
+#: ../lib/wiking/cms/cms.py:921 ../lib/wiking/cms/cms.py:936
+#: ../lib/wiking/cms/cms.py:944 ../lib/wiking/cms/cms.py:951
+#: ../lib/wiking/cms/cms.py:960 ../lib/wiking/cms/cms.py:964
+#: ../lib/wiking/cms/cms.py:968 ../lib/wiking/cms/cms.py:2188
+#: ../lib/wiking/cms/cms.py:2414 ../lib/wiking/cms/cms.py:2594
+msgid "Text"
+msgstr "Tekst"
+
+#. Translators: Website background (e.g. color)
+#: ../lib/wiking/cms/cms.py:923 ../lib/wiking/cms/cms.py:937
+#: ../lib/wiking/cms/cms.py:945 ../lib/wiking/cms/cms.py:952
+#: ../lib/wiking/cms/cms.py:961 ../lib/wiking/cms/cms.py:965
+#: ../lib/wiking/cms/cms.py:969
+msgid "Background"
+msgstr "Tło"
+
+#: ../lib/wiking/cms/cms.py:924
+msgid "Highlight background"
+msgstr "Podświetlone tło"
+
+#: ../lib/wiking/cms/cms.py:925
+msgid ""
+"Background highlighting may be used for emphasizing the current language, "
+"etc."
+msgstr "Podświetlone tło może być użyte do podkreślenia obecnego języka, itd."
+
+#: ../lib/wiking/cms/cms.py:927
+msgid "Link"
+msgstr "Link"
+
+#: ../lib/wiking/cms/cms.py:928
+msgid "Visited link"
+msgstr "Odwiedzony link"
+
+#. Translators: Computer terminology. Term for how a website hyperlink changes when
+#. you move mouse cursor over it.
+#: ../lib/wiking/cms/cms.py:931
+msgid "Hover link"
+msgstr "Hover link"
+
+#: ../lib/wiking/cms/cms.py:932
+msgid ""
+"Used for changing the link color when the user moves the mouse pointer over "
+"it."
+msgstr "Służy do zmiany koloru linku, kiedy użytkownik przesuwa kursor myszy."
+
+#: ../lib/wiking/cms/cms.py:934
+msgid "Borders"
+msgstr "Granice"
+
+#: ../lib/wiking/cms/cms.py:935
+msgid "Heading colors"
+msgstr "Pozycja kolorów"
+
+#: ../lib/wiking/cms/cms.py:938
+msgid "Underline"
+msgstr "Podkreślenie"
+
+#: ../lib/wiking/cms/cms.py:939
+msgid ""
+"Heading colors are used for section headings, panel headings and other "
+"heading-like elements.  Depending on style sheets, some heading types may be "
+"distinguished by a different background color and others may be just "
+"underlined."
+msgstr ""
+"Główne kolory są wykorzystywane do nagłówków sekcji, działów panelu i innych "
+"elementów. W zależności od arkusza stylów, niektóre rodzaje mogą być "
+"oddzielone przez inny kolor tła a inne mogą być tylko podkreślone."
+
+#: ../lib/wiking/cms/cms.py:943
+msgid "Frames"
+msgstr "Ramki"
+
+#: ../lib/wiking/cms/cms.py:946 ../lib/wiking/cms/cms.py:953
+#: ../lib/wiking/cms/cms.py:962 ../lib/wiking/cms/cms.py:966
+msgid "Border"
+msgstr "Granice"
+
+#: ../lib/wiking/cms/cms.py:947
+msgid ""
+"Frames are generally used for distinguishing separate areas of the page, "
+"such as forms, tables of contents, etc.  The usage may vary by stylesheet."
+msgstr ""
+"Ramki są stosowane do odróżnienia poszczególnych obszarów strony, takich jak "
+"formularze, spisów treści, itp. Użycie może się różnić."
+
+#: ../lib/wiking/cms/cms.py:950
+msgid "Page surrounding colors"
+msgstr "Kolory otaczające strony"
+
+#: ../lib/wiking/cms/cms.py:954
+msgid ""
+"What is 'page surrounding' depends from the stylesheet. In general it is the "
+"part of the page, which does not include the actual contents. Most often it "
+"is the page header and footer which usually remain unchanged throughout the "
+"whole website."
+msgstr ""
+"To czym jest 'page surrounding' zależy od arkusza. Na ogół jest to część "
+"strony, która nie obejmuje rzeczywistej zawartości. Najczęściej to jest "
+"nagłówka i stopki strony, które zazwyczaj pozostają niezmienione w całej "
+"witrynie."
+
+#: ../lib/wiking/cms/cms.py:959
+msgid "Error messages"
+msgstr "Komunikaty o błędach"
+
+#: ../lib/wiking/cms/cms.py:963
+msgid "Informational messages"
+msgstr "Wiadomości informacyjne"
+
+#: ../lib/wiking/cms/cms.py:967
+#, fuzzy
+msgid "Record meta data"
+msgstr "Record meta data"
+
+#: ../lib/wiking/cms/cms.py:970
+msgid ""
+"These colors are used for additional items printed listings, such as date "
+"and author of a message in news, etc."
+msgstr ""
+"Kolory te są wykorzystywane do dodatkowych elementów, takie jak data i autor "
+"wiadomości informacyjnych, itp."
+
+#: ../lib/wiking/cms/cms.py:972
+#, fuzzy
+msgid "Misc"
+msgstr "Rozmaity"
+
+#: ../lib/wiking/cms/cms.py:973
+msgid "Table cell"
+msgstr "Komórki tabeli"
+
+#: ../lib/wiking/cms/cms.py:974
+msgid "Shaded table cell"
+msgstr "Zacieniona komórka"
+
+#: ../lib/wiking/cms/cms.py:975
+#, fuzzy
+msgid "Form help text"
+msgstr "Tekst pomocy formularza"
+
+#: ../lib/wiking/cms/cms.py:976
+msgid "Inactive folder"
+msgstr "Nieaktywne folder"
+
+#. Translators: "Color Themes" is computer terminology.  Predefined sets of colors to be
+#. used for changing the visual appearance of a web page/application.  Similar to color
+#. styles.
+#: ../lib/wiking/cms/cms.py:981
+msgid "Color Themes"
+msgstr "Style kolorów"
+
+#. Translators: Describes more precisely the meaing of "Color Themes" section.
+#: ../lib/wiking/cms/cms.py:983
+msgid "Manage available color themes."
+msgstr "Zarządzaj stylami kolorów."
+
+#. Translators: Table column heading. Whether the account is active. Values are yes/no.
+#: ../lib/wiking/cms/cms.py:987 ../lib/wiking/cms/cms.py:2078
+#: ../lib/wiking/cms/users.py:1380
+msgid "Active"
+msgstr "Aktywny"
+
+#: ../lib/wiking/cms/cms.py:994
+msgid "Yes"
+msgstr "Tak"
+
+#. Translators: Button label
+#: ../lib/wiking/cms/cms.py:1003
+msgid "Activate"
+msgstr "Aktywny"
+
+#: ../lib/wiking/cms/cms.py:1003
+#, fuzzy
+msgid "Activate this color theme"
+msgstr "Aktywuj kolorystykę"
+
+#. Translators: Button label
+#: ../lib/wiking/cms/cms.py:1006
+msgid "Activate default"
+msgstr "Uaktywnij domyślne"
+
+#: ../lib/wiking/cms/cms.py:1007
+#, fuzzy
+msgid "Activate the default color theme"
+msgstr "Aktywuj kolorystykę"
+
+#: ../lib/wiking/cms/cms.py:1031
+msgid "Default"
+msgstr "Domyślny"
+
+#: ../lib/wiking/cms/cms.py:1035
+#, python-format
+msgid "The color theme \"%s\" has been activated."
+msgstr "Kolorystyka \"%s\" została zaaktywowana."
+
+#. Translators: Heading and menu item. Meaning web pages.
+#: ../lib/wiking/cms/cms.py:1057
+msgid "Pages"
+msgstr "Strony"
+
+#: ../lib/wiking/cms/cms.py:1064
+msgid ""
+"The identifier may be used to refer to this page from outside and also from "
+"other pages. A valid identifier can only contain letters, digits, dashes and "
+"underscores.  It must start with a letter."
+msgstr ""
+"Identyfikator może być używany w odniesieniu do tej strony z zewnątrz, a "
+"także z innych stron. Ważny identyfikator może zawierać tylko litery, cyfry, "
+"myślniki i podkreślenia. Musi zaczynać się od litery."
+
+#: ../lib/wiking/cms/cms.py:1070 ../lib/wiking/cms/cms.py:1563
+#: ../lib/wiking/cms/cms.py:2077 ../lib/wiking/cms/crypto.py:43
+msgid "Description"
+msgstr "Opis"
+
+#: ../lib/wiking/cms/cms.py:1071
+msgid "Brief page description (shown as a tooltip and in site map)."
+msgstr "Krótki opis strony (wyświetlany jako podpowiedź i mapa strony)."
+
+#: ../lib/wiking/cms/cms.py:1085
+msgid ""
+"Select the extension module to embed into the page.  Leave blank for an "
+"ordinary text page."
+msgstr ""
+"Wybierz rozszerzenie modułu aby umieścić je stronie. Pozostaw puste dla "
+"tekstu."
+
+#. Translators: "Parent item" has the meaning of hierarchical position.  More precise
+#. term might be "Superordinate item" but doesn't sound that nice in English.  The term
+#. "item" represents a page, but also a menu item.
+#: ../lib/wiking/cms/cms.py:1090
+msgid "Parent item"
+msgstr "Pozycja nadrzędna"
+
+#: ../lib/wiking/cms/cms.py:1091
+msgid ""
+"Select the superordinate item in page hierarchy.  Leave blank for a top-"
+"level page."
+msgstr ""
+"Wybierz  element nadrzędny w hierarchii. Pozostaw puste pole na górze strony."
+
+#: ../lib/wiking/cms/cms.py:1096
+msgid ""
+"Allows you to control the availability of this page in each of the supported "
+"languages (switch language to control the availability in other languages)"
+msgstr ""
+"Pozwala kontrolować dostęp do tej strony w każdym z obsługiwanych języków "
+"(zmienić język kontroli aby uzyskać dostępność w innych językach)"
+
+#: ../lib/wiking/cms/cms.py:1099
+msgid "Status"
+msgstr "Status"
+
+#: ../lib/wiking/cms/cms.py:1100
+msgid "Hidden"
+msgstr "Ukryty"
+
+#: ../lib/wiking/cms/cms.py:1101
+msgid "Check if you don't want this page to appear in the menu."
+msgstr "Sprawdź, czy chcesz aby ta strona pojawiała się w menu."
+
+#. Translators: Page configuration option followed by an input field. Means order in the
+#. sense of sequence. What is first and what next.
+#: ../lib/wiking/cms/cms.py:1104
+#, fuzzy
+msgid "Menu order"
+msgstr "Menu order"
+
+#: ../lib/wiking/cms/cms.py:1105
+msgid ""
+"Enter a number denoting the order of the page in the menu.  Leave blank if "
+"you want to put the page automatically to the end."
+msgstr ""
+"Wprowadź numer oznaczający kolejność stron w menu. Pozostaw puste jeśli "
+"chcesz umieścić stronę na końcu."
+
+#. Translators: Label of a selector of a group allowed to access the page read only.
+#: ../lib/wiking/cms/cms.py:1111
+msgid "Read only access"
+msgstr ""
+
+#: ../lib/wiking/cms/cms.py:1113
+msgid "Select the role allowed to view the page contents."
+msgstr ""
+
+#. Translators: Label of a selector of a group allowed to edit the page.
+#: ../lib/wiking/cms/cms.py:1115
+msgid "Read/write access"
+msgstr ""
+
+#: ../lib/wiking/cms/cms.py:1117
+msgid "Select the role allowed to edit the page contents."
+msgstr ""
+
+#: ../lib/wiking/cms/cms.py:1121
+msgid "Not published"
+msgstr "Nie opublikowany"
+
+#: ../lib/wiking/cms/cms.py:1123
+msgid "Ok"
+msgstr "Ok"
+
+#: ../lib/wiking/cms/cms.py:1125
+msgid "Changed"
+msgstr "Zmieniony"
+
+#: ../lib/wiking/cms/cms.py:1132 ../lib/wiking/cms/cms.py:1159
+msgid "Page Text (for the current language)"
+msgstr "Tekst (w obecnym języku)"
+
+#. Translators: Options meaning page configuration settings.
+#: ../lib/wiking/cms/cms.py:1135 ../lib/wiking/cms/cms.py:1161
+msgid "Global Options (for all languages)"
+msgstr "Opcje globalne (dla wszystkich języków)"
+
+#: ../lib/wiking/cms/cms.py:1137 ../lib/wiking/cms/cms.py:1168
+#, fuzzy
+msgid "Basic Options"
+msgstr "Opcje"
+
+#: ../lib/wiking/cms/cms.py:1138 ../lib/wiking/cms/cms.py:1163
+#: ../lib/wiking/cms/cms.py:1169
+msgid "Menu position"
+msgstr ""
+
+#: ../lib/wiking/cms/cms.py:1139 ../lib/wiking/cms/cms.py:1164
+#: ../lib/wiking/cms/cms.py:1170
+#, fuzzy
+msgid "Access Rights"
+msgstr "Prawa dostępu"
+
+#. Translators: Noun. Such as e-mail attachments (here attachments for a webpage).
+#. Translators: Section title. Attachments as in email attachments.
+#: ../lib/wiking/cms/cms.py:1146 ../lib/wiking/cms/cms.py:1192
+#: ../lib/wiking/cms/cms.py:1408 ../lib/wiking/cms/cms.py:1445
+#: ../lib/wiking/cms/cms.py:1535
+msgid "Attachments"
+msgstr "Załączniki"
+
+#: ../lib/wiking/cms/cms.py:1151
+msgid "The page already exists in given language."
+msgstr "Strona już istnieje w podanym języku."
+
+#: ../lib/wiking/cms/cms.py:1153
+msgid "Duplicate menu order at this level of hierarchy."
+msgstr "Kopia menu na tym poziomie hierarchi."
+
+#: ../lib/wiking/cms/cms.py:1173
+msgid "Save"
+msgstr "Zapisz"
+
+#: ../lib/wiking/cms/cms.py:1173
+msgid "Save and publish"
+msgstr "Zapisz i opublikuj"
+
+#: ../lib/wiking/cms/cms.py:1176
+msgid "New page"
+msgstr "Nowa strona"
+
+#: ../lib/wiking/cms/cms.py:1177
+msgid "Edit Text"
+msgstr "Edytuj tekst"
+
+#: ../lib/wiking/cms/cms.py:1178
+msgid "Edit title, description and content for the current language"
+msgstr "Edytuj tytuł, opis i zawartość na obecnego języka"
+
+#. Translators: Button label. Page configuration options.
+#: ../lib/wiking/cms/cms.py:1181
+msgid "Options"
+msgstr "Opcje"
+
+#: ../lib/wiking/cms/cms.py:1182
+msgid "Edit global (language independent) page options and menu position"
+msgstr "Edytuj globalne (niezależne od języka) opcje strony i pozycji menu"
+
+#: ../lib/wiking/cms/cms.py:1183
+msgid "Publish"
+msgstr "Opublikuj"
+
+#: ../lib/wiking/cms/cms.py:1183
+msgid "Publish the page in its current state"
+msgstr "Publikowanie strony w obecnym stanie"
+
+#: ../lib/wiking/cms/cms.py:1186
+msgid "Unpublish"
+msgstr "Nieopublikowany"
+
+#: ../lib/wiking/cms/cms.py:1186
+msgid "Make the page invisible from outside"
+msgstr "Pozwól aby strona była nie widoczna z zewnątrz"
+
+#: ../lib/wiking/cms/cms.py:1188
+msgid "Revert"
+msgstr "Powrót"
+
+#: ../lib/wiking/cms/cms.py:1188
+msgid "Revert last modifications"
+msgstr "Powrót do ostatnich modyfikacji"
+
+#: ../lib/wiking/cms/cms.py:1190
+msgid "Preview"
+msgstr "Poprzedni"
+
+#: ../lib/wiking/cms/cms.py:1190
+msgid "Display the page in its current state"
+msgstr "Pokaż stronę w jej obecnym stanie"
+
+#: ../lib/wiking/cms/cms.py:1192
+msgid "Manage this page's attachments"
+msgstr "Zarządzanie załącznikami tej strony"
+
+#: ../lib/wiking/cms/cms.py:1267
+msgid "You don't have sufficient privilegs for this action."
+msgstr "Nie masz wystarczających uprawnień do wykonywania tych działań."
+
+#: ../lib/wiking/cms/cms.py:1268
+msgid ""
+"Save the page without publishing and ask the administrator to publish your "
+"changes."
+msgstr ""
+"Zapisz tę stronę bez publikowania i poprosić administratora o opublikowanie "
+"zmian."
+
+#: ../lib/wiking/cms/cms.py:1276
+msgid ""
+"Page content was modified, however the changes remain unpublished. Don't "
+"forget to publish the changes when you are done."
+msgstr ""
+"Zawartość strony została zmieniona, jednak zmiany pozostają niepublikowane. "
+"Nie zapomnij opublikować zmiany gdy skończysz."
+
+#: ../lib/wiking/cms/cms.py:1281
+msgid "New page was successfully created and published."
+msgstr "Nowa strona zostałą pomyślnie stworzona i opublikowana."
+
+#: ../lib/wiking/cms/cms.py:1283
+msgid ""
+"New page was successfully created, but was not published yet. Publish it "
+"when you are done."
+msgstr ""
+"Nowa strona zostałą pomyślnie stworzona, nie została jednak jeszcze "
+"opublikowana. Opublikuj ją gdy skończysz."
+
+#. Translators: Button label. Use standard computer terminology.
+#. Translators: Back button label. Standard computer terminology.
+#: ../lib/wiking/cms/cms.py:1306 ../lib/wiking/cms/cms.py:1668
+#: ../lib/wiking/cms/users.py:985
+msgid "Back"
+msgstr "Wstecz"
+
+#: ../lib/wiking/cms/cms.py:1355
+msgid "Registration"
+msgstr "Rejestracja"
+
+#. Translators: Label for section with user manuals, help pages etc.
+#: ../lib/wiking/cms/cms.py:1357
+msgid "Documentation"
+msgstr "Dokumntacja"
+
+#: ../lib/wiking/cms/cms.py:1460
+msgid "Content for this page already exists!"
+msgstr "Zawartość tej strony już istnieje!"
+
+#: ../lib/wiking/cms/cms.py:1467
+msgid "Content for this page does not exist in any language."
+msgstr "Zawartość tej strony nie istnieje w żadnym języku."
+
+#: ../lib/wiking/cms/cms.py:1470
+msgid "Choose source language"
+msgstr "Wybierz język źródłowy"
+
+#: ../lib/wiking/cms/cms.py:1474
+msgid "Translate"
+msgstr "Tłumacz"
+
+#: ../lib/wiking/cms/cms.py:1492
+msgid "Can't publish untitled page."
+msgstr "Nie można opublikować strony bez tytułu."
+
+#: ../lib/wiking/cms/cms.py:1499
+msgid "The changes were published."
+msgstr "Zmiany zostały opublikowane."
+
+#: ../lib/wiking/cms/cms.py:1509
+msgid "The page contents was reverted to its previous state."
+msgstr "Zawartość strony wróciła do poprzedniego stanu."
+
+#: ../lib/wiking/cms/cms.py:1519
+msgid "The page was unpublished."
+msgstr "Strona nie została opublikowana."
+
+#: ../lib/wiking/cms/cms.py:1536
+msgid "Manage page attachments. Go to a page to create new attachments."
+msgstr ""
+"Zarządzaj załącznikami strony. Przejdź do strony aby stworzyć nowe "
+"załączniki."
+
+#: ../lib/wiking/cms/cms.py:1542 ../lib/wiking/cms/cms.py:1856
+msgid "Page"
+msgstr "Strona"
+
+#: ../lib/wiking/cms/cms.py:1543
+msgid ""
+"Select the page where you want to move this attachment.  Don't forget to "
+"update all explicit links to this attachment within page text(s)."
+msgstr ""
+"Wybierz stronę, do której chcesz przenieść ten załącznik. Nie zapomnij "
+"zaktualizować wszystkie linki do tego załącznika w tekście strony(s)."
+
+#. Translators: Noun. File on disk. Computer terminology.
+#: ../lib/wiking/cms/cms.py:1547
+msgid "File"
+msgstr "Plik"
+
+#: ../lib/wiking/cms/cms.py:1549
+msgid ""
+"Upload a file from your local system.  The file name will be used to refer "
+"to the attachment within the page content.  Please note, that the file will "
+"be served over the internet, so the filename should not contain any special "
+"characters.  Letters, digits, underscores, dashes and dots are safe.  You "
+"risk problems with most other characters."
+msgstr ""
+"Prześlij plik ze swojego systemu lokalnego. Nazwa pliku będzie używane w "
+"odniesieniu do załącznika w treści strony. Proszę pamiętać, że plik używany "
+"w internecie, więc plik nie powinien zawierać żadnych znaków specjalnych. "
+"Litery, cyfry, podkreślenia, kreseki i kropeki są dopuszczalne. Natomiast "
+"możesz mieć problem z resztą specjalnych znaków."
+
+#: ../lib/wiking/cms/cms.py:1555
+msgid "Filename"
+msgstr "Nazwa pliku"
+
+#: ../lib/wiking/cms/cms.py:1558
+#, fuzzy
+msgid "Mime-type"
+msgstr "typ Mime"
+
+#: ../lib/wiking/cms/cms.py:1561
+msgid ""
+"The name of the attachment (e.g. the full name of the document). If empty, "
+"the file name will be used instead."
+msgstr ""
+"Nazwa załącznika (np. pełna nazwa dokumentu). Jeśli jest pusta, nazwa pliku "
+"będzie używana wzamian."
+
+#: ../lib/wiking/cms/cms.py:1564
+msgid "Optional description used for the listing of attachments (see below)."
+msgstr "Opcjonalny opis stosowanych do wykazu załączników (patrz poniżej)."
+
+#. Translators: Size of a file, in number of bytes, kilobytes etc.
+#: ../lib/wiking/cms/cms.py:1567
+msgid "Size"
+msgstr "Rozmiar"
+
+#: ../lib/wiking/cms/cms.py:1569
+msgid "Listed"
+msgstr "Wymieniony"
+
+#: ../lib/wiking/cms/cms.py:1570
+msgid ""
+"Check if you want the item to appear in the listing of attachments at the "
+"bottom of the page."
+msgstr ""
+"Sprawdź, czy chcesz aby pozycje pojawiały się w wykazie załączników u dołu "
+"strony."
+
+#. Translators: Button label
+#: ../lib/wiking/cms/cms.py:1629
+msgid "Move"
+msgstr "Przeniesienie"
+
+#: ../lib/wiking/cms/cms.py:1629
+msgid "Move the attachment to another page."
+msgstr "Przenieś załącznik na inną stronę."
+
+#: ../lib/wiking/cms/cms.py:1632 ../lib/wiking/cms/cms.py:1826
+msgid "New attachment"
+msgstr "Nowy załącznik"
+
+#: ../lib/wiking/cms/cms.py:1639
+msgid "Attachment of the same file name already exists for this page."
+msgstr "Załącznik o tej nazwie istnieje już na tej stronie."
+
+#: ../lib/wiking/cms/cms.py:1669
+msgid "Display the page"
+msgstr "Pokaż stronę"
+
+#: ../lib/wiking/cms/cms.py:1750
+msgid "Image title.  If empty, the file name will be used instead."
+msgstr "Tytuł obrazu. Jeśli jest puste, nazwa pliku będzie używana w zamian."
+
+#: ../lib/wiking/cms/cms.py:1752
+msgid "Optional image description."
+msgstr "Opcjonalny opis obrazu."
+
+#: ../lib/wiking/cms/cms.py:1753
+msgid "In galery"
+msgstr "W galeri"
+
+#: ../lib/wiking/cms/cms.py:1754
+msgid ""
+"Check if you want the image to appear an automatically generated galery."
+msgstr "Sprawdź, czy chcesz by obraz pojawiał się w galeri."
+
+#: ../lib/wiking/cms/cms.py:1765 ../lib/wiking/cms/cms.py:1868
+msgid "Author"
+msgstr "Autor"
+
+#: ../lib/wiking/cms/cms.py:1766
+msgid "Location"
+msgstr "Lokalizacja"
+
+#: ../lib/wiking/cms/cms.py:1767
+msgid "Width"
+msgstr "Szerokość"
+
+#: ../lib/wiking/cms/cms.py:1769
+msgid "Height"
+msgstr "Wysokość"
+
+#. Translators: Section title and menu item
+#: ../lib/wiking/cms/cms.py:1851
+msgid "News"
+msgstr "Informacje"
+
+#. Translators: Help string describing more precisely the meaning of the "News" section.
+#: ../lib/wiking/cms/cms.py:1853
+msgid "Publish site news."
+msgstr "Publikuj infomacje ze strony."
+
+#: ../lib/wiking/cms/cms.py:1859 ../lib/wiking/cms/cms.py:1861
+#: ../lib/wiking/cms/cms.py:1922 ../lib/wiking/cms/cms.py:1930
+#: ../lib/wiking/cms/cms.py:2596
+msgid "Date"
+msgstr "Data"
+
+#: ../lib/wiking/cms/cms.py:1863
+msgid "Date of the news item creation."
+msgstr "Data stworzenia informacji."
+
+#: ../lib/wiking/cms/cms.py:1864 ../lib/wiking/cms/cms.py:1866
+msgid "Message"
+msgstr "Wiadomość"
+
+#: ../lib/wiking/cms/cms.py:1865
+msgid "The item brief summary."
+msgstr "Krótkie podsumowanie."
+
+#. Translators: Button label for creating a new message in "News".
+#: ../lib/wiking/cms/cms.py:1887
+msgid "New message"
+msgstr "Nowa wiadomość"
+
+#. Translators: Section heading and menu item
+#: ../lib/wiking/cms/cms.py:1918
+#, fuzzy
+msgid "Planner"
+msgstr "Panujący"
+
+#: ../lib/wiking/cms/cms.py:1919
+msgid "Announce future events by date in a callendar-like listing."
+msgstr "Informuje o zdarzeniach wg daty w kalendarzu."
+
+#: ../lib/wiking/cms/cms.py:1924
+#, python-format
+msgid ""
+"The date when the planned event begins. Enter the date including year. "
+"Example: %(date)s"
+msgstr ""
+"Data planowanego rozpoczęcia imprezy. Wprowadź datę i rok .Na przykład: "
+"%(date)s"
+
+#: ../lib/wiking/cms/cms.py:1927
+msgid "End date"
+msgstr "Data zakończenia"
+
+#: ../lib/wiking/cms/cms.py:1928
+msgid ""
+"The date when the event ends if it is not the same as the start date (for "
+"events which last several days)."
+msgstr ""
+"Data wygasa, jeżeli nie jest taka sama jak data rozpoczęcia (dla zdarzeń, "
+"które trwają kilka dni)."
+
+#: ../lib/wiking/cms/cms.py:1931
+msgid "Event"
+msgstr "Zdarzenie"
+
+#: ../lib/wiking/cms/cms.py:1932
+msgid "The event brief summary."
+msgstr "Krótkie podsumowanie wydarzenia."
+
+#: ../lib/wiking/cms/cms.py:1942
+#, fuzzy
+msgid "Date in the past"
+msgstr "Stara baza danych"
+
+#: ../lib/wiking/cms/cms.py:1951
+msgid "End date precedes start date"
+msgstr "Data końcowa poprzedza datę rozpoczęcia"
+
+#. Translators: Button label for creating a new event in "Planner".
+#: ../lib/wiking/cms/cms.py:1953
+#, fuzzy
+msgid "New event"
+msgstr "Nowy załącznik"
+
+#. Translators: Name of the extension module for simple forum-like discussions.
+#: ../lib/wiking/cms/cms.py:1970
+msgid "Discussions"
+msgstr "Dyskusje"
+
+#: ../lib/wiking/cms/cms.py:1971
+msgid "Allow logged in users to post messages as in a simple forum."
+msgstr "Pozwalaj zalogowanym użytkownikom umieszczać wiadomości na forum."
+
+#. Translators: Field label for posting a message to the discussion.
+#: ../lib/wiking/cms/cms.py:1975
+msgid "Your comment"
+msgstr "Twój komentarz"
+
+#: ../lib/wiking/cms/cms.py:2017
+msgid "Your comment was posted to the discussion."
+msgstr "Twój komentarz został umieszczony na forum."
+
+#. Translators: The square brackets mark a link.  Please leave the brackets and the
+#. link target '?command=login' untouched and traslate 'log in' to fit into the
+#. sentence.  The user only sees it as 'You need to log in before ...'.
+#: ../lib/wiking/cms/cms.py:2028
+msgid "Note: You need to [?command=login log in] before you can post messages."
+msgstr ""
+"Uwaga: Musisz '?command=login' zalogować się przed wysłaniem wiadomości."
+
+#. Translators: Section heading and menu item. Computer terminology idiom.
+#: ../lib/wiking/cms/cms.py:2037
+msgid "Site Map"
+msgstr "Mapa witryny"
+
+#. Translators: Section heading and menu item. Meaning the visual appearance. Computer
+#. terminology.
+#: ../lib/wiking/cms/cms.py:2069
+msgid "Stylesheets"
+msgstr "Arkusze stylów"
+
+#. Translators: Help string. Cascading Style Sheet (CSS) is computer terminology idiom.
+#: ../lib/wiking/cms/cms.py:2072
+msgid "Manage available Cascading Style Sheets."
+msgstr "Zarządzaj dostępnymi kaskadowymi arkuszami stylów."
+
+#. Translators: Heading of a form field determining in
+#. which media the page is displayed. E.g. web, print,
+#. Braille, speech.
+#: ../lib/wiking/cms/cms.py:2082
+msgid "Media"
+msgstr "Media"
+
+#. Translators: Precedence meaning position in a sequence of importance or priority.
+#: ../lib/wiking/cms/cms.py:2088
+msgid "Number denoting the style sheet precedence."
+msgstr "Liczba oznaczający pierwszeństwo arkusza stylów."
+
+#: ../lib/wiking/cms/cms.py:2094
+msgid "All types"
+msgstr "Wszystkie typy"
+
+#. Translators: Braille as a type of media
+#: ../lib/wiking/cms/cms.py:2096
+msgid "Braille"
+msgstr "Brajl"
+
+#. Translators: Handheld device. Small computer.
+#: ../lib/wiking/cms/cms.py:2099
+#, fuzzy
+msgid "Handheld"
+msgstr "Podręczny komputer"
+
+#. Translators: Print as a type of media (print, speech...)
+#: ../lib/wiking/cms/cms.py:2101
+msgid "Print"
+msgstr "Drukuj"
+
+#. Translators: Meaning computer screen
+#: ../lib/wiking/cms/cms.py:2104
+msgid "Screen"
+msgstr "Ekran"
+
+#. Translators: Speech as a type of media (print, speech...)
+#: ../lib/wiking/cms/cms.py:2106
+msgid "Speech"
+msgstr "Mowa"
+
+#: ../lib/wiking/cms/cms.py:2175
+#, fuzzy
+msgid "System Texts"
+msgstr "Tekst systemu"
+
+#: ../lib/wiking/cms/cms.py:2176
+msgid "Edit miscellaneous system texts."
+msgstr "Edytuj różne teksty w systemie."
+
+#: ../lib/wiking/cms/cms.py:2183 ../lib/wiking/cms/cms.py:2409
+msgid "Label"
+msgstr "Etykieta"
+
+#: ../lib/wiking/cms/cms.py:2186 ../lib/wiking/cms/cms.py:2412
+msgid "Purpose"
+msgstr "Cel"
+
+#: ../lib/wiking/cms/cms.py:2404
+msgid "E-mails"
+msgstr "E-mails"
+
+#: ../lib/wiking/cms/cms.py:2405
+msgid "Edit e-mail texts."
+msgstr "Edytuj e-mail."
+
+#: ../lib/wiking/cms/cms.py:2417
+msgid "Additional recipients"
+msgstr "Dodatkowi odbiorcy"
+
+#: ../lib/wiking/cms/cms.py:2418
+msgid "Comma separated list of e-mail addresses."
+msgstr "Przecinek oddziela listę adresów e-mail."
+
+#. Translators: Section title and menu item. Sending emails to multiple recipients.
+#: ../lib/wiking/cms/cms.py:2583
+msgid "Bulk E-mails"
+msgstr "Większość e-maili"
+
+#: ../lib/wiking/cms/cms.py:2587
+msgid "Sender address"
+msgstr "Adress nadawcy"
+
+#: ../lib/wiking/cms/cms.py:2588
+msgid "E-mail address of the sender."
+msgstr "E-mail adress nadawcy."
+
+#. Translators: List of recipients of an email message
+#: ../lib/wiking/cms/cms.py:2590
+msgid "Recipients"
+msgstr "Adresaci"
+
+#. Translators: All users are intended recipients of an email message
+#: ../lib/wiking/cms/cms.py:2592
+#, fuzzy
+msgid "All users"
+msgstr "Wszystkie typy"
+
+#. Translators: The state of the user account (e.g. Enabled vs Disabled).  Column
+#. heading and field label.
+#: ../lib/wiking/cms/cms.py:2599 ../lib/wiking/cms/users.py:510
+msgid "State"
+msgstr "Stan"
+
+#. Translators: State of processing of an email message (e.g. New, Sending, Sent)
+#: ../lib/wiking/cms/cms.py:2606
+msgid "Sent"
+msgstr "Wysłany"
+
+#. Translators: State of processing of an email message (e.g. New, Sending, Sent)
+#: ../lib/wiking/cms/cms.py:2609
+msgid "Sending"
+msgstr "Wysyłanie"
+
+#. Translators: State of processing of an email message (e.g. New, Sending, Sent)
+#: ../lib/wiking/cms/cms.py:2612
+msgid "New"
+msgstr "Nowy"
+
+#: ../lib/wiking/cms/cms.py:2619
+#, python-format
+msgid "%(subject)s"
+msgstr "%(subject)s"
+
+#. Translators: Button label meaning save this email text for later repeated usage
+#: ../lib/wiking/cms/cms.py:2622
+msgid "Use as a Template"
+msgstr "Użyj jako szablonu"
+
+#. Translators: Description of button for creating a template of an email
+#: ../lib/wiking/cms/cms.py:2624
+msgid "Edit this mail for repeated use"
+msgstr "Edytuj mail do ponownego użycia."
 
 #. Translators: Web form label (account in the meaning of user account)
 #: ../lib/wiking/cms/texts.py:29
@@ -307,1277 +1508,64 @@ msgstr ""
 msgid "Contact:"
 msgstr "Zawartość"
 
-#: ../lib/wiking/cms/cms.py:62
-msgid "formatting manual"
-msgstr "Instrukcja formatowania"
-
-#: ../lib/wiking/cms/cms.py:60
-#, python-format
-msgid ""
-"The content should be formatted as LCG structured text. See the %(manual)s."
-msgstr "Treść powinna być w formacie LCG skonstruowany. Patrz %(manual)s."
-
-#: ../lib/wiking/cms/cms.py:72
-msgid "unknown"
-msgstr "nieznany"
-
-#. Translators: Heading and menu title for website content management.
-#. Translators: Content of a page (text or something else)
-#: ../lib/wiking/cms/cms.py:87 ../lib/wiking/cms/cms.py:755
-#: ../lib/wiking/cms/cms.py:994 ../lib/wiking/cms/cms.py:2011
-msgid "Content"
-msgstr "Zawartość"
-
-#: ../lib/wiking/cms/cms.py:88 ../lib/wiking/cms/cms.py:980
-msgid "Manage available pages and their content."
-msgstr "Zarządzanie dostępnymi witrynami i ich zawartością."
-
-#. Translators: Heading and menu title. Computer idiom meaning configuration of appearance
-#. (colors, sizes, positions, graphical presentation...).
-#: ../lib/wiking/cms/cms.py:92
-#, fuzzy
-msgid "Look &amp; Feel"
-msgstr "Wygląd &amp, Uczucie"
-
-#: ../lib/wiking/cms/cms.py:93
-msgid "Customize the appearance of your site."
-msgstr "Dostosowywanie wyglądu witryny."
-
-#. Translators: Heading and menu title.
-#: ../lib/wiking/cms/cms.py:96
-msgid "Users"
-msgstr "Użytkownicy"
-
-#: ../lib/wiking/cms/cms.py:97
-msgid "Manage user accounts, privileges and perform other user related tasks."
-msgstr ""
-"Zarządzanie kontami użytkowników, przywilejami i wykonywanie innych zadań "
-"związanych z użytkownikiem."
-
-#. Translators: Heading and menu title for configuration.
-#: ../lib/wiking/cms/cms.py:100
-msgid "Setup"
-msgstr "Ustawienie"
-
-#: ../lib/wiking/cms/cms.py:101
-msgid "Edit global properties of your web site."
-msgstr "Edycja właściwości globalne witryny internetowej."
-
-#. Translators: Name of a special purpose user group.
-#: ../lib/wiking/cms/cms.py:166
-msgid "Authenticated approved user"
-msgstr ""
-
-#. Translators: Name of a special purpose user group.
-#: ../lib/wiking/cms/cms.py:174
-msgid "Successfuly registered user"
-msgstr ""
-
-#. Translators: Name of a predefined user group.
-#: ../lib/wiking/cms/cms.py:187
-#, fuzzy
-msgid "User administrator"
-msgstr "Administrator"
-
-#. Translators: Name of a predefined user group.
-#: ../lib/wiking/cms/cms.py:190
-#, fuzzy
-msgid "Content administrator"
-msgstr "Administrator"
-
-#. Translators: Name of a predefined user group.
-#: ../lib/wiking/cms/cms.py:193
-#, fuzzy
-msgid "Settings administrator"
-msgstr "Administrator"
-
-#. Translators: Name of a predefined user group.
-#: ../lib/wiking/cms/cms.py:196
-#, fuzzy
-msgid "Mail administrator"
-msgstr "Administrator"
-
-#. Translators: Name of a predefined user group.
-#: ../lib/wiking/cms/cms.py:199
-#, fuzzy
-msgid "Style administrator"
-msgstr "Administrator"
-
-#. Translators: Name of a predefined user group.
-#: ../lib/wiking/cms/cms.py:202
-msgid "Administrator"
-msgstr "Administrator"
-
-#: ../lib/wiking/cms/cms.py:502
-#, fuzzy
-msgid "Enter the activation code:"
-msgstr "Wyślij ponownie kod aktywacji"
-
-#. Translators: Button name. Computer terminology. Use an appropriate term common
-#. for submitting forms in a computer application.
-#: ../lib/wiking/cms/cms.py:504 ../lib/wiking/cms/users.py:1242
-msgid "Submit"
-msgstr "Przesyłanie"
-
-#: ../lib/wiking/cms/cms.py:507
-msgid "Continue without activation"
-msgstr ""
-
-#: ../lib/wiking/cms/cms.py:539 ../lib/wiking/cms/users.py:640
-msgid "Account disabled"
-msgstr "Konto wyłączone"
-
-#: ../lib/wiking/cms/cms.py:541 ../lib/wiking/cms/users.py:881
-#, fuzzy
-msgid "Account not activated"
-msgstr "Konto wyłączone"
-
-#: ../lib/wiking/cms/cms.py:543
-#, fuzzy
-msgid "Account not approved"
-msgstr "Konto wyłączone"
-
-#: ../lib/wiking/cms/cms.py:591
-msgid "enabled"
-msgstr "włączone"
-
-#: ../lib/wiking/cms/cms.py:591
-msgid "disabled"
-msgstr "wyłączony"
-
-#: ../lib/wiking/cms/cms.py:593
-msgid "undefined"
-msgstr "nieokreślony"
-
-#: ../lib/wiking/cms/cms.py:594
-#, python-format
-msgid "The default value is %s."
-msgstr "Wartość domyślna jest %s."
-
-#. Translators: Website heading and menu item
-#: ../lib/wiking/cms/cms.py:606 ../lib/wiking/cms/cms.py:631
-msgid "Basic Configuration"
-msgstr "Podstawowa konfiguracja"
-
-#: ../lib/wiking/cms/cms.py:607
-msgid "Edit site configuration."
-msgstr "Edycja konfiguracji witryny."
-
-#: ../lib/wiking/cms/cms.py:614
-msgid ""
-"This address is used as public contact address for your site. It is "
-"displayed at the bottom of each page, in error messages, RSS feeds and so "
-"on.  Please make sure that this address is valid (e-mail sent to it is "
-"delivered to a responsible person)."
-msgstr ""
-"Adres ten jest wykorzystywany jako publiczny adres kontaktowy dla Twojej "
-"witryny. Jest on wyświetlany na dole każdej strony, komunikaty o błędach, "
-"kanały RSS. Upewnij się, że ten adres jest ważny (e-mail, jest dostarczony "
-"do osoby odpowiedzialnej)."
-
-#: ../lib/wiking/cms/cms.py:619
-msgid ""
-"E-mail messages sent by the system, such as automatic notifications, "
-"password reminders, bug-reports etc. will use this sender address. Please "
-"make sure that this address is valid, since users may reply to such messages "
-"if they encounter problems."
-msgstr ""
-"E-maile wysłane przez system, takie jak automatyczne powiadomienia, "
-"przypomnienia hasła, błędów itp. raporty będą korzystać z tego adresu. "
-"Upewnij się, że ten adres jest ważny, ponieważ użytkownicy mogą odpowiadać "
-"na takie wiadomości, jeśli napotkają problemy."
-
-#. Translators: Panels are small windows containing different things (such as recent news,
-#. application specific controls, sponsorship reference etc.) displayed by the side of a
-#. webpage.  To avoid confusion, we should avoid terms such as "windows", "frames"
-#. etc. which all have their specific meaning in computer terminology.
-#: ../lib/wiking/cms/cms.py:723
-msgid "Panels"
-msgstr "Panele"
-
-#: ../lib/wiking/cms/cms.py:724
-#, fuzzy
-msgid "Manage panels – the small windows shown by the side of every page."
-msgstr "Zarządzanie panelami, małe okienka wyświetlane obok każdej strony."
-
-#: ../lib/wiking/cms/cms.py:728 ../lib/wiking/cms/cms.py:989
-#: ../lib/wiking/cms/cms.py:1462 ../lib/wiking/cms/cms.py:1776
-msgid "Language"
-msgstr "Język"
-
-#. Translators: Title in the meaning of a heading
-#: ../lib/wiking/cms/cms.py:731 ../lib/wiking/cms/cms.py:990
-#: ../lib/wiking/cms/cms.py:991 ../lib/wiking/cms/cms.py:1477
-#: ../lib/wiking/cms/cms.py:1783 ../lib/wiking/cms/cms.py:1851
-msgid "Title"
-msgstr "Nazwa"
-
-#. Translators: Stylesheet is a computer term (CSS), make sure you use the usual
-#. translation.
-#. Translators: Unique identifier of a stylesheet.
-#. Translators: Form field label.
-#: ../lib/wiking/cms/cms.py:734 ../lib/wiking/cms/cms.py:984
-#: ../lib/wiking/cms/cms.py:1998 ../lib/wiking/cms/users.py:255
-msgid "Identifier"
-msgstr "Identyfikator"
-
-#: ../lib/wiking/cms/cms.py:736
-msgid ""
-"Assign an optional unique panel identifier if you need to refer to this "
-"panel in the stylesheet."
-msgstr ""
-
-#. Translators: Order in the meaning of sequence. A noun, not verb.
-#. Translators: Order as a position in sequence. E.g. first, second...
-#: ../lib/wiking/cms/cms.py:739 ../lib/wiking/cms/cms.py:2008
-msgid "Order"
-msgstr "Kolejność"
-
-#: ../lib/wiking/cms/cms.py:740
-msgid "Number denoting the order of the panel on the page."
-msgstr "Liczba wskazująa kolejność panelu na stronie."
-
-#. Translators: List items can be news, webpages, names of users. Intentionally general.
-#: ../lib/wiking/cms/cms.py:742
-msgid "List items"
-msgstr "Lista pozycji"
-
-#: ../lib/wiking/cms/cms.py:743
-msgid ""
-"The items of the extension module used by the selected page will be shown by "
-"the panel.  Leave blank for a text content panel."
-msgstr ""
-"Pozycje modułu rozszerzenia wykorzystywane przez wybrane strony będą "
-"wyświetlane w panelu. Pozostaw puste pole dla  zawartości tekstowej panelu."
-
-#. Translators: Computer term for a part of application.
-#. Translators: "Module" is an independent reusable part of a computer program (here a
-#. module of Wiking CMS).
-#: ../lib/wiking/cms/cms.py:748 ../lib/wiking/cms/cms.py:999
-msgid "Module"
-msgstr "Moduł"
-
-#. Translators: As number of items in a table.
-#: ../lib/wiking/cms/cms.py:751
-msgid "Items count"
-msgstr "Ilość pozycji w tabeli"
-
-#: ../lib/wiking/cms/cms.py:752
-msgid ""
-"Number of items from the selected module, which will be shown by the panel."
-msgstr ""
-"Liczba przedmiotów z wybranych modułów, które będą wyświetlane w panelu."
-
-#: ../lib/wiking/cms/cms.py:756
-msgid "Additional text content displayed on the panel."
-msgstr "Dodatkowa zawartość tekstu wyświetlana na panelu."
-
-#. Translators: Yes/no configuration of whether the page is
-#. published. Followed by a checkbox.
-#. Translators: Configuration option determining whether the page is published or not
-#. (passive form of publish).  The label may be followed by a checkbox.
-#: ../lib/wiking/cms/cms.py:760 ../lib/wiking/cms/cms.py:1013
-msgid "Published"
-msgstr "Opublikowany"
-
-#: ../lib/wiking/cms/cms.py:761
-msgid "Controls whether the panel is actually displayed."
-msgstr "Określa, czy panel jest obecnie widoczna."
-
-#. Translators: Heading and menu item for language configuration section.
-#: ../lib/wiking/cms/cms.py:806
-msgid "Languages"
-msgstr "Języki"
-
-#: ../lib/wiking/cms/cms.py:807
-msgid "Manage available languages."
-msgstr "Zarządzaj dostępnymi językami."
-
-#. Translators: Language code, e.g. 'cs', 'sk' etc.
-#: ../lib/wiking/cms/cms.py:811
-msgid "Code"
-msgstr "Kod"
-
-#. Translators: Language name: e.g. Czech, Slovak etc.
-#. Translators: Form field label, noun.
-#: ../lib/wiking/cms/cms.py:814 ../lib/wiking/cms/cms.py:908
-#: ../lib/wiking/cms/users.py:257 ../lib/wiking/cms/users.py:258
-msgid "Name"
-msgstr "Nazwa"
-
-#. Translators: Do not translate this.
-#: ../lib/wiking/cms/cms.py:823
-#, fuzzy, python-format
-msgid "%(name)s"
-msgstr "%(name)s"
-
-#: ../lib/wiking/cms/cms.py:842
-msgid "Normal page colors"
-msgstr "Normalne kolory strony"
-
-#: ../lib/wiking/cms/cms.py:843 ../lib/wiking/cms/cms.py:858
-#: ../lib/wiking/cms/cms.py:866 ../lib/wiking/cms/cms.py:873
-#: ../lib/wiking/cms/cms.py:882 ../lib/wiking/cms/cms.py:886
-#: ../lib/wiking/cms/cms.py:890 ../lib/wiking/cms/cms.py:2110
-#: ../lib/wiking/cms/cms.py:2334 ../lib/wiking/cms/cms.py:2514
-msgid "Text"
-msgstr "Tekst"
-
-#. Translators: Website background (e.g. color)
-#: ../lib/wiking/cms/cms.py:845 ../lib/wiking/cms/cms.py:859
-#: ../lib/wiking/cms/cms.py:867 ../lib/wiking/cms/cms.py:874
-#: ../lib/wiking/cms/cms.py:883 ../lib/wiking/cms/cms.py:887
-#: ../lib/wiking/cms/cms.py:891
-msgid "Background"
-msgstr "Tło"
-
-#: ../lib/wiking/cms/cms.py:846
-msgid "Highlight background"
-msgstr "Podświetlone tło"
-
-#: ../lib/wiking/cms/cms.py:847
-msgid ""
-"Background highlighting may be used for emphasizing the current language, "
-"etc."
-msgstr "Podświetlone tło może być użyte do podkreślenia obecnego języka, itd."
-
-#: ../lib/wiking/cms/cms.py:849
-msgid "Link"
-msgstr "Link"
-
-#: ../lib/wiking/cms/cms.py:850
-msgid "Visited link"
-msgstr "Odwiedzony link"
-
-#. Translators: Computer terminology. Term for how a website hyperlink changes when
-#. you move mouse cursor over it.
-#: ../lib/wiking/cms/cms.py:853
-msgid "Hover link"
-msgstr "Hover link"
-
-#: ../lib/wiking/cms/cms.py:854
-msgid ""
-"Used for changing the link color when the user moves the mouse pointer over "
-"it."
-msgstr "Służy do zmiany koloru linku, kiedy użytkownik przesuwa kursor myszy."
-
-#: ../lib/wiking/cms/cms.py:856
-msgid "Borders"
-msgstr "Granice"
-
-#: ../lib/wiking/cms/cms.py:857
-msgid "Heading colors"
-msgstr "Pozycja kolorów"
-
-#: ../lib/wiking/cms/cms.py:860
-msgid "Underline"
-msgstr "Podkreślenie"
-
-#: ../lib/wiking/cms/cms.py:861
-msgid ""
-"Heading colors are used for section headings, panel headings and other "
-"heading-like elements.  Depending on style sheets, some heading types may be "
-"distinguished by a different background color and others may be just "
-"underlined."
-msgstr ""
-"Główne kolory są wykorzystywane do nagłówków sekcji, działów panelu i innych "
-"elementów. W zależności od arkusza stylów, niektóre rodzaje mogą być "
-"oddzielone przez inny kolor tła a inne mogą być tylko podkreślone."
-
-#: ../lib/wiking/cms/cms.py:865
-msgid "Frames"
-msgstr "Ramki"
-
-#: ../lib/wiking/cms/cms.py:868 ../lib/wiking/cms/cms.py:875
-#: ../lib/wiking/cms/cms.py:884 ../lib/wiking/cms/cms.py:888
-msgid "Border"
-msgstr "Granice"
-
-#: ../lib/wiking/cms/cms.py:869
-msgid ""
-"Frames are generally used for distinguishing separate areas of the page, "
-"such as forms, tables of contents, etc.  The usage may vary by stylesheet."
-msgstr ""
-"Ramki są stosowane do odróżnienia poszczególnych obszarów strony, takich jak "
-"formularze, spisów treści, itp. Użycie może się różnić."
-
-#: ../lib/wiking/cms/cms.py:872
-msgid "Page surrounding colors"
-msgstr "Kolory otaczające strony"
-
-#: ../lib/wiking/cms/cms.py:876
-msgid ""
-"What is 'page surrounding' depends from the stylesheet. In general it is the "
-"part of the page, which does not include the actual contents. Most often it "
-"is the page header and footer which usually remain unchanged throughout the "
-"whole website."
-msgstr ""
-"To czym jest 'page surrounding' zależy od arkusza. Na ogół jest to część "
-"strony, która nie obejmuje rzeczywistej zawartości. Najczęściej to jest "
-"nagłówka i stopki strony, które zazwyczaj pozostają niezmienione w całej "
-"witrynie."
-
-#: ../lib/wiking/cms/cms.py:881
-msgid "Error messages"
-msgstr "Komunikaty o błędach"
-
-#: ../lib/wiking/cms/cms.py:885
-msgid "Informational messages"
-msgstr "Wiadomości informacyjne"
-
-#: ../lib/wiking/cms/cms.py:889
-#, fuzzy
-msgid "Record meta data"
-msgstr "Record meta data"
-
-#: ../lib/wiking/cms/cms.py:892
-msgid ""
-"These colors are used for additional items printed listings, such as date "
-"and author of a message in news, etc."
-msgstr ""
-"Kolory te są wykorzystywane do dodatkowych elementów, takie jak data i autor "
-"wiadomości informacyjnych, itp."
-
-#: ../lib/wiking/cms/cms.py:894
-#, fuzzy
-msgid "Misc"
-msgstr "Rozmaity"
-
-#: ../lib/wiking/cms/cms.py:895
-msgid "Table cell"
-msgstr "Komórki tabeli"
-
-#: ../lib/wiking/cms/cms.py:896
-msgid "Shaded table cell"
-msgstr "Zacieniona komórka"
-
-#: ../lib/wiking/cms/cms.py:897
-#, fuzzy
-msgid "Form help text"
-msgstr "Tekst pomocy formularza"
-
-#: ../lib/wiking/cms/cms.py:898
-msgid "Inactive folder"
-msgstr "Nieaktywne folder"
-
-#. Translators: "Color Themes" is computer terminology.  Predefined sets of colors to be
-#. used for changing the visual appearance of a web page/application.  Similar to color
-#. styles.
-#: ../lib/wiking/cms/cms.py:903
-msgid "Color Themes"
-msgstr "Style kolorów"
-
-#. Translators: Describes more precisely the meaing of "Color Themes" section.
-#: ../lib/wiking/cms/cms.py:905
-msgid "Manage available color themes."
-msgstr "Zarządzaj stylami kolorów."
-
-#. Translators: Table column heading. Whether the account is active. Values are yes/no.
-#: ../lib/wiking/cms/cms.py:909 ../lib/wiking/cms/cms.py:2000
-#: ../lib/wiking/cms/users.py:1362
-msgid "Active"
-msgstr "Aktywny"
-
-#: ../lib/wiking/cms/cms.py:916
-msgid "Yes"
-msgstr "Tak"
-
-#. Translators: Button label
-#: ../lib/wiking/cms/cms.py:925
-msgid "Activate"
-msgstr "Aktywny"
-
-#: ../lib/wiking/cms/cms.py:925
-#, fuzzy
-msgid "Activate this color theme"
-msgstr "Aktywuj kolorystykę"
-
-#. Translators: Button label
-#: ../lib/wiking/cms/cms.py:928
-msgid "Activate default"
-msgstr "Uaktywnij domyślne"
-
-#: ../lib/wiking/cms/cms.py:929
-#, fuzzy
-msgid "Activate the default color theme"
-msgstr "Aktywuj kolorystykę"
-
-#: ../lib/wiking/cms/cms.py:953
-msgid "Default"
-msgstr "Domyślny"
-
-#: ../lib/wiking/cms/cms.py:957
-#, python-format
-msgid "The color theme \"%s\" has been activated."
-msgstr "Kolorystyka \"%s\" została zaaktywowana."
-
-#. Translators: Heading and menu item. Meaning web pages.
-#: ../lib/wiking/cms/cms.py:979
-msgid "Pages"
-msgstr "Strony"
-
-#: ../lib/wiking/cms/cms.py:986
-msgid ""
-"The identifier may be used to refer to this page from outside and also from "
-"other pages. A valid identifier can only contain letters, digits, dashes and "
-"underscores.  It must start with a letter."
-msgstr ""
-"Identyfikator może być używany w odniesieniu do tej strony z zewnątrz, a "
-"także z innych stron. Ważny identyfikator może zawierać tylko litery, cyfry, "
-"myślniki i podkreślenia. Musi zaczynać się od litery."
-
-#: ../lib/wiking/cms/cms.py:992 ../lib/wiking/cms/cms.py:1480
-#: ../lib/wiking/cms/cms.py:1999
-msgid "Description"
-msgstr "Opis"
-
-#: ../lib/wiking/cms/cms.py:993
-msgid "Brief page description (shown as a tooltip and in site map)."
-msgstr "Krótki opis strony (wyświetlany jako podpowiedź i mapa strony)."
-
-#: ../lib/wiking/cms/cms.py:1003
-msgid ""
-"Select the extension module to embed into the page.  Leave blank for an "
-"ordinary text page."
-msgstr ""
-"Wybierz rozszerzenie modułu aby umieścić je stronie. Pozostaw puste dla "
-"tekstu."
-
-#. Translators: "Parent item" has the meaning of hierarchical position.  More precise
-#. term might be "Superordinate item" but doesn't sound that nice in English.  The term
-#. "item" represents a page, but also a menu item.
-#: ../lib/wiking/cms/cms.py:1008
-msgid "Parent item"
-msgstr "Pozycja nadrzędna"
-
-#: ../lib/wiking/cms/cms.py:1009
-msgid ""
-"Select the superordinate item in page hierarchy.  Leave blank for a top-"
-"level page."
-msgstr ""
-"Wybierz  element nadrzędny w hierarchii. Pozostaw puste pole na górze strony."
-
-#: ../lib/wiking/cms/cms.py:1014
-msgid ""
-"Allows you to control the availability of this page in each of the supported "
-"languages (switch language to control the availability in other languages)"
-msgstr ""
-"Pozwala kontrolować dostęp do tej strony w każdym z obsługiwanych języków "
-"(zmienić język kontroli aby uzyskać dostępność w innych językach)"
-
-#: ../lib/wiking/cms/cms.py:1017
-msgid "Status"
-msgstr "Status"
-
-#: ../lib/wiking/cms/cms.py:1018
-msgid "Hidden"
-msgstr "Ukryty"
-
-#: ../lib/wiking/cms/cms.py:1019
-msgid "Check if you don't want this page to appear in the menu."
-msgstr "Sprawdź, czy chcesz aby ta strona pojawiała się w menu."
-
-#. Translators: Page configuration option followed by an input field. Means order in the
-#. sense of sequence. What is first and what next.
-#: ../lib/wiking/cms/cms.py:1022
-#, fuzzy
-msgid "Menu order"
-msgstr "Menu order"
-
-#: ../lib/wiking/cms/cms.py:1023
-msgid ""
-"Enter a number denoting the order of the page in the menu.  Leave blank if "
-"you want to put the page automatically to the end."
-msgstr ""
-"Wprowadź numer oznaczający kolejność stron w menu. Pozostaw puste jeśli "
-"chcesz umieścić stronę na końcu."
-
-#. Translators: Label of a selector of a group allowed to access the page read only.
-#: ../lib/wiking/cms/cms.py:1029
-msgid "Read only access"
-msgstr ""
-
-#: ../lib/wiking/cms/cms.py:1031
-msgid "Select the role allowed to view the page contents."
-msgstr ""
-
-#. Translators: Label of a selector of a group allowed to edit the page.
-#: ../lib/wiking/cms/cms.py:1033
-msgid "Read/write access"
-msgstr ""
-
-#: ../lib/wiking/cms/cms.py:1035
-msgid "Select the role allowed to edit the page contents."
-msgstr ""
-
-#: ../lib/wiking/cms/cms.py:1039
-msgid "Not published"
-msgstr "Nie opublikowany"
-
-#: ../lib/wiking/cms/cms.py:1041
-msgid "Ok"
-msgstr "Ok"
-
-#: ../lib/wiking/cms/cms.py:1043
-msgid "Changed"
-msgstr "Zmieniony"
-
-#: ../lib/wiking/cms/cms.py:1050 ../lib/wiking/cms/cms.py:1077
-msgid "Page Text (for the current language)"
-msgstr "Tekst (w obecnym języku)"
-
-#. Translators: Options meaning page configuration settings.
-#: ../lib/wiking/cms/cms.py:1053 ../lib/wiking/cms/cms.py:1079
-msgid "Global Options (for all languages)"
-msgstr "Opcje globalne (dla wszystkich języków)"
-
-#: ../lib/wiking/cms/cms.py:1055 ../lib/wiking/cms/cms.py:1086
-#, fuzzy
-msgid "Basic Options"
-msgstr "Opcje"
-
-#: ../lib/wiking/cms/cms.py:1056 ../lib/wiking/cms/cms.py:1081
-#: ../lib/wiking/cms/cms.py:1087
-msgid "Menu position"
-msgstr ""
-
-#: ../lib/wiking/cms/cms.py:1057 ../lib/wiking/cms/cms.py:1082
-#: ../lib/wiking/cms/cms.py:1088
-#, fuzzy
-msgid "Access Rights"
-msgstr "Prawa dostępu"
-
-#. Translators: Noun. Such as e-mail attachments (here attachments for a webpage).
-#. Translators: Section title. Attachments as in email attachments.
-#: ../lib/wiking/cms/cms.py:1064 ../lib/wiking/cms/cms.py:1110
-#: ../lib/wiking/cms/cms.py:1326 ../lib/wiking/cms/cms.py:1363
-#: ../lib/wiking/cms/cms.py:1452
-msgid "Attachments"
-msgstr "Załączniki"
-
-#: ../lib/wiking/cms/cms.py:1069
-msgid "The page already exists in given language."
-msgstr "Strona już istnieje w podanym języku."
-
-#: ../lib/wiking/cms/cms.py:1071
-msgid "Duplicate menu order at this level of hierarchy."
-msgstr "Kopia menu na tym poziomie hierarchi."
-
-#: ../lib/wiking/cms/cms.py:1091
-msgid "Save"
-msgstr "Zapisz"
-
-#: ../lib/wiking/cms/cms.py:1091
-msgid "Save and publish"
-msgstr "Zapisz i opublikuj"
-
-#: ../lib/wiking/cms/cms.py:1094
-msgid "New page"
-msgstr "Nowa strona"
-
-#: ../lib/wiking/cms/cms.py:1095
-msgid "Edit Text"
-msgstr "Edytuj tekst"
-
-#: ../lib/wiking/cms/cms.py:1096
-msgid "Edit title, description and content for the current language"
-msgstr "Edytuj tytuł, opis i zawartość na obecnego języka"
-
-#. Translators: Button label. Page configuration options.
-#: ../lib/wiking/cms/cms.py:1099
-msgid "Options"
-msgstr "Opcje"
-
-#: ../lib/wiking/cms/cms.py:1100
-msgid "Edit global (language independent) page options and menu position"
-msgstr "Edytuj globalne (niezależne od języka) opcje strony i pozycji menu"
-
-#: ../lib/wiking/cms/cms.py:1101
-msgid "Publish"
-msgstr "Opublikuj"
-
-#: ../lib/wiking/cms/cms.py:1101
-msgid "Publish the page in its current state"
-msgstr "Publikowanie strony w obecnym stanie"
-
-#: ../lib/wiking/cms/cms.py:1104
-msgid "Unpublish"
-msgstr "Nieopublikowany"
-
-#: ../lib/wiking/cms/cms.py:1104
-msgid "Make the page invisible from outside"
-msgstr "Pozwól aby strona była nie widoczna z zewnątrz"
-
-#: ../lib/wiking/cms/cms.py:1106
-msgid "Revert"
-msgstr "Powrót"
-
-#: ../lib/wiking/cms/cms.py:1106
-msgid "Revert last modifications"
-msgstr "Powrót do ostatnich modyfikacji"
-
-#: ../lib/wiking/cms/cms.py:1108
-msgid "Preview"
-msgstr "Poprzedni"
-
-#: ../lib/wiking/cms/cms.py:1108
-msgid "Display the page in its current state"
-msgstr "Pokaż stronę w jej obecnym stanie"
-
-#: ../lib/wiking/cms/cms.py:1110
-msgid "Manage this page's attachments"
-msgstr "Zarządzanie załącznikami tej strony"
-
-#: ../lib/wiking/cms/cms.py:1185
-msgid "You don't have sufficient privilegs for this action."
-msgstr "Nie masz wystarczających uprawnień do wykonywania tych działań."
-
-#: ../lib/wiking/cms/cms.py:1186
-msgid ""
-"Save the page without publishing and ask the administrator to publish your "
-"changes."
-msgstr ""
-"Zapisz tę stronę bez publikowania i poprosić administratora o opublikowanie "
-"zmian."
-
-#: ../lib/wiking/cms/cms.py:1194
-msgid ""
-"Page content was modified, however the changes remain unpublished. Don't "
-"forget to publish the changes when you are done."
-msgstr ""
-"Zawartość strony została zmieniona, jednak zmiany pozostają niepublikowane. "
-"Nie zapomnij opublikować zmiany gdy skończysz."
-
-#: ../lib/wiking/cms/cms.py:1199
-msgid "New page was successfully created and published."
-msgstr "Nowa strona zostałą pomyślnie stworzona i opublikowana."
-
-#: ../lib/wiking/cms/cms.py:1201
-msgid ""
-"New page was successfully created, but was not published yet. Publish it "
-"when you are done."
-msgstr ""
-"Nowa strona zostałą pomyślnie stworzona, nie została jednak jeszcze "
-"opublikowana. Opublikuj ją gdy skończysz."
-
-#. Translators: Button label. Use standard computer terminology.
-#. Translators: Back button label. Standard computer terminology.
-#: ../lib/wiking/cms/cms.py:1224 ../lib/wiking/cms/cms.py:1585
-#: ../lib/wiking/cms/users.py:967
-msgid "Back"
-msgstr "Wstecz"
-
-#: ../lib/wiking/cms/cms.py:1273
-msgid "Registration"
-msgstr "Rejestracja"
-
-#. Translators: Label for section with user manuals, help pages etc.
-#: ../lib/wiking/cms/cms.py:1275
-msgid "Documentation"
-msgstr "Dokumntacja"
-
-#: ../lib/wiking/cms/cms.py:1378
-msgid "Content for this page already exists!"
-msgstr "Zawartość tej strony już istnieje!"
-
-#: ../lib/wiking/cms/cms.py:1385
-msgid "Content for this page does not exist in any language."
-msgstr "Zawartość tej strony nie istnieje w żadnym języku."
-
-#: ../lib/wiking/cms/cms.py:1388
-msgid "Choose source language"
-msgstr "Wybierz język źródłowy"
-
-#: ../lib/wiking/cms/cms.py:1391
-msgid "Translate"
-msgstr "Tłumacz"
-
-#: ../lib/wiking/cms/cms.py:1409
-msgid "Can't publish untitled page."
-msgstr "Nie można opublikować strony bez tytułu."
-
-#: ../lib/wiking/cms/cms.py:1416
-msgid "The changes were published."
-msgstr "Zmiany zostały opublikowane."
-
-#: ../lib/wiking/cms/cms.py:1426
-msgid "The page contents was reverted to its previous state."
-msgstr "Zawartość strony wróciła do poprzedniego stanu."
-
-#: ../lib/wiking/cms/cms.py:1436
-msgid "The page was unpublished."
-msgstr "Strona nie została opublikowana."
-
-#: ../lib/wiking/cms/cms.py:1453
-msgid "Manage page attachments. Go to a page to create new attachments."
-msgstr ""
-"Zarządzaj załącznikami strony. Przejdź do strony aby stworzyć nowe "
-"załączniki."
-
-#: ../lib/wiking/cms/cms.py:1459 ../lib/wiking/cms/cms.py:1775
-msgid "Page"
-msgstr "Strona"
-
-#: ../lib/wiking/cms/cms.py:1460
-msgid ""
-"Select the page where you want to move this attachment.  Don't forget to "
-"update all explicit links to this attachment within page text(s)."
-msgstr ""
-"Wybierz stronę, do której chcesz przenieść ten załącznik. Nie zapomnij "
-"zaktualizować wszystkie linki do tego załącznika w tekście strony(s)."
-
-#. Translators: Noun. File on disk. Computer terminology.
-#: ../lib/wiking/cms/cms.py:1464
-msgid "File"
-msgstr "Plik"
-
-#: ../lib/wiking/cms/cms.py:1466
-msgid ""
-"Upload a file from your local system.  The file name will be used to refer "
-"to the attachment within the page content.  Please note, that the file will "
-"be served over the internet, so the filename should not contain any special "
-"characters.  Letters, digits, underscores, dashes and dots are safe.  You "
-"risk problems with most other characters."
-msgstr ""
-"Prześlij plik ze swojego systemu lokalnego. Nazwa pliku będzie używane w "
-"odniesieniu do załącznika w treści strony. Proszę pamiętać, że plik używany "
-"w internecie, więc plik nie powinien zawierać żadnych znaków specjalnych. "
-"Litery, cyfry, podkreślenia, kreseki i kropeki są dopuszczalne. Natomiast "
-"możesz mieć problem z resztą specjalnych znaków."
-
-#: ../lib/wiking/cms/cms.py:1472
-msgid "Filename"
-msgstr "Nazwa pliku"
-
-#: ../lib/wiking/cms/cms.py:1475
-#, fuzzy
-msgid "Mime-type"
-msgstr "typ Mime"
-
-#: ../lib/wiking/cms/cms.py:1478
-msgid ""
-"The name of the attachment (e.g. the full name of the document). If empty, "
-"the file name will be used instead."
-msgstr ""
-"Nazwa załącznika (np. pełna nazwa dokumentu). Jeśli jest pusta, nazwa pliku "
-"będzie używana wzamian."
-
-#: ../lib/wiking/cms/cms.py:1481
-msgid "Optional description used for the listing of attachments (see below)."
-msgstr "Opcjonalny opis stosowanych do wykazu załączników (patrz poniżej)."
-
-#. Translators: Size of a file, in number of bytes, kilobytes etc.
-#: ../lib/wiking/cms/cms.py:1484
-msgid "Size"
-msgstr "Rozmiar"
-
-#: ../lib/wiking/cms/cms.py:1486
-msgid "Listed"
-msgstr "Wymieniony"
-
-#: ../lib/wiking/cms/cms.py:1487
-msgid ""
-"Check if you want the item to appear in the listing of attachments at the "
-"bottom of the page."
-msgstr ""
-"Sprawdź, czy chcesz aby pozycje pojawiały się w wykazie załączników u dołu "
-"strony."
-
-#. Translators: Button label
-#: ../lib/wiking/cms/cms.py:1546
-msgid "Move"
-msgstr "Przeniesienie"
-
-#: ../lib/wiking/cms/cms.py:1546
-msgid "Move the attachment to another page."
-msgstr "Przenieś załącznik na inną stronę."
-
-#: ../lib/wiking/cms/cms.py:1549 ../lib/wiking/cms/cms.py:1745
-msgid "New attachment"
-msgstr "Nowy załącznik"
-
-#: ../lib/wiking/cms/cms.py:1556
-msgid "Attachment of the same file name already exists for this page."
-msgstr "Załącznik o tej nazwie istnieje już na tej stronie."
-
-#: ../lib/wiking/cms/cms.py:1586
-msgid "Display the page"
-msgstr "Pokaż stronę"
-
-#: ../lib/wiking/cms/cms.py:1669
-msgid "Image title.  If empty, the file name will be used instead."
-msgstr "Tytuł obrazu. Jeśli jest puste, nazwa pliku będzie używana w zamian."
-
-#: ../lib/wiking/cms/cms.py:1671
-msgid "Optional image description."
-msgstr "Opcjonalny opis obrazu."
-
-#: ../lib/wiking/cms/cms.py:1672
-msgid "In galery"
-msgstr "W galeri"
-
-#: ../lib/wiking/cms/cms.py:1673
-msgid ""
-"Check if you want the image to appear an automatically generated galery."
-msgstr "Sprawdź, czy chcesz by obraz pojawiał się w galeri."
-
-#: ../lib/wiking/cms/cms.py:1684 ../lib/wiking/cms/cms.py:1789
-msgid "Author"
-msgstr "Autor"
-
-#: ../lib/wiking/cms/cms.py:1685
-msgid "Location"
-msgstr "Lokalizacja"
-
-#: ../lib/wiking/cms/cms.py:1686
-msgid "Width"
-msgstr "Szerokość"
-
-#: ../lib/wiking/cms/cms.py:1688
-msgid "Height"
-msgstr "Wysokość"
-
-#. Translators: Section title and menu item
-#: ../lib/wiking/cms/cms.py:1770
-msgid "News"
-msgstr "Informacje"
-
-#. Translators: Help string describing more precisely the meaning of the "News" section.
-#: ../lib/wiking/cms/cms.py:1772
-msgid "Publish site news."
-msgstr "Publikuj infomacje ze strony."
-
-#: ../lib/wiking/cms/cms.py:1778 ../lib/wiking/cms/cms.py:1780
-#: ../lib/wiking/cms/cms.py:1843 ../lib/wiking/cms/cms.py:1850
-#: ../lib/wiking/cms/cms.py:2516
-msgid "Date"
-msgstr "Data"
-
-#: ../lib/wiking/cms/cms.py:1782
-msgid "Date of the news item creation."
-msgstr "Data stworzenia informacji."
-
-#: ../lib/wiking/cms/cms.py:1783 ../lib/wiking/cms/cms.py:1785
-msgid "Message"
-msgstr "Wiadomość"
-
-#: ../lib/wiking/cms/cms.py:1784
-msgid "The item brief summary."
-msgstr "Krótkie podsumowanie."
-
-#: ../lib/wiking/cms/cms.py:1786
-msgid ""
-"It is, however, recommened to use the simplest possible formatting, since "
-"the item may be also published through an RSS channel, which does not "
-"support formatting."
-msgstr ""
-"Ważne jest, aby zastosować najprostsze możliwe formatowanie, pozycja ta może "
-"być również opublikowane za pośrednictwem kanałów RSS, który nie obsługuje "
-"formatowania."
-
-#. Translators: Button label for creating a new message in "News".
-#: ../lib/wiking/cms/cms.py:1808
-msgid "New message"
-msgstr "Nowa wiadomość"
-
-#. Translators: Section heading and menu item
-#: ../lib/wiking/cms/cms.py:1839
-#, fuzzy
-msgid "Planner"
-msgstr "Panujący"
-
-#: ../lib/wiking/cms/cms.py:1840
-msgid "Announce future events by date in a callendar-like listing."
-msgstr "Informuje o zdarzeniach wg daty w kalendarzu."
-
-#: ../lib/wiking/cms/cms.py:1845
-#, python-format
-msgid ""
-"The date when the planned event begins. Enter the date including year. "
-"Example: %(date)s"
-msgstr ""
-"Data planowanego rozpoczęcia imprezy. Wprowadź datę i rok .Na przykład: "
-"%(date)s"
-
-#: ../lib/wiking/cms/cms.py:1847
-msgid "End date"
-msgstr "Data zakończenia"
-
-#: ../lib/wiking/cms/cms.py:1848
-msgid ""
-"The date when the event ends if it is not the same as the start date (for "
-"events which last several days)."
-msgstr ""
-"Data wygasa, jeżeli nie jest taka sama jak data rozpoczęcia (dla zdarzeń, "
-"które trwają kilka dni)."
-
-#: ../lib/wiking/cms/cms.py:1851
-msgid "Event"
-msgstr "Zdarzenie"
-
-#: ../lib/wiking/cms/cms.py:1852
-msgid "The event brief summary."
-msgstr "Krótkie podsumowanie wydarzenia."
-
-#: ../lib/wiking/cms/cms.py:1862
-#, fuzzy
-msgid "Date in the past"
-msgstr "Stara baza danych"
-
-#: ../lib/wiking/cms/cms.py:1871
-msgid "End date precedes start date"
-msgstr "Data końcowa poprzedza datę rozpoczęcia"
-
-#. Translators: Button label for creating a new event in "Planner".
-#: ../lib/wiking/cms/cms.py:1873
-#, fuzzy
-msgid "New event"
-msgstr "Nowy załącznik"
-
-#. Translators: Name of the extension module for simple forum-like discussions.
-#: ../lib/wiking/cms/cms.py:1889
-msgid "Discussions"
-msgstr "Dyskusje"
-
-#: ../lib/wiking/cms/cms.py:1890
-msgid "Allow logged in users to post messages as in a simple forum."
-msgstr "Pozwalaj zalogowanym użytkownikom umieszczać wiadomości na forum."
-
-#. Translators: Field label for posting a message to the discussion.
-#: ../lib/wiking/cms/cms.py:1896
-msgid "Your comment"
-msgstr "Twój komentarz"
-
-#: ../lib/wiking/cms/cms.py:1939
-msgid "Your comment was posted to the discussion."
-msgstr "Twój komentarz został umieszczony na forum."
-
-#. Translators: The square brackets mark a link.  Please leave the brackets and the
-#. link target '?command=login' untouched and traslate 'log in' to fit into the
-#. sentence.  The user only sees it as 'You need to log in before ...'.
-#: ../lib/wiking/cms/cms.py:1950
-msgid "Note: You need to [?command=login log in] before you can post messages."
-msgstr ""
-"Uwaga: Musisz '?command=login' zalogować się przed wysłaniem wiadomości."
-
-#. Translators: Section heading and menu item. Computer terminology idiom.
-#: ../lib/wiking/cms/cms.py:1959
-msgid "Site Map"
-msgstr "Mapa witryny"
-
-#. Translators: Section heading and menu item. Meaning the visual appearance. Computer
-#. terminology.
-#: ../lib/wiking/cms/cms.py:1991
-msgid "Stylesheets"
-msgstr "Arkusze stylów"
-
-#. Translators: Help string. Cascading Style Sheet (CSS) is computer terminology idiom.
-#: ../lib/wiking/cms/cms.py:1994
-msgid "Manage available Cascading Style Sheets."
-msgstr "Zarządzaj dostępnymi kaskadowymi arkuszami stylów."
-
-#. Translators: Heading of a form field determining in
-#. which media the page is displayed. E.g. web, print,
-#. Braille, speech.
-#: ../lib/wiking/cms/cms.py:2004
-msgid "Media"
-msgstr "Media"
-
-#. Translators: Precedence meaning position in a sequence of importance or priority.
-#: ../lib/wiking/cms/cms.py:2010
-msgid "Number denoting the style sheet precedence."
-msgstr "Liczba oznaczający pierwszeństwo arkusza stylów."
-
-#: ../lib/wiking/cms/cms.py:2016
-msgid "All types"
-msgstr "Wszystkie typy"
-
-#. Translators: Braille as a type of media
-#: ../lib/wiking/cms/cms.py:2018
-msgid "Braille"
-msgstr "Brajl"
-
-#. Translators: Handheld device. Small computer.
-#: ../lib/wiking/cms/cms.py:2021
-#, fuzzy
-msgid "Handheld"
-msgstr "Podręczny komputer"
-
-#. Translators: Print as a type of media (print, speech...)
-#: ../lib/wiking/cms/cms.py:2023
-msgid "Print"
-msgstr "Drukuj"
-
-#. Translators: Meaning computer screen
-#: ../lib/wiking/cms/cms.py:2026
-msgid "Screen"
-msgstr "Ekran"
-
-#. Translators: Speech as a type of media (print, speech...)
-#: ../lib/wiking/cms/cms.py:2028
-msgid "Speech"
-msgstr "Mowa"
-
-#: ../lib/wiking/cms/cms.py:2097
-#, fuzzy
-msgid "System Texts"
-msgstr "Tekst systemu"
-
-#: ../lib/wiking/cms/cms.py:2098
-msgid "Edit miscellaneous system texts."
-msgstr "Edytuj różne teksty w systemie."
-
-#: ../lib/wiking/cms/cms.py:2105 ../lib/wiking/cms/cms.py:2329
-msgid "Label"
-msgstr "Etykieta"
-
-#: ../lib/wiking/cms/cms.py:2108 ../lib/wiking/cms/cms.py:2332
-msgid "Purpose"
-msgstr "Cel"
-
-#: ../lib/wiking/cms/cms.py:2111 ../lib/wiking/cms/cms.py:2335
-#: ../lib/wiking/cms/cms.py:2515
-msgid ""
-"Edit the given text as needed, in accordance with structured text rules."
-msgstr "Edytuj podany tekst jeśli jest to wymagane, zgodnie z zasadami."
-
-#: ../lib/wiking/cms/cms.py:2324
-msgid "E-mails"
-msgstr "E-mails"
-
-#: ../lib/wiking/cms/cms.py:2325
-msgid "Edit e-mail texts."
-msgstr "Edytuj e-mail."
-
-#: ../lib/wiking/cms/cms.py:2336 ../lib/wiking/cms/cms.py:2513
-msgid "Subject"
-msgstr "Temat"
-
-#: ../lib/wiking/cms/cms.py:2337
-msgid "Additional recipients"
-msgstr "Dodatkowi odbiorcy"
-
-#: ../lib/wiking/cms/cms.py:2338
-msgid "Comma separated list of e-mail addresses."
-msgstr "Przecinek oddziela listę adresów e-mail."
-
-#. Translators: Section title and menu item. Sending emails to multiple recipients.
-#: ../lib/wiking/cms/cms.py:2503
-msgid "Bulk E-mails"
-msgstr "Większość e-maili"
-
-#: ../lib/wiking/cms/cms.py:2507
-msgid "Sender address"
-msgstr "Adress nadawcy"
-
-#: ../lib/wiking/cms/cms.py:2508
-msgid "E-mail address of the sender."
-msgstr "E-mail adress nadawcy."
-
-#. Translators: List of recipients of an email message
-#: ../lib/wiking/cms/cms.py:2510
-msgid "Recipients"
-msgstr "Adresaci"
-
-#. Translators: All users are intended recipients of an email message
-#: ../lib/wiking/cms/cms.py:2512
-#, fuzzy
-msgid "All users"
-msgstr "Wszystkie typy"
-
-#. Translators: The state of the user account (e.g. Enabled vs Disabled).  Column
-#. heading and field label.
-#: ../lib/wiking/cms/cms.py:2519 ../lib/wiking/cms/users.py:504
-msgid "State"
-msgstr "Stan"
-
-#. Translators: State of processing of an email message (e.g. New, Sending, Sent)
-#: ../lib/wiking/cms/cms.py:2526
-msgid "Sent"
-msgstr "Wysłany"
-
-#. Translators: State of processing of an email message (e.g. New, Sending, Sent)
-#: ../lib/wiking/cms/cms.py:2529
-msgid "Sending"
-msgstr "Wysyłanie"
-
-#. Translators: State of processing of an email message (e.g. New, Sending, Sent)
-#: ../lib/wiking/cms/cms.py:2532
-msgid "New"
-msgstr "Nowy"
-
-#: ../lib/wiking/cms/cms.py:2539
-#, python-format
-msgid "%(subject)s"
-msgstr "%(subject)s"
-
-#. Translators: Button label meaning save this email text for later repeated usage
-#: ../lib/wiking/cms/cms.py:2543
-msgid "Use as a Template"
-msgstr "Użyj jako szablonu"
-
-#. Translators: Description of button for creating a template of an email
-#: ../lib/wiking/cms/cms.py:2545
-msgid "Edit this mail for repeated use"
-msgstr "Edytuj mail do ponownego użycia."
-
-#: ../lib/wiking/cms/users.py:60 ../lib/wiking/cms/users.py:161
+#: ../lib/wiking/cms/users.py:61 ../lib/wiking/cms/users.py:162
 msgid "Group"
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:61
+#: ../lib/wiking/cms/users.py:62
 msgid "Contained group"
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:62 ../lib/wiking/cms/users.py:163
+#: ../lib/wiking/cms/users.py:63 ../lib/wiking/cms/users.py:164
+#: ../lib/wiking/cms/crypto.py:88 ../lib/wiking/cms/crypto.py:93
 #, fuzzy
 msgid "Remove"
 msgstr "Powrót"
 
-#: ../lib/wiking/cms/users.py:67
+#: ../lib/wiking/cms/users.py:68
 msgid "Add contained group"
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:151
+#: ../lib/wiking/cms/users.py:152
 msgid "Add to another group"
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:157
+#: ../lib/wiking/cms/users.py:158
 #, fuzzy
 msgid "User Roles"
 msgstr "Użytkownicy"
 
-#: ../lib/wiking/cms/users.py:162 ../lib/wiking/cms/users.py:472
-#: ../lib/wiking/cms/users.py:1352
+#: ../lib/wiking/cms/users.py:163 ../lib/wiking/cms/users.py:478
+#: ../lib/wiking/cms/users.py:1370 ../lib/wiking/cms/crypto.py:83
 msgid "User"
 msgstr "Użytkownik"
 
-#: ../lib/wiking/cms/users.py:168
+#: ../lib/wiking/cms/users.py:169
 msgid "Add member"
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:236
+#: ../lib/wiking/cms/users.py:237
 msgid "Add to group"
 msgstr ""
 
 #. Translators: Form heading.
-#: ../lib/wiking/cms/users.py:249
+#: ../lib/wiking/cms/users.py:250
 #, fuzzy
 msgid "User Groups"
 msgstr "Użytkownicy"
 
 #. Translators: Form field label, adjective related to a "User group" (use the
 #. appropriate gender.
-#: ../lib/wiking/cms/users.py:261
+#: ../lib/wiking/cms/users.py:262
 #, fuzzy
 msgid "System"
 msgstr "Tekst systemu"
 
-#: ../lib/wiking/cms/users.py:262
+#: ../lib/wiking/cms/users.py:263
 msgid "Automatic"
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:280
+#: ../lib/wiking/cms/users.py:281
 msgid ""
 "This is a special system group with no explicit members. The system decides "
 "automatically which users belong into the group. Thus you can not manage "
@@ -1585,55 +1573,55 @@ msgid ""
 "groups."
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:286
+#: ../lib/wiking/cms/users.py:287
 msgid ""
 "This is a system group defined by one of the installed applications. You can "
 "not change or delete this group, but you can manage membership of users and "
 "other roles in it."
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:291
+#: ../lib/wiking/cms/users.py:292
 msgid ""
 "This is a user defined group. You can manage membership of users and other "
 "roles in it as well as modify or delete the group itself."
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:300
+#: ../lib/wiking/cms/users.py:301
 msgid "Contained Groups"
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:302
+#: ../lib/wiking/cms/users.py:303
 msgid ""
 "Users of this group automatically gain membersip in the following groups:"
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:304
+#: ../lib/wiking/cms/users.py:305
 msgid "Contained in Groups"
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:306
+#: ../lib/wiking/cms/users.py:307
 msgid ""
 "Users of the following groups automatically gain membersip in this group:"
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:309
+#: ../lib/wiking/cms/users.py:310
 msgid "Members"
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:426
+#: ../lib/wiking/cms/users.py:432
 msgid "User Management"
 msgstr "Zarządzanie użytkownikami"
 
-#: ../lib/wiking/cms/users.py:427
+#: ../lib/wiking/cms/users.py:433
 msgid "Manage registered users and their privileges."
 msgstr "Zarządzanie zarejestrowanymi użytkownikami i ich uprawnieniami."
 
 #. Translators: Login name for a website. Registration form field.
-#: ../lib/wiking/cms/users.py:446 ../lib/wiking/cms/users.py:1310
+#: ../lib/wiking/cms/users.py:452 ../lib/wiking/cms/users.py:1328
 msgid "Login name"
 msgstr "Login"
 
-#: ../lib/wiking/cms/users.py:449
+#: ../lib/wiking/cms/users.py:455
 msgid ""
 "A valid login name can only contain letters, digits, underscores, dashes and "
 "dots and must start with a letter."
@@ -1641,55 +1629,55 @@ msgstr ""
 "Poprawna nazwa użytkownika może zawierać tylko litery, cyfry, podkreślenia, "
 "myślniki i kropki i musi zaczynać się od litery."
 
-#: ../lib/wiking/cms/users.py:451 ../lib/wiking/cms/users.py:1311
+#: ../lib/wiking/cms/users.py:457 ../lib/wiking/cms/users.py:1329
 msgid "Password"
 msgstr "Hasło"
 
-#: ../lib/wiking/cms/users.py:453 ../lib/wiking/cms/users.py:460
+#: ../lib/wiking/cms/users.py:459 ../lib/wiking/cms/users.py:466
 msgid ""
 "Please, write the password into each of the two fields to eliminate typos."
 msgstr ""
 "Proszę wpisać hasło do każdego z dwóch pól, aby wyeliminować literówki."
 
-#: ../lib/wiking/cms/users.py:455
+#: ../lib/wiking/cms/users.py:461
 msgid "Old password"
 msgstr "Stare hasło"
 
-#: ../lib/wiking/cms/users.py:457
+#: ../lib/wiking/cms/users.py:463
 msgid "Verify your identity by entering your original (current) password."
 msgstr "Sprawdź swoją tożsamość, wprowadzając oryginalne (aktualne) hasło."
 
-#: ../lib/wiking/cms/users.py:458
+#: ../lib/wiking/cms/users.py:464 ../lib/wiking/cms/crypto.py:91
 msgid "New password"
 msgstr "Nowe hasło"
 
 #. Translators: User account information field label (contains date and time).
 #. TODO: Last password change is currently not displayed anywhere.  It should be only
 #. visible to the admin and to the user himself, so it requires a dynamic 'view' layout.
-#: ../lib/wiking/cms/users.py:465
+#: ../lib/wiking/cms/users.py:471
 msgid "Last password change"
 msgstr ""
 
 #. Translators: Full name of a person. Registration form field.
-#: ../lib/wiking/cms/users.py:469
+#: ../lib/wiking/cms/users.py:475
 msgid "Full Name"
 msgstr "Całe imię"
 
-#: ../lib/wiking/cms/users.py:474
+#: ../lib/wiking/cms/users.py:480
 msgid "First name"
 msgstr "Pierwsze imię"
 
-#: ../lib/wiking/cms/users.py:475
+#: ../lib/wiking/cms/users.py:481
 msgid "Surname"
 msgstr "Nazwisko"
 
 #. Translators: Name of a user to display on a website if he doesn't want the
 #. default "Name Surname". Registration form field.
-#: ../lib/wiking/cms/users.py:478
+#: ../lib/wiking/cms/users.py:484
 msgid "Displayed name"
 msgstr "Pokaż imię"
 
-#: ../lib/wiking/cms/users.py:479
+#: ../lib/wiking/cms/users.py:485
 msgid ""
 "Leave blank if you want to be referred by your full name or enter an "
 "alternate name, such as nickname or monogram."
@@ -1697,32 +1685,27 @@ msgstr ""
 "Pozostaw puste pole jeśli chcesz być określony przez swoje imię i nazwisko "
 "lub wprowadź alternatywną nazwę, taką jak pseudonim lub monogram."
 
-#. Translators: E-mail address. Registration form field.
-#: ../lib/wiking/cms/users.py:482
-msgid "E-mail"
-msgstr "E-mail"
-
 #. Translators: Telephone number. Registration form field.
-#: ../lib/wiking/cms/users.py:484
+#: ../lib/wiking/cms/users.py:490
 msgid "Phone"
 msgstr "Numer telefonu"
 
 #. Translators: Post address. Registration form field.
-#: ../lib/wiking/cms/users.py:486
+#: ../lib/wiking/cms/users.py:492
 msgid "Address"
 msgstr "Adres"
 
 #. Translators: Do not translate (means Uniform Resource Identifier).
-#: ../lib/wiking/cms/users.py:488
+#: ../lib/wiking/cms/users.py:494
 msgid "URI"
 msgstr "URI"
 
 #. Translators: Generic note for further information. Registration form field.
-#: ../lib/wiking/cms/users.py:490
+#: ../lib/wiking/cms/users.py:496
 msgid "Note"
 msgstr "Uwagi"
 
-#: ../lib/wiking/cms/users.py:491
+#: ../lib/wiking/cms/users.py:497
 msgid ""
 "Optional message for the administrator.  If you summarize briefly why you "
 "register, what role you expect in the system or whom you have talked to, "
@@ -1731,11 +1714,11 @@ msgstr ""
 
 #. Translators: Label of a checkbox to confirm usage conditions or a
 #. similar kind of agreement specific for given website.
-#: ../lib/wiking/cms/users.py:496
+#: ../lib/wiking/cms/users.py:502
 msgid "I agree"
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:497
+#: ../lib/wiking/cms/users.py:503
 msgid ""
 "Please check if (and only if) you have read the conditions above and you "
 "agree with them."
@@ -1743,11 +1726,11 @@ msgstr ""
 
 #. Translators: Since when the user is registered. Table column heading
 #. and field label for a date/time value.
-#: ../lib/wiking/cms/users.py:501
+#: ../lib/wiking/cms/users.py:507
 msgid "Registered since"
 msgstr "Zarejestrowany od"
 
-#: ../lib/wiking/cms/users.py:517
+#: ../lib/wiking/cms/users.py:523
 msgid ""
 "The activation code was not yet confirmed by the user. Therefore it is not "
 "possible to trust that given e-mail address belongs to the person who "
@@ -1759,7 +1742,7 @@ msgstr ""
 
 #. Translators: %(date)s is replaced by date and time of registration
 #. expiration.
-#: ../lib/wiking/cms/users.py:522
+#: ../lib/wiking/cms/users.py:528
 #, python-format
 msgid ""
 "The activation code will expire on %(date)s and the user will not be able to "
@@ -1768,7 +1751,7 @@ msgstr ""
 "Kod aktywacyjny wygasa %(date)s, po tym czasie użytkownik nie będzie mógł "
 "dokończyć rejestracji."
 
-#: ../lib/wiking/cms/users.py:526
+#: ../lib/wiking/cms/users.py:532
 msgid ""
 "Use the button \"Resend activation code\" below to remind the user of his "
 "pending registration."
@@ -1777,7 +1760,7 @@ msgstr ""
 "użytkownikowi o rejestracji."
 
 #. Translators: %(date)s is replaced by date and time of registration expiration.
-#: ../lib/wiking/cms/users.py:530
+#: ../lib/wiking/cms/users.py:536
 #, python-format
 msgid ""
 "The registration expired on %(date)s.  The user didn't confirm the "
@@ -1786,7 +1769,7 @@ msgstr ""
 "Rejestracji upłynął %(date)s. Użytkownik nie potwierdził kodu aktywacyjnego "
 "wysłanego do zadeklarowanego adresu e-mail."
 
-#: ../lib/wiking/cms/users.py:534
+#: ../lib/wiking/cms/users.py:540
 msgid ""
 "The account should be deleted automatically if the server maintenence script "
 "is installed correctly.  Otherwise you can delete the account manually."
@@ -1794,11 +1777,11 @@ msgstr ""
 "Konto powinno być automatycznie usuwane, jeśli skrypt jest zainstalowany "
 "poprawnie. W przeciwnym razie można usunąć konto ręcznie."
 
-#: ../lib/wiking/cms/users.py:538
+#: ../lib/wiking/cms/users.py:544
 msgid "The activation code was succesfully confirmed."
 msgstr "Kod aktywacji został pomyślnie zatwierdzony."
 
-#: ../lib/wiking/cms/users.py:541
+#: ../lib/wiking/cms/users.py:547
 msgid ""
 "Therefore it was verified that given e-mail address belongs to the person "
 "who requested the registration."
@@ -1806,7 +1789,7 @@ msgstr ""
 "Ustalono, że podany adres e-mail należy do osoby, która wysłała wniosek o "
 "rejestracje."
 
-#: ../lib/wiking/cms/users.py:543
+#: ../lib/wiking/cms/users.py:549
 msgid ""
 "The user is now able to log in, but still has no rights (other than an "
 "anonymous user)."
@@ -1814,196 +1797,200 @@ msgstr ""
 "Użytkownik jest w stanie zalogować się, ale nadal nie ma żadnych praw "
 "(innych niż anonimowych użytkowników)."
 
-#: ../lib/wiking/cms/users.py:545
+#: ../lib/wiking/cms/users.py:551
 #, fuzzy
 msgid "The account now awaits administrator's action to be approved."
 msgstr ""
 "Konto oczekuje uprawnień dostępu które mogą być udostępnione przez "
 "administratora."
 
-#: ../lib/wiking/cms/users.py:547
+#: ../lib/wiking/cms/users.py:553
 msgid ""
 "The account is blocked.  The user is able to log in, but has no access to "
 "protected services until the administrator enables the account again."
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:564
+#: ../lib/wiking/cms/users.py:570
 #, python-format
 msgid "Invalid e-mail address: %s"
 msgstr "Nie ważny adres e-mail: %s"
 
-#: ../lib/wiking/cms/users.py:566
+#: ../lib/wiking/cms/users.py:572
 msgid "User's Groups"
 msgstr ""
 
 #. Translators: Heading for an overview when and how the user has accessed the application.
-#: ../lib/wiking/cms/users.py:568 ../lib/wiking/cms/users.py:1347
+#: ../lib/wiking/cms/users.py:574 ../lib/wiking/cms/users.py:1365
 msgid "Login History"
 msgstr "Historia logowania"
 
+#: ../lib/wiking/cms/users.py:576
+msgid "Crypto Keys"
+msgstr ""
+
 #. Translators: Name of group of users who have full access to the system.
-#: ../lib/wiking/cms/users.py:576 ../lib/wiking/cms/users.py:1211
+#: ../lib/wiking/cms/users.py:585 ../lib/wiking/cms/users.py:1229
 msgid "Active users"
 msgstr "Aktywni użytkownicy"
 
 #. Translators: Name for a group of users accounts, who were not yet approved by the
 #. administrator.
-#: ../lib/wiking/cms/users.py:580
+#: ../lib/wiking/cms/users.py:589
 msgid "Unapproved accounts (pending admin approvals)"
 msgstr "Niezatwierdzone konta (do czasu zatwierdzenia administracyjnego)"
 
 #. Translators: Name for a group of users which did not confirm their registration yet
 #. by replying to an email with an activation code.
-#: ../lib/wiking/cms/users.py:584
+#: ../lib/wiking/cms/users.py:593
 msgid "Unfinished registration requests (activation code not confirmed)"
 msgstr ""
 "Niedokończony proces rejestracji (kod aktywacji nie został zaaktywowany)"
 
 #. Translators: Name for a group of users whose accounts were blocked.
-#: ../lib/wiking/cms/users.py:587
+#: ../lib/wiking/cms/users.py:596
 msgid "Disabled users"
 msgstr "Nie aktywni użytkownicy"
 
 #. Translators: Accounts as in user accounts (computer terminology).
-#: ../lib/wiking/cms/users.py:590
+#: ../lib/wiking/cms/users.py:599
 msgid "All accounts"
 msgstr "Wszystkie konta"
 
-#: ../lib/wiking/cms/users.py:594
+#: ../lib/wiking/cms/users.py:603 ../lib/wiking/cms/crypto.py:124
 msgid "Change password"
 msgstr "Zmień hasło"
 
-#: ../lib/wiking/cms/users.py:594
+#: ../lib/wiking/cms/users.py:603
 msgid "Change user's password"
 msgstr "Zmień hasło użytkownika"
 
 #. Translators: Button label.  Used to approve user's account by the administrator.
-#: ../lib/wiking/cms/users.py:596
+#: ../lib/wiking/cms/users.py:605
 msgid "Approve"
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:596
+#: ../lib/wiking/cms/users.py:605
 #, fuzzy
 msgid "Aprove this account"
 msgstr "Włącz to konto"
 
 #. Translators: Button label. Computer terminology. Use common word and form.
-#: ../lib/wiking/cms/users.py:603
+#: ../lib/wiking/cms/users.py:612
 msgid "Enable"
 msgstr "Włącz"
 
-#: ../lib/wiking/cms/users.py:603
+#: ../lib/wiking/cms/users.py:612
 msgid "Enable this account"
 msgstr "Włącz to konto"
 
 #. Translators: Button label. Computer terminology. Use common word and form.
-#: ../lib/wiking/cms/users.py:608
+#: ../lib/wiking/cms/users.py:617
 #, fuzzy
 msgid "Disable"
 msgstr "wyłączony"
 
-#: ../lib/wiking/cms/users.py:608
+#: ../lib/wiking/cms/users.py:617
 #, fuzzy
 msgid "Disable this account"
 msgstr "Włącz to konto"
 
-#: ../lib/wiking/cms/users.py:612
+#: ../lib/wiking/cms/users.py:621
 msgid "Resend activation code"
 msgstr "Wyślij ponownie kod aktywacji"
 
-#: ../lib/wiking/cms/users.py:612
+#: ../lib/wiking/cms/users.py:621
 msgid "Re-send registration mail"
 msgstr "Wyślij ponownie mail rejestracyjny"
 
-#: ../lib/wiking/cms/users.py:614
+#: ../lib/wiking/cms/users.py:623
 #, fuzzy
 msgid "Delete"
 msgstr "Domyślny"
 
-#: ../lib/wiking/cms/users.py:614
+#: ../lib/wiking/cms/users.py:623
 msgid "Remove the account completely"
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:638
+#: ../lib/wiking/cms/users.py:656
 msgid "New account"
 msgstr "Nowe konto"
 
-#: ../lib/wiking/cms/users.py:639
+#: ../lib/wiking/cms/users.py:657
 #, fuzzy
 msgid "Unapproved account"
 msgstr "Nowe konto"
 
-#: ../lib/wiking/cms/users.py:641
+#: ../lib/wiking/cms/users.py:659
 #, fuzzy
 msgid "Active account"
 msgstr "Nowe konto"
 
 #. Translators: Button label.
-#: ../lib/wiking/cms/users.py:694
+#: ../lib/wiking/cms/users.py:712 ../lib/wiking/cms/crypto.py:84
 msgid "New user"
 msgstr "Nowy użytkownik "
 
 #. Translators: Button label.
-#: ../lib/wiking/cms/users.py:696
+#: ../lib/wiking/cms/users.py:714
 msgid "Edit profile"
 msgstr "Edytuj profil"
 
 #. Translators: Button label. Modify the users data (email, address...)
-#: ../lib/wiking/cms/users.py:698
+#: ../lib/wiking/cms/users.py:716
 msgid "Modify user's record"
 msgstr "Modyfikuj dane użytkownika"
 
 #. Translators: Personal data -- first name, surname, nickname ...
-#: ../lib/wiking/cms/users.py:714 ../lib/wiking/cms/users.py:733
-#: ../lib/wiking/cms/users.py:746
+#: ../lib/wiking/cms/users.py:732 ../lib/wiking/cms/users.py:751
+#: ../lib/wiking/cms/users.py:764
 msgid "Personal data"
 msgstr "Dane osobowe"
 
 #. Translators: Contact information -- email, phone, address...
-#: ../lib/wiking/cms/users.py:715 ../lib/wiking/cms/users.py:734
-#: ../lib/wiking/cms/users.py:748
+#: ../lib/wiking/cms/users.py:733 ../lib/wiking/cms/users.py:752
+#: ../lib/wiking/cms/users.py:766
 msgid "Contact information"
 msgstr "Informacje kontaktowe"
 
 #. Translators: Others is a label for a group of unspecified form fields
 #. (as in Personal data, Contact information, Others).
-#: ../lib/wiking/cms/users.py:716 ../lib/wiking/cms/users.py:739
-#: ../lib/wiking/cms/users.py:751
+#: ../lib/wiking/cms/users.py:734 ../lib/wiking/cms/users.py:757
+#: ../lib/wiking/cms/users.py:769
 msgid "Others"
 msgstr "Inne"
 
-#: ../lib/wiking/cms/users.py:727
+#: ../lib/wiking/cms/users.py:745
 #, fuzzy
 msgid "Account state"
 msgstr "Konto wyłączone"
 
-#: ../lib/wiking/cms/users.py:737
+#: ../lib/wiking/cms/users.py:755
 msgid "Login information"
 msgstr "Informacje o logowaniu"
 
 #. Translators: Confirmation of website terms&conditions. Form label.
-#: ../lib/wiking/cms/users.py:743 ../lib/wiking/cms/users.py:758
+#: ../lib/wiking/cms/users.py:761 ../lib/wiking/cms/users.py:776
 #, fuzzy
 msgid "Confirmation"
 msgstr "Potwierdź"
 
-#: ../lib/wiking/cms/users.py:784
+#: ../lib/wiking/cms/users.py:802
 msgid "Enter your current password."
 msgstr "Wprowadź swoje aktualne hasło."
 
-#: ../lib/wiking/cms/users.py:788
+#: ../lib/wiking/cms/users.py:806
 msgid "Invalid password."
 msgstr "Nie ważne hasło."
 
-#: ../lib/wiking/cms/users.py:792
+#: ../lib/wiking/cms/users.py:810
 msgid "Enter the new password."
 msgstr "Wprowadź nowe hasło."
 
-#: ../lib/wiking/cms/users.py:800
+#: ../lib/wiking/cms/users.py:818
 msgid "The new password is the same as the old one."
 msgstr "Nowe hasło jest takie samo jak stare."
 
-#: ../lib/wiking/cms/users.py:825
+#: ../lib/wiking/cms/users.py:843
 #, python-format
 msgid ""
 "To finish your registration at %(server_hostname)s, click on the following "
@@ -2012,22 +1999,22 @@ msgid ""
 "\n"
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:838
+#: ../lib/wiking/cms/users.py:856
 msgid "Registration cancelled."
 msgstr "Rejestracja została anulowana."
 
-#: ../lib/wiking/cms/users.py:844
+#: ../lib/wiking/cms/users.py:862
 #, python-format
 msgid "Your registration at %s"
 msgstr "Postęp twojej rejestracji %s"
 
-#: ../lib/wiking/cms/users.py:848 ../lib/wiking/cms/users.py:902
-#: ../lib/wiking/cms/users.py:952 ../lib/wiking/cms/users.py:1318
+#: ../lib/wiking/cms/users.py:866 ../lib/wiking/cms/users.py:920
+#: ../lib/wiking/cms/users.py:970 ../lib/wiking/cms/users.py:1336
 msgid "Failed sending e-mail notification:"
 msgstr "Wysyłanie e-mail zakończyło się niepowodzeniem:"
 
 #. Translators: Follows an email addres, e.g. ``... was sent to your email address at joe@brailcom.org''
-#: ../lib/wiking/cms/users.py:852
+#: ../lib/wiking/cms/users.py:870
 #, fuzzy, python-format
 msgid ""
 "To finish registration, please confirm the activation code that was sent to "
@@ -2036,47 +2023,47 @@ msgstr ""
 "Rejestracji upłynął %(date)s. Użytkownik nie potwierdził kodu aktywacyjnego "
 "wysłanego do zadeklarowanego adresu e-mail."
 
-#: ../lib/wiking/cms/users.py:877
+#: ../lib/wiking/cms/users.py:895
 msgid "User registration already confirmed."
 msgstr "Rejestracja została potwierdzona."
 
-#: ../lib/wiking/cms/users.py:880
+#: ../lib/wiking/cms/users.py:898
 msgid "Invalid activation code."
 msgstr "Nie ważny kod aktywacji."
 
-#: ../lib/wiking/cms/users.py:888
+#: ../lib/wiking/cms/users.py:906
 #, fuzzy, python-format
 msgid "New user %(fullname)s registered at %(server_hostname)s."
 msgstr ""
 "Nowy użytkownik %(fullname) s zarejestrowany %(server_hostname)s. Zatwierdź "
 "konto: %(uri)s "
 
-#: ../lib/wiking/cms/users.py:892
+#: ../lib/wiking/cms/users.py:910
 msgid "The account was approved automatically according to server setup."
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:895
+#: ../lib/wiking/cms/users.py:913
 #, fuzzy
 msgid "Please approve the account:"
 msgstr "Włącz to konto"
 
-#: ../lib/wiking/cms/users.py:899
+#: ../lib/wiking/cms/users.py:917
 msgid "New user registration:"
 msgstr "Rejestracja nowego użytkownika:"
 
-#: ../lib/wiking/cms/users.py:905
+#: ../lib/wiking/cms/users.py:923
 msgid "E-mail notification has been sent to server administrator."
 msgstr "Powiadomienia e-mail został wysłany do serwera administratora."
 
-#: ../lib/wiking/cms/users.py:933
+#: ../lib/wiking/cms/users.py:951
 msgid "Registration confirmed"
 msgstr "Rejestracja została potwierdzona."
 
-#: ../lib/wiking/cms/users.py:944
+#: ../lib/wiking/cms/users.py:962
 msgid "The account was enabled."
 msgstr "Konto zostało uaktywnione."
 
-#: ../lib/wiking/cms/users.py:946
+#: ../lib/wiking/cms/users.py:964
 #, python-format
 msgid ""
 "Your account at %(uri)s has been enabled. Please log in with username "
@@ -2085,77 +2072,77 @@ msgstr ""
 "Twoje konto w  %(uri)s zostało uaktualnione. Zaloguj się z loginem "
 "'%(login)s' i twoim hasłem."
 
-#: ../lib/wiking/cms/users.py:949
+#: ../lib/wiking/cms/users.py:967
 msgid "Your account has been enabled."
 msgstr "Twoje konto jest aktywne."
 
-#: ../lib/wiking/cms/users.py:954
+#: ../lib/wiking/cms/users.py:972
 msgid "E-mail notification has been sent to:"
 msgstr "Powiadomienia e-mail został wysłany do:"
 
-#: ../lib/wiking/cms/users.py:956
+#: ../lib/wiking/cms/users.py:974
 #, fuzzy
 msgid "The account was disabled."
 msgstr "Konto zostało uaktywnione."
 
-#: ../lib/wiking/cms/users.py:962
+#: ../lib/wiking/cms/users.py:980
 #, fuzzy, python-format
 msgid "The registration expired on %(date)s."
 msgstr "Rejestracja została potwierdzona."
 
-#: ../lib/wiking/cms/users.py:965
+#: ../lib/wiking/cms/users.py:983
 #, fuzzy
 msgid "Continue"
 msgstr "Zawartość"
 
-#: ../lib/wiking/cms/users.py:969
+#: ../lib/wiking/cms/users.py:987
 #, fuzzy
 msgid "The registration code was not confirmed by the user!"
 msgstr "Rejestracja została potwierdzona."
 
-#: ../lib/wiking/cms/users.py:970
+#: ../lib/wiking/cms/users.py:988
 #, fuzzy
 msgid ""
 "Please enable the account only if you are sure that the e-mail address "
 "belongs to given user."
 msgstr "Potwierdź konto, jeśli jesteś pewien że e-mail adres należy do ciebie."
 
-#: ../lib/wiking/cms/users.py:1212
+#: ../lib/wiking/cms/users.py:1230
 msgid "Listing of all active user accounts."
 msgstr "Lista wszystkich aktywnych kont użytkowników."
 
-#: ../lib/wiking/cms/users.py:1238
+#: ../lib/wiking/cms/users.py:1256
 msgid "Enter your login name or e-mail address"
 msgstr "Wprowadź swój login alub adres e-mail"
 
-#: ../lib/wiking/cms/users.py:1273
+#: ../lib/wiking/cms/users.py:1291
 msgid "Password reminder"
 msgstr "Przypomnienie hasła"
 
-#: ../lib/wiking/cms/users.py:1286
+#: ../lib/wiking/cms/users.py:1304
 msgid "Multiple user accounts found for given email address."
 msgstr "Wiele kont użytkownika dla danego adresu e-mail."
 
-#: ../lib/wiking/cms/users.py:1287
+#: ../lib/wiking/cms/users.py:1305
 msgid "Please, select the account for which you want to remind:"
 msgstr "Wybierz konto do którego potrzebujesz przypomnienia:"
 
 #. Translators: Credentials such as password...
-#: ../lib/wiking/cms/users.py:1300
+#: ../lib/wiking/cms/users.py:1318
 msgid "Your credentials were reset to:"
 msgstr "Twoje dokumenty potwierdzające tożsamość zostały zresetowane do:"
 
 #. Translators: Credentials such as password...
-#: ../lib/wiking/cms/users.py:1304
+#: ../lib/wiking/cms/users.py:1322
 msgid "Your credentials are:"
 msgstr "Twoje dokumenty potwierdzające tożsamość to:"
 
-#: ../lib/wiking/cms/users.py:1306
+#: ../lib/wiking/cms/users.py:1324
 #, python-format
 msgid "A password reminder request has been made at %(server_uri)s."
 msgstr "Przypomnienie hasła wniosek został wsłany do %(server_uri)s."
 
-#: ../lib/wiking/cms/users.py:1313
+#: ../lib/wiking/cms/users.py:1331
 msgid ""
 "We strongly recommend you change your password at nearest occassion, since "
 "it has been exposed to an unsecure channel."
@@ -2163,62 +2150,235 @@ msgstr ""
 "Zalecamy zmianę hasła na najbliższej okazji, gdyż był miał styczność z "
 "niezabezpieczonym kanałem."
 
-#: ../lib/wiking/cms/users.py:1319
+#: ../lib/wiking/cms/users.py:1337
 msgid "Please try repeating your request later or contact the administrator!"
 msgstr "Powtórz żądanie później lub skontaktuj się z administratorem!"
 
-#: ../lib/wiking/cms/users.py:1321
+#: ../lib/wiking/cms/users.py:1339
 msgid "E-mail information has been sent to your email address."
 msgstr "Informacja została przesłana na twojego emaila."
 
-#: ../lib/wiking/cms/users.py:1324
+#: ../lib/wiking/cms/users.py:1342
 msgid "No user account for your query."
 msgstr "Brak użytkownika odpowiadającego Twojemu zapytaniu."
 
-#: ../lib/wiking/cms/users.py:1348
+#: ../lib/wiking/cms/users.py:1366
 msgid "History of successful login sessions and unsuccessful login attempts."
 msgstr "Historia logowań zakończonych sukcesem i nieudanych prób logowania."
 
 #. Translators: Login name.
-#: ../lib/wiking/cms/users.py:1354
+#: ../lib/wiking/cms/users.py:1372
 msgid "Login"
 msgstr "Login"
 
 #. Translators: Form field saying whether the users attempt was succesful. Values are Yes/No.
-#: ../lib/wiking/cms/users.py:1356
+#: ../lib/wiking/cms/users.py:1374
 msgid "Success"
 msgstr "Pomyślnie"
 
 #. Translators: Table column heading. Time of the start of user session, followed by a date and time.
-#: ../lib/wiking/cms/users.py:1358
+#: ../lib/wiking/cms/users.py:1376
 msgid "Start time"
 msgstr "Czas rozpoczęcia"
 
 #. Translators: Table column heading. The length of user session. Contains time.
-#: ../lib/wiking/cms/users.py:1360
+#: ../lib/wiking/cms/users.py:1378
 msgid "Duration"
 msgstr "Czas trwania"
 
-#: ../lib/wiking/cms/users.py:1363
+#: ../lib/wiking/cms/users.py:1381
 msgid "IP address"
 msgstr "IP adres"
 
 #. Translators: Internet name of the remote computer (computer terminology).
-#: ../lib/wiking/cms/users.py:1365
+#: ../lib/wiking/cms/users.py:1383
 msgid "Hostname"
 msgstr "Nazwa hosta"
 
 #. Translators: "User agent" is a generalized name for browser or more precisely the
 #. software which produced the HTTP request (was used to access the website).
-#: ../lib/wiking/cms/users.py:1368
+#: ../lib/wiking/cms/users.py:1386
 msgid "User agent"
 msgstr "agent użytkownika"
 
 #. Translators: Meaning where the user came from. Computer terminology. Do not translate
 #. "HTTP" and if unsure, don't translate at all (it is a very technical term).
-#: ../lib/wiking/cms/users.py:1371
+#: ../lib/wiking/cms/users.py:1389
 msgid "HTTP Referer"
 msgstr "HTTP Referer"
+
+#: ../lib/wiking/cms/crypto.py:40
+msgid "Crypto Areas"
+msgstr ""
+
+#: ../lib/wiking/cms/crypto.py:47
+msgid "Users and Keys"
+msgstr ""
+
+#: ../lib/wiking/cms/crypto.py:79
+msgid "Users and Encryption Keys"
+msgstr ""
+
+#: ../lib/wiking/cms/crypto.py:81
+msgid "Id"
+msgstr ""
+
+#: ../lib/wiking/cms/crypto.py:86
+msgid "Key"
+msgstr ""
+
+#: ../lib/wiking/cms/crypto.py:87
+#, fuzzy
+msgid "Action"
+msgstr "Lokalizacja"
+
+#: ../lib/wiking/cms/crypto.py:89
+#, fuzzy
+msgid "Current password"
+msgstr "Nowe hasło"
+
+#: ../lib/wiking/cms/crypto.py:122
+msgid "Create key"
+msgstr ""
+
+#: ../lib/wiking/cms/crypto.py:124
+#, fuzzy
+msgid "Change key password"
+msgstr "Zmień hasło"
+
+#: ../lib/wiking/cms/crypto.py:125
+msgid "Copy to user"
+msgstr ""
+
+#: ../lib/wiking/cms/crypto.py:125
+msgid "Add another user of the key"
+msgstr ""
+
+#: ../lib/wiking/cms/crypto.py:195
+msgid "New key not created. Maybe it already exists?"
+msgstr ""
+
+#: ../lib/wiking/cms/crypto.py:205
+msgid "Password not changed. Maybe invalid old password?"
+msgstr ""
+
+#: ../lib/wiking/cms/crypto.py:214
+msgid "User not added. Maybe invalid old password?"
+msgstr ""
+
+#: ../lib/wiking/cms/crypto.py:224
+msgid "The user couldn't be deleted. Maybe he is the last key holder?"
+msgstr ""
+
+#~ msgid "Webmaster's e-mail address"
+#~ msgstr "Webmaster's e-mail address"
+
+#~ msgid "Default sender address"
+#~ msgstr "Domyślny adres nadawcy"
+
+#, fuzzy
+#~ msgid "Force HTTPS login"
+#~ msgstr "Force HTTPS login"
+
+#~ msgid ""
+#~ "If enabled, the login form will always be redirected to an HTTPS address "
+#~ "to ensure the security of the submitted credentials.  This, however, "
+#~ "requires your server to be setup to accept HTTPS requests for the same "
+#~ "virtual host and pass them to Wiking."
+#~ msgstr ""
+#~ "Jeśli opcja jest włączona, formularz logowania zawsze będzie "
+#~ "przekierowany na adres HTTPS w celu zapewnienia bezpieczeństwa środkom "
+#~ "weryfikacji tożsamości. To jednak wymaga, aby serwer jest ustawiony tak, "
+#~ "aby akceptować żądań HTTPS na tym samym serwerze wirtualnym i przekazać "
+#~ "je do Wiking."
+
+#~ msgid "Site title"
+#~ msgstr "nAZWA STRONY"
+
+#~ msgid ""
+#~ "Site title is a short and (hopefully) unique title of the whole website. "
+#~ "It will appear at the top of every page."
+#~ msgstr ""
+#~ "Nazwa strony jest krótka  i (miejmy nadzieję) unikalnym tytułem całej "
+#~ "strony internetowej. Będzie on wyświetlany na górze każdej strony."
+
+#~ msgid "Site subtitle"
+#~ msgstr "Podtytuł witryny"
+
+#, fuzzy
+#~ msgid ""
+#~ "Site subtitle is an optional more descriptive title of the website.  It "
+#~ "will appear at the top of every page together with site title, but where "
+#~ "brevity matters, only title will be used."
+#~ msgstr ""
+#~ "Podtytuł jest alternatywnym bardziej opisowym tytułem strony "
+#~ "internetowej. Będzie on wyświetlany na górze każdej strony wraz z tytułem "
+#~ "strony, ale generalnie, używany będzie tylko tytuł."
+
+#~ msgid "Site icon"
+#~ msgstr "Ikona na stronie"
+
+#~ msgid "Default language"
+#~ msgstr "Domyślny język"
+
+#~ msgid ""
+#~ "Defines the language (lowercase ISO 639-1 Alpha-2 code) to be used when "
+#~ "content language negotiation fails. If not set (which is the default), "
+#~ "the server will issue a 606 HTTP error (Not acceptable) when the document "
+#~ "is not available in any of the requested languages. The error page will "
+#~ "contain a description of the problem and a list of available language "
+#~ "variants of the requested document. The negotiation is based on the "
+#~ "browser setting of user's language preference passed through the 'Accept-"
+#~ "Language' HTTP header. If set, Wiking will automatically serve given "
+#~ "language variant instead of issuing the error if that variant is "
+#~ "available.  If unavailable, the 606 error is raised anyway, so you need "
+#~ "to make sure that all documents are available at least in the default "
+#~ "language variant if you want to avoid 606 errors completely."
+#~ msgstr ""
+#~ "Definiuje język (małe ISO 639-1 Alfa-2 kod)do użycia kiedy serwer nie "
+#~ "potrafi znaleźć odpowiedniego języka. Jeśli nie zostało ustwanione, (co "
+#~ "jest domyślnie), serwer będzie miał problem HTTP 606 (Niedozwolony), gdy "
+#~ "dokument nie jest dostępny w żadnym z wymaganych języków. Strona błędu "
+#~ "może zawierać opis problemu i listę dostępnych wariantów językowych "
+#~ "wymaganych dokumentów. Poszukiwania są oparte na ustawieniach  "
+#~ "przeglądarki użytkownika języka przejdź do \"Accept-Language header\" "
+#~ "HTTP. Jeśli jest ustawiona, Wiking automatycznie ustawi język zamiast "
+#~ "pokazywać błąd, jeśli ten wariant jest dostępny. Jeśli jest to  "
+#~ "niemożliwe, błąd  606 będzie występował tak czy inaczej, tak, więc trzeba "
+#~ "się upewnić, że wszystkie dokumenty są dostępne  w wariancie języka "
+#~ "domyślnego, jeżeli chcesz uniknąć błędów 606 całkowicie."
+
+#~ msgid "Display role in login panel"
+#~ msgstr "Pokaż pozycje użytkownika"
+
+#, fuzzy
+#~ msgid ""
+#~ "If enabled, the login panel on each page will not display only the "
+#~ "current username, but also his current user role, which affects his "
+#~ "permissions."
+#~ msgstr ""
+#~ "Po włączeniu, panel logowania będzie wyświetlać zarówno obeceną nazwe "
+#~ "użytkownika, ale również jego role (np. administrator, użytkownik, "
+#~ "student itd.)"
+
+#~ msgid "Whether to use e-mails as login names"
+#~ msgstr "Czy używać e-mailu jako loginu"
+
+#~ msgid "Iff true, users must use e-mail addresses as their login names."
+#~ msgstr "Jeśli prawdziwy, użytkownicy muszą użyć adresu e-mail jako loginu."
+
+#~ msgid ""
+#~ "It is, however, recommened to use the simplest possible formatting, since "
+#~ "the item may be also published through an RSS channel, which does not "
+#~ "support formatting."
+#~ msgstr ""
+#~ "Ważne jest, aby zastosować najprostsze możliwe formatowanie, pozycja ta "
+#~ "może być również opublikowane za pośrednictwem kanałów RSS, który nie "
+#~ "obsługuje formatowania."
+
+#~ msgid ""
+#~ "Edit the given text as needed, in accordance with structured text rules."
+#~ msgstr "Edytuj podany tekst jeśli jest to wymagane, zgodnie z zasadami."
 
 #, fuzzy
 #~ msgid ""
@@ -2276,10 +2436,6 @@ msgstr "HTTP Referer"
 #~ "Ustawianie własności, jeśli chcesz, aby dany użytkownik miał pełną "
 #~ "kontrolę na stronie, nawet jeśli zwykłe uprawnienia są niższe."
 
-#, fuzzy
-#~ msgid "Contributor"
-#~ msgstr "Współpracownik"
-
 #~ msgid "Role"
 #~ msgstr "Rola"
 
@@ -2301,9 +2457,6 @@ msgstr "HTTP Referer"
 
 #~ msgid "Organizations"
 #~ msgstr "Organizacje"
-
-#~ msgid "Manage institutions and other organizations."
-#~ msgstr "Zarządzanie instytucjami i innymi organizacjami."
 
 #~ msgid "VAT id"
 #~ msgstr "NIP"
