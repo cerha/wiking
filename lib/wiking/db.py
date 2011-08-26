@@ -717,7 +717,7 @@ class PytisModule(Module, ActionHandler):
         return self._current_base_uri(req, record) +'/'+ record[self._referer].export()
 
     def _form(self, form, req, record=None, action=None, hidden=(), new=False, prefill=None,
-              handler=None, binding_uri=None, **kwargs):
+              invalid_prefill=None, handler=None, binding_uri=None, **kwargs):
         """Form instance creation wrapper.
 
         You may override this method if you need to tweek form constructor
@@ -766,20 +766,13 @@ class PytisModule(Module, ActionHandler):
         if action is not None:
             hidden += (('action', action),
                        ('submit', 'submit'))
-        valid_prefill = {}
-        if prefill:
-            for key, value in prefill.items():
-                type = self._type[key]
-                value, error = type.validate(value, strict=False)
-                if not error:
-                    valid_prefill[key] = value
-        form_record = self._record(req, record and record.row(), prefill=valid_prefill, new=new)
+        form_record = self._record(req, record and record.row(), prefill=prefill, new=new)
         for fid, data, linking_column, value_column in self._array_fields:
             rows = data.get_rows(condition=pd.EQ(linking_column, form_record[self._key]))
             values = [r[value_column] for r in rows]
             form_record[fid] = pd.Value(form_record.type(fid), values)
         form_instance = form(self._view, form_record, handler=handler or req.uri(),
-                             name=self.name(), hidden=hidden, prefill=prefill,
+                             name=self.name(), hidden=hidden, prefill=invalid_prefill,
                              uri_provider=self._uri_provider(req, uri), **kwargs)
         if binding_uri is None:
             # We use heading_info only for main form, not for binding side
@@ -1096,23 +1089,19 @@ class PytisModule(Module, ActionHandler):
                 prefill['lang'] = lang
         return prefill
     
-    def _form_field_prefill(self, req, new=False):
+    def _invalid_prefill(self, req, record):
         # Note, this method is only used for prefilling the fields in a
         # displayed form.  It has no effect on the 'prefill' passed to the
-        # created 'Record' instances.  The dictionary values must be strings.
-        # These strings will be validated after form submission.
-        if new:
-            prefill = self._prefill(req)
-        else:
-            prefill = {}
-        result = {}
-        for key, type in self._type.items():
-            if not isinstance(type, (pd.Binary, pd.Password)):
-                if req.has_param(key):
-                    result[key] = req.param(key)
-                elif key in prefill:
-                    result[key] = type.export(prefill[key])
-        return result
+        # created 'Record' instances.  The returned dictionary values must be
+        # user input string which didn't pass validation, but the form should
+        # still display them in fields so that the user can fix them and try
+        # validation again.
+        prefill = {}
+        for key in record.keys():
+            invalid_string = record.invalid_string(key)
+            if invalid_string != None:
+                prefill[key] = invalid_string
+        return prefill
 
     def _binding_condition(self, binding, record):
         # What is binding condition??
@@ -1690,16 +1679,23 @@ class PytisModule(Module, ActionHandler):
                     errors = (self._analyze_exception(e),)
                 else:
                     return self._redirect_after_insert(req, record)
+            invalid_prefill = self._invalid_prefill(req, record)
         else:
             errors = ()
+            invalid_prefill = None
+            if prefill is None:
+                prefill = {}
+            for key, type in self._type.items():
+                if req.has_param(key) and not isinstance(type, (pd.Binary, pd.Password)):
+                    value, error = type.validate(req.param(key), strict=False)
+                    if not error:
+                        prefill[key] = value
         # TODO: Redirect handler to HTTPS if cfg.force_https_login is true?
         # The primary motivation is to protect registration form data.  The
         # same would apply for action_edit.
-        form_prefill = self._form_field_prefill(req, new=True)
-        if prefill is not None:
-            form_prefill.update(prefill)
         form = self._form(pw.EditForm, req, new=True, action=action,
-                          prefill=form_prefill, layout=layout, errors=errors,
+                          prefill=prefill, invalid_prefill=invalid_prefill,
+                          layout=layout, errors=errors,
                           submit=self._submit_buttons(req, action))
         return self._document(req, form, subtitle=self._action_subtitle(req, action))
 
@@ -1716,7 +1712,7 @@ class PytisModule(Module, ActionHandler):
                 if fid != key and not field.nocopy():
                     computer = field.computer()
                     if not computer or key not in computer.depends():
-                        prefill[fid] = record[fid].export()
+                        prefill[fid] = record[fid].value()
         return self.action_insert(req, prefill=prefill, action=action)
             
     def action_update(self, req, record, action='update'):
@@ -1738,7 +1734,8 @@ class PytisModule(Module, ActionHandler):
                 return self._redirect_after_update(req, record)
         form = self._form(pw.EditForm, req, record=record, action=action, layout=layout,
                           submit=self._submit_buttons(req, action, record),
-                          prefill=self._form_field_prefill(req), errors=errors)
+                          invalid_prefill=self._invalid_prefill(req, record),
+                          errors=errors)
         return self._document(req, form, record,
                               subtitle=self._action_subtitle(req, action, record=record))
 
