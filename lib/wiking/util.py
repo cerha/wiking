@@ -1170,7 +1170,12 @@ class ActionCtrl(lcg.Content):
         action = self._action
         enabled = action.enabled()
         if isinstance(enabled, collections.Callable):
-            enabled = enabled(self._row)
+            context = action.context()
+            if context == pp.ActionContext.RECORD:
+                args = (self._row,)
+            else:
+                args = (context.req(),)
+            enabled = enabled(*args)
         uri = self._uri
         args = dict(action=action.id(), **action.kwargs())
         if self._row and action.context() == pp.ActionContext.RECORD:

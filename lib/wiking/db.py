@@ -595,10 +595,10 @@ class PytisModule(Module, ActionHandler):
                 if context == pp.ActionContext.RECORD:
                     args = (record,)
                 elif context == pp.ActionContext.GLOBAL:
-                    args = ()
+                    args = (req,)
                 else:
                     raise Exception("Unsupported action context:", context)
-                result = result(*args, **action.kwargs())
+                result = result(*args)
             return result
         actions = [action for action in actions or self._actions(req, record)
                    if visible(action) and self._authorized(req, action=action.id(), record=record)]
