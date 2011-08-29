@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-08-25 17:37+0200\n"
+"POT-Creation-Date: 2011-08-29 14:16+0200\n"
 "PO-Revision-Date: 2011-08-25 17:43+0200\n"
 "Last-Translator: Hynek Hanke <hanke@brailcom.org>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
@@ -129,8 +129,8 @@ msgstr "Předmět"
 #. Translators: Form field label, noun.
 #: ../lib/wiking/cms/certificates.py:230 ../lib/wiking/cms/cms.py:855
 #: ../lib/wiking/cms/cms.py:899 ../lib/wiking/cms/cms.py:986
-#: ../lib/wiking/cms/users.py:258 ../lib/wiking/cms/users.py:259
 #: ../lib/wiking/cms/crypto.py:42 ../lib/wiking/cms/crypto.py:82
+#: ../lib/wiking/cms/users.py:258 ../lib/wiking/cms/users.py:259
 msgid "Name"
 msgstr "Název"
 
@@ -150,62 +150,6 @@ msgstr "Požadavek na certifikát se nepodařilo zpracovat"
 #: ../lib/wiking/cms/certificates.py:371
 msgid "Certificate upload"
 msgstr "Odeslání certifikátu"
-
-#. Translators: Yes/No configuration option label. Should the login panel be visible?
-#: ../lib/wiking/cms/configuration.py:36
-msgid "Allow login panel"
-msgstr "Zobrazit panel přihlášení"
-
-#: ../lib/wiking/cms/configuration.py:37
-msgid ""
-"If enabled, the information about the currently logged user and login/logout "
-"controls will be present on each page as a separate panel.  This panel will "
-"always be the first panel on the page."
-msgstr ""
-"Pokud tuto volbu povolíte, informace o právě přihlášeném uživateli a "
-"ovládací prvky pro přihlášení/odhlášení budou zobrazeny v samostatném "
-"panelu.  Tento panel bude vždy zobrazen jako první z panelů."
-
-#. Translators: Yes/No configuration option label. Should link to WMI be visible?  "WMI"
-#. stands for Wiking Management Interface.  Don't feel obliged to use an abbreviation.  Use
-#. whatever brief form obviously referning to whatever translation you used for "Wiking
-#. Management Interface".
-#: ../lib/wiking/cms/configuration.py:47
-msgid "Allow WMI link"
-msgstr "Povolit odkaz do správcovského rozhraní"
-
-#. Translators: Yes/no configuration label. Can new users register to this
-#. website/application?
-#: ../lib/wiking/cms/configuration.py:55
-msgid "Allow new user registration"
-msgstr "Umožnit registraci nových uživatelů"
-
-#: ../lib/wiking/cms/configuration.py:56
-msgid ""
-"If enabled, all visitors are allowed to create a user account.  If disabled, "
-"new user accounts must be created by administrator.  Note, that the newly "
-"created accounts are inactive (at least with the default implementation of "
-"the user management module), so the creation of the account doesn't give the "
-"user any actual privileges."
-msgstr ""
-"Pokud je povoleno, všem návštěvníkům je umožněno se zaregistrovat jako "
-"uživatel a vytvořit tak uživatelský účet.  Pokud tuto možnost zakážete, "
-"budou všechy účty vytvářeny administrátorem.  Nově vytvořené účty jsou vždy "
-"neaktivní (alespoň ve výchozí implementaci modulu správy uživatelů), takže "
-"vytvoření účtu ještě samo o sobě uživateli nedává žádná práva."
-
-#. Translators: Maximal size an uploaded file can have.
-#: ../lib/wiking/cms/configuration.py:65
-msgid "Maximal upload size"
-msgstr "Maximální velikost pro upload"
-
-#: ../lib/wiking/cms/configuration.py:66
-msgid ""
-"The maximal size of uploaded files in bytes.  The server needs to be "
-"relaoded for the changes in this option to take effect."
-msgstr ""
-"Maximální velikost souborů přenášených na server (celé číslo v bajtech).  "
-"Pozor, aby se změny této volby uplatnily, je nutné server restartovat."
 
 #: ../lib/wiking/cms/cms.py:61
 msgid "formatting manual"
@@ -1407,6 +1351,145 @@ msgstr "Použít jako vzor"
 msgid "Edit this mail for repeated use"
 msgstr "Upravit tento mail pro nové použití"
 
+#. Translators: Yes/No configuration option label. Should the login panel be visible?
+#: ../lib/wiking/cms/configuration.py:36
+msgid "Allow login panel"
+msgstr "Zobrazit panel přihlášení"
+
+#: ../lib/wiking/cms/configuration.py:37
+msgid ""
+"If enabled, the information about the currently logged user and login/logout "
+"controls will be present on each page as a separate panel.  This panel will "
+"always be the first panel on the page."
+msgstr ""
+"Pokud tuto volbu povolíte, informace o právě přihlášeném uživateli a "
+"ovládací prvky pro přihlášení/odhlášení budou zobrazeny v samostatném "
+"panelu.  Tento panel bude vždy zobrazen jako první z panelů."
+
+#. Translators: Yes/No configuration option label. Should link to WMI be visible?  "WMI"
+#. stands for Wiking Management Interface.  Don't feel obliged to use an abbreviation.  Use
+#. whatever brief form obviously referning to whatever translation you used for "Wiking
+#. Management Interface".
+#: ../lib/wiking/cms/configuration.py:47
+msgid "Allow WMI link"
+msgstr "Povolit odkaz do správcovského rozhraní"
+
+#. Translators: Yes/no configuration label. Can new users register to this
+#. website/application?
+#: ../lib/wiking/cms/configuration.py:55
+msgid "Allow new user registration"
+msgstr "Umožnit registraci nových uživatelů"
+
+#: ../lib/wiking/cms/configuration.py:56
+msgid ""
+"If enabled, all visitors are allowed to create a user account.  If disabled, "
+"new user accounts must be created by administrator.  Note, that the newly "
+"created accounts are inactive (at least with the default implementation of "
+"the user management module), so the creation of the account doesn't give the "
+"user any actual privileges."
+msgstr ""
+"Pokud je povoleno, všem návštěvníkům je umožněno se zaregistrovat jako "
+"uživatel a vytvořit tak uživatelský účet.  Pokud tuto možnost zakážete, "
+"budou všechy účty vytvářeny administrátorem.  Nově vytvořené účty jsou vždy "
+"neaktivní (alespoň ve výchozí implementaci modulu správy uživatelů), takže "
+"vytvoření účtu ještě samo o sobě uživateli nedává žádná práva."
+
+#. Translators: Maximal size an uploaded file can have.
+#: ../lib/wiking/cms/configuration.py:65
+msgid "Maximal upload size"
+msgstr "Maximální velikost pro upload"
+
+#: ../lib/wiking/cms/configuration.py:66
+msgid ""
+"The maximal size of uploaded files in bytes.  The server needs to be "
+"relaoded for the changes in this option to take effect."
+msgstr ""
+"Maximální velikost souborů přenášených na server (celé číslo v bajtech).  "
+"Pozor, aby se změny této volby uplatnily, je nutné server restartovat."
+
+#: ../lib/wiking/cms/crypto.py:40
+msgid "Crypto Areas"
+msgstr "Šifrovací oblasti"
+
+#: ../lib/wiking/cms/crypto.py:47
+msgid "Users and Keys"
+msgstr "Uživatelé a klíče"
+
+#: ../lib/wiking/cms/crypto.py:79
+msgid "Users and Encryption Keys"
+msgstr "Uživatelé a šifrovací klíče"
+
+#: ../lib/wiking/cms/crypto.py:81
+msgid "Id"
+msgstr "Id"
+
+#: ../lib/wiking/cms/crypto.py:83 ../lib/wiking/cms/users.py:163
+#: ../lib/wiking/cms/users.py:478 ../lib/wiking/cms/users.py:1370
+msgid "User"
+msgstr "Uživatel"
+
+#. Translators: Button label.
+#: ../lib/wiking/cms/crypto.py:84 ../lib/wiking/cms/users.py:712
+msgid "New user"
+msgstr "Nový uživatel"
+
+#: ../lib/wiking/cms/crypto.py:86
+msgid "Key"
+msgstr "Klíč"
+
+#: ../lib/wiking/cms/crypto.py:87
+msgid "Action"
+msgstr "Akce"
+
+#: ../lib/wiking/cms/crypto.py:88 ../lib/wiking/cms/crypto.py:93
+#: ../lib/wiking/cms/users.py:63 ../lib/wiking/cms/users.py:164
+msgid "Remove"
+msgstr "Odstranit"
+
+#: ../lib/wiking/cms/crypto.py:89
+msgid "Current password"
+msgstr "Současné heslo"
+
+#: ../lib/wiking/cms/crypto.py:91 ../lib/wiking/cms/users.py:464
+msgid "New password"
+msgstr "Nové heslo"
+
+#: ../lib/wiking/cms/crypto.py:122
+msgid "Create key"
+msgstr "Vytvořit klíč"
+
+#: ../lib/wiking/cms/crypto.py:124 ../lib/wiking/cms/users.py:603
+msgid "Change password"
+msgstr "Změna hesla"
+
+#: ../lib/wiking/cms/crypto.py:124
+msgid "Change key password"
+msgstr "Změna hesla klíče"
+
+#: ../lib/wiking/cms/crypto.py:125
+msgid "Copy to user"
+msgstr "Zkopírovat uživateli"
+
+#: ../lib/wiking/cms/crypto.py:125
+msgid "Add another user of the key"
+msgstr "Přidat nového uživatele klíče"
+
+#: ../lib/wiking/cms/crypto.py:195
+msgid "New key not created. Maybe it already exists?"
+msgstr "Nový klíč nebyl vytvořen. Možná již existuje?"
+
+#: ../lib/wiking/cms/crypto.py:205
+msgid "Password not changed. Maybe invalid old password?"
+msgstr "Heslo nebylo změněno. Možná jste chybně zadali původní heslo?"
+
+#: ../lib/wiking/cms/crypto.py:214
+msgid "User not added. Maybe invalid old password?"
+msgstr "Uživatel nebyl přidán. Možná jste chybně zadali původní heslo?"
+
+#: ../lib/wiking/cms/crypto.py:224
+msgid "The user couldn't be deleted. Maybe he is the last key holder?"
+msgstr "Uživatel nebyl vymazán. Možná je to poslední držitel klíče?"
+
 #. Translators: Web form label (account in the meaning of user account)
 #: ../lib/wiking/cms/texts.py:29
 msgid "Information about a locked account"
@@ -1534,11 +1617,6 @@ msgstr "Skupina"
 msgid "Contained group"
 msgstr "Obsažená skupina"
 
-#: ../lib/wiking/cms/users.py:63 ../lib/wiking/cms/users.py:164
-#: ../lib/wiking/cms/crypto.py:88 ../lib/wiking/cms/crypto.py:93
-msgid "Remove"
-msgstr "Odstranit"
-
 #: ../lib/wiking/cms/users.py:68
 msgid "Add contained group"
 msgstr "Přidat obsaženou skupinu"
@@ -1550,11 +1628,6 @@ msgstr "Přidat do jiné skupiny"
 #: ../lib/wiking/cms/users.py:158
 msgid "User Roles"
 msgstr "Role uživatele"
-
-#: ../lib/wiking/cms/users.py:163 ../lib/wiking/cms/users.py:478
-#: ../lib/wiking/cms/users.py:1370 ../lib/wiking/cms/crypto.py:83
-msgid "User"
-msgstr "Uživatel"
 
 #: ../lib/wiking/cms/users.py:169
 msgid "Add member"
@@ -1672,10 +1745,6 @@ msgstr "Staré heslo"
 #: ../lib/wiking/cms/users.py:463
 msgid "Verify your identity by entering your original (current) password."
 msgstr "Potvrďte svou identitu zadáním Vašeho původního (současného) hesla."
-
-#: ../lib/wiking/cms/users.py:464 ../lib/wiking/cms/crypto.py:91
-msgid "New password"
-msgstr "Nové heslo"
 
 #. Translators: User account information field label (contains date and time).
 #. TODO: Last password change is currently not displayed anywhere.  It should be only
@@ -1885,10 +1954,6 @@ msgstr "Vyřazení uživatelé"
 msgid "All accounts"
 msgstr "Všechny účty"
 
-#: ../lib/wiking/cms/users.py:603 ../lib/wiking/cms/crypto.py:124
-msgid "Change password"
-msgstr "Změna hesla"
-
 #: ../lib/wiking/cms/users.py:603
 msgid "Change user's password"
 msgstr "Změna přihlašovacího hesla"
@@ -1947,11 +2012,6 @@ msgstr "Neschválený účet"
 #: ../lib/wiking/cms/users.py:659
 msgid "Active account"
 msgstr "Aktivní účet"
-
-#. Translators: Button label.
-#: ../lib/wiking/cms/users.py:712 ../lib/wiking/cms/crypto.py:84
-msgid "New user"
-msgstr "Nový uživatel"
 
 #. Translators: Button label.
 #: ../lib/wiking/cms/users.py:714
@@ -2227,66 +2287,6 @@ msgstr "Prohlížeč"
 #: ../lib/wiking/cms/users.py:1389
 msgid "HTTP Referer"
 msgstr "HTTP Referer"
-
-#: ../lib/wiking/cms/crypto.py:40
-msgid "Crypto Areas"
-msgstr "Šifrovací oblasti"
-
-#: ../lib/wiking/cms/crypto.py:47
-msgid "Users and Keys"
-msgstr "Uživatelé a klíče"
-
-#: ../lib/wiking/cms/crypto.py:79
-msgid "Users and Encryption Keys"
-msgstr "Uživatelé a šifrovací klíče"
-
-#: ../lib/wiking/cms/crypto.py:81
-msgid "Id"
-msgstr "Id"
-
-#: ../lib/wiking/cms/crypto.py:86
-msgid "Key"
-msgstr "Klíč"
-
-#: ../lib/wiking/cms/crypto.py:87
-msgid "Action"
-msgstr "Akce"
-
-#: ../lib/wiking/cms/crypto.py:89
-msgid "Current password"
-msgstr "Současné heslo"
-
-#: ../lib/wiking/cms/crypto.py:122
-msgid "Create key"
-msgstr "Vytvořit klíč"
-
-#: ../lib/wiking/cms/crypto.py:124
-msgid "Change key password"
-msgstr "Změna hesla klíče"
-
-#: ../lib/wiking/cms/crypto.py:125
-msgid "Copy to user"
-msgstr "Zkopírovat uživateli"
-
-#: ../lib/wiking/cms/crypto.py:125
-msgid "Add another user of the key"
-msgstr "Přidat nového uživatele klíče"
-
-#: ../lib/wiking/cms/crypto.py:195
-msgid "New key not created. Maybe it already exists?"
-msgstr "Nový klíč nebyl vytvořen. Možná již existuje?"
-
-#: ../lib/wiking/cms/crypto.py:205
-msgid "Password not changed. Maybe invalid old password?"
-msgstr "Heslo nebylo změněno. Možná jste chybně zadali původní heslo?"
-
-#: ../lib/wiking/cms/crypto.py:214
-msgid "User not added. Maybe invalid old password?"
-msgstr "Uživatel nebyl přidán. Možná jste chybně zadali původní heslo?"
-
-#: ../lib/wiking/cms/crypto.py:224
-msgid "The user couldn't be deleted. Maybe he is the last key holder?"
-msgstr "Uživatel nebyl vymazán. Možná je to poslední držitel klíče?"
 
 #~ msgid "Webmaster's e-mail address"
 #~ msgstr "E-mailová adresa správce"

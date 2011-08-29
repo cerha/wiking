@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-08-25 17:37+0200\n"
+"POT-Creation-Date: 2011-08-29 14:16+0200\n"
 "PO-Revision-Date: 2010-02-04 00:15+0100\n"
 "Last-Translator: Hostomský Károly <khostomsky@gmail.com>\n"
 "Language-Team: Hungarian <wiking@lists.freebsoft.org>\n"
@@ -127,8 +127,8 @@ msgstr "Tárgy"
 #. Translators: Form field label, noun.
 #: ../lib/wiking/cms/certificates.py:230 ../lib/wiking/cms/cms.py:855
 #: ../lib/wiking/cms/cms.py:899 ../lib/wiking/cms/cms.py:986
-#: ../lib/wiking/cms/users.py:258 ../lib/wiking/cms/users.py:259
 #: ../lib/wiking/cms/crypto.py:42 ../lib/wiking/cms/crypto.py:82
+#: ../lib/wiking/cms/users.py:258 ../lib/wiking/cms/users.py:259
 msgid "Name"
 msgstr "Név"
 
@@ -148,62 +148,6 @@ msgstr ""
 #: ../lib/wiking/cms/certificates.py:371
 msgid "Certificate upload"
 msgstr ""
-
-#. Translators: Yes/No configuration option label. Should the login panel be visible?
-#: ../lib/wiking/cms/configuration.py:36
-msgid "Allow login panel"
-msgstr "Látható a bejelentkezési panel"
-
-#: ../lib/wiking/cms/configuration.py:37
-msgid ""
-"If enabled, the information about the currently logged user and login/logout "
-"controls will be present on each page as a separate panel.  This panel will "
-"always be the first panel on the page."
-msgstr ""
-"Ha be van kapcsolva, az éppen bejelentkezett felhasználó információi és a be/"
-"kijelentkezési ablak minden oldalon külön táblában megjelenik. Ez a "
-"dialógusablak mindig az oldal első eleme lesz."
-
-#. Translators: Yes/No configuration option label. Should link to WMI be visible?  "WMI"
-#. stands for Wiking Management Interface.  Don't feel obliged to use an abbreviation.  Use
-#. whatever brief form obviously referning to whatever translation you used for "Wiking
-#. Management Interface".
-#: ../lib/wiking/cms/configuration.py:47
-msgid "Allow WMI link"
-msgstr "WMI link mutatása"
-
-#. Translators: Yes/no configuration label. Can new users register to this
-#. website/application?
-#: ../lib/wiking/cms/configuration.py:55
-msgid "Allow new user registration"
-msgstr "Új felhasználó regisztrációjának engedélyezése"
-
-#: ../lib/wiking/cms/configuration.py:56
-msgid ""
-"If enabled, all visitors are allowed to create a user account.  If disabled, "
-"new user accounts must be created by administrator.  Note, that the newly "
-"created accounts are inactive (at least with the default implementation of "
-"the user management module), so the creation of the account doesn't give the "
-"user any actual privileges."
-msgstr ""
-"Ha be van kapcsolva, minden látogató létrehozhat felhasználói fiókot. Ha ki "
-"van kapcsolva, az új felhasználói fiókokat a rendszergazda hozza létre. Az "
-"újonnan létesült felhasználói fiókok inaktívak (a felhasználói irányítómodul "
-"alapbeállításai alapján), így új fiók létrehozása nem ad azonnal a "
-"felhasználónak semmilyen plusz kiváltságot."
-
-#. Translators: Maximal size an uploaded file can have.
-#: ../lib/wiking/cms/configuration.py:65
-msgid "Maximal upload size"
-msgstr "Maximálisan feltölthető fájl mérete"
-
-#: ../lib/wiking/cms/configuration.py:66
-msgid ""
-"The maximal size of uploaded files in bytes.  The server needs to be "
-"relaoded for the changes in this option to take effect."
-msgstr ""
-"A maximális nagyságú feltölthető állomány nagysága bájtban. A szerver "
-"újraindítást igényel a változtatások életbelépéséhez."
 
 #: ../lib/wiking/cms/cms.py:61
 msgid "formatting manual"
@@ -1409,6 +1353,149 @@ msgstr "Mentsd el sablonként"
 msgid "Edit this mail for repeated use"
 msgstr "Mentsd el a mailt sablonként"
 
+#. Translators: Yes/No configuration option label. Should the login panel be visible?
+#: ../lib/wiking/cms/configuration.py:36
+msgid "Allow login panel"
+msgstr "Látható a bejelentkezési panel"
+
+#: ../lib/wiking/cms/configuration.py:37
+msgid ""
+"If enabled, the information about the currently logged user and login/logout "
+"controls will be present on each page as a separate panel.  This panel will "
+"always be the first panel on the page."
+msgstr ""
+"Ha be van kapcsolva, az éppen bejelentkezett felhasználó információi és a be/"
+"kijelentkezési ablak minden oldalon külön táblában megjelenik. Ez a "
+"dialógusablak mindig az oldal első eleme lesz."
+
+#. Translators: Yes/No configuration option label. Should link to WMI be visible?  "WMI"
+#. stands for Wiking Management Interface.  Don't feel obliged to use an abbreviation.  Use
+#. whatever brief form obviously referning to whatever translation you used for "Wiking
+#. Management Interface".
+#: ../lib/wiking/cms/configuration.py:47
+msgid "Allow WMI link"
+msgstr "WMI link mutatása"
+
+#. Translators: Yes/no configuration label. Can new users register to this
+#. website/application?
+#: ../lib/wiking/cms/configuration.py:55
+msgid "Allow new user registration"
+msgstr "Új felhasználó regisztrációjának engedélyezése"
+
+#: ../lib/wiking/cms/configuration.py:56
+msgid ""
+"If enabled, all visitors are allowed to create a user account.  If disabled, "
+"new user accounts must be created by administrator.  Note, that the newly "
+"created accounts are inactive (at least with the default implementation of "
+"the user management module), so the creation of the account doesn't give the "
+"user any actual privileges."
+msgstr ""
+"Ha be van kapcsolva, minden látogató létrehozhat felhasználói fiókot. Ha ki "
+"van kapcsolva, az új felhasználói fiókokat a rendszergazda hozza létre. Az "
+"újonnan létesült felhasználói fiókok inaktívak (a felhasználói irányítómodul "
+"alapbeállításai alapján), így új fiók létrehozása nem ad azonnal a "
+"felhasználónak semmilyen plusz kiváltságot."
+
+#. Translators: Maximal size an uploaded file can have.
+#: ../lib/wiking/cms/configuration.py:65
+msgid "Maximal upload size"
+msgstr "Maximálisan feltölthető fájl mérete"
+
+#: ../lib/wiking/cms/configuration.py:66
+msgid ""
+"The maximal size of uploaded files in bytes.  The server needs to be "
+"relaoded for the changes in this option to take effect."
+msgstr ""
+"A maximális nagyságú feltölthető állomány nagysága bájtban. A szerver "
+"újraindítást igényel a változtatások életbelépéséhez."
+
+#: ../lib/wiking/cms/crypto.py:40
+msgid "Crypto Areas"
+msgstr ""
+
+#: ../lib/wiking/cms/crypto.py:47
+msgid "Users and Keys"
+msgstr ""
+
+#: ../lib/wiking/cms/crypto.py:79
+msgid "Users and Encryption Keys"
+msgstr ""
+
+#: ../lib/wiking/cms/crypto.py:81
+msgid "Id"
+msgstr ""
+
+#: ../lib/wiking/cms/crypto.py:83 ../lib/wiking/cms/users.py:163
+#: ../lib/wiking/cms/users.py:478 ../lib/wiking/cms/users.py:1370
+msgid "User"
+msgstr "Felhasználó"
+
+#. Translators: Button label.
+#: ../lib/wiking/cms/crypto.py:84 ../lib/wiking/cms/users.py:712
+msgid "New user"
+msgstr "Új felhasználó"
+
+#: ../lib/wiking/cms/crypto.py:86
+msgid "Key"
+msgstr ""
+
+#: ../lib/wiking/cms/crypto.py:87
+#, fuzzy
+msgid "Action"
+msgstr "Helyszín"
+
+#: ../lib/wiking/cms/crypto.py:88 ../lib/wiking/cms/crypto.py:93
+#: ../lib/wiking/cms/users.py:63 ../lib/wiking/cms/users.py:164
+#, fuzzy
+msgid "Remove"
+msgstr "Visszaállítás"
+
+#: ../lib/wiking/cms/crypto.py:89
+#, fuzzy
+msgid "Current password"
+msgstr "Új jelszó"
+
+#: ../lib/wiking/cms/crypto.py:91 ../lib/wiking/cms/users.py:464
+msgid "New password"
+msgstr "Új jelszó"
+
+#: ../lib/wiking/cms/crypto.py:122
+msgid "Create key"
+msgstr ""
+
+#: ../lib/wiking/cms/crypto.py:124 ../lib/wiking/cms/users.py:603
+msgid "Change password"
+msgstr "Jelszó megváltoztatása"
+
+#: ../lib/wiking/cms/crypto.py:124
+#, fuzzy
+msgid "Change key password"
+msgstr "Jelszó megváltoztatása"
+
+#: ../lib/wiking/cms/crypto.py:125
+msgid "Copy to user"
+msgstr ""
+
+#: ../lib/wiking/cms/crypto.py:125
+msgid "Add another user of the key"
+msgstr ""
+
+#: ../lib/wiking/cms/crypto.py:195
+msgid "New key not created. Maybe it already exists?"
+msgstr ""
+
+#: ../lib/wiking/cms/crypto.py:205
+msgid "Password not changed. Maybe invalid old password?"
+msgstr ""
+
+#: ../lib/wiking/cms/crypto.py:214
+msgid "User not added. Maybe invalid old password?"
+msgstr ""
+
+#: ../lib/wiking/cms/crypto.py:224
+msgid "The user couldn't be deleted. Maybe he is the last key holder?"
+msgstr ""
+
 #. Translators: Web form label (account in the meaning of user account)
 #: ../lib/wiking/cms/texts.py:29
 msgid "Information about a locked account"
@@ -1516,12 +1603,6 @@ msgstr ""
 msgid "Contained group"
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:63 ../lib/wiking/cms/users.py:164
-#: ../lib/wiking/cms/crypto.py:88 ../lib/wiking/cms/crypto.py:93
-#, fuzzy
-msgid "Remove"
-msgstr "Visszaállítás"
-
 #: ../lib/wiking/cms/users.py:68
 msgid "Add contained group"
 msgstr ""
@@ -1534,11 +1615,6 @@ msgstr ""
 #, fuzzy
 msgid "User Roles"
 msgstr "Felhasználók"
-
-#: ../lib/wiking/cms/users.py:163 ../lib/wiking/cms/users.py:478
-#: ../lib/wiking/cms/users.py:1370 ../lib/wiking/cms/crypto.py:83
-msgid "User"
-msgstr "Felhasználó"
 
 #: ../lib/wiking/cms/users.py:169
 msgid "Add member"
@@ -1645,10 +1721,6 @@ msgstr "Régi jelszó"
 #: ../lib/wiking/cms/users.py:463
 msgid "Verify your identity by entering your original (current) password."
 msgstr "Igazold kilétedet a (aktuális) jelszavad beütésével."
-
-#: ../lib/wiking/cms/users.py:464 ../lib/wiking/cms/crypto.py:91
-msgid "New password"
-msgstr "Új jelszó"
 
 #. Translators: User account information field label (contains date and time).
 #. TODO: Last password change is currently not displayed anywhere.  It should be only
@@ -1853,10 +1925,6 @@ msgstr "Felfüggesztett felhasználók"
 msgid "All accounts"
 msgstr "Összes regisztráció"
 
-#: ../lib/wiking/cms/users.py:603 ../lib/wiking/cms/crypto.py:124
-msgid "Change password"
-msgstr "Jelszó megváltoztatása"
-
 #: ../lib/wiking/cms/users.py:603
 msgid "Change user's password"
 msgstr "A felhasználó jelszavának megváltoztatása"
@@ -1921,11 +1989,6 @@ msgstr "Új fiók"
 #, fuzzy
 msgid "Active account"
 msgstr "Új fiók"
-
-#. Translators: Button label.
-#: ../lib/wiking/cms/users.py:712 ../lib/wiking/cms/crypto.py:84
-msgid "New user"
-msgstr "Új felhasználó"
 
 #. Translators: Button label.
 #: ../lib/wiking/cms/users.py:714
@@ -2207,69 +2270,6 @@ msgstr "User agent"
 #: ../lib/wiking/cms/users.py:1389
 msgid "HTTP Referer"
 msgstr "HTTP Referer"
-
-#: ../lib/wiking/cms/crypto.py:40
-msgid "Crypto Areas"
-msgstr ""
-
-#: ../lib/wiking/cms/crypto.py:47
-msgid "Users and Keys"
-msgstr ""
-
-#: ../lib/wiking/cms/crypto.py:79
-msgid "Users and Encryption Keys"
-msgstr ""
-
-#: ../lib/wiking/cms/crypto.py:81
-msgid "Id"
-msgstr ""
-
-#: ../lib/wiking/cms/crypto.py:86
-msgid "Key"
-msgstr ""
-
-#: ../lib/wiking/cms/crypto.py:87
-#, fuzzy
-msgid "Action"
-msgstr "Helyszín"
-
-#: ../lib/wiking/cms/crypto.py:89
-#, fuzzy
-msgid "Current password"
-msgstr "Új jelszó"
-
-#: ../lib/wiking/cms/crypto.py:122
-msgid "Create key"
-msgstr ""
-
-#: ../lib/wiking/cms/crypto.py:124
-#, fuzzy
-msgid "Change key password"
-msgstr "Jelszó megváltoztatása"
-
-#: ../lib/wiking/cms/crypto.py:125
-msgid "Copy to user"
-msgstr ""
-
-#: ../lib/wiking/cms/crypto.py:125
-msgid "Add another user of the key"
-msgstr ""
-
-#: ../lib/wiking/cms/crypto.py:195
-msgid "New key not created. Maybe it already exists?"
-msgstr ""
-
-#: ../lib/wiking/cms/crypto.py:205
-msgid "Password not changed. Maybe invalid old password?"
-msgstr ""
-
-#: ../lib/wiking/cms/crypto.py:214
-msgid "User not added. Maybe invalid old password?"
-msgstr ""
-
-#: ../lib/wiking/cms/crypto.py:224
-msgid "The user couldn't be deleted. Maybe he is the last key holder?"
-msgstr ""
 
 #~ msgid "Webmaster's e-mail address"
 #~ msgstr "A webmester email címe"
