@@ -1166,11 +1166,11 @@ class PytisModule(Module, ActionHandler):
 
     def _handle(self, req, action, **kwargs):
         record = kwargs.get('record')
-        if record is not None:
+        if action != 'list':
             # Handle Pytis redirection.
             redirect = self._view.redirect()
             if redirect:
-                module = redirect(record)
+                module = redirect(req, record)
                 if module is not None and module != self.name():
                     for fw in reversed(req.forwards()):
                         if fw.module().name() == self.name():
@@ -1179,6 +1179,7 @@ class PytisModule(Module, ActionHandler):
                     else:
                         req.unresolved_path = list(req.path)
                     return req.forward(self._module(module), pytis_redirect=True)
+        if record is None:
             # Handle request to a subpath (pytis bindings are represented by request uri paths).
             if req.unresolved_path:
                 self._authorize(req, action='view', record=record)
