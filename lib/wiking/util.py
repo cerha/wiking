@@ -1632,10 +1632,6 @@ class WikingResolver(pytis.util.Resolver):
         return method()
 
     
-class WikingFileResolver(WikingResolver, pytis.util.FileResolver):
-    pass
-    
-        
 class DateTime(pytis.data.DateTime):
     """Pytis DateTime type which exports as a 'lcg.LocalizableDateTime'."""
     
