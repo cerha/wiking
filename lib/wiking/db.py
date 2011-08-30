@@ -1668,7 +1668,7 @@ class PytisModule(Module, ActionHandler):
 
     def action_insert(self, req, prefill=None, action='insert'):
         # 'prefill' is passed eg. on copying an existing record.  It is only
-        # applied to a displayed form and is ignored on form submission (the
+        # used to initialize form fields and is ignored on form submission (the
         # submitted form should already include those values).
         layout = self._layout_instance(self._layout(req, action))
         if req.param('submit'):
@@ -1695,7 +1695,7 @@ class PytisModule(Module, ActionHandler):
                 if req.has_param(key) and not isinstance(type, (pd.Binary, pd.Password)):
                     value, error = type.validate(req.param(key), strict=False)
                     if not error:
-                        prefill[key] = value
+                        prefill[key] = value.value()
         # TODO: Redirect handler to HTTPS if cfg.force_https_login is true?
         # The primary motivation is to protect registration form data.  The
         # same would apply for action_edit.
