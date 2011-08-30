@@ -1667,7 +1667,9 @@ class PytisModule(Module, ActionHandler):
     # ===== Action handlers which modify the database =====
 
     def action_insert(self, req, prefill=None, action='insert'):
-        # 'record' is passed when copying an existing record.
+        # 'prefill' is passed eg. on copying an existing record.  It is only
+        # applied to a displayed form and is ignored on form submission (the
+        # submitted form should already include those values).
         layout = self._layout_instance(self._layout(req, action))
         if req.param('submit'):
             record = self._record(req, None, new=True, prefill=self._prefill(req))
@@ -1686,9 +1688,10 @@ class PytisModule(Module, ActionHandler):
         else:
             errors = ()
             invalid_prefill = None
-            if prefill is None:
-                prefill = {}
-            for key, type in self._type.items():
+            prefill = dict(self._prefill(req), **(prefill or {}))
+            for key in layout.order():
+                # Prefill also valid values passed as request arguments.
+                type = self._type[key]
                 if req.has_param(key) and not isinstance(type, (pd.Binary, pd.Password)):
                     value, error = type.validate(req.param(key), strict=False)
                     if not error:
