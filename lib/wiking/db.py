@@ -403,6 +403,8 @@ class PytisModule(Module, ActionHandler):
                         value = value.filename()
                 elif isinstance(type, pd.Array):
                     value = pytis.util.xtuple(value)
+                elif value == '' and isinstance(type, pd.Binary):
+                    value = None
             elif isinstance(type, pd.Binary):
                 value = None
             elif isinstance(type, pd.Boolean):
