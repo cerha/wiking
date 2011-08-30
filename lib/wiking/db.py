@@ -1091,7 +1091,7 @@ class PytisModule(Module, ActionHandler):
                 prefill['lang'] = lang
         return prefill
     
-    def _invalid_prefill(self, req, record):
+    def _invalid_prefill(self, req, record, layout):
         # Note, this method is only used for prefilling the fields in a
         # displayed form.  It has no effect on the 'prefill' passed to the
         # created 'Record' instances.  The returned dictionary values must be
@@ -1099,7 +1099,7 @@ class PytisModule(Module, ActionHandler):
         # still display them in fields so that the user can fix them and try
         # validation again.
         prefill = {}
-        for key in record.keys():
+        for key in layout.order():
             invalid_string = record.invalid_string(key)
             if invalid_string != None:
                 prefill[key] = invalid_string
@@ -1682,7 +1682,7 @@ class PytisModule(Module, ActionHandler):
                     errors = (self._analyze_exception(e),)
                 else:
                     return self._redirect_after_insert(req, record)
-            invalid_prefill = self._invalid_prefill(req, record)
+            invalid_prefill = self._invalid_prefill(req, record, layout)
         else:
             errors = ()
             invalid_prefill = None
@@ -1737,7 +1737,7 @@ class PytisModule(Module, ActionHandler):
                 return self._redirect_after_update(req, record)
         form = self._form(pw.EditForm, req, record=record, action=action, layout=layout,
                           submit=self._submit_buttons(req, action, record),
-                          invalid_prefill=self._invalid_prefill(req, record),
+                          invalid_prefill=self._invalid_prefill(req, record, layout),
                           errors=errors)
         return self._document(req, form, record,
                               subtitle=self._action_subtitle(req, action, record=record))
