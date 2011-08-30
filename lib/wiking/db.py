@@ -718,7 +718,7 @@ class PytisModule(Module, ActionHandler):
         # Return the URI of given record in the context of the current request.
         return self._current_base_uri(req, record) +'/'+ record[self._referer].export()
 
-    def _form(self, form, req, record=None, action=None, hidden=(), new=False, prefill=None,
+    def _form(self, form, req, record=None, action=None, new=False, prefill=None,
               invalid_prefill=None, handler=None, binding_uri=None, **kwargs):
         """Form instance creation wrapper.
 
@@ -765,16 +765,13 @@ class PytisModule(Module, ActionHandler):
         layout = kwargs.get('layout')
         if layout is not None and not isinstance(layout, pp.GroupSpec):
             kwargs['layout'] = self._layout_instance(layout)
-        if action is not None:
-            hidden += (('action', action),
-                       ('submit', 'submit'))
         form_record = self._record(req, record and record.row(), prefill=prefill, new=new)
         for fid, data, linking_column, value_column in self._array_fields:
             rows = data.get_rows(condition=pd.EQ(linking_column, form_record[self._key]))
             values = [r[value_column] for r in rows]
             form_record[fid] = pd.Value(form_record.type(fid), values)
         form_instance = form(self._view, form_record, handler=handler or req.uri(),
-                             name=self.name(), hidden=hidden, prefill=invalid_prefill,
+                             name=self.name(), prefill=invalid_prefill,
                              uri_provider=self._uri_provider(req, uri), **kwargs)
         if binding_uri is None:
             # We use heading_info only for main form, not for binding side
@@ -838,6 +835,30 @@ class PytisModule(Module, ActionHandler):
 
         """
         return self._LAYOUT.get(action)
+
+    def _hidden_fields(self, req, action, record=None):
+        """Return the hidden form fields for given action and record.
+
+        This method may be overriden to change hidden form fields dynamically
+        based on the combination of record, action and current request
+        properties.
+
+        Arguments:
+          req -- current request
+          action -- name of the action as a string (determines also the form
+            type)
+          record -- the current record instance or None (for actions which
+            don't work on an existing record, such as 'insert')
+
+        Returns a list of pairs (field, value) as accepted by the argument
+        'hidden' of 'pytis.web.Form' constructor.
+
+        The default implementation returns the list [('action', action),
+        ('submit', 'submit')] as these parameters are used by wiking itself.
+            
+        """
+        return [('action', action),
+                ('submit', 'submit')]
 
     def _submit_buttons(self, req, action, record=None):
         """Return the sequence of form submit buttons as pairs (LABEL, NAME).
@@ -1700,9 +1721,12 @@ class PytisModule(Module, ActionHandler):
         # The primary motivation is to protect registration form data.  The
         # same would apply for action_edit.
         form = self._form(pw.EditForm, req, new=True, action=action,
-                          prefill=prefill, invalid_prefill=invalid_prefill,
-                          layout=layout, errors=errors,
-                          submit=self._submit_buttons(req, action))
+                          layout=layout,
+                          hidden=self._hidden_fields(req, action),
+                          prefill=prefill,
+                          invalid_prefill=invalid_prefill,
+                          submit=self._submit_buttons(req, action),
+                          errors=errors)
         return self._document(req, form, subtitle=self._action_subtitle(req, action))
 
     def action_copy(self, req, record, action='insert'):
@@ -1738,9 +1762,11 @@ class PytisModule(Module, ActionHandler):
                 errors = (self._analyze_exception(e),)
             else:
                 return self._redirect_after_update(req, record)
-        form = self._form(pw.EditForm, req, record=record, action=action, layout=layout,
-                          submit=self._submit_buttons(req, action, record),
+        form = self._form(pw.EditForm, req, record=record, action=action,
+                          layout=layout,
+                          hidden=self._hidden_fields(req, action, record),
                           invalid_prefill=self._invalid_prefill(req, record, layout),
+                          submit=self._submit_buttons(req, action, record),
                           errors=errors)
         return self._document(req, form, record,
                               subtitle=self._action_subtitle(req, action, record=record))
