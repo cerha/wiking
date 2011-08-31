@@ -1716,15 +1716,19 @@ class PytisModule(Module, ActionHandler):
                             if record.field_changed(key)])
         else:
             errors = ()
-            invalid_prefill = None
             prefill = dict(self._prefill(req), **(prefill or {}))
+            invalid_prefill = {}
             for key in layout.order():
-                # Prefill also valid values passed as request arguments.
-                type = self._type[key]
-                if req.has_param(key) and not isinstance(type, (pd.Binary, pd.Password)):
-                    value, error = type.validate(req.param(key), strict=False)
-                    if not error:
-                        prefill[key] = value.value()
+                # Use values passed as request arguments as form prefill.
+                if req.has_param(key):
+                    type = self._type[key]
+                    if not isinstance(type, (pd.Binary, pd.Password)):
+                        string_value = req.param(key)
+                        value, error = type.validate(string_value, strict=False)
+                        if not error:
+                            prefill[key] = value.value()
+                        else:
+                            invalid_prefill = string_value
         # TODO: Redirect handler to HTTPS if cfg.force_https_login is true?
         # The primary motivation is to protect registration form data.  The
         # same would apply for action_edit.
