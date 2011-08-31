@@ -765,6 +765,10 @@ class PytisModule(Module, ActionHandler):
         layout = kwargs.get('layout')
         if layout is not None and not isinstance(layout, pp.GroupSpec):
             kwargs['layout'] = self._layout_instance(layout)
+        if action:
+            hidden_fields = self._hidden_fields(req, action, record)
+        else:
+            hidden_fields = ()
         form_record = self._record(req, record and record.row(), prefill=prefill, new=new)
         for fid, data, linking_column, value_column in self._array_fields:
             rows = data.get_rows(condition=pd.EQ(linking_column, form_record[self._key]))
@@ -772,7 +776,8 @@ class PytisModule(Module, ActionHandler):
             form_record[fid] = pd.Value(form_record.type(fid), values)
         form_instance = form(self._view, form_record, handler=handler or req.uri(),
                              name=self.name(), prefill=invalid_prefill,
-                             uri_provider=self._uri_provider(req, uri), **kwargs)
+                             uri_provider=self._uri_provider(req, uri),
+                             hidden=hidden_fields, **kwargs)
         if binding_uri is None:
             # We use heading_info only for main form, not for binding side
             # forms.  That's why we test binding_uri here (not very nice...).
@@ -1722,7 +1727,6 @@ class PytisModule(Module, ActionHandler):
         # same would apply for action_edit.
         form = self._form(pw.EditForm, req, new=True, action=action,
                           layout=layout,
-                          hidden=self._hidden_fields(req, action),
                           prefill=prefill,
                           invalid_prefill=invalid_prefill,
                           submit=self._submit_buttons(req, action),
@@ -1764,7 +1768,6 @@ class PytisModule(Module, ActionHandler):
                 return self._redirect_after_update(req, record)
         form = self._form(pw.EditForm, req, record=record, action=action,
                           layout=layout,
-                          hidden=self._hidden_fields(req, action, record),
                           invalid_prefill=self._invalid_prefill(req, record, layout),
                           submit=self._submit_buttons(req, action, record),
                           errors=errors)
