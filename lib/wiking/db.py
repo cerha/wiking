@@ -1710,7 +1710,9 @@ class PytisModule(Module, ActionHandler):
                     errors = (self._analyze_exception(e),)
                 else:
                     return self._redirect_after_insert(req, record)
-            # The record created above is not passed to the form, so we must  
+            # The record created above is not passed to the form, so we must
+            # pass the values through prefill/invalid_prefill to the newly
+            # displayed form.
             invalid_prefill = self._invalid_prefill(req, record, layout)
             prefill = dict([(key, record[key].value()) for key in layout.order()
                             if record.field_changed(key)])
