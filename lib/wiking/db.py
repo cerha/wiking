@@ -1207,11 +1207,10 @@ class PytisModule(Module, ActionHandler):
                     else:
                         req.unresolved_path = list(req.path)
                     return req.forward(self._module(module), pytis_redirect=True)
-        if record is None:
-            # Handle request to a subpath (pytis bindings are represented by request uri paths).
-            if req.unresolved_path:
-                self._authorize(req, action='view', record=record)
-                return self._handle_subpath(req, record)
+        # Handle request to a subpath (pytis bindings are represented by request uri paths).
+        if req.unresolved_path:
+            self._authorize(req, action='view', record=record)
+            return self._handle_subpath(req, record)
         return super(PytisModule, self)._handle(req, action, **kwargs)
 
     def _handle_subpath(self, req, record):
