@@ -1,3 +1,8 @@
+-- Remember to install the pgcrypto module first. To do that on debian-based systems,
+-- install the `postgresql-contrib' package and then run (substitute "8.4" with your
+-- PostgreSQL version and "brailshop.squeeze.pioneer" with your database server):
+-- su -c 'psql -1f /usr/share/postgresql/8.4/contrib/pgcrypto.sql brailshop.squeeze.pioneer' postgres
+
 create table cms_crypto_names (
        name text primary key,
        description text
