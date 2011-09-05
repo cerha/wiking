@@ -575,11 +575,11 @@ class Session(PytisModule, wiking.Session):
                 content = (content, form)
             else:
                 content = ConfirmationDialog(content)
-            # Translators: Dialog title (account in the meaning of user account).
             raise Abort(title, content)
         import wiking.cms.texts
         state = user.state()
         if state == Users.AccountState.DISABLED:
+            # Translators: Dialog title (account in the meaning of user account).
             abort(_("Account disabled"), wiking.cms.texts.disabled)
         elif state == Users.AccountState.NEW:
             abort(_("Account not activated"), wiking.cms.texts.unconfirmed, ActivationForm(uid))
