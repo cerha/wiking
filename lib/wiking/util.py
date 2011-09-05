@@ -158,8 +158,8 @@ class AuthenticationError(RequestError):
     little brave and guess the appropriate authentication method from the User
     Agent header.
 
-    The only currently recognized user agent is Thunderbird mail reader for its
-    built in RSS support.
+    The currently recognized user agents are Thunderbird mail reader (for its
+    built in RSS support) and Liferea.
     
     """
     _LOG = False
