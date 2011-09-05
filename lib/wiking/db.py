@@ -1200,6 +1200,8 @@ class PytisModule(Module, ActionHandler):
             if redirect:
                 module = redirect(req, record)
                 if module is not None and module != self.name():
+                    # Set the unresolved_path back to let the redirected module
+                    # do request resolution again.
                     for fw in reversed(req.forwards()):
                         if fw.module().name() == self.name():
                             req.unresolved_path = list(fw.unresolved_path())
