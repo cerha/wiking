@@ -1736,8 +1736,9 @@ class MailAttachment(object):
         """Return MIME type of the attachment."""
         return self._type
     
-def send_mail(addr, subject, text, sender=None, html=None, export=False, lang=None, cc=(),
-              headers=(), attachments=(), smtp_server=None):
+def send_mail(addr, subject, text, sender=None, sender_name=None, html=None,
+              export=False, lang=None, cc=(), headers=(), attachments=(),
+              smtp_server=None):
     """Send a MIME e-mail message.
 
     Arguments:
@@ -1745,8 +1746,12 @@ def send_mail(addr, subject, text, sender=None, html=None, export=False, lang=No
       addr -- recipient address as a string or sequence of recipient addresses
       subject -- message subject as a string or unicode
       text -- message text as a string or unicode
-      sender -- sender address as a string; if None, the address specified by the configuration
-        option `default_sender_address' is used.
+      sender -- sender email address as a string; if None, the address specified by the
+        configuration option `default_sender_address' is used.
+      sender_name -- optional human readable sender name as a string or
+        unicode; if not None, the name will be added to the 'From' header in
+        the standard form: "sender name" <sender@email>.  Proper encoding is
+        taken care of when necessary.
       html -- HTML part of the message as string or unicode
       export -- iff true, create the HTML part of the message by parsing 'text' as LCG Structured
         text and exporting it to HTML.
@@ -1768,6 +1773,7 @@ def send_mail(addr, subject, text, sender=None, html=None, export=False, lang=No
     assert isinstance(subject, basestring), ('type error', subject,)
     assert isinstance(text, basestring), ('type error', text,)
     assert sender is None or isinstance(sender, basestring), ('type error', sender,)
+    assert sender_name is None or isinstance(sender_name, basestring), ('type error', sender_name,)
     assert html is None or isinstance(html, basestring), ('type error', html,)
     assert isinstance(export, bool), ('type error', bool,)
     assert lang is None or isinstance(lang, basestring), ('type error', lang,)
@@ -1786,6 +1792,8 @@ def send_mail(addr, subject, text, sender=None, html=None, export=False, lang=No
     tr = translator(lang)
     if not sender or sender == '-': # Hack: '-' is the Wiking CMS Admin default value...
         sender = cfg.default_sender_address
+    if sender_name:
+        sender = '"%s" <%s>' % (email.Header.Header(sender_name, 'utf-8').encode(), sender)
     # Set up message headers.
     writer.addheader("From", sender)
     writer.addheader("To", addr)
