@@ -1768,7 +1768,6 @@ def send_mail(addr, subject, text, sender=None, sender_name=None, html=None,
         string; if 'None', server given in configuration is used
       
     """
-    string_class = type('')
     assert isinstance(addr, (basestring, tuple, list,)), ('type error', addr,)
     assert isinstance(subject, basestring), ('type error', subject,)
     assert isinstance(text, basestring), ('type error', text,)
