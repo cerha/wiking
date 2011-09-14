@@ -1569,7 +1569,7 @@ class WikingResolver(pytis.util.Resolver):
         for python_module_name in cfg.modules:
             python_module = self._import_python_module(python_module_name)
             for name, mod in python_module.__dict__.items():
-                if name not in modules and type(mod) == type(Module) \
+                if name not in modules and issubclass(type(mod), type(Module)) \
                        and issubclass(mod, Module):
                     modules[name] = mod
         return tuple(modules.values())
