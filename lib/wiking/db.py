@@ -1663,7 +1663,7 @@ class PytisModule(Module, ActionHandler):
         return result
 
     def _view_form_content(self, req, form, record):
-        """Return the page content for the 'view' action form as a list of 'lcg.Content' instances.
+        """Return page content for 'view' action form as a list of 'lcg.Content' instances.
 
         Arguments:
           req -- current 'Request' instance.
@@ -1683,6 +1683,21 @@ class PytisModule(Module, ActionHandler):
         content.extend(self._related_content(req, record))
         return content
     
+    def _update_form_content(self, req, form, record):
+        """Return page content for 'update' action form as a list of 'lcg.Content' instances.
+
+        Arguments:
+          req -- current 'Request' instance.
+          form -- 'pytis.web.EditForm' instance.
+          record -- the current record of the form as 'PytisModule.Record'.
+        
+        You may override this method to modify page content for the edit form
+        in derived classes.  The default implementation returns just the form
+        itself.
+
+        """
+        return [form]
+        
     def action_view(self, req, record, err=None, msg=None):
         # The arguments `msg' and `err' are DEPRECATED!  Please don't use.
         # They are currently still used in Eurochance LMS.
@@ -1781,7 +1796,8 @@ class PytisModule(Module, ActionHandler):
                           invalid_prefill=self._invalid_prefill(req, record, layout),
                           submit=self._submit_buttons(req, action, record),
                           errors=errors)
-        return self._document(req, form, record,
+        content = self._update_form_content(req, form, record)
+        return self._document(req, content, record,
                               subtitle=self._action_subtitle(req, action, record=record))
 
     def action_delete(self, req, record):
