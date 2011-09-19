@@ -37,8 +37,11 @@ end;
 $$ language plpgsql immutable;
 
 create or replace function cms_crypto_store_key (key text, psw text) returns bytea as $$
-  select pgp_sym_encrypt('wiking:'||$1, $2);
-$$ language sql immutable;
+-- This a PL/pgSQL, and not SQL, function in order to prevent direct dependency on pg_crypto.
+begin
+  return pgp_sym_encrypt('wiking:'||$1, $2);
+end;
+$$ language plpgsql immutable;
 
 create or replace function cms_crypto_insert_key (name_ text, uid_ int, key_ text, psw text) returns bool as $$
 begin
