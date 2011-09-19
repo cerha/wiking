@@ -5,12 +5,6 @@ div.calendar
   color: #000;
 }
 
-div.calendar.popup
-{
-  margin-left: -40px;
-  margin-top: -100px;
-}
-
 div.calendar table
 {
   background-color: #eee;

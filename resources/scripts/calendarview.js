@@ -518,7 +518,7 @@ Calendar.prototype = {
   // Shows the calendar at the given absolute position
   showAt: function (x, y)
   {
-    this.container.setStyle({ left: x + 'px', top: y + 'px' })
+    this.container.setStyle({ left: Math.max(x-40, 0) + 'px', top: Math.max(y-80, 0) + 'px' })
     this.show()
   },
 
