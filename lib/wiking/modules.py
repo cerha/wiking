@@ -359,6 +359,10 @@ class Resources(Module, RequestHandler):
         """
         return self._provider.resource(filename)
 
+    def resource_provider(self):
+        """Return the global resource provider instance."""
+        return self._provider
+        
 
 class SiteIcon(Module, RequestHandler):
     """Serve site icon according to the configuration option 'site_icon'.
