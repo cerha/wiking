@@ -333,8 +333,8 @@ Calendar.prototype = {
     this.date = new Date(date)
 
     // Calculate the first day to display (including the previous month)
-    date.setDate(1)
-    date.setDate(-(date.getDay()) + 1 + Calendar.FIRST_WEEK_DAY)
+    var offset = (date.getDay() >= Calendar.FIRST_WEEK_DAY ? +1 : -6) 
+    date.setDate(-date.getDay() + offset + Calendar.FIRST_WEEK_DAY)
 
     // Fill in the days of the month
     Element.getElementsBySelector(this.container, 'tbody tr').each(
