@@ -16,7 +16,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 import lcg, pytis
-import sys, email.Header, httplib, collections, datetime
+import sys, httplib, collections, datetime
 from xml.sax import saxutils
 
 DBG = pytis.util.DEBUG
@@ -1783,48 +1783,35 @@ def send_mail(addr, subject, text, sender=None, sender_name=None, html=None,
             assert isinstance(a, MailAttachment), ('type error', attachments, a,)
     if isinstance(addr, (tuple, list,)):
         addr = string.join(addr, ', ')
-    import MimeWriter
-    import mimetools
-    from cStringIO import StringIO
-    out = StringIO() # output buffer for our message 
-    writer = MimeWriter.MimeWriter(out)
-    tr = translator(lang)
-    if not sender or sender == '-': # Hack: '-' is the Wiking CMS Admin default value...
-        sender = cfg.default_sender_address
-    if sender_name:
-        sender = '"%s" <%s>' % (email.Header.Header(sender_name, 'utf-8').encode(), sender)
-    # Set up message headers.
-    writer.addheader("From", sender)
-    writer.addheader("To", addr)
-    if cc:
-        writer.addheader("Cc", string.join(cc, ', '))
-    translated_subject = tr.translate(subject)
-    try:
-        encoded_subject = translated_subject.encode('ascii')
-    except UnicodeEncodeError:
-        encoded_subject = email.Header.Header(translated_subject, 'utf-8').encode()
-    writer.addheader("Subject", encoded_subject)
-    writer.addheader("Date", time.strftime("%a, %d %b %Y %H:%M:%S %z"))
-    for header, value in headers:
-        writer.addheader(header, value)
-    writer.addheader("MIME-Version", "1.0")
-    # Start the multipart section (multipart/alternative seems to work better
-    # on some MUAs than multipart/mixed).
+    from email.mime.multipart import MIMEMultipart
+    from email.header import Header
     if attachments:
         multipart_type = 'mixed'
     else:
         multipart_type = 'alternative'
-    writer.startmultipartbody(multipart_type)
-    writer.flushheaders()
+    msg = MIMEMultipart(multipart_type)
+    tr = translator(lang)
+    if not sender or sender == '-': # Hack: '-' is the Wiking CMS Admin default value...
+        sender = cfg.default_sender_address
+    if sender_name:
+        sender = '"%s" <%s>' % (Header(sender_name, 'utf-8').encode(), sender)
+    # Set up message headers.
+    msg['From'] = sender
+    msg['To'] = addr
+    if cc:
+        msg['Cc'] = Header(string.join(cc, ', '), 'utf-8')
+    translated_subject = tr.translate(subject)
+    try:
+        encoded_subject = translated_subject.encode('ascii')
+    except UnicodeEncodeError:
+        encoded_subject = Header(translated_subject, 'utf-8')
+    msg['Subject'] = encoded_subject
+    msg['Date'] = time.strftime("%a, %d %b %Y %H:%M:%S %z")
+    for header, value in headers:
+        msg[header] = value
     # The plain text section.
-    if isinstance(text, unicode):
-        text = tr.translate(text)
-    txtin = StringIO(text.encode('utf-8'))
-    subpart = writer.nextpart()
-    subpart.addheader("Content-Transfer-Encoding", "quoted-printable")
-    pout = subpart.startbody("text/plain", [("charset", 'utf-8')])
-    mimetools.encode(txtin, pout, 'quoted-printable')
-    txtin.close()
+    from email.mime.text import MIMEText
+    msg.attach(MIMEText(text, 'plain', 'utf-8'))
     # The html section.
     if export:
         assert html is None
@@ -1834,27 +1821,35 @@ def send_mail(addr, subject, text, sender=None, sender_name=None, html=None,
         context = exporter.context(node, str(lang))
         html = "<html>\n"+ content.export(context) +"\n</html>\n"
     if html:
-        if isinstance(html, unicode):
-            html = tr.translate(html).encode('utf-8')
-        htmlin = StringIO(html)
-        subpart = writer.nextpart()
-        subpart.addheader("Content-Transfer-Encoding", "quoted-printable")
-        # Returns a file-like object we can write to.
-        pout = subpart.startbody("text/html", [("charset", 'utf-8')])
-        mimetools.encode(htmlin, pout, 'quoted-printable')
-        htmlin.close()
+        msg.attach(MIMEText(html, 'html', 'utf-8'))
     # The attachment section.
+    from email.mime.audio import MIMEAudio
+    from email.mime.base import MIMEBase
+    from email.mime.image import MIMEImage
     for a in attachments:
-        subpart = writer.nextpart()
-        subpart.addheader('Content-Transfer-Encoding', 'base64')
-        subpart.addheader('Content-Disposition', ('attachment; filename=%s' %
-                                                  (os.path.basename(a.file_name()),)))
+        file_name = os.path.basename(a.file_name())
         attin = a.stream()
-        pout = subpart.startbody(a.type())
-        mimetools.encode(attin, pout, 'base64')
+        ctype = a.type()
+        if ctype is None:
+            ctype, encoding = mimetypes.guess_type(file_name)
+            if ctype is None or encoding is not None:
+                ctype = 'application/octet-stream'
+        maintype, subtype = ctype.split('/', 1)
+        if maintype == 'text':
+            submsg = MIMEText(attin.read(), subtype, 'utf-8')
+        elif maintype == 'image':
+            submsg = MIMEImage(attin.read(), subtype)
+        elif maintype == 'audio':
+            submsg = MIMEAudio(attin.read(), subtype)
+        else:
+            submsg = MIMEBase(maintype, subtype)
+            submsg.set_payload(attin.read())
+            from email import encoders
+            encoders.encode_base64(submsg)
         attin.close()
-    # Close the writer and send the message.
-    writer.lastpart()
+        submsg.add_header('Content-Disposition', 'attachment', filename=file_name)
+        msg.attach(submsg)
+    # Send the message.
     addr_list = [addr]
     if cc:
         addr_list += cc
@@ -1864,9 +1859,8 @@ def send_mail(addr, subject, text, sender=None, sender_name=None, html=None,
         import smtplib
         server = smtplib.SMTP(smtp_server)
         try:
-            server.sendmail(sender, addr_list, out.getvalue())
+            server.sendmail(sender, addr_list, msg.as_string())
         finally:
-            out.close()
             server.quit()
         return None
     except Exception as e:
