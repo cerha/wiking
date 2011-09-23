@@ -1595,8 +1595,8 @@ class Attachments(ContentManagementModule):
                 fname = str(attachment_id) + append + '.' + ext
                 return os.path.join(cfg.storage, cfg.dbname, self.table, fname)
             return computer(func)
-        def redirect(self, record):
-            return record['is_image'].value() and 'Images' or None
+        def redirect(self, req, record):
+            return record and record['is_image'].value() and 'Images' or None
         layout = ('file', 'title', 'description', 'listed')
         columns = ('filename', 'title', 'bytesize', 'mime_type', 'listed', 'mapping_id')
         sorting = (('filename', ASC),)
