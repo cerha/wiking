@@ -1194,8 +1194,19 @@ class PytisModule(Module, ActionHandler):
 
     def _handle(self, req, action, **kwargs):
         record = kwargs.get('record')
-        if action != 'list':
-            # Handle Pytis redirection.
+        if record is not None and req.unresolved_path:
+            unresolved_subpath = True
+        else:
+            unresolved_subpath = False
+        if action != 'list' or unresolved_subpath:
+            # Handle Pytis redirection first.  The 'list' action is the only
+            # operation which is not subject to redirection.  Everything else
+            # (including 'insert') may be redirected to a more specific module
+            # according to request parameters or record values.  We also want
+            # the redirection to take place, when the 'list' action doesn't
+            # belong to the current module, but another module in the
+            # unresolved subpath.  The action on the current module is actually
+            # 'view' in this case.
             redirect = self._view.redirect()
             if redirect:
                 module = redirect(req, record)
@@ -1210,7 +1221,7 @@ class PytisModule(Module, ActionHandler):
                         req.unresolved_path = list(req.path)
                     return req.forward(self._module(module), pytis_redirect=True)
         # Handle request to a subpath (pytis bindings are represented by request uri paths).
-        if record is not None and req.unresolved_path:
+        if unresolved_subpath:
             self._authorize(req, action='view', record=record)
             return self._handle_subpath(req, record)
         return super(PytisModule, self)._handle(req, action, **kwargs)
