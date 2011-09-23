@@ -1631,6 +1631,22 @@ class WikingResolver(pytis.util.Resolver):
             raise pytis.util.ResolverSpecError(name, spec_name)
         return method()
 
+def module(name):
+    """Return the instance of given Wiking module.
+
+    @type name: str
+    @param name: Module name
+
+    Raises: ResolverError if no such module is found in the current resolver
+    configuration.
+
+    This is the official way to retrieve Wiking modules within the application.
+    All other means, such as the method 'Module._module()' or using
+    wiking.cfg.resolver directly are now deprecated.
+
+    """
+    return wiking.cfg.resolver.wiking_module(name)
+
     
 class DateTime(pytis.data.DateTime):
     """Pytis DateTime type which exports as a 'lcg.LocalizableDateTime'."""
