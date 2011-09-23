@@ -24,8 +24,8 @@ is stored in database and can be managed using a web browser.
 """
 
 import pytis.presentation as pp
-import wiking
 from wiking.cms import *
+import wiking
 
 import cStringIO
 import collections
@@ -557,7 +557,8 @@ class Session(PytisModule, wiking.Session):
         fields = [Field(_id) for _id in ('session_id', 'uid', 'session_key', 'last_access')]
 
     def init(self, req, user, session_key):
-        # Delete all expired records first...
+        import wiking # Don't know why, but it needs to be here...
+        # Delete all expired records first.
         data = self._data
         now_ = now()
         uid = user.uid()
