@@ -1807,6 +1807,8 @@ def send_mail(addr, subject, text, sender=None, sender_name=None, html=None,
         multipart_type = 'alternative'
     msg = MIMEMultipart(multipart_type)
     tr = translator(lang)
+    if isinstance(text, unicode):
+        text = tr.translate(text)
     if not sender or sender == '-': # Hack: '-' is the Wiking CMS Admin default value...
         sender = cfg.default_sender_address
     if sender_name:
