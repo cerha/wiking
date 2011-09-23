@@ -82,7 +82,7 @@ class RoleSets(UserManagementModule):
         if cid == 'delete':
             return req.make_uri(uri, role_set_id=record['role_set_id'].value(), action='delete')
         elif cid is None:
-            return self._module('ApplicationRoles').link(req, record[self._TITLE_COLUMN])
+            return wiking.module('ApplicationRoles').link(req, record[self._TITLE_COLUMN])
         else:
             return super(RoleSets, self)._link_provider(req, uri, record, cid, **kwargs)
 
@@ -179,9 +179,9 @@ class RoleMembers(UserManagementModule):
     def _link_provider(self, req, uri, record, cid, **kwargs):
         if cid is None:
             if self._TITLE_COLUMN == 'uid':
-                return self._module('Users').link(req, record['uid'])
+                return wiking.module('Users').link(req, record['uid'])
             else:
-                return self._module('ApplicationRoles').link(req, record['role_id'])
+                return wiking.module('ApplicationRoles').link(req, record['role_id'])
         elif cid == 'delete':
             return req.make_uri(uri, role_member_id=record['role_member_id'].value(), action='delete')
         else:
@@ -197,7 +197,7 @@ class RoleMembers(UserManagementModule):
           role, including all contained roles.
           
         """
-        included_role_ids = self._module('RoleSets').included_role_ids(role)
+        included_role_ids = wiking.module('RoleSets').included_role_ids(role)
         S = pd.String()
         condition = pd.OR(*[pd.EQ('role_id', pd.Value(S, m_id)) for m_id in included_role_ids])
         user_ids = []
@@ -250,7 +250,7 @@ class ApplicationRoles(UserManagementModule):
         title = _("User Groups")
         def __init__(self, *args, **kwargs):
             super(ApplicationRoles.Spec, self).__init__(*args, **kwargs)
-            self._roles = cfg.resolver.wiking_module('Users').Roles()
+            self._roles = wiking.module('Users').Roles()
         def fields(self): return (
             # Translators: Form field label.
             pp.Field('role_id', _("Identifier"), editable=computer(self._editable)),
@@ -629,7 +629,7 @@ class Users(UserManagementModule):
             uid = record.req().user().uid()
             if uid is None:
                 return None
-            crypto_keys = self._module(self._resolver)._module('CryptoKeys')
+            crypto_keys = wiking.module('CryptoKeys')
             if crypto_keys.assigned_names(uid):
                 return True
             else:
@@ -724,7 +724,7 @@ class Users(UserManagementModule):
         
     def _layout(self, req, action, record=None):
         def cms_text(cms_text):
-            texts = self._module('Texts')
+            texts = wiking.module('Texts')
             return texts.parsed_text(req, cms_text, lang=req.prefered_language())
         if action not in self._LAYOUT: # Allow overriding this layout in derived classes.
             if action == 'view':
@@ -925,14 +925,14 @@ class Users(UserManagementModule):
 
     def _registration_form_intro(self, record):
         req = record.req()
-        texts = self._module('Texts')
+        texts = wiking.module('Texts')
         content = texts.parsed_text(req, wiking.cms.texts.regintro, lang=req.prefered_language())
         if content is None:
             content = lcg.Content()
         return content
     
     def _confirmation_success_content(self, req, record):
-        texts = self._module('Texts')
+        texts = wiking.module('Texts')
         return texts.parsed_text(req, wiking.cms.texts.regsuccess, lang=req.prefered_language())
 
     def action_confirm(self, req):
@@ -1018,7 +1018,7 @@ class Users(UserManagementModule):
         if record['state'].value() == self.AccountState.ENABLED:
             roles.append(Roles.USER)
             roles_instance = self.Roles()
-            for role_id in self._module('RoleMembers').user_role_ids(uid):
+            for role_id in wiking.module('RoleMembers').user_role_ids(uid):
                 role = roles_instance[role_id]
                 if role not in roles:
                     roles.append(role)
@@ -1121,7 +1121,7 @@ class Users(UserManagementModule):
         elif key in user_cache:
             return user_cache[key]
         if role is not None:
-            role_user_ids = self._module('RoleMembers').user_ids(role)
+            role_user_ids = wiking.module('RoleMembers').user_ids(role)
         def make_user(row):
             if role is not None and row['uid'].value() not in role_user_ids:
                 return None
@@ -1192,7 +1192,7 @@ class Users(UserManagementModule):
                 role = (role,)
             user_ids = set()
             for r in role:
-                user_ids |= set(self._module('RoleMembers').user_ids(r))
+                user_ids |= set(wiking.module('RoleMembers').user_ids(r))
             include_uids = set(include_uids)
             exclude_uids = set(exclude_uids)
             user_ids |= include_uids
@@ -1268,13 +1268,13 @@ class Registration(Module, ActionHandler):
     def _handle(self, req, action, **kwargs):
         if len(req.unresolved_path) > 1 and req.user() \
                 and req.unresolved_path[0] == req.user().login():
-            return self._module('Users').handle(req)
+            return wiking.module('Users').handle(req)
         else:
             return super(Registration, self)._handle(req, action, **kwargs)
 
     def action_view(self, req):
         if req.user():
-            return self._module('Users').action_view(req, req.user().data())
+            return wiking.module('Users').action_view(req, req.user().data())
         elif req.param('command') == 'logout':
             raise Redirect('/')
         else:
@@ -1284,14 +1284,14 @@ class Registration(Module, ActionHandler):
     def action_insert(self, req, prefill=None, action='insert'):
         if not cfg.appl.allow_registration:
             raise Forbidden()
-        return self._module('Users').action_insert(req, prefill=prefill, action=action)
+        return wiking.module('Users').action_insert(req, prefill=prefill, action=action)
     RIGHTS_insert = (Roles.ANYONE,)
     
     def action_remind(self, req):
         title = _("Password reminder")
         query = req.param('query')
         if query:
-            users_module = self._module('Users')
+            users_module = wiking.module('Users')
             if query.find('@') == -1:
                 user = users_module.user(req, query)
             else:
@@ -1347,15 +1347,15 @@ class Registration(Module, ActionHandler):
     RIGHTS_remind = (Roles.ANYONE,)
 
     def action_update(self, req):
-        return self._module('Users').action_update(req, req.user().data())
+        return wiking.module('Users').action_update(req, req.user().data())
     RIGHTS_update = (Roles.REGISTERED,)
     
     def action_passwd(self, req):
-        return self._module('Users').action_passwd(req, req.user().data())
+        return wiking.module('Users').action_passwd(req, req.user().data())
     RIGHTS_passwd = (Roles.REGISTERED,)
     
     def action_confirm(self, req):
-        return self._module('Users').action_confirm(req)
+        return wiking.module('Users').action_confirm(req)
     RIGHTS_confirm = (Roles.ANYONE,)
 
 

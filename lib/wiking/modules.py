@@ -55,6 +55,7 @@ class Module(object):
         super(Module, self).__init__(**kwargs)
 
     def _module(self, name, **kwargs):
+        """Deprecated: Use 'wiking.module()' instead."""
         return self._resolver.wiking_module(name, **kwargs)
 
     
@@ -62,7 +63,7 @@ class RequestHandler(object):
     """Mix-in class for modules capable of handling requests."""
     
     def __init__(self, *args, **kwargs):
-        self._application = self._module('Application')
+        self._application = wiking.module('Application')
         super(RequestHandler, self).__init__(*args, **kwargs)
     
     def _base_uri(self, req):
@@ -468,7 +469,7 @@ class CookieAuthentication(object):
     
     def authenticate(self, req):
         try:
-            session = self._module('Session')
+            session = wiking.module('Session')
         except MaintenanceModeError:
             return None
         # When HTTP authentication is used, req.credentials() returns the

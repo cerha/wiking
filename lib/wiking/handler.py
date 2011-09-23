@@ -89,7 +89,7 @@ class Handler(object):
         config.dbconnections = cfg.connections
         config.dbconnection = config.option('dbconnection').default()
         del config
-        self._application = cfg.resolver.wiking_module('Application')
+        self._application = wiking.module('Application')
         self._exporter = cfg.exporter(translations=cfg.translation_path)
 
     def _serve_document(self, req, document, status_code=200):

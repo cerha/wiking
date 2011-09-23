@@ -1500,15 +1500,15 @@ class Specification(pp.Specification):
     actions = []
     data_cls = WikingDefaultDataClass
 
-    def __init__(self, module, resolver):
-        self._module = module
+    def __init__(self, wiking_module, resolver):
+        self._module = wiking_module
         if self.table is None:
-            self.table = pytis.util.camel_case_to_lower(module.name(), '_')
+            self.table = pytis.util.camel_case_to_lower(wiking_module.name(), '_')
         actions = self.actions
         if isinstance(actions, collections.Callable):
             actions = actions()
         actions = list(actions)
-        for base in module.__bases__ + (module,):
+        for base in wiking_module.__bases__ + (wiking_module,):
             if hasattr(base, '_ACTIONS'):
                 for action in base._ACTIONS:
                     if action not in actions:
@@ -1602,18 +1602,18 @@ class WikingResolver(pytis.util.Resolver):
         """
         key = (name, tuple(kwargs.items()))
         try:
-            module = self._wiking_module_cache[key]
+            module_instance = self._wiking_module_cache[key]
             # TODO: Check the class definition for changes and reload in runtime?
-            #if module.__class__ is not cls:
+            #if module_instance.__class__ is not cls:
             #    # Dispose the instance if the class definition has changed.
             #    raise KeyError()
         except KeyError:
             cls = self.wiking_module_cls(name)
             if issubclass(cls, PytisModule) and cfg.maintenance:
                 raise MaintenanceModeError()
-            module = cls(self, **kwargs)
-            self._wiking_module_cache[key] = module
-        return module
+            module_instance = cls(self, **kwargs)
+            self._wiking_module_cache[key] = module_instance
+        return module_instance
     
     def get(self, name, spec_name):
         try:

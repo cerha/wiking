@@ -111,10 +111,10 @@ class Application(Module):
             modname = self._MAPPING[identifier]
         except KeyError:
             raise NotFound()
-        module = self._module(modname)
-        assert isinstance(module, RequestHandler)
+        mod = wiking.module(modname)
+        assert isinstance(mod, RequestHandler)
         req.unresolved_path.pop(0)
-        return req.forward(module)
+        return req.forward(mod)
     
     def module_uri(self, req, modname):
         """Return the base URI of given Wiking module (relative to server root).

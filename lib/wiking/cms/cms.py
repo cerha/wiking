@@ -114,19 +114,19 @@ class WikingManagementInterface(Module, RequestHandler):
                 raise NotFound
             else:
                 raise Redirect('/_wmi/'+modname)
-        module = self._module(req.unresolved_path[0])
+        mod = wiking.module(req.unresolved_path[0])
         del req.unresolved_path[0]
-        return req.forward(module)
+        return req.forward(mod)
 
     def menu(self, req):
         variants = self._application.languages()
         return [MenuItem('_wmi/sec%d' % (i+1), title, descr=descr, variants=variants,
                          submenu=[MenuItem('_wmi/' + m.name(), m.title(), descr=m.descr(),
                                            variants=variants)
-                                  for m in [self._module(modname) for modname in modnames]])
+                                  for m in [wiking.module(modname) for modname in modnames]])
                 for i, (title, descr, modnames) in enumerate(self._MENU)] + \
                [MenuItem('__site_menu__', '', hidden=True, variants=variants,
-                         submenu=self._module('Pages').menu(req))]
+                         submenu=wiking.module('Pages').menu(req))]
 
     def module_uri(self, req, modname):
         """Return the WMI URI of given module or None if it is not available through WMI."""
@@ -212,16 +212,14 @@ class Roles(wiking.Roles):
         try:
             return super(Roles, self).__getitem__(role_id)
         except KeyError:
-            module = cfg.resolver.wiking_module('ApplicationRoles')
-            role = module.get_role(role_id)
+            role = wiking.module('ApplicationRoles').get_role(role_id)
             if role is None:
                 raise KeyError(role_id)
             return role
     
     def all_roles(self):
         standard_roles = super(Roles, self).all_roles()
-        module = cfg.resolver.wiking_module('ApplicationRoles')
-        user_defined_roles = module.user_defined_roles()
+        user_defined_roles = wiking.module('ApplicationRoles').user_defined_roles()
         return standard_roles + user_defined_roles
 
 
@@ -306,7 +304,7 @@ class CMSModule(PytisModule, RssModule, Panelizable):
             raise DecryptionError(unavailable_names.pop())
 
     def _generate_crypto_cookie(self):
-        return self._module('Session').session_key()
+        return wiking.module('Session').session_key()
 
 
 class ContentManagementModule(CMSModule):
@@ -467,7 +465,7 @@ class CMSExtension(Module, Embeddable, RequestHandler):
             for item in items:
                 self._mapping[item.id] = item.modname
                 self._rmapping[item.modname] = item.id
-                self._module(item.modname).set_parent(self)
+                wiking.module(item.modname).set_parent(self)
                 init(item.submenu)
         init(self._MENU)
     
@@ -477,10 +475,10 @@ class CMSExtension(Module, Embeddable, RequestHandler):
 
     def submenu(self, req):
         def menu_item(item):
-            module = self._module(item.modname)
+            submodule = wiking.module(item.modname)
             identifier = self.submodule_uri(req, item.modname)[1:]
-            submenu = [menu_item(i) for i in item.submenu] + module.submenu(req)
-            return MenuItem(identifier, module.title(), descr=module.descr(),
+            submenu = [menu_item(i) for i in item.submenu] + submodule.submenu(req)
+            return MenuItem(identifier, submodule.title(), descr=submodule.descr(),
                             submenu=submenu, **item.kwargs)
         return [menu_item(item) for item in self._MENU
                 if item.enabled is None or item.enabled(req)]
@@ -494,7 +492,7 @@ class CMSExtension(Module, Embeddable, RequestHandler):
         except KeyError:
             raise NotFound
         del req.unresolved_path[0]
-        return req.forward(self._module(modname))
+        return req.forward(wiking.module(modname))
 
     def submodule_uri(self, req, modname):
         return self._base_uri(req) +'/'+ self._rmapping[modname]
@@ -566,10 +564,10 @@ class Session(PytisModule, wiking.Session):
         expiration = datetime.timedelta(hours=cfg.session_expiration)
         data.delete_many(pd.LE('last_access', pd.Value(pd.DateTime(), now_ - expiration)))
         row, success = data.insert(data.make_row(uid=uid, session_key=session_key, last_access=now_))
-        self._module('SessionLog').log(req, now_, row['session_id'].value(), uid, user.login())
+        wiking.module('SessionLog').log(req, now_, row['session_id'].value(), uid, user.login())
         # Display info page for users without proper access
         def abort(title, text_id, form=None):
-            texts = self._module('Texts')
+            texts = wiking.module('Texts')
             content = texts.parsed_text(req, text_id, lang=req.prefered_language())
             if form:
                 content = (content, form)
@@ -587,8 +585,8 @@ class Session(PytisModule, wiking.Session):
             abort(_("Account not approved"), wiking.cms.texts.unapproved)
     
     def failure(self, req, user, login):
-        self._module('SessionLog').log(req, pytis.data.DateTime.datetime(), None,
-                                       user and user.uid(), login)
+        wiking.module('SessionLog').log(req, pytis.data.DateTime.datetime(), None,
+                                        user and user.uid(), login)
         
     def check(self, req, user, session_key):
         row = self._data.get_row(uid=user.uid(), session_key=session_key)
@@ -695,7 +693,7 @@ class Config(SettingsManagementModule):
             if isinstance(cfg.theme, Themes.Theme):
                 cfg.theme = Theme()
         elif not isinstance(cfg.theme, Themes.Theme) or cfg.theme.theme_id() != theme_id:
-            cfg.theme = self._module('Themes').theme(theme_id)
+            cfg.theme = wiking.module('Themes').theme(theme_id)
 
     def set_theme(self, req, theme_id):
         row = self._data.get_row(config_id=0)
@@ -809,7 +807,7 @@ class Panels(ContentManagementModule, Publishable):
         panels = []
         parser = lcg.Parser()
         #TODO: tady uvidim prirazenou stranku, navigable
-        roles = self._module('Users').Roles()
+        roles = wiking.module('Users').Roles()
         for row in self._data.get_rows(lang=lang, published=True, sorting=self._sorting):
             role_id = row['read_role_id'].value()
             if role_id is not None and not req.check_roles(roles[role_id]):
@@ -820,11 +818,11 @@ class Panels(ContentManagementModule, Publishable):
             channel = None
             modname = row['modname'].value()
             if modname:
-                module = self._module(modname)
+                mod = wiking.module(modname)
                 binding = self._embed_binding(modname)
-                content = tuple(module.panelize(req, lang, row['size'].value(),
+                content = tuple(mod.panelize(req, lang, row['size'].value(),
                                                 relation=binding and (binding, row)))
-                if module.has_channel():
+                if mod.has_channel():
                     channel = '/'+'.'.join((row['identifier'].value(), lang, 'rss'))
             if row['content'].value():
                 content += tuple(parser.parse(row['content'].value()))
@@ -1030,7 +1028,7 @@ class Themes(StyleManagementModule):
             theme_id = None
             name = _("Default")
             cfg.theme = Theme()
-        err = self._module('Config').set_theme(req, theme_id)
+        err = wiking.module('Config').set_theme(req, theme_id)
         if err is None:
             req.message(_("The color theme \"%s\" has been activated.", name))
         else:
@@ -1208,10 +1206,10 @@ class Pages(ContentManagementModule):
             binding = self._embed_binding(modname)
             # Modules with bindings are handled in the parent class method.
             if not binding:
-                module = self._module(modname)
-                if isinstance(module, RequestHandler):
+                mod = wiking.module(modname)
+                if isinstance(mod, RequestHandler):
                     try:
-                        return req.forward(module)
+                        return req.forward(mod)
                     except NotFound:
                         # Don't allow further processing if unresolved_path was already consumed. 
                         if not req.unresolved_path:
@@ -1327,12 +1325,12 @@ class Pages(ContentManagementModule):
             modname = row['modname'].value()
             if modname is not None:
                 try:
-                    module = self._module(modname)
+                    mod = wiking.module(modname)
                 except AttributeError:
                     # We want the CMS to work even if the module was uninstalled or renamed. 
                     submenu = []
                 else:
-                    submenu = list(module.submenu(req))
+                    submenu = list(mod.submenu(req))
             else:
                 submenu = []
             submenu += [item(r) for r in children.get(mapping_id, ())]
@@ -1378,7 +1376,7 @@ class Pages(ContentManagementModule):
         # Main content
         modname = record['modname'].value()
         if modname is not None:
-            content = self._module(modname).embed(req)
+            content = wiking.module(modname).embed(req)
             if isinstance(content, int):
                 # The request has already been served by the embedded module. 
                 return content
@@ -1397,7 +1395,7 @@ class Pages(ContentManagementModule):
             sections = parser.parse(pre) + content + parser.parse(post)
             content = [lcg.Container(sections)]
         # Attachment list
-        amod = self._module('Attachments')
+        amod = wiking.module('Attachments')
         attachments = amod.attachments(record['mapping_id'].value(), record['lang'].value(),
                                        '/'+ record['identifier'].export() + '/attachments')
         items = [(lcg.link(req.make_uri(a.uri), a.title),
@@ -1424,9 +1422,9 @@ class Pages(ContentManagementModule):
     def action_rss(self, req, record):
         modname = record['modname'].value()
         if modname is not None:
-            module = self._module(modname)
+            mod = wiking.module(modname)
             binding = self._embed_binding(modname)
-            return module.action_rss(req, relation=binding and (binding, record))
+            return mod.action_rss(req, relation=binding and (binding, record))
         else:
             raise NotFound()
         
@@ -1439,7 +1437,7 @@ class Pages(ContentManagementModule):
         
     def action_attachments(self, req, record):
         binding = self._view.bindings()[0]
-        content = self._module('Attachments').related(req, binding, record,
+        content = wiking.module('Attachments').related(req, binding, record,
                                                       uri=self._current_record_uri(req, record))
         # Translators: Section title. Attachments as in email attachments.
         return self._document(req, content, record, subtitle=_("Attachments"))
@@ -1485,9 +1483,9 @@ class Pages(ContentManagementModule):
         if record['title'].value() is None:
             if record['modname'].value() is not None:
                 # Supply the module's title automatically.
-                module = self._module(record['modname'].value())
+                mod = wiking.module(record['modname'].value())
                 tr = translator(record['lang'].value())
-                values['title'] = tr.translate(module.title())
+                values['title'] = tr.translate(mod.title())
             else:
                 req.message(_("Can't publish untitled page."), type=req.ERROR)
                 raise Redirect(self._current_record_uri(req, record))
@@ -1737,7 +1735,7 @@ class Attachments(ContentManagementModule):
 
     def action_insert_image(self, req):
         req.set_param('action', 'insert')
-        return self._module('Images').action_insert(req)
+        return wiking.module('Images').action_insert(req)
     RIGHTS_insert_image  = (Roles.CONTENT_ADMIN,)
 
 
@@ -2052,7 +2050,7 @@ class Stylesheets(Stylesheets):
         content = None
         if len(path) == 1:
             try:
-                content = self._module('Styles').stylesheet(path[0])
+                content = wiking.module('Styles').stylesheet(path[0])
             except MaintenanceModeError:
                 pass
         if content is not None:
@@ -2513,7 +2511,7 @@ class TextReferrer(object):
           
         """
         assert isinstance(text, Text)
-        return _method(self._module('Texts'), req, text, lang=lang, args=args)
+        return _method(wiking.module('Texts'), req, text, lang=lang, args=args)
 
     def _parsed_text(self, req, text, args=None, lang='en'):
         """Return parsed text corresponding to 'text'.
@@ -2528,7 +2526,7 @@ class TextReferrer(object):
 
     def _email_args(self, *args, **kwargs):
         """The same as 'Emails.email_args'"""
-        return self._module('Emails').email_args(*args, **kwargs)
+        return wiking.module('Emails').email_args(*args, **kwargs)
 
     def _send_mail(self, req, text, recipients, lang=None, args=None, **kwargs):
         """Send e-mail identified by 'text' to 'recipients'.

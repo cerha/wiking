@@ -93,7 +93,7 @@ class CryptoKeys(CMSExtensionModule):
             Field('delete', virtual=True, computer=computer(lambda row: _("Remove"))),
             )
         def _new_uid_filter(self, row, name):
-            assigned_users = self._module(self._resolver).assigned_users(row['name'])
+            assigned_users = wiking.module(self._resolver).assigned_users(row['name'])
             return pd.AND(*[pd.NE('uid', u) for u in assigned_users])
         sorting = (('uid', pd.ASCENDENT,),
                    ('name', pd.ASCENDENT,),
@@ -185,7 +185,7 @@ class CryptoKeys(CMSExtensionModule):
         return actions
 
     def _insert(self, req, record, transaction):
-        key = self._module('Session').session_key(length=128)
+        key = wiking.module('Session').session_key(length=128)
         if not self._call_db_function('cms_crypto_insert_key',
                                       record['name'].value(),
                                       record['uid'].value(),

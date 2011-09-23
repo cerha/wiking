@@ -62,7 +62,7 @@ class Application(CookieAuthentication, wiking.Application):
     def handle(self, req):
         req.wmi = False # Will be set to True by `WikingManagementInterface' if needed.
         try:
-            self._module('Config').configure(req)
+            wiking.module('Config').configure(req)
         except MaintenanceModeError:
             pass
         if req.unresolved_path:
@@ -74,7 +74,7 @@ class Application(CookieAuthentication, wiking.Application):
                 # Consume the unresolved path if it was in static mapping or leave it for further
                 # resolution when passing to Pages.
                 del req.unresolved_path[0]
-            return req.forward(self._module(modname))
+            return req.forward(wiking.module(modname))
         else:
             return super(Application, self).handle(req)
 
@@ -153,16 +153,16 @@ class Application(CookieAuthentication, wiking.Application):
             else:
                 try:
                     # Try if the module is directly embedded in a page.
-                    uri = self._module('Pages').module_uri(req, modname)
+                    uri = wiking.module('Pages').module_uri(req, modname)
                     if uri is None:
                         # If not embeded directly, try if it is a submodule of an embedded module.
-                        module = self._module(modname)
-                        if isinstance(module, CMSExtensionModule):
-                            parent = module.parent()
+                        mod = wiking.module(modname)
+                        if isinstance(mod, CMSExtensionModule):
+                            parent = mod.parent()
                             if parent is not None:
                                 uri = parent.submodule_uri(req, modname)
                         if uri is None:
-                            uri = self._module('WikingManagementInterface').module_uri(req, modname)
+                            uri = wiking.module('WikingManagementInterface').module_uri(req, modname)
                 except MaintenanceModeError:
                     pass
         return uri
@@ -180,9 +180,9 @@ class Application(CookieAuthentication, wiking.Application):
             return cfg.site_subtitle
     
     def menu(self, req):
-        module = req.wmi and 'WikingManagementInterface' or 'Pages'
+        modname = req.wmi and 'WikingManagementInterface' or 'Pages'
         try:
-            return self._module(module).menu(req)
+            return wiking.module(modname).menu(req)
         except MaintenanceModeError:
             return ()
     
@@ -192,25 +192,25 @@ class Application(CookieAuthentication, wiking.Application):
         else:
             panels = []
         try:
-            return panels + self._module('Panels').panels(req, lang)
+            return panels + wiking.module('Panels').panels(req, lang)
         except MaintenanceModeError:
             return []
         
     def languages(self):
         try:
-            return self._module('Languages').languages()
+            return wiking.module('Languages').languages()
         except MaintenanceModeError:
             return ('en', 'cs')
         
     def stylesheets(self, req):
         try:
-            return self._module('Styles').stylesheets(req)
+            return wiking.module('Styles').stylesheets(req)
         except MaintenanceModeError:
             return super(Application, self).stylesheets(req)
 
     def _auth_user(self, req, login):
         try:
-            return self._module('Users').user(req, login)
+            return wiking.module('Users').user(req, login)
         except MaintenanceModeError:
             return None
     
@@ -235,7 +235,7 @@ class Application(CookieAuthentication, wiking.Application):
         super(Application, self)._logout_hook(req, user)
         if user is None:
             return
-        self._module('CryptoKeys').clear_crypto_passwords(req, user)
+        wiking.module('CryptoKeys').clear_crypto_passwords(req, user)
 
     def authorize(self, req, module, action=None, record=None, **kwargs):
         """Authorization of CMS modules.
@@ -265,33 +265,33 @@ class Application(CookieAuthentication, wiking.Application):
         if module.name() == 'Pages' and record:
             if action in ('view', 'rss'):
                 role_id = record['read_role_id'].value()
-                roles = (self._module('Users').Roles()[role_id],)
+                roles = (wiking.module('Users').Roles()[role_id],)
             elif action in ('update', 'commit', 'revert', 'attachments'):
                 role_id = record['write_role_id'].value()
-                roles = (self._module('Users').Roles()[role_id], Roles.CONTENT_ADMIN)
+                roles = (wiking.module('Users').Roles()[role_id], Roles.CONTENT_ADMIN)
         if module.name() == 'Attachments' and req.page:
             if action in ('view', 'list'):
                 role_id = req.page['read_role_id'].value()
-                roles = (self._module('Users').Roles()[role_id],)
+                roles = (wiking.module('Users').Roles()[role_id],)
             elif action in ('insert', 'update', 'delete'):
                 role_id = req.page['write_role_id'].value()
-                roles = (self._module('Users').Roles()[role_id], Roles.CONTENT_ADMIN)
+                roles = (wiking.module('Users').Roles()[role_id], Roles.CONTENT_ADMIN)
         #debug("***:", module.name(), action, record.__class__, roles, hasattr(req, 'page'))
         if req.check_roles(roles):
             return True
         elif Roles.OWNER in roles and module.name() == 'Attachments' and hasattr(req, 'page') \
                  and req.user():
-            return self._module('Pages').check_owner(req.user(), req.page)
+            return wiking.module('Pages').check_owner(req.user(), req.page)
         elif Roles.OWNER in roles and isinstance(module, PytisModule) and record and req.user():
             return module.check_owner(req.user(), record)
         else:
             return False
         
     def contained_roles(self, req, role):
-        role_sets = cfg.resolver.wiking_module('RoleSets')
+        role_sets = wiking.module('RoleSets')
         role_ids = role_sets.included_role_ids(role)
         if self._roles_instance is None:
-            self._roles_instance = self._module('Users').Roles()
+            self._roles_instance = wiking.module('Users').Roles()
         roles_instance = self._roles_instance
         result = tuple([roles_instance[role_id] for role_id in role_ids])
         return result
@@ -329,7 +329,7 @@ class Application(CookieAuthentication, wiking.Application):
             return LoginCtrl(inline=True)
 
     def footer_content(self, req):
-        texts = self._module('Texts')
+        texts = wiking.module('Texts')
         text = texts.text(req, wiking.cms.texts.footer, lang=req.prefered_language())
         text = text.replace('$webmaster_address', cfg.webmaster_address)
         return lcg.Parser().parse(text)

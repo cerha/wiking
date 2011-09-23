@@ -223,7 +223,8 @@ class PytisModule(Module, ActionHandler):
             return self._req
 
         def module(self, name, **kwargs):
-            return self._resolver.wiking_module(name, **kwargs)
+            """Deprecated: Use 'wiking.module()' instead."""
+            return wiking.module(name, **kwargs)
 
         def key(self):
             """Return the value of record's key for data operations."""
@@ -680,10 +681,10 @@ class PytisModule(Module, ActionHandler):
         if cid in self._links:
             value_column, link = self._links[cid]
             try:
-                module = self._module(link.name())
+                mod = wiking.module(link.name())
             except AttributeError:
                 return None
-            return module.link(req, {link.column(): record[value_column].value()}, **kwargs)
+            return mod.link(req, {link.column(): record[value_column].value()}, **kwargs)
         return None
 
     def _image_provider(self, req, record, cid, uri):
@@ -1209,8 +1210,8 @@ class PytisModule(Module, ActionHandler):
             # 'view' in this case.
             redirect = self._view.redirect()
             if redirect:
-                module = redirect(req, record)
-                if module is not None and module != self.name():
+                modname = redirect(req, record)
+                if modname is not None and modname != self.name():
                     # Set the unresolved_path back to let the redirected module
                     # do request resolution again.
                     for fw in reversed(req.forwards()):
@@ -1219,7 +1220,7 @@ class PytisModule(Module, ActionHandler):
                             break
                     else:
                         req.unresolved_path = list(req.path)
-                    return req.forward(self._module(module), pytis_redirect=True)
+                    return req.forward(wiking.module(modname), pytis_redirect=True)
         # Handle request to a subpath (pytis bindings are represented by request uri paths).
         if unresolved_subpath:
             self._authorize(req, action='view', record=record)
@@ -1231,8 +1232,8 @@ class PytisModule(Module, ActionHandler):
             if req.unresolved_path[0] == binding.id():
                 del req.unresolved_path[0]
                 # TODO: respect the binding condition in the forwarded module.
-                module = self._module(binding.name())
-                return req.forward(module, binding=binding, record=record,
+                mod = wiking.module(binding.name())
+                return req.forward(mod, binding=binding, record=record,
                                    title=self._document_title(req, record))
         if req.unresolved_path[0] in [b.id() for b in self._view.bindings()]:
             # If a binding is present in `view.bindings()', but not in
@@ -1666,9 +1667,9 @@ class PytisModule(Module, ActionHandler):
         """
         result = []
         for binding in self._bindings(req, record):
-            module = self._module(binding.name())
-            content = module.related(req, binding, record,
-                                     uri=self._current_record_uri(req, record))
+            mod = wiking.module(binding.name())
+            content = mod.related(req, binding, record,
+                                  uri=self._current_record_uri(req, record))
             if content:
                 result.append(lcg.Section(title=binding.title(), content=content))
         return result

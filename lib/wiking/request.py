@@ -262,7 +262,7 @@ class Request(ServerInterface):
         self._module_uri = {}
         self._user = self._UNDEFINED
         self._fresh_login = False
-        self._application = wiking.cfg.resolver.wiking_module('Application')
+        self._application = wiking.module('Application')
         self._cookies = Cookie.SimpleCookie(self.header('Cookie'))
         self._preferred_languages = self._init_preferred_languages()
         self._credentials = self._init_credentials()
