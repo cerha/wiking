@@ -120,7 +120,7 @@ update users set state='enabled' where state in ('cont', 'user');
 update users set state='disabled' where state='disa';
 
 alter table email_spool add column role_id name references roles on update cascade on delete cascade;
-update email_spool set role_id=role;
+update email_spool set role_id=role where role != '_all';
 alter table email_spool drop column role;
 
 alter table users drop column organization;
