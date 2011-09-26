@@ -728,11 +728,6 @@ class Users(UserManagementModule):
             return texts.parsed_text(req, cms_text, lang=req.prefered_language())
         if action not in self._LAYOUT: # Allow overriding this layout in derived classes.
             if action == 'view':
-                # Translators: Personal data -- first name, surname, nickname ...
-                layout = [FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname',)),
-                          FieldSet(_("Contact information"), ('email', 'phone', 'address','uri')),
-                          FieldSet(_("Others"), ('note',)),
-                          ]
                 regconfirm = cms_text(wiking.cms.texts.regconfirm)
                 account_state = ['state']
                 if regconfirm:
@@ -740,10 +735,13 @@ class Users(UserManagementModule):
                         account_state.append(cms_text(wiking.cms.texts.regconfirm_confirmed))
                     else:
                         account_state.append(regconfirm)
-                # Hack: FieldSet with only text is not possible in this case, so we
-                # append the confirmation information into Account state
-                layout.append([FieldSet(_("Account state"), account_state),
-                               lambda r: r['state_info'].value()]) # Returns lcg.Content element.
+                # Translators: Personal data -- first name, surname, nickname ...
+                layout = [FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname',)),
+                          FieldSet(_("Contact information"), ('email', 'phone', 'address','uri')),
+                          FieldSet(_("Others"), ('note',)),
+                          FieldSet(_("Account state"), account_state),
+                          lambda r: r['state_info'].value(),
+                          ]
                 return layout
             if action == 'insert':
                 layout = [
