@@ -4,7 +4,7 @@
 //
 // Maintained by Justin Mecham <justin@aspect.net>
 //
-// Portions Copyright 2002-2005, 2009 Mihai Bazon
+// Portions Copyright 2002-2005, 2009, 2011 Mihai Bazon
 //
 // This calendar is based very loosely on the Dynarch Calendar in that it was
 // used as a base, but completely gutted and more or less rewritten in place
@@ -332,6 +332,7 @@ Calendar.prototype = {
 
     this.date = new Date(date)
 
+    date.setDate(1)
     // Calculate the first day to display (including the previous month)
     var offset = (date.getDay() >= Calendar.FIRST_WEEK_DAY ? +1 : -6) 
     date.setDate(-date.getDay() + offset + Calendar.FIRST_WEEK_DAY)
@@ -456,7 +457,7 @@ Calendar.prototype = {
     this.container.appendChild(table)
 
     // Initialize Calendar
-    this.update(this.date)
+    //this.update(this.date)
 
     // Observe the container for mousedown events
     Event.observe(this.container, 'mousedown', Calendar.handleMouseDownEvent)
@@ -570,8 +571,9 @@ Calendar.prototype = {
 
   setDate: function(date)
   {
-    if (!date.equalsTo(this.date))
-      this.update(date)
+      if (!date.equalsTo(this.date)) {
+	  this.update(date)
+      }
   },
 
   setDateFormat: function(format)
