@@ -1605,10 +1605,11 @@ class PytisModule(Module, ActionHandler):
         
     def related(self, req, binding, record, uri):
         """Return the listing of records related to other module's record by given binding."""
-        if isinstance(binding, Binding) and binding.form() is not None:
-            form_cls = binding.form()
+        if isinstance(binding, Binding) and binding.form_cls() is not None:
+            form_cls = binding.form_cls()
+            form_kwargs = binding.form_kwargs()
         else:
-            form_cls = pw.ListView
+            form_cls, form_kwargs = pw.ListView, {}
         condition = self._binding_condition(binding, record)
         columns = [c for c in self._columns(req) if c != binding.binding_column()]
         lang = req.prefered_language(raise_error=False)
@@ -1616,7 +1617,8 @@ class PytisModule(Module, ActionHandler):
         form = self._form(form_cls, req, columns=columns, binding_uri=binding_uri,
                           condition=self._condition(req, condition=condition, lang=lang),
                           arguments=self._binding_arguments(binding, record),
-                          profiles=self._profiles(req), filter_sets=self._filter_sets(req))
+                          profiles=self._profiles(req), filter_sets=self._filter_sets(req),
+                          **form_kwargs)
         content = self._list_form_content(req, form, uri=binding_uri)
         descr = binding.descr()
         if descr:

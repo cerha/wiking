@@ -1538,13 +1538,24 @@ class Binding(pp.Binding):
         form = kwargs.pop('form', None)
         enabled = kwargs.pop('enabled', None)
         super(Binding, self).__init__(*args, **kwargs)
-        assert form is None or issubclass(form, pytis.web.BrowseForm), form
+        if isinstance(form, tuple):
+            form_cls, form_kwargs = form
+            assert issubclass(form_cls, pytis.web.BrowseForm), form_cls
+            assert isinstance(form_kwargs, dict), form_kwargs
+        else:
+            assert form is None or issubclass(form, pytis.web.BrowseForm), form
+            form_cls = form
+            form_kwargs = {}
         assert enabled is None or isinstance(enabled, collections.Callable), enabled
-        self._form = form
+        self._form_cls = form_cls
+        self._form_kwargs = form_kwargs
         self._enabled = enabled
 
-    def form(self):
-        return self._form
+    def form_cls(self):
+        return self._form_cls
+
+    def form_kwargs(self):
+        return self._form_kwargs
 
     def enabled(self):
         return self._enabled
