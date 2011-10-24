@@ -79,7 +79,7 @@ class Handler(object):
         if cfg.dbname is None:
            cfg.dbname = server_hostname
         if cfg.resolver is None:
-            cfg.resolver = wiking.WikingResolver()
+            cfg.resolver = wiking.WikingResolver(cfg.modules)
         # Modify pytis configuration.
         import config
         config.dblisten = False
