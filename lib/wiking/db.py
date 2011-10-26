@@ -374,6 +374,7 @@ class PytisModule(Module, ActionHandler):
         changed_field = req.param('_pytis_form_changed_field')
         if changed_field:
             order = [id for id in order if id != changed_field] + [str(changed_field)]
+        locale_data = self._locale_data(req)
         for id in order:
             f = self._view.field(id)
             if not record.editable(id):
@@ -412,8 +413,19 @@ class PytisModule(Module, ActionHandler):
                 value = "F"
             else:
                 value = ""
+            if isinstance(type, pd.Float):
+                if isinstance(type, pd.Monetary):
+                    decimal_point = locale_data.mon_decimal_point
+                    thousands_sep = locale_data.mon_thousands_sep
+                else:
+                    decimal_point = locale_data.decimal_point
+                    thousands_sep = locale_data.thousands_sep
+                # Convert the value to 'C' locale formatting before validation.
+                if thousands_sep:
+                    value = value.replace(thousands_sep, '')
+                if decimal_point != '.':
+                    value = value.replace(decimal_point, '.')
             if isinstance(type, pd.DateTime):
-                locale_data = self._locale_data(req)
                 if isinstance(type, pd.Date):
                     format = locale_data.date_format
                 else:
