@@ -409,7 +409,6 @@ var WikingTreeMenu = Class.create(WikingMenu, {
     on_menu_keydown: function (event) {
 	var item = event.element();
 	var cmd = this.command(event);
-	console.log("**", cmd, item)
 	if (cmd == this.CMD_UP) {
 	    var target = null;
 	    if (item._wiking_menu_prev != null) {
@@ -427,7 +426,6 @@ var WikingTreeMenu = Class.create(WikingMenu, {
 		target = item._wiking_submenu[0];
 	    else
 		target = this.next_item(item);
-	    console.log(">>", target)
 	    this.set_focus(target);
 	    event.stop();
 	} else if (cmd == this.CMD_PREV) {
