@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-08-29 14:16+0200\n"
+"POT-Creation-Date: 2011-10-27 22:53+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Petr Topiarz <topiarz@post.cz>\n"
 "Language-Team: \n"
@@ -10,24 +10,6 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-
-#: ../lib/wiking/application.py:313
-msgid "Unable to perform a database operation."
-msgstr "Efectuarea operaţiei de bază de date a eşuat."
-
-#. Translators: Website idiom. This is followed by information on the underlying software
-#. tools.  Means: This website runs on [...this and that software...].
-#: ../lib/wiking/application.py:411
-msgid "Powered by"
-msgstr "Oferit de "
-
-#: ../lib/wiking/application.py:428
-msgid "Accessibility Statement"
-msgstr "Declaraţie de Accesibilitate"
-
-#: ../lib/wiking/application.py:456
-msgid "Contact:"
-msgstr "Contact:"
 
 #: ../lib/wiking/configuration.py:204
 msgid "Webmaster's e-mail address"
@@ -235,210 +217,91 @@ msgstr "Referinţa a fost actualizată cu succes."
 msgid "The record was deleted."
 msgstr "Referinţa a fost ştearsă."
 
-#: ../lib/wiking/db.py:443
+#: ../lib/wiking/db.py:458
 msgid "Integrity check failed."
 msgstr "Controlul integrităţii datelor a eşuat."
 
-#: ../lib/wiking/db.py:497
+#: ../lib/wiking/db.py:512
 #, fuzzy
 msgid "Unable to perform a database operation:"
 msgstr "Efectuarea operaţiei de bază de date a eşuat."
 
-#: ../lib/wiking/db.py:921
+#: ../lib/wiking/db.py:961
 msgid "Filter"
 msgstr ""
 
 #. Translators: Back button label. Standard computer terminology.
-#: ../lib/wiking/db.py:1756
+#: ../lib/wiking/db.py:1842
 msgid "Back"
 msgstr "Înapoi"
 
 #. Translators: RSS channel is a computer idiom, see Wikipedia.
-#: ../lib/wiking/db.py:1963 ../lib/wiking/db.py:2116
+#: ../lib/wiking/db.py:2049 ../lib/wiking/db.py:2202
 msgid "An RSS channel is available for this section:"
 msgstr "Pentru această secţiune este disponibil şi un canal RSS:"
 
 #. Translators: RSS channel is a computer idiom, see Wikipedia.  Don't translate 'RSS'.
-#: ../lib/wiking/db.py:1967 ../lib/wiking/db.py:2114
+#: ../lib/wiking/db.py:2053 ../lib/wiking/db.py:2200
 msgid "more about RSS"
 msgstr "mai mult despre RSS"
 
-#: ../lib/wiking/db.py:2109
+#: ../lib/wiking/db.py:2195
 #, fuzzy, python-format
 msgid "RSS channel \"%s\""
 msgstr "RSS canal"
 
-#: ../lib/wiking/db.py:2119
+#: ../lib/wiking/db.py:2205
 #, fuzzy
 msgid "RSS channels are available for this section"
 msgstr "Pentru această secţiune este disponibil şi un canal RSS:"
 
 #. Translators: Record as in `database record'.
-#: ../lib/wiking/db.py:2209
+#: ../lib/wiking/db.py:2295
 msgid "No records."
 msgstr "Nici o referinţă."
 
 #. Translators: `Item' is intentionally general. Could be webpage, notice or something else.
-#: ../lib/wiking/db.py:2217
+#: ../lib/wiking/db.py:2303
 msgid "The item was published."
 msgstr "Obiectul a fost publicat."
 
-#: ../lib/wiking/db.py:2218
+#: ../lib/wiking/db.py:2304
 msgid "The item was unpublished."
 msgstr "Publicarea obiectului s-a anulat."
 
-#: ../lib/wiking/db.py:2227
+#: ../lib/wiking/db.py:2313
 msgid "Publish"
 msgstr "Publică"
 
-#: ../lib/wiking/db.py:2230
+#: ../lib/wiking/db.py:2316
 msgid "Make the item visible to website visitors"
 msgstr "Fă obiectul accesibil vizitatorilor site-ului"
 
-#: ../lib/wiking/db.py:2231
+#: ../lib/wiking/db.py:2317
 msgid "Unpublish"
 msgstr "Nu publica"
 
-#: ../lib/wiking/db.py:2234
+#: ../lib/wiking/db.py:2320
 msgid "Make the item invisible to website visitors"
 msgstr "Fă obiectul inaccesibil pentru vizitatorii site-ului"
 
-#: ../lib/wiking/export.py:84
-msgid "Page heading"
-msgstr "Titlul paginii"
+#: ../lib/wiking/application.py:313
+msgid "Unable to perform a database operation."
+msgstr "Efectuarea operaţiei de bază de date a eşuat."
 
-#: ../lib/wiking/export.py:85 ../lib/wiking/export.py:204
-#: ../lib/wiking/export.py:229 ../lib/wiking/export.py:297
-msgid "Main navigation"
-msgstr "Navigaţia principală"
+#. Translators: Website idiom. This is followed by information on the underlying software
+#. tools.  Means: This website runs on [...this and that software...].
+#: ../lib/wiking/application.py:411
+msgid "Powered by"
+msgstr "Oferit de "
 
-#: ../lib/wiking/export.py:86 ../lib/wiking/export.py:206
-#: ../lib/wiking/export.py:291
-msgid "Local navigation"
-msgstr "Navigaţia acestei secţiuni "
+#: ../lib/wiking/application.py:428
+msgid "Accessibility Statement"
+msgstr "Declaraţie de Accesibilitate"
 
-#: ../lib/wiking/export.py:87 ../lib/wiking/export.py:202
-msgid "Main content"
-msgstr "Cuprinsul principal"
-
-#: ../lib/wiking/export.py:88
-msgid "Page footer"
-msgstr "Subsolul paginii"
-
-#. Translators: Title of a dialog on a webpage
-#: ../lib/wiking/export.py:89 ../lib/wiking/export.py:208
-#: ../lib/wiking/util.py:309
-msgid "Language selection"
-msgstr "Selectare limbă"
-
-#. Translators: Label for language selection followed by list of languages
-#: ../lib/wiking/export.py:92
-msgid "Language:"
-msgstr "Limba:"
-
-#: ../lib/wiking/export.py:103
-msgid "Expand/collapse complete menu hierarchy"
-msgstr ""
-
-#: ../lib/wiking/export.py:212
-msgid "Jump in page"
-msgstr "Treci la pagina"
-
-#. Translators: A label followed by location information in webpage navigation
-#: ../lib/wiking/export.py:217
-msgid "You are here:"
-msgstr "Te afli aici:"
-
-#. Translators: Heading of webpage navigation menu containing a list
-#. of links to pages in this web section
-#: ../lib/wiking/export.py:294
-msgid "In this section:"
-msgstr "În această secţiune:"
-
-#. Translators: Panels are small windows on the side of the page. This is a label
-#. for a link that shows/hides the panels.
-#: ../lib/wiking/export.py:311
-msgid "Show panels"
-msgstr "Afişează panourile"
-
-#: ../lib/wiking/export.py:312
-msgid "Hide panels"
-msgstr "Ascunde panourile"
-
-#. Translators: ``RSS channel'' is terminology idiom, see Wikipedia
-#: ../lib/wiking/export.py:324
-msgid "RSS channel"
-msgstr "RSS canal"
-
-#: ../lib/wiking/export.py:343
-msgid "Warning"
-msgstr "Atenţie"
-
-#. Translators: Information about last change of a webpage (when and who)
-#: ../lib/wiking/export.py:366
-#, python-format
-msgid "Last change: %(date)s, %(user)s"
-msgstr "Ultima modificare: %(date)s, %(user)s"
-
-#: ../lib/wiking/modules.py:488
-msgid "Enter your login name, please!"
-msgstr "Vă rugăm să introduceţi numele de utilizator!"
-
-#: ../lib/wiking/modules.py:490
-msgid "Enter your password, please!"
-msgstr "Vă rugăm să introduceţi parola!"
-
-#: ../lib/wiking/modules.py:495
-msgid "Invalid login!"
-msgstr "Autentificare invalidă!"
-
-#: ../lib/wiking/modules.py:595
-msgid "Searching"
-msgstr "Căutare"
-
-#: ../lib/wiking/modules.py:596
-msgid "Search results"
-msgstr "Rezultatele căutării"
-
-#: ../lib/wiking/modules.py:597
-msgid "Given search term doesn't contain any searchable term."
-msgstr "Expresia de căutare introdusă nu conţine nici un termen de căutare."
-
-#: ../lib/wiking/modules.py:601
-msgid "Search words:"
-msgstr "Caută cuvintele:"
-
-#: ../lib/wiking/modules.py:602
-msgid "Search"
-msgstr "Caută"
-
-#: ../lib/wiking/modules.py:658
-msgid "Nothing found."
-msgstr "Nici un rezultat."
-
-#: ../lib/wiking/modules.py:715
-msgid "The following modules were successfully reloaded:"
-msgstr "Următoarele module au fost reîncărcate cu succes:"
-
-#: ../lib/wiking/modules.py:717
-msgid "Reload"
-msgstr "Reîncărcare"
-
-#. Translators: Short description of a user group purpose.
-#: ../lib/wiking/request.py:1113
-msgid "Anyone"
-msgstr ""
-
-#. Translators: Short description of a user group purpose.
-#: ../lib/wiking/request.py:1116
-#, fuzzy
-msgid "Any authenticated user"
-msgstr "Acţiunea solicită autentificare"
-
-#. Translators: Short description of a user group purpose.
-#: ../lib/wiking/request.py:1123
-msgid "Current record owner"
-msgstr ""
+#: ../lib/wiking/application.py:456
+msgid "Contact:"
+msgstr "Contact:"
 
 #. Translators: '%(code)d' is replaced by error number and '%(name)s' by error title.
 #: ../lib/wiking/util.py:109
@@ -527,6 +390,12 @@ msgstr "Obiectul '%s' nu este accesibil."
 #: ../lib/wiking/util.py:297
 msgid "The item exists on the server, but can not be accessed."
 msgstr "Obiectul solicitat există la serverul nostru, dar nu poate fi afişat."
+
+#. Translators: Title of a dialog on a webpage
+#: ../lib/wiking/util.py:309 ../lib/wiking/export.py:89
+#: ../lib/wiking/export.py:208
+msgid "Language selection"
+msgstr "Selectare limbă"
 
 #: ../lib/wiking/util.py:313
 #, python-format
@@ -680,15 +549,146 @@ msgstr "Parola"
 msgid "Continue"
 msgstr ""
 
-#: ../lib/wiking/util.py:1900
+#: ../lib/wiking/util.py:1926
 msgid "Invalid format"
 msgstr "Format invalid"
 
 #. Translators: Computer terminology. `gmail.com' is a domain name in email address
 #. `joe@gmail.com'.
-#: ../lib/wiking/util.py:1908 ../lib/wiking/util.py:1915
+#: ../lib/wiking/util.py:1934 ../lib/wiking/util.py:1941
 msgid "Domain not found"
 msgstr "Domeniul nu a fost găsit"
+
+#: ../lib/wiking/export.py:84
+msgid "Page heading"
+msgstr "Titlul paginii"
+
+#: ../lib/wiking/export.py:85 ../lib/wiking/export.py:204
+#: ../lib/wiking/export.py:229 ../lib/wiking/export.py:297
+msgid "Main navigation"
+msgstr "Navigaţia principală"
+
+#: ../lib/wiking/export.py:86 ../lib/wiking/export.py:206
+#: ../lib/wiking/export.py:291
+msgid "Local navigation"
+msgstr "Navigaţia acestei secţiuni "
+
+#: ../lib/wiking/export.py:87 ../lib/wiking/export.py:202
+msgid "Main content"
+msgstr "Cuprinsul principal"
+
+#: ../lib/wiking/export.py:88
+msgid "Page footer"
+msgstr "Subsolul paginii"
+
+#. Translators: Label for language selection followed by list of languages
+#: ../lib/wiking/export.py:92
+msgid "Language:"
+msgstr "Limba:"
+
+#: ../lib/wiking/export.py:103
+msgid "Expand/collapse complete menu hierarchy"
+msgstr ""
+
+#: ../lib/wiking/export.py:212
+msgid "Jump in page"
+msgstr "Treci la pagina"
+
+#. Translators: A label followed by location information in webpage navigation
+#: ../lib/wiking/export.py:217
+msgid "You are here:"
+msgstr "Te afli aici:"
+
+#. Translators: Heading of webpage navigation menu containing a list
+#. of links to pages in this web section
+#: ../lib/wiking/export.py:294
+msgid "In this section:"
+msgstr "În această secţiune:"
+
+#. Translators: Panels are small windows on the side of the page. This is a label
+#. for a link that shows/hides the panels.
+#: ../lib/wiking/export.py:311
+msgid "Show panels"
+msgstr "Afişează panourile"
+
+#: ../lib/wiking/export.py:312
+msgid "Hide panels"
+msgstr "Ascunde panourile"
+
+#. Translators: ``RSS channel'' is terminology idiom, see Wikipedia
+#: ../lib/wiking/export.py:324
+msgid "RSS channel"
+msgstr "RSS canal"
+
+#: ../lib/wiking/export.py:343
+msgid "Warning"
+msgstr "Atenţie"
+
+#. Translators: Information about last change of a webpage (when and who)
+#: ../lib/wiking/export.py:366
+#, python-format
+msgid "Last change: %(date)s, %(user)s"
+msgstr "Ultima modificare: %(date)s, %(user)s"
+
+#: ../lib/wiking/modules.py:493
+msgid "Enter your login name, please!"
+msgstr "Vă rugăm să introduceţi numele de utilizator!"
+
+#: ../lib/wiking/modules.py:495
+msgid "Enter your password, please!"
+msgstr "Vă rugăm să introduceţi parola!"
+
+#: ../lib/wiking/modules.py:500
+msgid "Invalid login!"
+msgstr "Autentificare invalidă!"
+
+#: ../lib/wiking/modules.py:600
+msgid "Searching"
+msgstr "Căutare"
+
+#: ../lib/wiking/modules.py:601
+msgid "Search results"
+msgstr "Rezultatele căutării"
+
+#: ../lib/wiking/modules.py:602
+msgid "Given search term doesn't contain any searchable term."
+msgstr "Expresia de căutare introdusă nu conţine nici un termen de căutare."
+
+#: ../lib/wiking/modules.py:606
+msgid "Search words:"
+msgstr "Caută cuvintele:"
+
+#: ../lib/wiking/modules.py:607
+msgid "Search"
+msgstr "Caută"
+
+#: ../lib/wiking/modules.py:663
+msgid "Nothing found."
+msgstr "Nici un rezultat."
+
+#: ../lib/wiking/modules.py:720
+msgid "The following modules were successfully reloaded:"
+msgstr "Următoarele module au fost reîncărcate cu succes:"
+
+#: ../lib/wiking/modules.py:722
+msgid "Reload"
+msgstr "Reîncărcare"
+
+#. Translators: Short description of a user group purpose.
+#: ../lib/wiking/request.py:1113
+msgid "Anyone"
+msgstr ""
+
+#. Translators: Short description of a user group purpose.
+#: ../lib/wiking/request.py:1116
+#, fuzzy
+msgid "Any authenticated user"
+msgstr "Acţiunea solicită autentificare"
+
+#. Translators: Short description of a user group purpose.
+#: ../lib/wiking/request.py:1123
+msgid "Current record owner"
+msgstr ""
 
 #~ msgid "US Government Section 508 Accessibility Guidelines."
 #~ msgstr ""

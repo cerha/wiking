@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-08-29 14:16+0200\n"
+"POT-Creation-Date: 2011-10-27 22:53+0200\n"
 "PO-Revision-Date: 2010-01-19 16:40+0100\n"
 "Last-Translator: Petr Topiarz <topiarz@post.cz>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
@@ -15,24 +15,6 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-
-#: ../lib/wiking/application.py:313
-msgid "Unable to perform a database operation."
-msgstr ""
-
-#. Translators: Website idiom. This is followed by information on the underlying software
-#. tools.  Means: This website runs on [...this and that software...].
-#: ../lib/wiking/application.py:411
-msgid "Powered by"
-msgstr "Drevet av"
-
-#: ../lib/wiking/application.py:428
-msgid "Accessibility Statement"
-msgstr "Tilgjengelighetserklæring"
-
-#: ../lib/wiking/application.py:456
-msgid "Contact:"
-msgstr "Kontakt:"
 
 #: ../lib/wiking/configuration.py:204
 msgid "Webmaster's e-mail address"
@@ -240,209 +222,90 @@ msgstr "Den nye fortegnelsen ble oppdatert."
 msgid "The record was deleted."
 msgstr "Fortegnelsen ble fjernet."
 
-#: ../lib/wiking/db.py:443
+#: ../lib/wiking/db.py:458
 msgid "Integrity check failed."
 msgstr "Integritets sjekk feilet."
 
-#: ../lib/wiking/db.py:497
+#: ../lib/wiking/db.py:512
 msgid "Unable to perform a database operation:"
 msgstr ""
 
-#: ../lib/wiking/db.py:921
+#: ../lib/wiking/db.py:961
 msgid "Filter"
 msgstr ""
 
 #. Translators: Back button label. Standard computer terminology.
-#: ../lib/wiking/db.py:1756
+#: ../lib/wiking/db.py:1842
 msgid "Back"
 msgstr "Tilbake"
 
 #. Translators: RSS channel is a computer idiom, see Wikipedia.
-#: ../lib/wiking/db.py:1963 ../lib/wiking/db.py:2116
+#: ../lib/wiking/db.py:2049 ../lib/wiking/db.py:2202
 msgid "An RSS channel is available for this section:"
 msgstr "En RSS-kanal  er tilgjengelig for denne seksjonen:"
 
 #. Translators: RSS channel is a computer idiom, see Wikipedia.  Don't translate 'RSS'.
-#: ../lib/wiking/db.py:1967 ../lib/wiking/db.py:2114
+#: ../lib/wiking/db.py:2053 ../lib/wiking/db.py:2200
 msgid "more about RSS"
 msgstr "mer om RSS"
 
-#: ../lib/wiking/db.py:2109
+#: ../lib/wiking/db.py:2195
 #, fuzzy, python-format
 msgid "RSS channel \"%s\""
 msgstr "RSS-kanal"
 
-#: ../lib/wiking/db.py:2119
+#: ../lib/wiking/db.py:2205
 #, fuzzy
 msgid "RSS channels are available for this section"
 msgstr "En RSS-kanal  er tilgjengelig for denne seksjonen:"
 
 #. Translators: Record as in `database record'.
-#: ../lib/wiking/db.py:2209
+#: ../lib/wiking/db.py:2295
 msgid "No records."
 msgstr "Ingen fortegnelse."
 
 #. Translators: `Item' is intentionally general. Could be webpage, notice or something else.
-#: ../lib/wiking/db.py:2217
+#: ../lib/wiking/db.py:2303
 msgid "The item was published."
 msgstr "Elementet ble publisert."
 
-#: ../lib/wiking/db.py:2218
+#: ../lib/wiking/db.py:2304
 msgid "The item was unpublished."
 msgstr "Elementet ble avpublisert."
 
-#: ../lib/wiking/db.py:2227
+#: ../lib/wiking/db.py:2313
 msgid "Publish"
 msgstr "Publiser"
 
-#: ../lib/wiking/db.py:2230
+#: ../lib/wiking/db.py:2316
 msgid "Make the item visible to website visitors"
 msgstr "La elementet være synlig for besøkende på nettstedet"
 
-#: ../lib/wiking/db.py:2231
+#: ../lib/wiking/db.py:2317
 msgid "Unpublish"
 msgstr "Avpubliser"
 
-#: ../lib/wiking/db.py:2234
+#: ../lib/wiking/db.py:2320
 msgid "Make the item invisible to website visitors"
 msgstr "La elementet være usynlig for besøkende på nettstedet"
 
-#: ../lib/wiking/export.py:84
-msgid "Page heading"
-msgstr "Sideoverskrift"
-
-#: ../lib/wiking/export.py:85 ../lib/wiking/export.py:204
-#: ../lib/wiking/export.py:229 ../lib/wiking/export.py:297
-msgid "Main navigation"
-msgstr "Hovednavigasjon"
-
-#: ../lib/wiking/export.py:86 ../lib/wiking/export.py:206
-#: ../lib/wiking/export.py:291
-msgid "Local navigation"
-msgstr "Lokalnavigasjon"
-
-#: ../lib/wiking/export.py:87 ../lib/wiking/export.py:202
-msgid "Main content"
-msgstr "Innhold"
-
-#: ../lib/wiking/export.py:88
-msgid "Page footer"
-msgstr "Sidefot"
-
-#. Translators: Title of a dialog on a webpage
-#: ../lib/wiking/export.py:89 ../lib/wiking/export.py:208
-#: ../lib/wiking/util.py:309
-msgid "Language selection"
-msgstr "Språkvalg"
-
-#. Translators: Label for language selection followed by list of languages
-#: ../lib/wiking/export.py:92
-msgid "Language:"
-msgstr "Språk:"
-
-#: ../lib/wiking/export.py:103
-msgid "Expand/collapse complete menu hierarchy"
+#: ../lib/wiking/application.py:313
+msgid "Unable to perform a database operation."
 msgstr ""
 
-#: ../lib/wiking/export.py:212
-msgid "Jump in page"
-msgstr "Gå på siden"
+#. Translators: Website idiom. This is followed by information on the underlying software
+#. tools.  Means: This website runs on [...this and that software...].
+#: ../lib/wiking/application.py:411
+msgid "Powered by"
+msgstr "Drevet av"
 
-#. Translators: A label followed by location information in webpage navigation
-#: ../lib/wiking/export.py:217
-msgid "You are here:"
-msgstr "Du er her:"
+#: ../lib/wiking/application.py:428
+msgid "Accessibility Statement"
+msgstr "Tilgjengelighetserklæring"
 
-#. Translators: Heading of webpage navigation menu containing a list
-#. of links to pages in this web section
-#: ../lib/wiking/export.py:294
-msgid "In this section:"
-msgstr "I denne seksjonen:"
-
-#. Translators: Panels are small windows on the side of the page. This is a label
-#. for a link that shows/hides the panels.
-#: ../lib/wiking/export.py:311
-msgid "Show panels"
-msgstr "Vis panelene"
-
-#: ../lib/wiking/export.py:312
-msgid "Hide panels"
-msgstr "Skjul panelene"
-
-#. Translators: ``RSS channel'' is terminology idiom, see Wikipedia
-#: ../lib/wiking/export.py:324
-msgid "RSS channel"
-msgstr "RSS-kanal"
-
-#: ../lib/wiking/export.py:343
-msgid "Warning"
-msgstr "Advarsel"
-
-#. Translators: Information about last change of a webpage (when and who)
-#: ../lib/wiking/export.py:366
-#, python-format
-msgid "Last change: %(date)s, %(user)s"
-msgstr "Sist endret: %(date)s, %(user)s"
-
-#: ../lib/wiking/modules.py:488
-msgid "Enter your login name, please!"
-msgstr "Vennligst skriv inn ditt innloggingsnavn!"
-
-#: ../lib/wiking/modules.py:490
-msgid "Enter your password, please!"
-msgstr "Vennligst skriv inn ditt passord!"
-
-#: ../lib/wiking/modules.py:495
-msgid "Invalid login!"
-msgstr "Ugyldig innlogging!"
-
-#: ../lib/wiking/modules.py:595
-msgid "Searching"
-msgstr "Søker"
-
-#: ../lib/wiking/modules.py:596
-msgid "Search results"
-msgstr "Søkeresultat"
-
-#: ../lib/wiking/modules.py:597
-msgid "Given search term doesn't contain any searchable term."
-msgstr "Oppgitt søkeord inneholder ingen søkbare termer."
-
-#: ../lib/wiking/modules.py:601
-msgid "Search words:"
-msgstr "Søk ordene:"
-
-#: ../lib/wiking/modules.py:602
-msgid "Search"
-msgstr "Søk"
-
-#: ../lib/wiking/modules.py:658
-msgid "Nothing found."
-msgstr "Ingenting funnet."
-
-#: ../lib/wiking/modules.py:715
-msgid "The following modules were successfully reloaded:"
-msgstr "Følgende moduler lastet på nytt:"
-
-#: ../lib/wiking/modules.py:717
-msgid "Reload"
-msgstr "Last på nytt"
-
-#. Translators: Short description of a user group purpose.
-#: ../lib/wiking/request.py:1113
-msgid "Anyone"
-msgstr ""
-
-#. Translators: Short description of a user group purpose.
-#: ../lib/wiking/request.py:1116
-#, fuzzy
-msgid "Any authenticated user"
-msgstr "Godkjenning kreves"
-
-#. Translators: Short description of a user group purpose.
-#: ../lib/wiking/request.py:1123
-msgid "Current record owner"
-msgstr ""
+#: ../lib/wiking/application.py:456
+msgid "Contact:"
+msgstr "Kontakt:"
 
 #. Translators: '%(code)d' is replaced by error number and '%(name)s' by error title.
 #: ../lib/wiking/util.py:109
@@ -529,6 +392,12 @@ msgstr "Elementet '% s' er ikke tilgjengelig."
 #: ../lib/wiking/util.py:297
 msgid "The item exists on the server, but can not be accessed."
 msgstr "Elementet eksisterer på serveren, men kan ikke nås."
+
+#. Translators: Title of a dialog on a webpage
+#: ../lib/wiking/util.py:309 ../lib/wiking/export.py:89
+#: ../lib/wiking/export.py:208
+msgid "Language selection"
+msgstr "Språkvalg"
 
 #: ../lib/wiking/util.py:313
 #, python-format
@@ -676,16 +545,147 @@ msgstr "Passord"
 msgid "Continue"
 msgstr ""
 
-#: ../lib/wiking/util.py:1900
+#: ../lib/wiking/util.py:1926
 msgid "Invalid format"
 msgstr "Ugyldig format"
 
 #. Translators: Computer terminology. `gmail.com' is a domain name in email address
 #. `joe@gmail.com'.
-#: ../lib/wiking/util.py:1908 ../lib/wiking/util.py:1915
+#: ../lib/wiking/util.py:1934 ../lib/wiking/util.py:1941
 #, fuzzy
 msgid "Domain not found"
 msgstr "Ingenting funnet."
+
+#: ../lib/wiking/export.py:84
+msgid "Page heading"
+msgstr "Sideoverskrift"
+
+#: ../lib/wiking/export.py:85 ../lib/wiking/export.py:204
+#: ../lib/wiking/export.py:229 ../lib/wiking/export.py:297
+msgid "Main navigation"
+msgstr "Hovednavigasjon"
+
+#: ../lib/wiking/export.py:86 ../lib/wiking/export.py:206
+#: ../lib/wiking/export.py:291
+msgid "Local navigation"
+msgstr "Lokalnavigasjon"
+
+#: ../lib/wiking/export.py:87 ../lib/wiking/export.py:202
+msgid "Main content"
+msgstr "Innhold"
+
+#: ../lib/wiking/export.py:88
+msgid "Page footer"
+msgstr "Sidefot"
+
+#. Translators: Label for language selection followed by list of languages
+#: ../lib/wiking/export.py:92
+msgid "Language:"
+msgstr "Språk:"
+
+#: ../lib/wiking/export.py:103
+msgid "Expand/collapse complete menu hierarchy"
+msgstr ""
+
+#: ../lib/wiking/export.py:212
+msgid "Jump in page"
+msgstr "Gå på siden"
+
+#. Translators: A label followed by location information in webpage navigation
+#: ../lib/wiking/export.py:217
+msgid "You are here:"
+msgstr "Du er her:"
+
+#. Translators: Heading of webpage navigation menu containing a list
+#. of links to pages in this web section
+#: ../lib/wiking/export.py:294
+msgid "In this section:"
+msgstr "I denne seksjonen:"
+
+#. Translators: Panels are small windows on the side of the page. This is a label
+#. for a link that shows/hides the panels.
+#: ../lib/wiking/export.py:311
+msgid "Show panels"
+msgstr "Vis panelene"
+
+#: ../lib/wiking/export.py:312
+msgid "Hide panels"
+msgstr "Skjul panelene"
+
+#. Translators: ``RSS channel'' is terminology idiom, see Wikipedia
+#: ../lib/wiking/export.py:324
+msgid "RSS channel"
+msgstr "RSS-kanal"
+
+#: ../lib/wiking/export.py:343
+msgid "Warning"
+msgstr "Advarsel"
+
+#. Translators: Information about last change of a webpage (when and who)
+#: ../lib/wiking/export.py:366
+#, python-format
+msgid "Last change: %(date)s, %(user)s"
+msgstr "Sist endret: %(date)s, %(user)s"
+
+#: ../lib/wiking/modules.py:493
+msgid "Enter your login name, please!"
+msgstr "Vennligst skriv inn ditt innloggingsnavn!"
+
+#: ../lib/wiking/modules.py:495
+msgid "Enter your password, please!"
+msgstr "Vennligst skriv inn ditt passord!"
+
+#: ../lib/wiking/modules.py:500
+msgid "Invalid login!"
+msgstr "Ugyldig innlogging!"
+
+#: ../lib/wiking/modules.py:600
+msgid "Searching"
+msgstr "Søker"
+
+#: ../lib/wiking/modules.py:601
+msgid "Search results"
+msgstr "Søkeresultat"
+
+#: ../lib/wiking/modules.py:602
+msgid "Given search term doesn't contain any searchable term."
+msgstr "Oppgitt søkeord inneholder ingen søkbare termer."
+
+#: ../lib/wiking/modules.py:606
+msgid "Search words:"
+msgstr "Søk ordene:"
+
+#: ../lib/wiking/modules.py:607
+msgid "Search"
+msgstr "Søk"
+
+#: ../lib/wiking/modules.py:663
+msgid "Nothing found."
+msgstr "Ingenting funnet."
+
+#: ../lib/wiking/modules.py:720
+msgid "The following modules were successfully reloaded:"
+msgstr "Følgende moduler lastet på nytt:"
+
+#: ../lib/wiking/modules.py:722
+msgid "Reload"
+msgstr "Last på nytt"
+
+#. Translators: Short description of a user group purpose.
+#: ../lib/wiking/request.py:1113
+msgid "Anyone"
+msgstr ""
+
+#. Translators: Short description of a user group purpose.
+#: ../lib/wiking/request.py:1116
+#, fuzzy
+msgid "Any authenticated user"
+msgstr "Godkjenning kreves"
+
+#. Translators: Short description of a user group purpose.
+#: ../lib/wiking/request.py:1123
+msgid "Current record owner"
+msgstr ""
 
 #~ msgid "US Government Section 508 Accessibility Guidelines."
 #~ msgstr ""
