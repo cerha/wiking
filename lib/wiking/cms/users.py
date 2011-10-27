@@ -621,7 +621,6 @@ class Users(UserManagementModule):
             Action(_("Resend activation code"), 'regreminder', descr=_("Re-send registration mail"),
                    visible=lambda r: r['state'].value() == Users.AccountState.NEW),
             Action(_("Delete"), 'delete', descr=_("Remove the account completely"),
-                   allow_referer=False,
                    visible=lambda r: r['state'].value() in (Users.AccountState.NEW,
                                                             Users.AccountState.UNAPPROVED)),
             )

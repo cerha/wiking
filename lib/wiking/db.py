@@ -587,8 +587,7 @@ class PytisModule(Module, ActionHandler):
         return (Action(self._COPY_LABEL, 'copy', descr=self._COPY_DESCR,
                        allow_referer=False),
                 Action(self._DELETE_LABEL, 'delete', descr=self._DELETE_DESCR,
-                       enabled=lambda r: self._delete_enabled(r.req(), r),
-                       allow_referer=False),
+                       enabled=lambda r: self._delete_enabled(r.req(), r)),
                 Action(self._LIST_LABEL, 'list', descr=self._LIST_DESCR, allow_referer=False),
                 )
     
@@ -1838,7 +1837,7 @@ class PytisModule(Module, ActionHandler):
         form = self._form(pw.ShowForm, req, record=record,
                           layout=self._layout(req, 'delete', record))
         req.message(self._delete_prompt(req, record))
-        actions = (Action(self._DELETE_LABEL, 'delete', allow_referer=False, submit=1),
+        actions = (Action(self._DELETE_LABEL, 'delete', submit=1),
                    # Translators: Back button label. Standard computer terminology.
                    Action(_("Back"), 'view'))
         action_menu = self._action_menu(req, record, actions)
