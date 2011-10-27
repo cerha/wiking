@@ -1098,6 +1098,9 @@ class Pages(ContentManagementModule):
             Field('status', _("Status"), virtual=True, computer=computer(self._status)),
             Field('hidden', _("Hidden"),
                   descr=_("Check if you don't want this page to appear in the menu.")),
+            Field('foldable', _("Foldable"), editable=computer(lambda r, hidden: not hidden),
+                  descr=_("Check if you want the relevant menu item to be foldable (only makes "
+                          "sense for pages, which have subordinary items in the menu).")),
             # Translators: Page configuration option followed by an input field. Means order in the
             # sense of sequence. What is first and what next.
             Field('ord', _("Menu order"), width=6, editable=ALWAYS,
@@ -1134,7 +1137,7 @@ class Pages(ContentManagementModule):
             FieldSet(_("Global Options (for all languages)"),
                      (ColumnLayout(
                         FieldSet(_("Basic Options"), ('identifier', 'modname',)),
-                        FieldSet(_("Menu position"), ('parent', 'ord', 'hidden',)),
+                        FieldSet(_("Menu position"), ('parent', 'ord', 'hidden', 'foldable')),
                         FieldSet(_("Access Rights"), ('read_role_id', 'write_role_id'))),),
                      ),
             )
@@ -1159,13 +1162,13 @@ class Pages(ContentManagementModule):
                              ('title', 'description', '_content')),
                     FieldSet(_("Global Options (for all languages)"),
                              ('identifier', 'modname',
-                              FieldSet(_("Menu position"), ('parent', 'ord', 'hidden',)),
+                              FieldSet(_("Menu position"), ('parent', 'ord', 'hidden', 'foldable')),
                               FieldSet(_("Access Rights"), ('read_role_id', 'write_role_id',)),
                               ))),
                'update': ('title', 'description', '_content'),
                'options':
                    (FieldSet(_("Basic Options"), ('identifier', 'modname',)),
-                    FieldSet(_("Menu position"), ('parent', 'ord', 'hidden',)),
+                    FieldSet(_("Menu position"), ('parent', 'ord', 'hidden', 'foldable')),
                     FieldSet(_("Access Rights"), ('read_role_id', 'write_role_id')),
                     )
                }
@@ -1320,9 +1323,6 @@ class Pages(ContentManagementModule):
             mapping_id = row['mapping_id'].value()
             identifier = str(row['identifier'].value())
             titles, descriptions = translations[mapping_id]
-            title = lcg.SelfTranslatableText(identifier, translations=titles)
-            descr = lcg.SelfTranslatableText('', translations=descriptions)
-            hidden = row['hidden'].value()
             modname = row['modname'].value()
             if modname is not None:
                 try:
@@ -1335,8 +1335,13 @@ class Pages(ContentManagementModule):
             else:
                 submenu = []
             submenu += [item(r) for r in children.get(mapping_id, ())]
-            return MenuItem(identifier, title, descr=descr, hidden=hidden,
-                            variants=titles.keys(), submenu=submenu)
+            return MenuItem(identifier,
+                            title=lcg.SelfTranslatableText(identifier, translations=titles),
+                            descr=lcg.SelfTranslatableText('', translations=descriptions),
+                            hidden=row['hidden'].value(),
+                            foldable=row['foldable'].value(),
+                            variants=titles.keys(),
+                            submenu=submenu)
         for row in self._data.get_rows(sorting=self._sorting, published=True):
             mapping_id = row['mapping_id'].value()
             if mapping_id not in translations:
