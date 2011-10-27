@@ -2086,14 +2086,17 @@ class Styles(StyleManagementModule):
             Field('media',       _("Media"), default='all',
                   enumerator=enum([media for media, title in self._MEDIA]),
                   display=lambda m: dict(self._MEDIA).get(m, m), prefer_display=True),
+            Field('scope',       _("Scope"), default='all',
+                  enumerator=enum([scope for scope, title in self._SCOPE]),
+                  display=lambda m: dict(self._SCOPE).get(m, m), prefer_display=True),
             # Translators: Order as a position in sequence. E.g. first, second...
             Field('ord', _("Order"), width=5,
                   # Translators: Precedence meaning position in a sequence of importance or priority.
                   descr=_("Number denoting the style sheet precedence.")),
             Field('content',     _("Content"), height=20, width=80),
             )
-        layout = ('identifier', 'active', 'media', 'ord', 'description', 'content')
-        columns = ('identifier', 'active', 'media', 'ord', 'description')
+        layout = ('identifier', 'active', 'media', 'scope', 'ord', 'description', 'content')
+        columns = ('identifier', 'active', 'media', 'scope', 'ord', 'description')
         sorting = (('ord', ASC),)
         _MEDIA = (('all', _("All types")),
                   # Translators: Braille as a type of media
@@ -2111,12 +2114,18 @@ class Styles(StyleManagementModule):
                   #('tty', _(""))), # media using a fixed-pitch character grid
                   #('tv', _(""))), # television-type devices
                   )
+        _SCOPE = (('all', _("All parts")),
+                  ('website', _("Website")),
+                  ('wmi', _("Management interface")))
     _REFERER = 'identifier'
 
     def stylesheets(self, req):
+        active_scopes = []
+        active_scopes.append(req.wmi and 'wmi' or 'website')
         return [lcg.Stylesheet(r['identifier'].value(), uri='/_css/'+r['identifier'].value(),
                                media=r['media'].value())
-                for r in self._data.get_rows(active=True, sorting=self._sorting)]
+                for r in self._data.get_rows(active=True, sorting=self._sorting)
+                if ((r['scope'].value() == 'all') or (r['scope'].value() in active_scopes))]
         
     def stylesheet(self, name):
         row = self._data.get_row(identifier=name, active=True)
