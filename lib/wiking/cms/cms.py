@@ -2077,17 +2077,20 @@ class Styles(StyleManagementModule):
         def fields(self): return (
             Field('stylesheet_id'),
             # Translators: Unique identifier of a stylesheet.
-            Field('identifier',  _("Identifier"), width=16),
+            Field('identifier', _("Identifier"), width=16),
             Field('description', _("Description"), width=50),
-            Field('active',      _("Active"), default=True),
+            Field('active', _("Active"), default=True),
             # Translators: Heading of a form field determining in
             # which media the page is displayed. E.g. web, print,
             # Braille, speech.
-            Field('media',       _("Media"), default='all',
+            Field('media', _("Media"), default='all',
                   enumerator=enum([media for media, title in self._MEDIA]),
                   display=lambda m: dict(self._MEDIA).get(m, m), prefer_display=True),
-            Field('scope',       _("Scope"), default='all',
+            # Translators: Scope of applicability of a stylesheet on different website parts.
+            Field('scope', _("Scope"), 
                   enumerator=enum([scope for scope, title in self._SCOPE]),
+                  # Translators: Global scope (applies to all parts of the website).
+                  null_display=_("Global"),
                   display=lambda m: dict(self._SCOPE).get(m, m), prefer_display=True),
             # Translators: Order as a position in sequence. E.g. first, second...
             Field('ord', _("Order"), width=5,
@@ -2114,18 +2117,16 @@ class Styles(StyleManagementModule):
                   #('tty', _(""))), # media using a fixed-pitch character grid
                   #('tv', _(""))), # television-type devices
                   )
-        _SCOPE = (('all', _("All parts")),
-                  ('website', _("Website")),
+        _SCOPE = (('website', _("Website")),
                   ('wmi', _("Management interface")))
     _REFERER = 'identifier'
 
     def stylesheets(self, req):
-        active_scopes = []
-        active_scopes.append(req.wmi and 'wmi' or 'website')
+        scopes = [None, req.wmi and 'wmi' or 'website']
         return [lcg.Stylesheet(r['identifier'].value(), uri='/_css/'+r['identifier'].value(),
                                media=r['media'].value())
                 for r in self._data.get_rows(active=True, sorting=self._sorting)
-                if ((r['scope'].value() == 'all') or (r['scope'].value() in active_scopes))]
+                if r['scope'].value() in scopes]
         
     def stylesheet(self, name):
         row = self._data.get_row(identifier=name, active=True)

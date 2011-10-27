@@ -413,7 +413,7 @@ create table stylesheets (
 	identifier varchar(32) UNIQUE not null,
 	active boolean not null default true,
 	media varchar(12) not null default 'all',
-	scope text not null default 'all',
+	scope text,
 	description text,
 	content text,
         ord integer
