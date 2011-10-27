@@ -1031,7 +1031,7 @@ class PytisModule(Module, ActionHandler):
         if isinstance(value, tuple):
             value = value[-1]
         type = self._data.key()[0].type()
-        v, error = type.validate(value)
+        v, error = type.validate(value, strict=False)
         if error:
             raise NotFound()
         row = self._data.row((v,))
@@ -1051,7 +1051,7 @@ class PytisModule(Module, ActionHandler):
         """
         type = self._type[self._referer]
         if not isinstance(type, pd.String):
-            v, error = type.validate(value)
+            v, error = type.validate(value, strict=False)
             if error is not None:
                 raise NotFound()
             else:
