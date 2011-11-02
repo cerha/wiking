@@ -1622,6 +1622,8 @@ class Attachments(ContentManagementModule):
                 cls = lcg.Audio
             elif self.filename.lower().endswith('flv'):
                 cls = lcg.Video
+            elif self.filename.lower().endswith('swf'):
+                cls = lcg.Flash
             else:
                 cls = lcg.Resource
             return cls(self.filename, uri=self.uri, title=self.title, descr=self.descr)
