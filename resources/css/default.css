@@ -436,6 +436,12 @@ div.discussions div.login-info p {
     background-repeat: no-repeat;
 }
 
+div.wiking-image-gallery img {
+    margin-right: 1.6em;
+    margin-top: .8em;
+    margin-bottom: .8em;
+}
+
 form.activation-form {
     float: left;
     margin-right: 0.5em;

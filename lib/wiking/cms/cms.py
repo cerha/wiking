@@ -1401,12 +1401,13 @@ class Pages(ContentManagementModule):
             sections = parser.parse(pre) + content + parser.parse(post)
             content = [lcg.Container(sections)]
         # Attachment list
-        amod = wiking.module('Attachments')
-        attachments = amod.attachments(record['mapping_id'].value(), record['lang'].value(),
-                                       '/'+ record['identifier'].export() + '/attachments')
-        items = [(lcg.link(req.make_uri(a.uri), a.title),
+        attachments = wiking.module('Attachments').attachments(req, record['mapping_id'].value(),
+                                                               record['lang'].value())
+        attachment_base_uri = '/'+ record['identifier'].export() + '/attachments'
+        items = [(lcg.link(req.make_uri(attachment_base_uri+'/'+a.filename), a.title),
                   ' ('+ a.bytesize +') ', lcg.WikiText(a.descr or ''))
-                 for a in attachments if a.listed]
+                 for a in attachments
+                 if a.listed]
         if items:
             # Translators: Section title. Attachments as in email attachments.
             content.append(lcg.Section(title=_("Attachments"), content=lcg.ul(items),
@@ -1422,7 +1423,19 @@ class Pages(ContentManagementModule):
         # Action menu
         content.append(self._action_menu(req, record, help='/_doc/wiking/cms/pages',
                                          cls='cms-page-actions'))
-        resources = [a.resource() for a in attachments]
+        def resource(a):
+            if a.mime_type.startswith('image/'):
+                cls = lcg.Image
+            elif a.filename.lower().endswith('mp3'):
+                cls = lcg.Audio
+            elif a.filename.lower().endswith('flv'):
+                cls = lcg.Video
+            elif a.filename.lower().endswith('swf'):
+                cls = lcg.Flash
+            else:
+                cls = lcg.Resource
+            return cls(a.filename, uri=a.uri, title=a.title, descr=a.descr)
+        resources = [resource(r) for a in attachments]
         return self._document(req, content, record, resources=resources)
 
     def action_rss(self, req, record):
@@ -1561,6 +1574,8 @@ class Attachments(ContentManagementModule):
                   type=pd.RegexString(maxlen=64, not_null=True, regex='^[0-9a-zA-Z_\.-]*$')),
             Field('mime_type', _("Mime-type"), width=22,
                   computer=computer(lambda r, file: file and file.type())),
+            Field('image', type=pd.Image(), computer=computer(self._image)),
+            Field('thumbnail', '', type=pd.Image(), computer=computer(self._thumbnail)),
             Field('title', _("Title"), width=30, maxlen=64,
                   descr=_("The name of the attachment (e.g. the full name of the document). "
                           "If empty, the file name will be used instead.")),
@@ -1593,6 +1608,26 @@ class Attachments(ContentManagementModule):
                 return value.type().Buffer(record['_filename'].value(),
                                            type=str(record['mime_type'].value()),
                                            filename=unicode(record['filename'].value()))
+        def _resize(self, file, size):
+            # Compute the value by resizing the original image.
+            import copy, PIL.Image, cStringIO
+            if file is None:
+                return None
+            f = cStringIO.StringIO(file.buffer())
+            try:
+                image = PIL.Image.open(f)
+            except IOError:
+                return None
+            else:
+                img = image.copy()
+                img.thumbnail(size, PIL.Image.ANTIALIAS)
+                stream = cStringIO.StringIO()
+                img.save(stream, image.format)
+                return pd.Image.Buffer(buffer(stream.getvalue()))
+        def _image(self, record, file):
+            return self._resize(file, (800, 800))
+        def _thumbnail(self, record, file):
+            return self._resize(file, (180, 180))
         def _filename_computer(self, append=''):
             """Return a computer computing filename for storing the file."""
             def func(record, attachment_id, ext):
@@ -1606,27 +1641,13 @@ class Attachments(ContentManagementModule):
         sorting = (('filename', ASC),)
 
     class Attachment(object):
-        def __init__(self, row, uri):
+        def __init__(self, row):
             self.filename = filename = row['filename'].export()
-            self.uri = uri +'/'+ filename
             self.title = row['title'].export() or filename
             self.descr = row['description'].value()
             self.bytesize = row['bytesize'].export()
             self.listed = row['listed'].value()
             self.mime_type = row['mime_type'].value()
-        def resource(self):
-            """Create and return 'lcg.Resource' instance using given 'lcg.ResourceProvider'."""
-            if self.mime_type.startswith('image/'):
-                cls = lcg.Image
-            elif self.filename.lower().endswith('mp3'):
-                cls = lcg.Audio
-            elif self.filename.lower().endswith('flv'):
-                cls = lcg.Video
-            elif self.filename.lower().endswith('swf'):
-                cls = lcg.Flash
-            else:
-                cls = lcg.Resource
-            return cls(self.filename, uri=self.uri, title=self.title, descr=self.descr)
 
     _ACTIONS = (
         #Action(_("New image"), 'insert_image', descr=_("Insert a new image attachment"),
@@ -1657,15 +1678,12 @@ class Attachments(ContentManagementModule):
         elif cid == 'file':
             cid = None
             kwargs['action'] = 'download'
-        #if cid == 'thumbnail':
-        #    cid = None
-        #    kwargs['action'] = 'image'
         return super(Attachments, self)._link_provider(req, uri, record, cid, **kwargs)
 
-    #def _image_provider(self, req, uri, record, cid, **kwargs):
-        #if cid in('file', 'filename') and record['width'].value():
-        #    return self._link_provider(req, uri, record, None, action='thumbnail')
-        #return super(Attachments, self)._image_provider(req, uri, record, cid, **kwargs)
+    def _image_provider(self, req, uri, record, cid, **kwargs):
+        if cid == 'file':
+            return self._link_provider(req, uri, record, None, action='thumbnail')
+        return super(Attachments, self)._image_provider(req, uri, record, cid, **kwargs)
 
     def _actions(self, req, record):
         actions = super(Attachments, self)._actions(req, record)
@@ -1729,9 +1747,15 @@ class Attachments(ContentManagementModule):
         return super(Attachments, self)._redirect_after_update_uri(req, record,
                                                                    action='view', **kwargs)
 
-    def attachments(self, mapping_id, lang, uri):
-        return [self.Attachment(record, uri) for record in
-                self._data.get_rows(mapping_id=mapping_id, lang=lang)]
+    def attachments(self, req, mapping_id, lang):
+        self._data.select(condition=pd.AND(pd.EQ('mapping_id', pd.ival(mapping_id)),
+                                           pd.EQ('lang', pd.sval(lang))))
+        while True:
+            row = self._data.fetchone()
+            if row is None:
+                break
+            yield self.Attachment(row)
+        self._data.close()
     
     def action_move(self, req, record):
         return self.action_update(req, record, action='move')
@@ -1741,11 +1765,51 @@ class Attachments(ContentManagementModule):
         return (str(record['mime_type'].value()), record['file'].value().buffer())
     RIGHTS_download = (Roles.ANYONE)
 
-    def action_insert_image(self, req):
-        req.set_param('action', 'insert')
-        return wiking.module('Images').action_insert(req)
-    RIGHTS_insert_image  = (Roles.CONTENT_ADMIN,)
+    def action_thumbnail(self, req, record, **kwargs):
+        value = record['thumbnail'].value()
+        if not value:
+            raise NotFound()
+        else:
+            return ('image/%s' % value.image().format.lower(), str(value.buffer()))
+    RIGHTS_thumbnail = (Roles.ANYONE)
 
+    def action_image(self, req, record, **kwargs):
+        value = record['image'].value()
+        if not value:
+            raise NotFound()
+        else:
+            return ('image/%s' % value.image().format.lower(), str(value.buffer()))
+    RIGHTS_image = (Roles.ANYONE)
+    
+
+class ImageGallery(Module, Embeddable):
+    """Extend page content by including a gallery of images present within attachments."""
+
+    _TITLE = _("Image Gallery")
+
+    class Gallery(lcg.Content):
+        def export(self, context):
+            g = context.generator()
+            req = context.req()
+            page = req.page
+            base_uri = '/'+ page['identifier'].export() + '/attachments'
+            content = [self._export_image(context, base_uri, a)
+                       for a in wiking.module('Attachments').attachments(req,
+                                                                         page['mapping_id'].value(),
+                                                                         page['lang'].value())
+                       if a.mime_type.startswith('image/')]
+            return g.div(content, cls='wiking-image-gallery')
+
+        def _export_image(self, context, base_uri, image):
+            g = context.generator()
+            req = context.req()
+            uri = base_uri +'/'+ image.filename
+            img = g.img(req.make_uri(uri, action='thumbnail'))
+            return g.a(img, href=req.make_uri(uri), title=image.title)
+            
+    def embed(self, req):
+        return [self.Gallery()]
+    
 
 class Images(Attachments):
     class Spec(Attachments.Spec):
