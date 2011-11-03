@@ -1414,10 +1414,7 @@ class Pages(ContentManagementModule):
                                           uri=req.make_uri(attachment_base_uri+'/'+a.filename,
                                                            action='thumbnail'),
                                           title=a.title, descr=_("Click the image to enlarge"),
-                                          # TODO: We need to store the
-                                          # real thumbnail sizes in the
-                                          # database...
-                                          #size = a.thumbnail_size_px,
+                                          size = (a.thumbnail_width, a.thumbnail_height),
                                           )
                     kwargs['thumbnail'] = thumbnail
             elif a.filename.lower().endswith('mp3'):
@@ -1588,15 +1585,6 @@ class Attachments(ContentManagementModule):
                   type=pd.RegexString(maxlen=64, not_null=True, regex='^[0-9a-zA-Z_\.-]*$')),
             Field('mime_type', _("Mime-type"), width=22,
                   computer=computer(lambda r, file: file and file.type())),
-            # Translators: Thumbnail is a small image preview in computer terminology.
-            Field('thumbnail_size', _("Thumbnail size"),
-                  enumerator=enum(('small', 'medium', 'large')), not_null=False,
-                  display=self._thumbnail_size_display, prefer_display=True,
-                  selection_type=pp.SelectionType.RADIO,
-                  descr=_("Only relevant for images.  When set, the image will not be "
-                          "displayed in full size, but as a small clickable preview.")),
-            Field('thumbnail', '', type=pd.Image(), computer=computer(self._thumbnail)),
-            Field('image', type=pd.Image(), computer=computer(self._image)),
             Field('title', _("Title"), width=30, maxlen=64,
                   descr=_("The name of the attachment (e.g. the full name of the document). "
                           "If empty, the file name will be used instead.")),
@@ -1606,6 +1594,22 @@ class Attachments(ContentManagementModule):
             # Translators: Size of a file, in number of bytes, kilobytes etc.
             Field('bytesize', _("Size"),
                   computer=computer(lambda r, file: file and pp.format_byte_size(len(file)))),
+            Field('thumbnail', '', type=pd.Image(), computer=computer(self._thumbnail)),
+            # Translators: Thumbnail is a small image preview in computer terminology.
+            Field('thumbnail_size', _("Thumbnail size"),
+                  enumerator=enum(('small', 'medium', 'large')), not_null=False,
+                  display=self._thumbnail_size_display, prefer_display=True,
+                  selection_type=pp.SelectionType.RADIO,
+                  descr=_("Only relevant for images.  When set, the image will not be "
+                          "displayed in full size, but as a small clickable preview.")),
+            # thumbnail_size is the desired maximal width (the corresponding
+            # pixel width may change with configuration option
+            # image_thumbnail_sizes), while thumbnail_width and
+            # thumbnail_height reflect the actual size of the thumbnail when it
+            # is generated (they also reflect the image aspect ratio).
+            Field('thumbnail_width', computer=computer(self._thumbnail_width)),
+            Field('thumbnail_height', computer=computer(self._thumbnail_height)),
+            Field('image', type=pd.Image(), computer=computer(self._image)),
             Field('listed', _("Listed"), default=True,
                   descr=_("Check if you want the item to appear in the listing of attachments at "
                           "the bottom of the page.")),
@@ -1657,6 +1661,16 @@ class Attachments(ContentManagementModule):
             else:
                 size = cfg.image_thumbnail_sizes[2]
             return self._resize(file, (size, size))
+        def _thumbnail_width(self, record, thumbnail):
+            if thumbnail:
+                return thumbnail.image().size[0]
+            else:
+                return None
+        def _thumbnail_height(self, record, thumbnail):
+            if thumbnail:
+                return thumbnail.image().size[1]
+            else:
+                return None
         def _filename_computer(self, append=''):
             """Return a computer computing filename for storing the file."""
             def func(record, attachment_id, ext):
@@ -1683,6 +1697,8 @@ class Attachments(ContentManagementModule):
             self.bytesize = row['bytesize'].export()
             self.listed = row['listed'].value()
             self.thumbnail_size = row['thumbnail_size'].value()
+            self.thumbnail_width = row['thumbnail_width'].value()
+            self.thumbnail_height = row['thumbnail_height'].value()
             self.mime_type = row['mime_type'].value()
 
     _ACTIONS = (
@@ -1829,19 +1845,20 @@ class ImageGallery(Module, Embeddable):
             req = context.req()
             page = req.page
             base_uri = '/'+ page['identifier'].export() + '/attachments'
-            content = [self._export_image(context, base_uri, a)
+            content = [self._export_item(context, base_uri, a)
                        for a in wiking.module('Attachments').attachments(req,
                                                                          page['mapping_id'].value(),
                                                                          page['lang'].value())
                        if a.mime_type.startswith('image/') and a.thumbnail_size is not None]
             return g.div(content, cls='wiking-image-gallery')
 
-        def _export_image(self, context, base_uri, image):
+        def _export_item(self, context, base_uri, a):
             g = context.generator()
             req = context.req()
-            uri = base_uri +'/'+ image.filename
-            img = g.img(req.make_uri(uri, action='thumbnail'))
-            title = image.title +' ('+ _("Click the image to enlarge") +')'
+            uri = base_uri +'/'+ a.filename
+            img = g.img(req.make_uri(uri, action='thumbnail'),
+                        width=a.thumbnail_width, height=a.thumbnail_height)
+            title = a.title +' ('+ _("Click the image to enlarge") +')'
             return g.a(img, href=req.make_uri(uri), title=title)
             
     def embed(self, req):
