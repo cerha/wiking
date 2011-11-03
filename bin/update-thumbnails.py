@@ -85,7 +85,7 @@ def run():
                 stream = cStringIO.StringIO()
                 img.save(stream, image.format)
                 img2 = image.copy()
-                img2.thumbnail((800, 800), PIL.Image.ANTIALIAS)
+                img2.thumbnail((800, 600), PIL.Image.ANTIALIAS)
                 stream2 = cStringIO.StringIO()
                 img2.save(stream2, image.format)
                 row['thumbnail'] = pd.Value(pd.Image(), pd.Image.Buffer(buffer(stream.getvalue())))
