@@ -20,9 +20,6 @@
 import sys, getopt, types, os, cStringIO, PIL
 import pytis.util, pytis.data as pd, config
 
-from pytis.form import ApplicationConfigManager
-from pytis.presentation import Profile
-
 def usage(msg=None):
     sys.stderr.write("""Update Wiking attachment thumbnails in the database.
 Usage: %s [options]
@@ -42,8 +39,7 @@ def run():
             usage()
     except getopt.GetoptError as e:
         usage(e.msg)
-    # Disable pytis logging and notification thread (may cause troubles when
-    # creating data objects for profile validation).
+    # Disable pytis logging and notification thread.
     config.dblisten = False
     # Disable pytis logging of data operations etc.
     config.log_exclude = [pytis.util.ACTION, pytis.util.EVENT, pytis.util.DEBUG, pytis.util.OPERATIONAL]
