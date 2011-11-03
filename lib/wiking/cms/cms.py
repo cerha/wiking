@@ -1596,7 +1596,7 @@ class Attachments(ContentManagementModule):
                   computer=computer(lambda r, file: file and pp.format_byte_size(len(file)))),
             Field('thumbnail', '', type=pd.Image(), computer=computer(self._thumbnail)),
             # Translators: Thumbnail is a small image preview in computer terminology.
-            Field('thumbnail_size', _("Thumbnail size"),
+            Field('thumbnail_size', _("Preview size"),
                   enumerator=enum(('small', 'medium', 'large')), not_null=False,
                   display=self._thumbnail_size_display, prefer_display=True,
                   selection_type=pp.SelectionType.RADIO,
@@ -1678,9 +1678,10 @@ class Attachments(ContentManagementModule):
                 return os.path.join(cfg.storage, cfg.dbname, self.table, fname)
             return computer(func)
         def _thumbnail_size_display(self, size):
-            labels = {'small': _("Small (%dpx)", cfg.image_thumbnail_sizes[0]),
-                    'medium': _("Medium (%dpx)", cfg.image_thumbnail_sizes[1]),
-                    'large': _("Large (%dpx)", cfg.image_thumbnail_sizes[2])}
+            # Translators: Size label related to "Preview size" field (pronoun).
+            labels = {'small': _("Small") + " (%dpx)" % cfg.image_thumbnail_sizes[0],
+                      'medium': _("Medium") + " (%dpx)" % cfg.image_thumbnail_sizes[1],
+                      'large': _("Large") + " (%dpx)" % cfg.image_thumbnail_sizes[2]}
             return labels.get(size, size)
         
         def redirect(self, req, record):
