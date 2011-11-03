@@ -168,6 +168,14 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
 
     def _resource_uri_prefix(self, context, resource):
         return context.req().module_uri('Resources')
+
+    def _uri_resource(self, context, resource):
+        uri = super(Exporter, self)._uri_resource(context, resource)
+        if resource.filename() == 'scriptaculous.js':
+            # Hack to support loading scriptaculous modules required by
+            # lightbox.js.
+            uri += '?load=effects,builder'
+        return uri
     
     def _head(self, context):
         context.node().resource('prototype.js')

@@ -1404,8 +1404,10 @@ class Pages(ContentManagementModule):
         resources = []
         attachments_list = []
         attachment_base_uri = '/'+ record['identifier'].export() + '/attachments'
+        needs_lightbox = False
         for a in wiking.module('Attachments').attachments(req, record['mapping_id'].value(),
                                                           record['lang'].value()):
+            uri = req.make_uri(attachment_base_uri+'/'+a.filename)
             kwargs = {}
             if a.mime_type.startswith('image/'):
                 cls = lcg.Image
@@ -1413,10 +1415,12 @@ class Pages(ContentManagementModule):
                     thumbnail = lcg.Image(a.filename,
                                           uri=req.make_uri(attachment_base_uri+'/'+a.filename,
                                                            action='thumbnail'),
-                                          title=a.title, descr=_("Click the image to enlarge"),
-                                          size = (a.thumbnail_width, a.thumbnail_height),
+                                          title=a.title, descr=a.descr,
+                                          size=(a.thumbnail_width, a.thumbnail_height),
                                           )
                     kwargs['thumbnail'] = thumbnail
+                    needs_lightbox = True
+                    uri = req.make_uri(attachment_base_uri+'/'+a.filename, action='image')
             elif a.filename.lower().endswith('mp3'):
                 cls = lcg.Audio
             elif a.filename.lower().endswith('flv'):
@@ -1425,13 +1429,17 @@ class Pages(ContentManagementModule):
                 cls = lcg.Flash
             else:
                 cls = lcg.Resource
-            uri = req.make_uri(attachment_base_uri+'/'+a.filename)
             resources.append(cls(a.filename, uri=uri, title=a.title, descr=a.descr, **kwargs))
             if a.listed:
                 item = (lcg.link(req.make_uri(attachment_base_uri+'/'+a.filename), a.title),
                         ' ('+ a.bytesize +') ', lcg.WikiText(a.descr or ''))
                 
                 attachments_list.append(item)
+        if needs_lightbox:
+            resources.extend((lcg.Script('prototype.js'),
+                              lcg.Script('scriptaculous.js'),
+                              lcg.Script('lightbox.js'),
+                              lcg.Stylesheet('lightbox.css')))
         if attachments_list:
             # Translators: Section title. Attachments as in email attachments.
             content.append(lcg.Section(title=_("Attachments"), content=lcg.ul(attachments_list),
@@ -1845,6 +1853,10 @@ class ImageGallery(Module, Embeddable):
             g = context.generator()
             req = context.req()
             page = req.page
+            context.resource('prototype.js')
+            context.resource('scriptaculous.js')
+            context.resource('lightbox.js')
+            context.resource('lightbox.css')
             base_uri = '/'+ page['identifier'].export() + '/attachments'
             content = [self._export_item(context, base_uri, a)
                        for a in wiking.module('Attachments').attachments(req,
@@ -1859,8 +1871,11 @@ class ImageGallery(Module, Embeddable):
             uri = base_uri +'/'+ a.filename
             img = g.img(req.make_uri(uri, action='thumbnail'),
                         width=a.thumbnail_width, height=a.thumbnail_height)
-            title = a.title +' ('+ _("Click the image to enlarge") +')'
-            return g.a(img, href=req.make_uri(uri), title=title)
+            title = a.title
+            if a.descr:
+                title += ': '+ a.descr
+            return g.a(img, href=req.make_uri(uri, action='image'), rel='lightbox[gallery]',
+                       title=title)
             
     def embed(self, req):
         return [self.Gallery()]
