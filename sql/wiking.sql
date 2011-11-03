@@ -247,6 +247,7 @@ create table _attachments (
        bytesize text not null,
        image bytea,
        thumbnail bytea,
+       thumbnail_size text,
        listed boolean not null default true,
        "timestamp" timestamp not null default now(),
        unique (mapping_id, filename)
@@ -273,7 +274,7 @@ create table _images (
 create or replace view attachments
 as select a.attachment_id  ||'.'|| l.lang as attachment_variant_id, l.lang,
   a.attachment_id, a.mapping_id, a.filename, a.mime_type, a.bytesize, 
-  a.image, a.thumbnail, a.listed, a."timestamp",
+  a.image, a.thumbnail, a.thumbnail_size, a.listed, a."timestamp",
   d.title, d.description, i.width is not null as is_image,
   i.width, i.height, i.author, i."location", i.exif_date, i.exif
 from _attachments a JOIN _mapping m using (mapping_id) cross join languages l
@@ -289,15 +290,15 @@ create or replace rule attachments_insert as
            select new.attachment_id, new.width, new.height, new.author, new."location",
                   new.exif_date, new.exif
            where new.is_image;
-    insert into _attachments (attachment_id, mapping_id, filename, 
-                              mime_type, bytesize, image, thumbnail, listed)
-           VALUES (new.attachment_id, new.mapping_id, new.filename,
-                   new.mime_type, new.bytesize, new.image, new.thumbnail, new.listed)
+    insert into _attachments (attachment_id, mapping_id, filename, mime_type, 
+                              bytesize, image, thumbnail, thumbnail_size, listed)
+           VALUES (new.attachment_id, new.mapping_id, new.filename, new.mime_type,
+                   new.bytesize, new.image, new.thumbnail, new.thumbnail_size, new.listed)
            returning
              attachment_id ||'.'|| (select max(lang) from _attachment_descr
                                     where attachment_id=attachment_id),  NULL::char(2),
-             attachment_id, mapping_id, filename, mime_type, bytesize, 
-             image, thumbnail, listed, "timestamp", NULL::text, NULL::text, NULL::boolean,
+             attachment_id, mapping_id, filename, mime_type, bytesize, image,
+             thumbnail, thumbnail_size, listed, "timestamp", NULL::text, NULL::text, NULL::boolean,
              NULL::int, NULL::int, NULL::text, NULL::text, NULL::timestamp, NULL::text
 );
 
@@ -310,6 +311,7 @@ create or replace rule attachments_update as
            bytesize = new.bytesize,
            image = new.image,
            thumbnail = new.thumbnail,
+           thumbnail_size = new.thumbnail_size,
            listed = new.listed
            where attachment_id = old.attachment_id;
     UPDATE _images SET

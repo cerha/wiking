@@ -1401,16 +1401,43 @@ class Pages(ContentManagementModule):
             sections = parser.parse(pre) + content + parser.parse(post)
             content = [lcg.Container(sections)]
         # Attachment list
-        attachments = wiking.module('Attachments').attachments(req, record['mapping_id'].value(),
-                                                               record['lang'].value())
+        resources = []
+        attachments_list = []
         attachment_base_uri = '/'+ record['identifier'].export() + '/attachments'
-        items = [(lcg.link(req.make_uri(attachment_base_uri+'/'+a.filename), a.title),
-                  ' ('+ a.bytesize +') ', lcg.WikiText(a.descr or ''))
-                 for a in attachments
-                 if a.listed]
-        if items:
+        for a in wiking.module('Attachments').attachments(req, record['mapping_id'].value(),
+                                                          record['lang'].value()):
+            kwargs = {}
+            if a.mime_type.startswith('image/'):
+                cls = lcg.Image
+                if a.thumbnail_size:
+                    thumbnail = lcg.Image(a.filename,
+                                          uri=req.make_uri(attachment_base_uri+'/'+a.filename,
+                                                           action='thumbnail'),
+                                          title=a.title, descr=_("Click the image to enlarge"),
+                                          # TODO: We need to store the
+                                          # real thumbnail sizes in the
+                                          # database...
+                                          #size = a.thumbnail_size_px,
+                                          )
+                    kwargs['thumbnail'] = thumbnail
+            elif a.filename.lower().endswith('mp3'):
+                cls = lcg.Audio
+            elif a.filename.lower().endswith('flv'):
+                cls = lcg.Video
+            elif a.filename.lower().endswith('swf'):
+                cls = lcg.Flash
+            else:
+                cls = lcg.Resource
+            uri = req.make_uri(attachment_base_uri+'/'+a.filename)
+            resources.append(cls(a.filename, uri=uri, title=a.title, descr=a.descr, **kwargs))
+            if a.listed:
+                item = (lcg.link(req.make_uri(attachment_base_uri+'/'+a.filename), a.title),
+                        ' ('+ a.bytesize +') ', lcg.WikiText(a.descr or ''))
+                
+                attachments_list.append(item)
+        if attachments_list:
             # Translators: Section title. Attachments as in email attachments.
-            content.append(lcg.Section(title=_("Attachments"), content=lcg.ul(items),
+            content.append(lcg.Section(title=_("Attachments"), content=lcg.ul(attachments_list),
                                        anchor='attachment-automatic-list')) # Prevent dupl. anchor.
         if not content:
             rows = self._data.get_rows(condition=\
@@ -1423,19 +1450,6 @@ class Pages(ContentManagementModule):
         # Action menu
         content.append(self._action_menu(req, record, help='/_doc/wiking/cms/pages',
                                          cls='cms-page-actions'))
-        def resource(a):
-            if a.mime_type.startswith('image/'):
-                cls = lcg.Image
-            elif a.filename.lower().endswith('mp3'):
-                cls = lcg.Audio
-            elif a.filename.lower().endswith('flv'):
-                cls = lcg.Video
-            elif a.filename.lower().endswith('swf'):
-                cls = lcg.Flash
-            else:
-                cls = lcg.Resource
-            return cls(a.filename, uri=a.uri, title=a.title, descr=a.descr)
-        resources = [resource(r) for a in attachments]
         return self._document(req, content, record, resources=resources)
 
     def action_rss(self, req, record):
@@ -1574,8 +1588,15 @@ class Attachments(ContentManagementModule):
                   type=pd.RegexString(maxlen=64, not_null=True, regex='^[0-9a-zA-Z_\.-]*$')),
             Field('mime_type', _("Mime-type"), width=22,
                   computer=computer(lambda r, file: file and file.type())),
-            Field('image', type=pd.Image(), computer=computer(self._image)),
+            # Translators: Thumbnail is a small image preview in computer terminology.
+            Field('thumbnail_size', _("Thumbnail size"),
+                  enumerator=enum(('small', 'medium', 'large')), not_null=False,
+                  display=self._thumbnail_size_display, prefer_display=True,
+                  selection_type=pp.SelectionType.RADIO,
+                  descr=_("Only relevant for images.  When set, the image will not be "
+                          "displayed in full size, but as a small clickable preview.")),
             Field('thumbnail', '', type=pd.Image(), computer=computer(self._thumbnail)),
+            Field('image', type=pd.Image(), computer=computer(self._image)),
             Field('title', _("Title"), width=30, maxlen=64,
                   descr=_("The name of the attachment (e.g. the full name of the document). "
                           "If empty, the file name will be used instead.")),
@@ -1625,19 +1646,33 @@ class Attachments(ContentManagementModule):
                 img.save(stream, image.format)
                 return pd.Image.Buffer(buffer(stream.getvalue()))
         def _image(self, record, file):
-            return self._resize(file, (800, 800))
-        def _thumbnail(self, record, file):
-            return self._resize(file, (180, 180))
+            return self._resize(file, cfg.image_screen_size)
+        def _thumbnail(self, record, file, thumbnail_size):
+            if thumbnail_size is None:
+                return None
+            elif thumbnail_size == 'small':
+                size = cfg.image_thumbnail_sizes[0]
+            elif thumbnail_size == 'medium':
+                size = cfg.image_thumbnail_sizes[1]
+            else:
+                size = cfg.image_thumbnail_sizes[2]
+            return self._resize(file, (size, size))
         def _filename_computer(self, append=''):
             """Return a computer computing filename for storing the file."""
             def func(record, attachment_id, ext):
                 fname = str(attachment_id) + append + '.' + ext
                 return os.path.join(cfg.storage, cfg.dbname, self.table, fname)
             return computer(func)
+        def _thumbnail_size_display(self, size):
+            labels = {'small': _("Small (%dpx)", cfg.image_thumbnail_sizes[0]),
+                    'medium': _("Medium (%dpx)", cfg.image_thumbnail_sizes[1]),
+                    'large': _("Large (%dpx)", cfg.image_thumbnail_sizes[2])}
+            return labels.get(size, size)
+        
         def redirect(self, req, record):
             return record and record['is_image'].value() and 'Images' or None
-        layout = ('file', 'title', 'description', 'listed')
-        columns = ('filename', 'title', 'bytesize', 'mime_type', 'listed', 'mapping_id')
+        layout = ('file', 'title', 'description', 'thumbnail_size' , 'listed')
+        columns = ('filename', 'title', 'bytesize', 'mime_type', 'thumbnail_size', 'listed', 'mapping_id')
         sorting = (('filename', ASC),)
 
     class Attachment(object):
@@ -1647,6 +1682,7 @@ class Attachments(ContentManagementModule):
             self.descr = row['description'].value()
             self.bytesize = row['bytesize'].export()
             self.listed = row['listed'].value()
+            self.thumbnail_size = row['thumbnail_size'].value()
             self.mime_type = row['mime_type'].value()
 
     _ACTIONS = (
@@ -1797,7 +1833,7 @@ class ImageGallery(Module, Embeddable):
                        for a in wiking.module('Attachments').attachments(req,
                                                                          page['mapping_id'].value(),
                                                                          page['lang'].value())
-                       if a.mime_type.startswith('image/')]
+                       if a.mime_type.startswith('image/') and a.thumbnail_size is not None]
             return g.div(content, cls='wiking-image-gallery')
 
         def _export_image(self, context, base_uri, image):
@@ -1805,7 +1841,8 @@ class ImageGallery(Module, Embeddable):
             req = context.req()
             uri = base_uri +'/'+ image.filename
             img = g.img(req.make_uri(uri, action='thumbnail'))
-            return g.a(img, href=req.make_uri(uri), title=image.title)
+            title = image.title +' ('+ _("Click the image to enlarge") +')'
+            return g.a(img, href=req.make_uri(uri), title=title)
             
     def embed(self, req):
         return [self.Gallery()]
