@@ -1635,8 +1635,10 @@ class Attachments(ContentManagementModule):
             Field('listed', _("Listed"), default=True,
                   descr=_("Check if you want the item to appear in the listing of attachments at "
                           "the bottom of the page.")),
-            Field('_filename', virtual=True,
-                  computer=self._filename_computer()),
+            #Field('author', _("Author"), width=30),
+            #Field('location', _("Location"), width=50),
+            #Field('exif_date', _("EXIF date"), type=DateTime()),
+            Field('_filename', virtual=True, computer=computer(self._filename)),
             )
         def _ext(self, record, filename):
             if filename is None:
@@ -1702,8 +1704,6 @@ class Attachments(ContentManagementModule):
                       'large': _("Large") + " (%dpx)" % cfg.image_thumbnail_sizes[2]}
             return labels.get(size, size)
         
-        def redirect(self, req, record):
-            return record and record['is_image'].value() and 'Images' or None
         layout = ('file', 'title', 'description', 'thumbnail_size' , 'in_gallery', 'listed')
         columns = ('filename', 'title', 'bytesize', 'mime_type', 'thumbnail_size', 'in_gallery', 'listed', 'mapping_id')
         sorting = (('filename', ASC),)
@@ -1749,7 +1749,6 @@ class Attachments(ContentManagementModule):
         # Translators: Button label
         Action(_("Move"), 'move', descr=_("Move the attachment to another page.")),
         )
-    _STORED_FIELDS = (('file', '_filename'),) # Define which fields are stored as files.
     _INSERT_LABEL = _("New attachment")
     _REFERER = 'filename'
     _LAYOUT = {'move': ('mapping_id',)}
@@ -1798,20 +1797,19 @@ class Attachments(ContentManagementModule):
 
     def _save_files(self, record):
         if not os.path.exists(cfg.storage) \
-               or not os.access(cfg.storage, os.W_OK):
+                or not os.access(cfg.storage, os.W_OK):
             import getpass
             raise Exception("The configuration option 'storage' points to '%(dir)s', but this "
                             "directory does not exist or is not writable by user '%(user)s'." %
                             dict(dir=cfg.storage, user=getpass.getuser()))
-        for id, filename_id in self._STORED_FIELDS:
-            fname = record[filename_id].value()
-            dir = os.path.split(fname)[0]
-            if not os.path.exists(dir):
-                os.makedirs(dir, 0700)
-            buf = record[id].value()
-            if buf is not None:
-                log(OPR, "Saving file:", (fname, pp.format_byte_size(len(buf))))
-                buf.save(fname)
+        fname = record['_filename'].value()
+        dir = os.path.split(fname)[0]
+        if not os.path.exists(dir):
+            os.makedirs(dir, 0700)
+        buf = record['file'].value()
+        if buf is not None:
+            log(OPR, "Saving file:", (fname, pp.format_byte_size(len(buf))))
+            buf.save(fname)
         
     def _insert_transaction(self, req, record):
         return self._transaction()
@@ -1874,110 +1872,6 @@ class Attachments(ContentManagementModule):
         else:
             return ('image/%s' % value.image().format.lower(), str(value.buffer()))
     RIGHTS_image = (Roles.ANYONE)
-    
-
-class Images(Attachments):
-    class Spec(Attachments.Spec):
-        table = 'attachments'
-        def fields(self):
-            overridde = (
-                Field('title',
-                      descr=_("Image title.  If empty, the file name will be used instead.")),
-                Field('description', maxlen=512,
-                      descr=_("Optional image description.")),
-                Field('listed', _("In galery"),
-                      descr=_("Check if you want the image to appear an automatically generated "
-                              "galery.")),
-                Field('is_image', default=True),
-                )
-            extra = (
-                Field('image', virtual=True, editable=ALWAYS, computer=computer(self._image),
-                      type=pd.Image(maxsize=(3000, 3000))),
-                #Field('resized', virtual=True, editable=ALWAYS, type=pd.Image(),
-                #      computer=self._resize_computer('resized', '_resized_filename', (800, 800))),
-                #Field('thumbnail', virtual=True, type=pd.Image(),
-                #      computer=self._resize_computer('thumbnail', '_thumbnail_filename', (130, 130))),
-                Field('author', _("Author"), width=30),
-                Field('location', _("Location"), width=50),
-                Field('width', _("Width"),
-                      computer=computer(lambda r, image: image and image.size[0])),
-                Field('height', _("Height"), 
-                      computer=computer(lambda r, image: image and image.size[1])),
-                #Field('size', _("Pixel size"), virtual=True,
-                #      computer=computer(lambda r, width, height:
-                #                        width is not None and '%dx%d' % (width, height))),
-                #Field('exif_date', _("EXIF date"), type=DateTime()),
-                #Field('exif'),
-                Field('_thumbnail_filename', virtual=True,
-                      computer=self._filename_computer('-thumbnail')),
-                Field('_resized_filename', virtual=True,
-                      computer=self._filename_computer('-resized')),
-                )
-            return self._inherited_fields(Images, override=overridde) + extra
-        def _image(self, record):
-            # Use lazy get to prevent running the computer (to find out, whether a new file was
-            # uploaded and prevent loading the previously saved file in that case).
-            file = record.get('file', lazy=True).value()
-            if file is not None and file.path() is None:
-                log(OPR, "Loading image:", len(file))
-                import PIL.Image 
-                stream = cStringIO.StringIO(file.buffer())
-                try:
-                    image = PIL.Image.open(stream)
-                except IOError:
-                    return None
-                else:
-                    return image
-            return None
-        def _resize_computer(self, cid, filename, size):
-            """Return a computer loading field value from file."""
-            def func(record):
-                value = record[cid]
-                result = value.value()
-                if result is not None:
-                    return result
-                else:
-                    img = copy.copy(record['image'].value())
-                    if img:
-                        # Recompute the value by resizing the original image.
-                        from PIL.Image import ANTIALIAS
-                        log(OPR, "Resizing image:", (img.size, size))
-                        img.thumbnail(size, ANTIALIAS)
-                        stream = cStringIO.StringIO()
-                        img.save(stream, img.format)
-                        return pd.Image.Buffer(buffer(stream.getvalue()))
-                    elif not record.new():
-                        #log(OPR, "Loading file:", record[filename].value())
-                        return value.type().Buffer(record[filename].value(),
-                                                   type=str(record['mime_type'].value()))
-                return result
-            return computer(func)
-        layout = ('file', 'title', 'description', 'author', 'location', 'listed')
-            
-    _STORED_FIELDS = (('file', '_filename'),
-                      ('resized', '_resized_filename'),
-                      ('thumbnail', '_thumbnail_filename')
-                      )
-    _INSERT_LABEL = _("New attachment")
-
-    def _binding_forward(self, req):
-        # HACK: This module is always accessed through redirect in Attachments, but the parent
-        # method does not take that into account.
-        for fw in reversed(req.forwards()):
-            if fw.arg('binding') is not None:
-                if fw.module().name() == 'Attachments':
-                    return fw
-                else:
-                    return None
-        return None
-    
-    #def action_resized(self, req, record):
-    #    return (str(record['mime_type'].value()), record['resized'].value().buffer())
-    #RIGHTS_resized = (Roles.ANYONE,)
-    
-    #def action_thumbnail(self, req, record):
-    #    return (str(record['mime_type'].value()), record['thumbnail'].value().buffer())
-    #RIGHTS_thumbnail = (Roles.ANYONE,)
 
     
 class News(ContentManagementModule, EmbeddableCMSModule):
