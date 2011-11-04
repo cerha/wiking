@@ -250,8 +250,13 @@ create table _attachments (
        thumbnail_size text, -- desired size - small/medium/large
        thumbnail_width int, -- the actual pixel width of the thumbnail
        thumbnail_height int, -- the actual pixel height of the thumbnail
+       in_gallery boolean not null default false,
        listed boolean not null default true,
-       "timestamp" timestamp not null default now(),
+       author text,
+       "location" text,
+       width int,
+       height int,
+       "timestamp" timestamp,
        unique (mapping_id, filename)
 );
 
@@ -263,48 +268,34 @@ create table _attachment_descr (
        unique (attachment_id, lang)
 );
 
-create table _images (
-       attachment_id int not null references _attachments on delete cascade initially deferred,
-       width int not null,
-       height int not null,
-       author text,
-       "location" text,
-       exif_date timestamp,
-       exif text
-);
-
 create or replace view attachments
 as select a.attachment_id  ||'.'|| l.lang as attachment_variant_id, l.lang,
-  a.attachment_id, a.mapping_id, a.filename, a.mime_type, a.bytesize, 
+  a.attachment_id, a.mapping_id, d.title, d.description,
+  a.filename, a.mime_type, a.bytesize,
   a.image, a.thumbnail, a.thumbnail_size, a.thumbnail_width, a.thumbnail_height,
-  a.listed, a."timestamp", d.title, d.description, i.width is not null as is_image,
-  i.width, i.height, i.author, i."location", i.exif_date, i.exif
+  a.in_gallery, a.listed, a.author, a."location", a.width, a.height, a."timestamp"
 from _attachments a JOIN _mapping m using (mapping_id) cross join languages l
-     left outer join _attachment_descr d using (attachment_id, lang)
-     left outer join _images i using (attachment_id);
+     left outer join _attachment_descr d using (attachment_id, lang);
 
 create or replace rule attachments_insert as
  on insert to attachments do instead (
     insert into _attachment_descr (attachment_id, lang, title, description)
            select new.attachment_id, new.lang, new.title, new.description
            where new.title IS not null OR new.description IS not null;
-    insert into _images (attachment_id, width, height, author, "location", exif_date, exif)
-           select new.attachment_id, new.width, new.height, new.author, new."location",
-                  new.exif_date, new.exif
-           where new.is_image;
-    insert into _attachments (attachment_id, mapping_id, filename, mime_type, bytesize, 
+    insert into _attachments (attachment_id, mapping_id, filename, mime_type, bytesize,
                               image, thumbnail, thumbnail_size, thumbnail_width, thumbnail_height,
-                              listed)
+                              in_gallery, listed, author, "location", width, height, "timestamp")
            VALUES (new.attachment_id, new.mapping_id, new.filename, new.mime_type,
                    new.bytesize, new.image, new.thumbnail, new.thumbnail_size,
-                   new.thumbnail_width, new.thumbnail_height, new.listed)
+                   new.thumbnail_width, new.thumbnail_height, new.in_gallery, new.listed,
+                   new.author, new."location", new.width, new.height, new."timestamp")
            returning
              attachment_id ||'.'|| (select max(lang) from _attachment_descr
                                     where attachment_id=attachment_id),  NULL::char(2),
-             attachment_id, mapping_id, filename, mime_type, bytesize, image,
-             thumbnail, thumbnail_size, thumbnail_width, thumbnail_height, listed,
-             "timestamp", NULL::text, NULL::text, NULL::boolean, NULL::int, 
-             NULL::int, NULL::text, NULL::text, NULL::timestamp, NULL::text
+             attachment_id, mapping_id, NULL::text, NULL::text,
+             filename, mime_type, bytesize, image, thumbnail,
+             thumbnail_size, thumbnail_width, thumbnail_height, in_gallery, listed,
+             author, "location", width, height, "timestamp"
 );
 
 create or replace rule attachments_update as
@@ -319,15 +310,13 @@ create or replace rule attachments_update as
            thumbnail_size = new.thumbnail_size,
            thumbnail_width = new.thumbnail_width,
            thumbnail_height = new.thumbnail_height,
-           listed = new.listed
-           where attachment_id = old.attachment_id;
-    UPDATE _images SET
-           width = new.width,
-           height = new.height,
+           listed = new.listed,
+           in_gallery = new.in_gallery,
            author = new.author,
            "location" = new."location",
-           exif_date = new.exif_date,
-           exif = new.exif
+           width = new.width,
+           height = new.height,
+	   "timestamp" = new."timestamp"
            where attachment_id = old.attachment_id;
     UPDATE _attachment_descr SET title=new.title, description=new.description
            where attachment_id = old.attachment_id and lang = old.lang;

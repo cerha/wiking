@@ -1402,6 +1402,7 @@ class Pages(ContentManagementModule):
             content = [lcg.Container(sections)]
         # Attachment list
         resources = []
+        gallery_images = []
         attachments_list = []
         attachment_base_uri = '/'+ record['identifier'].export() + '/attachments'
         needs_lightbox = False
@@ -1412,15 +1413,19 @@ class Pages(ContentManagementModule):
             if a.mime_type.startswith('image/'):
                 cls = lcg.Image
                 if a.thumbnail_size:
-                    thumbnail = lcg.Image(a.filename,
-                                          uri=req.make_uri(attachment_base_uri+'/'+a.filename,
-                                                           action='thumbnail'),
+                    thumbnail_uri = req.make_uri(attachment_base_uri+'/'+a.filename,
+                                                 action='thumbnail')
+                    thumbnail = lcg.Image(a.filename, uri=thumbnail_uri,
                                           title=a.title, descr=a.descr,
                                           size=(a.thumbnail_width, a.thumbnail_height),
                                           )
                     kwargs['thumbnail'] = thumbnail
                     needs_lightbox = True
                     uri = req.make_uri(attachment_base_uri+'/'+a.filename, action='image')
+                else:
+                    thumbnail_uri = None
+                if a.in_gallery:
+                    gallery_images.append((a, uri, thumbnail_uri))
             elif a.filename.lower().endswith('mp3'):
                 cls = lcg.Audio
             elif a.filename.lower().endswith('flv'):
@@ -1440,6 +1445,8 @@ class Pages(ContentManagementModule):
                               lcg.Script('scriptaculous.js'),
                               lcg.Script('lightbox.js'),
                               lcg.Stylesheet('lightbox.css')))
+        if gallery_images:
+            content.append(Attachments.ImageGallery(gallery_images))
         if attachments_list:
             # Translators: Section title. Attachments as in email attachments.
             content.append(lcg.Section(title=_("Attachments"), content=lcg.ul(attachments_list),
@@ -1604,8 +1611,8 @@ class Attachments(ContentManagementModule):
                   computer=computer(lambda r, file: file and pp.format_byte_size(len(file)))),
             Field('thumbnail', '', type=pd.Image(), computer=computer(self._thumbnail)),
             # Translators: Thumbnail is a small image preview in computer terminology.
-            Field('thumbnail_size', _("Preview size"),
-                  enumerator=enum(('small', 'medium', 'large')), not_null=False,
+            Field('thumbnail_size', _("Preview size"), not_null=False,
+                  enumerator=enum(('small', 'medium', 'large')), default='medium',
                   display=self._thumbnail_size_display, prefer_display=True,
                   null_display=_("Full size (don't resize)"),
                   selection_type=pp.SelectionType.RADIO,
@@ -1619,10 +1626,15 @@ class Attachments(ContentManagementModule):
             Field('thumbnail_width', computer=computer(self._thumbnail_width)),
             Field('thumbnail_height', computer=computer(self._thumbnail_height)),
             Field('image', type=pd.Image(), computer=computer(self._image)),
+            Field('in_gallery', _("In Gallery"),
+                  #editable=computer(lambda r, thumbnail_size: thumbnail_size is not None),
+                  # The computer doesn't work (probably a PresentedRow issue?).
+                  #computer=computer(lambda r, thumbnail_size: thumbnail_size is not None),
+                  descr=_("Check if you want the image to appear in an image Gallery "
+                          "below the page text.")),
             Field('listed', _("Listed"), default=True,
                   descr=_("Check if you want the item to appear in the listing of attachments at "
                           "the bottom of the page.")),
-            Field('is_image'),
             Field('_filename', virtual=True,
                   computer=self._filename_computer()),
             )
@@ -1680,12 +1692,9 @@ class Attachments(ContentManagementModule):
                 return thumbnail.image().size[1]
             else:
                 return None
-        def _filename_computer(self, append=''):
-            """Return a computer computing filename for storing the file."""
-            def func(record, attachment_id, ext):
-                fname = str(attachment_id) + append + '.' + ext
-                return os.path.join(cfg.storage, cfg.dbname, self.table, fname)
-            return computer(func)
+        def _filename(self, record, attachment_id, ext):
+            fname = str(attachment_id) +'.'+ ext
+            return os.path.join(cfg.storage, cfg.dbname, self.table, fname)
         def _thumbnail_size_display(self, size):
             # Translators: Size label related to "Preview size" field (pronoun).
             labels = {'small': _("Small") + " (%dpx)" % cfg.image_thumbnail_sizes[0],
@@ -1695,10 +1704,32 @@ class Attachments(ContentManagementModule):
         
         def redirect(self, req, record):
             return record and record['is_image'].value() and 'Images' or None
-        layout = ('file', 'title', 'description', 'thumbnail_size' , 'listed')
-        columns = ('filename', 'title', 'bytesize', 'mime_type', 'thumbnail_size', 'listed', 'mapping_id')
+        layout = ('file', 'title', 'description', 'thumbnail_size' , 'in_gallery', 'listed')
+        columns = ('filename', 'title', 'bytesize', 'mime_type', 'thumbnail_size', 'in_gallery', 'listed', 'mapping_id')
         sorting = (('filename', ASC),)
 
+    class ImageGallery(lcg.Content):
+        
+        def __init__(self, attachments):
+            self._attachments = attachments
+            super(Attachments.ImageGallery, self).__init__()
+            
+        def _export_item(self, context, a, uri, thumbnail_uri):
+            g = context.generator()
+            title = a.title
+            if a.descr:
+                title += ': '+ a.descr
+            if thumbnail_uri:
+                img = g.img(thumbnail_uri, width=a.thumbnail_width, height=a.thumbnail_height)
+                return g.a(img, href=uri, rel='lightbox[gallery]', title=title)
+            else:
+                return g.img(uri)
+        
+        def export(self, context):
+            g = context.generator()
+            content = [self._export_item(context, *args) for args in self._attachments]
+            return g.div(content, cls='wiking-image-gallery')
+            
     class Attachment(object):
         def __init__(self, row):
             self.filename = filename = row['filename'].export()
@@ -1710,6 +1741,7 @@ class Attachments(ContentManagementModule):
             self.thumbnail_width = row['thumbnail_width'].value()
             self.thumbnail_height = row['thumbnail_height'].value()
             self.mime_type = row['mime_type'].value()
+            self.in_gallery = row['in_gallery'].value()
 
     _ACTIONS = (
         #Action(_("New image"), 'insert_image', descr=_("Insert a new image attachment"),
@@ -1842,44 +1874,6 @@ class Attachments(ContentManagementModule):
         else:
             return ('image/%s' % value.image().format.lower(), str(value.buffer()))
     RIGHTS_image = (Roles.ANYONE)
-    
-
-class ImageGallery(Module, Embeddable):
-    """Extend page content by including a gallery of images present within attachments."""
-
-    _TITLE = _("Image Gallery")
-
-    class Gallery(lcg.Content):
-        def export(self, context):
-            g = context.generator()
-            req = context.req()
-            page = req.page
-            context.resource('prototype.js')
-            context.resource('scriptaculous.js')
-            context.resource('lightbox.js')
-            context.resource('lightbox.css')
-            base_uri = '/'+ page['identifier'].export() + '/attachments'
-            content = [self._export_item(context, base_uri, a)
-                       for a in wiking.module('Attachments').attachments(req,
-                                                                         page['mapping_id'].value(),
-                                                                         page['lang'].value())
-                       if a.mime_type.startswith('image/') and a.thumbnail_size is not None]
-            return g.div(content, cls='wiking-image-gallery')
-
-        def _export_item(self, context, base_uri, a):
-            g = context.generator()
-            req = context.req()
-            uri = base_uri +'/'+ a.filename
-            img = g.img(req.make_uri(uri, action='thumbnail'),
-                        width=a.thumbnail_width, height=a.thumbnail_height)
-            title = a.title
-            if a.descr:
-                title += ': '+ a.descr
-            return g.a(img, href=req.make_uri(uri, action='image'), rel='lightbox[gallery]',
-                       title=title)
-            
-    def embed(self, req):
-        return [self.Gallery()]
     
 
 class Images(Attachments):
