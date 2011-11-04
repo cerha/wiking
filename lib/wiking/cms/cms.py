@@ -1607,6 +1607,7 @@ class Attachments(ContentManagementModule):
             Field('thumbnail_size', _("Preview size"),
                   enumerator=enum(('small', 'medium', 'large')), not_null=False,
                   display=self._thumbnail_size_display, prefer_display=True,
+                  null_display=_("Full size (don't resize)"),
                   selection_type=pp.SelectionType.RADIO,
                   descr=_("Only relevant for images.  When set, the image will not be "
                           "displayed in full size, but as a small clickable preview.")),
