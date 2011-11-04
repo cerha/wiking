@@ -1707,6 +1707,16 @@ class Attachments(ContentManagementModule):
         layout = ('file', 'title', 'description', 'thumbnail_size' , 'in_gallery', 'listed')
         columns = ('filename', 'title', 'bytesize', 'mime_type', 'thumbnail_size', 'in_gallery', 'listed', 'mapping_id')
         sorting = (('filename', ASC),)
+        actions = (
+            #Action(_("New image"), 'insert_image', descr=_("Insert a new image attachment"),
+            #       context=pp.ActionContext.GLOBAL),
+            # Translators: Button label
+            Action(_("Move"), 'move', descr=_("Move the attachment to another page.")),
+            Action(_("Back to page"), 'back', descr=_("Go back to the page."),
+                   visible=lambda req: not req.wmi,
+                   context=pp.ActionContext.GLOBAL,
+                   ),
+            )
 
     class ImageGallery(lcg.Content):
         
@@ -1743,12 +1753,6 @@ class Attachments(ContentManagementModule):
             self.mime_type = row['mime_type'].value()
             self.in_gallery = row['in_gallery'].value()
 
-    _ACTIONS = (
-        #Action(_("New image"), 'insert_image', descr=_("Insert a new image attachment"),
-        #       context=pp.ActionContext.GLOBAL),
-        # Translators: Button label
-        Action(_("Move"), 'move', descr=_("Move the attachment to another page.")),
-        )
     _INSERT_LABEL = _("New attachment")
     _REFERER = 'filename'
     _LAYOUT = {'move': ('mapping_id',)}
@@ -1853,6 +1857,10 @@ class Attachments(ContentManagementModule):
         return self.action_update(req, record, action='move')
     RIGHTS_move = (Roles.CONTENT_ADMIN,)
 
+    def action_back(self, req):
+        raise Redirect('/'+req.uri().split('/')[1])
+    RIGHTS_back = (Roles.CONTENT_ADMIN,)
+    
     def action_download(self, req, record, **kwargs):
         return (str(record['mime_type'].value()), record['file'].value().buffer())
     RIGHTS_download = (Roles.ANYONE)
