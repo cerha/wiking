@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-10-27 22:53+0200\n"
+"POT-Creation-Date: 2011-11-04 17:22+0100\n"
 "PO-Revision-Date: 2010-01-19 16:43+0100\n"
 "Last-Translator: Petr Topiarz <topiarz@post.cz>\n"
 "Language-Team: Slovak <wiking@lists.freebsoft.org>\n"
@@ -397,7 +397,7 @@ msgstr "Požadovaná položka na serveri existuje, ale nie je zverejnená."
 
 #. Translators: Title of a dialog on a webpage
 #: ../lib/wiking/util.py:309 ../lib/wiking/export.py:89
-#: ../lib/wiking/export.py:208
+#: ../lib/wiking/export.py:216
 msgid "Language selection"
 msgstr "Výber jazyka"
 
@@ -564,17 +564,17 @@ msgstr "Nič nebolo nájdené."
 msgid "Page heading"
 msgstr "Začiatok strany"
 
-#: ../lib/wiking/export.py:85 ../lib/wiking/export.py:204
-#: ../lib/wiking/export.py:229 ../lib/wiking/export.py:297
+#: ../lib/wiking/export.py:85 ../lib/wiking/export.py:212
+#: ../lib/wiking/export.py:237 ../lib/wiking/export.py:305
 msgid "Main navigation"
 msgstr "Hlavná navigácia"
 
-#: ../lib/wiking/export.py:86 ../lib/wiking/export.py:206
-#: ../lib/wiking/export.py:291
+#: ../lib/wiking/export.py:86 ../lib/wiking/export.py:214
+#: ../lib/wiking/export.py:299
 msgid "Local navigation"
 msgstr "Navigácia tejto sekcie"
 
-#: ../lib/wiking/export.py:87 ../lib/wiking/export.py:202
+#: ../lib/wiking/export.py:87 ../lib/wiking/export.py:210
 #, fuzzy
 msgid "Main content"
 msgstr "Obsah"
@@ -592,42 +592,42 @@ msgstr "Jazyk:"
 msgid "Expand/collapse complete menu hierarchy"
 msgstr ""
 
-#: ../lib/wiking/export.py:212
+#: ../lib/wiking/export.py:220
 msgid "Jump in page"
 msgstr "Prejsť v stránke"
 
 #. Translators: A label followed by location information in webpage navigation
-#: ../lib/wiking/export.py:217
+#: ../lib/wiking/export.py:225
 msgid "You are here:"
 msgstr "Nachádzate sa tu:"
 
 #. Translators: Heading of webpage navigation menu containing a list
 #. of links to pages in this web section
-#: ../lib/wiking/export.py:294
+#: ../lib/wiking/export.py:302
 msgid "In this section:"
 msgstr "V tejto sekcii:"
 
 #. Translators: Panels are small windows on the side of the page. This is a label
 #. for a link that shows/hides the panels.
-#: ../lib/wiking/export.py:311
+#: ../lib/wiking/export.py:319
 msgid "Show panels"
 msgstr "Zobraziť panely"
 
-#: ../lib/wiking/export.py:312
+#: ../lib/wiking/export.py:320
 msgid "Hide panels"
 msgstr "Skryť panely"
 
 #. Translators: ``RSS channel'' is terminology idiom, see Wikipedia
-#: ../lib/wiking/export.py:324
+#: ../lib/wiking/export.py:332
 msgid "RSS channel"
 msgstr "RSS kanál"
 
-#: ../lib/wiking/export.py:343
+#: ../lib/wiking/export.py:351
 msgid "Warning"
 msgstr "Varovanie"
 
 #. Translators: Information about last change of a webpage (when and who)
-#: ../lib/wiking/export.py:366
+#: ../lib/wiking/export.py:374
 #, python-format
 msgid "Last change: %(date)s, %(user)s"
 msgstr "Posledná zmena: %(date)s, %(user)s"

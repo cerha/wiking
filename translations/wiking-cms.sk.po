@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-11-03 09:50+0100\n"
+"POT-Creation-Date: 2011-11-04 17:22+0100\n"
 "PO-Revision-Date: 2009-09-14 15:18+0100\n"
 "Last-Translator: Petr Topiarz <topiarz@post.cz>\n"
 "Language-Team: Slovak <wiking@lists.freebsoft.org>\n"
@@ -102,8 +102,8 @@ msgstr ""
 msgid "Manage user and other kinds of certificates."
 msgstr "Správa inštitúcií a iných organizácií."
 
-#: ../lib/wiking/cms/certificates.py:228 ../lib/wiking/cms/cms.py:2551
-#: ../lib/wiking/cms/cms.py:2728
+#: ../lib/wiking/cms/certificates.py:228 ../lib/wiking/cms/cms.py:2463
+#: ../lib/wiking/cms/cms.py:2640
 msgid "Subject"
 msgstr "Predmet"
 
@@ -240,7 +240,7 @@ msgstr "Používatelia"
 #. translation.
 #. Translators: Unique identifier of a stylesheet.
 #: ../lib/wiking/cms/users.py:256 ../lib/wiking/cms/cms.py:772
-#: ../lib/wiking/cms/cms.py:1061 ../lib/wiking/cms/cms.py:2201
+#: ../lib/wiking/cms/cms.py:1061 ../lib/wiking/cms/cms.py:2113
 msgid "Identifier"
 msgstr "Identifikátor"
 
@@ -422,7 +422,7 @@ msgstr "Registrácia od"
 
 #. Translators: The state of the user account (e.g. Enabled vs Disabled).  Column
 #. heading and field label.
-#: ../lib/wiking/cms/users.py:510 ../lib/wiking/cms/cms.py:2734
+#: ../lib/wiking/cms/users.py:510 ../lib/wiking/cms/cms.py:2646
 #, fuzzy
 msgid "State"
 msgstr "Stav"
@@ -793,7 +793,7 @@ msgstr "Obsah"
 #. Translators: Back button label. Standard computer terminology.
 #. Translators: Button label. Use standard computer terminology.
 #: ../lib/wiking/cms/users.py:982 ../lib/wiking/cms/cms.py:1308
-#: ../lib/wiking/cms/cms.py:1745
+#: ../lib/wiking/cms/cms.py:1789
 msgid "Back"
 msgstr "Späť"
 
@@ -899,7 +899,7 @@ msgstr "Popis"
 
 #. Translators: Table column heading. Whether the account is active. Values are yes/no.
 #: ../lib/wiking/cms/users.py:1377 ../lib/wiking/cms/cms.py:986
-#: ../lib/wiking/cms/cms.py:2203
+#: ../lib/wiking/cms/cms.py:2115
 msgid "Active"
 msgstr "Aktívne"
 
@@ -945,7 +945,7 @@ msgstr "neznámy"
 #. Translators: Heading and menu title for website content management.
 #. Translators: Content of a page (text or something else)
 #: ../lib/wiking/cms/cms.py:86 ../lib/wiking/cms/cms.py:793
-#: ../lib/wiking/cms/cms.py:1071 ../lib/wiking/cms/cms.py:2220
+#: ../lib/wiking/cms/cms.py:1071 ../lib/wiking/cms/cms.py:2132
 msgid "Content"
 msgstr "Obsah"
 
@@ -1109,14 +1109,14 @@ msgid "Manage panels – the small windows shown by the side of every page."
 msgstr "Správa panelov – malých okienok zobrazených na boku každej stránky."
 
 #: ../lib/wiking/cms/cms.py:766 ../lib/wiking/cms/cms.py:1066
-#: ../lib/wiking/cms/cms.py:1573 ../lib/wiking/cms/cms.py:1982
+#: ../lib/wiking/cms/cms.py:1588 ../lib/wiking/cms/cms.py:1894
 msgid "Language"
 msgstr "Jazyk"
 
 #. Translators: Title in the meaning of a heading
 #: ../lib/wiking/cms/cms.py:769 ../lib/wiking/cms/cms.py:1067
-#: ../lib/wiking/cms/cms.py:1068 ../lib/wiking/cms/cms.py:1588
-#: ../lib/wiking/cms/cms.py:1989 ../lib/wiking/cms/cms.py:2056
+#: ../lib/wiking/cms/cms.py:1068 ../lib/wiking/cms/cms.py:1603
+#: ../lib/wiking/cms/cms.py:1901 ../lib/wiking/cms/cms.py:1968
 msgid "Title"
 msgstr "Názov"
 
@@ -1128,7 +1128,7 @@ msgstr ""
 
 #. Translators: Order in the meaning of sequence. A noun, not verb.
 #. Translators: Order as a position in sequence. E.g. first, second...
-#: ../lib/wiking/cms/cms.py:777 ../lib/wiking/cms/cms.py:2217
+#: ../lib/wiking/cms/cms.py:777 ../lib/wiking/cms/cms.py:2129
 msgid "Order"
 msgstr "Poradie"
 
@@ -1223,8 +1223,8 @@ msgstr "Bežné farby stránky"
 #: ../lib/wiking/cms/cms.py:920 ../lib/wiking/cms/cms.py:935
 #: ../lib/wiking/cms/cms.py:943 ../lib/wiking/cms/cms.py:950
 #: ../lib/wiking/cms/cms.py:959 ../lib/wiking/cms/cms.py:963
-#: ../lib/wiking/cms/cms.py:967 ../lib/wiking/cms/cms.py:2323
-#: ../lib/wiking/cms/cms.py:2549 ../lib/wiking/cms/cms.py:2729
+#: ../lib/wiking/cms/cms.py:967 ../lib/wiking/cms/cms.py:2235
+#: ../lib/wiking/cms/cms.py:2461 ../lib/wiking/cms/cms.py:2641
 msgid "Text"
 msgstr "Text"
 
@@ -1428,8 +1428,8 @@ msgstr ""
 "ostatých stránok. Platný identifikátor obsahuje iba písmená bez diakritiky, "
 "číslice, pomlčky a prípadne podčiarkovník. Musí však vždy začínať písmenom."
 
-#: ../lib/wiking/cms/cms.py:1069 ../lib/wiking/cms/cms.py:1591
-#: ../lib/wiking/cms/cms.py:2202 ../lib/wiking/cms/crypto.py:43
+#: ../lib/wiking/cms/cms.py:1069 ../lib/wiking/cms/cms.py:1606
+#: ../lib/wiking/cms/cms.py:2114 ../lib/wiking/cms/crypto.py:43
 msgid "Description"
 msgstr "Popis"
 
@@ -1564,8 +1564,8 @@ msgstr "Oprávnenie"
 #. Translators: Noun. Such as e-mail attachments (here attachments for a webpage).
 #. Translators: Section title. Attachments as in email attachments.
 #: ../lib/wiking/cms/cms.py:1148 ../lib/wiking/cms/cms.py:1194
-#: ../lib/wiking/cms/cms.py:1437 ../lib/wiking/cms/cms.py:1473
-#: ../lib/wiking/cms/cms.py:1563
+#: ../lib/wiking/cms/cms.py:1452 ../lib/wiking/cms/cms.py:1488
+#: ../lib/wiking/cms/cms.py:1578
 msgid "Attachments"
 msgstr "Prílohy"
 
@@ -1686,53 +1686,49 @@ msgstr "Registrácia"
 msgid "Documentation"
 msgstr "Dokumentácia systému Wiking"
 
-#: ../lib/wiking/cms/cms.py:1416 ../lib/wiking/cms/cms.py:1862
-msgid "Click the image to enlarge"
-msgstr ""
-
-#: ../lib/wiking/cms/cms.py:1488
+#: ../lib/wiking/cms/cms.py:1503
 msgid "Content for this page already exists!"
 msgstr "Obsah pre túto stránku už existuje!"
 
-#: ../lib/wiking/cms/cms.py:1495
+#: ../lib/wiking/cms/cms.py:1510
 msgid "Content for this page does not exist in any language."
 msgstr "Obsah pre túto stránku neexistuje v žiadnom jazyku."
 
-#: ../lib/wiking/cms/cms.py:1498
+#: ../lib/wiking/cms/cms.py:1513
 msgid "Choose source language"
 msgstr "Zvoľte zdrojový jazyk"
 
-#: ../lib/wiking/cms/cms.py:1502
+#: ../lib/wiking/cms/cms.py:1517
 msgid "Translate"
 msgstr "Preložiť"
 
-#: ../lib/wiking/cms/cms.py:1520
+#: ../lib/wiking/cms/cms.py:1535
 msgid "Can't publish untitled page."
 msgstr "Nie je možné zverejniť stránku bez názvu."
 
-#: ../lib/wiking/cms/cms.py:1527
+#: ../lib/wiking/cms/cms.py:1542
 msgid "The changes were published."
 msgstr "Zmeny boli zverejnené."
 
-#: ../lib/wiking/cms/cms.py:1537
+#: ../lib/wiking/cms/cms.py:1552
 msgid "The page contents was reverted to its previous state."
 msgstr "Obsah stránky bol vrátený do pôvodného stavu."
 
-#: ../lib/wiking/cms/cms.py:1547
+#: ../lib/wiking/cms/cms.py:1562
 msgid "The page was unpublished."
 msgstr "Stránka nebola zverejnená."
 
-#: ../lib/wiking/cms/cms.py:1564
+#: ../lib/wiking/cms/cms.py:1579
 msgid "Manage page attachments. Go to a page to create new attachments."
 msgstr ""
 "Správa príloh.  Nové prílohy pridávajte vždy cez stránku, ku ktorej chcete "
 "prílohu priradiť."
 
-#: ../lib/wiking/cms/cms.py:1570 ../lib/wiking/cms/cms.py:1981
+#: ../lib/wiking/cms/cms.py:1585 ../lib/wiking/cms/cms.py:1893
 msgid "Page"
 msgstr "Stránka"
 
-#: ../lib/wiking/cms/cms.py:1571
+#: ../lib/wiking/cms/cms.py:1586
 msgid ""
 "Select the page where you want to move this attachment.  Don't forget to "
 "update all explicit links to this attachment within page text(s)."
@@ -1741,11 +1737,11 @@ msgstr ""
 "aktualizovať explicitné odkazy na túto prílohu v texte stránok."
 
 #. Translators: Noun. File on disk. Computer terminology.
-#: ../lib/wiking/cms/cms.py:1575
+#: ../lib/wiking/cms/cms.py:1590
 msgid "File"
 msgstr "Súbor"
 
-#: ../lib/wiking/cms/cms.py:1577
+#: ../lib/wiking/cms/cms.py:1592
 msgid ""
 "Upload a file from your local system.  The file name will be used to refer "
 "to the attachment within the page content.  Please note, that the file will "
@@ -1760,15 +1756,15 @@ msgstr ""
 "podčiarkovník a bodka. Použitím iných znakov v názve súboru riskujete "
 "problémy."
 
-#: ../lib/wiking/cms/cms.py:1583
+#: ../lib/wiking/cms/cms.py:1598
 msgid "Filename"
 msgstr "Názov súboru"
 
-#: ../lib/wiking/cms/cms.py:1586
+#: ../lib/wiking/cms/cms.py:1601
 msgid "Mime-type"
 msgstr "Typ MIME"
 
-#: ../lib/wiking/cms/cms.py:1589
+#: ../lib/wiking/cms/cms.py:1604
 msgid ""
 "The name of the attachment (e.g. the full name of the document). If empty, "
 "the file name will be used instead."
@@ -1776,32 +1772,50 @@ msgstr ""
 "Názov prílohy (napr. plný názov dokumentu). Ak nie je zadaný, bude zobrazený "
 "názov súboru."
 
-#: ../lib/wiking/cms/cms.py:1592
+#: ../lib/wiking/cms/cms.py:1607
 msgid "Optional description used for the listing of attachments (see below)."
 msgstr "Nepovinný opis použitý pri zozname príloh (viď nižšie)."
 
 #. Translators: Size of a file, in number of bytes, kilobytes etc.
-#: ../lib/wiking/cms/cms.py:1595
+#: ../lib/wiking/cms/cms.py:1610
 msgid "Size"
 msgstr "Veľkosť"
 
 #. Translators: Thumbnail is a small image preview in computer terminology.
-#: ../lib/wiking/cms/cms.py:1599
+#: ../lib/wiking/cms/cms.py:1614
 #, fuzzy
 msgid "Preview size"
 msgstr "Náhľad"
 
-#: ../lib/wiking/cms/cms.py:1603
+#: ../lib/wiking/cms/cms.py:1617
+msgid "Full size (don't resize)"
+msgstr ""
+
+#: ../lib/wiking/cms/cms.py:1619
 msgid ""
 "Only relevant for images.  When set, the image will not be displayed in full "
 "size, but as a small clickable preview."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1613
+#: ../lib/wiking/cms/cms.py:1629
+#, fuzzy
+msgid "In Gallery"
+msgstr "V galérii"
+
+#: ../lib/wiking/cms/cms.py:1633
+#, fuzzy
+msgid ""
+"Check if you want the image to appear in an image Gallery below the page "
+"text."
+msgstr ""
+"Zaškrtnite, ak chcete aby bol obrázok zobrazený v automaticky vytváranej "
+"galérii."
+
+#: ../lib/wiking/cms/cms.py:1635
 msgid "Listed"
 msgstr "V zozname"
 
-#: ../lib/wiking/cms/cms.py:1614
+#: ../lib/wiking/cms/cms.py:1636
 msgid ""
 "Check if you want the item to appear in the listing of attachments at the "
 "bottom of the page."
@@ -1810,123 +1824,96 @@ msgstr ""
 "konci stránky."
 
 #. Translators: Size label related to "Preview size" field (pronoun).
-#: ../lib/wiking/cms/cms.py:1682
+#: ../lib/wiking/cms/cms.py:1702
 msgid "Small"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1683
+#: ../lib/wiking/cms/cms.py:1703
 msgid "Medium"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1684
+#: ../lib/wiking/cms/cms.py:1704
 msgid "Large"
 msgstr ""
 
 #. Translators: Button label
-#: ../lib/wiking/cms/cms.py:1709
+#: ../lib/wiking/cms/cms.py:1714
 msgid "Move"
 msgstr "Presunúť"
 
-#: ../lib/wiking/cms/cms.py:1709
+#: ../lib/wiking/cms/cms.py:1714
 msgid "Move the attachment to another page."
 msgstr "Presunúť prílohu do inej stránky."
 
-#: ../lib/wiking/cms/cms.py:1712 ../lib/wiking/cms/cms.py:1951
+#: ../lib/wiking/cms/cms.py:1715
+msgid "Back to page"
+msgstr ""
+
+#: ../lib/wiking/cms/cms.py:1715
+#, fuzzy
+msgid "Go back to the page."
+msgstr "Presunúť prílohu do inej stránky."
+
+#: ../lib/wiking/cms/cms.py:1756
 msgid "New attachment"
 msgstr "Nová príloha"
 
-#: ../lib/wiking/cms/cms.py:1719
+#: ../lib/wiking/cms/cms.py:1763
 msgid "Attachment of the same file name already exists for this page."
 msgstr "Príloha s rovnakým názvom súboru pre túto stránku už existuje."
 
-#: ../lib/wiking/cms/cms.py:1746
+#: ../lib/wiking/cms/cms.py:1790
 msgid "Display the page"
 msgstr "Zobraziť stránku"
 
-#: ../lib/wiking/cms/cms.py:1841
-#, fuzzy
-msgid "Image Gallery"
-msgstr "V galérii"
-
-#: ../lib/wiking/cms/cms.py:1875
-msgid "Image title.  If empty, the file name will be used instead."
-msgstr "Názov obrázku. Ak nie je vyplnený, bude zobrazený názov súboru."
-
-#: ../lib/wiking/cms/cms.py:1877
-msgid "Optional image description."
-msgstr "Nepovinný popis obrázku."
-
-#: ../lib/wiking/cms/cms.py:1878
-msgid "In galery"
-msgstr "V galérii"
-
-#: ../lib/wiking/cms/cms.py:1879
-msgid ""
-"Check if you want the image to appear an automatically generated galery."
-msgstr ""
-"Zaškrtnite, ak chcete aby bol obrázok zobrazený v automaticky vytváranej "
-"galérii."
-
-#: ../lib/wiking/cms/cms.py:1890 ../lib/wiking/cms/cms.py:1993
-msgid "Author"
-msgstr "Autor"
-
-#: ../lib/wiking/cms/cms.py:1891
-msgid "Location"
-msgstr "Miesto"
-
-#: ../lib/wiking/cms/cms.py:1892
-msgid "Width"
-msgstr "Šírka"
-
-#: ../lib/wiking/cms/cms.py:1894
-msgid "Height"
-msgstr "Výška"
-
 #. Translators: Section title and menu item
-#: ../lib/wiking/cms/cms.py:1976
+#: ../lib/wiking/cms/cms.py:1888
 msgid "News"
 msgstr "Novinky"
 
 #. Translators: Help string describing more precisely the meaning of the "News" section.
-#: ../lib/wiking/cms/cms.py:1978
+#: ../lib/wiking/cms/cms.py:1890
 msgid "Publish site news."
 msgstr "Zverejniť aktuálne správy."
 
-#: ../lib/wiking/cms/cms.py:1984 ../lib/wiking/cms/cms.py:1986
-#: ../lib/wiking/cms/cms.py:2047 ../lib/wiking/cms/cms.py:2055
-#: ../lib/wiking/cms/cms.py:2731
+#: ../lib/wiking/cms/cms.py:1896 ../lib/wiking/cms/cms.py:1898
+#: ../lib/wiking/cms/cms.py:1959 ../lib/wiking/cms/cms.py:1967
+#: ../lib/wiking/cms/cms.py:2643
 msgid "Date"
 msgstr "Dátum"
 
-#: ../lib/wiking/cms/cms.py:1988
+#: ../lib/wiking/cms/cms.py:1900
 msgid "Date of the news item creation."
 msgstr "Dátum vloženia novej správy."
 
-#: ../lib/wiking/cms/cms.py:1989 ../lib/wiking/cms/cms.py:1991
+#: ../lib/wiking/cms/cms.py:1901 ../lib/wiking/cms/cms.py:1903
 msgid "Message"
 msgstr "Správa"
 
-#: ../lib/wiking/cms/cms.py:1990
+#: ../lib/wiking/cms/cms.py:1902
 msgid "The item brief summary."
 msgstr "Stručné zhrnutie obsahu správy."
 
+#: ../lib/wiking/cms/cms.py:1905
+msgid "Author"
+msgstr "Autor"
+
 #. Translators: Button label for creating a new message in "News".
-#: ../lib/wiking/cms/cms.py:2012
+#: ../lib/wiking/cms/cms.py:1924
 msgid "New message"
 msgstr "Nová správa"
 
 #. Translators: Section heading and menu item
-#: ../lib/wiking/cms/cms.py:2043
+#: ../lib/wiking/cms/cms.py:1955
 msgid "Planner"
 msgstr "Plánovač"
 
-#: ../lib/wiking/cms/cms.py:2044
+#: ../lib/wiking/cms/cms.py:1956
 msgid "Announce future events by date in a callendar-like listing."
 msgstr ""
 "Umožňuje oznámenie budúcich udalostí podľa dátumu v kaledárovom výpise."
 
-#: ../lib/wiking/cms/cms.py:2049
+#: ../lib/wiking/cms/cms.py:1961
 #, python-format
 msgid ""
 "The date when the planned event begins. Enter the date including year. "
@@ -1935,11 +1922,11 @@ msgstr ""
 "Dátum, kedy plánovaná udalosť začína. Dátum vkladajte vrátane roku. "
 "Napríklad: %(date)s"
 
-#: ../lib/wiking/cms/cms.py:2052
+#: ../lib/wiking/cms/cms.py:1964
 msgid "End date"
 msgstr "Dátum do"
 
-#: ../lib/wiking/cms/cms.py:2053
+#: ../lib/wiking/cms/cms.py:1965
 msgid ""
 "The date when the event ends if it is not the same as the start date (for "
 "events which last several days)."
@@ -1947,66 +1934,66 @@ msgstr ""
 "Dátum, kedy plánovaná udalosť končí, ak nie je zhodný s dátumom začiatku "
 "(pre udalosti, ktoré trvajú niekoľko dní)."
 
-#: ../lib/wiking/cms/cms.py:2056
+#: ../lib/wiking/cms/cms.py:1968
 msgid "Event"
 msgstr "Udalosť"
 
-#: ../lib/wiking/cms/cms.py:2057
+#: ../lib/wiking/cms/cms.py:1969
 msgid "The event brief summary."
 msgstr "Stručné zhrnutie obsahu udalosti."
 
-#: ../lib/wiking/cms/cms.py:2067
+#: ../lib/wiking/cms/cms.py:1979
 msgid "Date in the past"
 msgstr "Dátum je v minulosti"
 
-#: ../lib/wiking/cms/cms.py:2076
+#: ../lib/wiking/cms/cms.py:1988
 msgid "End date precedes start date"
 msgstr "Dátum konca je pred dátumom začiatku"
 
 #. Translators: Button label for creating a new event in "Planner".
-#: ../lib/wiking/cms/cms.py:2078
+#: ../lib/wiking/cms/cms.py:1990
 #, fuzzy
 msgid "New event"
 msgstr "Nová príloha"
 
 #. Translators: Name of the extension module for simple forum-like discussions.
-#: ../lib/wiking/cms/cms.py:2095
+#: ../lib/wiking/cms/cms.py:2007
 msgid "Discussions"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2096
+#: ../lib/wiking/cms/cms.py:2008
 msgid "Allow logged in users to post messages as in a simple forum."
 msgstr ""
 
 #. Translators: Field label for posting a message to the discussion.
-#: ../lib/wiking/cms/cms.py:2100
+#: ../lib/wiking/cms/cms.py:2012
 msgid "Your comment"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2142
+#: ../lib/wiking/cms/cms.py:2054
 msgid "Your comment was posted to the discussion."
 msgstr ""
 
 #. Translators: The square brackets mark a link.  Please leave the brackets and the
 #. link target '?command=login' untouched and traslate 'log in' to fit into the
 #. sentence.  The user only sees it as 'You need to log in before ...'.
-#: ../lib/wiking/cms/cms.py:2153
+#: ../lib/wiking/cms/cms.py:2065
 msgid "Note: You need to [?command=login log in] before you can post messages."
 msgstr ""
 
 #. Translators: Section heading and menu item. Computer terminology idiom.
-#: ../lib/wiking/cms/cms.py:2162
+#: ../lib/wiking/cms/cms.py:2074
 msgid "Site Map"
 msgstr "Mapa stránok"
 
 #. Translators: Section heading and menu item. Meaning the visual appearance. Computer
 #. terminology.
-#: ../lib/wiking/cms/cms.py:2194
+#: ../lib/wiking/cms/cms.py:2106
 msgid "Stylesheets"
 msgstr "Štýly"
 
 #. Translators: Help string. Cascading Style Sheet (CSS) is computer terminology idiom.
-#: ../lib/wiking/cms/cms.py:2197
+#: ../lib/wiking/cms/cms.py:2109
 #, fuzzy
 msgid "Manage available Cascading Style Sheets."
 msgstr "Správa použitých kaskádových štýlov."
@@ -2014,153 +2001,153 @@ msgstr "Správa použitých kaskádových štýlov."
 #. Translators: Heading of a form field determining in
 #. which media the page is displayed. E.g. web, print,
 #. Braille, speech.
-#: ../lib/wiking/cms/cms.py:2207
+#: ../lib/wiking/cms/cms.py:2119
 msgid "Media"
 msgstr ""
 
 #. Translators: Scope of applicability of a stylesheet on different website parts.
-#: ../lib/wiking/cms/cms.py:2211
+#: ../lib/wiking/cms/cms.py:2123
 msgid "Scope"
 msgstr ""
 
 #. Translators: Global scope (applies to all parts of the website).
-#: ../lib/wiking/cms/cms.py:2214
+#: ../lib/wiking/cms/cms.py:2126
 msgid "Global"
 msgstr ""
 
 #. Translators: Precedence meaning position in a sequence of importance or priority.
-#: ../lib/wiking/cms/cms.py:2219
+#: ../lib/wiking/cms/cms.py:2131
 #, fuzzy
 msgid "Number denoting the style sheet precedence."
 msgstr "Číslo udávajúce poradie panelu na stránke."
 
-#: ../lib/wiking/cms/cms.py:2225
+#: ../lib/wiking/cms/cms.py:2137
 #, fuzzy
 msgid "All types"
 msgstr "Všetci používatelia"
 
 #. Translators: Braille as a type of media
-#: ../lib/wiking/cms/cms.py:2227
+#: ../lib/wiking/cms/cms.py:2139
 msgid "Braille"
 msgstr ""
 
 #. Translators: Handheld device. Small computer.
-#: ../lib/wiking/cms/cms.py:2230
+#: ../lib/wiking/cms/cms.py:2142
 msgid "Handheld"
 msgstr ""
 
 #. Translators: Print as a type of media (print, speech...)
-#: ../lib/wiking/cms/cms.py:2232
+#: ../lib/wiking/cms/cms.py:2144
 #, fuzzy
 msgid "Print"
 msgstr "Privátne"
 
 #. Translators: Meaning computer screen
-#: ../lib/wiking/cms/cms.py:2235
+#: ../lib/wiking/cms/cms.py:2147
 msgid "Screen"
 msgstr ""
 
 #. Translators: Speech as a type of media (print, speech...)
-#: ../lib/wiking/cms/cms.py:2237
+#: ../lib/wiking/cms/cms.py:2149
 msgid "Speech"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2241
+#: ../lib/wiking/cms/cms.py:2153
 msgid "Website"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2242
+#: ../lib/wiking/cms/cms.py:2154
 #, fuzzy
 msgid "Management interface"
 msgstr "Vstúpiť do rozhrania správy obsahu"
 
-#: ../lib/wiking/cms/cms.py:2310
+#: ../lib/wiking/cms/cms.py:2222
 msgid "System Texts"
 msgstr "Systémové texty"
 
-#: ../lib/wiking/cms/cms.py:2311
+#: ../lib/wiking/cms/cms.py:2223
 msgid "Edit miscellaneous system texts."
 msgstr "Prispôsobiť rôzne systémové texty."
 
-#: ../lib/wiking/cms/cms.py:2318 ../lib/wiking/cms/cms.py:2544
+#: ../lib/wiking/cms/cms.py:2230 ../lib/wiking/cms/cms.py:2456
 msgid "Label"
 msgstr "Názov"
 
-#: ../lib/wiking/cms/cms.py:2321 ../lib/wiking/cms/cms.py:2547
+#: ../lib/wiking/cms/cms.py:2233 ../lib/wiking/cms/cms.py:2459
 msgid "Purpose"
 msgstr "Účel"
 
-#: ../lib/wiking/cms/cms.py:2539
+#: ../lib/wiking/cms/cms.py:2451
 msgid "E-mails"
 msgstr "Emaily"
 
-#: ../lib/wiking/cms/cms.py:2540
+#: ../lib/wiking/cms/cms.py:2452
 msgid "Edit e-mail texts."
 msgstr "Upraviť text emailov."
 
-#: ../lib/wiking/cms/cms.py:2552
+#: ../lib/wiking/cms/cms.py:2464
 msgid "Additional recipients"
 msgstr "Ďaľší príjemcovia"
 
-#: ../lib/wiking/cms/cms.py:2553
+#: ../lib/wiking/cms/cms.py:2465
 msgid "Comma separated list of e-mail addresses."
 msgstr "Zoznam emailových adries oddelených čiarkou."
 
 #. Translators: Section title and menu item. Sending emails to multiple recipients.
-#: ../lib/wiking/cms/cms.py:2718
+#: ../lib/wiking/cms/cms.py:2630
 #, fuzzy
 msgid "Bulk E-mails"
 msgstr "Emaily"
 
-#: ../lib/wiking/cms/cms.py:2722
+#: ../lib/wiking/cms/cms.py:2634
 #, fuzzy
 msgid "Sender address"
 msgstr "Prednastavená adresa odosielateľa"
 
-#: ../lib/wiking/cms/cms.py:2723
+#: ../lib/wiking/cms/cms.py:2635
 msgid "E-mail address of the sender."
 msgstr ""
 
 #. Translators: List of recipients of an email message
-#: ../lib/wiking/cms/cms.py:2725
+#: ../lib/wiking/cms/cms.py:2637
 msgid "Recipients"
 msgstr ""
 
 #. Translators: All users are intended recipients of an email message
-#: ../lib/wiking/cms/cms.py:2727
+#: ../lib/wiking/cms/cms.py:2639
 #, fuzzy
 msgid "All users"
 msgstr "Všetci používatelia"
 
 #. Translators: State of processing of an email message (e.g. New, Sending, Sent)
-#: ../lib/wiking/cms/cms.py:2741
+#: ../lib/wiking/cms/cms.py:2653
 #, fuzzy
 msgid "Sent"
 msgstr "Nastavenie"
 
 #. Translators: State of processing of an email message (e.g. New, Sending, Sent)
-#: ../lib/wiking/cms/cms.py:2744
+#: ../lib/wiking/cms/cms.py:2656
 msgid "Sending"
 msgstr ""
 
 #. Translators: State of processing of an email message (e.g. New, Sending, Sent)
-#: ../lib/wiking/cms/cms.py:2747
+#: ../lib/wiking/cms/cms.py:2659
 #, fuzzy
 msgid "New"
 msgstr "Novinky"
 
-#: ../lib/wiking/cms/cms.py:2754
+#: ../lib/wiking/cms/cms.py:2666
 #, fuzzy, python-format
 msgid "%(subject)s"
 msgstr "Predmet"
 
 #. Translators: Button label meaning save this email text for later repeated usage
-#: ../lib/wiking/cms/cms.py:2757
+#: ../lib/wiking/cms/cms.py:2669
 msgid "Use as a Template"
 msgstr ""
 
 #. Translators: Description of button for creating a template of an email
-#: ../lib/wiking/cms/cms.py:2759
+#: ../lib/wiking/cms/cms.py:2671
 msgid "Edit this mail for repeated use"
 msgstr ""
 
@@ -2341,6 +2328,25 @@ msgstr ""
 #, fuzzy
 msgid "Contact:"
 msgstr "Obsah"
+
+#, fuzzy
+#~ msgid "Image Gallery"
+#~ msgstr "V galérii"
+
+#~ msgid "Image title.  If empty, the file name will be used instead."
+#~ msgstr "Názov obrázku. Ak nie je vyplnený, bude zobrazený názov súboru."
+
+#~ msgid "Optional image description."
+#~ msgstr "Nepovinný popis obrázku."
+
+#~ msgid "Location"
+#~ msgstr "Miesto"
+
+#~ msgid "Width"
+#~ msgstr "Šírka"
+
+#~ msgid "Height"
+#~ msgstr "Výška"
 
 #~ msgid "Webmaster's e-mail address"
 #~ msgstr "Emailová adresa webmastera"
