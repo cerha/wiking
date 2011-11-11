@@ -1834,10 +1834,9 @@ class Attachments(ContentManagementModule):
     
     def _delete(self, req, record, transaction):
         super(Attachments, self)._delete(req, record, transaction)
-        for id, filename_id in self._STORED_FIELDS:
-            fname = record[filename_id].value()
-            if os.path.exists(fname):
-                os.unlink(fname)
+        fname = record['_filename'].value()
+        if os.path.exists(fname):
+            os.unlink(fname)
 
     def _redirect_after_update_uri(self, req, record, **kwargs):
         return super(Attachments, self)._redirect_after_update_uri(req, record,
