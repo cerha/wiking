@@ -2123,7 +2123,7 @@ class Styles(StyleManagementModule):
             Field('scope', _("Scope"), 
                   enumerator=enum([scope for scope, title in self._SCOPE]),
                   # Translators: Global scope (applies to all parts of the website).
-                  null_display=_("Global"),
+                  null_display=_("Global"), not_null=False,
                   display=lambda m: dict(self._SCOPE).get(m, m), prefer_display=True),
             # Translators: Order as a position in sequence. E.g. first, second...
             Field('ord', _("Order"), width=5,
