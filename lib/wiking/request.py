@@ -510,12 +510,15 @@ class Request(ServerInterface):
         self.start_response(status_code, content_type=content_type, content_length=len(data))
         self.write(data)
 
-    def serve_file(self, filename, content_type, lock=False):
+    def serve_file(self, path, content_type, filename=None, lock=False):
         """Send the contents of given file to the client.
 
         Arguments:
-          filename -- full path to the file in server's filesystem.
+          path -- full path to the file in server's filesystem.
           content_type -- same as in 'start_response()', but mandatory for this method.
+          filename -- File name to be used for the 'Content-Disposition' HTTP header.
+             This will force the browser to save the file under given file name instead
+             of displaying it.
           lock -- iff True, shared lock will be aquired on the file while it is served.
 
         'wiking.NotFound' exception is raised if the file does not exist.
@@ -525,9 +528,9 @@ class Request(ServerInterface):
         
         """
         try:
-            info = os.stat(filename)
+            info = os.stat(path)
         except OSError:
-            log(OPR, "File not found:", filename)
+            log(OPR, "File not found:", path)
             raise wiking.NotFound()
         mtime = datetime.datetime.utcfromtimestamp(info.st_mtime)
         since_header = self.header('If-Modified-Since')
@@ -543,8 +546,12 @@ class Request(ServerInterface):
                     self.start_response(httplib.NOT_MODIFIED)
                     return
         self.set_header('Last-Modified', format_http_date(mtime))
+        if filename:
+            if isinstance(filename, unicode):
+                filename = filename.encode(self._encoding)
+            self.set_header('Content-Disposition', 'attachment; filename=%s' % filename)
         self.start_response(content_type=content_type, content_length=info.st_size)
-        f = file(filename)
+        f = file(path)
         if lock:
             import fcntl
             fcntl.lockf(f, fcntl.LOCK_SH)
