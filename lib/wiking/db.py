@@ -397,7 +397,7 @@ class PytisModule(Module, ActionHandler):
                         fname = value.filename()
                         if fname:
                             kwargs['filename'] = fname
-                            kwargs['type'] = value.type()
+                            kwargs['mime_type'] = value.mime_type()
                             value = value.file()
                         else:
                             value = None

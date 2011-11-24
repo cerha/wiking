@@ -1599,7 +1599,7 @@ class Attachments(ContentManagementModule):
                   computer=computer(lambda r, file: file and file.filename()),
                   type=pd.RegexString(maxlen=64, not_null=True, regex='^[0-9a-zA-Z_\.-]*$')),
             Field('mime_type', _("Mime-type"), width=22,
-                  computer=computer(lambda r, file: file and file.type())),
+                  computer=computer(lambda r, file: file and file.mime_type())),
             Field('title', _("Title"), width=30, maxlen=64,
                   descr=_("The name of the attachment (e.g. the full name of the document). "
                           "If empty, the file name will be used instead.")),
@@ -1654,7 +1654,7 @@ class Attachments(ContentManagementModule):
             else:
                 #log(OPR, "Loading file:", record['_filename'].value())
                 return value.type().Buffer(record['_filename'].value(),
-                                           type=str(record['mime_type'].value()),
+                                           mime_type=str(record['mime_type'].value()),
                                            filename=unicode(record['filename'].value()))
         def _resize(self, file, size):
             # Compute the value by resizing the original image.

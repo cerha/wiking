@@ -39,7 +39,7 @@ class FileUpload(pytis.web.FileUpload):
         return self._field.file
     def filename(self):
         return self._filename
-    def type(self):
+    def mime_type(self):
         return self._field.type
 
     
