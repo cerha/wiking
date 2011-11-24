@@ -265,24 +265,19 @@ class Stylesheets(Module, RequestHandler):
 
     The default implementation serves stylesheet files from the wiking resources directory.
 
+    Consider using a more generic 'Resources' module which also handles style sheets.
+
     Map the module to a particular URI within your application to use it.
 
     """
-
     _MATCHER = re.compile (r"\$(\w[\w-]*)(?:\.(\w[\w-]*))?")
-
-    def _stylesheet(self, path):
-        for resource_dir in cfg.resource_path:
-            filename = os.path.join(resource_dir, 'css', *path)
-            if os.path.exists(filename):
-                return "".join(file(filename).readlines())
-        raise NotFound()
 
     def _theme(self, req):
         """Return the color theme to be used for stylesheet color substitution.
 
-        Returns cfg.theme by default but may be overriden to select the current theme based on some
-        application specific logic (eg. according to user's preferences, etc.).
+        Returns cfg.theme by default but may be overriden to select the current
+        theme based on some application specific logic (eg. according to user's
+        preferences, etc.).
         
         """
         return cfg.theme
@@ -298,24 +293,30 @@ class Stylesheets(Module, RequestHandler):
 
     def _handle(self, req):
         """Serve the stylesheet from a file."""
+        def stylesheet(self, path):
+            for resource_dir in cfg.resource_path:
+                filename = os.path.join(resource_dir, 'css', *path)
+                if os.path.exists(filename):
+                    return "".join(file(filename).readlines())
+            raise NotFound()
         if len(req.unresolved_path) >= 1:
             theme = self._theme(req)
-            stylesheet = self._stylesheet(req.unresolved_path)
-            return ('text/css', self._substitute(stylesheet, theme))
+            return ('text/css', self._substitute(stylesheet(req.unresolved_path), theme))
         elif not req.unresolved_path:
             raise Forbidden()
         else:
             raise NotFound()
         
 
-class Resources(Module, RequestHandler):
+class Resources(Stylesheets):
     """Serve the resource files as provided by the LCG's 'ResourceProvider'.
 
-    This module will automatically serve all resources found within the directories configured
-    through the 'resource_path' option.  Use with caution, since this module will expose all files
-    located within configured directories to the internet!  Note that the LCG's default resource
-    directory (as configured within the LCG package) is always automatically added to the search
-    path.
+    This module will automatically serve all resources found within the
+    directories configured through the 'resource_path' option.  Use with
+    caution, since this module will expose all files located within configured
+    directories to the internet!  Note that the LCG's default resource
+    directory (as configured within the LCG package) is always automatically
+    added to the search path.
 
     Map the module to a particular URI within your application to use it.
 
@@ -345,10 +346,17 @@ class Resources(Module, RequestHandler):
             if resource is not None and (subdir is None or resource.SUBDIR == subdir):
                 src_file = resource.src_file()
                 if src_file:
-                    import mimetypes
-                    mime_type, encoding = mimetypes.guess_type(src_file)
-                    return req.serve_file(src_file, mime_type or 'application/octet-stream')
-        raise NotFound()
+                    if isinstance(resource, lcg.Stylesheet):
+                        theme = self._theme(req)
+                        stylesheet = "".join(file(src_file).readlines())
+                        return ('text/css', self._substitute(stylesheet, theme))
+                    else:
+                        import mimetypes
+                        mime_type, encoding = mimetypes.guess_type(src_file)
+                        return req.serve_file(src_file, mime_type or 'application/octet-stream')
+            raise NotFound()
+        else:
+            raise Forbidden()
 
     def resource(self, filename):
         """Obtain a resource instance from the global resource provider.
