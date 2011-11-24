@@ -168,7 +168,7 @@ img { position: relative; } /* MSIE float workaround */
 .pytis-form fieldset.body div.field { 
     margin: 0.2em 0;
 }
-.pytis-form label { 
+.pytis-form label, .pytis-form .field-label { 
     white-space: nowrap;
     font-weight: bold;
 }
