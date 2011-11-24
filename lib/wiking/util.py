@@ -1568,30 +1568,15 @@ class WikingResolver(pytis.util.Resolver):
 
     def _get_specification(self, key):
         name, kwargs = key
-        try:
-            module_cls = self.wiking_module_cls(name)
-        except AttributeError:
-            return super(WikingResolver, self)._get_specification(key)
-        else:
-            return module_cls.Spec(module_cls, self)
-        
+        module_cls = self.wiking_module_cls(name)
+        return module_cls.Spec(module_cls, self, **dict(kwargs))
+    
     def wiking_module_cls(self, name):
         """Return the Wiking module class of given 'name'."""
         try:
             module_cls = self._wiking_module_class_cache[name]
         except KeyError:
-            for python_module_name in self._search:
-                python_module = self._import_module(python_module_name)
-                try:
-                    module_cls = getattr(python_module, name)
-                except AttributeError:
-                    continue
-                else:
-                    break
-            else:
-                msg = ("Resolver error loading Wiking module '%s' (searching in %s): %s" %
-                       (name, ', '.join(self._search), e))
-                raise wiking.util.ResolverError(msg)
+            module_cls = self._get_specification_cls(name)
             self._wiking_module_class_cache[name] = module_cls
         return module_cls
 

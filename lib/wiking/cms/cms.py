@@ -1325,9 +1325,10 @@ class Pages(ContentManagementModule):
             titles, descriptions = translations[mapping_id]
             modname = row['modname'].value()
             if modname is not None:
+                from pytis.util import ResolverError
                 try:
                     mod = wiking.module(modname)
-                except AttributeError:
+                except ResolverError:
                     # We want the CMS to work even if the module was uninstalled or renamed. 
                     submenu = []
                 else:

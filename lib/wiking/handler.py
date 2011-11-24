@@ -88,6 +88,7 @@ class Handler(object):
             setattr(config, option, getattr(cfg, option))
         config.dbconnections = cfg.connections
         config.dbconnection = config.option('dbconnection').default()
+        config.resolver = cfg.resolver
         del config
         self._application = wiking.module('Application')
         self._exporter = cfg.exporter(translations=cfg.translation_path)
