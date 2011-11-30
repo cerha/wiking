@@ -549,7 +549,7 @@ class Request(ServerInterface):
         if filename:
             if isinstance(filename, unicode):
                 filename = filename.encode(self._encoding)
-            self.set_header('Content-Disposition', 'attachment; filename=%s' % filename)
+            self.set_header('Content-Disposition', 'attachment; filename="%s"' % filename)
         self.start_response(content_type=content_type, content_length=info.st_size)
         f = file(path)
         if lock:
