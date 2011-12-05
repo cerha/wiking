@@ -1576,7 +1576,7 @@ class WikingResolver(pytis.util.Resolver):
         try:
             module_cls = self._wiking_module_class_cache[name]
         except KeyError:
-            module_cls = self._get_specification_cls(name)
+            module_cls = self._get_object_by_name(name)
             self._wiking_module_class_cache[name] = module_cls
         return module_cls
 
