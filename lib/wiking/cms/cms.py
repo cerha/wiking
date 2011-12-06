@@ -2156,7 +2156,7 @@ class Styles(StyleManagementModule):
 
     def stylesheets(self, req):
         scopes = [None, req.wmi and 'wmi' or 'website']
-        return [lcg.Stylesheet(r['identifier'].value(), uri='/_css/'+r['identifier'].value(),
+        return [lcg.Stylesheet(r['identifier'].value(), uri='/_resources/'+r['identifier'].value(),
                                media=r['media'].value())
                 for r in self._data.get_rows(active=True, sorting=self._sorting)
                 if r['scope'].value() in scopes]
