@@ -114,11 +114,11 @@ class Application(CookieAuthentication, wiking.Application):
 
          The mapping used in step 1. is called static, because it is a
          hardcoded assignment of URIs of modules needed for Wiking CMS to run
-         (such as 'Stylesheets', 'Documentation', 'Resources', etc).  The user
-         is not able to change this mapping.  The convention is, that URIs in
-         the static mapping in Wiking CMS start with an underscore to prevent
-         conflicts with user defined URIs (identifiers) of CMS pages (which are
-         dynamic from this perspective — the user may change them).
+         (such as 'Documentation', 'Resources', etc).  The user is not able to
+         change this mapping.  The convention is, that URIs in the static
+         mapping in Wiking CMS start with an underscore to prevent conflicts
+         with user defined URIs (identifiers) of CMS pages (which are dynamic
+         from this perspective — the user may change them).
 
          Examples (calling through 'wiking.Request.module_uri()'):
 
@@ -202,7 +202,7 @@ class Application(CookieAuthentication, wiking.Application):
         
     def stylesheets(self, req):
         try:
-            return wiking.module('Styles').stylesheets(req)
+            return wiking.module('StyleSheets').stylesheets(req)
         except MaintenanceModeError:
             return super(Application, self).stylesheets(req)
 

@@ -90,7 +90,7 @@ class WikingManagementInterface(Module, RequestHandler):
         # (colors, sizes, positions, graphical presentation...).
         (_("Look &amp; Feel"),
          _("Customize the appearance of your site."),
-         ['Styles', 'Themes']),
+         ['StyleSheets', 'Themes']),
         # Translators: Heading and menu title. 
         (_("Users"),
          _("Manage user accounts, privileges and perform other user related tasks."),
@@ -2077,33 +2077,27 @@ class SiteMap(Module, Embeddable):
         return [lcg.RootIndex()]
 
 
-class Stylesheets(Stylesheets):
-    """Serve the available style sheets.
-
-    The Wiking base stylesheet class is extended to retrieve the stylesheet contents from the
-    database driven 'Styles' module (in addition to serving the default styles installed on the
-    filesystem).
+class Resources(wiking.Resources):
+    """Serve resource files.
+    
+    The Wiking base Resources class is extended to retrieve the stylesheet
+    contents from the database driven 'StyleSheets' module (in addition to
+    serving the default styles installed on the filesystem).
 
     """
-    def _stylesheet(self, path):
-        content = None
-        if len(path) == 1:
-            try:
-                content = wiking.module('Styles').stylesheet(path[0])
-            except MaintenanceModeError:
-                pass
-        if content is not None:
-            return content
-        else:
-            return super(Stylesheets, self)._stylesheet(path)
+    def _stylesheet(self, filename):
+        try:
+            return wiking.module('StyleSheets').stylesheet(filename)
+        except MaintenanceModeError:
+            return None
 
    
-class Styles(StyleManagementModule):
+class StyleSheets(StyleManagementModule):
     """Manage available Cascading Style Sheets through a Pytis data object."""
     class Spec(Specification):
         # Translators: Section heading and menu item. Meaning the visual appearance. Computer
         # terminology.
-        title = _("Stylesheets")
+        title = _("Style sheets")
         table = 'stylesheets'
         # Translators: Help string. Cascading Style Sheet (CSS) is computer terminology idiom.
         help = _("Manage available Cascading Style Sheets.")

@@ -326,34 +326,57 @@ class Resources(Stylesheets):
         super(Resources, self).__init__(*args, **kwargs)
         self._provider = lcg.ResourceProvider(dirs=cfg.resource_path)
 
+    def _stylesheet(self, filename):
+        """Return the dynamic stylesheet content as a string or None.
+        
+        When None is returned, the resource file is searched in
+        cfg.resource_path and served from there if found.
+        
+        This method is overriden in wiking.cms.Resources to handle dynamic
+        style sheets defined in the database through the wiking.cms.StyleSheets
+        module.
+        
+        """
+        return None
+
     def _handle(self, req):
         """Serve the resource from a file."""
-        if len(req.unresolved_path) >= 1:
-            if '..' in req.unresolved_path:
-                # Avoid direcory traversal attacks.
-                raise Forbidden()
-            if req.unresolved_path[0] in ('images', 'css', 'scripts', 'media', 'flash'):
+        def find_resource(filename):
+            subdir = filename.split('/', 1)[0]
+            if subdir in ('images', 'css', 'scripts', 'media', 'flash'):
                 # This is just a temporary hack to allow backward compatibility
                 # with resource URIs using type specific subdirectories.
                 # Wiking no longer generates such URIs and applications should
                 # avoid them too as this hack will be removed in future.
-                subdir = req.unresolved_path[0]
-                del req.unresolved_path[0]
+                filename = filename[len(subdir)+1:]
             else:
                 subdir = None
-            filename = os.path.join(*req.unresolved_path)
             resource = self._provider.resource(filename)
             if resource is not None and (subdir is None or resource.SUBDIR == subdir):
-                src_file = resource.src_file()
-                if src_file:
-                    if isinstance(resource, lcg.Stylesheet):
-                        theme = self._theme(req)
-                        stylesheet = "".join(file(src_file).readlines())
-                        return ('text/css', self._substitute(stylesheet, theme))
-                    else:
-                        import mimetypes
-                        mime_type, encoding = mimetypes.guess_type(src_file)
-                        return req.serve_file(src_file, mime_type or 'application/octet-stream')
+                if resource.src_file():
+                    return resource
+            return None
+        if len(req.unresolved_path) >= 1:
+            if '..' in req.unresolved_path:
+                # Avoid direcory traversal attacks.
+                raise Forbidden()
+            filename = os.path.join(*req.unresolved_path)
+            if filename.endswith('css'):
+                content = self._stylesheet(filename)
+                if content is None:
+                    resource = find_resource(filename)
+                    if resource:
+                        content = "".join(file(resource.src_file()).readlines())
+                if content is not None:
+                    theme = self._theme(req)
+                    return ('text/css', self._substitute(content, theme))
+                else:
+                    raise NotFound()
+            resource = find_resource(filename)
+            if resource is not None:
+                import mimetypes
+                mime_type, encoding = mimetypes.guess_type(src_file)
+                return req.serve_file(resource.src_file(), mime_type or 'application/octet-stream')
             raise NotFound()
         else:
             raise Forbidden()
