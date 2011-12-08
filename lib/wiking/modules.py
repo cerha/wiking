@@ -375,8 +375,9 @@ class Resources(Stylesheets):
             resource = find_resource(filename)
             if resource is not None:
                 import mimetypes
+                src_file = resource.src_file()
                 mime_type, encoding = mimetypes.guess_type(src_file)
-                return req.serve_file(resource.src_file(), mime_type or 'application/octet-stream')
+                return req.serve_file(src_file, mime_type or 'application/octet-stream')
             raise NotFound()
         else:
             raise Forbidden()
