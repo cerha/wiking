@@ -268,7 +268,7 @@ class ApplicationRoles(UserManagementModule):
         def _xname_computer(self, record, role_id, name):
             return name or role_id and self._xname(role_id) # 'role_id' is None in a new record.
         def _xname_display(self, row):
-            return row['name'].value() or self._xname(row['role_id'].value())
+            return row['name'].value() or self._xname(row['role_id'].value()) or row['role_id'].value()
         def _xname(self, role_id):
             try:
                 role = self._roles[role_id]
