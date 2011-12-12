@@ -409,7 +409,11 @@ class PytisModule(Module, ActionHandler):
                     value = None
             elif isinstance(type, pd.Binary):
                 value = None
-            elif isinstance(type, pd.Boolean):
+            elif isinstance(type, pd.Boolean) and f.selection_type() is None:
+                # Imply False only for checkbox (when selection_type is None)
+                # to allow not null check for radio and choice selections
+                # (force the user to select the True or False option
+                # explicitly.
                 value = "F"
             else:
                 value = ""
