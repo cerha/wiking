@@ -2040,3 +2040,21 @@ def parse_http_date(date_string):
     if tz_offset is not None:
         dt -= tz_offset
     return dt
+
+def pdf_document(content, lang):
+    """Return PDF document created from 'lcg_content'.
+
+    Arguments:
+
+      content -- document content, 'lcg.Content' instance
+      lang -- document language as an ISO 639-1 Alpha-2 lowercase
+        language code string or 'None'
+
+    """
+    assert isinstance(content, lcg.Content)
+    exporter = lcg.pdf.PDFExporter()
+    document = lcg.ContentNode(id='wiking', title=' ', content=content)
+    lcg_content = lcg.ContentNode(id='__dummy', content=lcg.Content(), children=[document])
+    context = exporter.context(lcg_content, lang)
+    pdf = exporter.export(context)
+    return pdf
