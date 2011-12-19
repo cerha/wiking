@@ -66,7 +66,8 @@ create table users (
         regcode char(16),
         certauth boolean not null default false,
         note text,
-        confirm boolean not null default false
+        confirm boolean not null default false,
+        gender char(1) -- [m]ale, [f]emale, NULL=unknown
 );
 alter table users alter column since 
 set default current_timestamp(0) at time zone 'GMT';

@@ -484,6 +484,10 @@ class Users(UserManagementModule):
             Field('nickname', _("Displayed name"),
                   descr=_("Leave blank if you want to be referred by your full name or enter an "
                           "alternate name, such as nickname or monogram.")),
+            Field('gender', _("Gender"), not_null=False,
+                  enumerator=enum(self._module.Gender.states()),
+                  display=self._gender_display, prefer_display=True,
+                  selection_type=pp.SelectionType.RADIO),
             # Translators: E-mail address. Registration form field.
             Field('email', _("E-mail"), width=36, constraints=(self._check_email,)),
             # Translators: Telephone number. Registration form field.
@@ -559,6 +563,8 @@ class Users(UserManagementModule):
                 return lcg.Container([lcg.p(text) for text in texts], name='wiking-info-bar')
             else:
                 return lcg.Content()
+        def _gender_display(self, gender):
+            return self._module.Gender.label(gender)
         def _state_style(self, record):
             if record['state'].value() in (Users.AccountState.NEW, Users.AccountState.UNAPPROVED):
                 return pp.Style(foreground='#a20')
@@ -662,8 +668,23 @@ class Users(UserManagementModule):
             return cls._STATES.keys()
 
         @classmethod
+        def label(cls, gender):
+            return cls._STATES[gender]
+        
+    class Gender(object):
+        MALE = 'm'
+        FEMALE = 'f'
+        
+        _GENDERS = {MALE: _("Male"),
+                   FEMALE: _("Female")}
+        
+        @classmethod
+        def states(cls):
+            return cls._GENDERS.keys()
+
+        @classmethod
         def label(cls, state):
-            return cls._STATES[state]
+            return cls._GENDERS[state]
         
     class User(wiking.User):
         """CMS specific User class."""
@@ -735,7 +756,7 @@ class Users(UserManagementModule):
                     else:
                         account_state.append(regconfirm)
                 # Translators: Personal data -- first name, surname, nickname ...
-                layout = [FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname',)),
+                layout = [FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname', 'gender',)),
                           FieldSet(_("Contact information"), ('email', 'phone', 'address','uri')),
                           FieldSet(_("Others"), ('note',)),
                           FieldSet(_("Account state"), account_state),
@@ -758,7 +779,7 @@ class Users(UserManagementModule):
                     layout.append(FieldSet(_("Confirmation"), (regconfirm, 'confirm',)))
                 return tuple(layout)
             elif action == 'update':
-                layout =  [FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname')),
+                layout =  [FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname', 'gender',)),
                            # Translators: Contact information -- email, phone, address...
                            FieldSet(_("Contact information"), ('email', 'phone', 'address', 'uri')),
                            # Translators: Others is a label for a group of unspecified form fields
