@@ -116,9 +116,22 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         return (('generator', 'Wiking %s, LCG %s, Pytis %s' %
                  (wiking.__version__, lcg.__version__, pytis.__version__)),)
 
+    def _node_identification(self, context):
+        """Returns a string of CSS classes identifying the current node
+        and its context in node hierarchy
+        """
+        node = context.node()
+        cls = 'node-id-' + self._safe_css_id(node.id())
+        cls += ''.join([' parent-node-id-' + self._safe_css_id(n.id())
+                        for n in node.path()[1:-1]])
+        return cls
+
     def _wrap(self, context):
         return self._parts(context, self._WRAP_PARTS)
     
+    def _wrap_attr(self, context):
+        return dict(cls=self._node_identification(context))
+
     def _bottom(self, context):
         return self._parts(context, self._BOTTOM_PARTS)
                            
@@ -127,15 +140,17 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
 
     def _page_attr(self, context):
         node = context.node()
-        cls = 'node-id-' + self._safe_css_id(node.id())
-        cls += ''.join([' parent-node-id-' + self._safe_css_id(n.id())
-                        for n in node.path()[1:-1]])
+        cls = ''
         if context.has_menu:
             cls += ' with-menu'
         if context.has_submenu:
             cls += ' with-submenu'
         if node.panels() and context.req().show_panels():
             cls += ' with-panels'
+        # Duplicate node identification here for backward
+        # compatibility. New styles should use node identification
+        # on the wrap element
+        cls += ' ' + self._node_identification(context)
         return dict(cls=cls)
 
     def _part(self, name, context):
