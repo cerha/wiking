@@ -672,11 +672,8 @@ class Users(UserManagementModule):
             return cls._STATES[gender]
         
     class Gender(object):
-        MALE = 'm'
-        FEMALE = 'f'
-        
-        _GENDERS = {MALE: _("Male"),
-                   FEMALE: _("Female")}
+        _GENDERS = {wiking.User.MALE: _("Male"),
+                    wiking.User.FEMALE: _("Female")}
         
         @classmethod
         def states(cls):
@@ -1048,8 +1045,8 @@ class Users(UserManagementModule):
                     roles.append(r)
         return dict(login=login, name=record['user'].value(), uid=uid,
                     uri=uri, email=record['email'].value(), data=record, roles=roles,
-                    state=record['state'].value(), lang=record['lang'].value(),
-                    confirm=record['confirm'].value())
+                    state=record['state'].value(), gender=record['gender'].value(),
+                    lang=record['lang'].value(), confirm=record['confirm'].value())
 
     def _make_user(self, kwargs):
         return self.User(**kwargs)

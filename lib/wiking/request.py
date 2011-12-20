@@ -932,10 +932,12 @@ class User(object):
     be a little cumbersome in some situations.
 
     """
+    MALE = 'm'
+    FEMALE = 'f'
     
-    def __init__(self, login, uid=None, name=None, roles=(),
-                 email=None, password=None, password_expiration=None, uri=None,
-                 data=None, lang='en'):
+    def __init__(self, login, uid=None, name=None, roles=(), email=None,
+                 password=None, password_expiration=None, gender=None, lang='en',
+                 uri=None, data=None):
         """Initialize the instance.
 
         Arguments:
@@ -950,9 +952,10 @@ class User(object):
             not allowed.  The login password will be checked against this value for authentication
             to succeed.
           password_expiration -- password expiration date as a Python 'date' instance or None
+          gender -- User's gender as one of MALE/FEMALE class constants or None if unknown
+          lang -- code of the user's preferred language
           uri -- user's profile URI or None
           data -- application specific data
-          lang -- code of the user's preferred language
 
         Please note, that password expiration date has currently no impact on the authentication
         process.  It will just be displayed in the login panel, if defined.
@@ -1001,6 +1004,14 @@ class User(object):
         """Return password expiration date as a Python 'date' instance or None."""
         return self._password_expiration
 
+    def gender(self):
+        """Return the user's gender as MALE/FEMALE class constant or None if unknown."""
+        return self._lang
+
+    def lang(self):
+        """Return code of the user's preferred language."""
+        return self._lang
+
     def uri(self):
         """Return the URI of user's profile."""
         return self._uri
@@ -1008,10 +1019,6 @@ class User(object):
     def data(self):
         """Return application specific data passed to the constructor."""
         return self._data
-
-    def lang(self):
-        """Return code of the user's preferred language."""
-        return self._lang
 
 
 class Role(object):
