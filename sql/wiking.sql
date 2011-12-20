@@ -135,7 +135,7 @@ create table _mapping (
 	identifier varchar(32) unique not null,
 	parent integer references _mapping,
 	modname text,
-	hidden boolean not null,
+	menu_visibility text,
 	foldable boolean,
 	ord int not null,
 	tree_order text,
@@ -173,7 +173,7 @@ create table _pages (
 create or replace view pages as
 select m.mapping_id ||'.'|| l.lang as page_id, l.lang,
        m.mapping_id, m.identifier, m.parent, m.modname,
-       m.hidden, m.foldable, m.ord, m.tree_order, m.read_role_id, m.write_role_id,
+       m.menu_visility, m.foldable, m.ord, m.tree_order, m.read_role_id, m.write_role_id,
        coalesce(p.published, false) as published,
        coalesce(p.title, m.identifier) as title_or_identifier,
        p.title, p.description, p.content, p._title, p._description, p._content
@@ -182,8 +182,8 @@ from _mapping m cross join languages l
 
 create or replace rule pages_insert as
   on insert to pages do instead (
-     insert into _mapping (identifier, parent, modname, read_role_id, write_role_id, hidden, foldable, ord)
-     values (new.identifier, new.parent, new.modname, new.read_role_id, new.write_role_id, new.hidden, new.foldable,
+     insert into _mapping (identifier, parent, modname, read_role_id, write_role_id, menu_visility, foldable, ord)
+     values (new.identifier, new.parent, new.modname, new.read_role_id, new.write_role_id, new.menu_visility, new.foldable,
              coalesce(new.ord, (select max(ord)+100 from _mapping
                                 where coalesce(parent, 0)=coalesce(new.parent, 0)), 100));
      update _mapping set tree_order = _mapping_tree_order(mapping_id);
@@ -193,7 +193,7 @@ create or replace rule pages_insert as
             new.lang, new.published,
             new.title, new.description, new.content, new._title, new._description, new._content
      returning mapping_id ||'.'|| lang,
-       lang, mapping_id, null::varchar(32), null::int, null::text, null::boolean, null::boolean,
+       lang, mapping_id, null::varchar(32), null::int, null::text, null::text, null::boolean,
        null::int, null::text, null::name, null::name,
        published, title, title, description, content, _title,
        _description, _content
@@ -207,7 +207,7 @@ create or replace rule pages_update as
         modname = new.modname,
         read_role_id = new.read_role_id,
         write_role_id = new.write_role_id,
-        hidden = new.hidden,
+        menu_visility = new.menu_visility,
         foldable = new.foldable,
         ord = new.ord
     where _mapping.mapping_id = old.mapping_id;

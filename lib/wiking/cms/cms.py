@@ -1096,9 +1096,13 @@ class Pages(ContentManagementModule):
                           "supported languages (switch language to control the availability in "
                           "other languages)")),
             Field('status', _("Status"), virtual=True, computer=computer(self._status)),
-            Field('hidden', _("Hidden"),
-                  descr=_("Check if you don't want this page to appear in the menu.")),
-            Field('foldable', _("Foldable"), editable=computer(lambda r, hidden: not hidden),
+            Field('menu_visibility', _("Visibility in menu"),
+                  enumerator=enum(('always', 'authorized', 'never')), default='always',
+                  display=self._menu_visibility_display, prefer_display=True,
+                  selection_type=pp.SelectionType.RADIO,
+                  descr=_("Select a value to show or hide this page in the menu.")),
+            Field('foldable', _("Foldable"), editable=computer(lambda r, menu_visibility:
+                                                                   menu_visibility != 'never'),
                   descr=_("Check if you want the relevant menu item to be foldable (only makes "
                           "sense for pages, which have subordinary items in the menu).")),
             # Translators: Page configuration option followed by an input field. Means order in the
@@ -1125,6 +1129,11 @@ class Pages(ContentManagementModule):
                 return _("Ok")
             else:
                 return _("Changed")
+        def _menu_visibility_display(self, menu_visibility):
+            labels = {'always': _("Always visible"),
+                      'authorized': _("Visible only to authorized users after login"),
+                      'never': _("Always hidden")}
+            return labels.get(menu_visibility, menu_visibility)
         def row_style(self, record):
             return not record['published'].value() and pp.Style(foreground='#777') or None
         sorting = (('tree_order', ASC), ('identifier', ASC),)
@@ -1137,12 +1146,13 @@ class Pages(ContentManagementModule):
             FieldSet(_("Global Options (for all languages)"),
                      (ColumnLayout(
                         FieldSet(_("Basic Options"), ('identifier', 'modname',)),
-                        FieldSet(_("Menu position"), ('parent', 'ord', 'hidden', 'foldable')),
+                        FieldSet(_("Menu position"), ('parent', 'ord', 'menu_visibility',
+                                                      'foldable')),
                         FieldSet(_("Access Rights"), ('read_role_id', 'write_role_id'))),),
                      ),
             )
-        columns = ('title_or_identifier', 'identifier', 'modname', 'status', 'ord', 'hidden',
-                   'read_role_id', 'write_role_id')
+        columns = ('title_or_identifier', 'identifier', 'modname', 'status', 'ord',
+                   'menu_visibility', 'read_role_id', 'write_role_id')
         cb = CodebookSpec(display='title_or_identifier', prefer_display=True)
         # Translators: Noun. Such as e-mail attachments (here attachments for a webpage).
         bindings = (Binding('attachments', _("Attachments"), 'Attachments', 'mapping_id'),)
@@ -1162,13 +1172,14 @@ class Pages(ContentManagementModule):
                              ('title', 'description', '_content')),
                     FieldSet(_("Global Options (for all languages)"),
                              ('identifier', 'modname',
-                              FieldSet(_("Menu position"), ('parent', 'ord', 'hidden', 'foldable')),
+                              FieldSet(_("Menu position"), ('parent', 'ord', 'menu_visibility',
+                                                            'foldable')),
                               FieldSet(_("Access Rights"), ('read_role_id', 'write_role_id',)),
                               ))),
                'update': ('title', 'description', '_content'),
                'options':
                    (FieldSet(_("Basic Options"), ('identifier', 'modname',)),
-                    FieldSet(_("Menu position"), ('parent', 'ord', 'hidden', 'foldable')),
+                    FieldSet(_("Menu position"), ('parent', 'ord', 'menu_visibility', 'foldable')),
                     FieldSet(_("Access Rights"), ('read_role_id', 'write_role_id')),
                     )
                }
@@ -1314,6 +1325,18 @@ class Pages(ContentManagementModule):
             actions = tuple([a for a in actions if a.id() not in exclude])
         return actions
 
+    def _visible_in_menu(self, req, row):
+        """Return True or False if page described by row is visible or not in the menu"""
+        visibility = row['menu_visibility'].value()
+        if visibility == 'always':
+            return True
+        elif visibility == 'authorized':
+            roles = wiking.module('Users').Roles()
+            return req.check_roles(roles[row['read_role_id'].value()],
+                                   roles[row['write_role_id'].value()])
+        elif visibility == 'never':
+            return False
+
     # Public methods
     
     def menu(self, req):
@@ -1336,10 +1359,11 @@ class Pages(ContentManagementModule):
             else:
                 submenu = []
             submenu += [item(r) for r in children.get(mapping_id, ())]
+            hidden = not self._visible_in_menu(req, row)
             return MenuItem(identifier,
                             title=lcg.SelfTranslatableText(identifier, translations=titles),
                             descr=lcg.SelfTranslatableText('', translations=descriptions),
-                            hidden=row['hidden'].value(),
+                            hidden=hidden,
                             foldable=row['foldable'].value(),
                             variants=titles.keys(),
                             submenu=submenu)
@@ -1455,11 +1479,14 @@ class Pages(ContentManagementModule):
         if not content:
             rows = self._data.get_rows(condition=\
                                        pd.AND(pd.EQ('parent', record['mapping_id']),
-                                              pd.EQ('hidden', pd.Value(pd.Boolean(), False)),
+                                              pd.NE('menu_visibility', pd.Value(pd.String(), 'never')),
                                               pd.EQ('published', pd.Value(pd.Boolean(), True))),
                                        sorting=self._sorting)
             if rows:
-                raise Redirect('/'+rows[0]['identifier'].value())
+                for row in rows:
+                    if self._visible_in_menu(req, row):
+                        raise Redirect('/'+row['identifier'].value())
+
         # Action menu
         content.append(self._action_menu(req, record, help='/_doc/wiking/cms/pages',
                                          cls='cms-page-actions'))
