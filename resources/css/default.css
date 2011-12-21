@@ -175,6 +175,10 @@ img { position: relative; } /* MSIE float workaround */
 .pytis-form div.radio-group label { 
     font-weight: normal;
 }
+.pytis-form div.radio-group { 
+    margin-bottom: 0.3em;
+}
+
 .pytis-form .group table { 
     border-collapse: collapse;
 }
