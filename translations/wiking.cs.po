@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-12-19 16:04+0100\n"
+"POT-Creation-Date: 2011-12-21 11:24+0100\n"
 "PO-Revision-Date: 2011-10-27 17:06+0100\n"
 "Last-Translator: Hynek Hanke <hanke@brailcom.org>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
@@ -15,24 +15,6 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-
-#: ../lib/wiking/application.py:313
-msgid "Unable to perform a database operation."
-msgstr "Provedení databázové operace se nezdařilo."
-
-#. Translators: Website idiom. This is followed by information on the underlying software
-#. tools.  Means: This website runs on [...this and that software...].
-#: ../lib/wiking/application.py:411
-msgid "Powered by"
-msgstr "Provozováno na"
-
-#: ../lib/wiking/application.py:428
-msgid "Accessibility Statement"
-msgstr "Prohlášení o zpřístupnění"
-
-#: ../lib/wiking/application.py:456
-msgid "Contact:"
-msgstr "Kontakt:"
 
 #: ../lib/wiking/db.py:62
 msgid "Row with this key already exists."
@@ -205,6 +187,136 @@ msgstr "Zneveřejnit"
 msgid "Make the item invisible to website visitors"
 msgstr "Učinit položku nedostupnou pro návštěvníky stránek"
 
+#: ../lib/wiking/configuration.py:204
+msgid "Webmaster's e-mail address"
+msgstr "E-mailová adresa správce"
+
+#: ../lib/wiking/configuration.py:215
+msgid "Default sender address"
+msgstr "Výchozí adresa odesílatele"
+
+#: ../lib/wiking/configuration.py:232
+msgid "Force HTTPS login"
+msgstr "Vynutit HTTPS pro přihlášení"
+
+#: ../lib/wiking/configuration.py:233
+msgid ""
+"If enabled, the login form will always be redirected to an HTTPS address to "
+"ensure the security of the submitted credentials.  This, however, requires "
+"your server to be setup to accept HTTPS requests for the same virtual host "
+"and pass them to Wiking."
+msgstr ""
+"Pokud je povoleno, přihlašovací formulář bude vždy přesměrován na HTTPS "
+"adresu aby byla zajištěna bezpečnost přenášených přihlašovacích údajů.  To "
+"ovšem vyžaduje, aby byl server zkonfigurován pro obsluhu HTTPS požadavků pro "
+"stejný virtuální server a aby tyto požadavky byly předávány systému Wiking."
+
+#: ../lib/wiking/configuration.py:241
+msgid "Allow HTTP authentication"
+msgstr "Povolit HTTP autentizaci"
+
+#. Translators: Site means a webpage or web application.
+#: ../lib/wiking/configuration.py:294
+msgid "Site title"
+msgstr "Název portálu"
+
+#: ../lib/wiking/configuration.py:295
+msgid ""
+"Site title is a short and (hopefully) unique title of the whole website. It "
+"will appear at the top of every page."
+msgstr ""
+"Tento název by měl krátce a pokud možno jednoznačně označovat celý portál.  "
+"Název bude zobrazen v záhlaví každé stránky"
+
+#. Translators: Site means a webpage or web application. Subtitle as in ,,title -- subtitle''.
+#: ../lib/wiking/configuration.py:301
+msgid "Site subtitle"
+msgstr "Podtitul portálu"
+
+#: ../lib/wiking/configuration.py:302
+msgid ""
+"Site subtitle is an optional more descriptive title of the website.  It will "
+"appear at the top of every page together with site title, but where brevity "
+"matters, only title will be used."
+msgstr ""
+"Podtitul je nepovinný podrobnější popis portálu.  Bude také zobrazen v "
+"záhlaví každé stránky, ale v situacích, kde je nutná stručnost bude vynechán."
+
+#. Translators: Web page or web application specific image.
+#: ../lib/wiking/configuration.py:309
+msgid "Site icon"
+msgstr "Ikona portálu"
+
+#: ../lib/wiking/configuration.py:323
+msgid "Default language"
+msgstr "Výchozí jazyk"
+
+#. Translators: Language negotiation means the process where the server is trying
+#. to find a language that matches with what the users internet browser asks for.
+#: ../lib/wiking/configuration.py:326
+msgid ""
+"Defines the language (lowercase ISO 639-1 Alpha-2 code) to be used when "
+"content language negotiation fails. If not set (which is the default), the "
+"server will issue a 606 HTTP error (Not acceptable) when the document is not "
+"available in any of the requested languages. The error page will contain a "
+"description of the problem and a list of available language variants of the "
+"requested document. The negotiation is based on the browser setting of "
+"user's language preference passed through the 'Accept-Language' HTTP header. "
+"If set, Wiking will automatically serve given language variant instead of "
+"issuing the error if that variant is available.  If unavailable, the 606 "
+"error is raised anyway, so you need to make sure that all documents are "
+"available at least in the default language variant if you want to avoid 606 "
+"errors completely."
+msgstr ""
+"Definuje jazyk (kód ISO 639-1 Alpha-2 psaný malými písmeny), který se bude "
+"používat, pokud selže automatické přepínání jazyka obsahu. Pokud není "
+"nastaveno (což je defaultní hodnota) a požadovaný dokument není dostupný v "
+"některém z požadovaných jazyků, server odešle HTTP chybu 606 (Not "
+"acceptable). Chybová stránka obsahuje popis problému a seznam dostupných "
+"jazykových variant požadovaného dokumentu. Automatické přepínání jazyka "
+"obsahuje je založeno na nastavení jazyka internetového prohlížeče uživatelem "
+"předávaného pomocí  HTTP hlavičky 'Accept-Language'. Pokud je toto "
+"nastaveno, Wiking automaticky poskytne tuto jazykovou variantu, pokud je "
+"dostupná, a chybu nezobrazí. Pokud toto není nastaveno, ke vzniku chyby 606 "
+"dojde stejně. Pokud se tedy chybě 606 chcete úplně vyhnout, ujistěte se, že "
+"jsou všechny dokumenty dostupné alespoň v defaultním jazyku."
+
+#. Translators: Yes/No configuration option label. Should the login panel display user role (as Admin, Student, Tutor etc.)
+#: ../lib/wiking/configuration.py:396
+msgid "Display role in login panel"
+msgstr "Zobrazit roli v panelu přihlášení"
+
+#: ../lib/wiking/configuration.py:397
+msgid ""
+"If enabled, the login panel on each page will not display only the current "
+"username, but also his current user role, which affects his permissions."
+msgstr ""
+"Pokud je povoleno, přihlašovací panel na každé stránce bude mimo jména "
+"uživatele zobrazovat i popis jeho uživatelské role v systému, která určuje "
+"oprávnění."
+
+#: ../lib/wiking/configuration.py:415
+msgid "Whether to use e-mails as login names"
+msgstr "Použít e-mailové adresy jako přihlašovací jméno"
+
+#: ../lib/wiking/configuration.py:416
+msgid "Iff true, users must use e-mail addresses as their login names."
+msgstr ""
+"Je-li nastaveno, uživatelé musí jako svá přihlašovací jména používat e-"
+"mailové adresy."
+
+#: ../lib/wiking/configuration.py:430
+msgid ""
+"If set, the newly registered users will be automatically approved without "
+"any administrator's action.  The adminstrator may still need to asign users "
+"to groups to grant them further privileges, but the accounts are enabled "
+"right after the user confirms the registration code."
+msgstr ""
+"Pokud je nastaveno, nově registrovaní uživatelé budou automaticky schválení "
+"bez zásahu administrátora.  Pro přidělení následných přístupových práv může "
+"být přesto zásah správce zapotřebí, ale účet bude plně aktivní ihned po "
+"uživatelově potvrzení registračního kódu."
+
 #: ../lib/wiking/export.py:84
 msgid "Page heading"
 msgstr "Záhlaví stránky"
@@ -281,67 +393,6 @@ msgstr "Varování"
 #, python-format
 msgid "Last change: %(date)s, %(user)s"
 msgstr "Poslední změna: %(date)s, %(user)s"
-
-#. Translators: Short description of a user group purpose.
-#: ../lib/wiking/request.py:1120
-msgid "Anyone"
-msgstr "Kdokoliv"
-
-#. Translators: Short description of a user group purpose.
-#: ../lib/wiking/request.py:1123
-msgid "Any authenticated user"
-msgstr "Jakýkoliv autentizovaný uživatel"
-
-#. Translators: Short description of a user group purpose.
-#: ../lib/wiking/request.py:1130
-msgid "Current record owner"
-msgstr "Vlastník tohoto záznamu"
-
-#: ../lib/wiking/modules.py:525
-msgid "Enter your login name, please!"
-msgstr "Zadejte, prosím, vaše uživatelské jméno!"
-
-#: ../lib/wiking/modules.py:527
-msgid "Enter your password, please!"
-msgstr "Zadejte, prosím, vaše heslo!"
-
-#: ../lib/wiking/modules.py:532
-msgid "Invalid login!"
-msgstr "Neplatné přihlášení!"
-
-#: ../lib/wiking/modules.py:632
-msgid "Searching"
-msgstr "Vyhledávání"
-
-#: ../lib/wiking/modules.py:633
-msgid "Search results"
-msgstr "Výsledky vyhledávání"
-
-#: ../lib/wiking/modules.py:634
-msgid "Given search term doesn't contain any searchable term."
-msgstr ""
-"Zadaný vyhledávací výraz neobsahuje nic, podle čeho by bylo možno vyhledání "
-"provést."
-
-#: ../lib/wiking/modules.py:638
-msgid "Search words:"
-msgstr "Vyhledat slova:"
-
-#: ../lib/wiking/modules.py:639
-msgid "Search"
-msgstr "Vyhledat"
-
-#: ../lib/wiking/modules.py:695
-msgid "Nothing found."
-msgstr "Nic nebylo nalezeno."
-
-#: ../lib/wiking/modules.py:752
-msgid "The following modules were successfully reloaded:"
-msgstr "Následující moduly byly úspěšně načteny znovu:"
-
-#: ../lib/wiking/modules.py:754
-msgid "Reload"
-msgstr "Načíst znovu"
 
 #. Translators: '%(code)d' is replaced by error number and '%(name)s' by error title.
 #: ../lib/wiking/util.py:109
@@ -590,135 +641,84 @@ msgstr "Neplatný formát"
 msgid "Domain not found"
 msgstr "Doména nenalezena"
 
-#: ../lib/wiking/configuration.py:204
-msgid "Webmaster's e-mail address"
-msgstr "E-mailová adresa správce"
+#. Translators: Short description of a user group purpose.
+#: ../lib/wiking/request.py:1127
+msgid "Anyone"
+msgstr "Kdokoliv"
 
-#: ../lib/wiking/configuration.py:215
-msgid "Default sender address"
-msgstr "Výchozí adresa odesílatele"
+#. Translators: Short description of a user group purpose.
+#: ../lib/wiking/request.py:1130
+msgid "Any authenticated user"
+msgstr "Jakýkoliv autentizovaný uživatel"
 
-#: ../lib/wiking/configuration.py:232
-msgid "Force HTTPS login"
-msgstr "Vynutit HTTPS pro přihlášení"
+#. Translators: Short description of a user group purpose.
+#: ../lib/wiking/request.py:1137
+msgid "Current record owner"
+msgstr "Vlastník tohoto záznamu"
 
-#: ../lib/wiking/configuration.py:233
-msgid ""
-"If enabled, the login form will always be redirected to an HTTPS address to "
-"ensure the security of the submitted credentials.  This, however, requires "
-"your server to be setup to accept HTTPS requests for the same virtual host "
-"and pass them to Wiking."
+#: ../lib/wiking/application.py:313
+msgid "Unable to perform a database operation."
+msgstr "Provedení databázové operace se nezdařilo."
+
+#. Translators: Website idiom. This is followed by information on the underlying software
+#. tools.  Means: This website runs on [...this and that software...].
+#: ../lib/wiking/application.py:411
+msgid "Powered by"
+msgstr "Provozováno na"
+
+#: ../lib/wiking/application.py:428
+msgid "Accessibility Statement"
+msgstr "Prohlášení o zpřístupnění"
+
+#: ../lib/wiking/application.py:456
+msgid "Contact:"
+msgstr "Kontakt:"
+
+#: ../lib/wiking/modules.py:525
+msgid "Enter your login name, please!"
+msgstr "Zadejte, prosím, vaše uživatelské jméno!"
+
+#: ../lib/wiking/modules.py:527
+msgid "Enter your password, please!"
+msgstr "Zadejte, prosím, vaše heslo!"
+
+#: ../lib/wiking/modules.py:532
+msgid "Invalid login!"
+msgstr "Neplatné přihlášení!"
+
+#: ../lib/wiking/modules.py:632
+msgid "Searching"
+msgstr "Vyhledávání"
+
+#: ../lib/wiking/modules.py:633
+msgid "Search results"
+msgstr "Výsledky vyhledávání"
+
+#: ../lib/wiking/modules.py:634
+msgid "Given search term doesn't contain any searchable term."
 msgstr ""
-"Pokud je povoleno, přihlašovací formulář bude vždy přesměrován na HTTPS "
-"adresu aby byla zajištěna bezpečnost přenášených přihlašovacích údajů.  To "
-"ovšem vyžaduje, aby byl server zkonfigurován pro obsluhu HTTPS požadavků pro "
-"stejný virtuální server a aby tyto požadavky byly předávány systému Wiking."
+"Zadaný vyhledávací výraz neobsahuje nic, podle čeho by bylo možno vyhledání "
+"provést."
 
-#: ../lib/wiking/configuration.py:241
-msgid "Allow HTTP authentication"
-msgstr "Povolit HTTP autentizaci"
+#: ../lib/wiking/modules.py:638
+msgid "Search words:"
+msgstr "Vyhledat slova:"
 
-#. Translators: Site means a webpage or web application.
-#: ../lib/wiking/configuration.py:294
-msgid "Site title"
-msgstr "Název portálu"
+#: ../lib/wiking/modules.py:639
+msgid "Search"
+msgstr "Vyhledat"
 
-#: ../lib/wiking/configuration.py:295
-msgid ""
-"Site title is a short and (hopefully) unique title of the whole website. It "
-"will appear at the top of every page."
-msgstr ""
-"Tento název by měl krátce a pokud možno jednoznačně označovat celý portál.  "
-"Název bude zobrazen v záhlaví každé stránky"
+#: ../lib/wiking/modules.py:695
+msgid "Nothing found."
+msgstr "Nic nebylo nalezeno."
 
-#. Translators: Site means a webpage or web application. Subtitle as in ,,title -- subtitle''.
-#: ../lib/wiking/configuration.py:301
-msgid "Site subtitle"
-msgstr "Podtitul portálu"
+#: ../lib/wiking/modules.py:752
+msgid "The following modules were successfully reloaded:"
+msgstr "Následující moduly byly úspěšně načteny znovu:"
 
-#: ../lib/wiking/configuration.py:302
-msgid ""
-"Site subtitle is an optional more descriptive title of the website.  It will "
-"appear at the top of every page together with site title, but where brevity "
-"matters, only title will be used."
-msgstr ""
-"Podtitul je nepovinný podrobnější popis portálu.  Bude také zobrazen v "
-"záhlaví každé stránky, ale v situacích, kde je nutná stručnost bude vynechán."
-
-#. Translators: Web page or web application specific image.
-#: ../lib/wiking/configuration.py:309
-msgid "Site icon"
-msgstr "Ikona portálu"
-
-#: ../lib/wiking/configuration.py:323
-msgid "Default language"
-msgstr "Výchozí jazyk"
-
-#. Translators: Language negotiation means the process where the server is trying
-#. to find a language that matches with what the users internet browser asks for.
-#: ../lib/wiking/configuration.py:326
-msgid ""
-"Defines the language (lowercase ISO 639-1 Alpha-2 code) to be used when "
-"content language negotiation fails. If not set (which is the default), the "
-"server will issue a 606 HTTP error (Not acceptable) when the document is not "
-"available in any of the requested languages. The error page will contain a "
-"description of the problem and a list of available language variants of the "
-"requested document. The negotiation is based on the browser setting of "
-"user's language preference passed through the 'Accept-Language' HTTP header. "
-"If set, Wiking will automatically serve given language variant instead of "
-"issuing the error if that variant is available.  If unavailable, the 606 "
-"error is raised anyway, so you need to make sure that all documents are "
-"available at least in the default language variant if you want to avoid 606 "
-"errors completely."
-msgstr ""
-"Definuje jazyk (kód ISO 639-1 Alpha-2 psaný malými písmeny), který se bude "
-"používat, pokud selže automatické přepínání jazyka obsahu. Pokud není "
-"nastaveno (což je defaultní hodnota) a požadovaný dokument není dostupný v "
-"některém z požadovaných jazyků, server odešle HTTP chybu 606 (Not "
-"acceptable). Chybová stránka obsahuje popis problému a seznam dostupných "
-"jazykových variant požadovaného dokumentu. Automatické přepínání jazyka "
-"obsahuje je založeno na nastavení jazyka internetového prohlížeče uživatelem "
-"předávaného pomocí  HTTP hlavičky 'Accept-Language'. Pokud je toto "
-"nastaveno, Wiking automaticky poskytne tuto jazykovou variantu, pokud je "
-"dostupná, a chybu nezobrazí. Pokud toto není nastaveno, ke vzniku chyby 606 "
-"dojde stejně. Pokud se tedy chybě 606 chcete úplně vyhnout, ujistěte se, že "
-"jsou všechny dokumenty dostupné alespoň v defaultním jazyku."
-
-#. Translators: Yes/No configuration option label. Should the login panel display user role (as Admin, Student, Tutor etc.)
-#: ../lib/wiking/configuration.py:396
-msgid "Display role in login panel"
-msgstr "Zobrazit roli v panelu přihlášení"
-
-#: ../lib/wiking/configuration.py:397
-msgid ""
-"If enabled, the login panel on each page will not display only the current "
-"username, but also his current user role, which affects his permissions."
-msgstr ""
-"Pokud je povoleno, přihlašovací panel na každé stránce bude mimo jména "
-"uživatele zobrazovat i popis jeho uživatelské role v systému, která určuje "
-"oprávnění."
-
-#: ../lib/wiking/configuration.py:415
-msgid "Whether to use e-mails as login names"
-msgstr "Použít e-mailové adresy jako přihlašovací jméno"
-
-#: ../lib/wiking/configuration.py:416
-msgid "Iff true, users must use e-mail addresses as their login names."
-msgstr ""
-"Je-li nastaveno, uživatelé musí jako svá přihlašovací jména používat e-"
-"mailové adresy."
-
-#: ../lib/wiking/configuration.py:430
-msgid ""
-"If set, the newly registered users will be automatically approved without "
-"any administrator's action.  The adminstrator may still need to asign users "
-"to groups to grant them further privileges, but the accounts are enabled "
-"right after the user confirms the registration code."
-msgstr ""
-"Pokud je nastaveno, nově registrovaní uživatelé budou automaticky schválení "
-"bez zásahu administrátora.  Pro přidělení následných přístupových práv může "
-"být přesto zásah správce zapotřebí, ale účet bude plně aktivní ihned po "
-"uživatelově potvrzení registračního kódu."
+#: ../lib/wiking/modules.py:754
+msgid "Reload"
+msgstr "Načíst znovu"
 
 #~ msgid "US Government Section 508 Accessibility Guidelines."
 #~ msgstr "Sekce 508 směrnic pro zpřístupnění vydaných vládou USA"
