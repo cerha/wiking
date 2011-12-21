@@ -1359,11 +1359,10 @@ class Pages(ContentManagementModule):
             else:
                 submenu = []
             submenu += [item(r) for r in children.get(mapping_id, ())]
-            hidden = not self._visible_in_menu(req, row)
             return MenuItem(identifier,
                             title=lcg.SelfTranslatableText(identifier, translations=titles),
                             descr=lcg.SelfTranslatableText('', translations=descriptions),
-                            hidden=hidden,
+                            hidden=not self._visible_in_menu(req, row),
                             foldable=row['foldable'].value(),
                             variants=titles.keys(),
                             submenu=submenu)
@@ -1479,8 +1478,8 @@ class Pages(ContentManagementModule):
         if not content:
             rows = self._data.get_rows(condition=\
                                        pd.AND(pd.EQ('parent', record['mapping_id']),
-                                              pd.NE('menu_visibility', pd.Value(pd.String(), 'never')),
-                                              pd.EQ('published', pd.Value(pd.Boolean(), True))),
+                                              pd.NE('menu_visibility', pd.sval('never')),
+                                              pd.EQ('published', pd.bval(True))),
                                        sorting=self._sorting)
             if rows:
                 for row in rows:
