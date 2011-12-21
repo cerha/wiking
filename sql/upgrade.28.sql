@@ -2,8 +2,7 @@ drop view pages;
 drop view mapping;
 
 alter table _mapping add column menu_visibility text not null default 'always';
-update _mapping set menu_visibility='always' where hidden=true;
-update _mapping set menu_visibility='never' where hidden=false;
+update _mapping set menu_visibility='never' where hidden=true;
 alter table _mapping drop column hidden;
 
 create or replace view mapping as select * from _mapping;
