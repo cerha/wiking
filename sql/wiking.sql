@@ -135,7 +135,7 @@ create table _mapping (
 	identifier varchar(32) unique not null,
 	parent integer references _mapping,
 	modname text,
-	menu_visibility text,
+	menu_visibility text not null,
 	foldable boolean,
 	ord int not null,
 	tree_order text,
