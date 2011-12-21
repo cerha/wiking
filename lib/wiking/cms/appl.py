@@ -262,15 +262,17 @@ class Application(CookieAuthentication, wiking.Application):
             roles = self._RIGHTS.get(module.name(), ())
         if module.name() == 'Pages' and record:
             if action in ('view', 'rss'):
-                role_id = record['read_role_id'].value()
-                roles = (wiking.module('Users').Roles()[role_id],)
+                roles_m = wiking.module('Users').Roles()
+                roles = (roles_m[record['read_role_id'].value()],
+                         roles_m[record['write_role_id'].value()])
             elif action in ('update', 'commit', 'revert', 'attachments'):
                 role_id = record['write_role_id'].value()
                 roles = (wiking.module('Users').Roles()[role_id], Roles.CONTENT_ADMIN)
         if module.name() == 'Attachments' and req.page:
             if action in ('view', 'list'):
-                role_id = req.page['read_role_id'].value()
-                roles = (wiking.module('Users').Roles()[role_id],)
+                roles_m = wiking.module('Users').Roles()
+                roles = (user_roles[req.page['read_role_id'].value()],
+                         user_roles[req.page['write_role_id'].value()])
             elif action in ('insert', 'update', 'delete'):
                 role_id = req.page['write_role_id'].value()
                 roles = (wiking.module('Users').Roles()[role_id], Roles.CONTENT_ADMIN)
