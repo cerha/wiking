@@ -1100,7 +1100,14 @@ class Pages(ContentManagementModule):
                   enumerator=enum(('always', 'authorized', 'never')), default='always',
                   display=self._menu_visibility_display, prefer_display=True,
                   selection_type=pp.SelectionType.RADIO,
-                  descr=_("Select a value to show or hide this page in the menu.")),
+                  descr=_('When "%(always)s" is selected, unauthorized users see the menu '
+                          'item, but still can not open the page.  When "%(authorized)s" '
+                          'is selected, visibility is controlled by the "Access Rights" '
+                          'settings below.  Note, that when access rights are restricted, '
+                          'the item will be hidden until the user logs in, which may be '
+                          'confusing (the expected item is not there).',
+                          always=self._menu_visibility_display('always'),
+                          authorized=self._menu_visibility_display('authorized'))),
             Field('foldable', _("Foldable"), editable=computer(lambda r, menu_visibility:
                                                                    menu_visibility != 'never'),
                   descr=_("Check if you want the relevant menu item to be foldable (only makes "
@@ -1131,7 +1138,7 @@ class Pages(ContentManagementModule):
                 return _("Changed")
         def _menu_visibility_display(self, menu_visibility):
             labels = {'always': _("Always visible"),
-                      'authorized': _("Visible only to authorized users after login"),
+                      'authorized': _("Visible only to authorized users"),
                       'never': _("Always hidden")}
             return labels.get(menu_visibility, menu_visibility)
         def row_style(self, record):
