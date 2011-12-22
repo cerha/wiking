@@ -41,13 +41,15 @@ following goals:
   
 == Top Level Page Structure == structure
 
- * div#*wrap* /class="node-id-<id> parent-node-id-<pid>"/ -- All content is
-   wrapped in this div, the only direct descendant of HTML body element.
-   /<id>/ is replaced by the identifier of the current node (page). One or more
-   of the /parent-node-id-<pid>/ classes are present if the current node is
-   subordinate to other nodes and then /<pid>/ is the identifier of each parent
-   node. This makes it possible to style the different pages and parts of the
-   site differently.
+ * div#*wrap* /class="node-id-<id> parent-node-id-<pid> lang-<iso-code>"/ --
+   All content is wrapped in this div, the only direct descendant of HTML body
+   element.  /<id>/ is replaced by the identifier of the current node
+   (page). One or more of the /parent-node-id-<pid>/ classes are present if the
+   current node is subordinate to other nodes and then /<pid>/ is the
+   identifier of each parent node. /iso-code/ is the two-letter ISO 639-1 code
+   of the primary language for the current node. This makes it possible to
+   style the different pages, parts and language versions of the site
+   differently.
 
    * div#*top* -- The top of the page usually containing logos and page title
      (see also [#logo]).

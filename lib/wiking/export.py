@@ -134,7 +134,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         return self._parts(context, self._WRAP_PARTS)
     
     def _wrap_attr(self, context):
-        return dict(cls=self._node_identification(context))
+        return dict(cls = self._node_identification(context) + " lang-%s" % context.lang())
 
     def _bottom(self, context):
         return self._parts(context, self._BOTTOM_PARTS)
