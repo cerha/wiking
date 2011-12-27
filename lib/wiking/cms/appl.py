@@ -271,8 +271,8 @@ class Application(CookieAuthentication, wiking.Application):
         if module.name() == 'Attachments' and req.page:
             if action in ('view', 'list'):
                 roles_m = wiking.module('Users').Roles()
-                roles = (user_roles[req.page['read_role_id'].value()],
-                         user_roles[req.page['write_role_id'].value()])
+                roles = (roles_m[req.page['read_role_id'].value()],
+                         roles_m[req.page['write_role_id'].value()])
             elif action in ('insert', 'update', 'delete'):
                 role_id = req.page['write_role_id'].value()
                 roles = (wiking.module('Users').Roles()[role_id], Roles.CONTENT_ADMIN)
