@@ -1840,7 +1840,7 @@ class PytisModule(Module, ActionHandler):
                 req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
             else:
                 return self._redirect_after_delete(req, record)
-        if req.param('__form_class') == 'ListView':
+        if req.param('__invoked_from') == 'ListView':
             back_action = 'list'
         else:
             back_action = 'view'
@@ -1986,7 +1986,11 @@ class PytisModule(Module, ActionHandler):
         the final redirection URI.
     
         """
-        return self._current_record_uri(req, record), kwargs
+        if req.param('__invoked_from') == 'ListView':
+            kwargs.update(form_name=self.name(), search=record[self._key].export())
+            return self._current_base_uri(req, record), kwargs
+        else:
+            return self._current_record_uri(req, record), kwargs
         
     def _redirect_after_delete_uri(self, req, record, **kwargs):
         """Return the URI for HTTP redirection after succesful record insertion.
