@@ -192,10 +192,10 @@ class PytisModule(Module, ActionHandler):
     """Default value to pass to 'pytis.web.BrowseForm' 'limit' constructor argument."""
     _ALLOW_QUERY_SEARCH = None
     """Default value to pass to 'pytis.web.BrowseForm' 'allow_query_search' constructor argument."""
-    _ACTION_MENU_FIRST = False
-    "If true, action menu is put above forms."
-    _ACTION_MENU_LAST = True
-    "If true, action menu is put below forms."
+    _TOP_ACTIONS = False
+    "If true, action menu is put above BrowseForm/ListView forms."
+    _BOTTOM_ACTIONS = True
+    "If true, action menu is put below BrowseForm/ListView forms."
     _ROW_ACTIONS = False
     "If true, action menu created also for each table row in BrowseForm/ListView forms."
     
@@ -767,8 +767,8 @@ class PytisModule(Module, ActionHandler):
                 limits = self._BROWSE_FORM_LIMITS,
                 limit = self._BROWSE_FORM_DEFAULT_LIMIT,
                 allow_query_search = self._ALLOW_QUERY_SEARCH,
-                top_actions = self._ACTION_MENU_FIRST,
-                bottom_actions = self._ACTION_MENU_LAST,
+                top_actions = self._TOP_ACTIONS,
+                bottom_actions = self._BOTTOM_ACTIONS,
                 row_actions = self._ROW_ACTIONS,
                 immediate_filters = cfg.immediate_filters,
                 filter_fields = self._filter_fields(req),
