@@ -270,6 +270,12 @@ img { position: relative; } /* MSIE float workaround */
     opacity: 0.5;
     color: $color.foreground;
 }
+.pytis-form.browse-form td .actions { 
+    margin: 0;
+}
+.pytis-form.browse-form td .actions button {
+    line-height: 1em;
+}
 
 .list-form-controls button.prev-page-button span {
     background-image: url(/_resources/previous.png);

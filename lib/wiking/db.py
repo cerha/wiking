@@ -196,6 +196,8 @@ class PytisModule(Module, ActionHandler):
     "If true, action menu is put above forms."
     _ACTION_MENU_LAST = True
     "If true, action menu is put below forms."
+    _ROW_ACTIONS = False
+    "If true, action menu created also for each table row in BrowseForm/ListView forms."
     
     _SUBMIT_BUTTONS = {}
     "Dictionary of form buttons keyed by action name (see '_submit_buttons()' method)."
@@ -767,6 +769,7 @@ class PytisModule(Module, ActionHandler):
                 allow_query_search = self._ALLOW_QUERY_SEARCH,
                 top_actions = self._ACTION_MENU_FIRST,
                 bottom_actions = self._ACTION_MENU_LAST,
+                row_actions = self._ROW_ACTIONS,
                 immediate_filters = cfg.immediate_filters,
                 filter_fields = self._filter_fields(req),
                 actions = (), # Display no actions by default, rather than just spec actions.
