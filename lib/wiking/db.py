@@ -20,6 +20,7 @@ import collections
 import re
 
 from wiking import *
+from pytis.presentation import Action
 
 _ = lcg.TranslatableTextFactory('wiking')
 
@@ -581,19 +582,19 @@ class PytisModule(Module, ActionHandler):
         return Document(title, content, lang=lang, **kwargs)
 
     def _default_actions_first(self, req, record):
-        return (Action(self._INSERT_LABEL, 'insert', descr=self._INSERT_DESCR,
+        return (Action('insert', self._INSERT_LABEL, descr=self._INSERT_DESCR,
                        context=pp.ActionContext.GLOBAL),
-                Action(self._EXPORT_LABEL, 'export', descr=self._EXPORT_DESCR,
+                Action('export', self._EXPORT_LABEL, descr=self._EXPORT_DESCR,
                        context=pp.ActionContext.GLOBAL),
-                Action(self._UPDATE_LABEL, 'update', descr=self._UPDATE_DESCR,
+                Action('update', self._UPDATE_LABEL, descr=self._UPDATE_DESCR,
                        enabled=lambda r: self._update_enabled(r.req(), r)),
                 )
 
     def _default_actions_last(self, req, record):
-        return (Action(self._COPY_LABEL, 'copy', descr=self._COPY_DESCR),
-                Action(self._DELETE_LABEL, 'delete', descr=self._DELETE_DESCR,
+        return (Action('copy', self._COPY_LABEL, descr=self._COPY_DESCR),
+                Action('delete', self._DELETE_LABEL, descr=self._DELETE_DESCR,
                        enabled=lambda r: self._delete_enabled(r.req(), r)),
-                Action(self._LIST_LABEL, 'list', descr=self._LIST_DESCR),
+                Action('list', self._LIST_LABEL, descr=self._LIST_DESCR),
                 )
     
     def _actions(self, req, record):
@@ -1841,9 +1842,9 @@ class PytisModule(Module, ActionHandler):
                 return self._redirect_after_delete(req, record)
         form = self._form(pw.ShowForm, req, record=record,
                           layout=self._layout(req, 'delete', record),
-                          actions=(Action(self._DELETE_LABEL, 'delete', submit=1),
+                          actions=(Action('delete', self._DELETE_LABEL, submit=1),
                                    # Translators: Back button label. Standard computer terminology.
-                                   Action(_("Back"), 'view')))
+                                   Action('view', _("Back"))))
         req.message(self._delete_prompt(req, record))
         return self._document(req, form, record,
                               subtitle=self._action_subtitle(req, 'delete', record))
@@ -2314,11 +2315,11 @@ class Publishable(object):
         data.update(key, values)
     _change_published = staticmethod(_change_published)
     
-    _ACTIONS = (Action(_("Publish"), 'publish',
+    _ACTIONS = (Action('publish', _("Publish"),
                        handler=lambda r: Publishable._change_published(r),
                        enabled=lambda r: not r['published'].value(),
                        descr=_("Make the item visible to website visitors")),
-                Action(_("Unpublish"), 'unpublish',
+                Action('unpublish', _("Unpublish"),
                        handler=lambda r: Publishable._change_published(r),
                        enabled=lambda r: r['published'].value(),
                        descr=_("Make the item invisible to website visitors")),
