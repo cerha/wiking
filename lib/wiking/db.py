@@ -769,6 +769,7 @@ class PytisModule(Module, ActionHandler):
                 bottom_actions = self._ACTION_MENU_LAST,
                 immediate_filters = cfg.immediate_filters,
                 filter_fields = self._filter_fields(req),
+                actions = (), # Display no actions by default, rather than just spec actions.
                 )
             kwargs = dict(default_kwargs, **kwargs)
         layout = kwargs.get('layout')
