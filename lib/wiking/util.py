@@ -1148,78 +1148,6 @@ class WikingNode(lcg.ContentNode):
     def layout(self):
         return self._layout
 
-
-class ActionCtrl(lcg.Content):
-    """Context action invocation control."""
-    
-    def __init__(self, uri, action, referer, name, row=None):
-        super(ActionCtrl, self).__init__()
-        assert isinstance(uri, (str, unicode)), uri
-        assert isinstance(action, pp.Action), action
-        assert isinstance(referer, str), referer
-        assert isinstance(name, str), name
-        assert row is None or isinstance(row, pp.PresentedRow), row
-        self._uri = uri
-        self._action = action
-        self._referer = referer
-        self._name = name
-        self._row = row
-
-    def export(self, context):
-        g = context.generator()
-        action = self._action
-        enabled = action.enabled()
-        if isinstance(enabled, collections.Callable):
-            context = action.context()
-            if context == pp.ActionContext.RECORD:
-                args = (self._row,)
-            else:
-                args = (context.req(),)
-            enabled = enabled(*args)
-        uri = self._uri
-        args = dict(action=action.id(), **action.kwargs())
-        if self._row and action.context() == pp.ActionContext.RECORD:
-            if self._referer is not None and (not isinstance(action, Action)
-                                              or action.allow_referer()):
-                if not uri.endswith('/'):
-                    uri += '/'
-                uri += self._row[self._referer].export()
-            else:
-                key = self._row.data().key()[0].id()
-                if action.id() == 'list':
-                    args = dict(args, search=self._row[key].export(), form_name=self._name)
-                else:
-                    args = dict(args, **{key: self._row[key].export()})
-        content = [g.hidden(name, value is True and 'true' or value)
-                   for name, value in args.items()] + \
-                  [g.button(g.span(action.title()), title=action.descr(), disabled=not enabled,
-                            cls='action-'+action.id() + (not enabled and ' disabled' or ''))]
-        return g.form(['  '+x for x in content], action=uri)
-
-
-class ActionMenu(lcg.Container):
-    """A set of action controls."""
-    
-    def __init__(self, uri, actions, referer, name, row=None,
-                 # Translators: A set of buttons for various actions (edit, delete, etc.) is
-                 # prepended with this label.
-                 title=_("Actions:"), help=None, cls=None):
-        ctrls = [ActionCtrl(uri, a, referer, name, row) for a in actions]
-        if help:
-            # Translators: Link or button leading to documentation/help. Use usual computer
-            # terminlogy.
-            ctrls.append(lcg.link(help, _("Help")))
-        super(ActionMenu, self).__init__(ctrls)
-        self._title = title
-        self._name = name
-        self._cls = cls
-
-    def export(self, context):
-        g = context.generator()
-        cls = self._cls
-        return g.div(concat([ctrl.export(context) for ctrl in self._content]),
-                     cls='actions module-actions-' + self._name + (cls and ' ' + cls or ''))
-
     
 class PanelItem(lcg.Content):
 
@@ -1389,7 +1317,6 @@ class HtmlContent(lcg.TextContent):
     def export(self, context):
         return self._text
 
-
     
 # ============================================================================
 # Classes derived from Pytis components
@@ -1402,22 +1329,12 @@ class FieldSet(pp.GroupSpec):
         super(FieldSet, self).__init__(fields, label=label, orientation=orientation)
         
 class Action(pytis.presentation.Action):
-    """Deprecated: Use the parent class which now includes all the necessary methods.
-
-    The only argument not present in the parent class is 'allow_referer'.  This argument should not
-    be necessary if the action handler uses proper redirection after action completion (when the
-    original URI is not available anymore).
-
-    """
-    def __init__(self, title, id, allow_referer=True, **kwargs):
-        self._allow_referer = allow_referer
+    """Deprecated: Use the parent class which now includes all the necessary methods."""
+    def __init__(self, title, id, **kwargs):
         if 'context' in kwargs and kwargs['context'] is None:
             # Make context specification in applications backwards compatible.
             kwargs['context'] = pp.ActionContext.GLOBAL
         super(Action, self).__init__(id, title, **kwargs)
-
-    def allow_referer(self):
-        return self._allow_referer
 
 
 from pytis.data.dbapi import DBAPIData

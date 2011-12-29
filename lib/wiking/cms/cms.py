@@ -39,7 +39,7 @@ import time
 from pytis.util import *
 import pytis.data
 from pytis.presentation import computer, Computer, CbComputer, HGroup, CodebookSpec, \
-    Field, ColumnLayout
+    Field, ColumnLayout, Action
 from lcg import log as debug
 
 CHOICE = pp.SelectionType.CHOICE
@@ -999,10 +999,10 @@ class Themes(StyleManagementModule):
         columns = ('name', 'active')
         cb = CodebookSpec(display='name', prefer_display=True)
     # Translators: Button label
-    _ACTIONS = (Action(_("Activate"), 'activate', descr=_("Activate this color theme"),
-                       enabled=lambda r: r['active'].value() is None, allow_referer=False),
+    _ACTIONS = (Action('activate', _("Activate"), descr=_("Activate this color theme"),
+                       enabled=lambda r: r['active'].value() is None),
                 # Translators: Button label
-                Action(_("Activate default"), 'activate', context=pp.ActionContext.GLOBAL,
+                Action('activate', _("Activate default"), context=pp.ActionContext.GLOBAL,
                        descr=_("Activate the default color theme"),
                        enabled=lambda r: isinstance(cfg.theme, Themes.Theme)),)
     RIGHTS_copy = (Roles.STYLE_ADMIN,)
@@ -1161,6 +1161,25 @@ class Pages(ContentManagementModule):
         columns = ('title_or_identifier', 'identifier', 'modname', 'status', 'ord',
                    'menu_visibility', 'read_role_id', 'write_role_id')
         cb = CodebookSpec(display='title_or_identifier', prefer_display=True)
+        actions = (
+            # Translators: Button label. Page configuration options.
+            Action('options', _("Options"),
+                   descr=_("Edit global (language independent) page options and menu position")),
+            Action('commit', _("Publish"), descr=_("Publish the page in its current state"),
+                   enabled=lambda r: (r['_content'].value() != r['content'].value() \
+                                          or not r['published'].value())),
+            Action('unpublish', _("Unpublish"), descr=_("Make the page invisible from outside"),
+                   enabled=lambda r: r['published'].value()),
+            Action('revert', _("Revert"), descr=_("Revert last modifications"),
+                   enabled=lambda r: r['_content'].value() != r['content'].value()),
+            Action('preview', _("Preview"), descr=_("Display the page in its current state"),
+                   ), #enabled=lambda r: r['_content'].value() is not None),
+            Action('attachments', _("Attachments"), descr=_("Manage this page's attachments")),
+            #Action('translate', _("Translate"), 
+            #      descr=_("Create the content by translating another language variant"),
+            #       enabled=lambda r: r['_content'].value() is None),
+            Action('help', _("Help")),
+            )
         # Translators: Noun. Such as e-mail attachments (here attachments for a webpage).
         bindings = (Binding('attachments', _("Attachments"), 'Attachments', 'mapping_id'),)
 
@@ -1196,24 +1215,6 @@ class Pages(ContentManagementModule):
     _INSERT_LABEL = _("New page")
     _UPDATE_LABEL = _("Edit Text")
     _UPDATE_DESCR = _("Edit title, description and content for the current language")
-    _ACTIONS = (
-        # Translators: Button label. Page configuration options.
-        Action(_("Options"), 'options',
-               descr=_("Edit global (language independent) page options and menu position")),
-        Action(_("Publish"), 'commit', descr=_("Publish the page in its current state"),
-               enabled=lambda r: (r['_content'].value() != r['content'].value() \
-                                  or not r['published'].value())),
-        Action(_("Unpublish"), 'unpublish', descr=_("Make the page invisible from outside"),
-               enabled=lambda r: r['published'].value()),
-        Action(_("Revert"), 'revert',  descr=_("Revert last modifications"),
-               enabled=lambda r: r['_content'].value() != r['content'].value()),
-        Action(_("Preview"), 'preview', descr=_("Display the page in its current state"),
-               ), #enabled=lambda r: r['_content'].value() is not None),
-        Action(_("Attachments"), 'attachments', descr=_("Manage this page's attachments")),
-        #Action(_("Translate"), 'translate',
-        #      descr=_("Create the content by translating another language variant"),
-        #       enabled=lambda r: r['_content'].value() is None),
-        )
     _SEPARATOR = re.compile('^====+\s*$', re.MULTILINE)
 
     def _handle(self, req, action, **kwargs):
@@ -1323,7 +1324,7 @@ class Pages(ContentManagementModule):
         actions = super(Pages, self)._actions(req, record)
         if record is not None:
             if req.wmi and req.param('action') == 'preview':
-                actions = (Action(_("Back"), 'view'),)
+                actions = (Action('view', _("Back")),)
             if req.wmi:
                 exclude = ('attachments',)
             else:
@@ -1492,10 +1493,11 @@ class Pages(ContentManagementModule):
                 for row in rows:
                     if self._visible_in_menu(req, row):
                         raise Redirect('/'+row['identifier'].value())
-
-        # Action menu
-        content.append(self._action_menu(req, record, help='/_doc/wiking/cms/pages',
-                                         cls='cms-page-actions'))
+        if req.check_roles(Roles.CONTENT_ADMIN):
+            # Append an empty show form just for the action menu.
+            form = self._form(pw.ShowForm, req, record=record, layout=(),
+                              actions=self._permitted_actions(req))
+            content.append(lcg.Container(form, id='cms-page-actions'))
         return self._document(req, content, record, resources=resources)
 
     def action_rss(self, req, record):
@@ -1507,19 +1509,8 @@ class Pages(ContentManagementModule):
         else:
             raise NotFound()
         
-    def action_list(self, req, record=None):
-        if record is not None:
-            # Simulate the list action for the embedded module.
-            return self.action_view(req, record)
-        else:
-            return super(Pages, self).action_list(req)
-        
     def action_attachments(self, req, record):
-        binding = self._view.bindings()[0]
-        content = wiking.module('Attachments').related(req, binding, record,
-                                                      uri=self._current_record_uri(req, record))
-        # Translators: Section title. Attachments as in email attachments.
-        return self._document(req, content, record, subtitle=_("Attachments"))
+        raise Redirect(self._current_record_uri(req, record) + '/attachments')
     RIGHTS_attachments = (Roles.CONTENT_ADMIN,)
         
     def action_preview(self, req, record):
@@ -1596,6 +1587,10 @@ class Pages(ContentManagementModule):
             req.message(_("The page was unpublished."))
         raise Redirect(self._current_record_uri(req, record))
     RIGHTS_unpublish = (Roles.CONTENT_ADMIN,)
+
+    def action_help(self, req, record):
+        raise Redirect('/_doc/wiking/cms/pages')
+    RIGHTS_help = (Roles.CONTENT_ADMIN,)
 
     
 class Attachments(ContentManagementModule):
@@ -1745,8 +1740,8 @@ class Attachments(ContentManagementModule):
             #Action(_("New image"), 'insert_image', descr=_("Insert a new image attachment"),
             #       context=pp.ActionContext.GLOBAL),
             # Translators: Button label
-            Action(_("Move"), 'move', descr=_("Move the attachment to another page.")),
-            Action(_("Back to page"), 'back', descr=_("Go back to the page."),
+            Action('move', _("Move"), descr=_("Move the attachment to another page.")),
+            Action('back', _("Back to page"), descr=_("Go back to the page."),
                    visible=lambda req: not req.wmi,
                    context=pp.ActionContext.GLOBAL,
                    ),
@@ -1816,21 +1811,12 @@ class Attachments(ContentManagementModule):
             return self._link_provider(req, uri, record, None, action='thumbnail')
         return super(Attachments, self)._image_provider(req, uri, record, cid, **kwargs)
 
-    def _actions(self, req, record):
-        actions = super(Attachments, self)._actions(req, record)
-        if record is None and not req.wmi:
-            # Translators: Button label. Use standard computer terminology.
-            actions += (Action(_("Back"), 'list', context=pp.ActionContext.GLOBAL,
-                               descr=_("Display the page")),)
-        return actions
-
     def _binding_parent_redirect(self, req, **kwargs):
-        if not req.wmi and (req.param('action') != 'list'
-                            or req.param('form_name') == 'Attachments'):
-            # Redirect to the 'attachments' action when "Back to list" is pressed within attachment
-            # record view page outside WMI, but use the default page action (view) when the
-            # _("Back") button (defined above) is pressed in the 'attachments' listing.
-            kwargs['action'] = 'attachments'
+        if not req.wmi:
+            # Avoid binding parent redirection outside wmi, because we don't
+            # have the sideform there -- the attachment listing has a special
+            # action button which displays the listing alone.
+            return
         super(Attachments, self)._binding_parent_redirect(req, **kwargs)
 
     def _save_files(self, record):

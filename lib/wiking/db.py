@@ -588,44 +588,36 @@ class PytisModule(Module, ActionHandler):
                 )
 
     def _default_actions_last(self, req, record):
-        return (Action(self._COPY_LABEL, 'copy', descr=self._COPY_DESCR,
-                       allow_referer=False),
+        return (Action(self._COPY_LABEL, 'copy', descr=self._COPY_DESCR),
                 Action(self._DELETE_LABEL, 'delete', descr=self._DELETE_DESCR,
                        enabled=lambda r: self._delete_enabled(r.req(), r)),
-                Action(self._LIST_LABEL, 'list', descr=self._LIST_DESCR, allow_referer=False),
+                Action(self._LIST_LABEL, 'list', descr=self._LIST_DESCR),
                 )
     
     def _actions(self, req, record):
-        actions = self._default_actions_first(req, record) + \
-                  self._view.actions() + \
-                  self._default_actions_last(req, record)
-        if record is not None:
-            context = pp.ActionContext.RECORD
-        else:
-            context = pp.ActionContext.GLOBAL
-        return tuple([a for a in actions if a.context() == context])
+        return tuple(self._default_actions_first(req, record) + 
+                     self._view.actions() + 
+                     self._default_actions_last(req, record))
 
-    def _action_menu(self, req, record=None, actions=None, uri=None, **kwargs):
-        def visible(action):
-            result = action.visible()
-            if isinstance(result, collections.Callable):
-                context = action.context()
-                if context == pp.ActionContext.RECORD:
-                    args = (record,)
-                elif context == pp.ActionContext.GLOBAL:
-                    args = (req,)
-                else:
-                    raise Exception("Unsupported action context:", context)
-                result = result(*args)
-            return result
-        actions = [action for action in actions or self._actions(req, record)
-                   if visible(action) and self._authorized(req, action=action.id(), record=record)]
-        if not actions:
-            return None
-        if uri is None:
-            uri = self._current_base_uri(req, record)
-        return ActionMenu(uri, actions, self._referer, self.name(), record, **kwargs)
-
+    def _permitted_actions(self, req):
+        def actions(form, record):
+            if isinstance(form, pw.BrowseForm):
+                exclude = ('list',)
+            else:
+                exclude = ()
+            # Action context filtering is redundant here (it is done by the
+            # form as well), but we need it here because `_authorized()'
+            # methods in applications may historically not expect out of
+            # context actions.
+            if record is not None:
+                required_context = pp.ActionContext.RECORD
+            else:
+                required_context = pp.ActionContext.GLOBAL
+            return [action for action in self._actions(req, record)
+                    if action.id() not in exclude and action.context() == required_context
+                    and self._authorized(req, action=action.id(), record=record)]
+        return actions
+    
     def _update_enabled(self, req, record):
         """Return true iff the default 'update' action is enabled for given record.
 
@@ -769,15 +761,16 @@ class PytisModule(Module, ActionHandler):
         else:
             uri = self._current_base_uri(req, record)
         if issubclass(form, pw.BrowseForm):
-            kwargs['req'] = req
-            if 'limits' not in kwargs:
-                kwargs['limits'] = self._BROWSE_FORM_LIMITS
-            if 'limit' not in kwargs:
-                kwargs['limit'] = self._BROWSE_FORM_DEFAULT_LIMIT
-            kwargs['allow_query_search'] = self._ALLOW_QUERY_SEARCH
-            kwargs['filter_fields'] = self._filter_fields(req)
-            if 'immediate_filters' not in kwargs:
-                kwargs['immediate_filters'] = cfg.immediate_filters
+            default_kwargs = dict(
+                limits = self._BROWSE_FORM_LIMITS,
+                limit = self._BROWSE_FORM_DEFAULT_LIMIT,
+                allow_query_search = self._ALLOW_QUERY_SEARCH,
+                top_actions = self._ACTION_MENU_FIRST,
+                bottom_actions = self._ACTION_MENU_LAST,
+                immediate_filters = cfg.immediate_filters,
+                filter_fields = self._filter_fields(req),
+                )
+            kwargs = dict(default_kwargs, **kwargs)
         layout = kwargs.get('layout')
         if layout is not None and not isinstance(layout, pp.GroupSpec):
             kwargs['layout'] = self._layout_instance(layout)
@@ -790,7 +783,7 @@ class PytisModule(Module, ActionHandler):
             rows = data.get_rows(condition=pd.EQ(linking_column, form_record[self._key]))
             values = [r[value_column] for r in rows]
             form_record[fid] = pd.Value(form_record.type(fid), values)
-        form_instance = form(self._view, form_record, handler=handler or req.uri(),
+        form_instance = form(self._view, req, form_record, handler=handler or req.uri(),
                              name=self.name(), prefill=invalid_prefill,
                              uri_provider=self._uri_provider(req, uri),
                              hidden=hidden_fields, **kwargs)
@@ -811,7 +804,10 @@ class PytisModule(Module, ActionHandler):
     def _uri_provider(self, req, uri):
         """Return the uri_provider function to pass the pytis form."""
         def uri_provider(record, cid, type=pw.UriType.LINK):
-            if type == pw.UriType.LINK:
+            if record is None:
+                assert type == pw.UriType.LINK
+                return uri
+            elif type == pw.UriType.LINK:
                 method = self._link_provider
             elif type == pw.UriType.IMAGE:
                 method = self._image_provider
@@ -1340,14 +1336,7 @@ class PytisModule(Module, ActionHandler):
         in derived classes.
 
         """
-        content = [form]
-        action_menu = self._action_menu(req, uri=uri)
-        if action_menu:
-            if self._ACTION_MENU_FIRST:
-                content.insert(0, action_menu) 
-            if self._ACTION_MENU_LAST:
-                content.append(action_menu) 
-        return content
+        return [form]
 
     def _print_field_title(self, req, record, field):
         """Return the document title used by the 'print_field' action.
@@ -1633,6 +1622,7 @@ class PytisModule(Module, ActionHandler):
                           condition=self._condition(req, condition=condition, lang=lang),
                           arguments=self._binding_arguments(binding, record),
                           profiles=self._profiles(req), filter_sets=self._filter_sets(req),
+                          actions=self._permitted_actions(req),
                           **form_kwargs)
         content = self._list_form_content(req, form, uri=binding_uri)
         descr = binding.descr()
@@ -1642,7 +1632,10 @@ class PytisModule(Module, ActionHandler):
 
     # ===== Action handlers =====
     
-    def action_list(self, req):
+    def action_list(self, req, record=None):
+        if record is not None:
+            raise Redirect(self._current_base_uri(req, record),
+                           search=record[self._key].export(), form_name=self.name())
         # Don't display the listing alone, but display the original main form,
         # when this list is accessed through bindings as a related form.
         self._binding_parent_redirect(req, search=req.param('search'), form_name=self.name())
@@ -1652,7 +1645,10 @@ class PytisModule(Module, ActionHandler):
                           columns=self._columns(req),
                           condition=self._condition(req, lang=lang),
                           arguments=self._arguments(req),
-                          profiles=self._profiles(req), filter_sets=self._filter_sets(req))
+                          profiles=self._profiles(req),
+                          filter_sets=self._filter_sets(req),
+                          actions=self._permitted_actions(req),
+                          )
         content = self._list_form_content(req, form)
         return self._document(req, content, lang=lang)
 
@@ -1701,16 +1697,10 @@ class PytisModule(Module, ActionHandler):
         
         You may override this method to modify page content for the view form
         in derived classes.  The default implementation returns the form
-        itself, action menu and the result of '_related_content()' packed in
-        one list.
+        itself and the result of '_related_content()' packed in one list.
 
         """
-        content = [form]
-        action_menu = self._action_menu(req, record)
-        if action_menu:
-            content.append(action_menu)
-        content.extend(self._related_content(req, record))
-        return content
+        return [form] + self._related_content(req, record)
     
     def _update_form_content(self, req, form, record):
         """Return page content for 'update' action form as a list of 'lcg.Content' instances.
@@ -1731,7 +1721,9 @@ class PytisModule(Module, ActionHandler):
         # The arguments `msg' and `err' are DEPRECATED!  Please don't use.
         # They are currently still used in Eurochance LMS.
         form = self._form(pw.ShowForm, req, record=record,
-                          layout=self._layout(req, 'view', record))
+                          layout=self._layout(req, 'view', record),
+                          actions=self._permitted_actions(req),
+                          )
         content = self._view_form_content(req, form, record)
         return self._document(req, content, record, err=err, msg=msg)
 
@@ -1791,8 +1783,13 @@ class PytisModule(Module, ActionHandler):
         # Copy values of the existing record as prefill values for the new
         # record.  Exclude Password and Binary values, key column, computed
         # columns depending on key column and fields with 'nocopy'.
-        prefill = {}
         key = self._key
+        base_uri = self._current_base_uri(req, record)
+        if req.uri() != base_uri:
+            # Invoke the same action for the same record but without the
+            # referer in the uri.
+            raise Redirect(base_uri, action='copy', **{key: record[key].export()})
+        prefill = {}
         layout = self._layout_instance(self._layout(req, action))
         for fid in layout.order():
             if not isinstance(self._type[fid], (pd.Password, pd.Binary)):
@@ -1839,13 +1836,12 @@ class PytisModule(Module, ActionHandler):
             else:
                 return self._redirect_after_delete(req, record)
         form = self._form(pw.ShowForm, req, record=record,
-                          layout=self._layout(req, 'delete', record))
+                          layout=self._layout(req, 'delete', record),
+                          actions=(Action(self._DELETE_LABEL, 'delete', submit=1),
+                                   # Translators: Back button label. Standard computer terminology.
+                                   Action(_("Back"), 'view')))
         req.message(self._delete_prompt(req, record))
-        actions = (Action(self._DELETE_LABEL, 'delete', submit=1),
-                   # Translators: Back button label. Standard computer terminology.
-                   Action(_("Back"), 'view'))
-        action_menu = self._action_menu(req, record, actions)
-        return self._document(req, [form, action_menu], record,
+        return self._document(req, form, record,
                               subtitle=self._action_subtitle(req, 'delete', record))
         
     def _export(self, req, export_row, content_type, headers=()):

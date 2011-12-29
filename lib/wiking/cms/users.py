@@ -39,6 +39,8 @@ import pytis.util
 import wiking
 from wiking.cms import *
 
+from pytis.presentation import Field, Action
+
 _ = lcg.TranslatableTextFactory('wiking-cms')
 
 
@@ -606,27 +608,27 @@ class Users(UserManagementModule):
             )
         default_filter = 'enabled'
         actions = (
-            Action(_("Change password"), 'passwd', descr=_("Change user's password")),
+            Action('passwd', _("Change password"), descr=_("Change user's password")),
             # Translators: Button label.  Used to approve user's account by the administrator.
-            Action(_("Approve"), 'enable', descr=_("Aprove this account"),
+            Action('enable', _("Approve"), descr=_("Aprove this account"),
                    # Note: We use "Approve" just for consistency of the
                    # terminology in the user interface.  Technically it is the
                    # same as "Enable" (changes state to enabled).
                    visible=lambda r: r['state'].value() in (Users.AccountState.NEW,
                                                             Users.AccountState.UNAPPROVED)),
             # Translators: Button label. Computer terminology. Use common word and form.
-            Action(_("Enable"), 'enable', descr=_("Enable this account"),
+            Action('enable', _("Enable"), descr=_("Enable this account"),
                    enabled=lambda r: r['state'].value() != Users.AccountState.ENABLED,
                    visible=lambda r: r['state'].value() not in (Users.AccountState.NEW,
                                                                 Users.AccountState.UNAPPROVED)),
             # Translators: Button label. Computer terminology. Use common word and form.
-            Action(_("Disable"), 'disable', descr=_("Disable this account"),
+            Action('disable', _("Disable"), descr=_("Disable this account"),
                    enabled=lambda r: r['state'].value() == Users.AccountState.ENABLED,
                    visible=lambda r: r['state'].value() not in (Users.AccountState.NEW,
                                                                 Users.AccountState.UNAPPROVED)),
-            Action(_("Resend activation code"), 'regreminder', descr=_("Re-send registration mail"),
+            Action('regreminder', _("Resend activation code"), descr=_("Re-send registration mail"),
                    visible=lambda r: r['state'].value() == Users.AccountState.NEW),
-            Action(_("Delete"), 'delete', descr=_("Remove the account completely"),
+            Action('delete', _("Delete"), descr=_("Remove the account completely"),
                    visible=lambda r: r['state'].value() in (Users.AccountState.NEW,
                                                             Users.AccountState.UNAPPROVED)),
             )
@@ -994,15 +996,14 @@ class Users(UserManagementModule):
             if record['regexpire'].value() <= pd.DateTime.datetime():
                 req.message(_("The registration expired on %(date)s.",
                               date=record['regexpire'].export()), type=req.WARNING)
-            form = self._form(pw.ShowForm, req, record, layout=self._layout(req, 'view', record))
-            actions = (Action(_("Continue"), 'enable', submit=1),
-                       # Translators: Back button label. Standard computer terminology.
-                       Action(_("Back"), 'view'))
-            action_menu = self._action_menu(req, record, actions)
+            form = self._form(pw.ShowForm, req, record, layout=self._layout(req, 'view', record),
+                              actions=(Action('enable', _("Continue"), submit=1),
+                                       # Translators: Button label to get to a previous state.
+                                       Action('view', _("Back"))))
             req.message(_("The registration code was not confirmed by the user!"))
             req.message(_("Please enable the account only if you are sure that "
                           "the e-mail address belongs to given user."))
-            return self._document(req, (form, action_menu), record)
+            return self._document(req, (form), record)
         self._change_state(req, record, self.AccountState.ENABLED)
     RIGHTS_enable = (Roles.USER_ADMIN,)
 
