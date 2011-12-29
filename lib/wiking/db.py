@@ -127,6 +127,10 @@ class PytisModule(Module, ActionHandler):
     _UPDATE_LABEL = _("Edit")
     # Translators: Tooltip of database record modification button (computer terminology)
     _UPDATE_DESCR = _("Modify the record")
+    # Translators: Button label for database record display (verb in imperative).
+    _VIEW_LABEL = _("View")
+    # Translators: Tooltip of database record display button (computer terminology)
+    _VIEW_DESCR = _("Display the record")
     # Translators: Button label for database record deletion (verb in imperative,
     # computer terminology).
     _DELETE_LABEL = _("Remove")
@@ -586,6 +590,7 @@ class PytisModule(Module, ActionHandler):
                        context=pp.ActionContext.GLOBAL),
                 Action('export', self._EXPORT_LABEL, descr=self._EXPORT_DESCR,
                        context=pp.ActionContext.GLOBAL),
+                Action('view', self._VIEW_LABEL, descr=self._VIEW_DESCR),
                 Action('update', self._UPDATE_LABEL, descr=self._UPDATE_DESCR,
                        enabled=lambda r: self._update_enabled(r.req(), r)),
                 )
@@ -606,6 +611,8 @@ class PytisModule(Module, ActionHandler):
         def actions(form, record):
             if isinstance(form, pw.BrowseForm):
                 exclude = ('list',)
+            elif isinstance(form, pw.ShowForm):
+                exclude = ('view',)
             else:
                 exclude = ()
             # Action context filtering is redundant here (it is done by the
