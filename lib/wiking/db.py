@@ -1840,11 +1840,15 @@ class PytisModule(Module, ActionHandler):
                 req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
             else:
                 return self._redirect_after_delete(req, record)
+        if req.param('__form_class') == 'ListView':
+            back_action = 'list'
+        else:
+            back_action = 'view'
         form = self._form(pw.ShowForm, req, record=record,
                           layout=self._layout(req, 'delete', record),
                           actions=(Action('delete', self._DELETE_LABEL, submit=1),
                                    # Translators: Back button label. Standard computer terminology.
-                                   Action('view', _("Back"))))
+                                   Action(back_action, _("Back"))))
         req.message(self._delete_prompt(req, record))
         return self._document(req, form, record,
                               subtitle=self._action_subtitle(req, 'delete', record))
