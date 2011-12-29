@@ -1,5 +1,5 @@
 # Wiking translations.
-# Copyright (C) 2006-2010 Brailcom, o.p.s.
+# Copyright (C) 2006-2011 Brailcom, o.p.s.
 # This file is distributed under the same license as the Wiking package.
 # Tomas Cerha <cerha@brailcom.org>, 2006.
 #
@@ -7,185 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-12-21 11:24+0100\n"
-"PO-Revision-Date: 2011-10-27 17:06+0100\n"
+"POT-Creation-Date: 2011-12-29 21:07+0100\n"
+"PO-Revision-Date: 2011-12-29 21:07+0100\n"
 "Last-Translator: Hynek Hanke <hanke@brailcom.org>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-
-#: ../lib/wiking/db.py:62
-msgid "Row with this key already exists."
-msgstr "Řádek s tímto klíčem již existuje."
-
-#: ../lib/wiking/db.py:64
-msgid "This value already exists.  Enter a unique value."
-msgstr "Taková hodnota již existuje.  Zadejte unikátní hodnotu."
-
-#. Translators: This is about an empty (not filled in) value in a web form. Field means a
-#. form field.
-#: ../lib/wiking/db.py:68
-msgid "Empty value.  This field is mandatory."
-msgstr "Prázdná hodnota.  Tato položka je povinná."
-
-#. Translators: This is delete action failure message in a web page.
-#: ../lib/wiking/db.py:71
-msgid "Record couldn't be deleted because other records refer to it."
-msgstr "Záznam nemohl být smazán, protože se na něj odkazují jiné záznamy."
-
-#. Translators: Button label for new database record creation (computer terminology).
-#: ../lib/wiking/db.py:121
-msgid "New record"
-msgstr "Nový záznam"
-
-#. Translators: Tooltip of new database record creation button (computer terminology).
-#: ../lib/wiking/db.py:123
-msgid "Create a new record"
-msgstr "Vytvořit nový záznam"
-
-#. Translators: Button label for database record modification (verb in imperative,
-#. computer terminology).
-#: ../lib/wiking/db.py:126
-msgid "Edit"
-msgstr "Upravit"
-
-#. Translators: Tooltip of database record modification button (computer terminology)
-#: ../lib/wiking/db.py:128
-msgid "Modify the record"
-msgstr "Změnit záznam"
-
-#. Translators: Button label for database record deletion (verb in imperative,
-#. computer terminology).
-#: ../lib/wiking/db.py:131
-msgid "Remove"
-msgstr "Smazat"
-
-#. Translators: Tooltip of database record deletion button (computer terminology).
-#: ../lib/wiking/db.py:133
-msgid "Remove the record permanently"
-msgstr "Nevratně odstranit záznam"
-
-#. Translators: Prompt before database record deletion (computer terminology).
-#: ../lib/wiking/db.py:135
-msgid "Please, confirm removing the record permanently."
-msgstr "Potvrďte, prosím, nevratné smazání záznamu."
-
-#. Translators: Button label for database record copying (verb in imperative,
-#. computer terminology).
-#: ../lib/wiking/db.py:138
-msgid "Copy"
-msgstr "Vytvořit kopii"
-
-#. Translators: Tooltip of database record copy button (computer terminology).
-#: ../lib/wiking/db.py:140
-msgid "Create new record initialized by values of this record"
-msgstr "Vytvořit nový záznam předvyplněný hodnotami tohoto záznamu"
-
-#. Translators: Button label for returning from a single record view to the listing of all
-#. database records (computer terminology).
-#: ../lib/wiking/db.py:143
-msgid "Back to list"
-msgstr "Zpět na seznam"
-
-#. Translators: Tooltip of a button for returning from a single record view to the
-#. listing of all records (computer terminology).
-#: ../lib/wiking/db.py:146
-msgid "Back to the list of all records"
-msgstr "Zpět na výpis všech záznamů"
-
-#. Translators: Button label (verb in imperative, computer terminology).
-#: ../lib/wiking/db.py:148
-msgid "Export"
-msgstr "Exportovat"
-
-#. Translators: Button tooltip.  Don't translate `CSV', it is an
-#. internationally recognized computer abbreviation.
-#: ../lib/wiking/db.py:151
-msgid "Export the listing into a CSV format"
-msgstr "Exportovat výpis do CSV formátu"
-
-#. Translators: Message displayed after new database record creation (computer terminology).
-#: ../lib/wiking/db.py:153
-msgid "New record was successfully inserted."
-msgstr "Nový záznam byl úspěšně vložen."
-
-#. Translators: Message displayed after a database record modification (computer terminology).
-#: ../lib/wiking/db.py:155
-msgid "The record was successfully updated."
-msgstr "Záznam byl úspěšně aktualizován."
-
-#. Translators: Message displayed after a database record deletion (computer terminology).
-#: ../lib/wiking/db.py:157
-msgid "The record was deleted."
-msgstr "Záznam byl odstraněn."
-
-#: ../lib/wiking/db.py:462
-msgid "Integrity check failed."
-msgstr "Kontrola integrity dat selhala."
-
-#: ../lib/wiking/db.py:516
-msgid "Unable to perform a database operation:"
-msgstr "Provedení databázové operace se nezdařilo:"
-
-#: ../lib/wiking/db.py:965
-msgid "Filter"
-msgstr "Filtr"
-
-#. Translators: Back button label. Standard computer terminology.
-#: ../lib/wiking/db.py:1846
-msgid "Back"
-msgstr "Zpět"
-
-#. Translators: RSS channel is a computer idiom, see Wikipedia.
-#: ../lib/wiking/db.py:2053 ../lib/wiking/db.py:2206
-msgid "An RSS channel is available for this section:"
-msgstr "K dispozici je také RSS kanál pro tuto sekci:"
-
-#. Translators: RSS channel is a computer idiom, see Wikipedia.  Don't translate 'RSS'.
-#: ../lib/wiking/db.py:2057 ../lib/wiking/db.py:2204
-msgid "more about RSS"
-msgstr "více o RSS"
-
-#: ../lib/wiking/db.py:2199
-#, python-format
-msgid "RSS channel \"%s\""
-msgstr "RSS kanál „%s“"
-
-#: ../lib/wiking/db.py:2209
-msgid "RSS channels are available for this section"
-msgstr "Pro tuto sekci jsou k dispozici RSS kanály"
-
-#. Translators: Record as in `database record'.
-#: ../lib/wiking/db.py:2299
-msgid "No records."
-msgstr "Žádné záznamy"
-
-#. Translators: `Item' is intentionally general. Could be webpage, notice or something else.
-#: ../lib/wiking/db.py:2307
-msgid "The item was published."
-msgstr "Položka byla zveřejněna."
-
-#: ../lib/wiking/db.py:2308
-msgid "The item was unpublished."
-msgstr "Zveřejnění položky bylo zrušeno."
-
-#: ../lib/wiking/db.py:2317
-msgid "Publish"
-msgstr "Zveřejnit"
-
-#: ../lib/wiking/db.py:2320
-msgid "Make the item visible to website visitors"
-msgstr "Zpřístupnit položku návštěvníkům stránek"
-
-#: ../lib/wiking/db.py:2321
-msgid "Unpublish"
-msgstr "Zneveřejnit"
-
-#: ../lib/wiking/db.py:2324
-msgid "Make the item invisible to website visitors"
-msgstr "Učinit položku nedostupnou pro návštěvníky stránek"
 
 #: ../lib/wiking/configuration.py:204
 msgid "Webmaster's e-mail address"
@@ -317,82 +146,204 @@ msgstr ""
 "být přesto zásah správce zapotřebí, ale účet bude plně aktivní ihned po "
 "uživatelově potvrzení registračního kódu."
 
-#: ../lib/wiking/export.py:84
-msgid "Page heading"
-msgstr "Záhlaví stránky"
+#: ../lib/wiking/db.py:63
+msgid "Row with this key already exists."
+msgstr "Řádek s tímto klíčem již existuje."
 
-#: ../lib/wiking/export.py:85 ../lib/wiking/export.py:227
-#: ../lib/wiking/export.py:252 ../lib/wiking/export.py:320
-msgid "Main navigation"
-msgstr "Hlavní navigace"
+#: ../lib/wiking/db.py:65
+msgid "This value already exists.  Enter a unique value."
+msgstr "Taková hodnota již existuje.  Zadejte unikátní hodnotu."
 
-#: ../lib/wiking/export.py:86 ../lib/wiking/export.py:229
-#: ../lib/wiking/export.py:314
-msgid "Local navigation"
-msgstr "Navigace této sekce"
+#. Translators: This is about an empty (not filled in) value in a web form. Field means a
+#. form field.
+#: ../lib/wiking/db.py:69
+msgid "Empty value.  This field is mandatory."
+msgstr "Prázdná hodnota.  Tato položka je povinná."
 
-#: ../lib/wiking/export.py:87 ../lib/wiking/export.py:225
-msgid "Main content"
-msgstr "Hlavní obsah"
+#. Translators: This is delete action failure message in a web page.
+#: ../lib/wiking/db.py:72
+msgid "Record couldn't be deleted because other records refer to it."
+msgstr "Záznam nemohl být smazán, protože se na něj odkazují jiné záznamy."
 
-#: ../lib/wiking/export.py:88
-msgid "Page footer"
-msgstr "Zápatí stránky"
+#. Translators: Button label for new database record creation (computer terminology).
+#: ../lib/wiking/db.py:122
+msgid "New record"
+msgstr "Nový záznam"
 
-#. Translators: Title of a dialog on a webpage
-#: ../lib/wiking/export.py:89 ../lib/wiking/export.py:231
-#: ../lib/wiking/util.py:309
-msgid "Language selection"
-msgstr "Výběr jazyka"
+#. Translators: Tooltip of new database record creation button (computer terminology).
+#: ../lib/wiking/db.py:124
+msgid "Create a new record"
+msgstr "Vytvořit nový záznam"
 
-#. Translators: Label for language selection followed by list of languages
-#: ../lib/wiking/export.py:92
-msgid "Language:"
-msgstr "Jazyk:"
+#. Translators: Button label for database record modification (verb in imperative,
+#. computer terminology).
+#: ../lib/wiking/db.py:127
+msgid "Edit"
+msgstr "Upravit"
 
-#: ../lib/wiking/export.py:103
-msgid "Expand/collapse complete menu hierarchy"
-msgstr "Rozbalit/sbalit kompletní hierarchii menu"
+#. Translators: Tooltip of database record modification button (computer terminology)
+#: ../lib/wiking/db.py:129
+msgid "Modify the record"
+msgstr "Změnit záznam"
 
-#: ../lib/wiking/export.py:235
-msgid "Jump in page"
-msgstr "Přejít ve stránce"
+#. Translators: Button label for database record display (verb in imperative).
+#: ../lib/wiking/db.py:131
+msgid "View"
+msgstr "Zobrazit"
 
-#. Translators: A label followed by location information in webpage navigation
-#: ../lib/wiking/export.py:240
-msgid "You are here:"
-msgstr "Nacházíte se zde:"
+#. Translators: Tooltip of database record display button (computer terminology)
+#: ../lib/wiking/db.py:133
+msgid "Display the record"
+msgstr "Zobrazit náhled záznamu"
 
-#. Translators: Heading of webpage navigation menu containing a list
-#. of links to pages in this web section
-#: ../lib/wiking/export.py:317
-msgid "In this section:"
-msgstr "V této sekci:"
+#. Translators: Button label for database record deletion (verb in imperative,
+#. computer terminology).
+#: ../lib/wiking/db.py:136
+msgid "Remove"
+msgstr "Smazat"
 
-#. Translators: Panels are small windows on the side of the page. This is a label
-#. for a link that shows/hides the panels.
-#: ../lib/wiking/export.py:334
-msgid "Show panels"
-msgstr "Zobrazit panely"
+#. Translators: Tooltip of database record deletion button (computer terminology).
+#: ../lib/wiking/db.py:138
+msgid "Remove the record permanently"
+msgstr "Nevratně odstranit záznam"
 
-#: ../lib/wiking/export.py:335
-msgid "Hide panels"
-msgstr "Skrýt panely"
+#. Translators: Prompt before database record deletion (computer terminology).
+#: ../lib/wiking/db.py:140
+msgid "Please, confirm removing the record permanently."
+msgstr "Potvrďte, prosím, nevratné smazání záznamu."
 
-#. Translators: ``RSS channel'' is terminology idiom, see Wikipedia
-#: ../lib/wiking/export.py:347
-msgid "RSS channel"
-msgstr "RSS kanál"
+#. Translators: Button label for database record copying (verb in imperative,
+#. computer terminology).
+#: ../lib/wiking/db.py:143
+msgid "Copy"
+msgstr "Vytvořit kopii"
 
-#: ../lib/wiking/export.py:366
-msgid "Warning"
-msgstr "Varování"
+#. Translators: Tooltip of database record copy button (computer terminology).
+#: ../lib/wiking/db.py:145
+msgid "Create new record initialized by values of this record"
+msgstr "Vytvořit nový záznam předvyplněný hodnotami tohoto záznamu"
 
-#. Translators: Information about last change of a webpage (when and who)
-#: ../lib/wiking/export.py:389
+#. Translators: Button label for returning from a single record view to the listing of all
+#. database records (computer terminology).
+#: ../lib/wiking/db.py:148
+msgid "Back to list"
+msgstr "Zpět na seznam"
+
+#. Translators: Tooltip of a button for returning from a single record view to the
+#. listing of all records (computer terminology).
+#: ../lib/wiking/db.py:151
+msgid "Back to the list of all records"
+msgstr "Zpět na výpis všech záznamů"
+
+#. Translators: Button label (verb in imperative, computer terminology).
+#: ../lib/wiking/db.py:153
+msgid "Export"
+msgstr "Exportovat"
+
+#. Translators: Button tooltip.  Don't translate `CSV', it is an
+#. internationally recognized computer abbreviation.
+#: ../lib/wiking/db.py:156
+msgid "Export the listing into a CSV format"
+msgstr "Exportovat výpis do CSV formátu"
+
+#. Translators: Message displayed after new database record creation (computer terminology).
+#: ../lib/wiking/db.py:158
+msgid "New record was successfully inserted."
+msgstr "Nový záznam byl úspěšně vložen."
+
+#. Translators: Message displayed after a database record modification (computer terminology).
+#: ../lib/wiking/db.py:160
+msgid "The record was successfully updated."
+msgstr "Záznam byl úspěšně aktualizován."
+
+#. Translators: Message displayed after a database record deletion (computer terminology).
+#: ../lib/wiking/db.py:162
+msgid "The record was deleted."
+msgstr "Záznam byl odstraněn."
+
+#: ../lib/wiking/db.py:469
+msgid "Integrity check failed."
+msgstr "Kontrola integrity dat selhala."
+
+#: ../lib/wiking/db.py:523
+msgid "Unable to perform a database operation:"
+msgstr "Provedení databázové operace se nezdařilo:"
+
+#: ../lib/wiking/db.py:973
+msgid "Filter"
+msgstr "Filtr"
+
+#. Translators: Back button label. Standard computer terminology.
+#: ../lib/wiking/db.py:1858
+msgid "Back"
+msgstr "Zpět"
+
+#. Translators: RSS channel is a computer idiom, see Wikipedia.
+#: ../lib/wiking/db.py:2069 ../lib/wiking/db.py:2222
+msgid "An RSS channel is available for this section:"
+msgstr "K dispozici je také RSS kanál pro tuto sekci:"
+
+#. Translators: RSS channel is a computer idiom, see Wikipedia.  Don't translate 'RSS'.
+#: ../lib/wiking/db.py:2073 ../lib/wiking/db.py:2220
+msgid "more about RSS"
+msgstr "více o RSS"
+
+#: ../lib/wiking/db.py:2215
 #, python-format
-msgid "Last change: %(date)s, %(user)s"
-msgstr "Poslední změna: %(date)s, %(user)s"
+msgid "RSS channel \"%s\""
+msgstr "RSS kanál „%s“"
+
+#: ../lib/wiking/db.py:2225
+msgid "RSS channels are available for this section"
+msgstr "Pro tuto sekci jsou k dispozici RSS kanály"
+
+#. Translators: Record as in `database record'.
+#: ../lib/wiking/db.py:2315
+msgid "No records."
+msgstr "Žádné záznamy"
+
+#. Translators: `Item' is intentionally general. Could be webpage, notice or something else.
+#: ../lib/wiking/db.py:2323
+msgid "The item was published."
+msgstr "Položka byla zveřejněna."
+
+#: ../lib/wiking/db.py:2324
+msgid "The item was unpublished."
+msgstr "Zveřejnění položky bylo zrušeno."
+
+#: ../lib/wiking/db.py:2333
+msgid "Publish"
+msgstr "Zveřejnit"
+
+#: ../lib/wiking/db.py:2336
+msgid "Make the item visible to website visitors"
+msgstr "Zpřístupnit položku návštěvníkům stránek"
+
+#: ../lib/wiking/db.py:2337
+msgid "Unpublish"
+msgstr "Zneveřejnit"
+
+#: ../lib/wiking/db.py:2340
+msgid "Make the item invisible to website visitors"
+msgstr "Učinit položku nedostupnou pro návštěvníky stránek"
+
+#: ../lib/wiking/application.py:313
+msgid "Unable to perform a database operation."
+msgstr "Provedení databázové operace se nezdařilo."
+
+#. Translators: Website idiom. This is followed by information on the underlying software
+#. tools.  Means: This website runs on [...this and that software...].
+#: ../lib/wiking/application.py:411
+msgid "Powered by"
+msgstr "Provozováno na"
+
+#: ../lib/wiking/application.py:428
+msgid "Accessibility Statement"
+msgstr "Prohlášení o zpřístupnění"
+
+#: ../lib/wiking/application.py:456
+msgid "Contact:"
+msgstr "Kontakt:"
 
 #. Translators: '%(code)d' is replaced by error number and '%(name)s' by error title.
 #: ../lib/wiking/util.py:109
@@ -408,7 +359,7 @@ msgstr "Akce vyžaduje přihlášení"
 #. Translators: Login dialog page title (use a noun).
 #. Translators: Login info label (noun) followed by login name and other info.
 #: ../lib/wiking/util.py:193 ../lib/wiking/util.py:710
-#: ../lib/wiking/util.py:1271
+#: ../lib/wiking/util.py:1199
 msgid "Login"
 msgstr "Přihlášení"
 
@@ -480,6 +431,12 @@ msgstr "Položka '%s' není dostupná."
 #: ../lib/wiking/util.py:297
 msgid "The item exists on the server, but can not be accessed."
 msgstr "Požadovaná položka na serveru existuje, ale nemůže být zobrazena."
+
+#. Translators: Title of a dialog on a webpage
+#: ../lib/wiking/util.py:309 ../lib/wiking/export.py:89
+#: ../lib/wiking/export.py:231
+msgid "Language selection"
+msgstr "Výběr jazyka"
 
 #: ../lib/wiking/util.py:313
 #, python-format
@@ -557,7 +514,7 @@ msgstr "Platnost hesla vyprší %(date)s"
 #. user to obtain access to the website/application by submitting his personal
 #. details.
 #. Translators: Webpage link leading to registration form.
-#: ../lib/wiking/util.py:702 ../lib/wiking/util.py:1315
+#: ../lib/wiking/util.py:702 ../lib/wiking/util.py:1243
 msgid "New user registration"
 msgstr "Registrace nového uživatele"
 
@@ -565,114 +522,140 @@ msgstr "Registrace nového uživatele"
 msgid "Login Panel"
 msgstr "Panel přihlášení"
 
-#. Translators: A set of buttons for various actions (edit, delete, etc.) is
-#. prepended with this label.
-#: ../lib/wiking/util.py:1206
-msgid "Actions:"
-msgstr "Akce:"
-
-#. Translators: Link or button leading to documentation/help. Use usual computer
-#. terminlogy.
-#: ../lib/wiking/util.py:1211
-msgid "Help"
-msgstr "Nápověda"
-
-#: ../lib/wiking/util.py:1253
+#: ../lib/wiking/util.py:1181
 msgid "Go to your profile"
 msgstr "Zobrazit uživatelský profil"
 
 #. Translators: Logout button label (verb in imperative).
-#: ../lib/wiking/util.py:1255
+#: ../lib/wiking/util.py:1183
 msgid "log out"
 msgstr "odhlásit"
 
 #. Translators: Login status info.  If logged, the username is displayed instead.
-#: ../lib/wiking/util.py:1258
+#: ../lib/wiking/util.py:1186
 msgid "not logged"
 msgstr "nepřihlášen"
 
 #. Translators: Login button label (verb in imperative).
-#: ../lib/wiking/util.py:1260
+#: ../lib/wiking/util.py:1188
 msgid "log in"
 msgstr "přihlásit"
 
-#: ../lib/wiking/util.py:1302
+#: ../lib/wiking/util.py:1230
 msgid "Login name"
 msgstr "Přihlašovací jméno"
 
-#: ../lib/wiking/util.py:1305
+#: ../lib/wiking/util.py:1233
 msgid "Password"
 msgstr "Heslo"
 
 #. Translators: Login button label - verb in imperative.
-#: ../lib/wiking/util.py:1311
+#: ../lib/wiking/util.py:1239
 msgid "Log in"
 msgstr "přihlásit"
 
 #. Translators: Login dialog link to password change or password reminder (depends
 #. on configuration).
-#: ../lib/wiking/util.py:1318
+#: ../lib/wiking/util.py:1246
 msgid "Forgot your password?"
 msgstr "Zapomenuté heslo?"
 
 #. Translators: Web form label and message
-#: ../lib/wiking/util.py:1348
+#: ../lib/wiking/util.py:1276
 #, python-format
 msgid "Decryption password for '%s'"
 msgstr "Šifrovací heslo pro oblast `%s'"
 
 #. Translators: Web form button.
-#: ../lib/wiking/util.py:1355
+#: ../lib/wiking/util.py:1283
 msgid "Send password"
 msgstr "Použít heslo"
 
 #. Translators: Confirmation button
-#: ../lib/wiking/util.py:1376
+#: ../lib/wiking/util.py:1304
 msgid "Continue"
 msgstr "Pokračovat"
 
-#: ../lib/wiking/util.py:1892
+#: ../lib/wiking/util.py:1809
 msgid "Invalid format"
 msgstr "Neplatný formát"
 
 #. Translators: Computer terminology. `gmail.com' is a domain name in email address
 #. `joe@gmail.com'.
-#: ../lib/wiking/util.py:1900 ../lib/wiking/util.py:1907
+#: ../lib/wiking/util.py:1817 ../lib/wiking/util.py:1824
 msgid "Domain not found"
 msgstr "Doména nenalezena"
 
-#. Translators: Short description of a user group purpose.
-#: ../lib/wiking/request.py:1127
-msgid "Anyone"
-msgstr "Kdokoliv"
+#: ../lib/wiking/export.py:84
+msgid "Page heading"
+msgstr "Záhlaví stránky"
 
-#. Translators: Short description of a user group purpose.
-#: ../lib/wiking/request.py:1130
-msgid "Any authenticated user"
-msgstr "Jakýkoliv autentizovaný uživatel"
+#: ../lib/wiking/export.py:85 ../lib/wiking/export.py:227
+#: ../lib/wiking/export.py:252 ../lib/wiking/export.py:320
+msgid "Main navigation"
+msgstr "Hlavní navigace"
 
-#. Translators: Short description of a user group purpose.
-#: ../lib/wiking/request.py:1137
-msgid "Current record owner"
-msgstr "Vlastník tohoto záznamu"
+#: ../lib/wiking/export.py:86 ../lib/wiking/export.py:229
+#: ../lib/wiking/export.py:314
+msgid "Local navigation"
+msgstr "Navigace této sekce"
 
-#: ../lib/wiking/application.py:313
-msgid "Unable to perform a database operation."
-msgstr "Provedení databázové operace se nezdařilo."
+#: ../lib/wiking/export.py:87 ../lib/wiking/export.py:225
+msgid "Main content"
+msgstr "Hlavní obsah"
 
-#. Translators: Website idiom. This is followed by information on the underlying software
-#. tools.  Means: This website runs on [...this and that software...].
-#: ../lib/wiking/application.py:411
-msgid "Powered by"
-msgstr "Provozováno na"
+#: ../lib/wiking/export.py:88
+msgid "Page footer"
+msgstr "Zápatí stránky"
 
-#: ../lib/wiking/application.py:428
-msgid "Accessibility Statement"
-msgstr "Prohlášení o zpřístupnění"
+#. Translators: Label for language selection followed by list of languages
+#: ../lib/wiking/export.py:92
+msgid "Language:"
+msgstr "Jazyk:"
 
-#: ../lib/wiking/application.py:456
-msgid "Contact:"
-msgstr "Kontakt:"
+#: ../lib/wiking/export.py:103
+msgid "Expand/collapse complete menu hierarchy"
+msgstr "Rozbalit/sbalit kompletní hierarchii menu"
+
+#: ../lib/wiking/export.py:235
+msgid "Jump in page"
+msgstr "Přejít ve stránce"
+
+#. Translators: A label followed by location information in webpage navigation
+#: ../lib/wiking/export.py:240
+msgid "You are here:"
+msgstr "Nacházíte se zde:"
+
+#. Translators: Heading of webpage navigation menu containing a list
+#. of links to pages in this web section
+#: ../lib/wiking/export.py:317
+msgid "In this section:"
+msgstr "V této sekci:"
+
+#. Translators: Panels are small windows on the side of the page. This is a label
+#. for a link that shows/hides the panels.
+#: ../lib/wiking/export.py:334
+msgid "Show panels"
+msgstr "Zobrazit panely"
+
+#: ../lib/wiking/export.py:335
+msgid "Hide panels"
+msgstr "Skrýt panely"
+
+#. Translators: ``RSS channel'' is terminology idiom, see Wikipedia
+#: ../lib/wiking/export.py:347
+msgid "RSS channel"
+msgstr "RSS kanál"
+
+#: ../lib/wiking/export.py:366
+msgid "Warning"
+msgstr "Varování"
+
+#. Translators: Information about last change of a webpage (when and who)
+#: ../lib/wiking/export.py:389
+#, python-format
+msgid "Last change: %(date)s, %(user)s"
+msgstr "Poslední změna: %(date)s, %(user)s"
 
 #: ../lib/wiking/modules.py:525
 msgid "Enter your login name, please!"
@@ -719,6 +702,27 @@ msgstr "Následující moduly byly úspěšně načteny znovu:"
 #: ../lib/wiking/modules.py:754
 msgid "Reload"
 msgstr "Načíst znovu"
+
+#. Translators: Short description of a user group purpose.
+#: ../lib/wiking/request.py:1127
+msgid "Anyone"
+msgstr "Kdokoliv"
+
+#. Translators: Short description of a user group purpose.
+#: ../lib/wiking/request.py:1130
+msgid "Any authenticated user"
+msgstr "Jakýkoliv autentizovaný uživatel"
+
+#. Translators: Short description of a user group purpose.
+#: ../lib/wiking/request.py:1137
+msgid "Current record owner"
+msgstr "Vlastník tohoto záznamu"
+
+#~ msgid "Actions:"
+#~ msgstr "Akce:"
+
+#~ msgid "Help"
+#~ msgstr "Nápověda"
 
 #~ msgid "US Government Section 508 Accessibility Guidelines."
 #~ msgstr "Sekce 508 směrnic pro zpřístupnění vydaných vládou USA"
