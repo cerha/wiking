@@ -41,25 +41,29 @@ following goals:
   
 == Top Level Page Structure == structure
 
- * div#*wrap* -- All content is wrapped in this div, the only direct descendant
-   of HTML body element.
+ * div#*wrap* /class="node-id-<id> parent-node-id-<pid>"/ -- All content is
+   wrapped in this div, the only direct descendant of HTML body element.
+   /<id>/ is replaced by the identifier of the current node (page). One or more
+   of the /parent-node-id-<pid>/ classes are present if the current node is
+   subordinate to other nodes and then /<pid>/ is the identifier of each parent
+   node. This makes it possible to style the different pages and parts of the
+   site differently.
 
    * div#*top* -- The top of the page usually containing logos and page title
-     (see also [#logo].
+     (see also [#logo]).
 
      * div#*top-layer1* -- Nested divs allow construction of logos from
        multiple aligned images through CSS backgrounds.
 
        * div#*top-layer2*
 
-	 * div#*top-layer3*
+         * div#*top-layer3*
 
-	   * div#*site-title* -- Displays the configured site title and
+           * div#*site-title* -- Displays the configured site title and
              subtitle.
 
-   * div#*page* /class="node-id-<id> with-menu with-submenu with-panels"/ --
-     /<id>/ is replaced by the identifier of the current page.  The classes
-     /with-menu/, /with-submenu/ and /with-panels/ are only present if the
+   * div#*page* /class="with-menu with-submenu with-panels"/ --
+     The classes /with-menu/, /with-submenu/ and /with-panels/ are only present if the
      corresponding parts exist.
 
      * div#*links* -- Page navigation links for text browsers (hidden in visual
