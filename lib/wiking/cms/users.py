@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2006-2011 Brailcom, o.p.s.
+# Copyright (C) 2006-2012 Brailcom, o.p.s.
 #
 # COPYRIGHT NOTICE
 #
@@ -82,7 +82,7 @@ class RoleSets(UserManagementModule):
     
     def _link_provider(self, req, uri, record, cid, **kwargs):
         if cid == 'delete':
-            return req.make_uri(uri, role_set_id=record['role_set_id'].value(), action='delete')
+            return req.make_uri(uri +'/'+ record['role_set_id'].export(), action='delete')
         elif cid is None:
             return wiking.module('ApplicationRoles').link(req, record[self._TITLE_COLUMN])
         else:
@@ -185,7 +185,7 @@ class RoleMembers(UserManagementModule):
             else:
                 return wiking.module('ApplicationRoles').link(req, record['role_id'])
         elif cid == 'delete':
-            return req.make_uri(uri, role_member_id=record['role_member_id'].value(), action='delete')
+            return req.make_uri(uri +'/'+ record['role_member_id'].export(), action='delete')
         else:
             return super(RoleMembers, self)._link_provider(req, uri, record, cid, **kwargs)
 
