@@ -1,4 +1,4 @@
-# Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 Brailcom, o.p.s.
+# Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -1963,15 +1963,18 @@ def pdf_document(content, lang):
 
     Arguments:
 
-      content -- document content, 'lcg.Content' instance
+      content -- document content, sequence of 'lcg.Content' instances
       lang -- document language as an ISO 639-1 Alpha-2 lowercase
         language code string or 'None'
 
     """
-    assert isinstance(content, lcg.Content)
+    assert isinstance(content, (list, tuple)), content
+    assert all([isinstance(c, lcg.Content) for c in content])
     exporter = lcg.pdf.PDFExporter()
-    document = lcg.ContentNode(id='wiking', title=' ', content=content)
-    lcg_content = lcg.ContentNode(id='__dummy', content=lcg.Content(), children=[document])
+    children = []
+    for i in range(len(content)):
+        children.append(lcg.ContentNode(id='wiking%d' % (i,), title=' ', content=content[i]))
+    lcg_content = lcg.ContentNode(id='__dummy', content=lcg.Content(), children=children)
     context = exporter.context(lcg_content, lang)
     pdf = exporter.export(context)
     return pdf
