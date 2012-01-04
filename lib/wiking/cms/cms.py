@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2006-2011 Brailcom, o.p.s.
+# Copyright (C) 2006-2012 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -2169,7 +2169,8 @@ class StyleSheets(StyleManagementModule):
 
     def stylesheets(self, req):
         scopes = [None, req.wmi and 'wmi' or 'website']
-        return [lcg.Stylesheet(r['identifier'].value(), uri='/_resources/'+r['identifier'].value(),
+        base_uri = req.module_uri('Resources')
+        return [lcg.Stylesheet(r['identifier'].value(), uri=base_uri+'/'+r['identifier'].value(),
                                media=r['media'].value())
                 for r in self._data.get_rows(active=True, sorting=self._sorting)
                 if r['scope'].value() in scopes]
