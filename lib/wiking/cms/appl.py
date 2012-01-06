@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 Brailcom, o.p.s.
+# Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -368,8 +368,11 @@ class Application(CookieAuthentication, wiking.Application):
             if not req.param('initdb'):
                 err = self._try_query(dbname, "select * from mapping")
                 if err:
-                    return 'Database "%s" not initialized!' % dbname + \
-                           _button("Initialize", initdb=1)
+                    if cfg.debug:
+                        message = 'Database "%s" not initialized (%s)!' % (dbname, errstr,)
+                    else:
+                        message = 'Database "%s" not initialized!' % (dbname,)
+                    return message + _button("Initialize", initdb=1)
             else:
                 script = ''
                 for f in ('wiking.sql', 'init.sql'):
