@@ -191,7 +191,23 @@ class AuthenticationRedirect(AuthenticationError):
     
     # Translators: Login dialog page title (use a noun).
     _TITLE = _("Login")
-    
+
+
+class DisplayDocument(Exception):
+    """Exception that should result in displaying the given document."""
+    def __init__(self, document):
+        """
+        Arguments:
+
+          document -- document to display
+
+        """
+        self._document = document
+        super(DisplayDocument, self).__init__()
+
+    def document(self):
+        return self._document
+
 
 class Abort(RequestError):
     """Error useful for aborting regular request processing and displaying substitutional content.
@@ -1487,7 +1503,15 @@ class WikingResolver(pytis.util.Resolver):
         name, kwargs = key
         module_cls = self.wiking_module_cls(name)
         return module_cls.Spec(module_cls, self, **dict(kwargs))
-    
+
+    def _get_object_by_name(self, name):
+        # Temporary hack
+        if name.startswith('cms.'):
+            import wiking
+            return wiking.cms.Users
+        else:
+            return super(WikingResolver, self)._get_object_by_name(name)
+
     def wiking_module_cls(self, name):
         """Return the Wiking module class of given 'name'."""
         try:
@@ -1978,3 +2002,9 @@ def pdf_document(content, lang):
     context = exporter.context(lcg_content, lang)
     pdf = exporter.export(context)
     return pdf
+
+def generate_authentication_code():
+    """Return string suitable to use for authentication as a one pad code."""
+    import random
+    random.seed()
+    return ''.join(['%d' % (random.randint(0, 9),) for i in range(16)])

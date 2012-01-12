@@ -1,4 +1,4 @@
-# Copyright (C) 2005-2011 Brailcom, o.p.s.
+# Copyright (C) 2005-2012 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify

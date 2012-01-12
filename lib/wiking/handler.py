@@ -1,4 +1,4 @@
-# Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 Brailcom, o.p.s.
+# Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012 Brailcom, o.p.s.
 # Author: Tomas Cerha <cerha@brailcom.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -149,6 +149,8 @@ class Handler(object):
                 self._serve_error_document(req, error)
             except (ClosedConnection, Redirect):
                 raise
+            except DisplayDocument as e:
+                self._serve_document(req, e.document())
             except Exception as e:
                 # Try to return a nice error document produced by the exporter.
                 try:
@@ -159,6 +161,8 @@ class Handler(object):
             pass
         except Redirect as r:
             req.redirect(r.uri(), args=r.args(), permanent=r.permanent())
+        except DisplayDocument as e:
+            self._serve_document(req, e.document())
         except Exception as e:
             # If error document export fails, return a minimal error page.  It is reasonable to
             # assume, that if RequestError handling fails, somethong is wrong with the exporter and

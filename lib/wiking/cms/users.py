@@ -443,9 +443,7 @@ class Users(UserManagementModule):
             return pd.DateTime.datetime() + datetime.timedelta(days=expiry_days)
         @staticmethod
         def _generate_registration_code():
-            import random
-            random.seed()
-            return ''.join(['%d' % (random.randint(0, 9),) for i in range(16)])
+            return wiking.generate_authentication_code()
         def fields(self):
             md5_passwords = (cfg.password_storage == 'md5')
             return (
@@ -866,7 +864,12 @@ class Users(UserManagementModule):
         return text, attachments
 
     def _redirect_after_insert(self, req, record):
-        if self._send_registration_email(req, record):
+        user = self.user(req, login=record['login'].value())
+        if user.state() != Users.AccountState.NEW:
+            # User already confirmed in the Wiking CMS user table, no need to
+            # confirm again for the application user table.
+            content = lcg.p(_("Registration completed. You can log in now."))
+        elif self._send_registration_email(req, record):
             content = ()
         else:
             self._data.delete(record['uid'])
@@ -963,7 +966,7 @@ class Users(UserManagementModule):
             state = self.AccountState.ENABLED
         else:
             state = self.AccountState.UNAPPROVED
-        record.update(state=state)
+        record.update(state=state, regcode=None)
         self._send_admin_approval_mail(req, record)
         return Document(_("Registration confirmed"),
                         content=self._confirmation_success_content(req, record))
@@ -1296,12 +1299,26 @@ class Registration(Module, ActionHandler):
         else:
             raise AuthenticationError()
     RIGHTS_view = (Roles.ANYONE,)
-    
+
     def action_insert(self, req, prefill=None, action='insert'):
         if not cfg.appl.allow_registration:
             raise Forbidden()
         return wiking.module('Users').action_insert(req, prefill=prefill, action=action)
     RIGHTS_insert = (Roles.ANYONE,)
+
+    def action_reinsert(self, req, prefill=None, action='insert'):
+        login = req.param('login')
+        regcode = req.param('regcode')
+        if not login or not regcode:
+            raise AuthenticationError()
+        cms_users = wiking.module('wiking.cms.Users')
+        user = cms_users.user(req, login=login)
+        if not user:
+            raise AuthenticationError()
+        row = cms_users.record(req, pd.ival(user.uid()))
+        prefill = dict([(key, row[key].value(),) for key in row.keys()])
+        return self.action_insert(req, prefill=prefill)
+    RIGHTS_reinsert = (Roles.ANYONE,)
     
     def action_remind(self, req):
         title = _("Password reminder")

@@ -208,9 +208,23 @@ class Application(CookieAuthentication, wiking.Application):
 
     def _auth_user(self, req, login):
         try:
-            return wiking.module('Users').user(req, login)
+            user = wiking.module('Users').user(req, login)
+            if user is None and cfg.appl.allow_registration:
+                user = wiking.module('wiking.cms.Users').user(req, login)
+                if user and user.state() == Users.AccountState.NEW:
+                    user = None
         except MaintenanceModeError:
             return None
+        return user
+
+    def _auth_hook(self, req, login, user, initial, success):
+        if success and user and not wiking.module('Users').user(req, login):
+            cms_users = wiking.module('wiking.cms.Users')
+            row = cms_users.record(req, pd.ival(user.uid()))
+            regcode = generate_authentication_code()
+            row.update(regcode=regcode)
+            raise Redirect(self.module_uri(req, 'Registration'),
+                           action='reinsert', login=login, regcode=regcode)
     
     def _auth_check_password(self, user, password):
         record = user.data()
