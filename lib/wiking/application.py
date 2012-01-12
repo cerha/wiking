@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2006-2011 Brailcom, o.p.s.
+# Copyright (C) 2006-2012 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -331,21 +331,23 @@ class Application(Module):
                 elif len(value) > 40:
                     value = value[:40] + '... (trimmed; total %d chars)' % len(value)
                 return saxutils.escape(value)
+            def format_info(label, value):
+                if value.startswith('http://') or value.startswith('https://'):
+                    value = '<a href="%s">%s</a>' % (value, value)
+                return "%s: %s\n" % (label, value)
             params = ["  %s = %s" % (saxutils.escape(param), param_value(param))
                       for param in req.params()]
-            hostname = req.server_hostname()
-            req_info = "\n".join(["%s: %s" % pair for pair in
-                                  (("Server", hostname),
-                                   ("URI", req.uri()),
-                                   ("Remote host", req.remote_host()),
-                                   ("Remote user", user and user.login() or ''),
-                                   ("HTTP referrer", req.header('Referer')),
-                                   ("User agent", req.header('User-Agent')),
-                                   ('Server software', 'Wiking %s, LCG %s, Pytis %s' %
-                                    (wiking.__version__, lcg.__version__, pytis.__version__)),
-                                   ("Query parematers", "\n"+"\n".join(params)),
-                                   )])
-            text = req_info + "\n\n" + cgitb.text(einfo)
+            req_info = (
+                ("URI", req.server_uri(current=True) + req.uri()),
+                ("Remote host", req.remote_host()),
+                ("Remote user", user and user.login() or ''),
+                ("HTTP referer", req.header('Referer')),
+                ("User agent", req.header('User-Agent')),
+                ('Server software', 'Wiking %s, LCG %s, Pytis %s' % \
+                     (wiking.__version__, lcg.__version__, pytis.__version__)),
+                ("Query parematers", "\n"+"\n".join(params)),
+                )
+            text = "\n".join(["%s: %s" % pair for pair in req_info]) + "\n\n" + cgitb.text(einfo)
             if not cfg.debug:
                 # When debug is on, the exception goes to the browser window
                 # and it is better to leave the error log for printing
@@ -361,11 +363,12 @@ class Application(Module):
                     tb = tb.tb_next
                 filename = os.path.split(tb.tb_frame.f_code.co_filename)[-1]
                 buginfo = "%s at %s line %d" % (einfo[0].__name__, filename, tb.tb_lineno)
-                pre = req_info + "\n\n" + "".join(traceback.format_exception(*einfo))
+                pre = ("".join([format_info(label, value) for label, value in req_info]) +"\n\n"+
+                       "".join(traceback.format_exception(*einfo)))
                 err = send_mail(address, 'Wiking Error: ' + buginfo, text,
                                 html="<html><pre>"+ pre +"</pre>"+ cgitb.html(einfo) +"</html>",
                                 headers=(('Reply-To', address),
-                                         ('X-Wiking-Bug-Report-From', hostname)))
+                                         ('X-Wiking-Bug-Report-From', req.server_hostname())))
                 if err:
                     log(OPR, "Failed sending exception info to %s:" % address, err)
                 else:
