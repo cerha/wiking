@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2005-2011 Brailcom, o.p.s.
+# Copyright (C) 2005-2012 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -292,8 +292,11 @@ class PytisModule(Module, ActionHandler):
         import config
         self._dbconnection = config.dbconnection.select(self.Spec.connection)
         del config
-        self._data_spec = resolver.get(self.name(), 'data_spec')
-        self._view = resolver.get(self.name(), 'view_spec')
+        full_name = self.__class__.__name__
+        if self.__class__.__module__:
+            full_name = '%s.%s' % (self.__class__.__module__, full_name,)
+        self._data_spec = resolver.get(full_name, 'data_spec')
+        self._view = resolver.get(full_name, 'view_spec')
         self._exception_matchers = [(re.compile(regex), msg)
                                     for regex, msg in self._EXCEPTION_MATCHERS]
         self._db_function = {}
