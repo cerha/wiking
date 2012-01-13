@@ -217,14 +217,14 @@ class Application(CookieAuthentication, wiking.Application):
             return None
         return user
 
-    def _auth_hook(self, req, login, user, initial, success):
-        if success and user and not wiking.module('Users').user(req, login):
+    def _auth_hook(self, req, user):
+        if not wiking.module('Users').user(req, login):
             cms_users = wiking.module('wiking.cms.Users')
             row = cms_users.record(req, pd.ival(user.uid()))
             regcode = wiking.generate_random_string(16)
             row.update(regcode=regcode)
             raise Redirect(self.module_uri(req, 'Registration'),
-                           action='reinsert', login=login, regcode=regcode)
+                           action='reinsert', login=user.login(), regcode=regcode)
     
     def _auth_check_password(self, user, password):
         record = user.data()

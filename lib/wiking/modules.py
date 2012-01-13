@@ -447,7 +447,6 @@ class CookieAuthentication(object):
     This class implements cookie based authentication, but is still neutral to authentication data
     source.  Any possible source of authentication data may be used by implementing the methods
     '_auth_user()' and '_auth_check_password()'.  See their documentation for more information.
-    Moreover, the method '_auth_hook()' allows logging authentication attempts.
 
     This class may be used as a Mix-in class derived by the application which wishes to use it.
 
@@ -482,19 +481,13 @@ class CookieAuthentication(object):
         """
         return False
 
-    def _auth_hook(self, req, login, user, initial, success):
-        """Hook executed on each authentication attempt.
+    def _auth_hook(self, req, user):
+        """Hook executed after a succesfull authentication.
 
         Arguments:
         
           req -- current request object
-          login -- login name supplied by the user
-          user -- 'User' instance or None if '_auth_user()' didn't find a user matching given login
-            name
-          initial -- True if this is the initial login or False during an existing session.
-          success -- True if the authentication was successful, False otherwise
-
-        This hook is mainly designed to allow logging user acces and/or invalid login attempts.
+          user -- 'User' instance of the authenticated user
 
         """ 
         pass
@@ -527,12 +520,11 @@ class CookieAuthentication(object):
                 raise AuthenticationError(_("Enter your password, please!"))
             user = self._auth_user(req, login)
             if not user or not self._auth_check_password(user, password):
-                self._auth_hook(req, login, user, initial=True, success=False)
                 session.failure(req, user, login)
                 raise AuthenticationError(_("Invalid login!"))
             assert isinstance(user, User)
             # Login succesfull
-            self._auth_hook(req, login, user, initial=True, success=True)
+            self._auth_hook(req, user)
             session_key = session.session_key()
             req.set_cookie(self._LOGIN_COOKIE, login, expires=730*day, secure=secure)
             req.set_cookie(self._SESSION_COOKIE, session_key, secure=secure)
@@ -547,7 +539,6 @@ class CookieAuthentication(object):
                     # Session cookie expiration is unset to prevent cookie persistency.
                     # Session expiration is implemented internally by the session module.
                     req.set_cookie(self._SESSION_COOKIE, session_key, secure=secure)
-                    self._auth_hook(req, login, user, initial=False, success=True)
                 else:
                     session_timed_out = True # This is not true after logout.
                     user = None
