@@ -210,15 +210,22 @@ class Application(CookieAuthentication, wiking.Application):
         try:
             user = wiking.module('Users').user(req, login)
             if user is None and cfg.appl.allow_registration:
+                # It is possible, that the user doesn't exist in the
+                # application specific users table, but exists in the base
+                # table of wiking CMS (the user was registered for some other
+                # application sharing the same database).  Here we test if
+                # that's the case and handle the situation in the _auth_hook()
+                # below.
                 user = wiking.module('wiking.cms.Users').user(req, login)
                 if user and user.state() == Users.AccountState.NEW:
                     user = None
+            return user
         except MaintenanceModeError:
             return None
-        return user
 
     def _auth_hook(self, req, user):
         if not wiking.module('Users').user(req, login):
+            # See _auth_user() for comments.
             regcode = wiking.module('wiking.cms.Users').regenerate_registration_code(req)
             raise Redirect(self.module_uri(req, 'Registration'),
                            action='reinsert', login=user.login(), regcode=regcode)
