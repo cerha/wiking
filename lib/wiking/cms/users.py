@@ -1321,18 +1321,17 @@ class Registration(Module, ActionHandler):
         return wiking.module('Users').action_insert(req, prefill=prefill, action=action)
     RIGHTS_insert = (Roles.ANYONE,)
 
-    def action_reinsert(self, req, prefill=None, action='insert'):
+    def action_reinsert(self, req):
         login = req.param('login')
         regcode = req.param('regcode')
-        if not login or not regcode:
-            raise AuthenticationError()
-        cms_users = wiking.module('wiking.cms.Users')
-        user = cms_users.user(req, login=login)
-        if not user:
-            raise AuthenticationError()
-        row = cms_users.record(req, pd.ival(user.uid()))
-        prefill = dict([(key, row[key].value(),) for key in row.keys()])
-        return self.action_insert(req, prefill=prefill)
+        if login and regcode:
+            user = wiking.module('wiking.cms.Users').user(req, login=login)
+            if user:
+                record = user.data()
+                if regcode == record['regcode'].value():
+                    prefill = dict([(key, row[key].value(),) for key in row.keys()])
+                    return self.action_insert(req, prefill=prefill)
+        raise AuthenticationError()
     RIGHTS_reinsert = (Roles.ANYONE,)
     
     def action_remind(self, req):
