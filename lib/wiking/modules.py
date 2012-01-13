@@ -580,13 +580,12 @@ class Session(Module):
     
     """
 
-    def session_key(self, length=32):
+    def session_key(self, length=64):
         """Generate a new random session key and return it as a string.
 
         Arguments:
         
-          length -- Size of session key in *bytes* (the length of the hex string representation is
-            twice as much)
+          length -- character length of session key string
 
         This method may be used to generate a new key to be passed to the 'init()' method, but the
         caller may decide to generate the key himself.  In any case, the security of the
@@ -594,10 +593,7 @@ class Session(Module):
         with caution.
 
         """
-        return ''.join(['%02x' % ord(c) for c in os.urandom(length)])
-        #except NotImplementedError:
-        #    import random
-        #    return hex(random.randint(0, pow(256, length)))[2:]
+        return wiking.generate_random_string(length)
     
     def init(self, req, user, session_key):
         """Begin new session for given user ('User' instance) with given session key.

@@ -443,7 +443,7 @@ class Users(UserManagementModule):
             return pd.DateTime.datetime() + datetime.timedelta(days=expiry_days)
         @staticmethod
         def _generate_registration_code():
-            return wiking.generate_authentication_code()
+            return wiking.generate_random_string(16)
         def fields(self):
             md5_passwords = (cfg.password_storage == 'md5')
             return (

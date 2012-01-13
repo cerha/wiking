@@ -2003,8 +2003,13 @@ def pdf_document(content, lang):
     pdf = exporter.export(context)
     return pdf
 
-def generate_authentication_code():
-    """Return string suitable to use for authentication as a one pad code."""
-    import random
-    random.seed()
-    return ''.join(['%d' % (random.randint(0, 9),) for i in range(16)])
+def generate_random_string(length):
+    """Return a random string of given length."""
+    #import base64
+    try:
+        code = ''.join(['%02x' % ord(c) for c in os.urandom(length/2+1)])
+    except NotImplementedError:
+        import random
+        random.seed()
+        code = ''.join(['%02x' % random.randint(0, 255) for i in range(length/2+1)])
+    return code[:length]
