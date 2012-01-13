@@ -864,8 +864,8 @@ class Users(UserManagementModule):
         return text, attachments
 
     def _redirect_after_insert(self, req, record):
-        user = self.user(req, login=record['login'].value())
-        if user.state() != Users.AccountState.NEW:
+        row = self._data.get_row(login=record['login'].value())
+        if row['state'].value() != Users.AccountState.NEW:
             # User already confirmed in the Wiking CMS user table, no need to
             # confirm again for the application user table.
             content = lcg.p(_("Registration completed. You can log in now."))
