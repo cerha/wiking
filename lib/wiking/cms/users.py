@@ -1177,6 +1177,21 @@ class Users(UserManagementModule):
         record.update(password=value.value(), last_password_change=now())
         return password
 
+    def regenerate_registration_code(self, user):
+        """Generate a new registration code for given user and store it in the database.
+
+        @rtype: str
+        @return: The newly generated registration code.
+
+        Such code may be used as one time authentication code.  It is now used
+        for the 'reinsert' action.
+
+        """
+        record = user.data()
+        regcode = wiking.generate_random_string(16)
+        record.update(regcode=regcode)
+        return regcode
+    
     def send_mail(self, role, include_uids=(), exclude_uids=(), *args, **kwargs):
         """Send mail to all active users of given C{role}.
         
