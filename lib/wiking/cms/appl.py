@@ -224,7 +224,7 @@ class Application(CookieAuthentication, wiking.Application):
             return None
 
     def _auth_hook(self, req, user):
-        if not wiking.module('Users').user(req, login):
+        if not wiking.module('Users').user(req, user.login()):
             # See _auth_user() for comments.
             regcode = wiking.module('wiking.cms.Users').regenerate_registration_code(req)
             raise Redirect(self.module_uri(req, 'Registration'),
