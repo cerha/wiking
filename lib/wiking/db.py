@@ -590,7 +590,8 @@ class PytisModule(Module, ActionHandler):
 
     def _default_actions_first(self, req, record):
         return (Action('insert', self._INSERT_LABEL, descr=self._INSERT_DESCR,
-                       context=pp.ActionContext.GLOBAL),
+                       context=pp.ActionContext.GLOBAL,
+                       enabled=self._insert_enabled),
                 Action('export', self._EXPORT_LABEL, descr=self._EXPORT_DESCR,
                        context=pp.ActionContext.GLOBAL),
                 Action('view', self._VIEW_LABEL, descr=self._VIEW_DESCR),
@@ -630,6 +631,16 @@ class PytisModule(Module, ActionHandler):
                     if action.id() not in exclude and action.context() == required_context
                     and self._authorized(req, action=action.id(), record=record)]
         return actions
+    
+    def _insert_enabled(self, req):
+        """Return true iff the default 'insert' action is enabled for given request.
+
+        Please, note the difference between disabled actions and actions
+        unavailable due to insuffucient access rights as described in User
+        Interface Design Guidelines in Wiking Developers Documentation.
+        
+        """
+        return True
     
     def _update_enabled(self, req, record):
         """Return true iff the default 'update' action is enabled for given record.
