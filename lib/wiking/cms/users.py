@@ -1329,6 +1329,7 @@ class Registration(Module, ActionHandler):
             if user:
                 record = user.data()
                 if regcode == record['regcode'].value():
+                    row = record.row()
                     prefill = dict([(key, row[key].value(),) for key in row.keys()])
                     return self.action_insert(req, prefill=prefill)
         raise AuthenticationError()
