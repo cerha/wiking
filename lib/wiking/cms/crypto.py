@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2011 Brailcom, o.p.s.
+# Copyright (C) 2011, 2012 Brailcom, o.p.s.
 #
 # COPYRIGHT NOTICE
 #
@@ -185,7 +185,7 @@ class CryptoKeys(CMSExtensionModule):
         return actions
 
     def _insert(self, req, record, transaction):
-        key = wiking.module('Session').session_key(length=128)
+        key = wiking.generate_random_string(256)
         if not self._call_db_function('cms_crypto_insert_key',
                                       record['name'].value(),
                                       record['uid'].value(),
