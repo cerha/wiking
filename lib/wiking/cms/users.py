@@ -686,7 +686,7 @@ class Users(UserManagementModule):
     class User(wiking.User):
         """CMS specific User class."""
 
-        def __init__(self, login, state=None, confirm=None, **kwargs):
+        def __init__(self, login, firstname=None, surname=None, state=None, confirm=None, **kwargs):
             """
             @type state: string
             @param state: User's account state.
@@ -694,6 +694,8 @@ class Users(UserManagementModule):
             @param confirm: Value of the user's 'confirm' flag.
             """
             wiking.User.__init__(self, login, **kwargs)
+            self._firstname = firstname
+            self._surname = surname
             self._state = state
             self._confirm = confirm
         
@@ -711,6 +713,20 @@ class Users(UserManagementModule):
             """
             return self._confirm
 
+        def firstname(self):
+            """
+            @rtype: string or 'None'
+            @return: Users first name.
+            """
+            return self._firstname
+        
+        def surname(self):
+            """
+            @rtype: string or 'None'
+            @return: Users surname.
+            """
+            return self._surname
+        
     class Roles(Roles):
         """Definition of the 'Roles' class used by the application.
 
@@ -1047,7 +1063,8 @@ class Users(UserManagementModule):
             for r in self._application.contained_roles(req, role):
                 if r not in roles:
                     roles.append(r)
-        return dict(login=login, name=record['user'].value(), uid=uid,
+        return dict(login=login, uid=uid, name=record['user'].value(),
+                    firstname=record['firstname'].value(), surname=record['surname'].value(),
                     uri=uri, email=record['email'].value(), data=record, roles=roles,
                     state=record['state'].value(), gender=record['gender'].value(),
                     lang=record['lang'].value(), confirm=record['confirm'].value())
