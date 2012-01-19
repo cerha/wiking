@@ -1793,7 +1793,7 @@ class PytisModule(Module, ActionHandler):
                         if not error:
                             prefill[key] = value.value()
                         else:
-                            invalid_prefill = string_value
+                            invalid_prefill[key] = string_value
         # TODO: Redirect handler to HTTPS if cfg.force_https_login is true?
         # The primary motivation is to protect registration form data.  The
         # same would apply for action_edit.
