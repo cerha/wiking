@@ -489,7 +489,8 @@ class Users(UserManagementModule):
                   display=self._gender_display, prefer_display=True,
                   selection_type=pp.SelectionType.RADIO),
             # Translators: E-mail address. Registration form field.
-            Field('email', _("E-mail"), width=36, constraints=(self._check_email,)),
+            Field('email', _("E-mail"), width=36, not_null=(not cfg.login_is_email),
+                  constraints=(self._check_email,)),
             # Translators: Telephone number. Registration form field.
             Field('phone', _("Phone")),
             # Translators: Post address. Registration form field.
