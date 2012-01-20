@@ -1280,8 +1280,8 @@ class PytisModule(Module, ActionHandler):
             raise NotFound()
 
     def _binding_enabled(self, req, record, binding):
-        if isinstance(b, wiking.Binding):
-            enabled = b.enabled()
+        if isinstance(binding, wiking.Binding):
+            enabled = binding.enabled()
             if enabled is None:
                 return True
             elif isinstance(enabled, collections.Callable):
