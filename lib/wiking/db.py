@@ -751,7 +751,7 @@ class PytisModule(Module, ActionHandler):
         return self._current_base_uri(req, record) +'/'+ record[self._referer].export()
 
     def _form(self, form, req, record=None, action=None, new=False, prefill=None,
-              invalid_prefill=None, handler=None, binding_uri=None, **kwargs):
+              invalid_prefill=None, handler=None, binding_uri=None, hidden_fields=(), **kwargs):
         """Form instance creation wrapper.
 
         You may override this method if you need to tweek form constructor
@@ -801,9 +801,7 @@ class PytisModule(Module, ActionHandler):
         if layout is not None and not isinstance(layout, pp.GroupSpec):
             kwargs['layout'] = self._layout_instance(layout)
         if action:
-            hidden_fields = self._hidden_fields(req, action, record)
-        else:
-            hidden_fields = ()
+            hidden_fields += tuple(self._hidden_fields(req, action, record))
         form_record = self._record(req, record and record.row(), prefill=prefill, new=new)
         for fid, data, linking_column, value_column in self._array_fields:
             rows = data.get_rows(condition=pd.EQ(linking_column, form_record[self._key]))
