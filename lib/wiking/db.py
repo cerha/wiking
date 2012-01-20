@@ -1279,12 +1279,20 @@ class PytisModule(Module, ActionHandler):
         else:
             raise NotFound()
 
-    def _binding_enabled(self, binding, record):
-        return 
+    def _binding_enabled(self, req, record, binding):
+        if isinstance(b, wiking.Binding):
+            enabled = b.enabled()
+            if enabled is None:
+                return True
+            elif isinstance(enabled, collections.Callable):
+                return enabled(record)
+            else:
+                return bool(enabled)
+        else:
+            return True
 
     def _bindings(self, req, record):
-        return [b for b in self._view.bindings()
-                if not isinstance(b, Binding) or b.enabled() is None or b.enabled()(record)]
+        return [b for b in self._view.bindings() if self._binding_enabled(req, record, b)]
 
     def _call_rows_db_function(self, name, *args, **kwargs):
         """Call database function NAME with given arguments and return the result.
