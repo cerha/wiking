@@ -1672,7 +1672,7 @@ class MailAttachment(object):
     
 def send_mail(addr, subject, text, sender=None, sender_name=None, html=None,
               export=False, lang=None, cc=(), headers=(), attachments=(),
-              smtp_server=None):
+              smtp_server=None, smtp_port=None):
     """Send a MIME e-mail message.
 
     Arguments:
@@ -1700,6 +1700,8 @@ def send_mail(addr, subject, text, sender=None, sender_name=None, html=None,
         to the mail
       smtp_server -- SMTP server name to use for sending the message as a
         string; if 'None', server given in configuration is used
+      smtp_port -- SMTP port to use for sending the message as a
+        number; if 'None', server given in configuration is used
       
     """
     assert isinstance(addr, (basestring, tuple, list,)), ('type error', addr,)
@@ -1712,6 +1714,7 @@ def send_mail(addr, subject, text, sender=None, sender_name=None, html=None,
     assert lang is None or isinstance(lang, basestring), ('type error', lang,)
     assert isinstance(cc, (tuple, list,)), ('type error', cc,)
     assert smtp_server is None or isinstance(smtp_server, basestring), ('type error', smtp_server,)
+    assert smtp_port is None or isinstance(smtp_port, int), ('type error', smtp_port,)
     if __debug__:
         for a in attachments:
             assert isinstance(a, MailAttachment), ('type error', attachments, a,)
@@ -1791,9 +1794,11 @@ def send_mail(addr, subject, text, sender=None, sender_name=None, html=None,
         addr_list += cc
     if not smtp_server:
         smtp_server = cfg.smtp_server or 'localhost'
+    if not smtp_port:
+        smtp_port = cfg.smtp_port or 25
     try:
         import smtplib
-        server = smtplib.SMTP(smtp_server)
+        server = smtplib.SMTP(smtp_server, smtp_port)
         try:
             server.sendmail(sender, addr_list, msg.as_string())
         finally:

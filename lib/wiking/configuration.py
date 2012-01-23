@@ -175,6 +175,11 @@ class Configuration(pc):
                 "you must also supply the 'bug_report_address' option.")
         _DEFAULT = 'localhost'
 
+    class _Option_smtp_port(pc.NumericOption):
+        _DESCR = "Port for SMTP server"
+        _DOC = ("SMTP server port")
+        _DEFAULT = 25
+
     class _Option_allow_smtp_email_validation(pc.BooleanOption):
         _DESCR = "Allow SMTP e-mail validation"
         _DOC = ("Wiking email validation functions may use SMTP to verify the existence of an "
