@@ -805,7 +805,7 @@ class PytisModule(Module, ActionHandler):
         form_record = self._record(req, record and record.row(), prefill=prefill, new=new)
         for fid, data, linking_column, value_column in self._array_fields:
             rows = data.get_rows(condition=pd.EQ(linking_column, form_record[self._key]))
-            values = [r[value_column] for r in rows]
+            values = tuple([r[value_column] for r in rows])
             form_record[fid] = pd.Value(form_record.type(fid), values)
         form_instance = form(self._view, req, form_record, handler=handler or req.uri(),
                              name=self.name(), prefill=invalid_prefill,
