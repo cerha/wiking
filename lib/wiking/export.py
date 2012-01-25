@@ -1,4 +1,4 @@
-# Copyright (C) 2006-2011 Brailcom, o.p.s.
+# Copyright (C) 2006-2012 Brailcom, o.p.s.
 # Author: Tomas Cerha <cerha@brailcom.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -24,8 +24,12 @@ class MinimalExporter(lcg.HtmlExporter):
     _BODY_PARTS = ('main', 'bottom_bar')
 
     def _head(self, context):
+        try:
+            uri = context.req().module_uri('Resources')
+        except:
+            uri = '_resources'
         return super(MinimalExporter, self)._head(context) + \
-               ['<link rel="stylesheet" type="text/css" href="/_css/%s">' % style
+               ['<link rel="stylesheet" type="text/css" href="/%s/%s">' % (uri, style)
                 for style in ('default.css', 'layout.css')]
     
     def _meta(self, context):
