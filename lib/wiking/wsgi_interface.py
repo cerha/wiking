@@ -1,4 +1,4 @@
-# Copyright (C) 2010, 2011 Brailcom, o.p.s.
+# Copyright (C) 2010, 2011, 2012 Brailcom, o.p.s.
 # Author: Tomas Cerha <cerha@brailcom.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -42,11 +42,11 @@ class WsgiRequest(wiking.Request):
         self._params = self._init_params(encoding)
         self._response_started = False
         self._response_data = []
-        self._uri = unicode(environ['PATH_INFO'], encoding)
+        self._uri = unicode(environ['SCRIPT_NAME'] + environ['PATH_INFO'], encoding)
         super(WsgiRequest, self).__init__(encoding=encoding)
         #if not self.uri().startswith('/_'):
-        #    wiking.debug("==============", self.uri(), '==============')
-        #    for key, val in environ.items():
+        #    wiking.debug("============== %s ==============" % self.uri())
+        #    for key, val in sorted(environ.items()):
         #        wiking.debug(key, val)
 
     def _init_params(self, encoding):
