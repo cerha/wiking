@@ -348,7 +348,7 @@ class Application(CookieAuthentication, wiking.Application):
 
     def footer_content(self, req):
         texts = wiking.module('Texts')
-        text = texts.text(req, wiking.cms.texts.footer, lang=req.prefered_language())
+        text = texts.text(req, wiking.cms.texts.footer, lang=req.preferred_language())
         text = text.replace('$webmaster_address', cfg.webmaster_address)
         return lcg.Parser().parse(text)
     

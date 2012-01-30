@@ -352,7 +352,7 @@ class PytisModule(Module, ActionHandler):
                            prefill=prefill, resolver=self._resolver, new=new)
 
     def _locale_data(self, req):
-        lang = req.prefered_language(raise_error=False)
+        lang = req.preferred_language(raise_error=False)
         return translator(lang).locale_data()
 
     def _binding_forward(self, req):
@@ -463,7 +463,7 @@ class PytisModule(Module, ActionHandler):
                 errors.append((id, error.message()))
         if not errors:
             if record.new() and self._LIST_BY_LANGUAGE and record['lang'].value() is None:
-                lang = req.prefered_language(raise_error=False)
+                lang = req.preferred_language(raise_error=False)
                 record['lang'] = pd.Value(record.type('lang'), lang)
             for check in self._view.check():
                 result = check(record)
@@ -1087,7 +1087,7 @@ class PytisModule(Module, ActionHandler):
             values[binding_column] = value
         # Add the current prefered language in language dependent modules.
         if self._LIST_BY_LANGUAGE:
-            values['lang'] = req.prefered_language(raise_error=False)
+            values['lang'] = req.preferred_language(raise_error=False)
         return values
     
     def _refered_row(self, req, value):
@@ -1148,7 +1148,7 @@ class PytisModule(Module, ActionHandler):
                and self._OWNER_COLUMN not in prefill:
             prefill[self._OWNER_COLUMN] = req.user().uid()
         if self._LIST_BY_LANGUAGE and 'lang' not in prefill:
-            lang = req.prefered_language(raise_error=False)
+            lang = req.preferred_language(raise_error=False)
             if lang:
                 prefill['lang'] = lang
         return prefill
@@ -1345,7 +1345,7 @@ class PytisModule(Module, ActionHandler):
         
         """
         if req.param('_pytis_form_update_request'):
-            tr = translator(req.prefered_language(raise_error=False))
+            tr = translator(req.preferred_language(raise_error=False))
             uri = self._current_base_uri(req, record)
             response = pw.EditForm.ajax_response(req, record, layout, errors, tr,
                                                  uri_provider=self._uri_provider(req, uri))
@@ -1426,7 +1426,7 @@ class PytisModule(Module, ActionHandler):
 
         """
         text = record[field.id()].value()
-        tr = translator(str(req.prefered_language()))
+        tr = translator(str(req.preferred_language()))
         parser = lcg.Parser()
         # Translation is needed before parsing, because the text may contain 'lcg.Translatable'
         # instances, which would be destroyed during parsing (think of virtual fields with text
@@ -1648,7 +1648,7 @@ class PytisModule(Module, ActionHandler):
             form_cls, form_kwargs = pw.ListView, {}
         condition = self._binding_condition(binding, record)
         columns = [c for c in self._columns(req) if c != binding.binding_column()]
-        lang = req.prefered_language(raise_error=False)
+        lang = req.preferred_language(raise_error=False)
         binding_uri = uri +'/'+ binding.id()
         form = self._form(form_cls, req, columns=columns, binding_uri=binding_uri,
                           condition=self._condition(req, condition=condition, lang=lang),
@@ -1672,7 +1672,7 @@ class PytisModule(Module, ActionHandler):
         # when this list is accessed through bindings as a related form.
         self._binding_parent_redirect(req, search=req.param('search'), form_name=self.name())
         # If this is not a binding forwarded request, display the listing.
-        lang = req.prefered_language()
+        lang = req.preferred_language()
         form = self._form(pw.ListView, req,
                           columns=self._columns(req),
                           condition=self._condition(req, lang=lang),
@@ -1887,7 +1887,7 @@ class PytisModule(Module, ActionHandler):
             condition = self._binding_condition(fw.arg('binding'), fw.arg('record'))
         else:
             condition = None
-        lang = req.prefered_language()
+        lang = req.preferred_language()
         for header, content in headers:
             req.set_header(header, content)
         req.start_response(content_type=content_type)
@@ -1950,7 +1950,7 @@ class PytisModule(Module, ActionHandler):
         node = lcg.ContentNode(req.uri().encode('utf-8'),
                                title=self._print_field_title(req, record, field),
                                content=self._print_field_content(req, record, field))
-        context = exporter.context(node, req.prefered_language())
+        context = exporter.context(node, req.preferred_language())
         result = exporter.export(context)
         req.set_header('Content-disposition',
                        'attachment; filename=%s' % self._print_field_filename(req, record, field))
@@ -2080,7 +2080,7 @@ class RssModule(object):
         # This is the case for determination of the uri in `_rss_info()' and of the title in
         # `action_rss()'.  It is necessary to be able to determine the URI globally, but it is
         # currently not possible when a module is mapped more than once in CMS.
-        return req.uri() +'.'+ req.prefered_language() +'.rss'
+        return req.uri() +'.'+ req.preferred_language() +'.rss'
 
     def _rss_info(self, req, lang=None):
         # Argument lang is unused (defined only for backwards compatibility).
@@ -2143,7 +2143,7 @@ class RssModule(object):
             get_description = self._rss_structured_text_description
         else:
             get_description = self._rss_column_description
-        lang = req.prefered_language()
+        lang = req.preferred_language()
         if relation:
             condition = self._binding_condition(*relation)
         else:
@@ -2196,7 +2196,7 @@ class PytisRssModule(PytisModule):
                 raise BadRequest('Channel not specified.')
             for channel in self._channels(req):
                 if channel.id() == channel_id:
-                    lang = req.param('lang') or req.prefered_language(raise_error=False)
+                    lang = req.param('lang') or req.preferred_language(raise_error=False)
                     return dict(channel=channel, lang=lang)
             else:
                 raise BadRequest('Unknown channel: %s' % channel_id)
@@ -2207,7 +2207,7 @@ class PytisRssModule(PytisModule):
                 lang = str(channel_id[-2:])
                 channel_id = channel_id[:-3]
             else:
-                lang = req.prefered_language(raise_error=False)
+                lang = req.preferred_language(raise_error=False)
             for channel in self._channels(req):
                 if channel.id() == channel_id:
                     return dict(channel=channel, lang=lang)

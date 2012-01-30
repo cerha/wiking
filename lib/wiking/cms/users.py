@@ -759,7 +759,7 @@ class Users(UserManagementModule):
     def _layout(self, req, action, record=None):
         def cms_text(cms_text):
             texts = wiking.module('Texts')
-            return texts.parsed_text(req, cms_text, lang=req.prefered_language())
+            return texts.parsed_text(req, cms_text, lang=req.preferred_language())
         if action not in self._LAYOUT: # Allow overriding this layout in derived classes.
             if action == 'view':
                 regconfirm = cms_text(wiking.cms.texts.regconfirm)
@@ -825,7 +825,7 @@ class Users(UserManagementModule):
             # This language is used for translation of email messages sent to the user.  This way
             # it is set only once during registration.  It would make sense to change it on each
             # change of user interface language by that user.
-            record['lang'] = pd.Value(record.type('lang'), req.prefered_language())
+            record['lang'] = pd.Value(record.type('lang'), req.preferred_language())
         errors = []
         if 'old_password' in layout.order():
             #if not req.check_roles(Roles.USER_ADMIN): Too dangerous?
@@ -963,14 +963,14 @@ class Users(UserManagementModule):
     def _registration_form_intro(self, record):
         req = record.req()
         texts = wiking.module('Texts')
-        content = texts.parsed_text(req, wiking.cms.texts.regintro, lang=req.prefered_language())
+        content = texts.parsed_text(req, wiking.cms.texts.regintro, lang=req.preferred_language())
         if content is None:
             content = lcg.Content()
         return content
     
     def _confirmation_success_content(self, req, record):
         texts = wiking.module('Texts')
-        return texts.parsed_text(req, wiking.cms.texts.regsuccess, lang=req.prefered_language())
+        return texts.parsed_text(req, wiking.cms.texts.regsuccess, lang=req.preferred_language())
 
     def action_confirm(self, req):
         """Confirm the activation code sent by e-mail to make user registration valid.
@@ -1397,7 +1397,7 @@ class Registration(Module, ActionHandler):
                     _("We strongly recommend you change your password at nearest occassion, "
                       "since it has been exposed to an unsecure channel."),
                     '', separator='\n')
-                err = send_mail(user.email(), title, text, lang=req.prefered_language())
+                err = send_mail(user.email(), title, text, lang=req.preferred_language())
                 if err:
                     req.message(_("Failed sending e-mail notification:") +' '+ err, type=req.ERROR)
                     msg = _("Please try repeating your request later or contact the administrator!")

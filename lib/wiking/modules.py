@@ -199,7 +199,7 @@ class Documentation(Module, RequestHandler):
         '/usr/local/share/wiking/doc/src'.
       * File '/usr/local/share/wiking/doc/src/user/navigation.<lang>.txt'. is searched,
         where <lang> may be one of the application defined languages.  Prefered language
-        is determined through `Request.prefered_language()'.
+        is determined through `Request.preferred_language()'.
 
     """
     
@@ -246,7 +246,7 @@ class Documentation(Module, RequestHandler):
                 variants = ['en']
             else:
                 raise NotFound()
-        lang = req.prefered_language(variants)
+        lang = req.preferred_language(variants)
         filename = '.'.join((basename, lang, 'txt'))
         f = codecs.open(filename, encoding='utf-8')
         text = "".join(f.readlines())

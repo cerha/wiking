@@ -337,7 +337,7 @@ class NotAcceptable(RequestError):
                             for l in self.args[0]]))
         msg += (lcg.HorizontalSeparator(),
                 lcg.p(_("Your browser is configured to accept only the following languages:")),
-                lcg.ul([lcg.language_name(l) or l for l in req.prefered_languages()]),
+                lcg.ul([lcg.language_name(l) or l for l in req.preferred_languages()]),
                 lcg.p(_("If you want to accept other languages permanently, setup the language "
                         "preferences in your browser or contact your system administrator.")))
         return msg
@@ -839,7 +839,7 @@ class Document(object):
         
         """
         id = '/'.join(req.path)
-        lang = self._lang or req.prefered_language(raise_error=False) or 'en'
+        lang = self._lang or req.preferred_language(raise_error=False) or 'en'
         nodes = {}
         styles = []
         for x in application.stylesheets(req):

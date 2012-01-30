@@ -114,7 +114,7 @@ class Handler(object):
                                content=error.message(req))
         exporter = MinimalExporter(translations=cfg.translation_path)
         try:
-            lang = req.prefered_language()
+            lang = req.preferred_language()
         except:
             lang = cfg.default_language_by_domain.get(req.server_hostname(current=True),
                                                       cfg.default_language) or 'en'

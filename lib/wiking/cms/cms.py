@@ -569,7 +569,7 @@ class Session(PytisModule, wiking.Session):
         # Display info page for users without proper access
         def abort(title, text_id, form=None):
             texts = wiking.module('Texts')
-            content = texts.parsed_text(req, text_id, lang=req.prefered_language())
+            content = texts.parsed_text(req, text_id, lang=req.preferred_language())
             if form:
                 content = (content, form)
             else:
@@ -1261,7 +1261,7 @@ class Pages(ContentManagementModule):
         rows = self._data.get_rows(identifier=identifier, published=True)
         if rows:
             variants = [str(row['lang'].value()) for row in rows]
-            lang = req.prefered_language(variants)
+            lang = req.preferred_language(variants)
             del req.unresolved_path[0]
             return rows[variants.index(lang)]
         elif self._data.get_rows(identifier=identifier):
@@ -2058,7 +2058,7 @@ class Discussions(News):
             elif not req.check_roles(Roles.USER):
                 raise AuthorizationError()
             prefill = dict(timestamp=now(),
-                           lang=req.prefered_language(),
+                           lang=req.preferred_language(),
                            mapping_id=record['mapping_id'].value(),
                            author=req.user().uid(),
                            title='-',
@@ -2301,7 +2301,7 @@ class CommonTexts(SettingsManagementModule):
 
     def _select_language(self, req, lang):
         if lang is None:
-            lang = req.prefered_language()
+            lang = req.preferred_language()
             if lang is None:
                 lang = 'en'
         return lang
