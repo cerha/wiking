@@ -58,6 +58,7 @@ class Application(Module):
     argument of the same name.
 
     """
+    _PREFERRED_LANGUAGE_COOKIE = 'wiking_preferred_language'
     
     def __init__(self, *args, **kwargs):
         super(Application, self).__init__(*args, **kwargs)
@@ -256,22 +257,66 @@ class Application(Module):
         return []
         
     def languages(self):
-        """Return the list of available languages as the corresponding alpha-2 language codes.
+        """Return a list of all languages supported by the application.
         
-        Wiking allows you to serve content in multiple languages.  The default language is selected
-        automatically using the Content Negotiation techique and the user is also able to switch
-        between the available languages manually.  The behavior is described in the Navigation
-        section of the Wiking User's documentation.
-
-        This method returns the list of all languages relevant for the application.
+        Returns a list of all supported languages as the corresponding alpha-2
+        language codes.
         
-        You should check, whether the translations for all the specified languages are available in
-        the gettext catalog for Wiking and also for all the components you are using, such as LCG
-        and Pytis.
-
+        You should check, whether the translations for all the specified
+        languages are available in the gettext catalog for Wiking and also for
+        all the components you are using, such as LCG and Pytis.
 
         """
         return ['en']
+
+    def preferred_languages(self, req):
+        """Return a list of languages accepted by the current user in the order of their preference.
+
+        The list of prefered languages allows wiking applications to serve
+        multilingual content using the automatic Content Negotiation techique
+        with a possibility for the user to switch between the available
+        language variants manually.  You should never call this method directly
+        in a Wiking application.  You rather want to call
+        'Request.preferred_languages()'.
+
+        You may need to override this method to change its logic completely or
+        partially for given application if the default logic described below
+        doesn't suit your needs.
+        
+        The default implementation uses a combination of user preferences set
+        in 'Accept-Language' HTTP headers, explicit language switching and
+        global defaults set in configuration.
+        
+        If the application supports language switching (the small widget at the
+        top right corner in the default layout), the language selected there
+        has the highest precedence (the selected value is saved in a cookie).
+        The languages set through the HTTP header Accept-Language in browsers
+        preferences immediately follow in the order of their precedence.  The
+        last option (lowest precedence) is the default language configured for
+        the server through 'default_language' and 'default_language_by_domain'
+        configuration options.
+
+        """
+        if req.has_param('setlang'):
+            # Use the language selected explicitly by the user in this request.
+            selected = str(req.param('setlang'))
+            req.set_param('setlang', None)
+            req.set_cookie(self._PREFERRED_LANGUAGE_COOKIE, selected)
+        else:
+            # Use the language selected previously (if at all).
+            selected = req.cookie(self._PREFERRED_LANGUAGE_COOKIE)
+            if selected:
+                selected = str(selected)
+        if selected:
+            languages = [selected]
+        else:
+            languages = []
+        languages.extend([lang for lang in req.accepted_languages() if lang != selected])
+        default = wiking.cfg.default_language_by_domain.get(req.server_hostname(current=True),
+                                                            wiking.cfg.default_language)
+        if default and default not in languages:
+            languages.append(default)
+        return languages
 
     def stylesheets(self, req):
         """Return the list of all available style sheets as 'lcg.Stylesheet' instances.

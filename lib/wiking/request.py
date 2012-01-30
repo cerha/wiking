@@ -1,4 +1,4 @@
-# Copyright (C) 2006-2011 Brailcom, o.p.s.
+# Copyright (C) 2006-2012 Brailcom, o.p.s.
 # Author: Tomas Cerha <cerha@brailcom.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -238,7 +238,6 @@ class Request(ServerInterface):
             except KeyError:
                 return None
 
-    _LANG_COOKIE = 'wiking_preferred_language'
     _PANELS_COOKIE = 'wiking_show_panels'
     _MESSAGES_COOKIE = 'wiking_messages'
     _UNDEFINED = object()
@@ -264,7 +263,7 @@ class Request(ServerInterface):
         self._fresh_login = False
         self._application = wiking.module('Application')
         self._cookies = Cookie.SimpleCookie(self.header('Cookie'))
-        self._preferred_languages = self._init_preferred_languages()
+        self._preferred_languages = None
         self._credentials = self._init_credentials()
         self._decryption_password = self._init_decryption_password()
         self._messages = self._init_messages()
@@ -309,46 +308,6 @@ class Request(ServerInterface):
             password = self.param('__decryption_password')
             self.set_param('__decryption_password', None)
         return password
-        
-    def _init_preferred_languages(self):
-        accepted = []
-        if self.has_param('setlang'):
-            preferred = str(self.param('setlang'))
-            self.set_param('setlang', None)
-            self.set_cookie(self._LANG_COOKIE, preferred)
-        else:
-            preferred = self.cookie(self._LANG_COOKIE)
-            if preferred:
-                preferred = str(preferred)
-        for item in self.header('Accept-Language', '').lower().split(','):
-            if item:
-                x = item.split(';')
-                # For now we ignore the country part and recognize just the core languages.
-                lang = x[0].split('-')[0]
-                if lang == preferred and preferred is not None:
-                    preferred = None
-                    q = 2.0
-                elif len(x) == 1:
-                    q = 1.0
-                elif x[1].startswith('q='):
-                    try:
-                        q = float(x[1][2:])
-                    except ValueError:
-                        continue
-                else:
-                    continue
-                if lang not in [l for _q, l in accepted]:
-                    accepted.append((q, lang))
-        accepted.sort()
-        accepted.reverse()
-        languages = [lang for q, lang in accepted]
-        if preferred:
-            languages.insert(0, preferred)
-        default = wiking.cfg.default_language_by_domain.get(self.server_hostname(current=True),
-                                                            wiking.cfg.default_language)
-        if default and default not in languages:
-            languages.append(default)
-        return tuple(languages)
 
     def _init_messages(self):
         # Attempt to unpack the messages previously stored before request
@@ -721,16 +680,48 @@ class Request(ServerInterface):
 
         """
         return self._show_panels
+
+    def accepted_languages(self):
+        """Return the tuple of language codes set in 'Accept-Language' sorted by their preference.
+
+        This is just a convenience method to parse the HTTP 'Accept-Language'
+        header.  See the method 'preferred_languages()' for application
+        specific list of preferred languages.
+
+        """
+        accepted = []
+        for item in self.header('Accept-Language', '').lower().split(','):
+            if item:
+                x = item.split(';')
+                # For now we ignore the country part and recognize just the core languages.
+                lang = x[0].split('-')[0]
+                if len(x) == 1:
+                    q = 1.0
+                elif x[1].startswith('q='):
+                    try:
+                        q = float(x[1][2:])
+                    except ValueError:
+                        continue
+                else:
+                    continue
+                if lang not in [l for _q, l in accepted]:
+                    accepted.append((q, lang))
+        accepted.sort()
+        accepted.reverse()
+        return tuple([lang for q, lang in accepted])
     
     def preferred_languages(self):
-        """Return a sequence of language codes in the order of client's preference.
+        """Return a list of user's preferred languages in the order of their preference.
 
-        The result is based on the Accept-Language HTTP header, preferred language set previously
-        through 'setlang' parameter (stored in a cookie) and default language configured for the
-        server (see 'default_language' and 'default_language_by_domain' configuration options).
+        Returns the result of curren't application's method
+        'Application.preferred_languages()' and caches its result for the
+        current request.
         
         """
-        return self._preferred_languages
+        result = self._preferred_languages
+        if result is None:
+            self._preferred_languages = result = self._application.preferred_languages(self)
+        return result
 
     def preferred_language(self, variants=None, raise_error=True):
         """Return the preferred variant from the list of available variants.
