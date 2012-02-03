@@ -449,11 +449,12 @@ class Users(UserManagementModule):
             return (
             Field('uid', width=8, editable=NEVER),
             # Translators: Login name for a website. Registration form field.
-            Field('login', _("Login name"), width=16, editable=ONCE,
-                  type=pd.RegexString(maxlen=16, not_null=True, regex='^[a-zA-Z][0-9a-zA-Z_\.-]*$'),
+            Field('login', _("Login name"), width=36, editable=ONCE,
+                  type=pd.RegexString(maxlen=64, not_null=True,
+                                      regex='^[a-zA-Z][0-9a-zA-Z_\.@-]*$'),
                   computer=(cfg.login_is_email and computer(lambda r, email: email) or None),
                   descr=_("A valid login name can only contain letters, digits, underscores, "
-                          "dashes and dots and must start with a letter.")),
+                          "dashes, at signs and dots and must start with a letter.")),
             Field('password', _("Password"), width=16,
                   type=pd.Password(minlen=4, maxlen=32, not_null=True, md5=md5_passwords),
                   descr=_("Please, write the password into each of the two fields to eliminate "
