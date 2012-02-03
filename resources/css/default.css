@@ -19,7 +19,6 @@ div.errors, #messages .error, #messages .warning {
 
 img { position: relative; } /* MSIE float workaround */
 .hidden { display: none; }
-.not-null { color: #f00; }
 
 /* Generic pytis forms styles */
 
@@ -168,10 +167,17 @@ img { position: relative; } /* MSIE float workaround */
 .pytis-form fieldset.body div.field { 
     margin: 0.2em 0;
 }
-.pytis-form label, .pytis-form .field-label { 
+.pytis-form .field-label { 
     white-space: nowrap;
     font-weight: bold;
 }
+.pytis-form .field-label .not-null { color: #f00; }
+.pytis-form.edit-form .field-label {
+    line-height: 2em;
+}
+.pytis-form .field-label.disabled { color: $color.help; }
+.pytis-form .field-label.disabled .not-null { display: none; }
+
 .pytis-form div.radio-group label { 
     font-weight: normal;
 }
@@ -240,6 +246,7 @@ img { position: relative; } /* MSIE float workaround */
 /*.pytis-form .invalid {
     background-color: $color.error-bg;
 }*/
+
 
 .actions { 
     margin: 1em 0;
