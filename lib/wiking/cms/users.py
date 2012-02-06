@@ -872,17 +872,18 @@ class Users(UserManagementModule):
     def _hidden_fields(self, req, action, record=None):
         fields = super(Users, self)._hidden_fields(req, action, record=record)
         if action == 'insert' and req.param('action') == 'reinsert':
-            # Force 'action' back to 'reinsert', not 'insert'...
-            fields = [(key, key == 'action' and 'reinsert' or value) for key, value in fields]
+            fields = [(name, value) for name, value in fields if name != 'action'] + [
+                # Force 'action' to 'reinsert', the super method produces 'insert'...
+                ('action', 'reinsert'),
+                # The regcode serves as a temporary authorization token.
+                ('regcode', req.param('regcode')),
+                ]
             layout = self._layout_instance(self._layout(req, action))
             if 'login' not in layout.order():
-                # Pass the login field as hidden on 'reinsert' when it is not
-                # in the layout (typically when the current aplication has
+                # Pass the login field as hidden when it is not in the layout
+                # (typically when the current aplication has
                 # 'cfg.login_is_email' = True)
                 fields.append(('login', req.param('login')))
-            # Pass the regcode on 'reinsert' -- it serves as a temporary
-            # authorization token.
-            fields.append(('regcode', req.param('regcode')))
         return fields
         
     def _make_registration_email(self, req, record):
