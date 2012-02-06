@@ -1364,8 +1364,11 @@ class Registration(Module, ActionHandler):
             if user:
                 record = user.data()
                 if regcode == record['regcode'].value():
-                    row = record.row()
-                    prefill = dict([(key, row[key].value(),) for key in row.keys()])
+                    if not req.param('submit'):
+                        row = record.row()
+                        prefill = dict([(key, row[key].value(),) for key in row.keys()])
+                    else:
+                        prefill = None
                     return self.action_insert(req, prefill=prefill)
         raise AuthenticationError()
     RIGHTS_reinsert = (Roles.ANYONE,)
