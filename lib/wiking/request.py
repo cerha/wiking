@@ -264,6 +264,7 @@ class Request(ServerInterface):
         self._application = wiking.module('Application')
         self._cookies = Cookie.SimpleCookie(self.header('Cookie'))
         self._preferred_languages = None
+        self._translator = None
         self._credentials = self._init_credentials()
         self._decryption_password = self._init_decryption_password()
         self._messages = self._init_messages()
@@ -534,13 +535,12 @@ class Request(ServerInterface):
             # Store them together with the target URI to recognize for which
             # request they should be loaded.  Of course, this will not work,
             # when the redirection target is outside the current wiking host.
-            translate = wiking.translator(self.preferred_language()).translate
             # Translate the messages before quoting, since the resulting strings
             # wil not be translatable enymore.  We make the assumption, that the
             # redirected request's locale will be the same as for this request,
             # but that seems quite appropriate assumption.
             lines = [urllib.quote(uri.encode(self._encoding))] + \
-                [type +':'+ urllib.quote(translate(message).encode(self._encoding))
+                [type +':'+ urllib.quote(self.translate(message).encode(self._encoding))
                  for message, type  in self._messages]
             self.set_cookie(self._MESSAGES_COOKIE,  "\n".join(lines))
         html = ("<html><head><title>Redirected</title></head>"
@@ -753,6 +753,36 @@ class Request(ServerInterface):
     prefered_language = preferred_language
     """Misspelled method name kept for backwards compatibility. Use 'preferred_language()'."""
 
+    def translate(self, string):
+        """Return the 'string' translated into the user's preferred language.
+
+        Arguments:
+
+          string -- 'lcg.Translatable' or unicode instance
+
+        Unicode instances which are not 'lcg.Translatable' are returned without
+        change.  Translatable instances are returned as unicode localized
+        according to the current preferred language.
+
+        This is actually just a convenience wrapper for a frequently used call
+        to 'Request.translator().translate()'.
+
+        """
+        return self.translator().translate(string)
+
+    def translator(self):
+        """Return an 'lcg.Translator()' instance for the current preferred language.
+        
+        Using this method is encouraged as the created translator instance is
+        cached for the duration of the request.
+
+        """
+        translator = self._translator
+        if translator is None:
+            lang = self.preferred_language(raise_error=False)
+            translator = self._translator = wiking.translator(lang)
+        return translator
+    
     def credentials(self):
         """Return the login name and password as given by the user.
 

@@ -351,10 +351,6 @@ class PytisModule(Module, ActionHandler):
         return self.Record(req, self._view.fields(), self._data, row,
                            prefill=prefill, resolver=self._resolver, new=new)
 
-    def _locale_data(self, req):
-        lang = req.preferred_language(raise_error=False)
-        return translator(lang).locale_data()
-
     def _binding_forward(self, req):
         # Return the ForwardInfo instance for the last forward made because of the binding
         # dependency (this module is in bindings of the forwarding module).
@@ -384,7 +380,6 @@ class PytisModule(Module, ActionHandler):
         changed_field = req.param('_pytis_form_changed_field')
         if changed_field:
             order = [id for id in order if id != changed_field] + [str(changed_field)]
-        locale_data = self._locale_data(req)
         for id in order:
             f = self._view.field(id)
             if not record.editable(id):
@@ -428,6 +423,7 @@ class PytisModule(Module, ActionHandler):
             else:
                 value = ""
             if isinstance(type, pd.Float):
+                locale_data = req.translator().locale_data()
                 if isinstance(type, pd.Monetary):
                     decimal_point = locale_data.mon_decimal_point
                     thousands_sep = locale_data.mon_thousands_sep
@@ -440,6 +436,7 @@ class PytisModule(Module, ActionHandler):
                 if decimal_point != '.':
                     value = value.replace(decimal_point, '.')
             if isinstance(type, pd.DateTime):
+                locale_data = req.translator().locale_data()
                 if isinstance(type, pd.Date):
                     format = locale_data.date_format
                 else:
@@ -1345,9 +1342,8 @@ class PytisModule(Module, ActionHandler):
         
         """
         if req.param('_pytis_form_update_request'):
-            tr = translator(req.preferred_language(raise_error=False))
             uri = self._current_base_uri(req, record)
-            response = pw.EditForm.ajax_response(req, record, layout, errors, tr,
+            response = pw.EditForm.ajax_response(req, record, layout, errors, req.translator(),
                                                  uri_provider=self._uri_provider(req, uri))
             req.send_response(response, content_type='application/json')
             return True
@@ -1426,12 +1422,11 @@ class PytisModule(Module, ActionHandler):
 
         """
         text = record[field.id()].value()
-        tr = translator(str(req.preferred_language()))
         parser = lcg.Parser()
         # Translation is needed before parsing, because the text may contain 'lcg.Translatable'
         # instances, which would be destroyed during parsing (think of virtual fields with text
         # constructed in runtime).
-        content = parser.parse(tr.translate(text))
+        content = parser.parse(req.translate(text))
         return lcg.Container(content)
     
     def _transaction(self):
@@ -2151,24 +2146,23 @@ class RssModule(object):
         rows = self._rows(req, condition=condition, lang=lang, limit=self._RSS_LIMIT)
         base_uri = req.server_uri(current=True)
         record = self._record(req, None)
-        translate = translator(str(lang)).translate
         writer = RssWriter(req)
         req.start_response(content_type='application/xml')
         writer.start(base_uri,
-                     translate(cfg.site_title +' - '+ self._rss_channel_title(req)),
-                     description=translate(cfg.site_subtitle),
+                     req.translate(cfg.site_title +' - '+ self._rss_channel_title(req)),
+                     description=req.translate(cfg.site_subtitle),
                      webmaster=cfg.webmaster_address,
                      generator='Wiking %s' % wiking.__version__,
                      language=lang)
         for row in rows:
             record.set_row(row)
-            title = translate(self._rss_title(req, record))
+            title = req.translate(self._rss_title(req, record))
             uri = self._rss_uri(req, record, lang=lang)
             if uri:
                 uri = base_uri + uri
             description = get_description(req, record)
             if description:
-                description = translate(description)
+                description = req.translate(description)
             date = self._rss_date(req, record)
             author = self._rss_author(req, record)
             writer.item(link=uri,
@@ -2249,12 +2243,11 @@ class PytisRssModule(PytisModule):
         
     def action_rss(self, req, channel, lang):
         # TODO: 'lang' may be None here.
-        tr = translator(str(lang))
         def translate(value):
             if value is None:
                 return value
             else:
-                return tr.translate(value)
+                return req.translate(value)
         def func(spec, default=None, raw=False):
             # Return a function of one argument (record) returning the channel
             # item value according to specification.
