@@ -779,15 +779,18 @@ class Users(UserManagementModule):
                           ]
                 return layout
             if action == 'insert':
+                if req.param('action') == 'reinsert':
+                    login_information = ((cfg.login_is_email and 'email' or 'login'),)
+                else:
+                    login_information = ((cfg.login_is_email and 'email' or 'login'), 'password',)
                 layout = [
                     self._registration_form_intro,
                     FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname',)),
                     FieldSet(_("Contact information"),
                              ((not cfg.login_is_email) and ('email',) or ()) +
                              ('phone', 'address', 'uri')),
-                    FieldSet(_("Login information"),
-                             ((cfg.login_is_email and 'email' or 'login'), 'password')),
-                    FieldSet(_("Others"), ('note',))]
+                    FieldSet(_("Login information"), login_information),
+                    FieldSet(_("Others"), ('note',))]                    
                 regconfirm = cms_text(wiking.cms.texts.regconfirm)
                 if regconfirm:
                     # Translators: Confirmation of website terms&conditions. Form label.
