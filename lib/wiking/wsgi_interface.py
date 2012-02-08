@@ -117,7 +117,7 @@ class WsgiRequest(wiking.Request):
             # environment variable 'wiking.server_hostname' according the
             # ServerName directive whenever there is one or more ServerAlias
             # directives because SERVER_NAME doesn't contain what we need.
-            self._environ.get('wiking.server_hostname', self._environ['SERVER_NAME'])
+            return self._environ.get('wiking.server_hostname', self._environ['SERVER_NAME'])
 
     def start_http_response(self, status_code):
         if True: #not self._response_started:
