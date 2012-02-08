@@ -109,7 +109,15 @@ class WsgiRequest(wiking.Request):
         if current:
             return self._environ.get(self.header('Host'), self._environ['SERVER_NAME'])
         else:
-            return self._environ['SERVER_NAME']
+            # PEP http://www.python.org/dev/peps/pep-3333/ is not very clear on
+            # what SERVER_NAME should exactly contain and we don't know of any
+            # other method how to retrieve the unique server name (as descrined
+            # in the docstring of this method in the parent class) under WSGI.
+            # So at least under Apache/mod_wsgi, it is necessary to set the
+            # environment variable 'wiking.server_hostname' according the
+            # ServerName directive whenever there is one or more ServerAlias
+            # directives because SERVER_NAME doesn't contain what we need.
+            self._environ.get('wiking.server_hostname', self._environ['SERVER_NAME'])
 
     def start_http_response(self, status_code):
         if True: #not self._response_started:
