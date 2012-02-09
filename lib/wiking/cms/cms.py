@@ -998,13 +998,15 @@ class Themes(StyleManagementModule):
                                       for label, fields in self._FIELDS])
         columns = ('name', 'active')
         cb = CodebookSpec(display='name', prefer_display=True)
-    # Translators: Button label
-    _ACTIONS = (Action('activate', _("Activate"), descr=_("Activate this color theme"),
-                       enabled=lambda r: r['active'].value() is None),
-                # Translators: Button label
-                Action('activate', _("Activate default"), context=pp.ActionContext.GLOBAL,
-                       descr=_("Activate the default color theme"),
-                       enabled=lambda r: isinstance(cfg.theme, Themes.Theme)),)
+        actions = (
+            # Translators: Button label
+            Action('activate', _("Activate"), descr=_("Activate this color theme"),
+                   enabled=lambda r: r['active'].value() is None),
+            # Translators: Button label
+            Action('activate', _("Activate default"), context=pp.ActionContext.GLOBAL,
+                   descr=_("Activate the default color theme"),
+                   enabled=lambda r: isinstance(cfg.theme, Themes.Theme)),
+            )
     RIGHTS_copy = (Roles.STYLE_ADMIN,)
     
     class Theme(Theme):

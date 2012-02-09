@@ -99,6 +99,11 @@ class CryptoKeys(CMSExtensionModule):
                    ('name', pd.ASCENDENT,),
                    )
         columns = ('uid', 'name', 'delete',)
+        actions = (
+            Action('password', _("Change password"), descr=_("Change key password")),
+            Action('adduser', _("Copy to user"), descr=_("Add another user of the key")),
+            )
+
 
     _DB_FUNCTIONS = dict(CMSExtensionModule._DB_FUNCTIONS,
                          cms_crypto_delete_key=(('name_', pd.String(),),
@@ -120,11 +125,6 @@ class CryptoKeys(CMSExtensionModule):
 
     _TITLE_COLUMN = 'uid'
     _INSERT_LABEL = _("Create key")
-    
-    _ACTIONS = (Action('password', _("Change password"), descr=_("Change key password")),
-                Action('adduser', _("Copy to user"), descr=_("Add another user of the key")),
-                )
-
     _OWNER_COLUMN = 'uid'
 
     RIGHTS_list = (Roles.CRYPTO_ADMIN,)

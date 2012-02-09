@@ -1442,6 +1442,7 @@ class Specification(pp.Specification):
             actions = actions()
         actions = list(actions)
         for base in wiking_module.__bases__ + (wiking_module,):
+            # Using the _ACTIONS module attribute is DEPRECATED!
             if hasattr(base, '_ACTIONS'):
                 for action in base._ACTIONS:
                     if action not in actions:

@@ -2343,6 +2343,7 @@ class Publishable(object):
         data.update(key, values)
     _change_published = staticmethod(_change_published)
     
+    # TODO: Using the _ACTIONS module attribute is DEPRECATED!  Use Spec.actions instead!
     _ACTIONS = (Action('publish', _("Publish"),
                        handler=lambda r: Publishable._change_published(r),
                        enabled=lambda r: not r['published'].value(),
