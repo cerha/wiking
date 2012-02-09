@@ -1343,16 +1343,8 @@ class FieldSet(pp.GroupSpec):
     def __init__(self, label, fields, horizontal=False):
         orientation = horizontal and pp.Orientation.HORIZONTAL or pp.Orientation.VERTICAL
         super(FieldSet, self).__init__(fields, label=label, orientation=orientation)
+
         
-class Action(pytis.presentation.Action):
-    """Deprecated: Use the parent class which now includes all the necessary methods."""
-    def __init__(self, title, id, **kwargs):
-        if 'context' in kwargs and kwargs['context'] is None:
-            # Make context specification in applications backwards compatible.
-            kwargs['context'] = pp.ActionContext.GLOBAL
-        super(Action, self).__init__(id, title, **kwargs)
-
-
 from pytis.data.dbapi import DBAPIData
     
 class WikingDefaultDataClass(DBAPIData):

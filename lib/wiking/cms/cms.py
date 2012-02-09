@@ -1739,7 +1739,7 @@ class Attachments(ContentManagementModule):
         columns = ('filename', 'title', 'bytesize', 'mime_type', 'thumbnail_size', 'in_gallery', 'listed', 'mapping_id')
         sorting = (('filename', ASC),)
         actions = (
-            #Action(_("New image"), 'insert_image', descr=_("Insert a new image attachment"),
+            #Action('insert_image', _("New image"), descr=_("Insert a new image attachment"),
             #       context=pp.ActionContext.GLOBAL),
             # Translators: Button label
             Action('move', _("Move"), descr=_("Move the attachment to another page.")),
