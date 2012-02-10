@@ -1,4 +1,4 @@
-# Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 Brailcom, o.p.s.
+# Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012 Brailcom, o.p.s.
 # Author: Tomas Cerha <cerha@brailcom.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -288,12 +288,6 @@ class Configuration(pc):
             return {'wiking': '/usr/local/share/wiking/doc/src',
                     'lcg': '/usr/local/share/lcg/doc/src'}
         
-    class _Option_storage(pc.StringOption):
-        _DESCR = "Directory for storing uploaded files"
-        _DOC = ("You only need this directory if your application(s) use the `StoredFileModule' "
-                "(Wiking CMS does that).  The directory must be writable by the web-server user.")
-        _DEFAULT = '/var/lib/wiking'
-        
     class _Option_site_title(pc.StringOption):
         # Translators: Site means a webpage or web application.
         _DESCR = _("Site title")
@@ -403,6 +397,16 @@ class Configuration(pc):
                  "username, but also his current user role, which affects his permissions.")
         _DEFAULT = False
         
+    class _Option_immediate_filters(pc.BooleanOption, pc.HiddenOption):
+        _DESCR = ("Whether to apply filtering combobox selection immediately.")
+        _DEFAULT = True
+
+    class _Option_ignored_crypto_names(pc.Option):
+        _DESCR = "Sequence of ignored crypto names"
+        _DOC = ("Ignored crypto names don't raise decryption password dialog and "
+                "show obfuscated data instead.")
+        _DEFAULT = ()
+
     # The following options are actually Wiking CMS specific, but we have them here to allow their
     # setting through a configuration file.  As soon as the support for application specific
     # configuration files is ready, the options should be moved to CMS configuration.  The options
@@ -438,22 +442,18 @@ class Configuration(pc):
                  "after the user confirms the registration code.")
         _DEFAULT = False
 
+    class _Option_storage(pc.StringOption):
+        _DESCR = "Directory for storing uploaded files"
+        _DOC = ("You only need this directory if your application(s) use the `StoredFileModule' "
+                "(Wiking CMS does that).  The directory must be writable by the web-server user.")
+        _DEFAULT = '/var/lib/wiking'
+        
     class _Option_sql_dir(pc.StringOption):
         _DESCR = "SQL directory"
         _DOC = ("The directory where Wiking CMS database initialization/upgrade scripts "
                 "can be found.")
         _DEFAULT = '/usr/local/share/wiking/sql'
         
-    class _Option_immediate_filters(pc.BooleanOption, pc.HiddenOption):
-        _DESCR = ("Whether to apply filtering combobox selection immediately.")
-        _DEFAULT = True
-
-    class _Option_ignored_crypto_names(pc.Option):
-        _DESCR = "Sequence of ignored crypto names"
-        _DOC = ("Ignored crypto names don't raise decryption password dialog and "
-                "show obfuscated data instead.")
-        _DEFAULT = ()
-
     class _Option_image_thumbnail_sizes(pc.Option):
         _DESCR = "Sequence available image thumbnail sizes"
         _DOC = ("Sequence of three integers denoting the pixel size of small, "
