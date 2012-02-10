@@ -299,7 +299,10 @@ class Request(ServerInterface):
             if auth_header and auth_header.startswith('Basic '):
                 encoded_credentials = auth_header.split()[1]
                 login, password = encoded_credentials.decode("base64").split(":", 1)
-        return login, password
+        if login or password:
+            return login, password
+        else:
+            return None
 
     def _init_decryption_password(self):
         password = None
@@ -795,7 +798,8 @@ class Request(ServerInterface):
         no way to tell the user agent to drop the cached credentials).
 
         The return value does not indicate anything about authentication.  The
-        credentials are returned even if login is not successful.
+        credentials are actually used by the authentication mechanism which
+        decides whether they are valid or not.
         
         """
         return self._credentials
