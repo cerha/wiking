@@ -1517,9 +1517,8 @@ class WikingResolver(pytis.util.Resolver):
     def wiking_module(self, name, **kwargs):
         """Return the instance of a Wiking module given by 'name'.
 
-        All keyword arguments will be passed to the module constructor.  The instances are cached
-        (for the same constructor arguments).  The constructor argument 'resolver' is supplied
-        automatically.
+        Any keyword arguments are be passed to the module constructor.  The
+        instances are cached internally (for matching constructor arguments).
         
         """
         key = (name, tuple(kwargs.items()))
@@ -1531,9 +1530,7 @@ class WikingResolver(pytis.util.Resolver):
             #    raise KeyError()
         except KeyError:
             cls = self.wiking_module_cls(name)
-            if issubclass(cls, PytisModule) and cfg.maintenance:
-                raise MaintenanceModeError()
-            module_instance = cls(self, **kwargs)
+            module_instance = cls(name, **kwargs)
             self._wiking_module_instance_cache[key] = module_instance
         return module_instance
 

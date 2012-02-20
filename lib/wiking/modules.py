@@ -41,22 +41,25 @@ class Module(object):
         """Return brief module description as a string or 'lcg.LocalizableText'."""
         return cls._DESCR
 
-    def __init__(self, resolver, **kwargs):
+    def __init__(self, name):
         """Initialize the instance.
 
         Arguments:
 
-          resolver -- a 'WikingResolver' instance.
+          name -- the real name which was resolved to this module by the
+            resolver.  The resolved name may contain a full class name including
+            the names of python modules where the class is defined.  The name
+            returned by the method 'name()', on the other hand, is just the
+            name of the class itself.
 
         """
-        assert isinstance(resolver, WikingResolver), resolver
-        self._resolver = resolver
-        #log(OPR, 'New module instance: %s[%x]' % (self.name(), lcg.positive_id(self)))
-        super(Module, self).__init__(**kwargs)
+        self._resolved_name = name
+        #log(OPR, 'New module instance: %s[%x]' % (name, lcg.positive_id(self)))
+        super(Module, self).__init__()
 
     def _module(self, name, **kwargs):
         """Deprecated: Use 'wiking.module()' instead."""
-        return self._resolver.wiking_module(name, **kwargs)
+        return wiking.cfg.resolver.wiking_module(name)
 
     
 class RequestHandler(object):

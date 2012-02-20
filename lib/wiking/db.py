@@ -285,18 +285,18 @@ class PytisModule(Module, ActionHandler):
     
     # Instance methods
     
-    def __init__(self, resolver, **kwargs):
+    def __init__(self, name):
+        if cfg.maintenance:
+            raise MaintenanceModeError()
         self._link_cache = {}
         self._link_cache_req = None
-        super(PytisModule, self).__init__(resolver, **kwargs)
+        super(PytisModule, self).__init__(name)
         import config
         self._dbconnection = config.dbconnection.select(self.Spec.connection)
         del config
-        full_name = self.__class__.__name__
-        if self.__class__.__module__:
-            full_name = '%s.%s' % (self.__class__.__module__, full_name,)
-        self._data_spec = resolver.get(full_name, 'data_spec')
-        self._view = resolver.get(full_name, 'view_spec')
+        resolver = wiking.cfg.resolver
+        self._data_spec = resolver.get(name, 'data_spec')
+        self._view = resolver.get(name, 'view_spec')
         self._exception_matchers = [(re.compile(regex), msg)
                                     for regex, msg in self._EXCEPTION_MATCHERS]
         self._db_function = {}
@@ -319,15 +319,16 @@ class PytisModule(Module, ActionHandler):
             self._sorting = ((key, pytis.data.ASCENDENT),)
         self._referer = self._REFERER or key
         self._array_fields = []
+        resolver = wiking.cfg.resolver
         for fid, spec_name, linking_column, value_column in self._ARRAY_FIELDS:
-            data_spec = self._resolver.get(spec_name, 'data_spec')
+            data_spec = resolver.get(spec_name, 'data_spec')
             data = data_spec.create(connection_data=self._dbconnection)
             self._array_fields.append((fid, data, linking_column, value_column))
         fields = self._view.fields()
         # We sometimes need to know the data type of certain field without having access to the
         # record at the same time, so we create a record here just to save the data types of all
         # fields for future use.
-        record = pp.PresentedRow(fields, self._data, None, resolver=self._resolver)
+        record = pp.PresentedRow(fields, self._data, None, resolver=resolver)
         self._type = dict([(key, record.type(key)) for key in record.keys()])
         self._links = {}
         def cb_link(field):
@@ -349,7 +350,7 @@ class PytisModule(Module, ActionHandler):
     def _record(self, req, row, new=False, prefill=None):
         """Return the Record instance initialized by given data row."""
         return self.Record(req, self._view.fields(), self._data, row,
-                           prefill=prefill, resolver=self._resolver, new=new)
+                           prefill=prefill, resolver=wiking.cfg.resolver, new=new)
 
     def _binding_forward(self, req):
         # Return the ForwardInfo instance for the last forward made because of the binding
