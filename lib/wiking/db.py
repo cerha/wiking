@@ -1175,9 +1175,13 @@ class PytisModule(Module, ActionHandler):
         binding_column = binding.binding_column()
         if binding_column:
             type = self._type[binding_column]
-            value = record[type.enumerator().value_column()].value()
+            enumerator = type.enumerator()
+            if enumerator is None:
+                raise Exception("Column '%s' of '%s' is used as a binding column but "
+                                "has no enumerator defined.")
+            value = record[enumerator.value_column()].value()
             bcond = pd.EQ(binding_column, pd.Value(type, value))
-            if condition: 
+            if condition:
                 condition = pd.AND(condition, bcond)
             else:
                 condition = bcond
