@@ -296,7 +296,7 @@ class Stylesheets(Module, RequestHandler):
 
     def _handle(self, req):
         """Serve the stylesheet from a file."""
-        def stylesheet(self, path):
+        def stylesheet(path):
             for resource_dir in cfg.resource_path:
                 filename = os.path.join(resource_dir, 'css', *path)
                 if os.path.exists(filename):
