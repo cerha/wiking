@@ -1425,7 +1425,7 @@ class Specification(pp.Specification):
     actions = []
     data_cls = WikingDefaultDataClass
 
-    def __init__(self, wiking_module, resolver):
+    def __init__(self, wiking_module):
         self._module = wiking_module
         if self.table is None:
             self.table = pytis.util.camel_case_to_lower(wiking_module.name(), '_')
@@ -1440,7 +1440,7 @@ class Specification(pp.Specification):
                     if action not in actions:
                         actions.append(action)
         self.actions = tuple(actions)
-        super(Specification, self).__init__(resolver)
+        super(Specification, self).__init__()
 
     def _action_spec_name(self):
         # Mainly to indicate the module name in specification error messages...
@@ -1495,7 +1495,7 @@ class WikingResolver(pytis.util.Resolver):
     def _get_specification(self, key):
         name, kwargs = key
         module_cls = self.wiking_module_cls(name)
-        return module_cls.Spec(module_cls, self, **dict(kwargs))
+        return module_cls.Spec(module_cls, **dict(kwargs))
 
     def _get_object_by_name(self, name):
         # Temporary hack
