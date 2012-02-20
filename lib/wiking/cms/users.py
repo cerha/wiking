@@ -1119,7 +1119,7 @@ class Users(UserManagementModule):
         elif uid is not None and login is None:
             row = self._data.get_row(uid=uid)
         else:
-            raise Exception("Invalid 'user()' arguments.")
+            raise Exception("Invalid 'user()' arguments.", (login, uid))
         if row is None:
             user = None
         else:
