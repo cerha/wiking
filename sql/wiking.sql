@@ -539,7 +539,7 @@ from cms_system_text_labels cross join cms_languages
      left outer join cms_system_texts using (label, site, lang);
 
 create or replace rule cms_v_system_texts_update as
-  on update to cms_system_texts do instead (
+  on update to cms_v_system_texts do instead (
     delete from cms_system_texts where label = new.label and lang = new.lang and site = new.site;
     insert into cms_system_texts (label, site, lang, description, content)
            values (new.label, new.site, new.lang, new.description, new.content);
