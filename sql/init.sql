@@ -1,11 +1,11 @@
 -- Wiking initial data --
 
-insert into languages (lang) values ('en');
-insert into config (site_title) values ('Wiking site');
+insert into cms_languages (lang) values ('en');
+insert into cms_config (site, site_title) values ('*', 'Wiking Site');
 
-insert into stylesheets (identifier, media, ord) values ('default.css', 'all', 10);
-insert into stylesheets (identifier, media, ord) values ('layout.css', 'screen', 20);
-insert into stylesheets (identifier, media, ord) values ('print.css', 'print', 30);
+insert into cms_stylesheets (identifier, media, ord) values ('default.css', 'all', 10);
+insert into cms_stylesheets (identifier, media, ord) values ('layout.css', 'screen', 20);
+insert into cms_stylesheets (identifier, media, ord) values ('print.css', 'print', 30);
 
 insert into roles (role_id, system, auto) values ('anyone', 't', 't');
 insert into roles (role_id, system, auto) values ('authenticated', 't', 't');
@@ -28,16 +28,17 @@ insert into role_sets (role_id, member_role_id) values ('admin', 'mail_admin');
 insert into role_sets (role_id, member_role_id) values ('admin', 'style_admin');
 
 insert into users (login, password, firstname, surname, nickname, user_, email, state, last_password_change)
-values ('admin', 'wiking', 'Wiking', 'Admin', 'Admin', 'Admin', '-', 'enabled', '2000-01-01 00:00:00');
+values ('admin', 'wiking', 'Wiking', 'Admin', 'Admin', 'Admin', '-', 'enabled', '2012-01-01 00:00');
 
-insert into role_members (role_id, uid) values ('admin', 1);
-insert into pages (lang, title, published, identifier, hidden, read_role_id, write_role_id, _content) 
-values ('en', 'Welcome', 't', 'index', 'f', 'anyone', 'content_admin',
+insert into role_members (role_id, uid) values ('admin', (select uid from users where login='admin'));
+insert into cms_v_pages (site, lang, title, published, identifier, menu_visibility, 
+                         read_role_id, write_role_id, _content) 
+values ('*', 'en', 'Welcome', 't', 'index', 'always', 'anyone', 'content_admin',
         'Your new Wiking site has been succesfully set up.' || E'\n\n' ||
 	'Enter the [/_wmi Wiking Management Interface] to manage the content.');
-update pages set content=_content;
+update cms_v_pages set content=_content;
 
-insert into themes ("name", foreground, background, border, heading_fg, heading_bg, heading_line,
+insert into cms_themes ("name", foreground, background, border, heading_fg, heading_bg, heading_line,
     frame_fg, frame_bg, frame_border, link, link_visited, link_hover, meta_fg, meta_bg, help,
     error_fg, error_bg, error_border, message_fg, message_bg, message_border,
     table_cell, table_cell2, top_fg, top_bg, top_border, highlight_bg, inactive_folder)
@@ -45,7 +46,7 @@ values ('Yellowstone', '#000', '#fff9ec', '#eda', '#420', '#fff0b0', '#eca', '#0
         '#ffde90', '#a30', '#a30', '#f40', null, null, '#553', null, null, null, null, null, null,
         '#fff', '#fff8f0', '#444', '#fff', '#db9', '#fb7', '#ed9');
 
-insert into themes ("name", foreground, background, border, heading_fg, heading_bg, heading_line, 
+insert into cms_themes ("name", foreground, background, border, heading_fg, heading_bg, heading_line, 
     frame_fg, frame_bg, frame_border, link, link_visited, link_hover, meta_fg, meta_bg, help, 
     error_fg, error_bg, error_border, message_fg, message_bg, message_border, 
     table_cell, table_cell2, top_fg, top_bg, top_border, highlight_bg, inactive_folder)
@@ -53,7 +54,7 @@ values ('Olive', '#000', '#fff', '#bcb', '#0b4a44', '#d2e0d8', null, '#000', '#e
         '#042', null, '#d72', null, null, null, null, '#fc9', '#fa8', null, '#dfd', '#aea',
         '#f8fbfa', '#f1f3f2', null, '#efebe7', '#8a9', '#fc8', '#d2e0d8');
 
-COPY countries (country) FROM stdin;
+COPY cms_countries (country) FROM stdin;
 AD
 AE
 AF

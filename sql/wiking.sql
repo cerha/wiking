@@ -3,12 +3,32 @@
 
 set client_min_messages=WARNING;
 
-create table languages (
-	lang_id serial primary key,
-	lang char(2) unique not null
+create table cms_languages (
+        lang_id serial primary key,
+        lang char(2) unique not null
 );
 
-create table countries (
+create table cms_config (
+        site text primary key,
+        site_title text,
+        site_subtitle text,
+        allow_login_panel boolean not null default true,
+        allow_registration boolean not null default true,
+        login_is_email boolean not null default false,
+        registration_expiration int,
+        force_https_login boolean not null default false,
+        https_port int,
+        smtp_server text,
+        webmaster_address text,
+        bug_report_address text,
+        default_sender_address text,
+        upload_limit int,
+        session_expiration int,
+        default_language char(2) references cms_languages(lang) on update cascade,
+        theme_id integer -- references cms_themes
+);
+
+create table cms_countries (
 	country_id serial primary key,
 	country char(2) unique not null
 );
@@ -61,7 +81,7 @@ create table users (
 	state text not null default 'new',
         last_password_change timestamp not null,
 	since timestamp not null default current_timestamp(0),
-	lang char(2) references languages(lang) on update cascade on delete set null,
+	lang char(2) references cms_languages(lang) on update cascade on delete set null,
         regexpire timestamp,
         regcode char(16),
         certauth boolean not null default false,
@@ -96,7 +116,7 @@ create table role_members (
        unique (role_id, uid)
 );
 
-create table session (
+create table cms_session (
        session_id serial primary key,
        uid int not null references users on delete cascade,
        session_key text not null,
@@ -104,9 +124,9 @@ create table session (
        unique (uid, session_key)
 );
 
-create table _session_log (
+create table cms_session_log (
        log_id serial primary key,
-       session_id int references session on delete set null,
+       session_id int references cms_session on delete set null,
        uid int references users on delete cascade, -- may be null for invalid logins
        login varchar(32) not null, -- usefull when uid is null or login changes
        success bool not null,
@@ -117,11 +137,11 @@ create table _session_log (
        referer text
 );
 
-create or replace rule session_delete as on delete to session do (
-       update _session_log set end_time=old.last_access WHERE session_id=old.session_id;
+create or replace rule cms_session_delete as on delete to cms_session do (
+       update cms_session_log set end_time=old.last_access WHERE session_id=old.session_id;
 );
 
-create view session_log as select 
+create or replace view cms_v_session_log as select
        l.log_id,
        l.session_id,
        l.uid,
@@ -133,13 +153,13 @@ create view session_log as select
        l.ip_address,
        l.user_agent,
        l.referer
-from _session_log l left outer join session s using (session_id);
+from cms_session_log l left outer join cms_session s using (session_id);
 
-create or replace rule session_log_insert as
-  on insert to session_log do instead (
-     insert into _session_log (session_id, uid, login, success, 
-     	    	 	       start_time, ip_address, user_agent, referer)
-            values (new.session_id, new.uid, new.login, new.success, 
+create or replace rule cms_v_session_log_insert as
+  on insert to cms_v_session_log do instead (
+     insert into cms_session_log (session_id, uid, login, success,
+     	    	 	          start_time, ip_address, user_agent, referer)
+            values (new.session_id, new.uid, new.login, new.success,
 	    	    new.start_time, new.ip_address, new.user_agent, new.referer)
             returning log_id, session_id, uid, login, success, NULL::boolean,
 	    	      start_time, NULL::interval, ip_address, user_agent, referer;
@@ -147,36 +167,25 @@ create or replace rule session_log_insert as
 
 -------------------------------------------------------------------------------
 
-create table _mapping (
-	mapping_id serial primary key,
-	identifier varchar(32) unique not null,
-	parent integer references _mapping,
+create table cms_pages (
+       	page_id serial primary key,
+	site text not null references cms_config(site) on update cascade on delete cascade,
+	identifier varchar(32) not null,
+	parent integer references cms_pages,
 	modname text,
 	menu_visibility text not null,
 	foldable boolean,
 	ord int not null,
 	tree_order text,
 	read_role_id name not null default 'anyone' references roles on update cascade,
-	write_role_id name not null default 'content_admin' references roles on update cascade on delete set default
+	write_role_id name not null default 'content_admin' references roles on update cascade on delete set default,
+	unique (identifier, site)
 );
-create unique index _mapping_unique_tree_order on _mapping (ord, coalesce(parent, 0));
+create unique index cms_pages_unique_tree_order on cms_pages (ord, coalesce(parent, 0), site);
 
-create or replace function _mapping_tree_order(mapping_id int) returns text as $$
-  select
-    case when $1 is null then '' else
-      (select _mapping_tree_order(parent) || '.' || to_char(coalesce(ord, 999999), 'FM000000')
-       from _mapping where mapping_id=$1)
-    end
-  as result
-$$ language sql;
-
-create or replace view mapping as select * from _mapping;
-
--------------------------------------------------------------------------------
-
-create table _pages (
-       mapping_id integer not null references _mapping on delete cascade,
-       lang char(2) not null references languages(lang) on update cascade,
+create table cms_page_texts (
+       page_id integer not null references cms_pages on delete cascade,
+       lang char(2) not null references cms_languages(lang) on update cascade,
        published boolean not null default true,
        title text not null,
        description text,
@@ -184,52 +193,65 @@ create table _pages (
        _title text,
        _description text,
        _content text,
-       primary key (mapping_id, lang)
+       primary key (page_id, lang)
 );
 
-create or replace view pages as
-select m.mapping_id ||'.'|| l.lang as page_id, l.lang,
-       m.mapping_id, m.identifier, m.parent, m.modname,
-       m.menu_visility, m.foldable, m.ord, m.tree_order, m.read_role_id, m.write_role_id,
-       coalesce(p.published, false) as published,
-       coalesce(p.title, m.identifier) as title_or_identifier,
-       p.title, p.description, p.content, p._title, p._description, p._content
-from _mapping m cross join languages l
-     left outer join _pages p using (mapping_id, lang);
+create or replace function cms_page_tree_order(page_id int) returns text as $$
+  select
+    case when $1 is null then '' else
+      (select cms_page_tree_order(parent) || '.' || to_char(coalesce(ord, 999999), 'FM000000')
+       from cms_pages where page_id=$1)
+    end
+  as result
+$$ language sql;
 
-create or replace rule pages_insert as
-  on insert to pages do instead (
-     insert into _mapping (identifier, parent, modname, read_role_id, write_role_id, menu_visility, foldable, ord)
-     values (new.identifier, new.parent, new.modname, new.read_role_id, new.write_role_id, new.menu_visility, new.foldable,
-             coalesce(new.ord, (select max(ord)+100 from _mapping
+create or replace view cms_v_pages as
+select p.page_id ||'.'|| l.lang as page_key, p.site, l.lang,
+       p.page_id, p.identifier, p.parent, p.modname,
+       p.menu_visibility, p.foldable, p.ord, p.tree_order,
+       p.read_role_id, p.write_role_id,
+       coalesce(t.published, false) as published,
+       coalesce(t.title, p.identifier) as title_or_identifier,
+       t.title, t.description, t.content, t._title, t._description, t._content
+from cms_pages p cross join cms_languages l
+     left outer join cms_page_texts t using (page_id, lang);
+
+create or replace rule cms_v_pages_insert as
+  on insert to cms_v_pages do instead (
+     insert into cms_pages (site, identifier, parent, modname, read_role_id, write_role_id,
+                            menu_visibility, foldable, ord)
+     values (new.site, new.identifier, new.parent, new.modname,
+             new.read_role_id, new.write_role_id, new.menu_visibility, new.foldable,
+             coalesce(new.ord, (select max(ord)+100 from cms_pages
                                 where coalesce(parent, 0)=coalesce(new.parent, 0)), 100));
-     update _mapping set tree_order = _mapping_tree_order(mapping_id);
-     insert into _pages (mapping_id, lang, published,
+     update cms_pages set tree_order = cms_page_tree_order(page_id);
+     insert into cms_page_texts (page_id, lang, published,
                          title, description, content, _title, _description, _content)
-     select (select mapping_id from _mapping where identifier=new.identifier),
+     select (select page_id from cms_pages where identifier=new.identifier),
             new.lang, new.published,
             new.title, new.description, new.content, new._title, new._description, new._content
-     returning mapping_id ||'.'|| lang,
-       lang, mapping_id, null::varchar(32), null::int, null::text, null::text, null::boolean,
+     returning page_id ||'.'|| lang, null::text,
+       lang, page_id, null::varchar(32), null::int, null::text, null::text, null::boolean,
        null::int, null::text, null::name, null::name,
        published, title, title, description, content, _title,
        _description, _content
 );
 
-create or replace rule pages_update as
-  on update to pages do instead (
-    update _mapping set
+create or replace rule cms_v_pages_update as
+  on update to cms_v_pages do instead (
+    update cms_pages set
+        site = new.site,
         identifier = new.identifier,
         parent = new.parent,
         modname = new.modname,
         read_role_id = new.read_role_id,
         write_role_id = new.write_role_id,
-        menu_visility = new.menu_visility,
+        menu_visibility = new.menu_visibility,
         foldable = new.foldable,
         ord = new.ord
-    where _mapping.mapping_id = old.mapping_id;
-    update _mapping set tree_order = _mapping_tree_order(mapping_id);
-    update _pages set
+    where cms_pages.page_id = old.page_id;
+    update cms_pages set tree_order = cms_page_tree_order(page_id);
+    update cms_page_texts set
         published = new.published,
         title = new.title,
         description = new.description,
@@ -237,29 +259,29 @@ create or replace rule pages_update as
         _title = new._title,
         _description = new._description,
         _content = new._content
-    where mapping_id = old.mapping_id and lang = new.lang;
-    insert into _pages (mapping_id, lang, published,
+    where page_id = old.page_id and lang = new.lang;
+    insert into cms_page_texts (page_id, lang, published,
                         title, description, content, _title, _description, _content)
-           select old.mapping_id, new.lang, new.published,
+           select old.page_id, new.lang, new.published,
                   new.title, new.description, new.content,
                   new._title, new._description, new._content
-           where new.lang not in (select lang from _pages where mapping_id=old.mapping_id)
+           where new.lang not in (select lang from cms_page_texts where page_id=old.page_id)
                  and (new.title is not null or new.description is not null
                       or new.content is not null
                       or new._title is not null or new._description is not null
                       or new._content is not null);
 );
 
-create or replace rule pages_delete as
-  on delete to pages do instead (
-     delete from _mapping where mapping_id = old.mapping_id;
+create or replace rule cms_v_pages_delete as
+  on delete to cms_v_pages do instead (
+     delete from cms_pages where page_id = old.page_id;
 );
 
 -------------------------------------------------------------------------------
 
-create table _attachments (
+create table cms_page_attachments (
        attachment_id serial primary key,
-       mapping_id int not null references _mapping on delete cascade,
+       page_id int not null references cms_pages on delete cascade,
        filename varchar(64) not null,
        mime_type text not null,
        bytesize text not null,
@@ -275,51 +297,51 @@ create table _attachments (
        width int,
        height int,
        "timestamp" timestamp,
-       unique (mapping_id, filename)
+       unique (filename, page_id)
 );
 
-create table _attachment_descr (
-       attachment_id int not null references _attachments on delete cascade initially deferred,
-       lang char(2) not null references languages(lang) on update cascade on delete cascade,
+create table cms_page_attachment_texts (
+       attachment_id int not null references cms_page_attachments on delete cascade initially deferred,
+       lang char(2) not null references cms_languages(lang) on update cascade on delete cascade,
        title text,
        description text,
        unique (attachment_id, lang)
 );
 
-create or replace view attachments
-as select a.attachment_id  ||'.'|| l.lang as attachment_variant_id, l.lang,
-  a.attachment_id, a.mapping_id, d.title, d.description,
+create or replace view cms_v_page_attachments
+as select a.attachment_id  ||'.'|| t.lang as attachment_key, t.lang,
+  a.attachment_id, a.page_id, t.title, t.description,
   a.filename, a.mime_type, a.bytesize,
   a.image, a.thumbnail, a.thumbnail_size, a.thumbnail_width, a.thumbnail_height,
   a.in_gallery, a.listed, a.author, a."location", a.width, a.height, a."timestamp"
-from _attachments a JOIN _mapping m using (mapping_id) cross join languages l
-     left outer join _attachment_descr d using (attachment_id, lang);
+from cms_page_attachments a cross join cms_languages
+     left outer join cms_page_attachment_texts t using (attachment_id, lang);
 
-create or replace rule attachments_insert as
- on insert to attachments do instead (
-    insert into _attachment_descr (attachment_id, lang, title, description)
+create or replace rule cms_v_page_attachments_insert as
+ on insert to cms_v_page_attachments do instead (
+    insert into cms_page_attachment_texts (attachment_id, lang, title, description)
            select new.attachment_id, new.lang, new.title, new.description
-           where new.title IS not null OR new.description IS not null;
-    insert into _attachments (attachment_id, mapping_id, filename, mime_type, bytesize,
-                              image, thumbnail, thumbnail_size, thumbnail_width, thumbnail_height,
-                              in_gallery, listed, author, "location", width, height, "timestamp")
-           VALUES (new.attachment_id, new.mapping_id, new.filename, new.mime_type,
+           where new.title is not null OR new.description is not null;
+    insert into cms_page_attachments (attachment_id, page_id, filename, mime_type, bytesize, image,
+                                 thumbnail, thumbnail_size, thumbnail_width, thumbnail_height,
+                                 in_gallery, listed, author, "location", width, height, "timestamp")
+           values (new.attachment_id, new.page_id, new.filename, new.mime_type,
                    new.bytesize, new.image, new.thumbnail, new.thumbnail_size,
                    new.thumbnail_width, new.thumbnail_height, new.in_gallery, new.listed,
                    new.author, new."location", new.width, new.height, new."timestamp")
            returning
-             attachment_id ||'.'|| (select max(lang) from _attachment_descr
-                                    where attachment_id=attachment_id),  NULL::char(2),
-             attachment_id, mapping_id, NULL::text, NULL::text,
+             attachment_id ||'.'|| (select max(lang) from cms_page_attachment_texts
+                                    where attachment_id=attachment_id), null::char(2),
+             attachment_id, page_id, null::text, null::text,
              filename, mime_type, bytesize, image, thumbnail,
              thumbnail_size, thumbnail_width, thumbnail_height, in_gallery, listed,
              author, "location", width, height, "timestamp"
 );
 
-create or replace rule attachments_update as
- on UPDATE to attachments do instead (
-    UPDATE _attachments SET
-           mapping_id = new.mapping_id,
+create or replace rule cms_v_page_attachments_update as
+ on update to cms_v_page_attachments do instead (
+    update cms_page_attachments set
+           page_id = new.page_id,
            filename = new.filename,
            mime_type = new.mime_type,
            bytesize = new.bytesize,
@@ -336,114 +358,113 @@ create or replace rule attachments_update as
            height = new.height,
 	   "timestamp" = new."timestamp"
            where attachment_id = old.attachment_id;
-    UPDATE _attachment_descr SET title=new.title, description=new.description
+    update cms_page_attachment_texts set
+           title=new.title,
+           description=new.description
            where attachment_id = old.attachment_id and lang = old.lang;
-    insert into _attachment_descr (attachment_id, lang, title, description)
+    insert into cms_page_attachment_texts (attachment_id, lang, title, description)
            select new.attachment_id, new.lang, new.title, new.description
-           where old.attachment_id NOT IN
-             (select attachment_id from _attachment_descr where lang=old.lang);
+           where old.attachment_id not in
+             (select attachment_id from cms_page_attachment_texts where lang=old.lang);
 );
 
-create or replace rule attachments_delete as
-  on delete to attachments do instead (
-     delete from _attachments where attachment_id = old.attachment_id;
+create or replace rule cms_v_page_attachments_delete as
+  on delete to cms_v_page_attachments do instead (
+     delete from cms_page_attachments where attachment_id = old.attachment_id;
 );
 
 -------------------------------------------------------------------------------
 
-create table news (
+create table cms_news (
 	news_id serial primary key,
-	lang char(2) not null references languages(lang) on update cascade,
-	mapping_id int not null references _mapping on delete cascade,
-	"timestamp" timestamp not null default now(),
-	title text not null,
+	site text not null references cms_config(site) on update cascade on delete cascade,
+	page_id int not null references cms_pages on delete cascade,
 	author int not null references users,
+	"timestamp" timestamp not null default now(),
+	lang char(2) not null references cms_languages(lang) on update cascade,
+	title text not null,
 	content text not null
 );
 
--------------------------------------------------------------------------------
-
-create table planner (
+create table cms_planner (
 	planner_id serial primary key,
-	lang char(2) not null references languages(lang) on update cascade,
-	mapping_id int not null references _mapping on delete cascade,
-	start_date date not null,
-	end_date date,
-	title text not null,
+	site text not null references cms_config(site) on update cascade on delete cascade,
+	page_id int not null references cms_pages on delete cascade,
 	author int not null references users,
 	"timestamp" timestamp not null default now(),
+	start_date date not null,
+	end_date date,
+	lang char(2) not null references cms_languages(lang) on update cascade,
+	title text not null,
 	content text not null,
-	UNIQUE (start_date, lang, title)
+	unique (title, site, start_date, lang)
 );
 
--------------------------------------------------------------------------------
-
-create table _panels (
+create table cms_panels (
 	panel_id serial primary key,
-	lang char(2) not null references languages(lang) on update cascade,
-	identifier varchar(32) UNIQUE,
+	site text not null references cms_config(site) on update cascade on delete cascade,
+	lang char(2) not null references cms_languages(lang) on update cascade,
+	identifier varchar(32),
 	title text not null,
 	ord int,
-	mapping_id integer references _mapping on delete set null,
+	page_id integer references cms_pages on delete set null,
 	size int,
 	content text,
 	_content text,
 	published boolean not null default false,
-	UNIQUE (identifier, lang)
+	unique (identifier, site, lang)
 );
 
-create or replace view panels as
-select _panels.*, _mapping.modname, _mapping.read_role_id
-from _panels
-     left outer join _mapping using (mapping_id)
-     left outer join _pages using (mapping_id, lang);
+create or replace view cms_v_panels as
+select cms_panels.*, cms_pages.modname, cms_pages.read_role_id
+from cms_panels left outer join cms_pages using (page_id);
 
-create or replace rule panels_insert as
-  on insert to panels do instead (
-     insert into _panels
-        (lang, identifier, title, ord, mapping_id, size, content, _content, published)
-     VALUES
-        (new.lang, new.identifier, new.title, new.ord, new.mapping_id, new.size,
+create or replace rule cms_v_panels_insert as
+  on insert to cms_v_panels do instead (
+     insert into cms_panels
+        (site, lang, identifier, title, ord, page_id, size, content, _content, published)
+     values
+        (new.site, new.lang, new.identifier, new.title, new.ord, new.page_id, new.size,
 	 new.content, new._content, new.published)
 );
 
-create or replace rule panels_update as
-  on UPDATE to panels do instead (
-    UPDATE _panels SET
-	lang = new.lang,
-	identifier = new.identifier,
-	title = new.title,
-	ord = new.ord,
-	mapping_id = new.mapping_id,
-	size = new.size,
-	content = new.content,
-	_content = new._content,
-	published = new.published
-    where _panels.panel_id = old.panel_id;
+create or replace rule cms_v_panels_update as
+  on update to cms_v_panels do instead (
+    update cms_panels set
+      site = new.site,
+      lang = new.lang,
+      identifier = new.identifier,
+      title = new.title,
+      ord = new.ord,
+      page_id = new.page_id,
+      size = new.size,
+      content = new.content,
+      _content = new._content,
+      published = new.published
+    where panel_id = old.panel_id;
 );
 
-create or replace rule panels_delete as
-  on delete to panels do instead (
-     delete from _panels
-     where _panels.panel_id = old.panel_id;
+create or replace rule cms_v_panels_delete as
+  on delete to cms_v_panels do instead (
+     delete from cms_panels where panel_id = old.panel_id;
 );
 
 -------------------------------------------------------------------------------
 
-create table stylesheets (
+create table cms_stylesheets (
 	stylesheet_id serial primary key,
-	identifier varchar(32) UNIQUE not null,
+	site text references cms_config(site) on update cascade on delete cascade,
+	identifier varchar(32) not null,
 	active boolean not null default true,
 	media varchar(12) not null default 'all',
 	scope text,
 	description text,
 	content text,
-        ord integer
+        ord integer,
+	unique (identifier, site)
 );
 
--------------------------------------------------------------------------------
-
-create table themes (
+create table cms_themes (
 	theme_id serial primary key,
 	name text UNIQUE not null,	
         foreground varchar(7),
@@ -476,61 +497,73 @@ create table themes (
         inactive_folder varchar(7)
 );
 
+alter table cms_config add constraint cms_config_theme_id_fkey foreign key (theme_id) references cms_themes;
+
 -------------------------------------------------------------------------------
 
-create table text_labels (
-         label name primary key
+create table cms_system_text_labels (
+        label name not null,
+        site text not null references cms_config(site) on update cascade on delete cascade,
+	primary key (label, site)
 );
 
-create or replace function add_text_label (_label name) returns void as $$
+create or replace function cms_add_text_label (_label name, _site text) returns void as $$
 declare
-  already_present int := count(*) from text_labels where label = _label;
+  already_present int := count(*) from cms_system_text_labels
+                         where label = _label and site = _site;
 begin
   if already_present = 0 then
-    insert into text_labels (label) values (_label);
+    insert into cms_system_text_labels (label, site) values (_label, _site);
   end if;
 end
 $$ language plpgsql;
 
-create table _texts (
-        label name not null references text_labels,
-        lang char(2) not null references languages(lang) on update cascade on delete cascade,
+create table cms_system_texts (
+        label name not null,
+        site text not null,
+        lang char(2) not null references cms_languages(lang) on update cascade on delete cascade,
         description text default '',
         content text default '',
-        primary key (label, lang)
+        primary key (label, site, lang),
+	foreign key (label, site) references cms_system_text_labels (label, site) on update cascade on delete cascade
 );
 
-create or replace view texts as
+create or replace view cms_v_system_texts as
 select label || '@' || lang as text_id,
        label,
+       site,
        lang,
        coalesce(description, '') as description,
        coalesce(content, '') as content
-from text_labels cross join languages left outer join _texts using (label, lang);
+from cms_system_text_labels cross join cms_languages
+     left outer join cms_system_texts using (label, site, lang);
 
-create or replace rule texts_update as
-  on update to texts do instead (
-    delete from _texts where label = new.label and lang = new.lang;
-    insert into _texts values (new.label, new.lang, new.description, new.content);
+create or replace rule cms_v_system_texts_update as
+  on update to cms_system_texts do instead (
+    delete from cms_system_texts where label = new.label and lang = new.lang and site = new.site;
+    insert into cms_system_texts (label, site, lang, description, content)
+           values (new.label, new.site, new.lang, new.description, new.content);
 );
 
-create table email_labels (
-         label name primary key
+-------------------------------------------------------------------------------
+
+create table cms_email_labels (
+        label name primary key
 );
 
-create or replace function add_email_label (_label name) returns void as $$
+create or replace function cms_add_email_label (_label name) returns void as $$
 declare
-  already_present int := count(*) from email_labels where label = _label;
+  already_present int := count(*) from cms_email_labels where label = _label;
 begin
   if already_present = 0 then
-    insert into email_labels (label) values (_label);
+    insert into cms_email_labels (label) values (_label);
   end if;
 end
 $$ language plpgsql;
 
-create table _emails (
-        label name not null references email_labels,
-        lang char(2) not null references languages(lang) on update cascade on delete cascade,
+create table cms_emails (
+        label name not null references cms_email_labels,
+        lang char(2) not null references cms_languages(lang) on update cascade on delete cascade,
         description text,
         subject text,
         cc text,
@@ -538,7 +571,7 @@ create table _emails (
         primary key (label, lang)
 );
 
-create or replace view emails as
+create or replace view cms_v_emails as
 select label || '@' || lang as text_id,
        label,
        lang,
@@ -546,32 +579,32 @@ select label || '@' || lang as text_id,
        coalesce(subject, '') as subject,
        coalesce(cc, '') as cc,
        coalesce(content, '') as content
-from email_labels cross join languages left outer join _emails using (label, lang);
+from cms_email_labels cross join cms_languages left outer join cms_emails using (label, lang);
 
-create or replace rule emails_insert as
-  on insert to emails do instead (
-    select add_email_label(new.label);
-    insert into _emails values (new.label, new.lang, new.description, new.subject, new.cc, new.content);
+create or replace rule cms_v_emails_insert as
+  on insert to cms_v_emails do instead (
+    select cms_add_email_label(new.label);
+    insert into cms_emails values (new.label, new.lang, new.description, new.subject, new.cc, new.content);
 );
-create or replace rule emails_update as
-  on update to emails do instead (
-    delete from _emails where label = new.label and lang = new.lang;
-    insert into _emails values (new.label, new.lang, new.description, new.subject, new.cc, new.content);
+create or replace rule cms_v_emails_update as
+  on update to cms_v_emails do instead (
+    delete from cms_emails where label = new.label and lang = new.lang;
+    insert into cms_emails values (new.label, new.lang, new.description, new.subject, new.cc, new.content);
 );
-create or replace rule emails_delete as
-  on delete to emails do instead (
-    delete from _emails where label = old.label;
-    delete from email_labels where label = old.label;
+create or replace rule cms_v_emails_delete as
+  on delete to cms_v_emails do instead (
+    delete from cms_emails where label = old.label;
+    delete from cms_email_labels where label = old.label;
 );
 
-create table email_attachments (
+create table cms_email_attachments (
        attachment_id serial primary key,
-       label name not null references email_labels on delete cascade,
+       label name not null references cms_email_labels on delete cascade,
        filename varchar(64) not null,
        mime_type text not null
 );
 
-create table email_spool (
+create table cms_email_spool (
        id serial primary key,
        sender_address text,
        role_id name references roles on update cascade on delete cascade, -- recipient role, if NULL then all users
@@ -580,30 +613,6 @@ create table email_spool (
        date timestamp default now (), -- time of insertion
        pid int, -- PID of the process currently sending the mails
        finished boolean default false -- set TRUE after the mail was successfully sent
-);
-
--------------------------------------------------------------------------------
-
-create table config (
-        config_id int primary key default 0 check (config_id = 0),
-        site_title text,
-        site_subtitle text,
-        allow_login_panel boolean not null default true,
-        allow_registration boolean not null default true,
-        login_is_email boolean not null default false,
-        registration_expiration int,
-        force_https_login boolean not null default false,
-        https_port int,
-        smtp_server text,
-        webmaster_address text,
-        bug_report_address text,
-        default_sender_address text,
-        upload_limit int,
-        session_expiration int,
-	default_language char(2) references languages(lang) on update cascade,
-        certificate_authentication boolean not null default false,
-        certificate_expiration int,
-        theme_id integer references themes
 );
 
 -------------------------------------------------------------------------------

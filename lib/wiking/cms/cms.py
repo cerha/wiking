@@ -554,6 +554,7 @@ class ActivationForm(lcg.Content):
 class Session(PytisModule, wiking.Session):
     """Implement Wiking session management by storing session information in database."""
     class Spec(Specification):
+        table = 'cms_session'
         fields = [Field(_id) for _id in ('session_id', 'uid', 'session_key', 'last_access')]
 
     def init(self, req, user, session_key):
@@ -648,8 +649,9 @@ class Config(SettingsManagementModule):
         # Translators: Website heading and menu item
         title = _("Basic Configuration")
         help = _("Edit site configuration.")
+        table = 'cms_config'
         fields = (
-            _Field('config_id'),
+            _Field('site'),
             _Field('theme_id', codebook='Themes'),
             _Field('site_title', width=24),
             _Field('site_subtitle', width=50),
@@ -675,7 +677,7 @@ class Config(SettingsManagementModule):
 
     def _resolve(self, req):
         # We always work with just one record.
-        return self._data.get_row(config_id=0)
+        return self._data.get_row(site='*')
     
     def _default_action(self, req, **kwargs):
         return 'update'
@@ -686,7 +688,7 @@ class Config(SettingsManagementModule):
     
     def configure(self, req):
         # Called by the application prior to handling any request.
-        row = self._data.get_row(config_id=0)
+        row = self._data.get_row(site='*')
         for f in self._view.fields():
             f.configure(row[f.id()].value())
         theme_id = row['theme_id'].value()
@@ -697,7 +699,7 @@ class Config(SettingsManagementModule):
             cfg.theme = wiking.module('Themes').theme(theme_id)
 
     def set_theme(self, req, theme_id):
-        row = self._data.get_row(config_id=0)
+        row = self._data.get_row(site='*')
         record = self._record(req, row)
         try:
             record.update(theme_id=theme_id)
@@ -706,27 +708,29 @@ class Config(SettingsManagementModule):
     
 
 class PageTitles(ContentManagementModule):
-    """Simplified version of the 'Pages' module for 'Mapping' enumerator.
+    """Simplified version of the 'Pages' module for 'PageStructure' enumerator.
 
-    This module is needed to prevent recursive enumerator definition in 'Mapping'.
+    This module is needed to prevent recursive enumerator definition in 'PageStructure'.
     
     """
     class Spec(Specification):
-        table = 'pages'
-        fields = [Field(_f) for _f in ('page_id', 'mapping_id', 'lang', 'title')]
+        table = 'cms_v_pages'
+        fields = [Field(_f) for _f in ('page_key', 'page_id', 'lang', 'title')]
 
         
-class Mapping(ContentManagementModule):
+class PageStructure(ContentManagementModule):
     """Provide a set of available URIs -- page identifiers bound to particular pages.
 
-    This mapping contains unique record for each page identifier.  Pages define the content for
-    each mapping identifier in one particular languages.  This module is needed for the reference
-    integrity specification in 'Pages', 'Attachments' and other modules, where records are related
-    to (language independent) mapping items.
+    This module contains a unique record for each page identifier, while
+    'Pages' define the content for each page identifier in one particular
+    language.  This module is needed for the reference integrity specification
+    in 'Pages', 'Attachments' and other modules, where records are related to
+    (language independent) page structure nodes.
     
     """
     class Spec(Specification):
-        fields = (Field('mapping_id', enumerator='PageTitles'),
+        table = 'cms_pages'
+        fields = (Field('page_id', enumerator='PageTitles'),
                   Field('identifier'),
                   Field('modname'),
                   Field('tree_order'),
@@ -735,8 +739,8 @@ class Mapping(ContentManagementModule):
                   )
         sorting = (('tree_order', ASC), ('identifier', ASC),)
         def _translate(self, row):
-            enumerator = row['mapping_id'].type().enumerator()
-            condition = pd.AND(pd.EQ('mapping_id', row['mapping_id']),
+            enumerator = row['page_id'].type().enumerator()
+            condition = pd.AND(pd.EQ('page_id', row['page_id']),
                                pd.NE('title', pd.Value(pd.String(), None)))
             indent = '   ' * (len(row['tree_order'].value().split('.')) - 2)
             translations = dict([(r['lang'].value().lower(), indent + r['title'].value())
@@ -761,6 +765,7 @@ class Panels(ContentManagementModule, Publishable):
         title = _("Panels")
         help = _(u"Manage panels – the small windows shown by the side of "
                  "every page.")
+        table = 'cms_v_panels'
         fields = (
             Field('panel_id', width=5, editable=NEVER),
             Field('lang', _("Language"), codebook='Languages', editable=ONCE,
@@ -777,7 +782,7 @@ class Panels(ContentManagementModule, Publishable):
             Field('ord', _("Order"), width=5,
                   descr=_("Number denoting the order of the panel on the page.")),
             # Translators: List items can be news, webpages, names of users. Intentionally general.
-            Field('mapping_id', _("List items"), width=5, not_null=False, codebook='Mapping',
+            Field('page_id', _("List items"), width=5, not_null=False, codebook='PageStructure',
                   descr=_("The items of the extension module used by the selected page will be "
                           "shown by the panel.  Leave blank for a text content panel.")),
             Field('modname'),
@@ -801,7 +806,7 @@ class Panels(ContentManagementModule, Publishable):
             )
         sorting = (('ord', ASC),)
         columns = ('title', 'identifier', 'ord', 'modtitle', 'size', 'published', 'content')
-        layout = ('title', 'identifier', 'ord', 'mapping_id', 'size', 'content', 'published')
+        layout = ('title', 'identifier', 'ord', 'page_id', 'size', 'content', 'published')
     _LIST_BY_LANGUAGE = True
 
     def panels(self, req, lang):
@@ -843,7 +848,7 @@ class Languages(SettingsManagementModule):
         # Translators: Heading and menu item for language configuration section.
         title = _("Languages")
         help = _("Manage available languages.")
-        table = 'languages'
+        table = 'cms_languages'
         fields = (
             Field('lang_id'),
             # Translators: Language code, e.g. 'cs', 'sk' etc.
@@ -887,7 +892,7 @@ class Countries(SettingsManagementModule):
     class Spec(Specification):
         # Translators: Heading and menu item for language configuration section.
         title = _("Countries")
-        table = 'countries'
+        table = 'cms_countries'
         fields = (
             Field('country_id'),
             # Translators: Language code, e.g. 'cs', 'sk' etc.
@@ -980,6 +985,7 @@ class Themes(StyleManagementModule):
         title = _("Color Themes")
         # Translators: Describes more precisely the meaing of "Color Themes" section.
         help = _("Manage available color themes.")
+        table = 'cms_themes'
         def fields(self):
             fields = [Field('theme_id'),
                       Field('name', _("Name"), nocopy=True),
@@ -1057,9 +1063,10 @@ class Pages(ContentManagementModule):
         # Translators: Heading and menu item. Meaning web pages.
         title = _("Pages")
         help = _("Manage available pages and their content.")
+        table = 'cms_v_pages'
         def fields(self): return (
+            Field('page_key'),
             Field('page_id'),
-            Field('mapping_id'),
             Field('identifier', _("Identifier"), width=20, fixed=True, editable=ONCE,
                   type=pd.RegexString(maxlen=32, not_null=True, regex='^[a-zA-Z][0-9a-zA-Z_-]*$'),
                   descr=_("The identifier may be used to refer to this page from outside and also "
@@ -1088,7 +1095,7 @@ class Pages(ContentManagementModule):
             # Translators: "Parent item" has the meaning of hierarchical position.  More precise
             # term might be "Superordinate item" but doesn't sound that nice in English.  The term
             # "item" represents a page, but also a menu item.
-            Field('parent', _("Parent item"), codebook='Mapping', not_null=False,
+            Field('parent', _("Parent item"), codebook='PageStructure', not_null=False,
                   descr=_("Select the superordinate item in page hierarchy.  Leave blank for "
                           "a top-level page.")),
             # Translators: Configuration option determining whether the page is published or not
@@ -1183,13 +1190,13 @@ class Pages(ContentManagementModule):
             Action('help', _("Help")),
             )
         # Translators: Noun. Such as e-mail attachments (here attachments for a webpage).
-        bindings = (Binding('attachments', _("Attachments"), 'Attachments', 'mapping_id'),)
+        bindings = (Binding('attachments', _("Attachments"), 'Attachments', 'page_id'),)
 
     _REFERER = 'identifier'
     _EXCEPTION_MATCHERS = (
-        ('duplicate key (value )?violates unique constraint "_pages_mapping_id_key"',
+        ('duplicate key (value )?violates unique constraint "_pages_page_id_key"',
          _("The page already exists in given language.")),
-        ('duplicate key (value )?violates unique constraint "_mapping_unique_tree_(?P<id>ord)er"',
+        ('duplicate key (value )?violates unique constraint "cms_pages_unique_tree_(?P<id>ord)er"',
          _("Duplicate menu order at this level of hierarchy.")),) + \
          ContentManagementModule._EXCEPTION_MATCHERS
     _LIST_BY_LANGUAGE = True
@@ -1353,9 +1360,9 @@ class Pages(ContentManagementModule):
         children = {None: []}
         translations = {}
         def item(row):
-            mapping_id = row['mapping_id'].value()
+            page_id = row['page_id'].value()
             identifier = str(row['identifier'].value())
-            titles, descriptions = translations[mapping_id]
+            titles, descriptions = translations[page_id]
             modname = row['modname'].value()
             if modname is not None:
                 from pytis.util import ResolverError
@@ -1368,7 +1375,7 @@ class Pages(ContentManagementModule):
                     submenu = list(mod.submenu(req))
             else:
                 submenu = []
-            submenu += [item(r) for r in children.get(mapping_id, ())]
+            submenu += [item(r) for r in children.get(page_id, ())]
             return MenuItem(identifier,
                             title=lcg.SelfTranslatableText(identifier, translations=titles),
                             descr=lcg.SelfTranslatableText('', translations=descriptions),
@@ -1377,14 +1384,14 @@ class Pages(ContentManagementModule):
                             variants=titles.keys(),
                             submenu=submenu)
         for row in self._data.get_rows(sorting=self._sorting, published=True):
-            mapping_id = row['mapping_id'].value()
-            if mapping_id not in translations:
+            page_id = row['page_id'].value()
+            if page_id not in translations:
                 parent = row['parent'].value()
                 if parent not in children:
                     children[parent] = []
                 children[parent].append(row)
-                translations[mapping_id] = ({}, {})
-            titles, descriptions = translations[mapping_id]
+                translations[page_id] = ({}, {})
+            titles, descriptions = translations[page_id]
             lang = str(row['lang'].value())
             titles[lang] = row['title_or_identifier'].value()
             if row['description'].value() is not None:
@@ -1440,7 +1447,7 @@ class Pages(ContentManagementModule):
         attachments_list = []
         attachment_base_uri = '/'+ record['identifier'].export() + '/attachments'
         needs_lightbox = False
-        for a in wiking.module('Attachments').attachments(req, record['mapping_id'].value(),
+        for a in wiking.module('Attachments').attachments(req, record['page_id'].value(),
                                                           record['lang'].value()):
             uri = req.make_uri(attachment_base_uri+'/'+a.filename)
             kwargs = {}
@@ -1487,7 +1494,7 @@ class Pages(ContentManagementModule):
                                        anchor='attachment-automatic-list')) # Prevent dupl. anchor.
         if not content:
             rows = self._data.get_rows(condition=\
-                                       pd.AND(pd.EQ('parent', record['mapping_id']),
+                                       pd.AND(pd.EQ('parent', record['page_id']),
                                               pd.NE('menu_visibility', pd.sval('never')),
                                               pd.EQ('published', pd.bval(True))),
                                        sorting=self._sorting)
@@ -1532,7 +1539,7 @@ class Pages(ContentManagementModule):
             cond = pd.AND(pd.NE('_content', pd.Value(pd.String(), None)),
                           pd.NE('lang', record['lang']))
             langs = [str(row['lang'].value()) for row in
-                     self._data.get_rows(mapping_id=record['mapping_id'].value(), condition=cond)]
+                     self._data.get_rows(page_id=record['page_id'].value(), condition=cond)]
             if not langs:
                 req.message(_("Content for this page does not exist in any language."),
                             type=req.ERROR)
@@ -1540,10 +1547,10 @@ class Pages(ContentManagementModule):
             d = pw.SelectionDialog('src_lang', _("Choose source language"),
                                    [(lang, lcg.language_name(lang) or lang) for lang in langs],
                                    action='translate', hidden=\
-                                   [(id, record[id].value()) for id in ('mapping_id', 'lang')])
+                                   [(id, record[id].value()) for id in ('page_id', 'lang')])
             return self._document(req, d, record, subtitle=_("Translate"))
         else:
-            row = self._data.get_row(mapping_id=record['mapping_id'].value(),
+            row = self._data.get_row(page_id=record['page_id'].value(),
                                      lang=str(req.param('src_lang')))
             for k in ('_content','title'):
                 req.set_param(k, row[k].value())
@@ -1608,12 +1615,13 @@ class Attachments(ContentManagementModule):
         # Translators: Section title. Attachments as in email attachments.
         title = _("Attachments")
         help = _("Manage page attachments. Go to a page to create new attachments.")
+        table = 'cms_v_page_attachments'
         def fields(self): return (
-            Field('attachment_variant_id',
+            Field('attachment_key',
                   computer=computer(lambda r, attachment_id, lang:
                                     attachment_id and '%d.%s' % (attachment_id, lang))),
             Field('attachment_id'),
-            Field('mapping_id', _("Page"), codebook='Mapping', editable=ALWAYS,
+            Field('page_id', _("Page"), codebook='PageStructure', editable=ALWAYS,
                   descr=_("Select the page where you want to move this attachment.  Don't forget "
                           "to update all explicit links to this attachment within page text(s).")),
             Field('lang', _("Language"), codebook='Languages', editable=ONCE, value_column='lang'),
@@ -1736,7 +1744,7 @@ class Attachments(ContentManagementModule):
             return labels.get(size, size)
         
         layout = ('file', 'title', 'description', 'thumbnail_size' , 'in_gallery', 'listed')
-        columns = ('filename', 'title', 'bytesize', 'mime_type', 'thumbnail_size', 'in_gallery', 'listed', 'mapping_id')
+        columns = ('filename', 'title', 'bytesize', 'mime_type', 'thumbnail_size', 'in_gallery', 'listed', 'page_id')
         sorting = (('filename', ASC),)
         actions = (
             #Action('insert_image', _("New image"), descr=_("Insert a new image attachment"),
@@ -1786,11 +1794,11 @@ class Attachments(ContentManagementModule):
 
     _INSERT_LABEL = _("New attachment")
     _REFERER = 'filename'
-    _LAYOUT = {'move': ('mapping_id',)}
+    _LAYOUT = {'move': ('page_id',)}
     _LIST_BY_LANGUAGE = True
     _SEQUENCE_FIELDS = (('attachment_id', '_attachments_attachment_id_seq'),)
     _EXCEPTION_MATCHERS = (
-        ('duplicate key (value )?violates unique constraint "_attachments_mapping_id_key"',
+        ('duplicate key (value )?violates unique constraint "_attachments_page_id_key"',
          ('file', _("Attachment of the same file name already exists for this page."))),)
     RIGHTS_view   = (Roles.CONTENT_ADMIN,)
 
@@ -1864,8 +1872,8 @@ class Attachments(ContentManagementModule):
         return super(Attachments, self)._redirect_after_update_uri(req, record,
                                                                    action='view', **kwargs)
 
-    def attachments(self, req, mapping_id, lang):
-        self._data.select(condition=pd.AND(pd.EQ('mapping_id', pd.ival(mapping_id)),
+    def attachments(self, req, page_id, lang):
+        self._data.select(condition=pd.AND(pd.EQ('page_id', pd.ival(page_id)),
                                            pd.EQ('lang', pd.sval(lang))))
         while True:
             row = self._data.fetchone()
@@ -1909,9 +1917,10 @@ class News(ContentManagementModule, EmbeddableCMSModule):
         title = _("News")
         # Translators: Help string describing more precisely the meaning of the "News" section.
         help = _("Publish site news.")
+        table = 'cms_news'
         def fields(self): return (
             Field('news_id', editable=NEVER),
-            Field('mapping_id', _("Page"), codebook='Mapping', editable=ONCE),
+            Field('page_id', _("Page"), codebook='PageStructure', editable=ONCE),
             Field('lang', _("Language"), codebook='Languages', editable=ONCE,
                   selection_type=CHOICE, value_column='lang'),
             Field('timestamp', _("Date"),
@@ -1939,20 +1948,20 @@ class News(ContentManagementModule, EmbeddableCMSModule):
         
     _LIST_BY_LANGUAGE = True
     _OWNER_COLUMN = 'author'
-    _EMBED_BINDING_COLUMN = 'mapping_id'
+    _EMBED_BINDING_COLUMN = 'page_id'
     _PANEL_FIELDS = ('date', 'title')
     # Translators: Button label for creating a new message in "News".
     _INSERT_LABEL = _("New message")
     _RSS_TITLE_COLUMN = 'title'
     _RSS_DESCR_COLUMN = 'content'
     _RSS_DATE_COLUMN = 'timestamp'
-    _mapping_identifier_cache = BoundCache()
+    _page_identifier_cache = BoundCache()
 
     def _record_uri(self, req, record, *args, **kwargs):
         def get():
-            return record.cb_value('mapping_id', 'identifier').value()
+            return record.cb_value('page_id', 'identifier').value()
         # BoundCache will cache only in the scope of one request.
-        uri = '/'+ self._mapping_identifier_cache.get(req, record['mapping_id'].value(), get)
+        uri = '/'+ self._page_identifier_cache.get(req, record['page_id'].value(), get)
         #if args or kwargs:
         #    uri += '/data/' + record[self._referer].export()
         #    return req.make_uri(uri, *args, **kwargs)
@@ -1964,7 +1973,7 @@ class News(ContentManagementModule, EmbeddableCMSModule):
             return super(News, self)._redirect_after_insert(req, record)
         else:
             req.message(self._insert_msg(req, record))
-            identifier = record.cb_value('mapping_id', 'identifier').value()
+            identifier = record.cb_value('page_id', 'identifier').value()
             raise Redirect('/'+identifier)
         
     def _rss_author(self, req, record):
@@ -1975,6 +1984,7 @@ class Planner(News):
         # Translators: Section heading and menu item
         title = _("Planner")
         help = _("Announce future events by date in a callendar-like listing.")
+        table = 'cms_planner'
         def fields(self): return [
             Field('planner_id', editable=NEVER),
             Field('start_date', _("Date"), width=10,
@@ -2027,7 +2037,6 @@ class Discussions(News):
         # Translators: Name of the extension module for simple forum-like discussions.
         title = _("Discussions")
         help = _("Allow logged in users to post messages as in a simple forum.")
-        table = 'news'
         def fields(self):
             # Translators: Field label for posting a message to the discussion.
             override = (Field('content', label=_("Your comment"), compact=True,
@@ -2061,7 +2070,7 @@ class Discussions(News):
                 raise AuthorizationError()
             prefill = dict(timestamp=now(),
                            lang=req.preferred_language(),
-                           mapping_id=record['mapping_id'].value(),
+                           page_id=record['page_id'].value(),
                            author=req.user().uid(),
                            title='-',
                            content=req.param('content'))
@@ -2119,7 +2128,7 @@ class StyleSheets(StyleManagementModule):
         # Translators: Section heading and menu item. Meaning the visual appearance. Computer
         # terminology.
         title = _("Style sheets")
-        table = 'stylesheets'
+        table = 'cms_stylesheets'
         # Translators: Help string. Cascading Style Sheet (CSS) is computer terminology idiom.
         help = _("Manage available Cascading Style Sheets.")
         def fields(self): return (
@@ -2234,7 +2243,7 @@ class CommonTexts(SettingsManagementModule):
     """
     class Spec(Specification):
 
-        table = 'texts'
+        table = 'cms_v_system_texts'
         title = _("System Texts")
         help = _("Edit miscellaneous system texts.")
 
@@ -2268,7 +2277,6 @@ class CommonTexts(SettingsManagementModule):
             return descr
         
     _LIST_BY_LANGUAGE = True
-    _TEXT_REGISTRAR = None
     RIGHTS_insert = ()
     RIGHTS_delete = ()
 
@@ -2276,13 +2284,8 @@ class CommonTexts(SettingsManagementModule):
         super(CommonTexts, self)._delayed_init()
         self._register_texts()
         
-    def _is_text(self, object):
-        return isinstance(object, Text)
-    
     def _register_texts(self):
-        for identifier, text in self.Spec._texts.items():
-            if self._is_text(text):
-                self._call_db_function(self._TEXT_REGISTRAR, text.label())
+        pass
 
     @classmethod
     def register_text(class_, text):
@@ -2344,9 +2347,8 @@ class Texts(CommonTexts):
     'label' attribute).  See 'Text' class for more details.
     
     """
-    _TEXT_REGISTRAR = 'add_text_label'
     _DB_FUNCTIONS = dict(CommonTexts._DB_FUNCTIONS,
-                         add_text_label=(('1', pd.String(),),))
+                         cms_add_text_label=(('label', pd.String()), ('site', pd.String())))
 
     def _auto_filled_fields(self):
         def content(req, record, field_id):
@@ -2358,6 +2360,11 @@ class Texts(CommonTexts):
             return translator(lang).translate(text.text())
         return (('content', content,),)
 
+    def _register_texts(self):
+        for identifier, text in self.Spec._texts.items():
+            if isinstance(text, Text):
+                self._call_db_function('cms_add_text_label', text.label(), '*')
+                
     def text(self, req, text, lang=None, args=None):
         """Return text corresponding to 'text'.
 
@@ -2451,9 +2458,8 @@ class Emails(CommonTexts):
     underscore prefix prepended to custom e-mail labels.
 
     """
-    _TEXT_REGISTRAR = 'add_email_label'
     _DB_FUNCTIONS = dict(CommonTexts._DB_FUNCTIONS,
-                         add_email_label=(('1', pd.String(),),))
+                         cms_add_email_label=(('label', pd.String()),))
 
     class LabelType(pytis.data.String):
         def _validate(self, obj, **kwargs):
@@ -2463,7 +2469,7 @@ class Emails(CommonTexts):
     
     class Spec(Texts.Spec):
 
-        table = 'emails'
+        table = 'cms_v_emails'
         title = _("E-mails")
         help = _("Edit e-mail texts.")
         
@@ -2485,8 +2491,10 @@ class Emails(CommonTexts):
         sorting = (('label', ASC,),)
         layout = ('label', 'descr', 'subject', 'cc', 'content',)
 
-    def _is_text(self, object):
-        return isinstance(object, EmailText)
+    def _register_texts(self):
+        for identifier, text in self.Spec._texts.items():
+            if isinstance(text, EmailText):
+                self._call_db_function('cms_add_email_label', text.label())
 
     def _actions(self, req, record):
         actions = super(Emails, self)._actions(req, record)
@@ -2641,7 +2649,7 @@ class EmailSpool(MailManagementModule):
     """
     class Spec(Specification):
 
-        table = 'email_spool'
+        table = 'cms_email_spool'
         # Translators: Section title and menu item. Sending emails to multiple recipients.
         title = _("Bulk E-mails")
 

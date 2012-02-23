@@ -1454,6 +1454,7 @@ class SessionLog(UserManagementModule):
         # Translators: Heading for an overview when and how the user has accessed the application.
         title = _("Login History")
         help = _("History of successful login sessions and unsuccessful login attempts.")
+        table = 'cms_v_session_log'
         def fields(self): return (
             Field('log_id'),
             Field('session_id'),

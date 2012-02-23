@@ -384,7 +384,7 @@ class Application(CookieAuthentication, wiking.Application):
                     return 'Unable to create database: %s' % err
         elif errstr.startswith("Unknown column '"):
             if not req.param('initdb'):
-                err = self._try_query(dbname, "select * from mapping")
+                err = self._try_query(dbname, "select * from cms_config")
                 if err:
                     if cfg.debug:
                         message = 'Database "%s" not initialized (%s)!' % (dbname, errstr,)
