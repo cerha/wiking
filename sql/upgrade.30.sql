@@ -292,13 +292,16 @@ create or replace rule cms_v_pages_insert as
      values (new.site, new.identifier, new.parent, new.modname,
              new.read_role_id, new.write_role_id, new.menu_visibility, new.foldable,
              coalesce(new.ord, (select max(ord)+100 from cms_pages
-                                where coalesce(parent, 0)=coalesce(new.parent, 0)), 100));
+                                where site=new.site
+                                      and coalesce(parent, 0)=coalesce(new.parent, 0)), 100));
      update cms_pages set tree_order = cms_page_tree_order(page_id);
      insert into cms_page_texts (page_id, lang, published,
-                         title, description, content, _title, _description, _content)
-     select (select page_id from cms_pages where identifier=new.identifier),
+                                 title, description, content,
+                                 _title, _description, _content)
+     select (select page_id from cms_pages where identifier=new.identifier and site=new.site),
             new.lang, new.published,
-            new.title, new.description, new.content, new._title, new._description, new._content
+            new.title, new.description, new.content,
+            new._title, new._description, new._content
      returning page_id ||'.'|| lang, null::text,
        lang, page_id, null::varchar(32), null::int, null::text, null::text, null::boolean,
        null::int, null::text, null::name, null::name,
@@ -319,7 +322,7 @@ create or replace rule cms_v_pages_update as
         foldable = new.foldable,
         ord = new.ord
     where cms_pages.page_id = old.page_id;
-    update cms_pages set tree_order = cms_page_tree_order(page_id);
+    update cms_pages set tree_order = cms_page_tree_order(page_id) where site=new.site;
     update cms_page_texts set
         published = new.published,
         title = new.title,
@@ -330,15 +333,14 @@ create or replace rule cms_v_pages_update as
         _content = new._content
     where page_id = old.page_id and lang = new.lang;
     insert into cms_page_texts (page_id, lang, published,
-                        title, description, content, _title, _description, _content)
+                                title, description, content,
+                                _title, _description, _content)
            select old.page_id, new.lang, new.published,
                   new.title, new.description, new.content,
                   new._title, new._description, new._content
            where new.lang not in (select lang from cms_page_texts where page_id=old.page_id)
-                 and (new.title is not null or new.description is not null
-                      or new.content is not null
-                      or new._title is not null or new._description is not null
-                      or new._content is not null);
+                 and coalesce(new.title, new.description, new.content,
+                              new._title, new._description, new._content) is not null;
 );
 
 create or replace rule cms_v_pages_delete as
@@ -476,6 +478,9 @@ declare
                          where label = _label and site = _site;
 begin
   if already_present = 0 then
+    update cms_config set site=_site where site='*';
+    insert into cms_config (site, site_title) select _site, _site
+           where _site not in (select site from cms_config);
     insert into cms_system_text_labels (label, site) values (_label, _site);
   end if;
 end
