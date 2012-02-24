@@ -481,17 +481,6 @@ begin
 end
 $$ language plpgsql;
 
-create or replace function cms_add_email_label (_label name, _site text) returns void as $$
-declare
-  already_present int := count(*) from cms_email_labels
-                         where label = _label and site = _site;
-begin
-  if already_present = 0 then
-    insert into cms_email_labels (label, site) values (_label, _site);
-  end if;
-end
-$$ language plpgsql;
-
 create or replace view cms_v_system_texts as
 select label || '@' || lang as text_id,
        label,
