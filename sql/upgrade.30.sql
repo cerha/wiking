@@ -85,7 +85,6 @@ create table cms_page_attachment_texts (
 
 create table cms_news (
 	news_id serial primary key,
-	site text not null references cms_config(site) on update cascade on delete cascade,
 	page_id int not null references cms_pages on delete cascade,
 	author int not null references users,
 	"timestamp" timestamp not null default now(),
@@ -96,7 +95,6 @@ create table cms_news (
 
 create table cms_planner (
 	planner_id serial primary key,
-	site text not null references cms_config(site) on update cascade on delete cascade,
 	page_id int not null references cms_pages on delete cascade,
 	author int not null references users,
 	"timestamp" timestamp not null default now(),
@@ -193,14 +191,14 @@ select setval('cms_page_attachments_attachment_id_seq', nextval('_attachments_at
 drop table _attachments cascade;
 drop table _attachment_descr cascade;
 
-insert into cms_news (news_id, site, page_id, author, "timestamp", lang, title, content)
-       select news_id, '*', mapping_id, author, "timestamp", lang, title, content
+insert into cms_news (news_id, page_id, author, "timestamp", lang, title, content)
+       select news_id, mapping_id, author, "timestamp", lang, title, content
        from news;
 select setval('cms_news_news_id_seq', nextval('news_news_id_seq'));
 drop table news cascade;
 
-insert into cms_planner (planner_id, site, page_id, author, "timestamp", start_date, end_date, lang, title, content)
-       select planner_id, '*', mapping_id, author, "timestamp", start_date, end_date, lang, title, content
+insert into cms_planner (planner_id, page_id, author, "timestamp", start_date, end_date, lang, title, content)
+       select planner_id, mapping_id, author, "timestamp", start_date, end_date, lang, title, content
        from planner;
 select setval('cms_planner_planner_id_seq', nextval('planner_planner_id_seq'));
 drop table planner cascade;

@@ -379,7 +379,6 @@ create or replace rule cms_v_page_attachments_delete as
 
 create table cms_news (
 	news_id serial primary key,
-	site text not null references cms_config(site) on update cascade on delete cascade,
 	page_id int not null references cms_pages on delete cascade,
 	author int not null references users,
 	"timestamp" timestamp not null default now(),
@@ -390,7 +389,6 @@ create table cms_news (
 
 create table cms_planner (
 	planner_id serial primary key,
-	site text not null references cms_config(site) on update cascade on delete cascade,
 	page_id int not null references cms_pages on delete cascade,
 	author int not null references users,
 	"timestamp" timestamp not null default now(),
