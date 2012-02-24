@@ -236,7 +236,7 @@ class PasswordExpirationError(RequestError):
     def message(self, req):
         content = lcg.p(_("Your password expired.  Access to the application is now blocked for "
                           "security reasons until you change your password."))
-        uri = req.application().password_change_uri(req)
+        uri = wiking.module('Application').password_change_uri(req)
         if uri:
             # Translators: This is a link on a webpage
             content = (content, lcg.p(lcg.link(uri, _("Change your password"))))
@@ -685,7 +685,7 @@ class LoginPanel(Panel):
             req = context.req()
             user = req.user()
             result = LoginCtrl().export(context)
-            appl = req.application()
+            appl = wiking.module('Application')
             if user:
                 if cfg.display_role_in_login_panel:
                     # TODO: show only explicitly assigned roles, not special
@@ -1253,7 +1253,7 @@ class LoginDialog(lcg.Content):
             ) + tuple(hidden) + (
             # Translators: Login button label - verb in imperative.
             g.submit(_("Log in"), cls='submit'),)
-        appl = req.application()
+        appl = wiking.module('Application')
         links = [g.link(label, uri) for label, uri in
                  # Translators: Webpage link leading to registration form.
                  ((_("New user registration"), appl.registration_uri(req)),

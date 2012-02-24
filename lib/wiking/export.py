@@ -57,7 +57,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             # 'req()' method, so their use should be limited to this module only!
             self.has_menu = bool([n for n in self.node().root().children() if not n.hidden()])
             self.has_submenu = bool([n for n in self.node().top().children() if not n.hidden()])
-            self.application = req.application()
+            self.application = wiking.module('Application')
             super(Exporter.Context, self)._init_kwargs(**kwargs)
 
         def req(self):
