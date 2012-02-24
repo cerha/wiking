@@ -1,4 +1,4 @@
-# Copyright (C) 2006-2011 Brailcom, o.p.s.
+# Copyright (C) 2006-2012 Brailcom, o.p.s.
 # Author: Tomas Cerha <cerha@brailcom.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -98,13 +98,16 @@ class ModPythonRequest(wiking.Request):
     def remote_host(self):
         return self._req.get_remote_host()
 
-    def server_hostname(self, current=False):
-        if current:
-            hostname = self._req.hostname
-            # Should not be None by definition, but it happens.  We were not able to reproduce it,
-            # but we have tracebacks, where server_hostname(True) returned None.
-            if hostname:
-                return self._req.hostname
+    def server_hostname(self):
+        hostname = self._req.hostname
+        if hostname is None:
+            # Should not be None by definition, but it happens.  We were not
+            # able to reproduce it, but we have tracebacks, where None was
+            # returned.
+            hostname = self._req.server.server_hostname
+        return hostname
+
+    def primary_server_hostname(self):
         return self._req.server.server_hostname
 
     def start_http_response(self, status_code):
@@ -151,15 +154,13 @@ class ModPythonHandler(object):
         self._handler = None
 
     def __call__(self, request):
+        req = ModPythonRequest(request)
         if self._handler is None:
-            # The initialization is postponed until the first request, since we
-            # need the information from the request instance to initialize the the
-            # handler instance.
-            opt = request.get_options()
-            self._handler = wiking.Handler(request.server.server_hostname,
-                                           request.server.server_admin,
-                                           dict([(o, opt[o]) for o in opt.keys()]))
-        self._handler.handle(ModPythonRequest(request))
+            # The Handler initialization is postponed until the first request,
+            # since we need the information from the request instance to
+            # initialize the the handler instance and the global configuration.
+            self._handler = wiking.Handler(req)
+        self._handler.handle(req)
         return mod_python.apache.OK
 
 handler = ModPythonHandler()

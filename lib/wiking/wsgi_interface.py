@@ -105,19 +105,19 @@ class WsgiRequest(wiking.Request):
     def remote_host(self):
         return self._environ.get('REMOTE_HOST', self._environ.get('REMOTE_ADDR'))
 
-    def server_hostname(self, current=False):
-        if current:
-            return self._environ.get(self.header('Host'), self._environ['SERVER_NAME'])
-        else:
-            # PEP http://www.python.org/dev/peps/pep-3333/ is not very clear on
-            # what SERVER_NAME should exactly contain and we don't know of any
-            # other method how to retrieve the unique server name (as descrined
-            # in the docstring of this method in the parent class) under WSGI.
-            # So at least under Apache/mod_wsgi, it is necessary to set the
-            # environment variable 'wiking.server_hostname' according the
-            # ServerName directive whenever there is one or more ServerAlias
-            # directives because SERVER_NAME doesn't contain what we need.
-            return self._environ.get('wiking.server_hostname', self._environ['SERVER_NAME'])
+    def server_hostname(self):
+        return self._environ.get(self.header('Host'), self._environ['SERVER_NAME'])
+
+    def primary_server_hostname(self):
+        # PEP http://www.python.org/dev/peps/pep-3333/ is not very clear on
+        # what SERVER_NAME should exactly contain and we don't know of any
+        # other method how to retrieve the unique server name (as descrined
+        # in the docstring of this method in the parent class) under WSGI.
+        # So at least under Apache/mod_wsgi, it is necessary to set the
+        # environment variable 'wiking.server_hostname' according the
+        # ServerName directive whenever there is one or more ServerAlias
+        # directives because SERVER_NAME doesn't contain what we need.
+        return None
 
     def start_http_response(self, status_code):
         if True: #not self._response_started:
@@ -170,15 +170,13 @@ class WsgiEntryPoint(object):
         self._handler = None
 
     def __call__(self, environ, start_response):
+        req = WsgiRequest(environ, start_response)
         handler = self._handler
         if handler is None:
             # Initialization is postponed until the first request, since we
             # need information from the environment to initialize the the
             # handler instance.
-            options = dict([(k[7:], v) for k, v in environ.items() if k.startswith('wiking.')])
-            handler = wiking.Handler(environ['SERVER_NAME'], None, options)
-            self._handler = handler
-        req = WsgiRequest(environ, start_response)
+            handler = self._handler = wiking.Handler(req)
         handler.handle(req)
         for chunk in req.response_data():
             yield chunk

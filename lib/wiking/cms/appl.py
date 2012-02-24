@@ -360,7 +360,7 @@ class Application(CookieAuthentication, wiking.Application):
                              for x in params.items()]) +
                     '<input type="submit" value="%s">' % label +
                     '</form>')
-        dbname = cfg.dbname or req.server_hostname()
+        dbname = cfg.dbname or cfg.server_hostname
         if errstr == 'FATAL:  database "%s" does not exist\n' % dbname:
             if not req.param('createdb'):
                 return 'Database "%s" does not exist.\n' % dbname + \

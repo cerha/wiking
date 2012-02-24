@@ -133,18 +133,34 @@ class ServerInterface(pytis.web.Request):
         """
         pass
 
-    def server_hostname(self, current=False):
+    def server_hostname(self):
         """Return the server's fully qualified domain name as a string.
 
-        Each virtual server may have several names through which it can be
-        accessed, such as 'www.yourdomain.com' and 'www.yourdomain.org'.  One
-        of them is the main one (i.e. as defined in web server configuration).
-        The main name is returned by default, but if 'current' is True, the
-        name used in the current request URI is returned.
+        Each virtual server may have several names (aliases) through which it
+        can be accessed, such as 'www.yourdomain.com' and 'www.yourdomain.org'.
+        This method returns the name used for the current request.  Use the
+        configuration variable 'wiking.cfg.server_hostname' if you need the
+        globally unique server name (which normally corresponds to the main
+        server name).
 
         """
         pass
 
+    def primary_server_hostname(self):
+        """Return the fully qualified domain name of the primary server as a string.
+
+        As oposed to 'server_hostname()', this method should return the same
+        result for all requests which belong to the same (virtual) server.  If
+        this information is not available from the request environment, None is
+        returned.  In this case the administrator is forced to set the
+        configuration variable 'server_hostname' manually.  Thus this method is
+        not designed to be used in applications.  It is only used by Wiking
+        internally to determine the default value of
+        'wiking.cfg.server_hostname'.
+        
+        """
+        pass
+        
     def start_http_response(self, status_code):
         """Start the HTTP response.
 
@@ -255,13 +271,16 @@ class Request(ServerInterface):
     _ABS_URI_MATCHER = re.compile(r'^((https?|ftp)://[^/]+)(.*)$')
 
     def __init__(self, encoding):
+        # NOTE: The request constructor should never rely on global
+        # configuration values as the first Request instance is created before
+        # the wiking.Handler instance and the configuration is initialized in
+        # wiking.Handler constructor.
         super(Request, self).__init__()
         self._encoding = encoding
         self._forwards = []
         self._module_uri = {}
         self._user = self._UNDEFINED
         self._fresh_login = False
-        self._application = wiking.module('Application')
         self._cookies = Cookie.SimpleCookie(self.header('Cookie'))
         self._preferred_languages = None
         self._translator = None
@@ -293,12 +312,6 @@ class Request(ServerInterface):
                 password = self.param('password')
                 self.set_param('password', None)
             self._fresh_login = True
-        elif wiking.cfg.allow_http_authentication:
-            # Return HTTP Basic auth credentials if available
-            auth_header = self.header('Authorization')
-            if auth_header and auth_header.startswith('Basic '):
-                encoded_credentials = auth_header.split()[1]
-                login, password = encoded_credentials.decode("base64").split(":", 1)
         if login or password:
             return login, password
         else:
@@ -381,11 +394,13 @@ class Request(ServerInterface):
         """Return full server URI as a string.
 
         Arguments:
-          force_https -- If True, the uri will point to an HTTPS address even if the current
-            request is not on HTTPS.  This may be useful for redirection of links or form
-            submissions to a secure channel.
-          current -- controls which server domain name to use.  Corrensponds to the same argument
-            of 'server_hostname()'.
+          force_https -- If True, the uri will point to an HTTPS address even
+            if the current request is not on HTTPS.  This may be useful for
+            redirection of links or form submissions to a secure channel.
+          current -- controls which server domain name to use.  True means to
+            use the result of 'server_hostname()' (see its docstring for more
+            information) and False means to use the global name from
+            'wiking.cfg.server_hostname'.
         
         The URI in the form 'http://www.yourdomain.com' is constructed including port and scheme
         specification.  If current request port corresponds to 'https_port' configuration option
@@ -403,7 +418,11 @@ class Request(ServerInterface):
         else:
             scheme = 'http'
             default_port = 80
-        result = scheme + '://'+ self.server_hostname(current=current)
+        if current:
+            server_hostname = self.server_hostname()
+        else:
+            server_hostname = wiking.cfg.server_hostname
+        result = scheme + '://'+ server_hostname
         if port != default_port:
             result += ':'+ str(port)
         return result
@@ -721,7 +740,8 @@ class Request(ServerInterface):
         """
         result = self._preferred_languages
         if result is None:
-            self._preferred_languages = result = self._application.preferred_languages(self)
+            application = wiking.module('Application')
+            self._preferred_languages = result = application.preferred_languages(self)
         return result
 
     def preferred_language(self, variants=None, raise_error=True):
@@ -740,7 +760,8 @@ class Request(ServerInterface):
 
         """
         if variants is None:
-            variants = self._application.languages()
+            application = wiking.module('Application')
+            variants = application.languages()
         for lang in self.preferred_languages():
             if lang in variants:
                 return lang
@@ -802,7 +823,16 @@ class Request(ServerInterface):
         decides whether they are valid or not.
         
         """
-        return self._credentials
+        if self._credentials:
+            return self._credentials
+        if wiking.cfg.allow_http_authentication:
+            # Return HTTP Basic auth credentials if available
+            auth_header = self.header('Authorization')
+            if auth_header and auth_header.startswith('Basic '):
+                encoded_credentials = auth_header.split()[1]
+                return encoded_credentials.decode("base64").split(":", 1)
+        return None
+
 
     def decryption_password(self):
         """Return decryption password as given by the user."""
@@ -822,8 +852,9 @@ class Request(ServerInterface):
         if self._user is self._UNDEFINED:
             # Set to None for the case that authentication raises an exception.
             self._user = None
+            application = wiking.module('Application')
             # AuthenticationError may be raised if the credentials are invalid.
-            self._user = self._application.authenticate(self)
+            self._user = application.authenticate(self)
         if require and self._user is None:
             #if session_timed_out:
             #      raise AuthenticationError(_("Session expired. Please log in again."))
@@ -854,18 +885,14 @@ class Request(ServerInterface):
                 user_roles = self._anonymous_roles
             except AttributeError:
                 # Determine the roles just once per request (may be used many times).
-                user_roles = self._anonymous_roles = \
-                             self._application.contained_roles(self, Roles.ANYONE)
+                application = wiking.module('Application')
+                user_roles = self._anonymous_roles = application.contained_roles(self, Roles.ANYONE)
         else:
             user_roles = user.roles()
         for role in roles:
             if role in user_roles:
                 return True
         return False
-    
-    def application(self):
-        """Return the current `Application' instance."""
-        return self._application
 
     def module_uri(self, modname):
         """Return the base URI of given Wiking module (relative to server root).
@@ -891,7 +918,8 @@ class Request(ServerInterface):
         try:
             uri = self._module_uri[modname]
         except KeyError:
-            uri = self._module_uri[modname] = self._application.module_uri(self, modname)
+            application = wiking.module('Application')
+            uri = self._module_uri[modname] = application.module_uri(self, modname)
         return uri
         
     def message(self, message, type=None):

@@ -15,8 +15,8 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-import pytis.data
-from wiking import *
+import wiking
+import lcg
 
 _ = lcg.TranslatableTextFactory('wiking')
 
@@ -31,49 +31,67 @@ class Handler(object):
     """
     _profiling_instance = None
     
-    def __init__(self, server_hostname, webmaster_address, options):
+    def __init__(self, req):
+        """Initialize the global wiking handler instance.
+        
+        The argument 'req' is the initial request which triggered the Handler
+        creation, however the handler will normally exist much longer thant for
+        this single request and its method 'handle()' will be called to handle
+        also other requests (including this one).  The constructor only needs
+        the request instance to gather some global information to be able to
+        initialize the configuration etc.
+        
+        """
         # Initialize the global configuration stored in 'wiking.cfg'.
-        def split(value):
-            separator = value.find(':') != -1 and ':' or ','
-            return tuple([d.strip() for d in value.split(separator)])
-        # Read the configuration file first, so that the Apache options have a higher priority.
-        if 'config_file' in options:
-            cfg.user_config_file = options.pop('config_file')
-        for name, value in options.items():
-            if name == 'translation_path':
-                cfg.translation_path = tuple(cfg.translation_path) + split(value)
-            elif name == 'resource_path':
-                cfg.resource_path = split(value) + tuple(cfg.resource_path)
-            elif name == 'modules':
-                cfg.modules = split(value)
-            elif name == 'database':
-                cfg.dbname = value # For backwards compatibility...
-            elif hasattr(cfg, name):
-                option = cfg.option(name)
-                if isinstance(option, cfg.StringOption):
-                    setattr(cfg, name, value)
+        cfg = wiking.cfg
+        config_file = req.option('config_file')
+        if config_file:
+            # Read the configuration file first, so that the request options have a higher priority.
+            cfg.user_config_file = config_file
+        for option in cfg.options():
+            name = option.name()
+            value = req.option(name)
+            if value and name != 'config_file':
+                if name in ('translation_path', 'resource_path', 'modules'):
+                    separator = value.find(':') != -1 and ':' or ','
+                    value = tuple([d.strip() for d in value.split(separator)])
+                    if name == 'translation_path':
+                        value = tuple(cfg.translation_path) + value
+                    elif name == 'resource_path':
+                        value += tuple(cfg.resource_path)
                 elif isinstance(option, cfg.NumericOption):
                     if value.isdigit():
-                        setattr(cfg, name, value)
+                        value = int(value)
                     else:
                         log(OPR, "Invalid numeric value for '%s':" % name, value)
+                        continue
                 elif isinstance(option, cfg.BooleanOption):
-                    if value.lower() in ('yes', 'no', 'true', 'false', 'on', 'off'):
-                        setattr(cfg, name, value.lower() in ('yes', 'true', 'on'))
+                    if value.lower() in ('yes', 'true', 'on'):
+                        value = True
+                    elif value.lower() in ('no', 'false', 'off'):
+                        value = False
                     else:
                         log(OPR, "Invalid boolean value for '%s':" % name, value)
-                else:
-                    log(OPR, "Unable to set '%s' through Apache configuration. "
-                        "PythonOption ignored." % name)
-            elif name == 'allow_profiling' and value:
-                self.__class__._profiling_instance = self
+                        continue
+                elif not isinstance(option, cfg.StringOption):
+                    log(OPR, "Unable to set '%s' through request options." % name)
+                    continue
+                setattr(cfg, name, value)
+        # Apply default values which depend on the request.
+        server_hostname = cfg.server_hostname
+        if server_hostname is None:
+            # TODO: The name returned by req.server_hostname() works for simple
+            # cases where there are no server aliases, but we can not guarantee
+            # that it is really unique.  Thus might be safer to raise an error
+            # when req.primary_server_hostname() returns None and require
+            # configuring server_hostname explicitly.
+            server_hostname = req.primary_server_hostname() or req.server_hostname()
+            cfg.server_hostname = server_hostname
         domain = server_hostname
         if domain.startswith('www.'):
             domain = domain[4:]
         if cfg.webmaster_address is None:
-            if webmaster_address is None or webmaster_address == '[no address given]':
-                webmaster_address = 'webmaster@' + domain
-            cfg.webmaster_address = webmaster_address
+            cfg.webmaster_address = 'webmaster@' + domain
         if cfg.default_sender_address is None:
             cfg.default_sender_address = 'wiking@' + domain
         if cfg.dbname is None:
@@ -81,6 +99,7 @@ class Handler(object):
         if cfg.resolver is None:
             cfg.resolver = wiking.WikingResolver(cfg.modules)
         # Modify pytis configuration.
+        import pytis.util
         import config
         config.dblisten = False
         config.log_exclude = [pytis.util.ACTION, pytis.util.EVENT, pytis.util.DEBUG]
@@ -92,6 +111,9 @@ class Handler(object):
         del config
         self._application = wiking.module('Application')
         self._exporter = cfg.exporter(translations=cfg.translation_path)
+        # Set the global profiling instance if profiling is enabled.
+        if req.option('allow_profiling'):
+            self.__class__._profiling_instance = self
 
     def _serve_document(self, req, document, status_code=200):
         """Serve a document using the Wiking exporter."""
@@ -103,7 +125,7 @@ class Handler(object):
     def _serve_error_document(self, req, error):
         """Serve an error page using the Wiking exporter."""
         error.log(req)
-        document = Document(error.title(req), error.message(req))
+        document = wiking.Document(error.title(req), error.message(req))
         self._serve_document(req, document, status_code=error.status_code(req))
 
     def _serve_minimal_error_document(self, req, error):
@@ -112,12 +134,12 @@ class Handler(object):
         node = lcg.ContentNode(req.uri().encode('utf-8'),
                                title=error.title(req),
                                content=error.message(req))
-        exporter = MinimalExporter(translations=cfg.translation_path)
+        exporter = wiking.MinimalExporter(translations=wiking.cfg.translation_path)
         try:
             lang = req.preferred_language()
         except:
-            lang = cfg.default_language_by_domain.get(req.server_hostname(current=True),
-                                                      cfg.default_language) or 'en'
+            lang = wiking.cfg.default_language_by_domain.get(req.server_hostname(),
+                                                             wiking.cfg.default_language) or 'en'
         context = exporter.context(node, lang=lang)
         exported = exporter.export(context)
         req.send_response(context.translate(exported), status_code=error.status_code(req))
@@ -127,7 +149,7 @@ class Handler(object):
         try:
             try:
                 result = application.handle(req)
-                if isinstance(result, Document):
+                if isinstance(result, wiking.Document):
                     # Always perform authentication (if it was not performed before) to handle
                     # authentication exceptions here and prevent them in export time.
                     req.user()
@@ -138,30 +160,30 @@ class Handler(object):
                 else:
                     # int is deprecated! Just for backwards compatibility.  
                     assert result is None or isinstance(result, int)
-            except RequestError as error:
+            except wiking.RequestError as error:
                 try:
                     req.user()
-                except RequestError:
+                except wiking.RequestError:
                     # Ignore all errors within authentication except for AuthenticationError.
                     pass
-                except AuthenticationError as auth_error:
+                except wiking.AuthenticationError as auth_error:
                     self._serve_error_document(req, auth_error)
                 self._serve_error_document(req, error)
-            except (ClosedConnection, Redirect):
+            except (wiking.ClosedConnection, wiking.Redirect):
                 raise
-            except DisplayDocument as e:
+            except wiking.DisplayDocument as e:
                 self._serve_document(req, e.document())
             except Exception as e:
                 # Try to return a nice error document produced by the exporter.
                 try:
                     return application.handle_exception(req, e)
-                except RequestError as error:
+                except wiking.RequestError as error:
                     return self._serve_error_document(req, error)
-        except ClosedConnection:
+        except wiking.ClosedConnection:
             pass
-        except Redirect as r:
+        except wiking.Redirect as r:
             req.redirect(r.uri(), args=r.args(), permanent=r.permanent())
-        except DisplayDocument as e:
+        except wiking.DisplayDocument as e:
             self._serve_document(req, e.document())
         except Exception as e:
             # If error document export fails, return a minimal error page.  It is reasonable to
@@ -170,7 +192,7 @@ class Handler(object):
             # same level above.
             try:
                 application.handle_exception(req, e)
-            except RequestError as error:
+            except wiking.RequestError as error:
                 self._serve_minimal_error_document(req, error)
             
     def handle(self, req):

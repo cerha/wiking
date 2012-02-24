@@ -677,7 +677,7 @@ class Config(SettingsManagementModule):
 
     def _resolve(self, req):
         # We always work with just one record.
-        return self._data.get_row(site='*')
+        return self._data.get_row(site=wiking.cfg.server_hostname)
     
     def _default_action(self, req, **kwargs):
         return 'update'
@@ -688,7 +688,12 @@ class Config(SettingsManagementModule):
     
     def configure(self, req):
         # Called by the application prior to handling any request.
-        row = self._data.get_row(site='*')
+        site = wiking.cfg.server_hostname
+        row = self._data.get_row(site=site)
+        if row is None:
+            row = self._data.get_row(site=site)
+            if row:
+                self._data.update((row['site'],), self._data.make_row(site=site))
         for f in self._view.fields():
             f.configure(row[f.id()].value())
         theme_id = row['theme_id'].value()
@@ -699,7 +704,7 @@ class Config(SettingsManagementModule):
             cfg.theme = wiking.module('Themes').theme(theme_id)
 
     def set_theme(self, req, theme_id):
-        row = self._data.get_row(site='*')
+        row = self._data.get_row(site=wiking.cfg.server_hostname)
         record = self._record(req, row)
         try:
             record.update(theme_id=theme_id)
@@ -2363,7 +2368,8 @@ class Texts(CommonTexts):
     def _register_texts(self):
         for identifier, text in self.Spec._texts.items():
             if isinstance(text, Text):
-                self._call_db_function('cms_add_text_label', text.label(), '*')
+                site = wiking.cfg.server_hostname
+                self._call_db_function('cms_add_text_label', text.label(), site)
                 
     def text(self, req, text, lang=None, args=None):
         """Return text corresponding to 'text'.

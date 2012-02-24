@@ -895,7 +895,7 @@ class Users(UserManagementModule):
                            regcode=record['regcode'].value())
         text = _("To finish your registration at %(server_hostname)s, click on the following link:\n"
                  "%(uri)s\n\n",
-                 server_hostname=req.server_hostname(),
+                 server_hostname=wiking.cfg.server_hostname,
                  uri=uri,
                  code=record['regcode'].value())
         attachments = ()
@@ -917,7 +917,7 @@ class Users(UserManagementModule):
     def _send_registration_email(self, req, record):
         text, attachments = self._make_registration_email(req, record)
         err = send_mail(record['email'].value(),
-                        _("Your registration at %s", req.server_hostname()),
+                        _("Your registration at %s", wiking.cfg.server_hostname),
                         text, export=True,
                         lang=record['lang'].value(), attachments=attachments)
         if err:
@@ -962,7 +962,8 @@ class Users(UserManagementModule):
         if addr:
             base_uri = req.module_uri(self.name()) or '/_wmi/'+ self.name()
             text = _("New user %(fullname)s registered at %(server_hostname)s.",
-                     fullname=record['fullname'].value(), server_hostname=req.server_hostname()
+                     fullname=record['fullname'].value(),
+                     server_hostname=wiking.cfg.server_hostname
                      ) + '\n\n'
             if cfg.autoapprove_new_users:
                 text += _("The account was approved automatically according to server setup.")

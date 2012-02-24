@@ -312,7 +312,7 @@ class Application(Module):
         else:
             languages = []
         languages.extend([lang for lang in req.accepted_languages() if lang != selected])
-        default = wiking.cfg.default_language_by_domain.get(req.server_hostname(current=True),
+        default = wiking.cfg.default_language_by_domain.get(req.server_hostname(),
                                                             wiking.cfg.default_language)
         if default and default not in languages:
             languages.append(default)
@@ -413,7 +413,7 @@ class Application(Module):
                 err = send_mail(address, 'Wiking Error: ' + buginfo, text,
                                 html="<html><pre>"+ pre +"</pre>"+ cgitb.html(einfo) +"</html>",
                                 headers=(('Reply-To', address),
-                                         ('X-Wiking-Bug-Report-From', req.server_hostname())))
+                                         ('X-Wiking-Bug-Report-From', cfg.server_hostname)))
                 if err:
                     log(OPR, "Failed sending exception info to %s:" % address, err)
                 else:

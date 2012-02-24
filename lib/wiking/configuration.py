@@ -287,6 +287,20 @@ class Configuration(pc):
         def default(self):
             return {'wiking': '/usr/local/share/wiking/doc/src',
                     'lcg': '/usr/local/share/lcg/doc/src'}
+
+    class _Option_server_hostname(pc.StringOption):
+        _DESCR = "Primary server host name"
+        _DOC = ("This value may be used by applications to distinguish "
+                "between separate servers.  One server may still have multiple "
+                "aliases so it can be accessed under different server names (as "
+                "returned by 'wiking.Request.server_hostname()'), but this "
+                "configuration option will have the same value for all servers "
+                "which belong to one primary server (or more precisely, all "
+                "servers, which share the same configuration).  This is usually "
+                "also the primary (official) server name.  The primary server, "
+                "however, is typically still a virtual server and there may be "
+                "several primary servers on one physical host.")
+        _DEFAULT = None
         
     class _Option_site_title(pc.StringOption):
         # Translators: Site means a webpage or web application.
