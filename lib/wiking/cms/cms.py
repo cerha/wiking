@@ -691,7 +691,7 @@ class Config(SettingsManagementModule):
         site = wiking.cfg.server_hostname
         row = self._data.get_row(site=site)
         if row is None:
-            row = self._data.get_row(site=site)
+            row = self._data.get_row(site='*')
             if row:
                 self._data.update((row['site'],), self._data.make_row(site=site))
         for f in self._view.fields():
