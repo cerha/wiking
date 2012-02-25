@@ -717,7 +717,22 @@ class Config(SettingsManagementModule):
             return self._error_message(*self._analyze_exception(e))
     
 
-class PageTitles(ContentManagementModule):
+class SiteSpecificContentModule(ContentManagementModule):
+
+    def _refered_row_values(self, req, value):
+        return dict(super(SiteSpecificContentModule, self)._refered_row_values(req, value),
+                    site=wiking.cfg.server_hostname)
+    
+    def _condition(self, req, **kwargs):
+        return pd.AND(super(SiteSpecificContentModule, self)._condition(req, **kwargs),
+                      pd.EQ('site', pd.sval(wiking.cfg.server_hostname)))
+
+    def _prefill(self, req):
+        return dict(super(SiteSpecificContentModule, self)._prefill(req),
+                    site=wiking.cfg.server_hostname)
+    
+        
+class PageTitles(SiteSpecificContentModule):
     """Simplified version of the 'Pages' module for 'PageStructure' enumerator.
 
     This module is needed to prevent recursive enumerator definition in 'PageStructure'.
@@ -725,10 +740,10 @@ class PageTitles(ContentManagementModule):
     """
     class Spec(Specification):
         table = 'cms_v_pages'
-        fields = [Field(_f) for _f in ('page_key', 'page_id', 'lang', 'title')]
+        fields = [Field(_f) for _f in ('page_key', 'page_id', 'site', 'lang', 'title')]
 
         
-class PageStructure(ContentManagementModule):
+class PageStructure(SiteSpecificContentModule):
     """Provide a set of available URIs -- page identifiers bound to particular pages.
 
     This module contains a unique record for each page identifier, while
@@ -741,6 +756,7 @@ class PageStructure(ContentManagementModule):
     class Spec(Specification):
         table = 'cms_pages'
         fields = (Field('page_id', enumerator='PageTitles'),
+                  Field('site'),
                   Field('identifier'),
                   Field('modname'),
                   Field('tree_order'),
@@ -761,7 +777,7 @@ class PageStructure(ContentManagementModule):
             return pp.CodebookSpec(display=self._translate, prefer_display=True)
 
 
-class Panels(ContentManagementModule, Publishable):
+class Panels(SiteSpecificContentModule, Publishable):
     """Provide a set of side panels.
 
     The panels are stored in a Pytis data object to allow their management through WMI.
@@ -778,6 +794,7 @@ class Panels(ContentManagementModule, Publishable):
         table = 'cms_v_panels'
         fields = (
             Field('panel_id', width=5, editable=NEVER),
+            Field('site'),
             Field('lang', _("Language"), codebook='Languages', editable=ONCE,
                   selection_type=CHOICE, value_column='lang'),
             # Translators: Title in the meaning of a heading
@@ -793,6 +810,7 @@ class Panels(ContentManagementModule, Publishable):
                   descr=_("Number denoting the order of the panel on the page.")),
             # Translators: List items can be news, webpages, names of users. Intentionally general.
             Field('page_id', _("List items"), width=5, not_null=False, codebook='PageStructure',
+                  runtime_filter=computer(lambda r, site: pd.EQ('site', pd.sval(site))),
                   descr=_("The items of the extension module used by the selected page will be "
                           "shown by the panel.  Leave blank for a text content panel.")),
             Field('modname'),
@@ -824,7 +842,9 @@ class Panels(ContentManagementModule, Publishable):
         parser = lcg.Parser()
         #TODO: tady uvidim prirazenou stranku, navigable
         roles = wiking.module('Users').Roles()
-        for row in self._data.get_rows(lang=lang, published=True, sorting=self._sorting):
+        for row in self._data.get_rows(lang=lang, published=True,
+                                       site=wiking.cfg.server_hostname,
+                                       sorting=self._sorting):
             role_id = row['read_role_id'].value()
             if role_id is not None and not req.check_roles(roles[role_id]):
                 continue
@@ -1062,7 +1082,7 @@ class Themes(StyleManagementModule):
 # The modules above are system modules used internally by Wiking.
 # ==============================================================================
 
-class Pages(ContentManagementModule):
+class Pages(SiteSpecificContentModule):
     """Define available pages and their content and allow their management.
 
     This module implements the key CMS functionality.  Pages, their hierarchy, content and other
@@ -1077,6 +1097,7 @@ class Pages(ContentManagementModule):
         def fields(self): return (
             Field('page_key'),
             Field('page_id'),
+            Field('site'),
             Field('identifier', _("Identifier"), width=20, fixed=True, editable=ONCE,
                   type=pd.RegexString(maxlen=32, not_null=True, regex='^[a-zA-Z][0-9a-zA-Z_-]*$'),
                   descr=_("The identifier may be used to refer to this page from outside and also "
@@ -1106,6 +1127,7 @@ class Pages(ContentManagementModule):
             # term might be "Superordinate item" but doesn't sound that nice in English.  The term
             # "item" represents a page, but also a menu item.
             Field('parent', _("Parent item"), codebook='PageStructure', not_null=False,
+                  runtime_filter=computer(lambda r, site: pd.EQ('site', pd.sval(site))),
                   descr=_("Select the superordinate item in page hierarchy.  Leave blank for "
                           "a top-level page.")),
             # Translators: Configuration option determining whether the page is published or not
@@ -1162,6 +1184,9 @@ class Pages(ContentManagementModule):
             return labels.get(menu_visibility, menu_visibility)
         def row_style(self, record):
             return not record['published'].value() and pp.Style(foreground='#777') or None
+        def check(self, record):
+            if record['parent'].value() == record['page_id'].value():
+                return ('parent', _("A page can not be its own parent."))
         sorting = (('tree_order', ASC), ('identifier', ASC),)
         #grouping = 'grouping'
         #group_heading = 'title'
@@ -1204,11 +1229,11 @@ class Pages(ContentManagementModule):
 
     _REFERER = 'identifier'
     _EXCEPTION_MATCHERS = (
-        ('duplicate key (value )?violates unique constraint "_pages_page_id_key"',
+        ('duplicate key (value )?violates unique constraint "cms_pages_pkey"',
          _("The page already exists in given language.")),
         ('duplicate key (value )?violates unique constraint "cms_pages_unique_tree_(?P<id>ord)er"',
          _("Duplicate menu order at this level of hierarchy.")),) + \
-         ContentManagementModule._EXCEPTION_MATCHERS
+         SiteSpecificContentModule._EXCEPTION_MATCHERS
     _LIST_BY_LANGUAGE = True
     #_OWNER_COLUMN = 'owner'
     #_SUPPLY_OWNER = False
@@ -1273,17 +1298,19 @@ class Pages(ContentManagementModule):
             identifier = identifier[:-4]
             if len(identifier) > 3 and identifier[-3] == '.' and identifier[-2:].isalpha():
                 lang = str(identifier[-2:])
-                row = self._data.get_row(identifier=identifier[:-3], lang=lang, published=True)
+                row = self._data.get_row(identifier=identifier[:-3], lang=lang, published=True,
+                                         site=wiking.cfg.server_hostname)
                 if row:
                     del req.unresolved_path[0]
                     return row
-        rows = self._data.get_rows(identifier=identifier, published=True)
+        rows = self._data.get_rows(identifier=identifier, published=True,
+                                   site=wiking.cfg.server_hostname)
         if rows:
             variants = [str(row['lang'].value()) for row in rows]
             lang = req.preferred_language(variants)
             del req.unresolved_path[0]
             return rows[variants.index(lang)]
-        elif self._data.get_rows(identifier=identifier):
+        elif self._data.get_rows(identifier=identifier, site=wiking.cfg.server_hostname):
             raise Forbidden()
         else:
             raise NotFound()
@@ -1369,6 +1396,7 @@ class Pages(ContentManagementModule):
     def menu(self, req):
         children = {None: []}
         translations = {}
+        available_languages = wiking.module('Application').languages()
         def item(row):
             page_id = row['page_id'].value()
             identifier = str(row['identifier'].value())
@@ -1399,7 +1427,8 @@ class Pages(ContentManagementModule):
                             foldable=row['foldable'].value(),
                             variants=variants,
                             submenu=submenu)
-        for row in self._data.get_rows(sorting=self._sorting, published=True):
+        for row in self._data.get_rows(sorting=self._sorting, site=wiking.cfg.server_hostname,
+                                       published=True):
             page_id = row['page_id'].value()
             if page_id not in translations:
                 parent = row['parent'].value()
@@ -1427,7 +1456,7 @@ class Pages(ContentManagementModule):
         if modname == self.name():
             uri = '/'
         else:
-            row = self._data.get_row(modname=modname) #, published=True)
+            row = self._data.get_row(modname=modname, site=wiking.cfg.server_hostname)
             if row:
                 uri = '/'+ row['identifier'].value()
                 binding = self._embed_binding(modname)
@@ -1518,7 +1547,8 @@ class Pages(ContentManagementModule):
             rows = self._data.get_rows(condition=\
                                        pd.AND(pd.EQ('parent', record['page_id']),
                                               pd.NE('menu_visibility', pd.sval('never')),
-                                              pd.EQ('published', pd.bval(True))),
+                                              pd.EQ('published', pd.bval(True)),
+                                              pd.EQ('site', pd.sval(wiking.cfg.server_hostname))),
                                        sorting=self._sorting)
             if rows:
                 for row in rows:
@@ -1644,6 +1674,7 @@ class Attachments(ContentManagementModule):
                                     attachment_id and '%d.%s' % (attachment_id, lang))),
             Field('attachment_id'),
             Field('page_id', _("Page"), codebook='PageStructure', editable=ALWAYS,
+                  runtime_filter=computer(lambda r: pd.EQ('site', pd.sval(wiking.cfg.server_hostname))),
                   descr=_("Select the page where you want to move this attachment.  Don't forget "
                           "to update all explicit links to this attachment within page text(s).")),
             Field('lang', _("Language"), codebook='Languages', editable=ONCE, value_column='lang'),
@@ -1820,7 +1851,7 @@ class Attachments(ContentManagementModule):
     _LIST_BY_LANGUAGE = True
     _SEQUENCE_FIELDS = (('attachment_id', '_attachments_attachment_id_seq'),)
     _EXCEPTION_MATCHERS = (
-        ('duplicate key (value )?violates unique constraint "_attachments_page_id_key"',
+        ('duplicate key (value )?violates unique constraint "cms_page_attachments_filename_key"',
          ('file', _("Attachment of the same file name already exists for this page."))),)
     RIGHTS_view   = (Roles.CONTENT_ADMIN,)
 
@@ -1942,7 +1973,8 @@ class News(ContentManagementModule, EmbeddableCMSModule):
         table = 'cms_news'
         def fields(self): return (
             Field('news_id', editable=NEVER),
-            Field('page_id', _("Page"), codebook='PageStructure', editable=ONCE),
+            Field('page_id', _("Page"), codebook='PageStructure', editable=ONCE,
+                  runtime_filter=computer(lambda r: pd.EQ('site', pd.sval(wiking.cfg.server_hostname)))),
             Field('lang', _("Language"), codebook='Languages', editable=ONCE,
                   selection_type=CHOICE, value_column='lang'),
             Field('timestamp', _("Date"),
@@ -2155,6 +2187,7 @@ class StyleSheets(StyleManagementModule):
         help = _("Manage available Cascading Style Sheets.")
         def fields(self): return (
             Field('stylesheet_id'),
+            Field('site'),
             # Translators: Unique identifier of a stylesheet.
             Field('identifier', _("Identifier"), width=16),
             Field('description', _("Description"), width=50),
@@ -2200,16 +2233,24 @@ class StyleSheets(StyleManagementModule):
                   ('wmi', _("Management interface")))
     _REFERER = 'identifier'
 
+    def _condition(self, req, **kwargs):
+        return pd.AND(super(StyleSheets, self)._condition(req, **kwargs),
+                      pd.OR(pd.EQ('site', pd.sval(wiking.cfg.server_hostname)),
+                            pd.EQ('site', pd.sval(None))))
+    
     def stylesheets(self, req):
         scopes = [None, req.wmi and 'wmi' or 'website']
         base_uri = req.module_uri('Resources')
         return [lcg.Stylesheet(r['identifier'].value(), uri=base_uri+'/'+r['identifier'].value(),
                                media=r['media'].value())
-                for r in self._data.get_rows(active=True, sorting=self._sorting)
+                for r in self._data.get_rows(active=True, condition=self._condition(req),
+                                             sorting=self._sorting)
                 if r['scope'].value() in scopes]
         
     def stylesheet(self, name):
-        row = self._data.get_row(identifier=name, active=True)
+        condition = pd.OR(pd.EQ('site', pd.sval(wiking.cfg.server_hostname)),
+                          pd.EQ('site', pd.sval(None)))
+        row = self._data.get_row(identifier=name, active=True, condition=condition)
         if row:
             return row['content'].value()
         else:
@@ -2264,24 +2305,20 @@ class CommonTexts(SettingsManagementModule):
     
     """
     class Spec(Specification):
-
-        table = 'cms_v_system_texts'
-        title = _("System Texts")
-        help = _("Edit miscellaneous system texts.")
-
-        # This must be a private attribute, otherwise Wiking handles it in a special way
+        # This must be a private attribute, otherwise Pytis handles it in a special way
         _texts = {}
         
-        def fields(self): return (
-            Field('text_id', editable=NEVER),
-            Field('label', _("Label"), width=32, editable=NEVER),
-            Field('lang', editable=NEVER),
-            Field('description', editable=NEVER),
-            Field('descr', _("Purpose"), type=pytis.data.String(), width=64, virtual=True,
-                  computer=computer(self._description)),
-            Field('content', _("Text"), width=80, height=10,
-                  text_format=pp.TextFormat.LCG, descr=_STRUCTURED_TEXT_DESCR),
-            )
+        def fields(self):
+            return (
+                Field('text_id', editable=NEVER),
+                Field('label', _("Label"), width=32, editable=NEVER),
+                Field('lang', editable=NEVER),
+                Field('description', editable=NEVER),
+                Field('descr', _("Purpose"), width=64, virtual=True,
+                      computer=computer(self._description)),
+                Field('content', _("Text"), width=80, height=10,
+                      text_format=pp.TextFormat.LCG, descr=_STRUCTURED_TEXT_DESCR),
+                )
 
         columns = ('label', 'descr',)
         sorting = (('label', ASC,),)
@@ -2336,7 +2373,7 @@ class CommonTexts(SettingsManagementModule):
     def _retrieve_text_row(self, req, text, lang):
         lang = self._select_language(req, lang)
         identifier = text.label() + '@' + lang
-        row = self._data.get_row(text_id=identifier)
+        row = self._data.get_row(text_id=identifier, site=wiking.cfg.server_hostname)
         return row
 
     def _translated_args(self, translate, args):
@@ -2369,6 +2406,17 @@ class Texts(CommonTexts):
     'label' attribute).  See 'Text' class for more details.
     
     """
+    class Spec(CommonTexts.Spec):
+        table = 'cms_v_system_texts'
+        title = _("System Texts")
+        help = _("Edit miscellaneous system texts.")
+        def fields(self):
+            extra = (
+                Field('site'),
+                )
+            return self._inherited_fields(Texts.Spec) + extra
+
+    
     _DB_FUNCTIONS = dict(CommonTexts._DB_FUNCTIONS,
                          cms_add_text_label=(('label', pd.String()), ('site', pd.String())))
 
@@ -2490,25 +2538,21 @@ class Emails(CommonTexts):
                 obj = '_' + obj
             return pytis.data.String._validate(self, obj, **kwargs)
     
-    class Spec(Texts.Spec):
+    class Spec(CommonTexts.Spec):
 
         table = 'cms_v_emails'
         title = _("E-mails")
         help = _("Edit e-mail texts.")
-        
-        def fields(self): return (
-            Field('text_id', editable=NEVER),
-            Field('label', _("Label"), type=Emails.LabelType(maxlen=64), width=32, editable=ONCE),
-            Field('lang', editable=NEVER),
-            Field('description', editable=NEVER),
-            Field('descr', _("Purpose"), width=64,
-                  virtual=True, computer=computer(self._description)),
-            Field('content', _("Text"), width=80, height=10,
-                  text_format=pp.TextFormat.LCG, descr=_STRUCTURED_TEXT_DESCR),
-            Field('subject', _("Subject")),
-            Field('cc', _("Additional recipients"),
-                  descr=_("Comma separated list of e-mail addresses.")),
-            )
+        def fields(self):
+            override = (
+                Field('label', type=Emails.LabelType(maxlen=64), editable=ONCE),
+                )
+            extra = (
+                Field('subject', _("Subject")),
+                Field('cc', _("Additional recipients"),
+                      descr=_("Comma separated list of e-mail addresses.")),
+                )
+            return self._inherited_fields(Emails.Spec, override=override) + extra
         
         columns = ('label', 'descr',)
         sorting = (('label', ASC,),)
