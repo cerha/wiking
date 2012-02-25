@@ -121,12 +121,14 @@ class WikingManagementInterface(Module, RequestHandler):
     def menu(self, req):
         variants = self._application.languages()
         return [MenuItem('_wmi/sec%d' % (i+1), title, descr=descr, variants=variants,
-                         submenu=[MenuItem('_wmi/' + m.name(), m.title(), descr=m.descr(),
-                                           variants=variants)
+                         submenu=[MenuItem('_wmi/' + m.name(),
+                                           m.title(),
+                                           descr=m.descr(),
+                                           variants=variants,
+                                           submenu=m.submenu(req),
+                                           foldable=True)
                                   for m in [wiking.module(modname) for modname in modnames]])
-                for i, (title, descr, modnames) in enumerate(self._MENU)] + \
-               [MenuItem('__site_menu__', '', hidden=True, variants=variants,
-                         submenu=wiking.module('Pages').menu(req))]
+                for i, (title, descr, modnames) in enumerate(self._MENU)]
 
     def module_uri(self, req, modname):
         """Return the WMI URI of given module or None if it is not available through WMI."""
@@ -305,6 +307,9 @@ class CMSModule(PytisModule, RssModule, Panelizable):
 
     def _generate_crypto_cookie(self):
         return wiking.module('Session').session_key()
+
+    def submenu(self, req):
+        return []
 
 
 class ContentManagementModule(CMSModule):
@@ -1381,12 +1386,18 @@ class Pages(ContentManagementModule):
             else:
                 submenu = []
             submenu += [item(r) for r in children.get(page_id, ())]
-            return MenuItem(identifier,
+            if req.wmi:
+                menu_identifier = '_wmi/Pages/' + identifier
+                variants = available_languages
+            else:
+                menu_identifier = identifier
+                variants = titles.keys()
+            return MenuItem(menu_identifier,
                             title=lcg.SelfTranslatableText(identifier, translations=titles),
                             descr=lcg.SelfTranslatableText('', translations=descriptions),
                             hidden=not self._visible_in_menu(req, row),
                             foldable=row['foldable'].value(),
-                            variants=titles.keys(),
+                            variants=variants,
                             submenu=submenu)
         for row in self._data.get_rows(sorting=self._sorting, published=True):
             page_id = row['page_id'].value()
@@ -1405,6 +1416,12 @@ class Pages(ContentManagementModule):
                [MenuItem('_registration', _("Registration"), hidden=True),
                 # Translators: Label for section with user manuals, help pages etc.
                 MenuItem('_doc', _("Documentation"), hidden=True)]
+
+    def submenu(self, req):
+        if req.wmi:
+            return self.menu(req)
+        else:
+            return []
 
     def module_uri(self, req, modname):
         if modname == self.name():
