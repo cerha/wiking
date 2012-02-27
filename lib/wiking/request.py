@@ -284,7 +284,7 @@ class Request(ServerInterface):
         self._cookies = Cookie.SimpleCookie(self.header('Cookie'))
         self._preferred_language = None
         self._preferred_languages = None
-        self._translator = None
+        self._translator = {}
         self._credentials = self._init_credentials()
         self._decryption_password = self._init_decryption_password()
         self._messages = self._init_messages()
@@ -782,12 +782,14 @@ class Request(ServerInterface):
     prefered_language = preferred_language
     """Misspelled method name kept for backwards compatibility. Use 'preferred_language()'."""
 
-    def translate(self, string):
+    def translate(self, string, lang=None):
         """Return the 'string' translated into the user's preferred language.
 
         Arguments:
 
           string -- 'lcg.Translatable' or unicode instance
+          lang -- target language code as a string or None.  If None, the
+            current preferred language is used instead.
 
         Unicode instances which are not 'lcg.Translatable' are returned without
         change.  Translatable instances are returned as unicode localized
@@ -797,19 +799,23 @@ class Request(ServerInterface):
         to 'Request.translator().translate()'.
 
         """
-        return self.translator().translate(string)
+        return self.translator(lang).translate(string)
 
-    def translator(self):
-        """Return an 'lcg.Translator()' instance for the current preferred language.
+    def translator(self, lang=None):
+        """Return an 'lcg.Translator()' instance for given language.
+
+        If 'lang' is None, the current preferred language is used instead.
         
         Using this method is encouraged as the created translator instance is
         cached for the duration of the request.
 
         """
-        translator = self._translator
-        if translator is None:
+        if lang is None:
             lang = self.preferred_language(raise_error=False)
-            translator = self._translator = wiking.translator(lang)
+        try:
+            translator = self._translator[lang]
+        except KeyError:
+            translator = self._translator[lang] = wiking.translator(lang)
         return translator
     
     def credentials(self):
