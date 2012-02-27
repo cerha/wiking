@@ -1526,8 +1526,7 @@ class Pages(SiteSpecificContentModule):
             if record['modname'].value() is not None:
                 # Supply the module's title automatically.
                 mod = wiking.module(record['modname'].value())
-                tr = translator(record['lang'].value())
-                values['title'] = tr.translate(mod.title())
+                values['title'] = req.translate(mod.title(), record['lang'].value())
             else:
                 req.message(_("Can't publish untitled page."), type=req.ERROR)
                 raise Redirect(self._current_record_uri(req, record))
