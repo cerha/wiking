@@ -2091,22 +2091,18 @@ class Resources(wiking.Resources):
             return None
 
    
-class StyleSheets(StyleManagementModule):
+class StyleSheets(SiteSpecificContentModule, StyleManagementModule):
     """Manage available Cascading Style Sheets through a Pytis data object."""
     class Scopes(pp.Enumeration):
         enumeration = (
-            # Translators: This and the following three labels define the
-            # available values of a stylesheet's scope (applicability to
-            # diferent sites and their parts).  Each stylesheet may be
-            # applicable to the management interface (the area where only
-            # administrators are allowed) or pages (everything outside the
-            # management interface).  Additionally the stylesheet may apply to
-            # the current site only or possibly to all sites sharing the same
-            # CMS database.  The combinations make the available options.
-            ('pages',      _("Pages (any site)")),
-            ('wmi',        _("Management interface (any site)")),
-            ('site-pages', _("Pages (current site)")),
-            ('site-wmi',   _("Management interface (current site)")),
+            # Translators: This and the next label define the available values
+            # of a stylesheet's scope (applicability to diferent parts of a
+            # website).  Each stylesheet may be applicable to the management
+            # interface (the area where only administrators are allowed), pages
+            # (everything outside the management interface) or both ("Global"
+            # scope).
+            ('website', _("Website")),
+            ('wmi',     _("Management interface")),
             )
     class MediaTypes(pp.Enumeration):
         enumeration = (('all', _("All types")),
@@ -2135,7 +2131,7 @@ class StyleSheets(StyleManagementModule):
         help = _("Manage available Cascading Style Sheets.")
         def fields(self): return (
             Field('stylesheet_id'),
-            Field('site', computer=computer(self._site)),
+            Field('site'),
             # Translators: Unique identifier of a stylesheet.
             Field('identifier', _("Identifier"), width=16),
             Field('description', _("Description"), width=50),
@@ -2150,14 +2146,12 @@ class StyleSheets(StyleManagementModule):
                   # Translators: Global scope (applies to all parts of the website).
                   null_display=_("Global"), not_null=False,
                   # Translators: Description of scope options.  Make sure you
-                  # use the same terminology as in the options themselves,
-                  # which are defined a few items above.
-                  descr=_("Determines where this stylesheet is applicable. "
-                          'The "Management interface" is the area for CMS administration '
-                          'and "Pages" means the regular website outside the management '
-                          'interface.  These options may additionally apply to any website '
-                          'or be restricted exclusively to the current website (only makes '
-                          'sense in setups where multiple sites share the same CMS database).')),
+                  # use the same terms as in the options themselves, which are
+                  # defined a few items above.
+                  descr=_("Determines where this style sheet is applicable. "
+                          'The "Management interface" is the area for CMS administration, '
+                          '"Website" means the regular pages outside the management interface '
+                          'and "Global" means both.')),
             Field('ord', _("Order"), width=5,
                   # Translators: Precedence meaning position in a sequence of importance or priority.
                   descr=_("Number denoting the style sheet precedence.")),
@@ -2166,33 +2160,22 @@ class StyleSheets(StyleManagementModule):
         layout = ('identifier', 'active', 'media', 'scope', 'ord', 'description', 'content')
         columns = ('identifier', 'active', 'media', 'scope', 'ord', 'description')
         sorting = (('ord', ASC),)
-        def _site(self, record, scope):
-            if scope and scope.startswith('site-'):
-                return wiking.cfg.server_hostname
-            else:
-                return None
     _REFERER = 'identifier'
 
-    def _condition(self, req, **kwargs):
-        return pd.AND(super(StyleSheets, self)._condition(req, **kwargs),
-                      pd.OR(pd.EQ('site', pd.sval(wiking.cfg.server_hostname)),
-                            pd.EQ('site', pd.sval(None))))
-    
     def stylesheets(self, req):
-        scope = req.wmi and 'wmi' or 'pages'
+        scopes = (None, req.wmi and 'wmi' or 'website')
         base_uri = req.module_uri('Resources')
-        condition=pd.AND(self._condition(req),
-                         pd.EQ('active', pd.bval(True)),
-                         pd.ANY_OF('scope', *[pd.sval(s) for s in (None, scope, 'site-'+scope)]))
         return [lcg.Stylesheet(row['identifier'].value(),
                                uri=base_uri+'/'+row['identifier'].value(),
                                media=row['media'].value())
-                for row in self._data.get_rows(condition=condition, sorting=self._sorting)]
+                for row in self._data.get_rows(site=wiking.cfg.server_hostname,
+                                               active=True,
+                                               condition=pd.OR(*[pd.EQ('scope', pd.sval(s))
+                                                                 for s in scopes]),
+                                               sorting=self._sorting)]
         
     def stylesheet(self, name):
-        condition = pd.OR(pd.EQ('site', pd.sval(wiking.cfg.server_hostname)),
-                          pd.EQ('site', pd.sval(None)))
-        row = self._data.get_row(identifier=name, active=True, condition=condition)
+        row = self._data.get_row(identifier=name, active=True, site=wiking.cfg.server_hostname)
         if row:
             return row['content'].value()
         else:

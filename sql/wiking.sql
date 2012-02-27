@@ -452,7 +452,7 @@ create or replace rule cms_v_panels_delete as
 
 create table cms_stylesheets (
 	stylesheet_id serial primary key,
-	site text references cms_config(site) on update cascade on delete cascade,
+	site text not null references cms_config(site) on update cascade on delete cascade,
 	identifier varchar(32) not null,
 	active boolean not null default true,
 	media varchar(12) not null default 'all',
