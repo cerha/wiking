@@ -2092,6 +2092,27 @@ class Resources(wiking.Resources):
    
 class StyleSheets(StyleManagementModule):
     """Manage available Cascading Style Sheets through a Pytis data object."""
+    class Scopes(pp.Enumeration):
+        enumeration = (('website', _("Website")),
+                       ('wmi', _("Management interface")))
+    class MediaTypes(pp.Enumeration):
+        enumeration = (('all', _("All types")),
+                       # Translators: Braille as a type of media
+                       ('braille', _("Braille")), # braille tactile feedback devices
+                       #('embossed', _("Embossed") # for paged braille printers
+                       # Translators: Handheld device. Small computer.
+                       ('handheld', _("Handheld")),  # typically small screen, limited bandwidth
+                       # Translators: Print as a type of media (print, speech...)
+                       ('print', _("Print")), # paged material
+                       #('projection', _(""))), # projected presentations, for example projectors
+                       # Translators: Meaning computer screen
+                       ('screen', _("Screen")), # color computer screens
+                       # Translators: Speech as a type of media (print, speech...)
+                       ('speech', _("Speech")), # for speech synthesizers
+                       #('tty', _(""))), # media using a fixed-pitch character grid
+                       #('tv', _(""))), # television-type devices
+                       )
+
     class Spec(Specification):
         # Translators: Section heading and menu item. Meaning the visual appearance. Computer
         # terminology.
@@ -2109,15 +2130,11 @@ class StyleSheets(StyleManagementModule):
             # Translators: Heading of a form field determining in
             # which media the page is displayed. E.g. web, print,
             # Braille, speech.
-            Field('media', _("Media"), default='all',
-                  enumerator=enum([media for media, title in self._MEDIA]),
-                  display=lambda m: dict(self._MEDIA).get(m, m), prefer_display=True),
+            Field('media', _("Media"), default='all', enumerator=StyleSheets.MediaTypes),
             # Translators: Scope of applicability of a stylesheet on different website parts.
-            Field('scope', _("Scope"), 
-                  enumerator=enum([scope for scope, title in self._SCOPE]),
+            Field('scope', _("Scope"), enumerator=StyleSheets.Scopes,
                   # Translators: Global scope (applies to all parts of the website).
-                  null_display=_("Global"), not_null=False,
-                  display=lambda m: dict(self._SCOPE).get(m, m), prefer_display=True),
+                  null_display=_("Global"), not_null=False),
             # Translators: Order as a position in sequence. E.g. first, second...
             Field('ord', _("Order"), width=5,
                   # Translators: Precedence meaning position in a sequence of importance or priority.
@@ -2127,24 +2144,6 @@ class StyleSheets(StyleManagementModule):
         layout = ('identifier', 'active', 'media', 'scope', 'ord', 'description', 'content')
         columns = ('identifier', 'active', 'media', 'scope', 'ord', 'description')
         sorting = (('ord', ASC),)
-        _MEDIA = (('all', _("All types")),
-                  # Translators: Braille as a type of media
-                  ('braille', _("Braille")), # braille tactile feedback devices
-                  #('embossed', _("Embossed") # for paged braille printers
-                  # Translators: Handheld device. Small computer.
-                  ('handheld', _("Handheld")),  # typically small screen, limited bandwidth
-                  # Translators: Print as a type of media (print, speech...)
-                  ('print', _("Print")), # paged material
-                  #('projection', _(""))), # projected presentations, for example projectors
-                  # Translators: Meaning computer screen
-                  ('screen', _("Screen")), # color computer screens
-                  # Translators: Speech as a type of media (print, speech...)
-                  ('speech', _("Speech")), # for speech synthesizers
-                  #('tty', _(""))), # media using a fixed-pitch character grid
-                  #('tv', _(""))), # television-type devices
-                  )
-        _SCOPE = (('website', _("Website")),
-                  ('wmi', _("Management interface")))
     _REFERER = 'identifier'
 
     def _condition(self, req, **kwargs):
