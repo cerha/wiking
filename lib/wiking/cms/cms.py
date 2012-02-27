@@ -608,6 +608,10 @@ class Config(SettingsManagementModule):
         row = self._data.get_row(site=site)
         if row is None:
             row = self._data.get_row(site='*')
+            # This may happen in two cases: A) After DB initialization, as the
+            # init.sql script is currently static and doesnt have the
+            # information about real site name, B) After application of
+            # upgrade.30.sql.
             if row:
                 self._data.update((row['site'],), self._data.make_row(site=site))
         for f in self._view.fields():
