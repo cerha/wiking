@@ -214,6 +214,7 @@ alter table cms_stylesheets add column site text references cms_config(site) on 
 alter table cms_stylesheets drop constraint stylesheets_identifier_key;
 alter table cms_stylesheets add constraint cms_stylesheets_identifier_key unique (identifier, site);
 alter sequence stylesheets_stylesheet_id_seq rename to cms_stylesheets_stylesheet_id_seq;
+update cms_stylesheets set scope='pages' where scope='website';
 
 alter table themes rename to cms_themes;
 alter index themes_pkey rename to cms_themes_pkey;
