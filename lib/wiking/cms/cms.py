@@ -1764,7 +1764,7 @@ class Attachments(ContentManagementModule):
     _REFERER = 'filename'
     _LAYOUT = {'move': ('page_id',)}
     _LIST_BY_LANGUAGE = True
-    _SEQUENCE_FIELDS = (('attachment_id', '_attachments_attachment_id_seq'),)
+    _SEQUENCE_FIELDS = (('attachment_id', 'cms_page_attachments_attachment_id_seq'),)
     _EXCEPTION_MATCHERS = (
         ('duplicate key (value )?violates unique constraint "cms_page_attachments_filename_key"',
          ('file', _("Attachment of the same file name already exists for this page."))),)
