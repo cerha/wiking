@@ -2148,6 +2148,9 @@ class StyleSheets(StyleManagementModule):
                   selection_type=pp.SelectionType.RADIO,
                   # Translators: Global scope (applies to all parts of the website).
                   null_display=_("Global"), not_null=False,
+                  # Translators: Description of scope options.  Make sure you
+                  # use the same terminology as in the options themselves,
+                  # which are defined a few items above.
                   descr=_("Determines where this stylesheet is applicable. "
                           'The "Management interface" is the area for CMS administration '
                           'and "Pages" means the regular website outside the management '
