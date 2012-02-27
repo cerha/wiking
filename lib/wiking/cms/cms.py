@@ -1100,7 +1100,8 @@ class Pages(SiteSpecificContentModule):
         def row_style(self, record):
             return not record['published'].value() and pp.Style(foreground='#777') or None
         def check(self, record):
-            if record['parent'].value() == record['page_id'].value():
+            parent = record['parent'].value()
+            if parent is not None and parent == record['page_id'].value():
                 return ('parent', _("A page can not be its own parent."))
         sorting = (('tree_order', ASC), ('identifier', ASC),)
         #grouping = 'grouping'
