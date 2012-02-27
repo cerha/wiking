@@ -102,8 +102,7 @@ create table cms_planner (
 	end_date date,
 	lang char(2) not null references cms_languages(lang) on update cascade,
 	title text not null,
-	content text not null,
-	unique (title, site, start_date, lang)
+	content text not null
 );
 
 create table cms_panels (
