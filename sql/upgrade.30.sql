@@ -179,6 +179,7 @@ insert into cms_page_texts (page_id, lang, published, title, description, conten
 select setval('cms_pages_page_id_seq', nextval('_mapping_mapping_id_seq'));
 drop table _mapping cascade;
 drop table _pages cascade;
+update cms_pages set tree_order = cms_page_tree_order(page_id);
 
 insert into cms_page_attachments (attachment_id, page_id, filename, mime_type, bytesize, image, thumbnail, thumbnail_size, thumbnail_width, thumbnail_height, in_gallery, listed, author, "location", width, height, "timestamp")
        select attachment_id, mapping_id, filename, mime_type, bytesize, image, thumbnail, thumbnail_size, thumbnail_width, thumbnail_height, in_gallery, listed, author, "location", width, height, "timestamp"
