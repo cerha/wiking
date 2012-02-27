@@ -282,6 +282,7 @@ class Request(ServerInterface):
         self._user = self._UNDEFINED
         self._fresh_login = False
         self._cookies = Cookie.SimpleCookie(self.header('Cookie'))
+        self._preferred_language = None
         self._preferred_languages = None
         self._translator = None
         self._credentials = self._init_credentials()
@@ -760,10 +761,16 @@ class Request(ServerInterface):
 
         """
         if variants is None:
-            application = wiking.module('Application')
-            variants = application.languages()
+            if self._preferred_language is not None:
+                return self._preferred_language
+            variants = wiking.module('Application').languages()
+            save_default = True
+        else:
+            save_default = False
         for lang in self.preferred_languages():
             if lang in variants:
+                if save_default:
+                    self._preferred_language = lang
                 return lang
         if raise_error:
             raise wiking.NotAcceptable(variants)
