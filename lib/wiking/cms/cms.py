@@ -1702,7 +1702,7 @@ class Attachments(ContentManagementModule):
                 return None
         def _filename(self, record, attachment_id, ext):
             fname = str(attachment_id) +'.'+ ext
-            return os.path.join(cfg.storage, cfg.dbname, self.table, fname)
+            return os.path.join(cfg.storage, cfg.dbname, 'attachments', fname)
         def _thumbnail_size_display(self, size):
             # Translators: Size label related to "Preview size" field (pronoun).
             labels = {'small': _("Small") + " (%dpx)" % cfg.image_thumbnail_sizes[0],
