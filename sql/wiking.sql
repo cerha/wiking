@@ -532,12 +532,8 @@ create table cms_system_texts (
 );
 
 create or replace view cms_v_system_texts as
-select label || '@' || lang as text_id,
-       label,
-       site,
-       lang,
-       coalesce(description, '') as description,
-       coalesce(content, '') as content
+select label || ':' || site || ':' || lang as text_id,
+       label, site, lang, description, content
 from cms_system_text_labels cross join cms_languages
      left outer join cms_system_texts using (label, site, lang);
 
@@ -575,13 +571,8 @@ create table cms_emails (
 );
 
 create or replace view cms_v_emails as
-select label || '@' || lang as text_id,
-       label,
-       lang,
-       coalesce(description, '') as description,
-       coalesce(subject, '') as subject,
-       coalesce(cc, '') as cc,
-       coalesce(content, '') as content
+select label || ':' || lang as text_id,
+       label, lang, description, subject, cc, content
 from cms_email_labels cross join cms_languages left outer join cms_emails using (label, lang);
 
 create or replace rule cms_v_emails_insert as

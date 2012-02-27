@@ -2221,10 +2221,10 @@ class CommonTexts(SettingsManagementModule):
         
         def fields(self):
             return (
-                Field('text_id', editable=NEVER),
-                Field('label', _("Label"), width=32, editable=NEVER),
-                Field('lang', editable=NEVER),
-                Field('description', editable=NEVER),
+                Field('text_id'),
+                Field('label', _("Label"), width=32),
+                Field('lang'),
+                Field('description'),
                 Field('descr', _("Purpose"), width=64, virtual=True,
                       computer=computer(self._description)),
                 Field('content', _("Text"), width=80, height=10,
@@ -2247,6 +2247,7 @@ class CommonTexts(SettingsManagementModule):
             return descr
         
     _LIST_BY_LANGUAGE = True
+    _REFERER = 'label'
     RIGHTS_insert = ()
     RIGHTS_delete = ()
 
@@ -2280,12 +2281,6 @@ class CommonTexts(SettingsManagementModule):
             if lang is None:
                 lang = 'en'
         return lang
-
-    def _retrieve_text_row(self, req, text, lang):
-        lang = self._select_language(req, lang)
-        identifier = text.label() + '@' + lang
-        row = self._data.get_row(text_id=identifier, site=wiking.cfg.server_hostname)
-        return row
 
     def _translated_args(self, translate, args):
         translated_args = {}
@@ -2331,6 +2326,17 @@ class Texts(CommonTexts):
     _DB_FUNCTIONS = dict(CommonTexts._DB_FUNCTIONS,
                          cms_add_text_label=(('label', pd.String()), ('site', pd.String())))
 
+    def _refered_row_values(self, req, value):
+        return dict(super(Texts, self)._refered_row_values(req, value),
+                    site=wiking.cfg.server_hostname)
+    
+    def _condition(self, req, **kwargs):
+        return pd.AND(super(Texts, self)._condition(req, **kwargs),
+                      pd.EQ('site', pd.sval(wiking.cfg.server_hostname)))
+
+    def _prefill(self, req):
+        return dict(super(Texts, self)._prefill(req), site=wiking.cfg.server_hostname)
+
     def _auto_filled_fields(self):
         def content(req, record, field_id):
             label = record['label'].value()
@@ -2368,12 +2374,13 @@ class Texts(CommonTexts):
           
         """
         assert isinstance(text, Text)
-        row = self._retrieve_text_row(req, text, lang)
+        lang = self._select_language(req, lang)
+        text_id = ':'.join((text.label(), wiking.cfg.server_hostname, lang))
+        row = self._data.get_row(text_id=text_id)
         if row is None:
             retrieved_text = None
         else:
             retrieved_text = row['content'].value()
-        lang = self._select_language(req, lang)
         translate = translator(lang).translate
         if not retrieved_text:
             retrieved_text = translate(text.text())
@@ -2520,9 +2527,10 @@ class Emails(CommonTexts):
           
         """
         assert isinstance(text, EmailText)
-        row = self._retrieve_text_row(req, text, lang)
-        send_mail_args = dict(lang=lang, subject='', text='', cc=())
         lang = self._select_language(req, lang)
+        text_id = text.label() + ':' + lang
+        row = self._data.get_row(text_id=text_id)
+        send_mail_args = dict(lang=lang, subject='', text='', cc=())
         translate = translator(lang).translate
         if row is not None:
             send_mail_args['subject'] = row['subject'].value() or translate(text.subject())
