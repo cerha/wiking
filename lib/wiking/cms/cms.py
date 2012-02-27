@@ -2282,21 +2282,16 @@ class CommonTexts(SettingsManagementModule):
                 lang = 'en'
         return lang
 
-    def _translated_args(self, translate, args):
-        translated_args = {}
-        for k, v in args.items():
-            if isinstance(v, lcg.Localizable):
-                v = translate(v)
-            translated_args[k] = v
-        return translated_args
+    def _translated_args(self, req, lang, args):
+        return dict([(k, req.translate(v, lang)) for k, v in args.items()])
 
-    def _auto_filled_fields(self):
+    def _auto_filled_fields(self, req):
         return ()
 
     def _record(self, req, row, new=False, prefill=None):
         record = super(CommonTexts, self)._record(req, row, new=new, prefill=prefill)
         values_to_update = {}
-        for field_id, function in self._auto_filled_fields():
+        for field_id, function in self._auto_filled_fields(req):
             if not record[field_id].value():
                 values_to_update[field_id] = function(req, record, field_id)
         if values_to_update:
@@ -2337,14 +2332,14 @@ class Texts(CommonTexts):
     def _prefill(self, req):
         return dict(super(Texts, self)._prefill(req), site=wiking.cfg.server_hostname)
 
-    def _auto_filled_fields(self):
+    def _auto_filled_fields(self, req):
         def content(req, record, field_id):
             label = record['label'].value()
             if label is None:
                 return ''
             lang = record['lang'].value()
             text = self.Spec._texts[label]
-            return translator(lang).translate(text.text())
+            return req.translate(text.text(), lang)
         return (('content', content,),)
 
     def _register_texts(self):
@@ -2381,11 +2376,10 @@ class Texts(CommonTexts):
             retrieved_text = None
         else:
             retrieved_text = row['content'].value()
-        translate = translator(lang).translate
         if not retrieved_text:
-            retrieved_text = translate(text.text())
+            retrieved_text = req.translate(text.text(), lang=lang)
         if args:
-            retrieved_text = retrieved_text % self._translated_args(translate, args)
+            retrieved_text = retrieved_text % self._translated_args(req, lang, args)
         return retrieved_text
 
     def parsed_text(self, req, text, lang=None, args=None):
@@ -2487,7 +2481,7 @@ class Emails(CommonTexts):
             actions = [a for a in actions if a.id() != 'delete']
         return actions
     
-    def _auto_filled_fields(self):
+    def _auto_filled_fields(self, req):
         def content(req, record, field_id):
             label = record['label'].value()
             if label is None:
@@ -2500,7 +2494,7 @@ class Emails(CommonTexts):
                 text = email.subject()
             else:
                 return ''
-            return translator(lang).translate(text)
+            return req.translate(text, lang)
         return (('content', content,),
                 ('subject', content,),)
 
@@ -2531,16 +2525,15 @@ class Emails(CommonTexts):
         text_id = text.label() + ':' + lang
         row = self._data.get_row(text_id=text_id)
         send_mail_args = dict(lang=lang, subject='', text='', cc=())
-        translate = translator(lang).translate
         if row is not None:
-            send_mail_args['subject'] = row['subject'].value() or translate(text.subject())
-            send_mail_args['text'] = row['content'].value() or translate(text.text())
+            send_mail_args['subject'] = row['subject'].value() or req.translate(text.subject(), lang)
+            send_mail_args['text'] = row['content'].value() or req.translate(text.text(), lang)
             cc_string = row['cc'].value() or text.cc()
             if cc_string:
                 send_mail_args['cc'] = [address.strip() for address in cc_string.split(',')]
         if args:
             for key in ('subject', 'text',):
-                send_mail_args[key] = send_mail_args[key] % self._translated_args(translate, args)
+                send_mail_args[key] = send_mail_args[key] % self._translated_args(req, lang, args)
         return send_mail_args
 
 
