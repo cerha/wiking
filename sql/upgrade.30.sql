@@ -179,6 +179,14 @@ insert into cms_page_texts (page_id, lang, published, title, description, conten
 select setval('cms_pages_page_id_seq', nextval('_mapping_mapping_id_seq'));
 drop table _mapping cascade;
 drop table _pages cascade;
+create or replace function cms_page_tree_order(page_id int) returns text as $$
+  select
+    case when $1 is null then '' else
+      (select cms_page_tree_order(parent) || '.' || to_char(coalesce(ord, 999999), 'FM000000')
+       from cms_pages where page_id=$1)
+    end
+  as result
+$$ language sql;
 update cms_pages set tree_order = cms_page_tree_order(page_id);
 
 insert into cms_page_attachments (attachment_id, page_id, filename, mime_type, bytesize, image, thumbnail, thumbnail_size, thumbnail_width, thumbnail_height, in_gallery, listed, author, "location", width, height, "timestamp")
@@ -264,15 +272,6 @@ drop table email_labels;
 create or replace rule cms_session_delete as on delete to cms_session do (
        update cms_session_log set end_time=old.last_access WHERE session_id=old.session_id;
 );
-
-create or replace function cms_page_tree_order(page_id int) returns text as $$
-  select
-    case when $1 is null then '' else
-      (select cms_page_tree_order(parent) || '.' || to_char(coalesce(ord, 999999), 'FM000000')
-       from cms_pages where page_id=$1)
-    end
-  as result
-$$ language sql;
 
 create or replace view cms_v_pages as
 select p.page_id ||'.'|| l.lang as page_key, p.site, l.lang,
