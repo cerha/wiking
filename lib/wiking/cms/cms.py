@@ -260,12 +260,6 @@ class CMSModule(PytisModule, RssModule, Panelizable):
             binding = None
         return binding
 
-    def _form(self, form, req, *args, **kwargs):
-        if req.wmi and form == pw.ListView:
-            # Force to BrowseForm in WMI.
-            form = pw.BrowseForm
-        return super(CMSModule, self)._form(form, req, *args, **kwargs)
-    
     def _list_form_content(self, req, form, uri=None):
         # Add short module help text above the list form in WMI.
         content = super(CMSModule, self)._list_form_content(req, form, uri=uri)
@@ -616,7 +610,10 @@ class Config(SettingsManagementModule):
                 self._data.update((row['site'],), self._data.make_row(site=site))
         for f in self._view.fields():
             f.configure(row[f.id()].value())
-        theme_id = row['theme_id'].value()
+        try:
+            theme_id = int(req.param('preview_theme'))
+        except (TypeError, ValueError):
+            theme_id = row['theme_id'].value()
         if theme_id is None:
             if isinstance(cfg.theme, Themes.Theme):
                 cfg.theme = Theme()
@@ -934,32 +931,54 @@ class Themes(StyleManagementModule):
         def fields(self):
             fields = [Field('theme_id'),
                       Field('name', _("Name"), nocopy=True),
-                      Field('active', _("Active"), virtual=True,
-                            computer=computer(self._is_active))]
+                      Field('active', virtual=True, type=pd.Boolean,
+                            computer=computer(self._is_active)),
+                      Field('title', virtual=True, computer=computer(self._title)),
+                      ]
             for label, group in self._FIELDS:
                 fields.extend(group)
             return fields
         def _is_active(self, row, theme_id):
-            if isinstance(cfg.theme, Themes.Theme) and cfg.theme.theme_id() == theme_id:
-                return _("Yes")
+            return isinstance(cfg.theme, Themes.Theme) and cfg.theme.theme_id() == theme_id
+        def _title(self, row, name, active):
+            return name + (active and ' ('+ _("active") +')' or '')
+        def _preview(self, record):
+            # TODO: It would be better to have a special theme demo page, which
+            # would display all themable constructs.
+            # TODO: Disable user interaction within the iframe.
+            req = record.req()
+            # We can't rely on redirection here as it would not pass the
+            # preview_theme argument.
+            menu = [item for item in wiking.module('Pages').menu(req) if not item.hidden()]
+            if menu:
+                uri = menu[0].id()
             else:
-                return None
+                uri = '_wmi/Pages'
+            uri = '/%s?preview_theme=%d' % (uri, record['theme_id'].value())
+            class IFrame(lcg.Content):
+                def export(self, context):
+                    return context.generator().iframe(uri, width=800, height=220)
+            return IFrame()
+            
         def layout(self):
             return ('name',) + tuple([FieldSet(label, [f.id() for f in fields])
                                       for label, fields in self._FIELDS])
-        columns = ('name', 'active')
+        def list_layout(self):
+            return pp.ListLayout('title', content=self._preview)
         cb = CodebookSpec(display='name', prefer_display=True)
         actions = (
             # Translators: Button label
             Action('activate', _("Activate"), descr=_("Activate this color theme"),
-                   enabled=lambda r: r['active'].value() is None),
+                   enabled=lambda r: not r['active'].value()),
             # Translators: Button label
             Action('activate', _("Activate default"), context=pp.ActionContext.GLOBAL,
                    descr=_("Activate the default color theme"),
                    enabled=lambda r: isinstance(cfg.theme, Themes.Theme)),
             )
+        
+    _ROW_ACTIONS = True
     RIGHTS_copy = (Roles.STYLE_ADMIN,)
-    
+
     class Theme(Theme):
         def __init__(self, row):
             self._theme_id = row['theme_id'].value()
@@ -1309,7 +1328,7 @@ class Pages(SiteSpecificContentModule):
 
     # Public methods
     
-    def menu(self, req):
+    def menu(self, req, wmi=False):
         children = {None: []}
         translations = {}
         available_languages = wiking.module('Application').languages()
@@ -1330,7 +1349,7 @@ class Pages(SiteSpecificContentModule):
             else:
                 submenu = []
             submenu += [item(r) for r in children.get(page_id, ())]
-            if req.wmi:
+            if wmi:
                 menu_identifier = '_wmi/Pages/' + identifier
                 variants = available_languages
             else:
@@ -1364,7 +1383,7 @@ class Pages(SiteSpecificContentModule):
 
     def submenu(self, req):
         if req.wmi:
-            return self.menu(req)
+            return self.menu(req, wmi=True)
         else:
             return []
 
@@ -1945,6 +1964,12 @@ class News(ContentManagementModule, EmbeddableCMSModule):
             identifier = record.cb_value('page_id', 'identifier').value()
             raise Redirect('/'+identifier)
         
+    def _form(self, form, req, *args, **kwargs):
+        if req.wmi and form == pw.ListView:
+            # Force to BrowseForm in WMI (disable list layout).
+            form = pw.BrowseForm
+        return super(CMSModule, self)._form(form, req, *args, **kwargs)
+    
     def _rss_author(self, req, record):
         return record.cb_value('author', 'email').export()
 

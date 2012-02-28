@@ -194,6 +194,10 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             # Hack to support loading scriptaculous modules required by
             # lightbox.js.
             uri += '?load=effects,builder'
+        # Minor hack to make CMS theme preview work (pass theme_id to styles heets).
+        theme_id = context.req().param('preview_theme')
+        if theme_id and isinstance(resource, lcg.Stylesheet):
+            uri += '?preview_theme=%s' % theme_id
         return uri
     
     def _head(self, context):
