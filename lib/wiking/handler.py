@@ -29,7 +29,7 @@ class Handler(object):
     document into HTML and sending it to the client).
 
     """
-    _profiling_instance = None
+    _instance = None # Used for profiling only.
     
     def __init__(self, req):
         """Initialize the global wiking handler instance.
@@ -111,9 +111,8 @@ class Handler(object):
         del config
         self._application = wiking.module('Application')
         self._exporter = cfg.exporter(translations=cfg.translation_path)
-        # Set the global profiling instance if profiling is enabled.
-        if req.option('allow_profiling'):
-            self.__class__._profiling_instance = self
+        # Save the current handler instance for profiling purposes.
+        Handler._instance = self 
 
     def _serve_document(self, req, document, status_code=200):
         """Serve a document using the Wiking exporter."""
@@ -196,12 +195,12 @@ class Handler(object):
                 self._serve_minimal_error_document(req, error)
             
     def handle(self, req):
-        if self.__class__._profiling_instance: #and not req.uri().startswith('/_'):
+        if cfg.debug and req.param('profile') == '1':
             import cProfile as profile, pstats, tempfile
             self._profile_req = req
             tmpfile = tempfile.NamedTemporaryFile().name
             profile.run('from wiking.handler import Handler; '
-                        'self = Handler._profiling_instance; '
+                        'self = Handler._instance; '
                         'self._handle(self._profile_req)',
                         tmpfile)
             try:
