@@ -104,7 +104,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
 
     def _body_attr(self, context, **kwargs):
         translations = {"Expand/collapse complete menu hierarchy":
-                            context.translate(_("Expand/collapse complete menu hierarchy"))}
+                            context.localize(_("Expand/collapse complete menu hierarchy"))}
         onload = context.generator().js_call('new wiking.Handler', translations)
         cls = (context.node().layout() or self.Layout.DEFAULT) + '-layout'
         return super(Exporter, self)._body_attr(context, onload=onload, cls=cls, **kwargs)

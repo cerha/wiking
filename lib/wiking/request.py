@@ -821,8 +821,8 @@ class Request(ServerInterface):
             self._timezone = timezone
         return timezone
 
-    def translate(self, string, lang=None):
-        """Return the 'string' translated into the user's preferred language.
+    def localize(self, string, lang=None):
+        """Return the 'string' localized into the user's preferred language.
 
         Arguments:
 
@@ -830,23 +830,27 @@ class Request(ServerInterface):
           lang -- target language code as a string or None.  If None, the
             current preferred language is used instead.
 
-        Unicode instances which are not 'lcg.Translatable' are returned without
+        Unicode instances which are not 'lcg.Localizable' are returned without
         change.  Translatable instances are returned as unicode localized
-        according to the current preferred language.
+        according to the current locale settings (preferred language,
+        timezone, ...).
 
         This is actually just a convenience wrapper for a frequently used call
-        to 'Request.translator().translate()'.
+        to 'Request.localizer().localize()'.
 
         """
-        return self.translator(lang).translate(string)
+        return self.localizer(lang=lang).localize(string)
+
+    translate = localize
+    """Backwards compatibility alias - use 'localize()' instead."""
 
     def localizer(self, lang=None, timezone=None):
-        """Return an 'lcg.Translator()' instance for given language.
+        """Return an 'lcg.Localizer()' instance for given language.
 
         If 'lang' is None, the current preferred language is used instead.
         
-        Using this method is encouraged as the created translator instance is
-        cached for the duration of the request.
+        Using this method is encouraged as the created instance is cached for
+        the duration of the request.
 
         """
         if lang is None:

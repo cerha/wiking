@@ -1550,7 +1550,7 @@ class Pages(SiteSpecificContentModule):
             if record['modname'].value() is not None:
                 # Supply the module's title automatically.
                 mod = wiking.module(record['modname'].value())
-                values['title'] = req.translate(mod.title(), record['lang'].value())
+                values['title'] = req.localize(mod.title(), record['lang'].value())
             else:
                 req.message(_("Can't publish untitled page."), type=req.ERROR)
                 raise Redirect(self._current_record_uri(req, record))
@@ -2220,8 +2220,7 @@ class Text(Structure):
       text -- the text itself, as a translatable string or unicode in LCG
         formatting
 
-    Note the predefined texts get automatically translated using gettext
-    mechanism.
+    Note the predefined texts get automatically localized.
 
     """
     _attributes = (Attribute('label', str),
@@ -2323,8 +2322,8 @@ class CommonTexts(SettingsManagementModule):
                 lang = 'en'
         return lang
 
-    def _translated_args(self, req, lang, args):
-        return dict([(k, req.translate(v, lang)) for k, v in args.items()])
+    def _localized_args(self, req, lang, args):
+        return dict([(k, req.localize(v, lang)) for k, v in args.items()])
 
     def _auto_filled_fields(self, req):
         return ()
@@ -2380,7 +2379,7 @@ class Texts(CommonTexts):
                 return ''
             lang = record['lang'].value()
             text = self.Spec._texts[label]
-            return req.translate(text.text(), lang)
+            return req.localize(text.text(), lang)
         return (('content', content,),)
 
     def _register_texts(self):
@@ -2418,9 +2417,9 @@ class Texts(CommonTexts):
         else:
             retrieved_text = row['content'].value()
         if not retrieved_text:
-            retrieved_text = req.translate(text.text(), lang=lang)
+            retrieved_text = req.localize(text.text(), lang=lang)
         if args:
-            retrieved_text = retrieved_text % self._translated_args(req, lang, args)
+            retrieved_text = retrieved_text % self._localized_args(req, lang, args)
         return retrieved_text
 
     def parsed_text(self, req, text, lang=None, args=None):
@@ -2452,8 +2451,7 @@ class EmailText(Structure):
       text -- body of the mail, as a translatable plain text string or unicode
       cc -- comma separated recipient e-mail addresses, as a string
 
-    Note the predefined e-mail texts get automatically translated using gettext
-    mechanism.
+    Note the predefined e-mail texts get automatically localized.
 
     """
     _attributes = (Attribute('label', str),
@@ -2535,7 +2533,7 @@ class Emails(CommonTexts):
                 text = email.subject()
             else:
                 return ''
-            return req.translate(text, lang)
+            return req.localize(text, lang)
         return (('content', content,),
                 ('subject', content,),)
 
@@ -2567,14 +2565,14 @@ class Emails(CommonTexts):
         row = self._data.get_row(text_id=text_id)
         send_mail_args = dict(lang=lang, subject='', text='', cc=())
         if row is not None:
-            send_mail_args['subject'] = row['subject'].value() or req.translate(text.subject(), lang)
-            send_mail_args['text'] = row['content'].value() or req.translate(text.text(), lang)
+            send_mail_args['subject'] = row['subject'].value() or req.localize(text.subject(), lang)
+            send_mail_args['text'] = row['content'].value() or req.localize(text.text(), lang)
             cc_string = row['cc'].value() or text.cc()
             if cc_string:
                 send_mail_args['cc'] = [address.strip() for address in cc_string.split(',')]
         if args:
             for key in ('subject', 'text',):
-                send_mail_args[key] = send_mail_args[key] % self._translated_args(req, lang, args)
+                send_mail_args[key] = send_mail_args[key] % self._localized_args(req, lang, args)
         return send_mail_args
 
 

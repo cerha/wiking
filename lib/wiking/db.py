@@ -424,7 +424,7 @@ class PytisModule(Module, ActionHandler):
             else:
                 value = ""
             if isinstance(type, pd.Float):
-                locale_data = req.translator().locale_data()
+                locale_data = req.localizer().locale_data()
                 if isinstance(type, pd.Monetary):
                     decimal_point = locale_data.mon_decimal_point
                     thousands_sep = locale_data.mon_thousands_sep
@@ -437,7 +437,7 @@ class PytisModule(Module, ActionHandler):
                 if decimal_point != '.':
                     value = value.replace(decimal_point, '.')
             if isinstance(type, pd.DateTime):
-                locale_data = req.translator().locale_data()
+                locale_data = req.localizer().locale_data()
                 if isinstance(type, pd.Date):
                     format = locale_data.date_format
                 else:
@@ -1348,7 +1348,7 @@ class PytisModule(Module, ActionHandler):
         """
         if req.param('_pytis_form_update_request'):
             uri = self._current_base_uri(req, record)
-            response = pw.EditForm.ajax_response(req, record, layout, errors, req.translator(),
+            response = pw.EditForm.ajax_response(req, record, layout, errors, req.localizer(),
                                                  uri_provider=self._uri_provider(req, uri))
             req.send_response(response, content_type='application/json')
             return True
@@ -1431,7 +1431,7 @@ class PytisModule(Module, ActionHandler):
         # Translation is needed before parsing, because the text may contain 'lcg.Translatable'
         # instances, which would be destroyed during parsing (think of virtual fields with text
         # constructed in runtime).
-        content = parser.parse(req.translate(text))
+        content = parser.parse(req.localize(text))
         return lcg.Container(content)
     
     def _transaction(self):
@@ -2154,20 +2154,20 @@ class RssModule(object):
         writer = RssWriter(req)
         req.start_response(content_type='application/xml')
         writer.start(base_uri,
-                     req.translate(cfg.site_title +' - '+ self._rss_channel_title(req)),
-                     description=req.translate(cfg.site_subtitle),
+                     req.localize(cfg.site_title +' - '+ self._rss_channel_title(req)),
+                     description=req.localize(cfg.site_subtitle),
                      webmaster=cfg.webmaster_address,
                      generator='Wiking %s' % wiking.__version__,
                      language=lang)
         for row in rows:
             record.set_row(row)
-            title = req.translate(self._rss_title(req, record))
+            title = req.localize(self._rss_title(req, record))
             uri = self._rss_uri(req, record, lang=lang)
             if uri:
                 uri = base_uri + uri
             description = get_description(req, record)
             if description:
-                description = req.translate(description)
+                description = req.localize(description)
             date = self._rss_date(req, record)
             author = self._rss_author(req, record)
             writer.item(link=uri,
@@ -2235,7 +2235,7 @@ class PytisRssModule(PytisModule):
                                   type='application/rss+xml')
                          for ch in self._channels(req)]
         if channel_links:
-            # Translators: RSS channel is a computer idiom, see Wikipedia.  Don't translate 'RSS'.
+            # Translators: RSS channel is a computer idiom, see Wikipedia.  Don't translateg 'RSS'.
             doc_link = lcg.link('/_doc/wiking/user/rss', _("more about RSS"))
             if len(channel_links) == 1:
                 rss_info = lcg.p(_("An RSS channel is available for this section:"), ' ',
@@ -2248,11 +2248,11 @@ class PytisRssModule(PytisModule):
         
     def action_rss(self, req, channel, lang):
         # TODO: 'lang' may be None here.
-        def translate(value):
+        def localize(value):
             if value is None:
                 return value
             else:
-                return req.translate(value)
+                return req.localize(value)
         def func(spec, default=None, raw=False):
             # Return a function of one argument (record) returning the channel
             # item value according to specification.
@@ -2262,14 +2262,14 @@ class PytisRssModule(PytisModule):
                 else:
                     return lambda record: None
             elif isinstance(spec, collections.Callable):
-                return lambda record: translate(spec(req, record))
+                return lambda record: localize(spec(req, record))
             elif raw:
-                return lambda record: translate(record[spec].value())
+                return lambda record: localize(record[spec].value())
             # TODO: allow HTML formatting as in the old RssModule (hopefully more efficient).
             #elif ...:
-            #    return lambda record: format(translate(record[spec].export()))
+            #    return lambda record: format(localize(record[spec].export()))
             else:
-                return lambda record: translate(record[spec].export())
+                return lambda record: localize(record[spec].export())
         import wiking
         spec = channel.content()
         # Create anonymous functions for each channel item field to save
@@ -2288,8 +2288,8 @@ class PytisRssModule(PytisModule):
         writer = RssWriter(req)
         req.start_response(content_type='application/xml')
         writer.start(base_uri,
-                     translate(cfg.site_title +' - '+ channel.title()),
-                     description=translate(channel.descr() or cfg.site_subtitle),
+                     localize(cfg.site_title +' - '+ channel.title()),
+                     description=localize(channel.descr() or cfg.site_subtitle),
                      webmaster=channel.webmaster() or cfg.webmaster_address,
                      generator='Wiking %s' % wiking.__version__,
                      language=lang)

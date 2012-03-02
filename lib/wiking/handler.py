@@ -119,7 +119,7 @@ class Handler(object):
         node = document.build(req, self._application)
         context = self._exporter.context(node, node.lang(), sec_lang=node.sec_lang(), req=req)
         exported = self._exporter.export(context)
-        req.send_response(context.translate(exported), status_code=status_code)
+        req.send_response(context.localize(exported), status_code=status_code)
 
     def _serve_error_document(self, req, error):
         """Serve an error page using the Wiking exporter."""
@@ -141,7 +141,7 @@ class Handler(object):
                                                              wiking.cfg.default_language) or 'en'
         context = exporter.context(node, lang=lang)
         exported = exporter.export(context)
-        req.send_response(context.translate(exported), status_code=error.status_code(req))
+        req.send_response(context.localize(exported), status_code=error.status_code(req))
 
     def _handle(self, req):
         application = self._application
