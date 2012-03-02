@@ -128,13 +128,18 @@ wiking.Handler = Class.create(wiking.Base, {
 	// Update the information about browser's timezone in the cookie to let
 	// the server know what is the user's time zone.  The problem is that
 	// this information will not be available on the very first request, so
-	// the times may show in different time zones on the first and the
-	// upcomming requests.  The offset also desn't contain DST information
-	// so it will change on dst changes (with the first request after DST
-	// change also not being displayed correctly).
+	// the times will show in UTC on the first request and in the users
+	// time zone on upcomming request, which may be confusing.  It is also
+	// not 100% accurate as we don't detect the DST change dates and let
+	// the server decide what the DST change dates most likely are.
+	// TODO: Maybe use http://www.pageloom.com/automatic-timezone-detection-with-javascript
 	var cookies = new wiking.Cookies();
 	var date = new Date();
-	cookies.set('wiking_utc_offset', -date.getTimezoneOffset());
+	var summer_date = new Date(Date.UTC(2005, 6, 30, 0, 0, 0, 0));
+	var summer_offset = -summer_date.getTimezoneOffset()
+	var winter_date = new Date(Date.UTC(2005, 12, 30, 0, 0, 0, 0));
+	var winter_offset = -winter_date.getTimezoneOffset();
+	cookies.set('wiking_tz_offsets', summer_offset + ';' + winter_offset);
     },
     
     init_landmarks: function () {

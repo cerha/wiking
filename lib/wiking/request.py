@@ -255,21 +255,33 @@ class Request(ServerInterface):
                 return None
 
     class TZInfo(datetime.tzinfo):
-        """Timezone given by numeric UTC offset in minutes.
+        """Timezone given by numeric UTC offsets in minutes.
 
-        The dst information is not available in this case but is included in
-        the offset.  Thus timezone conversions will work correctly only for
-        datetimes in the same dst period.  But in case we don't have more
-        information (only the current UTC offset is available from a web client
-        through javascript autodetection), it is at least something.
+        The results may be inaccurate because we need to assume what the DST
+        change times *most likely* are.  In most cases, however, DST lasts from
+        the last Sunday in March until the last Sunday in October in modern
+        timezones.  So using this class when this assumption doesn't apply is a
+        fault.
         
         """
-        def __init__(self, offset):
-            self._offset = offset
+        
+        def __init__(self, summer_offset, winter_offset):
+            self._summer_offset = summer_offset
+            self._winter_offset = winter_offset
+            wiking.debug("**", summer_offset, winter_offset)
+        def _offset(self, dt):
+            d1 = datetime.datetime(dt.year, 4, 1)   
+            dst_start = d1 - datetime.timedelta(days=d1.weekday() + 1)
+            d2 = datetime.datetime(dt.year, 11, 1)
+            dst_end = d2 - datetime.timedelta(days=d2.weekday() + 1)
+            if dst_start <=  dt.replace(tzinfo=None) < dst_end:
+                return self._summer_offset
+            else:
+                return self._winter_offset
         def utcoffset(self, dt):
-            return datetime.timedelta(minutes=self._offset)
+            return datetime.timedelta(minutes=self._offset(dt))
         def tzname(self, dt):
-            offset = self._offset
+            offset = self._offset(dt)
             sign = offset/abs(offset)
             div, mod = divmod(abs(offset), 60)
             if mod:
@@ -277,11 +289,12 @@ class Request(ServerInterface):
             else:
                 return "GMT %+d" % div*sign
         def dst(self, dt):
-            return datetime.timedelta(0)
+            return self.utcoffset(dt) - datetime.timedelta(minutes=self._winter_offset)
+
         
     _PANELS_COOKIE = 'wiking_show_panels'
     _MESSAGES_COOKIE = 'wiking_messages'
-    _UTC_OFFSET_COOKIE = 'wiking_utc_offset'
+    _TZ_OFFSETS_COOKIE = 'wiking_tz_offsets'
     _UNDEFINED = object()
     
     INFO = 'INFO'
@@ -588,7 +601,7 @@ class Request(ServerInterface):
             # redirected request's locale will be the same as for this request,
             # but that seems quite appropriate assumption.
             lines = [urllib.quote(uri.encode(self._encoding))] + \
-                [type +':'+ urllib.quote(self.translate(message).encode(self._encoding))
+                [type +':'+ urllib.quote(self.localize(message).encode(self._encoding))
                  for message, type  in self._messages]
             self.set_cookie(self._MESSAGES_COOKIE,  "\n".join(lines))
         html = ("<html><head><title>Redirected</title></head>"
@@ -812,12 +825,14 @@ class Request(ServerInterface):
     def timezone(self):
         timezone = self._timezone
         if timezone is self._UNDEFINED:
+            offsets = self.cookie(self._TZ_OFFSETS_COOKIE)
             try:
-                utc_offset = int(self.cookie(self._UTC_OFFSET_COOKIE))
-            except (ValueError, TypeError):
+                summer_offset, winter_offset = [int(x) for x in urllib.unquote(offsets).split(';')]
+            except (ValueError, TypeError, AttributeError) as e:
+                wiking.debug("**", e)
                 timezone = None
             else:
-                timezone = self.TZInfo(utc_offset)
+                timezone = self.TZInfo(summer_offset, winter_offset)
             self._timezone = timezone
         return timezone
 
