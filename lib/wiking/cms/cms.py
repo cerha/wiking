@@ -1663,7 +1663,7 @@ class Attachments(ContentManagementModule):
                           "the bottom of the page.")),
             #Field('author', _("Author"), width=30),
             #Field('location', _("Location"), width=50),
-            #Field('exif_date', _("EXIF date"), type=DateTime()),
+            #Field('exif_date', _("EXIF date"), type=wiking.DateTime()),
             Field('_filename', virtual=True, computer=computer(self._filename)),
             )
         def _ext(self, record, filename):
@@ -1911,28 +1911,29 @@ class News(ContentManagementModule, EmbeddableCMSModule):
                   runtime_filter=computer(lambda r: pd.EQ('site', pd.sval(wiking.cfg.server_hostname)))),
             Field('lang', _("Language"), codebook='Languages', editable=ONCE,
                   selection_type=CHOICE, value_column='lang'),
-            Field('timestamp', _("Date"),
-                  type=DateTime(not_null=True), default=now),
-            Field('date', _("Date"), virtual=True,
-                  computer=Computer(self._date, depends=('timestamp',)),
-                  descr=_("Date of the news item creation.")),
+            Field('timestamp', _("Date"), type=wiking.DateTime(not_null=True, utc=True),
+                  default=now),
             Field('title', _("Title"), column_label=_("Message"), width=32,
                   descr=_("The item brief summary.")),
             Field('content', _("Message"), height=6, width=80, text_format=pp.TextFormat.LCG,
                   descr=_STRUCTURED_TEXT_DESCR),
             Field('author', _("Author"), codebook='Users'),
-            Field('date_title', virtual=True,
-                  computer=Computer(self._date_title, depends=('date', 'title'))))
+            Field('date', _("Date"), virtual=True, computer=computer(self._date),
+                  descr=_("Date of the news item creation.")),
+            Field('date_title', virtual=True, computer=computer(self._date_title)),
+            )
         sorting = (('timestamp', DESC),)
         columns = ('title', 'timestamp', 'author')
         layout = ('timestamp', 'title', 'content')
         list_layout = pp.ListLayout('title', meta=('timestamp', 'author'),  content=('content',),
                                     anchor="item-%s")
-        def _date(self, record):
+        def _date(self, record, timestamp):
             return record['timestamp'].export(show_time=False)
-        def _date_title(self, record):
-            if record['title'].value():
-                return record['date'].export() +': '+ record['title'].value()
+        def _date_title(self, record, date, title):
+            if title:
+                return date +': '+ record['title'].value()
+            else:
+                return None
         
     _LIST_BY_LANGUAGE = True
     _OWNER_COLUMN = 'author'
@@ -1979,37 +1980,38 @@ class Planner(News):
         title = _("Planner")
         help = _("Announce future events by date in a callendar-like listing.")
         table = 'cms_planner'
-        def fields(self): return [
-            Field('planner_id', editable=NEVER),
-            Field('start_date', _("Date"), width=10,
-                  type=Date(not_null=True, constraints=(self._check_date,)),
-                  descr=_("The date when the planned event begins. Enter the date including year. "
-                          "Example: %(date)s",
-                          date=lcg.LocalizableDateTime((datetime.datetime.today()+datetime.timedelta(weeks=1)).date().isoformat()))),
-            Field('end_date', _("End date"), width=10, type=Date(), editable=NEVER,
-                  descr=_("The date when the event ends if it is not the same as the start date "
-                          "(for events which last several days).")),
-            Field('date', _("Date"), virtual=True, computer=computer(self._date)),
-            Field('title', _("Title"), column_label=_("Event"), width=32,
-                  descr=_("The event brief summary.")),
-            ] + [f for f in super(Planner.Spec, self).fields() 
-                 if f.id() not in ('news_id', 'date', 'title')]
+        def fields(self):
+            override = (
+                Field('title', column_label=_("Event"), descr=_("The event brief summary.")),
+                )
+            sample_date = datetime.datetime.today() + datetime.timedelta(weeks=1) 
+            extra = (
+                Field('planner_id', editable=NEVER),
+                Field('start_date', _("Date"), width=10, type=wiking.Date(not_null=True),
+                      descr=_("The date when the planned event begins. Enter the date "
+                              "including year.  Example: %(date)s",
+                              date=lcg.LocalizableDateTime(sample_date.date().isoformat()))),
+                Field('end_date', _("End date"), width=10, type=wiking.Date(),
+                      descr=_("The date when the event ends if it is not the same as the "
+                              "start date (for events which last several days).")),
+                )
+            return self._inherited_fields(Planner.Spec, override=override,
+                                          exclude=('news_id',)) + extra
         sorting = (('start_date', ASC),)
         columns = ('title', 'date', 'author')
         layout = ('start_date', 'end_date', 'title', 'content')
         list_layout = pp.ListLayout('date_title', meta=('author', 'timestamp'), content='content',
                                     anchor="item-%s")
-        def _check_date(self, date):
-            if date < pd.Date.datetime():
-                return _("Date in the past")
         def _date(self, record, start_date, end_date):
             date = record['start_date'].export(show_weekday=True)
             if end_date:
                 date += ' - ' + record['end_date'].export(show_weekday=True)
             return date
         def check(self, record):
-            end = record['end_date'].value()
-            if end and end <= record['start_date'].value():
+            start_date, end_date = record['start_date'].value(), record['end_date'].value()
+            if start_date < pd.Date.datetime():
+                return ('start_date', _("Date in the past"))
+            if end_date and end_date <= start_date:
                 return ('end_date', _("End date precedes start date"))
     # Translators: Button label for creating a new event in "Planner".
     _INSERT_LABEL = _("New event")
@@ -2682,7 +2684,7 @@ class EmailSpool(MailManagementModule):
             Field('subject', _("Subject")),
             Field('content', _("Text"), width=80, height=10,
                   text_format=pp.TextFormat.LCG, descr=_STRUCTURED_TEXT_DESCR),
-            Field('date', _("Date"), type=DateTime(), default=now, editable=NEVER),
+            Field('date', _("Date"), type=wiking.DateTime(), default=now, editable=NEVER),
             Field('pid', editable=NEVER),
             Field('finished', editable=NEVER),
             Field('state', _("State"), type=pytis.data.String(), editable=NEVER,
