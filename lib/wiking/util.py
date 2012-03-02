@@ -1575,7 +1575,7 @@ class DateTime(pytis.data.DateTime):
         result = super(DateTime, self)._export(value, **kwargs)
         if show_time is None:
             show_time = self._show_time
-        return lcg.LocalizableDateTime(result, show_weekday=show_weekday,
+        return lcg.LocalizableDateTime(result, show_weekday=show_weekday, utc=self._utc,
                                        show_time=show_time, leading_zeros=self._leading_zeros)
 
         
@@ -1904,11 +1904,9 @@ def make_uri(base, *args, **kwargs):
         uri += '?'+ query
     return uri
 
-def translator(lang):
-    if lang:
-        return lcg.GettextTranslator(str(lang), path=cfg.translation_path, fallback=True)
-    else:
-        return lcg.NullTranslator()
+def translator(lang, timezone=None):
+    """Depracated: Use 'req.localizer()' instead."""
+    return lcg.Localizer(lang, translation_path=cfg.translation_path, timezone=timezone)
 
 _WKDAY = ('Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun',)
 _MONTH = ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',)

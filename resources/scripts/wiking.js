@@ -1,6 +1,6 @@
 /* -*- coding: utf-8 -*-
  *
- * Copyright (C) 2008-2011 Brailcom, o.p.s.
+ * Copyright (C) 2008-2012 Brailcom, o.p.s.
  * Author: Tomas Cerha
  *
  * This program is free software; you can redistribute it and/or modify
@@ -17,7 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-var WikingBase = Class.create({
+var wiking = new Object();
+
+wiking.Base = Class.create({
 
     initialize: function (keymap, translations) {
 	this.keymap = keymap;
@@ -81,7 +83,7 @@ var WikingBase = Class.create({
 });
 
 
-var WikingHandler = Class.create(WikingBase, {
+wiking.Handler = Class.create(wiking.Base, {
     // This class is instantiated within the page onload handler.  It is the
     // main javascript interface of a Wiking application.  It creates
     // instances of other javascript classes to handle menus etc if the
@@ -107,12 +109,12 @@ var WikingHandler = Class.create(WikingBase, {
 	this.init_landmarks();
 	var menu = $('menu');
 	if (menu)
-	    this.menu = new WikingFoldersMenu(translations, menu);
+	    this.menu = new wiking.FoldersMenu(translations, menu);
 	else
 	    this.menu = null;
 	var submenu = $('submenu');
 	if (submenu) {
-	    this.submenu = new WikingTreeMenu(translations, submenu);
+	    this.submenu = new wiking.TreeMenu(translations, submenu);
 	    if (menu)
 		this.menu.bind_submenu(this.submenu);
 	} else {
@@ -123,6 +125,16 @@ var WikingHandler = Class.create(WikingBase, {
 	// Move focus to the main content if there is no anchor in the current URL.
 	if (window.location.href.match("#") == null)
 	    this.set_focus($('main-heading'));
+	// Update the information about browser's timezone in the cookie to let
+	// the server know what is the user's time zone.  The problem is that
+	// this information will not be available on the very first request, so
+	// the times may show in different time zones on the first and the
+	// upcomming requests.  The offset also desn't contain DST information
+	// so it will change on dst changes (with the first request after DST
+	// change also not being displayed correctly).
+	var cookies = new wiking.Cookies();
+	var date = new Date();
+	cookies.set('wiking_utc_offset', -date.getTimezoneOffset());
     },
     
     init_landmarks: function () {
@@ -148,7 +160,7 @@ var WikingHandler = Class.create(WikingBase, {
     
 });
 
-var WikingMenu = Class.create(WikingBase, {
+wiking.Menu = Class.create(wiking.Base, {
     // Initialize a hierarchical menu -- assign ARIA roles to HTML tags
     // and bind keyboard event handling to support keyboard menu traversal.
     
@@ -222,7 +234,7 @@ var WikingMenu = Class.create(WikingBase, {
 });
 
 
-var WikingFoldersMenu = Class.create(WikingMenu, {
+wiking.FoldersMenu = Class.create(wiking.Menu, {
     // Specific handling of top level folders menu.
     
     initialize: function ($super, translations, node) {
@@ -255,7 +267,7 @@ var WikingFoldersMenu = Class.create(WikingMenu, {
     },
     
     bind_submenu: function(menu) {
-	// Bind given WikingTreeMenu instance as a descendant of this menu in
+	// Bind given wiking.TreeMenu instance as a descendant of this menu in
 	// keyboard traversal.
 	var item = $(this.node.getAttribute('aria-activedescendant'));
 	item._wiking_submenu = menu.items;
@@ -287,7 +299,7 @@ var WikingFoldersMenu = Class.create(WikingMenu, {
 });
 
 
-var WikingTreeMenu = Class.create(WikingMenu, {
+wiking.TreeMenu = Class.create(wiking.Menu, {
     // Specific handling of foldable tree menu.
     
     initialize: function ($super, translations, node) {
@@ -353,7 +365,7 @@ var WikingTreeMenu = Class.create(WikingMenu, {
     },
     
     bind_parent: function(parent) {
-	// Bind given WikingFolderMenu item as a parent of this menu in
+	// Bind given wiking.FolderMenu item as a parent of this menu in
 	// keyboard traversal.
 	for (var i = 0; i < this.items.length; i++) {
 	    var item = this.items[i];
@@ -481,4 +493,53 @@ var WikingTreeMenu = Class.create(WikingMenu, {
 	}
     }
     
+});
+
+wiking.Cookies = Class.create({
+    // This class is taken from 
+    // http://codeinthehole.com/writing/javascript-cookie-objects-using-prototype-and-json/
+    initialize: function(path, domain) {
+        this.path = path || '/';
+        this.domain = domain || null;
+    },
+    // Sets a cookie
+    set: function(key, value, days) {
+        if (typeof key != 'string') throw "Invalid key";
+        if (typeof value != 'string' && typeof value != 'number') throw "Invalid value";
+        if (days && typeof days != 'number') throw "Invalid expiration time";
+        var setValue = key+'='+escape(new String(value));
+        if (days) {
+            var date = new Date();
+            date.setTime(date.getTime()+(days*24*60*60*1000));
+            var setExpiration = "; expires="+date.toGMTString();
+        } else var setExpiration = "";
+        var setPath = '; path='+escape(this.path);
+        var setDomain = (this.domain) ? '; domain='+escape(this.domain) : '';
+        var cookieString = setValue+setExpiration+setPath+setDomain;
+        document.cookie = cookieString;
+    },
+    // Returns a cookie value or false
+    get: function(key) {
+        var keyEquals = key+"=";
+        var value = false;
+        document.cookie.split(';').invoke('strip').each(function(s){
+            if (s.startsWith(keyEquals)) {
+                value = unescape(s.substring(keyEquals.length, s.length));
+                throw $break;
+            }
+        });
+        return value;
+    },
+    // Clears a cookie
+    clear: function(key) {
+        this.set(key,'',-1);
+    },
+    // Clears all cookies
+    clearAll: function() {
+        document.cookie.split(';').collect(function(s){
+            return s.split('=').first().strip();
+        }).each(function(key){
+            this.clear(key);
+        }.bind(this));
+    }
 });

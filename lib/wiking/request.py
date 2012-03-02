@@ -254,8 +254,34 @@ class Request(ServerInterface):
             except KeyError:
                 return None
 
+    class TZInfo(datetime.tzinfo):
+        """Timezone given by numeric UTC offset in minutes.
+
+        The dst information is not available in this case but is included in
+        the offset.  Thus timezone conversions will work correctly only for
+        datetimes in the same dst period.  But in case we don't have more
+        information (only the current UTC offset is available from a web client
+        through javascript autodetection), it is at least something.
+        
+        """
+        def __init__(self, offset):
+            self._offset = offset
+        def utcoffset(self, dt):
+            return datetime.timedelta(minutes=self._offset)
+        def tzname(self, dt):
+            offset = self._offset
+            sign = offset/abs(offset)
+            div, mod = divmod(abs(offset), 60)
+            if mod:
+                return "GMT %+d:%d" % (div*sign, mod)
+            else:
+                return "GMT %+d" % div*sign
+        def dst(self, dt):
+            return datetime.timedelta(0)
+        
     _PANELS_COOKIE = 'wiking_show_panels'
     _MESSAGES_COOKIE = 'wiking_messages'
+    _UTC_OFFSET_COOKIE = 'wiking_utc_offset'
     _UNDEFINED = object()
     
     INFO = 'INFO'
@@ -284,7 +310,8 @@ class Request(ServerInterface):
         self._cookies = Cookie.SimpleCookie(self.header('Cookie'))
         self._preferred_language = None
         self._preferred_languages = None
-        self._translator = {}
+        self._timezone = self._UNDEFINED
+        self._localizer = {}
         self._credentials = self._init_credentials()
         self._decryption_password = self._init_decryption_password()
         self._messages = self._init_messages()
@@ -782,6 +809,18 @@ class Request(ServerInterface):
     prefered_language = preferred_language
     """Misspelled method name kept for backwards compatibility. Use 'preferred_language()'."""
 
+    def timezone(self):
+        timezone = self._timezone
+        if timezone is self._UNDEFINED:
+            try:
+                utc_offset = int(self.cookie(self._UTC_OFFSET_COOKIE))
+            except (ValueError, TypeError):
+                timezone = None
+            else:
+                timezone = self.TZInfo(utc_offset)
+            self._timezone = timezone
+        return timezone
+
     def translate(self, string, lang=None):
         """Return the 'string' translated into the user's preferred language.
 
@@ -801,7 +840,7 @@ class Request(ServerInterface):
         """
         return self.translator(lang).translate(string)
 
-    def translator(self, lang=None):
+    def localizer(self, lang=None, timezone=None):
         """Return an 'lcg.Translator()' instance for given language.
 
         If 'lang' is None, the current preferred language is used instead.
@@ -813,10 +852,15 @@ class Request(ServerInterface):
         if lang is None:
             lang = self.preferred_language(raise_error=False)
         try:
-            translator = self._translator[lang]
+            localizer = self._localizer[lang]
         except KeyError:
-            translator = self._translator[lang] = wiking.translator(lang)
-        return translator
+            localizer = lcg.Localizer(lang, translation_path=wiking.cfg.translation_path,
+                                      timezone=self.timezone())
+            self._localizer[lang] = localizer
+        return localizer
+    
+    translator = localizer
+    """Backwards compatibility alias - use 'localizer()' instead."""
     
     def credentials(self):
         """Return the login name and password as given by the user.

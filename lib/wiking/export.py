@@ -58,7 +58,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             self.has_menu = bool([n for n in self.node().root().children() if not n.hidden()])
             self.has_submenu = bool([n for n in self.node().top().children() if not n.hidden()])
             self.application = wiking.module('Application')
-            super(Exporter.Context, self)._init_kwargs(**kwargs)
+            super(Exporter.Context, self)._init_kwargs(timezone=req.timezone(), **kwargs)
 
         def req(self):
             """Return the current request as a 'wiking.Request' instance.
@@ -105,7 +105,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
     def _body_attr(self, context, **kwargs):
         translations = {"Expand/collapse complete menu hierarchy":
                             context.translate(_("Expand/collapse complete menu hierarchy"))}
-        onload = context.generator().js_call('new WikingHandler', translations)
+        onload = context.generator().js_call('new wiking.Handler', translations)
         cls = (context.node().layout() or self.Layout.DEFAULT) + '-layout'
         return super(Exporter, self)._body_attr(context, onload=onload, cls=cls, **kwargs)
 
