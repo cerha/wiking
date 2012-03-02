@@ -878,9 +878,6 @@ class Request(ServerInterface):
             self._localizer[lang] = localizer
         return localizer
     
-    translator = localizer
-    """Backwards compatibility alias - use 'localizer()' instead."""
-    
     def credentials(self):
         """Return the login name and password as given by the user.
 

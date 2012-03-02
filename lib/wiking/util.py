@@ -1717,9 +1717,11 @@ def send_mail(addr, subject, text, sender=None, sender_name=None, html=None,
     else:
         multipart_type = 'alternative'
     msg = MIMEMultipart(multipart_type)
-    tr = translator(lang)
+    localizer = lcg.Localizer(lang, translation_path=cfg.translation_path)
+
+    
     if isinstance(text, unicode):
-        text = tr.translate(text)
+        text = localizer.localize(text)
     if not sender or sender == '-': # Hack: '-' is the Wiking CMS Admin default value...
         sender = cfg.default_sender_address
     if sender_name:
@@ -1729,7 +1731,7 @@ def send_mail(addr, subject, text, sender=None, sender_name=None, html=None,
     msg['To'] = addr
     if cc:
         msg['Cc'] = Header(string.join(cc, ', '), 'utf-8')
-    translated_subject = tr.translate(subject)
+    translated_subject = localizer.localize(subject)
     try:
         encoded_subject = translated_subject.encode('ascii')
     except UnicodeEncodeError:
@@ -1747,7 +1749,7 @@ def send_mail(addr, subject, text, sender=None, sender_name=None, html=None,
         content = lcg.Container(lcg.Parser().parse(text))
         exporter = lcg.HtmlExporter(translations=cfg.translation_path)
         node = lcg.ContentNode('mail', title=subject, content=content)
-        context = exporter.context(node, str(lang))
+        context = exporter.context(node, lang)
         html = "<html>\n"+ content.export(context) +"\n</html>\n"
     if html:
         msg.attach(MIMEText(html, 'html', 'utf-8'))
@@ -1903,10 +1905,6 @@ def make_uri(base, *args, **kwargs):
     if query:
         uri += '?'+ query
     return uri
-
-def translator(lang, timezone=None):
-    """Depracated: Use 'req.localizer()' instead."""
-    return lcg.Localizer(lang, translation_path=cfg.translation_path, timezone=timezone)
 
 _WKDAY = ('Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun',)
 _MONTH = ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',)
