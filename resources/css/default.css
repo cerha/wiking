@@ -133,14 +133,14 @@ img { position: relative; } /* MSIE float workaround */
     margin-left: 1em;
 }
 
-.pytis-form.browse-form .found-record {
+.pytis-form.browse-form #found-record {
     background-color: $color.highlight-bg !important;
 }
 
 .pytis-form.list-view div.list-item {
     margin-bottom: 1.1em;
 }
-.pytis-form.list-view .found-record h3 {
+.pytis-form.list-view #found-record h3 {
     background-color: $color.highlight-bg;
 }
 
