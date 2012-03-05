@@ -268,7 +268,6 @@ class Request(ServerInterface):
         def __init__(self, summer_offset, winter_offset):
             self._summer_offset = summer_offset
             self._winter_offset = winter_offset
-            wiking.debug("**", summer_offset, winter_offset)
         def _offset(self, dt):
             d1 = datetime.datetime(dt.year, 4, 1)   
             dst_start = d1 - datetime.timedelta(days=d1.weekday() + 1)
