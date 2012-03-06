@@ -682,12 +682,16 @@ class Request(ServerInterface):
             else:
                 uri = urllib.quote(base_uri.encode(self._encoding))
         if args and isinstance(args[0], basestring):
-            uri += '#'+ urllib.quote(unicode(args[0]).encode(self._encoding))
+            anchor = urllib.quote(unicode(args[0]).encode(self._encoding))
             args = args[1:]
+        else:
+            anchor = None
         query = ';'.join([k +"="+ urllib.quote_plus(unicode(v).encode(self._encoding))
                           for k, v in args + tuple(kwargs.items()) if v is not None])
         if query:
             uri += '?'+ query
+        if anchor:
+            uri += '#'+ anchor
         return uri
 
 
