@@ -1716,7 +1716,8 @@ class PytisModule(Module, ActionHandler):
             content = mod.related(req, binding, record,
                                   uri=self._current_record_uri(req, record))
             if content:
-                result.append(lcg.Section(title=binding.title(), content=content))
+                result.append(lcg.Section(title=binding.title(), anchor='binding-'+binding.id(),
+                                          content=content))
         return result
 
     def _view_form_content(self, req, form, record):
