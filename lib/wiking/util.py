@@ -420,27 +420,34 @@ class Redirect(Exception):
     """
     _PERMANENT = False
     
-    def __init__(self, uri, **kwargs):
+    def __init__(self, uri, *args, **kwargs):
         """Arguments:
         
           uri -- redirection target URI as a string.  May be relative to the
             current request server address or absolute (beginning with
             'http://' or 'https://').  Relative URI is automatically prepended
-            by current server URI, since HTTP specification requires absolute
-            URIs.  The URI should not contain any encoded query arguments.  If
-            needed, they should be passed separately as additional keyword
-            arguments to the constructor call.
+            by the current request server address (the HTTP specification
+            requires absolute URIs).  The URI can not contain any encoded query
+            arguments or anchor.  If needed, they must be passed separately as
+            additional positional or keyword arguments (see below).
+          args, kwargs -- query arguments (and/or anchor) to be encoded into
+            the final uri.  The same rules as for the arguments of
+            'Request.make_uri()' apply.
             
         """
         self._uri = uri
-        self._args = kwargs
+        self._args = args + tuple(kwargs.items())
 
     def uri(self):
         """Return the redirection target URI."""
         return self._uri
     
     def args(self):
-        """Return the dictionary of query arguments to be encoded to the URI."""
+        """Return the tuple of query arguments to be encoded to the URI.
+
+        The arguments are returned in the form expected by 'Request.make_uri()'.
+        
+        """
         return self._args
 
     def permanent(self):
