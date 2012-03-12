@@ -1710,15 +1710,18 @@ class PytisModule(Module, ActionHandler):
         method to adjust this default behavior.
 
         """
-        result = []
+        sections = []
         for binding in self._bindings(req, record):
             mod = wiking.module(binding.name())
             content = mod.related(req, binding, record,
                                   uri=self._current_record_uri(req, record))
             if content:
-                result.append(lcg.Section(title=binding.title(), anchor='binding-'+binding.id(),
-                                          content=content))
-        return result
+                sections.append(lcg.Section(title=binding.title(), anchor='binding-'+binding.id(),
+                                            descr=binding.descr(), content=content))
+        if sections:
+            return [wiking.Notebook(sections, name='bindings-'+self.name())]
+        else:
+            return []
 
     def _view_form_content(self, req, form, record):
         """Return page content for 'view' action form as a list of 'lcg.Content' instances.

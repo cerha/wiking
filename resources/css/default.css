@@ -20,6 +20,31 @@ div.errors, #messages .error, #messages .warning {
 img { position: relative; } /* MSIE float workaround */
 .hidden { display: none; }
 
+
+.notebook-container ul.notebook-switcher {
+    margin: 1.4em 0;
+    padding: 0.2em 0.3em;
+    border-bottom: solid $color.top-border 1px;
+}
+.notebook-container li.notebook-tab {
+    display: inline;
+    white-space: nowrap;
+    margin-right: 0.3em;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+.notebook-container li.notebook-tab a {
+    border: solid $color.top-border 1px;
+    padding: 0.2em 1em;
+    background-color: $color.frame-bg;
+    text-decoration: none;
+}
+.notebook-container li.notebook-tab a.current {
+    background-color: $color.background;
+    border-bottom: solid $color.background 1px;
+}
+
+
 /* Generic pytis forms styles */
 
 .pytis-form .group, .pytis-form div.submit, .list-form-controls .paging-controls { 

@@ -1340,6 +1340,30 @@ class HtmlContent(lcg.TextContent):
     def export(self, context):
         return self._text
 
+
+class Notebook(lcg.Container):
+    """HTML Notebook widget as an LCG content element.
+
+    This widget is currently used for 'PytisModule' bindings.  Each binding
+    side form is displayed as a separate tab.  This widget is quite generic so
+    it could have been defined in LCG itself, but its export is HTML specific
+    and the user interface relies on Wiking specific JavaScript code in
+    'wiking.js'.
+
+    """
+    def name(self):
+        # Avoid creation of the inner div (the name is present in outer div's cls).
+        return None
+    
+    def export(self, context):
+        g = context.generator()
+        switcher = g.ul(lcg.concat([g.li(g.a(s.title(), href='#'+s.anchor(), title=s.descr(),
+                                             cls=(i==0 and 'current' or None)),
+                                         cls="notebook-tab")
+                                    for i, s in enumerate(self.sections(context))]),
+                        cls='notebook-switcher')
+        return g.div(switcher + super(Notebook, self).export(context),
+                     cls=' '.join([x for x in ('notebook-container', self._name) if x]))
     
 # ============================================================================
 # Classes derived from Pytis components
