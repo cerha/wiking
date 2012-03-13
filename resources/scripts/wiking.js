@@ -148,7 +148,8 @@ wiking.Handler = Class.create(wiking.Base, {
     init_keymap: function () {
 	return {
 	    'Ctrl-Shift-m': this.cmd_menu,
-	    'Ctrl-Shift-Up': this.cmd_menu
+	    'Ctrl-Shift-Up': this.cmd_menu,
+	    'Ctrl-Shift-Down': this.cmd_notebook
 	};
     },
 
@@ -166,6 +167,15 @@ wiking.Handler = Class.create(wiking.Base, {
 	    this.submenu.focus();
 	else if (this.menu != null)
 	    this.menu.focus();
+    },
+    
+    cmd_notebook: function (element) {
+	// Move focus to the first Notebook widget on the page.
+	var nb = document.body.down('div.notebook-container');
+	if (nb != null) {
+	    var item = $(nb.getAttribute('aria-activedescendant'));
+	    this.set_focus(item);
+	}
     }
     
 });
