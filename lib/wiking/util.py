@@ -1350,7 +1350,23 @@ class Notebook(lcg.Container):
     and the user interface relies on Wiking specific JavaScript code in
     'wiking.js'.
 
+    The notebook tabs are represented by 'lcg.Section' instances.  The sections
+    define tab titles, descriptions and content.  This makes the notebook
+    degrade gracefully in non-javascript browsers and possibly also in other
+    output formats.
+
     """
+    def __init__(self, content, active=None, **kwargs):
+        """Arguments:
+
+           content -- sequence of 'lcg.Section' instances representing the tabs
+           active -- id (anchor name) of the active tab or None
+           **kwargs -- other arguments defined by the parent class
+           
+        """
+        self._active = active
+        super(Notebook, self).__init__(content, **kwargs)
+    
     def name(self):
         # Avoid creation of the inner div (the name is present in outer div's cls).
         return None
@@ -1359,9 +1375,9 @@ class Notebook(lcg.Container):
         g = context.generator()
         id = 'notebook-%x' % lcg.positive_id(self)
         switcher = g.ul(lcg.concat([g.li(g.a(s.title(), href='#'+s.anchor(), title=s.descr(),
-                                             cls=(i==0 and 'current' or None)),
+                                             cls=(s.anchor()==self._active and 'current' or None)),
                                          cls="notebook-tab")
-                                    for i, s in enumerate(self.sections(context))]),
+                                    for s in self.sections(context)]),
                         cls='notebook-switcher')
         return (g.div(switcher + super(Notebook, self).export(context), id=id,
                       cls=' '.join([x for x in ('notebook-container', self._name) if x])) +
