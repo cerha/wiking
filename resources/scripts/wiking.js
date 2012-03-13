@@ -125,10 +125,6 @@ wiking.Handler = Class.create(wiking.Base, {
 	} else {
 	    this.submenu = null;
 	}
-	$$('.notebook-container').each(function(notebook) {
-	    new wiking.Notebook(translations, notebook);
-	});
-
 	// Set up global key handler.
 	document.observe('keydown', this.on_key_down.bind(this));
 	// Move focus to the main content if there is no anchor in the current URL.
@@ -291,16 +287,12 @@ wiking.NotebookBase = Class.create(wiking.Menu, {
 });
 
 wiking.Notebook = Class.create(wiking.NotebookBase, {
+    // Generic notebook widget
+    // There may be multiple instances on one page.
+    // This is a Javascript counterpart of the `wiking.Notebook' python class.
 
-    init_items: function ($super, ul, parent) {
-	if (this.node.getAttribute('id') == null) {
-	    // Assign a unique id to the notebook node if it doesn't have one
-	    // (it is needed in the super class method).
-	    var i = 1;
-	    while ($('notebook.'+i) != null) i++;
-	    this.node.setAttribute('id', 'notebook.'+i);
-	}
-	return $super(ul, parent);
+    initialize: function ($super, node_id) {
+	$super({}, $(node_id));
     },
 
     init_item: function ($super, li, id, prev, parent) {

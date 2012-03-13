@@ -1357,13 +1357,16 @@ class Notebook(lcg.Container):
     
     def export(self, context):
         g = context.generator()
+        id = 'notebook-%x' % lcg.positive_id(self)
         switcher = g.ul(lcg.concat([g.li(g.a(s.title(), href='#'+s.anchor(), title=s.descr(),
                                              cls=(i==0 and 'current' or None)),
                                          cls="notebook-tab")
                                     for i, s in enumerate(self.sections(context))]),
                         cls='notebook-switcher')
-        return g.div(switcher + super(Notebook, self).export(context),
-                     cls=' '.join([x for x in ('notebook-container', self._name) if x]))
+        return (g.div(switcher + super(Notebook, self).export(context), id=id,
+                      cls=' '.join([x for x in ('notebook-container', self._name) if x])) +
+                g.script(g.js_call('new wiking.Notebook', id)))
+
     
 # ============================================================================
 # Classes derived from Pytis components
