@@ -261,7 +261,7 @@ wiking.NotebookBase = Class.create(wiking.Menu, {
     init_item: function ($super, li, id, prev, parent) {
 	$super(li, id, prev, parent);
 	li.setAttribute('role', 'tab');
-	li.down('a').onclick = (function() { this.cmd_activate(li); }).bind(this);
+	li.down('a').onclick = (function() { this.cmd_activate(li); return false; }).bind(this);
     },
     
     init_keymap: function () {
