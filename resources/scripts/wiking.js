@@ -128,7 +128,7 @@ wiking.Handler = Class.create(wiking.Base, {
 	// Set up global key handler.
 	document.observe('keydown', this.on_key_down.bind(this));
 	// Move focus to the main content if there is no anchor in the current URL.
-	if (window.location.href.match("#") == null)
+	if (self.location.href.match("#") == null)
 	    this.set_focus($('main-heading'));
 	// Update the information about browser's timezone in the cookie to let
 	// the server know what is the user's time zone.  The problem is that
@@ -138,13 +138,11 @@ wiking.Handler = Class.create(wiking.Base, {
 	// not 100% accurate as we don't detect the DST change dates and let
 	// the server decide what the DST change dates most likely are.
 	// TODO: Maybe use http://www.pageloom.com/automatic-timezone-detection-with-javascript
-	var cookies = new wiking.Cookies();
-	var date = new Date();
 	var summer_date = new Date(Date.UTC(2005, 6, 30, 0, 0, 0, 0));
 	var summer_offset = -summer_date.getTimezoneOffset()
 	var winter_date = new Date(Date.UTC(2005, 12, 30, 0, 0, 0, 0));
 	var winter_offset = -winter_date.getTimezoneOffset();
-	cookies.set('wiking_tz_offsets', summer_offset + ';' + winter_offset);
+	wiking.cookies.set('wiking_tz_offsets', summer_offset + ';' + winter_offset);
     },
     
     init_keymap: function () {
@@ -184,11 +182,11 @@ wiking.Menu = Class.create(wiking.Base, {
 	var ul = node.down('ul');
 	this.items = this.init_items(ul, null);
 	// Set the active item.
-	var active = this.active_item();
-	if (active == null && this.items.length != 0)
-	    this.activate_item(this.items[0]);
+	var active = this.initially_active_item();
+	if (active != null)
+	    this.activate_item(active);
     },
-    
+
     init_items: function (ul, parent) {
 	var items = [];
 	var base_id;
@@ -213,10 +211,7 @@ wiking.Menu = Class.create(wiking.Base, {
 	link.setAttribute('tabindex', '-1');
 	li.setAttribute('role', 'presentation');
 	li.setAttribute('id', id);
-	if (link.hasClassName('current'))
-	    this.activate_item(li);
-	else
-	    li.setAttribute('tabindex', '-1');
+	li.setAttribute('tabindex', '-1');
 	li._wiking_menu_prev = prev;
 	li._wiking_menu_next = null;
 	li._wiking_menu_parent = parent;
@@ -225,6 +220,18 @@ wiking.Menu = Class.create(wiking.Base, {
 	if (prev != null)
 	    prev._wiking_menu_next = li;
 	li.observe('keydown', this.on_key_down.bind(this));
+    },
+    
+    initially_active_item: function () {
+	if (this.items.length != 0) {
+	    var current = this.node.down('a.current');
+	    if (current)
+		return current.up('li');
+	    else
+		return this.items[0];
+	} else {
+	    return null;
+	}
     },
     
     active_item: function () {
@@ -290,37 +297,95 @@ wiking.Notebook = Class.create(wiking.NotebookBase, {
     // Generic notebook widget
     // There may be multiple instances on one page.
     // This is a Javascript counterpart of the `wiking.Notebook' python class.
+    COOKIE: 'wiking_last_notebook_tab',
 
     initialize: function ($super, node_id) {
 	$super({}, $(node_id));
     },
 
+    initially_active_item: function () {
+	// The active item set in the python code (marked as 'current' in HTML)
+	// has the highest precedence.
+	var current = this.node.down('.notebook-switcher li a.current');
+	if (current)
+	    return current.up('li');
+	else
+	    return (this.current_location_active_item() || // the tab may be referenced by anchor.
+		    this.last_saved_active_item() || // the most recently active tab.
+		    this.items[0]); // finally the first item is used with the lowest precedence.
+    },
+
+
     init_item: function ($super, li, id, prev, parent) {
 	$super(li, id, prev, parent);
-	var item = li.down('a');
-	var href = item.getAttribute('href');
-	if (href[0] == '#') {
-	    var tab = $('section-'+href.substr(1));
-	} else {
-	    // TODO: Handle links with absolute url by dynamic loading tab
-	    // content through AJAX.
-	    var tab = null;
-	}
+	var link = li.down('a');
+	var href = link.getAttribute('href'); // The href always starts with '#'.
+	var tab = $('section-'+href.substr(1));
 	li._wiking_notebook_tab = tab;
+	tab._wiking_notebook_item = li;
 	tab.down('h1,h2,h3,h4,h5,h6').hide();
-	if (prev != null)
-	    tab.hide();
+	tab.hide();
+    },
+
+    current_location_active_item: function() {
+	// Get the active item if the anchor is part of the current location.
+	var match = self.location.href.match('#');
+	if (match != null) {
+	    var parts = self.location.href.split('#', 2);
+	    var tab = this.node.down('#section-'+parts[1]);
+	    if (tab && tab._wiking_notebook_item) {
+		return tab._wiking_notebook_item;
+	    }
+	}
+    },
+
+    last_saved_active_item: function() {
+	// Get the active item saved most recently in a browser cookie.
+	//
+	// We remember the last tab only for one notebook (the one which was
+	// last switched) to avoid polution of cookies with too many values).
+	//
+	// The HTML class should identify a particular Notebook widget and
+	// should not change across requests, while its id is unique on a page,
+	// but may not identify a particulat widget and may change across
+	// requests.  So we use the class as a part of cookie value.
+	//
+	var cls = this.node.getAttribute('class');
+	if (cls) {
+	    var cookie = wiking.cookies.get(this.COOKIE);
+	    if (cookie) {
+		var parts = cookie.split(':', 2);
+		if (parts[0] == cls) {
+		    var tab = this.node.down('#'+parts[1]);
+		    if (tab && tab._wiking_notebook_item) {
+			return tab._wiking_notebook_item;
+		    }
+		}
+	    }
+	}
+	return null;
+    },
+
+    activate_item: function ($super, item) {
+	var previously_active_item = this.active_item()
+	$super(item);
+	if (previously_active_item != item) {
+	    if (previously_active_item) {
+		previously_active_item.down('a').removeClassName('current');
+		previously_active_item._wiking_notebook_tab.hide();
+	    }
+	    item.down('a').addClassName('current');
+	    item._wiking_notebook_tab.show();
+	    var cls = this.node.getAttribute('class');
+	    if (cls) {
+		var cookie = cls+':'+item._wiking_notebook_tab.getAttribute('id');
+		wiking.cookies.set(this.COOKIE, cookie);
+	    }
+	}
     },
 
     cmd_activate: function (item) {
-	var previously_active_item = this.active_item()
-	if (previously_active_item != item) {
-	    previously_active_item.down('a').removeClassName('current');
-	    item.down('a').addClassName('current');
-	    previously_active_item._wiking_notebook_tab.hide();
-	    item._wiking_notebook_tab.show()
-	    this.activate_item(item);
-	}
+	this.activate_item(item);
 	this.set_focus(item._wiking_notebook_tab);
     }
 
@@ -465,6 +530,7 @@ wiking.TreeMenu = Class.create(wiking.Menu, {
     
     next_item: function (item) {
 	// Recursively find the next item in sequence by traversing the hierarchy.
+	var next;
 	if (item._wiking_menu_next != null)
 	    next = item._wiking_menu_next;
 	else if (item._wiking_menu_parent != null
@@ -600,3 +666,5 @@ wiking.Cookies = Class.create({
         }.bind(this));
     }
 });
+
+wiking.cookies = new wiking.Cookies();
