@@ -631,47 +631,45 @@ wiking.TreeMenu = Class.create(wiking.Menu, {
 wiking.Cookies = Class.create({
     // This class is taken from 
     // http://codeinthehole.com/writing/javascript-cookie-objects-using-prototype-and-json/
-    initialize: function(path, domain) {
+    initialize: function (path, domain) {
         this.path = path || '/';
         this.domain = domain || null;
     },
     // Sets a cookie
-    set: function(key, value, days) {
+    set: function (key, value, days) {
         if (typeof key != 'string') throw "Invalid key";
         if (typeof value != 'string' && typeof value != 'number') throw "Invalid value";
         if (days && typeof days != 'number') throw "Invalid expiration time";
-        var setValue = key+'='+escape(new String(value));
+	var value = escape(new String(value)) + '; path=' + escape(this.path);
         if (days) {
             var date = new Date();
-            date.setTime(date.getTime()+(days*24*60*60*1000));
-            var setExpiration = "; expires="+date.toGMTString();
-        } else var setExpiration = "";
-        var setPath = '; path='+escape(this.path);
-        var setDomain = (this.domain) ? '; domain='+escape(this.domain) : '';
-        var cookieString = setValue+setExpiration+setPath+setDomain;
-        document.cookie = cookieString;
+            date.setTime(date.getTime() + (days*24*60*60*1000));
+            value += "; expires=" + date.toGMTString();
+        }
+        if (this.domain)
+	    value += '; domain=' + escape(this.domain);
+        document.cookie = key +'='+ value;
     },
     // Returns a cookie value or false
-    get: function(key) {
-        var keyEquals = key+"=";
+    get: function (key) {
         var value = false;
-        document.cookie.split(';').invoke('strip').each(function(s){
-            if (s.startsWith(keyEquals)) {
-                value = unescape(s.substring(keyEquals.length, s.length));
+        document.cookie.split(';').invoke('strip').each(function(s) {
+            if (s.startsWith(key+"=")) {
+                value = unescape(s.substring(key.length+1, s.length));
                 throw $break;
             }
         });
         return value;
     },
     // Clears a cookie
-    clear: function(key) {
+    clear: function (key) {
         this.set(key,'',-1);
     },
     // Clears all cookies
-    clearAll: function() {
-        document.cookie.split(';').collect(function(s){
+    clearAll: function () {
+        document.cookie.split(';').collect(function (s) {
             return s.split('=').first().strip();
-        }).each(function(key){
+        }).each(function (key) {
             this.clear(key);
         }.bind(this));
     }
