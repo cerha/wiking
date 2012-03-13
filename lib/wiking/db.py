@@ -1657,9 +1657,6 @@ class PytisModule(Module, ActionHandler):
                           actions=self._permitted_actions(req),
                           **form_kwargs)
         content = self._list_form_content(req, form, uri=binding_uri)
-        descr = binding.descr()
-        if descr:
-            content.insert(0, lcg.p(descr))
         return lcg.Container(content)
 
     # ===== Action handlers =====
