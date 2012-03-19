@@ -857,9 +857,8 @@ class Document(object):
         resource_provider = lcg.ResourceProvider(resources=resources, dirs=cfg.resource_path)
         def mknode(item):
             if item.id() == id:
-                heading = self._title or item.title()
-                if heading and self._subtitle:
-                    heading = lcg.concat(heading, ' :: ', self._subtitle)
+                title = self._title or item.title()
+                subtitle = self._subtitle
                 content = self._content
                 if isinstance(content, (list, tuple)):
                     content = lcg.Container([c for c in content if c is not None])
@@ -868,7 +867,8 @@ class Document(object):
                 if variants is None:
                     variants = item.variants()
             else:
-                heading = item.title()
+                title = item.title()
+                subtitle = None
                 content = lcg.Content()
                 panels = ()
                 variants = item.variants()
@@ -879,7 +879,7 @@ class Document(object):
                 hidden = True
             # The identifier is encoded to allow unicode characters within it.  The encoding
             # actually doesnt't matter, we just need any unique 8-bit string.
-            node = WikingNode(item.id().encode('utf-8'), title=item.title(), heading=heading,
+            node = WikingNode(item.id().encode('utf-8'), title=title, subtitle=subtitle,
                               descr=item.descr(), content=content,
                               lang=lang, sec_lang=self._sec_lang, variants=variants or (),
                               active=item.active(), foldable=item.foldable(), hidden=hidden,
@@ -1122,10 +1122,10 @@ class RssWriter(object):
 
 class WikingNode(lcg.ContentNode):
 
-    def __init__(self, id, heading=None, panels=(), lang=None, sec_lang=None,
+    def __init__(self, id, subtitle=None, panels=(), lang=None, sec_lang=None,
                  active=True, foldable=False, layout=None, **kwargs):
         super(WikingNode, self).__init__(id, **kwargs)
-        self._heading = heading
+        self._subtitle = subtitle
         self._panels = panels
         self._lang = lang
         self._sec_lang = sec_lang
@@ -1153,8 +1153,8 @@ class WikingNode(lcg.ContentNode):
     def foldable(self):
         return self._foldable
     
-    def heading(self):
-        return self._heading or self._title
+    def subtitle(self):
+        return self._subtitle
     
     def top(self):
         parent = self._parent

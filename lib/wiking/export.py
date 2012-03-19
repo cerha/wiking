@@ -215,8 +215,17 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
     def _site_subtitle(self, context):
         return context.application.site_subtitle(context.req())
     
+    def _heading(self, context):
+        node = context.node()
+        title = node.title()
+        subtitle = node.subtitle()
+        if title and subtitle:
+            return lcg.concat(title, ' :: ', subtitle)
+        else:
+            return title or subtitle
+        
     def _title(self, context):
-        return self._site_title(context) + ' - ' + context.node().heading()
+        return self._site_title(context) + ' - ' + self._heading(context)
 
     def _top(self, context):
         g = self._generator
@@ -382,7 +391,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
     def _main(self, context):
         g = self._generator
         return (g.hr(cls='hidden'),
-                g.div((g.h(g.link(context.node().heading(), None, tabindex=0,
+                g.div((g.h(g.link(self._heading(context), None, tabindex=0,
                                   name='main-heading', id='main-heading'), 1),
                        self._messages(context),
                        super(Exporter, self)._content(context)), id='content'),
