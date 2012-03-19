@@ -3,9 +3,9 @@
 insert into cms_languages (lang) values ('en');
 insert into cms_config (site, site_title) values ('*', 'Wiking Site');
 
-insert into cms_stylesheets (identifier, media, ord) values ('default.css', 'all', 10);
-insert into cms_stylesheets (identifier, media, ord) values ('layout.css', 'screen', 20);
-insert into cms_stylesheets (identifier, media, ord) values ('print.css', 'print', 30);
+insert into cms_stylesheets (identifier, site, media, ord) values ('default.css', '*', 'all', 10);
+insert into cms_stylesheets (identifier, site, media, ord) values ('layout.css', '*', 'screen', 20);
+insert into cms_stylesheets (identifier, site, media, ord) values ('print.css', '*', 'print', 30);
 
 insert into roles (role_id, system, auto) values ('anyone', 't', 't');
 insert into roles (role_id, system, auto) values ('authenticated', 't', 't');
