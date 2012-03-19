@@ -832,7 +832,6 @@ class Request(ServerInterface):
             try:
                 summer_offset, winter_offset = [int(x) for x in urllib.unquote(offsets).split(';')]
             except (ValueError, TypeError, AttributeError) as e:
-                wiking.debug("**", e)
                 timezone = None
             else:
                 timezone = self.TZInfo(summer_offset, winter_offset)
