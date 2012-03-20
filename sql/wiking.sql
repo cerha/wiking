@@ -758,3 +758,8 @@ begin
   return query select name from t_pytis_passwords;
 end;
 $$ language plpgsql;
+
+-- This one is to avoid error messages in Apache logs
+create or replace function pytis_crypto_unlock_current_user_passwords (password_ text) returns setof text as $$
+select ''::text where false;
+$$ language sql immutable;
