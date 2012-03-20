@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright (C) 2011 Brailcom, o.p.s.
+# Copyright (C) 2011, 2012 Brailcom, o.p.s.
 #
 # COPYRIGHT NOTICE
 #
@@ -16,6 +16,15 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+"""Update Wiking CMS attachment thumbnails in the database.
+
+Thumbnails are normally updated automatically on source image changes, but when
+the administrator decides to change the thumbnail sizes (configuration option
+image_thumbnail_sizes of Wiking CMS), all thumbnails must be regenerated to
+match the new settings.
+
+"""
 
 import sys, getopt, types, os, cStringIO, PIL.Image
 import pytis.util, pytis.data as pd, config
