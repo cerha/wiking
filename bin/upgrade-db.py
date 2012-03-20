@@ -67,7 +67,7 @@ def run(args):
             print "Applying %s ..." % filename
             cursor.execute(sql)
         connection.commit()
-        print "Database %s upgraded successfully to version %d." % (database, to)
+        print "Database %s upgraded successfully to version %d." % (database, target_version)
     except Exception as e:
         connection.rollback()
         sys.stderr.write("Error: %s" % e.message)
@@ -75,7 +75,6 @@ def run(args):
         sys.exit(1)
     finally:
         connection.close()
-    
 
 if __name__ == '__main__':
     run(sys.argv)
