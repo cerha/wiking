@@ -759,7 +759,7 @@ begin
 end;
 $$ language plpgsql;
 
--- This one is to avoid error messages in Apache logs
+-- This one is to avoid error messages in Apache logs (the function us required by Pytis)
 create or replace function pytis_crypto_unlock_current_user_passwords (password_ text) returns setof text as $$
 select ''::text where false;
 $$ language sql immutable;
