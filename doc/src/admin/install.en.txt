@@ -14,8 +14,8 @@
 Apart from that, you also need two external components, which are developed
 within the Free(b)soft project as Wiking itself and all their dependencies:
 
-  * lcg >= 0.5.1 (from http://www.freebsoft.org/lcg)
-  * pytis >= 1.1.1 (from http://www.freebsoft.org/pytis)
+  * lcg >= 0.6.0 (from http://devel.freebsoft.org/lcg)
+  * pytis >= 1.2.0 (from http://devel.freebsoft.org/pytis)
 
 The way of installation of these components depends on how you decide to
 install Wiking itself.  The following sections describe the options.

@@ -1,3 +1,79 @@
+Version 1.3.0 (2012-03-20):
+
+ * New features:
+   - Added support for WSGI server interface
+   - Adjustments for Python 2.6
+   - Improved ARIA support in tree menu and main menu notebook
+   - Automatic time zone conversions during content localization
+   - Use HTML 4.0 Strict by default (removed quirks mode hacks in stylesheets)
+   - Allow HTML formatting in RSS channel content
+   - Configurable SMTP port
+   - Pytis bindings (side forms) displayed as a notebook widget
+   - Make it possible to disable HTTP authentication in configuration
+
+ * New features in Wiking CMS:
+   - Advanced management of user roles
+   - User account states managed separately (independent of roles)
+   - Read/write access rights to pages now granted through roles
+   - Panels can have explicit identifiers to simplify styling
+   - Generic support for encrypted database columns (to be used by
+     extensions/applications)
+   - Stylesheet scope can be restricted to WMI or pages outside WMI
+   - Hierarchical menu can be set to foldable for any page (menu item)
+   - Image galleries with automatic thumbnails and Javascript viewer
+   - Page menu visibility can be set to follow access rights
+   - Multiple sites can be now hosted within a single database (sharing
+     all user accounts)
+   - Added support for application specific user data
+   - Show tree menu of all pages in WMI
+   - Preview color themes in the listing
+
+ * More significant Wiking API changes:
+   - Request API and server interface separated to allow WSGI support
+     (and possibly any other server interface)
+   - Removed `Request' methods:
+     send_http_header(), done(), result(), uri_prefix(), application()
+   - `Done' exception not supported anymore (return None instead)
+   - Use httplib constants for HTTP response status codes
+   - All PytisModule actions now support Post/Redirect/Get
+   - Use Python datetime instead of mx.DateTime
+   - Codebase converted to UTF-8 from ISO 8859-2
+   - New method `PytisModule._view_form_content()' á la `_list_view_content()'
+   - `PytisModule.action_insert()' arguments changed
+   - Pass request to `visible' and `enabled' Action functions in GLOBAL context
+   - Added support for human readable sender names to wiking.send_mail()
+   - New method `wiking.module()' to be the only means to retrieve Wiking
+     module instances
+   - Gender recognized by `wiking.User'
+   - Move action menu rendering from Wiking to Pytis forms
+   - Added support for row level action buttons (off by default)
+   - `wiking.Action' removed (use pytis.presentation.Action)
+   - `PytisModule._ACTIONS' deprecated
+   - New methods `Request.localizer()' and `Request.localize()'.
+   - Allow redefinition of preferred languages logic for an application.
+   - Enable PytisModule.record to be part of a transaction
+   - New method `PytisModule._binding_enabled()' for dynamic binding
+     availability
+   - `Application._auth_hook()' arguments changed
+   - New method `PytisModule._insert_enabled()' for dynamic insert action
+     availability
+   - New method `PytisModule._hidden_fields()' for explicit control over
+     form's hidden fields.
+
+ * Bug fixes:
+   - Safe closing of selects
+   - Quote URI in request messages stored on redirection
+   - Handle IOError during FieldStorage
+   - Fix calendar display in cartain situations
+   - Put filename into double qoutes in Content-Disposition header
+
+ * Now depends on LCG 0.6.0 and Pytis 1.2.0
+
+ * Documentation updates and additions
+
+ * New and updated translations
+
+
 Version 1.2.0 (2010-01-17):
 
  * New features:
