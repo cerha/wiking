@@ -203,9 +203,6 @@ img { position: relative; } /* MSIE float workaround */
     font-weight: bold;
 }
 .pytis-form .field-label .not-null { color: #f00; }
-.pytis-form.edit-form .field-label {
-    line-height: 2em;
-}
 .pytis-form .field-label.disabled { color: $color.help; }
 .pytis-form .field-label.disabled .not-null { display: none; }
 
@@ -219,14 +216,22 @@ img { position: relative; } /* MSIE float workaround */
 .pytis-form .group table { 
     border-collapse: collapse;
 }
+.pytis-form.show-form td.ctrl, .pytis-form.list-view td.ctrl { 
+    line-height: 1.4em;
+}
 .pytis-form th.label { 
     padding-right: 0.3em;
     line-height: 1.4em;
     white-space: nowrap;
 }
-.pytis-form.show-form td.ctrl, .pytis-form.list-view td.ctrl { 
-    line-height: 1.4em;
+.pytis-form.edit-form th.label {
+    /* To display labels vertically centered with form controls. */
+    line-height: 2em;
 }
+.pytis-form.show-form th.label { 
+    /* Force normal line height in a show form embedded in an edit form. */
+    line-height: 1.4em; 
+} 
 
 .pytis-form.show-form a.print-field-link { 
     float: right;
