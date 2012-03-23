@@ -1029,22 +1029,6 @@ class Request(ServerInterface):
             messages = [m for m in self._messages if m[1] != self.HEADING]
         return tuple(messages)
 
-    def send_http_header(self, content_type, length=None):
-        """Deprecated.  Use 'start_response()' instead."""
-        self.start_response(content_type=content_type, content_length=length)
-
-    def done(self):
-        """Deprecated.  Return None instead."""
-        return None
-    
-    def result(self, data, content_type="text/html"):
-        """Deprecated.  Use 'send_response()' instead."""
-        self.send_response(data, content_type=content_type)
-        
-    def uri_prefix(self):
-        """Deprecated.  Now always returns an empty string."""
-        return ''
-
     
 class User(object):
     """Representation of the logged in user.
@@ -1305,16 +1289,3 @@ class Roles(object):
         @return: All the roles available in the application.
         """
         return self._predefined_roles()
-
-    @classmethod
-    def check(cls, req, roles):
-        """@deprecated: Use L{wiking.Request.check_roles} instead."""
-        if cls.ANYONE in roles:
-            return True
-        user = req.user()
-        if user is None:
-            return False
-        for role in roles:
-            if role in user.roles():
-                return True
-        return False
