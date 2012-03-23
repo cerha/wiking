@@ -261,15 +261,6 @@ class PytisModule(Module, ActionHandler):
                 dbcolumns.append(dbcolumn)
                 rdata.append((id, value))
             return pd.Row(rdata)
-
-        def user_roles(self):
-            """Return sequence of the current user roles."""
-            user = self.req().user()
-            if user is None:
-                roles = ()
-            else:
-                roles = user.roles()
-            return roles
             
     @classmethod
     def title(cls):
