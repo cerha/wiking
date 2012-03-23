@@ -1765,7 +1765,7 @@ class PytisModule(Module, ActionHandler):
     def action_insert(self, req, prefill=None, action='insert'):
         # 'prefill' is passed eg. on copying an existing record.  It is only
         # used to initialize form fields and is ignored on form submission (the
-        # submitted form should already include those values).
+        # submitted form should pass those values through request arguments).
         layout = self._layout_instance(self._layout(req, action))
         if req.param('submit'):
             record = self._record(req, None, new=True, prefill=self._prefill(req))
