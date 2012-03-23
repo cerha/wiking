@@ -229,10 +229,6 @@ class PytisModule(Module, ActionHandler):
         def req(self):
             return self._req
 
-        def module(self, name, **kwargs):
-            """Deprecated: Use 'wiking.module()' instead."""
-            return wiking.module(name, **kwargs)
-
         def key(self):
             """Return the value of record's key for data operations."""
             return (self[self._data.key()[0].id()],)

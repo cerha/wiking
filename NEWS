@@ -4,6 +4,7 @@ Unreleased changes:
    - Removed prevoiusly deprecated `Request' methods:
      send_http_header(), done(), result(), uri_prefix()
    - Removed prevoiusly deprecated method Roles.check().
+   - Removed prevoiusly deprecated method PytisModule.Record.module().
 
 Version 1.3.0 (2012-03-20):
 
