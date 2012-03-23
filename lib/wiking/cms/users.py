@@ -117,6 +117,18 @@ class RoleSets(UserManagementModule):
             self._cached_dictionary_time = time.time()
         return self._cached_dictionary
 
+    def related(self, req, binding, record, uri):
+        content = super(RoleSets, self).related(req, binding, record, uri)
+        if binding.id() == 'contained':
+            info = _("Users of group '%s' automatically gain membersip in the following groups:",
+                     record['xname'].value())
+        elif binding.id() == 'containing':
+            info = _("Users of the following groups automatically gain membersip in group '%s':",
+                     record['xname'].value())
+        else:
+            info = None
+        return info and lcg.Container((lcg.p(info), content)) or content
+    
     def included_role_ids(self, role):
         """
         @type role: L{Role}
@@ -301,13 +313,9 @@ class ApplicationRoles(UserManagementModule):
             return pp.CodebookSpec(display=self._xname_display, prefer_display=True)
         def bindings(self):
             return (Binding('contained', _("Contained Groups"), 'RoleSets',
-                            'role_id', form=pw.ItemizedView,
-                            descr=_("Users of this group automatically gain "
-                                    "membersip in the following groups:")),
+                            'role_id', form=pw.ItemizedView),
                     Binding('containing', _("Contained in Groups"), 'ContainingRoles',
                             'member_role_id', form=pw.ItemizedView,
-                            descr=_("Users of the following groups automatically gain "
-                                    "membersip in this group:"),
                             enabled=lambda r: not r['auto'].value()),
                     Binding('members', _("Members"), 'RoleMembers',
                             'role_id', form=pw.ItemizedView,
