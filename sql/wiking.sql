@@ -605,7 +605,7 @@ create table cms_email_spool (
        id serial primary key,
        sender_address text,
        role_id name references roles on update cascade on delete cascade, -- recipient role, if NULL then all users
-       subject text unique, -- unique to prevent inadvertent multiple insertion
+       subject text,
        content text, -- body of the e-mail
        date timestamp default now (), -- time of insertion
        pid int, -- PID of the process currently sending the mails
