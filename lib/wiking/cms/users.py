@@ -469,9 +469,8 @@ class Users(UserManagementModule):
             # Translators: User account information field label (contains date and time).
             # TODO: Last password change is currently not displayed anywhere.  It should be only
             # visible to the admin and to the user himself, so it requires a dynamic 'view' layout.
-            Field('last_password_change', _("Last password change"), type=DateTime(), default=now,
-                  computer=computer(lambda r, password:
-                                    r.field_changed('password') and now() or r['last_password_change'].value())),
+            Field('last_password_change', _("Last password change"), type=DateTime(utc=True),
+                  default=now, computer=computer(self._last_password_change)),
             # Translators: Full name of a person. Registration form field.
             Field('fullname', _("Full Name"), virtual=True, editable=NEVER,
                   computer=computer(self._fullname)),
@@ -576,6 +575,11 @@ class Users(UserManagementModule):
             result = wiking.validate_email_address(email)
             if not result[0]:
                 return _("Invalid e-mail address: %s", result[1])
+        def _last_password_change(self, record, password):
+            if record.field_changed('password'):
+                return now()
+            else:
+                return record['last_password_change'].value()
         def bindings(self):
             return (Binding('roles', _("User's Groups"), 'UserRoles', 'uid',
                             form=pw.ItemizedView),
