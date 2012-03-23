@@ -195,7 +195,7 @@ insert into cms_page_attachments (attachment_id, page_id, filename, mime_type, b
 insert into cms_page_attachment_texts (attachment_id, lang, title, description)
        select attachment_id, lang, title, description
        from _attachment_descr;
-select setval('cms_page_attachments_attachment_id_seq', nextval('_attachments_attachment_id_seq')-1);
+select setval('cms_page_attachments_attachment_id_seq', nextval('_attachments_attachment_id_seq'));
 drop table _attachments cascade;
 drop table _attachment_descr cascade;
 
