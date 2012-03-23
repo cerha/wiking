@@ -2691,14 +2691,14 @@ class EmailSpool(MailManagementModule):
 
         def _state_computer(self, row, pid, finished):
             if finished:
-                # Translators: State of processing of an email message (e.g. New, Sending, Sent)
+                # Translators: State of processing of an email message (e.g. Pending, Sending, Sent)
                 state = _("Sent")
             elif pid:
-                # Translators: State of processing of an email message (e.g. New, Sending, Sent)
+                # Translators: State of processing of an email message (e.g. Pending, Sending, Sent)
                 state = _("Sending")
             else:
-                # Translators: State of processing of an email message (e.g. New, Sending, Sent)
-                state = _("New")
+                # Translators: State of processing of an email message (e.g. Pending, Sending, Sent)
+                state = _("Pending")
             return state
         
         columns = ('id', 'subject', 'date', 'state',)
