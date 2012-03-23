@@ -3,6 +3,10 @@
 
 set client_min_messages=WARNING;
 
+create table cms_database_version (
+        version integer
+);
+
 create table cms_languages (
         lang_id serial primary key,
         lang char(2) unique not null
@@ -25,7 +29,7 @@ create table cms_config (
         upload_limit int,
         session_expiration int,
         default_language char(2) references cms_languages(lang) on update cascade,
-        theme_id integer -- references cms_themes
+        theme_id integer -- references cms_themes (added after the referenced table is created)
 );
 
 create table cms_countries (
@@ -759,7 +763,9 @@ begin
 end;
 $$ language plpgsql;
 
--- This one is to avoid error messages in Apache logs (the function us required by Pytis)
+-- This one is to avoid error messages in Apache logs (the function is required by Pytis)
 create or replace function pytis_crypto_unlock_current_user_passwords (password_ text) returns setof text as $$
 select ''::text where false;
 $$ language sql immutable;
+
+
