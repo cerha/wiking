@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright (C) 2009, 2011 Brailcom, o.p.s.
+# Copyright (C) 2009, 2011, 2012 Brailcom, o.p.s.
 #
 # COPYRIGHT NOTICE
 #
@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 """This script is intended to be run from cron, in reasonable intervals, to
-handle bulk e-mailing request stored in email_spool database table.
+handle bulk e-mailing request stored in cms_email_spool database table.
 
 The script must run under a user having sufficient permissions to modify the
 database table.
@@ -52,7 +52,7 @@ def pid_dead(pid):
     
 def check_obsolete_pids(connection):
     cursor = connection.cursor()
-    cursor.execute("select distinct pid from email_spool where pid is not null and finished='F'")
+    cursor.execute("select distinct pid from cms_email_spool where pid is not null and finished='F'")
     pids = []
     while True:
         row = cursor.fetchone()
@@ -61,22 +61,25 @@ def check_obsolete_pids(connection):
         pids.append(row[0])
     for pid in pids:
         if pid_dead(pid):
-            connection.cursor().execute("update email_spool set pid=NULL where pid=%s", (pid,))
+            connection.cursor().execute("update cms_email_spool set pid=NULL where pid=%s", (pid,))
             if pid_dead(pid):
                 connection.commit()
             else:
                 connection.rollback()
 
 def mark_spool(connection, pid):
-    connection.cursor().execute("update email_spool set pid=%s where pid is NULL and finished='F'", (pid,))
+    connection.cursor().execute("update cms_email_spool set pid=%s where pid is NULL and finished='F'", (pid,))
     connection.commit()
 
-def mail_it(connection, sender_address, role, subject, content):
-    query = "select email, lang from users where role != 'none'"
+def mail_it(connection, sender_address, role_id, subject, content):
+    relation = 'users'
+    condition = "state='enabled'"
     query_args = ()
-    if role and role != '_all':
-        query += " and role=%s"
-        query_args = (role,)
+    if role_id:
+        relation += ' join role_members using (uid)'
+        query += " and role_id=%s"
+        query_args = (role_id,)
+    query = 'select email, lang from %s where %s' % (relation, condition)
     cursor = connection.cursor()
     cursor.execute(query, query_args)
     failures = []
@@ -101,7 +104,7 @@ def mail_it(connection, sender_address, role, subject, content):
     
 def mail(connection, pid):
     cursor = connection.cursor()
-    cursor.execute("select id, sender_address, role, subject, content from email_spool where pid=%s", (pid,))
+    cursor.execute("select id, sender_address, role_id, subject, content from cms_email_spool where pid=%s", (pid,))
     emails = []
     while True:
         row = cursor.fetchone()
@@ -111,7 +114,7 @@ def mail(connection, pid):
     connection.commit()
     for email in emails:
         mail_it(connection, *email[1:])
-        connection.cursor().execute("update email_spool set pid=NULL, finished='T' where id=%s", (email[0],))
+        connection.cursor().execute("update cms_email_spool set pid=NULL, finished='T' where id=%s", (email[0],))
         connection.commit()
 
 def run(argv):
