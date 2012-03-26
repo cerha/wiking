@@ -1153,7 +1153,19 @@ class PytisModule(Module, ActionHandler):
         return prefill
 
     def _binding_condition(self, binding, record):
-        # What is binding condition??
+        """Return a binding condition as a 'pytis.data.Operator' instance.
+
+        Arguments:
+
+          binding -- 'pytis.presentation.Binding()' instance coming from parent
+            module's 'bindings' specification.
+          record -- parent module's 'wiking.PytisModule.Record()' instance.
+
+        Returns a condition for filtering this module's records based on a
+        relation to the parent module's record, where the relation is described
+        by given binding specification.
+        
+        """
         cfunc = binding.condition()
         if cfunc:
             condition = cfunc(record)
