@@ -6,6 +6,11 @@ Unreleased changes:
    - Removed prevoiusly deprecated method Roles.check().
    - Removed prevoiusly deprecated method PytisModule.Record.module().
    - Removed method PytisModule.Record.user_roles().
+   - Changed arguments of PytisModule._condition() - all keyword arguments
+     removed.
+   - Changed semantics of PytisModule._rows() - self._condition(req) is
+     always added to condition and language condition is added automatically
+     if _LIST_BY_LANGUAGE is True.
 
 Version 1.3.0 (2012-03-20):
 

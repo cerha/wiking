@@ -635,8 +635,8 @@ class SiteSpecificContentModule(ContentManagementModule):
         return dict(super(SiteSpecificContentModule, self)._refered_row_values(req, value),
                     site=wiking.cfg.server_hostname)
     
-    def _condition(self, req, **kwargs):
-        return pd.AND(super(SiteSpecificContentModule, self)._condition(req, **kwargs),
+    def _condition(self, req):
+        return pd.AND(super(SiteSpecificContentModule, self)._condition(req),
                       pd.EQ('site', pd.sval(wiking.cfg.server_hostname)))
 
     def _prefill(self, req):
@@ -2017,8 +2017,8 @@ class Planner(News):
     _INSERT_LABEL = _("New event")
     _RSS_TITLE_COLUMN = 'date_title'
     _RSS_DATE_COLUMN = None
-    def _condition(self, req, **kwargs):
-        scondition = super(Planner, self)._condition(req, **kwargs)
+    def _condition(self, req):
+        scondition = super(Planner, self)._condition(req)
         today = pd.Date.datetime()
         condition = pd.OR(pd.GE('start_date', pd.Value(pd.Date(), today)),
                           pd.GE('end_date', pd.Value(pd.Date(), today)))
@@ -2365,8 +2365,8 @@ class Texts(CommonTexts):
         return dict(super(Texts, self)._refered_row_values(req, value),
                     site=wiking.cfg.server_hostname)
     
-    def _condition(self, req, **kwargs):
-        return pd.AND(super(Texts, self)._condition(req, **kwargs),
+    def _condition(self, req):
+        return pd.AND(super(Texts, self)._condition(req),
                       pd.EQ('site', pd.sval(wiking.cfg.server_hostname)))
 
     def _prefill(self, req):

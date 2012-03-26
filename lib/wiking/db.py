@@ -1186,23 +1186,38 @@ class PytisModule(Module, ActionHandler):
                 condition = bcond
         return condition
         
-    def _condition(self, req, lang=None, condition=None, values=None):
-        # Can be used by a module to further restrict the listed records.
-        conds = []
-        if condition:
-            conds.append(condition)
-        if values:
-            for k, v in values.items():
-                conds.append(pd.EQ(k, pd.Value(self._type[k], v)))
+    def _condition(self, req):
+        """Return the filtering condition as a pytis.data.Operator instance or None.
+
+        Returns the condition for filtering records visible to the current
+        request user.  This condition is used for filtering the rows visible
+        through action 'list' and should be also used in all other situations,
+        where data rows become visible in the user interface in some form.
+
+        You may need to override this method if you want to filter visible rows
+        according to some application specific condition, which may be
+        determined from the request object (most typically access rights of the
+        current user).
+
+        The base class implementation automatically includes the binding
+        condition (see '_binding_condition()') if the current module is handled
+        through binding forwarding.  Binding forwarding is used to access data
+        through pytis 'binding' specification.  The URI of a binding forwarded
+        request has a form '/xyz/key/binding-id', where 'xyz' is the URI of the
+        parent module, 'key' is the reference to a record of the parent module
+        and 'binding-id' is the id of the 'pytis.presentation.Binding' used in
+        the parent module's 'binding' specification.  In this case, the binding
+        condition will limit the listing of this module only to records related
+        to the parent module's record (satisfying the binding condition).  It
+        is called binding forwarding because the parent module forwards the
+        request to the submodule within '_handle_subpath()'.
+
+        """
         fw = self._binding_forward(req)
         if fw:
             binding = fw.arg('binding')
             record = fw.arg('record')
-            conds.append(self._binding_condition(binding, record))
-        if lang and self._LIST_BY_LANGUAGE:
-            conds.append(pd.EQ('lang', pd.Value(pd.String(), lang)))
-        if conds:
-            return pd.AND(*conds)
+            return self._binding_condition(binding, record)
         else:
             return None
         
@@ -1224,10 +1239,16 @@ class PytisModule(Module, ActionHandler):
             arguments = None
         return arguments
         
-    def _rows(self, req, lang=None, condition=None, limit=None, sorting=None):
-        return self._data.get_rows(sorting=sorting or self._sorting, limit=limit,
-                                   condition=self._condition(req, lang=lang, condition=condition),
-                                   arguments=self._arguments(req))
+    def _rows(self, req, condition=None, lang=None, limit=None, sorting=None):
+        if self._LIST_BY_LANGUAGE:
+            if lang is None:
+                lang = req.preferred_language()
+            lcondition = pd.EQ('lang', pd.sval(lang))
+        else:
+            lcondition = None
+        return self._data.get_rows(condition=pd.AND(self._condition(req), lcondition, condition),
+                                   arguments=self._arguments(req),
+                                   sorting=sorting or self._sorting, limit=limit)
 
     def _handle(self, req, action, **kwargs):
         record = kwargs.get('record')
@@ -1645,12 +1666,18 @@ class PytisModule(Module, ActionHandler):
             form_kwargs = binding.form_kwargs()
         else:
             form_cls, form_kwargs = pw.ListView, {}
-        condition = self._binding_condition(binding, record)
         columns = [c for c in self._columns(req) if c != binding.binding_column()]
         lang = req.preferred_language(raise_error=False)
+        if self._LIST_BY_LANGUAGE:
+            lcondition = pd.AND(pd.EQ('lang', pd.sval(lang)))
+        else:
+            lcondition = None
+        condition = pd.AND(self._condition(req),
+                           self._binding_condition(binding, record),
+                           lcondition)
         binding_uri = uri +'/'+ binding.id()
         form = self._form(form_cls, req, columns=columns, binding_uri=binding_uri,
-                          condition=self._condition(req, condition=condition, lang=lang),
+                          condition=condition,
                           arguments=self._binding_arguments(binding, record),
                           profiles=self._profiles(req), filter_sets=self._filter_sets(req),
                           actions=self._permitted_actions(req),
@@ -1669,9 +1696,12 @@ class PytisModule(Module, ActionHandler):
         self._binding_parent_redirect(req, search=req.param('search'), form_name=self.name())
         # If this is not a binding forwarded request, display the listing.
         lang = req.preferred_language()
+        condition = self._condition(req)
+        if self._LIST_BY_LANGUAGE:
+            condition = pd.AND(condition, pd.EQ('lang', pd.sval(lang)))
         form = self._form(pw.ListView, req,
                           columns=self._columns(req),
-                          condition=self._condition(req, lang=lang),
+                          condition=condition,
                           arguments=self._arguments(req),
                           profiles=self._profiles(req),
                           filter_sets=self._filter_sets(req),
@@ -1882,16 +1912,10 @@ class PytisModule(Module, ActionHandler):
         
     def _export(self, req, export_row, content_type, headers=()):
         record = self._record(req, None)
-        fw = self._binding_forward(req)
-        if fw:
-            condition = self._binding_condition(fw.arg('binding'), fw.arg('record'))
-        else:
-            condition = None
-        lang = req.preferred_language()
         for header, content in headers:
             req.set_header(header, content)
         req.start_response(content_type=content_type)
-        for row in self._rows(req, condition=condition, lang=lang):
+        for row in self._rows(req):
             record.set_row(row)
             export_row(record)
 
@@ -2282,8 +2306,8 @@ class PytisRssModule(PytisModule):
         author = func(spec.author())
         date = func(spec.date(), raw=True)
         #
-        rows = self._rows(req, lang=lang, limit=channel.limit(), sorting=channel.sorting(),
-                          condition=channel.condition())
+        rows = self._rows(req, condition=channel.condition(), lang=lang,
+                          limit=channel.limit(), sorting=channel.sorting())
         record = self._record(req, None)
         writer = RssWriter(req)
         req.start_response(content_type='application/xml')
