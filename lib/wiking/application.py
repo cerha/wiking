@@ -68,17 +68,22 @@ class Application(Module):
         """Handle the request.
 
         The Wiking Handler passes the request to the current application for
-        further processing.  All errors are handled by the handler.
+        further processing.  All errors and exceptions are handled by the
+        handler.
 
-        The return value may be one of three types:
+        The return value may be one of three kinds:
            * 'Document' instance.
-           * A sequence of two values (MIME_TYPE, CONTENT), where MIME_TYPE is
+           * A tuple of two values (MIME_TYPE, CONTENT), where MIME_TYPE is
              a string determining the mime type of the content and CONTENT is
-             the actual output data as an 8-bit string or buffer.
-           * None to indicate, that the request has already been served by
-             calling the Request methods directly (normally
-             'req.start_response()' and 'req.write()').
+             the actual output data as a basestring (unicode or str).
+           * An iterable which returns the response data as strings (a Python
+             list, generator instance or an iterable object).  In this case it
+             is expected, that the HTTP headers were already sent (using
+             'req.start_response()').
 
+        The method may also raise 'RequestError' exceptions to indicate special
+        states or 'Redirect' exceptions to perform HTTP redirection.
+             
         The default implementation uses static mapping of request paths (URI)
         to wiking modules defined by the class constant '\_MAPPING' to
         determine which module is responsible for processing the request and

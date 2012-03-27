@@ -11,6 +11,15 @@ Unreleased changes:
    - Changed semantics of PytisModule._rows() - self._condition(req) is
      always added to condition and language condition is added automatically
      if _LIST_BY_LANGUAGE is True.
+   - Request.write() method was removed.
+   - The return values of Request.send_file() and Request.send_response()
+     now must be passed on.
+   - The methods Application.handle(), RequestHandler.handle() and
+     ActionHandler.action_*() now must return a value.
+   - New method PytisModule._records() for iteration over DB records.
+   - PytisModule._try_ajax_handler() replaced by _is_ajax_request() and
+     _handle_ajax_request().
+
 
 Version 1.3.0 (2012-03-20):
 

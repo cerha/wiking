@@ -365,12 +365,7 @@ class Embeddable(object):
     """
     
     def embed(self, req):
-        """Return a list of content instances extending the page content.
-
-        The returned value can also be an integer to indicate that the request has already been
-        served (with the resulting status code).
-        
-        """
+        """Return a list of content instances extending the page content."""
         pass
 
     def submenu(self, req):
@@ -1410,9 +1405,6 @@ class Pages(SiteSpecificContentModule):
         modname = record['modname'].value()
         if modname is not None:
             content = wiking.module(modname).embed(req)
-            if isinstance(content, int):
-                # The request has already been served by the embedded module. 
-                return content
         else:
             content = []
         if preview:

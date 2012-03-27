@@ -164,10 +164,9 @@ class ServerInterface(pytis.web.Request):
     def start_http_response(self, status_code):
         """Start the HTTP response.
 
-        HTTP response headers will be sent to the client.  This method must be
-        called before any 'write()' calls and must be called just once for each
-        request.  Any 'set_header()' calls after calling this method are
-        ignored.
+        HTTP response headers will be sent to the client (any 'set_header()'
+        calls after calling this method are ignored).  This method must be
+        called before returning the request processing result.
 
         This is a low level server interface method.  See also
         'Request.start_response()' for a more convenient application interface
@@ -175,17 +174,6 @@ class ServerInterface(pytis.web.Request):
         
         Raise 'ClosedConnection' if the client closes the connection during the
         operation.
-        
-        """
-        pass
-        
-    def write(self, data):
-        """Write data to the client through the network socket.
-
-        This method may only be called after 'start_http_response()'.
-
-        Raise 'ClosedConnection' if the client closes the connection during
-        writing.
         
         """
         pass
@@ -483,10 +471,11 @@ class Request(ServerInterface):
             prior to this call.
 
         This is actually just a little more convenient way of calling
-        'start_http_response()' defined by the low level server API.  This
-        method must be called before any 'write()' calls and must be called
-        just once for each request.  Any 'set_header()' calls after calling
-        this method are ignored.
+        'start_http_response()' defined by the low level server API.  Calling
+        this method will cause all HTTP headers to be sent to the client.  Any
+        'set_header()' calls after calling this method are ignored.  In most
+        typical cases, you will not call this method directly, but through the
+        'send_response()' wrapper.
 
         If 'status_code' is set to 401 (UNAUTHORIZED), the 'WWW-Authenticate'
         header is automatically set to 'Basic realm="<cfg.site_title>"'.  Use
@@ -518,9 +507,9 @@ class Request(ServerInterface):
           status_code -- same as in 'start_response()'.
           
         This method is actually just a shorthand for calling 'start_response()'
-        and 'write()' in one step with additional unicode handling.  The
-        'Content-Length' HTTP header is automatically set according to the
-        length of 'data'.
+        and returning response data in one step with additional unicode
+        handling.  The 'Content-Length' HTTP header is automatically set
+        according to the length of 'data'.
 
         """
         if isinstance(data, unicode):
@@ -528,7 +517,7 @@ class Request(ServerInterface):
             if content_type in ("text/html", "application/xml", "text/css", "text/plain"):
                 content_type += "; charset=%s" % self._encoding
         self.start_response(status_code, content_type=content_type, content_length=len(data))
-        self.write(data)
+        return [data]
 
     def serve_file(self, path, content_type, filename=None, lock=False):
         """Send the contents of given file to the client.
@@ -564,28 +553,30 @@ class Request(ServerInterface):
             else:
                 if mtime == since:
                     self.start_response(httplib.NOT_MODIFIED)
-                    return
+                    return []
         self.set_header('Last-Modified', format_http_date(mtime))
         if filename:
             if isinstance(filename, unicode):
                 filename = filename.encode(self._encoding)
             self.set_header('Content-Disposition', 'attachment; filename="%s"' % filename)
         self.start_response(content_type=content_type, content_length=info.st_size)
-        f = file(path)
-        if lock:
-            import fcntl
-            fcntl.lockf(f, fcntl.LOCK_SH)
-        try:
-            while True:
-                # Read the file in 0.5MB chunks.
-                data = f.read(524288)
-                if not data:
-                    break
-                self.write(data)
-        finally:
+        def generator():
+            f = file(path)
             if lock:
-                fcntl.lockf(f, fcntl.LOCK_UN)
-            f.close()
+                import fcntl
+                fcntl.lockf(f, fcntl.LOCK_SH)
+            try:
+                while True:
+                    # Read the file in 0.5MB chunks.
+                    data = f.read(524288)
+                    if not data:
+                        break
+                    yield data
+            finally:
+                if lock:
+                    fcntl.lockf(f, fcntl.LOCK_UN)
+                f.close()
+        return generator()
 
     def _redirect(self, uri, permanent=False):
         """Implement the actual request redirection for the already completed absolute URI."""
@@ -611,7 +602,7 @@ class Request(ServerInterface):
             status_code = httplib.MOVED_PERMANENTLY
         else:
             status_code = httplib.FOUND
-        self.send_response(html, status_code=status_code, content_type="text/html")
+        return self.send_response(html, status_code=status_code, content_type="text/html")
 
     def redirect(self, uri, args=(), permanent=False):
         """Send an HTTP redirection response to the browser.
@@ -645,7 +636,7 @@ class Request(ServerInterface):
             uri = self.make_uri(uri, *args)
         else:
             uri = self.make_uri(uri, **args)
-        self._redirect(uri, permanent=permanent)
+        return self._redirect(uri, permanent=permanent)
 
     def make_uri(self, base_uri, *args, **kwargs):
         """Return a URI constructed from given base URI and arguments.

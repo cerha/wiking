@@ -41,7 +41,6 @@ class WsgiRequest(wiking.Request):
         self._response_headers = wsgiref.headers.Headers(self._response_headers_storage)
         self._params = self._init_params(encoding)
         self._response_started = False
-        self._response_data = []
         self._uri = unicode(environ['SCRIPT_NAME'] + environ['PATH_INFO'], encoding)
         super(WsgiRequest, self).__init__(encoding=encoding)
         #if not self.uri().startswith('/_'):
@@ -127,35 +126,9 @@ class WsgiRequest(wiking.Request):
         else:
             raise RuntimeError("start_http_response() can only be called once!")
 
-    def write(self, data):
-        # This works fine for ordinary pages, but it doesn't allow streaming
-        # (it will work, but the whole stream must be read into memory and sent
-        # in one chunk).  Implementing the WSGI generator interface on top of
-        # Wiking's imperative approach with req.write() would involve a
-        # multithreaded queue.  It seems better to add support for returning a
-        # generator instance from wiking.Handler.handle().  This would work
-        # seamlesly with WSGI and would be easy to implement for mod_python.
-        # The Wiking applications which need streaming would need to be changed
-        # to use generators instead of req.write() than, but there's not so
-        # much code like that (one example is wiking.Request.send_file()).
-        if isinstance(data, buffer):
-            # WSGI doesn't accept buffer, while mod_python's write() does so
-            # this is necessary for backwards compatibility.  It would be
-            # probably good, however, to deprecate passing python buffer
-            # instances to wiking.Request.write().
-            data = str(data)
-        self._response_data.append(data)
-
     def option(self, name, default=None):
         return self._environ.get('wiking.'+ name, default)
 
-    def response_data(self):
-        """This method is internal to the WSGI module.
-        
-        It should never be used within Wiking applications.
-        
-        """
-        return self._response_data
 
 class WsgiEntryPoint(object):
     """WSGI entry point.
@@ -177,9 +150,7 @@ class WsgiEntryPoint(object):
             # need information from the environment to initialize the the
             # handler instance.
             handler = self._handler = wiking.Handler(req)
-        handler.handle(req)
-        for chunk in req.response_data():
-            yield chunk
+        return handler.handle(req)
 
 
 application = WsgiEntryPoint()

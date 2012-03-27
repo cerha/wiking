@@ -17,7 +17,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 import collections
-import re
+import re, cStringIO as StringIO
 
 from wiking import *
 from pytis.presentation import Action
@@ -1240,15 +1240,42 @@ class PytisModule(Module, ActionHandler):
         return arguments
         
     def _rows(self, req, condition=None, lang=None, limit=None, sorting=None):
+        return list(self._rows_generator(req, condition=condition, lang=lang, limit=limit,
+                                         sorting=sorting))
+    
+    def _rows_generator(self, req, condition=None, lang=None, limit=None, sorting=None):
         if self._LIST_BY_LANGUAGE:
             if lang is None:
                 lang = req.preferred_language()
             lcondition = pd.EQ('lang', pd.sval(lang))
         else:
             lcondition = None
-        return self._data.get_rows(condition=pd.AND(self._condition(req), lcondition, condition),
-                                   arguments=self._arguments(req),
-                                   sorting=sorting or self._sorting, limit=limit)
+        data = self._data
+        count = 0
+        try:
+            data.select(condition=pd.AND(self._condition(req), lcondition, condition),
+                        arguments=self._arguments(req),
+                        sort=sorting or self._sorting)
+            while True:
+                if limit is not None and count >= limit:
+                    break
+                row = data.fetchone()
+                if row is None:
+                    break
+                count += 1
+                yield row
+        finally:
+            try:
+                data.close()
+            except:
+                pass
+
+    def _records(self, req, condition=None, lang=None, limit=None, sorting=None):
+        record = self._record(req, None)
+        for row in self._rows_generator(req, condition=condition, lang=lang, limit=limit,
+                                        sorting=sorting):
+            record.set_row(row)
+            yield record
 
     def _handle(self, req, action, **kwargs):
         record = kwargs.get('record')
@@ -1356,24 +1383,28 @@ class PytisModule(Module, ActionHandler):
             result = None
         return result
 
-    def _try_ajax_handler(self, req, record, layout, errors):
-        """Handle the request if it is an AJAX request, otherwise return.
+    def _is_ajax_request(self, req):
+        """Return True if the request is an AJAX request.
 
-        If the current request is a pytis form update request, handle it and
-        return True -- the calling side should stop processing the request
-        (return None from the handler function) in this case.  If False is
-        returned, this is not an AJAX request and the calling side can continue
-        processing it.
+        If the current request is a pytis form update request, return True,
+        Otherwise return False.  If True is returned, request processing should
+        be passed to the method '_handle_ajax_request()'.
         
         """
-        if req.param('_pytis_form_update_request'):
-            uri = self._current_base_uri(req, record)
-            response = pw.EditForm.ajax_response(req, record, layout, errors, req.localizer(),
-                                                 uri_provider=self._uri_provider(req, uri))
-            req.send_response(response, content_type='application/json')
-            return True
-        else:
-            return False
+        return req.param('_pytis_form_update_request') is not None
+
+    def _handle_ajax_request(self, req, record, layout, errors):
+        """Handle the AJAX request and return the result.
+
+        This method should be called when the method '_is_ajax_request()'
+        returns true.
+
+        """
+        uri = self._current_base_uri(req, record)
+        response = pw.EditForm.ajax_response(req, record, layout, errors, req.localizer(),
+                                             uri_provider=self._uri_provider(req, uri))
+        return req.send_response(response, content_type='application/json')
+         
 
     def _list_form_content(self, req, form, uri=None):
         """Return the page content for the 'list' action form as a list of 'lcg.Content' instances.
@@ -1799,8 +1830,8 @@ class PytisModule(Module, ActionHandler):
         if req.param('submit'):
             record = self._record(req, None, new=True, prefill=self._prefill(req))
             errors = self._validate(req, record, layout)
-            if self._try_ajax_handler(req, record, layout, errors):
-                return None
+            if self._is_ajax_request(req):
+                return self._handle_ajax_request(req, record, layout, errors)
             if not errors:
                 try:
                     transaction = self._insert_transaction(req, record)
@@ -1866,8 +1897,8 @@ class PytisModule(Module, ActionHandler):
         layout = self._layout_instance(self._layout(req, action, record))
         if req.param('submit'):
             errors = self._validate(req, record, layout)
-            if self._try_ajax_handler(req, record, layout, errors):
-                return None
+            if self._is_ajax_request(req):
+                return self._handle_ajax_request(req, record, layout, errors)
         else:
             errors = ()
         if req.param('submit') and not errors:
@@ -1910,30 +1941,26 @@ class PytisModule(Module, ActionHandler):
         return self._document(req, form, record,
                               subtitle=self._action_subtitle(req, 'delete', record))
         
-    def _export(self, req, export_row, content_type, headers=()):
-        record = self._record(req, None)
-        for header, content in headers:
-            req.set_header(header, content)
-        req.start_response(content_type=content_type)
-        for row in self._rows(req):
-            record.set_row(row)
-            export_row(record)
-
     def action_export(self, req):
         columns = self._exported_columns(req)
         export_kwargs = dict([(cid, isinstance(self._type[cid], pytis.data.Float)
                                and dict(locale_format=False) or {}) for cid in columns])
-        def export_row(record):
-            data = []
-            for cid in columns:
-                value = record.display(cid) or record[cid].export(**export_kwargs[cid])
-                singleline = ';'.join(re.split('\r?\n', value))
-                data.append(singleline.replace('\t', '\\t'))
-            req.write('\t'.join(data).encode('utf-8') + '\n')
-        self._export(req, export_row, 'text/plain; charset=utf-8',
-                     headers=(('Content-disposition',
-                               'attachment; filename=%s' % self._export_filename(req)),))
-        return None
+        def generator():
+            data = ''
+            buffer_size = 1024*512
+            for record in self._records(req):
+                coldata = []
+                for cid in columns:
+                    value = record.display(cid) or record[cid].export(**export_kwargs[cid])
+                    coldata.append(';'.join(value.splitlines()).replace('\t', '\\t'))
+                data += '\t'.join(coldata).encode('utf-8') + '\n'
+                if len(data) >= buffer_size:
+                    yield data
+                    data = ''
+        req.set_header('Content-disposition',
+                       'attachment; filename=%s' % self._export_filename(req))
+        req.start_response(content_type='text/plain; charset=utf-8')
+        return generator()
 
     def action_jsondata(self, req):
         try:
@@ -1945,12 +1972,8 @@ class PytisModule(Module, ActionHandler):
             columns.insert(0, self._key)
         # Inspect column types in advance as it is cheaper than calling
         # isinstance for all exported values.
-        export_types = (pd.DateTime, pd.Time,)
-        def is_export_column(cid):
-            def column_is_instance(type_):
-                return isinstance(self._type[cid], type_)
-            return any(map(column_is_instance, export_types))
-        datetime_columns = filter(is_export_column, columns)
+        datetime_columns = [cid for cid in columns
+                            if isinstance(self._type[cid], (pd.DateTime, pd.Time,))]
         def export_value(record, cid):
             value = record[cid]
             if cid in datetime_columns:
@@ -1958,11 +1981,9 @@ class PytisModule(Module, ActionHandler):
             else:
                 result = value.value()
             return result
-        data = []
-        def export_row(record):
-            return data.append(dict([(cid, export_value(record, cid)) for cid in columns]))
-        self._export(req, export_row, 'application/json')
-        req.write(json.dumps(data))
+        data = [dict([(cid, export_value(record, cid)) for cid in columns])
+                for record in self._records(req)]
+        return req.send_response(json.dumps(data), content_type='application/json')
                 
     def action_print_field(self, req, record):
         field = self._view.field(req.param('field'))
@@ -1979,7 +2000,7 @@ class PytisModule(Module, ActionHandler):
         req.set_header('Content-disposition',
                        'attachment; filename=%s' % self._print_field_filename(req, record, field))
         req.start_response(content_type='application/pdf')
-        req.write(result)
+        return [result]
     
     def _action_subtitle(self, req, action, record=None):
         actions = sorted(self._actions(req, record), key=lambda a: len(a.kwargs()), reverse=True)
@@ -2172,19 +2193,16 @@ class RssModule(object):
             condition = self._binding_condition(*relation)
         else:
             condition = None
-        rows = self._rows(req, condition=condition, lang=lang, limit=self._RSS_LIMIT)
         base_uri = req.server_uri(current=True)
-        record = self._record(req, None)
-        writer = RssWriter(req)
-        req.start_response(content_type='application/xml')
+        buff = StringIO.StringIO()
+        writer = RssWriter(buff)
         writer.start(base_uri,
                      req.localize(cfg.site_title +' - '+ self._rss_channel_title(req)),
                      description=req.localize(cfg.site_subtitle),
                      webmaster=cfg.webmaster_address,
                      generator='Wiking %s' % wiking.__version__,
                      language=lang)
-        for row in rows:
-            record.set_row(row)
+        for record in self._records(req, condition=condition, lang=lang, limit=self._RSS_LIMIT):
             title = req.localize(self._rss_title(req, record))
             uri = self._rss_uri(req, record, lang=lang)
             if uri:
@@ -2200,6 +2218,7 @@ class RssModule(object):
                         author=author,
                         pubdate=date)
         writer.finish()
+        return req.send_response(buff.getvalue(), content_type='application/xml')
 
 
 class PytisRssModule(PytisModule):
@@ -2306,25 +2325,23 @@ class PytisRssModule(PytisModule):
         author = func(spec.author())
         date = func(spec.date(), raw=True)
         #
-        rows = self._rows(req, condition=channel.condition(), lang=lang,
-                          limit=channel.limit(), sorting=channel.sorting())
-        record = self._record(req, None)
-        writer = RssWriter(req)
-        req.start_response(content_type='application/xml')
+        buff = StringIO.StringIO()
+        writer = RssWriter(buff)
         writer.start(base_uri,
                      localize(cfg.site_title +' - '+ channel.title()),
                      description=localize(channel.descr() or cfg.site_subtitle),
                      webmaster=channel.webmaster() or cfg.webmaster_address,
                      generator='Wiking %s' % wiking.__version__,
                      language=lang)
-        for row in rows:
-            record.set_row(row)
+        for record in self._records(req, condition=channel.condition(), lang=lang,
+                                    limit=channel.limit(), sorting=channel.sorting()):
             writer.item(link=link(record),
                         title=title(record),
                         description=descr(record),
                         author=author(record),
                         pubdate=date(record))
         writer.finish()
+        return req.send_response(buff.getvalue(), content_type='application/xml')
         
 # Mixin module classes
 
@@ -2343,7 +2360,7 @@ class Panelizable(object):
             condition = None
         record = self._record(req, None)
         items = []
-        for row in self._rows(req, condition=condition, lang=lang, limit=count-1):
+        for row in self._rows(req, condition=condition, lang=lang, limit=count):
             record.set_row(row)
             item = PanelItem([(f.id(), record[f.id()].export(),
                                f.id() == self._title_column and \

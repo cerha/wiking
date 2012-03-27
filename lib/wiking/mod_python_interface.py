@@ -117,12 +117,6 @@ class ModPythonRequest(wiking.Request):
         except IOError as e:
             raise wiking.ClosedConnection(str(e))
 
-    def write(self, data):
-        try:
-            self._req.write(data)
-        except IOError as e:
-            raise wiking.ClosedConnection(str(e))
-        
     def option(self, name, default=None):
         return self._options.get(name, default)
     
@@ -155,12 +149,17 @@ class ModPythonHandler(object):
 
     def __call__(self, request):
         req = ModPythonRequest(request)
-        if self._handler is None:
+        handler = self._handler
+        if handler is None:
             # The Handler initialization is postponed until the first request,
             # since we need the information from the request instance to
             # initialize the the handler instance and the global configuration.
-            self._handler = wiking.Handler(req)
-        self._handler.handle(req)
+            handler = self._handler = wiking.Handler(req)
+        for chunk in handler.handle(req):
+            try:
+                request.write(chunk)
+            except IOError as e:
+                break
         return mod_python.apache.OK
 
 handler = ModPythonHandler()

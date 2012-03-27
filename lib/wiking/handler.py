@@ -17,6 +17,7 @@
 
 import wiking
 import lcg
+import types
 
 _ = lcg.TranslatableTextFactory('wiking')
 
@@ -119,13 +120,13 @@ class Handler(object):
         node = document.build(req, self._application)
         context = self._exporter.context(node, node.lang(), sec_lang=node.sec_lang(), req=req)
         exported = self._exporter.export(context)
-        req.send_response(context.localize(exported), status_code=status_code)
+        return req.send_response(context.localize(exported), status_code=status_code)
 
     def _serve_error_document(self, req, error):
         """Serve an error page using the Wiking exporter."""
         error.log(req)
         document = wiking.Document(error.title(req), error.message(req))
-        self._serve_document(req, document, status_code=error.status_code(req))
+        return self._serve_document(req, document, status_code=error.status_code(req))
 
     def _serve_minimal_error_document(self, req, error):
         """Serve a minimal error page using the minimalistic exporter."""
@@ -141,7 +142,7 @@ class Handler(object):
                                                              wiking.cfg.default_language) or 'en'
         context = exporter.context(node, lang=lang)
         exported = exporter.export(context)
-        req.send_response(context.localize(exported), status_code=error.status_code(req))
+        return req.send_response(context.localize(exported), status_code=error.status_code(req))
 
     def _handle(self, req):
         application = self._application
@@ -152,13 +153,14 @@ class Handler(object):
                     # Always perform authentication (if it was not performed before) to handle
                     # authentication exceptions here and prevent them in export time.
                     req.user()
-                    self._serve_document(req, result)
-                elif isinstance(result, (tuple, list)):
+                    return self._serve_document(req, result)
+                elif isinstance(result, tuple):
                     content_type, data = result
-                    req.send_response(data, content_type=content_type)
+                    return req.send_response(data, content_type=content_type)
+                elif isinstance(result, (list, types.GeneratorType)):
+                    return result
                 else:
-                    # int is deprecated! Just for backwards compatibility.  
-                    assert result is None or isinstance(result, int)
+                    raise Exception('Invalid wiking handler result: %s' % type(result))
             except wiking.RequestError as error:
                 try:
                     req.user()
@@ -166,12 +168,12 @@ class Handler(object):
                     # Ignore all errors within authentication except for AuthenticationError.
                     pass
                 except wiking.AuthenticationError as auth_error:
-                    self._serve_error_document(req, auth_error)
-                self._serve_error_document(req, error)
+                    return self._serve_error_document(req, auth_error)
+                return self._serve_error_document(req, error)
             except (wiking.ClosedConnection, wiking.Redirect):
                 raise
             except wiking.DisplayDocument as e:
-                self._serve_document(req, e.document())
+                return self._serve_document(req, e.document())
             except Exception as e:
                 # Try to return a nice error document produced by the exporter.
                 try:
@@ -179,20 +181,20 @@ class Handler(object):
                 except wiking.RequestError as error:
                     return self._serve_error_document(req, error)
         except wiking.ClosedConnection:
-            pass
+            return []
         except wiking.Redirect as r:
-            req.redirect(r.uri(), args=r.args(), permanent=r.permanent())
+            return req.redirect(r.uri(), args=r.args(), permanent=r.permanent())
         except wiking.DisplayDocument as e:
-            self._serve_document(req, e.document())
+            return self._serve_document(req, e.document())
         except Exception as e:
             # If error document export fails, return a minimal error page.  It is reasonable to
             # assume, that if RequestError handling fails, somethong is wrong with the exporter and
             # error document export will fail too, so it is ok, to have them handled both at the
             # same level above.
             try:
-                application.handle_exception(req, e)
+                return application.handle_exception(req, e)
             except wiking.RequestError as error:
-                self._serve_minimal_error_document(req, error)
+                return self._serve_minimal_error_document(req, error)
             
     def handle(self, req):
         if cfg.debug and req.param('profile') == '1':
@@ -201,7 +203,7 @@ class Handler(object):
             tmpfile = tempfile.NamedTemporaryFile().name
             profile.run('from wiking.handler import Handler; '
                         'self = Handler._instance; '
-                        'self._handle(self._profile_req)',
+                        'self._result = self._handle(self._profile_req)',
                         tmpfile)
             try:
                 stats = pstats.Stats(tmpfile)
@@ -214,10 +216,11 @@ class Handler(object):
                 sys.stderr.flush()
             finally:
                 os.remove(tmpfile)
+            return self._result
         else:
             #result, t1, t2 = timeit(self._handle, req)
             #log(OPR, "Request processed in %.1f ms (%.1f ms wall time):" % (1000*t1, 1000*t2), req.uri())
-            self._handle(req)
+            return self._handle(req)
             
 try:
     # Only for backwards compatibility with older Apache/mod_python

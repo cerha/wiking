@@ -438,8 +438,7 @@ class Application(CookieAuthentication, wiking.Application):
                     errstr = exception.message()
                 result = self._maybe_install(req, errstr)
                 if result is not None:
-                    req.send_response(result)
-                    return
+                    return req.send_response(result)
             except:
                 pass
         return super(Application, self).handle_exception(req, exception)
