@@ -737,48 +737,48 @@ class LoginPanel(Panel):
 class Document(object):
     """Independent Wiking document representation.
 
-    The 'Document' is Wiking's abstraction of an LCG document (represented by 'lcg.ContentNode').
+    The 'Document' is Wiking's abstraction of an LCG document (represented by
+    'lcg.ContentNode').
     
-    This allows us to initialize document data without actually creating the whole LCG node
-    hierarchy and specifying all the required attributes at the same time.  Default attribute
-    values sensible in the Wiking environment are substituted and the whole content node hierarchy
-    is built afterwards by calling the method 'build()'.
+    This allows us to initialize document data without actually creating the
+    whole LCG node hierarchy and specifying all the required attributes at the
+    same time.  Default attribute values sensible in the Wiking environment are
+    substituted and the whole content node hierarchy is built afterwards by
+    Wiking handler which is responsible to produce the HTTP response out of the
+    'Document' instance by converting it to 'lcg.ContentNode' and exporting it
+    to HTML.
 
     """
     
-    def __init__(self, title, content, subtitle=None, lang=None, sec_lang=None, variants=None,
-                 resources=(), globals=None, layout=None):
-        """Initialize the instance.
+    def __init__(self, title, content, subtitle=None, lang=None, sec_lang=None,
+                 variants=None, resources=(), globals=None, layout=None):
+        """Arguments:
 
-        Arguments:
-
-          title -- document title as a (translatable) string.  Can be also None, in which case the
-            title will default to the title of the corresponding menu item (if found).
-
-          content -- document content as 'lcg.Content' instance or their sequence.  If a sequence
-            is passed, it is allowed to contain None values, which will be omitted.
-
-          subtitle -- document subtitle as a (translatable) string.  If not None, it will be
-            appended to the title.
-
-          lang -- language of the content as a corresponding iso language code.  Can be None if the
-            content is not language dependent -- i.e. is all composed of translatable text, so that
-            it can be exported into any target language (supported by the application and its
-            translations).  Should always be defined for language dependent content, unless the
-            whole application is mono-lingual.
-
-          variants -- available language variants as a sequence of language codes.  Should be
-            defined if only a limited set of target languages for the document exist.  For example
-            when the document is read form a file or a database and it is known which other
-            versions of the source exist.  If None, variants default to the variants defined by the
-            corresponding menu item (if found) or to application-wide set of all available
-            languages.
-          
-          resources -- external resources available for this document as a sequence of
-            'lcg.Resource' instances.
-
-          layout -- output layout as one of `wiking.Exporter.Layout' constants or None for the
-            default layout.
+          title -- document title as a (translatable) string.  Can be also
+            None, in which case the title will default to the title of the
+            corresponding menu item (if found).
+          content -- document content as 'lcg.Content' instance or their
+            sequence.  If a sequence is passed, it is allowed to contain None
+            values, which will be omitted.
+          subtitle -- document subtitle as a (translatable) string.  If not
+            None, it will be appended to the title.
+          lang -- language of the content as a corresponding iso language code.
+            Can be None if the content is not language dependent -- i.e. is all
+            composed of translatable text, so that it can be exported into any
+            target language (supported by the application and its
+            translations).  Should always be defined for language dependent
+            content, unless the whole application is mono-lingual.
+          variants -- available language variants as a sequence of language
+            codes.  Should be defined if only a limited set of target languages
+            for the document exist.  For example when the document is read form
+            a file or a database and it is known which other versions of the
+            source exist.  If None, variants default to the variants defined by
+            the corresponding menu item (if found) or to application-wide set
+            of all available languages.
+          resources -- external resources available for this document as a
+            sequence of 'lcg.Resource' instances.
+          layout -- output layout as one of `wiking.Exporter.Layout' constants
+            or None for the default layout.
 
         """
         self._title = title
@@ -837,78 +837,6 @@ class Document(object):
         """
         args = [(k[1:], v) for k, v in self.__dict__.items() if k.startswith('_')]
         return self.__class__(**dict(args, **kwargs))
-
-    def build(self, req, application):
-        """Return the 'WikingNode' instance representing the document.
-
-        As 'WikingNode' is derived from 'lcg.ContentNode', its construction
-        mainly means that the whole application menu structure must be built.
-        
-        """
-        id = '/'.join(req.path)
-        lang = self._lang or req.preferred_language(raise_error=False) or 'en'
-        nodes = {}
-        styles = []
-        for x in application.stylesheets(req):
-            if isinstance(x, basestring):
-                x = lcg.Stylesheet(x, uri=x)
-            styles.append(x)
-        resources = tuple(styles) + self._resources
-        resource_provider = lcg.ResourceProvider(resources=resources, dirs=cfg.resource_path)
-        def mknode(item):
-            if item.id() == id:
-                heading = self._title or item.title()
-                if heading and self._subtitle:
-                    heading = lcg.concat(heading, ' :: ', self._subtitle)
-                content = self._content
-                if isinstance(content, (list, tuple)):
-                    content = lcg.Container([c for c in content if c is not None])
-                panels = application.panels(req, lang)
-                variants = self._variants
-                if variants is None:
-                    variants = item.variants()
-            else:
-                heading = item.title()
-                content = lcg.Content()
-                panels = ()
-                variants = item.variants()
-            hidden = item.hidden()
-            if variants is None:
-                variants = application.languages()
-            elif lang not in variants:
-                hidden = True
-            # The identifier is encoded to allow unicode characters within it.  The encoding
-            # actually doesnt't matter, we just need any unique 8-bit string.
-            node = WikingNode(item.id().encode('utf-8'), title=item.title(), page_heading=heading,
-                              descr=item.descr(), content=content,
-                              lang=lang, sec_lang=self._sec_lang, variants=variants or (),
-                              active=item.active(), foldable=item.foldable(), hidden=hidden,
-                              children=[mknode(i) for i in item.submenu()],
-                              resource_provider=resource_provider, globals=self._globals,
-                              panels=panels, layout=self._layout)
-            nodes[item.id()] = node
-            return node
-        top_level_nodes = [mknode(item) for item in application.menu(req)]
-        # Find the parent node by the identifier prefix.
-        parent = None
-        for i in range(len(req.path)-1):
-            key = '/'.join(req.path[:len(req.path)-i-1])
-            if key in nodes:
-                parent = nodes[key]
-                break
-        if id in nodes:
-            node = nodes[id]
-        else: 
-            # Create the current document's node if it was not created with the menu.
-            variants = self._variants or parent and parent.variants() or None
-            node = mknode(MenuItem(id, self._title, hidden=True, variants=variants))
-            if parent:
-                parent.add_child(node)
-            else:
-                top_level_nodes.append(node)
-        root = WikingNode('__wiking_root_node__', title='root', content=lcg.Content(),
-                          children=top_level_nodes)
-        return node
 
     
 class BoundCache(object):

@@ -115,9 +115,84 @@ class Handler(object):
         # Save the current handler instance for profiling purposes.
         Handler._instance = self 
 
+
+    def _build(self, req, document):
+        """Return the 'WikingNode' instance representing the given document.
+
+        The whole application menu structure must be built in order to create
+        the 'WikingNone' instance ('WikingNode' is derived from
+        'lcg.ContentNode').
+        
+        """
+        application = self._application
+        id = '/'.join(req.path)
+        lang = document.lang() or req.preferred_language(raise_error=False) or 'en'
+        nodes = {}
+        styles = []
+        for x in application.stylesheets(req):
+            if isinstance(x, basestring):
+                x = lcg.Stylesheet(x, uri=x)
+            styles.append(x)
+        resources = tuple(styles) + document.resources()
+        resource_provider = lcg.ResourceProvider(resources=resources, dirs=cfg.resource_path)
+        def mknode(item):
+            if item.id() == id:
+                heading = document.title() or item.title()
+                if heading and document.subtitle():
+                    heading = lcg.concat(heading, ' :: ', document.subtitle())
+                content = document.content()
+                if isinstance(content, (list, tuple)):
+                    content = lcg.Container([c for c in content if c is not None])
+                panels = application.panels(req, lang)
+                variants = document.variants()
+                if variants is None:
+                    variants = item.variants()
+            else:
+                heading = item.title()
+                content = lcg.Content()
+                panels = ()
+                variants = item.variants()
+            hidden = item.hidden()
+            if variants is None:
+                variants = application.languages()
+            elif lang not in variants:
+                hidden = True
+            # The identifier is encoded to allow unicode characters within it.  The encoding
+            # actually doesnt't matter, we just need any unique 8-bit string.
+            node = WikingNode(item.id().encode('utf-8'), title=item.title(), page_heading=heading,
+                              descr=item.descr(), content=content,
+                              lang=lang, sec_lang=document.sec_lang(), variants=variants or (),
+                              active=item.active(), foldable=item.foldable(), hidden=hidden,
+                              children=[mknode(i) for i in item.submenu()],
+                              resource_provider=resource_provider, globals=document.globals(),
+                              panels=panels, layout=document.layout())
+            nodes[item.id()] = node
+            return node
+        top_level_nodes = [mknode(item) for item in application.menu(req)]
+        # Find the parent node by the identifier prefix.
+        parent = None
+        for i in range(len(req.path)-1):
+            key = '/'.join(req.path[:len(req.path)-i-1])
+            if key in nodes:
+                parent = nodes[key]
+                break
+        if id in nodes:
+            node = nodes[id]
+        else: 
+            # Create the current document's node if it was not created with the menu.
+            variants = document.variants() or parent and parent.variants() or None
+            node = mknode(MenuItem(id, document.title(), hidden=True, variants=variants))
+            if parent:
+                parent.add_child(node)
+            else:
+                top_level_nodes.append(node)
+        root = WikingNode('__wiking_root_node__', title='root', content=lcg.Content(),
+                          children=top_level_nodes)
+        return node
+
     def _serve_document(self, req, document, status_code=200):
         """Serve a document using the Wiking exporter."""
-        node = document.build(req, self._application)
+        node = self._build(req, document)
         context = self._exporter.context(node, node.lang(), sec_lang=node.sec_lang(), req=req)
         exported = self._exporter.export(context)
         return req.send_response(context.localize(exported), status_code=status_code)
