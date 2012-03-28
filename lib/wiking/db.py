@@ -1403,7 +1403,7 @@ class PytisModule(Module, ActionHandler):
         uri = self._current_base_uri(req, record)
         response = pw.EditForm.ajax_response(req, record, layout, errors, req.localizer(),
                                              uri_provider=self._uri_provider(req, uri))
-        return req.send_response(response, content_type='application/json')
+        return wiking.Response(response, content_type='application/json')
          
 
     def _list_form_content(self, req, form, uri=None):
@@ -1940,10 +1940,10 @@ class PytisModule(Module, ActionHandler):
         columns = self._exported_columns(req)
         export_kwargs = dict([(cid, isinstance(self._type[cid], pytis.data.Float)
                                and dict(locale_format=False) or {}) for cid in columns])
-        def generator():
+        def generator(records):
             data = ''
             buffer_size = 1024*512
-            for record in self._records(req):
+            for record in records:
                 coldata = []
                 for cid in columns:
                     value = record.display(cid) or record[cid].export(**export_kwargs[cid])
@@ -1952,10 +1952,10 @@ class PytisModule(Module, ActionHandler):
                 if len(data) >= buffer_size:
                     yield data
                     data = ''
-        req.set_header('Content-disposition',
-                       'attachment; filename=%s' % self._export_filename(req))
-        req.start_response(content_type='text/plain; charset=utf-8')
-        return generator()
+        return wiking.Response(generator(self._records(req)),
+                               content_type='text/plain; charset=utf-8',
+                               filename=self._export_filename(req))
+
 
     def action_jsondata(self, req):
         try:
@@ -1978,7 +1978,7 @@ class PytisModule(Module, ActionHandler):
             return result
         data = [dict([(cid, export_value(record, cid)) for cid in columns])
                 for record in self._records(req)]
-        return req.send_response(json.dumps(data), content_type='application/json')
+        return wiking.Response(json.dumps(data), content_type='application/json')
                 
     def action_print_field(self, req, record):
         field = self._view.field(req.param('field'))
@@ -1992,10 +1992,8 @@ class PytisModule(Module, ActionHandler):
                                content=self._print_field_content(req, record, field))
         context = exporter.context(node, req.preferred_language())
         result = exporter.export(context)
-        req.set_header('Content-disposition',
-                       'attachment; filename=%s' % self._print_field_filename(req, record, field))
-        req.start_response(content_type='application/pdf')
-        return [result]
+        return wiking.Response(result, content_type='application/pdf',
+                               filename=self._print_field_filename(req, record, field))
     
     def _action_subtitle(self, req, action, record=None):
         actions = sorted(self._actions(req, record), key=lambda a: len(a.kwargs()), reverse=True)
@@ -2213,7 +2211,7 @@ class RssModule(object):
                         author=author,
                         pubdate=date)
         writer.finish()
-        return req.send_response(buff.getvalue(), content_type='application/xml')
+        return wiking.Response(buff.getvalue(), content_type='application/xml')
 
 
 class PytisRssModule(PytisModule):
@@ -2336,7 +2334,7 @@ class PytisRssModule(PytisModule):
                         author=author(record),
                         pubdate=date(record))
         writer.finish()
-        return req.send_response(buff.getvalue(), content_type='application/xml')
+        return wiking.Response(buff.getvalue(), content_type='application/xml')
         
 # Mixin module classes
 

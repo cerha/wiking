@@ -15,7 +15,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-import os, string, Cookie, re, urllib, datetime, httplib
+import os, string, Cookie, re, urllib, datetime, httplib, types
 import wiking, lcg, pytis
 from wiking import log, OPR, format_http_date, parse_http_date
 
@@ -467,23 +467,25 @@ class Request(ServerInterface):
             for the status codes.
           content_type -- equivalent to calling "set_header('Content-Type', ...)"
             prior to this call.
-          content_type -- equivalent to calling "set_header('Content-Length', ...)"
+          content_length -- equivalent to calling "set_header('Content-Length', ...)"
             prior to this call.
 
         This is actually just a little more convenient way of calling
         'start_http_response()' defined by the low level server API.  Calling
         this method will cause all HTTP headers to be sent to the client.  Any
-        'set_header()' calls after calling this method are ignored.  In most
-        typical cases, you will not call this method directly, but through the
-        'send_response()' wrapper.
+        'set_header()' calls after calling this method are ignored.
 
         If 'status_code' is set to 401 (UNAUTHORIZED), the 'WWW-Authenticate'
         header is automatically set to 'Basic realm="<cfg.site_title>"'.  Use
         the lower level method 'start_http_response()' if you want to avoid
         this side effect.
         
-        Raise 'ClosedConnection' if the client closes the connection during the
+        Raises 'ClosedConnection' if the client closes the connection during the
         operation.
+
+        The method should not be used directly by Wiking applications.
+        Application code should return 'wiking.Response' and 'wiking.Handler'
+        is responsible for handling it further.
 
         """
         if content_type is not None:
@@ -494,7 +496,8 @@ class Request(ServerInterface):
             self.set_header('WWW-Authenticate', 'Basic realm="%s"' % wiking.cfg.site_title)
         self.start_http_response(status_code)
 
-    def send_response(self, data, content_type="text/html", status_code=httplib.OK):
+    def send_response(self, data, content_type="text/html", content_length=None,
+                      status_code=httplib.OK):
         """Start the HTTP response and send response data to the client.
 
         Arguments:
@@ -511,72 +514,27 @@ class Request(ServerInterface):
         handling.  The 'Content-Length' HTTP header is automatically set
         according to the length of 'data'.
 
+        The method should not be used directly by Wiking applications.
+        Application code should return 'wiking.Response' and 'wiking.Handler'
+        is responsible for handling it further.
+
         """
-        if isinstance(data, unicode):
-            data = data.encode(self._encoding)
-            if content_type in ("text/html", "application/xml", "text/css", "text/plain"):
-                content_type += "; charset=%s" % self._encoding
-        self.start_response(status_code, content_type=content_type, content_length=len(data))
-        return [data]
-
-    def serve_file(self, path, content_type, filename=None, lock=False):
-        """Send the contents of given file to the client.
-
-        Arguments:
-          path -- full path to the file in server's filesystem.
-          content_type -- same as in 'start_response()', but mandatory for this method.
-          filename -- File name to be used for the 'Content-Disposition' HTTP header.
-             This will force the browser to save the file under given file name instead
-             of displaying it.
-          lock -- iff True, shared lock will be aquired on the file while it is served.
-
-        'wiking.NotFound' exception is raised if the file does not exist.
-
-        Important note: The file size is read in advance to determine the Content-Lenght header.
-        If the file is changed before it gets sent, the result may be incorrect.
-        
-        """
-        try:
-            info = os.stat(path)
-        except OSError:
-            log(OPR, "File not found:", path)
-            raise wiking.NotFound()
-        mtime = datetime.datetime.utcfromtimestamp(info.st_mtime)
-        since_header = self.header('If-Modified-Since')
-        if since_header:
-            try:
-                since = parse_http_date(since_header)
-            except:
-                # Ignore the 'If-Modified-Since' header if the date format is
-                # invalid.
-                pass
-            else:
-                if mtime == since:
-                    self.start_response(httplib.NOT_MODIFIED)
-                    return []
-        self.set_header('Last-Modified', format_http_date(mtime))
-        if filename:
-            if isinstance(filename, unicode):
-                filename = filename.encode(self._encoding)
-            self.set_header('Content-Disposition', 'attachment; filename="%s"' % filename)
-        self.start_response(content_type=content_type, content_length=info.st_size)
-        def generator():
-            f = file(path)
-            if lock:
-                import fcntl
-                fcntl.lockf(f, fcntl.LOCK_SH)
-            try:
-                while True:
-                    # Read the file in 0.5MB chunks.
-                    data = f.read(524288)
-                    if not data:
-                        break
-                    yield data
-            finally:
-                if lock:
-                    fcntl.lockf(f, fcntl.LOCK_UN)
-                f.close()
-        return generator()
+        if isinstance(data, (list, types.GeneratorType)):
+            result = data 
+        else:
+            if isinstance(data, unicode):
+                data = data.encode(self._encoding)
+                if content_type in ("text/html", "application/xml", "text/css", "text/plain"):
+                    content_type += "; charset=%s" % self._encoding
+            elif isinstance(data, buffer):
+                data = str(data)
+            elif not isinstance(data, str):
+                raise Exception('Invalid data arguemnt to Request.send_response(): %s' % type(data))
+            result = [data]
+            if content_length is None:
+                content_length = len(data)
+        self.start_response(status_code, content_type=content_type, content_length=content_length)
+        return result
 
     def _redirect(self, uri, permanent=False):
         """Implement the actual request redirection for the already completed absolute URI."""
@@ -1024,13 +982,15 @@ class Request(ServerInterface):
 class User(object):
     """Representation of the logged in user.
 
-    The authentication module returns an instance of this class on successful authentication.  The
-    interface defined by this class is used within the framework, but applications are allowed (and
-    encouraged) to derive a class with an extended interface used by the application.
+    The authentication module returns an instance of this class on successful
+    authentication.  The interface defined by this class is used within the
+    framework, but applications are allowed (and encouraged) to derive a class
+    with an extended interface used by the application.
 
-    The simplest way of using application-specific extensions is passing an arbitrary object as the
-    'data' constructor argument.  This doesn't require deriving a specific 'User' subclass, but may
-    be a little cumbersome in some situations.
+    The simplest way of using application-specific extensions is passing an
+    arbitrary object as the 'data' constructor argument.  This doesn't require
+    deriving a specific 'User' subclass, but may be a little cumbersome in some
+    situations.
 
     """
     MALE = 'm'

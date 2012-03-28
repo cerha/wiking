@@ -380,7 +380,7 @@ class Resources(Stylesheets):
                 import mimetypes
                 src_file = resource.src_file()
                 mime_type, encoding = mimetypes.guess_type(src_file)
-                return req.serve_file(src_file, mime_type or 'application/octet-stream')
+                return wiking.serve_file(req, src_file, mime_type or 'application/octet-stream')
             raise NotFound()
         else:
             raise Forbidden()
@@ -410,7 +410,7 @@ class SiteIcon(Module, RequestHandler):
     def _handle(self, req):
         filename = cfg.site_icon
         if filename:
-            return req.serve_file(filename, 'image/vnd.microsoft.icon')
+            return wiking.serve_file(req, filename, 'image/vnd.microsoft.icon')
         else:
             raise NotFound()
 

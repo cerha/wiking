@@ -72,14 +72,13 @@ class Application(Module):
         handler.
 
         The return value may be one of three kinds:
-           * 'Document' instance.
-           * A tuple of two values (MIME_TYPE, CONTENT), where MIME_TYPE is
-             a string determining the mime type of the content and CONTENT is
-             the actual output data as a basestring (unicode or str).
-           * An iterable which returns the response data as strings (a Python
-             list, generator instance or an iterable object).  In this case it
-             is expected, that the HTTP headers were already sent (using
-             'req.start_response()').
+        
+           * 'wiking.Response' instance representing directly the HTTP response
+             data and headers.
+           * 'wiking.Document' instance, which is automatically converted to a
+             'wiking.Response' by 'wiking.Handler' exporting the document into
+             HTML through 'wiking.Exporter'.
+           
 
         The method may also raise 'RequestError' exceptions to indicate special
         states or 'Redirect' exceptions to perform HTTP redirection.

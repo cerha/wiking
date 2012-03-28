@@ -87,7 +87,7 @@ class ModPythonRequest(wiking.Request):
         elif name.lower() == 'content-length':
             self._req.set_content_length(int(value))
         else:
-            self._req.headers_out.add(name, value)
+            self._req.headers_out.add(name, value.encode(self._encoding))
         
     def port(self):
         return self._req.connection.local_addr[1]

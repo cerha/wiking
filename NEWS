@@ -12,10 +12,15 @@ Unreleased changes:
      always added to condition and language condition is added automatically
      if _LIST_BY_LANGUAGE is True.
    - Request.write() method was removed.
-   - The return values of Request.send_file() and Request.send_response()
-     now must be passed on.
+   - New class wiking.Response for representation of HTTP responses returned
+     by the application code
    - The methods Application.handle(), RequestHandler.handle() and
-     ActionHandler.action_*() now must return a value.
+     ActionHandler.action_*() now must always return either a wiking.Document
+     or wiking.Response instance.
+   - Using Request.send_file(), Request.send_response() and
+     Request.start_response() in application code is now forbidden in favour of
+     wiking.Response.
+   - Request.server_file() replaced by function wiking.serve_file().
    - New method PytisModule._records() for iteration over DB records.
    - PytisModule._try_ajax_handler() replaced by _is_ajax_request() and
      _handle_ajax_request().

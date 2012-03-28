@@ -838,6 +838,88 @@ class Document(object):
         args = [(k[1:], v) for k, v in self.__dict__.items() if k.startswith('_')]
         return self.__class__(**dict(args, **kwargs))
 
+
+class Response(object):
+    """Abstract representation of HTTP request response.
+
+    The response is the final result of request processing.  Methods involved
+    in request processing, such as Application.handle(),
+    RequestHandler.handle() and ActionHandler.action_*(), may return either a
+    'wiking.Document' instance (ordinary page further processed by
+    'wiking.Exporter') or a 'wiking.Response' directly.  Using
+    'wiking.Response' gives the application an unlimited freedom to return any
+    possible content which may be transmitted over an HTTP channel.
+
+    See also 'wiking.serve_file()' for a convenience function reading the
+    response data out of a file within server's filesystem.
+    
+    """
+    def __init__(self, data, content_type='text/html', content_length=None,
+                 status_code=httplib.OK, filename=None, headers=()):
+        """Arguments:
+        
+          data -- respnse data as one of the types described below.
+          
+          content_type -- The value to be used for the 'Content-Type' HTTP
+            header (basestring).  When 'data' is a unicode instance, and
+            'content_type' is one of "text/html", "application/xml", "text/css"
+            and "text/plain", the charset information is appended automatically
+            to the value.  So for example "text/plain" will be converted to
+            "text/plain; charset=UTF-8".
+
+          content_length -- Explicit value for the 'Content-Length' HTTP header
+            (basestring).  Set automatically when 'data' is 'str', 'buffer' or
+            'unicode', but should be supplied when 'data' is an iterable
+            object.
+            
+          status_code -- integer number denoting the HTTP response status code
+            (default is 'httplib.OK').  It is recommended to use 'httplib'
+            constants for the status codes.
+
+          filename -- file name (basestring) for the 'Content-disposition' HTTP
+            header.  This has the same effect as adding a pair
+            ('Content-disposition', "attachment; filename=<filename>" to
+            'headers'.  The browser will usually show a "Save File" dialog and
+            suggest given file name as the default name for saving the request
+            result into a file.
+
+          headers -- any additional HTTP headers to be sent with the request as
+            a sequence of pairs NAME, VALUE (strings).
+
+        The supported response data types:
+          str -- is sent unchanged to the client
+          buffer -- is converted to str
+          unicode -- is encoded to str using the current request encoding
+          iterable -- iterable object (typically a generator) returning
+            response data in chunks.  The returned chunks must be strings.
+          
+        """
+        self._data = data
+        self._content_type = content_type
+        self._content_length = content_length
+        self._status_code = status_code
+        self._headers = headers
+        self._filename = filename
+        
+    def data(self):
+        return self._data
+
+    def content_type(self):
+        return self._content_type
+
+    def content_length(self):
+        return self._content_length
+
+    def status_code(self):
+        return self._status_code
+
+    def headers(self):
+        return self._headers
+    
+    def filename(self):
+        return self._filename
+        
+    
     
 class BoundCache(object):
     """Simple unlimited cache caching only in a limited scope.
@@ -1592,6 +1674,61 @@ class Time(pytis.data.Time):
 # Misc functions
 # ============================================================================
 
+def serve_file(req, path, content_type, filename=None, lock=False):
+    """Return 'wiking.Response' instance to send the contents of a given file to the client.
+
+    Arguments:
+      path -- Full path to the file in server's filesystem.
+      content_type -- The value to be used for the 'Content-Type' HTTP
+        header (basestring).
+      filename -- File name to be used for the 'Content-Disposition' HTTP header.
+         This will force the browser to save the file under given file name instead
+         of displaying it.
+      lock -- Iff True, shared lock will be aquired on the file while it is served.
+
+    'wiking.NotFound' exception is raised if the file does not exist.
+
+    Important note: The file size is read in advance to determine the Content-Lenght header.
+    If the file is changed before it gets sent, the result may be incorrect.
+    
+    """
+    try:
+        info = os.stat(path)
+    except OSError:
+        log(OPR, "File not found:", path)
+        raise wiking.NotFound()
+    mtime = datetime.datetime.utcfromtimestamp(info.st_mtime)
+    since_header = req.header('If-Modified-Since')
+    if since_header:
+        try:
+            since = parse_http_date(since_header)
+        except:
+            # Ignore the 'If-Modified-Since' header if the date format is
+            # invalid.
+            pass
+        else:
+            if mtime == since:
+                return wiking.Response('', status_code=httplib.NOT_MODIFIED,
+                                       content_type=content_type)
+    headers = (('Last-Modified', format_http_date(mtime)),)
+    def generator():
+        f = file(path)
+        if lock:
+            import fcntl
+            fcntl.lockf(f, fcntl.LOCK_SH)
+        try:
+            while True:
+                # Read the file in 0.5MB chunks.
+                data = f.read(524288)
+                if not data:
+                    break
+                yield data
+        finally:
+            if lock:
+                fcntl.lockf(f, fcntl.LOCK_UN)
+            f.close()
+    return wiking.Response(generator(), content_type=content_type, content_length=info.st_size,
+                           filename=filename, headers=headers)
 
 def timeit(func, *args, **kwargs):
     """Measure the function execution time.

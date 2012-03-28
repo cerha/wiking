@@ -224,16 +224,25 @@ class Handler(object):
         try:
             try:
                 result = application.handle(req)
+                if isinstance(result, (tuple, list)):
+                    # Temporary backwards compatibility conversion.
+                    content_type, data = result
+                    result = wiking.Response(data, content_type=content_type)
                 if isinstance(result, wiking.Document):
                     # Always perform authentication (if it was not performed before) to handle
                     # authentication exceptions here and prevent them in export time.
                     req.user()
                     return self._serve_document(req, result)
-                elif isinstance(result, tuple):
-                    content_type, data = result
-                    return req.send_response(data, content_type=content_type)
-                elif isinstance(result, (list, types.GeneratorType)):
-                    return result
+                elif isinstance(result, wiking.Response):
+                    for header, value in result.headers():
+                        req.set_header(header, value)
+                    filename = result.filename()
+                    if filename:
+                        req.set_header('Content-Disposition',
+                                       'attachment; filename="%s"' % filename)
+                    return req.send_response(result.data(), content_type=result.content_type(),
+                                             content_length=result.content_length(),
+                                             status_code=result.status_code())
                 else:
                     raise Exception('Invalid wiking handler result: %s' % type(result))
             except wiking.RequestError as error:

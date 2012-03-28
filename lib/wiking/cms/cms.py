@@ -1870,7 +1870,7 @@ class Attachments(ContentManagementModule):
     RIGHTS_back = (Roles.CONTENT_ADMIN,)
     
     def action_download(self, req, record, **kwargs):
-        return (str(record['mime_type'].value()), record['file'].value().buffer())
+        return Response(record['file'].value().buffer(), content_type=record['mime_type'].value())
     RIGHTS_download = (Roles.ANYONE)
 
     def action_thumbnail(self, req, record, **kwargs):
@@ -1878,7 +1878,7 @@ class Attachments(ContentManagementModule):
         if not value:
             raise NotFound()
         else:
-            return ('image/%s' % value.image().format.lower(), str(value.buffer()))
+            return Response(value.buffer(), content_type='image/%s' % value.image().format.lower())
     RIGHTS_thumbnail = (Roles.ANYONE)
 
     def action_image(self, req, record, **kwargs):
@@ -1886,7 +1886,7 @@ class Attachments(ContentManagementModule):
         if not value:
             raise NotFound()
         else:
-            return ('image/%s' % value.image().format.lower(), str(value.buffer()))
+            return Response(value.buffer(), content_type='image/%s' % value.image().format.lower())
     RIGHTS_image = (Roles.ANYONE)
 
     
