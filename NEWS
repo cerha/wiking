@@ -19,6 +19,7 @@ Unreleased changes:
    - New method PytisModule._records() for iteration over DB records.
    - PytisModule._try_ajax_handler() replaced by _is_ajax_request() and
      _handle_ajax_request().
+   - Removed method PytisModule.record().
 
 
 Version 1.3.0 (2012-03-20):

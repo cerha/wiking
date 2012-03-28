@@ -1639,11 +1639,6 @@ class PytisModule(Module, ActionHandler):
         
     # ===== Public methods =====
     
-    def record(self, req, value, transaction=None):
-        """Return the record corresponding to given key value."""
-        row = self._data.row((value,), transaction=transaction)
-        return row and self._record(req, row)
-        
     def link(self, req, key, *args, **kwargs):
         """Return a uri for given key value."""
         if self._link_cache_req is not req:
