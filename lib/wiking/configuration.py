@@ -381,10 +381,9 @@ class Configuration(pc):
         _DESCR = "Wiking module resolver"
         _DOC = ("Module resolver is used to locate available Wiking modules.  The value must be "
                 "a 'WikingResolver' instance.  If not set, the default instance will be created "
-                "by Wiking handler in the initialization phase using the values of configuration "
-                "options 'modules', 'database', 'dbhost', 'dbport', 'dbuser' and 'maintenance' "
-                "defined above.  If you supply your own instance, the configured values of the "
-                "above named options will have no effect.")
+                "by Wiking handler in the initialization phase, passing it the value of "
+                "the configuration option 'modules' defined above.  If you supply your own "
+                "instance, the configured value of 'modules' will have no effect.")
         
     class _Option_exporter(pc.Option):
         _DESCR = "Page exporter class"
