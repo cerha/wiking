@@ -59,10 +59,7 @@ class Application(CookieAuthentication, wiking.Application):
 
     def handle(self, req):
         req.wmi = False # Will be set to True by `WikingManagementInterface' if needed.
-        try:
-            wiking.module('Config').configure(req)
-        except MaintenanceModeError:
-            pass
+        wiking.module('Config').configure(req)
         if req.unresolved_path:
             try:
                 modname = self._MAPPING[req.unresolved_path[0]]
@@ -149,20 +146,17 @@ class Application(CookieAuthentication, wiking.Application):
             if req.wmi:
                 uri = '/_wmi/'+ modname
             else:
-                try:
-                    # Try if the module is directly embedded in a page.
-                    uri = wiking.module('Pages').module_uri(req, modname)
+                # Try if the module is directly embedded in a page.
+                uri = wiking.module('Pages').module_uri(req, modname)
+                if uri is None:
+                    # If not embeded directly, try if it is a submodule of an embedded module.
+                    mod = wiking.module(modname)
+                    if isinstance(mod, CMSExtensionModule):
+                        parent = mod.parent()
+                        if parent is not None:
+                            uri = parent.submodule_uri(req, modname)
                     if uri is None:
-                        # If not embeded directly, try if it is a submodule of an embedded module.
-                        mod = wiking.module(modname)
-                        if isinstance(mod, CMSExtensionModule):
-                            parent = mod.parent()
-                            if parent is not None:
-                                uri = parent.submodule_uri(req, modname)
-                        if uri is None:
-                            uri = wiking.module('WikingManagementInterface').module_uri(req, modname)
-                except MaintenanceModeError:
-                    pass
+                        uri = wiking.module('WikingManagementInterface').module_uri(req, modname)
         return uri
 
     def site_title(self, req):
@@ -179,49 +173,34 @@ class Application(CookieAuthentication, wiking.Application):
     
     def menu(self, req):
         modname = req.wmi and 'WikingManagementInterface' or 'Pages'
-        try:
-            return wiking.module(modname).menu(req)
-        except MaintenanceModeError:
-            return ()
+        return wiking.module(modname).menu(req)
     
     def panels(self, req, lang):
         if cfg.appl.allow_login_panel:
             panels = [LoginPanel()]
         else:
             panels = []
-        try:
-            return panels + wiking.module('Panels').panels(req, lang)
-        except MaintenanceModeError:
-            return []
+        return panels + wiking.module('Panels').panels(req, lang)
         
     def languages(self):
-        try:
-            return wiking.module('Languages').languages()
-        except MaintenanceModeError:
-            return ('en', 'cs')
+        return wiking.module('Languages').languages()
         
     def stylesheets(self, req):
-        try:
-            return wiking.module('StyleSheets').stylesheets(req)
-        except MaintenanceModeError:
-            return super(Application, self).stylesheets(req)
+        return wiking.module('StyleSheets').stylesheets(req)
 
     def _auth_user(self, req, login):
-        try:
-            user = wiking.module('Users').user(req, login)
-            if user is None and cfg.appl.allow_registration:
-                # It is possible, that the user doesn't exist in the
-                # application specific users table, but exists in the base
-                # table of wiking CMS (the user was registered for some other
-                # application sharing the same database).  Here we test if
-                # that's the case and handle the situation in the _auth_hook()
-                # below.
-                user = wiking.module('wiking.cms.Users').user(req, login)
-                if user and user.state() == Users.AccountState.NEW:
-                    user = None
-            return user
-        except MaintenanceModeError:
-            return None
+        user = wiking.module('Users').user(req, login)
+        if user is None and cfg.appl.allow_registration:
+            # It is possible, that the user doesn't exist in the
+            # application specific users table, but exists in the base
+            # table of wiking CMS (the user was registered for some other
+            # application sharing the same database).  Here we test if
+            # that's the case and handle the situation in the _auth_hook()
+            # below.
+            user = wiking.module('wiking.cms.Users').user(req, login)
+            if user and user.state() == Users.AccountState.NEW:
+                user = None
+        return user
 
     def _auth_hook(self, req, user):
         if not wiking.module('Users').user(req, user.login()):

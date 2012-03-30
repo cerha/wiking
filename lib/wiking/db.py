@@ -273,8 +273,6 @@ class PytisModule(Module, ActionHandler):
     # Instance methods
     
     def __init__(self, name):
-        if cfg.maintenance:
-            raise MaintenanceModeError()
         self._link_cache = {}
         self._link_cache_req = None
         super(PytisModule, self).__init__(name)

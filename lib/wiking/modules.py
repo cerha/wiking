@@ -496,10 +496,7 @@ class CookieAuthentication(object):
         pass
     
     def authenticate(self, req):
-        try:
-            session = wiking.module('Session')
-        except MaintenanceModeError:
-            return None
+        session = wiking.module('Session')
         # When HTTP authentication is used, req.credentials() returns the
         # credentials for every subsequent request (for cookie authentication
         # the credentials are sent just once on login form submission).  This

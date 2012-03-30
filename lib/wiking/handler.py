@@ -223,6 +223,13 @@ class Handler(object):
         application = self._application
         try:
             try:
+                if cfg.maintenance and not req.uri().startswith('/_resources/'):
+                    # TODO: excluding /_resources/ is here to make stylesheets
+                    # available for the maintenance error page.  The URI is
+                    # however not necassarily correct (application may change
+                    # it).  Better would most likely be including some basic styles
+                    # directly in MinimalExporter.
+                    return self._serve_minimal_error_document(req, MaintenanceModeError())
                 result = application.handle(req)
                 if isinstance(result, (tuple, list)):
                     # Temporary backwards compatibility conversion.

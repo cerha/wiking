@@ -394,7 +394,7 @@ class MaintenanceModeError(ServiceUnavailable):
     mainenance mode.
     
     """
-    _TITLE = _("Maintenance mode")
+    _TITLE = _("Maintenance Mode")
     _LOG = False
 
     def message(self, req):
@@ -402,8 +402,6 @@ class MaintenanceModeError(ServiceUnavailable):
         # updating/fixing something but will work again after the maintaince is finished.
         return lcg.p(_("The system is temporarily down for maintenance."))
 
-# Keep the misspelled name for backwards compatibility...
-MaintananceModeError = MaintenanceModeError
 
 class Redirect(Exception):
     """Exception class for HTTP redirection.

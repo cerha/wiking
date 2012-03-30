@@ -2229,10 +2229,7 @@ class Resources(wiking.Resources):
 
     """
     def _stylesheet(self, filename):
-        try:
-            return wiking.module('StyleSheets').stylesheet(filename)
-        except MaintenanceModeError:
-            return None
+        return wiking.module('StyleSheets').stylesheet(filename)
 
    
 class StyleSheets(SiteSpecificContentModule, StyleManagementModule):
