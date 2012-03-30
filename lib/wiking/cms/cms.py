@@ -1605,7 +1605,7 @@ class PageHistory(ContentManagementModule):
                 Field('lang'),
                 Field('uid', codebook='Users'),
                 Field('user', _("Changed by"), computer=pp.CbComputer('uid', 'user_')),
-                Field('timestamp', _("Datum"), utc=True),
+                Field('timestamp', _("Date"), utc=True),
                 Field('comment', _("Comment")),
                 Field('content'),
                 Field('inserted_lines', _("Inserted lines")),
