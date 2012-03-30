@@ -519,3 +519,12 @@ div.item span.panel-field-date {
 .pytis-form.browse-form.mapping table th {
     border-width: 1px 0;
 } */
+
+table.diff { border: 1px solid $color.border; margin-top: 0.4em; margin-bottom: 0.2em; }
+table.diff td, table.diff th { padding: 0.2em; }
+td.diff_header { text-align: right; }
+th.diff_header, th.diff_next { background-color: $color.heading-bg; }
+td.diff_header, td.diff_next { background-color: $color.frame-bg; }
+span.diff_add, span.field.id-diff_add { background-color: #aaffaa; }
+span.diff_chg, span.field.id-diff_chg { background-color: #ffff77; }
+span.diff_sub, span.field.id-diff_sub { background-color: #ffaaaa; }

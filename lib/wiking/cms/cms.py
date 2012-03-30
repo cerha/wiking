@@ -35,6 +35,7 @@ import random
 import re
 import string
 import time
+import difflib
 
 from pytis.util import *
 import pytis.data
@@ -1044,6 +1045,8 @@ class Pages(SiteSpecificContentModule):
                   #text_format=pp.TextFormat.LCG,
                   descr=_STRUCTURED_TEXT_DESCR),
             Field('content', text_format=pp.TextFormat.LCG, descr=_STRUCTURED_TEXT_DESCR),
+            Field('comment', _("Comment"), virtual=True, width=70,
+                  descr=_("Describe briefly the changes you made.")),
             # Translators: "Module" is an independent reusable part of a computer program (here a
             # module of Wiking CMS).
             Field('modname', _("Module"), display=_modtitle, prefer_display=True, not_null=False,
@@ -1155,7 +1158,8 @@ class Pages(SiteSpecificContentModule):
             Action('help', _("Help")),
             )
         # Translators: Noun. Such as e-mail attachments (here attachments for a webpage).
-        bindings = (Binding('attachments', _("Attachments"), 'Attachments', 'page_id'),)
+        bindings = (Binding('attachments', _("Attachments"), 'Attachments', 'page_id'),
+                    Binding('history', _("History"), 'PageHistory', 'page_key'),)
 
     _REFERER = 'identifier'
     _EXCEPTION_MATCHERS = (
@@ -1176,7 +1180,7 @@ class Pages(SiteSpecificContentModule):
                                                             'foldable')),
                               FieldSet(_("Access Rights"), ('read_role_id', 'write_role_id',)),
                               ))),
-               'update': ('title', 'description', '_content'),
+               'update': ('title', 'description', '_content', 'comment'),
                'options':
                    (FieldSet(_("Basic Options"), ('identifier', 'modname',)),
                     FieldSet(_("Menu position"), ('parent', 'ord', 'menu_visibility', 'foldable')),
@@ -1255,23 +1259,25 @@ class Pages(SiteSpecificContentModule):
     def _validate(self, req, record, layout):
         errors = super(Pages, self)._validate(req, record, layout)
         if not errors and req.has_param('commit'):
-            if self._application.authorize(req, self, action='commit', record=record):
-                record['content'] = record['_content']
-                record['published'] = pytis.data.Value(pytis.data.Boolean(), True)
-            else:
-                # This will actually never happen, since the 'edit' and
-                # 'commit' rights always the same now.
-                errors = [(None, _("You don't have sufficient privilegs for this action.") +' '+ \
-                               _("Save the page without publishing and ask the administrator "
-                                 "to publish your changes."))]
+            record['content'] = record['_content']
+            record['published'] = pd.bval(True)
         return errors
-
-    def _update_msg(self, req, record):
-        if record['content'].value() == record['_content'].value():
-            return super(Pages, self)._update_msg(req, record)
-        else:
-            return _("Page content was modified, however the changes remain unpublished. Don't "
-                     "forget to publish the changes when you are done.")
+    
+    def _insert_transaction(self, req, record):
+        return self._transaction()
+    
+    def _update_transaction(self, req, record):
+        return self._transaction()
+    
+    def _insert(self, req, record, transaction):
+        result = super(Pages, self)._insert(req, record, transaction)
+        wiking.module('PageHistory').on_page_change(req, record, transaction=transaction)
+        return result
+        
+    def _update(self, req, record, transaction):
+        result = super(Pages, self)._update(req, record, transaction)
+        wiking.module('PageHistory').on_page_change(req, record, transaction=transaction)
+        return result
 
     def _insert_msg(self, req, record):
         if record['published'].value():
@@ -1280,6 +1286,13 @@ class Pages(SiteSpecificContentModule):
             return _("New page was successfully created, but was not published yet. "
                      "Publish it when you are done.")
         
+    def _update_msg(self, req, record):
+        if record['content'].value() == record['_content'].value():
+            return super(Pages, self)._update_msg(req, record)
+        else:
+            return _("Page content was modified, however the changes remain unpublished. "
+                     "Don't forget to publish the changes when you are done.")
+
     def _link_provider(self, req, uri, record, cid, **kwargs):
         if cid == 'parent':
             return None
@@ -1579,6 +1592,118 @@ class Pages(SiteSpecificContentModule):
         raise Redirect('/_doc/wiking/cms/pages')
     RIGHTS_help = (Roles.CONTENT_ADMIN,)
 
+
+class PageHistory(ContentManagementModule):
+    """History of page content changes."""
+    class Spec(Specification):
+        table = 'cms_v_page_history'
+        def fields(self):
+            return (
+                Field('history_id'),
+                Field('page_key', codebook='Pages'),
+                Field('page_id'),
+                Field('lang'),
+                Field('uid', codebook='Users'),
+                Field('user', _("Changed by"), computer=pp.CbComputer('uid', 'user_')),
+                Field('timestamp', _("Datum"), utc=True),
+                Field('comment', _("Comment")),
+                Field('content'),
+                Field('inserted_lines', _("Inserted lines")),
+                Field('changed_lines',  _("Changed lines")),
+                Field('deleted_lines',  _("Deleted lines")),
+                Field('changes', _("Inserted / Changed / Deleted Lines")),
+                Field('diff_add', _("Inserted"), virtual=True, computer=computer(lambda r: _("Green"))),
+                Field('diff_chg', _("Changed"), virtual=True, computer=computer(lambda r: _("Yellow"))),
+                Field('diff_sub', _("Deleted"), virtual=True, computer=computer(lambda r: _("Red"))),
+                )
+        sorting = (('timestamp', pd.DESCENDANT),)
+        columns = ('timestamp', 'user', 'comment', 'changes')
+        #actions = (
+        #    Action('diff', _("Show differences against the current version")),
+        #    )
+
+    RIGHTS_insert = ()
+    RIGHTS_update = ()
+    RIGHTS_delete = ()
+
+    def _document_title(self, req, record):
+        if record:
+            page_title = self._binding_forward(req).arg('title')
+            dt = record['timestamp'].value().strftime('%Y-%m-%d %H:%M:%S')
+            return page_title +' :: '+ _("Changed on %s", lcg.LocalizableDateTime(dt, utc=True))
+        else:
+            return super(PageHistory, self)._document_title(req, record)
+        
+    def _layout(self, req, action, record=None):
+        if action == 'view':
+            return (('comment',),
+                    ColumnLayout(
+                    FieldSet(_("Change Summary"), ('inserted_lines', 'changed_lines',
+                                                   'deleted_lines')),
+                    FieldSet(_("Colors"), ('diff_add', 'diff_chg', 'diff_sub')),
+                    ),
+                    self._diff)
+        else:
+            return super(PageHistory, self)._layout(req, action, record=record)
+        
+    def _diff(self, record):
+        rows = self._rows(record.req(),
+                          condition=pd.AND(pd.EQ('page_key', record['page_key']),
+                                           pd.LT('history_id', record['history_id'])),
+                          sorting=(('history_id', pd.DESCENDANT),), limit=1)
+        if rows:
+            row = rows[0]
+            text1 = row['content'].value()
+            text2 = record['content'].value() or ''
+            if text1 == text2:
+                content = lcg.p(_("No differences against previous version."))
+            else:
+                name1 = (_("Original version") +
+                         lcg.format(" (%s %s)", row['user'].value(), row['timestamp'].export()))
+                name2 = (_("Modified version") +
+                         lcg.format(" (%s %s)", record['user'].value(), record['timestamp'].export()))
+                diff = difflib.HtmlDiff(wrapcolumn=80)
+                content = HtmlContent(diff.make_table(text1.splitlines(), text2.splitlines(),
+                                                      name1, name2, context=True, numlines=3))
+        else:
+            content = lcg.p(_("Previous version empty (no differences available)."))
+        return content
+        
+    def on_page_change(self, req, page, transaction):
+        """Insert a new history item if the page text has changed."""
+        original_text = page.original_row()['_content'].value() or ''
+        new_text = page['_content'].value() or ''
+        if new_text != original_text:
+            matcher = difflib.SequenceMatcher(lambda x: False,
+                                              original_text.splitlines(), new_text.splitlines())
+            inserted = changed = deleted = 0
+            for tag, i1, i2, j1, j2 in matcher.get_opcodes():
+                a, b = i2-i1, j2-j1
+                if tag == 'insert':
+                    inserted += b
+                elif tag == 'delete':
+                    deleted += a
+                elif tag == 'replace':
+                    if a > b:
+                        changed += b
+                        inserted += b-a
+                    else:
+                        changed += a
+                        deleted += a-b
+            row = self._data.make_row(
+                page_id=page['page_id'].value(),
+                lang=page['lang'].value(),
+                uid=req.user().uid(),
+                timestamp=now(),
+                comment=page['comment'].value(),
+                content=new_text,
+                inserted_lines=inserted,
+                changed_lines=changed,
+                deleted_lines=deleted)
+            result, success = self._data.insert(row, transaction=transaction)
+            if not success:
+                raise pd.DBException(result)
+    
     
 class Attachments(ContentManagementModule):
     """Attachments are external files (documents, images, media, ...) attached to CMS pages.
