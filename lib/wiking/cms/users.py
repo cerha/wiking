@@ -1107,7 +1107,7 @@ class Users(UserManagementModule):
     def _make_user(self, kwargs):
         return self.User(**kwargs)
 
-    def user(self, req, login=None, uid=None):
+    def user(self, req, login=None, uid=None, transaction=None):
         """Return a user for given login name or user id.
 
         Arguments:
@@ -1120,7 +1120,7 @@ class Users(UserManagementModule):
         Returns a 'User' instance (defined in request.py) or None.
 
         """
-        key = (login, uid,)
+        key = (login, uid, transaction and id(transaction))
         user_cache = self._user_cache.get(req)
         if user_cache is None:
             user_cache = self._user_cache[req] = {}
@@ -1128,17 +1128,18 @@ class Users(UserManagementModule):
             return user_cache[key]
         # Get the user data from db
         if login is not None and uid is None:
-            row = self._data.get_row(login=login)
+            kwargs = dict(login=login)
         elif uid is not None and login is None:
-            row = self._data.get_row(uid=uid)
+            kwargs = dict(uid=uid)
         else:
             raise Exception("Invalid 'user()' arguments.", (login, uid))
+        row = self._data.get_row(transaction=transaction, **kwargs)
         if row is None:
             user = None
         else:
             # Convert user data into a User instance
-            kwargs = self._user_arguments(req, row['login'].value(), row)
-            user = self._make_user(kwargs)
+            user_kwargs = self._user_arguments(req, row['login'].value(), row)
+            user = self._make_user(user_kwargs)
         user_cache[key] = user
         return user
 
