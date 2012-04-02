@@ -1348,6 +1348,30 @@ class HtmlContent(lcg.TextContent):
     def export(self, context):
         return self._text
 
+class HtmlRenderer(lcg.Content):
+    """LCG content class for wrapping a direct HTML renderer function.
+
+    This is a simple convenience wrapper for situations where HTML content is
+    rendered directly by a python function passed to the constructor.  The
+    result can be placed within an LCG content hierarchy and the passed
+    renderer function will be called on export with two arguments (context,
+    generator), where 'context' is a 'wiking.Exporter.Context' instance and
+    'generator' is an 'lcg.HtmlGenerator' instance.
+
+    Use with caution.  Defining specific content classes for more generic
+    content elements is encouraged over using this class.  This class should
+    only be used for simple cases where defining a class makes too much
+    unnecessary noise...
+
+    """
+    def __init__(self, renderer):
+        assert isinstance(renderer, collections.Callable)
+        self._renderer = renderer
+    
+    def export(self, context):
+        return self._renderer(context, context.generator())
+    
+
 
 class Notebook(lcg.Container):
     """HTML Notebook widget as an LCG content element.
