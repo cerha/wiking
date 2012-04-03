@@ -19,10 +19,33 @@
 
 var wiking = new Object();
 
-wiking.Base = Class.create({
+wiking.Translatable = Class.create({
+    // Translations are passed to JavaScript from Python when the constructor
+    // is called.  The method 'gettext()' then allows obtaining a translation
+    // for given string.  The advantage is that we have all translations at one
+    // place (in the gettext catalog of the Python source).  The disadvantage
+    // is that we need to duplicate all strings used in JavaScript at the
+    // Python side and keep them in sync, so this is only usable when their
+    // amount is small (which it currently is).
 
     initialize: function (translations) {
 	this.translations = translations;
+    },
+
+    gettext: function(text) {
+	translation = this.translations[text];
+	if (typeof(translation) != 'undefined')
+	    return translation;
+	else
+	    return text;
+    }
+
+});
+
+wiking.KeyHandler = Class.create(wiking.Translatable, {
+
+    initialize: function ($super, translations) {
+	$super(translations);
 	this.keymap = this.init_keymap();
     },
       
@@ -30,15 +53,6 @@ wiking.Base = Class.create({
 	return {};
     },
 
-    gettext: function(text) {
-	// Translations are passed to JavaScript from python when init() is called.
-	translation = this.translations[text];
-	if (typeof(translation) != 'undefined')
-	    return translation;
-	else
-	    return text;
-    },
-    
     event_key: function (event) {
 	var code = document.all ? event.keyCode : event.which;
 	var map = {
@@ -93,7 +107,7 @@ wiking.Base = Class.create({
 });
 
 
-wiking.Handler = Class.create(wiking.Base, {
+wiking.Handler = Class.create(wiking.KeyHandler, {
     // This class is instantiated within the page onload handler.  It is the
     // main javascript interface of a Wiking application.  It creates
     // instances of other javascript classes to handle menus etc if the
@@ -180,7 +194,7 @@ wiking.Handler = Class.create(wiking.Base, {
     
 });
 
-wiking.Menu = Class.create(wiking.Base, {
+wiking.Menu = Class.create(wiking.KeyHandler, {
     // Initialize a hierarchical menu -- assign ARIA roles to HTML tags
     // and bind keyboard event handling to support keyboard menu traversal.
     
