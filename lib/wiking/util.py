@@ -1352,11 +1352,13 @@ class HtmlRenderer(lcg.Content):
     """LCG content class for wrapping a direct HTML renderer function.
 
     This is a simple convenience wrapper for situations where HTML content is
-    rendered directly by a python function passed to the constructor.  The
+    rendered directly by a Python function passed to the constructor.  The
     result can be placed within an LCG content hierarchy and the passed
-    renderer function will be called on export with two arguments (context,
-    generator), where 'context' is a 'wiking.Exporter.Context' instance and
-    'generator' is an 'lcg.HtmlGenerator' instance.
+    renderer function will be called on export with at least three arguments
+    (element, context, generator), where 'element' is the 'HtmlRenderer'
+    instance, 'context' is a 'wiking.Exporter.Context' instance and 'generator'
+    is an 'lcg.HtmlGenerator' instance.  Also any additional arguments
+    (including keyword arguments) passed to the constructor are passed on.
 
     Use with caution.  Defining specific content classes for more generic
     content elements is encouraged over using this class.  This class should
@@ -1364,12 +1366,22 @@ class HtmlRenderer(lcg.Content):
     unnecessary noise...
 
     """
-    def __init__(self, renderer):
+    def __init__(self, renderer, *args, **kwargs):
+        """Arguments:
+
+        renderer -- the rendering function (see class docstring for details).
+        *args, **kwargs -- all remaining arguments are passed along to
+          'renderer' when called on export.
+
+        """
         assert isinstance(renderer, collections.Callable)
         self._renderer = renderer
+        self._renderer_args = args
+        self._renderer_kwargs = kwargs
     
     def export(self, context):
-        return self._renderer(context, context.generator())
+        return self._renderer(self, context, context.generator(),
+                              *self._renderer_args, **self._renderer_kwargs)
     
 
 
