@@ -59,6 +59,10 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             self.has_submenu = bool([n for n in self.node().top().children() if not n.hidden()])
             self.application = wiking.module('Application')
             super(Exporter.Context, self)._init_kwargs(timezone=req.timezone(), **kwargs)
+            # Make sure that Prototype.js is always loaded first, so that it is
+            # available in any other scripts.
+            self.resource('prototype.js')
+            self.resource('wiking.js')
 
         def req(self):
             """Return the current request as a 'wiking.Request' instance.
@@ -201,8 +205,6 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         return uri
     
     def _head(self, context):
-        context.node().resource('prototype.js')
-        context.node().resource('wiking.js')
         result = super(Exporter, self)._head(context)
         channels = [('<link rel="alternate" type="application/rss+xml" '
                      'title="'+ p.title() +'" href="'+ p.channel() +'">')
@@ -349,7 +351,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
                         cls='panel-anchor')
             channel = panel.channel()
             if channel:
-                icon = context.node().resource('rss.png')
+                icon = context.resource('rss.png')
                 if icon:
                     # Translators: ``RSS channel'' is terminology idiom, see Wikipedia
                     channel_title = panel.title() +' ('+ _("RSS channel") +')'
