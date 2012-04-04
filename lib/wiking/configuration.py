@@ -226,11 +226,11 @@ class Configuration(pc):
                 "valid (e-mail sent to it is delivered to a responsible person).")
         _DEFAULT = None        
         
-    class _Option_https_port(pc.NumericOption):
-        _DESCR = "HTTPS port number"
+    class _Option_https_ports(pc.Option):
+        _DESCR = "HTTPS port numbers"
         _DOC = ("The default HTTPS port is 443 but certain server configurations may require "
-                "using a different port.  Set this option if this is your case.")
-        _DEFAULT = 443
+                "using a different port or several ports for HTTPS connections.")
+        _DEFAULT = (443,)
         
     class _Option_force_https_login(pc.BooleanOption):
         # Translation: ``Force'' means ,,do not allow otherwise'', sentence in imperative followed by a checkbox.

@@ -430,17 +430,18 @@ class Request(ServerInterface):
             information) and False means to use the global name from
             'wiking.cfg.server_hostname'.
         
-        The URI in the form 'http://www.yourdomain.com' is constructed including port and scheme
-        specification.  If current request port corresponds to 'https_port' configuration option
-        (443 by default), the scheme is set to 'https'.  The port is also included in the uri if
-        it is not the current scheme's default port (80 or 443).
+        The URI in the form 'http://www.yourdomain.com' is constructed
+        including port and scheme specification.  If current request port
+        corresponds to one of 'https_ports' configuration option (443 by
+        default), the scheme is set to 'https'.  The port is also included in
+        the uri if it is not the current scheme's default port (80 or 443).
 
         """
         if force_https:
-            port = wiking.cfg.https_port
+            port = wiking.cfg.https_ports[0]
         else:
             port = self.port()
-        if port == wiking.cfg.https_port:
+        if port in wiking.cfg.https_ports:
             scheme = 'https'
             default_port = 443
         else:

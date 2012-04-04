@@ -93,7 +93,7 @@ class ModPythonRequest(wiking.Request):
         return self._req.connection.local_addr[1]
 
     def https(self):
-        return self._req.connection.local_addr[1] == wiking.cfg.https_port
+        return self._req.connection.local_addr[1] in wiking.cfg.https_ports
     
     def remote_host(self):
         return self._req.get_remote_host()
