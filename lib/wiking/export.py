@@ -194,10 +194,6 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
 
     def _uri_resource(self, context, resource):
         uri = super(Exporter, self)._uri_resource(context, resource)
-        if resource.filename() == 'scriptaculous.js':
-            # Hack to support loading scriptaculous modules required by
-            # lightbox.js.
-            uri += '?load=effects,builder'
         # Minor hack to make CMS theme preview work (pass theme_id to styles heets).
         theme_id = context.req().param('preview_theme')
         if theme_id and isinstance(resource, lcg.Stylesheet):

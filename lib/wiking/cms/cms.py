@@ -1473,7 +1473,8 @@ class Pages(SiteSpecificContentModule):
                 attachments_list.append(item)
         if needs_lightbox:
             resources.extend((lcg.Script('prototype.js'),
-                              lcg.Script('scriptaculous.js'),
+                              lcg.Script('effects.js'),
+                              lcg.Script('builder.js'),
                               lcg.Script('lightbox.js'),
                               lcg.Stylesheet('lightbox.css')))
         if gallery_images:
