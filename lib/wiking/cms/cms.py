@@ -310,7 +310,6 @@ class CMSModule(PytisModule, RssModule, Panelizable):
 class ContentManagementModule(CMSModule):
     """Base class for WMI modules managed by L{Roles.CONTENT_ADMIN}."""
     RIGHTS_insert    = (Roles.CONTENT_ADMIN,)
-    RIGHTS_update    = (Roles.CONTENT_ADMIN, Roles.OWNER)
     RIGHTS_update    = (Roles.CONTENT_ADMIN,)
     RIGHTS_delete    = (Roles.CONTENT_ADMIN,)
     RIGHTS_publish   = (Roles.CONTENT_ADMIN,)
