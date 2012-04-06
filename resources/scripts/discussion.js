@@ -106,17 +106,24 @@ var Discussion = Class.create(wiking.Translatable, {
 					'method': 'POST',
      					'style': 'display: none',
 					'class': 'pytis-form edit-form'});
+	var field_id = 'wiking-discussion-reply-' + comment_id;
+	var label = new Element('span', {'class': 'field-label id-'+this.field});
+	label.insert(new Element('label', {'for': field_id}).update(this.gettext('Your Reply')));
+	label.insert(new Element('sup', {'class': 'not-null'}).update('*'));
+	label.insert(':');
+	form.insert(label);
+        form.insert(new Element('textarea', {'class': 'fullsize', 
+     					     'cols': '80', 
+     					     'rows': '8',
+     					     'name': this.field,
+					     'id': field_id,
+     					     'aria-required': 'true'}));
         var hidden = [['action', 'insert'], 
      		      ['submit', 'submit'], 
      		      ['in_reply_to', comment_id]];
         hidden.each(function (x) {
      	    form.insert(new Element('input', {'type': 'hidden', 'name': x[0], 'value': x[1]}));
         });
-        form.insert(new Element('textarea', {'class': 'fullsize', 
-     					     'cols': '80', 
-     					     'rows': '8',
-     					     'name': this.field,
-     					     'aria-required': 'true'}));
 	var buttons = [
 	    ["Submit", {'type': 'submit', 'value': '1'}, 
 	     function (event) {}],
