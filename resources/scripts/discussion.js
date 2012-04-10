@@ -26,80 +26,30 @@
  * all when JavaScript is off).  The button, when pressed, inserts a form for
  * entering a reply to given comment into the page just below the comment.
  * 
- * The API is simple.  An instance of the Discussion class must be created
- * first and then the method 'init_reply()' must be called for each comment,
- * passing it the comment_id (to be sent with the reply text as a reference to
- * the comment being replied to.
+ * An instance of the Discussion class must be created below the exported pytis
+ * form.  The new instance will automatically locate all '.discussion-reply'
+ * elements in the document and bind Javascript handlers to the related HTML
+ * elements of the discussion list.
 
 */
 
 var Discussion = Class.create(wiking.Translatable, {
 
-    initialize: function ($super, uri, field, translations, autohide) {
+    initialize: function ($super, uri, field, translations) {
 	$super(translations);
 	this.uri = uri;
 	this.field = field;
-	this.autohide = (typeof(autohide) == 'undefined' ? false : autohide);
-    },
-
-    init_reply: function (element_id, comment_id, quoted) {
-	var div = $(element_id).up('div.list-item');
-	if (this.autohide) {
-	    div.observe('mouseover', function(event) { 
-		this.on_mouseover(div, comment_id, quoted);
+	$$('.discussion-reply').each(function (div) {
+	    var comment_id = div.down('span.in-reply-to').innerHTML;
+	    var quoted = decodeURIComponent(div.down('span.quoted').innerHTML);
+	    var button = div.down('button.reply');
+	    button.observe('click', function (event) { 
+		this.on_reply(div, comment_id, quoted);
 	    }.bind(this));
-	    div.observe('mouseout', function(event) { 
-		this.on_mouseout(event, div);
-	    }.bind(this));
-	} else {
-	    var button = this.create_reply_button(div, comment_id, quoted);
-	    button.show();
-	}
-    },
-
-    create_reply_button: function (div, comment_id, quoted) {
-	var button = new Element('button', {'onclick': 'return false;'});
-	button.insert(new Element('span').update(this.gettext('Reply')));
-	button.observe('click', function (event) { 
-	    this.on_reply(div, comment_id, quoted);
 	}.bind(this));
-	button_div = new Element('div', {'style': 'display: none',
-					 'class': 'reply-button'}).insert(button)
-	div.insert(button_div);
-	return button_div;
-    },
-
-    on_mouseover: function (div, comment_id, quoted) {
-	var form = div.up('div.pytis-form').down('form');
-	if (!form) {
-	    var button = div.down('.reply-button');
-	    if (!button)
-		button = this.create_reply_button(div, comment_id, quoted);
-	    if (!button.visible()) {
-		this.slide_down(button);
-	    }
-	}
-    },
-
-    on_mouseout: function (event, div) {
-	// Note, the mousout event is generated also for the elements inside
-	// the div, so we must find out ourselves whether the mouse really has
-	// really left the div (silly, isn't it?).
-	var x = event.pointerX();
-	var y = event.pointerY();
-	var offset = div.cumulativeOffset();
-	var size = div.getDimensions();
-	if (!(x > offset.left && x < offset.left+size.width &&  
-	      y > offset.top  && y < offset.top+size.height)) {
-	    var button = div.down('.reply-button');
-	    if (button && button.visible())
-		this.slide_up(button);
-	}
     },
 
     on_reply: function (div, comment_id, quoted) {
-	if (this.autohide)
-            div.down('.reply-button').hide();
 	if (div.up('div.pytis-form').down('form'))
 	    return;
         var form = new Element('form', {'action': this.uri,
@@ -139,10 +89,9 @@ var Discussion = Class.create(wiking.Translatable, {
             button_div.insert(button);
 	}.bind(this));
 	div.insert(form);
-	if (!this.autohide)
-	    $$('.reply-button button').each(function(button) {
-		button.disable();
-	    });
+	$$('.discussion-reply button.reply').each(function(button) {
+	    button.disable();
+	});
 	this.slide_down(form);
 	var field = form[this.field];
 	setTimeout(function () { field.focus(); }, 250);
@@ -154,10 +103,9 @@ var Discussion = Class.create(wiking.Translatable, {
 	    setTimeout(function () { form.remove(); }, 200);
 	else
 	    form.remove();
-	if (!this.autohide)
-	    $$('.reply-button button').each(function(button) {
-		button.enable();
-	    });
+	$$('.discussion-reply button.reply').each(function(button) {
+	    button.enable();
+	});
     },
 
     on_quote: function (field, quoted) {
