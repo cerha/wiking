@@ -67,7 +67,7 @@ class RequestError(Exception):
     False if logging is not appropriate for given error type.
 
     """
-    _LOG_FORMAT = "%(error)s: %(server_hostname)s%(uri)s [%(user)s@%(remote_host)s] (%(stack)s)\n"
+    _LOG_FORMAT = "%(error)s: %(server_hostname)s%(uri)s [%(user)s@%(remote_host)s]"
     """Python format string used for printing error message to the system log.
     
     The format string may use the following format variables:
@@ -134,8 +134,10 @@ class RequestError(Exception):
                 referrer=req.header('Referer'),
                 user_agent=req.header('User-Agent'),
                 server_software='Wiking %s, LCG %s, Pytis %s' % \
-                    (wiking.__version__, lcg.__version__, pytis.__version__),
-                stack=", ".join(['%s:%d:%s()' % tuple(frame[1:4]) for frame in self._stack]))
+                    (wiking.__version__, lcg.__version__, pytis.__version__))
+            if cfg.debug:
+                frames = ['%s:%d:%s()' % tuple(frame[1:4]) for frame in self._stack]
+                message += " (%s)" % ", ".join(frames)
             log(OPR, message)
 
 
