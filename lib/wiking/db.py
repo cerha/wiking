@@ -1762,15 +1762,19 @@ class PytisModule(Module, ActionHandler):
 
         """
         sections = []
+        active = None
         for binding in self._bindings(req, record):
-            mod = wiking.module(binding.name())
-            content = mod.related(req, binding, record,
-                                  uri=self._current_record_uri(req, record))
+            modname = binding.name()
+            mod = wiking.module(modname)
+            content = mod.related(req, binding, record, uri=self._current_record_uri(req, record))
             if content:
-                sections.append(lcg.Section(title=binding.title(), anchor='binding-'+binding.id(),
-                                            descr=binding.descr(), content=content))
+                anchor = 'binding-'+binding.id()
+                if req.param('form_name') == modname:
+                    active = anchor
+                sections.append(lcg.Section(title=binding.title(), descr=binding.descr(),
+                                            anchor=anchor, content=content))
         if sections:
-            return [wiking.Notebook(sections, name='bindings-'+self.name())]
+            return [wiking.Notebook(sections, name='bindings-'+self.name(), active=active)]
         else:
             return []
 
