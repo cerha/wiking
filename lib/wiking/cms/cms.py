@@ -603,6 +603,7 @@ class Config(SettingsManagementModule):
             # upgrade.30.sql.
             if row:
                 self._data.update((row['site'],), self._data.make_row(site=site))
+        assert row is not None, site
         for f in self._view.fields():
             f.configure(row[f.id()].value())
         try:
