@@ -247,20 +247,21 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         
     def _menu(self, context):
         g = self._generator
-        top = context.node().top()
-        links = [g.link(item.title(), self._uri_node(context, item),
-                        title=item.descr(), hotkey=(i==0 and '1' or None),
-                        cls='navigation-link' + (item is top and ' current' or ''),
-                        ) + (item is top and self._hidden(' *') or '')
-                 for i, item in enumerate(context.node().root().children())
-                 if not item.hidden()]
-        if links:
+        items = [item for item in context.node().root().children() if not item.hidden()]
+        if items:
+            top = context.node().top()
+            n = len(items)
+            style = "width: %d%%" % (100/n)
+            last_style = "width: %d%%" % (100 - (100 / n * (n-1)))
+            first, last = items[0], items[-1]
+            menu = [g.li(g.link(item.title(), self._uri_node(context, item),
+                                title=item.descr(), hotkey=(item is first and '1' or None),
+                                cls='navigation-link'+(item is top and ' current' or ''),
+                                )+(item is top and self._hidden(' *') or ''),
+                         style=(item is last and last_style or style))
+                    for item in items]
             title = g.link(_("Main navigation")+':', None, name='main-navigation', hotkey="3")
-            style = "width: %d%%" % (100/len(links))
-            last_style = "width: %d%%" % (100 - (100 / len(links) * (len(links)-1)))
-            last = links[-1]
-            return concat(g.h(title, 3),
-                          g.ul(*[g.li(l, style=(l==last and last_style or style)) for l in links]))
+            return concat(g.h(title, 3), g.ul(*menu))
         else:
             return None
 
