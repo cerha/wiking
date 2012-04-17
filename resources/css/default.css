@@ -82,6 +82,9 @@ img { position: relative; } /* MSIE float workaround */
 .pytis-form .horizontal-group th.spaced {
     padding-left: 0.6em;
 }
+.pytis-form .error {
+    color: #a21;
+}
 
 
 /* Fix MSIE fieldset background */

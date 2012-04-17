@@ -436,8 +436,35 @@ class PytisModule(Module, ActionHandler):
                     else:
                         format = locale_data.date_format +' '+ time_format
                 kwargs['format'] = format
-            if isinstance(type, (pd.Binary, pd.Password)) and not value and not record.new():
-                continue # Keep the original file if no file is uploaded.
+            if isinstance(type, (pd.Binary, pd.Password)) and not value:
+                try:
+                    size = int(req.param('_pytis_file_size_'+id))
+                except ValueError:
+                    pass
+                else:
+                    # Handle AJAX request for validation of file size (only
+                    # size is sent by the form to prevent uploading potentially
+                    # large files through AJAX requests before form submission).
+                    from pytis.util import format_byte_size
+                    if type.minlen() is not None and size < type.minlen():
+                        # Take the string from the pytis domain as the
+                        # validation belongs to pytis anyway so when it is
+                        # moved, this hack will vanish.
+                        error = lcg.TranslatableText(u"Minimal size %(minlen)s not satisfied",
+                                                     minlen=format_byte_size(type.minlen()),
+                                                     _domain='pytis')
+                        errors.append((id, error))
+                    if type.maxlen() is not None and size > type.maxlen():
+                        error = lcg.TranslatableText(u"Maximal size %(maxlen)s exceeded",
+                                                     maxlen=format_byte_size(type.maxlen()),
+                                                     _domain='pytis')
+                        errors.append((id, error))
+                    # Don't perform real type validation as we don't have the real
+                    # value to validate here.
+                    continue
+                if not record.new():
+                    # Keep the original file if no file is uploaded.
+                    continue 
             if isinstance(type, pd.Password) and kwargs.get('verify') is None:
                 kwargs['verify'] = not type.verify() and value or ''
             error = record.validate(id, value, **kwargs)
