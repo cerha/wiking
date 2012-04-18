@@ -1838,7 +1838,7 @@ class Attachments(ContentManagementModule):
                 img.save(stream, image.format)
                 return pd.Image.Buffer(buffer(stream.getvalue()))
         def _image(self, record, file):
-            return self._resize(file, wiking.cfg.image_screen_size)
+            return self._resize(file, wiking.cms.cfg.image_screen_size)
         def _thumbnail(self, record, file, thumbnail_size):
             if thumbnail_size is None:
                 return None

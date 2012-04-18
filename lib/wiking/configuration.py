@@ -411,18 +411,3 @@ class Configuration(pc):
         _DOC = ("Ignored crypto names don't raise decryption password dialog and "
                 "show obfuscated data instead.")
         _DEFAULT = ()
-
-    # The following options are actually Wiking CMS specific, but we have them here to allow their
-    # setting through a configuration file.  As soon as the support for application specific
-    # configuration files is ready, the options should be moved to CMS configuration.  The options
-    # are currently marked as hidden to prevent them in the automatically generated documentation.
-
-    class _Option_image_screen_size(pc.Option):
-        _DESCR = "Enlarged image screen size"
-        _DOC = ("Pair of integers (width, height) in pixels denoting the maximal size "
-                "of an image when displayed on screen (after clicking the thumbnail). "
-                "This "
-                "size is usually smaller than the original image size (which "
-                "may be larger than the screen size).  If the original is smaller")
-        _DEFAULT = (800, 800)
-        

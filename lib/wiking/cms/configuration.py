@@ -137,3 +137,12 @@ class CMSConfiguration(pc):
                 "is smaller to maintain the image proportion).")
         _DEFAULT = (120, 180, 240)
         
+    class _Option_image_screen_size(pc.Option):
+        _DESCR = "Enlarged image screen size"
+        _DOC = ("Pair of integers (width, height) in pixels denoting the maximal size "
+                "of an image when displayed on screen (after clicking the thumbnail). "
+                "This "
+                "size is usually smaller than the original image size (which "
+                "may be larger than the screen size).  If the original is smaller")
+        _DEFAULT = (800, 800)
+        
