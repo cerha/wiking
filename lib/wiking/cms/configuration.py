@@ -123,3 +123,9 @@ class CMSConfiguration(pc):
         _DOC = ("The directory must be writable by the web-server user.")
         _DEFAULT = '/var/lib/wiking'
         
+    class _Option_sql_dir(pc.StringOption):
+        _DESCR = "SQL directory"
+        _DOC = ("The directory where Wiking CMS database initialization/upgrade scripts "
+                "can be found.")
+        _DEFAULT = '/usr/local/share/wiking/sql'
+        

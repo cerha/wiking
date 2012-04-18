@@ -378,7 +378,7 @@ class Application(CookieAuthentication, wiking.Application):
             else:
                 script = ''
                 for f in ('wiking.sql', 'init.sql'):
-                    path = os.path.join(wiking.cfg.sql_dir, f)
+                    path = os.path.join(wiking.cms.cfg.sql_dir, f)
                     if os.path.exists(path):
                         script += "".join(file(path).readlines())
                     else:

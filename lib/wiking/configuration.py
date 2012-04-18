@@ -417,12 +417,6 @@ class Configuration(pc):
     # configuration files is ready, the options should be moved to CMS configuration.  The options
     # are currently marked as hidden to prevent them in the automatically generated documentation.
 
-    class _Option_sql_dir(pc.StringOption):
-        _DESCR = "SQL directory"
-        _DOC = ("The directory where Wiking CMS database initialization/upgrade scripts "
-                "can be found.")
-        _DEFAULT = '/usr/local/share/wiking/sql'
-        
     class _Option_image_thumbnail_sizes(pc.Option):
         _DESCR = "Sequence available image thumbnail sizes"
         _DOC = ("Sequence of three integers denoting the pixel size of small, "
