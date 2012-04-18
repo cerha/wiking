@@ -2146,70 +2146,105 @@ class Planner(News):
             return condition
 
 
-class Discussions(News):
-    class Spec(News.Spec):
+class Discussions(ContentManagementModule, EmbeddableCMSModule):
+    class Spec(Specification):
         # Translators: Name of the extension module for simple forum-like discussions.
         title = _("Discussions")
+        # Translators: Help string describing more precisely the meaning of the "News" section.
         help = _("Allow logged in users to post messages as in a simple forum.")
-        def fields(self):
+        table = 'cms_discussions'
+        def fields(self): return (
+            Field('comment_id', editable=NEVER),
+            Field('page_id', codebook='PageStructure', editable=ONCE,
+                  runtime_filter=computer(lambda r: pd.EQ('site', pd.sval(wiking.cfg.server_hostname)))),
+            Field('lang', codebook='Languages', editable=ONCE,
+                  selection_type=CHOICE, value_column='lang'),
+            Field('in_reply_to'),
+            Field('tree_order', type=pd.TreeOrder()),
+            Field('timestamp', type=wiking.DateTime(not_null=True, utc=True), default=now),
+            Field('author', codebook='Users'),
             # Translators: Field label for posting a message to the discussion.
-            override = (Field('content', label=_("Your comment"), compact=True,
-                              text_format=pp.TextFormat.PLAIN),)
-            return self._inherited_fields(Discussions.Spec, override=override,
-                                          exclude=('date', 'date_title'))
-        sorting = (('timestamp', ASC),)
-        columns = ('timestamp', 'author')
-        layout = ('content',)
-        list_layout = pp.ListLayout(lcg.TranslatableText("%(timestamp)s, %(author)s:"),
-                                    content=('content',))
-
-    # Insertion is handled within the 'related()' method (called on page 'view' action).
-    RIGHTS_insert = ()
-
-    def _rss_title(self, req, record):
-        return record.display('author')
+            Field('text', _("Your comment"), height=6, width=80, compact=True,),
+            )
+        sorting = (('tree_order', ASC),)
+        layout = ('text',)
+        def list_layout(self):
+            import textwrap, urllib
+            def reply_button(element, context, g, record):
+                text = textwrap.fill(record['text'].value(), 60, replace_whitespace=False)
+                quoted = '\n'.join(['> '+line for line in text.splitlines()]) +'\n\n'
+                # Write the reply button using JavaScript so that is is not
+                # displayed when Javascript is not available.
+                return g.script_write(g.div(
+                        # Button label to add a reaction to a previous discussion post.
+                        (g.button(g.span(_("Reply")), cls='reply'),
+                         g.span(record['comment_id'].export(), cls='in-reply-to',
+                                style='display: none'),
+                         g.span(urllib.quote(quoted.encode('utf-8')), cls='quoted',
+                                style='display: none'),
+                         ), cls='discussion-reply'))
+            return pp.ListLayout(lcg.TranslatableText("%(timestamp)s, %(author)s:"),
+                                 content=('text', lambda r: wiking.HtmlRenderer(reply_button, r)),
+                                 anchor='komentar-%s')
 
     def _link_provider(self, req, uri, record, cid, **kwargs):
         if cid is None and not req.wmi:
             return None
         return super(Discussions, self)._link_provider(req, uri, record, cid, **kwargs)
+    
+    def _actions(self, req, record):
+        # Disable the New Record button under the list as we have the insertion
+        # form just below.
+        return [a for a in super(Discussions, self)._actions(req, record) if a.id() != 'insert']
+    
+    def _authorized(self, req, action, record=None):
+        return action == 'insert'
 
+    def _redirect_after_insert(self, req, record):
+        req.message(_("Your comment was posted to the discussion."))
+        raise wiking.Redirect(self._binding_parent_uri(req))
+
+    def _prefill(self, req):
+        try:
+            in_reply_to = int(req.param('in_reply_to'))
+        except (TypeError, ValueError):
+            in_reply_to = None
+        return dict(super(Discussions, self)._prefill(req),
+                    timestamp=now(),
+                    author=req.user().uid(),
+                    page_id=req.page['page_id'].value(),
+                    lang=req.page['lang'].value(),
+                    in_reply_to=in_reply_to)
+    
     def related(self, req, binding, record, uri):
-        # We don't want to insert messages through a separate insert form, so we embed one directly
-        # under the message list and process the insertion here as well.
-        if req.param('form_name') == self.name() and req.param('content') and not req.wmi:
-            if not req.user():
-                raise AuthenticationError()
-            elif not req.check_roles(Roles.USER):
-                raise AuthorizationError()
-            prefill = dict(timestamp=now(),
-                           lang=req.preferred_language(),
-                           page_id=record['page_id'].value(),
-                           author=req.user().uid(),
-                           title='-',
-                           content=req.param('content'))
-            new_record = self._record(req, None, new=True, prefill=prefill)
-            try:
-                transaction = self._transaction()
-                self._in_transaction(transaction, self._insert, req, new_record, transaction)
-            except pd.DBException as e:
-                req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
-            else:
-                req.message(_("Your comment was posted to the discussion."))
-                # Redirect to prevent multiple submissions (Post/Redirect/Get paradigm).
-                raise Redirect(req.uri())
         content = [super(Discussions, self).related(req, binding, record, uri)]
-        if not req.wmi:
-            if req.check_roles(Roles.USER):
-                content.append(self._form(pw.EditForm, req, reset=None))
-            else:
-                # Translators: The square brackets mark a link.  Please leave the brackets and the
-                # link target '?command=login' untouched and traslate 'log in' to fit into the
-                # sentence.  The user only sees it as 'You need to log in before ...'.
-                msg = _("Note: You need to [?command=login log in] before you can post messages.")
-                content.append(lcg.Container((lcg.p(msg, formatted=True),), id='login-info'))
-        return lcg.Container(content, id='discussions')
-        
+        if req.check_roles(Roles.USER):
+            form_uri = uri + '/'+ binding.id()
+            # Add JavaScript initialization above the list.
+            def render(element, context, g):
+                context.resource('effects.js')
+                context.resource('discussion.js')
+                # Translators: Button labels to add a reaction to a previous discussion post.
+                return g.script(g.js_call('new Discussion', form_uri, 'text',
+                                          {"Your Reply": req.localize(_("Your reply")),
+                                           "Quote": req.localize(_("Quote")),
+                                           "Cancel": req.localize(_("Cancel")),
+                                           "Submit": req.localize(_("Submit")),
+                                           }))
+            content.append(wiking.HtmlRenderer(render))
+            # We don't want to insert messages through a separate insert form,
+            # so we embed one directly below the message list.
+            content.append(self._form(pw.EditForm, req, reset=None, action='insert',
+                                      handler=form_uri))
+        else:
+            # Translators: The square brackets mark a link.  Please leave the brackets and the
+            # link target '?command=login' untouched and traslate 'log in' to fit into the
+            # sentence.  The user only sees it as 'You need to log in before ...'.
+            msg = _("Note: You need to [?command=login log in] before you can post messages.")
+            content.append(lcg.Container((lcg.p(msg, formatted=True),), name='login-info'))
+        # Wrap in a names container to allow css styling.
+        return lcg.Container(content, name='discussions')
+    
         
 class SiteMap(Module, Embeddable):
     """Extend page content by including a hierarchical listing of the main menu."""
