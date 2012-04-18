@@ -417,14 +417,6 @@ class Configuration(pc):
     # configuration files is ready, the options should be moved to CMS configuration.  The options
     # are currently marked as hidden to prevent them in the automatically generated documentation.
 
-    class _Option_image_thumbnail_sizes(pc.Option):
-        _DESCR = "Sequence available image thumbnail sizes"
-        _DOC = ("Sequence of three integers denoting the pixel size of small, "
-                "medium and large image thumbnail.  The images are resized so "
-                "that their longer side is at most given size (the short side "
-                "is smaller to maintain the image proportion).")
-        _DEFAULT = (120, 180, 240)
-        
     class _Option_image_screen_size(pc.Option):
         _DESCR = "Enlarged image screen size"
         _DOC = ("Pair of integers (width, height) in pixels denoting the maximal size "

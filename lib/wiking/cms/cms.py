@@ -1785,7 +1785,7 @@ class Attachments(ContentManagementModule):
                           "displayed in full size, but as a small clickable preview.")),
             # thumbnail_size is the desired maximal width (the corresponding
             # pixel width may change with configuration option
-            # image_thumbnail_sizes), while thumbnail_width and
+            # wiking.cms.cfg.image_thumbnail_sizes), while thumbnail_width and
             # thumbnail_height reflect the actual size of the thumbnail when it
             # is generated (they also reflect the image aspect ratio).
             Field('thumbnail_width', computer=computer(self._thumbnail_width)),
@@ -1843,11 +1843,11 @@ class Attachments(ContentManagementModule):
             if thumbnail_size is None:
                 return None
             elif thumbnail_size == 'small':
-                size = wiking.cfg.image_thumbnail_sizes[0]
+                size = wiking.cms.cfg.image_thumbnail_sizes[0]
             elif thumbnail_size == 'medium':
-                size = wiking.cfg.image_thumbnail_sizes[1]
+                size = wiking.cms.cfg.image_thumbnail_sizes[1]
             else:
-                size = wiking.cfg.image_thumbnail_sizes[2]
+                size = wiking.cms.cfg.image_thumbnail_sizes[2]
             return self._resize(file, (size, size))
         def _thumbnail_width(self, record, thumbnail):
             if thumbnail:
@@ -1864,9 +1864,9 @@ class Attachments(ContentManagementModule):
             return os.path.join(wiking.cms.cfg.storage, wiking.cfg.dbname, 'attachments', fname)
         def _thumbnail_size_display(self, size):
             # Translators: Size label related to "Preview size" field (pronoun).
-            labels = {'small': _("Small") + " (%dpx)" % wiking.cfg.image_thumbnail_sizes[0],
-                      'medium': _("Medium") + " (%dpx)" % wiking.cfg.image_thumbnail_sizes[1],
-                      'large': _("Large") + " (%dpx)" % wiking.cfg.image_thumbnail_sizes[2]}
+            labels = {'small': _("Small") + " (%dpx)" % wiking.cms.cfg.image_thumbnail_sizes[0],
+                      'medium': _("Medium") + " (%dpx)" % wiking.cms.cfg.image_thumbnail_sizes[1],
+                      'large': _("Large") + " (%dpx)" % wiking.cms.cfg.image_thumbnail_sizes[2]}
             return labels.get(size, size)
         
         layout = ('file', 'title', 'description', 'thumbnail_size' , 'in_gallery', 'listed')

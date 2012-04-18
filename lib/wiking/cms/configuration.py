@@ -129,3 +129,11 @@ class CMSConfiguration(pc):
                 "can be found.")
         _DEFAULT = '/usr/local/share/wiking/sql'
         
+    class _Option_image_thumbnail_sizes(pc.Option):
+        _DESCR = "Sequence available image thumbnail sizes"
+        _DOC = ("Sequence of three integers denoting the pixel size of small, "
+                "medium and large image thumbnail.  The images are resized so "
+                "that their longer side is at most given size (the short side "
+                "is smaller to maintain the image proportion).")
+        _DEFAULT = (120, 180, 240)
+        
