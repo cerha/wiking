@@ -460,7 +460,7 @@ class Users(UserManagementModule):
             Field('login', _("Login name"), width=36, editable=ONCE,
                   type=pd.RegexString(maxlen=64, not_null=True,
                                       regex='^[a-zA-Z][0-9a-zA-Z_\.@-]*$'),
-                  computer=(wiking.cfg.login_is_email and computer(lambda r, email: email) or None),
+                  computer=(wiking.cms.cfg.login_is_email and computer(lambda r, email: email) or None),
                   descr=_("A valid login name can only contain letters, digits, underscores, "
                           "dashes, at signs and dots and must start with a letter.")),
             Field('password', _("Password"), width=16,
@@ -497,7 +497,7 @@ class Users(UserManagementModule):
                   display=self._gender_display, prefer_display=True,
                   selection_type=pp.SelectionType.RADIO),
             # Translators: E-mail address. Registration form field.
-            Field('email', _("E-mail"), width=36, not_null=(not wiking.cfg.login_is_email),
+            Field('email', _("E-mail"), width=36, not_null=(not wiking.cms.cfg.login_is_email),
                   constraints=(self._check_email,)),
             # Translators: Telephone number. Registration form field.
             Field('phone', _("Phone")),
@@ -792,14 +792,14 @@ class Users(UserManagementModule):
                 return layout
             if action == 'insert':
                 if req.param('action') == 'reinsert':
-                    login_information = ((wiking.cfg.login_is_email and 'email' or 'login'),)
+                    login_information = ((wiking.cms.cfg.login_is_email and 'email' or 'login'),)
                 else:
-                    login_information = ((wiking.cfg.login_is_email and 'email' or 'login'), 'password',)
+                    login_information = ((wiking.cms.cfg.login_is_email and 'email' or 'login'), 'password',)
                 layout = [
                     self._registration_form_intro,
                     FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname',)),
                     FieldSet(_("Contact information"),
-                             ((not wiking.cfg.login_is_email) and ('email',) or ()) +
+                             ((not wiking.cms.cfg.login_is_email) and ('email',) or ()) +
                              ('phone', 'address', 'uri')),
                     FieldSet(_("Login information"), login_information),
                     FieldSet(_("Others"), ('note',))]                    
@@ -828,7 +828,7 @@ class Users(UserManagementModule):
                 if not req.check_roles(Roles.USER_ADMIN) or req.user().uid() == record['uid'].value():
                     # Don't require old password for admin, unless he is changing his own password.
                     layout.insert(0, 'old_password')
-                if not wiking.cfg.login_is_email:
+                if not wiking.cms.cfg.login_is_email:
                     # Add read-only login to make sure the user knows which password is edited.  It
                     # also helps the browser password helper to recognize which password is changed
                     # (if the user has multiple accounts).
@@ -897,7 +897,7 @@ class Users(UserManagementModule):
             if 'login' not in layout.order():
                 # Pass the login field as hidden when it is not in the layout
                 # (typically when the current aplication has
-                # 'wiking.cfg.login_is_email' = True)
+                # 'wiking.cms.cfg.login_is_email' = True)
                 fields.append(('login', req.param('login')))
         return fields
         

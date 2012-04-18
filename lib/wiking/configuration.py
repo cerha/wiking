@@ -417,11 +417,6 @@ class Configuration(pc):
     # configuration files is ready, the options should be moved to CMS configuration.  The options
     # are currently marked as hidden to prevent them in the automatically generated documentation.
 
-    class _Option_login_is_email(pc.BooleanOption, pc.HiddenOption):
-        _DESCR = _("Whether to use e-mails as login names")
-        _DOC = _("Iff true, users must use e-mail addresses as their login names.")
-        _DEFAULT = False
-
     class _Option_registration_expiry_days(pc.NumericOption, pc.HiddenOption):
         _DESCR = "Number of days after unanswered user registration expires"
         _DOC = ("When registration by e-mail is enabled, each newly registered user is required "

@@ -96,3 +96,8 @@ class CMSConfiguration(pc):
                 "and 'md5' (passwords are stored in the form of MD5 hashes).")
         _DEFAULT = 'plain'
  
+    class _Option_login_is_email(pc.BooleanOption):
+        _DESCR = _("Whether to use e-mails as login names")
+        _DOC = _("Iff true, users must use e-mail addresses as their login names.")
+        _DEFAULT = False
+ 
