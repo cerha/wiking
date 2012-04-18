@@ -101,3 +101,9 @@ class CMSConfiguration(pc):
         _DOC = _("Iff true, users must use e-mail addresses as their login names.")
         _DEFAULT = False
  
+    class _Option_registration_expiry_days(pc.NumericOption):
+        _DESCR = "Number of days after unanswered user registration expires"
+        _DOC = ("When registration by e-mail is enabled, each newly registered user is required "
+                "to answer the registration e-mail within the limit given here.")
+        _DEFAULT = 2
+ 

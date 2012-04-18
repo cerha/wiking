@@ -417,12 +417,6 @@ class Configuration(pc):
     # configuration files is ready, the options should be moved to CMS configuration.  The options
     # are currently marked as hidden to prevent them in the automatically generated documentation.
 
-    class _Option_registration_expiry_days(pc.NumericOption, pc.HiddenOption):
-        _DESCR = "Number of days after unanswered user registration expires"
-        _DOC = ("When registration by e-mail is enabled, each newly registered user is required "
-                "to answer the registration e-mail within the limit given here.")
-        _DEFAULT = 2
-
     class _Option_autoapprove_new_users(pc.StringOption):
         # Change in this option requires server restart to take full effect (the
         # default value of system text 'cms.regsucess' depends on it and system

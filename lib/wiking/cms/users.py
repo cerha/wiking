@@ -447,7 +447,7 @@ class Users(UserManagementModule):
             else:
                 return firstname or surname or login
         def _registration_expiry(self):
-            expiry_days = wiking.cfg.registration_expiry_days
+            expiry_days = wiking.cms.cfg.registration_expiry_days
             return pd.DateTime.datetime() + datetime.timedelta(days=expiry_days)
         @staticmethod
         def _generate_registration_code():
