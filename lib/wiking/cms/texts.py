@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import lcg, wiking
+import lcg
 from wiking.cms import Text
 
 _ = lcg.TranslatableTextFactory('wiking-cms')
@@ -64,14 +64,16 @@ regintro = Text(
 regsuccess = Text(
     'cms.regsuccess',
     _("Text displayed after successful user registration"),
-    (wiking.cms.cfg.autoapprove_new_users and
-     _("Registration completed successfuly. "
-       "Your account is now fully functional but you may need "
-       "to get futher privileges by the administrator to access "
-       "certain restricted services.")
-     or
-     _("Registration completed successfuly. "
-       "Your account now awaits administrator's approval.")))
+    _("Registration completed successfuly. "
+      "Your account now awaits administrator's approval."))
+    
+regsuccess_autoapproved = Text(
+    'cms.regsuccess_autoapproved',
+    _("Text displayed after successful user registration when autoapprove_new_users is set in configuration"),
+    _("Registration completed successfuly. "
+      "Your account is now fully functional but you may need "
+      "to get futher privileges by the administrator to access "
+      "certain restricted services."))
     
 regconfirm = Text(
     'cms.regconfirm',

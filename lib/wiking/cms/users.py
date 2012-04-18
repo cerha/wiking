@@ -1004,7 +1004,11 @@ class Users(UserManagementModule):
     
     def _confirmation_success_content(self, req, record):
         texts = wiking.module('Texts')
-        return texts.parsed_text(req, wiking.cms.texts.regsuccess, lang=req.preferred_language())
+        if wiking.cms.cfg.autoapprove_new_users:
+            text = wiking.cms.texts.regsuccess_autoapproved
+        else:
+            text = wiking.cms.texts.regsuccess
+        return texts.parsed_text(req, text, lang=req.preferred_language())
 
     def action_confirm(self, req):
         """Confirm the activation code sent by e-mail to make user registration valid.
