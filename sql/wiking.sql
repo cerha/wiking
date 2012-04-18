@@ -72,7 +72,7 @@ $$ language sql stable;
 
 create table users (
 	uid serial primary key,
-	login varchar(32) unique not null,
+	login varchar(64) unique not null,
 	password varchar(32),
 	firstname text not null,
 	surname text not null,
