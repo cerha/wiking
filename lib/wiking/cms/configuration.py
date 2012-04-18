@@ -118,3 +118,8 @@ class CMSConfiguration(pc):
                  "after the user confirms the registration code.")
         _DEFAULT = False
  
+    class _Option_storage(pc.StringOption):
+        _DESCR = "Directory for storing uploaded files"
+        _DOC = ("The directory must be writable by the web-server user.")
+        _DEFAULT = '/var/lib/wiking'
+        

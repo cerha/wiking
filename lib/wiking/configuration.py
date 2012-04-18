@@ -417,12 +417,6 @@ class Configuration(pc):
     # configuration files is ready, the options should be moved to CMS configuration.  The options
     # are currently marked as hidden to prevent them in the automatically generated documentation.
 
-    class _Option_storage(pc.StringOption):
-        _DESCR = "Directory for storing uploaded files"
-        _DOC = ("You only need this directory if your application(s) use the `StoredFileModule' "
-                "(Wiking CMS does that).  The directory must be writable by the web-server user.")
-        _DEFAULT = '/var/lib/wiking'
-        
     class _Option_sql_dir(pc.StringOption):
         _DESCR = "SQL directory"
         _DOC = ("The directory where Wiking CMS database initialization/upgrade scripts "

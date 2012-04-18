@@ -328,7 +328,7 @@ class CertificateRequest(UserCertificates):
 
         def _certificate_computation(self, buffer):
             serial_number = self._serial_number_counter.next()
-            working_dir = os.path.join(wiking.cfg.storage, 'certificate-%d' % (serial_number,))
+            working_dir = os.path.join(wiking.cms.cfg.storage, 'certificate-%d' % (serial_number,))
             request_file = os.path.join(working_dir, 'request')
             certificate_file = os.path.join(working_dir, 'certificate.pem')
             log_file = os.path.join(working_dir, 'log')

@@ -1861,7 +1861,7 @@ class Attachments(ContentManagementModule):
                 return None
         def _filename(self, record, attachment_id, ext):
             fname = str(attachment_id) +'.'+ ext
-            return os.path.join(wiking.cfg.storage, wiking.cfg.dbname, 'attachments', fname)
+            return os.path.join(wiking.cms.cfg.storage, wiking.cfg.dbname, 'attachments', fname)
         def _thumbnail_size_display(self, size):
             # Translators: Size label related to "Preview size" field (pronoun).
             labels = {'small': _("Small") + " (%dpx)" % wiking.cfg.image_thumbnail_sizes[0],
@@ -1956,12 +1956,12 @@ class Attachments(ContentManagementModule):
         super(Attachments, self)._binding_parent_redirect(req, **kwargs)
 
     def _save_files(self, record):
-        if not os.path.exists(wiking.cfg.storage) \
-                or not os.access(wiking.cfg.storage, os.W_OK):
+        directory = wiking.cms.cfg.storage
+        if not os.path.exists(directory) or not os.access(directory, os.W_OK):
             import getpass
             raise Exception("The configuration option 'storage' points to '%(dir)s', but this "
                             "directory does not exist or is not writable by user '%(user)s'." %
-                            dict(dir=wiking.cfg.storage, user=getpass.getuser()))
+                            dict(dir=directory, user=getpass.getuser()))
         fname = record['_filename'].value()
         dir = os.path.split(fname)[0]
         if not os.path.exists(dir):
