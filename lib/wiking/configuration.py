@@ -417,14 +417,6 @@ class Configuration(pc):
     # configuration files is ready, the options should be moved to CMS configuration.  The options
     # are currently marked as hidden to prevent them in the automatically generated documentation.
 
-    class _Option_password_storage(pc.StringOption):
-        _DESCR = "Form of storing user passwords in the database"
-        _DOC = ("This option defines in which way user passwords are stored in a database. "
-                "The allowed values are the strings 'plain' "
-                "(passwords are stored in the plain text form), "
-                "and 'md5' (passwords are stored in the form of MD5 hashes).")
-        _DEFAULT = 'plain'
-
     class _Option_login_is_email(pc.BooleanOption, pc.HiddenOption):
         _DESCR = _("Whether to use e-mails as login names")
         _DOC = _("Iff true, users must use e-mail addresses as their login names.")

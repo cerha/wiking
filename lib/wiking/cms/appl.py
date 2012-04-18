@@ -216,7 +216,7 @@ class Application(CookieAuthentication, wiking.Application):
     
     def _auth_check_password(self, user, password):
         record = user.data()
-        password_storage = wiking.cfg.password_storage
+        password_storage = wiking.cms.cfg.password_storage
         if password_storage == 'plain':
             pass
         elif password_storage == 'md5':

@@ -453,7 +453,7 @@ class Users(UserManagementModule):
         def _generate_registration_code():
             return wiking.generate_random_string(16)
         def fields(self):
-            md5_passwords = (wiking.cfg.password_storage == 'md5')
+            md5_passwords = (wiking.cms.cfg.password_storage == 'md5')
             return (
             Field('uid', width=8, editable=NEVER),
             # Translators: Login name for a website. Registration form field.
@@ -1412,7 +1412,7 @@ class Registration(Module, ActionHandler):
                                        for u in users]))
                     return Document(title, content)
             if user:
-                if wiking.cfg.password_storage == 'md5':
+                if wiking.cms.cfg.password_storage == 'md5':
                     try:
                         password = users_module.reset_password(user)
                     except Exception as e:

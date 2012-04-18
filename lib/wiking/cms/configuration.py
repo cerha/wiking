@@ -88,3 +88,11 @@ class CMSConfiguration(pc):
                  "needs to be relaoded for the changes in this option to take effect.")
         _DEFAULT = 3*1024*1024
 
+    class _Option_password_storage(pc.StringOption):
+        _DESCR = "Form of storing user passwords in the database"
+        _DOC = ("This option defines in which way user passwords are stored in a database. "
+                "The allowed values are the strings 'plain' "
+                "(passwords are stored in the plain text form), "
+                "and 'md5' (passwords are stored in the form of MD5 hashes).")
+        _DEFAULT = 'plain'
+ 
