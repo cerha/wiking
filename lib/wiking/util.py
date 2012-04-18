@@ -1380,11 +1380,22 @@ class HtmlRenderer(lcg.Content):
         self._renderer = renderer
         self._renderer_args = args
         self._renderer_kwargs = kwargs
+        super(HtmlRenderer, self).__init__()
     
     def export(self, context):
         return self._renderer(self, context, context.generator(),
                               *self._renderer_args, **self._renderer_kwargs)
     
+class IFrame(lcg.Content):
+    """HTML specific IFRAME component."""
+    def __init__(self, uri, width=400, height=200):
+        self._uri = uri
+        self._width = width
+        self._height = height
+        super(IFrame, self).__init__()
+        
+    def export(self, context):
+        return context.generator().iframe(self._uri, width=self._width, height=self._height)
 
 
 class Notebook(lcg.Container):

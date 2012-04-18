@@ -972,10 +972,7 @@ class Themes(StyleManagementModule):
             else:
                 uri = '_wmi/Pages'
             uri = '/%s?preview_theme=%d' % (uri, record['theme_id'].value())
-            class IFrame(lcg.Content):
-                def export(self, context):
-                    return context.generator().iframe(uri, width=800, height=220)
-            return IFrame()
+            return IFrame(uri, width=800, height=220)
             
         def layout(self):
             return ('name',) + tuple([FieldSet(label, [f.id() for f in fields])
@@ -1060,11 +1057,7 @@ class Pages(SiteSpecificContentModule):
             Field('description', _("Description"), width=64,
                   descr=_("Brief page description (shown as a tooltip and in site map).")),
             Field('_content', _("Content"), compact=True, height=20, width=80,
-                  # We need to be able to force max height of the field in
-                  #ShowForm to be able to show it formatted (plain text fields
-                  #get scrolled automatically, but structured text fields not).
-                  #text_format=pp.TextFormat.LCG,
-                  descr=_STRUCTURED_TEXT_DESCR),
+                  text_format=pp.TextFormat.LCG, descr=_STRUCTURED_TEXT_DESCR),
             Field('content', text_format=pp.TextFormat.LCG, descr=_STRUCTURED_TEXT_DESCR),
             Field('comment', _("Comment"), virtual=True, width=70,
                   descr=_("Describe briefly the changes you made.")),
@@ -1144,18 +1137,23 @@ class Pages(SiteSpecificContentModule):
         sorting = (('tree_order', ASC), ('identifier', ASC),)
         #grouping = 'grouping'
         #group_heading = 'title'
-        layout = (
-            FieldSet(_("Page Text (for the current language)"),
-                     ('title', 'description', 'status', '_content')),
-            # Translators: Options meaning page configuration settings.
-            FieldSet(_("Global Options (for all languages)"),
-                     (ColumnLayout(
-                        FieldSet(_("Basic Options"), ('identifier', 'modname',)),
-                        FieldSet(_("Menu position"), ('parent', 'ord', 'menu_visibility',
-                                                      'foldable')),
-                        FieldSet(_("Access Rights"), ('read_role_id', 'write_role_id'))),),
-                     ),
-            )
+        def layout(self):
+            return (
+                lambda record: lcg.p(record['description'].export()),
+                FieldSet(_("Preview"),
+                         (lambda record: IFrame('/'+record['identifier'].value(),
+                                                width=800, height=220),)),
+                # Translators: Options meaning page configuration settings.
+                FieldSet(_("Global Options (common for all language variants)"),
+                         (ColumnLayout(
+                            FieldSet(_("Basic Options"), ('identifier', 'modname',)),
+                            FieldSet(_("Menu position"), ('parent', 'ord', 'menu_visibility',
+                                                          'foldable')),
+                            FieldSet(_("Access Rights"), ('read_role_id', 'write_role_id'))),),
+                         ),
+                FieldSet(_("State of the current language variant"),
+                         (lambda record: lcg.p(record['status'].export()),)),
+                )
         columns = ('title_or_identifier', 'identifier', 'modname', 'status', 'ord',
                    'menu_visibility', 'read_role_id', 'write_role_id')
         cb = CodebookSpec(display='title_or_identifier', prefer_display=True)
