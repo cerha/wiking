@@ -107,3 +107,14 @@ class CMSConfiguration(pc):
                 "to answer the registration e-mail within the limit given here.")
         _DEFAULT = 2
  
+    class _Option_autoapprove_new_users(pc.StringOption):
+        # Change in this option requires server restart to take full effect (the
+        # default value of system text 'cms.regsucess' depends on it and system
+        # texts are global variables).
+        _DESCR = "Approve new users automatically"
+        _DOC = _("If set, the newly registered users will be automatically approved without any "
+                 "administrator's action.  The adminstrator may still need to asign users to "
+                 "groups to grant them further privileges, but the accounts are enabled right "
+                 "after the user confirms the registration code.")
+        _DEFAULT = False
+ 

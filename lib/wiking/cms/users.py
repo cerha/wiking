@@ -977,7 +977,7 @@ class Users(UserManagementModule):
                      fullname=record['fullname'].value(),
                      server_hostname=wiking.cfg.server_hostname
                      ) + '\n\n'
-            if wiking.cfg.autoapprove_new_users:
+            if wiking.cms.cfg.autoapprove_new_users:
                 text += _("The account was approved automatically according to server setup.")
             else:
                 uri = req.server_uri() + base_uri +'/'+ record['login'].value()
@@ -1013,7 +1013,7 @@ class Users(UserManagementModule):
         
         """
         record = self._check_registration_code(req)
-        if wiking.cfg.autoapprove_new_users:
+        if wiking.cms.cfg.autoapprove_new_users:
             state = self.AccountState.ENABLED
         else:
             state = self.AccountState.UNAPPROVED

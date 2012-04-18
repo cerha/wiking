@@ -64,7 +64,7 @@ regintro = Text(
 regsuccess = Text(
     'cms.regsuccess',
     _("Text displayed after successful user registration"),
-    (wiking.cfg.autoapprove_new_users and
+    (wiking.cms.cfg.autoapprove_new_users and
      _("Registration completed successfuly. "
        "Your account is now fully functional but you may need "
        "to get futher privileges by the administrator to access "
