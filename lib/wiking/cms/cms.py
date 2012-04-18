@@ -56,10 +56,17 @@ enum = lambda seq: pd.FixedEnumerator(seq)
 
 _ = lcg.TranslatableTextFactory('wiking-cms')
 
-_STRUCTURED_TEXT_DESCR = \
-    _("The content should be formatted as LCG structured text. See the %(manual)s.",
-      manual=('<a target="help" href="/_doc/lcg/structured-text">' + \
-              _("formatting manual") + "</a>"))
+class ContentField(Field):
+    def __init__(self, name, label=None, descr=None, **kwargs):
+        editor = wiking.cms.cfg.text_editor
+        msg = _("The content should be formatted as LCG structured text. See the %(manual)s.",
+                manual=lcg.format('<a target="help" href="/_doc/lcg/structured-text">%s</a>',
+                                  _("formatting manual")))
+        if descr:
+            descr += ' '+msg
+        else:
+            descr = msg
+        Field.__init__(self, name, label, descr=descr, text_format=pp.TextFormat.LCG, **kwargs)
 
 def _modtitle(name, default=None):
     """Return a localizable module title by module name."""
@@ -721,7 +728,7 @@ class Panels(SiteSpecificContentModule, Publishable):
         help = _(u"Manage panels – the small windows shown by the side of "
                  "every page.")
         table = 'cms_v_panels'
-        fields = (
+        def fields(self): return (
             Field('panel_id', width=5, editable=NEVER),
             Field('site'),
             Field('lang', _("Language"), codebook='Languages', editable=ONCE,
@@ -752,9 +759,8 @@ class Panels(SiteSpecificContentModule, Publishable):
                   descr=_("Number of items from the selected module, which "
                           "will be shown by the panel.")),
             # Translators: Content of a page (text or something else)
-            Field('content', _("Content"), height=10, width=80, text_format=pp.TextFormat.LCG,
-                  descr=(_("Additional text content displayed on the panel.") + ' ' +
-                         _STRUCTURED_TEXT_DESCR)),
+            ContentField('content', _("Content"), height=10, width=80,
+                         descr=_("Additional text content displayed on the panel.")),
             # Translators: Yes/no configuration of whether the page is
             # published. Followed by a checkbox.
             Field('published', _("Published"), default=True,
@@ -1056,9 +1062,8 @@ class Pages(SiteSpecificContentModule):
             Field('title', _("Title"), not_null=True),
             Field('description', _("Description"), width=64,
                   descr=_("Brief page description (shown as a tooltip and in site map).")),
-            Field('_content', _("Content"), compact=True, height=20, width=80,
-                  text_format=pp.TextFormat.LCG, descr=_STRUCTURED_TEXT_DESCR),
-            Field('content', text_format=pp.TextFormat.LCG, descr=_STRUCTURED_TEXT_DESCR),
+            ContentField('_content', _("Content"), compact=True, height=20, width=80),
+            ContentField('content'),
             Field('comment', _("Comment"), virtual=True, width=70,
                   descr=_("Describe briefly the changes you made.")),
             # Translators: "Module" is an independent reusable part of a computer program (here a
@@ -2052,8 +2057,7 @@ class News(ContentManagementModule, EmbeddableCMSModule):
                   default=now),
             Field('title', _("Title"), column_label=_("Message"), width=32,
                   descr=_("The item brief summary.")),
-            Field('content', _("Message"), height=6, width=80, text_format=pp.TextFormat.LCG,
-                  descr=_STRUCTURED_TEXT_DESCR),
+            ContentField('content', _("Message"), height=6, width=80),
             Field('author', _("Author"), codebook='Users'),
             Field('date', _("Date"), virtual=True, computer=computer(self._date),
                   descr=_("Date of the news item creation.")),
@@ -2436,8 +2440,7 @@ class CommonTexts(SettingsManagementModule):
                 Field('description'),
                 Field('descr', _("Purpose"), width=64, virtual=True,
                       computer=computer(self._description)),
-                Field('content', _("Text"), width=80, height=10,
-                      text_format=pp.TextFormat.LCG, descr=_STRUCTURED_TEXT_DESCR),
+                ContentField('content', _("Text"), width=80, height=10),
                 )
 
         columns = ('label', 'descr',)
@@ -2849,8 +2852,7 @@ class EmailSpool(MailManagementModule):
                   # Translators: All users are intended recipients of an email message
                   codebook='UserGroups', null_display=_("All users")),
             Field('subject', _("Subject")),
-            Field('content', _("Text"), width=80, height=10,
-                  text_format=pp.TextFormat.LCG, descr=_STRUCTURED_TEXT_DESCR),
+            ContentField('content', _("Text"), width=80, height=10),
             Field('date', _("Date"), type=wiking.DateTime(), default=now, editable=NEVER),
             Field('pid', editable=NEVER),
             Field('finished', editable=NEVER),
