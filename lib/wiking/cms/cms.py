@@ -24,8 +24,8 @@ is stored in database and can be managed using a web browser.
 """
 
 import pytis.presentation as pp
+import wiking, wiking.cms
 from wiking.cms import *
-import wiking
 
 import cStringIO
 import collections
@@ -524,8 +524,8 @@ class Config(SettingsManagementModule):
             def __init__(self, name, label=None, descr=None, transform_default=None, **kwargs):
                 if hasattr(cfg, name):
                     option = cfg.option(name)
-                elif hasattr(cfg.appl, name):
-                    option = cfg.appl.option(name)
+                elif hasattr(wiking.cms.cfg, name):
+                    option = wiking.cms.cfg.option(name)
                 else:
                     option = None
                     default = None
@@ -555,27 +555,29 @@ class Config(SettingsManagementModule):
         title = _("Basic Configuration")
         help = _("Edit site configuration.")
         table = 'cms_config'
-        fields = (
-            _Field('site'),
-            _Field('theme_id', codebook='Themes'),
-            _Field('site_title', width=24),
-            _Field('site_subtitle', width=50),
-            _Field('webmaster_address',
-                   descr=_("This address is used as public contact address for your site. "
-                           "It is displayed at the bottom of each page, in error messages, RSS "
-                           "feeds and so on.  Please make sure that this address is valid "
-                           "(e-mail sent to it is delivered to a responsible person).")),
-            _Field('default_sender_address',
-                   descr=_("E-mail messages sent by the system, such as automatic notifications, "
-                           "password reminders, bug-reports etc. will use this sender address. "
-                           "Please make sure that this address is valid, since users may reply "
-                           "to such messages if they encounter problems.")),
-            _Field('allow_login_panel'),
-            _Field('allow_registration'),
-            _Field('force_https_login'),
-            _Field('upload_limit',
-                   transform_default=lambda n: repr(n) +' ('+ pp.format_byte_size(n)+')'),
-            )
+        def fields(self):
+            F = self._Field
+            return (
+                F('site'),
+                F('theme_id', codebook='Themes'),
+                F('site_title', width=24),
+                F('site_subtitle', width=50),
+                F('webmaster_address',
+                  descr=_("This address is used as public contact address for your site. "
+                          "It is displayed at the bottom of each page, in error messages, RSS "
+                          "feeds and so on.  Please make sure that this address is valid "
+                          "(e-mail sent to it is delivered to a responsible person).")),
+                F('default_sender_address',
+                  descr=_("E-mail messages sent by the system, such as automatic notifications, "
+                          "password reminders, bug-reports etc. will use this sender address. "
+                          "Please make sure that this address is valid, since users may reply "
+                          "to such messages if they encounter problems.")),
+                F('allow_login_panel'),
+                F('allow_registration'),
+                F('force_https_login'),
+                F('upload_limit',
+                  transform_default=lambda n: repr(n) +' ('+ pp.format_byte_size(n)+')'),
+                )
         layout = ('site_title', 'site_subtitle', 'webmaster_address', 'default_sender_address',
                   'allow_login_panel', 'allow_registration', 'force_https_login', 'upload_limit')
     _TITLE_TEMPLATE = _("Basic Configuration")
@@ -592,7 +594,26 @@ class Config(SettingsManagementModule):
         raise Redirect(req.uri())
     
     def configure(self, req):
-        # Called by the application prior to handling any request.
+        """Update configuration acording to the current database contents.
+
+        This method is called at the beginning of every request to synchronize
+        the global configuration object with configuration values stored in the
+        database (those values may be changed at any time by another process).
+
+        This method is similar to 'Aplication.initialize()', but this method is
+        called for every request, while 'Aplication.initialize()' is only
+        called once on Application initialization.
+
+        """
+        # This dummy read of wiking.cms.cfg.allow_registration is here to
+        # force reading wiking.cms.cfg before updating it.  Not doing so may
+        # lead to owerwriting the updated values by the default values from the
+        # confuiguration file after its change, because config file
+        # modification is detected only after an attempt to read a value.  This
+        # is not a perfect solution - better would be to recognize the
+        # precedence of configuration value sources directly within the
+        # Configuration class.
+        x = wiking.cms.cfg.allow_registration
         site = wiking.cfg.server_hostname
         row = self._data.get_row(site=site)
         if row is None:
@@ -1732,7 +1753,7 @@ class Attachments(ContentManagementModule):
             Field('lang', _("Language"), codebook='Languages', editable=ONCE, value_column='lang'),
             # Translators: Noun. File on disk. Computer terminology.
             Field('file', _("File"), virtual=True, editable=ALWAYS, computer=computer(self._file),
-                  type=pd.Binary(not_null=True, maxlen=cfg.appl.upload_limit),
+                  type=pd.Binary(not_null=True, maxlen=wiking.cms.cfg.upload_limit),
                   descr=_("Upload a file from your local system.  The file name will be used "
                           "to refer to the attachment within the page content.  Please note, "
                           "that the file will be served over the internet, so the filename should "

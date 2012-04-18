@@ -63,7 +63,23 @@ class Application(Module):
     def __init__(self, *args, **kwargs):
         super(Application, self).__init__(*args, **kwargs)
         self._reverse_mapping = dict([(v,k) for k,v in self._MAPPING.items()])
-    
+
+    def initialize(self, req):
+        """Perform application specific initialization.
+
+        This method is called once, just after Application instance creation.
+        It is supposed to perform any application specific initialization
+
+        Note, that 'req' is the first request that triggers initialization of
+        the application, but the application will live much longer and serve a
+        number of other requests which follow.  But this method is called only
+        once for the first request.
+
+        The default implementation does nothing.
+
+        """
+        pass
+        
     def handle(self, req):
         """Handle the request.
 

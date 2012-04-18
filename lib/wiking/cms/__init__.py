@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2006-2011 Brailcom, o.p.s.
+# Copyright (C) 2006-2012 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -18,11 +18,14 @@
 
 """Wiking Content Management System implemented as a Wiking application."""
 
-import wiking # Full references to wiking identifiers are sometimes necessary
+# TODO: Get rid of * imports...
 from wiking import *
 
-from configuration import *
-cfg.appl = CMSConfiguration()
+from configuration import CMSConfiguration
+cfg = CMSConfiguration()
+
+import wiking
+
 
 from cms import *
 from users import *

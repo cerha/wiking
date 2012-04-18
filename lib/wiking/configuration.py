@@ -395,14 +395,6 @@ class Configuration(pc):
                 "about the export mechanism.")
         _DEFAULT = Exporter
 
-    class _Option_appl(pc.Option):
-        _DESCR = "Application specific configuration"
-        _DOC = ("This option makes it possible to define an application specific set of "
-                "configuration options for each Wiking application and make these options "
-                "available through the main configuration instance.  Type of the value is "
-                "optional, but an instance of class derived from 'pytis.util.Configuration' is "
-                "recommended.")
-
     class _Option_display_role_in_login_panel(pc.BooleanOption):
         # Translators: Yes/No configuration option label. Should the login panel display user role (as Admin, Student, Tutor etc.)
         _DESCR = _("Display role in login panel")

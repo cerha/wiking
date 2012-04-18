@@ -57,6 +57,11 @@ class Application(CookieAuthentication, wiking.Application):
                 uri, label, title = ('/', _("Leave the Management Interface"), None)
             return context.generator().link(label, uri, title=title, hotkey="9", id='wmi-link')
 
+    def initialize(self, req):
+        config_file = wiking.cfg.user_config_file
+        if config_file:
+            wiking.cms.cfg.user_config_file = config_file
+        
     def handle(self, req):
         req.wmi = False # Will be set to True by `WikingManagementInterface' if needed.
         wiking.module('Config').configure(req)
@@ -176,7 +181,7 @@ class Application(CookieAuthentication, wiking.Application):
         return wiking.module(modname).menu(req)
     
     def panels(self, req, lang):
-        if cfg.appl.allow_login_panel:
+        if wiking.cms.cfg.allow_login_panel:
             panels = [LoginPanel()]
         else:
             panels = []
@@ -190,7 +195,7 @@ class Application(CookieAuthentication, wiking.Application):
 
     def _auth_user(self, req, login):
         user = wiking.module('Users').user(req, login)
-        if user is None and cfg.appl.allow_registration:
+        if user is None and wiking.cms.cfg.allow_registration:
             # It is possible, that the user doesn't exist in the
             # application specific users table, but exists in the base
             # table of wiking CMS (the user was registered for some other
@@ -294,7 +299,7 @@ class Application(CookieAuthentication, wiking.Application):
         return result
     
     def registration_uri(self, req):
-        if cfg.appl.allow_registration:
+        if wiking.cms.cfg.allow_registration:
             return req.make_uri(req.module_uri('Registration'), action='insert')
         return None
         
@@ -309,14 +314,14 @@ class Application(CookieAuthentication, wiking.Application):
 
     def bottom_bar_left_content(self, req):
         result = self._powered_by_wiking(req)
-        if not cfg.appl.allow_login_panel:
+        if not wiking.cms.cfg.allow_login_panel:
             link = self._accessibility_statement_link(req)
             if link:
                 result = (result, ' | ', link)
         return result
     
     def bottom_bar_right_content(self, req):
-        if cfg.appl.allow_login_panel:
+        if wiking.cms.cfg.allow_login_panel:
             return self._accessibility_statement_link(req)
         elif req.user() is None:
             return self.WMILink()

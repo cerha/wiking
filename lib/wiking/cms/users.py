@@ -1369,7 +1369,7 @@ class Registration(Module, ActionHandler):
     RIGHTS_view = (Roles.ANYONE,)
 
     def action_insert(self, req, prefill=None, action='insert'):
-        if not cfg.appl.allow_registration:
+        if not wiking.cms.cfg.allow_registration:
             raise Forbidden()
         return wiking.module('Users').action_insert(req, prefill=prefill, action=action)
     RIGHTS_insert = (Roles.ANYONE,)

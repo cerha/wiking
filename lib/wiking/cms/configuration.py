@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2006, 2007, 2008, 2009 Brailcom, o.p.s.
+# Copyright (C) 2006, 2007, 2008, 2009, 2012 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -24,12 +24,33 @@ supposed usage is as the `appl' option in top level Wiking configuration.
 """
 
 from pytis.util import Configuration as pc
-import lcg
+import lcg, os
 
 _ = lcg.TranslatableTextFactory('wiking-cms')
 
 class CMSConfiguration(pc):
     """CMS Specific Configuration."""
+        
+    class _Option_config_file(pc.StringOption, pc.HiddenOption):
+        _DESCR = "Global Wiking CMS configuration file location"
+        def default(self):
+            for filename in ('/etc/wiking/config.py', '/etc/wiking.py',
+                             '/usr/local/etc/wiking/config.py', '/usr/local/etc/wiking.py'):
+                if os.access(filename, os.F_OK):
+                    return filename
+            return None
+
+    class _Option_user_config_file(pc.StringOption, pc.HiddenOption):
+        _DESCR = "Site specific Wiking CMS configuration file location"
+        def default(self):
+            try:
+                import wikingconfig
+            except ImportError:
+                return None
+            filename = wikingconfig.__file__
+            if filename.endswith('.pyc') or filename.endswith('.pyo'):
+                filename = filename[:-1]
+            return filename
         
     class _Option_allow_login_panel(pc.BooleanOption):
         # Translators: Yes/No configuration option label. Should the login panel be visible?

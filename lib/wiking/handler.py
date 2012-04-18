@@ -110,8 +110,9 @@ class Handler(object):
         config.dbconnection = config.option('dbconnection').default()
         config.resolver = cfg.resolver
         del config
-        self._application = wiking.module('Application')
+        self._application = application = wiking.module('Application')
         self._exporter = cfg.exporter(translations=cfg.translation_path)
+        application.initialize(config_file)
         # Save the current handler instance for profiling purposes.
         Handler._instance = self 
 
