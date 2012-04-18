@@ -477,7 +477,7 @@ class Request(ServerInterface):
         'set_header()' calls after calling this method are ignored.
 
         If 'status_code' is set to 401 (UNAUTHORIZED), the 'WWW-Authenticate'
-        header is automatically set to 'Basic realm="<cfg.site_title>"'.  Use
+        header is automatically set to 'Basic realm="<wiking.cfg.site_title>"'.  Use
         the lower level method 'start_http_response()' if you want to avoid
         this side effect.
         

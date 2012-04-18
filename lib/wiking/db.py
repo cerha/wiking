@@ -802,7 +802,7 @@ class PytisModule(Module, ActionHandler):
                 top_actions = self._TOP_ACTIONS,
                 bottom_actions = self._BOTTOM_ACTIONS,
                 row_actions = self._ROW_ACTIONS,
-                immediate_filters = cfg.immediate_filters,
+                immediate_filters = wiking.cfg.immediate_filters,
                 filter_fields = self._filter_fields(req),
                 actions = (), # Display no actions by default, rather than just spec actions.
                 )
@@ -1886,7 +1886,7 @@ class PytisModule(Module, ActionHandler):
                             prefill[key] = value.value()
                         else:
                             invalid_prefill[key] = string_value
-        # TODO: Redirect handler to HTTPS if cfg.force_https_login is true?
+        # TODO: Redirect handler to HTTPS if wiking.cfg.force_https_login is true?
         # The primary motivation is to protect registration form data.  The
         # same would apply for action_edit.
         form = self._form(pw.EditForm, req, new=True, action=action,
@@ -2016,7 +2016,7 @@ class PytisModule(Module, ActionHandler):
             raise BadRequest()
         if not field.printable():
             raise AuthorizationError()
-        exporter = lcg.pdf.PDFExporter(translations=cfg.translation_path)
+        exporter = lcg.pdf.PDFExporter(translations=wiking.cfg.translation_path)
         node = lcg.ContentNode(req.uri().encode('utf-8'),
                                title=self._print_field_title(req, record, field),
                                content=self._print_field_content(req, record, field))
@@ -2192,7 +2192,7 @@ class RssModule(object):
         if self._RSS_AUTHOR_COLUMN:
             return record[self._RSS_AUTHOR_COLUMN].export()
         else:
-            return cfg.webmaster_address
+            return wiking.cfg.webmaster_address
         
     def has_channel(self):
         # TODO: If the methods `_rss_channel_title()' and `_rss_channel_uri()' can be used
@@ -2220,9 +2220,9 @@ class RssModule(object):
         buff = StringIO.StringIO()
         writer = RssWriter(buff)
         writer.start(base_uri,
-                     req.localize(cfg.site_title +' - '+ self._rss_channel_title(req)),
-                     description=req.localize(cfg.site_subtitle),
-                     webmaster=cfg.webmaster_address,
+                     req.localize(wiking.cfg.site_title +' - '+ self._rss_channel_title(req)),
+                     description=req.localize(wiking.cfg.site_subtitle),
+                     webmaster=wiking.cfg.webmaster_address,
                      generator='Wiking %s' % wiking.__version__,
                      language=lang)
         for record in self._records(req, condition=condition, lang=lang, limit=self._RSS_LIMIT):
@@ -2351,9 +2351,9 @@ class PytisRssModule(PytisModule):
         buff = StringIO.StringIO()
         writer = RssWriter(buff)
         writer.start(base_uri,
-                     localize(cfg.site_title +' - '+ channel.title()),
-                     description=localize(channel.descr() or cfg.site_subtitle),
-                     webmaster=channel.webmaster() or cfg.webmaster_address,
+                     localize(wiking.cfg.site_title +' - '+ channel.title()),
+                     description=localize(channel.descr() or wiking.cfg.site_subtitle),
+                     webmaster=channel.webmaster() or wiking.cfg.webmaster_address,
                      generator='Wiking %s' % wiking.__version__,
                      language=lang)
         for record in self._records(req, condition=channel.condition(), lang=lang,

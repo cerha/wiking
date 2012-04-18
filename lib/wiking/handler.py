@@ -44,12 +44,11 @@ class Handler(object):
         
         """
         # Initialize the global configuration stored in 'wiking.cfg'.
-        cfg = wiking.cfg
         config_file = req.option('config_file')
         if config_file:
             # Read the configuration file first, so that the request options have a higher priority.
-            cfg.user_config_file = config_file
-        for option in cfg.options():
+            wiking.cfg.user_config_file = config_file
+        for option in wiking.cfg.options():
             name = option.name()
             value = req.option(name)
             if value and name != 'config_file':
@@ -57,16 +56,16 @@ class Handler(object):
                     separator = value.find(':') != -1 and ':' or ','
                     value = tuple([d.strip() for d in value.split(separator)])
                     if name == 'translation_path':
-                        value = tuple(cfg.translation_path) + value
+                        value = tuple(wiking.cfg.translation_path) + value
                     elif name == 'resource_path':
-                        value += tuple(cfg.resource_path)
-                elif isinstance(option, cfg.NumericOption):
+                        value += tuple(wiking.cfg.resource_path)
+                elif isinstance(option, wiking.cfg.NumericOption):
                     if value.isdigit():
                         value = int(value)
                     else:
                         log(OPR, "Invalid numeric value for '%s':" % name, value)
                         continue
-                elif isinstance(option, cfg.BooleanOption):
+                elif isinstance(option, wiking.cfg.BooleanOption):
                     if value.lower() in ('yes', 'true', 'on'):
                         value = True
                     elif value.lower() in ('no', 'false', 'off'):
@@ -74,12 +73,12 @@ class Handler(object):
                     else:
                         log(OPR, "Invalid boolean value for '%s':" % name, value)
                         continue
-                elif not isinstance(option, cfg.StringOption):
+                elif not isinstance(option, wiking.cfg.StringOption):
                     log(OPR, "Unable to set '%s' through request options." % name)
                     continue
-                setattr(cfg, name, value)
+                setattr(wiking.cfg, name, value)
         # Apply default values which depend on the request.
-        server_hostname = cfg.server_hostname
+        server_hostname = wiking.cfg.server_hostname
         if server_hostname is None:
             # TODO: The name returned by req.server_hostname() works for simple
             # cases where there are no server aliases, but we can not guarantee
@@ -87,18 +86,18 @@ class Handler(object):
             # when req.primary_server_hostname() returns None and require
             # configuring server_hostname explicitly.
             server_hostname = req.primary_server_hostname() or req.server_hostname()
-            cfg.server_hostname = server_hostname
+            wiking.cfg.server_hostname = server_hostname
         domain = server_hostname
         if domain.startswith('www.'):
             domain = domain[4:]
-        if cfg.webmaster_address is None:
-            cfg.webmaster_address = 'webmaster@' + domain
-        if cfg.default_sender_address is None:
-            cfg.default_sender_address = 'wiking@' + domain
-        if cfg.dbname is None:
-           cfg.dbname = server_hostname
-        if cfg.resolver is None:
-            cfg.resolver = wiking.WikingResolver(cfg.modules)
+        if wiking.cfg.webmaster_address is None:
+            wiking.cfg.webmaster_address = 'webmaster@' + domain
+        if wiking.cfg.default_sender_address is None:
+            wiking.cfg.default_sender_address = 'wiking@' + domain
+        if wiking.cfg.dbname is None:
+           wiking.cfg.dbname = server_hostname
+        if wiking.cfg.resolver is None:
+            wiking.cfg.resolver = wiking.WikingResolver(wiking.cfg.modules)
         # Modify pytis configuration.
         import pytis.util
         import config
@@ -106,12 +105,12 @@ class Handler(object):
         config.log_exclude = [pytis.util.ACTION, pytis.util.EVENT, pytis.util.DEBUG]
         for option in ('dbname', 'dbhost', 'dbport', 'dbuser', 'dbpass', 'dbsslm', 'dbschemas',):
             setattr(config, option, getattr(cfg, option))
-        config.dbconnections = cfg.connections
+        config.dbconnections = wiking.cfg.connections
         config.dbconnection = config.option('dbconnection').default()
-        config.resolver = cfg.resolver
+        config.resolver = wiking.cfg.resolver
         del config
         self._application = application = wiking.module('Application')
-        self._exporter = cfg.exporter(translations=cfg.translation_path)
+        self._exporter = wiking.cfg.exporter(translations=wiking.cfg.translation_path)
         application.initialize(config_file)
         # Save the current handler instance for profiling purposes.
         Handler._instance = self 
@@ -135,7 +134,7 @@ class Handler(object):
                 x = lcg.Stylesheet(x, uri=x)
             styles.append(x)
         resources = tuple(styles) + document.resources()
-        resource_provider = lcg.ResourceProvider(resources=resources, dirs=cfg.resource_path)
+        resource_provider = lcg.ResourceProvider(resources=resources, dirs=wiking.cfg.resource_path)
         def mknode(item):
             if item.id() == id:
                 heading = document.title() or item.title()
@@ -224,7 +223,7 @@ class Handler(object):
         application = self._application
         try:
             try:
-                if cfg.maintenance and not req.uri().startswith('/_resources/'):
+                if wiking.cfg.maintenance and not req.uri().startswith('/_resources/'):
                     # TODO: excluding /_resources/ is here to make stylesheets
                     # available for the maintenance error page.  The URI is
                     # however not necassarily correct (application may change
@@ -289,7 +288,7 @@ class Handler(object):
                 return self._serve_minimal_error_document(req, error)
             
     def handle(self, req):
-        if cfg.debug and req.param('profile') == '1':
+        if wiking.cfg.debug and req.param('profile') == '1':
             import cProfile as profile, pstats, tempfile
             self._profile_req = req
             tmpfile = tempfile.NamedTemporaryFile().name

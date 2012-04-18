@@ -135,7 +135,7 @@ class RequestError(Exception):
                 user_agent=req.header('User-Agent'),
                 server_software='Wiking %s, LCG %s, Pytis %s' % \
                     (wiking.__version__, lcg.__version__, pytis.__version__))
-            if cfg.debug:
+            if wiking.cfg.debug:
                 frames = ['%s:%d:%s()' % tuple(frame[1:4]) for frame in self._stack]
                 message += " (%s)" % ", ".join(frames)
             log(OPR, message)
@@ -176,7 +176,7 @@ class AuthenticationError(RequestError):
         
         """
         agent = req.header('User-Agent')
-        if cfg.allow_http_authentication and \
+        if wiking.cfg.allow_http_authentication and \
                 (req.param('__http_auth') or
                  agent is None or self._HTTP_AUTH_MATCHER.match(agent)):
             # Ask for HTTP Basic authentication.
@@ -255,7 +255,7 @@ class AuthorizationError(RequestError):
         return (lcg.p(_("You don't have sufficient privilegs for this action.")),
                 lcg.p(_("If you are sure that you are logged in under the right account "
                         "and you believe that this is a problem of access rights assignment, "
-                        "please contact the administrator at %s.", cfg.webmaster_address),
+                        "please contact the administrator at %s.", wiking.cfg.webmaster_address),
                       formatted=True))
 
 class DecryptionError(RequestError):
@@ -301,7 +301,7 @@ class NotFound(RequestError):
                         req.uri())),
                 lcg.p(_("If you are sure the web address is correct, but are encountering "
                         "this error, please contact the administrator at %s.",
-                        cfg.webmaster_address),
+                        wiking.cfg.webmaster_address),
                       formatted=True))
     #return lcg.coerce([lcg.p(p) for p in msg])
 
@@ -364,13 +364,13 @@ class InternalServerError(RequestError):
     def message(self, req):
         # TODO: Even though the admin address is in a formatted paragraph, it is not formatted as a
         # link during internal server error export.  It works well in all other cases.
-        if self._einfo and cfg.debug:
+        if self._einfo and wiking.cfg.debug:
             import cgitb
             return HtmlContent(cgitb.html(self._einfo))
         else:
             return (lcg.p(_("The server was unable to complete your request.")),
                     lcg.p(_("Please inform the server administrator, %s if the problem "
-                            "persists.", cfg.webmaster_address), formatted=True),
+                            "persists.", wiking.cfg.webmaster_address), formatted=True),
                     lcg.p(_("The error message was:")),
                     lcg.PreformattedText(self._message))
     
@@ -384,7 +384,7 @@ class ServiceUnavailable(RequestError):
         return (lcg.p(_("The requested function is currently unavailable. "
                         "Try repeating your request later.")),
                 lcg.p(_("Please inform the server administrator, %s if the problem "
-                        "persists.", cfg.webmaster_address), formatted=True))
+                        "persists.", wiking.cfg.webmaster_address), formatted=True))
     
     
 class MaintenanceModeError(ServiceUnavailable):
@@ -694,7 +694,7 @@ class LoginPanel(Panel):
             result = LoginCtrl().export(context)
             appl = wiking.module('Application')
             if user:
-                if cfg.display_role_in_login_panel:
+                if wiking.cfg.display_role_in_login_panel:
                     # TODO: show only explicitly assigned roles, not special
                     # roles, such as wiking.Roles.AUTHENTICATED.  Also for
                     # compound roles, show only the top level role.  This
@@ -982,7 +982,7 @@ class Channel(object):
         
         @type webmaster: basestring
         @param webmaster: Channel webmaster e-mail address.  If None,
-        'cfg.webmaster_address' is used.
+        'wiking.cfg.webmaster_address' is used.
 
         """
         assert isinstance(id, basestring)
@@ -1279,7 +1279,7 @@ class LoginDialog(lcg.Content):
                   (_("Forgot your password?"), appl.password_reminder_uri(req))) if uri]
         if links:
             content += (g.list(links),)
-        if not req.https() and cfg.force_https_login:
+        if not req.https() and wiking.cfg.force_https_login:
             uri = req.server_uri(force_https=True) + req.uri()
         else:
             uri = req.uri()
@@ -1868,13 +1868,13 @@ def send_mail(addr, subject, text, sender=None, sender_name=None, html=None,
     else:
         multipart_type = 'alternative'
     msg = MIMEMultipart(multipart_type)
-    localizer = lcg.Localizer(lang, translation_path=cfg.translation_path)
+    localizer = lcg.Localizer(lang, translation_path=wiking.cfg.translation_path)
 
     
     if isinstance(text, unicode):
         text = localizer.localize(text)
     if not sender or sender == '-': # Hack: '-' is the Wiking CMS Admin default value...
-        sender = cfg.default_sender_address
+        sender = wiking.cfg.default_sender_address
     if sender_name:
         sender = '"%s" <%s>' % (Header(sender_name, 'utf-8').encode(), sender)
     # Set up message headers.
@@ -1898,7 +1898,7 @@ def send_mail(addr, subject, text, sender=None, sender_name=None, html=None,
     if export:
         assert html is None
         content = lcg.Container(lcg.Parser().parse(text))
-        exporter = lcg.HtmlExporter(translations=cfg.translation_path)
+        exporter = lcg.HtmlExporter(translations=wiking.cfg.translation_path)
         node = lcg.ContentNode('mail', title=subject, content=content)
         context = exporter.context(node, lang)
         html = "<html>\n"+ content.export(context) +"\n</html>\n"
@@ -1936,9 +1936,9 @@ def send_mail(addr, subject, text, sender=None, sender_name=None, html=None,
     if cc:
         addr_list += cc
     if not smtp_server:
-        smtp_server = cfg.smtp_server or 'localhost'
+        smtp_server = wiking.cfg.smtp_server or 'localhost'
     if not smtp_port:
-        smtp_port = cfg.smtp_port or 25
+        smtp_port = wiking.cfg.smtp_port or 25
     try:
         import smtplib
         server = smtplib.SMTP(smtp_server, smtp_port)
@@ -1999,7 +1999,7 @@ def validate_email_address(address, helo=None):
         hosts = [h.to_text() for h in ahosts]
     else:
         hosts = [h.exchange.to_text() for h in mxhosts]
-    if cfg.allow_smtp_email_validation:
+    if wiking.cfg.allow_smtp_email_validation:
         reasons = ''
         for host in hosts:
             if host[-1] == '.':

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2006-2011 Brailcom, o.p.s.
+# Copyright (C) 2006-2012 Brailcom, o.p.s.
 # Author: Milan Zamazal
 #
 # This program is free software; you can redistribute it and/or modify
@@ -139,7 +139,7 @@ class Certificates(CMSModule):
         def _x509_computer(self, record):
             import gnutls.crypto
             if self._ca_x509 is None:
-                self._ca_x509 = gnutls.crypto.X509Certificate(open(cfg.ca_certificate_file).read())
+                self._ca_x509 = gnutls.crypto.X509Certificate(open(wiking.cfg.ca_certificate_file).read())
             certificate = record['certificate'].value()
             if certificate is None: # new record form
                 return None
@@ -328,7 +328,7 @@ class CertificateRequest(UserCertificates):
 
         def _certificate_computation(self, buffer):
             serial_number = self._serial_number_counter.next()
-            working_dir = os.path.join(cfg.storage, 'certificate-%d' % (serial_number,))
+            working_dir = os.path.join(wiking.cfg.storage, 'certificate-%d' % (serial_number,))
             request_file = os.path.join(working_dir, 'request')
             certificate_file = os.path.join(working_dir, 'certificate.pem')
             log_file = os.path.join(working_dir, 'log')
@@ -338,11 +338,11 @@ class CertificateRequest(UserCertificates):
                 stdout = open(log_file, 'w')
                 open(request_file, 'w').write(str(buffer))
                 open(template_file, 'w').write('serial = %s\nexpiration_days = %s\ntls_www_client\n' %
-                                               (serial_number, cfg.certificate_expiration_days,))
+                                               (serial_number, wiking.cfg.certificate_expiration_days,))
                 return_code = subprocess.call(('/usr/bin/certtool', '--generate-certificate',
                                                '--load-request', request_file,
                                                '--outfile', certificate_file,
-                                               '--load-ca-certificate', cfg.ca_certificate_file, '--load-ca-privkey', cfg.ca_key_file,
+                                               '--load-ca-certificate', wiking.cfg.ca_certificate_file, '--load-ca-privkey', wiking.cfg.ca_key_file,
                                                '--template', template_file,),
                                               stdout=stdout, stderr=stdout)
                 if return_code != 0:

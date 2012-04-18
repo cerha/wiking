@@ -168,13 +168,13 @@ class Application(CookieAuthentication, wiking.Application):
         if req.wmi:
             return _("Wiking Management Interface")
         else:
-            return cfg.site_title
+            return wiking.cfg.site_title
 
     def site_subtitle(self, req):
         if req.wmi:
             return None
         else:
-            return cfg.site_subtitle
+            return wiking.cfg.site_subtitle
     
     def menu(self, req):
         modname = req.wmi and 'WikingManagementInterface' or 'Pages'
@@ -216,7 +216,7 @@ class Application(CookieAuthentication, wiking.Application):
     
     def _auth_check_password(self, user, password):
         record = user.data()
-        password_storage = cfg.password_storage
+        password_storage = wiking.cfg.password_storage
         if password_storage == 'plain':
             pass
         elif password_storage == 'md5':
@@ -333,7 +333,7 @@ class Application(CookieAuthentication, wiking.Application):
     def footer_content(self, req):
         texts = wiking.module('Texts')
         text = texts.text(req, wiking.cms.texts.footer, lang=req.preferred_language())
-        text = text.replace('$webmaster_address', cfg.webmaster_address)
+        text = text.replace('$webmaster_address', wiking.cfg.webmaster_address)
         return lcg.Parser().parse(text)
     
     def _maybe_install(self, req, errstr):
@@ -344,7 +344,7 @@ class Application(CookieAuthentication, wiking.Application):
                              for x in params.items()]) +
                     '<input type="submit" value="%s">' % label +
                     '</form>')
-        dbname = cfg.dbname or cfg.server_hostname
+        dbname = wiking.cfg.dbname or wiking.cfg.server_hostname
         if errstr == 'FATAL:  database "%s" does not exist\n' % dbname:
             if not req.param('createdb'):
                 return 'Database "%s" does not exist.\n' % dbname + \
@@ -370,7 +370,7 @@ class Application(CookieAuthentication, wiking.Application):
             if not req.param('initdb'):
                 err = self._try_query(dbname, "select * from cms_config")
                 if err:
-                    if cfg.debug:
+                    if wiking.cfg.debug:
                         message = 'Database "%s" not initialized (%s)!' % (dbname, errstr,)
                     else:
                         message = 'Database "%s" not initialized!' % (dbname,)
@@ -378,7 +378,7 @@ class Application(CookieAuthentication, wiking.Application):
             else:
                 script = ''
                 for f in ('wiking.sql', 'init.sql'):
-                    path = os.path.join(cfg.sql_dir, f)
+                    path = os.path.join(wiking.cfg.sql_dir, f)
                     if os.path.exists(path):
                         script += "".join(file(path).readlines())
                     else:
@@ -397,9 +397,9 @@ class Application(CookieAuthentication, wiking.Application):
         import psycopg2 as dbapi
         try:
             dboptions = dict([(key, value) for key, value in (('database', dbname),
-                                                              ('user', cfg.dbuser),
-                                                              ('host', cfg.dbhost),
-                                                              ('port', cfg.dbport))
+                                                              ('user', wiking.cfg.dbuser),
+                                                              ('host', wiking.cfg.dbhost),
+                                                              ('port', wiking.cfg.dbport))
                               if value is not None])
             conn = dbapi.connect(**dboptions)
             try:

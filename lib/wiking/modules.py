@@ -191,14 +191,14 @@ class Documentation(Module, RequestHandler):
     This module is not bound to a data object.  It serves on-line documentation directly from files
     on the disk.
 
-    By default, the first component of unresolved path refers to the key of `cfg.doc_dirs' which
+    By default, the first component of unresolved path refers to the key of `wiking.cfg.doc_dirs' which
     determines the base directory, where the documents are searched.  The rest of unresolved path
     refers to the actual file within this directory.  Filename extension and language variant is
     added automatically.
 
     For example a request to '/doc/wiking/user/navigation' is resolved as follows:
       * 'doc' must be mapped within application to the `Documentation' module.
-      * 'wiking' is searched in `cfg.doc_dirs', where it translates for example to
+      * 'wiking' is searched in `wiking.cfg.doc_dirs', where it translates for example to
         '/usr/local/share/wiking/doc/src'.
       * File '/usr/local/share/wiking/doc/src/user/navigation.<lang>.txt'. is searched,
         where <lang> may be one of the application defined languages.  Prefered language
@@ -214,9 +214,9 @@ class Documentation(Module, RequestHandler):
         else:
             raise Forbidden()
         try:
-            basedir = cfg.doc_dirs[component]
+            basedir = wiking.cfg.doc_dirs[component]
         except KeyError:
-            log(OPR, "Component '%s' not found in 'cfg.doc_dirs':" % component, cfg.doc_dirs)
+            log(OPR, "Component '%s' not found in 'wiking.cfg.doc_dirs':" % component, wiking.cfg.doc_dirs)
             raise NotFound()
         if not os.path.exists(basedir):
             raise Exception("Documentation directory for '%s' does not exist. "
@@ -278,12 +278,12 @@ class Stylesheets(Module, RequestHandler):
     def _theme(self, req):
         """Return the color theme to be used for stylesheet color substitution.
 
-        Returns cfg.theme by default but may be overriden to select the current
+        Returns wiking.cfg.theme by default but may be overriden to select the current
         theme based on some application specific logic (eg. according to user's
         preferences, etc.).
         
         """
-        return cfg.theme
+        return wiking.cfg.theme
 
     def _substitute(self, stylesheet, theme):
         def subst(match):
@@ -297,7 +297,7 @@ class Stylesheets(Module, RequestHandler):
     def _handle(self, req):
         """Serve the stylesheet from a file."""
         def stylesheet(path):
-            for resource_dir in cfg.resource_path:
+            for resource_dir in wiking.cfg.resource_path:
                 filename = os.path.join(resource_dir, 'css', *path)
                 if os.path.exists(filename):
                     return "".join(file(filename).readlines())
@@ -327,13 +327,13 @@ class Resources(Stylesheets):
 
     def __init__(self, *args, **kwargs):
         super(Resources, self).__init__(*args, **kwargs)
-        self._provider = lcg.ResourceProvider(dirs=cfg.resource_path)
+        self._provider = lcg.ResourceProvider(dirs=wiking.cfg.resource_path)
 
     def _stylesheet(self, filename):
         """Return the dynamic stylesheet content as a string or None.
         
         When None is returned, the resource file is searched in
-        cfg.resource_path and served from there if found.
+        wiking.cfg.resource_path and served from there if found.
         
         This method is overriden in wiking.cms.Resources to handle dynamic
         style sheets defined in the database through the wiking.cms.StyleSheets
@@ -408,7 +408,7 @@ class SiteIcon(Module, RequestHandler):
     """
     
     def _handle(self, req):
-        filename = cfg.site_icon
+        filename = wiking.cfg.site_icon
         if filename:
             return wiking.serve_file(req, filename, 'image/vnd.microsoft.icon')
         else:

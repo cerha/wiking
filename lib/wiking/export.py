@@ -175,8 +175,8 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             return None
 
     def _language_selection_image(self, context, lang):
-        if cfg.language_selection_image:
-            return cfg.language_selection_image % lang
+        if wiking.cfg.language_selection_image:
+            return wiking.cfg.language_selection_image % lang
         else:
             return None
     

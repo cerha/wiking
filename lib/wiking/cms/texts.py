@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2009, 2010, 2011 Brailcom, o.p.s.
+# Copyright (C) 2009, 2010, 2011, 2012 Brailcom, o.p.s.
 #
 # COPYRIGHT NOTICE
 #
@@ -17,9 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import lcg
-from cms import Text
-from wiking import cfg
+import lcg, wiking
+from wiking.cms import Text
 
 _ = lcg.TranslatableTextFactory('wiking-cms')
 
@@ -65,7 +64,7 @@ regintro = Text(
 regsuccess = Text(
     'cms.regsuccess',
     _("Text displayed after successful user registration"),
-    (cfg.autoapprove_new_users and
+    (wiking.cfg.autoapprove_new_users and
      _("Registration completed successfuly. "
        "Your account is now fully functional but you may need "
        "to get futher privileges by the administrator to access "

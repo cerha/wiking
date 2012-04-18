@@ -166,7 +166,7 @@ class Application(Module):
         be overriden to change the title dynamically.
         
         """
-        return cfg.site_title
+        return wiking.cfg.site_title
 
     def site_subtitle(self, req):
         """Return site subtitle as a string or None.
@@ -178,7 +178,7 @@ class Application(Module):
         be overriden to change the subtitle dynamically.
 
         """
-        return cfg.site_subtitle
+        return wiking.cfg.site_subtitle
     
     def menu(self, req):
         """Return the main navigation menu hierarchy.
@@ -367,7 +367,7 @@ class Application(Module):
         to signal, that the handler should display the appropriate error page.
 
         The default implementation sends a complete exception information (including Python
-        traceback) by email if 'cfg.bug_report_address' has been set up.  If not, the traceback is
+        traceback) by email if 'wiking.cfg.bug_report_address' has been set up.  If not, the traceback is
         logged to server's error log.  'InternalServerError' is then raised.
 
         """
@@ -392,7 +392,7 @@ class Application(Module):
             # TODO: This should be moved to InternalServerError.log().
             log(OPR, 'InternalServerError: %s [%s@%s] %s' % (uri, user or 'anonymous',
                                                              req.remote_host(), buginfo))
-            if not cfg.debug:
+            if not wiking.cfg.debug:
                 # When debug is on, the full traceback goes to the browser
                 # window and it is better to leave the error log for printing
                 # debugging information (the exception makes too much noise
@@ -401,7 +401,7 @@ class Application(Module):
                 # traceback is not immediately visible in the browser, such as
                 # AJAX calls, sylesheet requests, etc.
                 log(OPR, "\n"+ cgitb.text(einfo))
-            address = cfg.bug_report_address
+            address = wiking.cfg.bug_report_address
             if address is not None:
                 def param_value(param):
                     if param in ('passwd', 'password'):
@@ -441,7 +441,7 @@ class Application(Module):
                         cgitb.html(einfo) +"</html>")
                 err = send_mail(address, 'Wiking Error: ' + buginfo, text, html=html,
                                 headers=(('Reply-To', address),
-                                         ('X-Wiking-Bug-Report-From', cfg.server_hostname)))
+                                         ('X-Wiking-Bug-Report-From', wiking.cfg.server_hostname)))
                 if err:
                     log(OPR, "Failed sending exception info to %s:" % address, err)
                 else:
@@ -530,5 +530,5 @@ class Application(Module):
 
         """
         return lcg.p(_("Contact:"), ' ',
-                     lcg.link("mailto:"+cfg.webmaster_address, cfg.webmaster_address))
+                     lcg.link("mailto:"+wiking.cfg.webmaster_address, wiking.cfg.webmaster_address))
     

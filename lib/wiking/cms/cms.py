@@ -67,7 +67,7 @@ def _modtitle(name, default=None):
         title = ''
     else:
         try:
-            cls = cfg.resolver.wiking_module_cls(name)
+            cls = wiking.cfg.resolver.wiking_module_cls(name)
         except:
             title = default or concat(name,' (',_("unknown"),')')
         else:
@@ -252,7 +252,7 @@ class CMSModule(PytisModule, RssModule, Panelizable):
 
     def _embed_binding(self, modname):
         try:
-            cls = cfg.resolver.wiking_module_cls(modname)
+            cls = wiking.cfg.resolver.wiking_module_cls(modname)
         except:
             cls = None
         if cls and issubclass(cls, EmbeddableCMSModule):
@@ -296,7 +296,7 @@ class CMSModule(PytisModule, RssModule, Panelizable):
         available_names = set([row[0].value()
                                for row in self._call_rows_db_function('cms_crypto_cook_passwords',
                                                                       uid, crypto_cookie)])
-        unavailable_names = set(crypto_names) - available_names - set(cfg.ignored_crypto_names)
+        unavailable_names = set(crypto_names) - available_names - set(wiking.cfg.ignored_crypto_names)
         if unavailable_names:
             raise DecryptionError(unavailable_names.pop())
 
@@ -522,8 +522,8 @@ class Config(SettingsManagementModule):
     class Spec(Specification):
         class _Field(Field):
             def __init__(self, name, label=None, descr=None, transform_default=None, **kwargs):
-                if hasattr(cfg, name):
-                    option = cfg.option(name)
+                if hasattr(wiking.cfg, name):
+                    option = wiking.cfg.option(name)
                 elif hasattr(wiking.cms.cfg, name):
                     option = wiking.cms.cfg.option(name)
                 else:
@@ -536,7 +536,7 @@ class Config(SettingsManagementModule):
                     if descr is None:
                         descr = option.documentation()
                     if transform_default is None:
-                        if isinstance(option, cfg.BooleanOption):
+                        if isinstance(option, wiking.cfg.BooleanOption):
                             transform_default = lambda x: x and _("enabled") or _("disabled")
                         else:
                             transform_default = lambda x: x is None and _("undefined") or repr(x)
@@ -632,10 +632,10 @@ class Config(SettingsManagementModule):
         except (TypeError, ValueError):
             theme_id = row['theme_id'].value()
         if theme_id is None:
-            if isinstance(cfg.theme, Themes.Theme):
-                cfg.theme = Theme()
-        elif not isinstance(cfg.theme, Themes.Theme) or cfg.theme.theme_id() != theme_id:
-            cfg.theme = wiking.module('Themes').theme(theme_id)
+            if isinstance(wiking.cfg.theme, Themes.Theme):
+                wiking.cfg.theme = Theme()
+        elif not isinstance(wiking.cfg.theme, Themes.Theme) or wiking.cfg.theme.theme_id() != theme_id:
+            wiking.cfg.theme = wiking.module('Themes').theme(theme_id)
 
     def set_theme(self, req, theme_id):
         row = self._data.get_row(site=wiking.cfg.server_hostname)
@@ -956,7 +956,7 @@ class Themes(StyleManagementModule):
                 fields.extend(group)
             return fields
         def _is_active(self, row, theme_id):
-            return isinstance(cfg.theme, Themes.Theme) and cfg.theme.theme_id() == theme_id
+            return isinstance(wiking.cfg.theme, Themes.Theme) and wiking.cfg.theme.theme_id() == theme_id
         def _title(self, row, name, active):
             return name + (active and ' ('+ _("active") +')' or '')
         def _preview(self, record):
@@ -990,7 +990,7 @@ class Themes(StyleManagementModule):
             # Translators: Button label
             Action('activate', _("Activate default"), context=pp.ActionContext.GLOBAL,
                    descr=_("Activate the default color theme"),
-                   enabled=lambda r: isinstance(cfg.theme, Themes.Theme)),
+                   enabled=lambda r: isinstance(wiking.cfg.theme, Themes.Theme)),
             )
         
     _ROW_ACTIONS = True
@@ -1013,11 +1013,11 @@ class Themes(StyleManagementModule):
         if record:
             theme_id = record['theme_id'].value()
             name = record['name'].value()
-            cfg.theme = self.Theme(record.row())
+            wiking.cfg.theme = self.Theme(record.row())
         else:
             theme_id = None
             name = _("Default")
-            cfg.theme = Theme()
+            wiking.cfg.theme = Theme()
         err = wiking.module('Config').set_theme(req, theme_id)
         if err is None:
             req.message(_("The color theme \"%s\" has been activated.", name))
@@ -1071,7 +1071,7 @@ class Pages(SiteSpecificContentModule):
             # Translators: "Module" is an independent reusable part of a computer program (here a
             # module of Wiking CMS).
             Field('modname', _("Module"), display=_modtitle, prefer_display=True, not_null=False,
-                  enumerator=enum([_m.name() for _m in cfg.resolver.available_modules()
+                  enumerator=enum([_m.name() for _m in wiking.cfg.resolver.available_modules()
                                    if issubclass(_m, Embeddable) \
                                    and _m not in (EmbeddableCMSModule, CMSExtension)]),
                   descr=_("Select the extension module to embed into the page.  Leave blank for "
@@ -1838,16 +1838,16 @@ class Attachments(ContentManagementModule):
                 img.save(stream, image.format)
                 return pd.Image.Buffer(buffer(stream.getvalue()))
         def _image(self, record, file):
-            return self._resize(file, cfg.image_screen_size)
+            return self._resize(file, wiking.cfg.image_screen_size)
         def _thumbnail(self, record, file, thumbnail_size):
             if thumbnail_size is None:
                 return None
             elif thumbnail_size == 'small':
-                size = cfg.image_thumbnail_sizes[0]
+                size = wiking.cfg.image_thumbnail_sizes[0]
             elif thumbnail_size == 'medium':
-                size = cfg.image_thumbnail_sizes[1]
+                size = wiking.cfg.image_thumbnail_sizes[1]
             else:
-                size = cfg.image_thumbnail_sizes[2]
+                size = wiking.cfg.image_thumbnail_sizes[2]
             return self._resize(file, (size, size))
         def _thumbnail_width(self, record, thumbnail):
             if thumbnail:
@@ -1861,12 +1861,12 @@ class Attachments(ContentManagementModule):
                 return None
         def _filename(self, record, attachment_id, ext):
             fname = str(attachment_id) +'.'+ ext
-            return os.path.join(cfg.storage, cfg.dbname, 'attachments', fname)
+            return os.path.join(wiking.cfg.storage, wiking.cfg.dbname, 'attachments', fname)
         def _thumbnail_size_display(self, size):
             # Translators: Size label related to "Preview size" field (pronoun).
-            labels = {'small': _("Small") + " (%dpx)" % cfg.image_thumbnail_sizes[0],
-                      'medium': _("Medium") + " (%dpx)" % cfg.image_thumbnail_sizes[1],
-                      'large': _("Large") + " (%dpx)" % cfg.image_thumbnail_sizes[2]}
+            labels = {'small': _("Small") + " (%dpx)" % wiking.cfg.image_thumbnail_sizes[0],
+                      'medium': _("Medium") + " (%dpx)" % wiking.cfg.image_thumbnail_sizes[1],
+                      'large': _("Large") + " (%dpx)" % wiking.cfg.image_thumbnail_sizes[2]}
             return labels.get(size, size)
         
         layout = ('file', 'title', 'description', 'thumbnail_size' , 'in_gallery', 'listed')
@@ -1956,12 +1956,12 @@ class Attachments(ContentManagementModule):
         super(Attachments, self)._binding_parent_redirect(req, **kwargs)
 
     def _save_files(self, record):
-        if not os.path.exists(cfg.storage) \
-                or not os.access(cfg.storage, os.W_OK):
+        if not os.path.exists(wiking.cfg.storage) \
+                or not os.access(wiking.cfg.storage, os.W_OK):
             import getpass
             raise Exception("The configuration option 'storage' points to '%(dir)s', but this "
                             "directory does not exist or is not writable by user '%(user)s'." %
-                            dict(dir=cfg.storage, user=getpass.getuser()))
+                            dict(dir=wiking.cfg.storage, user=getpass.getuser()))
         fname = record['_filename'].value()
         dir = os.path.split(fname)[0]
         if not os.path.exists(dir):
