@@ -1261,7 +1261,7 @@ class LoginDialog(lcg.Content):
                   if param not in ('command', 'login', 'password', '__log_in')]
         content = (
             g.label(_("Login name")+':', id='login') + g.br(),
-            g.field(name='login', value=login, id='login', size=18, maxlength=32),
+            g.field(name='login', value=login, id='login', size=18, maxlength=64),
             g.br(), 
             g.label(_("Password")+':', id='password') + g.br(),
             g.field(name='password', id='password', password=True, size=18, maxlength=32),
