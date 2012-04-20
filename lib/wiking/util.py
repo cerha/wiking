@@ -16,7 +16,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 import lcg, pytis, pytis.presentation
-import sys, httplib, collections, datetime
+import sys, httplib, collections, datetime, mimetypes
 from xml.sax import saxutils
 
 DBG = pytis.util.DEBUG
@@ -1721,13 +1721,14 @@ class Time(pytis.data.Time):
 # Misc functions
 # ============================================================================
 
-def serve_file(req, path, content_type, filename=None, lock=False):
+def serve_file(req, path, content_type=None, filename=None, lock=False):
     """Return 'wiking.Response' instance to send the contents of a given file to the client.
 
     Arguments:
       path -- Full path to the file in server's filesystem.
-      content_type -- The value to be used for the 'Content-Type' HTTP
-        header (basestring).
+      content_type -- The value to be used for the 'Content-Type' HTTP header
+        (basestring).  If None, the type will be automatically guessed using the
+        python mimetypes module.
       filename -- File name to be used for the 'Content-Disposition' HTTP header.
          This will force the browser to save the file under given file name instead
          of displaying it.
@@ -1744,6 +1745,9 @@ def serve_file(req, path, content_type, filename=None, lock=False):
     except OSError:
         log(OPR, "File not found:", path)
         raise wiking.NotFound()
+    if content_type is None:
+        mime_type, encoding = mimetypes.guess_type(path)
+        content_type = mime_type or 'application/octet-stream'
     mtime = datetime.datetime.utcfromtimestamp(info.st_mtime)
     since_header = req.header('If-Modified-Since')
     if since_header:

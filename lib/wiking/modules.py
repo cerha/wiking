@@ -377,10 +377,7 @@ class Resources(Stylesheets):
                     raise NotFound()
             resource = find_resource(filename)
             if resource is not None:
-                import mimetypes
-                src_file = resource.src_file()
-                mime_type, encoding = mimetypes.guess_type(src_file)
-                return wiking.serve_file(req, src_file, mime_type or 'application/octet-stream')
+                return wiking.serve_file(req, resource.src_file())
             raise NotFound()
         else:
             raise Forbidden()
