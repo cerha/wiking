@@ -58,7 +58,6 @@ _ = lcg.TranslatableTextFactory('wiking-cms')
 
 class ContentField(Field):
     def __init__(self, name, label=None, descr=None, **kwargs):
-        editor = wiking.cms.cfg.text_editor
         msg = _("The content should be formatted as LCG structured text. See the %(manual)s.",
                 manual=lcg.format('<a target="help" href="/_doc/lcg/structured-text">%s</a>',
                                   _("formatting manual")))
