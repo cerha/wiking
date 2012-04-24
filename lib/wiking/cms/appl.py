@@ -334,7 +334,11 @@ class Application(CookieAuthentication, wiking.Application):
         texts = wiking.module('Texts')
         text = texts.text(req, wiking.cms.texts.footer, lang=req.preferred_language())
         text = text.replace('$webmaster_address', wiking.cfg.webmaster_address)
-        return lcg.Parser().parse(text)
+        if wiking.cms.cfg.content_editor == 'plain':
+            content = lcg.Parser().parse(text)
+        else:
+            content = [HtmlContent(text)]
+        return content
     
     def _maybe_install(self, req, errstr):
         """Check a DB error string and try to set it up if it is the problem."""

@@ -58,14 +58,23 @@ _ = lcg.TranslatableTextFactory('wiking-cms')
 
 class ContentField(Field):
     def __init__(self, name, label=None, descr=None, **kwargs):
-        msg = _("The content should be formatted as LCG structured text. See the %(manual)s.",
-                manual=lcg.format('<a target="help" href="/_doc/lcg/structured-text">%s</a>',
-                                  _("formatting manual")))
-        if descr:
-            descr += ' '+msg
+        editor = wiking.cms.cfg.content_editor
+        if editor == 'plain':
+            msg = _("The content should be formatted as LCG structured text. "
+                    "See the %(manual)s.",
+                    manual=lcg.format('<a target="help" href="%s">%s</a>',
+                                      '/_doc/lcg/structured-text',
+                                      _("formatting manual")))
+            if descr:
+                descr += ' '+msg
+            else:
+                descr = msg
+            text_format = pp.TextFormat.LCG
+        elif editor == 'html':
+            text_format = pp.TextFormat.HTML
         else:
-            descr = msg
-        Field.__init__(self, name, label, descr=descr, text_format=pp.TextFormat.LCG, **kwargs)
+            raise Exception("Invalid value of 'wiking.cms.cfg.content_editor': %s" % editor)
+        Field.__init__(self, name, label, descr=descr, text_format=text_format, **kwargs)
 
 def _modtitle(name, default=None):
     """Return a localizable module title by module name."""
@@ -794,8 +803,12 @@ class Panels(SiteSpecificContentModule, Publishable):
                                                 relation=binding and (binding, row)))
                 if mod.has_channel():
                     channel = '/'+'.'.join((row['identifier'].value(), lang, 'rss'))
+
             if row['content'].value():
-                content += tuple(parser.parse(row['content'].value()))
+                if wiking.cms.cfg.content_editor == 'plain':
+                    content += tuple(parser.parse(row['content'].value()))
+                else:
+                    content += (HtmlContent(row['content'].value()),)
             content = lcg.Container(content)
             panels.append(Panel(panel_id, title, content, channel=channel))
         return panels
@@ -1452,9 +1465,12 @@ class Pages(SiteSpecificContentModule):
                 pre, post = self._SEPARATOR.split(text, maxsplit=2)
             else:
                 pre, post = text, ''
-            parser = lcg.Parser()
-            sections = parser.parse(pre) + content + parser.parse(post)
-            content = [lcg.Container(sections)]
+            if wiking.cms.cfg.content_editor == 'plain':
+                parser = lcg.Parser()
+                sections = parser.parse(pre) + content + parser.parse(post)
+                content = [lcg.Container(sections)]
+            else:
+                content = [HtmlContent(pre)] + content + [HtmlContent(post)]
         # Attachment list
         resources = []
         gallery_images = []
@@ -2604,7 +2620,10 @@ class Texts(CommonTexts):
         assert isinstance(text, Text)
         retrieved_text = self.text(req, text, lang=lang, args=args)
         if retrieved_text:
-            content = lcg.Container(lcg.Parser().parse(retrieved_text))
+            if wiking.cms.cfg.content_editor == 'plain':
+                content = lcg.Container(lcg.Parser().parse(retrieved_text))
+            else:
+                content = HtmlContent(retrieved_text)
         else:
             content = None
         return content

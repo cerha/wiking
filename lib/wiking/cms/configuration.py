@@ -146,3 +146,14 @@ class CMSConfiguration(pc):
                 "may be larger than the screen size).  If the original is smaller")
         _DEFAULT = (800, 800)
         
+    class _Option_content_editor(pc.StringOption):
+        _DESCR = "CMS text editor to be used"
+        _DOC = ("The currently supported options are 'plain' for plain text editor "
+                "using the LCG Structured Text formatting and 'html' for a JavaScript "
+                "based HTML editor (currently CKEditor from http://ckeditor.com is "
+                "used).  Note, that it is currently not possible to change this option "
+                "for an existing database and there is no support for conversion.  You "
+                "must decide before site creation.")
+        _DEFAULT = 'plain'
+        
+        
