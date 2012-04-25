@@ -166,7 +166,7 @@ class Configuration(pc):
                 "This mode is mostly useful for server administration tasks, which require "
                 "exclusive access to the database.  Wiking will not attempt to connect to "
                 "the database in this mode and will display a polite error message in response "
-                "to requests, which would require database access.")
+                "to all requests.")
         _DEFAULT = False
         
     class _Option_smtp_server(pc.StringOption):

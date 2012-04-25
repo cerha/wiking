@@ -388,12 +388,12 @@ class ServiceUnavailable(RequestError):
     
     
 class MaintenanceModeError(ServiceUnavailable):
-    """Error indicating an invalid action in maintenance mode.
+    """Error used on an attempt to access the application in maintenance mode.
 
-    The maintenance mode can be turned on by the 'maintenance' configuration option.  If this
-    option is set to 'true', no database access will be allowed and any attempt to do so will raise
-    this error.  The application should handle all these errors gracefully to support the
-    mainenance mode.
+    The maintenance mode can be turned on by the 'maintenance' configuration
+    option.  If this option is set to 'true', no requests will be handled
+    normally and the Wiking handler will always just display this error
+    message.
     
     """
     _TITLE = _("Maintenance Mode")
