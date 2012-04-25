@@ -1,5 +1,30 @@
 alter table users alter column login type varchar(64);
+drop view cms_v_session_log;
 alter table cms_session_log alter column login type varchar(64);
+
+create or replace view cms_v_session_log as select
+       l.log_id,
+       l.session_id,
+       l.uid,
+       l.login,
+       l.success,
+       s.session_id is not null and age(s.last_access) < '1 hour' as active,
+       l.start_time,
+       coalesce(l.end_time, s.last_access) - l.start_time as duration,
+       l.ip_address,
+       l.user_agent,
+       l.referer
+from cms_session_log l left outer join cms_session s using (session_id);
+
+create or replace rule cms_v_session_log_insert as
+  on insert to cms_v_session_log do instead (
+     insert into cms_session_log (session_id, uid, login, success,
+     	    	 	          start_time, ip_address, user_agent, referer)
+            values (new.session_id, new.uid, new.login, new.success,
+	    	    new.start_time, new.ip_address, new.user_agent, new.referer)
+            returning log_id, session_id, uid, login, success, NULL::boolean,
+	    	      start_time, NULL::interval, ip_address, user_agent, referer;
+);
 
 drop function insert_or_update_user (uid_ int, login_ varchar(32), password_ varchar(32), firstname_ text, surname_ text, nickname_ text, user__ text, email_ text, phone_ text, address_ text, uri_ text, state_ text, last_password_change_ timestamp, since_ timestamp, lang_ char(2), regexpire_ timestamp, regcode_ char(16), certauth_ boolean, note_ text, confirm_ boolean, gender_ char(1));
 create or replace function cms_f_insert_or_update_user (uid_ int, login_ varchar(64), password_ varchar(32), firstname_ text, surname_ text, nickname_ text, user__ text, email_ text, phone_ text, address_ text, uri_ text, state_ text, last_password_change_ timestamp, since_ timestamp, lang_ char(2), regexpire_ timestamp, regcode_ char(16), certauth_ boolean, note_ text, confirm_ boolean, gender_ char(1)) returns void as $$
