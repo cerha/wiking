@@ -97,7 +97,7 @@ alter table users alter column since
 set default current_timestamp(0) at time zone 'GMT';
 grant all on users_uid_seq to "www-data";
 
-create or replace function insert_or_update_user (uid_ int, login_ varchar(32), password_ varchar(32), firstname_ text, surname_ text, nickname_ text, user__ text, email_ text, phone_ text, address_ text, uri_ text, state_ text, last_password_change_ timestamp, since_ timestamp, lang_ char(2), regexpire_ timestamp, regcode_ char(16), certauth_ boolean, note_ text, confirm_ boolean, gender_ char(1)) returns void as $$
+create or replace function cms_f_insert_or_update_user (uid_ int, login_ varchar(64), password_ varchar(32), firstname_ text, surname_ text, nickname_ text, user__ text, email_ text, phone_ text, address_ text, uri_ text, state_ text, last_password_change_ timestamp, since_ timestamp, lang_ char(2), regexpire_ timestamp, regcode_ char(16), certauth_ boolean, note_ text, confirm_ boolean, gender_ char(1)) returns void as $$
 declare
   row record;
 begin
@@ -132,7 +132,7 @@ create table cms_session_log (
        log_id serial primary key,
        session_id int references cms_session on delete set null,
        uid int references users on delete cascade, -- may be null for invalid logins
-       login varchar(32) not null, -- usefull when uid is null or login changes
+       login varchar(64) not null, -- useful when uid is null or login changes
        success bool not null,
        start_time timestamp not null,
        end_time timestamp,
