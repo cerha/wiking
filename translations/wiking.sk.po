@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-18 16:16+0200\n"
+"POT-Creation-Date: 2012-04-25 09:28+0200\n"
 "PO-Revision-Date: 2010-01-19 16:43+0100\n"
 "Last-Translator: Petr Topiarz <topiarz@post.cz>\n"
 "Language-Team: Slovak <wiking@lists.freebsoft.org>\n"
@@ -533,13 +533,13 @@ msgstr "Heslo"
 msgid "Continue"
 msgstr ""
 
-#: ../lib/wiking/util.py:1981
+#: ../lib/wiking/util.py:1996
 msgid "Invalid format"
 msgstr "Neplatný formát!"
 
 #. Translators: Computer terminology. `gmail.com' is a domain name in email address
 #. `joe@gmail.com'.
-#: ../lib/wiking/util.py:1989 ../lib/wiking/util.py:1996
+#: ../lib/wiking/util.py:2004 ../lib/wiking/util.py:2011
 #, fuzzy
 msgid "Domain not found"
 msgstr "Nič nebolo nájdené."
@@ -616,49 +616,49 @@ msgstr "Varovanie"
 msgid "Last change: %(date)s, %(user)s"
 msgstr "Posledná zmena: %(date)s, %(user)s"
 
-#: ../lib/wiking/modules.py:518
+#: ../lib/wiking/modules.py:515
 msgid "Enter your login name, please!"
 msgstr "Zadajte, prosím, vaše uživateľské meno!"
 
-#: ../lib/wiking/modules.py:520
+#: ../lib/wiking/modules.py:517
 msgid "Enter your password, please!"
 msgstr "Zadajte, prosím, vaše heslo!"
 
-#: ../lib/wiking/modules.py:524
+#: ../lib/wiking/modules.py:521
 msgid "Invalid login!"
 msgstr "Neplatné prihlásenie!"
 
-#: ../lib/wiking/modules.py:619
+#: ../lib/wiking/modules.py:616
 msgid "Searching"
 msgstr "Vyhľadávanie"
 
-#: ../lib/wiking/modules.py:620
+#: ../lib/wiking/modules.py:617
 msgid "Search results"
 msgstr "Výsledky vyhľadávania"
 
-#: ../lib/wiking/modules.py:621
+#: ../lib/wiking/modules.py:618
 msgid "Given search term doesn't contain any searchable term."
 msgstr ""
 "Zadaný vyhľadávací výraz neobsahuje nič, podľa čoho by bolo možné "
 "vyhľadávanie uskutočniť."
 
-#: ../lib/wiking/modules.py:625
+#: ../lib/wiking/modules.py:622
 msgid "Search words:"
 msgstr "Vyhľadať slová:"
 
-#: ../lib/wiking/modules.py:626
+#: ../lib/wiking/modules.py:623
 msgid "Search"
 msgstr "Vyhľadať"
 
-#: ../lib/wiking/modules.py:682
+#: ../lib/wiking/modules.py:679
 msgid "Nothing found."
 msgstr "Nič nebolo nájdené."
 
-#: ../lib/wiking/modules.py:739
+#: ../lib/wiking/modules.py:736
 msgid "The following modules were successfully reloaded:"
 msgstr "Nasledujúce moduly boli úspešne prečítané znovu:"
 
-#: ../lib/wiking/modules.py:741
+#: ../lib/wiking/modules.py:738
 msgid "Reload"
 msgstr "Načítať znovu"
 

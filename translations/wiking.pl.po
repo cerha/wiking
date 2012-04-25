@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-18 16:16+0200\n"
+"POT-Creation-Date: 2012-04-25 09:28+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Petr Topiarz <topiarz@post.cz>\n"
 "Language-Team: \n"
@@ -531,13 +531,13 @@ msgstr "Hasło"
 msgid "Continue"
 msgstr ""
 
-#: ../lib/wiking/util.py:1981
+#: ../lib/wiking/util.py:1996
 msgid "Invalid format"
 msgstr "Nieaktualny format"
 
 #. Translators: Computer terminology. `gmail.com' is a domain name in email address
 #. `joe@gmail.com'.
-#: ../lib/wiking/util.py:1989 ../lib/wiking/util.py:1996
+#: ../lib/wiking/util.py:2004 ../lib/wiking/util.py:2011
 msgid "Domain not found"
 msgstr "Domena nie została znaleziona"
 
@@ -612,47 +612,47 @@ msgstr "Ostrzeżenie"
 msgid "Last change: %(date)s, %(user)s"
 msgstr "Ostatnia zmiana:  %(date)s, %(user)s"
 
-#: ../lib/wiking/modules.py:518
+#: ../lib/wiking/modules.py:515
 msgid "Enter your login name, please!"
 msgstr "Wpisz nazwe użytkownika"
 
-#: ../lib/wiking/modules.py:520
+#: ../lib/wiking/modules.py:517
 msgid "Enter your password, please!"
 msgstr "Wpisz hasło"
 
-#: ../lib/wiking/modules.py:524
+#: ../lib/wiking/modules.py:521
 msgid "Invalid login!"
 msgstr "Nieważny login!"
 
-#: ../lib/wiking/modules.py:619
+#: ../lib/wiking/modules.py:616
 msgid "Searching"
 msgstr "Szukanie"
 
-#: ../lib/wiking/modules.py:620
+#: ../lib/wiking/modules.py:617
 msgid "Search results"
 msgstr "Wyniki wyszukiwania"
 
-#: ../lib/wiking/modules.py:621
+#: ../lib/wiking/modules.py:618
 msgid "Given search term doesn't contain any searchable term."
 msgstr "Podany termin nie pasuje do żanego wyszukanego wyrażenia."
 
-#: ../lib/wiking/modules.py:625
+#: ../lib/wiking/modules.py:622
 msgid "Search words:"
 msgstr "Szukane słowa:"
 
-#: ../lib/wiking/modules.py:626
+#: ../lib/wiking/modules.py:623
 msgid "Search"
 msgstr "Szukaj"
 
-#: ../lib/wiking/modules.py:682
+#: ../lib/wiking/modules.py:679
 msgid "Nothing found."
 msgstr "Nic nie znaleziono."
 
-#: ../lib/wiking/modules.py:739
+#: ../lib/wiking/modules.py:736
 msgid "The following modules were successfully reloaded:"
 msgstr "Następujące moduły zostały pomyślnie przeładowane:"
 
-#: ../lib/wiking/modules.py:741
+#: ../lib/wiking/modules.py:738
 msgid "Reload"
 msgstr "Przeładowny"
 
