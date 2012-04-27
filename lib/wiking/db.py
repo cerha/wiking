@@ -439,7 +439,7 @@ class PytisModule(Module, ActionHandler):
             if isinstance(type, (pd.Binary, pd.Password)) and not value:
                 try:
                     size = int(req.param('_pytis_file_size_'+id))
-                except ValueError:
+                except ValueError, TypeError:
                     pass
                 else:
                     # Handle AJAX request for validation of file size (only
