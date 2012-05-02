@@ -21,6 +21,7 @@ import re, cStringIO as StringIO
 
 from wiking import *
 from pytis.presentation import Action
+from pytis.web import UriType
 
 _ = lcg.TranslatableTextFactory('wiking')
 
@@ -776,6 +777,14 @@ class PytisModule(Module, ActionHandler):
         else:
             return None
     
+    def _file_browser_uri_provider(self, req, uri, record, cid, images=False):
+        """Return URI for HTML form field file browser (see 'pytis.web.UriType.FILE_BROWSER')."""
+        return None
+    
+    def _file_upload_uri_provider(self, req, uri, record, cid, images=False):
+        """Return URI for HTML form field file upload (see 'pytis.web.UriType.FILE_BROWSER')."""
+        return None
+        
     def _record_uri(self, req, record, *args, **kwargs):
         # Return the absolute URI of module's record if a direct mapping of the module exists.  
         # Use the method '_current_record_uri()' to get URI in the context of the current request.
@@ -876,17 +885,24 @@ class PytisModule(Module, ActionHandler):
 
     def _uri_provider(self, req, uri):
         """Return the uri_provider function to pass the pytis form."""
-        def uri_provider(record, cid, type=pw.UriType.LINK):
+        def uri_provider(record, cid, type=UriType.LINK):
+            kwargs = {}
             if record is None:
-                assert type == pw.UriType.LINK
+                assert type == UriType.LINK
                 return uri
-            elif type == pw.UriType.LINK:
+            elif type == UriType.LINK:
                 method = self._link_provider
-            elif type == pw.UriType.IMAGE:
+            elif type == UriType.IMAGE:
                 method = self._image_provider
-            elif type == pw.UriType.PRINT:
+            elif type == UriType.PRINT:
                 method = self._print_uri_provider
-            return method(req, uri, record, cid)
+            elif type in (UriType.FILE_BROWSER, UriType.IMAGE_BROWSER):
+                method = self._file_browser_uri_provider
+                kwargs = dict(images=(type==UriType.IMAGE_BROWSER))
+            elif type in (UriType.FILE_UPLOAD, UriType.IMAGE_UPLOAD):
+                method = self._file_upload_uri_provider
+                kwargs = dict(images=(type==UriType.IMAGE_UPLOAD))
+            return method(req, uri, record, cid, **kwargs)
         return uri_provider
     
     def _layout_instance(self, layout):
