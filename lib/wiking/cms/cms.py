@@ -1334,6 +1334,13 @@ class Pages(SiteSpecificContentModule):
             return None
         return super(Pages, self)._link_provider(req, uri, record, cid, **kwargs)
 
+    def _file_browser_uri_provider(self, req, uri, record, cid, images=False):
+        return req.make_uri(self._current_record_uri(req, record)+'/attachments',
+                            action='browse', images=(images and '1' or None))
+    
+    def _file_upload_uri_provider(self, req, uri, record, cid, images=False):
+        return None
+        
     def _redirect_after_insert(self, req, record):
         req.message(self._insert_msg(req, record))
         raise Redirect(self._current_record_uri(req, record))
@@ -1954,6 +1961,13 @@ class Attachments(ContentManagementModule):
         
     def _link_provider(self, req, uri, record, cid, **kwargs):
         if cid is None and not kwargs:
+            if req.param('action') == 'browse':
+                if req.param('images') == '1':
+                    action = 'thumbnail'
+                else:
+                    action = None
+                uri = req.make_uri(uri+'/'+record['filename'].value(), action=action)
+                return "javascript: pytis.HtmlField.select_file('%s')" % uri
             kwargs['action'] = 'view'
         elif cid == 'file':
             cid = None
@@ -2025,6 +2039,24 @@ class Attachments(ContentManagementModule):
                 break
             yield self.Attachment(row)
         self._data.close()
+        
+    def action_browse(self, req):
+        lang = req.preferred_language()
+        condition = self._condition(req)
+        if self._LIST_BY_LANGUAGE:
+            condition = pd.AND(condition, pd.EQ('lang', pd.sval(lang)))
+        form = self._form(pw.ListView, req,
+                          columns=self._columns(req),
+                          condition=condition,
+                          arguments=self._arguments(req),
+                          profiles=self._profiles(req),
+                          filter_sets=self._filter_sets(req),
+                          actions=self._form_actions(req),
+                          )
+        content = self._list_form_content(req, form)
+        return self._document(req, content, lang=lang, layout=wiking.Exporter.Layout.FRAME,
+                              resources=(lcg.Script('prototype.js'), lcg.Script('pytis.js'),))
+    RIGHTS_browse = (Roles.CONTENT_ADMIN,)
     
     def action_move(self, req, record):
         return self.action_update(req, record, action='move')
