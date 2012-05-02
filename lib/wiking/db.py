@@ -617,30 +617,69 @@ class PytisModule(Module, ActionHandler):
                 )
     
     def _actions(self, req, record):
+        """Return the list of all possible actions of this module.
+
+        The returned list will include all defined actions in the order in
+        which they should appear in the user interface.  It is preferred to
+        define actions statically in specification (as Specification.actions),
+        but you may override this method if you want to add/remove some actions
+        dynamically (depending on some condition).
+
+        Use '_form_actions' if you want to modify form actions for a particular
+        form instance and use '_form_actions_argument()' if you want to pass
+        the 'actions' argument to a pytis form constructor.
+
+        """
         return tuple(self._default_actions_first(req, record) + 
                      self._view.actions() + 
                      self._default_actions_last(req, record))
 
-    def _permitted_actions(self, req):
-        def actions(form, record):
-            if isinstance(form, pw.BrowseForm):
-                exclude = ('list',)
-            elif isinstance(form, pw.ShowForm):
-                exclude = ('view',)
-            else:
-                exclude = ()
-            # Action context filtering is redundant here (it is done by the
-            # form as well), but we need it here because `_authorized()'
-            # methods in applications may historically not expect out of
-            # context actions.
-            if record is not None:
-                required_context = pp.ActionContext.RECORD
-            else:
-                required_context = pp.ActionContext.GLOBAL
-            return [action for action in self._actions(req, record)
-                    if action.id() not in exclude and action.context() == required_context
-                    and self._authorized(req, action=action.id(), record=record)]
-        return actions
+    def _form_actions(self, req, record, form):
+        """Return a list of actions available in form user interface.
+
+        Override this method when you need to modify the list of actions
+        available in a form, but use '_form_actions_argument()' if you want to
+        pass the 'actions' argument to a form constructor.
+
+        This method filters out the list of all available actions returned by
+        '_actions()' to include only those, which are permitted to the current
+        web user and which make sense in the current context (actions with
+        'ActionContext.GLOBAL' when 'record' is None and 'ActionContext.RECORD'
+        otherwise.
+        
+
+        """
+        if isinstance(form, pw.BrowseForm):
+            exclude = ('list',)
+        elif isinstance(form, pw.ShowForm):
+            exclude = ('view',)
+        else:
+            exclude = ()
+        # Action context filtering is redundant here (it is done by the
+        # form as well), but we need it here because `_authorized()'
+        # methods in applications may historically not expect out of
+        # context actions.
+        if record is not None:
+            required_context = pp.ActionContext.RECORD
+        else:
+            required_context = pp.ActionContext.GLOBAL
+        return [action for action in self._actions(req, record)
+                if action.id() not in exclude and action.context() == required_context
+                and self._authorized(req, action=action.id(), record=record)]
+    
+    def _form_actions_argument(self, req):
+        """Return a callable to be passed to 'actions' form constructor argument.
+
+        This method returns a callable object to be passed to 'actions'
+        argument of a pytis form constructor.  The callable is actually just a
+        wrapper for the method '_form_actions()' which actually creates the
+        list of form actions permitted to the current web user.  So use this
+        method when you need to pass 'actions' to a form constructor, but
+        override '_form_actions()' if you want to modify the list of actions
+        available in a form.
+
+        """
+        return lambda form, record: self._form_actions(req, record, form)
     
     def _insert_enabled(self, req):
         """Return true iff the default 'insert' action is enabled for given request.
@@ -1732,7 +1771,7 @@ class PytisModule(Module, ActionHandler):
                           condition=condition,
                           arguments=self._binding_arguments(binding, record),
                           profiles=self._profiles(req), filter_sets=self._filter_sets(req),
-                          actions=self._permitted_actions(req),
+                          actions=self._form_actions_argument(req),
                           **form_kwargs)
         content = self._list_form_content(req, form, uri=binding_uri)
         return lcg.Container(content)
@@ -1757,7 +1796,7 @@ class PytisModule(Module, ActionHandler):
                           arguments=self._arguments(req),
                           profiles=self._profiles(req),
                           filter_sets=self._filter_sets(req),
-                          actions=self._permitted_actions(req),
+                          actions=self._form_actions_argument(req),
                           )
         content = self._list_form_content(req, form)
         return self._document(req, content, lang=lang)
@@ -1840,7 +1879,7 @@ class PytisModule(Module, ActionHandler):
         # They are currently still used in Eurochance LMS.
         form = self._form(pw.ShowForm, req, record=record,
                           layout=self._layout(req, 'view', record),
-                          actions=self._permitted_actions(req),
+                          actions=self._form_actions_argument(req),
                           )
         content = self._view_form_content(req, form, record)
         return self._document(req, content, record, err=err, msg=msg)

@@ -1537,7 +1537,7 @@ class Pages(SiteSpecificContentModule):
         if req.check_roles(Roles.CONTENT_ADMIN):
             # Append an empty show form just for the action menu.
             form = self._form(pw.ShowForm, req, record=record, layout=(),
-                              actions=self._permitted_actions(req))
+                              actions=self._form_actions_argument(req))
             content.append(lcg.Container(form, id='cms-page-actions'))
         return self._document(req, content, record, resources=resources)
 
