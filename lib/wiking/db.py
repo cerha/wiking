@@ -1325,38 +1325,51 @@ class PytisModule(Module, ActionHandler):
                                          sorting=sorting))
     
     def _rows_generator(self, req, condition=None, lang=None, limit=None, sorting=None):
+        def generator(cond, args):
+            data = self._data
+            count = 0
+            try:
+                data.select(condition=cond, arguments=args, sort=sorting or self._sorting)
+                while True:
+                    if limit is not None and count >= limit:
+                        break
+                    row = data.fetchone()
+                    if row is None:
+                        break
+                    count += 1
+                    yield row
+            finally:
+                try:
+                    data.close()
+                except:
+                    pass
+        # Note, condition and arguments must be computed here, not within the
+        # generator function itself because it depends on the current state of
+        # 'req'.  In practise it means, that binding forward condition would
+        # not be included in condition because req._forwards is popped after
+        # handle() returns (see 'Request.forward()') and the generator will run
+        # after that.
         if self._LIST_BY_LANGUAGE:
             if lang is None:
                 lang = req.preferred_language()
             lcondition = pd.EQ('lang', pd.sval(lang))
         else:
             lcondition = None
-        data = self._data
-        count = 0
-        try:
-            data.select(condition=pd.AND(self._condition(req), lcondition, condition),
-                        arguments=self._arguments(req),
-                        sort=sorting or self._sorting)
-            while True:
-                if limit is not None and count >= limit:
-                    break
-                row = data.fetchone()
-                if row is None:
-                    break
-                count += 1
-                yield row
-        finally:
-            try:
-                data.close()
-            except:
-                pass
+        return generator(pd.AND(self._condition(req), condition, lcondition),
+                         self._arguments(req))
 
     def _records(self, req, condition=None, lang=None, limit=None, sorting=None):
         record = self._record(req, None)
-        for row in self._rows_generator(req, condition=condition, lang=lang, limit=limit,
-                                        sorting=sorting):
-            record.set_row(row)
-            yield record
+        # Call self._rows_generator() outside the generator function to compute
+        # the condition and other `req' dependent data now, not when the
+        # generator runs.
+        rows = self._rows_generator(req, condition=condition, lang=lang, limit=limit,
+                                    sorting=sorting)
+        def generator():
+            for row in rows:
+                record.set_row(row)
+                yield record
+        return generator()
 
     def _handle(self, req, action, **kwargs):
         record = kwargs.get('record')
