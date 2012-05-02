@@ -2037,6 +2037,8 @@ class PytisModule(Module, ActionHandler):
                 if len(data) >= buffer_size:
                     yield data
                     data = ''
+            if data:
+                yield data
         return wiking.Response(generator(self._records(req)),
                                content_type='text/plain; charset=utf-8',
                                filename=self._export_filename(req))
