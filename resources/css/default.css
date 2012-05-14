@@ -468,14 +468,12 @@ div.discussions .pytis-form.list-view.discussions div.list-item {
 div.discussions .pytis-form.list-view.discussions div.list-item.group-start { 
     padding-top: 0;
 }
-div.discussions .pytis-form.list-view.discussions div.list-item .discussion-reply { 
+div.discussions .pytis-form.list-view.discussions div.list-item .actions { 
     text-align: right;
+    margin: 0;
 }
-div.discussions .pytis-form.list-view.discussions div.list-item .discussion-reply form { 
-    text-align: left;
-}
-div.discussions .pytis-form.list-view.discussions div.list-item .discussion-reply button.reply,
-div.discussions .pytis-form.list-view.discussions div.list-item .discussion-reply button.reply span { 
+div.discussions .pytis-form.list-view.discussions div.list-item .actions button,
+div.discussions .pytis-form.list-view.discussions div.list-item .actions button span {
     line-height: 1em;
     padding: 0;
 }

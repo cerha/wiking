@@ -40,19 +40,27 @@ var Discussion = Class.create(wiking.Translatable, {
 	this.uri = uri;
 	this.field = field;
 	$$('.discussion-reply').each(function (div) {
-	    var comment_id = div.down('span.in-reply-to').innerHTML;
+	    var comment_id = div.down('span.id').innerHTML;
 	    var quoted = decodeURIComponent(div.down('span.quoted').innerHTML);
 	    var button = div.down('button.reply');
+	    var item = div.up('.list-item');
+	    var actions = item.down('.actions');
+	    if (actions == null) {
+		actions = new Element('div', {'class': 'actions'})
+		item.insert(actions);
+	    }
+            var button = new Element('button', {'class': 'reply'}).update(this.gettext("Reply"));
 	    button.observe('click', function (event) { 
-		this.on_reply(div, comment_id, quoted);
+		this.on_reply(item, comment_id, quoted);
 	    }.bind(this));
+	    actions.insert({'top': button});
 	}.bind(this));
     },
 
-    on_reply: function (div, comment_id, quoted) {
-	if (div.up('div.pytis-form').down('form'))
+    on_reply: function (item, comment_id, quoted) {
+	if (item.down('form.edit-form'))
 	    return;
-        var form = new Element('form', {'action': this.uri,
+        var form = new Element('form', {'action': this.uri+'/'+comment_id,
 					'method': 'POST',
      					'style': 'display: none',
 					'class': 'pytis-form edit-form'});
@@ -61,19 +69,14 @@ var Discussion = Class.create(wiking.Translatable, {
 	label.insert(new Element('label', {'for': field_id}).update(this.gettext('Your Reply')));
 	label.insert(new Element('sup', {'class': 'not-null'}).update('*'));
 	label.insert(':');
-	form.insert(label);
+	form.insert(new Element('div').update(label));
         form.insert(new Element('textarea', {'class': 'fullsize', 
      					     'cols': '80', 
      					     'rows': '8',
      					     'name': this.field,
 					     'id': field_id,
      					     'aria-required': 'true'}));
-        var hidden = [['action', 'insert'], 
-     		      ['submit', 'submit'], 
-     		      ['in_reply_to', comment_id]];
-        hidden.each(function (x) {
-     	    form.insert(new Element('input', {'type': 'hidden', 'name': x[0], 'value': x[1]}));
-        });
+     	form.insert(new Element('input', {'type': 'hidden', 'name': 'action', 'value': 'reply'}));
 	var buttons = [
 	    ["Submit", {'type': 'submit', 'value': '1'}, 
 	     function (event) {}],
@@ -81,15 +84,15 @@ var Discussion = Class.create(wiking.Translatable, {
 	     function (event) { this.on_quote(form[this.field], quoted); }],
 	    ["Cancel", {'onclick': 'return false;'}, 
 	     function (event) { this.on_cancel(form); }]];
-	var button_div = new Element('div', {'class': 'submit'});
-	form.insert(button_div);
+	var div = new Element('div', {'class': 'submit'});
+	form.insert(div);
         buttons.each(function (x) {
             var button = new Element('button', x[1]).update(this.gettext(x[0]));
 	    button.observe('click', x[2].bind(this));
-            button_div.insert(button);
+            div.insert(button);
 	}.bind(this));
-	div.insert(form);
-	$$('.discussion-reply button.reply').each(function(button) {
+	item.insert(form);
+	$$('.actions button.reply').each(function(button) {
 	    button.disable();
 	});
 	this.slide_down(form);
@@ -103,7 +106,7 @@ var Discussion = Class.create(wiking.Translatable, {
 	    setTimeout(function () { form.remove(); }, 200);
 	else
 	    form.remove();
-	$$('.discussion-reply button.reply').each(function(button) {
+	$$('.actions button.reply').each(function(button) {
 	    button.enable();
 	});
     },

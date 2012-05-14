@@ -2240,22 +2240,21 @@ class Discussions(ContentManagementModule, EmbeddableCMSModule):
         layout = ('text',)
         def list_layout(self):
             import textwrap, urllib
-            def reply_button(element, context, g, record):
-                text = textwrap.fill(record['text'].value(), 60, replace_whitespace=False)
-                quoted = '\n'.join(['> '+line for line in text.splitlines()]) +'\n\n'
-                # Write the reply button using JavaScript so that is is not
-                # displayed when Javascript is not available.
-                return g.script_write(g.div(
-                        # Button label to add a reaction to a previous discussion post.
-                        (g.button(g.span(_("Reply")), cls='reply'),
-                         g.span(record['comment_id'].export(), cls='in-reply-to',
-                                style='display: none'),
-                         g.span(urllib.quote(quoted.encode('utf-8')), cls='quoted',
-                                style='display: none'),
-                         ), cls='discussion-reply'))
+            def reply_info(element, context, g, record):
+                if record.req().check_roles(Roles.USER):
+                    text = textwrap.fill(record['text'].value(), 60, replace_whitespace=False)
+                    quoted = '\n'.join(['> '+line for line in text.splitlines()]) +'\n\n'
+                    # This hidden 'div.discussion-reply' is a placeholder and
+                    # information needed for the Javascript 'Discussion' class
+                    # instantiated below the form in the method related().
+                    return g.div((g.span(record['comment_id'].export(), cls='id'),
+                                  g.span(urllib.quote(quoted.encode('utf-8')), cls='quoted'),
+                                  ), cls='discussion-reply', style='display: none')
+                else:
+                    return ''
             return pp.ListLayout(lcg.TranslatableText("%(timestamp)s, %(author)s:"),
-                                 content=('text', lambda r: wiking.HtmlRenderer(reply_button, r)),
-                                 anchor='komentar-%s')
+                                 content=('text', lambda r: wiking.HtmlRenderer(reply_info, r)),
+                                 anchor='comment-%s')
 
     def _link_provider(self, req, uri, record, cid, **kwargs):
         if cid is None and not req.wmi:
@@ -2268,24 +2267,33 @@ class Discussions(ContentManagementModule, EmbeddableCMSModule):
         return [a for a in super(Discussions, self)._actions(req, record) if a.id() != 'insert']
     
     def _authorized(self, req, action, record=None):
-        return action == 'insert'
+        return action in ('insert', 'reply')
 
     def _redirect_after_insert(self, req, record):
         req.message(_("Your comment was posted to the discussion."))
         raise wiking.Redirect(self._binding_parent_uri(req))
 
     def _prefill(self, req):
-        try:
-            in_reply_to = int(req.param('in_reply_to'))
-        except (TypeError, ValueError):
-            in_reply_to = None
         return dict(super(Discussions, self)._prefill(req),
                     timestamp=now(),
                     author=req.user().uid(),
                     page_id=req.page['page_id'].value(),
-                    lang=req.page['lang'].value(),
-                    in_reply_to=in_reply_to)
+                    lang=req.page['lang'].value())
     
+    def action_reply(self, req, record):
+        prefill = dict(self._prefill(req),
+                       in_reply_to=record['comment_id'].value(),
+                       text=req.param('text'))
+        record = self._record(req, None, new=True, prefill=prefill)
+        try:
+            transaction = self._insert_transaction(req, record)
+            self._in_transaction(transaction, self._insert, req, record, transaction)
+        except pd.DBException as e:
+            req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
+            raise Redirect(self._binding_parent_uri(req))
+        else:
+            return self._redirect_after_insert(req, record)
+        
     def related(self, req, binding, record, uri):
         content = [super(Discussions, self).related(req, binding, record, uri)]
         if req.check_roles(Roles.USER):
@@ -2296,7 +2304,8 @@ class Discussions(ContentManagementModule, EmbeddableCMSModule):
                 context.resource('discussion.js')
                 # Translators: Button labels to add a reaction to a previous discussion post.
                 return g.script(g.js_call('new Discussion', form_uri, 'text',
-                                          {"Your Reply": req.localize(_("Your reply")),
+                                          {"Reply": req.localize(_("Reply")),
+                                           "Your Reply": req.localize(_("Your reply")),
                                            "Quote": req.localize(_("Quote")),
                                            "Cancel": req.localize(_("Cancel")),
                                            "Submit": req.localize(_("Submit")),
