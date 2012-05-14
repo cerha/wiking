@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-25 09:28+0200\n"
+"POT-Creation-Date: 2012-05-14 14:04+0200\n"
 "PO-Revision-Date: 2009-09-08 09:23+0100\n"
 "Last-Translator: Jostein Sand Nilsen <nistonasneslin@gmail.com>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
@@ -102,8 +102,8 @@ msgstr ""
 msgid "Manage user and other kinds of certificates."
 msgstr "Administrer institusjoner og andre organisasjoner."
 
-#: ../lib/wiking/cms/certificates.py:228 ../lib/wiking/cms/cms.py:2692
-#: ../lib/wiking/cms/cms.py:2872
+#: ../lib/wiking/cms/certificates.py:228 ../lib/wiking/cms/cms.py:2733
+#: ../lib/wiking/cms/cms.py:2913
 msgid "Subject"
 msgstr "Emne"
 
@@ -270,7 +270,7 @@ msgstr "Brukere"
 #. translation.
 #. Translators: Unique identifier of a stylesheet.
 #: ../lib/wiking/cms/users.py:270 ../lib/wiking/cms/cms.py:748
-#: ../lib/wiking/cms/cms.py:1067 ../lib/wiking/cms/cms.py:2351
+#: ../lib/wiking/cms/cms.py:1067 ../lib/wiking/cms/cms.py:2392
 msgid "Identifier"
 msgstr "Identifikatoren"
 
@@ -449,7 +449,7 @@ msgstr "Registrert fra"
 
 #. Translators: The state of the user account (e.g. Enabled vs Disabled).  Column
 #. heading and field label.
-#: ../lib/wiking/cms/users.py:523 ../lib/wiking/cms/cms.py:2877
+#: ../lib/wiking/cms/users.py:523 ../lib/wiking/cms/cms.py:2918
 msgid "State"
 msgstr "Status"
 
@@ -829,7 +829,7 @@ msgid "Continue"
 msgstr "Innhold"
 
 #. Translators: Button label to get to a previous state.
-#: ../lib/wiking/cms/users.py:1060 ../lib/wiking/cms/cms.py:1352
+#: ../lib/wiking/cms/users.py:1060 ../lib/wiking/cms/cms.py:1359
 msgid "Back"
 msgstr "Tilbake"
 
@@ -855,7 +855,7 @@ msgstr "Angi innloggingsnavn eller e-postadresse"
 #. Translators: Button name. Computer terminology. Use an appropriate term common
 #. for submitting forms in a computer application.
 #: ../lib/wiking/cms/users.py:1351 ../lib/wiking/cms/users.py:1496
-#: ../lib/wiking/cms/cms.py:2270
+#: ../lib/wiking/cms/cms.py:2311
 msgid "Submit"
 msgstr "Send"
 
@@ -946,7 +946,7 @@ msgid "Duration"
 msgstr "Varighet"
 
 #. Translators: Table column heading. Whether the account is active. Values are yes/no.
-#: ../lib/wiking/cms/users.py:1579 ../lib/wiking/cms/cms.py:2353
+#: ../lib/wiking/cms/users.py:1579 ../lib/wiking/cms/cms.py:2394
 msgid "Active"
 msgstr "Aktiv"
 
@@ -988,7 +988,7 @@ msgstr "ukjent"
 #. Translators: Heading and menu title for website content management.
 #. Translators: Content of a page (text or something else)
 #: ../lib/wiking/cms/cms.py:102 ../lib/wiking/cms/cms.py:770
-#: ../lib/wiking/cms/cms.py:1077 ../lib/wiking/cms/cms.py:2373
+#: ../lib/wiking/cms/cms.py:1077 ../lib/wiking/cms/cms.py:2414
 msgid "Content"
 msgstr "Innhold"
 
@@ -1139,14 +1139,14 @@ msgstr ""
 "Administrer panelene - de små vinduene som vises på sidene av hver side."
 
 #: ../lib/wiking/cms/cms.py:742 ../lib/wiking/cms/cms.py:1072
-#: ../lib/wiking/cms/cms.py:1771 ../lib/wiking/cms/cms.py:2069
+#: ../lib/wiking/cms/cms.py:1778 ../lib/wiking/cms/cms.py:2101
 msgid "Language"
 msgstr "Språk"
 
 #. Translators: Title in the meaning of a heading
 #: ../lib/wiking/cms/cms.py:745 ../lib/wiking/cms/cms.py:1073
-#: ../lib/wiking/cms/cms.py:1074 ../lib/wiking/cms/cms.py:1786
-#: ../lib/wiking/cms/cms.py:2073
+#: ../lib/wiking/cms/cms.py:1074 ../lib/wiking/cms/cms.py:1793
+#: ../lib/wiking/cms/cms.py:2105
 msgid "Title"
 msgstr "Tittel"
 
@@ -1157,7 +1157,7 @@ msgid ""
 msgstr ""
 
 #. Translators: Order in the meaning of sequence. A noun, not verb.
-#: ../lib/wiking/cms/cms.py:753 ../lib/wiking/cms/cms.py:2370
+#: ../lib/wiking/cms/cms.py:753 ../lib/wiking/cms/cms.py:2411
 msgid "Order"
 msgstr "Rekkefølge"
 
@@ -1252,8 +1252,8 @@ msgstr "Normale sidefarger"
 #: ../lib/wiking/cms/cms.py:902 ../lib/wiking/cms/cms.py:917
 #: ../lib/wiking/cms/cms.py:925 ../lib/wiking/cms/cms.py:932
 #: ../lib/wiking/cms/cms.py:941 ../lib/wiking/cms/cms.py:945
-#: ../lib/wiking/cms/cms.py:949 ../lib/wiking/cms/cms.py:2458
-#: ../lib/wiking/cms/cms.py:2873
+#: ../lib/wiking/cms/cms.py:949 ../lib/wiking/cms/cms.py:2499
+#: ../lib/wiking/cms/cms.py:2914
 msgid "Text"
 msgstr "Tekst"
 
@@ -1457,8 +1457,8 @@ msgstr ""
 "også fra andre sider. En gyldig identifikator kan inneholde kun bokstaver, "
 "tall, bindestrek og understreking. Den må begynne med en bokstav."
 
-#: ../lib/wiking/cms/cms.py:1075 ../lib/wiking/cms/cms.py:1789
-#: ../lib/wiking/cms/cms.py:2352 ../lib/wiking/cms/crypto.py:43
+#: ../lib/wiking/cms/cms.py:1075 ../lib/wiking/cms/cms.py:1796
+#: ../lib/wiking/cms/cms.py:2393 ../lib/wiking/cms/crypto.py:43
 msgid "Description"
 msgstr "Beskrivelse"
 
@@ -1466,7 +1466,7 @@ msgstr "Beskrivelse"
 msgid "Brief page description (shown as a tooltip and in site map)."
 msgstr "Kort sidebeskrivelse (vises som et redskaptips og i nettstedskart)."
 
-#: ../lib/wiking/cms/cms.py:1079 ../lib/wiking/cms/cms.py:1649
+#: ../lib/wiking/cms/cms.py:1079 ../lib/wiking/cms/cms.py:1656
 msgid "Comment"
 msgstr ""
 
@@ -1574,7 +1574,7 @@ msgstr "Ikke publisert "
 msgid "Ok"
 msgstr "Ok"
 
-#: ../lib/wiking/cms/cms.py:1142 ../lib/wiking/cms/cms.py:1656
+#: ../lib/wiking/cms/cms.py:1142 ../lib/wiking/cms/cms.py:1663
 msgid "Changed"
 msgstr "Endret"
 
@@ -1665,7 +1665,7 @@ msgstr "Vis siden i sin nåværende form"
 #. Translators: Noun. Such as e-mail attachments (here attachments for a webpage).
 #. Translators: Section title. Attachments as in email attachments.
 #: ../lib/wiking/cms/cms.py:1190 ../lib/wiking/cms/cms.py:1197
-#: ../lib/wiking/cms/cms.py:1524 ../lib/wiking/cms/cms.py:1759
+#: ../lib/wiking/cms/cms.py:1531 ../lib/wiking/cms/cms.py:1766
 msgid "Attachments"
 msgstr "Vedlegg"
 
@@ -1737,140 +1737,140 @@ msgstr ""
 "Sideinnholdet ble endret, men endringene forblir upubliserte. Ikke glem å "
 "publisere endringene når du er ferdig."
 
-#: ../lib/wiking/cms/cms.py:1424
+#: ../lib/wiking/cms/cms.py:1431
 msgid "Registration"
 msgstr "Registrering"
 
 #. Translators: Label for section with user manuals, help pages etc.
-#: ../lib/wiking/cms/cms.py:1426
+#: ../lib/wiking/cms/cms.py:1433
 #, fuzzy
 msgid "Documentation"
 msgstr "Wiking dokumentasjon"
 
-#: ../lib/wiking/cms/cms.py:1569
+#: ../lib/wiking/cms/cms.py:1576
 msgid "Content for this page already exists!"
 msgstr "Innholdet på denne siden finnes allerede!"
 
-#: ../lib/wiking/cms/cms.py:1576
+#: ../lib/wiking/cms/cms.py:1583
 msgid "Content for this page does not exist in any language."
 msgstr "Innholdet på denne siden finnes ikke på noe språk."
 
-#: ../lib/wiking/cms/cms.py:1579
+#: ../lib/wiking/cms/cms.py:1586
 msgid "Choose source language"
 msgstr "Velg kildespråk"
 
-#: ../lib/wiking/cms/cms.py:1583
+#: ../lib/wiking/cms/cms.py:1590
 msgid "Translate"
 msgstr "Oversett"
 
-#: ../lib/wiking/cms/cms.py:1600
+#: ../lib/wiking/cms/cms.py:1607
 msgid "Can't publish untitled page."
 msgstr "Det er umulig å publisere en side uten tittel."
 
-#: ../lib/wiking/cms/cms.py:1607
+#: ../lib/wiking/cms/cms.py:1614
 msgid "The changes were published."
 msgstr "Forandringene ble publisert."
 
-#: ../lib/wiking/cms/cms.py:1617
+#: ../lib/wiking/cms/cms.py:1624
 msgid "The page contents was reverted to its previous state."
 msgstr "Sideinnholdet ble tilbakestilt til sin tidligere tilstand."
 
-#: ../lib/wiking/cms/cms.py:1627
+#: ../lib/wiking/cms/cms.py:1634
 msgid "The page was unpublished."
 msgstr "Siden ble ikke publisert."
 
-#: ../lib/wiking/cms/cms.py:1647
+#: ../lib/wiking/cms/cms.py:1654
 #, fuzzy
 msgid "Changed by"
 msgstr "Endret"
 
-#: ../lib/wiking/cms/cms.py:1648 ../lib/wiking/cms/cms.py:2071
-#: ../lib/wiking/cms/cms.py:2077 ../lib/wiking/cms/cms.py:2146
-#: ../lib/wiking/cms/cms.py:2874
+#: ../lib/wiking/cms/cms.py:1655 ../lib/wiking/cms/cms.py:2103
+#: ../lib/wiking/cms/cms.py:2109 ../lib/wiking/cms/cms.py:2178
+#: ../lib/wiking/cms/cms.py:2915
 msgid "Date"
 msgstr "Dato"
 
-#: ../lib/wiking/cms/cms.py:1651
+#: ../lib/wiking/cms/cms.py:1658
 #, fuzzy
 msgid "Inserted lines"
 msgstr "Besøkt lenke"
 
-#: ../lib/wiking/cms/cms.py:1652
+#: ../lib/wiking/cms/cms.py:1659
 #, fuzzy
 msgid "Changed lines"
 msgstr "Endret"
 
-#: ../lib/wiking/cms/cms.py:1653
+#: ../lib/wiking/cms/cms.py:1660
 #, fuzzy
 msgid "Deleted lines"
 msgstr "Standard"
 
-#: ../lib/wiking/cms/cms.py:1654
+#: ../lib/wiking/cms/cms.py:1661
 msgid "Inserted / Changed / Deleted Lines"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1655
+#: ../lib/wiking/cms/cms.py:1662
 msgid "Inserted"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1655
+#: ../lib/wiking/cms/cms.py:1662
 #, fuzzy
 msgid "Green"
 msgstr "Sendt"
 
-#: ../lib/wiking/cms/cms.py:1656
+#: ../lib/wiking/cms/cms.py:1663
 msgid "Yellow"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1657
+#: ../lib/wiking/cms/cms.py:1664
 #, fuzzy
 msgid "Deleted"
 msgstr "Standard"
 
-#: ../lib/wiking/cms/cms.py:1657
+#: ../lib/wiking/cms/cms.py:1664
 msgid "Red"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1673
+#: ../lib/wiking/cms/cms.py:1680
 #, fuzzy, python-format
 msgid "Changed on %s"
 msgstr "Endret"
 
-#: ../lib/wiking/cms/cms.py:1681
+#: ../lib/wiking/cms/cms.py:1688
 #, fuzzy
 msgid "Change Summary"
 msgstr "Bytt passord"
 
-#: ../lib/wiking/cms/cms.py:1683
+#: ../lib/wiking/cms/cms.py:1690
 #, fuzzy
 msgid "Colors"
 msgstr "Fargetemaer"
 
-#: ../lib/wiking/cms/cms.py:1699
+#: ../lib/wiking/cms/cms.py:1706
 msgid "No differences against previous version."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1701
+#: ../lib/wiking/cms/cms.py:1708
 msgid "Original version"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1703
+#: ../lib/wiking/cms/cms.py:1710
 msgid "Modified version"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1709
+#: ../lib/wiking/cms/cms.py:1716
 msgid "Previous version empty (no differences available)."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1760
+#: ../lib/wiking/cms/cms.py:1767
 msgid "Manage page attachments. Go to a page to create new attachments."
 msgstr "Administrer sidevedlegg. Gå til en side for å lage nye vedlegg."
 
-#: ../lib/wiking/cms/cms.py:1767 ../lib/wiking/cms/cms.py:2067
+#: ../lib/wiking/cms/cms.py:1774 ../lib/wiking/cms/cms.py:2099
 msgid "Page"
 msgstr "Side"
 
-#: ../lib/wiking/cms/cms.py:1769
+#: ../lib/wiking/cms/cms.py:1776
 msgid ""
 "Select the page where you want to move this attachment.  Don't forget to "
 "update all explicit links to this attachment within page text(s)."
@@ -1879,11 +1879,11 @@ msgstr ""
 "eksplisitte koblinger til dette vedlegget innen sidetekst(er)."
 
 #. Translators: Noun. File on disk. Computer terminology.
-#: ../lib/wiking/cms/cms.py:1773
+#: ../lib/wiking/cms/cms.py:1780
 msgid "File"
 msgstr "Fil"
 
-#: ../lib/wiking/cms/cms.py:1775
+#: ../lib/wiking/cms/cms.py:1782
 msgid ""
 "Upload a file from your local system.  The file name will be used to refer "
 "to the attachment within the page content.  Please note, that the file will "
@@ -1897,15 +1897,15 @@ msgstr ""
 "Bokstaver, tall, understreking, streker og prikker er trygge. Du risikerer "
 "problemer med de fleste andre tegn."
 
-#: ../lib/wiking/cms/cms.py:1781
+#: ../lib/wiking/cms/cms.py:1788
 msgid "Filename"
 msgstr "Filnavn"
 
-#: ../lib/wiking/cms/cms.py:1784
+#: ../lib/wiking/cms/cms.py:1791
 msgid "Mime-type"
 msgstr "Mime-type"
 
-#: ../lib/wiking/cms/cms.py:1787
+#: ../lib/wiking/cms/cms.py:1794
 msgid ""
 "The name of the attachment (e.g. the full name of the document). If empty, "
 "the file name will be used instead."
@@ -1913,38 +1913,38 @@ msgstr ""
 "Navnet på vedlegget (f.eks det fullstendige navnet på dokumentet). Hvis det "
 "står tomt, vil filnavnet bli brukt i stedet."
 
-#: ../lib/wiking/cms/cms.py:1790
+#: ../lib/wiking/cms/cms.py:1797
 msgid "Optional description used for the listing of attachments (see below)."
 msgstr ""
 "Valgfri beskrivelse som brukes for oppføringen av vedlegg (se nedenfor)."
 
 #. Translators: Size of a file, in number of bytes, kilobytes etc.
-#: ../lib/wiking/cms/cms.py:1793
+#: ../lib/wiking/cms/cms.py:1800
 msgid "Size"
 msgstr "Størrelse"
 
 #. Translators: Thumbnail is a small image preview in computer terminology.
-#: ../lib/wiking/cms/cms.py:1797
+#: ../lib/wiking/cms/cms.py:1804
 #, fuzzy
 msgid "Preview size"
 msgstr "Forhåndsvisning"
 
-#: ../lib/wiking/cms/cms.py:1800
+#: ../lib/wiking/cms/cms.py:1807
 msgid "Full size (don't resize)"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1802
+#: ../lib/wiking/cms/cms.py:1809
 msgid ""
 "Only relevant for images.  When set, the image will not be displayed in full "
 "size, but as a small clickable preview."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1812
+#: ../lib/wiking/cms/cms.py:1819
 #, fuzzy
 msgid "In Gallery"
 msgstr "I galleriet"
 
-#: ../lib/wiking/cms/cms.py:1816
+#: ../lib/wiking/cms/cms.py:1823
 #, fuzzy
 msgid ""
 "Check if you want the image to appear in an image Gallery below the page "
@@ -1952,11 +1952,11 @@ msgid ""
 msgstr ""
 "Kryss av om du vil at bildet skal vises i et automatisk generert galleri."
 
-#: ../lib/wiking/cms/cms.py:1818
+#: ../lib/wiking/cms/cms.py:1825
 msgid "Listed"
 msgstr "Oppført"
 
-#: ../lib/wiking/cms/cms.py:1819
+#: ../lib/wiking/cms/cms.py:1826
 msgid ""
 "Check if you want the item to appear in the listing of attachments at the "
 "bottom of the page."
@@ -1965,93 +1965,93 @@ msgstr ""
 "siden."
 
 #. Translators: Size label related to "Preview size" field (pronoun).
-#: ../lib/wiking/cms/cms.py:1885
+#: ../lib/wiking/cms/cms.py:1892
 msgid "Small"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1886
+#: ../lib/wiking/cms/cms.py:1893
 msgid "Medium"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1887
+#: ../lib/wiking/cms/cms.py:1894
 msgid "Large"
 msgstr ""
 
 #. Translators: Button label
-#: ../lib/wiking/cms/cms.py:1897
+#: ../lib/wiking/cms/cms.py:1904
 msgid "Move"
 msgstr "Flytt"
 
-#: ../lib/wiking/cms/cms.py:1897
+#: ../lib/wiking/cms/cms.py:1904
 msgid "Move the attachment to another page."
 msgstr "Flytt vedlegget til en annen side."
 
-#: ../lib/wiking/cms/cms.py:1898
+#: ../lib/wiking/cms/cms.py:1905
 msgid "Back to page"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1898
+#: ../lib/wiking/cms/cms.py:1905
 #, fuzzy
 msgid "Go back to the page."
 msgstr "Flytt vedlegget til en annen side."
 
-#: ../lib/wiking/cms/cms.py:1939
+#: ../lib/wiking/cms/cms.py:1946
 msgid "New attachment"
 msgstr "Nytt vedlegg"
 
-#: ../lib/wiking/cms/cms.py:1946
+#: ../lib/wiking/cms/cms.py:1953
 msgid "Attachment of the same file name already exists for this page."
 msgstr "Det finnes allerede et vedlegg med samme filnavn på denne siden."
 
 #. Translators: Section title and menu item
-#: ../lib/wiking/cms/cms.py:2061
+#: ../lib/wiking/cms/cms.py:2093
 msgid "News"
 msgstr "Nyheter"
 
 #. Translators: Help string describing more precisely the meaning of the "News" section.
-#: ../lib/wiking/cms/cms.py:2063
+#: ../lib/wiking/cms/cms.py:2095
 msgid "Publish site news."
 msgstr "Publiser sidenyheter."
 
-#: ../lib/wiking/cms/cms.py:2073 ../lib/wiking/cms/cms.py:2075
+#: ../lib/wiking/cms/cms.py:2105 ../lib/wiking/cms/cms.py:2107
 msgid "Message"
 msgstr "Beskjed"
 
-#: ../lib/wiking/cms/cms.py:2074
+#: ../lib/wiking/cms/cms.py:2106
 msgid "The item brief summary."
 msgstr "En kort sammendrag av beskjedsinnhold."
 
-#: ../lib/wiking/cms/cms.py:2076
+#: ../lib/wiking/cms/cms.py:2108
 msgid "Author"
 msgstr "Forfatter"
 
-#: ../lib/wiking/cms/cms.py:2078
+#: ../lib/wiking/cms/cms.py:2110
 msgid "Date of the news item creation."
 msgstr "Når nyhetsartikkelen ble opprettet."
 
 #. Translators: Button label for creating a new message in "News".
-#: ../lib/wiking/cms/cms.py:2099
+#: ../lib/wiking/cms/cms.py:2131
 msgid "New message"
 msgstr "Ny beskjed"
 
 #. Translators: Section heading and menu item
-#: ../lib/wiking/cms/cms.py:2136
+#: ../lib/wiking/cms/cms.py:2168
 msgid "Planner"
 msgstr "Planlegger"
 
-#: ../lib/wiking/cms/cms.py:2137
+#: ../lib/wiking/cms/cms.py:2169
 msgid "Announce future events by date in a callendar-like listing."
 msgstr "Meddel fremtidige hendelser etter dato i en kalenderaktig oppføring."
 
-#: ../lib/wiking/cms/cms.py:2141
+#: ../lib/wiking/cms/cms.py:2173
 msgid "Event"
 msgstr "Hendelse"
 
-#: ../lib/wiking/cms/cms.py:2141
+#: ../lib/wiking/cms/cms.py:2173
 msgid "The event brief summary."
 msgstr "En kort sammendrag av hendelsen."
 
-#: ../lib/wiking/cms/cms.py:2147
+#: ../lib/wiking/cms/cms.py:2179
 #, fuzzy, python-format
 msgid ""
 "The date when the planned event begins. Enter the date including year.  "
@@ -2060,11 +2060,11 @@ msgstr ""
 "Dato når det planlagte arrangementet begynner. Angi datoen inkludert året. "
 "Eksempel: %(date)s"
 
-#: ../lib/wiking/cms/cms.py:2150
+#: ../lib/wiking/cms/cms.py:2182
 msgid "End date"
 msgstr "Sluttdato"
 
-#: ../lib/wiking/cms/cms.py:2151
+#: ../lib/wiking/cms/cms.py:2183
 msgid ""
 "The date when the event ends if it is not the same as the start date (for "
 "events which last several days)."
@@ -2072,64 +2072,64 @@ msgstr ""
 "Datoen da hendelsen skal avsluttes hvis det ikke er det samme som "
 "startdatoen (for hendelser som varer flere dager)."
 
-#: ../lib/wiking/cms/cms.py:2169
+#: ../lib/wiking/cms/cms.py:2201
 msgid "Date in the past"
 msgstr "Dato i fortiden"
 
-#: ../lib/wiking/cms/cms.py:2171
+#: ../lib/wiking/cms/cms.py:2203
 msgid "End date precedes start date"
 msgstr "Sluttdato er foran startdato"
 
 #. Translators: Button label for creating a new event in "Planner".
-#: ../lib/wiking/cms/cms.py:2173
+#: ../lib/wiking/cms/cms.py:2205
 #, fuzzy
 msgid "New event"
 msgstr "Nytt vedlegg"
 
 #. Translators: Name of the extension module for simple forum-like discussions.
-#: ../lib/wiking/cms/cms.py:2190
+#: ../lib/wiking/cms/cms.py:2222
 msgid "Discussions"
 msgstr ""
 
 #. Translators: Help string describing more precisely the meaning of the "News" section.
-#: ../lib/wiking/cms/cms.py:2192
+#: ../lib/wiking/cms/cms.py:2224
 msgid "Allow logged in users to post messages as in a simple forum."
 msgstr ""
 
 #. Translators: Field label for posting a message to the discussion.
-#: ../lib/wiking/cms/cms.py:2205
+#: ../lib/wiking/cms/cms.py:2237
 msgid "Your comment"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2218
-msgid "Reply"
-msgstr ""
-
-#: ../lib/wiking/cms/cms.py:2242
+#: ../lib/wiking/cms/cms.py:2273
 msgid "Your comment was posted to the discussion."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2267
+#: ../lib/wiking/cms/cms.py:2307
+msgid "Reply"
+msgstr ""
+
+#: ../lib/wiking/cms/cms.py:2308
 msgid "Your reply"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2268
+#: ../lib/wiking/cms/cms.py:2309
 msgid "Quote"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2269
+#: ../lib/wiking/cms/cms.py:2310
 msgid "Cancel"
 msgstr ""
 
 #. Translators: The square brackets mark a link.  Please leave the brackets and the
 #. link target '?command=login' untouched and traslate 'log in' to fit into the
 #. sentence.  The user only sees it as 'You need to log in before ...'.
-#: ../lib/wiking/cms/cms.py:2281
+#: ../lib/wiking/cms/cms.py:2322
 msgid "Note: You need to [?command=login log in] before you can post messages."
 msgstr ""
 
 #. Translators: Section heading and menu item. Computer terminology idiom.
-#: ../lib/wiking/cms/cms.py:2291
+#: ../lib/wiking/cms/cms.py:2332
 msgid "Site Map"
 msgstr "Sideoversikt"
 
@@ -2139,56 +2139,56 @@ msgstr "Sideoversikt"
 #. interface (the area where only administrators are allowed), pages
 #. (everything outside the management interface) or both ("Global"
 #. scope).
-#: ../lib/wiking/cms/cms.py:2319
+#: ../lib/wiking/cms/cms.py:2360
 msgid "Website"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2320
+#: ../lib/wiking/cms/cms.py:2361
 #, fuzzy
 msgid "Management interface"
 msgstr "Wiking Management Interface"
 
-#: ../lib/wiking/cms/cms.py:2323
+#: ../lib/wiking/cms/cms.py:2364
 #, fuzzy
 msgid "All types"
 msgstr "Alle brukere"
 
 #. Translators: Braille as a type of media
-#: ../lib/wiking/cms/cms.py:2325
+#: ../lib/wiking/cms/cms.py:2366
 msgid "Braille"
 msgstr ""
 
 #. Translators: Handheld device. Small computer.
-#: ../lib/wiking/cms/cms.py:2328
+#: ../lib/wiking/cms/cms.py:2369
 msgid "Handheld"
 msgstr ""
 
 #. Translators: Print as a type of media (print, speech...)
-#: ../lib/wiking/cms/cms.py:2330
+#: ../lib/wiking/cms/cms.py:2371
 #, fuzzy
 msgid "Print"
 msgstr "Privat"
 
 #. Translators: Meaning computer screen
-#: ../lib/wiking/cms/cms.py:2333
+#: ../lib/wiking/cms/cms.py:2374
 #, fuzzy
 msgid "Screen"
 msgstr "Sendt"
 
 #. Translators: Speech as a type of media (print, speech...)
-#: ../lib/wiking/cms/cms.py:2335
+#: ../lib/wiking/cms/cms.py:2376
 msgid "Speech"
 msgstr ""
 
 #. Translators: Section heading and menu item. Meaning the visual appearance. Computer
 #. terminology.
-#: ../lib/wiking/cms/cms.py:2343
+#: ../lib/wiking/cms/cms.py:2384
 #, fuzzy
 msgid "Style sheets"
 msgstr "Stilarkene"
 
 #. Translators: Help string. Cascading Style Sheet (CSS) is computer terminology idiom.
-#: ../lib/wiking/cms/cms.py:2346
+#: ../lib/wiking/cms/cms.py:2387
 #, fuzzy
 msgid "Manage available Cascading Style Sheets."
 msgstr "Administrer tilgjengelige Cascading Style Sheets (CSS)."
@@ -2196,24 +2196,24 @@ msgstr "Administrer tilgjengelige Cascading Style Sheets (CSS)."
 #. Translators: Heading of a form field determining in
 #. which media the page is displayed. E.g. web, print,
 #. Braille, speech.
-#: ../lib/wiking/cms/cms.py:2357
+#: ../lib/wiking/cms/cms.py:2398
 msgid "Media"
 msgstr ""
 
 #. Translators: Scope of applicability of a stylesheet on different website parts.
-#: ../lib/wiking/cms/cms.py:2359
+#: ../lib/wiking/cms/cms.py:2400
 msgid "Scope"
 msgstr ""
 
 #. Translators: Global scope (applies to all parts of the website).
-#: ../lib/wiking/cms/cms.py:2362
+#: ../lib/wiking/cms/cms.py:2403
 msgid "Global"
 msgstr ""
 
 #. Translators: Description of scope options.  Make sure you
 #. use the same terms as in the options themselves, which are
 #. defined a few items above.
-#: ../lib/wiking/cms/cms.py:2366
+#: ../lib/wiking/cms/cms.py:2407
 msgid ""
 "Determines where this style sheet is applicable. The \"Management interface"
 "\" is the area for CMS administration, \"Website\" means the regular pages "
@@ -2221,95 +2221,95 @@ msgid ""
 msgstr ""
 
 #. Translators: Precedence meaning position in a sequence of importance or priority.
-#: ../lib/wiking/cms/cms.py:2372
+#: ../lib/wiking/cms/cms.py:2413
 #, fuzzy
 msgid "Number denoting the style sheet precedence."
 msgstr "Nummer som viser hvilken nummer i rekken panelet er på en side."
 
-#: ../lib/wiking/cms/cms.py:2453
+#: ../lib/wiking/cms/cms.py:2494
 msgid "Label"
 msgstr "Etikett"
 
-#: ../lib/wiking/cms/cms.py:2456
+#: ../lib/wiking/cms/cms.py:2497
 msgid "Purpose"
 msgstr "Formål"
 
-#: ../lib/wiking/cms/cms.py:2539
+#: ../lib/wiking/cms/cms.py:2580
 msgid "System Texts"
 msgstr "Systemtekster"
 
-#: ../lib/wiking/cms/cms.py:2540
+#: ../lib/wiking/cms/cms.py:2581
 msgid "Edit miscellaneous system texts."
 msgstr "Rediger diverse systemtekster."
 
-#: ../lib/wiking/cms/cms.py:2685
+#: ../lib/wiking/cms/cms.py:2726
 msgid "E-mails"
 msgstr "E-post"
 
-#: ../lib/wiking/cms/cms.py:2686
+#: ../lib/wiking/cms/cms.py:2727
 msgid "Edit e-mail texts."
 msgstr "Rediger e-posttekstene."
 
-#: ../lib/wiking/cms/cms.py:2693
+#: ../lib/wiking/cms/cms.py:2734
 msgid "Additional recipients"
 msgstr "Ytterligere mottagere"
 
-#: ../lib/wiking/cms/cms.py:2694
+#: ../lib/wiking/cms/cms.py:2735
 msgid "Comma separated list of e-mail addresses."
 msgstr "Kommadelt liste med e-postadresser."
 
 #. Translators: Section title and menu item. Sending emails to multiple recipients.
-#: ../lib/wiking/cms/cms.py:2862
+#: ../lib/wiking/cms/cms.py:2903
 msgid "Bulk E-mails"
 msgstr "Masse-e-post"
 
-#: ../lib/wiking/cms/cms.py:2866
+#: ../lib/wiking/cms/cms.py:2907
 msgid "Sender address"
 msgstr "Avsenderadresse"
 
-#: ../lib/wiking/cms/cms.py:2867
+#: ../lib/wiking/cms/cms.py:2908
 msgid "E-mail address of the sender."
 msgstr "Avsenderens e-postadresse."
 
 #. Translators: List of recipients of an email message
-#: ../lib/wiking/cms/cms.py:2869
+#: ../lib/wiking/cms/cms.py:2910
 msgid "Recipients"
 msgstr "Mottakere"
 
 #. Translators: All users are intended recipients of an email message
-#: ../lib/wiking/cms/cms.py:2871
+#: ../lib/wiking/cms/cms.py:2912
 #, fuzzy
 msgid "All users"
 msgstr "Alle brukere"
 
 #. Translators: State of processing of an email message (e.g. Pending, Sending, Sent)
-#: ../lib/wiking/cms/cms.py:2884
+#: ../lib/wiking/cms/cms.py:2925
 msgid "Sent"
 msgstr "Sendt"
 
 #. Translators: State of processing of an email message (e.g. Pending, Sending, Sent)
-#: ../lib/wiking/cms/cms.py:2887
+#: ../lib/wiking/cms/cms.py:2928
 msgid "Sending"
 msgstr "Sender"
 
 #. Translators: State of processing of an email message (e.g. Pending, Sending, Sent)
-#: ../lib/wiking/cms/cms.py:2890
+#: ../lib/wiking/cms/cms.py:2931
 #, fuzzy
 msgid "Pending"
 msgstr "Sender"
 
-#: ../lib/wiking/cms/cms.py:2897
+#: ../lib/wiking/cms/cms.py:2938
 #, python-format
 msgid "%(subject)s"
 msgstr "%(subject)s"
 
 #. Translators: Button label meaning save this email text for later repeated usage
-#: ../lib/wiking/cms/cms.py:2900
+#: ../lib/wiking/cms/cms.py:2941
 msgid "Use as a Template"
 msgstr "Bruk som mal"
 
 #. Translators: Description of button for creating a template of an email
-#: ../lib/wiking/cms/cms.py:2902
+#: ../lib/wiking/cms/cms.py:2943
 msgid "Edit this mail for repeated use"
 msgstr "Rediger e-posten for gjentatt bruk"
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-25 09:28+0200\n"
+"POT-Creation-Date: 2012-05-09 19:29+0200\n"
 "PO-Revision-Date: 2012-04-25 09:27+0200\n"
 "Last-Translator: Hynek Hanke <hanke@brailcom.org>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
@@ -124,184 +124,184 @@ msgstr ""
 "uživatele zobrazovat i popis jeho uživatelské role v systému, která určuje "
 "oprávnění."
 
-#: ../lib/wiking/db.py:63
+#: ../lib/wiking/db.py:64
 msgid "Row with this key already exists."
 msgstr "Řádek s tímto klíčem již existuje."
 
-#: ../lib/wiking/db.py:65
+#: ../lib/wiking/db.py:66
 msgid "This value already exists.  Enter a unique value."
 msgstr "Taková hodnota již existuje.  Zadejte unikátní hodnotu."
 
 #. Translators: This is about an empty (not filled in) value in a web form. Field means a
 #. form field.
-#: ../lib/wiking/db.py:69
+#: ../lib/wiking/db.py:70
 msgid "Empty value.  This field is mandatory."
 msgstr "Prázdná hodnota.  Tato položka je povinná."
 
 #. Translators: This is delete action failure message in a web page.
-#: ../lib/wiking/db.py:72
+#: ../lib/wiking/db.py:73
 msgid "Record couldn't be deleted because other records refer to it."
 msgstr "Záznam nemohl být smazán, protože se na něj odkazují jiné záznamy."
 
 #. Translators: Button label for new database record creation (computer terminology).
-#: ../lib/wiking/db.py:122
+#: ../lib/wiking/db.py:123
 msgid "New record"
 msgstr "Nový záznam"
 
 #. Translators: Tooltip of new database record creation button (computer terminology).
-#: ../lib/wiking/db.py:124
+#: ../lib/wiking/db.py:125
 msgid "Create a new record"
 msgstr "Vytvořit nový záznam"
 
 #. Translators: Button label for database record modification (verb in imperative,
 #. computer terminology).
-#: ../lib/wiking/db.py:127
+#: ../lib/wiking/db.py:128
 msgid "Edit"
 msgstr "Upravit"
 
 #. Translators: Tooltip of database record modification button (computer terminology)
-#: ../lib/wiking/db.py:129
+#: ../lib/wiking/db.py:130
 msgid "Modify the record"
 msgstr "Změnit záznam"
 
 #. Translators: Button label for database record display (verb in imperative).
-#: ../lib/wiking/db.py:131
+#: ../lib/wiking/db.py:132
 msgid "View"
 msgstr "Zobrazit"
 
 #. Translators: Tooltip of database record display button (computer terminology)
-#: ../lib/wiking/db.py:133
+#: ../lib/wiking/db.py:134
 msgid "Display the record"
 msgstr "Zobrazit náhled záznamu"
 
 #. Translators: Button label for database record deletion (verb in imperative,
 #. computer terminology).
-#: ../lib/wiking/db.py:136
+#: ../lib/wiking/db.py:137
 msgid "Remove"
 msgstr "Smazat"
 
 #. Translators: Tooltip of database record deletion button (computer terminology).
-#: ../lib/wiking/db.py:138
+#: ../lib/wiking/db.py:139
 msgid "Remove the record permanently"
 msgstr "Nevratně odstranit záznam"
 
 #. Translators: Prompt before database record deletion (computer terminology).
-#: ../lib/wiking/db.py:140
+#: ../lib/wiking/db.py:141
 msgid "Please, confirm removing the record permanently."
 msgstr "Potvrďte, prosím, nevratné smazání záznamu."
 
 #. Translators: Button label for database record copying (verb in imperative,
 #. computer terminology).
-#: ../lib/wiking/db.py:143
+#: ../lib/wiking/db.py:144
 msgid "Copy"
 msgstr "Vytvořit kopii"
 
 #. Translators: Tooltip of database record copy button (computer terminology).
-#: ../lib/wiking/db.py:145
+#: ../lib/wiking/db.py:146
 msgid "Create new record initialized by values of this record"
 msgstr "Vytvořit nový záznam předvyplněný hodnotami tohoto záznamu"
 
 #. Translators: Button label for returning from a single record view to the listing of all
 #. database records (computer terminology).
-#: ../lib/wiking/db.py:148
+#: ../lib/wiking/db.py:149
 msgid "Back to list"
 msgstr "Zpět na seznam"
 
 #. Translators: Tooltip of a button for returning from a single record view to the
 #. listing of all records (computer terminology).
-#: ../lib/wiking/db.py:151
+#: ../lib/wiking/db.py:152
 msgid "Back to the list of all records"
 msgstr "Zpět na výpis všech záznamů"
 
 #. Translators: Button label (verb in imperative, computer terminology).
-#: ../lib/wiking/db.py:153
+#: ../lib/wiking/db.py:154
 msgid "Export"
 msgstr "Exportovat"
 
 #. Translators: Button tooltip.  Don't translate `CSV', it is an
 #. internationally recognized computer abbreviation.
-#: ../lib/wiking/db.py:156
+#: ../lib/wiking/db.py:157
 msgid "Export the listing into a CSV format"
 msgstr "Exportovat výpis do CSV formátu"
 
 #. Translators: Message displayed after new database record creation (computer terminology).
-#: ../lib/wiking/db.py:158
+#: ../lib/wiking/db.py:159
 msgid "New record was successfully inserted."
 msgstr "Nový záznam byl úspěšně vložen."
 
 #. Translators: Message displayed after a database record modification (computer terminology).
-#: ../lib/wiking/db.py:160
+#: ../lib/wiking/db.py:161
 msgid "The record was successfully updated."
 msgstr "Záznam byl úspěšně aktualizován."
 
 #. Translators: Message displayed after a database record deletion (computer terminology).
-#: ../lib/wiking/db.py:162
+#: ../lib/wiking/db.py:163
 msgid "The record was deleted."
 msgstr "Záznam byl odstraněn."
 
-#: ../lib/wiking/db.py:482
+#: ../lib/wiking/db.py:483
 msgid "Integrity check failed."
 msgstr "Kontrola integrity dat selhala."
 
-#: ../lib/wiking/db.py:536
+#: ../lib/wiking/db.py:537
 msgid "Unable to perform a database operation:"
 msgstr "Provedení databázové operace se nezdařilo:"
 
-#: ../lib/wiking/db.py:995
+#: ../lib/wiking/db.py:1050
 msgid "Filter"
 msgstr "Filtr"
 
 #. Translators: Back button label. Standard computer terminology.
-#: ../lib/wiking/db.py:1964
+#: ../lib/wiking/db.py:2032
 msgid "Back"
 msgstr "Zpět"
 
 #. Translators: RSS channel is a computer idiom, see Wikipedia.
-#: ../lib/wiking/db.py:2157 ../lib/wiking/db.py:2307
+#: ../lib/wiking/db.py:2227 ../lib/wiking/db.py:2377
 msgid "An RSS channel is available for this section:"
 msgstr "K dispozici je také RSS kanál pro tuto sekci:"
 
 #. Translators: RSS channel is a computer idiom, see Wikipedia.  Don't translateg 'RSS'.
-#: ../lib/wiking/db.py:2161 ../lib/wiking/db.py:2305
+#: ../lib/wiking/db.py:2231 ../lib/wiking/db.py:2375
 msgid "more about RSS"
 msgstr "více o RSS"
 
-#: ../lib/wiking/db.py:2300
+#: ../lib/wiking/db.py:2370
 #, python-format
 msgid "RSS channel \"%s\""
 msgstr "RSS kanál „%s“"
 
-#: ../lib/wiking/db.py:2310
+#: ../lib/wiking/db.py:2380
 msgid "RSS channels are available for this section"
 msgstr "Pro tuto sekci jsou k dispozici RSS kanály"
 
 #. Translators: Record as in `database record'.
-#: ../lib/wiking/db.py:2397
+#: ../lib/wiking/db.py:2467
 msgid "No records."
 msgstr "Žádné záznamy"
 
 #. Translators: `Item' is intentionally general. Could be webpage, notice or something else.
-#: ../lib/wiking/db.py:2405
+#: ../lib/wiking/db.py:2475
 msgid "The item was published."
 msgstr "Položka byla zveřejněna."
 
-#: ../lib/wiking/db.py:2406
+#: ../lib/wiking/db.py:2476
 msgid "The item was unpublished."
 msgstr "Zveřejnění položky bylo zrušeno."
 
-#: ../lib/wiking/db.py:2416
+#: ../lib/wiking/db.py:2486
 msgid "Publish"
 msgstr "Zveřejnit"
 
-#: ../lib/wiking/db.py:2419
+#: ../lib/wiking/db.py:2489
 msgid "Make the item visible to website visitors"
 msgstr "Zpřístupnit položku návštěvníkům stránek"
 
-#: ../lib/wiking/db.py:2420
+#: ../lib/wiking/db.py:2490
 msgid "Unpublish"
 msgstr "Zneveřejnit"
 
-#: ../lib/wiking/db.py:2423
+#: ../lib/wiking/db.py:2493
 msgid "Make the item invisible to website visitors"
 msgstr "Učinit položku nedostupnou pro návštěvníky stránek"
 

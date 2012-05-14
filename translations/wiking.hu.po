@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-25 09:28+0200\n"
+"POT-Creation-Date: 2012-05-09 19:29+0200\n"
 "PO-Revision-Date: 2010-02-04 00:17+0100\n"
 "Last-Translator: Hostomský Károly <khostomsky@gmail.com>\n"
 "Language-Team: Hungarian <wiking@lists.freebsoft.org>\n"
@@ -101,187 +101,187 @@ msgid ""
 "username, but also his current user role, which affects his permissions."
 msgstr ""
 
-#: ../lib/wiking/db.py:63
+#: ../lib/wiking/db.py:64
 msgid "Row with this key already exists."
 msgstr ""
 
-#: ../lib/wiking/db.py:65
+#: ../lib/wiking/db.py:66
 msgid "This value already exists.  Enter a unique value."
 msgstr "Ez az érték már létezik. Válasszon egyedi értéket."
 
 #. Translators: This is about an empty (not filled in) value in a web form. Field means a
 #. form field.
-#: ../lib/wiking/db.py:69
+#: ../lib/wiking/db.py:70
 msgid "Empty value.  This field is mandatory."
 msgstr "Üres mező. A mező kitöltése kötelező."
 
 #. Translators: This is delete action failure message in a web page.
-#: ../lib/wiking/db.py:72
+#: ../lib/wiking/db.py:73
 msgid "Record couldn't be deleted because other records refer to it."
 msgstr ""
 
 #. Translators: Button label for new database record creation (computer terminology).
-#: ../lib/wiking/db.py:122
+#: ../lib/wiking/db.py:123
 msgid "New record"
 msgstr "Új elem"
 
 #. Translators: Tooltip of new database record creation button (computer terminology).
-#: ../lib/wiking/db.py:124
+#: ../lib/wiking/db.py:125
 msgid "Create a new record"
 msgstr "Új elem létrehozása"
 
 #. Translators: Button label for database record modification (verb in imperative,
 #. computer terminology).
-#: ../lib/wiking/db.py:127
+#: ../lib/wiking/db.py:128
 msgid "Edit"
 msgstr "Szerkeszt"
 
 #. Translators: Tooltip of database record modification button (computer terminology)
-#: ../lib/wiking/db.py:129
+#: ../lib/wiking/db.py:130
 msgid "Modify the record"
 msgstr "Elem szerkesztése"
 
 #. Translators: Button label for database record display (verb in imperative).
-#: ../lib/wiking/db.py:131
+#: ../lib/wiking/db.py:132
 msgid "View"
 msgstr ""
 
 #. Translators: Tooltip of database record display button (computer terminology)
-#: ../lib/wiking/db.py:133
+#: ../lib/wiking/db.py:134
 #, fuzzy
 msgid "Display the record"
 msgstr "Elem szerkesztése"
 
 #. Translators: Button label for database record deletion (verb in imperative,
 #. computer terminology).
-#: ../lib/wiking/db.py:136
+#: ../lib/wiking/db.py:137
 msgid "Remove"
 msgstr "Töröl"
 
 #. Translators: Tooltip of database record deletion button (computer terminology).
-#: ../lib/wiking/db.py:138
+#: ../lib/wiking/db.py:139
 msgid "Remove the record permanently"
 msgstr "Elem végleges törlése"
 
 #. Translators: Prompt before database record deletion (computer terminology).
-#: ../lib/wiking/db.py:140
+#: ../lib/wiking/db.py:141
 msgid "Please, confirm removing the record permanently."
 msgstr "Kérem, erősítse meg az elem végleges törlését."
 
 #. Translators: Button label for database record copying (verb in imperative,
 #. computer terminology).
-#: ../lib/wiking/db.py:143
+#: ../lib/wiking/db.py:144
 msgid "Copy"
 msgstr "Másol"
 
 #. Translators: Tooltip of database record copy button (computer terminology).
-#: ../lib/wiking/db.py:145
+#: ../lib/wiking/db.py:146
 msgid "Create new record initialized by values of this record"
 msgstr "Új elem létrehozása ezen rekord értékei szerint iniciálva"
 
 #. Translators: Button label for returning from a single record view to the listing of all
 #. database records (computer terminology).
-#: ../lib/wiking/db.py:148
+#: ../lib/wiking/db.py:149
 msgid "Back to list"
 msgstr "Vissza a listához"
 
 #. Translators: Tooltip of a button for returning from a single record view to the
 #. listing of all records (computer terminology).
-#: ../lib/wiking/db.py:151
+#: ../lib/wiking/db.py:152
 msgid "Back to the list of all records"
 msgstr "Vissz a elemek listájához"
 
 #. Translators: Button label (verb in imperative, computer terminology).
-#: ../lib/wiking/db.py:153
+#: ../lib/wiking/db.py:154
 msgid "Export"
 msgstr ""
 
 #. Translators: Button tooltip.  Don't translate `CSV', it is an
 #. internationally recognized computer abbreviation.
-#: ../lib/wiking/db.py:156
+#: ../lib/wiking/db.py:157
 msgid "Export the listing into a CSV format"
 msgstr ""
 
 #. Translators: Message displayed after new database record creation (computer terminology).
-#: ../lib/wiking/db.py:158
+#: ../lib/wiking/db.py:159
 msgid "New record was successfully inserted."
 msgstr "Az új elem sikeresen be lett szúrva."
 
 #. Translators: Message displayed after a database record modification (computer terminology).
-#: ../lib/wiking/db.py:160
+#: ../lib/wiking/db.py:161
 msgid "The record was successfully updated."
 msgstr "Az elemet sikeresen frissítette."
 
 #. Translators: Message displayed after a database record deletion (computer terminology).
-#: ../lib/wiking/db.py:162
+#: ../lib/wiking/db.py:163
 msgid "The record was deleted."
 msgstr "Az elem törlődött."
 
-#: ../lib/wiking/db.py:482
+#: ../lib/wiking/db.py:483
 msgid "Integrity check failed."
 msgstr "Integritás ellenőrzés sikertelen."
 
-#: ../lib/wiking/db.py:536
+#: ../lib/wiking/db.py:537
 #, fuzzy
 msgid "Unable to perform a database operation:"
 msgstr "A művelet végrehajtása az adatbázisban sikertelen."
 
-#: ../lib/wiking/db.py:995
+#: ../lib/wiking/db.py:1050
 msgid "Filter"
 msgstr ""
 
 #. Translators: Back button label. Standard computer terminology.
-#: ../lib/wiking/db.py:1964
+#: ../lib/wiking/db.py:2032
 msgid "Back"
 msgstr "Vissza"
 
 #. Translators: RSS channel is a computer idiom, see Wikipedia.
-#: ../lib/wiking/db.py:2157 ../lib/wiking/db.py:2307
+#: ../lib/wiking/db.py:2227 ../lib/wiking/db.py:2377
 msgid "An RSS channel is available for this section:"
 msgstr "RSS csatorna elérhető a következő szekcióhoz:"
 
 #. Translators: RSS channel is a computer idiom, see Wikipedia.  Don't translateg 'RSS'.
-#: ../lib/wiking/db.py:2161 ../lib/wiking/db.py:2305
+#: ../lib/wiking/db.py:2231 ../lib/wiking/db.py:2375
 msgid "more about RSS"
 msgstr "több információ az RSS-ről"
 
-#: ../lib/wiking/db.py:2300
+#: ../lib/wiking/db.py:2370
 #, fuzzy, python-format
 msgid "RSS channel \"%s\""
 msgstr "RSS csatorna"
 
-#: ../lib/wiking/db.py:2310
+#: ../lib/wiking/db.py:2380
 #, fuzzy
 msgid "RSS channels are available for this section"
 msgstr "RSS csatorna elérhető a következő szekcióhoz:"
 
 #. Translators: Record as in `database record'.
-#: ../lib/wiking/db.py:2397
+#: ../lib/wiking/db.py:2467
 msgid "No records."
 msgstr "Nincsenek elemek."
 
 #. Translators: `Item' is intentionally general. Could be webpage, notice or something else.
-#: ../lib/wiking/db.py:2405
+#: ../lib/wiking/db.py:2475
 msgid "The item was published."
 msgstr "Elem megjelenítve."
 
-#: ../lib/wiking/db.py:2406
+#: ../lib/wiking/db.py:2476
 msgid "The item was unpublished."
 msgstr "Az elem eltávolítva."
 
-#: ../lib/wiking/db.py:2416
+#: ../lib/wiking/db.py:2486
 msgid "Publish"
 msgstr "Megjelenít"
 
-#: ../lib/wiking/db.py:2419
+#: ../lib/wiking/db.py:2489
 msgid "Make the item visible to website visitors"
 msgstr "Elem láthatóvá tétele a weboldal látogatóinak"
 
-#: ../lib/wiking/db.py:2420
+#: ../lib/wiking/db.py:2490
 msgid "Unpublish"
 msgstr "Nem "
 
-#: ../lib/wiking/db.py:2423
+#: ../lib/wiking/db.py:2493
 msgid "Make the item invisible to website visitors"
 msgstr "Elem elrejtése a weboldal látogatói elől"
 
