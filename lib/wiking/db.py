@@ -1702,7 +1702,7 @@ class PytisModule(Module, ActionHandler):
         if not success:
             raise pd.DBException(result)
         elif result is not None:
-            # The resul;t is typically None, when inserting into a view which
+            # The result is typically None, when inserting into a view which
             # has no "returning" statement in the insert rule.
             # We can't use set_row(), since it would destroy virtual file
             # fields (used in CMS).
