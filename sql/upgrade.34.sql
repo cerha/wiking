@@ -1,5 +1,5 @@
-alter table users alter column login type varchar(64);
 drop view cms_v_session_log;
+alter table users alter column login type varchar(64);
 alter table cms_session_log alter column login type varchar(64);
 
 create or replace view cms_v_session_log as select
