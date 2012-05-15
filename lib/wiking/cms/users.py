@@ -1566,7 +1566,7 @@ class SessionLog(UserManagementModule):
         def fields(self): return (
             Field('log_id'),
             Field('session_id'),
-            Field('uid', _('User'), codebook='Users'),
+            Field('uid', _('User'), codebook='Users', inline_display='uid_user'),
             # Translators: Login name.
             Field('login', _("Login")),
             # Translators: Form field saying whether the users attempt was succesful. Values are Yes/No.
