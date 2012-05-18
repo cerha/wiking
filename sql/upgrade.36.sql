@@ -27,3 +27,5 @@ for each statement execute procedure update_user_roles ();
 
 -- Force triggers
 update role_sets set role_id='admin' where role_id='admin';
+
+update cms_database_version set version=36;
