@@ -121,7 +121,7 @@ create table role_members (
 );
 
 create table a_user_roles (
-       uid int not null references users on update cascade on delete cascade,
+       uid int references users on update cascade on delete cascade,
        role_id name not null references roles on update cascade on delete cascade
 );
 create index a_user_roles_uid_index on a_user_roles (uid);
@@ -133,7 +133,7 @@ declare
   role_id_ name;
 begin
   truncate a_user_roles;
-  for uid_ in select uid from users loop
+  for uid_ in select uid from users union select null loop
     for role_id_ in select role_id from role_members where uid=uid_ union select unnest(array['anyone', 'authenticated']) loop
       insert into a_user_roles (select uid_, * from expanded_role(role_id_));
     end loop;
