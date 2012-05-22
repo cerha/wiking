@@ -38,20 +38,25 @@ class PytisModule(Module, ActionHandler):
     pytis record and expect a 'PytisModule.Record' instance as the 'record'
     argument of the action handler method.  Some actions (such as 'list') don't
     expect any arguments since they don't operate on a particular record.
+
+    The pytis data records are mapped to URIs through so called 'referer'
+    column (see 'ViewSpec' for a docstring).  This should be a unique column
+    with values, which may be used in URI (don't contain special characters,
+    etc.).  If not defined, the key column is used by default.  For example a
+    record with the value 123 in the referer column will be mapped to the uri
+    '/module-uri/123'.  This URI will be resolved automatically to calling an
+    action method with 'record' argument holding a 'PytisModule.Record'
+    instance corresponding to the data row with 123 in the key value.  Referer
+    column values are converted to strings and back through standard pytis
+    value export/validation according to referer column type.
     
     """
     _REFERER = None
-    """Id of the referer column as one of the id's defined by 'Spec.fields' or None.
+    """DEPRECARED!  Use the Pytis specification option 'referer' instead.
 
-    The Pytis module maps data records to URIs through so called 'referer'
-    column.  This should be a unique column with values, which may be used in
-    URI (don't contain special characters, etc.).  If not defined, the key
-    column is used by default.  As the key is typically a number, the records
-    URI will typically look like '/module-uri/123'.  This URI will be resolved
-    automatically to calling an action method with 'record' argument holding a
-    'PytisModule.Record' instance corresponding to the data row with 123 in the
-    key value.  Referer column values are converted to strings and back through
-    standard pytis value export/validation according to referer column type.
+    Currently overrides the specification option 'referer' of Pytis ViewSpec,
+    but is deprecated.
+
        
     """
     _TITLE_COLUMN = None
@@ -303,7 +308,7 @@ class PytisModule(Module, ActionHandler):
         self._sorting = self._view.sorting()
         if self._sorting is None:
             self._sorting = ((key, pytis.data.ASCENDENT),)
-        self._referer = self._REFERER or key
+        self._referer = self._REFERER or self._view.referer() or key
         self._array_fields = []
         resolver = wiking.cfg.resolver
         for fid, spec_name, linking_column, value_column in self._ARRAY_FIELDS:
@@ -317,22 +322,27 @@ class PytisModule(Module, ActionHandler):
         record = pp.PresentedRow(fields, self._data, None, resolver=resolver)
         self._type = dict([(key, record.type(key)) for key in record.keys()])
         self._links = {}
-        def cb_link(field):
-            e = self._type[field.id()].enumerator()
-            return e and pp.Link(field.codebook(), e.value_column())
         for f in fields:
-            if f.links():
-                self._links[f.id()] = (f.id(), f.links()[0])
-            elif f.codebook():
-                link = cb_link(f)
-                if link:
-                    self._links[f.id()] = (f.id(), link)
+            if f.codebook():
+                cb_field = f
             elif isinstance(f.computer(), pp.CbComputer):
-                cb_field = f.computer().field()
-                link = cb_link(self._view.field(cb_field))
-                if link: # and link.name() not in [x[1].name() for x in self._links.values()]:
-                    self._links[f.id()] = (cb_field, link)
-
+                cb_field = self._view.field(f.computer().field())
+            else:
+                continue
+            column = cb_field.id()
+            codebook = cb_field.codebook()
+            enumerator = self._type[column].enumerator()
+            if codebook and enumerator:
+                referer = cb_field.inline_referer()
+                value_column = enumerator.value_column()
+                if not referer and wiking.module(codebook).referer() == value_column:
+                    # If the inline_referer column was not specified explicitly
+                    # and the module's referer column is the same as the
+                    # codebook's value_column, we can use the codebook column
+                    # as the inline referer (it is the same value).
+                    referer = column
+                self._links[f.id()] = (codebook, referer, column, value_column)
+        
     def _record(self, req, row, new=False, prefill=None):
         """Return the Record instance initialized by given data row."""
         return self.Record(req, self._view.fields(), self._data, row,
@@ -759,13 +769,24 @@ class PytisModule(Module, ActionHandler):
         """
         if cid is None:
             return uri and req.make_uri(uri +'/'+ record[self._referer].export(), **kwargs)
-        if cid in self._links:
-            value_column, link = self._links[cid]
+        try:
+            codebook, referer, column, value_column = self._links[cid]
+        except KeyError:
+            pass
+        else:
+            if referer:
+                uri = req.module_uri(codebook)
+                if uri:
+                    return req.make_uri('%s/%s' % (uri, record[referer].export()))
+            # TODO: If the referer is not defined, we temporarily use the old
+            # method, but it is deprecated.  Inline referer should be defined
+            # everywhere (if it is not the value_column) or links will not
+            # be displayed.
             try:
-                mod = wiking.module(link.name())
+                mod = wiking.module(codebook)
             except AttributeError:
                 return None
-            return mod.link(req, {link.column(): record[value_column].value()}, **kwargs)
+            return mod.link(req, {value_column: record[column].value()}, **kwargs)
         return None
 
     def _image_provider(self, req, record, cid, uri):
@@ -1733,8 +1754,23 @@ class PytisModule(Module, ActionHandler):
         
     # ===== Public methods =====
     
+    def referer(self):
+        """Temporary internal method.  Don't use in application code."""
+        # This temporary method is used within PytisModule._delayed_init() to
+        # retrieve module's referer column name.  As soon as the referer column
+        # is specified in ViewSpec and not through the deprecated
+        # PytisModule._REFERER constant, we will be able to retrieve it through
+        # the resolver and we will not need this method.
+        return self._referer
+        
     def link(self, req, key, *args, **kwargs):
-        """Return a uri for given key value."""
+        """DEPRACATED!
+
+        Don't use in application code and don't rely on implicit links which
+        require subqueries.  See also the comment in
+        'PytisModule._link_provider()'.
+
+        """
         if self._link_cache_req is not req:
             self._link_cache = {}
             self._link_cache_req = req
