@@ -1722,7 +1722,11 @@ class PytisModule(Module, ActionHandler):
             # We can't use set_row(), since it would destroy virtual file
             # fields (used in CMS).
             for key in result.keys():
-                record[key] = result[key]
+                # The 'result' row may contain automatically appended data
+                # columns, such as inline_display, so we must check their
+                # presence in record.
+                if key in record:
+                    record[key] = result[key]
             self._update_linking_tables(req, record, transaction)
         
     def _update(self, req, record, transaction):
