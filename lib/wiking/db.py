@@ -775,9 +775,7 @@ class PytisModule(Module, ActionHandler):
             pass
         else:
             if referer:
-                uri = req.module_uri(codebook)
-                if uri:
-                    return req.make_uri('%s/%s' % (uri, record[referer].export()))
+                return req.record_uri(codebook, record[referer].export())
             # TODO: If the referer is not defined, we temporarily use the old
             # method, but it is deprecated.  Inline referer should be defined
             # everywhere (if it is not the value_column) or links will not
@@ -809,11 +807,7 @@ class PytisModule(Module, ActionHandler):
     def _record_uri(self, req, record, *args, **kwargs):
         # Return the absolute URI of module's record if a direct mapping of the module exists.  
         # Use the method '_current_record_uri()' to get URI in the context of the current request.
-        uri = self._base_uri(req)
-        if uri:
-            return req.make_uri(uri +'/'+ record[self._referer].export(), *args, **kwargs)
-        else:
-            return None
+        return req.record_uri(self.name(), record[self._referer].export(), *args, **kwargs)
 
     def _current_base_uri(self, req, record=None):
         # Return the module base URI in the context of the current request.
