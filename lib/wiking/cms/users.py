@@ -1563,7 +1563,8 @@ class SessionLog(UserManagementModule):
         def fields(self): return (
             Field('log_id'),
             Field('session_id'),
-            Field('uid', _('User'), codebook='Users', inline_display='uid_user'),
+            Field('uid', _('User'), codebook='Users',
+                  inline_display='uid_user', inline_referer='uid_login'),
             # Translators: Login name.
             Field('login', _("Login")),
             # Translators: Form field saying whether the users attempt was succesful. Values are Yes/No.
@@ -1582,7 +1583,8 @@ class SessionLog(UserManagementModule):
             Field('user_agent', _("User agent")),
             # Translators: Meaning where the user came from. Computer terminology. Do not translate
             # "HTTP" and if unsure, don't translate at all (it is a very technical term).
-            Field('referer', _("HTTP Referer")))
+            Field('referer', _("HTTP Referer")),
+            Field('uid_login'))
         def _hostname(self, row, ip_address):
             try:
                 return socket.gethostbyaddr(ip_address)[0]
