@@ -946,24 +946,6 @@ class Request(ServerInterface):
             application = wiking.module('Application')
             uri = self._module_uri[modname] = application.module_uri(self, modname)
         return uri
-
-    def record_uri(self, modname, referer, *args, **kwargs):
-        """Return URI of module's record determined by given referer value.
-
-        This is just a convenience wrapper for joining the module's base URI
-        (obtained for the 'modname' argument through the 'module_uri()' method)
-        and the referer value (the argument 'referer' must be the exported
-        string value).  If the module's base URI is None, None is returned.
-        Any keyword arguments are passed to 'req.make_uri()' which is used to
-        encode the final URI properly in any case (if not None).
-
-        """
-        module_uri = self.module_uri(modname)
-        if module_uri:
-            result = self.make_uri(module_uri +'/'+ referer, *args, **kwargs)
-        else:
-            result = None
-        return result
         
     def message(self, message, type=None):
         """Add a message to the stack.

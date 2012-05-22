@@ -775,7 +775,7 @@ class PytisModule(Module, ActionHandler):
             pass
         else:
             if referer:
-                return req.record_uri(codebook, record[referer].export())
+                return wiking.module(codebook).record_uri(req, record[referer].export())
             # TODO: If the referer is not defined, we temporarily use the old
             # method, but it is deprecated.  Inline referer should be defined
             # everywhere (if it is not the value_column) or links will not
@@ -807,7 +807,7 @@ class PytisModule(Module, ActionHandler):
     def _record_uri(self, req, record, *args, **kwargs):
         # Return the absolute URI of module's record if a direct mapping of the module exists.  
         # Use the method '_current_record_uri()' to get URI in the context of the current request.
-        return req.record_uri(self.name(), record[self._referer].export(), *args, **kwargs)
+        return self.record_uri(req, record[self._referer].export(), *args, **kwargs)
 
     def _current_base_uri(self, req, record=None):
         # Return the module base URI in the context of the current request.
@@ -1761,8 +1761,28 @@ class PytisModule(Module, ActionHandler):
         # the resolver and we will not need this method.
         return self._referer
         
+
+    def record_uri(self, req, referer, *args, **kwargs):
+        """Return URI of module's record determined by given referer value.
+
+        The referer value will be appended to the module's base URI if the
+        module has a unique global URI (otherwise None is returned).  The
+        argument 'referer' must be the exported string value of the module's
+        referer column and the calling side is responsible for passing a valid
+        value (corresponding to an existing referer column value).  Any
+        additional positional and keyword arguments are passed to
+        'req.make_uri()' which is used to encode the returned URI properly.
+
+        """
+        base_uri = self._base_uri(req)
+        if base_uri:
+            result = req.make_uri(base_uri +'/'+ referer, *args, **kwargs)
+        else:
+            result = None
+        return result
+
     def link(self, req, key, *args, **kwargs):
-        """DEPRACATED!
+        """DEPRACATED!  Use 'record_uri()' instead.
 
         Don't use in application code and don't rely on implicit links which
         require subqueries.  See also the comment in
