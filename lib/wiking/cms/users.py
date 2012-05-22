@@ -81,10 +81,10 @@ class RoleSets(UserManagementModule):
         return super(RoleSets, self)._form(form, req, *args, **kwargs)
     
     def _link_provider(self, req, uri, record, cid, **kwargs):
-        if cid == 'delete':
+        if cid is None:
+            return self._link_provider(req, uri, record, self._TITLE_COLUMN, **kwargs)
+        elif cid == 'delete':
             return req.make_uri(uri +'/'+ record['role_set_id'].export(), action='delete')
-        elif cid is None:
-            return wiking.module('ApplicationRoles').link(req, record[self._TITLE_COLUMN])
         else:
             return super(RoleSets, self)._link_provider(req, uri, record, cid, **kwargs)
 
@@ -192,10 +192,7 @@ class RoleMembers(UserManagementModule):
     
     def _link_provider(self, req, uri, record, cid, **kwargs):
         if cid is None:
-            if self._TITLE_COLUMN == 'uid':
-                return wiking.module('Users').link(req, record['uid'])
-            else:
-                return wiking.module('ApplicationRoles').link(req, record['role_id'])
+            return self._link_provider(req, uri, record, self._TITLE_COLUMN, **kwargs)
         elif cid == 'delete':
             return req.make_uri(uri +'/'+ record['role_member_id'].export(), action='delete')
         else:
