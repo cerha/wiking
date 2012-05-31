@@ -1907,9 +1907,11 @@ class Attachments(ContentManagementModule):
             self._page_record = page_record
             self._base_uri = '/'+ page_record['identifier'].export() + '/attachments'
 
-        def insert(self, data, filename, image_size=(800, 800), thumbnail_size=(200, 200)):
-            pass
-            
+        def _api_call(self, name, *args, **kwargs):
+            page_id, lang = self._page_record['page_id'].value(), self._page_record['lang'].value()
+            method = getattr(wiking.module('Attachments'), 'storage_api_'+name)
+            return method(page_id, lang, *args, **kwargs)
+
         def _resource(self, req, row):
             filename = row['filename'].value()
             title = row['title'].value()
@@ -1945,23 +1947,26 @@ class Attachments(ContentManagementModule):
                                  thumbnail_size=thumbnail_size),
                        **kwargs)
         
-        def resources(self):
-            page_record = self._page_record
-            req = page_record.req()
-            page_id, lang = page_record['page_id'].value(), page_record['lang'].value()
-            return [self._resource(req, row)
-                    for row in wiking.module('Attachments').attachment_rows(page_id, lang)]
-     
         def resource(self, filename):
-            page_record = self._page_record
-            page_id, lang = page_record['page_id'].value(), page_record['lang'].value()
-            row = wiking.module('Attachments').attachment_row(page_id, lang, filename)
+            row = self._api_call('row', filename)
             if row:
-                return self._resource(page_record.req(), row)
+                return self._resource(self._page_record.req(), row)
             else:
                 return None
+
+        def resources(self):
+            req = self._page_record.req()
+            return [self._resource(req, row) for row in self._api_call('rows')]
+     
+        def insert(self, data, filename, image_size=(800, 800), thumbnail_size=(200, 200)):
+            pass
+            
+        def update(self, filename, values):
+            debug("***", values)
+            return self._api_call('update', filename, values)
      
         def retrieve(self, filename):
+            # Currently unused by the web form attachment dialog.
             pass
 
     _INSERT_LABEL = _("New attachment")
@@ -2044,7 +2049,10 @@ class Attachments(ContentManagementModule):
         return super(Attachments, self)._redirect_after_update_uri(req, record,
                                                                    action='view', **kwargs)
 
-    def attachment_rows(self, page_id, lang):
+    def storage_api_row(self, page_id, lang, filename):
+        return self._data.get_row(page_id=page_id, lang=lang, filename=filename)
+
+    def storage_api_rows(self, page_id, lang):
         self._data.select(condition=pd.AND(pd.EQ('page_id', pd.ival(page_id)),
                                            pd.EQ('lang', pd.sval(lang))))
         while True:
@@ -2054,8 +2062,17 @@ class Attachments(ContentManagementModule):
             yield row
         self._data.close()
         
-    def attachment_row(self, page_id, lang, filename):
-        return self._data.get_row(page_id=page_id, lang=lang, filename=filename)
+    def storage_api_update(self, page_id, lang, filename, values):
+        row = self._data.get_row(page_id=page_id, lang=lang, filename=filename)
+        if row:
+            try:
+                self._data.update(row['attachment_key'], self._data.make_row(**values))
+            except pd.DBException as e:
+                return self._error_message(*self._analyze_exception(e))
+            else:
+                return None
+        else:
+            return _("Attachment '%s' not found!", filename)
         
     def action_move(self, req, record):
         return self.action_update(req, record, action='move')
