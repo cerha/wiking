@@ -1074,7 +1074,8 @@ class Pages(SiteSpecificContentModule):
             Field('title', _("Title"), not_null=True),
             Field('description', _("Description"), width=64,
                   descr=_("Brief page description (shown as a tooltip and in site map).")),
-            ContentField('_content', _("Content"), compact=True, height=20, width=80),
+            ContentField('_content', _("Content"), compact=True, height=20, width=80,
+                         attachment_storage=lambda r: Attachments.AttachmentStorage(r)),
             ContentField('content'),
             Field('comment', _("Comment"), virtual=True, width=70,
                   descr=_("Describe briefly the changes you made.")),
@@ -1334,13 +1335,6 @@ class Pages(SiteSpecificContentModule):
             return None
         return super(Pages, self)._link_provider(req, uri, record, cid, **kwargs)
 
-    def _file_browser_uri_provider(self, req, uri, record, cid, images=False):
-        return req.make_uri(self._current_record_uri(req, record)+'/attachments',
-                            action='browse', images=(images and '1' or None))
-    
-    def _file_upload_uri_provider(self, req, uri, record, cid, images=False):
-        return None
-        
     def _redirect_after_insert(self, req, record):
         req.message(self._insert_msg(req, record))
         raise Redirect(self._current_record_uri(req, record))
@@ -1478,58 +1472,28 @@ class Pages(SiteSpecificContentModule):
                 content = [lcg.Container(sections)]
             else:
                 content = [HtmlContent(pre)] + content + [HtmlContent(post)]
-        # Attachment list
-        resources = []
-        gallery_images = []
-        attachments_list = []
-        attachment_base_uri = '/'+ record['identifier'].export() + '/attachments'
-        needs_lightbox = False
-        for a in wiking.module('Attachments').attachments(req, record['page_id'].value(),
-                                                          record['lang'].value()):
-            uri = req.make_uri(attachment_base_uri+'/'+a.filename)
-            kwargs = {}
-            if a.mime_type.startswith('image/'):
-                cls = lcg.Image
-                if a.thumbnail_size:
-                    thumbnail_uri = req.make_uri(attachment_base_uri+'/'+a.filename,
-                                                 action='thumbnail')
-                    thumbnail = lcg.Image(a.filename, uri=thumbnail_uri,
-                                          title=a.title, descr=a.descr,
-                                          size=(a.thumbnail_width, a.thumbnail_height),
-                                          )
-                    kwargs['thumbnail'] = thumbnail
-                    needs_lightbox = True
-                    uri = req.make_uri(attachment_base_uri+'/'+a.filename, action='image')
-                else:
-                    thumbnail_uri = None
-                if a.in_gallery:
-                    gallery_images.append((a, uri, thumbnail_uri))
-            elif a.filename.lower().endswith('mp3'):
-                cls = lcg.Audio
-            elif a.filename.lower().endswith('flv'):
-                cls = lcg.Video
-            elif a.filename.lower().endswith('swf'):
-                cls = lcg.Flash
-            else:
-                cls = lcg.Resource
-            resources.append(cls(a.filename, uri=uri, title=a.title, descr=a.descr, **kwargs))
-            if a.listed:
-                item = (lcg.link(req.make_uri(attachment_base_uri+'/'+a.filename), a.title),
-                        ' ('+ a.bytesize +') ', lcg.WikiText(a.descr or ''))
-                
-                attachments_list.append(item)
-        if needs_lightbox:
+        # Process page attachments
+        storage = Attachments.AttachmentStorage(record)
+        resources = storage.resources()
+        # Create automatic attachment list if any attachments are marked as listed.
+        gallery_images = [r for r in resources if r.info()['in_gallery']]
+        if gallery_images:
+            content.append(Attachments.ImageGallery(gallery_images))
+        # Create automatic attachment list if any attachments are marked as listed.
+        listed_attachments = [(lcg.link(r.uri(), r.title() or r.filename()),
+                               ' ('+ r.info()['byte_size'] +') ', lcg.WikiText(r.descr() or ''))
+                              for r in resources if r.info()['listed']]
+        if listed_attachments:
+            # Translators: Section title. Attachments as in email attachments.
+            content.append(lcg.Section(title=_("Attachments"), content=lcg.ul(listed_attachments),
+                                       anchor='attachment-automatic-list')) # Prevent dupl. anchor.
+        # Load Lightbox if there are any images with thumbnails within the attachments.
+        if any(isinstance(r, lcg.Image) and r.thumbnail() for r in resources):
             resources.extend((lcg.Script('prototype.js'),
                               lcg.Script('effects.js'),
                               lcg.Script('builder.js'),
                               lcg.Script('lightbox.js'),
                               lcg.Stylesheet('lightbox.css')))
-        if gallery_images:
-            content.append(Attachments.ImageGallery(gallery_images))
-        if attachments_list:
-            # Translators: Section title. Attachments as in email attachments.
-            content.append(lcg.Section(title=_("Attachments"), content=lcg.ul(attachments_list),
-                                       anchor='attachment-automatic-list')) # Prevent dupl. anchor.
         if not content:
             rows = self._data.get_rows(condition=\
                                        pd.AND(pd.EQ('parent', record['page_id']),
@@ -1910,38 +1874,95 @@ class Attachments(ContentManagementModule):
 
     class ImageGallery(lcg.Content):
         
-        def __init__(self, attachments):
-            self._attachments = attachments
+        def __init__(self, resources):
+            self._resources = resources
             super(Attachments.ImageGallery, self).__init__()
             
-        def _export_item(self, context, a, uri, thumbnail_uri):
+        def _export_item(self, context, resource):
             g = context.generator()
-            title = a.title
-            if a.descr:
-                title += ': '+ a.descr
-            if thumbnail_uri:
-                img = g.img(thumbnail_uri, width=a.thumbnail_width, height=a.thumbnail_height)
-                return g.a(img, href=uri, rel='lightbox[gallery]', title=title)
+            title = resource.title() or resource.filename()
+            if resource.descr():
+                title += ': '+ resource.descr()
+            thumbnail = resource.thumbnail()
+            if thumbnail:
+                size = thumbnail.size()
+                if size:
+                    width, height = size
+                else:
+                    width, height = None, None
+                img = g.img(thumbnail.uri(), width=width, height=height)
+                return g.a(img, href=resource.uri(), rel='lightbox[gallery]', title=title)
             else:
-                return g.img(uri)
+                return g.img(resource.uri())
         
         def export(self, context):
             g = context.generator()
-            content = [self._export_item(context, *args) for args in self._attachments]
+            content = [self._export_item(context, r) for r in self._resources]
             return g.div(content, cls='wiking-image-gallery')
             
-    class Attachment(object):
-        def __init__(self, row):
-            self.filename = filename = row['filename'].export()
-            self.title = row['title'].export() or filename
-            self.descr = row['description'].value()
-            self.bytesize = row['bytesize'].export()
-            self.listed = row['listed'].value()
-            self.thumbnail_size = row['thumbnail_size'].value()
-            self.thumbnail_width = row['thumbnail_width'].value()
-            self.thumbnail_height = row['thumbnail_height'].value()
-            self.mime_type = row['mime_type'].value()
-            self.in_gallery = row['in_gallery'].value()
+            
+    class AttachmentStorage(pp.AttachmentStorage):
+
+        def __init__(self, page_record):
+            self._page_record = page_record
+            self._base_uri = '/'+ page_record['identifier'].export() + '/attachments'
+
+        def insert(self, data, filename, image_size=(800, 800), thumbnail_size=(200, 200)):
+            pass
+            
+        def _resource(self, req, row):
+            filename = row['filename'].value()
+            title = row['title'].value()
+            descr = row['description'].value()
+            mime_type = row['mime_type'].value()
+            thumbnail_size = row['thumbnail_size'].value()
+            uri = req.make_uri(self._base_uri+'/'+filename)
+            kwargs = {}
+            if mime_type.startswith('image/'):
+                cls = lcg.Image
+                if thumbnail_size:
+                    kwargs['thumbnail'] = lcg.Image(filename,
+                                                    uri=req.make_uri(self._base_uri+'/'+filename,
+                                                                     action='thumbnail'),
+                                                    title=title, descr=descr,
+                                                    size=(row['thumbnail_width'].value(),
+                                                          row['thumbnail_height'].value()))
+                    uri = req.make_uri(self._base_uri+'/'+filename, action='image')
+            elif filename.lower().endswith('mp3'):
+                cls = lcg.Audio
+            elif filename.lower().endswith('flv'):
+                cls = lcg.Video
+            elif filename.lower().endswith('swf'):
+                cls = lcg.Flash
+            else:
+                cls = lcg.Resource
+            return cls(filename, uri=uri,
+                       title=title, descr=descr,
+                       info=dict(mime_type=mime_type,
+                                 byte_size=row['bytesize'].export(),
+                                 listed=row['listed'].value(),
+                                 in_gallery=row['in_gallery'].value(),
+                                 thumbnail_size=thumbnail_size),
+                       **kwargs)
+        
+        def resources(self):
+            page_record = self._page_record
+            req = page_record.req()
+            page_id, lang = page_record['page_id'].value(), page_record['lang'].value()
+            return [self._resource(req, row)
+                    for row in wiking.module('Attachments').attachment_rows(page_id, lang)]
+     
+        def resource(self, filename):
+            page_record = self._page_record
+            page_id, lang = page_record['page_id'].value(), page_record['lang'].value()
+            row = wiking.module('Attachments').attachment_row(page_id, lang, filename)
+            if row:
+                return self._resource(page_record.req(), row)
+            else:
+                return None
+     
+        def retrieve(self, filename):
+            pass
 
     _INSERT_LABEL = _("New attachment")
     _REFERER = 'filename'
@@ -1961,13 +1982,6 @@ class Attachments(ContentManagementModule):
         
     def _link_provider(self, req, uri, record, cid, **kwargs):
         if cid is None and not kwargs:
-            if req.param('action') == 'browse':
-                if req.param('images') == '1':
-                    action = 'thumbnail'
-                else:
-                    action = None
-                uri = req.make_uri(uri+'/'+record['filename'].value(), action=action)
-                return "javascript: pytis.HtmlField.select_file('%s')" % uri
             kwargs['action'] = 'view'
         elif cid == 'file':
             cid = None
@@ -2030,34 +2044,19 @@ class Attachments(ContentManagementModule):
         return super(Attachments, self)._redirect_after_update_uri(req, record,
                                                                    action='view', **kwargs)
 
-    def attachments(self, req, page_id, lang):
+    def attachment_rows(self, page_id, lang):
         self._data.select(condition=pd.AND(pd.EQ('page_id', pd.ival(page_id)),
                                            pd.EQ('lang', pd.sval(lang))))
         while True:
             row = self._data.fetchone()
             if row is None:
                 break
-            yield self.Attachment(row)
+            yield row
         self._data.close()
         
-    def action_browse(self, req):
-        lang = req.preferred_language()
-        condition = self._condition(req)
-        if self._LIST_BY_LANGUAGE:
-            condition = pd.AND(condition, pd.EQ('lang', pd.sval(lang)))
-        form = self._form(pw.ListView, req,
-                          columns=self._columns(req),
-                          condition=condition,
-                          arguments=self._arguments(req),
-                          profiles=self._profiles(req),
-                          filter_sets=self._filter_sets(req),
-                          actions=self._form_actions(req),
-                          )
-        content = self._list_form_content(req, form)
-        return self._document(req, content, lang=lang, layout=wiking.Exporter.Layout.FRAME,
-                              resources=(lcg.Script('prototype.js'), lcg.Script('pytis.js'),))
-    RIGHTS_browse = (Roles.CONTENT_ADMIN,)
-    
+    def attachment_row(self, page_id, lang, filename):
+        return self._data.get_row(page_id=page_id, lang=lang, filename=filename)
+        
     def action_move(self, req, record):
         return self.action_update(req, record, action='move')
     RIGHTS_move = (Roles.CONTENT_ADMIN,)
