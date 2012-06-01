@@ -1908,9 +1908,9 @@ class Attachments(ContentManagementModule):
             self._base_uri = '/'+ page_record['identifier'].export() + '/attachments'
 
         def _api_call(self, name, *args, **kwargs):
-            page_id, lang = self._page_record['page_id'].value(), self._page_record['lang'].value()
+            r = self._page_record
             method = getattr(wiking.module('Attachments'), 'storage_api_'+name)
-            return method(page_id, lang, *args, **kwargs)
+            return method(r.req(), r['page_id'].value(), r['lang'].value(), *args, **kwargs)
 
         def _resource(self, req, row):
             filename = row['filename'].value()
@@ -1958,11 +1958,12 @@ class Attachments(ContentManagementModule):
             req = self._page_record.req()
             return [self._resource(req, row) for row in self._api_call('rows')]
      
-        def insert(self, data, filename, image_size=(800, 800), thumbnail_size=(200, 200)):
-            pass
+        def insert(self, filename, data, values):
+            # Insert is not implemented because it is currently unused.  The
+            # insertion doesn't go through
+            return self._api_call('insert', filename, data, values)
             
         def update(self, filename, values):
-            debug("***", values)
             return self._api_call('update', filename, values)
      
         def retrieve(self, filename):
@@ -2049,10 +2050,10 @@ class Attachments(ContentManagementModule):
         return super(Attachments, self)._redirect_after_update_uri(req, record,
                                                                    action='view', **kwargs)
 
-    def storage_api_row(self, page_id, lang, filename):
+    def storage_api_row(self, req, page_id, lang, filename):
         return self._data.get_row(page_id=page_id, lang=lang, filename=filename)
 
-    def storage_api_rows(self, page_id, lang):
+    def storage_api_rows(self, req, page_id, lang):
         self._data.select(condition=pd.AND(pd.EQ('page_id', pd.ival(page_id)),
                                            pd.EQ('lang', pd.sval(lang))))
         while True:
@@ -2062,7 +2063,21 @@ class Attachments(ContentManagementModule):
             yield row
         self._data.close()
         
-    def storage_api_update(self, page_id, lang, filename, values):
+    def storage_api_insert(self, req, page_id, lang, filename, data, values):
+        prefill = dict(page_id=page_id, lang=lang)
+        record = self._record(req, None, new=True, prefill=prefill)
+        error = record.validate('file', data, filename=filename, mime_type=values.pop('mime_type'))
+        if error:
+            return error
+        try:
+            transaction = self._insert_transaction(req, record)
+            self._in_transaction(transaction, self._insert, req, record, transaction)
+        except pd.DBException as e:
+            return self._error_message(*self._analyze_exception(e))
+        else:
+            return None
+        
+    def storage_api_update(self, req, page_id, lang, filename, values):
         row = self._data.get_row(page_id=page_id, lang=lang, filename=filename)
         if row:
             try:
