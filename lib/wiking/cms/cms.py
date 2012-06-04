@@ -1912,51 +1912,40 @@ class Attachments(ContentManagementModule):
             method = getattr(wiking.module('Attachments'), 'storage_api_'+name)
             return method(r.req(), r['page_id'].value(), r['lang'].value(), *args, **kwargs)
 
-        def _resource(self, req, row):
-            filename = row['filename'].value()
-            title = row['title'].value()
-            descr = row['description'].value()
-            mime_type = row['mime_type'].value()
-            thumbnail_size = row['thumbnail_size'].value()
-            uri = req.make_uri(self._base_uri+'/'+filename)
-            kwargs = {}
-            if mime_type.startswith('image/'):
-                cls = lcg.Image
-                if thumbnail_size:
-                    kwargs['thumbnail'] = lcg.Image(filename,
-                                                    uri=req.make_uri(self._base_uri+'/'+filename,
-                                                                     action='thumbnail'),
-                                                    title=title, descr=descr,
-                                                    size=(row['thumbnail_width'].value(),
-                                                          row['thumbnail_height'].value()))
-                    uri = req.make_uri(self._base_uri+'/'+filename, action='image')
-            elif filename.lower().endswith('mp3'):
-                cls = lcg.Audio
-            elif filename.lower().endswith('flv'):
-                cls = lcg.Video
-            elif filename.lower().endswith('swf'):
-                cls = lcg.Flash
+        def _row_resource(self, row):
+            if row['thumbnail_size'].value():
+                thumbnail_size = (row['thumbnail_width'].value(), row['thumbnail_height'].value())
             else:
-                cls = lcg.Resource
-            return cls(filename, uri=uri,
-                       title=title, descr=descr,
-                       info=dict(mime_type=mime_type,
-                                 byte_size=row['bytesize'].export(),
-                                 listed=row['listed'].value(),
-                                 in_gallery=row['in_gallery'].value(),
-                                 thumbnail_size=thumbnail_size),
-                       **kwargs)
+                thumbnail_size = None
+            return self._resource(row['filename'].value(),
+                                  title=row['title'].value(),
+                                  descr=row['description'].value(),
+                                  info=dict(mime_type=row['mime_type'].value(),
+                                            byte_size=row['bytesize'].export(),
+                                            listed=row['listed'].value(),
+                                            in_gallery=row['in_gallery'].value(),
+                                            thumbnail_size=row['thumbnail_size'].value()),
+                                  has_thumbnail=thumbnail_size is not None,
+                                  thumbnail_size=thumbnail_size)
+
+        def _resource_uri(self, filename):
+            return self._page_record.req().make_uri(self._base_uri+'/'+filename)
+        
+        def _image_uri(self, filename):
+            return self._page_record.req().make_uri(self._base_uri+'/'+filename, action='image')
+        
+        def _thumbnail_uri(self, filename):
+            return self._page_record.req().make_uri(self._base_uri+'/'+filename, action='thumbnail')
         
         def resource(self, filename):
             row = self._api_call('row', filename)
             if row:
-                return self._resource(self._page_record.req(), row)
+                return self._row_resource(row)
             else:
                 return None
 
         def resources(self):
-            req = self._page_record.req()
-            return [self._resource(req, row) for row in self._api_call('rows')]
+            return [self._row_resource(row) for row in self._api_call('rows')]
      
         def insert(self, filename, data, values):
             # Insert is not implemented because it is currently unused.  The
