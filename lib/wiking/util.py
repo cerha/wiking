@@ -146,7 +146,7 @@ class AuthenticationError(RequestError):
     
     # Translators: This is a warning on a webpage which is only accessible for logged in users
     _TITLE = _("Authentication required")
-    _HTTP_AUTH_MATCHER = re.compile('.*(Thunderbird|Icedove|Liferea)/.*')
+    _HTTP_AUTH_MATCHER = re.compile('.*(Thunderbird|Icedove|Liferea|Pytis)/.*')
     """Regular expression matching user agents for which HTTP authentication is used automatically.
 
     HTTP authentication is normally requested by client through the special
