@@ -1495,8 +1495,11 @@ class PytisModule(Module, ActionHandler):
 
         """
         uri = self._current_base_uri(req, record)
-        response = pw.EditForm.ajax_response(req, record, layout, errors, req.localizer(),
-                                             uri_provider=self._uri_provider(req, uri))
+        try:
+            response = pw.EditForm.ajax_response(req, record, layout, errors, req.localizer(),
+                                                 uri_provider=self._uri_provider(req, uri))
+        except pw.BadRequest:
+            raise BadRequest()
         return wiking.Response(response, content_type='application/json')
          
 
