@@ -125,7 +125,7 @@ class Handler(object):
         
         """
         application = self._application
-        uri = req.uri().rstrip('/')
+        uri = '/'+req.uri().strip('/')
         lang = document.lang() or req.preferred_language(raise_error=False) or 'en'
         nodes = {}
         styles = []
@@ -136,7 +136,9 @@ class Handler(object):
         resources = tuple(styles) + document.resources()
         resource_provider = lcg.ResourceProvider(resources=resources, dirs=wiking.cfg.resource_path)
         def mknode(item):
-            item_uri = '/'+item.id().strip('/')
+            # Caution - make the same uri transformation as above to get same
+            # results in all cases (such as for '/').
+            item_uri = '/'+item.id().strip('/') 
             if item_uri == uri:
                 heading = document.title() or item.title()
                 if heading and document.subtitle():
