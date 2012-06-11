@@ -560,7 +560,9 @@ class MenuItem(object):
                  foldable=False, order=None, variants=None):
         """Arguments:
 
-          id -- unique menu item identifier.  
+          id -- unique menu item identifier (basestring) which is at the same
+            time used as the target URI.  It should start with a slash (if not,
+            it is prepended automatically, but this is deprecated).
           title -- title as a (translatable) string displayed in menu.
           descr -- brief description as a (translatable) string used as a
             tooltip or a sitemap description.

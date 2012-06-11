@@ -125,7 +125,7 @@ class Handler(object):
         
         """
         application = self._application
-        id = '/'.join(req.path)
+        uri = req.uri().rstrip('/')
         lang = document.lang() or req.preferred_language(raise_error=False) or 'en'
         nodes = {}
         styles = []
@@ -136,7 +136,8 @@ class Handler(object):
         resources = tuple(styles) + document.resources()
         resource_provider = lcg.ResourceProvider(resources=resources, dirs=wiking.cfg.resource_path)
         def mknode(item):
-            if item.id() == id:
+            item_uri = '/'+item.id().strip('/')
+            if item_uri == uri:
                 heading = document.title() or item.title()
                 if heading and document.subtitle():
                     heading = lcg.concat(heading, ' :: ', document.subtitle())
@@ -159,14 +160,14 @@ class Handler(object):
                 hidden = True
             # The identifier is encoded to allow unicode characters within it.  The encoding
             # actually doesnt't matter, we just need any unique 8-bit string.
-            node = WikingNode(item.id().encode('utf-8'), title=item.title(), page_heading=heading,
+            node = WikingNode(item_uri.encode('utf-8'), title=item.title(), page_heading=heading,
                               descr=item.descr(), content=content,
                               lang=lang, sec_lang=document.sec_lang(), variants=variants or (),
                               active=item.active(), foldable=item.foldable(), hidden=hidden,
                               children=[mknode(i) for i in item.submenu()],
                               resource_provider=resource_provider, globals=document.globals(),
                               panels=panels, layout=document.layout())
-            nodes[item.id()] = node
+            nodes[item_uri] = node
             return node
         top_level_nodes = [mknode(item) for item in application.menu(req)]
         # Find the parent node by the identifier prefix.
@@ -176,12 +177,12 @@ class Handler(object):
             if key in nodes:
                 parent = nodes[key]
                 break
-        if id in nodes:
-            node = nodes[id]
+        if uri in nodes:
+            node = nodes[uri]
         else: 
             # Create the current document's node if it was not created with the menu.
             variants = document.variants() or parent and parent.variants() or None
-            node = mknode(MenuItem(id, document.title(), hidden=True, variants=variants))
+            node = mknode(MenuItem(uri, document.title(), hidden=True, variants=variants))
             if parent:
                 parent.add_child(node)
             else:
