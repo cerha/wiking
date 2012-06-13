@@ -19,33 +19,12 @@
 
 var wiking = new Object();
 
-wiking.Translatable = Class.create({
-    // Translations are passed to JavaScript from Python when the constructor
-    // is called.  The method 'gettext()' then allows obtaining a translation
-    // for given string.  The advantage is that we have all translations at one
-    // place (in the gettext catalog of the Python source).  The disadvantage
-    // is that we need to duplicate all strings used in JavaScript at the
-    // Python side and keep them in sync, so this is only usable when their
-    // amount is small (which it currently is).
+wiking.gettext = new Gettext({domain:'wiking'});
+wiking._ = function (msg){ return wiking.gettext.gettext(msg); };
 
-    initialize: function (translations) {
-	this.translations = translations;
-    },
+wiking.KeyHandler = Class.create({
 
-    gettext: function(text) {
-	translation = this.translations[text];
-	if (typeof(translation) != 'undefined')
-	    return translation;
-	else
-	    return text;
-    }
-
-});
-
-wiking.KeyHandler = Class.create(wiking.Translatable, {
-
-    initialize: function ($super, translations) {
-	$super(translations);
+    initialize: function () {
 	this.keymap = this.init_keymap();
     },
       
@@ -122,18 +101,18 @@ wiking.Handler = Class.create(wiking.KeyHandler, {
 	'bottom':      'contentinfo'
     },
     
-    initialize: function ($super, translations) {
+    initialize: function ($super) {
 	// Constructor (called on page load).
-	$super(translations);
+	$super();
 	this.init_landmarks();
 	var menu = $('menu');
 	if (menu)
-	    this.menu = new wiking.MainMenu(translations, menu);
+	    this.menu = new wiking.MainMenu(menu);
 	else
 	    this.menu = null;
 	var submenu = $('submenu');
 	if (submenu) {
-	    this.submenu = new wiking.TreeMenu(translations, submenu);
+	    this.submenu = new wiking.TreeMenu(submenu);
 	    if (menu)
 		this.menu.bind_submenu(this.submenu);
 	} else {
@@ -198,8 +177,8 @@ wiking.Menu = Class.create(wiking.KeyHandler, {
     // Initialize a hierarchical menu -- assign ARIA roles to HTML tags
     // and bind keyboard event handling to support keyboard menu traversal.
     
-    initialize: function ($super, translations, node) {
-	$super(translations);
+    initialize: function ($super, node) {
+	$super();
 	this.node = node;
 	node.setAttribute('role', 'application');
 	// Go through the menu and assign aria roles and key bindings.
@@ -453,13 +432,13 @@ wiking.MainMenu = Class.create(wiking.NotebookBase, {
 wiking.TreeMenu = Class.create(wiking.Menu, {
     // Specific handling of foldable tree menu.
     
-    initialize: function ($super, translations, node) {
-	$super(translations, node);
+    initialize: function ($super, node) {
+	$super(node);
 	node.down('.menu-panel').setAttribute('role', 'tree');
 	if (this.foldable) {
 	    var b = new Element('button',
 				{id: 'toggle-menu-expansion-button',
-				 title: this.gettext("Expand/collapse complete menu hierarchy")});
+				 title: wiking._("Expand/collapse complete menu hierarchy")});
 	    node.down('ul').insert({after: b});
 	    b.observe('click', this.on_toggle_expansion.bind(this));
 	}

@@ -1,30 +1,36 @@
-domains := wiking wiking-cms
-mo_files := $(shell ls *.po | sed 's/\(.*\)\.\(.*\)\.po/\2\/LC_MESSAGES\/\1.mo/')
 
-all: $(mo_files)
-wiking.pot: $(shell find ../lib -name "*.py" -not -path "*/cms/*")
-wiking-cms.pot: $(shell find ../lib/wiking/cms -name "*.py")
+mo_files := $(patsubst wiking.%.po,%/LC_MESSAGES/wiking.mo,$(shell ls *.po)) $(patsubst wiking-cms.%.po,%/LC_MESSAGES/wiking-cms.mo,$(shell ls *.po))
+resource_po_files := $(patsubst wiking.%.po,../resources/translation/wiking.%.po,$(shell ls wiking.*.po))
 
-include $(domains:%=%.d)
-
-%.d: $(shell find ../lib -name "*.py")
-	@echo "Updating rules for domain $*."
-	@echo "$(wildcard $*.*.po): $*.%.po: $*.pot" > $@
-	@echo "$(filter %/$*.mo,$(mo_files)): %/LC_MESSAGES/$*.mo: $*.%.po %/LC_MESSAGES" >> $@
+all: $(mo_files) $(resource_po_files)
 
 %/LC_MESSAGES:
 	mkdir -p $*/LC_MESSAGES/
 
-%.mo:
+%/LC_MESSAGES/wiking.mo: wiking.%.po %/LC_MESSAGES
 	msgfmt -v $< -o $@
 
-%.po:
-	msgmerge --backup=none -q --update $@ $< && touch $@
+%/LC_MESSAGES/wiking-cms.mo: wiking-cms.%.po %/LC_MESSAGES
+	msgfmt -v $< -o $@
 
-%.pot:
-	xgettext $^ --add-comments=Translators: --from-code=utf-8 -o $@
+../resources/translation:
+	mkdir -p ../resources/translation/
+
+../resources/translation/wiking.%.po: wiking.%.po ../resources/translation
+	cp $< $@
+
+wiking.pot:
+	pybabel extract -F wiking.cfg --add-comments=Translators: -s ../ -o wiking.pot
+
+wiking-cms.pot:
+	pybabel extract -F wiking-cms.cfg --add-comments=Translators: -s ../ -o wiking-cms.pot
+
+$(shell ls wiking.*.po): wiking.%.po: wiking.pot
+	msgmerge -q --backup=none --update $@ $< && touch $@
+
+$(shell ls wiking-cms.*.po): wiking-cms.%.po: wiking-cms.pot
+	msgmerge -q --backup=none --update $@ $< && touch $@
 
 clean:
 	rm -f *.d *.pot
-
-.PHONY: all clean
+	rm -rf ../resources/translation/

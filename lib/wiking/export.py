@@ -62,7 +62,9 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             # Make sure that Prototype.js is always loaded first, so that it is
             # available in any other scripts.
             self.resource('prototype.js')
+            self.resource('gettext.js')
             self.resource('wiking.js')
+            self.resource('wiking.%s.po' % self.lang()) # Translations for Javascript
 
         def req(self):
             """Return the current request as a 'wiking.Request' instance.
@@ -107,9 +109,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         return self._UNSAFE_CHARS.sub('-', id)
 
     def _body_attr(self, context, **kwargs):
-        translations = {"Expand/collapse complete menu hierarchy":
-                            context.localize(_("Expand/collapse complete menu hierarchy"))}
-        onload = context.generator().js_call('new wiking.Handler', translations)
+        onload = context.generator().js_call('new wiking.Handler')
         cls = (context.node().layout() or self.Layout.DEFAULT) + '-layout'
         return super(Exporter, self)._body_attr(context, onload=onload, cls=cls, **kwargs)
 
