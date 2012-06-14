@@ -197,8 +197,9 @@ create or replace rule cms_v_session_log_insert as
      	    	 	          start_time, ip_address, user_agent, referer)
             values (new.session_id, new.uid, new.login, new.success,
 	    	    new.start_time, new.ip_address, new.user_agent, new.referer)
-            returning log_id, session_id, uid, login, success, NULL::boolean,
-	    	      start_time, NULL::interval, ip_address, user_agent, referer;
+            returning log_id, session_id, uid, NULL::varchar(64), NULL::text, login, 
+                      success, NULL::boolean, start_time, NULL::interval,
+                      ip_address, user_agent, referer;
 );
 
 -------------------------------------------------------------------------------
