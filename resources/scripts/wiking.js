@@ -303,7 +303,7 @@ wiking.Notebook = Class.create(wiking.NotebookBase, {
     COOKIE: 'wiking_last_notebook_tab',
 
     initialize: function ($super, node_id) {
-	$super({}, $(node_id));
+	$super($(node_id));
     },
 
     initially_active_item: function () {
