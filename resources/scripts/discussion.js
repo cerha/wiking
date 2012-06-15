@@ -33,10 +33,9 @@
 
 */
 
-var Discussion = Class.create(wiking.Translatable, {
+var Discussion = Class.create({
 
-    initialize: function ($super, uri, field, translations) {
-	$super(translations);
+    initialize: function ($super, uri, field) {
 	this.uri = uri;
 	this.field = field;
 	$$('.discussion-reply').each(function (div) {
@@ -49,7 +48,7 @@ var Discussion = Class.create(wiking.Translatable, {
 		actions = new Element('div', {'class': 'actions'})
 		item.insert(actions);
 	    }
-            var button = new Element('button', {'class': 'reply'}).update(this.gettext("Reply"));
+            var button = new Element('button', {'class': 'reply'}).update(wiking._("Reply"));
 	    button.observe('click', function (event) { 
 		this.on_reply(item, comment_id, quoted);
 	    }.bind(this));
@@ -66,7 +65,7 @@ var Discussion = Class.create(wiking.Translatable, {
 					'class': 'pytis-form edit-form'});
 	var field_id = 'wiking-discussion-reply-' + comment_id;
 	var label = new Element('span', {'class': 'field-label id-'+this.field});
-	label.insert(new Element('label', {'for': field_id}).update(this.gettext('Your Reply')));
+	label.insert(new Element('label', {'for': field_id}).update(wiking._('Your Reply')));
 	label.insert(new Element('sup', {'class': 'not-null'}).update('*'));
 	label.insert(':');
 	form.insert(new Element('div').update(label));
@@ -78,16 +77,16 @@ var Discussion = Class.create(wiking.Translatable, {
      					     'aria-required': 'true'}));
      	form.insert(new Element('input', {'type': 'hidden', 'name': 'action', 'value': 'reply'}));
 	var buttons = [
-	    ["Submit", {'type': 'submit', 'value': '1'}, 
+	    [wiking._("Submit"), {'type': 'submit', 'value': '1'}, 
 	     function (event) {}],
-	    ["Quote", {'onclick': 'return false;'}, 
+	    [wiking._("Quote"), {'onclick': 'return false;'}, 
 	     function (event) { this.on_quote(form[this.field], quoted); }],
-	    ["Cancel", {'onclick': 'return false;'}, 
+	    [wiking._("Cancel"), {'onclick': 'return false;'}, 
 	     function (event) { this.on_cancel(form); }]];
 	var div = new Element('div', {'class': 'submit'});
 	form.insert(div);
         buttons.each(function (x) {
-            var button = new Element('button', x[1]).update(this.gettext(x[0]));
+            var button = new Element('button', x[1]).update(x[0]);
 	    button.observe('click', x[2].bind(this));
             div.insert(button);
 	}.bind(this));

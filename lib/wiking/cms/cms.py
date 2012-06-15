@@ -2323,13 +2323,7 @@ class Discussions(ContentManagementModule, EmbeddableCMSModule):
                 context.resource('effects.js')
                 context.resource('discussion.js')
                 # Translators: Button labels to add a reaction to a previous discussion post.
-                return g.script(g.js_call('new Discussion', form_uri, 'text',
-                                          {"Reply": req.localize(_("Reply")),
-                                           "Your Reply": req.localize(_("Your reply")),
-                                           "Quote": req.localize(_("Quote")),
-                                           "Cancel": req.localize(_("Cancel")),
-                                           "Submit": req.localize(_("Submit")),
-                                           }))
+                return g.script(g.js_call('new Discussion', form_uri, 'text'))
             content.append(wiking.HtmlRenderer(render))
             # We don't want to insert messages through a separate insert form,
             # so we embed one directly below the message list.
