@@ -266,9 +266,9 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             return None
 
     def _submenu(self, context):
-        g = self._generator
         if not context.has_submenu:
             return None
+        g = self._generator
         current = context.node()
         while current is not None and current.hidden():
             current = current.parent()
@@ -297,8 +297,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             # in this space.  This is only needed for foldable trees, but we render also fixed
             # trees in the same manner for consistency.  The CSS class 'bullet' represents either
             # fixed tree items or leaves in foldable trees (where no further folding is possible).
-            content = g.span(node.title(),
-                             cls=not is_foldable(node) and 'bullet' or None)
+            content = g.span(node.title(), cls=not is_foldable(node) and 'bullet' or None)
             return g.link(content, context.uri(node), title=node.descr(),
                           cls=' '.join(cls) or None)
         def menu(node, indent=0):
@@ -315,21 +314,22 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
                                 '\n', ' '*(indent-2))
             else:
                 return ''
+        application = context.application
         if context.has_menu:
             # If there is the main menu, this is its submenu, but if the main
             # menu is empty, this menu acts as the main menu.
-            title = _("Local navigation")
-            # Translators: Heading of webpage navigation menu containing a list
-            # of links to pages in this web section
-            heading = _("In this section:")
+            heading = application.menu_panel_title(context.req())
+            title = application.menu_panel_tooltip(context.req())
             name = 'local-navigation'
         else:
             title = heading = _("Main navigation")
             name = 'main-navigation'
+        content = lcg.coerce(application.menu_panel_bottom_content(context.req()))
+        content.set_parent(context.node())
         return g.div((g.h(g.link(heading, None, name=name, hotkey="3"), 3),
-                      menu(context.node().top())),
+                      menu(context.node().top()) + content.export(context)),
                      cls='menu-panel')
-    
+
     def _panels(self, context):
         g = self._generator
         panels = context.node().panels()

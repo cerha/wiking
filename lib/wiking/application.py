@@ -506,6 +506,33 @@ class Application(Module):
         else:
             return None
 
+    def menu_panel_title(self, req):
+        """Return the displayed title of the left side hierarchical menu as a basestring.
+
+        Python string, unicode or lcg.Translatable instance is accepted.
+
+        """
+        # Translators: Heading of webpage left side hierarchical navigation
+        # menu containing a list of links to pages in this web section
+        return _("In this section:")
+    
+    def menu_panel_tooltip(self, req):
+        """Return the tooltip of the left side hierarchical menu as a basestring.
+
+
+        Python string, unicode or lcg.Translatable instance is accepted.
+
+        """
+        return _("Local navigation")
+        
+    def menu_panel_bottom_content(self, req):
+        """Return the additional content to be displayed in the hierarchical menu panel.
+
+        Any content acceptable by 'lcg.coerce()' may be returned.  The content
+        will be placed under the actual hierarchical menu list (at the bottom of the panel).
+
+        """
+        return None
     
     def bottom_bar_left_content(self, req):
         """Return the content displayed on the left side of the bottom bar above the page footer.
