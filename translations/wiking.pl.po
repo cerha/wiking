@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2012-06-15 10:10+0200\n"
+"POT-Creation-Date: 2012-06-15 14:18+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Petr Topiarz <topiarz@post.cz>\n"
 "Language-Team: \n"
@@ -324,7 +324,7 @@ msgid "Page heading"
 msgstr "Tytuł strony"
 
 #: ../lib/wiking/export.py:95 ../lib/wiking/export.py:233
-#: ../lib/wiking/export.py:263 ../lib/wiking/export.py:325
+#: ../lib/wiking/export.py:263 ../lib/wiking/export.py:326
 msgid "Main navigation"
 msgstr "Główna nawigacja"
 
@@ -358,25 +358,25 @@ msgstr "Jesteś tutaj:"
 
 #. Panels are small windows on the side of the page. This is a label
 #. for a link that shows/hides the panels.
-#: ../lib/wiking/export.py:341
+#: ../lib/wiking/export.py:344
 msgid "Show panels"
 msgstr "Pokaż panel"
 
-#: ../lib/wiking/export.py:342
+#: ../lib/wiking/export.py:345
 msgid "Hide panels"
 msgstr "Ukryj panel"
 
 #. ``RSS channel'' is terminology idiom, see Wikipedia
-#: ../lib/wiking/export.py:354
+#: ../lib/wiking/export.py:357
 msgid "RSS channel"
 msgstr "RSS kanał"
 
-#: ../lib/wiking/export.py:373
+#: ../lib/wiking/export.py:376
 msgid "Warning"
 msgstr "Ostrzeżenie"
 
 #. Information about last change of a webpage (when and who)
-#: ../lib/wiking/export.py:396
+#: ../lib/wiking/export.py:399
 #, python-format
 msgid "Last change: %(date)s, %(user)s"
 msgstr "Ostatnia zmiana:  %(date)s, %(user)s"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2012-06-15 10:10+0200\n"
+"POT-Creation-Date: 2012-06-15 14:18+0200\n"
 "PO-Revision-Date: 2012-06-15 10:06+0200\n"
 "Last-Translator: Hynek Hanke <hanke@brailcom.org>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
@@ -346,7 +346,7 @@ msgid "Page heading"
 msgstr "Záhlaví stránky"
 
 #: ../lib/wiking/export.py:95 ../lib/wiking/export.py:233
-#: ../lib/wiking/export.py:263 ../lib/wiking/export.py:325
+#: ../lib/wiking/export.py:263 ../lib/wiking/export.py:326
 msgid "Main navigation"
 msgstr "Hlavní navigace"
 
@@ -380,25 +380,25 @@ msgstr "Nacházíte se zde:"
 
 #. Panels are small windows on the side of the page. This is a label
 #. for a link that shows/hides the panels.
-#: ../lib/wiking/export.py:341
+#: ../lib/wiking/export.py:344
 msgid "Show panels"
 msgstr "Zobrazit panely"
 
-#: ../lib/wiking/export.py:342
+#: ../lib/wiking/export.py:345
 msgid "Hide panels"
 msgstr "Skrýt panely"
 
 #. ``RSS channel'' is terminology idiom, see Wikipedia
-#: ../lib/wiking/export.py:354
+#: ../lib/wiking/export.py:357
 msgid "RSS channel"
 msgstr "RSS kanál"
 
-#: ../lib/wiking/export.py:373
+#: ../lib/wiking/export.py:376
 msgid "Warning"
 msgstr "Varování"
 
 #. Information about last change of a webpage (when and who)
-#: ../lib/wiking/export.py:396
+#: ../lib/wiking/export.py:399
 #, python-format
 msgid "Last change: %(date)s, %(user)s"
 msgstr "Poslední změna: %(date)s, %(user)s"
