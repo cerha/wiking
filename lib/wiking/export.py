@@ -314,20 +314,23 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
                                 '\n', ' '*(indent-2))
             else:
                 return ''
+        req = context.req()
         application = context.application
         if context.has_menu:
             # If there is the main menu, this is its submenu, but if the main
             # menu is empty, this menu acts as the main menu.
-            heading = application.menu_panel_title(context.req())
-            title = application.menu_panel_tooltip(context.req())
+            heading = application.menu_panel_title(req)
+            title = application.menu_panel_tooltip(req)
             name = 'local-navigation'
         else:
             title = heading = _("Main navigation")
             name = 'main-navigation'
-        content = lcg.coerce(application.menu_panel_bottom_content(context.req()))
-        content.set_parent(context.node())
-        return g.div((g.h(g.link(heading, None, name=name, hotkey="3"), 3),
-                      menu(context.node().top()) + content.export(context)),
+        content = menu(context.node().top())
+        extra_content = application.menu_panel_bottom_content(req)
+        if extra_content:
+            extra_content.set_parent(context.node())
+            content += extra_content.export(context)
+        return g.div((g.h(g.link(heading, None, name=name, hotkey="3"), 3), content),
                      cls='menu-panel')
 
     def _panels(self, context):
