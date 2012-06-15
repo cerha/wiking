@@ -245,8 +245,31 @@ class PasswordExpirationError(RequestError):
         return content
 
     
-class AuthorizationError(RequestError):
-    """Error indicating that the user doesn't have privilegs for the action."""
+class Forbidden(RequestError):
+    """Error indicating unavailable request target.
+
+    This is a more generic case of denied access.  Use 'AuthorizationError' if
+    the access to the target depends on authorization settings.  Use
+    'Forbidden' when the target is globally unavailable, such as when directory
+    listing is denied to everyone, but files in that directory may be
+    accessible.
+    
+    """
+    _STATUS_CODE = httplib.FORBIDDEN
+    
+    def message(self, req):
+        return (lcg.p(_("The item '%s' is not available.", req.uri())),
+                lcg.p(_("The item exists on the server, but can not be accessed.")))
+
+
+class AuthorizationError(Forbidden):
+    """Error indicating that the user doesn't have privilegs for the action.
+
+    Use when the access to the target depends on authorization settings.
+    Typically when the user could be granted additional privilegs to get access
+    to the resource.  Use 'Forbidden' when the target is globally unavailable.
+
+    """
     
     # Translators: An error message
     _TITLE = _("Access Denied")
@@ -304,15 +327,6 @@ class NotFound(RequestError):
                         wiking.cfg.webmaster_address),
                       formatted=True))
     #return lcg.coerce([lcg.p(p) for p in msg])
-
-    
-class Forbidden(RequestError):
-    """Error indicating unavailable request target."""
-    _STATUS_CODE = httplib.FORBIDDEN
-    
-    def message(self, req):
-        return (lcg.p(_("The item '%s' is not available.", req.uri())),
-                lcg.p(_("The item exists on the server, but can not be accessed.")))
 
     
 class NotAcceptable(RequestError):
