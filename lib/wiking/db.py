@@ -1411,7 +1411,7 @@ class PytisModule(Module, ActionHandler):
                 del req.unresolved_path[0]
                 # TODO: respect the binding condition in the forwarded module.
                 mod = wiking.module(binding.name())
-                return req.forward(mod, binding=binding, record=record,
+                return req.forward(mod, binding=binding, record=record, forwarded_by=self,
                                    title=self._document_title(req, record))
         if req.unresolved_path[0] in [b.id() for b in self._view.bindings()]:
             # If a binding is present in `view.bindings()', but not in
