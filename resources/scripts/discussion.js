@@ -35,7 +35,7 @@
 
 var Discussion = Class.create({
 
-    initialize: function ($super, uri, field) {
+    initialize: function (uri, field) {
 	this.uri = uri;
 	this.field = field;
 	$$('.discussion-reply').each(function (div) {
