@@ -35,10 +35,13 @@
 
 var Discussion = Class.create({
 
-    initialize: function (uri, field) {
+    initialize: function (uri, field, container_selector) {
 	this.uri = uri;
 	this.field = field;
-	$$('.discussion-reply').each(function (div) {
+	selector = '.discussion-reply';
+	if (typeof(container_selector) != 'undefined')
+	    selector = container_selector +' '+ selector;
+	$$(selector).each(function (div) {
 	    var comment_id = div.down('span.id').innerHTML;
 	    var quoted = decodeURIComponent(div.down('span.quoted').innerHTML);
 	    var button = div.down('button.reply');
