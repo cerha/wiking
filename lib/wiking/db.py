@@ -246,7 +246,7 @@ class PytisModule(Module, ActionHandler):
         def update(self, transaction=None, **kwargs):
             """Update the record in the database by values of given keyword args."""
             self._data.update(self.key(), self._data.make_row(**kwargs), transaction=transaction)
-            self.reload()
+            self.reload(transaction=transaction)
     
         def rowdata(self):
             """Return record's row data for insert/update operations."""
