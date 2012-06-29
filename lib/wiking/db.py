@@ -2054,7 +2054,7 @@ class PytisModule(Module, ActionHandler):
         return self._document(req, content, record,
                               subtitle=self._action_subtitle(req, action, record=record))
 
-    def action_delete(self, req, record):
+    def action_delete(self, req, record, action='delete'):
         if req.param('submit'):
             try:
                 transaction = self._delete_transaction(req, record)
@@ -2068,13 +2068,13 @@ class PytisModule(Module, ActionHandler):
         else:
             back_action = 'view'
         form = self._form(pw.ShowForm, req, record=record,
-                          layout=self._layout(req, 'delete', record),
-                          actions=(Action('delete', self._DELETE_LABEL, submit=1),
+                          layout=self._layout(req, action, record),
+                          actions=(Action(action, self._DELETE_LABEL, submit=1),
                                    # Translators: Back button label. Standard computer terminology.
                                    Action(back_action, _("Back"))))
         req.message(self._delete_prompt(req, record))
         return self._document(req, form, record,
-                              subtitle=self._action_subtitle(req, 'delete', record))
+                              subtitle=self._action_subtitle(req, action, record))
         
     def action_export(self, req):
         columns = self._exported_columns(req)
