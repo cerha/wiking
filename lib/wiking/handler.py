@@ -175,13 +175,13 @@ class Handler(object):
         # Find the parent node by the identifier prefix.
         parent = None
         for i in range(len(req.path)-1):
-            key = '/'.join(req.path[:len(req.path)-i-1])
+            key = '/'+'/'.join(req.path[:len(req.path)-i-1])
             if key in nodes:
                 parent = nodes[key]
                 break
-        if uri in nodes:
+        try:
             node = nodes[uri]
-        else: 
+        except KeyError:
             # Create the current document's node if it was not created with the menu.
             variants = document.variants() or parent and parent.variants() or None
             node = mknode(MenuItem(uri, document.title(), hidden=True, variants=variants))
