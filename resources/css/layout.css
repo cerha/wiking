@@ -384,3 +384,43 @@ form.login-form ul {
 form.login-form label {
     font-weight: bold;
 }
+
+div.cke_dialog_body p.ckeditor-success {
+    color: green;
+}
+div.cke_dialog_body p.ckeditor-error {
+    color: red;
+}
+
+div.cke_dialog_body .cke_dialog_ui_file label {
+    display: block;
+    width: 0px;
+    height: 0px;
+}
+
+div.cke_dialog_body .attachment-selector {
+    width: 350px;
+}
+
+div.cke_dialog_body .attachment-selector label {
+    display: block;
+    width: 0px;
+    height: 0px;
+}
+
+div.cke_dialog_body div.preview-container {
+    width: 200px;
+    height: 200px;
+    background: #ffffff;
+    border: 1px solid #000000;
+    text-align: center;
+}
+
+div.cke_dialog_body img#image-preview {
+    max-height: 100%;
+}
+div.cke_dialog_body #video-preview, div.cke_dialog_body #audio-preview {
+    width: 100%;
+    height: 100%;
+}
+
