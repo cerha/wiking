@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2012-06-15 14:18+0200\n"
+"POT-Creation-Date: 2012-07-19 17:55+0200\n"
 "PO-Revision-Date: 2010-01-19 16:40+0100\n"
 "Last-Translator: Petr Topiarz <topiarz@post.cz>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
@@ -16,32 +16,32 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../lib/wiking/application.py:378
+#: ../lib/wiking/application.py:379
 msgid "Unable to perform a database operation."
 msgstr ""
 
 #. Website idiom. This is followed by information on the underlying software
 #. tools.  Means: This website runs on [...this and that software...].
-#: ../lib/wiking/application.py:487
+#: ../lib/wiking/application.py:488
 msgid "Powered by"
 msgstr "Drevet av"
 
-#: ../lib/wiking/application.py:504
+#: ../lib/wiking/application.py:505
 msgid "Accessibility Statement"
 msgstr "Tilgjengelighetserklæring"
 
 #. Heading of webpage left side hierarchical navigation
 #. menu containing a list of links to pages in this web section
-#: ../lib/wiking/application.py:517
+#: ../lib/wiking/application.py:518
 msgid "In this section:"
 msgstr "I denne seksjonen:"
 
-#: ../lib/wiking/application.py:526 ../lib/wiking/export.py:96
+#: ../lib/wiking/application.py:527 ../lib/wiking/export.py:96
 #: ../lib/wiking/export.py:235
 msgid "Local navigation"
 msgstr "Lokalnavigasjon"
 
-#: ../lib/wiking/application.py:559
+#: ../lib/wiking/application.py:560
 msgid "Contact:"
 msgstr "Kontakt:"
 
@@ -675,23 +675,23 @@ msgstr "Ugyldig format"
 msgid "Domain not found"
 msgstr "Ingenting funnet."
 
-#: ../resources/scripts/discussion.js:51
+#: ../resources/scripts/discussion.js:54
 msgid "Reply"
 msgstr ""
 
-#: ../resources/scripts/discussion.js:68
+#: ../resources/scripts/discussion.js:71
 msgid "Your Reply"
 msgstr ""
 
-#: ../resources/scripts/discussion.js:80
+#: ../resources/scripts/discussion.js:83
 msgid "Submit"
 msgstr ""
 
-#: ../resources/scripts/discussion.js:82
+#: ../resources/scripts/discussion.js:85
 msgid "Quote"
 msgstr ""
 
-#: ../resources/scripts/discussion.js:84
+#: ../resources/scripts/discussion.js:87
 msgid "Cancel"
 msgstr ""
 
