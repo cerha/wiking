@@ -1475,13 +1475,14 @@ class Pages(SiteSpecificContentModule):
         # Process page attachments
         storage = Attachments.AttachmentStorage(record)
         resources = storage.resources()
-        # Create automatic attachment list if any attachments are marked as listed.
+        # Create automatic image gallery if any attachments are marked as in gallery.
         gallery_images = [r for r in resources if r.info()['in_gallery']]
         if gallery_images:
             content.append(Attachments.ImageGallery(gallery_images))
         # Create automatic attachment list if any attachments are marked as listed.
         listed_attachments = [(lcg.link(r.uri(), r.title() or r.filename()),
-                               ' ('+ r.info()['byte_size'] +') ', lcg.WikiText(r.descr() or ''))
+                               ' ('+ r.info()['byte_size'] +') ',
+                               lcg.coerce(r.descr() or '', formatted=True))
                               for r in resources if r.info()['listed']]
         if listed_attachments:
             # Translators: Section title. Attachments as in email attachments.
