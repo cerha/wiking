@@ -203,8 +203,8 @@ class RoleMembers(UserManagementModule):
         @type role: L{Role}
         @param role: Role whose users should be returned.
 
-        @rtype: sequence of strings
-        @return: Sequence of identifiers of the users belonging to the given
+        @rtype: sequence of integers
+        @return: Sequence of UIDs of the users belonging to the given
           role, including all contained roles.
           
         """
