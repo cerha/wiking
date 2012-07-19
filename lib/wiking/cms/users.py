@@ -129,10 +129,13 @@ class RoleSets(UserManagementModule):
             info = None
         return info and lcg.Container((lcg.p(info), content)) or content
     
-    def included_role_ids(self, role):
+    def included_role_ids(self, role, reverse=False):
         """
         @type role: L{Role}
         @param role: Role whose contained roles should be returned.
+
+        @type reverse: L{bool}
+        @param reverse: Iff true, reverse role membership.
 
         @rtype: sequence of strings
         @return: Sequence of role identifiers included in the given role,
@@ -141,6 +144,12 @@ class RoleSets(UserManagementModule):
         """
         assert isinstance(role, wiking.Role), role
         containment = self._dictionary()
+        if reverse:
+            c = {}
+            for r, role_list in containment.items():
+                for rr in role_list:
+                    c[rr] = r
+            containment = c
         role_ids = []
         queue = [role.id()]
         while queue:
@@ -198,17 +207,22 @@ class RoleMembers(UserManagementModule):
         else:
             return super(RoleMembers, self)._link_provider(req, uri, record, cid, **kwargs)
 
-    def user_ids(self, role):
+    def user_ids(self, role, restrict=False):
         """
         @type role: L{Role}
         @param role: Role whose users should be returned.
 
-        @rtype: sequence of integers
-        @return: Sequence of UIDs of the users belonging to the given
-          role, including all contained roles.
+        @type restrict: L{bool}
+        @param restrict: If false, return identifiers of the users including
+          all contained roles.  If true, return identifiers of the users
+          including all containing roles.
+
+        @rtype: sequence of strings
+        @return: Sequence of identifiers of the users belonging to the given
+          role, including all roles as specified by L{restrict} argument.
           
         """
-        included_role_ids = wiking.module('RoleSets').included_role_ids(role)
+        included_role_ids = wiking.module('RoleSets').included_role_ids(role, reverse=restrict)
         S = pd.String()
         condition = pd.OR(*[pd.EQ('role_id', pd.Value(S, m_id)) for m_id in included_role_ids])
         user_ids = []
@@ -1280,7 +1294,7 @@ class Users(UserManagementModule):
                 role = (role,)
             user_ids = set()
             for r in role:
-                user_ids |= set(wiking.module('RoleMembers').user_ids(r))
+                user_ids |= set(wiking.module('RoleMembers').user_ids(r, restrict=True))
             include_uids = set(include_uids)
             exclude_uids = set(exclude_uids)
             user_ids |= include_uids
