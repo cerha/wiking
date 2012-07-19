@@ -61,13 +61,13 @@ class RoleSets(UserManagementModule):
         table = 'role_sets'
         fields = (pp.Field('role_set_id'),
                   pp.Field('role_id', _("Group"), codebook='ApplicationRoles'),
-                  pp.Field('member_role_id', _("Contained group"), codebook='UserGroups'),
+                  pp.Field('member_role_id', _("Gets rights of"), codebook='UserGroups'),
                   pp.Field('delete', virtual=True, computer=computer(lambda r: _("Remove"))),
                   )
         columns = layout = ('role_id', 'member_role_id')
         
     _TITLE_COLUMN = 'member_role_id'
-    _INSERT_LABEL = _("Add contained group")
+    _INSERT_LABEL = _("Add rights of group")
 
     _cached_dictionary = None
     _cached_dictionary_time = None
@@ -120,36 +120,26 @@ class RoleSets(UserManagementModule):
     def related(self, req, binding, record, uri):
         content = super(RoleSets, self).related(req, binding, record, uri)
         if binding.id() == 'contained':
-            info = _("Users of group '%s' automatically gain membersip in the following groups:",
+            info = _("Users of group '%s' automatically gain rights of the following groups:",
                      record['xname'].value())
         elif binding.id() == 'containing':
-            info = _("Users of the following groups automatically gain membersip in group '%s':",
+            info = _("Users of the following groups automatically get rights of group '%s':",
                      record['xname'].value())
         else:
             info = None
         return info and lcg.Container((lcg.p(info), content)) or content
-    
-    def included_role_ids(self, role, reverse=False):
-        """
-        @type role: L{Role}
-        @param role: Role whose contained roles should be returned.
 
-        @type reverse: L{bool}
-        @param reverse: Iff true, reverse role membership.
-
-        @rtype: sequence of strings
-        @return: Sequence of role identifiers included in the given role,
-          including the identifier of C{role} itself.
-          
-        """
+    def _related_role_ids(self, role, what_to_add):
         assert isinstance(role, wiking.Role), role
         containment = self._dictionary()
-        if reverse:
+        if what_to_add == 'including':
             c = {}
             for r, role_list in containment.items():
                 for rr in role_list:
                     c[rr] = r
             containment = c
+        else:
+            assert what_to_add == 'included', what_to_add
         role_ids = []
         queue = [role.id()]
         while queue:
@@ -158,6 +148,30 @@ class RoleSets(UserManagementModule):
                 role_ids.append(r_id)
             queue += list(containment.get(r_id, []))
         return role_ids
+        
+    def included_role_ids(self, role):
+        """
+        @type role: L{Role}
+        @param role: Role whose contained roles should be returned.
+
+        @rtype: sequence of strings
+        @return: Sequence of role identifiers included in the given role,
+          including the identifier of C{role} itself.
+          
+        """
+        return self._related_role_ids(role, 'included')
+
+    def containing_role_ids(self, role):
+        """
+        @type role: L{Role}
+        @param role: Role whose containing roles should be returned.
+
+        @rtype: sequence of strings
+        @return: Sequence of identifiers of roles containing the given role,
+          including the identifier of C{role} itself.
+          
+        """
+        return self._related_role_ids(role, 'including')
 
 
 class ContainingRoles(RoleSets):
@@ -172,7 +186,7 @@ class ContainingRoles(RoleSets):
 
     """
     _TITLE_COLUMN = 'role_id'
-    _INSERT_LABEL = _("Add to another group")
+    _INSERT_LABEL = _("Add rights to another group")
     
 
 class RoleMembers(UserManagementModule):
@@ -207,22 +221,17 @@ class RoleMembers(UserManagementModule):
         else:
             return super(RoleMembers, self)._link_provider(req, uri, record, cid, **kwargs)
 
-    def user_ids(self, role, restrict=False):
+    def user_ids(self, role):
         """
         @type role: L{Role}
         @param role: Role whose users should be returned.
 
-        @type restrict: L{bool}
-        @param restrict: If false, return identifiers of the users including
-          all contained roles.  If true, return identifiers of the users
-          including all containing roles.
-
-        @rtype: sequence of strings
+        @rtype: sequence of integers
         @return: Sequence of identifiers of the users belonging to the given
-          role, including all roles as specified by L{restrict} argument.
+          role, including all roles L{role} is member of.
           
         """
-        included_role_ids = wiking.module('RoleSets').included_role_ids(role, reverse=restrict)
+        included_role_ids = wiking.module('RoleSets').containing_role_ids(role)
         S = pd.String()
         condition = pd.OR(*[pd.EQ('role_id', pd.Value(S, m_id)) for m_id in included_role_ids])
         user_ids = []
@@ -307,15 +316,15 @@ class ApplicationRoles(UserManagementModule):
                          "members. The system decides automatically which "
                          "users belong into the group. Thus you can not "
                          "manage their membership manually. You can, "
-                         "however, still manage the contained groups.")
+                         "however, still add rights of other groups to it.")
             elif system:
                 info = _("This is a system group defined by one of the installed "
-                         "applications. You can not change or delete this group, "
-                         "but you can manage membership of users and other roles "
-                         "in it.")
+                         "applications. You cannot change or delete this group, "
+                         "but you can manage membership of users and add rights of other groups "
+                         "to it.")
             else:
                 info = _("This is a user defined group. You can manage membership "
-                         "of users and other roles in it as well as modify or "
+                         "of users and add rights of other groups to it as well as modify or "
                          "delete the group itself.")
             return info
         columns = ('xname', 'role_id', 'system')
@@ -323,9 +332,9 @@ class ApplicationRoles(UserManagementModule):
         def cb(self):
             return pp.CodebookSpec(display=self._xname_display, prefer_display=True)
         def bindings(self):
-            return (Binding('contained', _("Contained Groups"), 'RoleSets',
+            return (Binding('contained', _("Gets Rights of Groups"), 'RoleSets',
                             'role_id', form=pw.ItemizedView),
-                    Binding('containing', _("Contained in Groups"), 'ContainingRoles',
+                    Binding('containing', _("Passes Rights to Groups"), 'ContainingRoles',
                             'member_role_id', form=pw.ItemizedView,
                             enabled=lambda r: not r['auto'].value()),
                     Binding('members', _("Members"), 'RoleMembers',
@@ -1294,7 +1303,7 @@ class Users(UserManagementModule):
                 role = (role,)
             user_ids = set()
             for r in role:
-                user_ids |= set(wiking.module('RoleMembers').user_ids(r, restrict=True))
+                user_ids |= set(wiking.module('RoleMembers').user_ids(r))
             include_uids = set(include_uids)
             exclude_uids = set(exclude_uids)
             user_ids |= include_uids

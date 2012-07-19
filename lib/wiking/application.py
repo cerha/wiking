@@ -242,12 +242,13 @@ class Application(Module):
         """Return the sequence of user roles contained in given role.
 
         Arguments:
+        
           req -- Current request as a 'Request' instance.
           role -- User role as a 'Role' instance.
 
         In general, user roles may be contained in each other.  This means that user's membersip in
         one role (let's say role A) may automatically imply his membership in other roles (B and C
-        for example).  Roles B and C are contained in role A in this example.  If role containment
+        for example).  Roles B and C contain role A in this example.  If role containment
         is supported by the application, this method must be implemented and must return the list
         of all contained roles (including the given role itself and also transitively contained
         roles).
