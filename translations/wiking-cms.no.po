@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2012-07-27 16:15+0200\n"
+"POT-Creation-Date: 2012-07-27 16:22+0200\n"
 "PO-Revision-Date: 2009-09-08 09:23+0100\n"
 "Last-Translator: Jostein Sand Nilsen <nistonasneslin@gmail.com>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
@@ -1196,7 +1196,7 @@ msgid "Attachment of the same file name already exists for this page."
 msgstr "Det finnes allerede et vedlegg med samme filnavn på denne siden."
 
 #: ../lib/wiking/cms/cms.py:1972
-msgid "Attachment file name length is limited to 64 characters."
+msgid "Attachment file name exceeds the maximal length 64 characters."
 msgstr ""
 
 #: ../lib/wiking/cms/cms.py:2083
