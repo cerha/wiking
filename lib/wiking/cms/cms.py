@@ -1969,7 +1969,7 @@ class Attachments(ContentManagementModule):
         ('duplicate key (value )?violates unique constraint "cms_page_attachments_filename_key"',
          ('file', _("Attachment of the same file name already exists for this page."))),
         ('value too long for type character varying\(64\)',
-         ('file', _("Attachment file name length is limited to 64 characters."))),
+         ('file', _("Attachment file name exceeds the maximal length 64 characters."))),
         )
     RIGHTS_view   = (Roles.CONTENT_ADMIN,)
 
