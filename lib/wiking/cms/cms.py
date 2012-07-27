@@ -2058,7 +2058,7 @@ class Attachments(ContentManagementModule):
         record = self._record(req, None, new=True, prefill=prefill)
         error = record.validate('file', data, filename=filename, mime_type=values.pop('mime_type'))
         if error:
-            return error
+            return error.message()
         try:
             transaction = self._insert_transaction(req, record)
             self._in_transaction(transaction, self._insert, req, record, transaction)
