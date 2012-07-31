@@ -61,10 +61,10 @@ div.cke_dialog_body #video-preview, div.cke_dialog_body #audio-preview {
  * too may files...
  */ 
 
-div.lcg-exercise {
+pre.lcg-exercise {
     background: $color.frame-bg;
     border: 1px solid $color.frame-border; 
     padding: 2px;
     margin: 3px 0;
-    white-space: pre;
+    font-family: sans-serif;
 }
