@@ -257,8 +257,18 @@ wiking.Menu = Class.create(wiking.KeyHandler, {
     
     expand_item: function (item, recourse) {
 	return false;
-    }
+    },
     
+    cmd_prev: function (item) {
+	this.set_focus(item._wiking_menu_prev);
+    },
+
+    cmd_next: function (item) {
+	this.set_focus(item._wiking_menu_next);
+    },
+    
+    cmd_activate: function (item) {
+    }
 });
 
 wiking.NotebookBase = Class.create(wiking.Menu, {
@@ -281,17 +291,6 @@ wiking.NotebookBase = Class.create(wiking.Menu, {
 	    'Enter':	    this.cmd_activate,
 	    'Space':	    this.cmd_activate
 	};
-    },
-
-    cmd_prev: function (item) {
-	this.set_focus(item._wiking_menu_prev);
-    },
-
-    cmd_next: function (item) {
-	this.set_focus(item._wiking_menu_next);
-    },
-    
-    cmd_activate: function (item) {
     }
 
 });
@@ -563,14 +562,6 @@ wiking.TreeMenu = Class.create(wiking.Menu, {
 	this.set_focus(target);
     },
 
-    cmd_prev: function (item) {
-	this.set_focus(item._wiking_menu_prev);
-    },
-
-    cmd_next: function (item) {
-	this.set_focus(item._wiking_menu_next);
-    },
-
     cmd_expand: function (item) {
 	if (!this.expand_item(item) && item._wiking_submenu != null)
 	    this.set_focus(item._wiking_submenu[0]);
@@ -620,6 +611,121 @@ wiking.TreeMenu = Class.create(wiking.Menu, {
     }
     
 });
+
+
+wiking.PopupMenu = Class.create(wiking.Menu, {
+    // Popup menu widget.
+    
+    initialize: function ($super, items) {
+	// items -- array of menu items.  Each item is a dictionary with the
+	// following keys:
+	//   title -- item title (string)
+	//   descr -- item description/tooltip (string, optional)
+	//   href -- URI where the item points to (string, optional)
+	//   onclick -- JavaScript code to execute on invocation (string, optional)
+	// You will typically supply either onclick or href.
+	var ul = new Element('ul');
+	for (var i = 0; i < items.length; i++) {
+	    var item = items[i];
+	    var a = new Element('a', {'href': item.href, 
+				      'title': item.descr, 
+				      'onclick': item.onclick});
+	    a.update(item.title);
+	    ul.insert(new Element('li', {'class': 'active'}).update(a));
+	}
+	var menu = new Element('div', {'id': 'popup-menu'});
+	menu.insert(ul)
+	$(document.body).insert(menu);
+	$super(menu);
+    },
+
+    init_items: function ($super, ul, parent) {
+	ul.setAttribute('role', 'menu');
+	return $super(ul, parent);
+    },
+
+    init_item: function ($super, li, id, prev, parent) {
+	$super(li, id, prev, parent);
+	li.setAttribute('role', 'menuitem');
+	li.down('a').onclick = (function() { this.cmd_activate(li); return false; }).bind(this);
+    },
+
+    init_keymap: function () {
+	return {
+	    'Up':     this.cmd_prev,
+	    'Down':   this.cmd_next,
+	    'Enter':  this.cmd_activate,
+	    'Space':  this.cmd_activate,
+	    'Escape': this.cmd_quit
+	};
+    },
+
+    cmd_activate: function (item) {
+	this.remove();
+	self.location = item.down('a').getAttribute('href');
+    },
+
+    cmd_quit: function (item) {
+	this.remove();
+	console.log("...", this.return_keyboard_focus)
+	if (this.return_keyboard_focus != null)
+	    this.set_focus(this.return_keyboard_focus);
+    },
+
+    on_document_click: function (event) {
+	if (this.ignore_next_click) {
+	    // The first click is the one which pops the menu up.
+	    this.ignore_next_click = false;
+	    return;
+	}
+	var outside = event.findElement('div') != this.node;
+	this.remove();
+	if (outside)
+	    event.stop();
+    },
+    
+    popup: function (event) {
+        // event -- JavaScript event triggering the popup -- either a mouse
+        // action catched by 'contextmenu' handler or mouse/keyboard action
+        // catched by 'click' handler.
+	if (wiking.popup_menu)
+	    wiking.popup_menu.remove();
+	event.stop();
+	var code = document.all ? event.keyCode : event.which;
+	var left, top;
+	if (event.pointerX() >=0 && event.pointerY() >= 0) {
+	    this.return_keyboard_focus = null;
+	    left = event.pointerX();
+	    top = event.pointerY();
+	} else {
+	    this.return_keyboard_focus = event.element();
+	    var pos = event.element().cumulativeOffset();
+	    left = pos.left;
+	    top = pos.top+10;
+	}
+	wiking.popup_menu = this;
+	var menu = this.node;
+	var window_size = document.viewport.getDimensions();
+	if (left + menu.getWidth() > window_size.width)
+	    left = window_size.width - menu.getWidth() - 30;
+	if (top + menu.getHeight() > window_size.height)
+	    top -= menu.getHeight();
+	menu.setStyle({left: left+'px', top: top+'px', display: 'block'});
+	this.ignore_next_click = !event.isLeftClick();
+	if (this.return_keyboard_focus != null)
+	    this.set_focus(menu.down('li'));
+	this.on_click_handler = this.on_document_click.bind(this)
+	$(document).observe('click', this.on_click_handler);
+    },
+
+    remove: function() {
+	$(document).stopObserving('click', this.on_click_handler);
+	this.node.remove();
+	wiking.popup_menu = null;
+    }
+});
+
+wiking.popup_menu = null;
 
 wiking.Cookies = Class.create({
     // This class is taken from 
