@@ -738,15 +738,15 @@ wiking.Cookies = Class.create({
         if (typeof key != 'string') throw "Invalid key";
         if (typeof value != 'string' && typeof value != 'number') throw "Invalid value";
         if (days && typeof days != 'number') throw "Invalid expiration time";
-	var value = escape(new String(value)) + '; path=' + escape(this.path);
+	var cookie = escape(new String(value)) + '; path=' + escape(this.path);
         if (days) {
             var date = new Date();
             date.setTime(date.getTime() + (days*24*60*60*1000));
-            value += "; expires=" + date.toGMTString();
+            cookie += "; expires=" + date.toGMTString();
         }
         if (this.domain)
-	    value += '; domain=' + escape(this.domain);
-        document.cookie = key +'='+ value;
+	    cookie += '; domain=' + escape(this.domain);
+        document.cookie = key +'='+ cookie;
     },
     // Returns a cookie value or false
     get: function (key) {
