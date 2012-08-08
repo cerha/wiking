@@ -35,10 +35,13 @@
 
 var Discussion = Class.create({
 
-    initialize: function (uri, field, container_selector) {
+    initialize: function (uri, field, attachment_field, container_selector) {
 	this.uri = uri;
 	this.field = field;
-	selector = '.discussion-reply';
+	if (typeof(attachment_field) == 'undefined')
+	    attachment_field = null;
+	this.attachment_field = attachment_field;
+	var selector = '.discussion-reply';
 	if (typeof(container_selector) != 'undefined')
 	    selector = container_selector +' '+ selector;
 	$$(selector).each(function (div) {
@@ -78,6 +81,20 @@ var Discussion = Class.create({
      					     'name': this.field,
 					     'id': field_id,
      					     'aria-required': 'true'}));
+	if (this.attachment_field != null) {
+	    form.setAttribute('enctype', 'multipart/form-data');
+	    var attachment_field_id = field_id + 'attachment';
+	    var alabel = new Element('label', {'for': attachment_field_id});
+	    alabel.update(wiking._('Attachment'));
+	    var adiv = new Element('div');
+	    adiv.insert(new Element('span', {'class': 'field-label id-'+this.attachment_field}).update(alabel));
+	    adiv.insert(':&nbsp;');
+	    adiv.insert(new Element('input', {'type': 'file', 
+     					      'size': '50', 
+     					      'name': this.attachment_field,
+					      'id': attachment_field_id}));
+	    form.insert(adiv);
+	}
      	form.insert(new Element('input', {'type': 'hidden', 'name': 'action', 'value': 'reply'}));
 	var buttons = [
 	    [wiking._("Submit"), {'type': 'submit', 'value': '1'}, 
