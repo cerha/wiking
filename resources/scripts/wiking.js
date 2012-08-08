@@ -691,7 +691,6 @@ wiking.PopupMenu = Class.create(wiking.Menu, {
 	if (wiking.popup_menu)
 	    wiking.popup_menu.remove();
 	event.stop();
-	var code = document.all ? event.keyCode : event.which;
 	var left, top;
 	if (event.pointerX() >=0 && event.pointerY() >= 0) {
 	    this.return_keyboard_focus = null;
