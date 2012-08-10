@@ -64,6 +64,20 @@ div.cke_dialog_body #exercise-sound-file-preview, div.cke_dialog_body #exercise-
     height: 100%;
 }
 
+#math-preview-container {
+    width: 100%;
+    text-align: center;
+}
+
+#math-preview {
+    margin-top: 20px;
+    display: inline-block;
+}
+
+#math-preview math * {
+    font-size: 16pt !important;
+}
+
 /* Styles for the edited contents (inside the editor iframe).  Maybe these
  * styles should be in a separate file -- they apply to a differnt part of the
  * document than the previous styles for editor controls -- but they don't
