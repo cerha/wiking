@@ -332,7 +332,7 @@ class PytisModule(Module, ActionHandler):
             column = cb_field.id()
             codebook = cb_field.codebook()
             enumerator = self._type[column].enumerator()
-            if codebook and enumerator:
+            if codebook and isinstance(enumerator, pytis.data.DataEnumerator):
                 referer = cb_field.inline_referer()
                 value_column = enumerator.value_column()
                 if not referer and wiking.module(codebook).referer() == value_column:
