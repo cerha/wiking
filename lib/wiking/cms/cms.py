@@ -703,23 +703,74 @@ class PageStructure(SiteSpecificContentModule):
                   Field('site'),
                   Field('identifier'),
                   Field('modname'),
+                  Field('parent'),
+                  Field('ord'),
+                  Field('menu_visibility'),
                   Field('tree_order'),
                   Field('read_role_id'),
                   Field('write_role_id'),
                   )
         sorting = (('tree_order', ASC), ('identifier', ASC),)
-        def _translate(self, row):
-            enumerator = row['page_id'].type().enumerator()
-            condition = pd.AND(pd.EQ('page_id', row['page_id']),
-                               pd.NE('title', pd.Value(pd.String(), None)))
+        def _display(self, row):
             indent = '   ' * (len(row['tree_order'].value().split('.')) - 2)
-            translations = dict([(r['lang'].value().lower(), indent + r['title'].value())
-                                 for r in enumerator.rows(condition=condition)])
-            return lcg.SelfTranslatableText(indent + row['identifier'].value(),
-                                            translations=translations)
+            return self._module._page_title(row, indent)
         def cb(self):
-            return pp.CodebookSpec(display=self._translate, prefer_display=True)
+            return pp.CodebookSpec(display=self._display, prefer_display=True)
+        
+    @staticmethod
+    def _page_title(row, indent=''):
+        enumerator = row['page_id'].type().enumerator()
+        condition = pd.AND(pd.EQ('page_id', row['page_id']),
+                           pd.NE('title', pd.Value(pd.String(), None)))
+        translations = dict([(r['lang'].value().lower(), indent + r['title'].value())
+                             for r in enumerator.rows(condition=condition)])
+        return lcg.SelfTranslatableText(indent + row['identifier'].value(),
+                                        translations=translations)
+    
+    def page_position_selection(self, site, parent, page_id):
+        """Return the available values for page order selection.
 
+        Used for the 'ord' field of 'Pages'.  Arguments 'site', 'parent' and
+        'page_id' represent the inner values of the corresponding fields of the
+        'Pages' record for which the available order selection is requested.
+
+        Returns a list of integers representing available positions in page
+        order at the same level of page hierarchy.  Each integer is actually an
+        instance of 'Order' class, which carries also the corresponding
+        selection label as the value of the attributte 'label'.
+        
+        """
+        class Order(int):
+            def __new__(cls, order, label):
+                return int.__new__(cls, order)
+            def __init__(self, order, label):
+                self.label = label
+        result = []
+        last_row = None
+        for row in self._data.get_rows(site=site, parent=parent,
+                                       condition=pd.NE('menu_visibility', pd.sval('never')),
+                                       sorting=(('ord', ASC),)):
+            if row['page_id'].value() != page_id:
+                if not result:
+                    label = _("First")
+                else:
+                    label = _('Prior to "%s"', self._page_title(row))
+                if last_row and last_row['page_id'].value() == page_id:
+                    order = last_row['ord'].value()
+                else:
+                    order = row['ord'].value()
+                result.append(Order(order, label))
+            last_row = row
+        if result:
+            if last_row and last_row['page_id'].value() == page_id:
+                order = last_row['ord'].value()
+            else:
+                order = result[-1]+1
+            result.append(Order(order, _("Last")))
+        else:
+            result.append(Order(1, _("First")))
+        return result
+    
 
 class Panels(SiteSpecificContentModule, Publishable):
     """Provide a set of side panels.
@@ -1055,6 +1106,17 @@ class Pages(SiteSpecificContentModule):
     properties are managed throug a Pytis data object.
     
     """
+    class PagePositionEnumerator(pytis.data.Enumerator):
+        def values(self, **kwargs):
+            return wiking.module('PageStructure').page_position_selection(**kwargs)
+        def last_position(self, row, site, parent, page_id):
+            return self.values(site=site, parent=parent, page_id=page_id)[-1]
+    class MenuVisibility(pp.Enumeration):
+        enumeration = (('always', _("Always visible")),
+                       ('authorized', _("Visible only to authorized users")),
+                       ('never', _("Always hidden")),
+                       )
+        default='always'
     class Spec(Specification):
         # Translators: Heading and menu item. Meaning web pages.
         title = _("Pages")
@@ -1094,6 +1156,31 @@ class Pages(SiteSpecificContentModule):
                   runtime_filter=computer(lambda r, site: pd.EQ('site', pd.sval(site))),
                   descr=_("Select the superordinate item in page hierarchy.  Leave blank for "
                           "a top-level page.")),
+            # Translators: Page configuration option followed by a selection
+            # input field.  Determines the position in the sense of order in a
+            # sequence.  What is first and what next.
+            Field('ord', _("Position"), 
+                  enumerator=Pages.PagePositionEnumerator(), editable=ALWAYS,
+                  runtime_arguments=computer(lambda r, site, parent, page_id:
+                                                 dict(site=site, parent=parent, page_id=page_id)),
+                  computer=computer(Pages.PagePositionEnumerator().last_position),
+                  display=lambda x: x.label, # See PageStructure.page_position_selection().
+                  descr=_("Select the position within the items of the same level.")),
+            Field('menu_visibility', _("Visibility in menu"),
+                  enumerator=Pages.MenuVisibility, selection_type=pp.SelectionType.RADIO,
+                  descr=_('When "%(always)s" is selected, unauthorized users see the menu '
+                          'item, but still can not open the page.  When "%(authorized)s" '
+                          'is selected, visibility is controlled by the "Access Rights" '
+                          'settings below.  Note, that when access rights are restricted, '
+                          'the item will be hidden until the user logs in, which may be '
+                          'confusing (the expected item is not there).',
+                          always=dict(Pages.MenuVisibility.enumeration).get('always'),
+                          authorized=dict(Pages.MenuVisibility.enumeration).get('authorized'))),
+            Field('foldable', _("Foldable"), editable=computer(lambda r, menu_visibility:
+                                                                   menu_visibility != 'never'),
+                  descr=_("Check if you want the relevant menu item to be foldable (only makes "
+                          "sense for pages, which have subordinary items in the menu).")),
+            Field('tree_order', type=pd.TreeOrder()),
             # Translators: Configuration option determining whether the page is published or not
             # (passive form of publish).  The label may be followed by a checkbox.
             Field('published', _("Published"), default=False,
@@ -1101,28 +1188,6 @@ class Pages(SiteSpecificContentModule):
                           "supported languages (switch language to control the availability in "
                           "other languages)")),
             Field('status', _("Status"), virtual=True, computer=computer(self._status)),
-            Field('menu_visibility', _("Visibility in menu"),
-                  enumerator=enum(('always', 'authorized', 'never')), default='always',
-                  display=self._menu_visibility_display, prefer_display=True,
-                  selection_type=pp.SelectionType.RADIO,
-                  descr=_('When "%(always)s" is selected, unauthorized users see the menu '
-                          'item, but still can not open the page.  When "%(authorized)s" '
-                          'is selected, visibility is controlled by the "Access Rights" '
-                          'settings below.  Note, that when access rights are restricted, '
-                          'the item will be hidden until the user logs in, which may be '
-                          'confusing (the expected item is not there).',
-                          always=self._menu_visibility_display('always'),
-                          authorized=self._menu_visibility_display('authorized'))),
-            Field('foldable', _("Foldable"), editable=computer(lambda r, menu_visibility:
-                                                                   menu_visibility != 'never'),
-                  descr=_("Check if you want the relevant menu item to be foldable (only makes "
-                          "sense for pages, which have subordinary items in the menu).")),
-            # Translators: Page configuration option followed by an input field. Means order in the
-            # sense of sequence. What is first and what next.
-            Field('ord', _("Menu order"), width=6, editable=ALWAYS,
-                  descr=_("Enter a number denoting the order of the page in the menu.  Leave "
-                          "blank if you want to put the page automatically to the end.")),
-            Field('tree_order', type=pd.TreeOrder()),
             #Field('grouping', virtual=True,
             #      computer=computer(lambda r, tree_order: tree_order.split('.')[1])),
             # Translators: Label of a selector of a group allowed to access the page read only.
@@ -1141,11 +1206,6 @@ class Pages(SiteSpecificContentModule):
                 return _("Ok")
             else:
                 return _("Changed")
-        def _menu_visibility_display(self, menu_visibility):
-            labels = {'always': _("Always visible"),
-                      'authorized': _("Visible only to authorized users"),
-                      'never': _("Always hidden")}
-            return labels.get(menu_visibility, menu_visibility)
         def row_style(self, record):
             return not record['published'].value() and pp.Style(foreground='#777') or None
         def check(self, record):
@@ -1172,7 +1232,7 @@ class Pages(SiteSpecificContentModule):
                 FieldSet(_("State of the current language variant"),
                          (lambda record: lcg.p(record['status'].export()),)),
                 )
-        columns = ('title_or_identifier', 'identifier', 'modname', 'status', 'ord',
+        columns = ('title_or_identifier', 'identifier', 'modname', 'status',
                    'menu_visibility', 'read_role_id', 'write_role_id')
         cb = CodebookSpec(display='title_or_identifier', prefer_display=True)
         actions = (
@@ -1220,7 +1280,7 @@ class Pages(SiteSpecificContentModule):
                'update': ('title', 'description', '_content', 'comment'),
                'options':
                    (FieldSet(_("Basic Options"), ('identifier', 'modname',)),
-                    FieldSet(_("Menu position"), ('parent', 'ord', 'menu_visibility', 'foldable')),
+                    FieldSet(_("Menu position"), ('parent', 'menu_visibility', 'ord', 'foldable')),
                     FieldSet(_("Access Rights"), ('read_role_id', 'write_role_id')),
                     )
                }

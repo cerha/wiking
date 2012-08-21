@@ -220,6 +220,26 @@ create table cms_pages (
 );
 create unique index cms_pages_unique_tree_order on cms_pages (ord, coalesce(parent, 0), site);
 
+create or replace function cms_pages_update_order () returns trigger as $$
+declare
+  page_id_ int;
+begin
+  if new.ord is null then
+    new.ord := coalesce((select max(ord)+1 from cms_pages
+                         where site=new.site
+                         and coalesce(parent, 0)=coalesce(new.parent, 0)), 1);
+  else
+    update cms_pages set ord=ord+1
+    where site = new.site and coalesce(parent, 0) = coalesce(new.parent, 0)
+           and ord = new.ord and page_id != new.page_id;
+  end if;
+  return new;
+end;
+$$ language plpgsql;
+
+create trigger cms_pages_trigger_before before insert or update on cms_pages
+for each row execute procedure cms_pages_update_order();
+
 create table cms_page_texts (
        page_id integer not null references cms_pages on delete cascade,
        lang char(2) not null references cms_languages(lang) on update cascade,
@@ -258,10 +278,7 @@ create or replace rule cms_v_pages_insert as
      insert into cms_pages (site, identifier, parent, modname, read_role_id, write_role_id,
                             menu_visibility, foldable, ord)
      values (new.site, new.identifier, new.parent, new.modname,
-             new.read_role_id, new.write_role_id, new.menu_visibility, new.foldable,
-             coalesce(new.ord, (select max(ord)+100 from cms_pages
-                                where site=new.site
-                                      and coalesce(parent, 0)=coalesce(new.parent, 0)), 100));
+             new.read_role_id, new.write_role_id, new.menu_visibility, new.foldable, new.ord);
      update cms_pages set tree_order = cms_page_tree_order(page_id);
      insert into cms_page_texts (page_id, lang, published,
                                  title, description, content,
@@ -307,7 +324,7 @@ create or replace rule cms_v_pages_update as
                   new.title, new.description, new.content,
                   new._title, new._description, new._content
            where new.lang not in (select lang from cms_page_texts where page_id=old.page_id)
-                 and coalesce(new.title, new.description, new.content,
+               	 and coalesce(new.title, new.description, new.content,
                               new._title, new._description, new._content) is not null;
 );
 
