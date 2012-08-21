@@ -1492,7 +1492,12 @@ class WikingDefaultDataClass(DBAPIData):
         self._dbconnection = kwargs['connection_data'].select(kwargs.get('connection_name'))
 
     def _row_data(self, **kwargs):
-        return [(k, pd.Value(self.find_column(k).type(), v)) for k, v in kwargs.items()]
+        def t(colname):
+            column = self.find_column(colname)
+            assert column is not None, \
+                "Unknown column '%s' in '%s'" % (colname, self.table(self.key()[0].id()))
+            return column.type()
+        return [(k, pd.Value(t(k), v)) for k, v in kwargs.items()]
     
     def get_rows(self, skip=None, limit=None, sorting=(), condition=None, arguments=None,
                  columns=None, transaction=None, **kwargs):
