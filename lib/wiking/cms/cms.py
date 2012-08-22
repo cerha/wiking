@@ -1283,6 +1283,7 @@ class Pages(SiteSpecificContentModule):
                               FieldSet(_("Access Rights"), ('read_role_id', 'write_role_id',)),
                               ))),
                'update': ('title', 'description', '_content', 'comment'),
+               'delete': (),
                'options':
                    (FieldSet(_("Basic Options"), ('identifier', 'modname',)),
                     FieldSet(_("Menu position"), ('parent', 'menu_visibility', 'ord', 'foldable')),
@@ -1423,6 +1424,9 @@ class Pages(SiteSpecificContentModule):
                 exclude = ('unpublish', 'preview', 'delete', 'list')
             actions = tuple([a for a in actions if a.id() not in exclude])
         return actions
+        
+    def _delete_form_content(self, req, form, record):
+        return [form] + self._page_content(req, record)
 
     def _visible_in_menu(self, req, row):
         """Return True or False if page described by row is visible or not in the menu"""
@@ -1511,11 +1515,7 @@ class Pages(SiteSpecificContentModule):
                 uri = None
         return uri
 
-    # Action handlers.
-        
-    def action_view(self, req, record, preview=False):
-        if req.wmi and not preview:
-            return super(Pages, self).action_view(req, record)
+    def _page_content(self, req, record, preview=False):
         # Main content
         modname = record['modname'].value()
         if modname is not None:
@@ -1560,23 +1560,33 @@ class Pages(SiteSpecificContentModule):
                               lcg.Script('builder.js'),
                               lcg.Script('lightbox.js'),
                               lcg.Stylesheet('lightbox.css')))
+        if content and resources:
+            return [lcg.Container(content, resources=resources)]
+        else:
+            return content
+
+    # Action handlers.
+        
+    def action_view(self, req, record, preview=False):
+        content = self._page_content(req, record, preview=preview)
         if not content:
-            rows = self._data.get_rows(condition=\
-                                       pd.AND(pd.EQ('parent', record['page_id']),
-                                              pd.NE('menu_visibility', pd.sval('never')),
-                                              pd.EQ('published', pd.bval(True)),
-                                              pd.EQ('site', pd.sval(wiking.cfg.server_hostname))),
-                                       sorting=self._sorting)
-            if rows:
-                for row in rows:
-                    if self._visible_in_menu(req, row):
-                        raise Redirect('/'+row['identifier'].value())
+            # Redirect to the first visible subpage (if any) when the page has
+            # no content.  This makes it possible to create menu items which
+            # have no direct content, but only subitems.  The first subitem is
+            # selected when such item is clicked.
+            condition = pd.AND(pd.EQ('parent', record['page_id']),
+                               pd.NE('menu_visibility', pd.sval('never')),
+                               pd.EQ('published', pd.bval(True)),
+                               pd.EQ('site', pd.sval(wiking.cfg.server_hostname)))
+            for row in self._data.get_rows(condition=condition, sorting=self._sorting):
+                if self._visible_in_menu(req, row):
+                    raise Redirect('/'+row['identifier'].value())
         if req.check_roles(Roles.CONTENT_ADMIN):
             # Append an empty show form just for the action menu.
             form = self._form(pw.ShowForm, req, record=record, layout=(),
                               actions=self._form_actions_argument(req))
             content.append(lcg.Container(form, id='cms-page-actions'))
-        return self._document(req, content, record, resources=resources)
+        return self._document(req, content, record)
 
     def action_rss(self, req, record):
         modname = record['modname'].value()
