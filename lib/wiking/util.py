@@ -767,7 +767,7 @@ class Document(object):
     """
     
     def __init__(self, title, content, subtitle=None, lang=None, sec_lang=None,
-                 variants=None, resources=(), globals=None, layout=None):
+                 variants=None, globals=None, layout=None):
         """Arguments:
 
           title -- document title as a (translatable) string.  Can be also
@@ -791,8 +791,6 @@ class Document(object):
             source exist.  If None, variants default to the variants defined by
             the corresponding menu item (if found) or to application-wide set
             of all available languages.
-          resources -- external resources available for this document as a
-            sequence of 'lcg.Resource' instances.
           layout -- output layout as one of `wiking.Exporter.Layout' constants
             or None for the default layout.
 
@@ -803,7 +801,6 @@ class Document(object):
         self._lang = lang
         self._sec_lang = sec_lang
         self._variants = variants
-        self._resources = tuple(resources)
         self._globals = globals
         self._layout = layout
 
@@ -831,10 +828,6 @@ class Document(object):
         """Return the 'variants' passed to the constructor."""
         return self._variants
 
-    def resources(self):
-        """Return the 'resources' passed to the constructor."""
-        return self._resources
-        
     def globals(self):
         """Return the 'globals' passed to the constructor."""
         return self._globals
