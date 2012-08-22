@@ -1304,7 +1304,12 @@ class Pages(SiteSpecificContentModule):
     _INSERT_LABEL = _("New page")
     _UPDATE_LABEL = _("Edit Text")
     _UPDATE_DESCR = _("Edit title, description and content for the current language")
+    _LIST_LABEL = _("List all pages")
     _SEPARATOR = re.compile('^====+\s*$', re.MULTILINE)
+    _HONOUR_SPEC_TITLE = True
+    #_ROW_ACTIONS = True
+
+    RIGHTS_list = (Roles.CONTENT_ADMIN,)
 
     def _handle(self, req, action, **kwargs):
         # TODO: This is a hack to find out the parent page in the embedded
@@ -1327,6 +1332,9 @@ class Pages(SiteSpecificContentModule):
                         if not req.unresolved_path:
                             raise
         return super(Pages, self)._handle_subpath(req, record)
+
+    def _current_base_uri(self, req, record=None):
+        return '/'
 
     def _resolve(self, req):
         if req.wmi:
@@ -1429,7 +1437,7 @@ class Pages(SiteSpecificContentModule):
                 exclude = ('attachments',)
             else:
                 # TODO: Unpublish doesn't work outside WMI.
-                exclude = ('unpublish', 'preview', 'delete', 'list')
+                exclude = ('unpublish', 'preview',)
             actions = tuple([a for a in actions if a.id() not in exclude])
         return actions
         

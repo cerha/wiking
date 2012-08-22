@@ -75,6 +75,8 @@ class Application(CookieAuthentication, wiking.Application):
                 # resolution when passing to Pages.
                 del req.unresolved_path[0]
             return req.forward(wiking.module(modname))
+        elif req.param('action'):
+            return req.forward(wiking.module('Pages'))
         else:
             return super(Application, self).handle(req)
 

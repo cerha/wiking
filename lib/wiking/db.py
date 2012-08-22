@@ -762,7 +762,10 @@ class PytisModule(Module, ActionHandler):
 
         """
         if cid is None:
-            return uri and req.make_uri(uri +'/'+ record[self._referer].export(), **kwargs)
+            if uri:
+                return req.make_uri(uri.rstrip('/') +'/'+ record[self._referer].export(), **kwargs)
+            else:
+                return None
         try:
             codebook, referer, column, value_column = self._links[cid]
         except KeyError:
@@ -807,7 +810,7 @@ class PytisModule(Module, ActionHandler):
 
     def _current_record_uri(self, req, record):
         # Return the URI of given record in the context of the current request.
-        return self._current_base_uri(req, record) +'/'+ record[self._referer].export()
+        return self._current_base_uri(req, record).rstrip('/') +'/'+ record[self._referer].export()
 
     def _form(self, form, req, record=None, action=None, new=False, prefill=None,
               invalid_prefill=None, handler=None, binding_uri=None, hidden_fields=(), **kwargs):
@@ -1845,7 +1848,7 @@ class PytisModule(Module, ActionHandler):
     
     def action_list(self, req, record=None):
         if record is not None:
-            raise Redirect(self._current_base_uri(req, record),
+            raise Redirect(self._current_base_uri(req, record), action='list',
                            search=record[self._key].export(), form_name=self.name())
         # Don't display the listing alone, but display the original main form,
         # when this list is accessed through bindings as a related form.

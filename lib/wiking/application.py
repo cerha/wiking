@@ -115,9 +115,13 @@ class Application(Module):
             # to the menu in CMS, such as _registration.  If the real menu is
             # empty, we don't want these items to be used for redirection.
             menu = [item for item in self.menu(req) if not item.hidden()]
+            # The authentication must be performed before redirection, because
+            # the current request may include login/logout commands which would
+            # be discarded by the redirection.
+            user = req.user()
             if menu:
                 raise Redirect(menu[0].id())
-            elif not req.user():
+            elif not user:
                 # Here we handle the common case, that the menu is empty for
                 # non-authenticated users and will be non-empty after the user
                 # authenticates.  This presumption may not be theoretically
