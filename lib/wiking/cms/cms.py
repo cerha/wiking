@@ -1133,6 +1133,7 @@ class Pages(SiteSpecificContentModule):
             Field('site'),
             Field('identifier', _("Identifier"), width=20, fixed=True, editable=ONCE,
                   type=pd.RegexString(maxlen=32, not_null=True, regex='^[a-zA-Z][0-9a-zA-Z_-]*$'),
+                  computer=computer(self._default_identifier),
                   descr=_("The identifier may be used to refer to this page from outside and also "
                           "from other pages. A valid identifier can only contain letters, digits, "
                           "dashes and underscores.  It must start with a letter.")),
@@ -1211,6 +1212,14 @@ class Pages(SiteSpecificContentModule):
                 return _("Ok")
             else:
                 return _("Changed")
+        def _default_identifier(self, record, title):
+            import unicodedata
+            if title and record['identifier'].value() is None:
+                # This only applies on new record insertion and not during further editation.
+                without_accents = unicodedata.normalize('NFKD', title).encode('ascii', 'ignore')
+                return re.sub(r'[^a-z-]', '', without_accents.lower().replace(' ', '-'))
+            else:
+                return record['identifier'].value()
         def row_style(self, record):
             return not record['published'].value() and pp.Style(foreground='#777') or None
         def check(self, record):
