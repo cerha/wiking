@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2012-07-19 17:55+0200\n"
-"PO-Revision-Date: 2012-06-15 10:06+0200\n"
+"POT-Creation-Date: 2012-08-22 10:19+0200\n"
+"PO-Revision-Date: 2012-08-22 10:27+0200\n"
 "Last-Translator: Hynek Hanke <hanke@brailcom.org>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
 "Language: cs\n"
@@ -288,56 +288,56 @@ msgid "Filter"
 msgstr "Filtr"
 
 #. Back button label. Standard computer terminology.
-#: ../lib/wiking/db.py:2074
+#: ../lib/wiking/db.py:2090
 msgid "Back"
 msgstr "Zpět"
 
 #. RSS channel is a computer idiom, see Wikipedia.
-#: ../lib/wiking/db.py:2269 ../lib/wiking/db.py:2419
+#: ../lib/wiking/db.py:2285 ../lib/wiking/db.py:2435
 msgid "An RSS channel is available for this section:"
 msgstr "K dispozici je také RSS kanál pro tuto sekci:"
 
 #. RSS channel is a computer idiom, see Wikipedia.  Don't translateg 'RSS'.
-#: ../lib/wiking/db.py:2273 ../lib/wiking/db.py:2417
+#: ../lib/wiking/db.py:2289 ../lib/wiking/db.py:2433
 msgid "more about RSS"
 msgstr "více o RSS"
 
-#: ../lib/wiking/db.py:2412
+#: ../lib/wiking/db.py:2428
 #, python-format
 msgid "RSS channel \"%s\""
 msgstr "RSS kanál „%s“"
 
-#: ../lib/wiking/db.py:2422
+#: ../lib/wiking/db.py:2438
 msgid "RSS channels are available for this section"
 msgstr "Pro tuto sekci jsou k dispozici RSS kanály"
 
 #. Record as in `database record'.
-#: ../lib/wiking/db.py:2509
+#: ../lib/wiking/db.py:2525
 msgid "No records."
 msgstr "Žádné záznamy"
 
 #. `Item' is intentionally general. Could be webpage, notice or something else.
-#: ../lib/wiking/db.py:2517
+#: ../lib/wiking/db.py:2533
 msgid "The item was published."
 msgstr "Položka byla zveřejněna."
 
-#: ../lib/wiking/db.py:2518
+#: ../lib/wiking/db.py:2534
 msgid "The item was unpublished."
 msgstr "Zveřejnění položky bylo zrušeno."
 
-#: ../lib/wiking/db.py:2528
+#: ../lib/wiking/db.py:2544
 msgid "Publish"
 msgstr "Zveřejnit"
 
-#: ../lib/wiking/db.py:2531
+#: ../lib/wiking/db.py:2547
 msgid "Make the item visible to website visitors"
 msgstr "Zpřístupnit položku návštěvníkům stránek"
 
-#: ../lib/wiking/db.py:2532
+#: ../lib/wiking/db.py:2548
 msgid "Unpublish"
 msgstr "Zneveřejnit"
 
-#: ../lib/wiking/db.py:2535
+#: ../lib/wiking/db.py:2551
 msgid "Make the item invisible to website visitors"
 msgstr "Učinit položku nedostupnou pro návštěvníky stránek"
 
@@ -690,37 +690,41 @@ msgstr "Použít heslo"
 msgid "Continue"
 msgstr "Pokračovat"
 
-#: ../lib/wiking/util.py:2012
+#: ../lib/wiking/util.py:2017
 msgid "Invalid format"
 msgstr "Neplatný formát"
 
 #. Computer terminology. `gmail.com' is a domain name in email address
 #. `joe@gmail.com'.
-#: ../lib/wiking/util.py:2020 ../lib/wiking/util.py:2027
+#: ../lib/wiking/util.py:2025 ../lib/wiking/util.py:2032
 msgid "Domain not found"
 msgstr "Doména nenalezena"
 
-#: ../resources/scripts/discussion.js:54
+#: ../resources/scripts/discussion.js:57
 msgid "Reply"
 msgstr "Reagovat"
 
-#: ../resources/scripts/discussion.js:71
+#: ../resources/scripts/discussion.js:74
 msgid "Your Reply"
 msgstr "Vaše reakce"
 
-#: ../resources/scripts/discussion.js:83
+#: ../resources/scripts/discussion.js:88
+msgid "Attachment"
+msgstr "Příloha"
+
+#: ../resources/scripts/discussion.js:100
 msgid "Submit"
 msgstr "Odeslat"
 
-#: ../resources/scripts/discussion.js:85
+#: ../resources/scripts/discussion.js:102
 msgid "Quote"
 msgstr "Citovat"
 
-#: ../resources/scripts/discussion.js:87
+#: ../resources/scripts/discussion.js:104
 msgid "Cancel"
 msgstr "Zrušit"
 
-#: ../resources/scripts/wiking.js:441
+#: ../resources/scripts/wiking.js:440
 msgid "Expand/collapse complete menu hierarchy"
 msgstr "Rozbalit/sbalit kompletní hierarchii menu"
 
