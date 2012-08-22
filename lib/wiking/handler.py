@@ -133,8 +133,7 @@ class Handler(object):
             if isinstance(x, basestring):
                 x = lcg.Stylesheet(x, uri=x)
             styles.append(x)
-        resources = tuple(styles) + document.resources()
-        resource_provider = lcg.ResourceProvider(resources=resources, dirs=wiking.cfg.resource_path)
+        resource_provider = lcg.ResourceProvider(resources=styles, dirs=wiking.cfg.resource_path)
         def mknode(item):
             # Caution - make the same uri transformation as above to get same
             # results in all cases (such as for '/').
