@@ -1265,6 +1265,7 @@ class Pages(SiteSpecificContentModule):
             #Action('translate', _("Translate"), 
             #      descr=_("Create the content by translating another language variant"),
             #       enabled=lambda r: r['_content'].value() is None),
+            Action('new_page', _("New Page"), descr=_("Create a new page")),
             Action('help', _("Help")),
             )
         # Translators: Noun. Such as e-mail attachments (here attachments for a webpage).
@@ -1687,6 +1688,11 @@ class Pages(SiteSpecificContentModule):
             req.message(_("The page was unpublished."))
         raise Redirect(self._current_record_uri(req, record))
     RIGHTS_unpublish = (Roles.CONTENT_ADMIN,)
+
+    def action_new_page(self, req, record):
+        raise Redirect(self._current_base_uri(req, record), action='insert',
+                       parent=record['parent'].value(), ord=record['ord'].value())
+    RIGHTS_new_page = (Roles.CONTENT_ADMIN,)
 
     def action_help(self, req, record):
         raise Redirect('/_doc/wiking/cms/pages')
