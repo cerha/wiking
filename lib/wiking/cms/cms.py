@@ -1262,7 +1262,6 @@ class Pages(SiteSpecificContentModule):
                    enabled=lambda r: r['_content'].value() != r['content'].value()),
             Action('preview', _("Preview"), descr=_("Display the page in its current state"),
                    ), #enabled=lambda r: r['_content'].value() is not None),
-            Action('attachments', _("Attachments"), descr=_("Manage this page's attachments")),
             #Action('translate', _("Translate"), 
             #      descr=_("Create the content by translating another language variant"),
             #       enabled=lambda r: r['_content'].value() is None),
@@ -1594,8 +1593,13 @@ class Pages(SiteSpecificContentModule):
             # Append an empty show form just for the action menu.
             form = self._form(pw.ShowForm, req, record=record, layout=(),
                               actions=self._form_actions_argument(req))
-            content.append(lcg.Container(form, id='cms-page-actions'))
+            content.extend([lcg.Container(form, id='cms-page-actions')] +
+                           self._related_content(req, record))
         return self._document(req, content, record)
+                      
+    def action_preview(self, req, record):
+        return self.action_view(req, record, preview=True)
+    RIGHTS_preview = (Roles.CONTENT_ADMIN,)
 
     def action_rss(self, req, record):
         modname = record['modname'].value()
@@ -1606,14 +1610,6 @@ class Pages(SiteSpecificContentModule):
         else:
             raise NotFound()
         
-    def action_attachments(self, req, record):
-        raise Redirect(self._current_record_uri(req, record) + '/attachments')
-    RIGHTS_attachments = (Roles.CONTENT_ADMIN,)
-        
-    def action_preview(self, req, record):
-        return self.action_view(req, record, preview=True)
-    RIGHTS_preview = (Roles.CONTENT_ADMIN,)
-
     def action_options(self, req, record):
         return self.action_update(req, record, action='options')
     RIGHTS_options = (Roles.CONTENT_ADMIN,)
@@ -1951,10 +1947,6 @@ class Attachments(ContentManagementModule):
             #       context=pp.ActionContext.GLOBAL),
             # Translators: Button label
             Action('move', _("Move"), descr=_("Move the attachment to another page.")),
-            Action('back', _("Back to page"), descr=_("Go back to the page."),
-                   visible=lambda req: not req.wmi,
-                   context=pp.ActionContext.GLOBAL,
-                   ),
             )
 
     class ImageGallery(lcg.Content):
@@ -2076,14 +2068,6 @@ class Attachments(ContentManagementModule):
             return self._link_provider(req, uri, record, None, action='thumbnail')
         return super(Attachments, self)._image_provider(req, uri, record, cid, **kwargs)
 
-    def _binding_parent_redirect(self, req, **kwargs):
-        if not req.wmi:
-            # Avoid binding parent redirection outside wmi, because we don't
-            # have the sideform there -- the attachment listing has a special
-            # action button which displays the listing alone.
-            return
-        super(Attachments, self)._binding_parent_redirect(req, **kwargs)
-
     def _save_files(self, record):
         directory = wiking.cms.cfg.storage
         if not os.path.exists(directory) or not os.access(directory, os.W_OK):
@@ -2170,10 +2154,6 @@ class Attachments(ContentManagementModule):
         return self.action_update(req, record, action='move')
     RIGHTS_move = (Roles.CONTENT_ADMIN,)
 
-    def action_back(self, req):
-        raise Redirect('/'+req.uri().split('/')[1])
-    RIGHTS_back = (Roles.CONTENT_ADMIN,)
-    
     def action_download(self, req, record, **kwargs):
         return Response(record['file'].value().buffer(), content_type=record['mime_type'].value())
     RIGHTS_download = (Roles.ANYONE)
