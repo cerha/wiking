@@ -752,8 +752,12 @@ class PageStructure(SiteSpecificContentModule):
                                        sorting=(('ord', ASC),)):
             if row['page_id'].value() != page_id:
                 if not result:
+                    # Translators: Label in page order selection.
                     label = _("First")
                 else:
+                    # Translators: Label in page order selection.  %s is replaced by a page
+                    # title.  Selecting this item will put the current page in
+                    # advance of the named page in the sequential order.
                     label = _('Prior to "%s"', self._page_title(row))
                 if last_row and last_row['page_id'].value() == page_id:
                     order = last_row['ord'].value()
@@ -766,6 +770,7 @@ class PageStructure(SiteSpecificContentModule):
                 order = last_row['ord'].value()
             else:
                 order = result[-1]+1
+            # Translators: Label in page order selection.
             result.append(Order(order, _("Last")))
         else:
             result.append(Order(1, _("First")))
