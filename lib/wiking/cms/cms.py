@@ -98,19 +98,15 @@ class WikingManagementInterface(Module, RequestHandler):
 
     """
     _MENU = (
-        # Translators: Heading and menu title for website content management.
-        (_("Content"),
-         _("Manage available pages and their content."),
-         ['Pages', 'Panels']),
+        # Translators: Heading and menu title. 
+        (_("Users"),
+         _("Manage user accounts, privileges and perform other user related tasks."),
+         ['Users', 'ApplicationRoles', 'SessionLog', 'EmailSpool', 'CryptoNames']),
         # Translators: Heading and menu title. Computer idiom meaning configuration of appearance
         # (colors, sizes, positions, graphical presentation...).
         (_("Look &amp; Feel"),
          _("Customize the appearance of your site."),
          ['StyleSheets', 'Themes']),
-        # Translators: Heading and menu title. 
-        (_("Users"),
-         _("Manage user accounts, privileges and perform other user related tasks."),
-         ['Users', 'ApplicationRoles', 'SessionLog', 'EmailSpool', 'CryptoNames']),
         # Translators: Heading and menu title for configuration.
         (_("Setup"),
          _("Edit global properties of your web site."),
@@ -120,7 +116,7 @@ class WikingManagementInterface(Module, RequestHandler):
     def _handle(self, req):
         req.wmi = True # Switch to WMI only after successful authorization!
         if not req.unresolved_path:
-            raise Redirect('/_wmi/Pages')
+            raise Redirect('/_wmi/Users')
         if req.unresolved_path[0].startswith('sec'):
             # Redirect to the first module of given section.
             try:
@@ -1042,10 +1038,10 @@ class Themes(StyleManagementModule):
             # preview_theme argument.
             menu = [item for item in wiking.module('Pages').menu(req) if not item.hidden()]
             if menu:
-                uri = menu[0].id()
+                uri = '/'+menu[0].id()
             else:
-                uri = '_wmi/Pages'
-            uri = '/%s?preview_theme=%d' % (uri, record['theme_id'].value())
+                uri = '/_wmi/Users'
+            uri += '?preview_theme=%d' % record['theme_id'].value()
             return IFrame(uri, width=800, height=220)
             
         def layout(self):
@@ -1229,23 +1225,7 @@ class Pages(SiteSpecificContentModule):
         sorting = (('tree_order', ASC), ('identifier', ASC),)
         #grouping = 'grouping'
         #group_heading = 'title'
-        def layout(self):
-            return (
-                lambda record: lcg.p(record['description'].export()),
-                FieldSet(_("Preview"),
-                         (lambda record: IFrame('/'+record['identifier'].value(),
-                                                width=800, height=220),)),
-                # Translators: Options meaning page configuration settings.
-                FieldSet(_("Global Options (common for all language variants)"),
-                         (ColumnLayout(
-                            FieldSet(_("Basic Options"), ('identifier', 'modname',)),
-                            FieldSet(_("Menu position"), ('parent', 'ord', 'menu_visibility',
-                                                          'foldable')),
-                            FieldSet(_("Access Rights"), ('read_role_id', 'write_role_id'))),),
-                         ),
-                FieldSet(_("State of the current language variant"),
-                         (lambda record: lcg.p(record['status'].export()),)),
-                )
+        layout = ()
         columns = ('title_or_identifier', 'identifier', 'modname', 'status',
                    'menu_visibility', 'read_role_id', 'write_role_id')
         cb = CodebookSpec(display='title_or_identifier', prefer_display=True)
@@ -1338,13 +1318,13 @@ class Pages(SiteSpecificContentModule):
         return '/'
 
     def _resolve(self, req):
-        if req.wmi:
-            return super(Pages, self)._resolve(req)
         if req.has_param(self._key):
             row = self._get_row_by_key(req, req.param(self._key))
             if req.unresolved_path:
                 del req.unresolved_path[0]
             return row
+        if not req.unresolved_path:
+            return None
         identifier = req.unresolved_path[0]
         # Recognize special path of RSS channel as '<identifier>.<lang>.rss'. 
         if identifier.endswith('.rss'):
@@ -1423,24 +1403,8 @@ class Pages(SiteSpecificContentModule):
         raise Redirect(self._current_record_uri(req, record))
         
     def _redirect_after_update(self, req, record):
-        if not req.wmi:
-            req.message(self._update_msg(req, record))
-            raise Redirect(req.uri(), action='preview')
-        else:
-            super(Pages, self)._redirect_after_update(req, record)
-
-    def _actions(self, req, record):
-        actions = super(Pages, self)._actions(req, record)
-        if record is not None:
-            if req.wmi and req.param('action') == 'preview':
-                actions = (Action('view', _("Back")),)
-            if req.wmi:
-                exclude = ('attachments',)
-            else:
-                # TODO: Unpublish doesn't work outside WMI.
-                exclude = ('unpublish', 'preview',)
-            actions = tuple([a for a in actions if a.id() not in exclude])
-        return actions
+        req.message(self._update_msg(req, record))
+        raise Redirect(req.uri(), action='preview')
         
     def _delete_form_content(self, req, form, record):
         return [form] + self._page_content(req, record)
@@ -1480,18 +1444,12 @@ class Pages(SiteSpecificContentModule):
             else:
                 submenu = []
             submenu += [item(r) for r in children.get(page_id, ())]
-            if wmi:
-                menu_identifier = '_wmi/Pages/' + identifier
-                variants = available_languages
-            else:
-                menu_identifier = identifier
-                variants = titles.keys()
-            return MenuItem(menu_identifier,
+            return MenuItem(identifier,
                             title=lcg.SelfTranslatableText(identifier, translations=titles),
                             descr=lcg.SelfTranslatableText('', translations=descriptions),
                             hidden=not self._visible_in_menu(req, row),
                             foldable=row['foldable'].value(),
-                            variants=variants,
+                            variants=titles.keys(),
                             submenu=submenu)
         for row in self._data.get_rows(sorting=self._sorting, site=wiking.cfg.server_hostname,
                                        published=True):
@@ -1511,12 +1469,6 @@ class Pages(SiteSpecificContentModule):
                [MenuItem('_registration', _("Registration"), hidden=True),
                 # Translators: Label for section with user manuals, help pages etc.
                 MenuItem('_doc', _("Documentation"), hidden=True)]
-
-    def submenu(self, req):
-        if req.wmi:
-            return self.menu(req, wmi=True)
-        else:
-            return []
 
     def module_uri(self, req, modname):
         if modname == self.name():
@@ -2248,19 +2200,10 @@ class News(ContentManagementModule, EmbeddableCMSModule):
         return make_uri(uri, anchor)
             
     def _redirect_after_insert(self, req, record):
-        if req.wmi:
-            return super(News, self)._redirect_after_insert(req, record)
-        else:
-            req.message(self._insert_msg(req, record))
-            identifier = record.cb_value('page_id', 'identifier').value()
-            raise Redirect('/'+identifier)
+        req.message(self._insert_msg(req, record))
+        identifier = record.cb_value('page_id', 'identifier').value()
+        raise Redirect('/'+identifier)
         
-    def _form(self, form, req, *args, **kwargs):
-        if req.wmi and form == pw.ListView:
-            # Force to BrowseForm in WMI (disable list layout).
-            form = pw.BrowseForm
-        return super(CMSModule, self)._form(form, req, *args, **kwargs)
-    
     def _rss_author(self, req, record):
         return record.cb_value('author', 'email').export()
 
@@ -2359,7 +2302,7 @@ class Discussions(ContentManagementModule, EmbeddableCMSModule):
                                  anchor='comment-%s')
 
     def _link_provider(self, req, uri, record, cid, **kwargs):
-        if cid is None and not req.wmi:
+        if cid is None:
             return None
         return super(Discussions, self)._link_provider(req, uri, record, cid, **kwargs)
     
