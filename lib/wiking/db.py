@@ -1938,6 +1938,21 @@ class PytisModule(Module, ActionHandler):
 
         """
         return [form]
+
+    def _delete_form_content(self, req, form, record):
+        """Return page content for 'delete' action form as a list of 'lcg.Content' instances.
+
+        Arguments:
+          req -- current 'Request' instance.
+          form -- 'pytis.web.ShowForm' instance.
+          record -- the current record of the form as 'PytisModule.Record'.
+        
+        You may override this method to modify page content for the deletion
+        confirmation form in derived classes.  The default implementation
+        returns just the form itself.
+
+        """
+        return [form]
         
     def action_view(self, req, record):
         form = self._form(pw.ShowForm, req, record=record,
@@ -2065,7 +2080,7 @@ class PytisModule(Module, ActionHandler):
                                    # Translators: Back button label. Standard computer terminology.
                                    Action(back_action, _("Back"))))
         req.message(self._delete_prompt(req, record))
-        return self._document(req, form, record,
+        return self._document(req, self._delete_form_content(req, form, record), record,
                               subtitle=self._action_subtitle(req, action, record))
         
     def action_export(self, req):
