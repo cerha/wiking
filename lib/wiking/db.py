@@ -597,16 +597,10 @@ class PytisModule(Module, ActionHandler):
             title = lcg.TranslatableText('%(title)s (%(extra)s)').interpolate(interpolate)
         return title
         
-    def _document(self, req, content, record=None, lang=None, err=None, msg=None, **kwargs):
+    def _document(self, req, content, record=None, lang=None, **kwargs):
         title = self._document_title(req, record)
         if record and lang is None and self._LIST_BY_LANGUAGE:
             lang = str(record['lang'].value())
-        # Messages should be now stacked using the req.message() method directly, but they were
-        # passed as _document arguments before, so this is just for backwards compatibility.
-        if msg:
-            req.message(msg)
-        if err:
-            req.message(err, type=req.ERROR)
         return Document(title, content, lang=lang, **kwargs)
 
     def _default_actions_first(self, req, record):
@@ -1945,15 +1939,13 @@ class PytisModule(Module, ActionHandler):
         """
         return [form]
         
-    def action_view(self, req, record, err=None, msg=None):
-        # The arguments `msg' and `err' are DEPRECATED!  Please don't use.
-        # They are currently still used in Eurochance LMS.
+    def action_view(self, req, record):
         form = self._form(pw.ShowForm, req, record=record,
                           layout=self._layout(req, 'view', record),
                           actions=self._form_actions_argument(req),
                           )
         content = self._view_form_content(req, form, record)
-        return self._document(req, content, record, err=err, msg=msg)
+        return self._document(req, content, record)
 
     # ===== Action handlers which modify the database =====
 
