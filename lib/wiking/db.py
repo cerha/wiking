@@ -793,6 +793,13 @@ class PytisModule(Module, ActionHandler):
         else:
             return None
     
+    def _action_uri_provider(self, req, uri, record, form_cls, action):
+        params = dict([(name, value is True and 'true' or value)
+                       for name, value in action.kwargs().items()],
+                      action=action.id(),
+                      __invoked_from=form_cls.__name__)
+        return self._link_provider(req, uri, record, None, **params)
+    
     def _record_uri(self, req, record, *args, **kwargs):
         # Return the absolute URI of module's record if a direct mapping of the module exists.  
         # Use the method '_current_record_uri()' to get URI in the context of the current request.
@@ -871,7 +878,7 @@ class PytisModule(Module, ActionHandler):
             form_record[fid] = pd.Value(form_record.type(fid), values)
         form_instance = form(self._view, req, form_record, handler=handler or req.uri(),
                              name=self.name(), prefill=invalid_prefill,
-                             uri_provider=self._uri_provider(req, uri),
+                             uri_provider=self._uri_provider(req, form, uri),
                              hidden=hidden_fields, **kwargs)
         if binding_uri is None:
             # We use heading_info only for main form, not for binding side
@@ -887,19 +894,21 @@ class PytisModule(Module, ActionHandler):
                 req.message(heading_info, req.HEADING)
         return form_instance
 
-    def _uri_provider(self, req, uri):
+    def _uri_provider(self, req, form_cls, uri):
         """Return the uri_provider function to pass the pytis form."""
-        def uri_provider(record, cid, type=UriType.LINK):
+        def uri_provider(record, kind, target):
             if record is None:
-                assert type == UriType.LINK
+                assert kind == UriType.LINK
                 return uri
-            elif type == UriType.LINK:
+            elif kind == UriType.ACTION:
+                return self._action_uri_provider(req, uri, record, form_cls, target)
+            elif kind == UriType.LINK:
                 method = self._link_provider
-            elif type == UriType.IMAGE:
+            elif kind == UriType.IMAGE:
                 method = self._image_provider
-            elif type == UriType.PRINT:
+            elif kind == UriType.PRINT:
                 method = self._print_uri_provider
-            return method(req, uri, record, cid)
+            return method(req, uri, record, target)
         return uri_provider
     
     def _layout_instance(self, layout):
