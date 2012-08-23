@@ -262,6 +262,7 @@ class CMSModule(PytisModule, RssModule, Panelizable):
     RIGHTS_print_field = (Roles.ANYONE,)
 
     def _embed_binding(self, modname):
+        """Helper method to get a binding instance if given module is EmbeddableCMSModule."""
         try:
             cls = wiking.cfg.resolver.wiking_module_cls(modname)
         except:
@@ -274,14 +275,12 @@ class CMSModule(PytisModule, RssModule, Panelizable):
 
     def _list_form_content(self, req, form, uri=None):
         # Add short module help text above the list form in WMI.
-        content = super(CMSModule, self)._list_form_content(req, form, uri=uri)
-        # HACK: Test 'uri' to recognize related forms (binding side forms)
-        # where we suppress help.
-        if req.wmi and not uri: 
+        content = []
+        if req.wmi: 
             help = self._view.help()
             if help:
-                content.insert(0, lcg.p(help))
-        return content
+                content = [lcg.p(help)]
+        return content + super(CMSModule, self)._list_form_content(req, form, uri=uri)
 
     _CRYPTO_COOKIE = 'wiking_cms_crypto'
 
@@ -416,10 +415,9 @@ class EmbeddableCMSModule(CMSModule, Embeddable):
 
     def embed(self, req):
         content = [self.related(req, self.binding(), req.page, req.uri())]
-        if not req.wmi:
-            rss_info = self._rss_info(req)
-            if rss_info:
-                content.append(rss_info)
+        rss_info = self._rss_info(req)
+        if rss_info:
+            content.append(rss_info)
         return content
 
 
@@ -849,9 +847,12 @@ class Panels(SiteSpecificContentModule, Publishable):
         parser = lcg.Parser()
         #TODO: tady uvidim prirazenou stranku, navigable
         roles = wiking.module('Users').Roles()
-        for row in self._data.get_rows(lang=lang, published=True,
-                                       site=wiking.cfg.server_hostname,
-                                       sorting=self._sorting):
+        if self._application.preview_mode(req):
+            restriction = {}
+        else:
+            restriction = {'published': True}
+        for row in self._data.get_rows(site=wiking.cfg.server_hostname, lang=lang,
+                                       sorting=self._sorting, **restriction):
             role_id = row['read_role_id'].value()
             if role_id is not None and not req.check_roles(roles[role_id]):
                 continue
@@ -1248,17 +1249,20 @@ class Pages(SiteSpecificContentModule):
             Action('commit', _("Publish"), descr=_("Publish the page in its current state"),
                    enabled=lambda r: (r['_content'].value() != r['content'].value() \
                                           or not r['published'].value())),
-            Action('unpublish', _("Unpublish"), descr=_("Make the page invisible from outside"),
+            Action('unpublish', _("Unpublish"),
+                   descr=_("Make the page invisible in production mode"),
                    enabled=lambda r: r['published'].value()),
-            Action('revert', _("Revert"), descr=_("Revert last modifications"),
+            Action('revert', _("Revert"),
+                   descr=_("Revert the unpublished changes in page text "
+                           "to the last published state"),
                    enabled=lambda r: r['_content'].value() != r['content'].value()),
-            Action('preview', _("Preview"), descr=_("Display the page in its current state"),
-                   ), #enabled=lambda r: r['_content'].value() is not None),
             #Action('translate', _("Translate"), 
             #      descr=_("Create the content by translating another language variant"),
             #       enabled=lambda r: r['_content'].value() is None),
             Action('new_page', _("New Page"), descr=_("Create a new page")),
-            Action('help', _("Help")),
+            # The action seems inadequate in row context menu and the help page
+            # is out of date anyway.
+            #Action('help', _("Help")),
             )
         # Translators: Noun. Such as e-mail attachments (here attachments for a webpage).
         bindings = (Binding('attachments', _("Attachments"), 'Attachments', 'page_id'),
@@ -1291,7 +1295,7 @@ class Pages(SiteSpecificContentModule):
                     FieldSet(_("Access Rights"), ('read_role_id', 'write_role_id')),
                     )
                }
-    _SUBMIT_BUTTONS_ = ((_("Save"), None), (_("Save and publish"), 'commit'))
+    _SUBMIT_BUTTONS_ = ((_("Save as concept"), None), (_("Save and publish"), 'commit'))
     _SUBMIT_BUTTONS = {'update': _SUBMIT_BUTTONS_,
                        'insert': _SUBMIT_BUTTONS_}
     _INSERT_LABEL = _("New page")
@@ -1300,7 +1304,7 @@ class Pages(SiteSpecificContentModule):
     _LIST_LABEL = _("List all pages")
     _SEPARATOR = re.compile('^====+\s*$', re.MULTILINE)
     _HONOUR_SPEC_TITLE = True
-    #_ROW_ACTIONS = True
+    _ROW_ACTIONS = True
 
     RIGHTS_list = (Roles.CONTENT_ADMIN,)
 
@@ -1338,6 +1342,10 @@ class Pages(SiteSpecificContentModule):
         return '/'
 
     def _resolve(self, req):
+        if self._application.preview_mode(req):
+            restriction = {}
+        else:
+            restriction = {'published': True}
         if req.has_param(self._key):
             row = self._get_row_by_key(req, req.param(self._key))
             if req.unresolved_path:
@@ -1352,13 +1360,13 @@ class Pages(SiteSpecificContentModule):
             identifier = identifier[:-4]
             if len(identifier) > 3 and identifier[-3] == '.' and identifier[-2:].isalpha():
                 lang = str(identifier[-2:])
-                row = self._data.get_row(identifier=identifier[:-3], lang=lang, published=True,
-                                         site=wiking.cfg.server_hostname)
+                row = self._data.get_row(site=wiking.cfg.server_hostname,
+                                         identifier=identifier[:-3], lang=lang, **restriction)
                 if row:
                     del req.unresolved_path[0]
                     return row
-        rows = self._data.get_rows(identifier=identifier, published=True,
-                                   site=wiking.cfg.server_hostname)
+        rows = self._data.get_rows(site=wiking.cfg.server_hostname,
+                                   identifier=identifier, **restriction)
         if rows:
             variants = [str(row['lang'].value()) for row in rows]
             lang = req.preferred_language(variants)
@@ -1413,11 +1421,15 @@ class Pages(SiteSpecificContentModule):
 
     def _redirect_after_insert(self, req, record):
         req.message(self._insert_msg(req, record))
+        if not req.has_param('commit'):
+            self._application.set_preview_mode(req, True)
         raise Redirect(self._current_record_uri(req, record))
         
     def _redirect_after_update(self, req, record):
         req.message(self._update_msg(req, record))
-        raise Redirect(req.uri(), action='preview')
+        if not req.has_param('commit'):
+            self._application.set_preview_mode(req, True)
+        raise Redirect(req.uri())
         
     def _delete_form_content(self, req, form, record):
         return [form] + self._page_content(req, record)
@@ -1439,7 +1451,9 @@ class Pages(SiteSpecificContentModule):
     def menu(self, req, wmi=False):
         children = {None: []}
         translations = {}
-        available_languages = wiking.module('Application').languages()
+        application = wiking.module('Application')
+        available_languages = application.languages()
+        preview_mode = application.preview_mode(req)
         def item(row):
             page_id = row['page_id'].value()
             identifier = str(row['identifier'].value())
@@ -1457,15 +1471,23 @@ class Pages(SiteSpecificContentModule):
             else:
                 submenu = []
             submenu += [item(r) for r in children.get(page_id, ())]
+            if preview_mode:
+                variants = available_languages
+            else:
+                variants = titles.keys()
             return MenuItem(identifier,
                             title=lcg.SelfTranslatableText(identifier, translations=titles),
                             descr=lcg.SelfTranslatableText('', translations=descriptions),
                             hidden=not self._visible_in_menu(req, row),
                             foldable=row['foldable'].value(),
-                            variants=titles.keys(),
+                            variants=variants,
                             submenu=submenu)
-        for row in self._data.get_rows(sorting=self._sorting, site=wiking.cfg.server_hostname,
-                                       published=True):
+        if preview_mode:
+            restriction = {}
+        else:
+            restriction = {'published': True}
+        for row in self._data.get_rows(site=wiking.cfg.server_hostname,
+                                       sorting=self._sorting, **restriction):
             page_id = row['page_id'].value()
             if page_id not in translations:
                 parent = row['parent'].value()
@@ -1497,14 +1519,14 @@ class Pages(SiteSpecificContentModule):
                 uri = None
         return uri
 
-    def _page_content(self, req, record, preview=False):
+    def _page_content(self, req, record):
         # Main content
         modname = record['modname'].value()
         if modname is not None:
             content = wiking.module(modname).embed(req)
         else:
             content = []
-        if preview:
+        if self._application.preview_mode(req):
             text = record['_content'].value()
         else:
             text = record['content'].value()
@@ -1549,20 +1571,26 @@ class Pages(SiteSpecificContentModule):
 
     # Action handlers.
         
-    def action_view(self, req, record, preview=False):
-        content = self._page_content(req, record, preview=preview)
+    def action_view(self, req, record):
+        content = self._page_content(req, record)
         if not content:
-            # Redirect to the first visible subpage (if any) when the page has
-            # no content.  This makes it possible to create menu items which
-            # have no direct content, but only subitems.  The first subitem is
-            # selected when such item is clicked.
+            # Redirect to the first visible subpage (if any) when the page
+            # has no content.  This makes it possible to create menu items
+            # which have no direct content, but only subitems.  The first
+            # subitem is selected when such item is clicked.
             condition = pd.AND(pd.EQ('parent', record['page_id']),
                                pd.NE('menu_visibility', pd.sval('never')),
                                pd.EQ('published', pd.bval(True)),
                                pd.EQ('site', pd.sval(wiking.cfg.server_hostname)))
             for row in self._data.get_rows(condition=condition, sorting=self._sorting):
                 if self._visible_in_menu(req, row):
-                    raise Redirect('/'+row['identifier'].value())
+                    if self._application.preview_mode(req):
+                        req.message(_("This page has no content. "
+                                      "Users will be redirected to the first visible "
+                                      "subpage in production mode.", type=req.WARNING))
+                        break
+                    else:
+                        raise Redirect('/'+row['identifier'].value())
         if req.check_roles(Roles.CONTENT_ADMIN):
             # Append an empty show form just for the action menu.
             form = self._form(pw.ShowForm, req, record=record, layout=(),
@@ -1571,9 +1599,14 @@ class Pages(SiteSpecificContentModule):
                            self._related_content(req, record))
         return self._document(req, content, record)
                       
-    def action_preview(self, req, record):
-        return self.action_view(req, record, preview=True)
-    RIGHTS_preview = (Roles.CONTENT_ADMIN,)
+
+    def action_update(self, req, record, action='update'):
+        if action == 'update' and not self._application.preview_mode(req) \
+                and record['content'].value() != record['_content'].value():
+            req.message(_("The page has unpublished changes (not visible in production mode)."),
+                        type=req.WARNING)
+            self._application.set_preview_mode(req, True)
+        return super(Pages, self).action_update(req, record, action=action)
 
     def action_rss(self, req, record):
         modname = record['modname'].value()
@@ -1650,7 +1683,9 @@ class Pages(SiteSpecificContentModule):
         except pd.DBException as e:
             req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
         else:
-            req.message(_("The page was unpublished."))
+            req.message(_("The page was unpublished. "
+                          "It will not be visible in production mode anymore."))
+        self._application.set_preview_mode(req, True)
         raise Redirect(self._current_record_uri(req, record))
     RIGHTS_unpublish = (Roles.CONTENT_ADMIN,)
 
@@ -1659,9 +1694,9 @@ class Pages(SiteSpecificContentModule):
                        parent=record['parent'].value(), ord=record['ord'].value())
     RIGHTS_new_page = (Roles.CONTENT_ADMIN,)
 
-    def action_help(self, req, record):
-        raise Redirect('/_doc/wiking/cms/pages')
-    RIGHTS_help = (Roles.CONTENT_ADMIN,)
+    #def action_help(self, req, record):
+    #    raise Redirect('/_doc/wiking/cms/pages')
+    #RIGHTS_help = (Roles.CONTENT_ADMIN,)
 
 
 class PageHistory(ContentManagementModule):
@@ -2026,6 +2061,8 @@ class Attachments(ContentManagementModule):
         ('value too long for type character varying\(64\)',
          ('file', _("Attachment file name exceeds the maximal length 64 characters."))),
         )
+    _ROW_ACTIONS = True
+    
     RIGHTS_view   = (Roles.CONTENT_ADMIN,)
 
     def _default_action(self, req, record=None):

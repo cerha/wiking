@@ -45,18 +45,67 @@ class Application(CookieAuthentication, wiking.Application):
                                              Roles.SETTINGS_ADMIN, Roles.STYLE_ADMIN,
                                              Roles.MAIL_ADMIN,)}
 
+    _PREVIEW_MODE_COOKIE = 'wiking_cms_preview_mode'
+    _PREVIEW_MODE_PARAM = '_wiking_cms_preview_mode'
+    
     _roles_instance = None
 
     class WMILink(lcg.Content):
         # Used in login panel or bottom bar.
         def export(self, context):
+            g = context.generator()
             if not context.req().wmi:
                 uri, label, title = ('/_wmi/', _("Manage this site"),
                                      _("Enter the Wiking Management Interface"))
             else:
                 uri, label, title = ('/', _("Leave the Management Interface"), None)
-            return context.generator().link(label, uri, title=title, hotkey="9", id='wmi-link')
+            return g.link(label, uri, title=title, hotkey="9", id='wmi-link')
+    class PreviewModeCtrl(lcg.Content):
+        # Used in login panel or bottom bar.
+        def export(self, context):
+            g = context.generator()
+            req = context.req()
+            name = Application._PREVIEW_MODE_PARAM
+            current_value = wiking.module('Application').preview_mode(req) and '1' or '0'
+            return g.form([g.radio(id=name+'_'+value, name=name, value=value,
+                                   checked=current_value==value,
+                                   onchange='this.form.submit();') + 
+                           g.label(label, name+'_'+value) + g.br()
+                          for value, label in (('0', _("Production mode")),
+                                               ('1', _("Preview mode")))],
+                          action=req.uri(), method='GET')
 
+    def preview_mode(self, req):
+        """Query the current state of preview mode.
+
+        Returns True if the application is currently in a
+        preview mode and False when in production mode (the oposite of preview
+        mode).
+
+        These modes determine which content is displayed.  Preview mode is for
+        site administrators (also unpublished content is displayed), production
+        mode is for visitors (only published content is displayed).  Switching
+        may be used by adimnistrators to check the differences.
+
+        """
+        if req.check_roles(Roles.CONTENT_ADMIN):
+            return req.cookie(self._PREVIEW_MODE_COOKIE) == '1'
+        else:
+            return False
+        
+    def set_preview_mode(self, req, value):
+        """Change the current state of preview mode.
+
+        The current mode is changed according to given 'value' -- switched to
+        preview mode when 'value' is True or switched to production mode when
+        value is False.
+
+        """
+        if self.preview_mode(req) != value:
+            mode = value and _("preview mode") or _("production mode")
+            req.message(_("Switching to %(mode)s.", mode=mode), type=req.WARNING)
+            req.set_cookie(self._PREVIEW_MODE_COOKIE, value and '1' or '0')
+        
     def initialize(self, req):
         config_file = wiking.cfg.user_config_file
         if config_file:
@@ -64,6 +113,10 @@ class Application(CookieAuthentication, wiking.Application):
         
     def handle(self, req):
         req.wmi = False # Will be set to True by `WikingManagementInterface' if needed.
+        if req.check_roles(Roles.CONTENT_ADMIN):
+            preview_mode = req.param(self._PREVIEW_MODE_PARAM)
+            if preview_mode is not None:
+                req.set_cookie(self._PREVIEW_MODE_COOKIE, preview_mode == '1' and '1' or None)
         wiking.module('Config').configure(req)
         if req.unresolved_path:
             try:
@@ -146,12 +199,11 @@ class Application(CookieAuthentication, wiking.Application):
          'bug-comments').
         
         """
-        
         # Try the static mapping first.
         uri = super(Application, self).module_uri(req, modname)
         if uri is None:
             if req.wmi:
-                uri = '/_wmi/'+ modname
+                uri = '/_wmi/' + modname
             else:
                 # Try if the module is directly embedded in a page.
                 uri = wiking.module('Pages').module_uri(req, modname)
@@ -310,7 +362,7 @@ class Application(CookieAuthentication, wiking.Application):
 
     def login_panel_content(self, req):
         if self.authorize(req, WikingManagementInterface):
-            return self.WMILink()
+            return [self.PreviewModeCtrl(), self.WMILink()]
         else:
             return None
 
