@@ -362,16 +362,18 @@ class MailManagementModule(CMSModule):
 class Embeddable(object):
     """Mix-in class for modules which may be embedded into page content.
 
-    Wiking CMS allows setting an extension module for each page in its global options.  The list of
-    available modules always consists of all available modules derived from this class.  The
-    derived classes must implement the 'embed()' method to produce content, which is then embedded
-    into the page content together with the page text.  This content normally appears below the
-    page text, but if the page text contains the delimitter consisting of four or more equation
-    signs on a separate line, the embedded content will be placed within the text in the place of
-    this delimetter.
+    Wiking CMS allows setting an extension module for each page in its global
+    options.  The list of available modules always consists of all available
+    modules derived from this class.  The derived classes must implement the
+    'embed()' method to produce content, which is then embedded into the page
+    content together with the page text.  This content normally appears below
+    the page text, but if the page text contains the delimitter consisting of
+    four or more equation signs on a separate line, the embedded content will
+    be placed within the text in the place of this delimetter.
 
-    Except for the actual embedded content, the derived classes may also define menu items to be
-    automatically added into the main menu.  See the method 'submenu()'.
+    Except for the actual embedded content, the derived classes may also define
+    menu items to be automatically added into the main menu.  See the method
+    'submenu()'.
 
     """
     
@@ -399,6 +401,16 @@ class EmbeddableCMSModule(CMSModule, Embeddable):
     
     @classmethod
     def binding(cls):
+        """Return a Binding describing embedded module's relation to a page.
+
+        We use a Binding instance for this purpose, because embedding data
+        modules works exactly as pytis bindings.  The module's data are in a
+        relation to the current page record and the 'Binding' specification has
+        all the power to describe this relation.  In addition, we can use the
+        existing PytisModule methods to render embedded forms inside the page
+        and perform forwarding the requests from a page to the embedded module.
+
+        """
         return Binding('data', cls.title(), cls.name(), cls._EMBED_BINDING_COLUMN,
                        condition=cls._embed_binding_condition)
 
@@ -852,7 +864,7 @@ class Panels(SiteSpecificContentModule, Publishable):
                 mod = wiking.module(modname)
                 binding = self._embed_binding(modname)
                 content = tuple(mod.panelize(req, lang, row['size'].value(),
-                                                relation=binding and (binding, row)))
+                                             relation=binding and (binding, row)))
                 if mod.has_channel():
                     channel = '/'+'.'.join((row['identifier'].value(), lang, 'rss'))
 
@@ -1300,10 +1312,18 @@ class Pages(SiteSpecificContentModule):
         
     def _handle_subpath(self, req, record):
         modname = record['modname'].value()
-        if modname is not None:
+        if modname:
             binding = self._embed_binding(modname)
-            # Modules with bindings are handled in the parent class method.
-            if not binding:
+            if binding:
+                if req.unresolved_path[0] == binding.id():
+                    del req.unresolved_path[0]
+                    if self._binding_enabled(req, record, binding):
+                        return self._perform_binding_forward(req, record, binding)
+                    else:
+                        raise Forbidden()
+            else:
+                # This for modules, which are Embeddable, but not
+                # EmbeddableCMSModule.
                 mod = wiking.module(modname)
                 if isinstance(mod, RequestHandler):
                     try:
@@ -1348,13 +1368,6 @@ class Pages(SiteSpecificContentModule):
             raise Forbidden()
         else:
             raise NotFound()
-
-    def _bindings(self, req, record):
-        bindings = super(Pages, self)._bindings(req, record)
-        binding = self._embed_binding(record['modname'].value())
-        if binding:
-            bindings.insert(0, binding)
-        return bindings
 
     def _validate(self, req, record, layout):
         errors = super(Pages, self)._validate(req, record, layout)

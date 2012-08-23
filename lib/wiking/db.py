@@ -1402,24 +1402,20 @@ class PytisModule(Module, ActionHandler):
             return self._handle_subpath(req, record)
         return super(PytisModule, self)._handle(req, action, **kwargs)
 
-    def _handle_subpath(self, req, record):
-        for binding in self._bindings(req, record):
-            if req.unresolved_path[0] == binding.id():
-                del req.unresolved_path[0]
-                # TODO: respect the binding condition in the forwarded module.
-                mod = wiking.module(binding.name())
-                return req.forward(mod, binding=binding, record=record, forwarded_by=self,
-                                   title=self._document_title(req, record))
-        if req.unresolved_path[0] in [b.id() for b in self._view.bindings()]:
-            # If a binding is present in `view.bindings()', but not in
-            # self._bindings(), it is disabled (its `enabled' function
-            # returns False.  Thus the URI is valid, but not accessible
-            # for some reason.
-            raise Forbidden()
-        else:
-            raise NotFound()
+    def _bindings(self, req, record):
+        return self._view.bindings()
 
     def _binding_enabled(self, req, record, binding):
+        """Return True if the binding is active.
+
+        When True is returned, it indicates that the binding is available to
+        the current user.  One of the possible consequences is that URIs
+        related to this binding are served through '_handle_subpath()'.
+
+        By default, this method returns the value corresponding to the
+        'enabled' attribute of the binding specification.
+
+        """
         if isinstance(binding, wiking.Binding):
             enabled = binding.enabled()
             if enabled is None:
@@ -1431,8 +1427,36 @@ class PytisModule(Module, ActionHandler):
         else:
             return True
 
-    def _bindings(self, req, record):
-        return [b for b in self._view.bindings() if self._binding_enabled(req, record, b)]
+    def _binding_visible(self, req, record, binding):
+        """Return True if the binding is displayed as a side form.
+
+        When True is returned, it indicates that the side form represented by
+        this binding should be displayed (typically in the notebook created by
+        '_related_content()').
+
+        By default, this method returns the result of '_binding_enabled()'.
+        You may override this method to control the side form presence
+        separately from the functional aspects of binding availability.
+        
+        """
+        return self._binding_enabled(req, record, binding)
+        
+    def _perform_binding_forward(self, req, record, binding):
+        # TODO: respect the binding condition in the forwarded module.
+        mod = wiking.module(binding.name())
+        return req.forward(mod, binding=binding, record=record, forwarded_by=self,
+                           title=self._document_title(req, record))
+    
+    def _handle_subpath(self, req, record):
+        for binding in self._bindings(req, record):
+            if req.unresolved_path[0] == binding.id():
+                del req.unresolved_path[0]
+                if self._binding_enabled(req, record, binding):
+                    return self._perform_binding_forward(req, record, binding)
+                else:
+                    # The URI is valid, but not accessible for some reason.
+                    raise Forbidden()
+        raise NotFound()
 
     def _call_rows_db_function(self, name, *args, **kwargs):
         """Call database function NAME with given arguments and return the result.
@@ -1898,15 +1922,17 @@ class PytisModule(Module, ActionHandler):
         sections = []
         active = None
         for binding in self._bindings(req, record):
-            modname = binding.name()
-            mod = wiking.module(modname)
-            content = mod.related(req, binding, record, uri=self._current_record_uri(req, record))
-            if content:
-                anchor = 'binding-'+binding.id()
-                if req.param('form_name') == modname:
-                    active = anchor
-                sections.append(lcg.Section(title=binding.title(), descr=binding.descr(),
-                                            anchor=anchor, content=content))
+            if self._binding_visible(req, record, binding):
+                modname = binding.name()
+                mod = wiking.module(modname)
+                content = mod.related(req, binding, record,
+                                      uri=self._current_record_uri(req, record))
+                if content:
+                    anchor = 'binding-'+binding.id()
+                    if req.param('form_name') == modname:
+                        active = anchor
+                    sections.append(lcg.Section(title=binding.title(), descr=binding.descr(),
+                                                anchor=anchor, content=content))
         if sections:
             return [wiking.Notebook(sections, name='bindings-'+self.name(), active=active)]
         else:
