@@ -48,7 +48,7 @@ create or replace rule cms_v_pages_update as
   on update to cms_v_pages do instead (
     -- Set the ord=0 first to work around avoid problem with recursion order in
     -- cms_pages_update_order trigger (see the comment there for more info).
-    update cms_pages set ord=0 where cms_pages.page_id = new.page_id;
+    update cms_pages set ord=0 where cms_pages.page_id = old.page_id and new.ord < old.ord;
     update cms_pages set
         site = new.site,
         identifier = new.identifier,
