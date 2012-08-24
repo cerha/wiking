@@ -418,13 +418,16 @@ div.table-of-contents ul {
     margin-bottom: 0;
 }
 
-a.row-actions-ctrl { 
-    display: block;
+a.popup-menu-ctrl { 
+    display: inline-block;
     background-image: url(/_resources/popup-arrow.png);
     background-position: right bottom;
     background-repeat: no-repeat;
     width: 10px;
     height: 14px;
+}
+.pytis-form.browse-form tr a.popup-menu-ctrl { 
+    display: block;
     float: right;
 }
 

@@ -727,6 +727,39 @@ wiking.PopupMenu = Class.create(wiking.Menu, {
 
 wiking.popup_menu = null;
 
+wiking.init_popup_menu_ctrl = function(element_id, items, tooltip, selector) {
+    /* Convert given DOM element into a control for invocation of a popup menu.
+     *
+     * Arguments:
+     *   element_id -- html id of the DOM element - this will typically by an
+     *     empty link, such as <a id='xxx'></a>.  This element will
+     *     automatically be given a style class that makes appear as a small,
+     *     down pointing triangle to give the user the impression of a popup
+     *     control.
+     *   items -- definition of popup menu items to be passed to PopupMenu
+     *     constructor on menu invocation.
+     *   tooltip -- optional tooltip as a string.
+     *   selector -- CSS selector string (such as 'tr', 'div.title', '.menu li'
+     *     etc.) to identify a surrounding DOM element to be observed for
+     *     'contextmenu' event.  If passed, the corresponding element will also
+     *     invoke the context menu on right mouse button click.
+     *
+     */
+    function popup_menu(event) { 
+	var menu = new wiking.PopupMenu(items);
+	menu.popup(event);
+    };
+    var ctrl = $(element_id);
+    ctrl.addClassName('popup-menu-ctrl');
+    ctrl.observe('click', popup_menu);
+    ctrl.setAttribute('href', '#');
+    if (typeof tooltip != 'undefined')
+	ctrl.setAttribute('title', tooltip);
+    if (typeof selector != 'undefined')
+	ctrl.up(selector).observe('contextmenu', popup_menu);
+};
+
+
 wiking.Cookies = Class.create({
     // This class is taken from 
     // http://codeinthehole.com/writing/javascript-cookie-objects-using-prototype-and-json/
