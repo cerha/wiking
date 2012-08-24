@@ -631,7 +631,8 @@ wiking.PopupMenu = Class.create(wiking.Menu, {
 				      'title': item.descr, 
 				      'onclick': item.onclick});
 	    a.update(item.title);
-	    ul.insert(new Element('li', {'class': 'active'}).update(a));
+	    var enabled = (typeof item.enabled == 'undefined' || item.enabled);
+	    ul.insert(new Element('li', (enabled ? {'class': 'active'} : {})).update(a));
 	}
 	var menu = new Element('div', {'id': 'popup-menu'});
 	menu.insert(ul)
