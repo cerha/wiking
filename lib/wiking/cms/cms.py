@@ -257,8 +257,6 @@ class CMSModule(PytisModule, RssModule, Panelizable):
     RIGHTS_delete    = (Roles.ADMIN,)
     RIGHTS_export    = () # Denied by default.  Enable explicitly when needed.
     RIGHTS_copy      = () # Denied by default.  Enable explicitly when needed.
-    RIGHTS_publish   = (Roles.ADMIN,)
-    RIGHTS_unpublish = (Roles.ADMIN,)
     RIGHTS_print_field = (Roles.ANYONE,)
 
     def _embed_binding(self, modname):
@@ -322,40 +320,30 @@ class ContentManagementModule(CMSModule):
     RIGHTS_insert    = (Roles.CONTENT_ADMIN,)
     RIGHTS_update    = (Roles.CONTENT_ADMIN,)
     RIGHTS_delete    = (Roles.CONTENT_ADMIN,)
-    RIGHTS_publish   = (Roles.CONTENT_ADMIN,)
-    RIGHTS_unpublish = (Roles.CONTENT_ADMIN,)
     
 class SettingsManagementModule(CMSModule):
     """Base class for WMI modules managed by L{Roles.SETTINGS_ADMIN}."""
     RIGHTS_insert    = (Roles.SETTINGS_ADMIN,)
     RIGHTS_update    = (Roles.SETTINGS_ADMIN,)
     RIGHTS_delete    = (Roles.SETTINGS_ADMIN,)
-    RIGHTS_publish   = (Roles.SETTINGS_ADMIN,)
-    RIGHTS_unpublish = (Roles.SETTINGS_ADMIN,)
 
 class UserManagementModule(CMSModule):
     """Base class for WMI modules managed by L{Roles.USER_ADMIN}."""
     RIGHTS_insert    = (Roles.USER_ADMIN,)
     RIGHTS_update    = (Roles.USER_ADMIN,)
     RIGHTS_delete    = (Roles.USER_ADMIN,)
-    RIGHTS_publish   = (Roles.USER_ADMIN,)
-    RIGHTS_unpublish = (Roles.USER_ADMIN,)
     
 class StyleManagementModule(CMSModule):
     """Base class for WMI modules managed by L{Roles.STYLE_ADMIN}."""
     RIGHTS_insert    = (Roles.STYLE_ADMIN,)
     RIGHTS_update    = (Roles.STYLE_ADMIN,)
     RIGHTS_delete    = (Roles.STYLE_ADMIN,)
-    RIGHTS_publish   = (Roles.STYLE_ADMIN,)
-    RIGHTS_unpublish = (Roles.STYLE_ADMIN,)
     
 class MailManagementModule(CMSModule):
     """Base class for WMI modules managed by L{Roles.MAIL_ADMIN}."""
     RIGHTS_insert    = (Roles.MAIL_ADMIN,)
     RIGHTS_update    = (Roles.MAIL_ADMIN,)
     RIGHTS_delete    = (Roles.MAIL_ADMIN,)
-    RIGHTS_publish   = (Roles.MAIL_ADMIN,)
-    RIGHTS_unpublish = (Roles.MAIL_ADMIN,)
     
     
 class Embeddable(object):
@@ -782,9 +770,9 @@ class PageStructure(SiteSpecificContentModule):
             result.append(Order(1, _("First")))
         return result
     
-
-class Panels(SiteSpecificContentModule, Publishable):
-    """Provide a set of side panels.
+    
+class Panels(SiteSpecificContentModule):
+    """Manage a set of side panels.
 
     The panels are stored in a Pytis data object to allow their management through WMI.
 
@@ -831,8 +819,8 @@ class Panels(SiteSpecificContentModule, Publishable):
             # Translators: Content of a page (text or something else)
             ContentField('content', _("Content"), height=10, width=80,
                          descr=_("Additional text content displayed on the panel.")),
-            # Translators: Yes/no configuration of whether the page is
-            # published. Followed by a checkbox.
+            # Translators: Yes/no option whether the item is publically
+            # visible. Followed by a checkbox.
             Field('published', _("Published"), default=True,
                   descr=_("Controls whether the panel is actually displayed."),
                   ),
@@ -840,8 +828,62 @@ class Panels(SiteSpecificContentModule, Publishable):
         sorting = (('ord', ASC),)
         columns = ('title', 'identifier', 'ord', 'modtitle', 'size', 'published', 'content')
         layout = ('title', 'identifier', 'ord', 'page_id', 'size', 'content', 'published')
-    _LIST_BY_LANGUAGE = True
+        actions = (
+            Action('publish', _("Publish"),
+                   enabled=lambda r: not r['published'].value(),
+                   descr=_("Make the panel visible in production mode")),
+            Action('unpublish', _("Unpublish"),
+                   enabled=lambda r: r['published'].value(),
+                   descr=_("Make the panel invisible in production mode")),
+            )
 
+    _LIST_BY_LANGUAGE = True
+    _HONOUR_SPEC_TITLE = True
+    RIGHTS_list = ()
+    RIGHTS_view = ()
+    RIGHTS_publish = (Roles.CONTENT_ADMIN,)
+    RIGHTS_unpublish = (Roles.CONTENT_ADMIN,)
+
+    def _resolve(self, req):
+        # Don't allow resolution by uri, panels have no URI so the
+        # identification must be passed as a parameter.
+        if req.has_param(self._key):
+            return self._get_row_by_key(req, req.param(self._key))
+        else:
+            return None
+
+    def _current_record_uri(self, req, record):
+        return req.uri()
+    
+    def _hidden_fields(self, req, action, record=None):
+        hidden_fields = super(Panels, self)._hidden_fields(req, action, record=record)
+        hidden_fields.append(('_manage_cms_panels', '1'))
+        return hidden_fields
+
+    def _delete_confirmation_actions(self, req, record):
+        return (Action('delete', self._DELETE_LABEL, _manage_cms_panels='1',
+                       panel_id=record['panel_id'].export(), submit=1),)
+        
+    def _export_panel_controls(self, renderer, context, req, record):
+        def is_enabled(action):
+            enabled = action.enabled()
+            if isinstance(enabled, collections.Callable):
+                enabled = enabled(record)
+            return enabled
+        g = context.generator()
+        context.resource('pytis.js')
+        actions = [dict(title=action.title(),
+                        descr=action.descr(),
+                        enabled=is_enabled(action),
+                        href=req.make_uri('/', _manage_cms_panels='1',
+                                          action=action.id(),
+                                          panel_id=record['panel_id'].export()))
+                   for action in self._form_actions(req, record, None)]
+        element_id = 'wiking-cms-panel-controls-%d' % record['panel_id'].value()
+        return (g.a('', id=element_id) +
+                g.script(g.js_call('wiking.init_popup_menu_ctrl', element_id, actions,
+                                   _("Popup the menu of actions for this panel"), 'h3')))
+        
     def panels(self, req, lang):
         panels = []
         parser = lcg.Parser()
@@ -875,10 +917,33 @@ class Panels(SiteSpecificContentModule, Publishable):
                 else:
                     content += (HtmlContent(row['content'].value()),)
             content = lcg.Container(content)
-            panels.append(Panel(panel_id, title, content, channel=channel))
+            if req.check_roles(Roles.CONTENT_ADMIN):
+                titlebar_content = wiking.HtmlRenderer(self._export_panel_controls,
+                                                       req, self._record(req, row))
+            else:
+                titlebar_content = None
+            panels.append(Panel(panel_id, title, content,
+                                titlebar_content=titlebar_content, channel=channel))
+            
         return panels
 
+    def action_publish(self, req, record, publish=True):
+        try:
+            record.update(published=publish)
+        except pd.DBException as e:
+            req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
+        else:
+            if publish:
+                msg = _("The panel was published.")
+            else:
+                msg = _("The panel was unpublished.")
+            req.message(msg)
+        raise Redirect(req.uri())
 
+    def action_unpublish(self, req, record):
+        return self.action_publish(req, record, publish=False)
+
+    
 class Languages(SettingsManagementModule):
     """List all languages available for given site.
 
@@ -2335,8 +2400,9 @@ class Discussions(ContentManagementModule, EmbeddableCMSModule):
         layout = ('text',)
         def list_layout(self):
             import textwrap, urllib
-            def reply_info(element, context, g, record):
+            def reply_info(element, context, record):
                 if record.req().check_roles(Roles.USER):
+                    g = context.generator()
                     text = textwrap.fill(record['text'].value(), 60, replace_whitespace=False)
                     quoted = '\n'.join(['> '+line for line in text.splitlines()]) +'\n\n'
                     # This hidden 'div.discussion-reply' is a placeholder and
@@ -2394,7 +2460,8 @@ class Discussions(ContentManagementModule, EmbeddableCMSModule):
         if req.check_roles(Roles.USER):
             form_uri = uri + '/'+ binding.id()
             # Add JavaScript initialization above the list.
-            def render(element, context, g):
+            def render(element, context):
+                g = context.generator()
                 context.resource('effects.js')
                 context.resource('discussion.js')
                 # Translators: Button labels to add a reaction to a previous discussion post.

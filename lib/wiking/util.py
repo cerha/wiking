@@ -643,7 +643,8 @@ class Panel(object):
     application and optionally link to RSS channels.
 
     """
-    def __init__(self, id, title, content, accessible_title=None, channel=None):
+    def __init__(self, id, title, content, titlebar_content=None,
+                 accessible_title=None, channel=None):
         """
         @type id: basestring
         @param id: Panel unique identifier.  This identifier is included in
@@ -662,6 +663,10 @@ class Panel(object):
         purpose than it is desirable to display in panel heading, use this
         argument to pass an alternative title.
 
+        @type titlebar_content: L{lcg.Content} @param titlebar_content:
+        Additional panel title bar content.  If defined, the exported content
+        will be appended to the panel title inside the panel title bar.
+
         @type channel: basestring
         @param channel: RSS channel URI if this panel represents an RSS
         channel.  If not None, the panel will indicate a channel icon with a
@@ -679,6 +684,7 @@ class Panel(object):
         self._title = title
         self._content = content
         self._accessible_title = accessible_title or title
+        self._titlebar_content = titlebar_content
         self._channel = channel
         
     def id(self):
@@ -689,6 +695,9 @@ class Panel(object):
     
     def accessible_title(self):
         return self._accessible_title
+    
+    def titlebar_content(self):
+        return self._titlebar_content
 
     # TODO: navigable ....
     
@@ -1365,11 +1374,11 @@ class HtmlRenderer(lcg.Content):
     This is a simple convenience wrapper for situations where HTML content is
     rendered directly by a Python function passed to the constructor.  The
     result can be placed within an LCG content hierarchy and the passed
-    renderer function will be called on export with at least three arguments
-    (element, context, generator), where 'element' is the 'HtmlRenderer'
-    instance, 'context' is a 'wiking.Exporter.Context' instance and 'generator'
-    is an 'lcg.HtmlGenerator' instance.  Also any additional arguments
-    (including keyword arguments) passed to the constructor are passed on.
+    renderer function will be called on export with at least two arguments
+    (element, context), where 'element' is the 'HtmlRenderer' instance and
+    'context' is a 'wiking.Exporter.Context' instance.  Also any additional
+    arguments (including keyword arguments) passed to the constructor are
+    passed on.
 
     Use with caution.  Defining specific content classes for more generic
     content elements is encouraged over using this class.  This class should
@@ -1392,8 +1401,7 @@ class HtmlRenderer(lcg.Content):
         super(HtmlRenderer, self).__init__()
     
     def export(self, context):
-        return self._renderer(self, context, context.generator(),
-                              *self._renderer_args, **self._renderer_kwargs)
+        return self._renderer(self, context, *self._renderer_args, **self._renderer_kwargs)
     
 class IFrame(lcg.Content):
     """HTML specific IFRAME component."""

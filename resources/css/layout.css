@@ -245,6 +245,9 @@ div.panel {
     border: 1px solid $color.top-border;
     background-color: $color.background;
 }
+div.panels-bottom-content {
+    margin: 0 0em 0.5em 0.5em;
+}
 div.panel h3 {
     padding: 0.1em 0.2em;
     margin: 0;

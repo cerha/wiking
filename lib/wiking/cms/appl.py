@@ -61,20 +61,22 @@ class Application(CookieAuthentication, wiking.Application):
                 uri, label, title = ('/', _("Leave the Management Interface"), None)
             return g.link(label, uri, title=title, hotkey="9", id='wmi-link')
     class PreviewModeCtrl(lcg.Content):
-        # Used in login panel or bottom bar.
         def export(self, context):
             g = context.generator()
             req = context.req()
-            name = Application._PREVIEW_MODE_PARAM
-            current_value = wiking.module('Application').preview_mode(req) and '1' or '0'
-            return g.form([g.radio(id=name+'_'+value, name=name, value=value,
-                                   checked=current_value==value,
-                                   onchange='this.form.submit();') + 
-                           g.label(label, name+'_'+value) + g.br()
-                          for value, label in (('0', _("Production mode")),
-                                               ('1', _("Preview mode")))],
-                          action=req.uri(), method='GET')
-
+            if req.wmi:
+                return ""
+            else:
+                name = Application._PREVIEW_MODE_PARAM
+                current_value = wiking.module('Application').preview_mode(req) and '1' or '0'
+                return g.form([g.radio(id=name+'_'+value, name=name, value=value,
+                                       checked=current_value==value,
+                                       onchange='this.form.submit();') + 
+                               g.label(label, name+'_'+value) + g.br()
+                               for value, label in (('0', _("Production mode")),
+                                                    ('1', _("Preview mode")))],
+                              action=req.uri(), method='GET')
+            
     def preview_mode(self, req):
         """Query the current state of preview mode.
 
@@ -124,14 +126,18 @@ class Application(CookieAuthentication, wiking.Application):
             except KeyError:
                 modname = 'Pages'
             else:            
-                # Consume the unresolved path if it was in static mapping or leave it for further
-                # resolution when passing to Pages.
+                # Consume the unresolved path if it was in static mapping or
+                # leave it for further resolution when passing to Pages.
                 del req.unresolved_path[0]
-            return req.forward(wiking.module(modname))
         elif req.param('action'):
-            return req.forward(wiking.module('Pages'))
+            if req.param('_manage_cms_panels') == '1':
+                modname = 'Panels'
+            else:
+                modname = 'Pages'
         else:
             return super(Application, self).handle(req)
+        return req.forward(wiking.module(modname))
+        
 
     def module_uri(self, req, modname):
         """Return the base URI of given Wiking module (relative to server root).
@@ -366,6 +372,18 @@ class Application(CookieAuthentication, wiking.Application):
         else:
             return None
 
+    def right_panels_bottom_content(self, req):
+        if req.check_roles(Roles.CONTENT_ADMIN):
+            def content(renderer, context):
+                g = context.generator()
+                return g.form((g.submit(_("New Panel")),
+                               g.hidden('action', 'insert'),
+                               g.hidden('_manage_cms_panels', '1')),
+                              action='/', method='GET')
+            return wiking.HtmlRenderer(content)
+        else:
+            return None
+        
     def bottom_bar_left_content(self, req):
         result = self._powered_by_wiking(req)
         if not wiking.cms.cfg.allow_login_panel:

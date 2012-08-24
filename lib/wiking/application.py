@@ -539,6 +539,16 @@ class Application(Module):
         """
         return None
     
+    def right_panels_bottom_content(self, req):
+        """Return the additional content to be displayed under right side panels.
+
+        Any content acceptable by 'lcg.coerce()' may be returned.  The content
+        will be placed under the list of panels on the right side (if panels
+        are not hidden).
+
+        """
+        return None
+    
     def bottom_bar_left_content(self, req):
         """Return the content displayed on the left side of the bottom bar above the page footer.
 

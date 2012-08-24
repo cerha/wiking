@@ -335,20 +335,21 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
 
     def _panels(self, context):
         g = self._generator
+        req = context.req()
         panels = context.node().panels()
         if not panels:
             return None
-        if not context.req().show_panels():
+        if not req.show_panels():
             # Translators: Panels are small windows on the side of the page. This is a label
             # for a link that shows/hides the panels.
             return g.link(_("Show panels"), "?show_panels=1", cls='panel-control show')
         result = [g.link(_("Hide panels"), "?hide_panels=1", cls='panel-control hide')]
         for panel in panels:
-            content = panel.content()
-            # Add a fake container to force the heading level start at 4.
-            container = lcg.Container(lcg.Section('', lcg.Section('', content)))
             title = g.a(panel.title(), name='panel-'+panel.id()+'-anchor', tabindex=0,
                         cls='panel-anchor')
+            titlebar_content = panel.titlebar_content()
+            if titlebar_content:
+                title += titlebar_content.export(context)
             channel = panel.channel()
             if channel:
                 icon = context.resource('rss.png')
@@ -360,12 +361,19 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
                                cls='feed-icon-link')
                     title = link +' '+ title
             cls = 'panel'
-            if panel.id() == 'login' and context.req().user():
+            if panel.id() == 'login' and req.user():
                 cls += ' logged'
+            content = panel.content()
+            # Add a fake container to force the heading level start at 4.
+            container = lcg.Container(lcg.Section('', lcg.Section('', content)))
             result.append(g.div((g.h(title, 3),
                                  g.div(content.export(context), cls='panel-content')),
                                 id='panel-'+self._safe_css_id(panel.id()), cls=cls,
                                 title=panel.accessible_title()))
+        extra_content = context.application.right_panels_bottom_content(req)
+        if extra_content:
+            extra_content.set_parent(context.node())
+            result.append(g.div(extra_content.export(context), cls='panels-bottom-content'))
         result.append(g.br())
         return result
 

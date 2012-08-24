@@ -2099,6 +2099,16 @@ class PytisModule(Module, ActionHandler):
         return self._document(req, content, record,
                               subtitle=self._action_subtitle(req, action, record=record))
 
+    def _delete_confirmation_actions(self, req, record):
+        # TODO: Do we really need that?  Isn't 'javascript: history.back()' better?
+        # Maybe we want a pw.DeleteForm for that...
+        if req.param('__invoked_from') == 'ListView':
+            back = 'list'
+        else:
+            back = 'view'
+        return (Action(action, self._DELETE_LABEL, submit=1),
+                Action(back, _("Back")),)
+
     def action_delete(self, req, record, action='delete'):
         if req.param('submit'):
             try:
@@ -2108,15 +2118,10 @@ class PytisModule(Module, ActionHandler):
                 req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
             else:
                 return self._redirect_after_delete(req, record)
-        if req.param('__invoked_from') == 'ListView':
-            back_action = 'list'
-        else:
-            back_action = 'view'
         form = self._form(pw.ShowForm, req, record=record,
                           layout=self._layout(req, action, record),
-                          actions=(Action(action, self._DELETE_LABEL, submit=1),
-                                   # Translators: Back button label. Standard computer terminology.
-                                   Action(back_action, _("Back"))))
+                          # Translators: Back button label. Standard computer terminology.
+                          actions=self._delete_confirmation_actions(req, record))
         req.message(self._delete_prompt(req, record))
         return self._document(req, self._delete_form_content(req, form, record), record,
                               subtitle=self._action_subtitle(req, action, record))
@@ -2555,46 +2560,4 @@ class Panelizable(object):
 
 
                 
-class Publishable(object):
-    """Mix-in class for modules with publishable/unpublishable records."""
-    
-    # Translators: `Item' is intentionally general. Could be webpage, notice or something else.
-    _MSG_PUBLISHED = _("The item was published.")
-    _MSG_UNPUBLISHED = _("The item was unpublished.")
-
-    def _change_published(row):
-        data = row.data()
-        key = (row[data.key()[0].id()],)
-        values = data.make_row(published=not row['published'].value())
-        data.update(key, values)
-    _change_published = staticmethod(_change_published)
-    
-    # TODO: Using the _ACTIONS module attribute is DEPRECATED!  Use Spec.actions instead!
-    _ACTIONS = (Action('publish', _("Publish"),
-                       handler=lambda r: Publishable._change_published(r),
-                       enabled=lambda r: not r['published'].value(),
-                       descr=_("Make the item visible to website visitors")),
-                Action('unpublish', _("Unpublish"),
-                       handler=lambda r: Publishable._change_published(r),
-                       enabled=lambda r: r['published'].value(),
-                       descr=_("Make the item invisible to website visitors")),
-                )
-
-    # This is all quite ugly.  It would be much better to solve invoking pytis
-    # actions in some more generic way, so that we don't need to implement an
-    # action handler method for each pytis action.
-    
-    def action_publish(self, req, record, publish=True):
-        try:
-            if publish != record['published'].value():
-                Publishable._change_published(record)
-                record.reload()
-        except pd.DBException as e:
-            req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
-        else:
-            req.message(publish and self._MSG_PUBLISHED or self._MSG_UNPUBLISHED)
-        raise Redirect(self._current_record_uri(req, record))
-
-    def action_unpublish(self, req, record):
-        return self.action_publish(req, record, publish=False)
 
