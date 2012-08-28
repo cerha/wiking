@@ -1438,6 +1438,10 @@ class Pages(SiteSpecificContentModule):
             del req.unresolved_path[0]
             return rows[variants.index(lang)]
         elif self._data.get_rows(identifier=identifier, site=wiking.cfg.server_hostname):
+            if req.check_roles(Roles.CONTENT_ADMIN) and restriction:
+                req.message(_("The page exists but is not published. "
+                              "You need to switch to the Preview mode to be able to access it."),
+                            type=req.WARNING)
             raise Forbidden()
         else:
             raise NotFound()
@@ -1513,7 +1517,7 @@ class Pages(SiteSpecificContentModule):
 
     # Public methods
     
-    def menu(self, req, wmi=False):
+    def menu(self, req):
         children = {None: []}
         translations = {}
         application = wiking.module('Application')
@@ -1569,6 +1573,9 @@ class Pages(SiteSpecificContentModule):
                [MenuItem('_registration', _("Registration"), hidden=True),
                 # Translators: Label for section with user manuals, help pages etc.
                 MenuItem('_doc', _("Documentation"), hidden=True)]
+
+    def empty(self, req):
+        return len(self._data.get_rows(site=wiking.cfg.server_hostname)) == 0
 
     def module_uri(self, req, modname):
         if modname == self.name():

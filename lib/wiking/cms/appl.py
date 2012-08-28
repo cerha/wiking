@@ -135,7 +135,23 @@ class Application(CookieAuthentication, wiking.Application):
             else:
                 modname = 'Pages'
         else:
-            return super(Application, self).handle(req)
+            try:
+                return super(Application, self).handle(req)
+            except Forbidden:
+                # The parent method raises Forbidden when there are no menu items to redirect to.
+                if req.check_roles(Roles.CONTENT_ADMIN):
+                    # Give the administrator some hints on a fresh install.
+                    if wiking.module('Pages').empty(req):
+                        raise wiking.Abort(_("Welcome to Wiking CMS"),
+                                           lcg.Container((lcg.p("There are currently no pages."),
+                                                          lcg.p(lcg.link("/?action=insert",
+                                                                         _("Create a new page"))))))
+                    elif not self.preview_mode(req):
+                        req.message(_("There are no published pages. "
+                                      "You need to switch to the Preview mode "
+                                      "to be able to access the unpublished pages."),
+                                    type=req.WARNING)
+                raise
         return req.forward(wiking.module(modname))
         
 
