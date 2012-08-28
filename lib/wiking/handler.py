@@ -246,7 +246,7 @@ class Handler(object):
             if isinstance(error, InternalServerError):
                 message += ' ' + error.buginfo()
             log(OPR, message)
-        document = wiking.Document(error.title(req), error.message(req))
+        document = wiking.Document(error.title(req), error.content(req))
         try:
             return self._serve_document(req, document, status_code=error.status_code(req))
         except:

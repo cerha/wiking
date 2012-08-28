@@ -83,9 +83,9 @@ class RequestError(Exception):
                 # Translators: '%(code)d' is replaced by error number and '%(name)s' by error title.
                 return _("Error %(code)d: %(name)s", code=code, name=name)
 
-    def message(self, req):
-        """Return the error message as an 'lcg.Content' element structure.""" 
-        return None
+    def content(self, req):
+        """Return the error page content as an 'lcg.Content' element structure.""" 
+        pass
 
     def status_code(self, req):
         """Return the HTTP response status code corresponding to this request error.
@@ -148,7 +148,7 @@ class AuthenticationError(RequestError):
         else:
             return httplib.OK
 
-    def message(self, req):
+    def content(self, req):
         return LoginDialog(self.args and self.args[0] or None)
 
 
@@ -192,7 +192,7 @@ class Abort(RequestError):
     def title(self, req):
         return self.args[0]
 
-    def message(self, req):
+    def content(self, req):
         return self.args[1]
 
 
@@ -200,7 +200,7 @@ class PasswordExpirationError(RequestError):
     
     _TITLE = _("Your password expired")
     
-    def message(self, req):
+    def content(self, req):
         content = lcg.p(_("Your password expired.  Access to the application is now blocked for "
                           "security reasons until you change your password."))
         uri = wiking.module('Application').password_change_uri(req)
@@ -222,7 +222,7 @@ class Forbidden(RequestError):
     """
     _STATUS_CODE = httplib.FORBIDDEN
     
-    def message(self, req):
+    def content(self, req):
         return (lcg.p(_("The item '%s' is not available.", req.uri())),
                 lcg.p(_("The item exists on the server, but can not be accessed.")))
 
@@ -239,12 +239,13 @@ class AuthorizationError(Forbidden):
     # Translators: An error message
     _TITLE = _("Access Denied")
 
-    def message(self, req):
+    def content(self, req):
         return (lcg.p(_("You don't have sufficient privilegs for this action.")),
                 lcg.p(_("If you are sure that you are logged in under the right account "
                         "and you believe that this is a problem of access rights assignment, "
                         "please contact the administrator at %s.", wiking.cfg.webmaster_address),
                       formatted=True))
+
 
 class DecryptionError(RequestError):
     """Error signalling that a decryption key is missing.
@@ -252,8 +253,9 @@ class DecryptionError(RequestError):
     Its argument is the name of the inaccessible encryption area.
     
     """
-    def message(self, req):
+    def content(self, req):
         return DecryptionDialog(self.args[0])
+
     
 class BadRequest(RequestError):
     """Error indicating invalid request argument values or their combination.
@@ -271,7 +273,7 @@ class BadRequest(RequestError):
     """
     _STATUS_CODE = httplib.BAD_REQUEST
     
-    def message(self, req):
+    def content(self, req):
         if self.args:
             return lcg.coerce([lcg.p(arg) for arg in self.args])
         else:
@@ -282,7 +284,7 @@ class NotFound(RequestError):
     """Error indicating invalid request target."""
     _STATUS_CODE = httplib.NOT_FOUND
     
-    def message(self, req):
+    def content(self, req):
         # Translators: The word 'item' is intentionaly very generic, since it may mean a page,
         # image, streaming video, RSS channel or anything else.
         return (lcg.p(_("The item '%s' does not exist on this server or cannot be served.",
@@ -306,7 +308,7 @@ class NotAcceptable(RequestError):
     _TITLE = _("Language selection")
     _STATUS_CODE = httplib.NOT_ACCEPTABLE
     
-    def message(self, req):
+    def content(self, req):
         msg = (lcg.p(_("The resource '%s' is not available in either of the requested languages.",
                        req.uri())),)
         if self.args:
@@ -358,7 +360,7 @@ class InternalServerError(RequestError):
         """Return a short textual information about the error and its location."""
         return "%s at %s line %d" % (self._exception_class.__name__, self._filename, self._lineno)
 
-    def message(self, req):
+    def content(self, req):
         # TODO: Even though the admin address is in a formatted paragraph, it
         # is not formatted as a link during internal server error export.  It
         # works well in all other cases.
@@ -377,7 +379,7 @@ class ServiceUnavailable(RequestError):
     _TITLE = _("Service Unavailable")
     _STATUS_CODE = httplib.SERVICE_UNAVAILABLE
     
-    def message(self, req):
+    def content(self, req):
         return (lcg.p(_("The requested function is currently unavailable. "
                         "Try repeating your request later.")),
                 lcg.p(_("Please inform the server administrator, %s if the problem "
