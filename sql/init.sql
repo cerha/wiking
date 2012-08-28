@@ -33,12 +33,6 @@ insert into users (login, password, firstname, surname, nickname, user_, email, 
 values ('admin', 'wiking', 'Wiking', 'Admin', 'Admin', 'Admin', '-', 'enabled', '2012-01-01 00:00');
 
 insert into role_members (role_id, uid) values ('admin', (select uid from users where login='admin'));
-insert into cms_v_pages (site, lang, title, published, identifier, menu_visibility, 
-                         read_role_id, write_role_id, _content) 
-values ('*', 'en', 'Welcome', 't', 'index', 'always', 'anyone', 'content_admin',
-        'Your new Wiking site has been succesfully set up.' || E'\n\n' ||
-	'Enter the [/_wmi Wiking Management Interface] to manage the content.');
-update cms_v_pages set content=_content;
 
 insert into cms_themes ("name", foreground, background, border, heading_fg, heading_bg, heading_line,
     frame_fg, frame_bg, frame_border, link, link_visited, link_hover, meta_fg, meta_bg, help,
