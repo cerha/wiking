@@ -68,13 +68,23 @@ class Application(CookieAuthentication, wiking.Application):
                 return ""
             else:
                 name = Application._PREVIEW_MODE_PARAM
+                # Translators: There are two modes of operation in the CMS
+                # management.  The "Production mode" displays only the content
+                # publically visible to the website visitors.  "Preview mode",
+                # on the other hand, displays also the content which is not
+                # published yet.  This content is only visible to the
+                # administrators until it is published.  Please make sure you
+                # translate these two modes consistently acros all their
+                # occurences.
+                values = (('0', _("Production mode")),
+                          # Translators: See "Production mode"
+                          ('1', _("Preview mode")))
                 current_value = wiking.module('Application').preview_mode(req) and '1' or '0'
                 return g.form([g.radio(id=name+'_'+value, name=name, value=value,
                                        checked=current_value==value,
                                        onchange='this.form.submit();') + 
                                g.label(label, name+'_'+value) + g.br()
-                               for value, label in (('0', _("Production mode")),
-                                                    ('1', _("Preview mode")))],
+                               for value, label in values],
                               action=req.uri(), method='GET')
             
     def preview_mode(self, req):
@@ -104,8 +114,11 @@ class Application(CookieAuthentication, wiking.Application):
 
         """
         if self.preview_mode(req) != value:
-            mode = value and _("preview mode") or _("production mode")
-            req.message(_("Switching to %(mode)s.", mode=mode), type=req.WARNING)
+            if value:
+                message = _("Switching to preview mode")
+            else:
+                message = _("Switching to production mode")
+            req.message(message, type=req.WARNING)
             req.set_cookie(self._PREVIEW_MODE_COOKIE, value and '1' or '0')
         
     def initialize(self, req):
