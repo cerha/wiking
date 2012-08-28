@@ -241,8 +241,8 @@ class Handler(object):
             variables = self._error_log_variables(req, error)
             message = wiking.cfg.log_format % variables
             if wiking.cfg.debug:
-                frames = ['%s:%d:%s()' % tuple(frame[1:4]) for frame in reversed(error.stack()[:-5])]
-                message += " (%s)" % ", ".join(frames)
+                frames = ['%s:%d:%s()' % tuple(frame[1:4]) for frame in error.stack()]
+                message += " (%s)" % ", ".join(reversed(frames))
             if isinstance(error, InternalServerError):
                 message += ' ' + error.buginfo()
             log(OPR, message)
