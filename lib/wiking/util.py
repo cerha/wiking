@@ -26,6 +26,7 @@ log = pytis.util.StreamLogger(sys.stderr).log
 
 _ = lcg.TranslatableTextFactory('wiking')
 
+import wiking
 from wiking import *
 
 
@@ -60,42 +61,16 @@ class RequestError(Exception):
     The code may be 200 (OK) for errors which don't map to HTTP errors.
 
     """
-    _LOG = True
-    """Indicates whether this kind of error should be logged on the server.
-
-    This attribute is True by default, but some derived classes may set it to
-    False if logging is not appropriate for given error type.
-
-    """
-    _LOG_FORMAT = "%(error)s: %(server_hostname)s%(uri)s [%(user)s@%(remote_host)s]"
-    """Python format string used for printing error message to the system log.
-    
-    The format string may use the following format variables:
-       error -- error class name string (the class derived from 'RequestError'),
-       server_hostname -- requested server host name (virtual host),
-       uri -- URI of the request,
-       user -- current user's login name ('User.login()') or 'anonymous' when
-         user is not logged,
-       remote_host -- IP adress of the client's host as a string,
-       referrer -- HTTP referer (URI of the page linking to this request's
-         URI),
-       user_agent -- client software identification from the 'User-Agent' HTTP
-         header,
-       server_software -- server software identification (current versions of
-         Wiking, LCG and Pytis)
-    
-    """
     # TODO: The 'req' object should be required as constructor argument and
     # avoided in all public methods.  This change requires changes in
     # applications, so it must be done carefully...
 
     def __init__(self, *args, **kwargs):
         import inspect
-        # Ignore this frame and few last frames (they are inside mod_python).
-        self._stack = reversed(inspect.stack()[1:-4])
-        self._already_logged = False
+        # Ignore the current frame as we are only interested where the constructor was called.
+        self._stack = tuple(inspect.stack()[1:])
         super(RequestError, self).__init__(*args, **kwargs)
-    
+
     def title(self, req):
         if self._TITLE is not None:
             return self._TITLE
@@ -120,25 +95,15 @@ class RequestError(Exception):
         """
         return self._STATUS_CODE
         
-    def log(self, req):
-        """Currently used only for debugging, but in future it should be used for proper logging."""
-        # Prevent double logging when handling exception in exception (see handler.py).
-        import wiking
-        if self._LOG and not self._already_logged:
-            message = self._LOG_FORMAT % dict(
-                error=self.__class__.__name__,
-                server_hostname = req.server_hostname(),
-                uri=req.uri(),
-                user=(req.user() and req.user().login() or 'anonymous'),
-                remote_host=req.remote_host(),
-                referrer=req.header('Referer'),
-                user_agent=req.header('User-Agent'),
-                server_software='Wiking %s, LCG %s, Pytis %s' % \
-                    (wiking.__version__, lcg.__version__, pytis.__version__))
-            if wiking.cfg.debug:
-                frames = ['%s:%d:%s()' % tuple(frame[1:4]) for frame in self._stack]
-                message += " (%s)" % ", ".join(frames)
-            log(OPR, message)
+    def stack(self):
+        """Return Python call stack state saved in the constructor.
+
+        This makes it possible to determine later where this error instance was
+        created.  The returned value is a list of tuples as returned by
+        'inspect.stack()'.
+
+        """ 
+        return self._stack
 
 
 class AuthenticationError(RequestError):
@@ -164,7 +129,6 @@ class AuthenticationError(RequestError):
     built in RSS support) and Liferea.
     
     """
-    _LOG = False
     
     def status_code(self, req):
         """Return authentication error page status code.
@@ -197,6 +161,8 @@ class AuthenticationRedirect(AuthenticationError):
 
 class DisplayDocument(Exception):
     """Exception that should result in displaying the given document."""
+    # TODO: This class is redundant.  See Abort below!
+    
     def __init__(self, document):
         """
         Arguments:
@@ -222,7 +188,6 @@ class Abort(RequestError):
       content -- dialog content as an 'lcg.Content' instance or a sequence of such instances
 
     """
-    _LOG = False
 
     def title(self, req):
         return self.args[0]
@@ -364,23 +329,41 @@ class InternalServerError(RequestError):
     _TITLE = _("Internal Server Error")
     _STATUS_CODE = httplib.INTERNAL_SERVER_ERROR
 
-    # Avoid logging of this errror as it is now done in
-    # 'Application.handle_exception()'.  It would probably make sense to move
-    # logging here from there completely, but this change would require some
-    # extra work and thought.
-    _LOG = False
-
-    def __init__(self, message, einfo=None):
+    def __init__(self, einfo):
+        import traceback
+        # Don't store references to einfo here (see sys.exc_info() documentation).
+        if issubclass(einfo[0], pytis.data.DBSystemException):
+            message = _("Unable to perform a database operation.")
+        else:
+            message = ''.join(traceback.format_exception_only(*einfo[:2]))
+        tb = einfo[2]
+        while tb.tb_next is not None:
+            tb = tb.tb_next
+        if wiking.cfg.debug:
+            try:
+                # cgitb sometimes fails when the introspection touches
+                # something sensitive, such as database objects.
+                import cgitb
+                html_traceback = cgitb.html(einfo)
+            except:
+                html_traceback = "<pre>" + "".join(traceback.format_exception(*einfo)) + "</pre>"
+            self._html_traceback = html_traceback
         self._message = message
-        self._einfo = einfo
+        self._exception_class = einfo[0]
+        self._filename = os.path.split(tb.tb_frame.f_code.co_filename)[-1]
+        self._lineno = tb.tb_lineno
         super(InternalServerError, self).__init__()
-    
+
+    def buginfo(self):
+        """Return a short textual information about the error and its location."""
+        return "%s at %s line %d" % (self._exception_class.__name__, self._filename, self._lineno)
+
     def message(self, req):
-        # TODO: Even though the admin address is in a formatted paragraph, it is not formatted as a
-        # link during internal server error export.  It works well in all other cases.
-        if self._einfo and wiking.cfg.debug:
-            import cgitb
-            return HtmlContent(cgitb.html(self._einfo))
+        # TODO: Even though the admin address is in a formatted paragraph, it
+        # is not formatted as a link during internal server error export.  It
+        # works well in all other cases.
+        if wiking.cfg.debug:
+            return HtmlContent(self._html_traceback)
         else:
             return (lcg.p(_("The server was unable to complete your request.")),
                     lcg.p(_("Please inform the server administrator, %s if the problem "
@@ -401,24 +384,6 @@ class ServiceUnavailable(RequestError):
                         "persists.", wiking.cfg.webmaster_address), formatted=True))
     
     
-class MaintenanceModeError(ServiceUnavailable):
-    """Error used on an attempt to access the application in maintenance mode.
-
-    The maintenance mode can be turned on by the 'maintenance' configuration
-    option.  If this option is set to 'true', no requests will be handled
-    normally and the Wiking handler will always just display this error
-    message.
-    
-    """
-    _TITLE = _("Maintenance Mode")
-    _LOG = False
-
-    def message(self, req):
-        # Translators: Meaning that the system (webpage) does not work now because we are
-        # updating/fixing something but will work again after the maintaince is finished.
-        return lcg.p(_("The system is temporarily down for maintenance."))
-
-
 class Redirect(Exception):
     """Exception class for HTTP redirection.
 

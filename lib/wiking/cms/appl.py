@@ -489,19 +489,5 @@ class Application(CookieAuthentication, wiking.Application):
         except dbapi.ProgrammingError as e:
             return e.args[0]
 
-    def handle_exception(self, req, exception):
-        if isinstance(exception, pd.DBException):
-            try:
-                if exception.exception() and exception.exception().args:
-                    errstr = exception.exception().args[0]
-                else:
-                    errstr = exception.message()
-                result = self._maybe_install(req, errstr)
-                if result is not None:
-                    return wiking.Response(result)
-            except:
-                pass
-        return super(Application, self).handle_exception(req, exception)
-
 
     

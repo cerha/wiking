@@ -199,18 +199,9 @@ class Handler(object):
         exported = self._exporter.export(context)
         return req.send_response(context.localize(exported), status_code=status_code)
 
-    def _serve_error_document(self, req, error):
-        """Serve an error page using the Wiking exporter."""
-        error.log(req)
-        document = wiking.Document(error.title(req), error.message(req))
-        return self._serve_document(req, document, status_code=error.status_code(req))
-
-    def _serve_minimal_error_document(self, req, error):
+    def _serve_minimal_error_page(self, req, title, content, status_code=500):
         """Serve a minimal error page using the minimalistic exporter."""
-        error.log(req)
-        node = lcg.ContentNode(req.uri().encode('utf-8'),
-                               title=error.title(req),
-                               content=error.message(req))
+        node = lcg.ContentNode(req.uri().encode('utf-8'), title=title, content=content)
         exporter = wiking.MinimalExporter(translations=wiking.cfg.translation_path)
         try:
             lang = req.preferred_language()
@@ -219,10 +210,98 @@ class Handler(object):
                                                              wiking.cfg.default_language) or 'en'
         context = exporter.context(node, lang=lang)
         exported = exporter.export(context)
-        return req.send_response(context.localize(exported), status_code=error.status_code(req))
+        return req.send_response(context.localize(exported), status_code=status_code)
 
+    def _handle_maintenance_mode(self, req):
+        import httplib
+        # Translators: Meaning that the system (webpage) does not work now
+        # because we are updating/fixing something but will work again after
+        # the maintaince is finished.
+        content = lcg.p(_("The system is temporarily down for maintenance.")),
+        return self._serve_minimal_error_page(req, _("Maintenance Mode"), content,
+                                              status_code=httplib.SERVICE_UNAVAILABLE)
+
+    def _error_log_variables(self, req, error):
+        return dict(
+            error_type=error.__class__.__name__,
+            server_hostname=req.server_hostname(),
+            uri=req.uri(),
+            abs_uri=req.server_uri(current=True) + req.uri(),
+            user=(req.user() and req.user().login() or 'anonymous'),
+            remote_host=req.remote_host(),
+            referer=req.header('Referer'),
+            user_agent=req.header('User-Agent'),
+            server_software='Wiking %s, LCG %s, Pytis %s' % \
+                (wiking.__version__, lcg.__version__, pytis.__version__),
+            )
+    
+    def _handle_request_error(self, req, error):
+        if not isinstance(error, (wiking.AuthenticationError,
+                                  wiking.Abort, wiking.DisplayDocument)):
+            variables = self._error_log_variables(req, error)
+            message = wiking.cfg.log_format % variables
+            if wiking.cfg.debug:
+                frames = ['%s:%d:%s()' % tuple(frame[1:4]) for frame in reversed(error.stack()[:-5])]
+                message += " (%s)" % ", ".join(frames)
+            if isinstance(error, InternalServerError):
+                message += ' ' + error.buginfo()
+            log(OPR, message)
+        document = wiking.Document(error.title(req), error.message(req))
+        try:
+            return self._serve_document(req, document, status_code=error.status_code(req))
+        except:
+            return self._serve_minimal_error_page(req, document.title(), document.content(),
+                                                  status_code=error.status_code(req))
+
+    def _send_bug_report(self, req, einfo, error, address):
+        from xml.sax import saxutils
+        import cgitb, traceback
+        def param_value(param):
+            if param in ('passwd', 'password'):
+                value = '<password hidden>'
+            else:
+                value = req.param(param)
+            if not isinstance(value, basestring):
+                value = str(value)
+            lines = value.splitlines()
+            if len(lines) > 1:
+                value = lines[0][:40] + '... (trimmed; total %d lines)' % len(lines)
+            elif len(value) > 40:
+                value = value[:40] + '... (trimmed; total %d chars)' % len(value)
+            return saxutils.escape(value)
+        def format_info(label, value):
+            if value and (value.startswith('http://') or value.startswith('https://')):
+                value = '<a href="%s">%s</a>' % (value, value)
+            return "%s: %s\n" % (label, value)
+        variables = self._error_log_variables(req, error)
+        req_info = (
+            ("URI", variables['abs_uri']),
+            ("Remote host", variables['remote_host']),
+            ("Remote user", variables['user']),
+            ("HTTP referer", variables['referer']),
+            ("User agent", variables['user_agent']),
+            ('Server software', variables['server_software']),
+            ("Request parameters", "\n"+
+             "\n".join(["  %s = %s" % (saxutils.escape(param), param_value(param))
+                        for param in req.params()])),
+            )
+        text = ("\n".join(["%s: %s" % pair for pair in req_info]) + "\n\n" +
+                cgitb.text(einfo))
+        html = ("<html><pre>" +
+                "".join([format_info(label, value) for label, value in req_info]) +"\n\n"+
+                "".join(traceback.format_exception(*einfo)) +
+                "</pre>"+
+                cgitb.html(einfo) +"</html>")
+        subject = 'Wiking Error: ' + error.buginfo()
+        err = send_mail(address, subject, text, html=html,
+                        headers=(('Reply-To', address),
+                                 ('X-Wiking-Bug-Report-From', wiking.cfg.server_hostname)))
+        if err:
+            log(OPR, "Failed sending exception info to %s:" % address, err)
+        else:
+            log(OPR, "Traceback sent to %s." % address)
+    
     def _handle(self, req):
-        application = self._application
         try:
             try:
                 if wiking.cfg.maintenance and not req.uri().startswith('/_resources/'):
@@ -231,8 +310,8 @@ class Handler(object):
                     # however not necassarily correct (application may change
                     # it).  Better would most likely be including some basic styles
                     # directly in MinimalExporter.
-                    return self._serve_minimal_error_document(req, MaintenanceModeError())
-                result = application.handle(req)
+                    return self._handle_maintenance_mode(req)
+                result = self._application.handle(req)
                 if isinstance(result, (tuple, list)):
                     # Temporary backwards compatibility conversion.
                     content_type, data = result
@@ -255,39 +334,45 @@ class Handler(object):
                 else:
                     raise Exception('Invalid wiking handler result: %s' % type(result))
             except wiking.RequestError as error:
+                # Try to authenticate now, but ignore all errors within authentication except
+                # for AuthenticationError.
                 try:
                     req.user()
                 except wiking.RequestError:
-                    # Ignore all errors within authentication except for AuthenticationError.
                     pass
                 except wiking.AuthenticationError as auth_error:
-                    return self._serve_error_document(req, auth_error)
-                return self._serve_error_document(req, error)
-            except (wiking.ClosedConnection, wiking.Redirect):
-                raise
+                    error = auth_error
+                return self._handle_request_error(req, error)
             except wiking.DisplayDocument as e:
                 return self._serve_document(req, e.document())
-            except Exception as e:
-                # Try to return a nice error document produced by the exporter.
+            except wiking.ClosedConnection:
+                return []
+            except wiking.Redirect as r:
+                return req.redirect(r.uri(), args=r.args(), permanent=r.permanent())
+        except Exception:
+            # Any other unhandled exception is an Internal Server Error.  It is
+            # handled in a separate try/except block to chatch also errors in
+            # except blocks of the inner level.
+            einfo = sys.exc_info()
+            error = InternalServerError(einfo)
+            address = wiking.cfg.bug_report_address
+            if address is not None:
+                self._send_bug_report(req, einfo, error, address)
+            if not wiking.cfg.debug:
+                # When debug is on, the full traceback goes to the browser
+                # window and it is better to leave the error log for printing
+                # debugging information (the exception makes too much noise
+                # there...) so we log the traceback only when debug is off.
                 try:
-                    return application.handle_exception(req, e)
-                except wiking.RequestError as error:
-                    return self._serve_error_document(req, error)
-        except wiking.ClosedConnection:
-            return []
-        except wiking.Redirect as r:
-            return req.redirect(r.uri(), args=r.args(), permanent=r.permanent())
-        except wiking.DisplayDocument as e:
-            return self._serve_document(req, e.document())
-        except Exception as e:
-            # If error document export fails, return a minimal error page.  It is reasonable to
-            # assume, that if RequestError handling fails, somethong is wrong with the exporter and
-            # error document export will fail too, so it is ok, to have them handled both at the
-            # same level above.
-            try:
-                return application.handle_exception(req, e)
-            except wiking.RequestError as error:
-                return self._serve_minimal_error_document(req, error)
+                    # cgitb sometimes fails when the introspection touches
+                    # something sensitive, such as database objects.
+                    import cgitb
+                    tb = cgitb.text(einfo)
+                except:
+                    import traceback
+                    tb = "".join(traceback.format_exception(*einfo))
+                log(OPR, "\n"+ tb)
+            return self._handle_request_error(req, error)
             
     def handle(self, req):
         if wiking.cfg.debug and req.param('profile') == '1':

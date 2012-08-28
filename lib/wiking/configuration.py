@@ -197,6 +197,28 @@ class Configuration(pc):
                 "may contain sensitive information, so this mode should never be on in a "
                 "production environment.  It is only intended for developers.")
         _DEFAULT = False
+
+    class _Option_log_format(pc.StringOption):
+        _DESCR = "Logging format"
+        _DOC = ("""Python format string used for printing error message to the system log.
+    
+                The format string may use the following format variables:
+                  error_type -- error class name string (the class derived from 'RequestError'),
+                  server_hostname -- requested server host name (virtual host),
+                  uri -- URI of the request,
+                  abs_uri -- Absolute URI of the request (including server URI),
+                  user -- current user's login name ('User.login()') or 'anonymous' when
+                    user is not logged,
+                  remote_host -- IP adress of the client's host as a string,
+                  referer -- HTTP referer (URI of the page linking to this request's
+                    URI),
+                  user_agent -- client software identification from the 'User-Agent' HTTP
+                    header,
+                  server_software -- server software identification (current versions of
+                    Wiking, LCG and Pytis)
+         
+                """)
+        _DEFAULT = "%(error_type)s: %(abs_uri)s [%(user)s@%(remote_host)s]"
         
     class _Option_bug_report_address(pc.StringOption):
         _DESCR = "E-mail address where bug reports will be sent"
