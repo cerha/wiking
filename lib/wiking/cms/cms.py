@@ -872,17 +872,18 @@ class Panels(SiteSpecificContentModule):
             return enabled
         g = context.generator()
         context.resource('pytis.js')
-        actions = [dict(title=action.title(),
-                        descr=action.descr(),
+        actions = [dict(title=context.translate(action.title()),
+                        descr=context.translate(action.descr()),
                         enabled=is_enabled(action),
                         href=req.make_uri('/', _manage_cms_panels='1',
                                           action=action.id(),
                                           panel_id=record['panel_id'].export()))
                    for action in self._form_actions(req, record, None)]
         element_id = 'wiking-cms-panel-controls-%d' % record['panel_id'].value()
+        tooltip = context.translate(_("Popup the menu of actions for this panel"))
         return (g.a('', id=element_id) +
-                g.script(g.js_call('wiking.init_popup_menu_ctrl', element_id, actions,
-                                   _("Popup the menu of actions for this panel"), 'h3')))
+                g.script(g.js_call('wiking.init_popup_menu_ctrl',
+                                   element_id, actions, tooltip, 'h3')))
         
     def panels(self, req, lang):
         panels = []
