@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2012-08-28 16:13+0200\n"
-"PO-Revision-Date: 2012-08-22 10:27+0200\n"
+"PO-Revision-Date: 2012-08-28 16:31+0200\n"
 "Last-Translator: Hynek Hanke <hanke@brailcom.org>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
 "Language: cs\n"
@@ -38,46 +38,44 @@ msgstr "Opustit správcovské rozhraní"
 #. occurences.
 #: ../lib/wiking/cms/appl.py:79
 msgid "Production mode"
-msgstr ""
+msgstr "Režim ostrého provozu"
 
 #. See "Production mode"
 #: ../lib/wiking/cms/appl.py:81
-#, fuzzy
 msgid "Preview mode"
-msgstr "Velikost náhledu"
+msgstr "Režim konceptu"
 
 #: ../lib/wiking/cms/appl.py:118
-#, fuzzy
 msgid "Switching to preview mode"
-msgstr "Velikost náhledu"
+msgstr "Přepínám do režimu konceptu"
 
 #: ../lib/wiking/cms/appl.py:120
-#, fuzzy
 msgid "Switching to production mode"
-msgstr "Učinit stránku nedostupnou z vnějšku"
+msgstr "Přepínám do režimu ostrého provozu"
 
 #: ../lib/wiking/cms/appl.py:158
 msgid "Welcome to Wiking CMS"
-msgstr ""
+msgstr "Vítejte ve Wiking CMS"
 
 #: ../lib/wiking/cms/appl.py:161 ../lib/wiking/cms/cms.py:1327
 msgid "Create a new page"
-msgstr ""
+msgstr "Vytvořit novou stránku"
 
 #: ../lib/wiking/cms/appl.py:163
 msgid ""
 "There are no published pages. You need to switch to the Preview mode to be "
 "able to access the unpublished pages."
 msgstr ""
+"Žádné stránky nejsou zveřejněné. Musíte přepnout do režimu konceptu, pokud\n"
+"chcete přistupovat k nezveřejněným stránkám."
 
 #: ../lib/wiking/cms/appl.py:258
 msgid "Wiking Management Interface"
 msgstr "Správcovské rozhraní"
 
 #: ../lib/wiking/cms/appl.py:408
-#, fuzzy
 msgid "New Panel"
-msgstr "Nová stránka"
+msgstr "Nový panel"
 
 #: ../lib/wiking/cms/certificates.py:49
 msgid ""
@@ -461,32 +459,28 @@ msgid "Publish"
 msgstr "Zveřejnit"
 
 #: ../lib/wiking/cms/cms.py:834
-#, fuzzy
 msgid "Make the panel visible in production mode"
-msgstr "Učinit stránku nedostupnou z vnějšku"
+msgstr "Učinit panel viditelným v režimu ostrého provozu"
 
 #: ../lib/wiking/cms/cms.py:835 ../lib/wiking/cms/cms.py:1317
 msgid "Unpublish"
 msgstr "Zneveřejnit"
 
 #: ../lib/wiking/cms/cms.py:837
-#, fuzzy
 msgid "Make the panel invisible in production mode"
-msgstr "Učinit stránku nedostupnou z vnějšku"
+msgstr "Učinit panel neviditelným v režimu ostrého provozu"
 
 #: ../lib/wiking/cms/cms.py:885
 msgid "Popup the menu of actions for this panel"
-msgstr ""
+msgstr "Zobrazit menu akcí pro tento panel"
 
 #: ../lib/wiking/cms/cms.py:937
-#, fuzzy
 msgid "The panel was published."
-msgstr "Stránka byla zveřejněna."
+msgstr "Panel byl zveřejněn."
 
 #: ../lib/wiking/cms/cms.py:939
-#, fuzzy
 msgid "The panel was unpublished."
-msgstr "Stránka byla zveřejněna."
+msgstr "Zveřejnění panelu bylo zrušeno."
 
 #. Heading and menu item for language configuration section.
 #: ../lib/wiking/cms/cms.py:956
@@ -899,9 +893,8 @@ msgid "Publish the page in its current state"
 msgstr "Zveřejnit současnou podobu stránky"
 
 #: ../lib/wiking/cms/cms.py:1318
-#, fuzzy
 msgid "Make the page invisible in production mode"
-msgstr "Učinit stránku nedostupnou z vnějšku"
+msgstr "Učinit stránku neviditelnou v režimu ostrého provozu"
 
 #: ../lib/wiking/cms/cms.py:1320
 msgid "Revert"
@@ -909,10 +902,9 @@ msgstr "Vrátit změny"
 
 #: ../lib/wiking/cms/cms.py:1321
 msgid "Revert the unpublished changes in page text to the last published state"
-msgstr ""
+msgstr "Zrušit nezveřejněné úpravy a vrátit text stránky do posledně zveřejněného stavu."
 
 #: ../lib/wiking/cms/cms.py:1327
-#, fuzzy
 msgid "New Page"
 msgstr "Nová stránka"
 
@@ -957,7 +949,7 @@ msgstr "Obecné vlastnosti"
 
 #: ../lib/wiking/cms/cms.py:1363
 msgid "Save as concept"
-msgstr ""
+msgstr "Uložit jako koncept"
 
 #: ../lib/wiking/cms/cms.py:1363
 msgid "Save and publish"
@@ -977,13 +969,13 @@ msgstr "Upravit název, popis a obsah stránky pro aktuální jazyk"
 
 #: ../lib/wiking/cms/cms.py:1369
 msgid "List all pages"
-msgstr ""
+msgstr "Výpis všech stránek"
 
 #: ../lib/wiking/cms/cms.py:1442
 msgid ""
 "The page exists but is not published. You need to switch to the Preview mode "
 "to be able to access it."
-msgstr ""
+msgstr "Stránka existuje, ale není zveřejněna. Musíte přepnout do režimu konceptu, pokud s ní chcete pracovat."
 
 #: ../lib/wiking/cms/cms.py:1474
 msgid "New page was successfully created and published."
@@ -1018,12 +1010,11 @@ msgstr "Dokumentace"
 msgid ""
 "This page has no content. Users will be redirected to the first visible "
 "subpage in production mode."
-msgstr ""
+msgstr "Tato stránka nemá žádný obsah.  Uživatelé budou v režimu ostrého provozu přesměrováni na první viditelnou podstránku."
 
 #: ../lib/wiking/cms/cms.py:1678
-#, fuzzy
 msgid "The page has unpublished changes (not visible in production mode)."
-msgstr "Učinit stránku nedostupnou z vnějšku"
+msgstr "Stránka má nezveřejněné úpravy (neviditelné v režimu ostrého provozu)."
 
 #: ../lib/wiking/cms/cms.py:1700
 msgid "Content for this page already exists!"
@@ -1054,10 +1045,9 @@ msgid "The page contents was reverted to its previous state."
 msgstr "Obsah stránky byl navrácen do předchozího stavu."
 
 #: ../lib/wiking/cms/cms.py:1758
-#, fuzzy
 msgid ""
 "The page was unpublished. It will not be visible in production mode anymore."
-msgstr "Učinit stránku nedostupnou z vnějšku"
+msgstr "Zveřejnění stránky bylo zrušeno. Stránka již nebude viditelná v režimu ostrého provozu."
 
 #: ../lib/wiking/cms/cms.py:1785
 msgid "Changed by"
