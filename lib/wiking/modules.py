@@ -260,7 +260,12 @@ class Documentation(Module, RequestHandler):
             content = lcg.Container(content[0].content())
         else:
             title = ' :: '.join(req.unresolved_path)
-        return Document(title, content, lang=lang, variants=variants)
+        if req.param('framed') == '1':
+            # Used to display contextual help in an iframe (see pytis-ckeditor.js).
+            layout = wiking.Exporter.Layout.FRAME
+        else:
+            layout = None
+        return Document(title, content, lang=lang, variants=variants, layout=layout)
         
 
 class Stylesheets(Module, RequestHandler):
