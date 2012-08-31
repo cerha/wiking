@@ -247,6 +247,14 @@ class Application(CookieAuthentication, wiking.Application):
                     mod = wiking.module(modname)
                     if isinstance(mod, CMSExtensionModule):
                         parent = mod.parent()
+                        if parent is None:
+                            # Hack: Instantiate all CMSExtension modules to get
+                            # the parent, as parentship is initialized on
+                            # CMSExtension module for all its child
+                            # CMSExtensionModule submodules.
+                            for modname_, modcls in wiking.cfg.resolver.walk(CMSExtension):
+                                wiking.module(modname_)
+                            parent = mod.parent() # It's hopefully not None now...
                         if parent is not None:
                             uri = parent.submodule_uri(req, modname)
                     if uri is None:
