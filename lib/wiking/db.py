@@ -2100,7 +2100,7 @@ class PytisModule(Module, ActionHandler):
         return self._document(req, content, record,
                               subtitle=self._action_subtitle(req, action, record=record))
 
-    def _delete_confirmation_actions(self, req, record):
+    def _delete_confirmation_actions(self, req, record, action):
         # TODO: Do we really need that?  Isn't 'javascript: history.back()' better?
         # Maybe we want a pw.DeleteForm for that...
         if req.param('__invoked_from') == 'ListView':
@@ -2122,7 +2122,7 @@ class PytisModule(Module, ActionHandler):
         form = self._form(pw.ShowForm, req, record=record,
                           layout=self._layout(req, action, record),
                           # Translators: Back button label. Standard computer terminology.
-                          actions=self._delete_confirmation_actions(req, record))
+                          actions=self._delete_confirmation_actions(req, record, action))
         req.message(self._delete_prompt(req, record))
         return self._document(req, self._delete_form_content(req, form, record), record,
                               subtitle=self._action_subtitle(req, action, record))

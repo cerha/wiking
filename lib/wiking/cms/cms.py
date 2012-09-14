@@ -860,7 +860,7 @@ class Panels(SiteSpecificContentModule):
         hidden_fields.append(('_manage_cms_panels', '1'))
         return hidden_fields
 
-    def _delete_confirmation_actions(self, req, record):
+    def _delete_confirmation_actions(self, req, record, action):
         return (Action('delete', self._DELETE_LABEL, _manage_cms_panels='1',
                        panel_id=record['panel_id'].export(), submit=1),)
         
