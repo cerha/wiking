@@ -63,7 +63,9 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             # available in any other scripts.
             self.resource('prototype.js')
             self.resource('gettext.js')
+            self.resource('lcg.js')
             self.resource('wiking.js')
+            self.resource('lcg-widget-colors.css')
             self.resource('wiking.%s.po' % self.lang()) # Translations for Javascript
 
         def req(self):
@@ -269,51 +271,6 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         if not context.has_submenu:
             return None
         g = self._generator
-        current = context.node()
-        while current is not None and current.hidden():
-            current = current.parent()
-        path = current.path()
-        def is_foldable(node):
-            if node.foldable():
-                for item in node.children():
-                    if not item.hidden():
-                        return True
-            return False
-        def li_cls(node):
-            if is_foldable(node):
-                cls = 'foldable'
-                if node not in path:
-                    cls += ' folded'
-                return cls
-            return None
-        def item(node):
-            cls = []
-            if node is current:
-                cls.append('current')
-            if not node.active():
-                cls.append('inactive')
-            # The inner span is necessary because MSIE doesn't fire on click events outside the A
-            # tag, so we basically need to indent the link title inside and draw folding controls
-            # in this space.  This is only needed for foldable trees, but we render also fixed
-            # trees in the same manner for consistency.  The CSS class 'bullet' represents either
-            # fixed tree items or leaves in foldable trees (where no further folding is possible).
-            content = g.span(node.title(), cls=not is_foldable(node) and 'bullet' or None)
-            return g.link(content, context.uri(node), title=node.descr(),
-                          cls=' '.join(cls) or None)
-        def menu(node, indent=0):
-            spaces = ' ' * indent
-            items = [g.concat(spaces, '  ',
-                              g.li(g.concat(item(n),
-                                            menu(n, indent+4)),
-                                   cls=li_cls(n)),
-                              '\n')
-                     for n in node.children() if not n.hidden()]
-            if items:
-                return g.concat("\n", spaces,
-                                g.ul(concat('\n', items, spaces)),
-                                '\n', ' '*(indent-2))
-            else:
-                return ''
         req = context.req()
         application = context.application
         if context.has_menu:
@@ -325,7 +282,10 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         else:
             title = heading = _("Main navigation")
             name = 'main-navigation'
-        content = menu(context.node().top())
+        tree = lcg.FoldableTree(context.node().top(),
+                                tooltip=_("Expand/collapse complete menu hierarchy"))
+        tree.set_parent(context.node())
+        content = tree.export(context)
         extra_content = application.menu_panel_bottom_content(req)
         if extra_content:
             extra_content.set_parent(context.node())

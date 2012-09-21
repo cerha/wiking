@@ -143,68 +143,12 @@ a:link:hover, a:visited:hover { color: $color.link-hover; }
     background-color: $color.heading-bg;
     border-bottom: 1px solid $color.top-border;
 }
-#submenu ul {
-    display: block;
-    list-style-type: none;
-    padding: 0.1em 0.2em 0.1em 0.3em;
-    margin: 0;
-}
-#submenu ul ul {
-    padding-left: 1em;
-    padding-right: 0;
-}
-#submenu li { 
-    line-height: 1.2em;
-    width: 100%;
-}
-#submenu li a, #submenu li a span {
-    display: block;
-    clear: both;
-}
-#submenu li a {
-    cursor: default;
-    padding-left: 14px;
-}
-#submenu li a span {
-    cursor: pointer;
-    padding: 0.1em 0;
-    margin-left: 1px; /* Fix MSIE bullet display */
-}
-#submenu li a span.bullet {
-    display: list-item;
-    list-style-type: circle;
-}
-#submenu li a.current span {
-    background-color: $color.heading-bg;
-}
-#submenu li.foldable {
-    background-image: url(/_resources/folder-open.png);
-    background-position: left 0.35em;
-    background-repeat: no-repeat;
-}
-#submenu li.foldable.folded {
-    background-image: url(/_resources/folder-closed.png);
-}
-#submenu li.folded ul {
-    display: none;
-}
-#toggle-menu-expansion-button {
-    padding: 0;
-    margin: 0;
-    border: none;
-    width: 9px;
-    height: 9px;
+#submenu button.toggle-menu-expansion {
     position: absolute;
     top: 0.45em;
     right: 0.3em;
-    background-image: url(/_resources/folder-closed.png);
-    background-position: center;
-    background-repeat: no-repeat;
 }
-* html #toggle-menu-expansion-button { right: 0.8em; } /* MSIE hack */
-#toggle-menu-expansion-button.expanded {
-    background-image: url(/_resources/folder-open.png);
-}
+* html #submenu button.toggle-menu-expansion { right: 0.8em; } /* MSIE hack */
 
 /* This makes panels to skip in Firefox when page content is too wide...
 #submenu li a:hover {

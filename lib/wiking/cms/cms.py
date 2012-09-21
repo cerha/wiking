@@ -864,27 +864,6 @@ class Panels(SiteSpecificContentModule):
         return (Action('delete', self._DELETE_LABEL, _manage_cms_panels='1',
                        panel_id=record['panel_id'].export(), submit=1),)
         
-    def _export_panel_controls(self, renderer, context, req, record):
-        def is_enabled(action):
-            enabled = action.enabled()
-            if isinstance(enabled, collections.Callable):
-                enabled = enabled(record)
-            return enabled
-        g = context.generator()
-        context.resource('pytis.js')
-        actions = [dict(title=context.translate(action.title()),
-                        descr=context.translate(action.descr()),
-                        enabled=is_enabled(action),
-                        href=req.make_uri('/', _manage_cms_panels='1',
-                                          action=action.id(),
-                                          panel_id=record['panel_id'].export()))
-                   for action in self._form_actions(req, record, None)]
-        element_id = 'wiking-cms-panel-controls-%d' % record['panel_id'].value()
-        tooltip = context.translate(_("Popup the menu of actions for this panel"))
-        return (g.a('', id=element_id) +
-                g.script(g.js_call('wiking.init_popup_menu_ctrl',
-                                   element_id, actions, tooltip, 'h3')))
-        
     def panels(self, req, lang):
         panels = []
         parser = lcg.Parser()
@@ -919,8 +898,22 @@ class Panels(SiteSpecificContentModule):
                     content += (HtmlContent(row['content'].value()),)
             content = lcg.Container(content)
             if req.check_roles(Roles.CONTENT_ADMIN):
-                titlebar_content = wiking.HtmlRenderer(self._export_panel_controls,
-                                                       req, self._record(req, row))
+                record = self._record(req, row)
+                def is_enabled(action):
+                    enabled = action.enabled()
+                    if isinstance(enabled, collections.Callable):
+                        enabled = enabled(record)
+                    return enabled
+                items = [lcg.PopupMenuItem(action.title(),
+                                           tooltip=action.descr(),
+                                           enabled=is_enabled(action),
+                                           uri=req.make_uri('/', _manage_cms_panels='1',
+                                                            action=action.id(),
+                                                            panel_id=row['panel_id'].export()))
+                         for action in self._form_actions(req, record, None)]
+                titlebar_content = lcg.PopupMenuCtrl(items, tooltip=_("Popup the menu of actions "
+                                                                      "for this panel"),
+                                                     active_area_selector='h3')
             else:
                 titlebar_content = None
             panels.append(Panel(panel_id, title, content,
@@ -1549,7 +1542,7 @@ class Pages(SiteSpecificContentModule):
                             title=lcg.SelfTranslatableText(identifier, translations=titles),
                             descr=lcg.SelfTranslatableText('', translations=descriptions),
                             hidden=not self._visible_in_menu(req, row),
-                            foldable=row['foldable'].value(),
+                            foldable=bool(row['foldable'].value()),
                             variants=variants,
                             submenu=submenu)
         if preview_mode:

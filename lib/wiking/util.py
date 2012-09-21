@@ -80,7 +80,8 @@ class RequestError(Exception):
             if code == httplib.OK:
                 return name
             else:
-                # Translators: '%(code)d' is replaced by error number and '%(name)s' by error title.
+                # Translators: '%(code)d' is replaced by error number and
+                # '%(name)s' by error title.
                 return _("Error %(code)d: %(name)s", code=code, name=name)
 
     def content(self, req):
@@ -1118,14 +1119,13 @@ class RssWriter(object):
 class WikingNode(lcg.ContentNode):
 
     def __init__(self, id, page_heading=None, panels=(), lang=None, sec_lang=None,
-                 active=True, foldable=False, layout=None, **kwargs):
+                 active=True, layout=None, **kwargs):
         super(WikingNode, self).__init__(id, **kwargs)
         self._page_heading = page_heading
         self._panels = panels
         self._lang = lang
         self._sec_lang = sec_lang
         self._active = active
-        self._foldable = foldable
         self._layout = layout
         for panel in panels:
             panel.content().set_parent(self)
@@ -1145,9 +1145,6 @@ class WikingNode(lcg.ContentNode):
     def active(self):
         return self._active
 
-    def foldable(self):
-        return self._foldable
-    
     def page_heading(self):
         return self._page_heading or self._title
     
@@ -1380,49 +1377,6 @@ class IFrame(lcg.Content):
         
     def export(self, context):
         return context.generator().iframe(self._uri, width=self._width, height=self._height)
-
-
-class Notebook(lcg.Container):
-    """HTML Notebook widget as an LCG content element.
-
-    This widget is currently used for 'PytisModule' bindings.  Each binding
-    side form is displayed as a separate tab.  This widget is quite generic so
-    it could have been defined in LCG itself, but its export is HTML specific
-    and the user interface relies on Wiking specific JavaScript code in
-    'wiking.js'.
-
-    The notebook tabs are represented by 'lcg.Section' instances.  The sections
-    define tab titles, descriptions and content.  This makes the notebook
-    degrade gracefully in non-javascript browsers and possibly also in other
-    output formats.
-
-    """
-    def __init__(self, content, active=None, **kwargs):
-        """Arguments:
-
-           content -- sequence of 'lcg.Section' instances representing the tabs
-           active -- id (anchor name) of the active tab or None
-           **kwargs -- other arguments defined by the parent class
-           
-        """
-        self._active = active
-        super(Notebook, self).__init__(content, **kwargs)
-    
-    def name(self):
-        # Avoid creation of the inner div (the name is present in outer div's cls).
-        return None
-    
-    def export(self, context):
-        g = context.generator()
-        id = 'notebook-%x' % lcg.positive_id(self)
-        switcher = g.ul(lcg.concat([g.li(g.a(s.title(), href='#'+s.anchor(), title=s.descr(),
-                                             cls=(s.anchor()==self._active and 'current' or None)),
-                                         cls="notebook-tab")
-                                    for s in self.sections(context)]),
-                        cls='notebook-switcher')
-        return (g.div(switcher + super(Notebook, self).export(context), id=id,
-                      cls=' '.join([x for x in ('notebook-container', self._name) if x])) +
-                g.script(g.js_call('new wiking.Notebook', id)))
 
     
 # ============================================================================

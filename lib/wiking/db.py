@@ -1944,7 +1944,7 @@ class PytisModule(Module, ActionHandler):
                     sections.append(lcg.Section(title=binding.title(), descr=binding.descr(),
                                                 anchor=anchor, content=content))
         if sections:
-            return [wiking.Notebook(sections, name='bindings-'+self.name(), active=active)]
+            return [lcg.Notebook(sections, name='bindings-'+self.name(), active=active)]
         else:
             return []
 
