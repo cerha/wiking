@@ -353,7 +353,7 @@ class Application(Module):
         constant of the class (see its docstring for more info).
 
         """
-        uri = req.module_uri('Stylesheets')
+        uri = req.module_uri('Stylesheets') or req.module_uri('Resources')
         if uri is not None:
             return [lcg.Stylesheet(file, uri=uri+'/'+file, media=media)
                     for file, media in self._STYLESHEETS]
