@@ -199,9 +199,13 @@ class Handler(object):
         exported = self._exporter.export(context)
         return req.send_response(context.localize(exported), status_code=status_code)
 
-    def _serve_minimal_error_page(self, req, title, content, status_code=500):
-        """Serve a minimal error page using the minimalistic exporter."""
-        node = lcg.ContentNode(req.uri().encode('utf-8'), title=title, content=content)
+    def _handle_maintenance_mode(self, req):
+        import httplib
+        # Translators: Meaning that the system (webpage) does not work now
+        # because we are updating/fixing something but will work again after
+        # the maintaince is finished.
+        node = lcg.ContentNode(req.uri().encode('utf-8'), title=_("Maintenance Mode"),
+                               content=lcg.p(_("The system is temporarily down for maintenance.")))
         exporter = wiking.MinimalExporter(translations=wiking.cfg.translation_path)
         try:
             lang = req.preferred_language()
@@ -210,16 +214,8 @@ class Handler(object):
                                                              wiking.cfg.default_language) or 'en'
         context = exporter.context(node, lang=lang)
         exported = exporter.export(context)
-        return req.send_response(context.localize(exported), status_code=status_code)
-
-    def _handle_maintenance_mode(self, req):
-        import httplib
-        # Translators: Meaning that the system (webpage) does not work now
-        # because we are updating/fixing something but will work again after
-        # the maintaince is finished.
-        content = lcg.p(_("The system is temporarily down for maintenance.")),
-        return self._serve_minimal_error_page(req, _("Maintenance Mode"), content,
-                                              status_code=httplib.SERVICE_UNAVAILABLE)
+        return req.send_response(context.localize(exported),
+                                 status_code=httplib.SERVICE_UNAVAILABLE)
 
     def _error_log_variables(self, req, error):
         return dict(
@@ -247,11 +243,7 @@ class Handler(object):
                 message += ' ' + error.buginfo()
             log(OPR, message)
         document = wiking.Document(error.title(req), error.content(req))
-        try:
-            return self._serve_document(req, document, status_code=error.status_code(req))
-        except:
-            return self._serve_minimal_error_page(req, document.title(), document.content(),
-                                                  status_code=error.status_code(req))
+        return self._serve_document(req, document, status_code=error.status_code(req))
 
     def _send_bug_report(self, req, einfo, error, address):
         from xml.sax import saxutils
