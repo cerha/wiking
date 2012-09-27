@@ -20,7 +20,6 @@ div.errors, #messages .error, #messages .warning {
 img { position: relative; } /* MSIE float workaround */
 .hidden { display: none; }
 
-
 /* Generic pytis forms styles */
 
 .pytis-form .group, .pytis-form div.submit, .list-form-controls .paging-controls { 
@@ -321,8 +320,19 @@ img { position: relative; } /* MSIE float workaround */
     background-repeat: no-repeat;
 }
 
-/* LCG Formatter styles */
+/* styles for exported LCG elements */
 
+hr {
+    height: 1px;
+    background-color: $color.border;
+    border: 0px;
+}
+hr.new-page {
+    height: 4px;
+    background-color: transparent;
+    border: 1px dotted $color.border;
+    border-width: 1px 0;
+}
 ul {
     margin-top: 0.1em;
     margin-bottom: 0.1em; 
