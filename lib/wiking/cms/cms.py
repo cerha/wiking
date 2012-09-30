@@ -2196,8 +2196,11 @@ class Attachments(ContentManagementModule):
             os.unlink(fname)
 
     def _redirect_after_update_uri(self, req, record, **kwargs):
-        return super(Attachments, self)._redirect_after_update_uri(req, record,
-                                                                   action='view', **kwargs)
+        if req.param('__invoked_from') == 'ShowForm':
+            # The URI /page/attachments/x.jpg displays the image itself so we
+            # need to add the explicit action, but not when invoked from list.
+            kwargs['action'] = 'view'
+        return super(Attachments, self)._redirect_after_update_uri(req, record, **kwargs)
 
     def storage_api_row(self, req, page_id, lang, filename):
         return self._data.get_row(page_id=page_id, lang=lang, filename=filename)
