@@ -2245,11 +2245,11 @@ class Attachments(ContentManagementModule):
         return self.action_update(req, record, action='move')
     RIGHTS_move = (Roles.CONTENT_ADMIN,)
 
-    def action_download(self, req, record, **kwargs):
+    def action_download(self, req, record):
         return Response(record['file'].value().buffer(), content_type=record['mime_type'].value())
     RIGHTS_download = (Roles.ANYONE)
 
-    def action_thumbnail(self, req, record, **kwargs):
+    def action_thumbnail(self, req, record):
         value = record['thumbnail'].value()
         if not value:
             raise NotFound()
@@ -2257,7 +2257,7 @@ class Attachments(ContentManagementModule):
             return Response(value.buffer(), content_type='image/%s' % value.image().format.lower())
     RIGHTS_thumbnail = (Roles.ANYONE)
 
-    def action_image(self, req, record, **kwargs):
+    def action_image(self, req, record):
         value = record['image'].value()
         if not value:
             raise NotFound()
