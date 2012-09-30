@@ -2333,15 +2333,6 @@ class RssModule(object):
     def _rss_description(self, req, record):
         return None
         
-    def _rss_structured_text_description(self, req, record):
-        text = self._rss_column_description(req, record)
-        parser = lcg.Parser()
-        content = lcg.Container(parser.parse(text))
-        node = lcg.ContentNode('', content=content)
-        exporter = lcg.HtmlExporter()
-        context = exporter.context(node, None)
-        return node.content().export(context)
-        
     def _rss_column_description(self, req, record):
         return record[self._RSS_DESCR_COLUMN].export()
 
@@ -2370,10 +2361,25 @@ class RssModule(object):
         descr_column = self._RSS_DESCR_COLUMN
         if descr_column is None:
             get_description = self._rss_description
-        elif self._view.field(descr_column).text_format() == pp.TextFormat.LCG:
-            get_description = self._rss_structured_text_description
         else:
-            get_description = self._rss_column_description
+            def export(content):
+                node = lcg.ContentNode('', content=content)
+                exporter = lcg.HtmlExporter()
+                context = exporter.context(node, None)
+                return node.content().export(context)
+            text_format = self._view.field(descr_column).text_format()
+            if text_format == pp.TextFormat.LCG:
+                parser = lcg.Parser()
+                def get_description(req, record):
+                    text = self._rss_column_description(req, record)
+                    return export(lcg.Container(parser.parse(text)))
+            elif text_format == pp.TextFormat.HTML:
+                processor = lcg.HTMLProcessor()
+                def get_description(req, record):
+                    text = self._rss_column_description(req, record)
+                    return export(processor.html2lcg(text))
+            else:
+                get_description = self._rss_column_description
         lang = req.preferred_language()
         if relation:
             condition = self._binding_condition(*relation)

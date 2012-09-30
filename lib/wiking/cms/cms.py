@@ -866,7 +866,12 @@ class Panels(SiteSpecificContentModule):
         
     def panels(self, req, lang):
         panels = []
-        parser = lcg.Parser()
+        if wiking.cms.cfg.content_editor == 'plain':
+            parser = lcg.Parser()
+            processor = None
+        else:
+            parser = None
+            processor = lcg.HTMLProcessor()
         #TODO: tady uvidim prirazenou stranku, navigable
         roles = wiking.module('Users').Roles()
         if self._application.preview_mode(req):
@@ -895,7 +900,7 @@ class Panels(SiteSpecificContentModule):
                 if wiking.cms.cfg.content_editor == 'plain':
                     content += tuple(parser.parse(row['content'].value()))
                 else:
-                    content += (HtmlContent(row['content'].value()),)
+                    content += (processor.html2lcg(row['content'].value()),)
             content = lcg.Container(content)
             if req.check_roles(Roles.CONTENT_ADMIN):
                 record = self._record(req, row)
@@ -1600,13 +1605,14 @@ class Pages(SiteSpecificContentModule):
             if self._SEPARATOR.search(text):
                 pre, post = self._SEPARATOR.split(text, maxsplit=2)
             else:
-                pre, post = text, ''
+                pre, post = text, u''
             if wiking.cms.cfg.content_editor == 'plain':
                 parser = lcg.Parser()
                 sections = parser.parse(pre) + content + parser.parse(post)
                 content = [lcg.Container(sections)]
             else:
-                content = [HtmlContent(pre)] + content + [HtmlContent(post)]
+                processor = lcg.HTMLProcessor()
+                content = [processor.html2lcg(pre)] + content + [processor.html2lcg(post)]
         # Process page attachments
         storage = Attachments.AttachmentStorage(record)
         resources = storage.resources()
@@ -2821,7 +2827,7 @@ class Texts(CommonTexts):
             if wiking.cms.cfg.content_editor == 'plain':
                 content = lcg.Container(lcg.Parser().parse(retrieved_text))
             else:
-                content = HtmlContent(retrieved_text)
+                content = lcg.html2lcg(retrieved_text)
         else:
             content = None
         return content

@@ -446,6 +446,6 @@ class Application(CookieAuthentication, wiking.Application):
         if wiking.cms.cfg.content_editor == 'plain':
             content = lcg.Parser().parse(text)
         else:
-            content = [HtmlContent(text)]
+            content = [lcg.html2lcg(text)]
         return content
     
