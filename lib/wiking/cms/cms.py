@@ -1290,7 +1290,7 @@ class Pages(SiteSpecificContentModule):
             if title and record['identifier'].value() is None:
                 # This only applies on new record insertion and not during further editation.
                 without_accents = unicodedata.normalize('NFKD', title).encode('ascii', 'ignore')
-                return re.sub(r'[^a-z-]', '', without_accents.lower().replace(' ', '-'))
+                return re.sub(r'[^a-z0-9-]', '', without_accents.lower().replace(' ', '-'))
             else:
                 return record['identifier'].value()
         def row_style(self, record):
