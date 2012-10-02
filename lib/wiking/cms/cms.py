@@ -1543,7 +1543,7 @@ class Pages(SiteSpecificContentModule):
                 variants = available_languages
             else:
                 variants = titles.keys()
-            return MenuItem(identifier,
+            return MenuItem('/' + identifier,
                             title=lcg.SelfTranslatableText(identifier, translations=titles),
                             descr=lcg.SelfTranslatableText('', translations=descriptions),
                             hidden=not self._visible_in_menu(req, row),
