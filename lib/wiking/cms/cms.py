@@ -1375,7 +1375,8 @@ class Pages(SiteSpecificContentModule):
     def _handle(self, req, action, **kwargs):
         # TODO: This is a hack to find out the parent page in the embedded
         # module, but a better solution would be desirable.
-        req.page = kwargs.get('record')
+        if not hasattr(req, 'page'):
+            req.page = kwargs.get('record')
         return super(Pages, self)._handle(req, action, **kwargs)
         
     def _handle_subpath(self, req, record):
@@ -1410,11 +1411,6 @@ class Pages(SiteSpecificContentModule):
             restriction = {}
         else:
             restriction = {'published': True}
-        if req.has_param(self._key):
-            row = self._get_row_by_key(req, req.param(self._key))
-            if req.unresolved_path:
-                del req.unresolved_path[0]
-            return row
         if not req.unresolved_path:
             return None
         identifier = req.unresolved_path[0]
@@ -1432,6 +1428,15 @@ class Pages(SiteSpecificContentModule):
         rows = self._data.get_rows(site=wiking.cfg.server_hostname,
                                    identifier=identifier, **restriction)
         if rows:
+            if req.has_param(self._key):
+                # If key is passed (on form submission), resolve by key
+                # rather than by preferred language (the preferred language may
+                # have changed while the form was displayed).
+                key = req.param(self._key)
+                keys = [row[self._key].export() for row in rows]
+                if key in keys:
+                    del req.unresolved_path[0]
+                    return rows[keys.index(key)]
             variants = [str(row['lang'].value()) for row in rows]
             lang = req.preferred_language(variants)
             del req.unresolved_path[0]
@@ -1767,6 +1772,126 @@ class Pages(SiteSpecificContentModule):
     #    raise Redirect('/_doc/wiking/cms/pages')
     #RIGHTS_help = (Roles.CONTENT_ADMIN,)
 
+
+class EBooks(Pages, EmbeddableCMSModule):
+    """E-Books management as a CMS module.
+
+    E-Book is in principal a regular CMS page.  Subordinary pages are e-Book
+    chapters.  This module may be added to any CMS page (it is an embeddable
+    CMS module) and it will consist of a listing of available e-Books (subpages
+    of the page with the module) in alphabetical order.  Entering a particular
+    e-Book will add given e-Book to the CMS menu including all book's chapters.
+    
+    """
+    
+    class Spec(Pages.Spec):
+        title = _("E-Books")
+        def fields(self):
+            override = (
+                Field('_content', _("Title Page")),
+                Field('parent', computer=computer(lambda r: r.req().page['page_id'].value())),
+                Field('menu_visibility', default='never'),
+                Field('foldable', default=True),
+                )
+            return self._inherited_fields(EBooks.Spec, override=override)
+        columns = ('title', 'status', 'read_role_id', 'write_role_id',)
+        sorting = ('title', pd.ASCENDENT),
+        bindings = (
+            Binding('chapters', _("Chapters"), 'EBookChapters', 'parent'),
+            ) + Pages.Spec.bindings
+        actions = Pages.Spec.actions + (
+            Action('new_chapter', _("New Chapter"),
+                   descr=_("Create a new chapter in this e-Book.")),
+            )
+    
+    _INSERT_LABEL = _("New E-Book")
+    _EMBED_BINDING_COLUMN = 'parent'
+    _LAYOUT = dict(Pages._LAYOUT,
+                   insert=('title', 'description', '_content', 'identifier',
+                           FieldSet(_("Access Rights"), ('read_role_id', 'write_role_id',))),
+                   options=('read_role_id', 'write_role_id'),
+                   )
+    RIGHTS_new_page = ()
+    
+    def _insert_msg(self, req, record):
+        if record['published'].value():
+            return _("New E-Book was successfully created and published.")
+        else:
+            return _("New E-Book was successfully created, but was not published yet. "
+                     "Publish it when you are done.")
+
+    def _current_base_uri(self, req, record=None):
+        # Use PytisModule._current_base_uri (skip Pages._current_base_uri).
+        return super(Pages, self)._current_base_uri(req, record=record)
+        
+    def _handle(self, req, action, **kwargs):
+        req.ebook = kwargs.get('record')
+        return super(EBooks, self)._handle(req, action, **kwargs)
+
+    def _binding_visible(self, req, record, binding):
+        return binding.id() != 'chapters' and super(EBooks, self)._binding_visible(req, record, binding)
+        
+    def _page_content(self, req, record):
+        return super(EBooks, self)._page_content(req, record) + \
+            [lcg.NodeIndex(title=_("Table of Contents"))]
+        
+    def submenu(self, req):
+        # TODO: This partially duplicates Pages.menu() - refactor?
+        if not hasattr(req, 'ebook') or not hasattr(req, 'page') or req.page is None:
+            return []
+        record = req.ebook
+        children = {None: []}
+        base_uri = '/%s/data/%s' % (req.page['identifier'].value(), record['identifier'].value())
+        def item(row):
+            if row['page_id'].value() == record['page_id'].value():
+                uri = base_uri
+            else:
+                uri = base_uri + '/chapters/' + row['identifier'].value()
+            return MenuItem(uri,
+                            title=row['title'].value(),
+                            descr=row['description'].value(),
+                            foldable=True,
+                            submenu=[item(r) for r in children.get(row['page_id'].value(), ())])
+        if wiking.module('Application').preview_mode(req):
+            restriction = {}
+        else:
+            restriction = {'published': True}
+        condition = pd.OR(pd.EQ('page_id', record['page_id']),
+                          pd.WM('tree_order', pd.WMValue(pd.String(), '%s.*' % record['tree_order'].value())))
+        for row in self._data.get_rows(site=wiking.cfg.server_hostname, condition=condition,
+                                       lang=record['lang'].value(),
+                                       sorting=(('tree_order', pd.ASCENDENT),),
+                                       **restriction):
+            children.setdefault(row['parent'].value(), []).append(row)
+        return [item(row) for row in children[record['parent'].value()]]
+
+    def action_new_chapter(self, req, record):
+        raise Redirect(req.uri() +'/chapters', action='insert')
+    RIGHTS_new_chapter = (Roles.CONTENT_ADMIN,)
+
+        
+class EBookChapters(Pages):
+    """E-Book chapters are regular CMS pages """
+    class Spec(Pages.Spec):
+        def _default_identifier(self, record, title):
+            identifier = super(EBookChapters.Spec, self)._default_identifier(record, title)
+            if title and record['identifier'].value() is None:
+                identifier = '%s-%s' % (record['parent'].export(), identifier)
+            return identifier
+        columns = ('title', 'status')
+        sorting = ('ord', pd.ASCENDENT),
+    _INSERT_LABEL = _("New Chapter")
+    _LAYOUT = dict(Pages._LAYOUT,
+                   insert=('title', 'description', '_content', 'parent', 'ord'),
+                   options=('parent', 'ord'),
+                   )
+    RIGHTS_new_page = ()
+    RIGHTS_list = ()
+
+    def _current_base_uri(self, req, record=None):
+        # Use PytisModule._current_base_uri (skip Pages._current_base_uri).
+        return super(Pages, self)._current_base_uri(req, record=record)
+        
 
 class PageHistory(ContentManagementModule):
     """History of page content changes."""
