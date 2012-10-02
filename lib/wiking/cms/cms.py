@@ -1802,6 +1802,8 @@ class EBooks(Pages, EmbeddableCMSModule):
         actions = Pages.Spec.actions + (
             Action('new_chapter', _("New Chapter"),
                    descr=_("Create a new chapter in this e-Book.")),
+            Action('export_epub', _("Export to EPUB"),
+                   descr=_("Export the e-Book to EPUB format")),
             )
     
     _INSERT_LABEL = _("New E-Book")
@@ -1834,24 +1836,9 @@ class EBooks(Pages, EmbeddableCMSModule):
     def _page_content(self, req, record):
         return super(EBooks, self)._page_content(req, record) + \
             [lcg.NodeIndex(title=_("Table of Contents"))]
-        
-    def submenu(self, req):
-        # TODO: This partially duplicates Pages.menu() - refactor?
-        if not hasattr(req, 'ebook') or not hasattr(req, 'page') or req.page is None:
-            return []
-        record = req.ebook
+
+    def _child_rows(self, req, record):
         children = {None: []}
-        base_uri = '/%s/data/%s' % (req.page['identifier'].value(), record['identifier'].value())
-        def item(row):
-            if row['page_id'].value() == record['page_id'].value():
-                uri = base_uri
-            else:
-                uri = base_uri + '/chapters/' + row['identifier'].value()
-            return MenuItem(uri,
-                            title=row['title'].value(),
-                            descr=row['description'].value(),
-                            foldable=True,
-                            submenu=[item(r) for r in children.get(row['page_id'].value(), ())])
         if wiking.module('Application').preview_mode(req):
             restriction = {}
         else:
@@ -1863,12 +1850,49 @@ class EBooks(Pages, EmbeddableCMSModule):
                                        sorting=(('tree_order', pd.ASCENDENT),),
                                        **restriction):
             children.setdefault(row['parent'].value(), []).append(row)
+        return children
+        
+    def submenu(self, req):
+        # TODO: This partially duplicates Pages.menu() - refactor?
+        if not hasattr(req, 'ebook'):
+            return []
+        record = req.ebook
+        children = self._child_rows(req, record)
+        base_uri = '/%s/data/%s' % (req.page['identifier'].value(), record['identifier'].value())
+        def item(row):
+            if row['page_id'].value() == record['page_id'].value():
+                uri = base_uri
+            else:
+                uri = base_uri + '/chapters/' + row['identifier'].value()
+            return MenuItem(uri,
+                            title=row['title'].value(),
+                            descr=row['description'].value(),
+                            foldable=True,
+                            submenu=[item(r) for r in children.get(row['page_id'].value(), ())])
         return [item(row) for row in children[record['parent'].value()]]
 
     def action_new_chapter(self, req, record):
         raise Redirect(req.uri() +'/chapters', action='insert')
     RIGHTS_new_chapter = (Roles.CONTENT_ADMIN,)
 
+    def action_export_epub(self, req, record):
+        children = self._child_rows(req, record)
+        def mknode(row):
+            rec = self._record(req, row)
+            content = self._page_content(req, rec)
+            return lcg.ContentNode(row['identifier'].value(),
+                                   title=record['title'].value(),
+                                   content=content,
+                                   children=[mknode(r) for r in
+                                             children.get(row['page_id'].value(), ())])
+        node = mknode(record.row())
+        exporter = lcg.EpubExporter(translations=wiking.cfg.translation_path)
+        context = exporter.context(node, req.preferred_language())
+        result = exporter.export(context)
+        return wiking.Response(result, content_type='application/epub+zip',
+                               filename='%s.epub' % record['identifier'].value())
+    RIGHTS_export_epub = (Roles.CONTENT_ADMIN,)
+    
         
 class EBookChapters(Pages):
     """E-Book chapters are regular CMS pages """
