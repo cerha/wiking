@@ -1558,10 +1558,7 @@ class Pages(SiteSpecificContentModule):
                                        sorting=self._sorting, **restriction):
             page_id = row['page_id'].value()
             if page_id not in translations:
-                parent = row['parent'].value()
-                if parent not in children:
-                    children[parent] = []
-                children[parent].append(row)
+                children.setdefault(row['parent'].value(), []).append(row)
                 translations[page_id] = ({}, {})
             titles, descriptions = translations[page_id]
             lang = str(row['lang'].value())
