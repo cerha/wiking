@@ -1916,11 +1916,22 @@ class EBooks(Pages, EmbeddableCMSModule):
 class EBookChapters(Pages):
     """e-Book chapters are regular CMS pages """
     class Spec(Pages.Spec):
+        def fields(self):
+            override = (
+                Field('parent', runtime_filter=computer(self._parent_filter)),
+                )
+            return self._inherited_fields(EBookChapters.Spec, override=override)
         def _default_identifier(self, record, title):
             identifier = super(EBookChapters.Spec, self)._default_identifier(record, title)
             if title and record['identifier'].value() is None:
                 identifier = '%s-%s' % (record['parent'].export(), identifier)
             return identifier
+        def _parent_filter(self, record, site):
+            ebook = record.req().ebook
+            return pd.AND(pd.EQ('site', pd.sval(site)),
+                          pd.OR(pd.EQ('page_id', ebook['page_id']),
+                                pd.WM('tree_order', pd.WMValue(pd.String(), '%s.*' % ebook['tree_order'].value())))
+                          )
         columns = ('title', 'status')
         sorting = ('ord', pd.ASCENDENT),
     _INSERT_LABEL = _("New Chapter")
