@@ -1780,9 +1780,9 @@ class Pages(SiteSpecificContentModule):
 
 
 class EBooks(Pages, EmbeddableCMSModule):
-    """E-Books management as a CMS module.
+    """e-Books management as a CMS module.
 
-    E-Book is in principal a regular CMS page.  Subordinary pages are e-Book
+    e-Book is in principal a regular CMS page.  Subordinary pages are e-Book
     chapters.  This module may be added to any CMS page (it is an embeddable
     CMS module) and it will consist of a listing of available e-Books (subpages
     of the page with the module) in alphabetical order.  Entering a particular
@@ -1791,7 +1791,7 @@ class EBooks(Pages, EmbeddableCMSModule):
     """
     
     class Spec(Pages.Spec):
-        title = _("E-Books")
+        title = _("e-Books")
         def fields(self):
             override = (
                 Field('_content', _("Title Page")),
@@ -1814,7 +1814,7 @@ class EBooks(Pages, EmbeddableCMSModule):
                    descr=_("Export the e-Book to Braille")),
             )
     
-    _INSERT_LABEL = _("New E-Book")
+    _INSERT_LABEL = _("New e-Book")
     _EMBED_BINDING_COLUMN = 'parent'
     _LAYOUT = dict(Pages._LAYOUT,
                    insert=('title', 'description', '_content', 'identifier',
@@ -1825,9 +1825,9 @@ class EBooks(Pages, EmbeddableCMSModule):
     
     def _insert_msg(self, req, record):
         if record['published'].value():
-            return _("New E-Book was successfully created and published.")
+            return _("New e-Book was successfully created and published.")
         else:
-            return _("New E-Book was successfully created, but was not published yet. "
+            return _("New e-Book was successfully created, but was not published yet. "
                      "Publish it when you are done.")
 
     def _current_base_uri(self, req, record=None):
@@ -1913,7 +1913,7 @@ class EBooks(Pages, EmbeddableCMSModule):
     RIGHTS_export_braille = (Roles.CONTENT_ADMIN,)
         
 class EBookChapters(Pages):
-    """E-Book chapters are regular CMS pages """
+    """e-Book chapters are regular CMS pages """
     class Spec(Pages.Spec):
         def _default_identifier(self, record, title):
             identifier = super(EBookChapters.Spec, self)._default_identifier(record, title)
