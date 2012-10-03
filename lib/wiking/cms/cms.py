@@ -1908,8 +1908,8 @@ class EBooks(Pages, EmbeddableCMSModule):
         exporter = lcg.BrailleExporter(translations=wiking.cfg.translation_path)
         context = exporter.context(node, req.preferred_language())
         result = exporter.export(context)
-        return wiking.Response(result, content_type='application/epub+zip',
-                               filename='%s.epub' % record['identifier'].value())
+        return wiking.Response(result, content_type='text/plain',
+                               filename='%s.txt' % record['identifier'].value())
     RIGHTS_export_braille = (Roles.CONTENT_ADMIN,)
         
 class EBookChapters(Pages):
