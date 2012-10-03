@@ -1797,7 +1797,6 @@ class EBooks(Pages, EmbeddableCMSModule):
                 Field('_content', _("Title Page")),
                 Field('parent', computer=computer(lambda r: r.req().page['page_id'].value())),
                 Field('menu_visibility', default='never'),
-                Field('foldable', default=True),
                 )
             return self._inherited_fields(EBooks.Spec, override=override)
         columns = ('title', 'status', 'read_role_id', 'write_role_id',)
