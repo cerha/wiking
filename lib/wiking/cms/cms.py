@@ -1873,7 +1873,7 @@ class EBooks(Pages, EmbeddableCMSModule):
         
     def submenu(self, req):
         # TODO: This partially duplicates Pages.menu() - refactor?
-        if not hasattr(req, 'ebook'):
+        if not hasattr(req, 'ebook') or req.ebook is None:
             return []
         record = req.ebook
         children = self._child_rows(req, record)
