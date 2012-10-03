@@ -1906,7 +1906,9 @@ class EBooks(Pages, EmbeddableCMSModule):
     def action_export_braille(self, req, record):
         node = self._ebook(req, record)
         exporter = lcg.BrailleExporter(translations=wiking.cfg.translation_path)
-        context = exporter.context(node, req.preferred_language())
+        presentation = lcg.braille_presentation()
+        presentation_set = lcg.PresentationSet(((presentation, lcg.TopLevelMatcher(),),))
+        context = exporter.context(node, req.preferred_language(), presentation=presentation_set)
         result = exporter.export(context)
         return wiking.Response(result, content_type='text/plain',
                                filename='%s.txt' % record['identifier'].value())
