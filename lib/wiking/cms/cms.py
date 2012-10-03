@@ -1822,6 +1822,7 @@ class EBooks(Pages, EmbeddableCMSModule):
                    options=('read_role_id', 'write_role_id'),
                    )
     RIGHTS_new_page = ()
+    RIGHTS_list = ()
     
     def _insert_msg(self, req, record):
         if record['published'].value():
