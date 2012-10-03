@@ -1810,6 +1810,8 @@ class EBooks(Pages, EmbeddableCMSModule):
                    descr=_("Create a new chapter in this e-Book.")),
             Action('export_epub', _("Export to EPUB"),
                    descr=_("Export the e-Book to EPUB format")),
+            Action('export_braille', _("Export to Braille"),
+                   descr=_("Export the e-Book to Braille")),
             )
     
     _INSERT_LABEL = _("New E-Book")
@@ -1857,6 +1859,17 @@ class EBooks(Pages, EmbeddableCMSModule):
                                        **restriction):
             children.setdefault(row['parent'].value(), []).append(row)
         return children
+
+    def _ebook(self, req, record):
+        children = self._child_rows(req, record)
+        def node(row):
+            return lcg.ContentNode(row['identifier'].value(),
+                                   title=record['title'].value(),
+                                   content=self._page_content(req, self._record(req, row)),
+                                   children=[node(r) for r in
+                                             children.get(row['page_id'].value(), ())])
+        return node(record.row())
+    
         
     def submenu(self, req):
         # TODO: This partially duplicates Pages.menu() - refactor?
@@ -1882,16 +1895,7 @@ class EBooks(Pages, EmbeddableCMSModule):
     RIGHTS_new_chapter = (Roles.CONTENT_ADMIN,)
 
     def action_export_epub(self, req, record):
-        children = self._child_rows(req, record)
-        def mknode(row):
-            rec = self._record(req, row)
-            content = self._page_content(req, rec)
-            return lcg.ContentNode(row['identifier'].value(),
-                                   title=record['title'].value(),
-                                   content=content,
-                                   children=[mknode(r) for r in
-                                             children.get(row['page_id'].value(), ())])
-        node = mknode(record.row())
+        node = self._ebook(req, record)
         exporter = lcg.EpubExporter(translations=wiking.cfg.translation_path)
         context = exporter.context(node, req.preferred_language())
         result = exporter.export(context)
@@ -1899,6 +1903,14 @@ class EBooks(Pages, EmbeddableCMSModule):
                                filename='%s.epub' % record['identifier'].value())
     RIGHTS_export_epub = (Roles.CONTENT_ADMIN,)
     
+    def action_export_braille(self, req, record):
+        node = self._ebook(req, record)
+        exporter = lcg.BrailleExporter(translations=wiking.cfg.translation_path)
+        context = exporter.context(node, req.preferred_language())
+        result = exporter.export(context)
+        return wiking.Response(result, content_type='application/epub+zip',
+                               filename='%s.epub' % record['identifier'].value())
+    RIGHTS_export_braille = (Roles.CONTENT_ADMIN,)
         
 class EBookChapters(Pages):
     """E-Book chapters are regular CMS pages """
