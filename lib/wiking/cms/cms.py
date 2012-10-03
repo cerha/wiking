@@ -1372,6 +1372,18 @@ class Pages(SiteSpecificContentModule):
 
     RIGHTS_list = (Roles.CONTENT_ADMIN,)
 
+    def __init__(self, *args, **kwargs):
+        super(Pages, self).__init__(*args, **kwargs)
+        if wiking.cms.cfg.content_editor == 'plain':
+            parser = lcg.Parser()
+            def text2content(text):
+                return lcg.Container(parser.parse(text))
+        else:
+            processor = lcg.HTMLProcessor()
+            def text2content(text):
+                return processor.html2lcg(text)
+        self._text2content = text2content
+        
     def _handle(self, req, action, **kwargs):
         # TODO: This is a hack to find out the parent page in the embedded
         # module, but a better solution would be desirable.
@@ -1608,13 +1620,7 @@ class Pages(SiteSpecificContentModule):
                 pre, post = self._SEPARATOR.split(text, maxsplit=2)
             else:
                 pre, post = text, u''
-            if wiking.cms.cfg.content_editor == 'plain':
-                parser = lcg.Parser()
-                sections = parser.parse(pre) + content + parser.parse(post)
-                content = [lcg.Container(sections)]
-            else:
-                processor = lcg.HTMLProcessor()
-                content = [processor.html2lcg(pre)] + content + [processor.html2lcg(post)]
+            content = [self._text2content(pre)] + content + [self._text2content(post)]
         # Process page attachments
         storage = Attachments.AttachmentStorage(record)
         resources = storage.resources()
