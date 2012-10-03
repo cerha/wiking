@@ -288,7 +288,7 @@ class Configuration(pc):
                 "such as images, media or scripts are searched.  The directories are searched "
                 "in given order.  Files may be put into type specific subdirectories (jpegs and "
                 "pngs into 'images', stylesheets into 'css', javascripts into 'scripts') or to "
-                "the resource direcotries directly.  Wiking will return a 404 error and log the "
+                "the resource directories directly.  Wiking will return a 404 error and log the "
                 "exact list of directories where a particular file is searched when it is unable "
                 "to locate it.  Beware that all files located within the named directories will "
                 "be directly exposed to the Internet!")
