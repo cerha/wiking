@@ -653,6 +653,25 @@ class Config(SettingsManagementModule):
             record.update(theme_id=theme_id)
         except pd.DBException as e:
             return self._error_message(*self._analyze_exception(e))
+
+    def site_title(self, site):
+        """Return site title for given 'site' if available.
+
+        If it is unknown, return 'None'.
+
+        Arguments:
+
+          site -- site name; string
+
+        """
+        row = self._data.get_row(site=site)
+        if row is None:
+            title = None
+        else:
+            title = row['site_title'].value()
+        if title is None and site == wiking.cfg.server_hostname or wiking.cfg.server_hostname is None:
+            title = wiking.cfg.site_title
+        return title
     
 
 class SiteSpecificContentModule(ContentManagementModule):
