@@ -1883,7 +1883,7 @@ class EBooks(Pages, EmbeddableCMSModule):
         children = self._child_rows(req, record)
         def node(row):
             return lcg.ContentNode(row['identifier'].value(),
-                                   title=record['title'].value(),
+                                   title=row['title'].value(),
                                    content=self._page_content(req, self._record(req, row)),
                                    children=[node(r) for r in
                                              children.get(row['page_id'].value(), ())])
