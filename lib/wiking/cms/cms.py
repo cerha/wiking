@@ -1914,8 +1914,15 @@ class EBooks(Pages, EmbeddableCMSModule):
     RIGHTS_new_chapter = (Roles.CONTENT_ADMIN,)
 
     def action_export_epub(self, req, record):
+        class EpubExporter(lcg.EpubExporter):
+            def _get_resource_data(self, context, resource):
+                if resource.src_file():
+                    return resource.get()
+                else:
+                    # TODO: Retrieve the attachment.
+                    return None
         node = self._ebook(req, record)
-        exporter = lcg.EpubExporter(translations=wiking.cfg.translation_path)
+        exporter = EpubExporter(translations=wiking.cfg.translation_path)
         context = exporter.context(node, req.preferred_language())
         result = exporter.export(context)
         return wiking.Response(result, content_type='application/epub+zip',
