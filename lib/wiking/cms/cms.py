@@ -1884,7 +1884,9 @@ class EBooks(Pages, EmbeddableCMSModule):
         def node(row):
             return lcg.ContentNode(row['identifier'].value(),
                                    title=row['title'].value(),
-                                   content=self._page_content(req, self._record(req, row)),
+                                   # Call the super class _page_content to
+                                   # avoid a table of contents in every node.
+                                   content=super(EBooks, self)._page_content(req, self._record(req, row)),
                                    children=[node(r) for r in
                                              children.get(row['page_id'].value(), ())])
         return node(record.row())
