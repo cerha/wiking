@@ -1935,7 +1935,7 @@ class EBooks(Pages, EmbeddableCMSModule):
         presentation = lcg.braille_presentation()
         presentation_set = lcg.PresentationSet(((presentation, lcg.TopLevelMatcher(),),))
         context = exporter.context(node, req.preferred_language(), presentation=presentation_set)
-        result = exporter.export(context)
+        result = exporter.export(context, recursive=True)
         return wiking.Response(result, content_type='text/plain',
                                filename='%s.txt' % record['identifier'].value())
     RIGHTS_export_braille = (Roles.CONTENT_ADMIN,)
