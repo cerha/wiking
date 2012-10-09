@@ -279,7 +279,10 @@ class Handler(object):
                         for param in req.params()])),
             )
         def escape(text):
-            return re.sub(r'[^\x01-\x7F]', '?', text)
+            if isinstance(text, (tuple, list,)):
+                return [escape(t) for t in text]
+            else:
+                return re.sub(r'[^\x01-\x7F]', '?', text)
         try:
             text = ("\n".join(["%s: %s" % pair for pair in req_info]) + "\n\n" +
                     cgitb.text(einfo))
