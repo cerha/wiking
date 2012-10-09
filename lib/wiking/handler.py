@@ -15,9 +15,10 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+import re
+
 import wiking
 import lcg
-import types
 
 _ = lcg.TranslatableTextFactory('wiking')
 
@@ -277,13 +278,31 @@ class Handler(object):
              "\n".join(["  %s = %s" % (saxutils.escape(param), param_value(param))
                         for param in req.params()])),
             )
-        text = ("\n".join(["%s: %s" % pair for pair in req_info]) + "\n\n" +
-                cgitb.text(einfo))
-        html = ("<html><pre>" +
-                "".join([format_info(label, value) for label, value in req_info]) +"\n\n"+
-                "".join(traceback.format_exception(*einfo)) +
-                "</pre>"+
-                cgitb.html(einfo) +"</html>")
+        def escape(text):
+            if isinstance(text, basestring):
+                return re.sub(r'[^\x01-\x7F]', '?', text)
+            elif isinstance(text, (tuple, list,)):
+                return [escape(t) for t in text]
+            else:
+                return escape(str(t))
+        try:
+            text = ("\n".join(["%s: %s" % pair for pair in req_info]) + "\n\n" +
+                    cgitb.text(einfo))
+        except UnicodeDecodeError:
+            text = ("\n".join(["%s: %s" % (label, escape(value),) for label, value in req_info]) + "\n\n" +
+                    cgitb.text(escape(einfo)))
+        try:
+            html = ("<html><pre>" +
+                    "".join([format_info(label, value) for label, value in req_info]) +"\n\n"+
+                    "".join(traceback.format_exception(*einfo)) +
+                    "</pre>"+
+                    cgitb.html(einfo) +"</html>")
+        except UnicodeDecodeError:
+            html = ("<html><pre>" +
+                    "".join([format_info(label, escape(value)) for label, value in req_info]) +"\n\n"+
+                    "".join(traceback.format_exception(*einfo)) +
+                    "</pre>"+
+                    cgitb.html(escape(einfo)) +"</html>")            
         subject = 'Wiking Error: ' + error.buginfo()
         err = send_mail(address, subject, text, html=html,
                         headers=(('Reply-To', address),
