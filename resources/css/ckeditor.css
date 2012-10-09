@@ -93,3 +93,13 @@ div.lcg-exercise {
     margin: 3px 0;
     font-family: sans-serif;
 }
+
+
+a:link { color: $color.link; }
+a:visited { color: $color.link-visited; }
+a:link:hover, a:visited:hover { color: $color.link-hover; }
+a.lcg-audio { color: $color.link; text-decoration: underline; }
+
+img { margin: .5em .8em; }
+img[align="left"] { margin: .25em 1em .25em 0; }
+img[align="right"] { margin: .25em 0 .25em 1em; }
