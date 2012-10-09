@@ -279,18 +279,13 @@ class Handler(object):
                         for param in req.params()])),
             )
         def escape(text):
-            if isinstance(text, basestring):
-                return re.sub(r'[^\x01-\x7F]', '?', text)
-            elif isinstance(text, (tuple, list,)):
-                return [escape(t) for t in text]
-            else:
-                return escape(str(t))
+            return re.sub(r'[^\x01-\x7F]', '?', text)
         try:
             text = ("\n".join(["%s: %s" % pair for pair in req_info]) + "\n\n" +
                     cgitb.text(einfo))
         except UnicodeDecodeError:
             text = ("\n".join(["%s: %s" % (label, escape(value),) for label, value in req_info]) + "\n\n" +
-                    cgitb.text(escape(einfo)))
+                    escape(cgitb.text(einfo)))
         try:
             html = ("<html><pre>" +
                     "".join([format_info(label, value) for label, value in req_info]) +"\n\n"+
@@ -300,9 +295,10 @@ class Handler(object):
         except UnicodeDecodeError:
             html = ("<html><pre>" +
                     "".join([format_info(label, escape(value)) for label, value in req_info]) +"\n\n"+
-                    "".join(traceback.format_exception(*einfo)) +
+                    "".join(escape(traceback.format_exception(*einfo))) +
                     "</pre>"+
-                    cgitb.html(escape(einfo)) +"</html>")            
+                    escape(cgitb.html(einfo))
+                    +"</html>")            
         subject = 'Wiking Error: ' + error.buginfo()
         err = send_mail(address, subject, text, html=html,
                         headers=(('Reply-To', address),
