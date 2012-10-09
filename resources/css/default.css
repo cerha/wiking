@@ -389,6 +389,16 @@ pre.lcg-preformatted-text {
     white-space: pre;
 }
 
+img.lcg-image { 
+    margin: .5em .8em;
+}
+img.lcg-image.left-aligned { 
+    margin: .25em 1em .25em 0;
+}
+img.lcg-image.right-aligned { 
+    margin: .25em 0 .25em 1em;
+}
+
 div.table-of-contents { 
     border: solid $color.frame-border;
     border-width: 1px 0;
