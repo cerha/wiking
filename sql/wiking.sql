@@ -207,7 +207,7 @@ create or replace rule cms_v_session_log_insert as
 create table cms_pages (
        	page_id serial primary key,
 	site text not null references cms_config(site) on update cascade on delete cascade,
-	identifier varchar(32) not null,
+	identifier text not null,
 	parent integer references cms_pages,
 	modname text,
 	menu_visibility text not null,
@@ -293,7 +293,7 @@ create or replace rule cms_v_pages_insert as
             new.title, new.description, new.content,
             new._title, new._description, new._content
      returning page_id ||'.'|| lang, null::text,
-       lang, page_id, null::varchar(32), null::int, null::text, null::text, null::boolean,
+       lang, page_id, null::text, null::int, null::text, null::text, null::boolean,
        null::int, null::text, null::name, null::name,
        published, title, title, description, content, _title,
        _description, _content
@@ -373,7 +373,7 @@ create or replace rule cms_v_page_history_insert as
 create table cms_page_attachments (
        attachment_id serial primary key,
        page_id int not null references cms_pages on delete cascade,
-       filename varchar(64) not null,
+       filename text not null,
        mime_type text not null,
        bytesize text not null,
        image bytea,
@@ -520,7 +520,7 @@ create table cms_panels (
 	panel_id serial primary key,
 	site text not null references cms_config(site) on update cascade on delete cascade,
 	lang char(2) not null references cms_languages(lang) on update cascade,
-	identifier varchar(32),
+	identifier text,
 	title text not null,
 	ord int,
 	page_id integer references cms_pages on delete set null,
@@ -710,7 +710,7 @@ create or replace rule cms_v_emails_delete as
 create table cms_email_attachments (
        attachment_id serial primary key,
        label name not null references cms_email_labels on delete cascade,
-       filename varchar(64) not null,
+       filename text not null,
        mime_type text not null
 );
 
