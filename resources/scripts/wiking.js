@@ -109,7 +109,7 @@ wiking.Handler = Class.create(lcg.KeyHandler, {
     
     cmd_notebook: function (element) {
 	// Move focus to the first Notebook widget on the page.
-	var nb = document.body.down('div.notebook-container');
+	var nb = document.body.down('div.notebook-widget');
 	if (nb != null) {
 	    var item = $(nb.getAttribute('aria-activedescendant'));
 	    this.set_focus(item);
