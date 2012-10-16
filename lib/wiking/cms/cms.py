@@ -2535,7 +2535,8 @@ class News(ContentManagementModule, EmbeddableCMSModule):
         raise Redirect('/'+identifier)
         
     def _rss_author(self, req, record):
-        return record.cb_value('author', 'email').export()
+        cbvalue = record.cb_value('author', 'email')
+        return cbvalue and cbvalue.export()
 
 class Planner(News):
     class Spec(News.Spec):
