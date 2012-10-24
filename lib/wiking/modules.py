@@ -416,6 +416,26 @@ class SiteIcon(Module, RequestHandler):
         else:
             raise NotFound()
 
+
+class Robots(Module, RequestHandler):
+    """Serve robots.txt according to configuration.
+
+    This module is mapped to '/robots.txt' in the default 'Application'.
+
+    The file currently only supports the 'Crawl-delay' directive.  It is not
+    served (returns 404) when the configuration option 'crawl_delay' is None.
+
+    """
+    
+    def _handle(self, req):
+        crawl_delay = wiking.cfg.crawl_delay
+        if crawl_delay is not None:
+            data = ("User-agent: *\n"
+                    "Crawl-delay: %d\n" % crawl_delay)
+            return wiking.Response(data, 'text/plain')
+        else:
+            raise NotFound()
+
     
 class SubmenuRedirect(Module, RequestHandler):
     """Handle all requests by redirecting to the first submenu item.

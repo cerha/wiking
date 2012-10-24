@@ -433,3 +433,11 @@ class Configuration(pc):
         _DOC = ("Ignored crypto names don't raise decryption password dialog and "
                 "show obfuscated data instead.")
         _DEFAULT = ()
+
+    class _Option_crawl_delay(pc.NumericOption):
+        _DESCR = "Minimum delay in seconds between two successive requests from spiders."
+        _DOC = ("If not None, the application will serve a 'robots.txt' file with 'Crawl-Delay' "
+                "directive set to given number.  See "
+                "http://en.wikipedia.org/wiki/Robots_exclusion_standard for more info.")
+        _DEFAULT = None
+        

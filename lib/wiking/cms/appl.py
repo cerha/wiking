@@ -35,12 +35,14 @@ class Application(CookieAuthentication, wiking.Application):
                 '_wmi': 'WikingManagementInterface',
                 '_resources': 'Resources',
                 '_registration': 'Registration',
-                'favicon.ico': 'SiteIcon'}
+                'favicon.ico': 'SiteIcon',
+                'robots.txt': 'Robots'}
 
     _RIGHTS = {'Documentation': (Roles.ANYONE,),
                'Resources': (Roles.ANYONE,),
                'SiteMap': (Roles.ANYONE,),
                'SiteIcon': (Roles.ANYONE,),
+               'Robots': (Roles.ANYONE,),
                'WikingManagementInterface': (Roles.USER_ADMIN, Roles.CONTENT_ADMIN,
                                              Roles.SETTINGS_ADMIN, Roles.STYLE_ADMIN,
                                              Roles.MAIL_ADMIN,)}
