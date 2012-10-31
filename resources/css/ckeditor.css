@@ -113,3 +113,7 @@ blockquote {
 blockquote footer {
     background: #00FFFF;
 }
+
+*.cke-explicit-language {
+    background: lightyellow;
+}
