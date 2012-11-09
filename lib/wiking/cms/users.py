@@ -862,7 +862,7 @@ class Users(UserManagementModule):
             # it is set only once during registration.  It would make sense to change it on each
             # change of user interface language by that user.
             record['lang'] = pd.Value(record.type('lang'), req.preferred_language())
-        errors = []
+        errors = super(Users, self)._validate(req, record, layout)
         if 'old_password' in layout.order():
             #if not req.check_roles(Roles.USER_ADMIN): Too dangerous?
             old_password = req.param('old_password')
@@ -884,10 +884,15 @@ class Users(UserManagementModule):
                 elif record['password'].value() == current_password_value:
                     errors.append(('new_password',
                                    _(u"The new password is the same as the old one.")))
-        if errors:
-            return errors
-        else:
-            return super(Users, self)._validate(req, record, layout)
+        if not errors and req.param('action') == 'reinsert' and req.param('login') \
+                and 'login' not in layout.order():
+            # This is necessary, because the value of login is needed for
+            # the DB function cms_f_insert_or_update_user() and the hidden
+            # field value (see _hidden_fields) is not processed by
+            # validation.
+            record['login'] = pd.Value(record.type('login'), req.param('login'))
+        return errors
+
         
     def _default_actions_last(self, req, record):
         # Omit the default `delete' action to allow its redefinition in Spec.actions.
