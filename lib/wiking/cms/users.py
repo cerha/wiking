@@ -398,12 +398,15 @@ class ApplicationRoles(UserManagementModule):
             time.time() - self._roles_cache_time > 30):
             self._roles_cache = self._read_roles()
             self._roles_cache_time = time.time()
-        return self._roles_cache.get(role_id)
-        row = self._data.row(pd.Value(pd.String(), role_id))
-        if row:
-            return self._make_role(row)
-        else:
-            return None
+        try:
+            return self._roles_cache[role_id]
+        except KeyError:
+            row = self._data.row(pd.Value(pd.String(), role_id))
+            if row:
+                self._roles_cache[role_id] = role = self._make_role(row)
+                return role
+            else:
+                return None
     
     RIGHTS_list = (Roles.USER,)
     RIGHTS_view = (Roles.USER,)
