@@ -22,7 +22,7 @@ img { position: relative; } /* MSIE float workaround */
 
 /* Generic pytis forms styles */
 
-.pytis-form .group, .pytis-form div.submit, .list-form-controls .paging-controls { 
+.pytis-form .group, .pytis-form div.submit, .pytis-form .paging-controls {
     background-color: $color.frame-bg;
     border: 1px solid $color.frame-border;
     border-width: 1px 0;
@@ -74,6 +74,14 @@ img { position: relative; } /* MSIE float workaround */
 .pytis-form div.submit input { 
     padding: 0.1em 0.5em;
     margin: 0 1em;
+}
+
+.pytis-form .ajax-loading {
+    color: #aaa;
+    padding: 6px 0 6px 30px;
+    background-image: url(/_resources/ajax-loading.gif);
+    background-position: 8px center;
+    background-repeat: no-repeat;
 }
 
 .pytis-form.browse-form table {
@@ -186,8 +194,17 @@ img { position: relative; } /* MSIE float workaround */
 .pytis-form .field-label.disabled { color: $color.help; }
 .pytis-form .field-label.disabled .not-null { display: none; }
 
+.pytis-form div.radio-group div { 
+    white-space: nowrap;
+}
+.pytis-form div.radio-group input { 
+    float: left;
+    vertical-align: top;
+}
 .pytis-form div.radio-group label { 
     font-weight: normal;
+    display: inline-block;
+    margin: 0.3em 0 0.1em 0.1em;
 }
 .pytis-form div.radio-group { 
     margin-bottom: 0.3em;
@@ -346,13 +363,13 @@ a.backref, a:link.backref {
     text-decoration: none;
 }
 
-.citation, .quotation { 
+.lcg-citation, .lcg-quotation { 
     font-style: italic;
 }
 .underline { 
     text-decoration: underline;
 }
-dt .citation { 
+dt .lcg-citation { 
     font-style: normal;
 }
 dt em { 
