@@ -1503,7 +1503,7 @@ class Binding(pp.Binding):
         """Arguments:
 
           form -- the form class or none for the default form.  If used, must be a class derived
-            from 'pytis.web.BrowseForm'.
+            from 'pytis.web.Form'.
           enabled -- function of one argument ('pp.PresentedRow' instance) determining whether this
             binding is relevant for given row of the related main form.  If the function returns
             'True', the binding is used, otherwise it is omitted.
@@ -1516,10 +1516,10 @@ class Binding(pp.Binding):
         super(Binding, self).__init__(*args, **kwargs)
         if isinstance(form, tuple):
             form_cls, form_kwargs = form
-            assert issubclass(form_cls, pytis.web.BrowseForm), form_cls
+            assert issubclass(form_cls, pytis.web.Form), form_cls
             assert isinstance(form_kwargs, dict), form_kwargs
         else:
-            assert form is None or issubclass(form, pytis.web.BrowseForm), form
+            assert form is None or issubclass(form, pytis.web.Form), form
             form_cls = form
             form_kwargs = {}
         assert enabled is None or isinstance(enabled, collections.Callable), enabled

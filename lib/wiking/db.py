@@ -1853,29 +1853,55 @@ class PytisModule(Module, ActionHandler):
         return result
         
     def related(self, req, binding, record, uri):
-        """Return the listing of records related to other module's record by given binding."""
+        """Return the binding side form for other module's main form record.
+
+        The side form is typically a listing of records related to the main
+        form record (1:N binding) or details (show form) of a single side form
+        record referenced by the main form record (1:1 binding -- when 'single'
+        is True).
+
+        """
+        binding_uri = uri +'/'+ binding.id()
         if isinstance(binding, Binding) and binding.form_cls() is not None:
             form_cls = binding.form_cls()
             form_kwargs = binding.form_kwargs()
         else:
-            form_cls, form_kwargs = pw.ListView, {}
-        columns = [c for c in self._columns(req) if c != binding.binding_column()]
-        lang = req.preferred_language(raise_error=False)
-        if self._LIST_BY_LANGUAGE:
-            lcondition = pd.AND(pd.EQ('lang', pd.sval(lang)))
+            form_cls = binding.single() and pw.ShowForm or pw.ListView
+            form_kwargs = {}
+        if binding.single():
+            binding_column = binding.binding_column()
+            enumerator = record.type(binding_column).enumerator()
+            if enumerator is None:
+                raise Exception("Column '%s' of '%s' is used as a binding column but "
+                                "has no enumerator defined." % (binding_column, uri))
+            row = self._data.get_row(condition=binding.condition(),
+                                     **{enumerator.value_column(): record[binding_column].value()})
+            my_record = self._record(req, row)
+            content = self._form(form_cls, req, record=my_record, binding_uri=binding_uri,
+                                 layout=self._layout(req, 'view', my_record),
+                                 actions=(), #self._form_actions_argument(req), #TODO: doesn't work
+                                 **form_kwargs)
+            # TODO: This adds another level of binding subforms.  They don't
+            # seem to work now and it is questionable whether we want them...
+            # content = self._view_form_content(req, form, my_record)
         else:
-            lcondition = None
-        condition = pd.AND(self._condition(req),
-                           self._binding_condition(binding, record),
-                           lcondition)
-        binding_uri = uri +'/'+ binding.id()
-        form = self._form(form_cls, req, columns=columns, binding_uri=binding_uri,
-                          condition=condition,
-                          arguments=self._binding_arguments(binding, record),
-                          profiles=self._profiles(req), filter_sets=self._filter_sets(req),
-                          actions=self._form_actions_argument(req),
-                          **form_kwargs)
-        content = self._list_form_content(req, form, uri=binding_uri)
+            lang = req.preferred_language(raise_error=False)
+            if self._LIST_BY_LANGUAGE:
+                lcondition = pd.AND(pd.EQ('lang', pd.sval(lang)))
+            else:
+                lcondition = None
+            condition = pd.AND(self._condition(req),
+                               self._binding_condition(binding, record),
+                               lcondition)
+            form = self._form(form_cls, req, 
+                              binding_uri=binding_uri, condition=condition,
+                              columns=[c for c in self._columns(req)
+                                       if c != binding.binding_column()],
+                              arguments=self._binding_arguments(binding, record),
+                              profiles=self._profiles(req), filter_sets=self._filter_sets(req),
+                              actions=self._form_actions_argument(req),
+                              **form_kwargs)
+            content = self._list_form_content(req, form, record)
         return lcg.Container(content)
 
     # ===== Action handlers =====
