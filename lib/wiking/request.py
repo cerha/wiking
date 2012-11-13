@@ -490,6 +490,8 @@ class Request(ServerInterface):
 
         """
         if content_type is not None:
+            if isinstance(content_type, unicode):
+                content_type = str(content_type)
             self.set_header('Content-Type', content_type)
         if content_length is not None:
             self.set_header('Content-Length', str(content_length))
