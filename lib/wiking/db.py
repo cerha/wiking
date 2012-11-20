@@ -26,6 +26,31 @@ from pytis.web import UriType
 _ = lcg.TranslatableTextFactory('wiking')
 
 
+class DBException(pytis.data.DBException):
+    """Exception to abort database operations within the application code.
+
+    This exception is recognized within PytisModule._analyze_exception() and
+    thus it can be thrown inside the database operation methods, such as
+    PytisModule._insert(), PytisModule._update() or PytisModule._delete().  It
+    will cause the operation to be aborted (with the whole transaction) and the
+    user interface form is displayed again with given error message.  If a
+    'column' is passed (string identifier), the error message will refer to a
+    particular form field.  The effect is similar as if the error occured
+    within the database itself.
+
+    Unlike 'pytis.data.DBException' which wraps an error within the database
+    backend, 'wiking.DBException' is designed to be raised within the
+    application code.
+
+    """
+    def __init__(self, message, column=None):
+        self._message = message
+        self._column = column
+        super(DBException, self).__init__(message, None)
+    def column(self):
+        return self._column
+        
+
 class PytisModule(Module, ActionHandler):
     """Module bound to a Pytis data object.
 
@@ -508,7 +533,9 @@ class PytisModule(Module, ActionHandler):
         field or that it is not possible to determine which field it is.
 
         """
-        if e.exception():
+        if isinstance(e, wiking.DBException):
+            return (e.column(), e.message())
+        elif e.exception():
             error = str(e.exception()).strip()
         else:
             error = e.message()
