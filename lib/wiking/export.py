@@ -81,9 +81,19 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         DEFAULT = 'default'
         """Default Wiking layout wrapping the page content in menus, panels etc."""
         FRAME = 'frame'
-        """Frame layout displaying just the document content without any wrapping.
+        """Frame layout displaying just the document content wrapped in html body.
 
-        This layout is typically useful for rendering the IFRAME content.
+        This layout is typically useful for rendering the IFRAME content.  The
+        exported document content is wrapped into HTML body with HTML head
+        automatically created.
+        
+        """
+        BARE = 'bare'
+        """Returns bare exported content with no wrapping at all.
+
+        This layout is typically useful for rendering HTML fragments returned
+        by AJAX calls.  No wrapping is performed, so the result is not a
+        standalone HTML document.
         
         """
 
@@ -399,3 +409,9 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             return g.hr() + content.export(context)
         else:
             return None
+
+    def export(self, context):
+        if context.node().layout() == self.Layout.BARE:
+            return self._content(context)
+        else:
+            return super(Exporter, self).export(context)

@@ -234,6 +234,8 @@ class PytisModule(Module, ActionHandler):
     "If true, action menu is put below BrowseForm/ListView forms."
     _ROW_ACTIONS = False
     "If true, action menu created also for each table row in BrowseForm/ListView forms."
+    _ASYNC_LOAD = False
+    "If true, form data are loaded asynchronously through AJAX."
     
     _SUBMIT_BUTTONS = {}
     "Dictionary of form buttons keyed by action name (see '_submit_buttons()' method)."
@@ -888,6 +890,7 @@ class PytisModule(Module, ActionHandler):
                 top_actions = self._TOP_ACTIONS,
                 bottom_actions = self._BOTTOM_ACTIONS,
                 row_actions = self._ROW_ACTIONS,
+                async_load = self._ASYNC_LOAD,
                 immediate_filters = wiking.cfg.immediate_filters,
                 filter_fields = self._filter_fields(req),
                 actions = (), # Display no actions by default, rather than just spec actions.
@@ -1937,9 +1940,11 @@ class PytisModule(Module, ActionHandler):
         if record is not None:
             raise Redirect(self._current_base_uri(req, record), action='list',
                            search=record[self._key].export(), form_name=self.name())
-        # Don't display the listing alone, but display the original main form,
-        # when this list is accessed through bindings as a related form.
-        self._binding_parent_redirect(req, search=req.param('search'), form_name=self.name())
+        async_load = self._ASYNC_LOAD and req.param('_pytis_async_load_request') is not None
+        if not async_load:
+            # Don't display the listing alone, but display the original main form,
+            # when this list is accessed through bindings as a related form.
+            self._binding_parent_redirect(req, search=req.param('search'), form_name=self.name())
         # If this is not a binding forwarded request, display the listing.
         lang = req.preferred_language()
         condition = self._condition(req)
@@ -1953,8 +1958,11 @@ class PytisModule(Module, ActionHandler):
                           filter_sets=self._filter_sets(req),
                           actions=self._form_actions_argument(req),
                           )
-        content = self._list_form_content(req, form)
-        return self._document(req, content, lang=lang)
+        if async_load:
+            return wiking.Document('', form, layout=wiking.Exporter.Layout.BARE)
+        else:
+            content = self._list_form_content(req, form)
+            return self._document(req, content, lang=lang)
 
     def _binding_parent_uri(self, req):
         fw = self._binding_forward(req)
