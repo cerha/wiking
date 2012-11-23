@@ -1931,7 +1931,7 @@ class PytisModule(Module, ActionHandler):
                               profiles=self._profiles(req), filter_sets=self._filter_sets(req),
                               actions=self._form_actions_argument(req),
                               **form_kwargs)
-            content = self._list_form_content(req, form, record)
+            content = self._list_form_content(req, form, uri=binding_uri)
         return lcg.Container(content)
 
     # ===== Action handlers =====
