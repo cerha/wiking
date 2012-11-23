@@ -1937,7 +1937,11 @@ class EBooks(Pages, EmbeddableCMSModule):
         presentation = lcg.braille_presentation()
         presentation_set = lcg.PresentationSet(((presentation, lcg.TopLevelMatcher(),),))
         context = exporter.context(node, req.preferred_language(), presentation=presentation_set)
-        result = exporter.export(context, recursive=True)
+        try:
+            result = exporter.export(context, recursive=True)
+        except lcg.BrailleError, e:
+            req.message(e.message(), type=req.ERROR)
+            raise Redirect(self._current_record_uri(req, record))
         return wiking.Response(result, content_type='text/plain',
                                filename='%s.txt' % record['identifier'].value())
     RIGHTS_export_braille = (Roles.CONTENT_ADMIN,)
