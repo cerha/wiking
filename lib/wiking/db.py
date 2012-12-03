@@ -1944,7 +1944,11 @@ class PytisModule(Module, ActionHandler):
         if not async_load:
             # Don't display the listing alone, but display the original main form,
             # when this list is accessed through bindings as a related form.
-            self._binding_parent_redirect(req, search=req.param('search'), form_name=self.name())
+            if req.param('form_name') == self.name():
+                params = [(p, req.param(p)) for p in req.params()]
+            else:
+                params = ()
+            self._binding_parent_redirect(req, **dict(params))
         # If this is not a binding forwarded request, display the listing.
         lang = req.preferred_language()
         condition = self._condition(req)
