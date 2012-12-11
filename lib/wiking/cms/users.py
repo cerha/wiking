@@ -778,6 +778,7 @@ class Users(UserManagementModule):
     _PANEL_FIELDS = ('fullname',)
     _OWNER_COLUMN = 'uid'
     _SUPPLY_OWNER = False
+    _ASYNC_LOAD = True
     # Translators: Button label.
     _INSERT_LABEL = _("New user")
     # Translators: Button label.
@@ -1630,6 +1631,8 @@ class SessionLog(UserManagementModule):
                   'hostname', 'user_agent', 'referer')
         columns = ('start_time', 'duration', 'active', 'success', 'uid', 'login', 'ip_address')
         sorting = (('start_time', DESC),)
+        
+    _ASYNC_LOAD = True
         
     def log(self, req, time, session_id, uid, login):
         row = self._data.make_row(session_id=session_id, uid=uid, login=login,

@@ -2009,9 +2009,12 @@ class PageHistory(ContentManagementModule):
         #    Action('diff', _("Show differences against the current version")),
         #    )
 
+    _ASYNC_LOAD = True
     RIGHTS_insert = ()
     RIGHTS_update = ()
     RIGHTS_delete = ()
+    RIGHTS_list = (Roles.CONTENT_ADMIN,)
+    RIGHTS_view = (Roles.CONTENT_ADMIN,)
 
     def _document_title(self, req, record):
         if record:
@@ -2343,6 +2346,7 @@ class Attachments(ContentManagementModule):
          ('file', _("Attachment file name exceeds the maximal length 64 characters."))),
         )
     _ROW_ACTIONS = True
+    _ASYNC_LOAD = True
     
     RIGHTS_view   = (Roles.CONTENT_ADMIN,)
 
