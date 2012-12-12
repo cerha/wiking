@@ -415,3 +415,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             return self._content(context)
         else:
             return super(Exporter, self).export(context)
+
+
+class Html5Exporter(lcg.Html5Exporter, Exporter):
+    pass
