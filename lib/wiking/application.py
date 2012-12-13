@@ -410,7 +410,8 @@ class Application(Module):
             class A11yStatementLink(lcg.Content):
                 # A11y statement link with a hotkey (not supported by generic lcg links).
                 def export(self, context):
-                    return context.generator().link(_("Accessibility Statement"), uri, hotkey='0')
+                    g = context.generator()
+                    return g.a(_("Accessibility Statement"), href=uri, accesskey='0')
             return A11yStatementLink()
         else:
             return None

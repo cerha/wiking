@@ -44,7 +44,8 @@ class MinimalExporter(lcg.HtmlExporter):
         g = context.generator()
         import wiking
         return (g.hr(cls='hidden'),
-                g.span(g.link("Wiking", "http://www.freebsoft.org/wiking")+' '+wiking.__version__))
+                g.span(g.a("Wiking", href="http://www.freebsoft.org/wiking") + ' ' +
+                       wiking.__version__))
 
 
 class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
@@ -240,16 +241,16 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
 
     def _links(self, context):
         g = self._generator
-        links = [g.link(_("Main content"), '#main-heading', hotkey="2")]
+        links = [g.a(_("Main content"), href='#main-heading', accesskey="2")]
         if context.has_menu or context.has_submenu:
-            links.append(g.link(_("Main navigation"), '#main-navigation'))
+            links.append(g.a(_("Main navigation"), href='#main-navigation'))
             if context.has_menu and context.has_submenu:
-                links.append(g.link(_("Local navigation"), '#local-navigation'))
+                links.append(g.a(_("Local navigation"), href='#local-navigation'))
         if len(context.node().variants()) > 1:
-            links.append(g.link(_("Language selection"), '#language-selection-anchor'))
+            links.append(g.a(_("Language selection"), href='#language-selection-anchor'))
         if context.req().show_panels():
             for panel in context.node().panels():
-                links.append(g.link(panel.accessible_title(), '#panel-%s-anchor ' % panel.id()))
+                links.append(g.a(panel.accessible_title(), href='#panel-%s-anchor ' % panel.id()))
         return _("Jump in page") + ": " + concat(links, separator=' | ')
         
     def _breadcrumbs(self, context):
@@ -266,13 +267,13 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             style = "width: %d%%" % (100/n)
             last_style = "width: %d%%" % (100 - (100 / n * (n-1)))
             first, last = items[0], items[-1]
-            menu = [g.li(g.link(item.title(), self._uri_node(context, item),
-                                title=item.descr(), hotkey=(item is first and '1' or None),
-                                cls='navigation-link'+(item is top and ' current' or ''),
-                                )+(item is top and self._hidden(' *') or ''),
+            menu = [g.li(g.a(item.title(), href=self._uri_node(context, item),
+                             title=item.descr(), accesskey=(item is first and '1' or None),
+                             cls='navigation-link'+(item is top and ' current' or ''),
+                             )+(item is top and self._hidden(' *') or ''),
                          style=(item is last and last_style or style))
                     for item in items]
-            title = g.link(_("Main navigation")+':', None, name='main-navigation', hotkey="3")
+            title = g.a(_("Main navigation")+':', name='main-navigation', accesskey="3")
             return concat(g.h(title, 3), g.ul(*menu))
         else:
             return None
@@ -300,7 +301,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         if extra_content:
             extra_content.set_parent(context.node())
             content += extra_content.export(context)
-        return g.div((g.h(g.link(heading, None, name=name, hotkey="3"), 3), content),
+        return g.div((g.h(g.a(heading, name=name, accesskey="3"), 3), content),
                      cls='menu-panel')
 
     def _panels(self, context):
@@ -312,8 +313,8 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         if not req.show_panels():
             # Translators: Panels are small windows on the side of the page. This is a label
             # for a link that shows/hides the panels.
-            return g.link(_("Show panels"), "?show_panels=1", cls='panel-control show')
-        result = [g.link(_("Hide panels"), "?hide_panels=1", cls='panel-control hide')]
+            return g.a(_("Show panels"), href="?show_panels=1", cls='panel-control show')
+        result = [g.a(_("Hide panels"), href="?hide_panels=1", cls='panel-control hide')]
         for panel in panels:
             title = g.a(panel.title(), name='panel-'+panel.id()+'-anchor', tabindex=0,
                         cls='panel-anchor')
@@ -362,8 +363,8 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
     def _main(self, context):
         g = self._generator
         return (g.hr(cls='hidden'),
-                g.div((g.h(g.link(context.node().page_heading(), None, tabindex=0,
-                                  name='main-heading', id='main-heading'), 1),
+                g.div((g.h(g.a(context.node().page_heading(), tabindex=0,
+                               name='main-heading', id='main-heading'), 1),
                        self._messages(context),
                        super(Exporter, self)._content(context)), id='content'),
                 g.div('&nbsp;', id='clearing'))

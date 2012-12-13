@@ -708,14 +708,14 @@ class LoginPanel(Panel):
                 uri = appl.password_change_uri(req)
                 if uri:
                     # Translators: Link on login panel on the webpage.
-                    result += g.br() +'\n'+ g.link(_("Change your password"), uri)
+                    result += g.br() +'\n'+ g.a(_("Change your password"), href=uri)
             else:
                 uri = appl.registration_uri(req)
                 if uri:
                     # Translators: Login panel/dialog registration link.  Registration allows the
                     # user to obtain access to the website/application by submitting his personal
                     # details.
-                    result += g.br() +'\n'+ g.link(_("New user registration"), uri)
+                    result += g.br() +'\n'+ g.a(_("New user registration"), href=uri)
             added_content = appl.login_panel_content(req)
             if added_content:
                 exported = lcg.coerce(added_content).export(context)
@@ -1172,8 +1172,8 @@ class PanelItem(lcg.Content):
         
     def export(self, context):
         g = context.generator()
-        items = [g.span(uri and g.link(value, uri) or value,
-                            cls="panel-field-"+id)
+        items = [g.span(uri and g.a(value, href=uri) or value,
+                        cls="panel-field-"+id)
                  for id, value, uri in self._fields]
         return g.div(items, cls="item")
 
@@ -1193,7 +1193,7 @@ class LoginCtrl(lcg.Content):
             username = user.name()
             uri = user.uri()
             if uri:
-                username = g.link(username, uri, title=_("Go to your profile"))
+                username = g.a(username, href=uri, title=_("Go to your profile"))
             # Translators: Logout button label (verb in imperative).
             cmd, label = ('logout', _("log out"))
         else:
@@ -1203,7 +1203,7 @@ class LoginCtrl(lcg.Content):
             cmd, label = ('login', _("log in"))
             if req.uri().endswith('_registration'):
                 target_uri = '/' # Redirect logins from the registration forms to site root
-        link = g.link(label, g.uri(target_uri, command=cmd), cls='login-ctrl')
+        link = g.a(label, href=g.uri(target_uri, command=cmd), cls='login-ctrl')
         if self._inline:
             link = '[' + link + ']'
         else:
@@ -1253,14 +1253,14 @@ class LoginDialog(lcg.Content):
             # Translators: Login button label - verb in imperative.
             g.submit(_("Log in"), cls='submit'),)
         appl = wiking.module('Application')
-        links = [g.link(label, uri) for label, uri in
+        links = [g.li(g.a(label, href=uri)) for label, uri in
                  # Translators: Webpage link leading to registration form.
                  ((_("New user registration"), appl.registration_uri(req)),
-                 # Translators: Login dialog link to password change or password reminder (depends
+                  # Translators: Login dialog link to password change or password reminder (depends
                  # on configuration).
                   (_("Forgot your password?"), appl.password_reminder_uri(req))) if uri]
         if links:
-            content += (g.list(links),)
+            content += (g.ul(*links),)
         if not req.https() and wiking.cfg.force_https_login:
             uri = req.server_uri(force_https=True) + req.uri()
         else:

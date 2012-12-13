@@ -61,7 +61,7 @@ class Application(CookieAuthentication, wiking.Application):
                                      _("Enter the Wiking Management Interface"))
             else:
                 uri, label, title = ('/', _("Leave the Management Interface"), None)
-            return g.link(label, uri, title=title, hotkey="9", id='wmi-link')
+            return g.a(label, href=uri, title=title, accesskey="9", id='wmi-link')
     class PreviewModeCtrl(lcg.Content):
         def export(self, context):
             g = context.generator()
