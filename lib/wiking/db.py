@@ -682,7 +682,9 @@ class PytisModule(Module, ActionHandler):
         
 
         """
-        if isinstance(form, pw.BrowseForm):
+        if isinstance(form, pw.ListView) and self._view.list_layout():
+            exclude = ('list', 'view',)
+        elif isinstance(form, pw.BrowseForm):
             exclude = ('list',)
         elif isinstance(form, pw.ShowForm):
             exclude = ('view',)

@@ -2545,7 +2545,7 @@ class News(ContentManagementModule, EmbeddableCMSModule):
         columns = ('title', 'timestamp', 'author')
         layout = ('timestamp', 'title', 'content')
         list_layout = pp.ListLayout('title', meta=('timestamp', 'author'),  content=('content',),
-                                    anchor="item-%s")
+                                    anchor="item-%s", popup_actions=True)
         def _date(self, record, timestamp):
             return record['timestamp'].export(show_time=False)
         def _date_title(self, record, date, title):
@@ -2557,6 +2557,7 @@ class News(ContentManagementModule, EmbeddableCMSModule):
     _LIST_BY_LANGUAGE = True
     _EMBED_BINDING_COLUMN = 'page_id'
     _PANEL_FIELDS = ('date', 'title')
+    _ROW_ACTIONS = True
     # Translators: Button label for creating a new message in "News".
     _INSERT_LABEL = _("New message")
     _RSS_TITLE_COLUMN = 'title'
@@ -2595,6 +2596,7 @@ class News(ContentManagementModule, EmbeddableCMSModule):
     def _rss_author(self, req, record):
         cbvalue = record.cb_value('author', 'email')
         return cbvalue and cbvalue.export()
+
 
 class Planner(News):
     class Spec(News.Spec):
