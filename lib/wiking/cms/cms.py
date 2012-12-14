@@ -2532,7 +2532,7 @@ class News(ContentManagementModule, EmbeddableCMSModule):
             Field('lang', _("Language"), codebook='Languages', editable=ONCE,
                   selection_type=CHOICE, value_column='lang'),
             Field('timestamp', _("Date"), type=wiking.DateTime(not_null=True, utc=True),
-                  default=now),
+                  default=now, nocopy=True),
             Field('title', _("Title"), column_label=_("Message"), width=32,
                   descr=_("The item brief summary.")),
             ContentField('content', _("Message"), height=6, width=80),
