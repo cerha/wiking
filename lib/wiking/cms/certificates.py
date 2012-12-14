@@ -236,7 +236,6 @@ class UserCertificates(Certificates):
                                )
             return fields
 
-        _OWNER_COLUMN = 'uid'
         columns = ('common_name', 'valid_from', 'valid_until', 'trusted',)
         layout = ('trusted', 'common_name', 'email', 'issuer', 'valid_from', 'valid_until', 'text',)
 

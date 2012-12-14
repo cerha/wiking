@@ -130,6 +130,14 @@ class WikingManagementInterface(Module, RequestHandler):
         del req.unresolved_path[0]
         return req.forward(mod)
 
+    def _authorized(self, req):
+        return req.check_roles(Roles.USER_ADMIN, Roles.CONTENT_ADMIN,
+                               Roles.SETTINGS_ADMIN, Roles.STYLE_ADMIN,
+                               Roles.MAIL_ADMIN)
+    
+    def authorized(self, req):
+        return self._authorized(req)
+
     def menu(self, req):
         variants = self._application.languages()
         return [MenuItem('_wmi/sec%d' % (i+1), title, descr=descr, variants=variants,
@@ -249,15 +257,20 @@ class CMSModule(PytisModule, RssModule, Panelizable):
                                                     ('cookie', pd.String(),),),
                          )
     
-    RIGHTS_view = (Roles.ANYONE,)
-    RIGHTS_list = (Roles.ANYONE,)
-    RIGHTS_rss  = (Roles.ANYONE,)
-    RIGHTS_insert    = (Roles.ADMIN,)
-    RIGHTS_update    = (Roles.ADMIN,)
-    RIGHTS_delete    = (Roles.ADMIN,)
-    RIGHTS_export    = () # Denied by default.  Enable explicitly when needed.
-    RIGHTS_copy      = () # Denied by default.  Enable explicitly when needed.
-    RIGHTS_print_field = (Roles.ANYONE,)
+    def _authorized(self, req, action, **kwargs):
+        if hasattr(self, 'RIGHTS_'+action):
+            # This needs to be first in order to maintain backwards
+            # compatibility with existing RIGHTS_* specifications.  When
+            # RIGHTS_* are removed everywhere, calling super class should
+            # become the last resort.
+            return super(CMSModule, self)._authorized(req, action, **kwargs)
+        elif action in ('view', 'list', 'rss', 'print_field'):
+            return True
+        elif action in ('insert', 'update', 'delete'):
+            return req.check_roles(Roles.ADMIN)
+        else:
+            # Actions 'export' and 'copy' denied by default.  Enable explicitly when needed.
+            return False
 
     def _embed_binding(self, modname):
         """Helper method to get a binding instance if given module is EmbeddableCMSModule."""
@@ -315,35 +328,33 @@ class CMSModule(PytisModule, RssModule, Panelizable):
         return []
 
 
-class ContentManagementModule(CMSModule):
-    """Base class for WMI modules managed by L{Roles.CONTENT_ADMIN}."""
-    RIGHTS_insert    = (Roles.CONTENT_ADMIN,)
-    RIGHTS_update    = (Roles.CONTENT_ADMIN,)
-    RIGHTS_delete    = (Roles.CONTENT_ADMIN,)
-    
-class SettingsManagementModule(CMSModule):
-    """Base class for WMI modules managed by L{Roles.SETTINGS_ADMIN}."""
-    RIGHTS_insert    = (Roles.SETTINGS_ADMIN,)
-    RIGHTS_update    = (Roles.SETTINGS_ADMIN,)
-    RIGHTS_delete    = (Roles.SETTINGS_ADMIN,)
+class _ManagementModule(CMSModule):
+    _ADMIN_ROLES = ()
+    def _authorized(self, req, action, **kwargs):
+        if action in ('insert', 'update', 'delete'):
+            return req.check_roles(*self._ADMIN_ROLES)
+        else:
+            return super(_ManagementModule, self)._authorized(req, action, **kwargs)
 
-class UserManagementModule(CMSModule):
+class ContentManagementModule(_ManagementModule):
+    """Base class for WMI modules managed by L{Roles.CONTENT_ADMIN}."""
+    _ADMIN_ROLES = (Roles.CONTENT_ADMIN,)
+    
+class SettingsManagementModule(_ManagementModule):
+    """Base class for WMI modules managed by L{Roles.SETTINGS_ADMIN}."""
+    _ADMIN_ROLES = (Roles.SETTINGS_ADMIN,)
+
+class UserManagementModule(_ManagementModule):
     """Base class for WMI modules managed by L{Roles.USER_ADMIN}."""
-    RIGHTS_insert    = (Roles.USER_ADMIN,)
-    RIGHTS_update    = (Roles.USER_ADMIN,)
-    RIGHTS_delete    = (Roles.USER_ADMIN,)
+    _ADMIN_ROLES = (Roles.USER_ADMIN,)
     
-class StyleManagementModule(CMSModule):
+class StyleManagementModule(_ManagementModule):
     """Base class for WMI modules managed by L{Roles.STYLE_ADMIN}."""
-    RIGHTS_insert    = (Roles.STYLE_ADMIN,)
-    RIGHTS_update    = (Roles.STYLE_ADMIN,)
-    RIGHTS_delete    = (Roles.STYLE_ADMIN,)
+    _ADMIN_ROLES = (Roles.STYLE_ADMIN,)
     
-class MailManagementModule(CMSModule):
+class MailManagementModule(_ManagementModule):
     """Base class for WMI modules managed by L{Roles.MAIL_ADMIN}."""
-    RIGHTS_insert    = (Roles.MAIL_ADMIN,)
-    RIGHTS_update    = (Roles.MAIL_ADMIN,)
-    RIGHTS_delete    = (Roles.MAIL_ADMIN,)
+    _ADMIN_ROLES = (Roles.MAIL_ADMIN,)
     
     
 class Embeddable(object):
@@ -402,7 +413,7 @@ class EmbeddableCMSModule(CMSModule, Embeddable):
                        condition=cls._embed_binding_condition)
 
     def embed(self, req):
-        content = [self.related(req, self.binding(), req.page, req.uri())]
+        content = [self.related(req, self.binding(), req.page_record, req.uri())]
         rss_info = self._rss_info(req)
         if rss_info:
             content.append(rss_info)
@@ -858,11 +869,15 @@ class Panels(SiteSpecificContentModule):
 
     _LIST_BY_LANGUAGE = True
     _HONOUR_SPEC_TITLE = True
-    RIGHTS_list = ()
-    RIGHTS_view = ()
-    RIGHTS_publish = (Roles.CONTENT_ADMIN,)
-    RIGHTS_unpublish = (Roles.CONTENT_ADMIN,)
 
+    def _authorized(self, req, action, **kwargs):
+        if action in ('list', 'view'):
+            return False
+        elif action in ('publish', 'unpublish'):
+            return req.check_roles(*self._ADMIN_ROLES)
+        else:
+            return super(Panels, self)._authorized(req, action, **kwargs)
+            
     def _resolve(self, req):
         # Don't allow resolution by uri, panels have no URI so the
         # identification must be passed as a parameter.
@@ -1157,7 +1172,6 @@ class Themes(StyleManagementModule):
             )
         
     _ROW_ACTIONS = True
-    RIGHTS_copy = (Roles.STYLE_ADMIN,)
 
     class Theme(Theme):
         def __init__(self, row):
@@ -1168,6 +1182,12 @@ class Themes(StyleManagementModule):
         def theme_id(self):
             return self._theme_id
 
+    def _authorized(self, req, action, **kwargs):
+        if action in ('copy', 'activate'):
+            return req.check_roles(*self._ADMIN_ROLES)
+        else:
+            return super(Themes, self)._authorized(req, action, **kwargs)
+        
     def theme(self, theme_id):
         row = self._data.get_row(theme_id=theme_id)
         return self.Theme(row)
@@ -1188,7 +1208,6 @@ class Themes(StyleManagementModule):
             req.message(err, type=req.ERROR)
         req.set_param('search', theme_id)
         raise wiking.Redirect(self._current_base_uri(req, record))
-    RIGHTS_activate = (Roles.STYLE_ADMIN,)
     
 
 # ==============================================================================
@@ -1359,8 +1378,6 @@ class Pages(SiteSpecificContentModule):
          _("Duplicate menu order at this level of hierarchy.")),) + \
          SiteSpecificContentModule._EXCEPTION_MATCHERS
     _LIST_BY_LANGUAGE = True
-    #_OWNER_COLUMN = 'owner'
-    #_SUPPLY_OWNER = False
     _LAYOUT = {'insert':
                    (FieldSet(_("Page Text (for the current language)"),
                              ('title', 'description', '_content')),
@@ -1389,8 +1406,6 @@ class Pages(SiteSpecificContentModule):
     _HONOUR_SPEC_TITLE = True
     _ROW_ACTIONS = True
 
-    RIGHTS_list = (Roles.CONTENT_ADMIN,)
-
     def __init__(self, *args, **kwargs):
         super(Pages, self).__init__(*args, **kwargs)
         if wiking.cms.cfg.content_editor == 'plain':
@@ -1404,11 +1419,30 @@ class Pages(SiteSpecificContentModule):
         self._text2content = text2content
         
     def _handle(self, req, action, **kwargs):
-        # TODO: This is a hack to find out the parent page in the embedded
-        # module, but a better solution would be desirable.
-        if not hasattr(req, 'page'):
-            req.page = kwargs.get('record')
+        # TODO: This is a hack to find out the parent page and access rights in
+        # the embedded modules.
+        if not hasattr(req, 'page_record'):
+            record = kwargs.get('record')
+            req.page_record = record
+            req.page_read_access = self._authorized(req, 'view', record=record)
+            req.page_write_access = self._authorized(req, 'update', record=record)
         return super(Pages, self)._handle(req, action, **kwargs)
+        
+    def _authorized(self, req, action, record=None, **kwargs):
+        if action in ('new_page', 'list', 'options', 'publish', 'unpublish', 'delete', 'translate'):
+            roles = (Roles.CONTENT_ADMIN,)
+        else:
+            roles_module = wiking.module('Users').Roles()
+            if record and action in ('view', 'rss'):
+                roles = (roles_module[record['read_role_id'].value()],
+                         roles_module[record['write_role_id'].value()],
+                         Roles.CONTENT_ADMIN,)
+            elif action in ('update', 'commit', 'revert', 'attachments'):
+                roles = (roles_module[record['write_role_id'].value()],
+                         Roles.CONTENT_ADMIN,)
+            else:
+                roles = () # raise NotFound or BadRequest?
+        return req.check_roles(*roles)
         
     def _handle_subpath(self, req, record):
         modname = record['modname'].value()
@@ -1718,7 +1752,6 @@ class Pages(SiteSpecificContentModule):
         
     def action_options(self, req, record):
         return self.action_update(req, record, action='options')
-    RIGHTS_options = (Roles.CONTENT_ADMIN,)
     
     def action_translate(self, req, record):
         lang = req.param('src_lang')
@@ -1745,7 +1778,6 @@ class Pages(SiteSpecificContentModule):
             for k in ('_content','title'):
                 req.set_param(k, row[k].value())
             return self.action_update(req, record)
-    RIGHTS_translate = (Roles.CONTENT_ADMIN,)
 
     def action_commit(self, req, record):
         values = dict(content=record['_content'].value(), published=True)
@@ -1764,7 +1796,6 @@ class Pages(SiteSpecificContentModule):
         else:
             req.message(_("The changes were published."))
         raise Redirect(self._current_record_uri(req, record))
-    RIGHTS_commit = (Roles.CONTENT_ADMIN,)
 
     def action_revert(self, req, record):
         try:
@@ -1774,7 +1805,6 @@ class Pages(SiteSpecificContentModule):
         else:
             req.message(_("The page contents was reverted to its previous state."))
         raise Redirect(self._current_record_uri(req, record))
-    RIGHTS_revert = (Roles.CONTENT_ADMIN,)
     
     def action_unpublish(self, req, record):
         try:
@@ -1786,16 +1816,13 @@ class Pages(SiteSpecificContentModule):
                           "It will not be visible in production mode anymore."))
         self._application.set_preview_mode(req, True)
         raise Redirect(self._current_record_uri(req, record))
-    RIGHTS_unpublish = (Roles.CONTENT_ADMIN,)
 
     def action_new_page(self, req, record):
         raise Redirect(self._current_base_uri(req, record), action='insert',
                        parent=record['parent'].value(), ord=record['ord'].value())
-    RIGHTS_new_page = (Roles.CONTENT_ADMIN,)
 
     #def action_help(self, req, record):
     #    raise Redirect('/_doc/wiking/cms/pages')
-    #RIGHTS_help = (Roles.CONTENT_ADMIN,)
 
 
 class EBooks(Pages, EmbeddableCMSModule):
@@ -1839,8 +1866,16 @@ class EBooks(Pages, EmbeddableCMSModule):
                            FieldSet(_("Access Rights"), ('read_role_id', 'write_role_id',))),
                    options=('read_role_id', 'write_role_id'),
                    )
-    RIGHTS_new_page = ()
-    RIGHTS_list = ()
+
+    def _authorized(self, req, action, **kwargs):
+        if action in ('new_page', 'list'):
+            return False
+        elif action == 'new_chapter':
+            return req.page_write_access
+        elif action in ('export_epub', 'export_braille'):
+            return req.page_read_access
+        else:
+            return super(EBooks, self)._authorized(req, action, **kwargs)
     
     def _insert_msg(self, req, record):
         if record['published'].value():
@@ -1898,7 +1933,8 @@ class EBooks(Pages, EmbeddableCMSModule):
             return []
         record = req.ebook
         children = self._child_rows(req, record)
-        base_uri = '/%s/data/%s' % (req.page['identifier'].value(), record['identifier'].value())
+        base_uri = '/%s/data/%s' % (req.page_record['identifier'].value(),
+                                    record['identifier'].value())
         def item(row):
             if row['page_id'].value() == record['page_id'].value():
                 uri = base_uri
@@ -1913,7 +1949,6 @@ class EBooks(Pages, EmbeddableCMSModule):
 
     def action_new_chapter(self, req, record):
         raise Redirect(req.uri() +'/chapters', action='insert')
-    RIGHTS_new_chapter = (Roles.CONTENT_ADMIN,)
 
     def action_export_epub(self, req, record):
         class EpubExporter(lcg.EpubExporter):
@@ -1929,7 +1964,6 @@ class EBooks(Pages, EmbeddableCMSModule):
         result = exporter.export(context)
         return wiking.Response(result, content_type='application/epub+zip',
                                filename='%s.epub' % record['identifier'].value())
-    RIGHTS_export_epub = (Roles.CONTENT_ADMIN,)
     
     def action_export_braille(self, req, record):
         node = self._ebook(req, record)
@@ -1944,7 +1978,6 @@ class EBooks(Pages, EmbeddableCMSModule):
             raise Redirect(self._current_record_uri(req, record))
         return wiking.Response(result, content_type='text/plain',
                                filename='%s.txt' % record['identifier'].value())
-    RIGHTS_export_braille = (Roles.CONTENT_ADMIN,)
         
 class EBookChapters(Pages):
     """e-Book chapters are regular CMS pages """
@@ -1972,8 +2005,11 @@ class EBookChapters(Pages):
                    insert=('title', 'description', '_content', 'parent', 'ord'),
                    options=('parent', 'ord'),
                    )
-    RIGHTS_new_page = ()
-    RIGHTS_list = ()
+    def _authorized(self, req, action, **kwargs):
+        if action in ('new_page', 'list'):
+            return False
+        else:
+            return super(EBookChapters, self)._authorized(req, action, **kwargs)
 
     def _current_base_uri(self, req, record=None):
         # Use PytisModule._current_base_uri (skip Pages._current_base_uri).
@@ -2010,11 +2046,12 @@ class PageHistory(ContentManagementModule):
         #    )
 
     _ASYNC_LOAD = True
-    RIGHTS_insert = ()
-    RIGHTS_update = ()
-    RIGHTS_delete = ()
-    RIGHTS_list = (Roles.CONTENT_ADMIN,)
-    RIGHTS_view = (Roles.CONTENT_ADMIN,)
+
+    def _authorized(self, req, action, **kwargs):
+        if action in ('list', 'view'):
+            return req.page_write_access 
+        else:
+            return False
 
     def _document_title(self, req, record):
         if record:
@@ -2348,8 +2385,14 @@ class Attachments(ContentManagementModule):
     _ROW_ACTIONS = True
     _ASYNC_LOAD = True
     
-    RIGHTS_view   = (Roles.CONTENT_ADMIN,)
-
+    def _authorized(self, req, action, **kwargs):
+        if action in ('download', 'image', 'thumbnail'):
+            return req.page_read_access
+        elif action in ('list', 'view', 'insert', 'update', 'delete', 'move'):
+            return req.page_write_access
+        else:
+            return False
+            
     def _default_action(self, req, record=None):
         if record is None:
             return 'list'
@@ -2456,11 +2499,9 @@ class Attachments(ContentManagementModule):
         
     def action_move(self, req, record):
         return self.action_update(req, record, action='move')
-    RIGHTS_move = (Roles.CONTENT_ADMIN,)
 
     def action_download(self, req, record):
         return Response(record['file'].value().buffer(), content_type=record['mime_type'].value())
-    RIGHTS_download = (Roles.ANYONE)
 
     def action_thumbnail(self, req, record):
         value = record['thumbnail'].value()
@@ -2468,7 +2509,6 @@ class Attachments(ContentManagementModule):
             raise NotFound()
         else:
             return Response(value.buffer(), content_type='image/%s' % value.image().format.lower())
-    RIGHTS_thumbnail = (Roles.ANYONE)
 
     def action_image(self, req, record):
         value = record['image'].value()
@@ -2476,7 +2516,6 @@ class Attachments(ContentManagementModule):
             raise NotFound()
         else:
             return Response(value.buffer(), content_type='image/%s' % value.image().format.lower())
-    RIGHTS_image = (Roles.ANYONE)
 
     
 class News(ContentManagementModule, EmbeddableCMSModule):
@@ -2516,7 +2555,6 @@ class News(ContentManagementModule, EmbeddableCMSModule):
                 return None
         
     _LIST_BY_LANGUAGE = True
-    _OWNER_COLUMN = 'author'
     _EMBED_BINDING_COLUMN = 'page_id'
     _PANEL_FIELDS = ('date', 'title')
     # Translators: Button label for creating a new message in "News".
@@ -2526,6 +2564,18 @@ class News(ContentManagementModule, EmbeddableCMSModule):
     _RSS_DATE_COLUMN = 'timestamp'
     _page_identifier_cache = BoundCache()
 
+    def _authorized(self, req, action, record=None, **kwargs):
+        if action == 'list':
+            return req.page_read_access
+        elif action in ('update', 'delete', 'copy'):
+            return req.page_write_access
+        else:
+            return False
+    
+    def _prefill(self, req):
+        return dict(super(News, self)._prefill(req),
+                    author=req.user().uid())
+    
     def _record_uri(self, req, record, *args, **kwargs):
         def get():
             return record.cb_value('page_id', 'identifier').value()
@@ -2652,7 +2702,10 @@ class Discussions(ContentManagementModule, EmbeddableCMSModule):
         return [a for a in super(Discussions, self)._actions(req, record) if a.id() != 'insert']
     
     def _authorized(self, req, action, record=None):
-        return action in ('insert', 'reply')
+        if action in ('list', 'insert', 'reply'):
+            return req.page_read_access
+        else:
+            return False
 
     def _redirect_after_insert(self, req, record):
         req.message(_("Your comment was posted to the discussion."))
@@ -2662,8 +2715,8 @@ class Discussions(ContentManagementModule, EmbeddableCMSModule):
         return dict(super(Discussions, self)._prefill(req),
                     timestamp=now(),
                     author=req.user().uid(),
-                    page_id=req.page['page_id'].value(),
-                    lang=req.page['lang'].value())
+                    page_id=req.page_record['page_id'].value(),
+                    lang=req.page_record['lang'].value())
     
     def action_reply(self, req, record):
         prefill = dict(self._prefill(req),
@@ -2896,9 +2949,13 @@ class CommonTexts(SettingsManagementModule):
         
     _LIST_BY_LANGUAGE = True
     _REFERER = 'label'
-    RIGHTS_insert = ()
-    RIGHTS_delete = ()
 
+    def _authorized(self, req, action, **kwargs):
+        if action in ('insert', 'delete'):
+            return False
+        else:
+            return super(CommonTexts, self)._authorized(req, action, **kwargs)
+    
     def _delayed_init(self):
         super(CommonTexts, self)._delayed_init()
         self._register_texts()
@@ -3322,5 +3379,10 @@ class EmailSpool(MailManagementModule):
     # Translators: Description of button for creating a template of an email
     _COPY_DESCR = _("Edit this mail for repeated use")
     
-    RIGHTS_update = ()
-    RIGHTS_copy = MailManagementModule.RIGHTS_insert
+    def _authorized(self, req, action, **kwargs):
+        if action == 'update':
+            return False
+        if action == 'copy':
+            return req.check_roles(*self._ADMIN_ROLES)
+        else:
+            return super(EmailSpool, self)._authorized(req, action, **kwargs)

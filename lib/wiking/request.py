@@ -1202,9 +1202,10 @@ class Roles(object):
     """The owner of the item being operated.
     Interpretation of the term I{owner} is on the particular application.
     Standard way of owner identification is implemented in
-    L{PytisModule.check_owner}, based on the owner of the processed database
+    L{PytisModule._check_owner}, based on the owner of the processed database
     record.  Applications may redefine this method or implement their own
-    L{Application.authorize} method to change the concept of owner when needed.
+    L{Module._check_owner} method to change the concept of owner authorization
+    when needed.
     """
 
     @classmethod

@@ -349,6 +349,12 @@ class ApplicationRoles(UserManagementModule):
     _roles_cache = None
     _roles_cache_time = None
 
+    def _authorized(self, req, action, **kwargs):
+        if action in ('view', 'list'):
+            return req.check_roles(Roles.USER)
+        else:
+            return super(ApplicationRoles, self)._authorized(req, action, **kwargs)
+
     def _update_enabled(self, req, record):
         return not record['system'].value()
     
@@ -407,9 +413,6 @@ class ApplicationRoles(UserManagementModule):
                 return role
             else:
                 return None
-    
-    RIGHTS_list = (Roles.USER,)
-    RIGHTS_view = (Roles.USER,)
 
 
 class UserGroups(ApplicationRoles):
@@ -776,8 +779,6 @@ class Users(UserManagementModule):
 
     _REFERER = 'login'
     _PANEL_FIELDS = ('fullname',)
-    _OWNER_COLUMN = 'uid'
-    _SUPPLY_OWNER = False
     _ASYNC_LOAD = True
     # Translators: Button label.
     _INSERT_LABEL = _("New user")
@@ -785,14 +786,22 @@ class Users(UserManagementModule):
     _UPDATE_LABEL = _("Edit profile")
     # Translators: Button label. Modify the users data (email, address...)
     _UPDATE_DESCR = _("Modify user's record")
-    RIGHTS_insert = (Roles.ANYONE,)
-    RIGHTS_update = (Roles.USER_ADMIN, Roles.OWNER)
 
     def __init__(self, *args, **kwargs):
         self._user_cache = weakref.WeakKeyDictionary()
         self._find_users_cache = weakref.WeakKeyDictionary()
         super(Users, self).__init__(*args, **kwargs)
         
+    def _authorized(self, req, action, record=None, **kwargs):
+        if action in ('insert', 'confirm', 'regreminder'):
+            return True
+        elif action in ('update', 'passwd'):
+            return req.check_roles(Roles.USER_ADMIN) or self._check_uid(req, record, 'uid')
+        elif action in ('enable', 'disable'):
+            return req.check_roles(Roles.USER_ADMIN)
+        else:
+            return super(Users, self)._authorized(req, action, record=record, **kwargs)
+
     def _layout(self, req, action, record=None):
         def cms_text(cms_text):
             texts = wiking.module('Texts')
@@ -1054,7 +1063,6 @@ class Users(UserManagementModule):
         self._send_admin_approval_mail(req, record)
         return Document(_("Registration confirmed"),
                         content=self._confirmation_success_content(req, record))
-    RIGHTS_confirm = (Roles.ANYONE,)
 
     def _change_state(self, req, record, state):
         try:
@@ -1092,20 +1100,16 @@ class Users(UserManagementModule):
                           "the e-mail address belongs to given user."))
             return self._document(req, (form), record)
         self._change_state(req, record, self.AccountState.ENABLED)
-    RIGHTS_enable = (Roles.USER_ADMIN,)
 
     def action_disable(self, req, record):
         self._change_state(req, record, self.AccountState.DISABLED)
-    RIGHTS_disable = (Roles.USER_ADMIN,)
     
     def action_passwd(self, req, record):
         return self.action_update(req, record, action='passwd')
-    RIGHTS_passwd = (Roles.USER_ADMIN, Roles.OWNER)
 
     def action_regreminder(self, req, record):
         self._send_registration_email(req, record)
         raise Redirect(self._current_record_uri(req, record))
-    RIGHTS_regreminder = (Roles.ANYONE,)
 
     def _user_arguments(self, req, login, row):
         record = self._record(req, row)
@@ -1380,7 +1384,16 @@ class Registration(Module, ActionHandler):
                 g.submit(_("Submit"), cls='submit'),)
             return g.form(controls, method='POST', cls='password-reminder-form') #+ \
                    #g.p(_(""))
-    RIGHTS_list = ()
+
+    def _authorized(self, req, action, **kwargs):
+        if action in ('view', 'insert', 'reinsert', 'remind', 'confirm'):
+            return True
+        elif action == 'list':
+            return False
+        elif action in ('update', 'passwd'):
+            return req.check_roles(Roles.REGISTERED)
+        else:
+            return super(Registration, self)._authorized(req, action, **kwargs)
     
     def _default_action(self, req, **kwargs):
         return 'view'
@@ -1399,13 +1412,11 @@ class Registration(Module, ActionHandler):
             raise Redirect('/')
         else:
             raise AuthenticationError()
-    RIGHTS_view = (Roles.ANYONE,)
 
     def action_insert(self, req, prefill=None, action='insert'):
         if not wiking.cms.cfg.allow_registration:
             raise Forbidden()
         return wiking.module('Users').action_insert(req, prefill=prefill, action=action)
-    RIGHTS_insert = (Roles.ANYONE,)
 
     def action_reinsert(self, req):
         login = req.param('login')
@@ -1422,7 +1433,6 @@ class Registration(Module, ActionHandler):
                         prefill = None
                     return self.action_insert(req, prefill=prefill)
         raise AuthenticationError()
-    RIGHTS_reinsert = (Roles.ANYONE,)
     
     def action_remind(self, req):
         title = _("Password reminder")
@@ -1481,19 +1491,15 @@ class Registration(Module, ActionHandler):
         else:
             content = self.ReminderForm()
         return Document(title, content)
-    RIGHTS_remind = (Roles.ANYONE,)
 
     def action_update(self, req):
         return wiking.module('Users').action_update(req, req.user().data())
-    RIGHTS_update = (Roles.REGISTERED,)
     
     def action_passwd(self, req):
         return wiking.module('Users').action_passwd(req, req.user().data())
-    RIGHTS_passwd = (Roles.REGISTERED,)
     
     def action_confirm(self, req):
         return wiking.module('Users').action_confirm(req)
-    RIGHTS_confirm = (Roles.ANYONE,)
 
 
 class ActivationForm(lcg.Content):

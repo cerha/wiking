@@ -226,23 +226,6 @@ class Application(Module):
         """
         return None
 
-    def authorize(self, req, module, action=None, record=None, **kwargs):
-        """Check authorization of the current user for given action on given module.
-
-        Arguments:
-          req -- Current request as a 'Request' instance.
-          module -- The module responsible for handling the request as a 'RequestHandler' instance.
-          action -- Action name as a string or None for global module access check (this argument
-            is only used for 'ActionHandler' modules).
-          kwargs -- Action arguments (if any).  Also relevant only for 'ActionHandler' modules.
-          
-        Returns true if the user is allowed to perform given action and false if not.
-
-        The default implementation always returns True.
-        
-        """
-        return True
-
     def contained_roles(self, req, role):
         """Return the sequence of user roles contained in given role.
 

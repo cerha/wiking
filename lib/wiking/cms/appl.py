@@ -38,15 +38,6 @@ class Application(CookieAuthentication, wiking.Application):
                 'favicon.ico': 'SiteIcon',
                 'robots.txt': 'Robots'}
 
-    _RIGHTS = {'Documentation': (Roles.ANYONE,),
-               'Resources': (Roles.ANYONE,),
-               'SiteMap': (Roles.ANYONE,),
-               'SiteIcon': (Roles.ANYONE,),
-               'Robots': (Roles.ANYONE,),
-               'WikingManagementInterface': (Roles.USER_ADMIN, Roles.CONTENT_ADMIN,
-                                             Roles.SETTINGS_ADMIN, Roles.STYLE_ADMIN,
-                                             Roles.MAIL_ADMIN,)}
-
     _PREVIEW_MODE_COOKIE = 'wiking_cms_preview_mode'
     _PREVIEW_MODE_PARAM = '_wiking_cms_preview_mode'
     
@@ -336,58 +327,6 @@ class Application(CookieAuthentication, wiking.Application):
             return
         wiking.module('CryptoKeys').clear_crypto_passwords(req, user)
 
-    def authorize(self, req, module, action=None, record=None, **kwargs):
-        """Authorization of CMS modules.
-
-        The method defines basic authorization mechanism based on L{user
-        roles<wiking.Role>}.  If C{module} defines constant of the form
-        C{RIGHTS_}I{ACTION} where I{ACTION} is C{action} value then the
-        constant is used for determining user roles which are allowed to
-        perform the action.  The constant must be a tuple of L{Role} instances.
-        The user is allowed to perform the action iff one of his roles is among
-        the roles listed in the constant.  Note that special roles such as
-        I{OWNER} or I{USER} can be used in the list.  See L{Roles} for
-        information about standard and special roles.
-        
-        """
-        # Am I the only who thinks this method is a gross hack?  The method
-        # shouldn't handle specific requirements of the particular modules, the
-        # modules should.  -pdm
-        if req.path and req.path[0] == '_registration' and module.name() == 'Users':
-            # This hack redirects action authorization back to Registration after redirection to
-            # Users.
-            module = Registration
-        if action and hasattr(module, 'RIGHTS_'+action):
-            roles = getattr(module, 'RIGHTS_'+action)
-        else:
-            roles = self._RIGHTS.get(module.name(), ())
-        if module.name() == 'Pages' and record:
-            if action in ('view', 'rss'):
-                roles_m = wiking.module('Users').Roles()
-                roles = (roles_m[record['read_role_id'].value()],
-                         roles_m[record['write_role_id'].value()])
-            elif action in ('update', 'commit', 'revert', 'attachments'):
-                role_id = record['write_role_id'].value()
-                roles = (wiking.module('Users').Roles()[role_id], Roles.CONTENT_ADMIN)
-        if module.name() == 'Attachments' and req.page:
-            if action in ('view', 'list'):
-                roles_m = wiking.module('Users').Roles()
-                roles = (roles_m[req.page['read_role_id'].value()],
-                         roles_m[req.page['write_role_id'].value()])
-            elif action in ('insert', 'update', 'delete'):
-                role_id = req.page['write_role_id'].value()
-                roles = (wiking.module('Users').Roles()[role_id], Roles.CONTENT_ADMIN)
-        #debug("***:", module.name(), action, record.__class__, roles, hasattr(req, 'page'))
-        if req.check_roles(roles):
-            return True
-        elif Roles.OWNER in roles and module.name() == 'Attachments' and hasattr(req, 'page') \
-                 and req.user():
-            return wiking.module('Pages').check_owner(req.user(), req.page)
-        elif Roles.OWNER in roles and isinstance(module, PytisModule) and record and req.user():
-            return module.check_owner(req.user(), record)
-        else:
-            return False
-        
     def contained_roles(self, req, role):
         role_sets = wiking.module('RoleSets')
         role_ids = role_sets.included_role_ids(role)
@@ -406,7 +345,7 @@ class Application(CookieAuthentication, wiking.Application):
         return req.make_uri(req.module_uri('Registration'), action='remind')
 
     def login_panel_content(self, req):
-        if self.authorize(req, WikingManagementInterface):
+        if wiking.module('WikingManagementInterface').authorized(req):
             return [self.PreviewModeCtrl(), self.WMILink()]
         else:
             return None
@@ -436,7 +375,7 @@ class Application(CookieAuthentication, wiking.Application):
             return self._accessibility_statement_link(req)
         elif req.user() is None:
             return self.WMILink()
-        elif self.authorize(req, WikingManagementInterface):
+        elif wiking.module('WikingManagementInterface').authorized(req):
             return (LoginCtrl(inline=True), ' ', self.WMILink())
         else:
             return LoginCtrl(inline=True)

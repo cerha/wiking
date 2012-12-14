@@ -193,7 +193,6 @@ class PytisModule(Module, ActionHandler):
     _DELETE_MSG = _("The record was deleted.")
     
     _OWNER_COLUMN = None
-    _SUPPLY_OWNER = True
     _SEQUENCE_FIELDS = ()
     _ARRAY_FIELDS = ()
     """Specification of array fields with automatically updated linking tables.
@@ -1204,12 +1203,16 @@ class PytisModule(Module, ActionHandler):
             raise NotFound()
         return row
         
-    def check_owner(self, user, record):
-        if self._OWNER_COLUMN is not None:
-            owner = record[self._OWNER_COLUMN].value()
-            return user.uid() == owner
+    def _check_owner(self, req, action, record=None):
+        if record and self._OWNER_COLUMN is not None:
+            return self._check_uid(req, record, self._OWNER_COLUMN)
         return False
-    
+
+    def _check_uid(self, req, record, column):
+        user = req.user()
+        debug(self.name()+' OWNER:', column, user.uid(), record[column].value())
+        return user and user.uid() == record[column].value() or False
+
     def _prefill(self, req):
         """Return the new record prefill values as a dictionary.
         
@@ -1223,9 +1226,8 @@ class PytisModule(Module, ActionHandler):
         field 'default' specifications.
 
         The base class implementation automatically handles binding column
-        prefill in binding forwarded requests, record owner column prefill if
-        '_SUPPLY_OWNER' is True and default language if '_LIST_BY_LANGUAGE' is
-        True.
+        prefill in binding forwarded requests and default language if
+        '_LIST_BY_LANGUAGE' is True.
         
         """
         # TODO: The same prefill should also be used by the form when
@@ -1245,9 +1247,6 @@ class PytisModule(Module, ActionHandler):
                 binding_column = binding.binding_column()
                 main_form_column = self._type[binding_column].enumerator().value_column()
                 prefill[binding_column] = binding_record[main_form_column].value()
-        if self._OWNER_COLUMN and self._SUPPLY_OWNER and req.user() \
-               and self._OWNER_COLUMN not in prefill:
-            prefill[self._OWNER_COLUMN] = req.user().uid()
         if self._LIST_BY_LANGUAGE and 'lang' not in prefill:
             lang = req.preferred_language(raise_error=False)
             if lang:

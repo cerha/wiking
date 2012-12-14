@@ -91,17 +91,10 @@ class RequestHandler(object):
         the module itself (calling its 'handle()' method), with no further
         resolution.
 
-        The base implementation of this method postpones the authorization to
-        the current wiking application by calling
-        'wiking.Application.authorize()'.  This allows implementation of a
-        custom authorization mechanism by an application without overriding all
-        modules.  The application, however, may still choose to override this
-        method in its modules to implement authorization checking for them
-        directly (making it not possible to override this behavior by
-        overriding the application).
-
+        The default implementation always returns true.
+        
         """
-        return self._application.authorize(req, self, **kwargs)
+        return True
     
     def _authorize(self, req, **kwargs):
         """Check authorization and raise error if the user has no rights to perform the action.
@@ -172,6 +165,21 @@ class ActionHandler(RequestHandler):
             return req.param('action')
         else:
             return self._default_action(req, **kwargs)
+
+    def _check_owner(self, req, action, **kwargs):
+        return False
+        
+    def _authorized(self, req, action, **kwargs):
+        try:
+            roles = getattr(self, 'RIGHTS_'+action)
+        except AttributeError:
+            roles = ()
+        if req.check_roles(roles):
+            return True
+        elif Roles.OWNER in roles:
+            return self._check_owner(req, action, **kwargs)
+        else:
+            return False
 
     def _handle(self, req, action, **kwargs):
         """Perform action authorization and call the action method."""

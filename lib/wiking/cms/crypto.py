@@ -48,11 +48,11 @@ class CryptoNames(CMSExtensionModule):
                                    form=pw.ItemizedView),
                     )
 
-    RIGHTS_list = (Roles.CRYPTO_ADMIN,)
-    RIGHTS_view = (Roles.CRYPTO_ADMIN,)
-    RIGHTS_insert = ()
-    RIGHTS_update = ()
-    RIGHTS_delete = ()
+    def _authorized(self, req, action, **kwargs):
+        if action in ('view', 'list'):
+            return req.check_roles(Roles.CRYPTO_ADMIN)
+        else:
+            return False
 
 class CryptoKeys(CMSExtensionModule):
     """Management of keys and users.
@@ -125,17 +125,21 @@ class CryptoKeys(CMSExtensionModule):
 
     _TITLE_COLUMN = 'uid'
     _INSERT_LABEL = _("Create key")
-    _OWNER_COLUMN = 'uid'
 
-    RIGHTS_list = (Roles.CRYPTO_ADMIN,)
-    RIGHTS_view = (Roles.CRYPTO_ADMIN, Roles.OWNER,)
-    RIGHTS_insert = (Roles.CRYPTO_ADMIN,)
-    RIGHTS_update = ()
-    RIGHTS_delete = (Roles.CRYPTO_ADMIN,)
-    RIGHTS_copy = ()
-    RIGHTS_password = (Roles.OWNER,)
-    RIGHTS_adduser = (Roles.CRYPTO_ADMIN,)
+    def _authorized(self, req, action, record=None, **kwargs):
+        if action == 'view':
+            return req.check_roles(Roles.CRYPTO_ADMIN) or self._check_uid(req, record, 'uid')
+        elif action == 'password':
+            return self._check_uid(req, record, 'uid')
+        elif action in ('list', 'insert', 'delete', 'adduser'):
+            return req.check_roles(Roles.CRYPTO_ADMIN)
+        else:
+            return False
 
+    def _prefill(self, req):
+        return dict(super(CryptoKeys, self)._prefill(req),
+                    uid=req.user().uid())
+    
     def _layout(self, req, action, record=None):
         if action == 'insert':
             layout = ('name', 'uid', 'new_password',)
