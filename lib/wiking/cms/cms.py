@@ -99,16 +99,16 @@ class WikingManagementInterface(Module, RequestHandler):
     """
     _MENU = (
         # Translators: Heading and menu title. 
-        (_("Users"),
+        ('users', _("Users"),
          _("Manage user accounts, privileges and perform other user related tasks."),
          ['Users', 'ApplicationRoles', 'SessionLog', 'EmailSpool', 'CryptoNames']),
         # Translators: Heading and menu title. Computer idiom meaning configuration of appearance
         # (colors, sizes, positions, graphical presentation...).
-        (_("Look &amp; Feel"),
+        ('style', _("Look &amp; Feel"),
          _("Customize the appearance of your site."),
          ['StyleSheets', 'Themes']),
         # Translators: Heading and menu title for configuration.
-        (_("Setup"),
+        ('setup', _("Setup"),
          _("Edit global properties of your web site."),
          ['Config', 'Languages', 'Countries', 'Texts', 'Emails']),
         )
@@ -116,19 +116,20 @@ class WikingManagementInterface(Module, RequestHandler):
     def _handle(self, req):
         req.wmi = True # Switch to WMI only after successful authorization!
         if not req.unresolved_path:
-            raise Redirect('/_wmi/Users')
-        if req.unresolved_path[0].startswith('sec'):
-            # Redirect to the first module of given section.
-            try:
-                n = int(req.unresolved_path[0][3:])
-                modname = self._MENU[n-1][2][0]
-            except (ValueError, IndexError):
-                raise NotFound
-            else:
-                raise Redirect('/_wmi/'+modname)
-        mod = wiking.module(req.unresolved_path[0])
-        del req.unresolved_path[0]
-        return req.forward(mod)
+            raise Redirect('/_wmi/users/Users')
+        for section, title, descr, modnames in self._MENU:
+            if req.unresolved_path[0] == section:
+                del req.unresolved_path[0]
+                if not req.unresolved_path:
+                    # Redirect to the first module of given section.
+                    raise Redirect('/_wmi/'+section+'/'+modnames[0])
+                elif req.unresolved_path[0] in modnames:
+                    mod = wiking.module(req.unresolved_path[0])
+                    del req.unresolved_path[0]
+                    return req.forward(mod)
+                else:
+                    raise NotFound()
+        raise NotFound()
 
     def _authorized(self, req):
         return req.check_roles(Roles.USER_ADMIN, Roles.CONTENT_ADMIN,
@@ -140,21 +141,21 @@ class WikingManagementInterface(Module, RequestHandler):
 
     def menu(self, req):
         variants = self._application.languages()
-        return [MenuItem('_wmi/sec%d' % (i+1), title, descr=descr, variants=variants,
-                         submenu=[MenuItem('_wmi/' + m.name(),
+        return [MenuItem('/_wmi/' + section, title, descr=descr, variants=variants,
+                         submenu=[MenuItem('/_wmi/'+ section +'/' + m.name(),
                                            m.title(),
                                            descr=m.descr(),
                                            variants=variants,
                                            submenu=m.submenu(req),
                                            foldable=True)
                                   for m in [wiking.module(modname) for modname in modnames]])
-                for i, (title, descr, modnames) in enumerate(self._MENU)]
+                for section, title, descr, modnames in self._MENU]
 
     def module_uri(self, req, modname):
         """Return the WMI URI of given module or None if it is not available through WMI."""
-        for title, descr, modnames in self._MENU:
+        for section, title, descr, modnames in self._MENU:
             if modname in modnames:
-                return '/_wmi/' + modname
+                return '/_wmi/'+ section +'/' + modname
         return None
             
 
@@ -504,7 +505,7 @@ class CMSExtension(Module, Embeddable, RequestHandler):
         try:
             modname = self._mapping[req.unresolved_path[0]]
         except KeyError:
-            raise NotFound
+            raise NotFound()
         del req.unresolved_path[0]
         return req.forward(wiking.module(modname))
 
