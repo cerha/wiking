@@ -1946,7 +1946,7 @@ class PytisModule(Module, ActionHandler):
             # Don't display the listing alone, but display the original main form,
             # when this list is accessed through bindings as a related form.
             if req.param('form_name') == self.name():
-                params = [(p, req.param(p)) for p in req.params()]
+                params = [(p, req.param(p)) for p in req.params() if p != 'action']
             else:
                 params = ()
             self._binding_parent_redirect(req, **dict(params))
