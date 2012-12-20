@@ -1212,7 +1212,6 @@ class PytisModule(Module, ActionHandler):
 
     def _check_uid(self, req, record, column):
         user = req.user()
-        debug(self.name()+' OWNER:', column, user.uid(), record[column].value())
         return user and user.uid() == record[column].value() or False
 
     def _prefill(self, req):
