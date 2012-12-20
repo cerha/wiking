@@ -132,8 +132,7 @@ class WikingManagementInterface(Module, RequestHandler):
         raise NotFound()
 
     def _authorized(self, req):
-        return req.check_roles(Roles.USER_ADMIN, Roles.CONTENT_ADMIN,
-                               Roles.SETTINGS_ADMIN, Roles.STYLE_ADMIN,
+        return req.check_roles(Roles.USER_ADMIN, Roles.SETTINGS_ADMIN, Roles.STYLE_ADMIN,
                                Roles.MAIL_ADMIN)
     
     def authorized(self, req):
