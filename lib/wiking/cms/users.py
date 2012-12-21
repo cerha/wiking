@@ -489,8 +489,13 @@ class Users(UserManagementModule):
                   computer=(wiking.cms.cfg.login_is_email and computer(lambda r, email: email) or None),
                   descr=_("A valid login name can only contain letters, digits, underscores, "
                           "dashes, at signs and dots and must start with a letter.")),
+            Field('autogenerate_password', _("Generate Password"), width=16, virtual=True,
+                  type=pd.Boolean(), default=False, editable=pp.Editable.ALWAYS,
+                  descr=_("If checked, the password will be generated automatically and "
+                          "sent to the user's e-mail address.")),
             Field('password', _("Password"), width=16,
                   type=pd.Password(minlen=4, maxlen=32, not_null=True, md5=md5_passwords),
+                  editable=computer(lambda r, autogenerate_password: not autogenerate_password),
                   descr=_("Please, write the password into each of the two fields to eliminate "
                           "typos.")),
             Field('old_password', _(u"Old password"), virtual=True, width=16,
@@ -523,8 +528,7 @@ class Users(UserManagementModule):
                   display=self._gender_display, prefer_display=True,
                   selection_type=pp.SelectionType.RADIO),
             # Translators: E-mail address. Registration form field.
-            Field('email', _("E-mail"), width=36, not_null=(not wiking.cms.cfg.login_is_email),
-                  constraints=(self._check_email,)),
+            Field('email', _("E-mail"), width=36, not_null=(not wiking.cms.cfg.login_is_email)),
             # Translators: Telephone number. Registration form field.
             Field('phone', _("Phone")),
             # Translators: Post address. Registration form field.
@@ -605,15 +609,17 @@ class Users(UserManagementModule):
                 return pp.Style(foreground='#a20')
             else:
                 return None
-        def _check_email(self, email):
-            result = wiking.validate_email_address(email)
-            if not result[0]:
-                return _("Invalid e-mail address: %s", result[1])
         def _last_password_change(self, record, password):
             if record.field_changed('password'):
                 return now()
             else:
                 return record['last_password_change'].value()
+        def check(self, record):
+            if not record.req().param('_pytis_form_update_request') \
+                    and record['email'].value() and record.field_changed('email'):
+                ok, msg = wiking.validate_email_address(record['email'].value())
+                if not ok:
+                    return ('email', _("Invalid e-mail address: %s", msg))
         def bindings(self):
             return (Binding('roles', _("User's Groups"), 'UserRoles', 'uid',
                             form=pw.ItemizedView),
@@ -824,10 +830,12 @@ class Users(UserManagementModule):
                           ]
                 return layout
             if action == 'insert':
-                if req.param('action') == 'reinsert':
-                    login_information = ((wiking.cms.cfg.login_is_email and 'email' or 'login'),)
-                else:
-                    login_information = ((wiking.cms.cfg.login_is_email and 'email' or 'login'), 'password',)
+                login_field = wiking.cms.cfg.login_is_email and 'email' or 'login'
+                login_information = (login_field,)
+                if req.param('action') != 'reinsert':
+                    if req.check_roles(Roles.USER_ADMIN):
+                        login_information += ('autogenerate_password',)
+                    login_information += ('password',)
                 layout = [
                     self._registration_form_intro,
                     FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname',)),
@@ -904,6 +912,11 @@ class Users(UserManagementModule):
             # field value (see _hidden_fields) is not processed by
             # validation.
             record['login'] = pd.Value(record.type('login'), req.param('login'))
+        if not errors and record['autogenerate_password'].value():
+            import random
+            random.seed()
+            password = ''.join(random.sample(string.digits + string.ascii_letters, 10))
+            record['password'] = pd.Value(record.type('password'), password)
         return errors
 
         
@@ -941,13 +954,24 @@ class Users(UserManagementModule):
         
     def _make_registration_email(self, req, record):
         base_uri = req.server_uri() + (req.module_uri('Registration') or '/_wmi/'+ self.name())
-        uri = req.make_uri(base_uri, action='confirm', uid=record['uid'].value(),
-                           regcode=record['regcode'].value())
-        text = _("To finish your registration at %(server_hostname)s, click on the following link:\n"
-                 "%(uri)s\n\n",
-                 server_hostname=wiking.cfg.server_hostname,
-                 uri=uri,
-                 code=record['regcode'].value())
+        if record['autogenerate_password'].value():
+            text = _("Your account at %(server_hostname)s was created.\n\n"
+                     "Your password is: %(password)s\n\n"
+                     "It is recommended to change the password as soon as possible.\n"
+                     "Note, that the password is case sensitive.  Use the link below\n"
+                     "to log in:\n\n"
+                     "%(uri)s\n\n",
+                     server_hostname=wiking.cfg.server_hostname,
+                     uri=req.make_uri(base_uri, command='login', login=record['login'].value()),
+                     password=record['password'].value())
+        else:
+            text = _("To finish your registration at %(server_hostname)s, "
+                     "click on the following link:\n\n"
+                     "%(uri)s\n\n",
+                     server_hostname=wiking.cfg.server_hostname,
+                     uri = req.make_uri(base_uri, action='confirm', uid=record['uid'].value(),
+                                        regcode=record['regcode'].value()),
+                     code=record['regcode'].value())
         attachments = ()
         return text, attachments
 
@@ -974,10 +998,15 @@ class Users(UserManagementModule):
             req.message(_("Failed sending e-mail notification:") +' '+ err, type=req.ERROR)
             return False
         else:
-            # Translators: Follows an email addres, e.g. ``... was sent to your email address at joe@brailcom.org''
-            req.message(_("To finish registration, please confirm the "
-                               "activation code that was sent to your email "
-                               "address at %s.", record['email'].value()))
+            req.message(_("Account created."))
+            if record['autogenerate_password'].value():
+                msg = _("The generated password was sent to %s.", record['email'].value())
+            else:
+                # Translators: Follows an email addres, e.g. ``... was sent to your email address at joe@brailcom.org''
+                msg = _("To finish registration, please confirm the "
+                        "activation code that was sent to your email "
+                        "address at %s.", record['email'].value())
+            req.message(msg)
             return True
 
     def _check_registration_code(self, req):
