@@ -66,8 +66,11 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             self.resource('gettext.js')
             self.resource('lcg.js')
             self.resource('wiking.js')
-            self.resource('lcg-widget-colors.css')
             self.resource('wiking.%s.po' % self.lang()) # Translations for Javascript
+            # TODO: Load these stylesheets conditionally (only when
+            # lcg-widgets.css/pytis-forms.css are loaded).
+            self.resource('lcg-widget-colors.css')
+            self.resource('pytis-form-colors.css')
 
         def req(self):
             """Return the current request as a 'wiking.Request' instance.
