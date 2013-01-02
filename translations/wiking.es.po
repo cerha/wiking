@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2012-10-03 10:04+0200\n"
+"POT-Creation-Date: 2013-01-02 10:54+0100\n"
 "PO-Revision-Date: 2010-01-19 16:23+0100\n"
 "Last-Translator: david <rohozka@gmail.com>\n"
 "Language-Team: Spanish <wiking@lists.freebsoft.org>\n"
@@ -18,26 +18,26 @@ msgstr ""
 
 #. Website idiom. This is followed by information on the underlying software
 #. tools.  Means: This website runs on [...this and that software...].
-#: ../lib/wiking/application.py:395
+#: ../lib/wiking/application.py:390
 msgid "Powered by"
 msgstr "Desarrollado por"
 
-#: ../lib/wiking/application.py:412
+#: ../lib/wiking/application.py:408
 msgid "Accessibility Statement"
 msgstr "Declaración de accesibilidad"
 
 #. Heading of webpage left side hierarchical navigation
 #. menu containing a list of links to pages in this web section
-#: ../lib/wiking/application.py:425
+#: ../lib/wiking/application.py:421
 msgid "In this section:"
 msgstr "En esta sección:"
 
-#: ../lib/wiking/application.py:434 ../lib/wiking/export.py:98
-#: ../lib/wiking/export.py:237
+#: ../lib/wiking/application.py:430 ../lib/wiking/export.py:112
+#: ../lib/wiking/export.py:251
 msgid "Local navigation"
 msgstr "Navegación local"
 
-#: ../lib/wiking/application.py:477
+#: ../lib/wiking/application.py:473
 msgid "Contact:"
 msgstr "Contacto:"
 
@@ -132,227 +132,227 @@ msgid ""
 "username, but also his current user role, which affects his permissions."
 msgstr ""
 
-#: ../lib/wiking/db.py:69
+#: ../lib/wiking/db.py:94
 msgid "Row with this key already exists."
 msgstr ""
 
-#: ../lib/wiking/db.py:71
+#: ../lib/wiking/db.py:96
 msgid "This value already exists.  Enter a unique value."
 msgstr "Este valor ya existe. Introduzca un valor único."
 
 #. This is about an empty (not filled in) value in a web form. Field means a
 #. form field.
-#: ../lib/wiking/db.py:75
+#: ../lib/wiking/db.py:100
 msgid "Empty value.  This field is mandatory."
 msgstr "Valor vacío. Este campo es obligatorio."
 
 #. This is delete action failure message in a web page.
-#: ../lib/wiking/db.py:78
+#: ../lib/wiking/db.py:103
 msgid "Record couldn't be deleted because other records refer to it."
 msgstr ""
 
 #. Button label for new database record creation (computer terminology).
-#: ../lib/wiking/db.py:128
+#: ../lib/wiking/db.py:153
 msgid "New record"
 msgstr "Nuevo registro"
 
 #. Tooltip of new database record creation button (computer terminology).
-#: ../lib/wiking/db.py:130
+#: ../lib/wiking/db.py:155
 msgid "Create a new record"
 msgstr "Crear un nuevo registro"
 
 #. Button label for database record modification (verb in imperative,
 #. computer terminology).
-#: ../lib/wiking/db.py:133
+#: ../lib/wiking/db.py:158
 msgid "Edit"
 msgstr "Editar"
 
 #. Tooltip of database record modification button (computer terminology)
-#: ../lib/wiking/db.py:135
+#: ../lib/wiking/db.py:160
 msgid "Modify the record"
 msgstr "Modificar el registro"
 
 #. Button label for database record display (verb in imperative).
-#: ../lib/wiking/db.py:137
+#: ../lib/wiking/db.py:162
 msgid "View"
 msgstr ""
 
 #. Tooltip of database record display button (computer terminology)
-#: ../lib/wiking/db.py:139
+#: ../lib/wiking/db.py:164
 #, fuzzy
 msgid "Display the record"
 msgstr "Modificar el registro"
 
 #. Button label for database record deletion (verb in imperative,
 #. computer terminology).
-#: ../lib/wiking/db.py:142
+#: ../lib/wiking/db.py:167
 msgid "Remove"
 msgstr "Eliminar"
 
 #. Tooltip of database record deletion button (computer terminology).
-#: ../lib/wiking/db.py:144
+#: ../lib/wiking/db.py:169
 msgid "Remove the record permanently"
 msgstr "Eliminar el registro definitivamente"
 
 #. Prompt before database record deletion (computer terminology).
-#: ../lib/wiking/db.py:146
+#: ../lib/wiking/db.py:171
 msgid "Please, confirm removing the record permanently."
 msgstr "Por favor, confirme eliminar el registro definitivamente."
 
 #. Button label for database record copying (verb in imperative,
 #. computer terminology).
-#: ../lib/wiking/db.py:149
+#: ../lib/wiking/db.py:174
 msgid "Copy"
 msgstr "Copiar"
 
 #. Tooltip of database record copy button (computer terminology).
-#: ../lib/wiking/db.py:151
+#: ../lib/wiking/db.py:176
 msgid "Create new record initialized by values of this record"
 msgstr "Crear un nuevo registro inicializado con valores de este registro"
 
 #. Button label for returning from a single record view to the listing of all
 #. database records (computer terminology).
-#: ../lib/wiking/db.py:154
+#: ../lib/wiking/db.py:179
 msgid "Back to list"
 msgstr "Volver a la lista"
 
 #. Tooltip of a button for returning from a single record view to the
 #. listing of all records (computer terminology).
-#: ../lib/wiking/db.py:157
+#: ../lib/wiking/db.py:182
 msgid "Back to the list of all records"
 msgstr "Volver a la lista de todos los registros"
 
 #. Button label (verb in imperative, computer terminology).
-#: ../lib/wiking/db.py:159
+#: ../lib/wiking/db.py:184
 msgid "Export"
 msgstr ""
 
 #. Button tooltip.  Don't translate `CSV', it is an
 #. internationally recognized computer abbreviation.
-#: ../lib/wiking/db.py:162
+#: ../lib/wiking/db.py:187
 msgid "Export the listing into a CSV format"
 msgstr ""
 
 #. Message displayed after new database record creation (computer terminology).
-#: ../lib/wiking/db.py:164
+#: ../lib/wiking/db.py:189
 msgid "New record was successfully inserted."
 msgstr "El nuevo registro ha sido insertado con éxito."
 
 #. Message displayed after a database record modification (computer
 #. terminology).
-#: ../lib/wiking/db.py:166
+#: ../lib/wiking/db.py:191
 msgid "The record was successfully updated."
 msgstr "El registro ha sido actualizado con éxito."
 
 #. Message displayed after a database record deletion (computer terminology).
-#: ../lib/wiking/db.py:168
+#: ../lib/wiking/db.py:193
 msgid "The record was deleted."
 msgstr "El registro ha sido borrado."
 
-#: ../lib/wiking/db.py:493
+#: ../lib/wiking/db.py:519
 msgid "Integrity check failed."
 msgstr "Fallo en el control de integridad."
 
-#: ../lib/wiking/db.py:547
+#: ../lib/wiking/db.py:575
 msgid "Unable to perform a database operation:"
 msgstr ""
 
-#: ../lib/wiking/db.py:1056
+#: ../lib/wiking/db.py:1087
 msgid "Filter"
 msgstr ""
 
-#: ../lib/wiking/db.py:2111
+#: ../lib/wiking/db.py:2177
 msgid "Back"
 msgstr "Atrás"
 
 #. Back button label. Standard computer terminology.
 #. RSS channel is a computer idiom, see Wikipedia.
-#: ../lib/wiking/db.py:2320 ../lib/wiking/db.py:2476
+#: ../lib/wiking/db.py:2386 ../lib/wiking/db.py:2542
 msgid "An RSS channel is available for this section:"
 msgstr "Un canal RSS está disponible para esta sección:"
 
 #. RSS channel is a computer idiom, see Wikipedia.  Don't translateg 'RSS'.
-#: ../lib/wiking/db.py:2324 ../lib/wiking/db.py:2474
+#: ../lib/wiking/db.py:2390 ../lib/wiking/db.py:2540
 msgid "more about RSS"
 msgstr "Más sobre RSS"
 
-#: ../lib/wiking/db.py:2469
+#: ../lib/wiking/db.py:2535
 #, fuzzy, python-format
 msgid "RSS channel \"%s\""
 msgstr "RSS canal"
 
-#: ../lib/wiking/db.py:2479
+#: ../lib/wiking/db.py:2545
 #, fuzzy
 msgid "RSS channels are available for this section"
 msgstr "Un canal RSS está disponible para esta sección:"
 
 #. Record as in `database record'.
-#: ../lib/wiking/db.py:2566
+#: ../lib/wiking/db.py:2632
 msgid "No records."
 msgstr "Ningún registro."
 
-#: ../lib/wiking/export.py:96
+#: ../lib/wiking/export.py:110
 msgid "Page heading"
 msgstr "Título de la página"
 
-#: ../lib/wiking/export.py:97 ../lib/wiking/export.py:235
-#: ../lib/wiking/export.py:265 ../lib/wiking/export.py:283
+#: ../lib/wiking/export.py:111 ../lib/wiking/export.py:249
+#: ../lib/wiking/export.py:279 ../lib/wiking/export.py:297
 msgid "Main navigation"
 msgstr "Navegación principal"
 
-#: ../lib/wiking/export.py:99 ../lib/wiking/export.py:233
+#: ../lib/wiking/export.py:113 ../lib/wiking/export.py:247
 msgid "Main content"
 msgstr "Contenido principal"
 
-#: ../lib/wiking/export.py:100
+#: ../lib/wiking/export.py:114
 msgid "Page footer"
 msgstr "Pie de página"
 
 #. Title of a dialog on a webpage
-#: ../lib/wiking/export.py:101 ../lib/wiking/export.py:239
-#: ../lib/wiking/util.py:309
+#: ../lib/wiking/export.py:115 ../lib/wiking/export.py:253
+#: ../lib/wiking/util.py:314
 msgid "Language selection"
 msgstr "Selección de idioma"
 
 #. Label for language selection followed by list of languages
-#: ../lib/wiking/export.py:104
+#: ../lib/wiking/export.py:118
 msgid "Language:"
 msgstr "Idioma:"
 
-#: ../lib/wiking/export.py:243
+#: ../lib/wiking/export.py:257
 msgid "Jump in page"
 msgstr "Saltar en la página"
 
 #. A label followed by location information in webpage navigation
-#: ../lib/wiking/export.py:248
+#: ../lib/wiking/export.py:262
 msgid "You are here:"
 msgstr "Usted está aquí:"
 
-#: ../lib/wiking/export.py:286
+#: ../lib/wiking/export.py:300
 msgid "Expand/collapse complete menu hierarchy"
 msgstr ""
 
 #. Panels are small windows on the side of the page. This is a label
 #. for a link that shows/hides the panels.
-#: ../lib/wiking/export.py:305
+#: ../lib/wiking/export.py:319
 msgid "Show panels"
 msgstr "Mostrar paneles"
 
-#: ../lib/wiking/export.py:306
+#: ../lib/wiking/export.py:320
 msgid "Hide panels"
 msgstr "Ocultar paneles"
 
 #. ``RSS channel'' is terminology idiom, see Wikipedia
-#: ../lib/wiking/export.py:318
+#: ../lib/wiking/export.py:332
 msgid "RSS channel"
 msgstr "RSS canal"
 
-#: ../lib/wiking/export.py:344
+#: ../lib/wiking/export.py:358
 msgid "Warning"
 msgstr "Advertencia"
 
 #. Information about last change of a webpage (when and who)
-#: ../lib/wiking/export.py:367
+#: ../lib/wiking/export.py:381
 #, python-format
 msgid "Last change: %(date)s, %(user)s"
 msgstr "Último cambio: %(date)s, %(user)s"
@@ -360,72 +360,72 @@ msgstr "Último cambio: %(date)s, %(user)s"
 #. Meaning that the system (webpage) does not work now
 #. because we are updating/fixing something but will work again after
 #. the maintaince is finished.
-#: ../lib/wiking/handler.py:207
+#: ../lib/wiking/handler.py:208
 #, fuzzy
 msgid "Maintenance Mode"
 msgstr "Modo de mantenimiento"
 
-#: ../lib/wiking/handler.py:208
+#: ../lib/wiking/handler.py:209
 msgid "The system is temporarily down for maintenance."
 msgstr "El sistema está temporalmente fuera de servicio por mantenimiento."
 
-#: ../lib/wiking/modules.py:520
+#: ../lib/wiking/modules.py:549
 msgid "Enter your login name, please!"
 msgstr "Introduzca su nombre de usuario, por favor!"
 
-#: ../lib/wiking/modules.py:522
+#: ../lib/wiking/modules.py:551
 msgid "Enter your password, please!"
 msgstr "Introduzca su contraseña, por favor!"
 
-#: ../lib/wiking/modules.py:526
+#: ../lib/wiking/modules.py:555
 msgid "Invalid login!"
 msgstr "Usuario no válido!"
 
-#: ../lib/wiking/modules.py:621
+#: ../lib/wiking/modules.py:650
 msgid "Searching"
 msgstr "Buscando"
 
-#: ../lib/wiking/modules.py:622
+#: ../lib/wiking/modules.py:651
 msgid "Search results"
 msgstr "Resultados de búsqueda"
 
-#: ../lib/wiking/modules.py:623
+#: ../lib/wiking/modules.py:652
 msgid "Given search term doesn't contain any searchable term."
 msgstr "No hay resultados para los parámetros de búsqueda."
 
-#: ../lib/wiking/modules.py:627
+#: ../lib/wiking/modules.py:656
 msgid "Search words:"
 msgstr "Buscar palabras:"
 
-#: ../lib/wiking/modules.py:628
+#: ../lib/wiking/modules.py:657
 msgid "Search"
 msgstr "Búsqueda"
 
-#: ../lib/wiking/modules.py:684
+#: ../lib/wiking/modules.py:713
 msgid "Nothing found."
 msgstr "Nada encontrado."
 
-#: ../lib/wiking/modules.py:741
+#: ../lib/wiking/modules.py:770
 msgid "The following modules were successfully reloaded:"
 msgstr "Los siguientes módulos han sido recargados con éxito:"
 
-#: ../lib/wiking/modules.py:743
+#: ../lib/wiking/modules.py:772
 msgid "Reload"
 msgstr "Recarga"
 
 #. Short description of a user group purpose.
-#: ../lib/wiking/request.py:1189
+#: ../lib/wiking/request.py:1191
 msgid "Anyone"
 msgstr ""
 
 #. Short description of a user group purpose.
-#: ../lib/wiking/request.py:1192
+#: ../lib/wiking/request.py:1194
 #, fuzzy
 msgid "Any authenticated user"
 msgstr "Autentificación necesaria"
 
 #. Short description of a user group purpose.
-#: ../lib/wiking/request.py:1199
+#: ../lib/wiking/request.py:1201
 msgid "Current record owner"
 msgstr ""
 
@@ -443,17 +443,17 @@ msgstr "Autentificación necesaria"
 
 #. Login dialog page title (use a noun).
 #. Login info label (noun) followed by login name and other info.
-#: ../lib/wiking/util.py:160 ../lib/wiking/util.py:726
-#: ../lib/wiking/util.py:1214
+#: ../lib/wiking/util.py:165 ../lib/wiking/util.py:731
+#: ../lib/wiking/util.py:1219
 msgid "Login"
 msgstr "Iniciar sesión"
 
 #. Information text on login panel.
-#: ../lib/wiking/util.py:202 ../lib/wiking/util.py:703
+#: ../lib/wiking/util.py:207 ../lib/wiking/util.py:708
 msgid "Your password expired"
 msgstr "Su contraseña ha caducado"
 
-#: ../lib/wiking/util.py:205
+#: ../lib/wiking/util.py:210
 msgid ""
 "Your password expired.  Access to the application is now blocked for "
 "security reasons until you change your password."
@@ -463,29 +463,29 @@ msgstr ""
 
 #. This is a link on a webpage
 #. Link on login panel on the webpage.
-#: ../lib/wiking/util.py:210 ../lib/wiking/util.py:711
+#: ../lib/wiking/util.py:215 ../lib/wiking/util.py:716
 msgid "Change your password"
 msgstr "Cambie su contraseña"
 
-#: ../lib/wiking/util.py:227
+#: ../lib/wiking/util.py:232
 #, python-format
 msgid "The item '%s' is not available."
 msgstr "El registro '%s' no está disponible."
 
-#: ../lib/wiking/util.py:228
+#: ../lib/wiking/util.py:233
 msgid "The item exists on the server, but can not be accessed."
 msgstr "El registro existe en el servidor, pero no puede dar acceso."
 
 #. An error message
-#: ../lib/wiking/util.py:241
+#: ../lib/wiking/util.py:246
 msgid "Access Denied"
 msgstr "Acceso Denegado"
 
-#: ../lib/wiking/util.py:244
+#: ../lib/wiking/util.py:249
 msgid "You don't have sufficient privilegs for this action."
 msgstr "Usted no tiene autorización suficiente para hacer esta acción."
 
-#: ../lib/wiking/util.py:245
+#: ../lib/wiking/util.py:250
 #, python-format
 msgid ""
 "If you are sure that you are logged in under the right account and you "
@@ -496,18 +496,18 @@ msgstr ""
 "correcto y cree que es un problema de acceso, por favor envíe un correo "
 "electrónico al administrador en %s."
 
-#: ../lib/wiking/util.py:281
+#: ../lib/wiking/util.py:286
 msgid "Invalid request arguments."
 msgstr "Argumentos solicitados no válidos."
 
 #. The word 'item' is intentionaly very generic, since it may mean a page,
 #. image, streaming video, RSS channel or anything else.
-#: ../lib/wiking/util.py:292
+#: ../lib/wiking/util.py:297
 #, python-format
 msgid "The item '%s' does not exist on this server or cannot be served."
 msgstr "El registro '%s' no existe en este servidor o no puede ser dado."
 
-#: ../lib/wiking/util.py:293
+#: ../lib/wiking/util.py:298
 #, python-format
 msgid ""
 "If you are sure the web address is correct, but are encountering this error, "
@@ -517,7 +517,7 @@ msgstr ""
 "encuentra este error, por favor envíe un correo electrónico al administrador "
 "a %s."
 
-#: ../lib/wiking/util.py:314
+#: ../lib/wiking/util.py:319
 #, python-format
 msgid ""
 "The resource '%s' is not available in either of the requested languages."
@@ -526,15 +526,15 @@ msgstr ""
 
 #. Meaning language variants. A selection of links to various language
 #. versions follows.
-#: ../lib/wiking/util.py:318
+#: ../lib/wiking/util.py:323
 msgid "The available variants are:"
 msgstr "Las variantes disponibles son:"
 
-#: ../lib/wiking/util.py:323
+#: ../lib/wiking/util.py:328
 msgid "Your browser is configured to accept only the following languages:"
 msgstr "Su buscador está configurado para aceptar sólo los siguientes idiomas:"
 
-#: ../lib/wiking/util.py:325
+#: ../lib/wiking/util.py:330
 msgid ""
 "If you want to accept other languages permanently, setup the language "
 "preferences in your browser or contact your system administrator."
@@ -543,40 +543,40 @@ msgstr ""
 "preferencias de idioma en su buscador o contacte con su administrador de "
 "sistema."
 
-#: ../lib/wiking/util.py:332
+#: ../lib/wiking/util.py:337
 msgid "Internal Server Error"
 msgstr "Error interno del servidor"
 
-#: ../lib/wiking/util.py:339
+#: ../lib/wiking/util.py:344
 msgid "Unable to perform a database operation."
 msgstr ""
 
-#: ../lib/wiking/util.py:371
+#: ../lib/wiking/util.py:376
 msgid "The server was unable to complete your request."
 msgstr "El servidor no ha sido capaz de completar su solicitud."
 
-#: ../lib/wiking/util.py:372 ../lib/wiking/util.py:386
+#: ../lib/wiking/util.py:377 ../lib/wiking/util.py:391
 #, python-format
 msgid "Please inform the server administrator, %s if the problem persists."
 msgstr ""
 "Por favor informe al administrador del servidor, %s si el problema persiste."
 
-#: ../lib/wiking/util.py:374
+#: ../lib/wiking/util.py:379
 msgid "The error message was:"
 msgstr "El mensaje de error ha sido:"
 
-#: ../lib/wiking/util.py:380
+#: ../lib/wiking/util.py:385
 msgid "Service Unavailable"
 msgstr ""
 
-#: ../lib/wiking/util.py:384
+#: ../lib/wiking/util.py:389
 msgid ""
 "The requested function is currently unavailable. Try repeating your request "
 "later."
 msgstr ""
 
 #. Login panel info. '%(date)s' is replaced by a concrete date.
-#: ../lib/wiking/util.py:707
+#: ../lib/wiking/util.py:712
 #, python-format
 msgid "Your password expires on %(date)s"
 msgstr "Su contraseña caduca el %(date)s"
@@ -585,76 +585,80 @@ msgstr "Su contraseña caduca el %(date)s"
 #. user to obtain access to the website/application by submitting his personal
 #. details.
 #. Webpage link leading to registration form.
-#: ../lib/wiking/util.py:718 ../lib/wiking/util.py:1258
+#: ../lib/wiking/util.py:723 ../lib/wiking/util.py:1270
 msgid "New user registration"
 msgstr "Registro de nuevo usuario"
 
-#: ../lib/wiking/util.py:727
+#: ../lib/wiking/util.py:732
 msgid "Login Panel"
 msgstr "Iniciar sesión"
 
-#: ../lib/wiking/util.py:1196
+#: ../lib/wiking/util.py:1201
 msgid "Go to your profile"
 msgstr "Ir a su perfil"
 
 #. Logout button label (verb in imperative).
-#: ../lib/wiking/util.py:1198
+#: ../lib/wiking/util.py:1203
 msgid "log out"
 msgstr "cerrar sesión"
 
 #. Login status info.  If logged, the username is displayed instead.
-#: ../lib/wiking/util.py:1201
+#: ../lib/wiking/util.py:1206
 msgid "not logged"
 msgstr "sesión no iniciada"
 
 #. Login button label (verb in imperative).
-#: ../lib/wiking/util.py:1203
+#: ../lib/wiking/util.py:1208
 msgid "log in"
 msgstr "iniciar sesión"
 
-#: ../lib/wiking/util.py:1245
+#: ../lib/wiking/util.py:1257
+msgid "Your e-mail address"
+msgstr ""
+
+#: ../lib/wiking/util.py:1257
 msgid "Login name"
 msgstr "Nombre de usuario"
 
-#: ../lib/wiking/util.py:1248
+#: ../lib/wiking/util.py:1261
 msgid "Password"
 msgstr "Contraseña"
 
 #. Login button label - verb in imperative.
-#: ../lib/wiking/util.py:1254
+#: ../lib/wiking/util.py:1267
 msgid "Log in"
 msgstr "Iniciar sesión"
 
 #. Login dialog link to password change or password reminder (depends
 #. on configuration).
-#: ../lib/wiking/util.py:1261
+#: ../lib/wiking/util.py:1273
 msgid "Forgot your password?"
 msgstr "¿Olvidó su contraseña?"
 
 #. Web form label and message
-#: ../lib/wiking/util.py:1291
+#: ../lib/wiking/util.py:1302
 #, python-format
 msgid "Decryption password for '%s'"
 msgstr ""
 
 #. Web form button.
-#: ../lib/wiking/util.py:1298
+#: ../lib/wiking/util.py:1309
 #, fuzzy
 msgid "Send password"
 msgstr "Contraseña"
 
 #. Confirmation button
-#: ../lib/wiking/util.py:1319
+#: ../lib/wiking/util.py:1330
 msgid "Continue"
 msgstr ""
 
-#: ../lib/wiking/util.py:1939
+#: ../lib/wiking/util.py:1950
 msgid "Invalid format"
 msgstr "Formato inválido"
 
 #. Computer terminology. `gmail.com' is a domain name in email address
 #. `joe@gmail.com'.
-#: ../lib/wiking/util.py:1947 ../lib/wiking/util.py:1954
+#: ../lib/wiking/util.py:1958 ../lib/wiking/util.py:1965
 #, fuzzy
 msgid "Domain not found"
 msgstr "Nada encontrado."

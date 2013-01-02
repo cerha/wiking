@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2012-10-03 10:04+0200\n"
+"POT-Creation-Date: 2013-01-02 10:54+0100\n"
 "PO-Revision-Date: 2012-08-22 10:27+0200\n"
 "Last-Translator: Hynek Hanke <hanke@brailcom.org>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
@@ -18,26 +18,26 @@ msgstr ""
 
 #. Website idiom. This is followed by information on the underlying software
 #. tools.  Means: This website runs on [...this and that software...].
-#: ../lib/wiking/application.py:395
+#: ../lib/wiking/application.py:390
 msgid "Powered by"
 msgstr "Provozováno na"
 
-#: ../lib/wiking/application.py:412
+#: ../lib/wiking/application.py:408
 msgid "Accessibility Statement"
 msgstr "Prohlášení o zpřístupnění"
 
 #. Heading of webpage left side hierarchical navigation
 #. menu containing a list of links to pages in this web section
-#: ../lib/wiking/application.py:425
+#: ../lib/wiking/application.py:421
 msgid "In this section:"
 msgstr "V této sekci:"
 
-#: ../lib/wiking/application.py:434 ../lib/wiking/export.py:98
-#: ../lib/wiking/export.py:237
+#: ../lib/wiking/application.py:430 ../lib/wiking/export.py:112
+#: ../lib/wiking/export.py:251
 msgid "Local navigation"
 msgstr "Navigace této sekce"
 
-#: ../lib/wiking/application.py:477
+#: ../lib/wiking/application.py:473
 msgid "Contact:"
 msgstr "Kontakt:"
 
@@ -155,225 +155,225 @@ msgstr ""
 "uživatele zobrazovat i popis jeho uživatelské role v systému, která určuje "
 "oprávnění."
 
-#: ../lib/wiking/db.py:69
+#: ../lib/wiking/db.py:94
 msgid "Row with this key already exists."
 msgstr "Řádek s tímto klíčem již existuje."
 
-#: ../lib/wiking/db.py:71
+#: ../lib/wiking/db.py:96
 msgid "This value already exists.  Enter a unique value."
 msgstr "Taková hodnota již existuje.  Zadejte unikátní hodnotu."
 
 #. This is about an empty (not filled in) value in a web form. Field means a
 #. form field.
-#: ../lib/wiking/db.py:75
+#: ../lib/wiking/db.py:100
 msgid "Empty value.  This field is mandatory."
 msgstr "Prázdná hodnota.  Tato položka je povinná."
 
 #. This is delete action failure message in a web page.
-#: ../lib/wiking/db.py:78
+#: ../lib/wiking/db.py:103
 msgid "Record couldn't be deleted because other records refer to it."
 msgstr "Záznam nemohl být smazán, protože se na něj odkazují jiné záznamy."
 
 #. Button label for new database record creation (computer terminology).
-#: ../lib/wiking/db.py:128
+#: ../lib/wiking/db.py:153
 msgid "New record"
 msgstr "Nový záznam"
 
 #. Tooltip of new database record creation button (computer terminology).
-#: ../lib/wiking/db.py:130
+#: ../lib/wiking/db.py:155
 msgid "Create a new record"
 msgstr "Vytvořit nový záznam"
 
 #. Button label for database record modification (verb in imperative,
 #. computer terminology).
-#: ../lib/wiking/db.py:133
+#: ../lib/wiking/db.py:158
 msgid "Edit"
 msgstr "Upravit"
 
 #. Tooltip of database record modification button (computer terminology)
-#: ../lib/wiking/db.py:135
+#: ../lib/wiking/db.py:160
 msgid "Modify the record"
 msgstr "Změnit záznam"
 
 #. Button label for database record display (verb in imperative).
-#: ../lib/wiking/db.py:137
+#: ../lib/wiking/db.py:162
 msgid "View"
 msgstr "Zobrazit"
 
 #. Tooltip of database record display button (computer terminology)
-#: ../lib/wiking/db.py:139
+#: ../lib/wiking/db.py:164
 msgid "Display the record"
 msgstr "Zobrazit náhled záznamu"
 
 #. Button label for database record deletion (verb in imperative,
 #. computer terminology).
-#: ../lib/wiking/db.py:142
+#: ../lib/wiking/db.py:167
 msgid "Remove"
 msgstr "Smazat"
 
 #. Tooltip of database record deletion button (computer terminology).
-#: ../lib/wiking/db.py:144
+#: ../lib/wiking/db.py:169
 msgid "Remove the record permanently"
 msgstr "Nevratně odstranit záznam"
 
 #. Prompt before database record deletion (computer terminology).
-#: ../lib/wiking/db.py:146
+#: ../lib/wiking/db.py:171
 msgid "Please, confirm removing the record permanently."
 msgstr "Potvrďte, prosím, nevratné smazání záznamu."
 
 #. Button label for database record copying (verb in imperative,
 #. computer terminology).
-#: ../lib/wiking/db.py:149
+#: ../lib/wiking/db.py:174
 msgid "Copy"
 msgstr "Vytvořit kopii"
 
 #. Tooltip of database record copy button (computer terminology).
-#: ../lib/wiking/db.py:151
+#: ../lib/wiking/db.py:176
 msgid "Create new record initialized by values of this record"
 msgstr "Vytvořit nový záznam předvyplněný hodnotami tohoto záznamu"
 
 #. Button label for returning from a single record view to the listing of all
 #. database records (computer terminology).
-#: ../lib/wiking/db.py:154
+#: ../lib/wiking/db.py:179
 msgid "Back to list"
 msgstr "Zpět na seznam"
 
 #. Tooltip of a button for returning from a single record view to the
 #. listing of all records (computer terminology).
-#: ../lib/wiking/db.py:157
+#: ../lib/wiking/db.py:182
 msgid "Back to the list of all records"
 msgstr "Zpět na výpis všech záznamů"
 
 #. Button label (verb in imperative, computer terminology).
-#: ../lib/wiking/db.py:159
+#: ../lib/wiking/db.py:184
 msgid "Export"
 msgstr "Exportovat"
 
 #. Button tooltip.  Don't translate `CSV', it is an
 #. internationally recognized computer abbreviation.
-#: ../lib/wiking/db.py:162
+#: ../lib/wiking/db.py:187
 msgid "Export the listing into a CSV format"
 msgstr "Exportovat výpis do CSV formátu"
 
 #. Message displayed after new database record creation (computer terminology).
-#: ../lib/wiking/db.py:164
+#: ../lib/wiking/db.py:189
 msgid "New record was successfully inserted."
 msgstr "Nový záznam byl úspěšně vložen."
 
 #. Message displayed after a database record modification (computer
 #. terminology).
-#: ../lib/wiking/db.py:166
+#: ../lib/wiking/db.py:191
 msgid "The record was successfully updated."
 msgstr "Záznam byl úspěšně aktualizován."
 
 #. Message displayed after a database record deletion (computer terminology).
-#: ../lib/wiking/db.py:168
+#: ../lib/wiking/db.py:193
 msgid "The record was deleted."
 msgstr "Záznam byl odstraněn."
 
-#: ../lib/wiking/db.py:493
+#: ../lib/wiking/db.py:519
 msgid "Integrity check failed."
 msgstr "Kontrola integrity dat selhala."
 
-#: ../lib/wiking/db.py:547
+#: ../lib/wiking/db.py:575
 msgid "Unable to perform a database operation:"
 msgstr "Provedení databázové operace se nezdařilo:"
 
-#: ../lib/wiking/db.py:1056
+#: ../lib/wiking/db.py:1087
 msgid "Filter"
 msgstr "Filtr"
 
-#: ../lib/wiking/db.py:2111
+#: ../lib/wiking/db.py:2177
 msgid "Back"
 msgstr "Zpět"
 
 #. Back button label. Standard computer terminology.
 #. RSS channel is a computer idiom, see Wikipedia.
-#: ../lib/wiking/db.py:2320 ../lib/wiking/db.py:2476
+#: ../lib/wiking/db.py:2386 ../lib/wiking/db.py:2542
 msgid "An RSS channel is available for this section:"
 msgstr "K dispozici je také RSS kanál pro tuto sekci:"
 
 #. RSS channel is a computer idiom, see Wikipedia.  Don't translateg 'RSS'.
-#: ../lib/wiking/db.py:2324 ../lib/wiking/db.py:2474
+#: ../lib/wiking/db.py:2390 ../lib/wiking/db.py:2540
 msgid "more about RSS"
 msgstr "více o RSS"
 
-#: ../lib/wiking/db.py:2469
+#: ../lib/wiking/db.py:2535
 #, python-format
 msgid "RSS channel \"%s\""
 msgstr "RSS kanál „%s“"
 
-#: ../lib/wiking/db.py:2479
+#: ../lib/wiking/db.py:2545
 msgid "RSS channels are available for this section"
 msgstr "Pro tuto sekci jsou k dispozici RSS kanály"
 
 #. Record as in `database record'.
-#: ../lib/wiking/db.py:2566
+#: ../lib/wiking/db.py:2632
 msgid "No records."
 msgstr "Žádné záznamy"
 
-#: ../lib/wiking/export.py:96
+#: ../lib/wiking/export.py:110
 msgid "Page heading"
 msgstr "Záhlaví stránky"
 
-#: ../lib/wiking/export.py:97 ../lib/wiking/export.py:235
-#: ../lib/wiking/export.py:265 ../lib/wiking/export.py:283
+#: ../lib/wiking/export.py:111 ../lib/wiking/export.py:249
+#: ../lib/wiking/export.py:279 ../lib/wiking/export.py:297
 msgid "Main navigation"
 msgstr "Hlavní navigace"
 
-#: ../lib/wiking/export.py:99 ../lib/wiking/export.py:233
+#: ../lib/wiking/export.py:113 ../lib/wiking/export.py:247
 msgid "Main content"
 msgstr "Hlavní obsah"
 
-#: ../lib/wiking/export.py:100
+#: ../lib/wiking/export.py:114
 msgid "Page footer"
 msgstr "Zápatí stránky"
 
 #. Title of a dialog on a webpage
-#: ../lib/wiking/export.py:101 ../lib/wiking/export.py:239
-#: ../lib/wiking/util.py:309
+#: ../lib/wiking/export.py:115 ../lib/wiking/export.py:253
+#: ../lib/wiking/util.py:314
 msgid "Language selection"
 msgstr "Výběr jazyka"
 
 #. Label for language selection followed by list of languages
-#: ../lib/wiking/export.py:104
+#: ../lib/wiking/export.py:118
 msgid "Language:"
 msgstr "Jazyk:"
 
-#: ../lib/wiking/export.py:243
+#: ../lib/wiking/export.py:257
 msgid "Jump in page"
 msgstr "Přejít ve stránce"
 
 #. A label followed by location information in webpage navigation
-#: ../lib/wiking/export.py:248
+#: ../lib/wiking/export.py:262
 msgid "You are here:"
 msgstr "Nacházíte se zde:"
 
-#: ../lib/wiking/export.py:286
+#: ../lib/wiking/export.py:300
 msgid "Expand/collapse complete menu hierarchy"
 msgstr "Rozbalit/sbalit kompletní hierarchii menu"
 
 #. Panels are small windows on the side of the page. This is a label
 #. for a link that shows/hides the panels.
-#: ../lib/wiking/export.py:305
+#: ../lib/wiking/export.py:319
 msgid "Show panels"
 msgstr "Zobrazit panely"
 
-#: ../lib/wiking/export.py:306
+#: ../lib/wiking/export.py:320
 msgid "Hide panels"
 msgstr "Skrýt panely"
 
 #. ``RSS channel'' is terminology idiom, see Wikipedia
-#: ../lib/wiking/export.py:318
+#: ../lib/wiking/export.py:332
 msgid "RSS channel"
 msgstr "RSS kanál"
 
-#: ../lib/wiking/export.py:344
+#: ../lib/wiking/export.py:358
 msgid "Warning"
 msgstr "Varování"
 
 #. Information about last change of a webpage (when and who)
-#: ../lib/wiking/export.py:367
+#: ../lib/wiking/export.py:381
 #, python-format
 msgid "Last change: %(date)s, %(user)s"
 msgstr "Poslední změna: %(date)s, %(user)s"
@@ -381,72 +381,72 @@ msgstr "Poslední změna: %(date)s, %(user)s"
 #. Meaning that the system (webpage) does not work now
 #. because we are updating/fixing something but will work again after
 #. the maintaince is finished.
-#: ../lib/wiking/handler.py:207
+#: ../lib/wiking/handler.py:208
 msgid "Maintenance Mode"
 msgstr "Probíhá údržba systému"
 
-#: ../lib/wiking/handler.py:208
+#: ../lib/wiking/handler.py:209
 msgid "The system is temporarily down for maintenance."
 msgstr "Systém je dočasně mimo provoz z důvodů údržby."
 
-#: ../lib/wiking/modules.py:520
+#: ../lib/wiking/modules.py:549
 msgid "Enter your login name, please!"
 msgstr "Zadejte, prosím, vaše uživatelské jméno!"
 
-#: ../lib/wiking/modules.py:522
+#: ../lib/wiking/modules.py:551
 msgid "Enter your password, please!"
 msgstr "Zadejte, prosím, vaše heslo!"
 
-#: ../lib/wiking/modules.py:526
+#: ../lib/wiking/modules.py:555
 msgid "Invalid login!"
 msgstr "Neplatné přihlášení!"
 
-#: ../lib/wiking/modules.py:621
+#: ../lib/wiking/modules.py:650
 msgid "Searching"
 msgstr "Vyhledávání"
 
-#: ../lib/wiking/modules.py:622
+#: ../lib/wiking/modules.py:651
 msgid "Search results"
 msgstr "Výsledky vyhledávání"
 
-#: ../lib/wiking/modules.py:623
+#: ../lib/wiking/modules.py:652
 msgid "Given search term doesn't contain any searchable term."
 msgstr ""
 "Zadaný vyhledávací výraz neobsahuje nic, podle čeho by bylo možno vyhledání "
 "provést."
 
-#: ../lib/wiking/modules.py:627
+#: ../lib/wiking/modules.py:656
 msgid "Search words:"
 msgstr "Vyhledat slova:"
 
-#: ../lib/wiking/modules.py:628
+#: ../lib/wiking/modules.py:657
 msgid "Search"
 msgstr "Vyhledat"
 
-#: ../lib/wiking/modules.py:684
+#: ../lib/wiking/modules.py:713
 msgid "Nothing found."
 msgstr "Nic nebylo nalezeno."
 
-#: ../lib/wiking/modules.py:741
+#: ../lib/wiking/modules.py:770
 msgid "The following modules were successfully reloaded:"
 msgstr "Následující moduly byly úspěšně načteny znovu:"
 
-#: ../lib/wiking/modules.py:743
+#: ../lib/wiking/modules.py:772
 msgid "Reload"
 msgstr "Načíst znovu"
 
 #. Short description of a user group purpose.
-#: ../lib/wiking/request.py:1189
+#: ../lib/wiking/request.py:1191
 msgid "Anyone"
 msgstr "Kdokoliv"
 
 #. Short description of a user group purpose.
-#: ../lib/wiking/request.py:1192
+#: ../lib/wiking/request.py:1194
 msgid "Any authenticated user"
 msgstr "Jakýkoliv autentizovaný uživatel"
 
 #. Short description of a user group purpose.
-#: ../lib/wiking/request.py:1199
+#: ../lib/wiking/request.py:1201
 msgid "Current record owner"
 msgstr "Vlastník tohoto záznamu"
 
@@ -464,17 +464,17 @@ msgstr "Akce vyžaduje přihlášení"
 
 #. Login dialog page title (use a noun).
 #. Login info label (noun) followed by login name and other info.
-#: ../lib/wiking/util.py:160 ../lib/wiking/util.py:726
-#: ../lib/wiking/util.py:1214
+#: ../lib/wiking/util.py:165 ../lib/wiking/util.py:731
+#: ../lib/wiking/util.py:1219
 msgid "Login"
 msgstr "Přihlášení"
 
 #. Information text on login panel.
-#: ../lib/wiking/util.py:202 ../lib/wiking/util.py:703
+#: ../lib/wiking/util.py:207 ../lib/wiking/util.py:708
 msgid "Your password expired"
 msgstr "Platnost hesla vypršela"
 
-#: ../lib/wiking/util.py:205
+#: ../lib/wiking/util.py:210
 msgid ""
 "Your password expired.  Access to the application is now blocked for "
 "security reasons until you change your password."
@@ -484,29 +484,29 @@ msgstr ""
 
 #. This is a link on a webpage
 #. Link on login panel on the webpage.
-#: ../lib/wiking/util.py:210 ../lib/wiking/util.py:711
+#: ../lib/wiking/util.py:215 ../lib/wiking/util.py:716
 msgid "Change your password"
 msgstr "Změnit heslo"
 
-#: ../lib/wiking/util.py:227
+#: ../lib/wiking/util.py:232
 #, python-format
 msgid "The item '%s' is not available."
 msgstr "Položka '%s' není dostupná."
 
-#: ../lib/wiking/util.py:228
+#: ../lib/wiking/util.py:233
 msgid "The item exists on the server, but can not be accessed."
 msgstr "Požadovaná položka na serveru existuje, ale nemůže být zobrazena."
 
 #. An error message
-#: ../lib/wiking/util.py:241
+#: ../lib/wiking/util.py:246
 msgid "Access Denied"
 msgstr "Přístup odepřen"
 
-#: ../lib/wiking/util.py:244
+#: ../lib/wiking/util.py:249
 msgid "You don't have sufficient privilegs for this action."
 msgstr "Nemáte dostatečná práva pro provedení této akce."
 
-#: ../lib/wiking/util.py:245
+#: ../lib/wiking/util.py:250
 #, python-format
 msgid ""
 "If you are sure that you are logged in under the right account and you "
@@ -516,20 +516,20 @@ msgstr ""
 "Pokud jste si jisti, že jste přihlášeni pod správným účtem a domníváte se, "
 "že se jedná o chybu nastavení, kontaktujte, prosím, správce na adrese %s."
 
-#: ../lib/wiking/util.py:281
+#: ../lib/wiking/util.py:286
 msgid "Invalid request arguments."
 msgstr "Neplatné argumenty dotazu."
 
 #. The word 'item' is intentionaly very generic, since it may mean a page,
 #. image, streaming video, RSS channel or anything else.
-#: ../lib/wiking/util.py:292
+#: ../lib/wiking/util.py:297
 #, python-format
 msgid "The item '%s' does not exist on this server or cannot be served."
 msgstr ""
 "Požadovaná položka '%s' neexistuje na tomto serveru nebo nemůže být "
 "obsloužena."
 
-#: ../lib/wiking/util.py:293
+#: ../lib/wiking/util.py:298
 #, python-format
 msgid ""
 "If you are sure the web address is correct, but are encountering this error, "
@@ -538,7 +538,7 @@ msgstr ""
 "Pokud jste si jisti, že zadaná adresa je správná a přesto dochází k této\n"
 "chybě, kontaktujte prosím správce na adrese %s."
 
-#: ../lib/wiking/util.py:314
+#: ../lib/wiking/util.py:319
 #, python-format
 msgid ""
 "The resource '%s' is not available in either of the requested languages."
@@ -546,15 +546,15 @@ msgstr "Požadovaná položka '%s' není dostupná v žádném z požadovaných 
 
 #. Meaning language variants. A selection of links to various language
 #. versions follows.
-#: ../lib/wiking/util.py:318
+#: ../lib/wiking/util.py:323
 msgid "The available variants are:"
 msgstr "Dostupné varianty jsou:"
 
-#: ../lib/wiking/util.py:323
+#: ../lib/wiking/util.py:328
 msgid "Your browser is configured to accept only the following languages:"
 msgstr "Váš prohlížeč je nastaven aby akceptoval následující jazyky:"
 
-#: ../lib/wiking/util.py:325
+#: ../lib/wiking/util.py:330
 msgid ""
 "If you want to accept other languages permanently, setup the language "
 "preferences in your browser or contact your system administrator."
@@ -565,32 +565,32 @@ msgstr ""
 "Vašeho\n"
 "systému."
 
-#: ../lib/wiking/util.py:332
+#: ../lib/wiking/util.py:337
 msgid "Internal Server Error"
 msgstr "Interní chyba serveru"
 
-#: ../lib/wiking/util.py:339
+#: ../lib/wiking/util.py:344
 msgid "Unable to perform a database operation."
 msgstr "Provedení databázové operace se nezdařilo."
 
-#: ../lib/wiking/util.py:371
+#: ../lib/wiking/util.py:376
 msgid "The server was unable to complete your request."
 msgstr "Server nebyl schopen obsloužit Váš požadavek."
 
-#: ../lib/wiking/util.py:372 ../lib/wiking/util.py:386
+#: ../lib/wiking/util.py:377 ../lib/wiking/util.py:391
 #, python-format
 msgid "Please inform the server administrator, %s if the problem persists."
 msgstr "Informujte prosím správce serveru, %s pokud problém přetrvává."
 
-#: ../lib/wiking/util.py:374
+#: ../lib/wiking/util.py:379
 msgid "The error message was:"
 msgstr "Chybová zpráva byla:"
 
-#: ../lib/wiking/util.py:380
+#: ../lib/wiking/util.py:385
 msgid "Service Unavailable"
 msgstr "Služba není dostupná"
 
-#: ../lib/wiking/util.py:384
+#: ../lib/wiking/util.py:389
 msgid ""
 "The requested function is currently unavailable. Try repeating your request "
 "later."
@@ -599,7 +599,7 @@ msgstr ""
 "později."
 
 #. Login panel info. '%(date)s' is replaced by a concrete date.
-#: ../lib/wiking/util.py:707
+#: ../lib/wiking/util.py:712
 #, python-format
 msgid "Your password expires on %(date)s"
 msgstr "Platnost hesla vyprší %(date)s"
@@ -608,75 +608,80 @@ msgstr "Platnost hesla vyprší %(date)s"
 #. user to obtain access to the website/application by submitting his personal
 #. details.
 #. Webpage link leading to registration form.
-#: ../lib/wiking/util.py:718 ../lib/wiking/util.py:1258
+#: ../lib/wiking/util.py:723 ../lib/wiking/util.py:1270
 msgid "New user registration"
 msgstr "Registrace nového uživatele"
 
-#: ../lib/wiking/util.py:727
+#: ../lib/wiking/util.py:732
 msgid "Login Panel"
 msgstr "Panel přihlášení"
 
-#: ../lib/wiking/util.py:1196
+#: ../lib/wiking/util.py:1201
 msgid "Go to your profile"
 msgstr "Zobrazit uživatelský profil"
 
 #. Logout button label (verb in imperative).
-#: ../lib/wiking/util.py:1198
+#: ../lib/wiking/util.py:1203
 msgid "log out"
 msgstr "odhlásit"
 
 #. Login status info.  If logged, the username is displayed instead.
-#: ../lib/wiking/util.py:1201
+#: ../lib/wiking/util.py:1206
 msgid "not logged"
 msgstr "nepřihlášen"
 
 #. Login button label (verb in imperative).
-#: ../lib/wiking/util.py:1203
+#: ../lib/wiking/util.py:1208
 msgid "log in"
 msgstr "přihlásit"
 
-#: ../lib/wiking/util.py:1245
+#: ../lib/wiking/util.py:1257
+#, fuzzy
+msgid "Your e-mail address"
+msgstr "E-mailová adresa správce"
+
+#: ../lib/wiking/util.py:1257
 msgid "Login name"
 msgstr "Přihlašovací jméno"
 
-#: ../lib/wiking/util.py:1248
+#: ../lib/wiking/util.py:1261
 msgid "Password"
 msgstr "Heslo"
 
 #. Login button label - verb in imperative.
-#: ../lib/wiking/util.py:1254
+#: ../lib/wiking/util.py:1267
 msgid "Log in"
 msgstr "přihlásit"
 
 #. Login dialog link to password change or password reminder (depends
 #. on configuration).
-#: ../lib/wiking/util.py:1261
+#: ../lib/wiking/util.py:1273
 msgid "Forgot your password?"
 msgstr "Zapomenuté heslo?"
 
 #. Web form label and message
-#: ../lib/wiking/util.py:1291
+#: ../lib/wiking/util.py:1302
 #, python-format
 msgid "Decryption password for '%s'"
 msgstr "Šifrovací heslo pro oblast `%s'"
 
 #. Web form button.
-#: ../lib/wiking/util.py:1298
+#: ../lib/wiking/util.py:1309
 msgid "Send password"
 msgstr "Použít heslo"
 
 #. Confirmation button
-#: ../lib/wiking/util.py:1319
+#: ../lib/wiking/util.py:1330
 msgid "Continue"
 msgstr "Pokračovat"
 
-#: ../lib/wiking/util.py:1939
+#: ../lib/wiking/util.py:1950
 msgid "Invalid format"
 msgstr "Neplatný formát"
 
 #. Computer terminology. `gmail.com' is a domain name in email address
 #. `joe@gmail.com'.
-#: ../lib/wiking/util.py:1947 ../lib/wiking/util.py:1954
+#: ../lib/wiking/util.py:1958 ../lib/wiking/util.py:1965
 msgid "Domain not found"
 msgstr "Doména nenalezena"
 
