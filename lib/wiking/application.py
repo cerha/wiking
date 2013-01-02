@@ -356,8 +356,19 @@ class Application(Module):
         """Return the change password URI or None if the link should not appear in login panel."""
         return None
 
+    def login_is_email(self, req):
+        """Return True iff e-mail addresses are used as login names.
+
+        Using e-mail addresses as login names is quite typical.  If this is
+        indicated by returning True from this method, the user interface will
+        use more appropriate labels for login controls to avoid user's
+        confusion.
+
+        """
+        return False
+
     def login_panel_content(self, req):
-        """Return the content displayed in the login panel below the automatically generated part.
+        """Return the extra content displayed in login panel below login controls.
 
         Any content acceptable by 'lcg.coerce()' may be returned.
 

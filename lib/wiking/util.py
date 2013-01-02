@@ -1,4 +1,4 @@
-# Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012 Brailcom, o.p.s.
+# Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -150,7 +150,12 @@ class AuthenticationError(RequestError):
             return httplib.OK
 
     def content(self, req):
-        return LoginDialog(self.args and self.args[0] or None)
+        appl = wiking.module('Application')
+        return LoginDialog(message=self.args and self.args[0] or None,
+                           registration_uri=appl.registration_uri(req),
+                           password_reminder_uri=appl.password_reminder_uri(req),
+                           extra_content=appl.login_dialog_content(req),
+                           login_is_email=appl.login_is_email(req))
 
 
 class AuthenticationRedirect(AuthenticationError):
@@ -1217,9 +1222,14 @@ class LoginCtrl(lcg.Content):
 
 class LoginDialog(lcg.Content):
     """Login dialog for entering login name and password."""
-    def __init__(self, message=None):
+    def __init__(self, message=None, registration_uri=None, password_reminder_uri=None,
+                 extra_content=None, login_is_email=False):
         assert message is None or isinstance(message, basestring)
         self._message = message
+        self._registration_uri = registration_uri
+        self._password_reminder_uri = password_reminder_uri
+        self._extra_content = extra_content
+        self._login_is_email = login_is_email
         super(LoginDialog, self).__init__()
         
     def export(self, context):
@@ -1242,7 +1252,8 @@ class LoginDialog(lcg.Content):
         hidden = [hidden_field(param, req.param(param)) for param in req.params()
                   if param not in ('command', 'login', 'password', '__log_in')]
         content = (
-            g.label(_("Login name")+':', id='login') + g.br(),
+            g.label((self._login_is_email and _("Your e-mail address") or _("Login name"))+':',
+                    id='login') + g.br(),
             g.field(name='login', value=login, id='login', size=18, maxlength=64),
             g.br(), 
             g.label(_("Password")+':', id='password') + g.br(),
@@ -1252,13 +1263,12 @@ class LoginDialog(lcg.Content):
             ) + tuple(hidden) + (
             # Translators: Login button label - verb in imperative.
             g.submit(_("Log in"), cls='submit'),)
-        appl = wiking.module('Application')
         links = [g.li(g.a(label, href=uri)) for label, uri in
                  # Translators: Webpage link leading to registration form.
-                 ((_("New user registration"), appl.registration_uri(req)),
+                 ((_("New user registration"), self._registration_uri),
                   # Translators: Login dialog link to password change or password reminder (depends
                  # on configuration).
-                  (_("Forgot your password?"), appl.password_reminder_uri(req))) if uri]
+                  (_("Forgot your password?"), self._password_reminder_uri)) if uri]
         if links:
             content += (g.ul(*links),)
         if not req.https() and wiking.cfg.force_https_login:
@@ -1270,9 +1280,8 @@ class LoginDialog(lcg.Content):
                  g.script("onload_ = window.onload; window.onload = function() { "
                           "if (onload_) onload_(); "
                           "setTimeout(function () { document.login_form.login.focus() }, 0); };")
-        added_content = appl.login_dialog_content(req)
-        if added_content:
-            exported = lcg.coerce(added_content).export(context)
+        if self._extra_content:
+            exported = lcg.coerce(self._extra_content).export(context)
             result += "\n" + g.div(exported, cls='login-dialog-content')
         return result
 
