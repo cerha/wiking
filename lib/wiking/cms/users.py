@@ -828,7 +828,7 @@ class Users(UserManagementModule):
                     else:
                         account_state.append(regconfirm)
                 # Translators: Personal data -- first name, surname, nickname ...
-                layout = [FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname', 'gender',)),
+                layout = [FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname',)),
                           FieldSet(_("Contact information"), ('email', 'phone', 'address','uri')),
                           FieldSet(_("Others"), ('note',)),
                           FieldSet(_("Account state"), account_state),
@@ -856,7 +856,7 @@ class Users(UserManagementModule):
                     layout.append(FieldSet(_("Confirmation"), (regconfirm, 'confirm',)))
                 return tuple(layout)
             elif action == 'update':
-                layout =  [FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname', 'gender',)),
+                layout =  [FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname',)),
                            # Translators: Contact information -- email, phone, address...
                            FieldSet(_("Contact information"), ('email', 'phone', 'address', 'uri')),
                            # Translators: Others is a label for a group of unspecified form fields
