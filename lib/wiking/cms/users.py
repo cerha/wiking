@@ -136,7 +136,7 @@ class RoleSets(UserManagementModule):
             c = {}
             for r, role_list in containment.items():
                 for rr in role_list:
-                    c[rr] = r
+                    c[rr] = [r]
             containment = c
         else:
             assert what_to_add == 'included', what_to_add
