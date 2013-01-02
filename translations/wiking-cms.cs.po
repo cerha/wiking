@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2013-01-02 17:13+0100\n"
-"PO-Revision-Date: 2013-01-02 11:10+0100\n"
+"PO-Revision-Date: 2013-01-02 17:18+0100\n"
 "Last-Translator: Hynek Hanke <hanke@brailcom.org>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
 "Language: cs\n"
@@ -2423,19 +2423,16 @@ msgid "The new password is the same as the old one."
 msgstr "Nové heslo je stejné jako staré."
 
 #: ../lib/wiking/cms/users.py:967 ../lib/wiking/cms/users.py:993
-#, fuzzy
 msgid "Registration completed"
-msgstr "Registrace potvrzena"
+msgstr "Registrace dokončena"
 
 #: ../lib/wiking/cms/users.py:967
-#, fuzzy
 msgid "You can log in now."
-msgstr "Registrace dokončena.  Nyní se můžete přihlásit."
+msgstr "Nyní se můžete přihlásit."
 
 #: ../lib/wiking/cms/users.py:974
-#, fuzzy
 msgid "The account has been created."
-msgstr "Účet byl povolen."
+msgstr "Účet byl vytvořen."
 
 #: ../lib/wiking/cms/users.py:976
 #, python-format
@@ -2443,7 +2440,7 @@ msgid "The generated password was sent to %s."
 msgstr "Vygenerované heslo bylo odesláno na adresu %s."
 
 #: ../lib/wiking/cms/users.py:978 ../lib/wiking/cms/users.py:1161
-#, fuzzy, python-format
+#, python-format
 msgid "The activation code was sent to %s."
 msgstr "Aktivační kód byl odeslán na adresu %s."
 
@@ -2519,9 +2516,8 @@ msgid "Account not activated"
 msgstr "Účet neaktivní"
 
 #: ../lib/wiking/cms/users.py:1056
-#, fuzzy
 msgid "New user account:"
-msgstr "Nový účet"
+msgstr "Nový účet:"
 
 #: ../lib/wiking/cms/users.py:1059
 #, python-format
@@ -2529,16 +2525,15 @@ msgid "New user %(fullname)s registered at %(server_hostname)s."
 msgstr "Nový uživatel %(fullname)s se registroval na %(server_hostname)s."
 
 #: ../lib/wiking/cms/users.py:1066
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "New account for %(fullname)s was created by %(admin_name)s at "
 "%(server_hostname)s."
-msgstr "Nový uživatel %(fullname)s se registroval na %(server_hostname)s."
+msgstr "%(admin_name)s vytvořil nový účet pro uživatele %(fullname)s na %(server_hostname)s."
 
 #: ../lib/wiking/cms/users.py:1070
-#, fuzzy
 msgid "The account was enabled with an automatically generated password."
-msgstr "Účet byl schválen automaticky na základě nastavení serveru."
+msgstr "Účet byl povolen s automaticky vygenerovaným heslem."
 
 #: ../lib/wiking/cms/users.py:1072
 msgid "The account was approved automatically according to server setup."
@@ -2549,14 +2544,12 @@ msgid "Please approve the account:"
 msgstr "Proveďte, prosím, potvrzení registrace:"
 
 #: ../lib/wiking/cms/users.py:1077
-#, fuzzy
 msgid "Note:"
-msgstr "Poznámka"
+msgstr "Poznámka:"
 
 #: ../lib/wiking/cms/users.py:1082
-#, fuzzy
 msgid "E-mail notification has been sent to server administrators."
-msgstr "E-mailové upozornění bylo odesláno správci serveru."
+msgstr "E-mailové upozornění bylo odesláno správcům serveru."
 
 #: ../lib/wiking/cms/users.py:1113
 msgid "Registration confirmed"
