@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2006-2012 Brailcom, o.p.s.
+# Copyright (C) 2006-2013 Brailcom, o.p.s.
 #
 # COPYRIGHT NOTICE
 #
@@ -550,7 +550,7 @@ class Users(UserManagementModule):
             Field('since', _("Registered since"), type=DateTime(show_time=False), default=now),
             # Translators: The state of the user account (e.g. Enabled vs Disabled).  Column
             # heading and field label.
-            Field('state', _("State"), default=self._module.AccountState.NEW,
+            Field('state', _("State"), computer=computer(self._default_state),
                   enumerator=enum(self._module.AccountState.states()),
                   display=self._module.AccountState.label, prefer_display=True,
                   style=self._state_style),
@@ -559,6 +559,12 @@ class Users(UserManagementModule):
             Field('regcode', default=self._generate_registration_code),
             Field('state_info', virtual=True, computer=computer(self._state_info)),
             )
+        def _default_state(self, record, autogenerate_password):
+            req = record.req()
+            if autogenerate_password and req.check_roles(Roles.USER_ADMIN):
+                return self._module.AccountState.ENABLED
+            else:
+                return self._module.AccountState.NEW
         def _state_info(self, record, state, regexpire):
             req = record.req()
             if state == Users.AccountState.NEW:
