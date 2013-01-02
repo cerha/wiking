@@ -1,5 +1,5 @@
 # Wiking CMS translations.
-# Copyright (C) 2006-2012 Brailcom, o.p.s.
+# Copyright (C) 2006-2013 Brailcom, o.p.s.
 # This file is distributed under the same license as the Wiking package.
 # Tomas Cerha <cerha@brailcom.org>, 2006.
 #
@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2013-01-02 10:54+0100\n"
-"PO-Revision-Date: 2012-10-03 10:10+0200\n"
+"PO-Revision-Date: 2013-01-02 11:10+0100\n"
 "Last-Translator: Hynek Hanke <hanke@brailcom.org>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
 "Language: cs\n"
@@ -2051,15 +2051,14 @@ msgstr ""
 "tečku, pomlčku, podtržítko a zavináč a musí začínat písmenem."
 
 #: ../lib/wiking/cms/users.py:492
-#, fuzzy
 msgid "Generate Password"
-msgstr "Současné heslo"
+msgstr "Vygenerovat heslo"
 
 #: ../lib/wiking/cms/users.py:494
 msgid ""
 "If checked, the password will be generated automatically and sent to the "
 "user's e-mail address."
-msgstr ""
+msgstr "Pokud je zaškrtnuto, heslo bude vygenerováno automaticky a bude posláno na e-mailovou adresu uživatele."
 
 #: ../lib/wiking/cms/users.py:496 ../lib/wiking/cms/users.py:1505
 msgid "Password"
@@ -2435,9 +2434,19 @@ msgid ""
 "%(uri)s\n"
 "\n"
 msgstr ""
+"Váš účet na serveru %(server_hostname)s byl vytvořen.\n"
+"\n"
+"Vaše heslo je: %(password)s\n"
+"\n"
+"Doporučujeme heslo co při nejbližší příležitosti změnit.\n"
+"Pamatujte, že u hesla se rozlišují malá a velká písmena.\n"
+"Použijte odkaz níže pro přihlášení:\n"
+"\n"
+"%(uri)s\n"
+"\n"
 
 #: ../lib/wiking/cms/users.py:974
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "To finish your registration at %(server_hostname)s, click on the following "
 "link:\n"
@@ -2445,8 +2454,8 @@ msgid ""
 "%(uri)s\n"
 "\n"
 msgstr ""
-"Pro dokončení Vaší registrace na %(server_hostname)s klikněte na následující "
-"odkaz:\n"
+"Pro dokončení Vaší registrace na %(server_hostname)s klikněte na následující odkaz:\n"
+"\n"
 "%(uri)s\n"
 "\n"
 
@@ -2469,14 +2478,13 @@ msgid "Failed sending e-mail notification:"
 msgstr "Nepodařilo se odeslat e-mailové upozornění:"
 
 #: ../lib/wiking/cms/users.py:1001
-#, fuzzy
 msgid "Account created."
-msgstr "Stav účtu"
+msgstr "Účet vytvořen"
 
 #: ../lib/wiking/cms/users.py:1003
-#, fuzzy, python-format
+#, python-format
 msgid "The generated password was sent to %s."
-msgstr "Nové heslo je stejné jako staré."
+msgstr "Vygenerované heslo bylo odesláno na adresu %s."
 
 #: ../lib/wiking/cms/users.py:1008
 #, python-format
