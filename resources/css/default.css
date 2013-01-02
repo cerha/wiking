@@ -122,6 +122,10 @@ div.table-of-contents ul {
     margin-bottom: 0;
 }
 
+#login, #password { 
+    border: 1px solid $color.border;
+}
+
 /* Wiking CMS specific styles */
 .cms-page-actions { 
     margin: 1em 0 0 0;
