@@ -1238,6 +1238,8 @@ class LoginDialog(lcg.Content):
         credentials = req.credentials()
         if credentials:
             login = credentials[0]
+        elif req.has_param('login'):
+            login = req.param('login')
         else:
             login = None
         def hidden_field(param, value):
