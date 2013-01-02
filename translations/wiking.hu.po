@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2013-01-02 10:54+0100\n"
+"POT-Creation-Date: 2013-01-02 17:13+0100\n"
 "PO-Revision-Date: 2010-02-04 00:17+0100\n"
 "Last-Translator: Hostomský Károly <khostomsky@gmail.com>\n"
 "Language-Team: Hungarian <wiking@lists.freebsoft.org>\n"
@@ -651,13 +651,13 @@ msgstr "Jelszó"
 msgid "Continue"
 msgstr ""
 
-#: ../lib/wiking/util.py:1950
+#: ../lib/wiking/util.py:1951
 msgid "Invalid format"
 msgstr "Érvénytelen formátum"
 
 #. Computer terminology. `gmail.com' is a domain name in email address
 #. `joe@gmail.com'.
-#: ../lib/wiking/util.py:1958 ../lib/wiking/util.py:1965
+#: ../lib/wiking/util.py:1959 ../lib/wiking/util.py:1966
 msgid "Domain not found"
 msgstr "Domain nem található"
 
