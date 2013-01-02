@@ -1054,10 +1054,18 @@ class Users(UserManagementModule):
     def _send_admin_approval_mail(self, req, record):
         base_uri = req.module_uri(self.name()) or '/_wmi/'+ self.name()
         subject = _("New user account:") +' '+ record['fullname'].value()
-        text = _("New account for %(fullname)s was created at %(server_hostname)s.",
-                 fullname=record['fullname'].value(),
-                 server_hostname=wiking.cfg.server_hostname
-                 ) + '\n\n'
+        if req.user().uid() == record['uid'].value():
+            text = _("New user %(fullname)s registered at %(server_hostname)s.",
+                     fullname=record['fullname'].value(),
+                     server_hostname=wiking.cfg.server_hostname
+                     ) + '\n\n'
+        else:
+            text = _("New account for %(fullname)s was created by %(admin_name)s "
+                     "at %(server_hostname)s.",
+                     fullname=record['fullname'].value(),
+                     admin_name=req.user().name(),
+                     server_hostname=wiking.cfg.server_hostname
+                     ) + '\n\n'
         if record['autogenerate_password'].value():
             text += _("The account was enabled with an automatically generated password.")
         elif wiking.cms.cfg.autoapprove_new_users:
