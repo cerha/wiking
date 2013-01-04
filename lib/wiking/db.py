@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2005-2012 Brailcom, o.p.s.
+# Copyright (C) 2005-2013 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -2599,36 +2599,8 @@ class PytisRssModule(PytisModule):
                         pubdate=date(record))
         writer.finish()
         return wiking.Response(buff.getvalue(), content_type='application/xml')
-        
-# Mixin module classes
+      
 
-class Panelizable(object):
-
-    _PANEL_DEFAULT_COUNT = 3
-    _PANEL_FIELDS = None
-
-    def panelize(self, req, lang, count, relation=None):
-        count = count or self._PANEL_DEFAULT_COUNT
-        fields = [self._view.field(id)
-                  for id in self._PANEL_FIELDS or self._view.columns()]
-        if relation:
-            condition = self._binding_condition(*relation)
-        else:
-            condition = None
-        record = self._record(req, None)
-        items = []
-        for row in self._rows(req, condition=condition, lang=lang, limit=count):
-            record.set_row(row)
-            item = PanelItem([(f.id(), record[f.id()].export(),
-                               f.id() == self._title_column and \
-                               self._record_uri(req, record)) or None
-                              for f in fields])
-            items.append(item)
-        if items:
-            return items
-        else:
-            # Translators: Record as in `database record'.
-            return (lcg.TextContent(_("No records.")),)
 
 
                 

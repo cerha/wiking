@@ -473,8 +473,16 @@ create table cms_news (
 	author int not null references users,
 	"timestamp" timestamp not null default now(),
 	title text not null,
-	content text not null
+	content text not null,
+	days_displayed int not null
 );
+
+create or replace function cms_recent_timestamp(ts timestamp, max_days int) returns boolean as $$
+-- Return true if `ts' is not older than `max_days' days.  Needed for a pytis
+-- filternig condition (FunctionCondition is currently too simple to express
+-- this directly).
+select (current_date - $1::date) < $2;
+$$ language sql stable;
 
 create table cms_planner (
 	planner_id serial primary key,

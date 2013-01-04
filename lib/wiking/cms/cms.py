@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2006-2012 Brailcom, o.p.s.
+# Copyright (C) 2006-2013 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -245,7 +245,7 @@ class Roles(wiking.Roles):
         return standard_roles + user_defined_roles
 
 
-class CMSModule(PytisModule, RssModule, Panelizable):
+class CMSModule(PytisModule, RssModule):
     """Base class for all CMS modules."""
     
     _DB_FUNCTIONS = dict(PytisModule._DB_FUNCTIONS,
@@ -256,7 +256,10 @@ class CMSModule(PytisModule, RssModule, Panelizable):
                          cms_crypto_cook_passwords=(('uid', pd.Integer(),),
                                                     ('cookie', pd.String(),),),
                          )
-    
+    _PANEL_DEFAULT_COUNT = 3
+    _PANEL_FIELDS = None
+    _CRYPTO_COOKIE = 'wiking_cms_crypto'
+
     def _authorized(self, req, action, **kwargs):
         if hasattr(self, 'RIGHTS_'+action):
             # This needs to be first in order to maintain backwards
@@ -293,12 +296,6 @@ class CMSModule(PytisModule, RssModule, Panelizable):
                 content = [lcg.p(help)]
         return content + super(CMSModule, self)._list_form_content(req, form, uri=uri)
 
-    _CRYPTO_COOKIE = 'wiking_cms_crypto'
-
-    def handle(self, req):
-        self._check_crypto_passwords(req)
-        return super(CMSModule, self).handle(req)
-        
     def _check_crypto_passwords(self, req):
         crypto_names = self._data.crypto_names()
         if not crypto_names:
@@ -324,8 +321,38 @@ class CMSModule(PytisModule, RssModule, Panelizable):
     def _generate_crypto_cookie(self):
         return wiking.module('Session').session_key()
 
+    def _panel_condition(self, req, relation):
+        if relation:
+            return self._binding_condition(*relation)
+        else:
+            return None
+
+    def handle(self, req):
+        self._check_crypto_passwords(req)
+        return super(CMSModule, self).handle(req)
+        
     def submenu(self, req):
         return []
+
+    def panelize(self, req, lang, count, relation=None):
+        count = count or self._PANEL_DEFAULT_COUNT
+        fields = [self._view.field(id)
+                  for id in self._PANEL_FIELDS or self._view.columns()]
+        record = self._record(req, None)
+        items = []
+        for row in self._rows(req, condition=self._panel_condition(req, relation),
+                              lang=lang, limit=count):
+            record.set_row(row)
+            item = PanelItem([(f.id(), record[f.id()].export(),
+                               f.id() == self._title_column and \
+                               self._record_uri(req, record)) or None
+                              for f in fields])
+            items.append(item)
+        if items:
+            return items
+        else:
+            # Translators: Record as in `database record'.
+            return (lcg.TextContent(_("No records.")),)
 
 
 class _ManagementModule(CMSModule):
@@ -2518,15 +2545,10 @@ class Attachments(ContentManagementModule):
             return Response(value.buffer(), content_type='image/%s' % value.image().format.lower())
 
     
-class News(ContentManagementModule, EmbeddableCMSModule):
+class _News(ContentManagementModule, EmbeddableCMSModule):
+    """Common base class for News and Planner."""
     class Spec(Specification):
-        # Translators: Section title and menu item
-        title = _("News")
-        # Translators: Help string describing more precisely the meaning of the "News" section.
-        help = _("Publish site news.")
-        table = 'cms_news'
         def fields(self): return (
-            Field('news_id', editable=NEVER),
             Field('page_id', _("Page"), codebook='PageStructure', editable=ONCE,
                   runtime_filter=computer(lambda r: pd.EQ('site', pd.sval(wiking.cfg.server_hostname)))),
             Field('lang', _("Language"), codebook='Languages', editable=ONCE,
@@ -2541,16 +2563,11 @@ class News(ContentManagementModule, EmbeddableCMSModule):
                   descr=_("Date of the news item creation.")),
             Field('date_title', virtual=True, computer=computer(self._date_title)),
             )
-        sorting = (('timestamp', DESC),)
-        columns = ('title', 'timestamp', 'author')
-        layout = ('timestamp', 'title', 'content')
-        list_layout = pp.ListLayout('title', meta=('timestamp', 'author'),  content=('content',),
-                                    anchor="item-%s", popup_actions=True)
         def _date(self, record, timestamp):
             return record['timestamp'].export(show_time=False)
         def _date_title(self, record, date, title):
             if title:
-                return date +': '+ record['title'].value()
+                return date +': '+ title
             else:
                 return None
         
@@ -2558,11 +2575,7 @@ class News(ContentManagementModule, EmbeddableCMSModule):
     _EMBED_BINDING_COLUMN = 'page_id'
     _PANEL_FIELDS = ('date', 'title')
     _ROW_ACTIONS = True
-    # Translators: Button label for creating a new message in "News".
-    _INSERT_LABEL = _("New message")
-    _RSS_TITLE_COLUMN = 'title'
     _RSS_DESCR_COLUMN = 'content'
-    _RSS_DATE_COLUMN = 'timestamp'
     _page_identifier_cache = BoundCache()
 
     def _authorized(self, req, action, record=None, **kwargs):
@@ -2574,7 +2587,7 @@ class News(ContentManagementModule, EmbeddableCMSModule):
             return False
     
     def _prefill(self, req):
-        return dict(super(News, self)._prefill(req),
+        return dict(super(_News, self)._prefill(req),
                     author=req.user().uid())
     
     def _record_uri(self, req, record, *args, **kwargs):
@@ -2598,8 +2611,40 @@ class News(ContentManagementModule, EmbeddableCMSModule):
         return cbvalue and cbvalue.export()
 
 
-class Planner(News):
-    class Spec(News.Spec):
+class News(_News):
+    class Spec(_News.Spec):
+        # Translators: Section title and menu item
+        title = _("News")
+        # Translators: Help string describing more precisely the meaning of the "News" section.
+        help = _("Publish site news.")
+        table = 'cms_news'
+        def fields(self):
+            extra = (
+                Field('news_id', editable=NEVER),
+                Field('days_displayed', _("Displayed days"), default=30,
+                      descr=_("Number of days the item stays displayed in news.")),
+                )
+            return extra + self._inherited_fields(News.Spec)
+        sorting = (('timestamp', DESC),)
+        columns = ('title', 'timestamp', 'author')
+        layout = ('timestamp', 'days_displayed', 'title', 'content')
+        list_layout = pp.ListLayout('title', meta=('timestamp', 'author'),  content=('content',),
+                                    anchor="item-%s", popup_actions=True)
+    # Translators: Button label for creating a new message in "News".
+    _INSERT_LABEL = _("New message")
+    _RSS_TITLE_COLUMN = 'title'
+    _RSS_DATE_COLUMN = 'timestamp'
+
+    def _panel_condition(self, req, relation):
+        return pd.AND(super(News, self)._panel_condition(req, relation),
+                      pd.FunctionCondition('cms_recent_timestamp', 'timestamp', 'days_displayed'))
+    
+    def _list_form_content(self, req, form, uri=None):
+        return super(CMSModule, self)._list_form_content(req, form, uri=uri) + [lcg.p("===")]
+    
+
+class Planner(_News):
+    class Spec(_News.Spec):
         # Translators: Section heading and menu item
         title = _("Planner")
         help = _("Announce future events by date in a callendar-like listing.")
@@ -2619,8 +2664,7 @@ class Planner(News):
                       descr=_("The date when the event ends if it is not the same as the "
                               "start date (for events which last several days).")),
                 )
-            return self._inherited_fields(Planner.Spec, override=override,
-                                          exclude=('news_id',)) + extra
+            return extra + self._inherited_fields(Planner.Spec, override=override)
         sorting = (('start_date', ASC),)
         columns = ('title', 'date', 'author')
         layout = ('start_date', 'end_date', 'title', 'content')
@@ -2641,6 +2685,7 @@ class Planner(News):
     _INSERT_LABEL = _("New event")
     _RSS_TITLE_COLUMN = 'date_title'
     _RSS_DATE_COLUMN = None
+    
     def _condition(self, req):
         scondition = super(Planner, self)._condition(req)
         today = pd.Date.datetime()
