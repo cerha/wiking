@@ -2216,10 +2216,7 @@ class PytisModule(Module, ActionHandler):
 
 
     def action_jsondata(self, req):
-        try:
-            import json
-        except:
-            import simplejson as json
+        import json
         columns = list(self._columns(req))
         if self._key not in columns:
             columns.insert(0, self._key)
