@@ -2581,7 +2581,7 @@ class _News(ContentManagementModule, EmbeddableCMSModule):
     def _authorized(self, req, action, record=None, **kwargs):
         if action == 'list':
             return req.page_read_access
-        elif action in ('update', 'delete', 'copy'):
+        elif action in ('insert', 'update', 'delete', 'copy'):
             return req.page_write_access
         else:
             return False
