@@ -177,5 +177,3 @@ create or replace rule cms_v_panels_delete as
   on delete to cms_v_panels do instead (
      delete from cms_panels where panel_id = old.panel_id;
 );
-
-update cms_database_version set version=39;

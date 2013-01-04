@@ -27,5 +27,3 @@ create or replace rule cms_v_session_log_insert as
             returning log_id, session_id, uid, NULL::varchar(64), NULL::text, login, success, NULL::boolean,
 	    	      start_time, NULL::interval, ip_address, user_agent, referer;
 );
-
-update cms_database_version set version=35;

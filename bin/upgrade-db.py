@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright (C) 2012 Brailcom, o.p.s.
+# Copyright (C) 2012, 2013 Brailcom, o.p.s.
 #
 # COPYRIGHT NOTICE
 #
@@ -25,47 +25,53 @@ rolls back all changes when one of the scripts fails.
 
 """
 
-import os, sys, psycopg2 as dbapi
+import os, sys, glob, psycopg2 as dbapi
 
+def die(msg):
+    sys.stderr.write(msg)
+    sys.exit(1)
 
 def usage(msg=None):
-    sys.stderr.write("""Perform incremental upgrades of an existing Wiking CMS database.
-Usage: %s database directory source_version target_version
+    message = """Perform incremental upgrades of an existing Wiking CMS database.
+Usage: %s database directory
   database ... name of the Wiking CMS database to upgrade
   directory ... path to Wiking upgrade scripts (the `sql' subdirectory of a
     Wiking source archive)
-  source_version ... current database version (the upgrade will start with a
-    script `upgrade.<source_version+1>.sql
-  target_version ... target database version (the upgrade will finish with a
-    script `upgrade.<target_version>.sql
-""" % sys.argv[0])
+""" % sys.argv[0]
     if msg:
-        sys.stderr.write(msg)
-        sys.stderr.write('\n')
-    sys.exit(1)
+        message += msg+'\n'
+    die(message)
 
 def run(args):
     if '--help' in args:
         usage()
     try:
-        database, directory, source_version, target_version = args[1:]
+        database, directory = args[1:]
     except ValueError:
         usage("Invalid number of arguments.")
-    try:
-        source_version, target_version = int(source_version), int(target_version)
-    except ValueError:
-        usage("Arguments source_version and target_version must be numbers.")
-    if source_version >= target_version:
-        usage("The target version must be higher than the source version.")
-        
+
+    if not os.path.isdir(directory):
+        usage("Directory '%s' does not exist!" % directory)
+    upgrade_scripts = sorted(glob.glob(os.path.join(directory, 'upgrade.*.sql')))
+    if not upgrade_scripts:
+        usage("Directory '%s' contains no upgrade scripts!" % os.path.abspath(directory))
+    target_version = int(upgrade_scripts[-1].split('.')[-2])
     connection = dbapi.connect(database=database)
     try:
         cursor = connection.cursor()
+        cursor.execute("select version from cms_database_version;")
+        source_version = cursor.fetchone()[0]
+        if source_version == target_version:
+            die("The database is already at version %d." % source_version)
+        elif source_version > target_version:
+            die("The database is already at version %d, but the highest upgrade script is %d." %
+                (source_version, target_version))
         for version in range(source_version+1, target_version+1):
             filename = 'upgrade.%02d.sql' % version
             sql = open(os.path.join(directory, filename)).read()
             print "Applying %s ..." % filename
             cursor.execute(sql)
+        cursor.execute("update cms_database_version set version=%d;" % target_version)
         connection.commit()
     except Exception as e:
         connection.rollback()

@@ -83,5 +83,3 @@ create or replace rule cms_v_pages_update as
 
 -- Make sure no pages have ord=0.  The trigger should shift other pages if necessary.
 update cms_pages set ord=1 where ord=0;
-
-update cms_database_version set version=38;

@@ -73,5 +73,3 @@ for each row execute procedure cms_discussions_trigger_before_insert();
 
 insert into cms_discussions (page_id, lang, author, timestamp, text) select page_id, lang, author, timestamp, content from cms_news where page_id in (select page_id from cms_pages where modname='Discussions');
 delete from cms_news where page_id in (select page_id from cms_pages where modname='Discussions');
-
-update cms_database_version set version=34;
