@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2013-01-02 17:13+0100\n"
+"POT-Creation-Date: 2013-01-04 16:09+0100\n"
 "PO-Revision-Date: 2010-01-19 16:40+0100\n"
 "Last-Translator: Petr Topiarz <topiarz@post.cz>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
@@ -285,11 +285,6 @@ msgstr "RSS-kanal"
 #, fuzzy
 msgid "RSS channels are available for this section"
 msgstr "En RSS-kanal  er tilgjengelig for denne seksjonen:"
-
-#. Record as in `database record'.
-#: ../lib/wiking/db.py:2632
-msgid "No records."
-msgstr "Ingen fortegnelse."
 
 #: ../lib/wiking/export.py:110
 msgid "Page heading"
@@ -648,13 +643,13 @@ msgstr "Passord"
 msgid "Continue"
 msgstr ""
 
-#: ../lib/wiking/util.py:1951
+#: ../lib/wiking/util.py:1950
 msgid "Invalid format"
 msgstr "Ugyldig format"
 
 #. Computer terminology. `gmail.com' is a domain name in email address
 #. `joe@gmail.com'.
-#: ../lib/wiking/util.py:1959 ../lib/wiking/util.py:1966
+#: ../lib/wiking/util.py:1958 ../lib/wiking/util.py:1965
 #, fuzzy
 msgid "Domain not found"
 msgstr "Ingenting funnet."
@@ -682,6 +677,9 @@ msgstr ""
 #: ../resources/scripts/discussion.js:104
 msgid "Cancel"
 msgstr ""
+
+#~ msgid "No records."
+#~ msgstr "Ingen fortegnelse."
 
 #~ msgid "The item was published."
 #~ msgstr "Elementet ble publisert."

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2013-01-02 17:13+0100\n"
+"POT-Creation-Date: 2013-01-04 16:09+0100\n"
 "PO-Revision-Date: 2010-01-19 16:43+0100\n"
 "Last-Translator: Petr Topiarz <topiarz@post.cz>\n"
 "Language-Team: Slovak <wiking@lists.freebsoft.org>\n"
@@ -285,11 +285,6 @@ msgstr "RSS kanál"
 #, fuzzy
 msgid "RSS channels are available for this section"
 msgstr "K dispozícii je tiež RSS kanál pre túto sekciu:"
-
-#. Record as in `database record'.
-#: ../lib/wiking/db.py:2632
-msgid "No records."
-msgstr "Žiadne záznamy."
 
 #: ../lib/wiking/export.py:110
 msgid "Page heading"
@@ -655,13 +650,13 @@ msgstr "Heslo"
 msgid "Continue"
 msgstr ""
 
-#: ../lib/wiking/util.py:1951
+#: ../lib/wiking/util.py:1950
 msgid "Invalid format"
 msgstr "Neplatný formát!"
 
 #. Computer terminology. `gmail.com' is a domain name in email address
 #. `joe@gmail.com'.
-#: ../lib/wiking/util.py:1959 ../lib/wiking/util.py:1966
+#: ../lib/wiking/util.py:1958 ../lib/wiking/util.py:1965
 #, fuzzy
 msgid "Domain not found"
 msgstr "Nič nebolo nájdené."
@@ -689,6 +684,9 @@ msgstr ""
 #: ../resources/scripts/discussion.js:104
 msgid "Cancel"
 msgstr ""
+
+#~ msgid "No records."
+#~ msgstr "Žiadne záznamy."
 
 #~ msgid "The item was published."
 #~ msgstr "Položka bola zverejnená."

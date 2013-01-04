@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2013-01-02 17:13+0100\n"
+"POT-Creation-Date: 2013-01-04 16:09+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Petr Topiarz <topiarz@post.cz>\n"
 "Language-Team: \n"
@@ -281,11 +281,6 @@ msgstr "RSS canal"
 #, fuzzy
 msgid "RSS channels are available for this section"
 msgstr "Pentru această secţiune este disponibil şi un canal RSS:"
-
-#. Record as in `database record'.
-#: ../lib/wiking/db.py:2632
-msgid "No records."
-msgstr "Nici o referinţă."
 
 #: ../lib/wiking/export.py:110
 msgid "Page heading"
@@ -652,13 +647,13 @@ msgstr "Parola"
 msgid "Continue"
 msgstr ""
 
-#: ../lib/wiking/util.py:1951
+#: ../lib/wiking/util.py:1950
 msgid "Invalid format"
 msgstr "Format invalid"
 
 #. Computer terminology. `gmail.com' is a domain name in email address
 #. `joe@gmail.com'.
-#: ../lib/wiking/util.py:1959 ../lib/wiking/util.py:1966
+#: ../lib/wiking/util.py:1958 ../lib/wiking/util.py:1965
 msgid "Domain not found"
 msgstr "Domeniul nu a fost găsit"
 
@@ -685,6 +680,9 @@ msgstr ""
 #: ../resources/scripts/discussion.js:104
 msgid "Cancel"
 msgstr ""
+
+#~ msgid "No records."
+#~ msgstr "Nici o referinţă."
 
 #~ msgid "The item was published."
 #~ msgstr "Obiectul a fost publicat."
