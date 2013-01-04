@@ -134,28 +134,29 @@ div.table-of-contents ul {
     padding-top: 0.2em;
     border-top: 1px solid $color.border;
 }
-.cms-page-actions button span { 
-    padding: 3px;
-    padding-left: 19px;
-}
 .cms-page-actions button.disabled span { 
     color: $color.foreground;
     opacity: 0.4;
 }
 .cms-page-actions button.action-update span { 
     background-image: url(/_resources/edit.png);
+    padding-left: 19px;
 }
 .cms-page-actions button.action-options span { 
     background-image: url(/_resources/properties.png);
+    padding-left: 19px;
 }
 .cms-page-actions button.action-commit span { 
     background-image: url(/_resources/publish.png);
+    padding-left: 19px;
 }
 .cms-page-actions button.action-revert span { 
     background-image: url(/_resources/undo.png);
+    padding-left: 19px;
 }
 .cms-page-actions button.action-attachments span { 
     background-image: url(/_resources/attachment.png);
+    padding-left: 19px;
 }
 .list-form-controls button.prev-page-button span {
     background-image: url(/_resources/previous.png);
