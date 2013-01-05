@@ -1465,7 +1465,7 @@ class Pages(SiteSpecificContentModule):
                 roles = (roles_module[record['read_role_id'].value()],
                          roles_module[record['write_role_id'].value()],
                          Roles.CONTENT_ADMIN,)
-            elif action in ('update', 'commit', 'revert', 'attachments'):
+            elif record and action in ('update', 'commit', 'revert', 'attachments'):
                 roles = (roles_module[record['write_role_id'].value()],
                          Roles.CONTENT_ADMIN,)
             else:
