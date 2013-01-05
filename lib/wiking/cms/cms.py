@@ -1456,7 +1456,8 @@ class Pages(SiteSpecificContentModule):
         return super(Pages, self)._handle(req, action, **kwargs)
         
     def _authorized(self, req, action, record=None, **kwargs):
-        if action in ('new_page', 'list', 'options', 'publish', 'unpublish', 'delete', 'translate'):
+        if action in ('new_page', 'insert', 'list', 'options', 'publish', 'unpublish',
+                      'delete', 'translate'):
             roles = (Roles.CONTENT_ADMIN,)
         else:
             roles_module = wiking.module('Users').Roles()
