@@ -2365,7 +2365,7 @@ class RssModule(object):
                     if title:
                         return title
             return None
-        return find(self._application.menu(req), req.path[0]) or self._view.title()
+        return find(wiking.module('Application').menu(req), req.path[0]) or self._view.title()
 
     def _rss_channel_uri(self, req):
         # TODO: This note applies to this method anf the above `_rss_channel_title()'.  They are

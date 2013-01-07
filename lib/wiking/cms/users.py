@@ -1181,8 +1181,9 @@ class Users(UserManagementModule):
                     roles.append(role)
         # Resolve contained roles here to also count with roles contained in
         # AUTHENTICATED, and REGISTERED.
+        application = wiking.module('Application')
         for role in roles:
-            for r in self._application.contained_roles(req, role):
+            for r in application.contained_roles(req, role):
                 if r not in roles:
                     roles.append(r)
         return dict(login=login, uid=uid, name=record['user'].value(),

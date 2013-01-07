@@ -1,4 +1,4 @@
-# Copyright (C) 2005-2012 Brailcom, o.p.s.
+# Copyright (C) 2005-2013 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -64,10 +64,6 @@ class Module(object):
     
 class RequestHandler(object):
     """Mix-in class for modules capable of handling requests."""
-    
-    def __init__(self, *args, **kwargs):
-        self._application = wiking.module('Application')
-        super(RequestHandler, self).__init__(*args, **kwargs)
     
     def _base_uri(self, req):
         """Return the URI of this module as a string or None if not mapped.
@@ -242,7 +238,7 @@ class Documentation(Module, RequestHandler):
             raise Forbidden()
         import codecs
         basename = os.path.join(self._document_base_dir(req), *self._document_path(req))
-        variants = [lang for lang in self._application.languages()
+        variants = [lang for lang in wiking.module('Application').languages()
                     if os.path.exists('.'.join((basename, lang, 'txt')))]
         if not variants:
             # HACK: Try fallback to English if no application language variants
@@ -464,7 +460,7 @@ class SubmenuRedirect(Module, RequestHandler):
                         return item
             return None
         id = req.path[0]
-        item = find(self._application.menu(req), id)
+        item = find(wiking.module('Application').menu(req), id)
         if item:
             if item.submenu():
                 raise Redirect('/'+ item.submenu()[0].id())

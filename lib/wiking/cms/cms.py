@@ -139,7 +139,7 @@ class WikingManagementInterface(Module, RequestHandler):
         return self._authorized(req)
 
     def menu(self, req):
-        variants = self._application.languages()
+        variants = wiking.module('Application').languages()
         return [MenuItem('/_wmi/' + section, title, descr=descr, variants=variants,
                          submenu=[MenuItem('/_wmi/'+ section +'/' + m.name(),
                                            m.title(),
@@ -935,7 +935,7 @@ class Panels(SiteSpecificContentModule):
             processor = lcg.HTMLProcessor()
         #TODO: tady uvidim prirazenou stranku, navigable
         roles = wiking.module('Users').Roles()
-        if self._application.preview_mode(req):
+        if wiking.module('Application').preview_mode(req):
             restriction = {}
         else:
             restriction = {'published': True}
@@ -1500,7 +1500,7 @@ class Pages(SiteSpecificContentModule):
         return '/'
 
     def _resolve(self, req):
-        if self._application.preview_mode(req):
+        if wiking.module('Application').preview_mode(req):
             restriction = {}
         else:
             restriction = {'published': True}
@@ -1588,13 +1588,13 @@ class Pages(SiteSpecificContentModule):
     def _redirect_after_insert(self, req, record):
         req.message(self._insert_msg(req, record))
         if not req.has_param('commit'):
-            self._application.set_preview_mode(req, True)
+            wiking.module('Application').set_preview_mode(req, True)
         raise Redirect(self._current_record_uri(req, record))
         
     def _redirect_after_update(self, req, record):
         req.message(self._update_msg(req, record))
         if not req.has_param('commit'):
-            self._application.set_preview_mode(req, True)
+            wiking.module('Application').set_preview_mode(req, True)
         raise Redirect(req.uri())
         
     def _delete_form_content(self, req, form, record):
@@ -1692,7 +1692,7 @@ class Pages(SiteSpecificContentModule):
             content = wiking.module(modname).embed(req)
         else:
             content = []
-        if self._application.preview_mode(req):
+        if wiking.module('Application').preview_mode(req):
             text = record['_content'].value()
         else:
             text = record['content'].value()
@@ -1745,7 +1745,7 @@ class Pages(SiteSpecificContentModule):
                                pd.EQ('site', pd.sval(wiking.cfg.server_hostname)))
             for row in self._data.get_rows(condition=condition, sorting=self._sorting):
                 if self._visible_in_menu(req, row):
-                    if self._application.preview_mode(req):
+                    if wiking.module('Application').preview_mode(req):
                         req.message(_("This page has no content. "
                                       "Users will be redirected to the first visible "
                                       "subpage in production mode.", type=req.WARNING))
@@ -1762,11 +1762,12 @@ class Pages(SiteSpecificContentModule):
                       
 
     def action_update(self, req, record, action='update'):
-        if action == 'update' and not self._application.preview_mode(req) \
+        application = wiking.module('Application')
+        if action == 'update' and not application.preview_mode(req) \
                 and record['content'].value() != record['_content'].value():
             req.message(_("The page has unpublished changes (not visible in production mode)."),
                         type=req.WARNING)
-            self._application.set_preview_mode(req, True)
+            application.set_preview_mode(req, True)
         return super(Pages, self).action_update(req, record, action=action)
 
     def action_rss(self, req, record):
@@ -1842,7 +1843,7 @@ class Pages(SiteSpecificContentModule):
         else:
             req.message(_("The page was unpublished. "
                           "It will not be visible in production mode anymore."))
-        self._application.set_preview_mode(req, True)
+        wiking.module('Application').set_preview_mode(req, True)
         raise Redirect(self._current_record_uri(req, record))
 
     def action_new_page(self, req, record):
