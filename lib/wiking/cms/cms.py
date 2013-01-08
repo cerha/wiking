@@ -2640,10 +2640,45 @@ class News(_News):
     def _panel_condition(self, req, relation):
         return pd.AND(super(News, self)._panel_condition(req, relation),
                       pd.FunctionCondition('cms_recent_timestamp', 'timestamp', 'days_displayed'))
+
+    def _form(self, form, req, **kwargs):
+        if issubclass(form, pw.BrowseForm):
+            # We alter the condition passed to the form because we can not override
+            # the method _condition() -- this would also change the condition used
+            # for filtering the panel.
+            condition = pd.FunctionCondition('cms_recent_timestamp', 'timestamp', 'days_displayed')
+            if req.uri().endswith('/archive'):
+                condition = pd.NOT(condition)
+            kwargs['condition'] = pd.AND(kwargs['condition'], condition)
+        return super(News, self)._form(form, req, **kwargs)
+        
     
+    def _binding_parent_redirect(self, req, **kwargs):
+        if not req.uri().endswith('/archive'):
+            return super(News, self)._binding_parent_redirect(req, **kwargs)
+
+    def _action_subtitle(self, req, action, record=None):
+        if req.uri().endswith('/archive'):
+            return _("Archive")
+        else:
+            return super(News, self)._action_subtitle(req, action, record=record)
+        
     def _list_form_content(self, req, form, uri=None):
-        return super(CMSModule, self)._list_form_content(req, form, uri=uri) + [lcg.p("===")]
+        if req.uri().endswith('/data/archive'):
+            msg = _("Only older news are displayed. New items are available in [%s Recent news].",
+                    req.uri()[:-13])
+        else:
+            msg = _("Only recent news are displayed. Older items are available in the [%s archive].",
+                    req.uri() + '/data/archive')
+        return super(CMSModule, self)._list_form_content(req, form, uri=uri) + \
+            [lcg.p(msg,formatted=True)]
     
+    def _resolve(self, req):
+        if req.unresolved_path and req.unresolved_path[0] == 'archive':
+            del req.unresolved_path[0]
+            return None
+        return super(News, self)._resolve(req)
+
 
 class Planner(_News):
     class Spec(_News.Spec):

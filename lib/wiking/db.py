@@ -1966,7 +1966,8 @@ class PytisModule(Module, ActionHandler):
             return wiking.Document('', form, layout=wiking.Exporter.Layout.BARE)
         else:
             content = self._list_form_content(req, form)
-            return self._document(req, content, lang=lang)
+            return self._document(req, content,
+                                  subtitle=self._action_subtitle(req, 'list'), lang=lang)
 
     def _binding_parent_uri(self, req):
         fw = self._binding_forward(req)
