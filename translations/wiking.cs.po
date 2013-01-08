@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2013-01-04 16:09+0100\n"
+"POT-Creation-Date: 2013-01-08 17:34+0100\n"
 "PO-Revision-Date: 2013-01-02 11:10+0100\n"
 "Last-Translator: Hynek Hanke <hanke@brailcom.org>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
@@ -283,27 +283,27 @@ msgstr "Provedení databázové operace se nezdařilo:"
 msgid "Filter"
 msgstr "Filtr"
 
-#: ../lib/wiking/db.py:2177
+#: ../lib/wiking/db.py:2178
 msgid "Back"
 msgstr "Zpět"
 
 #. Back button label. Standard computer terminology.
 #. RSS channel is a computer idiom, see Wikipedia.
-#: ../lib/wiking/db.py:2386 ../lib/wiking/db.py:2542
+#: ../lib/wiking/db.py:2384 ../lib/wiking/db.py:2540
 msgid "An RSS channel is available for this section:"
 msgstr "K dispozici je také RSS kanál pro tuto sekci:"
 
 #. RSS channel is a computer idiom, see Wikipedia.  Don't translateg 'RSS'.
-#: ../lib/wiking/db.py:2390 ../lib/wiking/db.py:2540
+#: ../lib/wiking/db.py:2388 ../lib/wiking/db.py:2538
 msgid "more about RSS"
 msgstr "více o RSS"
 
-#: ../lib/wiking/db.py:2535
+#: ../lib/wiking/db.py:2533
 #, python-format
 msgid "RSS channel \"%s\""
 msgstr "RSS kanál „%s“"
 
-#: ../lib/wiking/db.py:2545
+#: ../lib/wiking/db.py:2543
 msgid "RSS channels are available for this section"
 msgstr "Pro tuto sekci jsou k dispozici RSS kanály"
 
@@ -376,57 +376,57 @@ msgstr "Poslední změna: %(date)s, %(user)s"
 #. Meaning that the system (webpage) does not work now
 #. because we are updating/fixing something but will work again after
 #. the maintaince is finished.
-#: ../lib/wiking/handler.py:208
+#: ../lib/wiking/handler.py:216
 msgid "Maintenance Mode"
 msgstr "Probíhá údržba systému"
 
-#: ../lib/wiking/handler.py:209
+#: ../lib/wiking/handler.py:217
 msgid "The system is temporarily down for maintenance."
 msgstr "Systém je dočasně mimo provoz z důvodů údržby."
 
-#: ../lib/wiking/modules.py:549
+#: ../lib/wiking/modules.py:545
 msgid "Enter your login name, please!"
 msgstr "Zadejte, prosím, vaše uživatelské jméno!"
 
-#: ../lib/wiking/modules.py:551
+#: ../lib/wiking/modules.py:547
 msgid "Enter your password, please!"
 msgstr "Zadejte, prosím, vaše heslo!"
 
-#: ../lib/wiking/modules.py:555
+#: ../lib/wiking/modules.py:551
 msgid "Invalid login!"
 msgstr "Neplatné přihlášení!"
 
-#: ../lib/wiking/modules.py:650
+#: ../lib/wiking/modules.py:646
 msgid "Searching"
 msgstr "Vyhledávání"
 
-#: ../lib/wiking/modules.py:651
+#: ../lib/wiking/modules.py:647
 msgid "Search results"
 msgstr "Výsledky vyhledávání"
 
-#: ../lib/wiking/modules.py:652
+#: ../lib/wiking/modules.py:648
 msgid "Given search term doesn't contain any searchable term."
 msgstr ""
 "Zadaný vyhledávací výraz neobsahuje nic, podle čeho by bylo možno vyhledání "
 "provést."
 
-#: ../lib/wiking/modules.py:656
+#: ../lib/wiking/modules.py:652
 msgid "Search words:"
 msgstr "Vyhledat slova:"
 
-#: ../lib/wiking/modules.py:657
+#: ../lib/wiking/modules.py:653
 msgid "Search"
 msgstr "Vyhledat"
 
-#: ../lib/wiking/modules.py:713
+#: ../lib/wiking/modules.py:709
 msgid "Nothing found."
 msgstr "Nic nebylo nalezeno."
 
-#: ../lib/wiking/modules.py:770
+#: ../lib/wiking/modules.py:766
 msgid "The following modules were successfully reloaded:"
 msgstr "Následující moduly byly úspěšně načteny znovu:"
 
-#: ../lib/wiking/modules.py:772
+#: ../lib/wiking/modules.py:768
 msgid "Reload"
 msgstr "Načíst znovu"
 

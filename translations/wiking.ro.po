@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2013-01-04 16:09+0100\n"
+"POT-Creation-Date: 2013-01-08 17:34+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Petr Topiarz <topiarz@post.cz>\n"
 "Language-Team: \n"
@@ -257,27 +257,27 @@ msgstr "Efectuarea operaţiei de bază de date a eşuat."
 msgid "Filter"
 msgstr ""
 
-#: ../lib/wiking/db.py:2177
+#: ../lib/wiking/db.py:2178
 msgid "Back"
 msgstr "Înapoi"
 
 #. Back button label. Standard computer terminology.
 #. RSS channel is a computer idiom, see Wikipedia.
-#: ../lib/wiking/db.py:2386 ../lib/wiking/db.py:2542
+#: ../lib/wiking/db.py:2384 ../lib/wiking/db.py:2540
 msgid "An RSS channel is available for this section:"
 msgstr "Pentru această secţiune este disponibil şi un canal RSS:"
 
 #. RSS channel is a computer idiom, see Wikipedia.  Don't translateg 'RSS'.
-#: ../lib/wiking/db.py:2390 ../lib/wiking/db.py:2540
+#: ../lib/wiking/db.py:2388 ../lib/wiking/db.py:2538
 msgid "more about RSS"
 msgstr "mai mult despre RSS"
 
-#: ../lib/wiking/db.py:2535
+#: ../lib/wiking/db.py:2533
 #, fuzzy, python-format
 msgid "RSS channel \"%s\""
 msgstr "RSS canal"
 
-#: ../lib/wiking/db.py:2545
+#: ../lib/wiking/db.py:2543
 #, fuzzy
 msgid "RSS channels are available for this section"
 msgstr "Pentru această secţiune este disponibil şi un canal RSS:"
@@ -351,56 +351,56 @@ msgstr "Ultima modificare: %(date)s, %(user)s"
 #. Meaning that the system (webpage) does not work now
 #. because we are updating/fixing something but will work again after
 #. the maintaince is finished.
-#: ../lib/wiking/handler.py:208
+#: ../lib/wiking/handler.py:216
 #, fuzzy
 msgid "Maintenance Mode"
 msgstr "Mod de întreţinere"
 
-#: ../lib/wiking/handler.py:209
+#: ../lib/wiking/handler.py:217
 msgid "The system is temporarily down for maintenance."
 msgstr "Sistem temporar suspendat pentru întreţinere."
 
-#: ../lib/wiking/modules.py:549
+#: ../lib/wiking/modules.py:545
 msgid "Enter your login name, please!"
 msgstr "Vă rugăm să introduceţi numele de utilizator!"
 
-#: ../lib/wiking/modules.py:551
+#: ../lib/wiking/modules.py:547
 msgid "Enter your password, please!"
 msgstr "Vă rugăm să introduceţi parola!"
 
-#: ../lib/wiking/modules.py:555
+#: ../lib/wiking/modules.py:551
 msgid "Invalid login!"
 msgstr "Autentificare invalidă!"
 
-#: ../lib/wiking/modules.py:650
+#: ../lib/wiking/modules.py:646
 msgid "Searching"
 msgstr "Căutare"
 
-#: ../lib/wiking/modules.py:651
+#: ../lib/wiking/modules.py:647
 msgid "Search results"
 msgstr "Rezultatele căutării"
 
-#: ../lib/wiking/modules.py:652
+#: ../lib/wiking/modules.py:648
 msgid "Given search term doesn't contain any searchable term."
 msgstr "Expresia de căutare introdusă nu conţine nici un termen de căutare."
 
-#: ../lib/wiking/modules.py:656
+#: ../lib/wiking/modules.py:652
 msgid "Search words:"
 msgstr "Caută cuvintele:"
 
-#: ../lib/wiking/modules.py:657
+#: ../lib/wiking/modules.py:653
 msgid "Search"
 msgstr "Caută"
 
-#: ../lib/wiking/modules.py:713
+#: ../lib/wiking/modules.py:709
 msgid "Nothing found."
 msgstr "Nici un rezultat."
 
-#: ../lib/wiking/modules.py:770
+#: ../lib/wiking/modules.py:766
 msgid "The following modules were successfully reloaded:"
 msgstr "Următoarele module au fost reîncărcate cu succes:"
 
-#: ../lib/wiking/modules.py:772
+#: ../lib/wiking/modules.py:768
 msgid "Reload"
 msgstr "Reîncărcare"
 
