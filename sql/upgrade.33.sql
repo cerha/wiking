@@ -32,4 +32,3 @@ select page_id, lang, (select uid from role_members where role_id='admin' order 
        case when lang='cs' then 'Počáteční verze' else 'Initial version' end,
        _content, 0,
        coalesce(array_upper(string_to_array(content, E'\n'), 1), 0), 0 from cms_page_texts;
-s
