@@ -2671,7 +2671,7 @@ class News(_News):
             msg = _("Only recent news are displayed. Older items are available in the [%s archive].",
                     req.uri() + '/data/archive')
         return super(CMSModule, self)._list_form_content(req, form, uri=uri) + \
-            [lcg.p(msg,formatted=True)]
+            [lcg.p(req.localize(msg), formatted=True)]
     
     def _resolve(self, req):
         if req.unresolved_path and req.unresolved_path[0] == 'archive':
