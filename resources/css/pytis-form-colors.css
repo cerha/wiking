@@ -58,3 +58,10 @@
 .actions button[disabled] span, .list-form-controls button[disabled] span {
     color: $color.foreground !important;
 }
+.cke_skin_kama td.cke_dialog_contents {
+    background-color: $color.frame-bg;
+}
+div.cke_dialog_body div.preview-container {
+    background-color: $color.frame-bg;
+    border-color: $color.frame-border;
+}
