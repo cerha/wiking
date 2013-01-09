@@ -1917,6 +1917,10 @@ class EBooks(Pages, EmbeddableCMSModule):
     def _current_base_uri(self, req, record=None):
         # Use PytisModule._current_base_uri (skip Pages._current_base_uri).
         return super(Pages, self)._current_base_uri(req, record=record)
+    
+    def _redirect_after_delete_uri(self, req, record, **kwargs):
+        return '/' + req.page_record['identifier'].value(), kwargs
+        
         
     def _handle(self, req, action, **kwargs):
         req.ebook = kwargs.get('record')
