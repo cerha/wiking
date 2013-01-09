@@ -2638,10 +2638,10 @@ class News(_News):
         list_layout = pp.ListLayout('title', meta=('timestamp', 'author'),  content=('content',),
                                     anchor="item-%s", popup_actions=True)
         filter_sets = (pp.FilterSet('filter', _("Show"), default='recent', filters=(
-                    pp.Filter('recent', _("Recent items"),
+                    pp.Filter('recent', _("Recent news"),
                               pd.FunctionCondition('cms_recent_timestamp',
                                                    'timestamp', 'days_displayed')),
-                    pp.Filter('archive', _("Archive of older items"),
+                    pp.Filter('archive', _("Archive of older news"),
                               pd.NOT(pd.FunctionCondition('cms_recent_timestamp',
                                                           'timestamp', 'days_displayed'))),
                     pp.Filter('all', _("All items")))),)
