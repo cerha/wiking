@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2013-01-08 18:29+0100\n"
+"POT-Creation-Date: 2013-01-09 10:04+0100\n"
 "PO-Revision-Date: 2010-02-02 15:43+0100\n"
 "Last-Translator: Petr Topiarz <topiarz@post.cz>\n"
 "Language-Team: French <wiking@lists.freebsoft.org>\n"
@@ -169,8 +169,8 @@ msgstr "Code d'activation non valide."
 msgid "Manage user and other kinds of certificates."
 msgstr "Gérer les institutions et autres organisations."
 
-#: ../lib/wiking/cms/certificates.py:228 ../lib/wiking/cms/cms.py:3226
-#: ../lib/wiking/cms/cms.py:3406
+#: ../lib/wiking/cms/certificates.py:228 ../lib/wiking/cms/cms.py:3231
+#: ../lib/wiking/cms/cms.py:3411
 msgid "Subject"
 msgstr "Objet"
 
@@ -384,14 +384,14 @@ msgstr ""
 "Gérer les panneaux - les petites fenêtres affichées à côté de chaque page."
 
 #: ../lib/wiking/cms/cms.py:849 ../lib/wiking/cms/cms.py:1278
-#: ../lib/wiking/cms/cms.py:2188 ../lib/wiking/cms/cms.py:2557
+#: ../lib/wiking/cms/cms.py:2193 ../lib/wiking/cms/cms.py:2562
 msgid "Language"
 msgstr "Langue"
 
 #. Title in the meaning of a heading
 #: ../lib/wiking/cms/cms.py:852 ../lib/wiking/cms/cms.py:1279
-#: ../lib/wiking/cms/cms.py:1280 ../lib/wiking/cms/cms.py:2203
-#: ../lib/wiking/cms/cms.py:2561
+#: ../lib/wiking/cms/cms.py:1280 ../lib/wiking/cms/cms.py:2208
+#: ../lib/wiking/cms/cms.py:2566
 msgid "Title"
 msgstr "Titre"
 
@@ -400,7 +400,7 @@ msgstr "Titre"
 #. Unique identifier of a stylesheet.
 #. Form field label.
 #: ../lib/wiking/cms/cms.py:855 ../lib/wiking/cms/cms.py:1272
-#: ../lib/wiking/cms/cms.py:2881 ../lib/wiking/cms/users.py:290
+#: ../lib/wiking/cms/cms.py:2886 ../lib/wiking/cms/users.py:290
 msgid "Identifier"
 msgstr "Identifiant"
 
@@ -411,7 +411,7 @@ msgid ""
 msgstr ""
 
 #. Order in the meaning of sequence. A noun, not verb.
-#: ../lib/wiking/cms/cms.py:860 ../lib/wiking/cms/cms.py:2900
+#: ../lib/wiking/cms/cms.py:860 ../lib/wiking/cms/cms.py:2905
 msgid "Order"
 msgstr "Ordre"
 
@@ -453,7 +453,7 @@ msgstr ""
 
 #. Content of a page (text or something else)
 #: ../lib/wiking/cms/cms.py:877 ../lib/wiking/cms/cms.py:1283
-#: ../lib/wiking/cms/cms.py:2903
+#: ../lib/wiking/cms/cms.py:2908
 msgid "Content"
 msgstr "Contenu"
 
@@ -546,8 +546,8 @@ msgstr "Couleurs normales de la page"
 #: ../lib/wiking/cms/cms.py:1092 ../lib/wiking/cms/cms.py:1107
 #: ../lib/wiking/cms/cms.py:1115 ../lib/wiking/cms/cms.py:1122
 #: ../lib/wiking/cms/cms.py:1131 ../lib/wiking/cms/cms.py:1135
-#: ../lib/wiking/cms/cms.py:1139 ../lib/wiking/cms/cms.py:2988
-#: ../lib/wiking/cms/cms.py:3407
+#: ../lib/wiking/cms/cms.py:1139 ../lib/wiking/cms/cms.py:2993
+#: ../lib/wiking/cms/cms.py:3412
 msgid "Text"
 msgstr "Texte"
 
@@ -766,8 +766,8 @@ msgstr ""
 "lettres, des chiffres, des tirets bas et des tirets. Il doit commencer par "
 "une lettre."
 
-#: ../lib/wiking/cms/cms.py:1281 ../lib/wiking/cms/cms.py:2206
-#: ../lib/wiking/cms/cms.py:2882 ../lib/wiking/cms/crypto.py:43
+#: ../lib/wiking/cms/cms.py:1281 ../lib/wiking/cms/cms.py:2211
+#: ../lib/wiking/cms/cms.py:2887 ../lib/wiking/cms/crypto.py:43
 msgid "Description"
 msgstr "Description"
 
@@ -777,7 +777,7 @@ msgstr ""
 "Brève description de la page (affichée comme une bulle d'aide et dans le "
 "plan du site)."
 
-#: ../lib/wiking/cms/cms.py:1286 ../lib/wiking/cms/cms.py:2062
+#: ../lib/wiking/cms/cms.py:1286 ../lib/wiking/cms/cms.py:2067
 #, fuzzy
 msgid "Comment"
 msgstr "Votre commentaire"
@@ -885,7 +885,7 @@ msgstr "Non publié"
 msgid "Ok"
 msgstr "Bien"
 
-#: ../lib/wiking/cms/cms.py:1352 ../lib/wiking/cms/cms.py:2069
+#: ../lib/wiking/cms/cms.py:1352 ../lib/wiking/cms/cms.py:2074
 msgid "Changed"
 msgstr "Modifié"
 
@@ -929,7 +929,7 @@ msgstr "Nouvelle page"
 #. Noun. Such as e-mail attachments (here attachments for a webpage).
 #. Section title. Attachments as in email attachments.
 #: ../lib/wiking/cms/cms.py:1397 ../lib/wiking/cms/cms.py:1720
-#: ../lib/wiking/cms/cms.py:2176
+#: ../lib/wiking/cms/cms.py:2181
 msgid "Attachments"
 msgstr "Pièces jointes"
 
@@ -960,7 +960,7 @@ msgid "Menu position"
 msgstr "Description"
 
 #: ../lib/wiking/cms/cms.py:1415 ../lib/wiking/cms/cms.py:1422
-#: ../lib/wiking/cms/cms.py:1896
+#: ../lib/wiking/cms/cms.py:1897
 #, fuzzy
 msgid "Access Rights"
 msgstr "Droits d'accès"
@@ -1084,45 +1084,45 @@ msgstr ""
 msgid "Title Page"
 msgstr "Titre"
 
-#: ../lib/wiking/cms/cms.py:1881
+#: ../lib/wiking/cms/cms.py:1882
 msgid "Chapters"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1884 ../lib/wiking/cms/cms.py:2033
+#: ../lib/wiking/cms/cms.py:1885 ../lib/wiking/cms/cms.py:2038
 #, fuzzy
 msgid "New Chapter"
 msgstr "Nouvelle page"
 
-#: ../lib/wiking/cms/cms.py:1885
+#: ../lib/wiking/cms/cms.py:1886
 msgid "Create a new chapter in this e-Book."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1886
+#: ../lib/wiking/cms/cms.py:1887
 msgid "Export to EPUB"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1887
+#: ../lib/wiking/cms/cms.py:1888
 msgid "Export the e-Book to EPUB format"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1888
+#: ../lib/wiking/cms/cms.py:1889
 msgid "Export to Braille"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1889
+#: ../lib/wiking/cms/cms.py:1890
 msgid "Export the e-Book to Braille"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1892
+#: ../lib/wiking/cms/cms.py:1893
 msgid "New e-Book"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1912
+#: ../lib/wiking/cms/cms.py:1913
 #, fuzzy
 msgid "New e-Book was successfully created and published."
 msgstr "La page a bien été créée et publiée."
 
-#: ../lib/wiking/cms/cms.py:1914
+#: ../lib/wiking/cms/cms.py:1915
 #, fuzzy
 msgid ""
 "New e-Book was successfully created, but was not published yet. Publish it "
@@ -1131,105 +1131,105 @@ msgstr ""
 "La page a bien été créée, mais n'a pas encore été publiée. Publiez-la "
 "lorsque vous avez terminé."
 
-#: ../lib/wiking/cms/cms.py:1930
+#: ../lib/wiking/cms/cms.py:1935
 msgid "Table of Contents"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2060
+#: ../lib/wiking/cms/cms.py:2065
 #, fuzzy
 msgid "Changed by"
 msgstr "Modifié"
 
-#: ../lib/wiking/cms/cms.py:2061 ../lib/wiking/cms/cms.py:2559
-#: ../lib/wiking/cms/cms.py:2565 ../lib/wiking/cms/cms.py:2668
-#: ../lib/wiking/cms/cms.py:3408
+#: ../lib/wiking/cms/cms.py:2066 ../lib/wiking/cms/cms.py:2564
+#: ../lib/wiking/cms/cms.py:2570 ../lib/wiking/cms/cms.py:2673
+#: ../lib/wiking/cms/cms.py:3413
 msgid "Date"
 msgstr "Date"
 
-#: ../lib/wiking/cms/cms.py:2064
+#: ../lib/wiking/cms/cms.py:2069
 #, fuzzy
 msgid "Inserted lines"
 msgstr "Lien visité"
 
-#: ../lib/wiking/cms/cms.py:2065
+#: ../lib/wiking/cms/cms.py:2070
 #, fuzzy
 msgid "Changed lines"
 msgstr "Modifié"
 
-#: ../lib/wiking/cms/cms.py:2066
+#: ../lib/wiking/cms/cms.py:2071
 #, fuzzy
 msgid "Deleted lines"
 msgstr "Défaut"
 
-#: ../lib/wiking/cms/cms.py:2067
+#: ../lib/wiking/cms/cms.py:2072
 msgid "Inserted / Changed / Deleted Lines"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2068
+#: ../lib/wiking/cms/cms.py:2073
 #, fuzzy
 msgid "Inserted"
 msgstr "Lien visité"
 
-#: ../lib/wiking/cms/cms.py:2068
+#: ../lib/wiking/cms/cms.py:2073
 #, fuzzy
 msgid "Green"
 msgstr "Écran"
 
-#: ../lib/wiking/cms/cms.py:2069
+#: ../lib/wiking/cms/cms.py:2074
 msgid "Yellow"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2070
+#: ../lib/wiking/cms/cms.py:2075
 #, fuzzy
 msgid "Deleted"
 msgstr "Défaut"
 
-#: ../lib/wiking/cms/cms.py:2070
+#: ../lib/wiking/cms/cms.py:2075
 msgid "Red"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2090
+#: ../lib/wiking/cms/cms.py:2095
 #, fuzzy, python-format
 msgid "Changed on %s"
 msgstr "Modifié"
 
-#: ../lib/wiking/cms/cms.py:2098
+#: ../lib/wiking/cms/cms.py:2103
 #, fuzzy
 msgid "Change Summary"
 msgstr "Modifier le mot de passe"
 
-#: ../lib/wiking/cms/cms.py:2100
+#: ../lib/wiking/cms/cms.py:2105
 #, fuzzy
 msgid "Colors"
 msgstr "Thèmes de couleurs"
 
-#: ../lib/wiking/cms/cms.py:2116
+#: ../lib/wiking/cms/cms.py:2121
 msgid "No differences against previous version."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2118
+#: ../lib/wiking/cms/cms.py:2123
 msgid "Original version"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2120
+#: ../lib/wiking/cms/cms.py:2125
 msgid "Modified version"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2126
+#: ../lib/wiking/cms/cms.py:2131
 msgid "Previous version empty (no differences available)."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2177
+#: ../lib/wiking/cms/cms.py:2182
 msgid "Manage page attachments. Go to a page to create new attachments."
 msgstr ""
 "Gérer les pièces jointes de la page. Aller à la page afin de créer de "
 "nouvelles pièces jointes."
 
-#: ../lib/wiking/cms/cms.py:2184 ../lib/wiking/cms/cms.py:2555
+#: ../lib/wiking/cms/cms.py:2189 ../lib/wiking/cms/cms.py:2560
 msgid "Page"
 msgstr "Page"
 
-#: ../lib/wiking/cms/cms.py:2186
+#: ../lib/wiking/cms/cms.py:2191
 msgid ""
 "Select the page where you want to move this attachment.  Don't forget to "
 "update all explicit links to this attachment within page text(s)."
@@ -1239,11 +1239,11 @@ msgstr ""
 "dans le texte de la page."
 
 #. Noun. File on disk. Computer terminology.
-#: ../lib/wiking/cms/cms.py:2190
+#: ../lib/wiking/cms/cms.py:2195
 msgid "File"
 msgstr "Fichier"
 
-#: ../lib/wiking/cms/cms.py:2192
+#: ../lib/wiking/cms/cms.py:2197
 msgid ""
 "Upload a file from your local system.  The file name will be used to refer "
 "to the attachment within the page content.  Please note, that the file will "
@@ -1257,15 +1257,15 @@ msgstr ""
 "contenir de caractères spéciaux. Lettres, chiffres, tirets bas, tirets et "
 "points sont autorisés. Les autres signent pourraient causer des problèmes."
 
-#: ../lib/wiking/cms/cms.py:2198
+#: ../lib/wiking/cms/cms.py:2203
 msgid "Filename"
 msgstr "Nom du fichier"
 
-#: ../lib/wiking/cms/cms.py:2201
+#: ../lib/wiking/cms/cms.py:2206
 msgid "Mime-type"
 msgstr "Type MIME"
 
-#: ../lib/wiking/cms/cms.py:2204
+#: ../lib/wiking/cms/cms.py:2209
 msgid ""
 "The name of the attachment (e.g. the full name of the document). If empty, "
 "the file name will be used instead."
@@ -1273,39 +1273,39 @@ msgstr ""
 "Le nom de la pièce jointe (p. ex. le nom du document). Si laissé en blanc, "
 "le nom du fichier sera utilisé."
 
-#: ../lib/wiking/cms/cms.py:2207
+#: ../lib/wiking/cms/cms.py:2212
 msgid "Optional description used for the listing of attachments (see below)."
 msgstr ""
 "Description facultative utilisée dans la liste des pièces jointes (voir ci-"
 "dessous)."
 
 #. Size of a file, in number of bytes, kilobytes etc.
-#: ../lib/wiking/cms/cms.py:2210
+#: ../lib/wiking/cms/cms.py:2215
 msgid "Size"
 msgstr "Dimension"
 
 #. Thumbnail is a small image preview in computer terminology.
-#: ../lib/wiking/cms/cms.py:2214
+#: ../lib/wiking/cms/cms.py:2219
 #, fuzzy
 msgid "Preview size"
 msgstr "Prévisualisation"
 
-#: ../lib/wiking/cms/cms.py:2217
+#: ../lib/wiking/cms/cms.py:2222
 msgid "Full size (don't resize)"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2219
+#: ../lib/wiking/cms/cms.py:2224
 msgid ""
 "Only relevant for images.  When set, the image will not be displayed in full "
 "size, but as a small clickable preview."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2229
+#: ../lib/wiking/cms/cms.py:2234
 #, fuzzy
 msgid "In Gallery"
 msgstr "En galerie"
 
-#: ../lib/wiking/cms/cms.py:2233
+#: ../lib/wiking/cms/cms.py:2238
 #, fuzzy
 msgid ""
 "Check if you want the image to appear in an image Gallery below the page "
@@ -1314,11 +1314,11 @@ msgstr ""
 "Cochez si vous voulez que l'image apparaisse dans la galerie générée "
 "automatiquement."
 
-#: ../lib/wiking/cms/cms.py:2235
+#: ../lib/wiking/cms/cms.py:2240
 msgid "Listed"
 msgstr "Dans la liste"
 
-#: ../lib/wiking/cms/cms.py:2236
+#: ../lib/wiking/cms/cms.py:2241
 msgid ""
 "Check if you want the item to appear in the listing of attachments at the "
 "bottom of the page."
@@ -1327,124 +1327,124 @@ msgstr ""
 "jointes au bas de la page."
 
 #. Size label related to "Preview size" field (pronoun).
-#: ../lib/wiking/cms/cms.py:2302
+#: ../lib/wiking/cms/cms.py:2307
 msgid "Small"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2303
+#: ../lib/wiking/cms/cms.py:2308
 #, fuzzy
 msgid "Medium"
 msgstr "Médias"
 
-#: ../lib/wiking/cms/cms.py:2304
+#: ../lib/wiking/cms/cms.py:2309
 msgid "Large"
 msgstr ""
 
 #. Button label
-#: ../lib/wiking/cms/cms.py:2314
+#: ../lib/wiking/cms/cms.py:2319
 msgid "Move"
 msgstr "Transférer"
 
-#: ../lib/wiking/cms/cms.py:2314
+#: ../lib/wiking/cms/cms.py:2319
 msgid "Move the attachment to another page."
 msgstr "Envoyer la pièce jointe à une autre page."
 
-#: ../lib/wiking/cms/cms.py:2404
+#: ../lib/wiking/cms/cms.py:2409
 msgid "New attachment"
 msgstr "Nouvelle pièce jointe"
 
-#: ../lib/wiking/cms/cms.py:2411
+#: ../lib/wiking/cms/cms.py:2416
 msgid "Attachment of the same file name already exists for this page."
 msgstr ""
 "La pièce jointe avec le même nom de fichier existe déjà pour cette page."
 
-#: ../lib/wiking/cms/cms.py:2413
+#: ../lib/wiking/cms/cms.py:2418
 msgid "Attachment file name exceeds the maximal length 64 characters."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2528
+#: ../lib/wiking/cms/cms.py:2533
 #, python-format
 msgid "Attachment '%s' not found!"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2561 ../lib/wiking/cms/cms.py:2563
+#: ../lib/wiking/cms/cms.py:2566 ../lib/wiking/cms/cms.py:2568
 msgid "Message"
 msgstr "Message"
 
-#: ../lib/wiking/cms/cms.py:2562
+#: ../lib/wiking/cms/cms.py:2567
 msgid "The item brief summary."
 msgstr "Un court résumé de l'article."
 
-#: ../lib/wiking/cms/cms.py:2564
+#: ../lib/wiking/cms/cms.py:2569
 msgid "Author"
 msgstr "Auteur"
 
-#: ../lib/wiking/cms/cms.py:2566
+#: ../lib/wiking/cms/cms.py:2571
 msgid "Date of the news item creation."
 msgstr "Date de la création de l'article avec les nouvelles."
 
 #. Section title and menu item
-#: ../lib/wiking/cms/cms.py:2620
+#: ../lib/wiking/cms/cms.py:2625
 msgid "News"
 msgstr "Nouvelles"
 
 #. Help string describing more precisely the meaning of the "News" section.
-#: ../lib/wiking/cms/cms.py:2622
+#: ../lib/wiking/cms/cms.py:2627
 msgid "Publish site news."
 msgstr "Publier des nouvelles du site."
 
-#: ../lib/wiking/cms/cms.py:2627
+#: ../lib/wiking/cms/cms.py:2632
 #, fuzzy
 msgid "Displayed days"
 msgstr "Nom affiché"
 
-#: ../lib/wiking/cms/cms.py:2628
+#: ../lib/wiking/cms/cms.py:2633
 msgid "Number of days the item stays displayed in news."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2636
+#: ../lib/wiking/cms/cms.py:2641
 msgid "Show"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2637
+#: ../lib/wiking/cms/cms.py:2642
 #, fuzzy
 msgid "Recent news"
 msgstr "Élément parent"
 
-#: ../lib/wiking/cms/cms.py:2640
+#: ../lib/wiking/cms/cms.py:2645
 #, fuzzy
 msgid "Archive of older news"
 msgstr "Dossier inactif"
 
-#: ../lib/wiking/cms/cms.py:2643
+#: ../lib/wiking/cms/cms.py:2648
 #, fuzzy
 msgid "All items"
 msgstr "Tous les types"
 
 #. Button label for creating a new message in "News".
-#: ../lib/wiking/cms/cms.py:2646
+#: ../lib/wiking/cms/cms.py:2651
 msgid "New message"
 msgstr "Noveau message"
 
 #. Section heading and menu item
-#: ../lib/wiking/cms/cms.py:2658
+#: ../lib/wiking/cms/cms.py:2663
 msgid "Planner"
 msgstr "Planning"
 
-#: ../lib/wiking/cms/cms.py:2659
+#: ../lib/wiking/cms/cms.py:2664
 msgid "Announce future events by date in a callendar-like listing."
 msgstr ""
 "Annonce les événements futurs selon la date, sous format d'un calendrier."
 
-#: ../lib/wiking/cms/cms.py:2663
+#: ../lib/wiking/cms/cms.py:2668
 msgid "Event"
 msgstr "Événement"
 
-#: ../lib/wiking/cms/cms.py:2663
+#: ../lib/wiking/cms/cms.py:2668
 msgid "The event brief summary."
 msgstr "Un bref résumé de l'événement."
 
-#: ../lib/wiking/cms/cms.py:2671
+#: ../lib/wiking/cms/cms.py:2676
 #, fuzzy, python-format
 msgid ""
 "The date when the planned event begins. Enter the date including year.  "
@@ -1453,11 +1453,11 @@ msgstr ""
 "La date où l'événement prévu commence. Entrez la date avec l'année. "
 "Exemple : %(date)s"
 
-#: ../lib/wiking/cms/cms.py:2672
+#: ../lib/wiking/cms/cms.py:2677
 msgid "End date"
 msgstr "Date de fin"
 
-#: ../lib/wiking/cms/cms.py:2673
+#: ../lib/wiking/cms/cms.py:2678
 msgid ""
 "The date when the event ends if it is not the same as the start date (for "
 "events which last several days)."
@@ -1465,38 +1465,38 @@ msgstr ""
 "La date de fin de l'événement ne correspond pas à la date de début (pour les "
 "événements qui durent plusieurs jours)."
 
-#: ../lib/wiking/cms/cms.py:2690
+#: ../lib/wiking/cms/cms.py:2695
 msgid "Date in the past"
 msgstr "Date dans le passé"
 
-#: ../lib/wiking/cms/cms.py:2692
+#: ../lib/wiking/cms/cms.py:2697
 msgid "End date precedes start date"
 msgstr "La date de fin précède la date de début"
 
 #. Button label for creating a new event in "Planner".
-#: ../lib/wiking/cms/cms.py:2694
+#: ../lib/wiking/cms/cms.py:2699
 #, fuzzy
 msgid "New event"
 msgstr "Nouvelle pièce jointe"
 
 #. Name of the extension module for simple forum-like discussions.
-#: ../lib/wiking/cms/cms.py:2712
+#: ../lib/wiking/cms/cms.py:2717
 msgid "Discussions"
 msgstr "Discussions"
 
 #. Help string describing more precisely the meaning of the "News" section.
-#: ../lib/wiking/cms/cms.py:2714
+#: ../lib/wiking/cms/cms.py:2719
 msgid "Allow logged in users to post messages as in a simple forum."
 msgstr ""
 "Autoriser les utilisateurs connectés à poster des messages comme dans un "
 "forum simple."
 
 #. Field label for posting a message to the discussion.
-#: ../lib/wiking/cms/cms.py:2727
+#: ../lib/wiking/cms/cms.py:2732
 msgid "Your comment"
 msgstr "Votre commentaire"
 
-#: ../lib/wiking/cms/cms.py:2767
+#: ../lib/wiking/cms/cms.py:2772
 msgid "Your comment was posted to the discussion."
 msgstr "Votre commentaire a été envoyé à la discussion."
 
@@ -1504,13 +1504,13 @@ msgstr "Votre commentaire a été envoyé à la discussion."
 #. The square brackets mark a link.  Please leave the brackets and the
 #. link target '?command=login' untouched and traslate 'log in' to fit into the
 #. sentence.  The user only sees it as 'You need to log in before ...'.
-#: ../lib/wiking/cms/cms.py:2811
+#: ../lib/wiking/cms/cms.py:2816
 msgid "Note: You need to [?command=login log in] before you can post messages."
 msgstr ""
 "Remarque : Vous devez [?command=login log in] avant d'envoyer les messages."
 
 #. Section heading and menu item. Computer terminology idiom.
-#: ../lib/wiking/cms/cms.py:2821
+#: ../lib/wiking/cms/cms.py:2826
 msgid "Site Map"
 msgstr "Plan du site"
 
@@ -1520,82 +1520,82 @@ msgstr "Plan du site"
 #. interface (the area where only administrators are allowed), pages
 #. (everything outside the management interface) or both ("Global"
 #. scope).
-#: ../lib/wiking/cms/cms.py:2849
+#: ../lib/wiking/cms/cms.py:2854
 msgid "Website"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2850
+#: ../lib/wiking/cms/cms.py:2855
 #, fuzzy
 msgid "Management interface"
 msgstr "L'interface de gestion Wiking"
 
-#: ../lib/wiking/cms/cms.py:2853
+#: ../lib/wiking/cms/cms.py:2858
 msgid "All types"
 msgstr "Tous les types"
 
 #. Braille as a type of media
-#: ../lib/wiking/cms/cms.py:2855
+#: ../lib/wiking/cms/cms.py:2860
 msgid "Braille"
 msgstr "Braille"
 
 #. Handheld device. Small computer.
-#: ../lib/wiking/cms/cms.py:2858
+#: ../lib/wiking/cms/cms.py:2863
 msgid "Handheld"
 msgstr "Ordinateur portable"
 
 #. Print as a type of media (print, speech...)
-#: ../lib/wiking/cms/cms.py:2860
+#: ../lib/wiking/cms/cms.py:2865
 msgid "Print"
 msgstr "Imprimer"
 
 #. Meaning computer screen
-#: ../lib/wiking/cms/cms.py:2863
+#: ../lib/wiking/cms/cms.py:2868
 msgid "Screen"
 msgstr "Écran"
 
 #. Speech as a type of media (print, speech...)
-#: ../lib/wiking/cms/cms.py:2865
+#: ../lib/wiking/cms/cms.py:2870
 msgid "Speech"
 msgstr "Expression orale"
 
 #. Section heading and menu item. Meaning the visual appearance. Computer
 #. terminology.
-#: ../lib/wiking/cms/cms.py:2873
+#: ../lib/wiking/cms/cms.py:2878
 #, fuzzy
 msgid "Style sheets"
 msgstr "Feuille de style"
 
 #. Help string. Cascading Style Sheet (CSS) is computer terminology idiom.
-#: ../lib/wiking/cms/cms.py:2876
+#: ../lib/wiking/cms/cms.py:2881
 msgid "Manage available Cascading Style Sheets."
 msgstr "Gérer les feuilles de style en cascade disponibles."
 
 #. Table column heading. Whether the account is active. Values are yes/no.
-#: ../lib/wiking/cms/cms.py:2883 ../lib/wiking/cms/users.py:1659
+#: ../lib/wiking/cms/cms.py:2888 ../lib/wiking/cms/users.py:1659
 msgid "Active"
 msgstr "Actif"
 
 #. Heading of a form field determining in
 #. which media the page is displayed. E.g. web, print,
 #. Braille, speech.
-#: ../lib/wiking/cms/cms.py:2887
+#: ../lib/wiking/cms/cms.py:2892
 msgid "Media"
 msgstr "Médias"
 
 #. Scope of applicability of a stylesheet on different website parts.
-#: ../lib/wiking/cms/cms.py:2889
+#: ../lib/wiking/cms/cms.py:2894
 msgid "Scope"
 msgstr ""
 
 #. Global scope (applies to all parts of the website).
-#: ../lib/wiking/cms/cms.py:2892
+#: ../lib/wiking/cms/cms.py:2897
 msgid "Global"
 msgstr ""
 
 #. Description of scope options.  Make sure you
 #. use the same terms as in the options themselves, which are
 #. defined a few items above.
-#: ../lib/wiking/cms/cms.py:2896
+#: ../lib/wiking/cms/cms.py:2901
 msgid ""
 "Determines where this style sheet is applicable. The \"Management interface"
 "\" is the area for CMS administration, \"Website\" means the regular pages "
@@ -1603,100 +1603,100 @@ msgid ""
 msgstr ""
 
 #. Precedence meaning position in a sequence of importance or priority.
-#: ../lib/wiking/cms/cms.py:2902
+#: ../lib/wiking/cms/cms.py:2907
 msgid "Number denoting the style sheet precedence."
 msgstr "Nombre indiquant la priorité des feuilles de style."
 
-#: ../lib/wiking/cms/cms.py:2983
+#: ../lib/wiking/cms/cms.py:2988
 msgid "Label"
 msgstr "Label"
 
-#: ../lib/wiking/cms/cms.py:2986
+#: ../lib/wiking/cms/cms.py:2991
 msgid "Purpose"
 msgstr "But"
 
-#: ../lib/wiking/cms/cms.py:3073
+#: ../lib/wiking/cms/cms.py:3078
 msgid "System Texts"
 msgstr "Textes du système"
 
-#: ../lib/wiking/cms/cms.py:3074
+#: ../lib/wiking/cms/cms.py:3079
 msgid "Edit miscellaneous system texts."
 msgstr "Modifier les différents textes du système."
 
-#: ../lib/wiking/cms/cms.py:3219
+#: ../lib/wiking/cms/cms.py:3224
 msgid "E-mails"
 msgstr "E-mails"
 
-#: ../lib/wiking/cms/cms.py:3220
+#: ../lib/wiking/cms/cms.py:3225
 msgid "Edit e-mail texts."
 msgstr "Modifier les e-mails."
 
-#: ../lib/wiking/cms/cms.py:3227
+#: ../lib/wiking/cms/cms.py:3232
 msgid "Additional recipients"
 msgstr "Destinataires supplémentaires"
 
-#: ../lib/wiking/cms/cms.py:3228
+#: ../lib/wiking/cms/cms.py:3233
 msgid "Comma separated list of e-mail addresses."
 msgstr "Liste des adresses e-mail séparées par des virgules."
 
 #. Section title and menu item. Sending emails to multiple recipients.
-#: ../lib/wiking/cms/cms.py:3396
+#: ../lib/wiking/cms/cms.py:3401
 msgid "Bulk E-mails"
 msgstr "E-mails collectifs"
 
-#: ../lib/wiking/cms/cms.py:3400
+#: ../lib/wiking/cms/cms.py:3405
 msgid "Sender address"
 msgstr "Adresse de l'expéditeur."
 
-#: ../lib/wiking/cms/cms.py:3401
+#: ../lib/wiking/cms/cms.py:3406
 msgid "E-mail address of the sender."
 msgstr "Adresse e-mail de l'expéditeur."
 
 #. List of recipients of an email message
-#: ../lib/wiking/cms/cms.py:3403
+#: ../lib/wiking/cms/cms.py:3408
 msgid "Recipients"
 msgstr "Destinataires"
 
 #. All users are intended recipients of an email message
-#: ../lib/wiking/cms/cms.py:3405
+#: ../lib/wiking/cms/cms.py:3410
 #, fuzzy
 msgid "All users"
 msgstr "Tous les types"
 
 #. The state of the user account (e.g. Enabled vs Disabled).  Column
 #. heading and field label.
-#: ../lib/wiking/cms/cms.py:3411 ../lib/wiking/cms/users.py:553
+#: ../lib/wiking/cms/cms.py:3416 ../lib/wiking/cms/users.py:553
 msgid "State"
 msgstr "Etat"
 
 #. State of processing of an email message (e.g. Pending, Sending, Sent)
-#: ../lib/wiking/cms/cms.py:3418
+#: ../lib/wiking/cms/cms.py:3423
 msgid "Sent"
 msgstr "Envoyé"
 
 #. State of processing of an email message (e.g. Pending, Sending, Sent)
-#: ../lib/wiking/cms/cms.py:3421
+#: ../lib/wiking/cms/cms.py:3426
 msgid "Sending"
 msgstr "Envoi en cours"
 
 #. State of processing of an email message (e.g. Pending, Sending, Sent)
-#: ../lib/wiking/cms/cms.py:3424
+#: ../lib/wiking/cms/cms.py:3429
 #, fuzzy
 msgid "Pending"
 msgstr "Envoi en cours"
 
-#: ../lib/wiking/cms/cms.py:3431
+#: ../lib/wiking/cms/cms.py:3436
 #, python-format
 msgid "%(subject)s"
 msgstr "%(subject)s"
 
 #. Button label meaning save this email text for later repeated usage
-#: ../lib/wiking/cms/cms.py:3434
+#: ../lib/wiking/cms/cms.py:3439
 msgid "Use as a Template"
 msgstr "Utiliser comme Modèle"
 
 #. Description of button for creating a template of an email
-#: ../lib/wiking/cms/cms.py:3436
+#: ../lib/wiking/cms/cms.py:3441
 msgid "Edit this mail for repeated use"
 msgstr "Modifier ce courriel pour un usage répété"
 
