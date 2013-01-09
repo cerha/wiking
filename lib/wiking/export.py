@@ -1,4 +1,4 @@
-# Copyright (C) 2006-2012 Brailcom, o.p.s.
+# Copyright (C) 2006-2013 Brailcom, o.p.s.
 # Author: Tomas Cerha <cerha@brailcom.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -56,8 +56,10 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             # Some harmless hacks for faster access to some often used parameters...
             # These attributes are not the part of the official context extension (such as the
             # 'req()' method, so their use should be limited to this module only!
-            self.has_menu = bool([n for n in self.node().root().children() if not n.hidden()])
-            self.has_submenu = bool([n for n in self.node().top().children() if not n.hidden()])
+            if isinstance(self.node(), wiking.WikingNode):
+                # Not needed when exporting AJAX response content, which does not use WikingNode.
+                self.has_menu = bool([n for n in self.node().root().children() if not n.hidden()])
+                self.has_submenu = bool([n for n in self.node().top().children() if not n.hidden()])
             self.application = wiking.module('Application')
             super(Exporter.Context, self)._init_kwargs(timezone=req.timezone(), **kwargs)
             # Make sure that Prototype.js is always loaded first, so that it is
@@ -90,14 +92,6 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         This layout is typically useful for rendering the IFRAME content.  The
         exported document content is wrapped into HTML body with HTML head
         automatically created.
-        
-        """
-        BARE = 'bare'
-        """Returns bare exported content with no wrapping at all.
-
-        This layout is typically useful for rendering HTML fragments returned
-        by AJAX calls.  No wrapping is performed, so the result is not a
-        standalone HTML document.
         
         """
 
@@ -413,12 +407,6 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             return g.hr() + content.export(context)
         else:
             return None
-
-    def export(self, context):
-        if context.node().layout() == self.Layout.BARE:
-            return self._content(context)
-        else:
-            return super(Exporter, self).export(context)
 
 
 class Html5Exporter(lcg.Html5Exporter, Exporter):

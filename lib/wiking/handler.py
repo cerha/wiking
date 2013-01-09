@@ -1,4 +1,4 @@
-# Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012 Brailcom, o.p.s.
+# Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Brailcom, o.p.s.
 # Author: Tomas Cerha <cerha@brailcom.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -116,6 +116,13 @@ class Handler(object):
         # Save the current handler instance for profiling purposes.
         Handler._instance = self 
 
+    def _resource_provider(self, req):
+        styles = []
+        for x in self._application.stylesheets(req):
+            if isinstance(x, basestring):
+                x = lcg.Stylesheet(x, uri=x)
+            styles.append(x)
+        return lcg.ResourceProvider(resources=styles, dirs=wiking.cfg.resource_path)
 
     def _build(self, req, document):
         """Return the 'WikingNode' instance representing the given document.
@@ -129,12 +136,7 @@ class Handler(object):
         uri = '/'+req.uri().strip('/')
         lang = document.lang() or req.preferred_language(raise_error=False) or 'en'
         nodes = {}
-        styles = []
-        for x in application.stylesheets(req):
-            if isinstance(x, basestring):
-                x = lcg.Stylesheet(x, uri=x)
-            styles.append(x)
-        resource_provider = lcg.ResourceProvider(resources=styles, dirs=wiking.cfg.resource_path)
+        resource_provider = self._resource_provider(req)
         def mknode(item):
             # Caution - make the same uri transformation as above to get same
             # results in all cases (such as for '/').
@@ -199,6 +201,14 @@ class Handler(object):
         context = self._exporter.context(node, node.lang(), sec_lang=node.sec_lang(), req=req)
         exported = self._exporter.export(context)
         return req.send_response(context.localize(exported), status_code=status_code)
+
+    def _serve_content(self, req, content):
+        """Serve a document using the Wiking exporter."""
+        import json
+        node = lcg.ContentNode(req.uri(), content=content, 
+                               resource_provider=self._resource_provider(req))
+        context = self._exporter.context(node, lang=req.preferred_language(), req=req)
+        return req.send_response(content.export(context))
 
     def _handle_maintenance_mode(self, req):
         import httplib
@@ -326,11 +336,14 @@ class Handler(object):
                     # Temporary backwards compatibility conversion.
                     content_type, data = result
                     result = wiking.Response(data, content_type=content_type)
-                if isinstance(result, wiking.Document):
+                if isinstance(result, (lcg.Content, wiking.Document)):
                     # Always perform authentication (if it was not performed before) to handle
                     # authentication exceptions here and prevent them in export time.
                     req.user()
-                    return self._serve_document(req, result)
+                    if isinstance(result, wiking.Document):
+                        return self._serve_document(req, result)
+                    else:
+                        return self._serve_content(req, result)
                 elif isinstance(result, wiking.Response):
                     for header, value in result.headers():
                         req.set_header(header, value)

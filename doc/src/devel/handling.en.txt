@@ -21,7 +21,7 @@ The handler's responsibilities are:
     arbitrary content data may be sent to the client).
 
 
-== The Request Class ==
+== The Request Object ==
 
 The argument 'req' which appears in all request handling methods is an
 instance of the Request class.  This class, apart from the generic
@@ -102,3 +102,28 @@ determined by the current application (see Application.[application#languages]).
 The methods 'preferred_languages()' and 'preferred_language()' provide an
 interface for determining the user's language preferences and selection of the
 most appropriate language from a list of available language variants.
+
+
+== Request Handling Result ==
+
+The result of request handling returned by RequestHandler.handle() (as well as
+ActionHandler.action_*() methods) can by of three kinds:
+
+  * wiking.Document instance ... in this case the document is rendered as a
+    complete HTML page with complete Wiking menus, panels, headings and footings
+    and the exported document content in the main content area.
+
+  * lcg.Content instance ... the content is exported into an HTML fragment
+    without Wiking menus etc. and also without HTML head and body elements.
+    Just bare exported content is returned to the client which is typically
+    useful for AJAX responses.  The response data is encoded into a JSON hash
+    object containing two keys: 'html' containing the actual HTML fragment and
+    'resources' containing the list of LCG resources needed to render the given
+    html fragment, such as scripts and style sheets.  These resources must be
+    added to the HTML head of the target page, because the rendered HTML
+    depends on them.
+
+  * wiking.Response instance ... can be used to return any kind of HTTP
+    response with arbitrary HTTP headers and response data (as a string or an
+    iterable object returning response data in chunks).
+

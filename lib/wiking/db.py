@@ -1963,7 +1963,7 @@ class PytisModule(Module, ActionHandler):
                           actions=self._form_actions_argument(req),
                           )
         if async_load:
-            return wiking.Document('', form, layout=wiking.Exporter.Layout.BARE)
+            return form
         else:
             content = self._list_form_content(req, form)
             return self._document(req, content,
