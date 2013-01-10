@@ -208,7 +208,7 @@ class Handler(object):
         node = lcg.ContentNode(req.uri(), content=content, 
                                resource_provider=self._resource_provider(req))
         context = self._exporter.context(node, lang=req.preferred_language(), req=req)
-        return req.send_response(content.export(context))
+        return req.send_response(context.localize(content.export(context)))
 
     def _handle_maintenance_mode(self, req):
         import httplib
