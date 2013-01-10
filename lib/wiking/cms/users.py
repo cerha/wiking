@@ -1054,7 +1054,7 @@ class Users(UserManagementModule):
     def _send_admin_approval_mail(self, req, record):
         base_uri = req.module_uri(self.name()) or '/_wmi/'+ self.name()
         subject = _("New user account:") +' '+ record['fullname'].value()
-        if req.user().uid() == record['uid'].value():
+        if req.user() is None:
             text = _("New user %(fullname)s registered at %(server_hostname)s.",
                      fullname=record['fullname'].value(),
                      server_hostname=wiking.cfg.server_hostname
