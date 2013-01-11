@@ -1270,7 +1270,7 @@ class Pages(SiteSpecificContentModule):
             Field('page_id'),
             Field('site'),
             Field('identifier', _("Identifier"), width=20, fixed=True, editable=ONCE,
-                  type=pd.RegexString(maxlen=32, not_null=True, regex='^[a-zA-Z][0-9a-zA-Z_-]*$'),
+                  type=pd.RegexString(not_null=True, regex='^[a-zA-Z][0-9a-zA-Z_-]*$'),
                   computer=computer(self._default_identifier),
                   descr=_("The identifier may be used to refer to this page from outside and also "
                           "from other pages. A valid identifier can only contain letters, digits, "
