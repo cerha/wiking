@@ -174,25 +174,20 @@ class Application(CookieAuthentication, wiking.Application):
           1. Static mapping as defined by the parent class (see
              'wiking.application._MAPPING') is searched first.  If the module
              is found there, the corresponding path is returned.
-          2. Otherwise, if the application is currently in the Wiking
-             Management Interface mode, the WMI path is returned as
-             '/_wmi/<modname>' (any module is accessible through this path in
-             WMI).
-          3. If the above fails, the module is searched within CMS pages as
+          2. If the above fails, the module is searched within CMS pages as
              their extension module.  If the module is found as an extension
              module of a particular page, the path to that page (including the
              subpath to the module) is returned.  Beware that if the same
              module had been used as an extension module for more than one
              page, there would be no way to distinguish which page to use to
              form the path and thus None is returned in such cases.
-          4. If the above fails and the module is derived from
+          3. If the above fails and the module is derived from
              'CMSExtensionModule', its parent module is searched according to
-             3. and if found, the corresponding path plus the path to the
+             2. and if found, the corresponding path plus the path to the
              submodule is returned.
-          5. If the above fails and the module is accessible through WMI menu,
-             the WMI uri is returned (not that as opposed to 2, this happend
-             also when we are currently not within WMI).
-          6. If all the above fails, None is returned.  Particularly, this
+          4. If the above fails and the module is accessible through the Wikimg
+             Management Interface, the WMI uri is returned.
+          5. If all the above fails, None is returned.  Particularly, this
              happens for modules, which are not directly associated with any
              page, which may also be the case for modules accessible through
              bindings to other modules.
@@ -230,28 +225,25 @@ class Application(CookieAuthentication, wiking.Application):
         # Try the static mapping first.
         uri = super(Application, self).module_uri(req, modname)
         if uri is None:
-            if req.wmi:
-                uri = '/_wmi/' + modname
-            else:
-                # Try if the module is directly embedded in a page.
-                uri = wiking.module('Pages').module_uri(req, modname)
+            # Try if the module is directly embedded in a page.
+            uri = wiking.module('Pages').module_uri(req, modname)
+            if uri is None:
+                # If not embeded directly, try if it is a submodule of an embedded module.
+                mod = wiking.module(modname)
+                if isinstance(mod, CMSExtensionModule):
+                    parent = mod.parent()
+                    if parent is None:
+                        # Hack: Instantiate all CMSExtension modules to get
+                        # the parent, as parentship is initialized on
+                        # CMSExtension module for all its child
+                        # CMSExtensionModule submodules.
+                        for modname_, modcls in wiking.cfg.resolver.walk(CMSExtension):
+                            wiking.module(modname_)
+                        parent = mod.parent() # It's hopefully not None now...
+                    if parent is not None:
+                        uri = parent.submodule_uri(req, modname)
                 if uri is None:
-                    # If not embeded directly, try if it is a submodule of an embedded module.
-                    mod = wiking.module(modname)
-                    if isinstance(mod, CMSExtensionModule):
-                        parent = mod.parent()
-                        if parent is None:
-                            # Hack: Instantiate all CMSExtension modules to get
-                            # the parent, as parentship is initialized on
-                            # CMSExtension module for all its child
-                            # CMSExtensionModule submodules.
-                            for modname_, modcls in wiking.cfg.resolver.walk(CMSExtension):
-                                wiking.module(modname_)
-                            parent = mod.parent() # It's hopefully not None now...
-                        if parent is not None:
-                            uri = parent.submodule_uri(req, modname)
-                    if uri is None:
-                        uri = wiking.module('WikingManagementInterface').module_uri(req, modname)
+                    uri = wiking.module('WikingManagementInterface').module_uri(req, modname)
         return uri
 
     def site_title(self, req):
