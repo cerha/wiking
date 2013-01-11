@@ -1871,7 +1871,7 @@ class EBooks(Pages, EmbeddableCMSModule):
             override = (
                 Field('_content', _("Title Page")),
                 Field('parent',
-                      computer=computer(lambda r: r.req().page['page_id'].value())),
+                      computer=computer(lambda r: r.req().page_record['page_id'].value())),
                 Field('menu_visibility', default='never'),
                 )
             return self._inherited_fields(EBooks.Spec, override=override)
