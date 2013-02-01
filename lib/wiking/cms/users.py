@@ -502,7 +502,7 @@ class Users(UserManagementModule):
                   type=pd.Password(verify=False, not_null=True, md5=md5_passwords),
                   descr=_(u"Verify your identity by entering your original (current) password.")),
             Field('new_password', _("New password"), virtual=True, width=16,
-                  type=pd.Password(not_null=True),
+                  type=pd.Password(verify=True, not_null=True),
                   descr=_("Please, write the password into each of the two fields to eliminate "
                           "typos.")),
             # Translators: User account information field label (contains date and time).
@@ -918,7 +918,7 @@ class Users(UserManagementModule):
             # field value (see _hidden_fields) is not processed by
             # validation.
             record['login'] = pd.Value(record.type('login'), req.param('login'))
-        if not errors and record['autogenerate_password'].value():
+        if not errors and record.new() and record['autogenerate_password'].value():
             import random
             random.seed()
             password = ''.join(random.sample(string.digits + string.ascii_letters, 10))
