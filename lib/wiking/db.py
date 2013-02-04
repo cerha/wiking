@@ -1039,7 +1039,12 @@ class PytisModule(Module, ActionHandler):
         columns defined by the specification.
 
         """
-        return self._view.columns()
+        columns = self._view.columns()
+        fw = self._binding_forward(req)
+        if fw:
+            binding_column = fw.arg('binding').binding_column()
+            columns = [c for c in columns if c != binding_column]
+        return columns
 
     def _exported_columns(self, req):
         """Return a list of columns present in CSV export (action 'export').
