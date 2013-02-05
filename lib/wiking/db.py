@@ -1888,7 +1888,7 @@ class PytisModule(Module, ActionHandler):
         return result
         
     def related(self, req, binding, record, uri):
-        """Return the binding side form for other module's main form record.
+        """Return the binding side form content for other module's main form record.
 
         The side form is typically a listing of records related to the main
         form record (1:N binding) or details (show form) of a single side form
@@ -1916,9 +1916,9 @@ class PytisModule(Module, ActionHandler):
                                  layout=self._layout(req, 'view', my_record),
                                  actions=(), #self._form_actions_argument(req), #TODO: doesn't work
                                  **form_kwargs)
-            # TODO: This adds another level of binding subforms.  They don't
-            # seem to work now and it is questionable whether we want them...
-            # content = self._view_form_content(req, form, my_record)
+            # This would add another level of binding subforms.  They don't
+            # seem to work now and we most likely don't want them.  content =
+            # self._view_form_content(req, form, my_record)
         else:
             lang = req.preferred_language(raise_error=False)
             if self._LIST_BY_LANGUAGE:
