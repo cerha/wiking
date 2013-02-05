@@ -221,19 +221,23 @@ class RoleMembers(UserManagementModule):
         else:
             return super(RoleMembers, self)._link_provider(req, uri, record, cid, **kwargs)
 
-    def user_ids(self, role):
+    def user_ids(self, role, strict=False):
         """
         @type role: L{Role}
         @param role: Role whose users should be returned.
+        @type strict: boolean
+        @param strict: If true then include only direct L{role} members, otherwise
+          include users of all roles L{role} is member of.
 
         @rtype: sequence of integers
         @return: Sequence of identifiers of the users belonging to the given
-          role, including all roles L{role} is member of.
+          role
           
         """
-        included_role_ids = wiking.module('RoleSets').containing_role_ids(role)
-        S = pd.String()
-        condition = pd.OR(*[pd.EQ('role_id', pd.Value(S, m_id)) for m_id in included_role_ids])
+        assert isinstance(role, wiking.Role), role
+        assert isinstance(strict, bool), strict
+        included_role_ids = (role.id(),) if strict else wiking.module('RoleSets').containing_role_ids(role)
+        condition = pd.OR(*[pd.EQ('role_id', pd.sval(m_id)) for m_id in included_role_ids])
         user_ids = []
         def add_user_id(row):
             uid = row['uid'].value()
@@ -250,6 +254,7 @@ class RoleMembers(UserManagementModule):
         @rtype: sequence of strings
         @return: Identifiers of all the roles explicitly assigned to the given user.
         """
+        assert isinstance(uid, int)
         condition = pd.EQ('uid', pd.Value(pd.Integer(), uid))
         def role_id(row):
             return row['role_id'].value()
