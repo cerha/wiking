@@ -2257,6 +2257,9 @@ class PytisModule(Module, ActionHandler):
                                filename=self._print_field_filename(req, record, field))
     
     def _action_subtitle(self, req, action, record=None):
+        if action == 'list':
+            # Don't use subtitle for 'list' by default (avoid "Back to List" subtitle).
+            return None
         actions = sorted(self._actions(req, record), key=lambda a: len(a.kwargs()), reverse=True)
         for a in actions:
             if a.id() == action:
