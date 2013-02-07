@@ -1,6 +1,6 @@
 /* -*- coding: utf-8 -*-
  *
- * Copyright (C) 2012 Brailcom, o.p.s.
+ * Copyright (C) 2012, 2013 Brailcom, o.p.s.
  * Author: Tomas Cerha
  *
  * This program is free software; you can redistribute it and/or modify
@@ -35,28 +35,32 @@
 
 var Discussion = Class.create({
 
-    initialize: function (uri, field, attachment_field, container_selector) {
+    initialize: function (form_id, uri, field, attachment_field) {
+	this.form = $(form_id);
 	this.uri = uri;
 	this.field = field;
 	if (typeof(attachment_field) == 'undefined')
 	    attachment_field = null;
 	this.attachment_field = attachment_field;
-	var selector = '.discussion-reply';
-	if (typeof(container_selector) != 'undefined')
-	    selector = container_selector +' '+ selector;
-	$$(selector).each(function (div) {
+	if (this.form.instance)
+	    this.form.instance.on_load(this.add_reply_buttons.bind(this));
+    },
+
+    add_reply_buttons: function () {
+	// Dynamically add reply buttons to a
+	this.form.select('.discussion-reply').each(function (div) {
 	    var comment_id = div.down('span.id').innerHTML;
 	    var quoted = decodeURIComponent(div.down('span.quoted').innerHTML);
 	    var button = div.down('button.reply');
 	    var item = div.up('.list-item');
 	    var actions = item.down('.actions');
 	    if (actions == null) {
-		actions = new Element('div', {'class': 'actions'})
-		item.insert(actions);
+	        actions = new Element('div', {'class': 'actions'})
+	        item.insert(actions);
 	    }
             var button = new Element('button', {'class': 'reply'}).update(wiking._("Reply"));
 	    button.observe('click', function (event) { 
-		this.on_reply(item, comment_id, quoted);
+	        this.on_reply(item, comment_id, quoted);
 	    }.bind(this));
 	    actions.insert({'top': button});
 	}.bind(this));

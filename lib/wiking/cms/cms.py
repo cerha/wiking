@@ -2792,30 +2792,30 @@ class Discussions(ContentManagementModule, EmbeddableCMSModule):
         else:
             return self._redirect_after_insert(req, record)
         
-    def related(self, req, binding, record, uri):
-        content = [super(Discussions, self).related(req, binding, record, uri)]
-        if req.check_roles(Roles.USER):
-            form_uri = uri + '/'+ binding.id()
-            # Add JavaScript initialization above the list.
-            def render(element, context):
-                g = context.generator()
-                context.resource('effects.js')
-                context.resource('discussion.js')
-                # Translators: Button labels to add a reaction to a previous discussion post.
-                return g.script(g.js_call('new Discussion', form_uri, 'text'))
-            content.append(wiking.HtmlRenderer(render))
-            # We don't want to insert messages through a separate insert form,
-            # so we embed one directly below the message list.
-            content.append(self._form(pw.EditForm, req, reset=None, action='insert',
-                                      handler=form_uri))
-        else:
-            # Translators: The square brackets mark a link.  Please leave the brackets and the
-            # link target '?command=login' untouched and traslate 'log in' to fit into the
-            # sentence.  The user only sees it as 'You need to log in before ...'.
-            msg = _("Note: You need to [?command=login log in] before you can post messages.")
-            content.append(lcg.Container((lcg.p(msg, formatted=True),), name='login-info'))
-        # Wrap in a names container to allow css styling.
-        return lcg.Container(content, name='discussions')
+    def _list_form_content(self, req, form, uri=None):
+        content = super(Discussions, self)._list_form_content(req, form, uri=uri)
+        if uri is not None:
+            if req.check_roles(Roles.USER):
+                # Add JavaScript initialization above the list.
+                def render(element, context):
+                    g = context.generator()
+                    context.resource('effects.js')
+                    context.resource('discussion.js')
+                    return g.script(g.js_call('new Discussion', form.form_id(), uri, 'text'))
+                content.append(wiking.HtmlRenderer(render))
+                # We don't want to insert messages through a separate insert form,
+                # so we embed one directly below the message list.
+                content.append(self._form(pw.EditForm, req, reset=None, action='insert',
+                                          handler=uri))
+            else:
+                # Translators: The square brackets mark a link.  Please leave the brackets and the
+                # link target '?command=login' untouched and traslate 'log in' to fit into the
+                # sentence.  The user only sees it as 'You need to log in before ...'.
+                msg = _("Note: You need to [?command=login log in] before you can post messages.")
+                content.append(lcg.Container((lcg.p(msg, formatted=True),), name='login-info'))
+            # Wrap in a names container to allow css styling.
+            content = [lcg.Container(content, name='discussions')]
+        return content
     
         
 class SiteMap(Module, Embeddable):
