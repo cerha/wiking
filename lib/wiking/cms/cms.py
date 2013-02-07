@@ -537,15 +537,14 @@ class CMSExtension(Module, Embeddable, RequestHandler):
 
     def submodule_uri(self, req, modname):
         return self._base_uri(req) +'/'+ self._rmapping[modname]
-    
 
-class CMSExtensionModule(CMSModule):
-    """CMS module to be used within a 'CMSExtension'."""
-    _HONOUR_SPEC_TITLE = True
+    
+class CMSExtensionMenuModule(object):
+    """Mixin class for modules to be used in 'CMSExtension' menu."""
 
     def __init__(self, *args, **kwargs):
         self._parent = None
-        super(CMSExtensionModule, self).__init__(*args, **kwargs)
+        super(CMSExtensionMenuModule, self).__init__(*args, **kwargs)
         
     def set_parent(self, parent):
         assert isinstance(parent, CMSExtension)
@@ -557,6 +556,10 @@ class CMSExtensionModule(CMSModule):
     def submenu(self, req):
         return []
 
+    
+class CMSExtensionModule(CMSModule, CMSExtensionMenuModule):
+    """CMS module to be used within a 'CMSExtension'."""
+    _HONOUR_SPEC_TITLE = True
 
 
 class Config(SettingsManagementModule):
