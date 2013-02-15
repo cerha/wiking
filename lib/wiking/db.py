@@ -1986,7 +1986,7 @@ class PytisModule(Module, ActionHandler):
         uri = self._binding_parent_uri(req)
         if uri is not None:
             raise Redirect(uri, **kwargs)
-        
+
     def _related_content(self, req, record):
         """Return the content related to given record as a list of 'lcg.Content' instances.
 
@@ -2004,18 +2004,36 @@ class PytisModule(Module, ActionHandler):
         active = None
         for binding in self._bindings(req, record):
             if self._binding_visible(req, record, binding):
-                modname = binding.name()
-                mod = wiking.module(modname)
-                content = mod.related(req, binding, record,
-                                      uri=self._current_record_uri(req, record))
+                content = self._binding_content(req, record, binding)
                 if content:
                     anchor = 'binding-'+binding.id()
-                    if req.param('form_name') == modname:
+                    if req.param('form_name') == binding.name():
                         active = anchor
                     sections.append(lcg.Section(title=binding.title(), descr=binding.descr(),
                                                 anchor=anchor, content=content))
         if sections:
             return [lcg.Notebook(sections, name='bindings-'+self.name(), active=active)]
+        else:
+            return []
+
+    def _binding_content(self, req, record, binding):
+        """Return the related (side form) content for given record and binding.
+
+        Arguments:
+          req -- current 'Request' instance.
+          record -- the current record of the form as 'PytisModule.Record'.
+          binding -- 'pytis.presentation.Binding()' instance (one of those
+            returned by '_bindings()').
+
+        The returned value must be a list of 'lcg.Content' instances.  It
+        becomes part of '_related_content()' result.
+
+        """
+        mod = wiking.module(binding.name())
+        uri = self._current_record_uri(req, record)
+        content = mod.related(req, binding, record, uri=uri)
+        if content:
+            return [content]
         else:
             return []
 
