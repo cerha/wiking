@@ -62,9 +62,9 @@ def run(args):
         cursor.execute("select version from cms_database_version;")
         source_version = cursor.fetchone()[0]
         if source_version == target_version:
-            die("The database is already at version %d." % source_version)
+            die("The database is already at version %d.\n" % source_version)
         elif source_version > target_version:
-            die("The database is already at version %d, but the highest upgrade script is %d." %
+            die("The database is already at version %d, but the highest upgrade script is %d.\n" %
                 (source_version, target_version))
         for version in range(source_version+1, target_version+1):
             filename = 'upgrade.%02d.sql' % version
