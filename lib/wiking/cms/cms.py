@@ -2507,7 +2507,7 @@ class Attachments(ContentManagementModule):
         self._data.close()
         
     def storage_api_insert(self, req, page_id, lang, filename, data, values):
-        prefill = dict(page_id=page_id, lang=lang)
+        prefill = dict(page_id=page_id, lang=lang, listed=False)
         record = self._record(req, None, new=True, prefill=prefill)
         error = record.validate('file', data, filename=filename, mime_type=values.pop('mime_type'))
         if error:
