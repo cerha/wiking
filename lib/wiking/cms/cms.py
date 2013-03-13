@@ -2397,8 +2397,6 @@ class Attachments(ContentManagementModule):
             return [self._row_resource(row) for row in self._api_call('rows')]
      
         def insert(self, filename, data, values):
-            # Insert is not implemented because it is currently unused.  The
-            # insertion doesn't go through
             return self._api_call('insert', filename, data, values)
             
         def update(self, filename, values):
