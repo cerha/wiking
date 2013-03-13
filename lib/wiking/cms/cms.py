@@ -2323,8 +2323,8 @@ class Attachments(ContentManagementModule):
 
     class ImageGallery(lcg.Content):
         
-        def __init__(self, resources):
-            self._resources = resources
+        def __init__(self, images):
+            self._images = images
             super(Attachments.ImageGallery, self).__init__()
             
         def _export_item(self, context, resource):
@@ -2346,7 +2346,7 @@ class Attachments(ContentManagementModule):
         
         def export(self, context):
             g = context.generator()
-            content = [self._export_item(context, r) for r in self._resources]
+            content = [self._export_item(context, r) for r in self._images]
             return g.div(content, cls='wiking-image-gallery')
             
             
