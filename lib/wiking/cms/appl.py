@@ -337,10 +337,12 @@ class Application(CookieAuthentication, wiking.Application):
         return req.make_uri(req.module_uri('Registration'), action='remind')
 
     def login_panel_content(self, req):
+        content = []
+        if req.check_roles(Roles.CONTENT_ADMIN):
+            content.append(self.PreviewModeCtrl())
         if wiking.module('WikingManagementInterface').authorized(req):
-            return [self.PreviewModeCtrl(), self.WMILink()]
-        else:
-            return None
+            content.append(self.WMILink())
+        return content or None
 
     def login_is_email(self, req):
         return wiking.cms.cfg.login_is_email
