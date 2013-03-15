@@ -1861,6 +1861,11 @@ class NavigablePages(Pages):
     """Pages which have a simple sequential navigation bar at the top and bottom."""
 
     class Navigation(lcg.Content):
+
+        def __init__(self, position):
+            self._position = position
+            super(NavigablePages.Navigation, self).__init__()
+            
         def export(self, context):
             g = context.generator()
             req = context.req()
@@ -1868,29 +1873,32 @@ class NavigablePages(Pages):
             ebook_id = '/%s/data/%s' % (req.page_record['identifier'].value(), 
                                         req.ebook_record['identifier'].value())
             ebook = [n for n in node.path() if n.id() == ebook_id][0]
-            def ctrl(target, label, cls):
+            def ctrl(target, cls, label):
                 # Check that the target node is within the ebook's children.
                 if target and ebook in target.path():
-                    uri, title, descr = context.uri(target), target.title(), target.descr()
+                    uri = context.uri(target)
+                    title = target.title()
                 else:
                     # Translators: Label used instead of a link when the target
                     # does not exist.  For example sequential navigation may
                     # contain: "Previous: Introduction, Next: None".
-                    uri, title, descr = None, _("None"), None
+                    uri = None
+                    title = _("None")
                     cls += ' dead'
-                html_id = context.unique_id()
-                return g.span(g.label(label, html_id) + ': ' + 
-                              g.a(title, href=uri, title=descr, id=html_id), 
-                              cls='navigation-ctrl ' + cls)
-            # Translators: Label of a link to the previous page in sequential navigation.
-            return g.div((ctrl(node.prev(), _('Previous'), 'prev'), ' | ',
-                          # Translators: Label of a link to the next page in sequential navigation.
-                          ctrl(node.next(), _('Next'), 'next')), 
-                          cls='page-navigation')
+                return g.a(label, href=uri, title=label +': '+ title, 
+                           cls='navigation-ctrl ' + cls)
+            # Translators: Label of a link in sequential navigation.
+            return g.div((ctrl(node.prev(), 'prev', _('Previous Chapter')), ' | ',
+                          ctrl(node.next(), 'next', _('Next Chapter'))), 
+                          cls='page-navigation '+self._position)
+
+    def _inner_page_content(self, req, record):
+        return super(NavigablePages, self)._page_content(req, record)
 
     def _page_content(self, req, record):
-        nav = self.Navigation()
-        return [nav] + super(NavigablePages, self)._page_content(req, record) + [nav]
+        return ([self.Navigation('top')] +
+                self._inner_page_content(req, record) +
+                [self.Navigation('bottom')])
 
 
 class EBooks(NavigablePages, EmbeddableCMSModule):
@@ -1968,8 +1976,8 @@ class EBooks(NavigablePages, EmbeddableCMSModule):
     def _binding_visible(self, req, record, binding):
         return binding.id() != 'chapters' and super(EBooks, self)._binding_visible(req, record, binding)
         
-    def _page_content(self, req, record):
-        return super(EBooks, self)._page_content(req, record) + \
+    def _inner_page_content(self, req, record):
+        return super(EBooks, self)._inner_page_content(req, record) + \
             [lcg.NodeIndex(title=_("Table of Contents"))]
 
     def _child_rows(self, req, record):
@@ -1992,9 +2000,9 @@ class EBooks(NavigablePages, EmbeddableCMSModule):
         def node(row):
             return lcg.ContentNode(row['identifier'].value(),
                                    title=row['title'].value(),
-                                   # Call the super class _page_content to
+                                   # Call the super class _inner_page_content to
                                    # avoid a table of contents in every node.
-                                   content=super(EBooks, self)._page_content(req, self._record(req, row)),
+                                   content=super(EBooks, self)._inner_page_content(req, self._record(req, row)),
                                    children=[node(r) for r in
                                              children.get(row['page_id'].value(), ())])
         return node(record.row())

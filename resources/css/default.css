@@ -251,13 +251,19 @@ div.item span.panel-field-date {
 .unpublished { text-decoration: line-through; }
 
 .page-navigation {
-    margin: .8em 0;
     background-color: $color.frame-bg;
     border: 1px solid $color.frame-border;
     border-width: 1px 0;
-    padding: 0.1em;
     text-align: right;
-    color: $color.help;
+    padding: 0.1em;
+}
+.page-navigation.top {
+    position: relative;
+    top: -0.4em;
+    margin-bottom: .5em;
+}
+.page-navigation.bottom {
+    margin-top: 1.2em;
 }
 .page-navigation .navigation-ctrl {
     background-repeat: no-repeat;
@@ -275,6 +281,7 @@ div.item span.panel-field-date {
 .page-navigation .navigation-ctrl.dead {
     opacity: 0.6;
 }
+
 table.diff { border: 1px solid $color.border; margin-top: 0.4em; margin-bottom: 0.2em; }
 table.diff td, table.diff th { padding: 0.2em; }
 td.diff_header { text-align: right; }
