@@ -250,6 +250,31 @@ div.item span.panel-field-date {
 /* Links to unpublished pages */
 .unpublished { text-decoration: line-through; }
 
+.page-navigation {
+    margin: .8em 0;
+    background-color: $color.frame-bg;
+    border: 1px solid $color.frame-border;
+    border-width: 1px 0;
+    padding: 0.1em;
+    text-align: right;
+    color: $color.help;
+}
+.page-navigation .navigation-ctrl {
+    background-repeat: no-repeat;
+}
+.page-navigation .navigation-ctrl.prev {
+    background-image: url(/_resources/previous.png);
+    background-position: left center;
+    padding-left: 18px;
+}
+.page-navigation .navigation-ctrl.next {
+    background-image: url(/_resources/next.png);
+    background-position: right center;
+    padding-right: 18px;
+}
+.page-navigation .navigation-ctrl.dead {
+    opacity: 0.6;
+}
 table.diff { border: 1px solid $color.border; margin-top: 0.4em; margin-bottom: 0.2em; }
 table.diff td, table.diff th { padding: 0.2em; }
 td.diff_header { text-align: right; }

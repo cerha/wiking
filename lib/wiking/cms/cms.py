@@ -1857,7 +1857,43 @@ class Pages(SiteSpecificContentModule):
     #    raise Redirect('/_doc/wiking/cms/pages')
 
 
-class EBooks(Pages, EmbeddableCMSModule):
+class NavigablePages(Pages):
+    """Pages which have a simple sequential navigation bar at the top and bottom."""
+
+    class Navigation(lcg.Content):
+        def export(self, context):
+            g = context.generator()
+            req = context.req()
+            node = context.node()
+            ebook_id = '/%s/data/%s' % (req.page_record['identifier'].value(), 
+                                        req.ebook_record['identifier'].value())
+            ebook = [n for n in node.path() if n.id() == ebook_id][0]
+            def ctrl(target, label, cls):
+                # Check that the target node is within the ebook's children.
+                if target and ebook in target.path():
+                    uri, title, descr = context.uri(target), target.title(), target.descr()
+                else:
+                    # Translators: Label used instead of a link when the target
+                    # does not exist.  For example sequential navigation may
+                    # contain: "Previous: Introduction, Next: None".
+                    uri, title, descr = None, _("None"), None
+                    cls += ' dead'
+                html_id = context.unique_id()
+                return g.span(g.label(label, html_id) + ': ' + 
+                              g.a(title, href=uri, title=descr, id=html_id), 
+                              cls='navigation-ctrl ' + cls)
+            # Translators: Label of a link to the previous page in sequential navigation.
+            return g.div((ctrl(node.prev(), _('Previous'), 'prev'), ' | ',
+                          # Translators: Label of a link to the next page in sequential navigation.
+                          ctrl(node.next(), _('Next'), 'next')), 
+                          cls='page-navigation')
+
+    def _page_content(self, req, record):
+        nav = self.Navigation()
+        return [nav] + super(NavigablePages, self)._page_content(req, record) + [nav]
+
+
+class EBooks(NavigablePages, EmbeddableCMSModule):
     """e-Books management as a CMS module.
 
     e-Book is in principal a regular CMS page.  Subordinary pages are e-Book
@@ -1926,7 +1962,7 @@ class EBooks(Pages, EmbeddableCMSModule):
         
         
     def _handle(self, req, action, **kwargs):
-        req.ebook = kwargs.get('record')
+        req.ebook_record = kwargs.get('record')
         return super(EBooks, self)._handle(req, action, **kwargs)
 
     def _binding_visible(self, req, record, binding):
@@ -1966,9 +2002,9 @@ class EBooks(Pages, EmbeddableCMSModule):
         
     def submenu(self, req):
         # TODO: This partially duplicates Pages.menu() - refactor?
-        if not hasattr(req, 'ebook') or req.ebook is None:
+        if not hasattr(req, 'ebook_record') or req.ebook_record is None:
             return []
-        record = req.ebook
+        record = req.ebook_record
         children = self._child_rows(req, record)
         base_uri = '/%s/data/%s' % (req.page_record['identifier'].value(),
                                     record['identifier'].value())
@@ -2016,7 +2052,7 @@ class EBooks(Pages, EmbeddableCMSModule):
         return wiking.Response(result, content_type='text/plain',
                                filename='%s.txt' % record['identifier'].value())
         
-class EBookChapters(Pages):
+class EBookChapters(NavigablePages):
     """e-Book chapters are regular CMS pages """
     class Spec(Pages.Spec):
         def fields(self):
@@ -2030,7 +2066,7 @@ class EBookChapters(Pages):
                 identifier = '%s-%s' % (record['parent'].export(), identifier)
             return identifier
         def _parent_filter(self, record, site):
-            ebook = record.req().ebook
+            ebook = record.req().ebook_record
             return pd.AND(pd.EQ('site', pd.sval(site)),
                           pd.OR(pd.EQ('page_id', ebook['page_id']),
                                 pd.WM('tree_order', pd.WMValue(pd.String(), '%s.*' % ebook['tree_order'].value())))
@@ -2051,7 +2087,7 @@ class EBookChapters(Pages):
     def _current_base_uri(self, req, record=None):
         # Use PytisModule._current_base_uri (skip Pages._current_base_uri).
         return super(Pages, self)._current_base_uri(req, record=record)
-        
+
 
 class PageHistory(ContentManagementModule):
     """History of page content changes."""
