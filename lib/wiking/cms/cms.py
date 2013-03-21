@@ -2181,7 +2181,7 @@ class PageHistory(ContentManagementModule):
         """Insert a new history item if the page text has changed."""
         original_text = page.original_row()['_content'].value() or ''
         new_text = page['_content'].value() or ''
-        if new_text != original_text:
+        if page.new() or new_text != original_text:
             matcher = difflib.SequenceMatcher(lambda x: False,
                                               original_text.splitlines(), new_text.splitlines())
             inserted = changed = deleted = 0
@@ -2203,7 +2203,7 @@ class PageHistory(ContentManagementModule):
                 lang=page['lang'].value(),
                 uid=req.user().uid(),
                 timestamp=now(),
-                comment=page['comment'].value(),
+                comment=page['comment'].value() or page.new() and _("Initial version") or None,
                 content=new_text,
                 inserted_lines=inserted,
                 changed_lines=changed,
