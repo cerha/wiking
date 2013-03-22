@@ -755,6 +755,7 @@ class PageStructure(SiteSpecificContentModule):
         table = 'cms_pages'
         fields = (Field('page_id', enumerator='PageTitles'),
                   Field('site'),
+                  Field('kind'),
                   Field('identifier'),
                   Field('modname'),
                   Field('parent'),
@@ -1272,6 +1273,7 @@ class Pages(SiteSpecificContentModule):
             Field('page_key'),
             Field('page_id'),
             Field('site'),
+            Field('kind', default='page'),
             Field('identifier', _("Identifier"), width=20, fixed=True, editable=ONCE,
                   type=pd.RegexString(not_null=True, regex='^[a-zA-Z][0-9a-zA-Z_-]*$'),
                   computer=computer(self._default_identifier),
@@ -1284,7 +1286,7 @@ class Pages(SiteSpecificContentModule):
             Field('description', _("Description"), width=64,
                   descr=_("Brief page description (shown as a tooltip and in site map).")),
             ContentField('_content', _("Content"), compact=True, height=20, width=80,
-                         attachment_storage=lambda r: Attachments.AttachmentStorage(r)),
+                         attachment_storage=self._attachment_storage),
             ContentField('content'),
             Field('comment', _("Comment"), virtual=True, width=70,
                   descr=_("Describe briefly the changes you made.")),
@@ -1328,6 +1330,9 @@ class Pages(SiteSpecificContentModule):
                   descr=_("Check if you want the relevant menu item to be foldable (only makes "
                           "sense for pages, which have subordinary items in the menu).")),
             Field('tree_order', type=pd.TreeOrder()),
+            Field('creator', _("Creator"), codebook='Users'),
+            Field('created', _("Created"), default=now),
+            Field('published_since', _("Published since")),
             # Translators: Configuration option determining whether the page is published or not
             # (passive form of publish).  The label may be followed by a checkbox.
             Field('published', _("Published"), default=False,
@@ -1361,12 +1366,20 @@ class Pages(SiteSpecificContentModule):
                 return re.sub(r'[^a-z0-9-]', '', without_accents.lower().replace(' ', '-'))
             else:
                 return record['identifier'].value()
+        def _attachment_storage_uri(self, record):
+            return '/'+ record['identifier'].export() + '/attachments'
+        def _attachment_storage(self, record):
+            return Attachments.AttachmentStorage(record.req(),
+                                                 record['page_id'].value(),
+                                                 record['lang'].value(),
+                                                 self._attachment_storage_uri(record))
         def row_style(self, record):
             return not record['published'].value() and pp.Style(foreground='#777') or None
         def check(self, record):
             parent = record['parent'].value()
             if parent is not None and parent == record['page_id'].value():
                 return ('parent', _("A page can not be its own parent."))
+        condition = pd.EQ('kind', pd.sval('page'))
         sorting = (('tree_order', ASC), ('identifier', ASC),)
         #grouping = 'grouping'
         #group_heading = 'title'
@@ -1546,11 +1559,18 @@ class Pages(SiteSpecificContentModule):
         else:
             raise NotFound()
 
+    def _prefill(self, req):
+        return dict(super(Pages, self)._prefill(req),
+                    lang=req.preferred_language(raise_error=False),
+                    creator=req.user().uid())
+
     def _validate(self, req, record, layout):
         errors = super(Pages, self)._validate(req, record, layout)
         if not errors and req.has_param('commit'):
             record['content'] = record['_content']
             record['published'] = pd.bval(True)
+            if not record.original_row()['published'].value() and record['published_since'].value() is None:
+                record['published_since'] = pd.dtval(now())
         return errors
     
     def _insert_transaction(self, req, record):
@@ -1706,7 +1726,7 @@ class Pages(SiteSpecificContentModule):
                 pre, post = text, u''
             content = [self._text2content(pre)] + content + [self._text2content(post)]
         # Process page attachments
-        storage = Attachments.AttachmentStorage(record)
+        storage = record.attachment_storage('_content')
         resources = storage.resources()
         # Create automatic image gallery if any attachments are marked as in gallery.
         gallery_images = [r for r in resources if r.info()['in_gallery']]
@@ -1813,6 +1833,8 @@ class Pages(SiteSpecificContentModule):
 
     def action_commit(self, req, record):
         values = dict(content=record['_content'].value(), published=True)
+        if not record['published'].value() and record['published_since'].value() is None:
+            values['published_since'] = now()
         if record['title'].value() is None:
             if record['modname'].value() is not None:
                 # Supply the module's title automatically.
@@ -1870,12 +1892,12 @@ class NavigablePages(Pages):
             g = context.generator()
             req = context.req()
             node = context.node()
-            ebook_id = '/%s/data/%s' % (req.page_record['identifier'].value(), 
-                                        req.ebook_record['identifier'].value())
-            ebook = [n for n in node.path() if n.id() == ebook_id][0]
+            publication_id = '/%s/data/%s' % (req.page_record['identifier'].value(), 
+                                              req.publication_record['identifier'].value())
+            publication = [n for n in node.path() if n.id() == publication_id][0]
             def ctrl(target, cls, label):
-                # Check that the target node is within the ebook's children.
-                if target and ebook in target.path():
+                # Check that the target node is within the publications's children.
+                if target and publication in target.path():
                     uri = context.uri(target)
                     title = target.title()
                 else:
@@ -1901,64 +1923,130 @@ class NavigablePages(Pages):
                 [self.Navigation('bottom')])
 
 
-class EBooks(NavigablePages, EmbeddableCMSModule):
-    """e-Books management as a CMS module.
+class Publications(NavigablePages, EmbeddableCMSModule):
+    """e-Publications management as a CMS module.
 
-    e-Book is in principal a regular CMS page.  Subordinary pages are e-Book
-    chapters.  This module may be added to any CMS page (it is an embeddable
-    CMS module) and it will consist of a listing of available e-Books (subpages
-    of the page with the module) in alphabetical order.  Entering a particular
-    e-Book will add given e-Book to the CMS menu including all book's chapters.
+    e-Publication (e-Book) is created as a hierarchy of CMS pages.  The top
+    level page represents the publication, subordinary pages are its chapters.
+    This module may be added to any CMS page (it is an embeddable CMS module)
+    and it will consist of a listing of available e-Publications in
+    alphabetical order.  Entering a particular publication will add its
+    hierarchy to the CMS menu.
     
     """
     
     class Spec(Pages.Spec):
-        title = _("e-Books")
+        title = _("e-Publications")
+        table = 'cms_v_publications'
         def fields(self):
             override = (
+                Field('kind', default='publication'),
                 Field('_content', _("Title Page")),
+                Field('description', _("Subtitle")),
+                Field('creator', _("Digitalized by")),
+                Field('published_since', _("Available since")),
                 Field('parent',
                       computer=computer(lambda r: r.req().page_record['page_id'].value())),
                 Field('menu_visibility', default='never'),
+                Field('status', visible=computer(self._preview_mode)),
+                #Field('read_role_id', visible=computer(self._is_admin)),
+                #Field('write_role_id', visible=computer(self._is_admin)),
                 )
-            return self._inherited_fields(EBooks.Spec, override=override)
-        columns = ('title', 'status', 'read_role_id', 'write_role_id',)
+            extra = (
+                Field('author', _("Author"), width=60, not_null=True,
+                      descr=_("Author's full name or a comma separated list of full names.")),
+                Field('isbn', _("ISBN"), width=20,
+                      descr=_("ISBN of the original book if the publication is a digitalized book.")),
+                Field('cover_image', _("Cover Image"), not_null=False,
+                      codebook='Attachments', value_column='attachment_id',
+                      runtime_filter=computer(self._attachment_filter), display='filename',
+                      descr=_("Insert the image as an attachment and select it from the list here.")),
+                Field('illustrator', _("Illustrator"), width=50,
+                      descr=_("Full name or a comma separated list of full names.")),
+                Field('publisher', _("Publisher"), width=30,
+                      descr=_("Name of the organization which published the original work.")),
+                Field('published_year', _("Year Published"), width=4,
+                      descr=_("Year when the original work was published.")),
+                Field('edition', _("Edition"), width=3,
+                      descr=_("Numeric order of the original work's edition.")),
+                Field('notes', _("Notes"), width=60, height=4,
+                      descr=_("Any other additional information about the publication, "
+                              "such as names of translators, reviewers etc.")),
+                Field('pubinfo', _("Published<publisher>"), virtual=True, computer=computer(self._pubinfo)),
+                )
+            return self._inherited_fields(Publications.Spec, override=override) + extra
+        def _preview_mode(self, record):
+            return wiking.module('Application').preview_mode(record.req())
+        #def _is_admin(self, record):
+        #    return record.req().check_roles(Roles.CONTENT_ADMIN)
+        def _attachment_filter(self, record, page_id, lang):
+            return pd.AND(pd.EQ('page_id', pd.ival(page_id)),
+                          pd.EQ('lang', pd.sval(lang)),
+                          pd.WM('mime_type', pd.WMValue(pd.String(), 'image/*')))
+        def _attachment_storage_uri(self, record):
+            return '/%s/data/%s/attachments' % (record.req().page_record['identifier'].value(),
+                                                record['identifier'].value())
+        def _pubinfo(self, record, publisher, published_year, edition):
+            if publisher:
+                info = publisher
+                if published_year:
+                    info += ' %d' % (published_year,)
+                    if edition:
+                        info += ' (' + lcg.format('%d. edition', edition) + ')'
+                return info
+            else:
+                return None
+        condition = pd.AND(pd.EQ('kind', pd.sval('publication')),
+                           pd.NE('title', pd.sval(None)))
+        layout = ('title', 'description', 'lang', 'identifier', 'cover_image',
+                  FieldSet(_("Bibliographic information"),
+                           ('author', 'illustrator', 'isbn', 
+                            'publisher', 'published_year', 'edition', 'notes')), 
+                  '_content', 
+                  FieldSet(_("Access Rights"), 
+                           ('read_role_id', 'write_role_id',)),
+                  )
+        columns = ('title', 'author', 'publisher', 'status')
         sorting = ('title', pd.ASCENDENT),
         bindings = (
-            Binding('chapters', _("Chapters"), 'EBookChapters', 'parent'),
+            Binding('chapters', _("Chapters"), 'PublicationChapters', 'parent'),
             ) + Pages.Spec.bindings
         actions = Pages.Spec.actions + (
             Action('new_chapter', _("New Chapter"),
-                   descr=_("Create a new chapter in this e-Book.")),
+                   descr=_("Create a new chapter in this publication.")),
             Action('export_epub', _("Export to EPUB"),
-                   descr=_("Export the e-Book to EPUB format")),
+                   descr=_("Export the publication to EPUB format")),
             Action('export_braille', _("Export to Braille"),
-                   descr=_("Export the e-Book to Braille")),
+                   descr=_("Export the publication to Braille")),
             )
     
-    _INSERT_LABEL = _("New e-Book")
+    _LIST_BY_LANGUAGE = False
+    _INSERT_LABEL = _("New e-Publication")
+    _UPDATE_LABEL = _("Edit")
     _EMBED_BINDING_COLUMN = 'parent'
-    _LAYOUT = dict(Pages._LAYOUT,
-                   insert=('title', 'description', '_content', 'identifier',
-                           FieldSet(_("Access Rights"), ('read_role_id', 'write_role_id',))),
-                   options=('read_role_id', 'write_role_id'),
-                   )
+    _LAYOUT = {}
 
     def _authorized(self, req, action, **kwargs):
-        if action in ('new_page', 'list'):
+        if action in ('new_page', 'list', 'options'):
             return False
         elif action == 'new_chapter':
             return req.page_write_access
         elif action in ('export_epub', 'export_braille'):
             return req.page_read_access
         else:
-            return super(EBooks, self)._authorized(req, action, **kwargs)
+            return super(Publications, self)._authorized(req, action, **kwargs)
     
+    def _condition(self, req):
+        condition = super(Publications, self)._condition(req)
+        if not wiking.module('Application').preview_mode(req):
+            condition = pd.AND(condition, pd.EQ('published', pd.bval(True)))
+        return condition
+
     def _insert_msg(self, req, record):
         if record['published'].value():
-            return _("New e-Book was successfully created and published.")
+            return _("New e-Publication was successfully created and published.")
         else:
-            return _("New e-Book was successfully created, but was not published yet. "
+            return _("New e-Publication was successfully created, but was not published yet. "
                      "Publish it when you are done.")
 
     def _current_base_uri(self, req, record=None):
@@ -1968,51 +2056,66 @@ class EBooks(NavigablePages, EmbeddableCMSModule):
     def _redirect_after_delete_uri(self, req, record, **kwargs):
         return '/' + req.page_record['identifier'].value(), kwargs
         
-        
+    def _link_provider(self, req, uri, record, cid, **kwargs):
+        if cid == 'lang':
+            return None
+        return super(Publications, self)._link_provider(req, uri, record, cid, **kwargs)
+
     def _handle(self, req, action, **kwargs):
-        req.ebook_record = kwargs.get('record')
-        return super(EBooks, self)._handle(req, action, **kwargs)
+        req.publication_record = kwargs.get('record')
+        return super(Publications, self)._handle(req, action, **kwargs)
 
     def _binding_visible(self, req, record, binding):
-        return binding.id() != 'chapters' and super(EBooks, self)._binding_visible(req, record, binding)
+        return binding.id() != 'chapters' and super(Publications, self)._binding_visible(req, record, binding)
         
     def _inner_page_content(self, req, record):
-        return super(EBooks, self)._inner_page_content(req, record) + \
-            [lcg.NodeIndex(title=_("Table of Contents"))]
+        def cover_image(element, context):
+            if record['cover_image'].value():
+                g = context.generator()
+                filename = record.cb_value('cover_image', 'filename').value()
+                storage = record.attachment_storage('_content')
+                image = storage.resource(filename)
+                if image.size():
+                    width, height = image.size()
+                else:
+                    width, height = None, None
+                return g.div(g.img(src=image.uri(), alt=image.descr(), width=width, height=height),
+                             cls='publication-cover-image')
+            else:
+                return ''
+        return ([wiking.HtmlRenderer(cover_image),
+                 self._form(pw.ShowForm, req, record=record, actions=(), 
+                            layout=[fid for fid in ('description', 'author', 'illustrator', 
+                                                    'isbn', 'pubinfo', 'lang',
+                                                    'creator', 'published_since', 'notes')
+                                    if record[fid].value() is not None])] +
+                super(Publications, self)._inner_page_content(req, record) +
+                [lcg.NodeIndex(title=_("Table of Contents"))])
 
     def _child_rows(self, req, record):
-        children = {None: []}
-        if wiking.module('Application').preview_mode(req):
-            restriction = {}
-        else:
-            restriction = {'published': True}
-        condition = pd.OR(pd.EQ('page_id', record['page_id']),
-                          pd.WM('tree_order', pd.WMValue(pd.String(), '%s.*' % record['tree_order'].value())))
-        for row in self._data.get_rows(site=wiking.cfg.server_hostname, condition=condition,
-                                       lang=record['lang'].value(),
-                                       sorting=(('tree_order', pd.ASCENDENT),),
-                                       **restriction):
-            children.setdefault(row['parent'].value(), []).append(row)
+        children = wiking.module('PublicationChapters').child_rows(req, record['tree_order'].value(), 
+                                                             record['lang'].value())
+        children[record['parent'].value()] = [record.row()]
         return children
+    
 
-    def _ebook(self, req, record):
+    def _publication(self, req, record):
         children = self._child_rows(req, record)
         def node(row):
             return lcg.ContentNode(row['identifier'].value(),
                                    title=row['title'].value(),
                                    # Call the super class _inner_page_content to
                                    # avoid a table of contents in every node.
-                                   content=super(EBooks, self)._inner_page_content(req, self._record(req, row)),
+                                   content=super(Publications, self)._inner_page_content(req, self._record(req, row)),
                                    children=[node(r) for r in
                                              children.get(row['page_id'].value(), ())])
         return node(record.row())
-    
         
     def submenu(self, req):
         # TODO: This partially duplicates Pages.menu() - refactor?
-        if not hasattr(req, 'ebook_record') or req.ebook_record is None:
+        if not hasattr(req, 'publication_record') or req.publication_record is None:
             return []
-        record = req.ebook_record
+        record = req.publication_record
         children = self._child_rows(req, record)
         base_uri = '/%s/data/%s' % (req.page_record['identifier'].value(),
                                     record['identifier'].value())
@@ -2039,7 +2142,7 @@ class EBooks(NavigablePages, EmbeddableCMSModule):
                 else:
                     # TODO: Retrieve the attachment.
                     return None
-        node = self._ebook(req, record)
+        node = self._publication(req, record)
         exporter = EpubExporter(translations=wiking.cfg.translation_path)
         context = exporter.context(node, req.preferred_language())
         result = exporter.export(context)
@@ -2047,7 +2150,7 @@ class EBooks(NavigablePages, EmbeddableCMSModule):
                                filename='%s.epub' % record['identifier'].value())
     
     def action_export_braille(self, req, record):
-        node = self._ebook(req, record)
+        node = self._publication(req, record)
         exporter = lcg.BrailleExporter(translations=wiking.cfg.translation_path)
         presentation = lcg.braille_presentation()
         presentation_set = lcg.PresentationSet(((presentation, lcg.TopLevelMatcher(),),))
@@ -2060,25 +2163,32 @@ class EBooks(NavigablePages, EmbeddableCMSModule):
         return wiking.Response(result, content_type='text/plain',
                                filename='%s.txt' % record['identifier'].value())
         
-class EBookChapters(NavigablePages):
-    """e-Book chapters are regular CMS pages """
+class PublicationChapters(NavigablePages):
+    """e-Publication chapters are regular CMS pages """
     class Spec(Pages.Spec):
         def fields(self):
             override = (
+                Field('kind', default='chapter'),
                 Field('parent', runtime_filter=computer(self._parent_filter)),
                 )
-            return self._inherited_fields(EBookChapters.Spec, override=override)
+            return self._inherited_fields(PublicationChapters.Spec, override=override)
         def _default_identifier(self, record, title):
-            identifier = super(EBookChapters.Spec, self)._default_identifier(record, title)
+            identifier = super(PublicationChapters.Spec, self)._default_identifier(record, title)
             if title and record['identifier'].value() is None:
                 identifier = '%s-%s' % (record['parent'].export(), identifier)
             return identifier
         def _parent_filter(self, record, site):
-            ebook = record.req().ebook_record
+            publication = record.req().publication_record
             return pd.AND(pd.EQ('site', pd.sval(site)),
-                          pd.OR(pd.EQ('page_id', ebook['page_id']),
-                                pd.WM('tree_order', pd.WMValue(pd.String(), '%s.*' % ebook['tree_order'].value())))
+                          pd.OR(pd.EQ('page_id', publication['page_id']),
+                                pd.WM('tree_order', pd.WMValue(pd.String(), '%s.*' % publication['tree_order'].value())))
                           )
+        def _attachment_storage_uri(self, record):
+            return '/%s/data/%s/chapters/%s/attachments' % \
+                (record.req().page_record['identifier'].value(),
+                 record.req().publication_record['identifier'].value(),
+                 record['identifier'].value())
+        condition = pd.EQ('kind', pd.sval('chapter'))
         columns = ('title', 'status')
         sorting = ('ord', pd.ASCENDENT),
     _INSERT_LABEL = _("New Chapter")
@@ -2090,11 +2200,26 @@ class EBookChapters(NavigablePages):
         if action in ('new_page', 'list'):
             return False
         else:
-            return super(EBookChapters, self)._authorized(req, action, **kwargs)
+            return super(PublicationChapters, self)._authorized(req, action, **kwargs)
 
     def _current_base_uri(self, req, record=None):
         # Use PytisModule._current_base_uri (skip Pages._current_base_uri).
         return super(Pages, self)._current_base_uri(req, record=record)
+
+    def child_rows(self, req, tree_order, lang):
+        children = {}
+        if wiking.module('Application').preview_mode(req):
+            restriction = {}
+        else:
+            restriction = {'published': True}
+        for row in self._data.get_rows(site=wiking.cfg.server_hostname, 
+                                       condition=pd.WM('tree_order', 
+                                                       pd.WMValue(pd.String(), '%s.*' % tree_order)),
+                                       lang=lang,
+                                       sorting=(('tree_order', pd.ASCENDENT),),
+                                       **restriction):
+            children.setdefault(row['parent'].value(), []).append(row)
+        return children
 
 
 class PageHistory(ContentManagementModule):
@@ -2396,14 +2521,15 @@ class Attachments(ContentManagementModule):
             
     class AttachmentStorage(pp.AttachmentStorage):
 
-        def __init__(self, page_record):
-            self._page_record = page_record
-            self._base_uri = '/'+ page_record['identifier'].export() + '/attachments'
+        def __init__(self, req, page_id, lang, base_uri):
+            self._req = req
+            self._page_id = page_id
+            self._lang = lang
+            self._base_uri = base_uri
 
         def _api_call(self, name, *args, **kwargs):
-            r = self._page_record
             method = getattr(wiking.module('Attachments'), 'storage_api_'+name)
-            return method(r.req(), r['page_id'].value(), r['lang'].value(), *args, **kwargs)
+            return method(self._req, self._page_id, self._lang, *args, **kwargs)
 
         def _row_resource(self, row):
             if row['thumbnail_size'].value():
@@ -2422,13 +2548,13 @@ class Attachments(ContentManagementModule):
                                   thumbnail_size=thumbnail_size)
 
         def _resource_uri(self, filename):
-            return self._page_record.req().make_uri(self._base_uri+'/'+filename)
+            return self._req.make_uri(self._base_uri+'/'+filename)
         
         def _image_uri(self, filename):
-            return self._page_record.req().make_uri(self._base_uri+'/'+filename, action='image')
+            return self._req.make_uri(self._base_uri+'/'+filename, action='image')
         
         def _thumbnail_uri(self, filename):
-            return self._page_record.req().make_uri(self._base_uri+'/'+filename, action='thumbnail')
+            return self._req.make_uri(self._base_uri+'/'+filename, action='thumbnail')
         
         def resource(self, filename):
             row = self._api_call('row', filename)
