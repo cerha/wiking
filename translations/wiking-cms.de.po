@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2013-03-22 16:58+0100\n"
+"POT-Creation-Date: 2013-03-22 17:18+0100\n"
 "PO-Revision-Date: 2008-10-24 13:19+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: German <wiking@lists.freebsoft.org>\n"
@@ -1101,6 +1101,11 @@ msgstr ""
 
 #: ../lib/wiking/cms/cms.py:1975
 msgid "Published<publisher>"
+msgstr ""
+
+#: ../lib/wiking/cms/cms.py:1995
+#, python-format
+msgid "%d. edition"
 msgstr ""
 
 #: ../lib/wiking/cms/cms.py:2002

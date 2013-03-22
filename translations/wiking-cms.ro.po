@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2013-03-22 16:58+0100\n"
+"POT-Creation-Date: 2013-03-22 17:18+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Petr Topiarz <topiarz@post.cz>\n"
 "Language-Team: \n"
@@ -1200,6 +1200,11 @@ msgstr ""
 #, fuzzy
 msgid "Published<publisher>"
 msgstr "Publicat"
+
+#: ../lib/wiking/cms/cms.py:1995
+#, fuzzy, python-format
+msgid "%d. edition"
+msgstr "Descriere"
 
 #: ../lib/wiking/cms/cms.py:2002
 #, fuzzy
