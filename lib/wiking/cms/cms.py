@@ -1992,7 +1992,7 @@ class Publications(NavigablePages, EmbeddableCMSModule):
                 if published_year:
                     info += ' %d' % (published_year,)
                     if edition:
-                        info += ' (' + lcg.format('%d. edition', edition) + ')'
+                        info += ' (' + _("%d. edition", edition) + ')'
                 return info
             else:
                 return None
