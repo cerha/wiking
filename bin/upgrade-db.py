@@ -33,7 +33,7 @@ def die(msg):
 
 def usage(msg=None):
     message = """Perform incremental upgrades of an existing Wiking CMS database.
-Usage: %s database directory
+Usage: %s [-p port] database directory
   database ... name of the Wiking CMS database to upgrade
   directory ... path to Wiking upgrade scripts (the `sql' subdirectory of a
     Wiking source archive)
@@ -45,18 +45,25 @@ Usage: %s database directory
 def run(args):
     if '--help' in args:
         usage()
+    if '-p' in args:
+        i = args.index('-p')
+        try:
+            __, port = args.pop(i), int(args.pop(i))
+        except (IndexError, ValueError):
+            usage("Argument -p requires a number.")
+    else:
+        port = 5432
     try:
         database, directory = args[1:]
     except ValueError:
         usage("Invalid number of arguments.")
-
     if not os.path.isdir(directory):
         usage("Directory '%s' does not exist!" % directory)
     upgrade_scripts = sorted(glob.glob(os.path.join(directory, 'upgrade.*.sql')))
     if not upgrade_scripts:
         usage("Directory '%s' contains no upgrade scripts!" % os.path.abspath(directory))
     target_version = int(upgrade_scripts[-1].split('.')[-2])
-    connection = dbapi.connect(database=database)
+    connection = dbapi.connect(database=database, port=port)
     try:
         cursor = connection.cursor()
         cursor.execute("select version from cms_database_version;")
