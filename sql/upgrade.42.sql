@@ -225,7 +225,7 @@ $$ language sql stable;
 
 update cms_pages set modname='Publications' where modname='EBooks';
 update cms_pages set kind='publication' where parent in (select page_id from cms_pages where modname='Publications');
-update cms_pages set kind='chapter' from (select x.page_id from cms_pages x join cms_pages y on x.page_id!=y.page_id and y.kind='publication' and is_child_page(x.page_id, y.page_id)) chapters where page_id=chapters.page_id;
+update cms_pages p set kind='chapter' from (select x.page_id from cms_pages x join cms_pages y on x.page_id!=y.page_id and y.kind='publication' and is_child_page(x.page_id, y.page_id)) chapters where p.page_id=chapters.page_id;
 insert into cms_publications (page_id, author) select page_id, '?' from cms_pages where kind = 'publication';
 
 update cms_page_texts t
