@@ -565,7 +565,7 @@ create or replace rule cms_v_publications_delete as
 
 create table cms_publication_languages (
        -- list of content languages available for given publication
-       page_id int not null references cms_publications on delete cascade,
+       page_id int not null references cms_publications(page_id) on delete cascade,
        lang text not null, -- language code
        unique (page_id, lang)
 );
@@ -573,7 +573,7 @@ create table cms_publication_languages (
 create table cms_publication_indexes (
        -- list of indexes available for given publication
        index_id serial primary key,
-       page_id int not null references cms_publications on delete cascade,
+       page_id int not null references cms_publications(page_id) on delete cascade,
        title text not null,
        unique (page_id, title)
 );
