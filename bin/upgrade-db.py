@@ -82,7 +82,7 @@ def run(args):
         connection.commit()
     except Exception as e:
         connection.rollback()
-        sys.stderr.write("Error: %s" % e.message)
+        sys.stderr.write("Error: %s" % e)
         sys.stderr.write("Transaction rolled back.\n")
         sys.exit(1)
     else:
