@@ -133,20 +133,6 @@ create or replace rule cms_v_pages_delete as
      delete from cms_pages where page_id = old.page_id;
 );
 
-update cms_pages set kind='publication' where parent in (select page_id from cms_pages where modname='EBooks');
-update cms_pages set kind='chapter' where parent in (select page_id from cms_pages where kind='publication');
-update cms_pages set kind='chapter' where parent in (select page_id from cms_pages where kind='chapter');
-update cms_pages set kind='chapter' where parent in (select page_id from cms_pages where kind='chapter');
-update cms_pages set kind='chapter' where parent in (select page_id from cms_pages where kind='chapter');
-update cms_pages set kind='chapter' where parent in (select page_id from cms_pages where kind='chapter');
-update cms_pages set kind='chapter' where parent in (select page_id from cms_pages where kind='chapter');
-update cms_pages set kind='chapter' where parent in (select page_id from cms_pages where kind='chapter');
-update cms_pages set kind='chapter' where parent in (select page_id from cms_pages where kind='chapter');
-update cms_pages set kind='chapter' where parent in (select page_id from cms_pages where kind='chapter');
-update cms_pages set kind='chapter' where parent in (select page_id from cms_pages where kind='chapter');
-update cms_pages set kind='chapter' where parent in (select page_id from cms_pages where kind='chapter');
-update cms_pages set kind='chapter' where parent in (select page_id from cms_pages where kind='chapter');
-
 create table cms_publications (
        -- bibliographic data of the original (paper) books
        page_id int unique not null references cms_pages on delete cascade,
@@ -231,8 +217,36 @@ create or replace rule cms_v_publications_delete as
      delete from cms_pages where page_id = old.page_id;
 );
 
-insert into cms_publications (page_id, author) select page_id, '?' from cms_pages where kind = 'publication';
+create or replace function is_child_page (integer, integer) returns bool as $$
+   select case when (select parent from cms_pages where page_id=$1) = $2 then true
+   when (select parent from cms_pages where page_id=$1) is null then false
+   else is_child_page((select parent from cms_pages where page_id=$1), $2) end
+$$ language sql stable;
+
 update cms_pages set modname='Publications' where modname='EBooks';
+update cms_pages set kind='publication' where parent in (select page_id from cms_pages where modname='Publications');
+update cms_pages set kind='chapter' from (select x.page_id from cms_pages x join cms_pages y on x.page_id!=y.page_id and y.kind='publication' and is_child_page(x.page_id, y.page_id)) chapters where page_id=chapters.page_id;
+insert into cms_publications (page_id, author) select page_id, '?' from cms_pages where kind = 'publication';
+
+update cms_page_texts t
+       set content=replace(content, 'src="'||old_url, 'src="'||new_url),
+           _content=replace(_content, 'src="'||old_url, 'src="'||new_url)
+       from (select y.page_id,
+                    '/'||y.identifier||'/attachments/' as old_url,
+                    '/'||x.identifier||'/data/'||y.identifier||'/attachments/' as new_url
+             from cms_pages x join cms_pages y on (x.page_id=y.parent)
+             where x.modname='Publications'
+             union
+             select z.page_id,
+                    '/'||z.identifier||'/attachments/' as old_url,
+                    '/'||x.identifier||'/data/'||y.identifier||'/chapters/'||z.identifier||'/attachments/' as new_url
+             from cms_pages x join cms_pages y on (x.page_id=y.parent)
+                  join cms_pages z on (is_child_page(z.page_id, y.page_id))
+             where x.modname='Publications'
+       ) pages
+       where t.page_id=pages.page_id;
+
+drop function is_child_page(integer, integer);
 
 create table cms_publication_languages (
        -- list of content languages available for given publication
