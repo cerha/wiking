@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2013-03-15 08:24+0100\n"
+"POT-Creation-Date: 2013-03-26 08:28+0100\n"
 "PO-Revision-Date: 2010-02-02 15:44+0100\n"
 "Last-Translator: Petr Topiarz <topiarz@post.cz>\n"
 "Language-Team: French <wiking@lists.freebsoft.org>\n"
@@ -262,27 +262,27 @@ msgstr "Impossible d'effectuer une opération de base de données."
 msgid "Filter"
 msgstr ""
 
-#: ../lib/wiking/db.py:2201
+#: ../lib/wiking/db.py:2200
 msgid "Back"
 msgstr "En arrière"
 
 #. Back button label. Standard computer terminology.
 #. RSS channel is a computer idiom, see Wikipedia.
-#: ../lib/wiking/db.py:2410 ../lib/wiking/db.py:2566
+#: ../lib/wiking/db.py:2409 ../lib/wiking/db.py:2565
 msgid "An RSS channel is available for this section:"
 msgstr "Un canal RSS est disponible pour cette section :"
 
 #. RSS channel is a computer idiom, see Wikipedia.  Don't translateg 'RSS'.
-#: ../lib/wiking/db.py:2414 ../lib/wiking/db.py:2564
+#: ../lib/wiking/db.py:2413 ../lib/wiking/db.py:2563
 msgid "more about RSS"
 msgstr "plus d'informations sur RSS"
 
-#: ../lib/wiking/db.py:2559
+#: ../lib/wiking/db.py:2558
 #, fuzzy, python-format
 msgid "RSS channel \"%s\""
 msgstr "Le canal RSS"
 
-#: ../lib/wiking/db.py:2569
+#: ../lib/wiking/db.py:2568
 #, fuzzy
 msgid "RSS channels are available for this section"
 msgstr "Un canal RSS est disponible pour cette section :"
@@ -439,13 +439,13 @@ msgstr "Authentification requise"
 
 #. Login dialog page title (use a noun).
 #. Login info label (noun) followed by login name and other info.
-#: ../lib/wiking/util.py:165 ../lib/wiking/util.py:739
-#: ../lib/wiking/util.py:1227
+#: ../lib/wiking/util.py:165 ../lib/wiking/util.py:731
+#: ../lib/wiking/util.py:1219
 msgid "Login"
 msgstr "Connexion"
 
 #. Information text on login panel.
-#: ../lib/wiking/util.py:207 ../lib/wiking/util.py:716
+#: ../lib/wiking/util.py:207 ../lib/wiking/util.py:708
 msgid "Your password expired"
 msgstr "Votre mot de passe a expiré"
 
@@ -459,7 +459,7 @@ msgstr ""
 
 #. This is a link on a webpage
 #. Link on login panel on the webpage.
-#: ../lib/wiking/util.py:215 ../lib/wiking/util.py:724
+#: ../lib/wiking/util.py:215 ../lib/wiking/util.py:716
 msgid "Change your password"
 msgstr "Changez votre mot de passe"
 
@@ -549,26 +549,26 @@ msgstr "Erreur interne du serveur"
 msgid "Unable to perform a database operation."
 msgstr "Impossible d'effectuer une opération de base de données."
 
-#: ../lib/wiking/util.py:384
+#: ../lib/wiking/util.py:376
 msgid "The server was unable to complete your request."
 msgstr "Le serveur n'a pas pu exécuter l'opération demandée."
 
-#: ../lib/wiking/util.py:385 ../lib/wiking/util.py:399
+#: ../lib/wiking/util.py:377 ../lib/wiking/util.py:391
 #, python-format
 msgid "Please inform the server administrator, %s if the problem persists."
 msgstr ""
 "S'il vous plaît, informez l'administrateur du serveur,% s si le problème "
 "persiste."
 
-#: ../lib/wiking/util.py:387
+#: ../lib/wiking/util.py:379
 msgid "The error message was:"
 msgstr "Le message d'erreur était :"
 
-#: ../lib/wiking/util.py:393
+#: ../lib/wiking/util.py:385
 msgid "Service Unavailable"
 msgstr "Le service n'est pas disponible"
 
-#: ../lib/wiking/util.py:397
+#: ../lib/wiking/util.py:389
 msgid ""
 "The requested function is currently unavailable. Try repeating your request "
 "later."
@@ -577,7 +577,7 @@ msgstr ""
 "votre demande ultérieurement."
 
 #. Login panel info. '%(date)s' is replaced by a concrete date.
-#: ../lib/wiking/util.py:720
+#: ../lib/wiking/util.py:712
 #, python-format
 msgid "Your password expires on %(date)s"
 msgstr "Votre mot de passe expire le  %(date)s"
@@ -586,80 +586,80 @@ msgstr "Votre mot de passe expire le  %(date)s"
 #. user to obtain access to the website/application by submitting his personal
 #. details.
 #. Webpage link leading to registration form.
-#: ../lib/wiking/util.py:731 ../lib/wiking/util.py:1278
+#: ../lib/wiking/util.py:723 ../lib/wiking/util.py:1270
 msgid "New user registration"
 msgstr "Enregistrement de nouveaux utilisateurs"
 
-#: ../lib/wiking/util.py:740
+#: ../lib/wiking/util.py:732
 msgid "Login Panel"
 msgstr "Panneau d'ouverture de session"
 
-#: ../lib/wiking/util.py:1209
+#: ../lib/wiking/util.py:1201
 msgid "Go to your profile"
 msgstr "Accédez à votre profil"
 
 #. Logout button label (verb in imperative).
-#: ../lib/wiking/util.py:1211
+#: ../lib/wiking/util.py:1203
 msgid "log out"
 msgstr "fermer une session"
 
 #. Login status info.  If logged, the username is displayed instead.
-#: ../lib/wiking/util.py:1214
+#: ../lib/wiking/util.py:1206
 msgid "not logged"
 msgstr "non connecté"
 
 #. Login button label (verb in imperative).
-#: ../lib/wiking/util.py:1216
+#: ../lib/wiking/util.py:1208
 msgid "log in"
 msgstr "ouvrir une session"
 
-#: ../lib/wiking/util.py:1265
+#: ../lib/wiking/util.py:1257
 msgid "Your e-mail address"
 msgstr ""
 
-#: ../lib/wiking/util.py:1265
+#: ../lib/wiking/util.py:1257
 msgid "Login name"
 msgstr "Identifiant"
 
-#: ../lib/wiking/util.py:1269
+#: ../lib/wiking/util.py:1261
 msgid "Password"
 msgstr "Mot de passe"
 
 #. Login button label - verb in imperative.
-#: ../lib/wiking/util.py:1275
+#: ../lib/wiking/util.py:1267
 msgid "Log in"
 msgstr "Connexion"
 
 #. Login dialog link to password change or password reminder (depends
 #. on configuration).
-#: ../lib/wiking/util.py:1281
+#: ../lib/wiking/util.py:1273
 msgid "Forgot your password?"
 msgstr "Vous avez oublié votre mot de passe ?"
 
 #. Web form label and message
-#: ../lib/wiking/util.py:1310
+#: ../lib/wiking/util.py:1302
 #, python-format
 msgid "Decryption password for '%s'"
 msgstr ""
 
 #. Web form button.
-#: ../lib/wiking/util.py:1317
+#: ../lib/wiking/util.py:1309
 #, fuzzy
 msgid "Send password"
 msgstr "Mot de passe"
 
 #. Confirmation button
-#: ../lib/wiking/util.py:1338
+#: ../lib/wiking/util.py:1330
 msgid "Continue"
 msgstr ""
 
-#: ../lib/wiking/util.py:1958
+#: ../lib/wiking/util.py:1950
 msgid "Invalid format"
 msgstr "Format invalide"
 
 #. Computer terminology. `gmail.com' is a domain name in email address
 #. `joe@gmail.com'.
-#: ../lib/wiking/util.py:1966 ../lib/wiking/util.py:1973
+#: ../lib/wiking/util.py:1958 ../lib/wiking/util.py:1965
 msgid "Domain not found"
 msgstr "Le domaine n'a pas été trouvé."
 
