@@ -1284,7 +1284,8 @@ class Pages(SiteSpecificContentModule):
             Field('title_or_identifier', _("Title")),
             Field('title', _("Title"), not_null=True),
             Field('description', _("Description"), width=64,
-                  descr=_("Brief page description (shown as a tooltip and in site map).")),
+                  descr=_("Brief description shown as a tooltip on links (such as menu items) "
+                          "and in site map.")),
             ContentField('_content', _("Content"), compact=True, height=20, width=80,
                          attachment_storage=self._attachment_storage),
             ContentField('content'),
@@ -1570,7 +1571,7 @@ class Pages(SiteSpecificContentModule):
             record['content'] = record['_content']
             record['published'] = pd.bval(True)
             if not record.original_row()['published'].value() and record['published_since'].value() is None:
-                record['published_since'] = pd.dtval(now())
+                record['published_since'] = pd.Value(record.type('published_since'), now())
         return errors
     
     def _insert_transaction(self, req, record):
