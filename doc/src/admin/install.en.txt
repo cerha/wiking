@@ -6,7 +6,7 @@
 
   * python >= 2.6
   * apache >= 2.0
-  * mod_python >= 3.2.10 or mod_wsgi >= 3.3
+  * mod_wsgi >= 3.3 (recommended) or mod_python >= 3.2.10
   * python-dnspython - DNS client module for Python
   * python-imaging - Python Imaging Library (needed only when using Image
     galeries)
