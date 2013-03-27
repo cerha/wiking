@@ -1572,7 +1572,7 @@ class Pages(SiteSpecificContentModule):
             record['published'] = pd.bval(True)
             if not record.original_row()['published'].value() and record['published_since'].value() is None:
                 record['published_since'] = pd.Value(record.type('published_since'), now())
-        if record['creator']value() is None:
+        if record['creator'].value() is None:
             # Supply creator to a newly created language variant (where prefill
             # doesn't apply because it actually is an update, not insert).
             record['creator'] = pd.Value(record.type('creator'), req.user().uid())
