@@ -1576,6 +1576,8 @@ class Pages(SiteSpecificContentModule):
             # Supply creator to a newly created language variant (where prefill
             # doesn't apply because it actually is an update, not insert).
             record['creator'] = pd.Value(record.type('creator'), req.user().uid())
+        if record['created'].value() is None:
+            record['created'] = pd.Value(record.type('created'), now())
         return errors
     
     def _insert_transaction(self, req, record):
