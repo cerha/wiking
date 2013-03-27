@@ -251,7 +251,7 @@ create table cms_page_texts (
        lang char(2) not null references cms_languages(lang) on update cascade,
        published boolean not null default true,
        creator int not null references users,
-       created timestamp not null default now();
+       created timestamp not null default now(),
        published_since timestamp;
        title text not null,
        description text,
