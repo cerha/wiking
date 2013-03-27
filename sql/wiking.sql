@@ -252,7 +252,7 @@ create table cms_page_texts (
        published boolean not null default true,
        creator int not null references users,
        created timestamp not null default now(),
-       published_since timestamp;
+       published_since timestamp,
        title text not null,
        description text,
        content text,
