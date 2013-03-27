@@ -379,7 +379,9 @@ class Application(CookieAuthentication, wiking.Application):
 
     def footer_content(self, req):
         texts = wiking.module('Texts')
-        text = texts.text(req, wiking.cms.texts.footer, lang=req.preferred_language())
+        # Default to English to avoid raising NotAcceptable where it is not handled.
+        lang = req.preferred_language(raise_error=False) or 'en'
+        text = texts.text(req, wiking.cms.texts.footer, lang=lang)
         text = text.replace('$webmaster_address', wiking.cfg.webmaster_address)
         if wiking.cms.cfg.content_editor == 'plain':
             content = lcg.Parser().parse(text)
