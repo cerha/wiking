@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2006-2012 Brailcom, o.p.s.
+# Copyright (C) 2006-2013 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
+# the Free Software Foundation; either version 3 of the License, or
 # (at your option) any later version.
 #
 # This program is distributed in the hope that it will be useful,
@@ -473,3 +473,108 @@ class Application(Module):
         return lcg.p(_("Contact:"), ' ',
                      lcg.link("mailto:"+wiking.cfg.webmaster_address, wiking.cfg.webmaster_address))
     
+    def _request_info(self, req):
+        return dict(
+            server_hostname=req.server_hostname(),
+            uri=req.uri(),
+            abs_uri=req.server_uri(current=True) + req.uri(),
+            user=(req.user() and req.user().login() or 'anonymous'),
+            remote_host=req.remote_host(),
+            referer=req.header('Referer'),
+            user_agent=req.header('User-Agent'),
+            server_software='Wiking %s, LCG %s, Pytis %s' % \
+                (wiking.__version__, lcg.__version__, pytis.__version__),
+            )
+    
+    def log_error(self, req, error):
+        """Write information about given RequestError instance into server's log.
+        
+        Log format is given by the 'log_format' configuration option.  Also, if
+        'debug' configuration option is set, the log entry will contain basic
+        traceback information (file names and line numbers).
+
+        """
+        variables = dict(self._request_info(req),
+                         error_type=error.__class__.__name__)
+        message = wiking.cfg.log_format % variables
+        if wiking.cfg.debug:
+            frames = ['%s:%d:%s()' % tuple(frame[1:4]) for frame in error.stack()]
+            message += " (%s)" % ", ".join(reversed(frames))
+        if isinstance(error, InternalServerError):
+            message += ' ' + error.buginfo()
+        log(OPR, message)
+
+    def send_bug_report(self, req, einfo):
+        """Send bug report by email if 'bug_report_address' is configured.
+
+        If the configuration option 'bug_report_address' is set, information
+        about the given exception (as returned by 'sys.exc_info()') is sent to
+        the configured email address.
+
+        """
+        address = wiking.cfg.bug_report_address
+        if address is None:
+            return
+        from xml.sax import saxutils
+        import cgitb, traceback
+        def param_value(param):
+            if param in ('passwd', 'password'):
+                value = '<password hidden>'
+            else:
+                value = req.param(param)
+            if not isinstance(value, basestring):
+                value = str(value)
+            lines = value.splitlines()
+            if len(lines) > 1:
+                value = lines[0][:40] + '... (trimmed; total %d lines)' % len(lines)
+            elif len(value) > 40:
+                value = value[:40] + '... (trimmed; total %d chars)' % len(value)
+            return saxutils.escape(value)
+        def format_info(label, value):
+            if value and (value.startswith('http://') or value.startswith('https://')):
+                value = '<a href="%s">%s</a>' % (value, value)
+            return "%s: %s\n" % (label, value)
+        req_info_values = self._request_info(req)
+        req_info = (
+            ("URI", req_info_values['abs_uri']),
+            ("Remote host", req_info_values['remote_host']),
+            ("Remote user", req_info_values['user']),
+            ("HTTP referer", req_info_values['referer']),
+            ("User agent", req_info_values['user_agent']),
+            ('Server software', req_info_values['server_software']),
+            ("Request parameters", "\n"+
+             "\n".join(["  %s = %s" % (saxutils.escape(param), param_value(param))
+                        for param in req.params()])),
+            )
+        def escape(text):
+            if isinstance(text, (tuple, list,)):
+                return [escape(t) for t in text]
+            else:
+                return re.sub(r'[^\x01-\x7F]', '?', text)
+        try:
+            text = ("\n".join(["%s: %s" % pair for pair in req_info]) + "\n\n" +
+                    cgitb.text(einfo))
+        except UnicodeDecodeError:
+            text = ("\n".join(["%s: %s" % (label, escape(value),) for label, value in req_info]) + "\n\n" +
+                    escape(cgitb.text(einfo)))
+        try:
+            html = ("<html><pre>" +
+                    "".join([format_info(label, value) for label, value in req_info]) +"\n\n"+
+                    "".join(traceback.format_exception(*einfo)) +
+                    "</pre>"+
+                    cgitb.html(einfo) +"</html>")
+        except UnicodeDecodeError:
+            html = ("<html><pre>" +
+                    "".join([format_info(label, escape(value)) for label, value in req_info]) +"\n\n"+
+                    "".join(escape(traceback.format_exception(*einfo))) +
+                    "</pre>"+
+                    escape(cgitb.html(einfo))
+                    +"</html>")
+        subject = 'Wiking Error: ' + InternalServerError(einfo).buginfo()
+        err = send_mail(address, subject, text, html=html,
+                        headers=(('Reply-To', address),
+                                 ('X-Wiking-Bug-Report-From', wiking.cfg.server_hostname)))
+        if err:
+            log(OPR, "Failed sending exception info to %s:" % address, err)
+        else:
+            log(OPR, "Traceback sent to %s." % address)

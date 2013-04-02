@@ -228,99 +228,13 @@ class Handler(object):
         return req.send_response(context.localize(exported),
                                  status_code=httplib.SERVICE_UNAVAILABLE)
 
-    def _error_log_variables(self, req, error):
-        return dict(
-            error_type=error.__class__.__name__,
-            server_hostname=req.server_hostname(),
-            uri=req.uri(),
-            abs_uri=req.server_uri(current=True) + req.uri(),
-            user=(req.user() and req.user().login() or 'anonymous'),
-            remote_host=req.remote_host(),
-            referer=req.header('Referer'),
-            user_agent=req.header('User-Agent'),
-            server_software='Wiking %s, LCG %s, Pytis %s' % \
-                (wiking.__version__, lcg.__version__, pytis.__version__),
-            )
-    
     def _handle_request_error(self, req, error):
         if not isinstance(error, (wiking.AuthenticationError,
                                   wiking.Abort, wiking.DisplayDocument)):
-            variables = self._error_log_variables(req, error)
-            message = wiking.cfg.log_format % variables
-            if wiking.cfg.debug:
-                frames = ['%s:%d:%s()' % tuple(frame[1:4]) for frame in error.stack()]
-                message += " (%s)" % ", ".join(reversed(frames))
-            if isinstance(error, InternalServerError):
-                message += ' ' + error.buginfo()
-            log(OPR, message)
+            self._application.log_error(req, error)
         document = wiking.Document(error.title(req), error.content(req))
         return self._serve_document(req, document, status_code=error.status_code(req))
 
-    def _send_bug_report(self, req, einfo, error, address):
-        from xml.sax import saxutils
-        import cgitb, traceback
-        def param_value(param):
-            if param in ('passwd', 'password'):
-                value = '<password hidden>'
-            else:
-                value = req.param(param)
-            if not isinstance(value, basestring):
-                value = str(value)
-            lines = value.splitlines()
-            if len(lines) > 1:
-                value = lines[0][:40] + '... (trimmed; total %d lines)' % len(lines)
-            elif len(value) > 40:
-                value = value[:40] + '... (trimmed; total %d chars)' % len(value)
-            return saxutils.escape(value)
-        def format_info(label, value):
-            if value and (value.startswith('http://') or value.startswith('https://')):
-                value = '<a href="%s">%s</a>' % (value, value)
-            return "%s: %s\n" % (label, value)
-        variables = self._error_log_variables(req, error)
-        req_info = (
-            ("URI", variables['abs_uri']),
-            ("Remote host", variables['remote_host']),
-            ("Remote user", variables['user']),
-            ("HTTP referer", variables['referer']),
-            ("User agent", variables['user_agent']),
-            ('Server software', variables['server_software']),
-            ("Request parameters", "\n"+
-             "\n".join(["  %s = %s" % (saxutils.escape(param), param_value(param))
-                        for param in req.params()])),
-            )
-        def escape(text):
-            if isinstance(text, (tuple, list,)):
-                return [escape(t) for t in text]
-            else:
-                return re.sub(r'[^\x01-\x7F]', '?', text)
-        try:
-            text = ("\n".join(["%s: %s" % pair for pair in req_info]) + "\n\n" +
-                    cgitb.text(einfo))
-        except UnicodeDecodeError:
-            text = ("\n".join(["%s: %s" % (label, escape(value),) for label, value in req_info]) + "\n\n" +
-                    escape(cgitb.text(einfo)))
-        try:
-            html = ("<html><pre>" +
-                    "".join([format_info(label, value) for label, value in req_info]) +"\n\n"+
-                    "".join(traceback.format_exception(*einfo)) +
-                    "</pre>"+
-                    cgitb.html(einfo) +"</html>")
-        except UnicodeDecodeError:
-            html = ("<html><pre>" +
-                    "".join([format_info(label, escape(value)) for label, value in req_info]) +"\n\n"+
-                    "".join(escape(traceback.format_exception(*einfo))) +
-                    "</pre>"+
-                    escape(cgitb.html(einfo))
-                    +"</html>")            
-        subject = 'Wiking Error: ' + error.buginfo()
-        err = send_mail(address, subject, text, html=html,
-                        headers=(('Reply-To', address),
-                                 ('X-Wiking-Bug-Report-From', wiking.cfg.server_hostname)))
-        if err:
-            log(OPR, "Failed sending exception info to %s:" % address, err)
-        else:
-            log(OPR, "Traceback sent to %s." % address)
-    
     def _handle(self, req):
         try:
             try:
@@ -377,10 +291,7 @@ class Handler(object):
             # handled in a separate try/except block to chatch also errors in
             # except blocks of the inner level.
             einfo = sys.exc_info()
-            error = InternalServerError(einfo)
-            address = wiking.cfg.bug_report_address
-            if address is not None:
-                self._send_bug_report(req, einfo, error, address)
+            self._application.send_bug_report(req, einfo)
             if not wiking.cfg.debug:
                 # When debug is on, the full traceback goes to the browser
                 # window and it is better to leave the error log for printing
@@ -395,7 +306,7 @@ class Handler(object):
                     import traceback
                     tb = "".join(traceback.format_exception(*einfo))
                 log(OPR, "\n"+ tb)
-            return self._handle_request_error(req, error)
+            return self._handle_request_error(req, InternalServerError(einfo))
             
     def handle(self, req):
         if wiking.cfg.debug and req.param('profile') == '1':

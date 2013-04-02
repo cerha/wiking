@@ -76,6 +76,27 @@ class ContentField(Field):
             raise Exception("Invalid value of 'wiking.cms.cfg.content_editor': %s" % editor)
         Field.__init__(self, name, label, descr=descr, text_format=text_format, **kwargs)
 
+
+_parser = lcg.Parser()
+_processor = lcg.HTMLProcessor()
+
+def text2content(req, text):
+    if text is not None:
+        try:
+            if wiking.cms.cfg.content_editor == 'plain':
+                content = lcg.Container(_parser.parse(text))
+            else:
+                content = _processor.html2lcg(text)
+        except Exception as e:
+            content = lcg.Container((lcg.p(_("Error processing document content:")),
+                                     lcg.PreformattedText("%s: %s" % (e.__class__.__name__, e))),
+                                    name='wiking-content-processing-error')
+            wiking.module.Application.send_bug_report(req, sys.exc_info())
+    else:
+        content = None
+    return content
+
+
 def _modtitle(name, default=None):
     """Return a localizable module title by module name."""
     if name is None:
@@ -931,12 +952,6 @@ class Panels(SiteSpecificContentModule):
         
     def panels(self, req, lang):
         panels = []
-        if wiking.cms.cfg.content_editor == 'plain':
-            parser = lcg.Parser()
-            processor = None
-        else:
-            parser = None
-            processor = lcg.HTMLProcessor()
         #TODO: tady uvidim prirazenou stranku, navigable
         roles = wiking.module('Users').Roles()
         if wiking.module('Application').preview_mode(req):
@@ -962,10 +977,7 @@ class Panels(SiteSpecificContentModule):
                     channel = '/'+'.'.join((row['identifier'].value(), lang, 'rss'))
 
             if row['content'].value():
-                if wiking.cms.cfg.content_editor == 'plain':
-                    content += tuple(parser.parse(row['content'].value()))
-                else:
-                    content += (processor.html2lcg(row['content'].value()),)
+                content += (text2content(req, row['content'].value()),)
             content = lcg.Container(content)
             if req.check_roles(Roles.CONTENT_ADMIN):
                 record = self._record(req, row)
@@ -1452,15 +1464,6 @@ class Pages(SiteSpecificContentModule):
 
     def __init__(self, *args, **kwargs):
         super(Pages, self).__init__(*args, **kwargs)
-        if wiking.cms.cfg.content_editor == 'plain':
-            parser = lcg.Parser()
-            def text2content(text):
-                return lcg.Container(parser.parse(text))
-        else:
-            processor = lcg.HTMLProcessor()
-            def text2content(text):
-                return processor.html2lcg(text)
-        self._text2content = text2content
         
     def _handle(self, req, action, **kwargs):
         # TODO: This is a hack to find out the parent page and access rights in
@@ -1731,7 +1734,7 @@ class Pages(SiteSpecificContentModule):
                 pre, post = self._SEPARATOR.split(text, maxsplit=2)
             else:
                 pre, post = text, u''
-            content = [self._text2content(pre)] + content + [self._text2content(post)]
+            content = [text2content(req, pre)] + content + [text2content(req, post)]
         # Process page attachments
         storage = record.attachment_storage('_content')
         resources = storage.resources()
@@ -3333,16 +3336,7 @@ class Texts(CommonTexts):
         instance.  If the given text doesn't exist, 'None' is returned.
         
         """
-        assert isinstance(text, Text)
-        retrieved_text = self.text(req, text, lang=lang, args=args)
-        if retrieved_text:
-            if wiking.cms.cfg.content_editor == 'plain':
-                content = lcg.Container(lcg.Parser().parse(retrieved_text))
-            else:
-                content = lcg.html2lcg(retrieved_text)
-        else:
-            content = None
-        return content
+        return text2content(req, self.text(req, text, lang=lang, args=args))
 
 
 class EmailText(Structure):
