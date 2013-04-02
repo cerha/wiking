@@ -1598,23 +1598,35 @@ class WikingResolver(pytis.util.Resolver):
     def available_modules(self):
         """Return a tuple of classes of all available Wiking modules."""
         return [module_cls for name, module_cls in self.walk(Module)]
-    
 
-def module(name):
-    """Return the instance of given Wiking module.
 
-    @type name: str
-    @param name: Module name
+class ModuleInstanceResolver(object):
+    """Single purpose class to be used as 'wiking.module' instance (see below)."""
+    def __call__(self, name):
+        return wiking.cfg.resolver.wiking_module(name)
+       
+    def __getattr__(self, name):
+        if name.startswith('_'):
+            return super(ModuleInstanceResolver, self).__getattr__(name)
+        else:
+            return wiking.cfg.resolver.wiking_module(name)
 
-    Raises: wiking.util.ResolverError if no such module is found in the current
-    resolver configuration.
+        
+module = ModuleInstanceResolver()
+"""Return the instance of given Wiking module.
 
-    This is the official way to retrieve Wiking modules within the application.
-    All other means, such as the method 'Module._module()' or using
-    wiking.cfg.resolver directly are now deprecated.
+This callable object may be used to retrieve instances of Wiking modules of the
+current application.  It may be either called as a function with module name as
+an argument or accessed using module names as its attributes.
 
-    """
-    return wiking.cfg.resolver.wiking_module(name)
+Raises: wiking.util.ResolverError if no such module is found in the current
+resolver configuration.
+
+This is the official way to retrieve Wiking modules within the application.
+All other means, such as the method 'Module._module()' or using
+wiking.cfg.resolver directly are deprecated.
+
+"""
 
     
 class DateTime(pytis.data.DateTime):
