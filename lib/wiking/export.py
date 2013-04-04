@@ -293,11 +293,9 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             name = 'main-navigation'
         tree = lcg.FoldableTree(context.node().top(),
                                 tooltip=_("Expand/collapse complete menu hierarchy"))
-        tree.set_parent(context.node())
         content = tree.export(context)
         extra_content = application.menu_panel_bottom_content(req)
         if extra_content:
-            extra_content.set_parent(context.node())
             content += extra_content.export(context)
         return g.div((g.h(g.a(heading, name=name, accesskey="3"), 3), content),
                      cls='menu-panel')
@@ -341,7 +339,6 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
                                 title=panel.accessible_title()))
         extra_content = context.application.right_panels_bottom_content(req)
         if extra_content:
-            extra_content.set_parent(context.node())
             result.append(g.div(extra_content.export(context), cls='panels-bottom-content'))
         result.append(g.br())
         return result
@@ -384,7 +381,6 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             result = [g.hr()]
             if left:
                 content = lcg.coerce(left)
-                content.set_parent(context.node())
                 if right:
                     result.append(g.span(content.export(context), cls="left"))
                 else:
@@ -393,7 +389,6 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
                 if left:
                     result.append(self._hidden(" | "))
                 content = lcg.coerce(right)
-                content.set_parent(context.node())
                 result.append(g.span(content.export(context)))
             return result
         else:
@@ -403,9 +398,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         g = self._generator
         content = context.application.footer_content(context.req())
         if content:
-            content = lcg.coerce(content)
-            content.set_parent(context.node())
-            return g.hr() + content.export(context)
+            return g.hr() + lcg.coerce(content).export(context)
         else:
             return None
 

@@ -1132,8 +1132,6 @@ class WikingNode(lcg.ContentNode):
         self._sec_lang = sec_lang
         self._active = active
         self._layout = layout
-        for panel in panels:
-            panel.content().set_parent(self)
 
     def add_child(self, node):
         if isinstance(self._children, tuple):
