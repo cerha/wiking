@@ -1192,7 +1192,7 @@ class Themes(StyleManagementModule):
             # preview_theme argument.
             menu = [item for item in wiking.module('Pages').menu(req) if not item.hidden()]
             if menu:
-                uri = '/'+menu[0].id()
+                uri = menu[0].id()
             else:
                 uri = '/_wmi/Users'
             uri += '?preview_theme=%d' % record['theme_id'].value()
