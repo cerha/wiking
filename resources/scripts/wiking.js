@@ -78,7 +78,7 @@ wiking.Handler = Class.create(lcg.KeyHandler, {
 	$$('a').each(function(element) {
 	    // Use smooth scrolling for in-page links.
 	    var href = element.readAttribute('href');
-	    if (href && href[0] == '#') {
+	    if (href && href[0] == '#' && href.substr(1, 8) != 'binding-') {
 		var name = href.substr(1, href.length);
 		var target = $(name) || $$('a[name='+name+']')[0];
 		if (target) {
