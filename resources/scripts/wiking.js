@@ -1,6 +1,6 @@
 /* -*- coding: utf-8 -*-
  *
- * Copyright (C) 2008-2012 Brailcom, o.p.s.
+ * Copyright (C) 2008-2013 Brailcom, o.p.s.
  * Author: Tomas Cerha
  *
  * This program is free software; you can redistribute it and/or modify
@@ -75,6 +75,20 @@ wiking.Handler = Class.create(lcg.KeyHandler, {
 	var winter_date = new Date(Date.UTC(2005, 12, 30, 0, 0, 0, 0));
 	var winter_offset = -winter_date.getTimezoneOffset();
 	lcg.cookies.set('wiking_tz_offsets', summer_offset + ';' + winter_offset);
+	$$('a').each(function(element) {
+	    // Use smooth scrolling for in-page links.
+	    var href = element.readAttribute('href');
+	    if (href && href[0] == '#') {
+		var name = href.substr(1, href.length);
+		var target = $(name) || $$('a[name='+name+']')[0];
+		if (target) {
+		    element.observe('click', function(event) {
+			Effect.ScrollTo(target);
+			return false;
+		    });
+		}
+	    }
+	});
     },
     
     keymap: function () {

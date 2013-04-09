@@ -65,6 +65,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             # Make sure that Prototype.js is always loaded first, so that it is
             # available in any other scripts.
             self.resource('prototype.js')
+            self.resource('effects.js')
             self.resource('gettext.js')
             self.resource('lcg.js')
             self.resource('wiking.js')
