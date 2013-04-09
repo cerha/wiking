@@ -235,8 +235,11 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         subtitle = self._site_subtitle(context)
         if subtitle:
             title += g.strong(' &ndash; ', cls='separator') + g.strong(subtitle, cls='subtitle')
-        return g.div(g.div(g.div(g.div(title, id='site-title'),
-                                 id='top-layer3'), id='top-layer2'), id='top-layer1')
+        content = g.div(title, id='site-title')
+        top_content = context.application.top_content(context.req())
+        if top_content:
+            content += g.div(lcg.coerce(top_content).export(context), id='top-content')
+        return g.div(g.div(g.div(content, id='top-layer3'), id='top-layer2'), id='top-layer1')
     
 
     def _links(self, context):

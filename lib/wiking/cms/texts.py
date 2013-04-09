@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2009, 2010, 2011, 2012 Brailcom, o.p.s.
+# Copyright (C) 2009, 2010, 2011, 2012, 2013 Brailcom, o.p.s.
 #
 # COPYRIGHT NOTICE
 #
@@ -21,6 +21,11 @@ import lcg
 from wiking.cms import Text
 
 _ = lcg.TranslatableTextFactory('wiking-cms')
+
+top = Text(
+    'cms.top',
+    _("Text displayed at the very top of every page under the site title."),
+    '')
 
 disabled = Text(
     'cms.disabled',

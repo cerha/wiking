@@ -367,6 +367,15 @@ class Application(Module):
         """
         return False
 
+    def top_content(self, req):
+        """Return the content displayed in the top portion of every page under the site title.
+        
+        Any content acceptable by 'lcg.coerce()' may be returned ('lcg.Content'
+        instance, basestring, or their sequence).
+
+        """
+        return None
+
     def login_panel_content(self, req):
         """Return the extra content displayed in login panel below login controls.
 
