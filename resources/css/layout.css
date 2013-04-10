@@ -64,8 +64,8 @@ a:link:hover, a:visited:hover { color: $color.link-hover; }
 #language-selection {
     position: absolute;
     top: .5em;
-    right: 8em;
-    max-width: 55%;
+    right: .8em;
+    max-width: 50%;
     font-size: 0.9em;
     /*white-space: nowrap;*/
 }

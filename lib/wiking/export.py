@@ -99,8 +99,8 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
 
     _BODY_PARTS = ('wrap', 'media_player')
     _WRAP_PARTS = ('top', 'page', 'bottom')
-    _PAGE_PARTS = ('links', 'breadcrumbs', 'language_selection',
-                   'menu', 'submenu', 'panels', 'main', 'page_clearing')
+    _TOP_PARTS = ('site_title', 'top_content', 'language_selection')
+    _PAGE_PARTS = ('links', 'breadcrumbs', 'menu', 'submenu', 'panels', 'main', 'page_clearing')
     _BOTTOM_PARTS = ('bottom_bar', 'footer')
     _PART_TITLE = {
         'top':     _("Page heading"),
@@ -213,26 +213,28 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         return lcg.concat(result, channels, separator="\n  ")
     
     def _site_title(self, context):
-        return context.application.site_title(context.req())
+        g = self._generator
+        title = context.application.site_title(context.req())
+        subtitle = context.application.site_subtitle(context.req())
+        content = g.strong(title, cls='title')
+        if subtitle:
+            content += g.strong(' &ndash; ', cls='separator') + g.strong(subtitle, cls='subtitle')
+        return content
 
-    def _site_subtitle(self, context):
-        return context.application.site_subtitle(context.req())
-    
     def _title(self, context):
-        return self._site_title(context) + ' - ' + context.node().page_heading()
+        return context.application.site_title(context.req()) +' - '+ context.node().page_heading()
 
     def _top(self, context):
         g = self._generator
-        title = g.strong(self._site_title(context), cls='title')
-        subtitle = self._site_subtitle(context)
-        if subtitle:
-            title += g.strong(' &ndash; ', cls='separator') + g.strong(subtitle, cls='subtitle')
-        content = g.div(title, id='site-title')
-        top_content = context.application.top_content(context.req())
-        if top_content:
-            content += g.div(lcg.coerce(top_content).export(context), id='top-content')
+        content = self._parts(context, self._TOP_PARTS)
         return g.div(g.div(g.div(content, id='top-layer3'), id='top-layer2'), id='top-layer1')
-    
+
+    def _top_content(self, context):
+        content = context.application.top_content(context.req())
+        if content:
+            return lcg.coerce(content).export(context)
+        else:
+            return None
 
     def _links(self, context):
         g = self._generator
