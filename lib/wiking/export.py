@@ -122,8 +122,12 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
 
     def _body_attr(self, context, **kwargs):
         onload = context.generator().js_call('new wiking.Handler')
-        cls = (context.node().layout() or self.Layout.DEFAULT) + '-layout'
-        return super(Exporter, self)._body_attr(context, onload=onload, cls=cls, **kwargs)
+        cls = ['page-id-' + self._safe_css_id(context.node().id().strip('/'))]
+        cls.extend(['parent-page-id-' + self._safe_css_id(node.id().strip('/'))
+                    for node in context.node().path()[1:-1]])
+        cls.extend(['lang-%s' % context.lang(),
+                    (context.node().layout() or self.Layout.DEFAULT) + '-layout'])
+        return super(Exporter, self)._body_attr(context, onload=onload, cls=' '.join(cls), **kwargs)
 
     def _body_content(self, context):
         if context.node().layout() == self.Layout.FRAME:
@@ -140,19 +144,11 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         """Returns a string of CSS classes identifying the current node
         and its context in node hierarchy
         """
-        node = context.node()
-        cls = 'node-id-' + self._safe_css_id(node.id())
-        cls += ''.join([' parent-node-id-' + self._safe_css_id(n.id())
-                        for n in node.path()[1:-1]])
-        return cls
 
     def _wrap(self, context):
         g = self._generator
         return g.div(self._parts(context, self._WRAP_PARTS), id='wrap2')
     
-    def _wrap_attr(self, context):
-        return dict(cls = self._node_identification(context) + " lang-%s" % context.lang())
-
     def _bottom(self, context):
         return self._parts(context, self._BOTTOM_PARTS)
                            
@@ -168,10 +164,6 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             cls += ' with-submenu'
         if node.panels() and context.req().show_panels():
             cls += ' with-panels'
-        # Duplicate node identification here for backward
-        # compatibility. New styles should use node identification
-        # on the wrap element
-        cls += ' ' + self._node_identification(context)
         return dict(cls=cls)
 
     def _part(self, name, context):
