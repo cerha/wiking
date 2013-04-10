@@ -1,4 +1,4 @@
-# Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012 Brailcom, o.p.s.
+# Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Brailcom, o.p.s.
 # Author: Tomas Cerha <cerha@brailcom.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -353,6 +353,13 @@ class Configuration(pc):
                 "substitution.  Thus Wiking style sheets may be color neutral and colors may "
                 "be defined separately.  The value is an instance of 'wiking.Theme' class.")
         _DEFAULT = Theme()
+
+    class _Option_scripts(pc.StringOption):
+        _DESCR = "Site specific scripts"
+        _DOC = ("Sequence of filenames of site specific JavaScript files to be loaded with "
+                "every page.  The named files must be available within resource directories "
+                "as configured by the option 'resource_path'.")
+        _DEFAULT = ()
 
     class _Option_default_language(pc.StringOption):        
         _DESCR = _("Default language")

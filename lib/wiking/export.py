@@ -64,11 +64,9 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             super(Exporter.Context, self)._init_kwargs(timezone=req.timezone(), **kwargs)
             # Make sure that Prototype.js is always loaded first, so that it is
             # available in any other scripts.
-            self.resource('prototype.js')
-            self.resource('effects.js')
-            self.resource('gettext.js')
-            self.resource('lcg.js')
-            self.resource('wiking.js')
+            scripts = ('prototype.js', 'effects.js', 'gettext.js', 'lcg.js', 'wiking.js')
+            for filename in scripts + tuple(wiking.cfg.scripts):
+                self.resource(filename)
             if self.lang() != 'en':
                 self.resource('wiking.%s.po' % self.lang()) # Translations for Javascript
             # TODO: Load these stylesheets conditionally (only when
