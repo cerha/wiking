@@ -145,7 +145,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
 
     def _wrap(self, context):
         g = self._generator
-        return g.div(self._parts(context, self._WRAP_PARTS), id='wrap2')
+        return g.div(self._parts(context, self._WRAP_PARTS), id='wrap-layer1')
     
     def _bottom(self, context):
         return self._parts(context, self._BOTTOM_PARTS)
