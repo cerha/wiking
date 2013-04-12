@@ -65,7 +65,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             # Make sure that Prototype.js is always loaded first, so that it is
             # available in any other scripts.
             scripts = ('prototype.js', 'effects.js', 'gettext.js', 'lcg.js', 'wiking.js')
-            for filename in scripts + tuple(wiking.cfg.scripts):
+            for filename in scripts + tuple(wiking.cfg.extra_scripts):
                 self.resource(filename)
             if self.lang() != 'en':
                 self.resource('wiking.%s.po' % self.lang()) # Translations for Javascript

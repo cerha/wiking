@@ -354,11 +354,11 @@ class Configuration(pc):
                 "be defined separately.  The value is an instance of 'wiking.Theme' class.")
         _DEFAULT = Theme()
 
-    class _Option_scripts(pc.StringOption):
+    class _Option_extra_scripts(pc.StringOption):
         _DESCR = "Site specific scripts"
-        _DOC = ("Sequence of filenames of site specific JavaScript files to be loaded with "
-                "every page.  The named files must be available within resource directories "
-                "as configured by the option 'resource_path'.")
+        _DOC = ("Sequence of filenames of additional site specific JavaScript files to be "
+                "loaded with every page.  The named files must be available within resource "
+                "directories as configured by the option 'resource_path'.")
         _DEFAULT = ()
 
     class _Option_default_language(pc.StringOption):        
