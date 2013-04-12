@@ -1646,7 +1646,12 @@ class PytisModule(Module, ActionHandler):
         # instances, which would be destroyed during parsing (think of virtual fields with text
         # constructed in runtime).
         content = parser.parse(req.localize(text))
-        return lcg.Container(content)
+        storage = record.attachment_storage(field.id())
+        if storage:
+            resources = storage.resources()
+        else:
+            resources = ()
+        return lcg.Container(content, resources=resources)
     
     def _transaction(self):
         """Create a new transaction and return it as 'pd.DBTransactionDefault' instance."""
