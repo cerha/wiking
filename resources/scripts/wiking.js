@@ -110,7 +110,6 @@ wiking.Handler = Class.create(lcg.KeyHandler, {
     
     cmd_menu: function (element) {
 	// Move focus to the menu (the current menu item).
-	var menu = $('menu');
 	var submenu = $('submenu');
 	if (submenu) {
 	    lcg.widget_instance(submenu.down('.foldable-tree-widget')).focus();
