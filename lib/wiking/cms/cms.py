@@ -24,6 +24,7 @@ is stored in database and can be managed using a web browser.
 """
 
 import pytis.presentation as pp
+import pytis.web as pw
 import wiking, wiking.cms
 from wiking.cms import *
 
@@ -2160,19 +2161,54 @@ class Publications(NavigablePages, EmbeddableCMSModule):
                                filename='%s.epub' % record['identifier'].value())
     
     def action_export_braille(self, req, record):
-        node = self._publication(req, record)
-        exporter = lcg.BrailleExporter(translations=wiking.cfg.translation_path)
+        page_width = int(req.param('braille_page_width') or '0')
+        page_height = int(req.param('braille_page_height') or '0')
         presentation = lcg.braille_presentation()
-        presentation_set = lcg.PresentationSet(((presentation, lcg.TopLevelMatcher(),),))
-        context = exporter.context(node, req.preferred_language(), presentation=presentation_set)
-        try:
-            result = exporter.export(context, recursive=True)
-        except lcg.BrailleError, e:
-            req.message(e.message(), type=req.ERROR)
-            raise Redirect(self._current_record_uri(req, record))
-        return wiking.Response(result, content_type='text/plain',
-                               filename='%s.txt' % record['identifier'].value())
-        
+        if page_width and page_height:
+            node = self._publication(req, record)
+            exporter = lcg.BrailleExporter(translations=wiking.cfg.translation_path)
+            presentation.page_width = lcg.UFont(page_width)
+            presentation.page_height = lcg.UFont(page_height)
+            presentation_set = lcg.PresentationSet(((presentation, lcg.TopLevelMatcher(),),))
+            context = exporter.context(node, req.preferred_language(), presentation=presentation_set)
+            try:
+                result = exporter.export(context, recursive=True)
+            except lcg.BrailleError, e:
+                req.message(e.message(), type=req.ERROR)
+                raise Redirect(self._current_record_uri(req, record))
+            return wiking.Response(result, content_type='text/plain',
+                                   filename='%s.txt' % record['identifier'].value())
+        else:
+            if not page_width:
+                page_width = presentation.page_width.size()
+            if not page_height:
+                page_height = presentation.page_height.size()
+            class Form(lcg.Content):
+                def __init__(self, uri, page_width, page_height):
+                    self._uri = uri
+                    self._page_width = page_width
+                    self._page_height = page_height
+                    super(Form, self).__init__()
+                def export(self, context):
+                    g = context.generator()
+                    buttons = g.submit(_("Export"))
+                    form_elements = (g.label(_("Page width:"), 'braille_page_width'),
+                                     g.field(value=str(self._page_width),
+                                             name='braille_page_width', size=3,
+                                             id='braille_page_width'),
+                                     g.br(),
+                                     g.label(_("Page height:"), 'braille_page_height'),
+                                     g.field(value=str(self._page_height),
+                                             name='braille_page_height', size=3,
+                                             id='braille_page_height'),
+                                     g.br(),
+                                     buttons,)
+                    return g.form(form_elements +
+                                  (g.hidden('action', 'export_braille'),),
+                                  action=g.uri(self._uri))
+            return Form(req.uri(), page_width, page_height)
+            
+                    
 class PublicationChapters(NavigablePages):
     """e-Publication chapters are regular CMS pages """
     class Spec(Pages.Spec):
