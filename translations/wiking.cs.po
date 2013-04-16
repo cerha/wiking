@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2013-04-02 19:25+0200\n"
+"POT-Creation-Date: 2013-04-16 11:14+0200\n"
 "PO-Revision-Date: 2013-01-02 11:10+0100\n"
 "Last-Translator: Hynek Hanke <hanke@brailcom.org>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
@@ -18,26 +18,26 @@ msgstr ""
 
 #. Website idiom. This is followed by information on the underlying software
 #. tools.  Means: This website runs on [...this and that software...].
-#: ../lib/wiking/application.py:390
+#: ../lib/wiking/application.py:399
 msgid "Powered by"
 msgstr "Provozováno na"
 
-#: ../lib/wiking/application.py:408
+#: ../lib/wiking/application.py:417
 msgid "Accessibility Statement"
 msgstr "Prohlášení o zpřístupnění"
 
 #. Heading of webpage left side hierarchical navigation
 #. menu containing a list of links to pages in this web section
-#: ../lib/wiking/application.py:421
+#: ../lib/wiking/application.py:430
 msgid "In this section:"
 msgstr "V této sekci:"
 
-#: ../lib/wiking/application.py:430 ../lib/wiking/export.py:107
-#: ../lib/wiking/export.py:246
+#: ../lib/wiking/application.py:439 ../lib/wiking/export.py:106
+#: ../lib/wiking/export.py:243
 msgid "Local navigation"
 msgstr "Navigace této sekce"
 
-#: ../lib/wiking/application.py:473
+#: ../lib/wiking/application.py:482
 msgid "Contact:"
 msgstr "Kontakt:"
 
@@ -102,14 +102,14 @@ msgstr ""
 msgid "Site icon"
 msgstr "Ikona portálu"
 
-#: ../lib/wiking/configuration.py:358
+#: ../lib/wiking/configuration.py:365
 msgid "Default language"
 msgstr "Výchozí jazyk"
 
 #. Language negotiation means the process where the server is trying
 #. to find a language that matches with what the users internet browser asks
 #. for.
-#: ../lib/wiking/configuration.py:361
+#: ../lib/wiking/configuration.py:368
 msgid ""
 "Defines the language (lowercase ISO 639-1 Alpha-2 code) to be used when "
 "content language negotiation fails. If not set (which is the default), the "
@@ -142,11 +142,11 @@ msgstr ""
 #. Settings label. URI means a link. Do not translate ''URI''.
 #. Yes/No configuration option label. Should the login panel display user role
 #. (as Admin, Student, Tutor etc.)
-#: ../lib/wiking/configuration.py:422
+#: ../lib/wiking/configuration.py:429
 msgid "Display role in login panel"
 msgstr "Zobrazit roli v panelu přihlášení"
 
-#: ../lib/wiking/configuration.py:423
+#: ../lib/wiking/configuration.py:430
 msgid ""
 "If enabled, the login panel on each page will not display only the current "
 "username, but also his current user role, which affects his permissions."
@@ -283,92 +283,92 @@ msgstr "Provedení databázové operace se nezdařilo:"
 msgid "Filter"
 msgstr "Filtr"
 
-#: ../lib/wiking/db.py:2200
+#: ../lib/wiking/db.py:2205
 msgid "Back"
 msgstr "Zpět"
 
 #. Back button label. Standard computer terminology.
 #. RSS channel is a computer idiom, see Wikipedia.
-#: ../lib/wiking/db.py:2409 ../lib/wiking/db.py:2565
+#: ../lib/wiking/db.py:2414 ../lib/wiking/db.py:2570
 msgid "An RSS channel is available for this section:"
 msgstr "K dispozici je také RSS kanál pro tuto sekci:"
 
 #. RSS channel is a computer idiom, see Wikipedia.  Don't translateg 'RSS'.
-#: ../lib/wiking/db.py:2413 ../lib/wiking/db.py:2563
+#: ../lib/wiking/db.py:2418 ../lib/wiking/db.py:2568
 msgid "more about RSS"
 msgstr "více o RSS"
 
-#: ../lib/wiking/db.py:2558
+#: ../lib/wiking/db.py:2563
 #, python-format
 msgid "RSS channel \"%s\""
 msgstr "RSS kanál „%s“"
 
-#: ../lib/wiking/db.py:2568
+#: ../lib/wiking/db.py:2573
 msgid "RSS channels are available for this section"
 msgstr "Pro tuto sekci jsou k dispozici RSS kanály"
 
-#: ../lib/wiking/export.py:105
+#: ../lib/wiking/export.py:104
 msgid "Page heading"
 msgstr "Záhlaví stránky"
 
-#: ../lib/wiking/export.py:106 ../lib/wiking/export.py:244
-#: ../lib/wiking/export.py:274 ../lib/wiking/export.py:292
+#: ../lib/wiking/export.py:105 ../lib/wiking/export.py:241
+#: ../lib/wiking/export.py:271 ../lib/wiking/export.py:289
 msgid "Main navigation"
 msgstr "Hlavní navigace"
 
-#: ../lib/wiking/export.py:108 ../lib/wiking/export.py:242
+#: ../lib/wiking/export.py:107 ../lib/wiking/export.py:239
 msgid "Main content"
 msgstr "Hlavní obsah"
 
-#: ../lib/wiking/export.py:109
+#: ../lib/wiking/export.py:108
 msgid "Page footer"
 msgstr "Zápatí stránky"
 
 #. Title of a dialog on a webpage
-#: ../lib/wiking/export.py:110 ../lib/wiking/export.py:248
+#: ../lib/wiking/export.py:109 ../lib/wiking/export.py:245
 #: ../lib/wiking/util.py:314
 msgid "Language selection"
 msgstr "Výběr jazyka"
 
 #. Label for language selection followed by list of languages
-#: ../lib/wiking/export.py:113
+#: ../lib/wiking/export.py:112
 msgid "Language:"
 msgstr "Jazyk:"
 
-#: ../lib/wiking/export.py:252
+#: ../lib/wiking/export.py:249
 msgid "Jump in page"
 msgstr "Přejít ve stránce"
 
 #. A label followed by location information in webpage navigation
-#: ../lib/wiking/export.py:257
+#: ../lib/wiking/export.py:254
 msgid "You are here:"
 msgstr "Nacházíte se zde:"
 
-#: ../lib/wiking/export.py:295
+#: ../lib/wiking/export.py:292
 msgid "Expand/collapse complete menu hierarchy"
 msgstr "Rozbalit/sbalit kompletní hierarchii menu"
 
 #. Panels are small windows on the side of the page. This is a label
 #. for a link that shows/hides the panels.
-#: ../lib/wiking/export.py:314
+#: ../lib/wiking/export.py:309
 msgid "Show panels"
 msgstr "Zobrazit panely"
 
-#: ../lib/wiking/export.py:315
+#: ../lib/wiking/export.py:310
 msgid "Hide panels"
 msgstr "Skrýt panely"
 
 #. ``RSS channel'' is terminology idiom, see Wikipedia
-#: ../lib/wiking/export.py:327
+#: ../lib/wiking/export.py:322
 msgid "RSS channel"
 msgstr "RSS kanál"
 
-#: ../lib/wiking/export.py:353
+#: ../lib/wiking/export.py:347
 msgid "Warning"
 msgstr "Varování"
 
 #. Information about last change of a webpage (when and who)
-#: ../lib/wiking/export.py:376
+#: ../lib/wiking/export.py:370
 #, python-format
 msgid "Last change: %(date)s, %(user)s"
 msgstr "Poslední změna: %(date)s, %(user)s"
@@ -460,7 +460,7 @@ msgstr "Akce vyžaduje přihlášení"
 #. Login dialog page title (use a noun).
 #. Login info label (noun) followed by login name and other info.
 #: ../lib/wiking/util.py:165 ../lib/wiking/util.py:731
-#: ../lib/wiking/util.py:1219
+#: ../lib/wiking/util.py:1217
 msgid "Login"
 msgstr "Přihlášení"
 
@@ -603,7 +603,7 @@ msgstr "Platnost hesla vyprší %(date)s"
 #. user to obtain access to the website/application by submitting his personal
 #. details.
 #. Webpage link leading to registration form.
-#: ../lib/wiking/util.py:723 ../lib/wiking/util.py:1270
+#: ../lib/wiking/util.py:723 ../lib/wiking/util.py:1268
 msgid "New user registration"
 msgstr "Registrace nového uživatele"
 
@@ -611,71 +611,71 @@ msgstr "Registrace nového uživatele"
 msgid "Login Panel"
 msgstr "Panel přihlášení"
 
-#: ../lib/wiking/util.py:1201
+#: ../lib/wiking/util.py:1199
 msgid "Go to your profile"
 msgstr "Zobrazit uživatelský profil"
 
 #. Logout button label (verb in imperative).
-#: ../lib/wiking/util.py:1203
+#: ../lib/wiking/util.py:1201
 msgid "log out"
 msgstr "odhlásit"
 
 #. Login status info.  If logged, the username is displayed instead.
-#: ../lib/wiking/util.py:1206
+#: ../lib/wiking/util.py:1204
 msgid "not logged"
 msgstr "nepřihlášen"
 
 #. Login button label (verb in imperative).
-#: ../lib/wiking/util.py:1208
+#: ../lib/wiking/util.py:1206
 msgid "log in"
 msgstr "přihlásit"
 
-#: ../lib/wiking/util.py:1257
+#: ../lib/wiking/util.py:1255
 msgid "Your e-mail address"
 msgstr "Vaše e-mailová adresa"
 
-#: ../lib/wiking/util.py:1257
+#: ../lib/wiking/util.py:1255
 msgid "Login name"
 msgstr "Přihlašovací jméno"
 
-#: ../lib/wiking/util.py:1261
+#: ../lib/wiking/util.py:1259
 msgid "Password"
 msgstr "Heslo"
 
 #. Login button label - verb in imperative.
-#: ../lib/wiking/util.py:1267
+#: ../lib/wiking/util.py:1265
 msgid "Log in"
 msgstr "přihlásit"
 
 #. Login dialog link to password change or password reminder (depends
 #. on configuration).
-#: ../lib/wiking/util.py:1273
+#: ../lib/wiking/util.py:1271
 msgid "Forgot your password?"
 msgstr "Zapomenuté heslo?"
 
 #. Web form label and message
-#: ../lib/wiking/util.py:1302
+#: ../lib/wiking/util.py:1300
 #, python-format
 msgid "Decryption password for '%s'"
 msgstr "Šifrovací heslo pro oblast `%s'"
 
 #. Web form button.
-#: ../lib/wiking/util.py:1309
+#: ../lib/wiking/util.py:1307
 msgid "Send password"
 msgstr "Použít heslo"
 
 #. Confirmation button
-#: ../lib/wiking/util.py:1330
+#: ../lib/wiking/util.py:1328
 msgid "Continue"
 msgstr "Pokračovat"
 
-#: ../lib/wiking/util.py:1962
+#: ../lib/wiking/util.py:1960
 msgid "Invalid format"
 msgstr "Neplatný formát"
 
 #. Computer terminology. `gmail.com' is a domain name in email address
 #. `joe@gmail.com'.
-#: ../lib/wiking/util.py:1970 ../lib/wiking/util.py:1977
+#: ../lib/wiking/util.py:1968 ../lib/wiking/util.py:1975
 msgid "Domain not found"
 msgstr "Doména nenalezena"
 
