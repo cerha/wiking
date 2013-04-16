@@ -1351,6 +1351,13 @@ class PytisModule(Module, ActionHandler):
         in the specification, to get them used for the data object.
 
         """
+        fw = self._binding_forward(req)
+        if fw:
+            binding = fw.arg('binding')
+            record = fw.arg('record')
+            return self._binding_arguments(binding, record)
+        else:
+            return None
         return None
         
     def _binding_arguments(self, binding, record):
