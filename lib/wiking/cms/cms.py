@@ -2163,7 +2163,10 @@ class Publications(NavigablePages, EmbeddableCMSModule):
     def action_export_braille(self, req, record):
         page_width = int(req.param('braille_page_width') or '0')
         page_height = int(req.param('braille_page_height') or '0')
-        presentation = lcg.braille_presentation()
+        try:
+            presentation = lcg.braille_presentation('presentation-braille-local.py')
+        except IOError:
+            presentation = lcg.braille_presentation()            
         if page_width and page_height:
             node = self._publication(req, record)
             exporter = lcg.BrailleExporter(translations=wiking.cfg.translation_path)
