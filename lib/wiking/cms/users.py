@@ -1026,7 +1026,7 @@ class Users(UserManagementModule):
             # account without someone's help) so we rather raise an error if we
             # fail sending it.  This should bring the problem to the
             # administrator's attention.
-            raise Exception(_("Failed sending e-mail notification:") +' '+ err, type=req.ERROR)
+            raise Exception(_("Failed sending e-mail notification:") +' '+ err)
         
 
     def _check_registration_code(self, req):
