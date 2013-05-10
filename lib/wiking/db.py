@@ -893,7 +893,6 @@ class PytisModule(Module, ActionHandler):
                 row_actions = self._ROW_ACTIONS,
                 async_load = self._ASYNC_LOAD,
                 immediate_filters = wiking.cfg.immediate_filters,
-                filter_fields = self._filter_fields(req),
                 actions = (), # Display no actions by default, rather than just spec actions.
                 )
             kwargs = dict(default_kwargs, **kwargs)
@@ -1103,17 +1102,6 @@ class PytisModule(Module, ActionHandler):
         """
         return None
 
-    def _filter_fields(self, req):
-        """Return the list of editable fitler field specifications.
-
-        The returned value is passed to 'pytis.web.BrowseForm'
-        'filter_fields' constructor argument.  See 'pytis.web.BrowseForm'
-        documentation for exact specification.
-
-        """
-        return None
-        
-    
     def _action_args(self, req):
         """Resolve request path and/or parameters into action method arguments.
 
