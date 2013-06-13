@@ -1630,14 +1630,14 @@ wiking.cfg.resolver directly are deprecated.
 class DateTime(pytis.data.DateTime):
     """Pytis DateTime type which exports as a 'lcg.LocalizableDateTime'."""
     
-    def __init__(self, show_time=True, exact=False, leading_zeros=True, **kwargs):
+    def _init(self, show_time=True, exact=False, leading_zeros=True, **kwargs):
         self._exact = exact
         self._show_time = show_time
         self._leading_zeros = leading_zeros
         format = '%Y-%m-%d %H:%M'
         if exact:
             format += ':%S'
-        super(DateTime, self).__init__(format=format, **kwargs)
+        super(DateTime, self)._init(format=format, **kwargs)
 
     def exact(self):
         return self._exact
@@ -1655,9 +1655,9 @@ class DateTime(pytis.data.DateTime):
 class Date(pytis.data.Date):
     """Pytis Date type which exports as a 'lcg.LocalizableDateTime'."""
 
-    def __init__(self, leading_zeros=True, **kwargs):
+    def _init(self, leading_zeros=True, **kwargs):
         self._leading_zeros = leading_zeros
-        super(Date, self).__init__(format='%Y-%m-%d', **kwargs)
+        super(Date, self)._init(format='%Y-%m-%d', **kwargs)
 
     def _export(self, value, show_weekday=False, **kwargs):
         result = super(Date, self)._export(value, **kwargs)
@@ -1667,12 +1667,12 @@ class Date(pytis.data.Date):
 class Time(pytis.data.Time):
     """Pytis Time type which exports as a 'lcg.LocalizableTime'."""
 
-    def __init__(self, exact=False, **kwargs):
+    def _init(self, exact=False, **kwargs):
         self._exact = exact
         format = '%H:%M'
         if exact:
             format += ':%S'
-        super(Time, self).__init__(format=format, **kwargs)
+        super(Time, self)._init(format=format, **kwargs)
     
     def exact(self):
         return self._exact
