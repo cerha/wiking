@@ -899,9 +899,9 @@ class PytisModule(Module, ActionHandler):
         layout = kwargs.get('layout')
         if layout is not None and not isinstance(layout, pp.GroupSpec):
             kwargs['layout'] = self._layout_instance(layout)
-        if action:
-            hidden_fields += tuple(self._hidden_fields(req, action, record))
         form_record = self._record(req, record and record.row(), prefill=prefill, new=new)
+        if action:
+            hidden_fields += tuple(self._hidden_fields(req, action, form_record))
         for fid, data, linking_column, value_column in self._array_fields:
             rows = data.get_rows(condition=pd.EQ(linking_column, form_record[self._key]))
             values = tuple([r[value_column] for r in rows])
@@ -989,8 +989,7 @@ class PytisModule(Module, ActionHandler):
           req -- current request
           action -- name of the action as a string (determines also the form
             type)
-          record -- the current record instance or None (for actions which
-            don't work on an existing record, such as 'insert')
+          record -- the current form record as 'PytisModule.Record' instance
 
         Returns a list of pairs (field, value) as accepted by the argument
         'hidden' of 'pytis.web.Form' constructor.
