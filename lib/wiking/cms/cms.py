@@ -23,26 +23,27 @@ is stored in database and can be managed using a web browser.
 
 """
 
+import lcg
+import pytis.data as pd
 import pytis.presentation as pp
 import pytis.web as pw
-import wiking, wiking.cms
-from wiking.cms import *
+import wiking
+from wiking import Binding, FieldSet, Forbidden, MenuItem, NotFound, PanelItem, \
+    Redirect, Response, Role, Specification, Theme, make_uri
+import wiking.cms
 
-import cStringIO
 import collections
 import datetime
 import os
-import random
 import re
-import string
+import sys
 import time
 import difflib
 
-from pytis.util import *
+from pytis.util import OPERATIONAL, Attribute, Structure, format_byte_size, log
 import pytis.data
-from pytis.presentation import computer, Computer, CbComputer, HGroup, CodebookSpec, \
+from pytis.presentation import computer, CodebookSpec, \
     Field, ColumnLayout, Action
-from lcg import log as debug
 
 CHOICE = pp.SelectionType.CHOICE
 ALPHANUMERIC = pp.TextFilter.ALPHANUMERIC
@@ -67,7 +68,7 @@ class ContentField(Field):
                                       '/_doc/lcg/structured-text',
                                       _("formatting manual")))
             if descr:
-                descr += ' '+msg
+                descr += ' ' + msg
             else:
                 descr = msg
             text_format = pp.TextFormat.LCG
@@ -106,13 +107,13 @@ def _modtitle(name, default=None):
         try:
             cls = wiking.cfg.resolver.wiking_module_cls(name)
         except:
-            title = default or concat(name,' (',_("unknown"),')')
+            title = default or lcg.concat(name, ' (', _("unknown"), ')')
         else:
             title = cls.title()
     return title
 
 
-class WikingManagementInterface(Module, RequestHandler):
+class WikingManagementInterface(wiking.Module, wiking.RequestHandler):
     """Wiking Management Interface.
 
     This module handles the WMI requestes by redirecting the request to the selected module.  The
@@ -120,7 +121,7 @@ class WikingManagementInterface(Module, RequestHandler):
 
     """
     _MENU = (
-        # Translators: Heading and menu title. 
+        # Translators: Heading and menu title.
         ('users', _("Users"),
          _("Manage user accounts, privileges and perform other user related tasks."),
          ['Users', 'ApplicationRoles', 'SessionLog', 'EmailSpool', 'CryptoNames']),
@@ -133,7 +134,7 @@ class WikingManagementInterface(Module, RequestHandler):
         ('setup', _("Setup"),
          _("Edit global properties of your web site."),
          ['Config', 'Languages', 'Countries', 'Texts', 'Emails']),
-        )
+    )
     
     def _handle(self, req):
         req.wmi = True # Switch to WMI only after successful authorization!
@@ -144,7 +145,7 @@ class WikingManagementInterface(Module, RequestHandler):
                 del req.unresolved_path[0]
                 if not req.unresolved_path:
                     # Redirect to the first module of given section.
-                    raise Redirect('/_wmi/'+section+'/'+modnames[0])
+                    raise Redirect('/_wmi/' + section + '/' + modnames[0])
                 elif req.unresolved_path[0] in modnames:
                     mod = wiking.module(req.unresolved_path[0])
                     del req.unresolved_path[0]
@@ -163,7 +164,7 @@ class WikingManagementInterface(Module, RequestHandler):
     def menu(self, req):
         variants = wiking.module('Application').languages()
         return [MenuItem('/_wmi/' + section, title, descr=descr, variants=variants,
-                         submenu=[MenuItem('/_wmi/'+ section +'/' + m.name(),
+                         submenu=[MenuItem('/_wmi/' + section + '/' + m.name(),
                                            m.title(),
                                            descr=m.descr(),
                                            variants=variants,
@@ -176,7 +177,7 @@ class WikingManagementInterface(Module, RequestHandler):
         """Return the WMI URI of given module or None if it is not available through WMI."""
         for section, title, descr, modnames in self._MENU:
             if modname in modnames:
-                return '/_wmi/'+ section +'/' + modname
+                return '/_wmi/' + section + '/' + modname
         return None
             
 
@@ -211,7 +212,7 @@ class Roles(wiking.Roles):
     I{Fully enabled} means the user registration process is fully completed and
     the user access to the application is not blocked.
 
-    This is a special purpose role, you can't assign users to this role explicitly.    
+    This is a special purpose role, you can't assign users to this role explicitly.
     """
     # Translators: Name of a special purpose user group.
     REGISTERED = Role('registered', _("Successfuly registered user"))
@@ -224,7 +225,7 @@ class Roles(wiking.Roles):
     (contains also users who registered, but didn't confirm the activation code yet), but weaker
     than L{wiking.cms.Roles.USER} (contains only users approved by the administrator).
 
-    This is a special purpose role, you can't assign users to this role explicitly.    
+    This is a special purpose role, you can't assign users to this role explicitly.
     """
     # Translators: Name of a predefined user group.
     USER_ADMIN = Role('user_admin', _("User administrator"))
@@ -267,10 +268,10 @@ class Roles(wiking.Roles):
         return standard_roles + user_defined_roles
 
 
-class CMSModule(PytisModule, RssModule):
+class CMSModule(wiking.PytisModule, wiking.RssModule):
     """Base class for all CMS modules."""
     
-    _DB_FUNCTIONS = dict(PytisModule._DB_FUNCTIONS,
+    _DB_FUNCTIONS = dict(wiking.PytisModule._DB_FUNCTIONS,
                          cms_crypto_lock_passwords=(('uid', pd.Integer(),),),
                          cms_crypto_unlock_passwords=(('uid', pd.Integer(),),
                                                       ('password', pd.String(),),
@@ -283,7 +284,7 @@ class CMSModule(PytisModule, RssModule):
     _CRYPTO_COOKIE = 'wiking_cms_crypto'
 
     def _authorized(self, req, action, **kwargs):
-        if hasattr(self, 'RIGHTS_'+action):
+        if hasattr(self, 'RIGHTS_' + action):
             # This needs to be first in order to maintain backwards
             # compatibility with existing RIGHTS_* specifications.  When
             # RIGHTS_* are removed everywhere, calling super class should
@@ -312,7 +313,7 @@ class CMSModule(PytisModule, RssModule):
     def _list_form_content(self, req, form, uri=None):
         # Add short module help text above the list form in WMI.
         content = []
-        if req.wmi: 
+        if req.wmi:
             help = self._view.help()
             if help:
                 content = [lcg.p(help)]
@@ -336,9 +337,10 @@ class CMSModule(PytisModule, RssModule):
         available_names = set([row[0].value()
                                for row in self._call_rows_db_function('cms_crypto_cook_passwords',
                                                                       uid, crypto_cookie)])
-        unavailable_names = set(crypto_names) - available_names - set(wiking.cfg.ignored_crypto_names)
+        unavailable_names = (set(crypto_names) - available_names -
+                             set(wiking.cfg.ignored_crypto_names))
         if unavailable_names:
-            raise DecryptionError(unavailable_names.pop())
+            raise wiking.DecryptionError(unavailable_names.pop())
 
     def _generate_crypto_cookie(self):
         return wiking.module('Session').session_key()
@@ -366,7 +368,7 @@ class CMSModule(PytisModule, RssModule):
                               lang=lang, limit=count):
             record.set_row(row)
             item = PanelItem([(f.id(), record[f.id()].export(),
-                               f.id() == self._title_column and \
+                               f.id() == self._title_column and
                                self._record_uri(req, record)) or None
                               for f in fields])
             items.append(item)
@@ -469,7 +471,7 @@ class EmbeddableCMSModule(CMSModule, Embeddable):
         return content
 
 
-class CMSExtension(Module, Embeddable, RequestHandler):
+class CMSExtension(wiking.Module, Embeddable, wiking.RequestHandler):
     """Generic base class for CMS extensions which consist of multiple (sub)modules.
 
     Many CMS extensions will use multiple modules to implement their functionality.  This class
@@ -558,7 +560,7 @@ class CMSExtension(Module, Embeddable, RequestHandler):
         return req.forward(wiking.module(modname))
 
     def submodule_uri(self, req, modname):
-        return self._base_uri(req) +'/'+ self._rmapping[modname]
+        return self._base_uri(req) + '/' + self._rmapping[modname]
 
     
 class CMSExtensionMenuModule(object):
@@ -612,7 +614,7 @@ class Config(SettingsManagementModule):
                             transform_default = lambda x: x and _("enabled") or _("disabled")
                         else:
                             transform_default = lambda x: x is None and _("undefined") or repr(x)
-                    descr += ' '+ _("The default value is %s.", transform_default(default))
+                    descr += ' ' + _("The default value is %s.", transform_default(default))
                 self._cfg_option = option
                 self._cfg_default_value = default
                 Field.__init__(self, name, label, descr=descr, **kwargs)
@@ -648,8 +650,8 @@ class Config(SettingsManagementModule):
                 F('allow_registration'),
                 F('force_https_login'),
                 F('upload_limit',
-                  transform_default=lambda n: repr(n) +' ('+ pp.format_byte_size(n)+')'),
-                )
+                  transform_default=lambda n: repr(n) + ' (' + format_byte_size(n) + ')'),
+            )
         layout = ('site_title', 'site_subtitle', 'webmaster_address', 'default_sender_address',
                   'allow_login_panel', 'allow_registration', 'force_https_login', 'upload_limit')
     _TITLE_TEMPLATE = _("Basic Configuration")
@@ -685,7 +687,6 @@ class Config(SettingsManagementModule):
         # is not a perfect solution - better would be to recognize the
         # precedence of configuration value sources directly within the
         # Configuration class.
-        x = wiking.cms.cfg.allow_registration
         site = wiking.cfg.server_hostname
         row = self._data.get_row(site=site)
         if row is None:
@@ -706,7 +707,8 @@ class Config(SettingsManagementModule):
         if theme_id is None:
             if isinstance(wiking.cfg.theme, Themes.Theme):
                 wiking.cfg.theme = Theme()
-        elif not isinstance(wiking.cfg.theme, Themes.Theme) or wiking.cfg.theme.theme_id() != theme_id:
+        elif (not isinstance(wiking.cfg.theme, Themes.Theme) or
+              wiking.cfg.theme.theme_id() != theme_id):
             wiking.cfg.theme = wiking.module('Themes').theme(theme_id)
 
     def set_theme(self, req, theme_id):
@@ -732,7 +734,8 @@ class Config(SettingsManagementModule):
             title = None
         else:
             title = row['site_title'].value()
-        if title is None and site == wiking.cfg.server_hostname or wiking.cfg.server_hostname is None:
+        if ((title is None and site == wiking.cfg.server_hostname or
+             wiking.cfg.server_hostname is None)):
             title = wiking.cfg.site_title
         return title
     
@@ -846,7 +849,7 @@ class PageStructure(SiteSpecificContentModule):
             if last_row and last_row['page_id'].value() == page_id:
                 order = last_row['ord'].value()
             else:
-                order = result[-1]+1
+                order = result[-1] + 1
             # Translators: Label in page order selection.
             result.append(Order(order, _("Last")))
         else:
@@ -869,44 +872,46 @@ class Panels(SiteSpecificContentModule):
         help = _(u"Manage panels – the small windows shown by the side of "
                  "every page.")
         table = 'cms_v_panels'
-        def fields(self): return (
-            Field('panel_id', width=5, editable=NEVER),
-            Field('site'),
-            Field('lang', _("Language"), codebook='Languages', editable=ONCE,
-                  selection_type=CHOICE, value_column='lang'),
-            # Translators: Title in the meaning of a heading
-            Field('title', _("Title"), width=30, not_null=True),
-            # Translators: Stylesheet is a computer term (CSS), make sure you use the usual
-            # translation.
-            Field('identifier', _("Identifier"), width=30,
-                  type=pd.RegexString(maxlen=32, not_null=False, regex='^[a-zA-Z][0-9a-zA-Z_-]*$'),
-                  descr=_("Assign an optional unique panel identifier if you need to refer "
-                          "to this panel in the stylesheet.")),
-            # Translators: Order in the meaning of sequence. A noun, not verb.
-            Field('ord', _("Order"), width=5,
-                  descr=_("Number denoting the order of the panel on the page.")),
-            # Translators: List items can be news, webpages, names of users. Intentionally general.
-            Field('page_id', _("List items"), width=5, not_null=False, codebook='PageStructure',
-                  runtime_filter=computer(lambda r, site: pd.EQ('site', pd.sval(site))),
-                  descr=_("The items of the extension module used by the selected page will be "
-                          "shown by the panel.  Leave blank for a text content panel.")),
-            Field('modname'),
-            Field('read_role_id'),
-            # Translators: Computer term for a part of application.
-            Field('modtitle', _("Module"), virtual=True,
-                  computer=computer(lambda r, modname: _modtitle(modname))),
-            # Translators: As number of items in a table.
-            Field('size', _("Items count"), width=5,
-                  descr=_("Number of items from the selected module, which "
-                          "will be shown by the panel.")),
-            # Translators: Content of a page (text or something else)
-            ContentField('content', _("Content"), height=10, width=80,
-                         descr=_("Additional text content displayed on the panel.")),
-            # Translators: Yes/no option whether the item is publically
-            # visible. Followed by a checkbox.
-            Field('published', _("Published"), default=True,
-                  descr=_("Controls whether the panel is actually displayed."),
-                  ),
+        def fields(self):
+            return (
+                Field('panel_id', width=5, editable=NEVER),
+                Field('site'),
+                Field('lang', _("Language"), codebook='Languages', editable=ONCE,
+                      selection_type=CHOICE, value_column='lang'),
+                # Translators: Title in the meaning of a heading
+                Field('title', _("Title"), width=30, not_null=True),
+                # Translators: Stylesheet is a computer term (CSS), make sure you use the usual
+                # translation.
+                Field('identifier', _("Identifier"), width=30,
+                      type=pd.RegexString(maxlen=32, not_null=False,
+                                          regex='^[a-zA-Z][0-9a-zA-Z_-]*$'),
+                      descr=_("Assign an optional unique panel identifier if you need to refer "
+                              "to this panel in the stylesheet.")),
+                # Translators: Order in the meaning of sequence. A noun, not verb.
+                Field('ord', _("Order"), width=5,
+                      descr=_("Number denoting the order of the panel on the page.")),
+                # Translators: List items can be news, webpages, names of users.
+                # Intentionally general.
+                Field('page_id', _("List items"), width=5, not_null=False, codebook='PageStructure',
+                      runtime_filter=computer(lambda r, site: pd.EQ('site', pd.sval(site))),
+                      descr=_("The items of the extension module used by the selected page will be "
+                              "shown by the panel.  Leave blank for a text content panel.")),
+                Field('modname'),
+                Field('read_role_id'),
+                # Translators: Computer term for a part of application.
+                Field('modtitle', _("Module"), virtual=True,
+                      computer=computer(lambda r, modname: _modtitle(modname))),
+                # Translators: As number of items in a table.
+                Field('size', _("Items count"), width=5,
+                      descr=_("Number of items from the selected module, which "
+                              "will be shown by the panel.")),
+                # Translators: Content of a page (text or something else)
+                ContentField('content', _("Content"), height=10, width=80,
+                             descr=_("Additional text content displayed on the panel.")),
+                # Translators: Yes/no option whether the item is publically
+                # visible. Followed by a checkbox.
+                Field('published', _("Published"), default=True,
+                      descr=_("Controls whether the panel is actually displayed.")),
             )
         sorting = (('ord', ASC),)
         columns = ('title', 'identifier', 'ord', 'modtitle', 'size', 'published', 'content')
@@ -918,7 +923,7 @@ class Panels(SiteSpecificContentModule):
             Action('unpublish', _("Unpublish"),
                    enabled=lambda r: r['published'].value(),
                    descr=_("Make the panel invisible in production mode")),
-            )
+        )
 
     _LIST_BY_LANGUAGE = True
     _HONOUR_SPEC_TITLE = True
@@ -975,7 +980,7 @@ class Panels(SiteSpecificContentModule):
                 content = tuple(mod.panelize(req, lang, row['size'].value(),
                                              relation=binding and (binding, row)))
                 if mod.has_channel():
-                    channel = '/'+'.'.join((row['identifier'].value(), lang, 'rss'))
+                    channel = '/' + '.'.join((row['identifier'].value(), lang, 'rss'))
 
             if row['content'].value():
                 content += (text2content(req, row['content'].value()),)
@@ -999,8 +1004,8 @@ class Panels(SiteSpecificContentModule):
                                                      active_area_selector='h3')
             else:
                 titlebar_content = None
-            panels.append(Panel(panel_id, title, content,
-                                titlebar_content=titlebar_content, channel=channel))
+            panels.append(wiking.Panel(panel_id, title, content,
+                                       titlebar_content=titlebar_content, channel=channel))
             
         return panels
 
@@ -1042,7 +1047,7 @@ class Languages(SettingsManagementModule):
             # Translators: Language name: e.g. Czech, Slovak etc.
             Field('name', _("Name"), virtual=True,
                   computer=computer(lambda r, lang: lcg.language_name(lang))),
-            )
+        )
         sorting = (('lang', ASC),)
         cb = CodebookSpec(display=lcg.language_name, prefer_display=True)
         layout = ('lang',)
@@ -1054,8 +1059,8 @@ class Languages(SettingsManagementModule):
     _language_list_time = None
     
     def languages(self):
-        if (self._language_list_time is None or
-            time.time() - self._language_list_time > 30):
+        if ((self._language_list_time is None or
+             time.time() - self._language_list_time > 30)):
             Languages._language_list = [str(r['lang'].value()) for r in self._data.get_rows()]
             Languages._language_list_time = time.time()
         return self._language_list
@@ -1086,7 +1091,7 @@ class Countries(SettingsManagementModule):
             # Translators: Language name: e.g. Czech, Slovak etc.
             Field('name', _("Name"), virtual=True,
                   computer=computer(lambda r, country: lcg.country_name(country))),
-            )
+        )
         sorting = (('country', ASC),)
         cb = CodebookSpec(display=lcg.country_name, prefer_display=True)
         layout = ('country',)
@@ -1103,7 +1108,7 @@ class Themes(StyleManagementModule):
         class _Field(Field):
             def __init__(self, id, label, descr=None):
                 Field.__init__(self, id, label, descr=descr, type=pd.Color(),
-                               dbcolumn=id.replace('-','_'))
+                               dbcolumn=id.replace('-', '_'))
         _FIELDS = (
             (_("Normal page colors"),
              (_Field('foreground', _("Text")),
@@ -1129,7 +1134,7 @@ class Themes(StyleManagementModule):
                              "heading types may be distinguished by a different background color "
                              "and others may be just underlined.")))),
             (_("Frames"),
-             (_Field('frame-fg', _("Text")), 
+             (_Field('frame-fg', _("Text")),
               _Field('frame-bg', _("Background")),
               _Field('frame-border', _("Border"),
                      descr=_("Frames are generally used for distinguishing separate areas of the "
@@ -1162,7 +1167,7 @@ class Themes(StyleManagementModule):
               _Field('table-cell2', _("Shaded table cell")),
               _Field('help', _("Form help text")),
               _Field('inactive-folder', _("Inactive folder")))),
-            )
+        )
         # Translators: "Color Themes" is computer terminology.  Predefined sets of colors to be
         # used for changing the visual appearance of a web page/application.  Similar to color
         # styles.
@@ -1181,9 +1186,10 @@ class Themes(StyleManagementModule):
                 fields.extend(group)
             return fields
         def _is_active(self, row, theme_id):
-            return isinstance(wiking.cfg.theme, Themes.Theme) and wiking.cfg.theme.theme_id() == theme_id
+            return (isinstance(wiking.cfg.theme, Themes.Theme) and
+                    wiking.cfg.theme.theme_id() == theme_id)
         def _title(self, row, name, active):
-            return name + (active and ' ('+ _("active") +')' or '')
+            return name + (active and ' (' + _("active") + ')' or '')
         def _preview(self, record):
             # TODO: It would be better to have a special theme demo page, which
             # would display all themable constructs.
@@ -1197,7 +1203,7 @@ class Themes(StyleManagementModule):
             else:
                 uri = '/_wmi/Users'
             uri += '?preview_theme=%d' % record['theme_id'].value()
-            return IFrame(uri, width=800, height=220)
+            return wiking.IFrame(uri, width=800, height=220)
             
         def layout(self):
             return ('name',) + tuple([FieldSet(label, [f.id() for f in fields])
@@ -1213,7 +1219,7 @@ class Themes(StyleManagementModule):
             Action('activate', _("Activate default"), context=pp.ActionContext.GLOBAL,
                    descr=_("Activate the default color theme"),
                    enabled=lambda r: isinstance(wiking.cfg.theme, Themes.Theme)),
-            )
+        )
         
     _ROW_ACTIONS = True
 
@@ -1251,11 +1257,11 @@ class Themes(StyleManagementModule):
         else:
             req.message(err, type=req.ERROR)
         req.set_param('search', theme_id)
-        raise wiking.Redirect(self._current_base_uri(req, record))
+        raise Redirect(self._current_base_uri(req, record))
     
 
 # ==============================================================================
-# The modules below handle the actual content.  
+# The modules below handle the actual content.
 # The modules above are system modules used internally by Wiking.
 # ==============================================================================
 
@@ -1276,94 +1282,98 @@ class Pages(SiteSpecificContentModule):
                        ('authorized', _("Visible only to authorized users")),
                        ('never', _("Always hidden")),
                        )
-        default='always'
+        default = 'always'
     class Spec(Specification):
         # Translators: Heading and menu item. Meaning web pages.
         title = _("Pages")
         help = _("Manage available pages and their content.")
         table = 'cms_v_pages'
-        def fields(self): return (
-            Field('page_key'),
-            Field('page_id'),
-            Field('site'),
-            Field('kind', default='page'),
-            Field('identifier', _("Identifier"), width=20, fixed=True, editable=ONCE,
-                  type=pd.RegexString(not_null=True, regex='^[a-zA-Z][0-9a-zA-Z_-]*$'),
-                  computer=computer(self._default_identifier),
-                  descr=_("The identifier may be used to refer to this page from outside and also "
-                          "from other pages. A valid identifier can only contain letters, digits, "
-                          "dashes and underscores.  It must start with a letter.")),
-            Field('lang', _("Language"), editable=ONCE, codebook='Languages', value_column='lang'),
-            Field('title_or_identifier', _("Title")),
-            Field('title', _("Title"), not_null=True),
-            Field('description', _("Description"), width=64,
-                  descr=_("Brief description shown as a tooltip on links (such as menu items) "
-                          "and in site map.")),
-            ContentField('_content', _("Content"), compact=True, height=20, width=80,
-                         attachment_storage=self._attachment_storage),
-            ContentField('content'),
-            Field('comment', _("Comment"), virtual=True, width=70,
-                  descr=_("Describe briefly the changes you made.")),
-            # Translators: "Module" is an independent reusable part of a computer program (here a
-            # module of Wiking CMS).
-            Field('modname', _("Module"), display=_modtitle, prefer_display=True, not_null=False,
-                  enumerator=enum([_m.name() for _m in wiking.cfg.resolver.available_modules()
-                                   if issubclass(_m, Embeddable) \
-                                   and _m not in (EmbeddableCMSModule, CMSExtension)]),
-                  descr=_("Select the extension module to embed into the page.  Leave blank for "
-                          "an ordinary text page.")),
-            # Translators: "Parent item" has the meaning of hierarchical position.  More precise
-            # term might be "Superordinate item" but doesn't sound that nice in English.  The term
-            # "item" represents a page, but also a menu item.
-            Field('parent', _("Parent item"), codebook='PageStructure', not_null=False,
-                  runtime_filter=computer(lambda r, site: pd.EQ('site', pd.sval(site))),
-                  descr=_("Select the superordinate item in page hierarchy.  Leave blank for "
-                          "a top-level page.")),
-            # Translators: Page configuration option followed by a selection
-            # input field.  Determines the position in the sense of order in a
-            # sequence.  What is first and what next.
-            Field('ord', _("Position"), 
-                  enumerator=Pages.PagePositionEnumerator(), editable=ALWAYS,
-                  runtime_arguments=computer(lambda r, site, parent, page_id:
+        def fields(self):
+            return (
+                Field('page_key'),
+                Field('page_id'),
+                Field('site'),
+                Field('kind', default='page'),
+                Field('identifier', _("Identifier"), width=20, fixed=True, editable=ONCE,
+                      type=pd.RegexString(not_null=True, regex='^[a-zA-Z][0-9a-zA-Z_-]*$'),
+                      computer=computer(self._default_identifier),
+                      descr=_("The identifier may be used to refer to this page from outside "
+                              "and also from other pages. "
+                              "A valid identifier can only contain letters, digits, "
+                              "dashes and underscores.  It must start with a letter.")),
+                Field('lang', _("Language"), editable=ONCE, codebook='Languages',
+                      value_column='lang'),
+                Field('title_or_identifier', _("Title")),
+                Field('title', _("Title"), not_null=True),
+                Field('description', _("Description"), width=64,
+                      descr=_("Brief description shown as a tooltip on links (such as menu items) "
+                              "and in site map.")),
+                ContentField('_content', _("Content"), compact=True, height=20, width=80,
+                             attachment_storage=self._attachment_storage),
+                ContentField('content'),
+                Field('comment', _("Comment"), virtual=True, width=70,
+                      descr=_("Describe briefly the changes you made.")),
+                # Translators: "Module" is an independent reusable part of a computer program
+                # (here a module of Wiking CMS).
+                Field('modname', _("Module"), display=_modtitle, prefer_display=True,
+                      not_null=False,
+                      enumerator=enum([_m.name() for _m in wiking.cfg.resolver.available_modules()
+                                       if issubclass(_m, Embeddable)
+                                       and _m not in (EmbeddableCMSModule, CMSExtension)]),
+                      descr=_("Select the extension module to embed into the page.  Leave blank "
+                              "for an ordinary text page.")),
+                # Translators: "Parent item" has the meaning of hierarchical position.  More precise
+                # term might be "Superordinate item" but doesn't sound that nice in English.
+                # The term "item" represents a page, but also a menu item.
+                Field('parent', _("Parent item"), codebook='PageStructure', not_null=False,
+                      runtime_filter=computer(lambda r, site: pd.EQ('site', pd.sval(site))),
+                      descr=_("Select the superordinate item in page hierarchy.  Leave blank for "
+                              "a top-level page.")),
+                # Translators: Page configuration option followed by a selection
+                # input field.  Determines the position in the sense of order in a
+                # sequence.  What is first and what next.
+                Field('ord', _("Position"),
+                      enumerator=Pages.PagePositionEnumerator(), editable=ALWAYS,
+                      runtime_arguments=computer(lambda r, site, parent, page_id:
                                                  dict(site=site, parent=parent, page_id=page_id)),
-                  computer=computer(Pages.PagePositionEnumerator().last_position),
-                  display=lambda x: x.label, # See PageStructure.page_position_selection().
-                  descr=_("Select the position within the items of the same level.")),
-            Field('menu_visibility', _("Visibility in menu"),
-                  enumerator=Pages.MenuVisibility, selection_type=pp.SelectionType.RADIO,
-                  descr=_('When "%(always)s" is selected, unauthorized users see the menu '
-                          'item, but still can not open the page.  When "%(authorized)s" '
-                          'is selected, visibility is controlled by the "Access Rights" '
-                          'settings below.  Note, that when access rights are restricted, '
-                          'the item will be hidden until the user logs in, which may be '
-                          'confusing (the expected item is not there).',
-                          always=dict(Pages.MenuVisibility.enumeration).get('always'),
-                          authorized=dict(Pages.MenuVisibility.enumeration).get('authorized'))),
-            Field('foldable', _("Foldable"), editable=computer(lambda r, menu_visibility:
+                      computer=computer(Pages.PagePositionEnumerator().last_position),
+                      display=lambda x: x.label, # See PageStructure.page_position_selection().
+                      descr=_("Select the position within the items of the same level.")),
+                Field('menu_visibility', _("Visibility in menu"),
+                      enumerator=Pages.MenuVisibility, selection_type=pp.SelectionType.RADIO,
+                      descr=_('When "%(always)s" is selected, unauthorized users see the menu '
+                              'item, but still can not open the page.  When "%(authorized)s" '
+                              'is selected, visibility is controlled by the "Access Rights" '
+                              'settings below.  Note, that when access rights are restricted, '
+                              'the item will be hidden until the user logs in, which may be '
+                              'confusing (the expected item is not there).',
+                              always=dict(Pages.MenuVisibility.enumeration).get('always'),
+                              authorized=dict(Pages.MenuVisibility.enumeration).get('authorized'))),
+                Field('foldable', _("Foldable"), editable=computer(lambda r, menu_visibility:
                                                                    menu_visibility != 'never'),
-                  descr=_("Check if you want the relevant menu item to be foldable (only makes "
-                          "sense for pages, which have subordinary items in the menu).")),
-            Field('tree_order', type=pd.TreeOrder()),
-            Field('creator', _("Creator"), codebook='Users'),
-            Field('created', _("Created"), default=now),
-            Field('published_since', _("Published since")),
-            # Translators: Configuration option determining whether the page is published or not
-            # (passive form of publish).  The label may be followed by a checkbox.
-            Field('published', _("Published"), default=False,
-                  descr=_("Allows you to control the availability of this page in each of the "
-                          "supported languages (switch language to control the availability in "
-                          "other languages)")),
-            Field('status', _("Status"), virtual=True, computer=computer(self._status)),
-            #Field('grouping', virtual=True,
-            #      computer=computer(lambda r, tree_order: tree_order.split('.')[1])),
-            # Translators: Label of a selector of a group allowed to access the page read only.
-            Field('read_role_id', _("Read only access"), codebook='ApplicationRoles',
-                  default=Roles.ANYONE.id(),
-                  descr=_("Select the role allowed to view the page contents.")),
-            # Translators: Label of a selector of a group allowed to edit the page.
-            Field('write_role_id', _("Read/write access"), codebook='ApplicationRoles',
-                  default=Roles.CONTENT_ADMIN.id(),
-                  descr=_("Select the role allowed to edit the page contents.")),
+                      descr=_("Check if you want the relevant menu item to be foldable (only makes "
+                              "sense for pages, which have subordinary items in the menu).")),
+                Field('tree_order', type=pd.TreeOrder()),
+                Field('creator', _("Creator"), codebook='Users'),
+                Field('created', _("Created"), default=now),
+                Field('published_since', _("Published since")),
+                # Translators: Configuration option determining whether the page is published or not
+                # (passive form of publish).  The label may be followed by a checkbox.
+                Field('published', _("Published"), default=False,
+                      descr=_("Allows you to control the availability of this page in each of the "
+                              "supported languages (switch language to control the availability in "
+                              "other languages)")),
+                Field('status', _("Status"), virtual=True, computer=computer(self._status)),
+                #Field('grouping', virtual=True,
+                #      computer=computer(lambda r, tree_order: tree_order.split('.')[1])),
+                # Translators: Label of a selector of a group allowed to access the page read only.
+                Field('read_role_id', _("Read only access"), codebook='ApplicationRoles',
+                      default=Roles.ANYONE.id(),
+                      descr=_("Select the role allowed to view the page contents.")),
+                # Translators: Label of a selector of a group allowed to edit the page.
+                Field('write_role_id', _("Read/write access"), codebook='ApplicationRoles',
+                      default=Roles.CONTENT_ADMIN.id(),
+                      descr=_("Select the role allowed to edit the page contents.")),
             )
         def _status(self, record, published, _content, content):
             if not published:
@@ -1381,7 +1391,7 @@ class Pages(SiteSpecificContentModule):
             else:
                 return record['identifier'].value()
         def _attachment_storage_uri(self, record):
-            return '/'+ record['identifier'].export() + '/attachments'
+            return '/' + record['identifier'].export() + '/attachments'
         def _attachment_storage(self, record):
             return Attachments.AttachmentStorage(record.req(),
                                                  record['page_id'].value(),
@@ -1406,8 +1416,8 @@ class Pages(SiteSpecificContentModule):
             Action('options', _("Options"),
                    descr=_("Edit global (language independent) page options and menu position")),
             Action('commit', _("Publish"), descr=_("Publish the page in its current state"),
-                   enabled=lambda r: (r['_content'].value() != r['content'].value() \
-                                          or not r['published'].value())),
+                   enabled=lambda r: (r['_content'].value() != r['content'].value()
+                                      or not r['published'].value())),
             Action('unpublish', _("Unpublish"),
                    descr=_("Make the page invisible in production mode"),
                    enabled=lambda r: r['published'].value()),
@@ -1415,14 +1425,14 @@ class Pages(SiteSpecificContentModule):
                    descr=_("Revert the unpublished changes in page text "
                            "to the last published state"),
                    enabled=lambda r: r['_content'].value() != r['content'].value()),
-            #Action('translate', _("Translate"), 
+            #Action('translate', _("Translate"),
             #      descr=_("Create the content by translating another language variant"),
             #       enabled=lambda r: r['_content'].value() is None),
             Action('new_page', _("New Page"), descr=_("Create a new page")),
             # The action seems inadequate in row context menu and the help page
             # is out of date anyway.
             #Action('help', _("Help")),
-            )
+        )
         # Translators: Noun. Such as e-mail attachments (here attachments for a webpage).
         bindings = (Binding('attachments', _("Attachments"), 'Attachments', 'page_id'),
                     Binding('history', _("History"), 'PageHistory', 'page_key'),)
@@ -1433,24 +1443,24 @@ class Pages(SiteSpecificContentModule):
          _("The page already exists in given language.")),
         ('duplicate key (value )?violates unique constraint "cms_pages_unique_tree_(?P<id>ord)er"',
          _("Duplicate menu order at this level of hierarchy.")),) + \
-         SiteSpecificContentModule._EXCEPTION_MATCHERS
+        SiteSpecificContentModule._EXCEPTION_MATCHERS
     _LIST_BY_LANGUAGE = True
     _LAYOUT = {'insert':
-                   (FieldSet(_("Page Text (for the current language)"),
-                             ('title', 'description', '_content')),
-                    FieldSet(_("Global Options (for all languages)"),
-                             ('identifier', 'modname',
-                              FieldSet(_("Menu position"), ('parent', 'ord', 'menu_visibility',
-                                                            'foldable')),
-                              FieldSet(_("Access Rights"), ('read_role_id', 'write_role_id',)),
-                              ))),
+               (FieldSet(_("Page Text (for the current language)"),
+                         ('title', 'description', '_content')),
+                FieldSet(_("Global Options (for all languages)"),
+                         ('identifier', 'modname',
+                          FieldSet(_("Menu position"), ('parent', 'ord', 'menu_visibility',
+                                                        'foldable')),
+                          FieldSet(_("Access Rights"), ('read_role_id', 'write_role_id',)),
+                          ))),
                'update': ('title', 'description', '_content', 'comment'),
                'delete': (),
                'options':
-                   (FieldSet(_("Basic Options"), ('identifier', 'modname',)),
-                    FieldSet(_("Menu position"), ('parent', 'menu_visibility', 'ord', 'foldable')),
-                    FieldSet(_("Access Rights"), ('read_role_id', 'write_role_id')),
-                    )
+               (FieldSet(_("Basic Options"), ('identifier', 'modname',)),
+                FieldSet(_("Menu position"), ('parent', 'menu_visibility', 'ord', 'foldable')),
+                FieldSet(_("Access Rights"), ('read_role_id', 'write_role_id')),
+                )
                }
     _SUBMIT_BUTTONS_ = ((_("Save as concept"), None), (_("Save and publish"), 'commit'))
     _SUBMIT_BUTTONS = {'update': _SUBMIT_BUTTONS_,
@@ -1508,11 +1518,11 @@ class Pages(SiteSpecificContentModule):
                 # This for modules, which are Embeddable, but not
                 # EmbeddableCMSModule.
                 mod = wiking.module(modname)
-                if isinstance(mod, RequestHandler):
+                if isinstance(mod, wiking.RequestHandler):
                     try:
                         return req.forward(mod)
                     except NotFound:
-                        # Don't allow further processing if unresolved_path was already consumed. 
+                        # Don't allow further processing if unresolved_path was already consumed.
                         if not req.unresolved_path:
                             raise
         return super(Pages, self)._handle_subpath(req, record)
@@ -1528,7 +1538,7 @@ class Pages(SiteSpecificContentModule):
         if not req.unresolved_path:
             return None
         identifier = req.unresolved_path[0]
-        # Recognize special path of RSS channel as '<identifier>.<lang>.rss'. 
+        # Recognize special path of RSS channel as '<identifier>.<lang>.rss'.
         if identifier.endswith('.rss'):
             req.set_param('action', 'rss')
             identifier = identifier[:-4]
@@ -1547,11 +1557,11 @@ class Pages(SiteSpecificContentModule):
                 # rather than by preferred language (the preferred language may
                 # have changed while the form was displayed).
                 key = req.param(self._key)
-                keys = [row[self._key].export() for row in rows]
+                keys = [r[self._key].export() for r in rows]
                 if key in keys:
                     del req.unresolved_path[0]
                     return rows[keys.index(key)]
-            variants = [str(row['lang'].value()) for row in rows]
+            variants = [str(r['lang'].value()) for r in rows]
             lang = req.preferred_language(variants)
             del req.unresolved_path[0]
             return rows[variants.index(lang)]
@@ -1574,7 +1584,8 @@ class Pages(SiteSpecificContentModule):
         if not errors and req.has_param('commit'):
             record['content'] = record['_content']
             record['published'] = pd.bval(True)
-            if not record.original_row()['published'].value() and record['published_since'].value() is None:
+            if ((not record.original_row()['published'].value() and
+                 record['published_since'].value() is None)):
                 record['published_since'] = pd.Value(record.type('published_since'), now())
         if record['creator'].value() is None:
             # Supply creator to a newly created language variant (where prefill
@@ -1664,7 +1675,7 @@ class Pages(SiteSpecificContentModule):
                 try:
                     mod = wiking.module(modname)
                 except ResolverError:
-                    # We want the CMS to work even if the module was uninstalled or renamed. 
+                    # We want the CMS to work even if the module was uninstalled or renamed.
                     submenu = []
                 else:
                     submenu = list(mod.submenu(req))
@@ -1711,10 +1722,10 @@ class Pages(SiteSpecificContentModule):
         else:
             row = self._data.get_row(modname=modname, site=wiking.cfg.server_hostname)
             if row:
-                uri = '/'+ row['identifier'].value()
+                uri = '/' + row['identifier'].value()
                 binding = self._embed_binding(modname)
                 if binding:
-                    uri += '/'+ binding.id()
+                    uri += '/' + binding.id()
             else:
                 uri = None
         return uri
@@ -1745,7 +1756,7 @@ class Pages(SiteSpecificContentModule):
             content.append(Attachments.ImageGallery(gallery_images))
         # Create automatic attachment list if any attachments are marked as listed.
         listed_attachments = [(lcg.link(r.uri(), r.title() or r.filename()),
-                               ' ('+ r.info()['byte_size'] +') ',
+                               ' (' + r.info()['byte_size'] + ') ',
                                lcg.coerce(r.descr() or '', formatted=True))
                               for r in resources if r.info()['listed']]
         if listed_attachments:
@@ -1785,7 +1796,7 @@ class Pages(SiteSpecificContentModule):
                                       "subpage in production mode.", type=req.WARNING))
                         break
                     else:
-                        raise Redirect('/'+row['identifier'].value())
+                        raise Redirect('/' + row['identifier'].value())
         if req.check_roles(Roles.CONTENT_ADMIN):
             # Append an empty show form just for the action menu.
             form = self._form(pw.ShowForm, req, record=record, layout=(),
@@ -1793,7 +1804,6 @@ class Pages(SiteSpecificContentModule):
             content.extend([lcg.Container(form, id='cms-page-actions')] +
                            self._related_content(req, record))
         return self._document(req, content, record)
-                      
 
     def action_update(self, req, record, action='update'):
         application = wiking.module('Application')
@@ -1831,14 +1841,14 @@ class Pages(SiteSpecificContentModule):
                             type=req.ERROR)
                 raise Redirect(self._current_record_uri(req, record))
             d = pw.SelectionDialog('src_lang', _("Choose source language"),
-                                   [(lang, lcg.language_name(lang) or lang) for lang in langs],
-                                   action='translate', hidden=\
-                                   [(id, record[id].value()) for id in ('page_id', 'lang')])
+                                   [(l, lcg.language_name(l) or l) for l in langs],
+                                   action='translate',
+                                   hidden=[(id, record[id].value()) for id in ('page_id', 'lang')])
             return self._document(req, d, record, subtitle=_("Translate"))
         else:
             row = self._data.get_row(page_id=record['page_id'].value(),
                                      lang=str(req.param('src_lang')))
-            for k in ('_content','title'):
+            for k in ('_content', 'title'):
                 req.set_param(k, row[k].value())
             return self.action_update(req, record)
 
@@ -1903,7 +1913,7 @@ class NavigablePages(Pages):
             g = context.generator()
             req = context.req()
             node = context.node()
-            publication_id = '/%s/data/%s' % (req.page_record['identifier'].value(), 
+            publication_id = '/%s/data/%s' % (req.page_record['identifier'].value(),
                                               req.publication_record['identifier'].value())
             publication = [n for n in node.path() if n.id() == publication_id][0]
             def ctrl(target, cls, label):
@@ -1918,12 +1928,12 @@ class NavigablePages(Pages):
                     uri = None
                     title = _("None")
                     cls += ' dead'
-                return g.a(label, href=uri, title=label +': '+ title, 
+                return g.a(label, href=uri, title=label + ': ' + title,
                            cls='navigation-ctrl ' + cls)
             # Translators: Label of a link in sequential navigation.
             return g.div((ctrl(node.prev(), 'prev', _('Previous Chapter')), ' | ',
-                          ctrl(node.next(), 'next', _('Next Chapter'))), 
-                          cls='page-navigation '+self._position)
+                          ctrl(node.next(), 'next', _('Next Chapter'))),
+                         cls='page-navigation ' + self._position)
 
     def _inner_page_content(self, req, record):
         return super(NavigablePages, self)._page_content(req, record)
@@ -1962,16 +1972,18 @@ class Publications(NavigablePages, EmbeddableCMSModule):
                 Field('status', visible=computer(self._preview_mode)),
                 #Field('read_role_id', visible=computer(self._is_admin)),
                 #Field('write_role_id', visible=computer(self._is_admin)),
-                )
+            )
             extra = (
                 Field('author', _("Author"), width=60, not_null=True,
                       descr=_("Author's full name or a comma separated list of full names.")),
                 Field('isbn', _("ISBN"), width=20,
-                      descr=_("ISBN of the original book if the publication is a digitalized book.")),
+                      descr=_("ISBN of the original book if the publication is "
+                              "a digitalized book.")),
                 Field('cover_image', _("Cover Image"), not_null=False,
                       codebook='Attachments', value_column='attachment_id',
                       runtime_filter=computer(self._attachment_filter), display='filename',
-                      descr=_("Insert the image as an attachment and select it from the list here.")),
+                      descr=_("Insert the image as an attachment and select it "
+                              "from the list here.")),
                 Field('illustrator', _("Illustrator"), width=50,
                       descr=_("Full name or a comma separated list of full names.")),
                 Field('publisher', _("Publisher"), width=30,
@@ -1983,8 +1995,9 @@ class Publications(NavigablePages, EmbeddableCMSModule):
                 Field('notes', _("Notes"), width=60, height=4,
                       descr=_("Any other additional information about the publication, "
                               "such as names of translators, reviewers etc.")),
-                Field('pubinfo', _("Published<publisher>"), virtual=True, computer=computer(self._pubinfo)),
-                )
+                Field('pubinfo', _("Published<publisher>"), virtual=True,
+                      computer=computer(self._pubinfo)),
+            )
             return self._inherited_fields(Publications.Spec, override=override) + extra
         def _preview_mode(self, record):
             return wiking.module('Application').preview_mode(record.req())
@@ -2011,17 +2024,17 @@ class Publications(NavigablePages, EmbeddableCMSModule):
                            pd.NE('title', pd.sval(None)))
         layout = ('title', 'description', 'lang', 'identifier', 'cover_image',
                   FieldSet(_("Bibliographic information"),
-                           ('author', 'illustrator', 'isbn', 
-                            'publisher', 'published_year', 'edition', 'notes')), 
-                  '_content', 
-                  FieldSet(_("Access Rights"), 
+                           ('author', 'illustrator', 'isbn',
+                            'publisher', 'published_year', 'edition', 'notes')),
+                  '_content',
+                  FieldSet(_("Access Rights"),
                            ('read_role_id', 'write_role_id',)),
                   )
         columns = ('title', 'author', 'publisher', 'status')
         sorting = ('title', pd.ASCENDENT),
         bindings = (
             Binding('chapters', _("Chapters"), 'PublicationChapters', 'parent'),
-            ) + Pages.Spec.bindings
+        ) + Pages.Spec.bindings
         actions = Pages.Spec.actions + (
             Action('new_chapter', _("New Chapter"),
                    descr=_("Create a new chapter in this publication.")),
@@ -2029,7 +2042,7 @@ class Publications(NavigablePages, EmbeddableCMSModule):
                    descr=_("Export the publication to EPUB format")),
             Action('export_braille', _("Export to Braille"),
                    descr=_("Export the publication to Braille")),
-            )
+        )
     
     _LIST_BY_LANGUAGE = False
     _INSERT_LABEL = _("New e-Publication")
@@ -2077,7 +2090,8 @@ class Publications(NavigablePages, EmbeddableCMSModule):
         return super(Publications, self)._handle(req, action, **kwargs)
 
     def _binding_visible(self, req, record, binding):
-        return binding.id() != 'chapters' and super(Publications, self)._binding_visible(req, record, binding)
+        return (binding.id() != 'chapters' and
+                super(Publications, self)._binding_visible(req, record, binding))
         
     def _inner_page_content(self, req, record):
         def cover_image(element, context):
@@ -2095,8 +2109,8 @@ class Publications(NavigablePages, EmbeddableCMSModule):
             else:
                 return ''
         return ([wiking.HtmlRenderer(cover_image),
-                 self._form(pw.ShowForm, req, record=record, actions=(), 
-                            layout=[fid for fid in ('description', 'author', 'illustrator', 
+                 self._form(pw.ShowForm, req, record=record, actions=(),
+                            layout=[fid for fid in ('description', 'author', 'illustrator',
                                                     'isbn', 'pubinfo', 'lang',
                                                     'creator', 'published_since', 'notes')
                                     if record[fid].value() is not None])] +
@@ -2104,11 +2118,11 @@ class Publications(NavigablePages, EmbeddableCMSModule):
                 [lcg.NodeIndex(title=_("Table of Contents"))])
 
     def _child_rows(self, req, record):
-        children = wiking.module('PublicationChapters').child_rows(req, record['tree_order'].value(), 
-                                                             record['lang'].value())
+        children = wiking.module('PublicationChapters').child_rows(req,
+                                                                   record['tree_order'].value(),
+                                                                   record['lang'].value())
         children[record['parent'].value()] = [record.row()]
         return children
-    
 
     def _publication(self, req, record):
         children = self._child_rows(req, record)
@@ -2117,7 +2131,8 @@ class Publications(NavigablePages, EmbeddableCMSModule):
                                    title=row['title'].value(),
                                    # Call the super class _inner_page_content to
                                    # avoid a table of contents in every node.
-                                   content=super(Publications, self)._inner_page_content(req, self._record(req, row)),
+                                   content=super(Publications, self).
+                                   _inner_page_content(req, self._record(req, row)),
                                    children=[node(r) for r in
                                              children.get(row['page_id'].value(), ())])
         return node(record.row())
@@ -2143,7 +2158,7 @@ class Publications(NavigablePages, EmbeddableCMSModule):
         return [item(row) for row in children[record['parent'].value()]]
 
     def action_new_chapter(self, req, record):
-        raise Redirect(req.uri() +'/chapters', action='insert')
+        raise Redirect(req.uri() + '/chapters', action='insert')
 
     def action_export_epub(self, req, record):
         class EpubExporter(lcg.EpubExporter):
@@ -2166,14 +2181,15 @@ class Publications(NavigablePages, EmbeddableCMSModule):
         try:
             presentation = lcg.braille_presentation('presentation-braille-local.py')
         except IOError:
-            presentation = lcg.braille_presentation()            
+            presentation = lcg.braille_presentation()
         if page_width and page_height:
             node = self._publication(req, record)
             exporter = lcg.BrailleExporter(translations=wiking.cfg.translation_path)
             presentation.page_width = lcg.UFont(page_width)
             presentation.page_height = lcg.UFont(page_height)
             presentation_set = lcg.PresentationSet(((presentation, lcg.TopLevelMatcher(),),))
-            context = exporter.context(node, req.preferred_language(), presentation=presentation_set)
+            context = exporter.context(node, req.preferred_language(),
+                                       presentation=presentation_set)
             try:
                 result = exporter.export(context, recursive=True)
             except lcg.BrailleError, e:
@@ -2219,7 +2235,7 @@ class PublicationChapters(NavigablePages):
             override = (
                 Field('kind', default='chapter'),
                 Field('parent', runtime_filter=computer(self._parent_filter)),
-                )
+            )
             return self._inherited_fields(PublicationChapters.Spec, override=override)
         def _default_identifier(self, record, title):
             identifier = super(PublicationChapters.Spec, self)._default_identifier(record, title)
@@ -2230,7 +2246,9 @@ class PublicationChapters(NavigablePages):
             publication = record.req().publication_record
             return pd.AND(pd.EQ('site', pd.sval(site)),
                           pd.OR(pd.EQ('page_id', publication['page_id']),
-                                pd.WM('tree_order', pd.WMValue(pd.String(), '%s.*' % publication['tree_order'].value())))
+                                pd.WM('tree_order',
+                                      pd.WMValue(pd.String(),
+                                                 '%s.*' % publication['tree_order'].value())))
                           )
         def _attachment_storage_uri(self, record):
             return '/%s/data/%s/chapters/%s/attachments' % \
@@ -2261,9 +2279,10 @@ class PublicationChapters(NavigablePages):
             restriction = {}
         else:
             restriction = {'published': True}
-        for row in self._data.get_rows(site=wiking.cfg.server_hostname, 
-                                       condition=pd.WM('tree_order', 
-                                                       pd.WMValue(pd.String(), '%s.*' % tree_order)),
+        for row in self._data.get_rows(site=wiking.cfg.server_hostname,
+                                       condition=pd.WM('tree_order',
+                                                       pd.WMValue(pd.String(),
+                                                                  '%s.*' % tree_order)),
                                        lang=lang,
                                        sorting=(('tree_order', pd.ASCENDENT),),
                                        **restriction):
@@ -2287,13 +2306,16 @@ class PageHistory(ContentManagementModule):
                 Field('comment', _("Comment")),
                 Field('content'),
                 Field('inserted_lines', _("Inserted lines")),
-                Field('changed_lines',  _("Changed lines")),
-                Field('deleted_lines',  _("Deleted lines")),
+                Field('changed_lines', _("Changed lines")),
+                Field('deleted_lines', _("Deleted lines")),
                 Field('changes', _("Inserted / Changed / Deleted Lines")),
-                Field('diff_add', _("Inserted"), virtual=True, computer=computer(lambda r: _("Green"))),
-                Field('diff_chg', _("Changed"), virtual=True, computer=computer(lambda r: _("Yellow"))),
-                Field('diff_sub', _("Deleted"), virtual=True, computer=computer(lambda r: _("Red"))),
-                )
+                Field('diff_add', _("Inserted"), virtual=True,
+                      computer=computer(lambda r: _("Green"))),
+                Field('diff_chg', _("Changed"), virtual=True,
+                      computer=computer(lambda r: _("Yellow"))),
+                Field('diff_sub', _("Deleted"), virtual=True,
+                      computer=computer(lambda r: _("Red"))),
+            )
         sorting = (('timestamp', pd.DESCENDANT),)
         columns = ('timestamp', 'user', 'comment', 'changes')
         #actions = (
@@ -2304,7 +2326,7 @@ class PageHistory(ContentManagementModule):
 
     def _authorized(self, req, action, **kwargs):
         if action in ('list', 'view'):
-            return req.page_write_access 
+            return req.page_write_access
         else:
             return False
 
@@ -2312,10 +2334,10 @@ class PageHistory(ContentManagementModule):
         if record:
             page_title = self._binding_forward(req).arg('title')
             dt = record['timestamp'].value().strftime('%Y-%m-%d %H:%M:%S')
-            return page_title +' :: '+ _("Changed on %s", lcg.LocalizableDateTime(dt, utc=True))
+            return page_title + ' :: ' + _("Changed on %s", lcg.LocalizableDateTime(dt, utc=True))
         else:
             return super(PageHistory, self)._document_title(req, record)
-        
+
     def _layout(self, req, action, record=None):
         if action == 'view':
             return (('comment',),
@@ -2327,7 +2349,7 @@ class PageHistory(ContentManagementModule):
                     self._diff)
         else:
             return super(PageHistory, self)._layout(req, action, record=record)
-        
+
     def _diff(self, record):
         rows = self._rows(record.req(),
                           condition=pd.AND(pd.EQ('page_key', record['page_key']),
@@ -2343,14 +2365,15 @@ class PageHistory(ContentManagementModule):
                 name1 = (_("Original version") +
                          lcg.format(" (%s %s)", row['user'].value(), row['timestamp'].export()))
                 name2 = (_("Modified version") +
-                         lcg.format(" (%s %s)", record['user'].value(), record['timestamp'].export()))
+                         lcg.format(" (%s %s)", record['user'].value(),
+                                    record['timestamp'].export()))
                 diff = difflib.HtmlDiff(wrapcolumn=80)
-                content = HtmlContent(diff.make_table(text1.splitlines(), text2.splitlines(),
-                                                      name1, name2, context=True, numlines=3))
+                content = lcg.HtmlContent(diff.make_table(text1.splitlines(), text2.splitlines(),
+                                                          name1, name2, context=True, numlines=3))
         else:
             content = lcg.p(_("Previous version empty (no differences available)."))
         return content
-        
+
     def on_page_change(self, req, page, transaction):
         """Insert a new history item if the page text has changed."""
         original_text = page.original_row()['_content'].value() or ''
@@ -2360,7 +2383,7 @@ class PageHistory(ContentManagementModule):
                                               original_text.splitlines(), new_text.splitlines())
             inserted = changed = deleted = 0
             for tag, i1, i2, j1, j2 in matcher.get_opcodes():
-                a, b = i2-i1, j2-j1
+                a, b = i2 - i1, j2 - j1
                 if tag == 'insert':
                     inserted += b
                 elif tag == 'delete':
@@ -2368,10 +2391,10 @@ class PageHistory(ContentManagementModule):
                 elif tag == 'replace':
                     if a > b:
                         changed += b
-                        inserted += b-a
+                        inserted += b - a
                     else:
                         changed += a
-                        deleted += a-b
+                        deleted += a - b
             row = self._data.make_row(
                 page_id=page['page_id'].value(),
                 lang=page['lang'].value(),
@@ -2385,8 +2408,8 @@ class PageHistory(ContentManagementModule):
             result, success = self._data.insert(row, transaction=transaction)
             if not success:
                 raise pd.DBException(result)
-    
-    
+
+
 class Attachments(ContentManagementModule):
     """Attachments are external files (documents, images, media, ...) attached to CMS pages.
 
@@ -2395,75 +2418,81 @@ class Attachments(ContentManagementModule):
     field virtual, storing its value in a file and loading it back through a 'computer'.
 
     """
-    
+
     class Spec(Specification):
         # Translators: Section title. Attachments as in email attachments.
         title = _("Attachments")
         help = _("Manage page attachments. Go to a page to create new attachments.")
         table = 'cms_v_page_attachments'
-        def fields(self): return (
-            Field('attachment_key',
-                  computer=computer(lambda r, attachment_id, lang:
-                                    attachment_id and '%d.%s' % (attachment_id, lang))),
-            Field('attachment_id'),
-            Field('page_id', _("Page"), codebook='PageStructure', editable=ALWAYS,
-                  runtime_filter=computer(lambda r: pd.EQ('site', pd.sval(wiking.cfg.server_hostname))),
-                  descr=_("Select the page where you want to move this attachment.  Don't forget "
-                          "to update all explicit links to this attachment within page text(s).")),
-            Field('lang', _("Language"), codebook='Languages', editable=ONCE, value_column='lang'),
-            # Translators: Noun. File on disk. Computer terminology.
-            Field('file', _("File"), virtual=True, editable=ALWAYS, computer=computer(self._file),
-                  type=pd.Binary(not_null=True, maxlen=wiking.cms.cfg.upload_limit),
-                  descr=_("Upload a file from your local system.  The file name will be used "
-                          "to refer to the attachment within the page content.  Please note, "
-                          "that the file will be served over the internet, so the filename should "
-                          "not contain any special characters.  Letters, digits, underscores, "
-                          "dashes and dots are safe.  You risk problems with most other "
-                          "characters.")),
-            Field('filename', _("Filename"),
-                  computer=computer(lambda r, file: file and file.filename()),
-                  type=pd.RegexString(maxlen=64, not_null=True, regex='^[0-9a-zA-Z_\.-]*$')),
-            Field('mime_type', _("Mime-type"), width=22,
-                  computer=computer(lambda r, file: file and file.mime_type())),
-            Field('title', _("Title"), width=30, maxlen=64,
-                  descr=_("The name of the attachment (e.g. the full name of the document). "
-                          "If empty, the file name will be used instead.")),
-            Field('description', _("Description"), height=3, width=60, maxlen=240,
-                  descr=_("Optional description used for the listing of attachments (see below).")),
-            Field('ext', virtual=True, computer=computer(self._ext)),
-            # Translators: Size of a file, in number of bytes, kilobytes etc.
-            Field('bytesize', _("Size"),
-                  computer=computer(lambda r, file: file and pp.format_byte_size(len(file)))),
-            Field('thumbnail', '', type=pd.Image(), computer=computer(self._thumbnail)),
-            # Translators: Thumbnail is a small image preview in computer terminology.
-            Field('thumbnail_size', _("Preview size"), not_null=False,
-                  enumerator=enum(('small', 'medium', 'large')), default='medium',
-                  display=self._thumbnail_size_display, prefer_display=True,
-                  null_display=_("Full size (don't resize)"),
-                  selection_type=pp.SelectionType.RADIO,
-                  descr=_("Only relevant for images.  When set, the image will not be "
-                          "displayed in full size, but as a small clickable preview.")),
-            # thumbnail_size is the desired maximal width (the corresponding
-            # pixel width may change with configuration option
-            # wiking.cms.cfg.image_thumbnail_sizes), while thumbnail_width and
-            # thumbnail_height reflect the actual size of the thumbnail when it
-            # is generated (they also reflect the image aspect ratio).
-            Field('thumbnail_width', computer=computer(self._thumbnail_width)),
-            Field('thumbnail_height', computer=computer(self._thumbnail_height)),
-            Field('image', type=pd.Image(), computer=computer(self._image)),
-            Field('in_gallery', _("In Gallery"),
-                  #editable=computer(lambda r, thumbnail_size: thumbnail_size is not None),
-                  # The computer doesn't work (probably a PresentedRow issue?).
-                  #computer=computer(lambda r, thumbnail_size: thumbnail_size is not None),
-                  descr=_("Check if you want the image to appear in an image Gallery "
-                          "below the page text.")),
-            Field('listed', _("Listed"), default=True,
-                  descr=_("Check if you want the item to appear in the listing of attachments at "
-                          "the bottom of the page.")),
-            #Field('author', _("Author"), width=30),
-            #Field('location', _("Location"), width=50),
-            #Field('exif_date', _("EXIF date"), type=wiking.DateTime()),
-            Field('_filename', virtual=True, computer=computer(self._filename)),
+        def fields(self):
+            return (
+                Field('attachment_key',
+                      computer=computer(lambda r, attachment_id, lang:
+                                        attachment_id and '%d.%s' % (attachment_id, lang))),
+                Field('attachment_id'),
+                Field('page_id', _("Page"), codebook='PageStructure', editable=ALWAYS,
+                      runtime_filter=computer(lambda r: pd.EQ('site',
+                                                              pd.sval(wiking.cfg.server_hostname))),
+                      descr=_("Select the page where you want to move this attachment.  "
+                              "Don't forget to update all explicit links to "
+                              "this attachment within page text(s).")),
+                Field('lang', _("Language"), codebook='Languages', editable=ONCE,
+                      value_column='lang'),
+                # Translators: Noun. File on disk. Computer terminology.
+                Field('file', _("File"), virtual=True, editable=ALWAYS,
+                      computer=computer(self._file),
+                      type=pd.Binary(not_null=True, maxlen=wiking.cms.cfg.upload_limit),
+                      descr=_("Upload a file from your local system.  The file name will be used "
+                              "to refer to the attachment within the page content.  Please note, "
+                              "that the file will be served over the internet, so the filename "
+                              "should not contain any special characters.  Letters, digits, "
+                              "underscores, dashes and dots are safe.  "
+                              "You risk problems with most other characters.")),
+                Field('filename', _("Filename"),
+                      computer=computer(lambda r, file: file and file.filename()),
+                      type=pd.RegexString(maxlen=64, not_null=True, regex='^[0-9a-zA-Z_\.-]*$')),
+                Field('mime_type', _("Mime-type"), width=22,
+                      computer=computer(lambda r, file: file and file.mime_type())),
+                Field('title', _("Title"), width=30, maxlen=64,
+                      descr=_("The name of the attachment (e.g. the full name of the document). "
+                              "If empty, the file name will be used instead.")),
+                Field('description', _("Description"), height=3, width=60, maxlen=240,
+                      descr=_("Optional description used for the listing of attachments "
+                              "(see below).")),
+                Field('ext', virtual=True, computer=computer(self._ext)),
+                # Translators: Size of a file, in number of bytes, kilobytes etc.
+                Field('bytesize', _("Size"),
+                      computer=computer(lambda r, file: file and pp.format_byte_size(len(file)))),
+                Field('thumbnail', '', type=pd.Image(), computer=computer(self._thumbnail)),
+                # Translators: Thumbnail is a small image preview in computer terminology.
+                Field('thumbnail_size', _("Preview size"), not_null=False,
+                      enumerator=enum(('small', 'medium', 'large')), default='medium',
+                      display=self._thumbnail_size_display, prefer_display=True,
+                      null_display=_("Full size (don't resize)"),
+                      selection_type=pp.SelectionType.RADIO,
+                      descr=_("Only relevant for images.  When set, the image will not be "
+                              "displayed in full size, but as a small clickable preview.")),
+                # thumbnail_size is the desired maximal width (the corresponding
+                # pixel width may change with configuration option
+                # wiking.cms.cfg.image_thumbnail_sizes), while thumbnail_width and
+                # thumbnail_height reflect the actual size of the thumbnail when it
+                # is generated (they also reflect the image aspect ratio).
+                Field('thumbnail_width', computer=computer(self._thumbnail_width)),
+                Field('thumbnail_height', computer=computer(self._thumbnail_height)),
+                Field('image', type=pd.Image(), computer=computer(self._image)),
+                Field('in_gallery', _("In Gallery"),
+                      #editable=computer(lambda r, thumbnail_size: thumbnail_size is not None),
+                      # The computer doesn't work (probably a PresentedRow issue?).
+                      #computer=computer(lambda r, thumbnail_size: thumbnail_size is not None),
+                      descr=_("Check if you want the image to appear in an image Gallery "
+                              "below the page text.")),
+                Field('listed', _("Listed"), default=True,
+                      descr=_("Check if you want the item to appear in the listing of attachments "
+                              "at the bottom of the page.")),
+                #Field('author', _("Author"), width=30),
+                #Field('location', _("Location"), width=50),
+                #Field('exif_date', _("EXIF date"), type=wiking.DateTime()),
+                Field('_filename', virtual=True, computer=computer(self._filename)),
             )
         def _ext(self, record, filename):
             if filename is None:
@@ -2483,7 +2512,8 @@ class Attachments(ContentManagementModule):
                                            filename=unicode(record['filename'].value()))
         def _resize(self, file, size):
             # Compute the value by resizing the original image.
-            import copy, PIL.Image, cStringIO
+            import PIL.Image
+            import cStringIO
             if file is None:
                 return None
             f = cStringIO.StringIO(file.buffer())
@@ -2520,7 +2550,7 @@ class Attachments(ContentManagementModule):
             else:
                 return None
         def _filename(self, record, attachment_id, ext):
-            fname = str(attachment_id) +'.'+ ext
+            fname = str(attachment_id) + '.' + ext
             return os.path.join(wiking.cms.cfg.storage, wiking.cfg.dbname, 'attachments', fname)
         def _thumbnail_size_display(self, size):
             # Translators: Size label related to "Preview size" field (pronoun).
@@ -2528,28 +2558,29 @@ class Attachments(ContentManagementModule):
                       'medium': _("Medium") + " (%dpx)" % wiking.cms.cfg.image_thumbnail_sizes[1],
                       'large': _("Large") + " (%dpx)" % wiking.cms.cfg.image_thumbnail_sizes[2]}
             return labels.get(size, size)
-        
-        layout = ('file', 'title', 'description', 'thumbnail_size' , 'in_gallery', 'listed')
-        columns = ('filename', 'title', 'bytesize', 'mime_type', 'thumbnail_size', 'in_gallery', 'listed', 'page_id')
+
+        layout = ('file', 'title', 'description', 'thumbnail_size', 'in_gallery', 'listed')
+        columns = ('filename', 'title', 'bytesize', 'mime_type', 'thumbnail_size', 'in_gallery',
+                   'listed', 'page_id')
         sorting = (('filename', ASC),)
         actions = (
             #Action('insert_image', _("New image"), descr=_("Insert a new image attachment"),
             #       context=pp.ActionContext.GLOBAL),
             # Translators: Button label
             Action('move', _("Move"), descr=_("Move the attachment to another page.")),
-            )
+        )
 
     class ImageGallery(lcg.Content):
-        
+
         def __init__(self, images):
             self._images = images
             super(Attachments.ImageGallery, self).__init__()
-            
+
         def _export_item(self, context, resource):
             g = context.generator()
             title = resource.title() or resource.filename()
             if resource.descr():
-                title += ': '+ resource.descr()
+                title += ': ' + resource.descr()
             thumbnail = resource.thumbnail()
             if thumbnail:
                 size = thumbnail.size()
@@ -2561,13 +2592,12 @@ class Attachments(ContentManagementModule):
                 return g.a(img, href=resource.uri(), rel='lightbox[gallery]', title=title)
             else:
                 return g.img(resource.uri())
-        
+
         def export(self, context):
             g = context.generator()
             content = [self._export_item(context, r) for r in self._images]
             return g.div(content, cls='wiking-image-gallery')
-            
-            
+
     class AttachmentStorage(pp.AttachmentStorage):
 
         def __init__(self, req, page_id, lang, base_uri):
@@ -2577,7 +2607,7 @@ class Attachments(ContentManagementModule):
             self._base_uri = base_uri
 
         def _api_call(self, name, *args, **kwargs):
-            method = getattr(wiking.module('Attachments'), 'storage_api_'+name)
+            method = getattr(wiking.module('Attachments'), 'storage_api_' + name)
             return method(self._req, self._page_id, self._lang, *args, **kwargs)
 
         def _row_resource(self, row):
@@ -2597,14 +2627,14 @@ class Attachments(ContentManagementModule):
                                   thumbnail_size=thumbnail_size)
 
         def _resource_uri(self, filename):
-            return self._req.make_uri(self._base_uri+'/'+filename)
-        
+            return self._req.make_uri(self._base_uri + '/' + filename)
+
         def _image_uri(self, filename):
-            return self._req.make_uri(self._base_uri+'/'+filename, action='image')
-        
+            return self._req.make_uri(self._base_uri + '/' + filename, action='image')
+
         def _thumbnail_uri(self, filename):
-            return self._req.make_uri(self._base_uri+'/'+filename, action='thumbnail')
-        
+            return self._req.make_uri(self._base_uri + '/' + filename, action='thumbnail')
+
         def resource(self, filename):
             row = self._api_call('row', filename)
             if row:
@@ -2614,13 +2644,13 @@ class Attachments(ContentManagementModule):
 
         def resources(self):
             return [self._row_resource(row) for row in self._api_call('rows')]
-     
+
         def insert(self, filename, data, values):
             return self._api_call('insert', filename, data, values)
-            
+
         def update(self, filename, values):
             return self._api_call('update', filename, values)
-     
+
         def retrieve(self, filename):
             # Currently unused by the web form attachment dialog.
             pass
@@ -2635,10 +2665,10 @@ class Attachments(ContentManagementModule):
          ('file', _("Attachment of the same file name already exists for this page."))),
         ('value too long for type character varying\(64\)',
          ('file', _("Attachment file name exceeds the maximal length 64 characters."))),
-        )
+    )
     _ROW_ACTIONS = True
     _ASYNC_LOAD = True
-    
+
     def _authorized(self, req, action, **kwargs):
         if action in ('download', 'image', 'thumbnail'):
             return req.page_read_access
@@ -2646,13 +2676,13 @@ class Attachments(ContentManagementModule):
             return req.page_write_access
         else:
             return False
-            
+
     def _default_action(self, req, record=None):
         if record is None:
             return 'list'
         else:
             return 'download'
-        
+
     def _link_provider(self, req, uri, record, cid, **kwargs):
         if cid is None and not kwargs:
             kwargs['action'] = 'view'
@@ -2679,26 +2709,26 @@ class Attachments(ContentManagementModule):
             os.makedirs(dir, 0700)
         buf = record['file'].value()
         if buf is not None:
-            log(OPR, "Saving file:", (fname, pp.format_byte_size(len(buf))))
+            log(OPERATIONAL, "Saving file:", (fname, pp.format_byte_size(len(buf))))
             buf.save(fname)
-        
+
     def _insert_transaction(self, req, record):
         return self._transaction()
-    
+
     def _insert(self, req, record, transaction):
         super(Attachments, self)._insert(req, record, transaction)
         self._save_files(record)
-        
+
     def _update_transaction(self, req, record):
         return self._transaction()
-    
+
     def _update(self, req, record, transaction):
         super(Attachments, self)._update(req, record, transaction)
         self._save_files(record)
-        
+
     def _delete_transaction(self, req, record):
         return self._transaction()
-    
+
     def _delete(self, req, record, transaction):
         super(Attachments, self)._delete(req, record, transaction)
         fname = record['_filename'].value()
@@ -2724,7 +2754,7 @@ class Attachments(ContentManagementModule):
                 break
             yield row
         self._data.close()
-        
+
     def storage_api_insert(self, req, page_id, lang, filename, data, values):
         prefill = dict(page_id=page_id, lang=lang, listed=False)
         record = self._record(req, None, new=True, prefill=prefill)
@@ -2738,7 +2768,7 @@ class Attachments(ContentManagementModule):
             return self._error_message(*self._analyze_exception(e))
         else:
             return None
-        
+
     def storage_api_update(self, req, page_id, lang, filename, values):
         row = self._data.get_row(page_id=page_id, lang=lang, filename=filename)
         if row:
@@ -2750,7 +2780,7 @@ class Attachments(ContentManagementModule):
                 return None
         else:
             return _("Attachment '%s' not found!", filename)
-        
+
     def action_move(self, req, record):
         return self.action_update(req, record, action='move')
 
@@ -2771,39 +2801,41 @@ class Attachments(ContentManagementModule):
         else:
             return Response(value.buffer(), content_type='image/%s' % value.image().format.lower())
 
-    
+
 class _News(ContentManagementModule, EmbeddableCMSModule):
     """Common base class for News and Planner."""
     class Spec(Specification):
-        def fields(self): return (
-            Field('page_id', _("Page"), codebook='PageStructure', editable=ONCE,
-                  runtime_filter=computer(lambda r: pd.EQ('site', pd.sval(wiking.cfg.server_hostname)))),
-            Field('lang', _("Language"), codebook='Languages', editable=ONCE,
-                  selection_type=CHOICE, value_column='lang'),
-            Field('timestamp', _("Date"), type=wiking.DateTime(not_null=True, utc=True),
-                  default=now, nocopy=True),
-            Field('title', _("Title"), column_label=_("Message"), width=32,
-                  descr=_("The item brief summary.")),
-            ContentField('content', _("Message"), height=6, width=80),
-            Field('author', _("Author"), codebook='Users'),
-            Field('date', _("Date"), virtual=True, computer=computer(self._date),
-                  descr=_("Date of the news item creation.")),
-            Field('date_title', virtual=True, computer=computer(self._date_title)),
+        def fields(self):
+            return (
+                Field('page_id', _("Page"), codebook='PageStructure', editable=ONCE,
+                      runtime_filter=computer(lambda r:
+                                              pd.EQ('site', pd.sval(wiking.cfg.server_hostname)))),
+                Field('lang', _("Language"), codebook='Languages', editable=ONCE,
+                      selection_type=CHOICE, value_column='lang'),
+                Field('timestamp', _("Date"), type=wiking.DateTime(not_null=True, utc=True),
+                      default=now, nocopy=True),
+                Field('title', _("Title"), column_label=_("Message"), width=32,
+                      descr=_("The item brief summary.")),
+                ContentField('content', _("Message"), height=6, width=80),
+                Field('author', _("Author"), codebook='Users'),
+                Field('date', _("Date"), virtual=True, computer=computer(self._date),
+                      descr=_("Date of the news item creation.")),
+                Field('date_title', virtual=True, computer=computer(self._date_title)),
             )
         def _date(self, record, timestamp):
             return record['timestamp'].export(show_time=False)
         def _date_title(self, record, date, title):
             if title:
-                return date +': '+ title
+                return date + ': ' + title
             else:
                 return None
-        
+
     _LIST_BY_LANGUAGE = True
     _EMBED_BINDING_COLUMN = 'page_id'
     _PANEL_FIELDS = ('date', 'title')
     _ROW_ACTIONS = True
     _RSS_DESCR_COLUMN = 'content'
-    _page_identifier_cache = BoundCache()
+    _page_identifier_cache = wiking.BoundCache()
 
     def _authorized(self, req, action, record=None, **kwargs):
         if action == 'list':
@@ -2812,27 +2844,27 @@ class _News(ContentManagementModule, EmbeddableCMSModule):
             return req.page_write_access
         else:
             return False
-    
+
     def _prefill(self, req):
         return dict(super(_News, self)._prefill(req),
                     author=req.user().uid())
-    
+
     def _record_uri(self, req, record, *args, **kwargs):
         def get():
             return record.cb_value('page_id', 'identifier').value()
         # BoundCache will cache only in the scope of one request.
-        uri = '/'+ self._page_identifier_cache.get(req, record['page_id'].value(), get)
+        uri = '/' + self._page_identifier_cache.get(req, record['page_id'].value(), get)
         #if args or kwargs:
         #    uri += '/data/' + record[self._referer].export()
         #    return req.make_uri(uri, *args, **kwargs)
-        anchor = 'item-'+ record[self._referer].export()
+        anchor = 'item-' + record[self._referer].export()
         return make_uri(uri, anchor)
-            
+
     def _redirect_after_insert(self, req, record):
         req.message(self._insert_msg(req, record))
         identifier = record.cb_value('page_id', 'identifier').value()
-        raise Redirect('/'+identifier)
-        
+        raise Redirect('/' + identifier)
+
     def _rss_author(self, req, record):
         cbvalue = record.cb_value('author', 'email')
         return cbvalue and cbvalue.export()
@@ -2850,21 +2882,21 @@ class News(_News):
                 Field('news_id', editable=NEVER),
                 Field('days_displayed', _("Displayed days"), default=30,
                       descr=_("Number of days the item stays displayed in news.")),
-                )
+            )
             return extra + self._inherited_fields(News.Spec)
         sorting = (('timestamp', DESC),)
         columns = ('title', 'timestamp', 'author')
         layout = ('timestamp', 'days_displayed', 'title', 'content')
-        list_layout = pp.ListLayout('title', meta=('timestamp', 'author'),  content=('content',),
+        list_layout = pp.ListLayout('title', meta=('timestamp', 'author'), content=('content',),
                                     anchor="item-%s", popup_actions=True)
         filter_sets = (pp.FilterSet('filter', _("Show"), default='recent', filters=(
-                    pp.Filter('recent', _("Recent news"),
-                              pd.FunctionCondition('cms_recent_timestamp',
-                                                   'timestamp', 'days_displayed')),
-                    pp.Filter('archive', _("Archive of older news"),
-                              pd.NOT(pd.FunctionCondition('cms_recent_timestamp',
-                                                          'timestamp', 'days_displayed'))),
-                    pp.Filter('all', _("All items")))),)
+            pp.Filter('recent', _("Recent news"),
+                      pd.FunctionCondition('cms_recent_timestamp',
+                                           'timestamp', 'days_displayed')),
+            pp.Filter('archive', _("Archive of older news"),
+                      pd.NOT(pd.FunctionCondition('cms_recent_timestamp',
+                                                  'timestamp', 'days_displayed'))),
+            pp.Filter('all', _("All items")))),)
 
     # Translators: Button label for creating a new message in "News".
     _INSERT_LABEL = _("New message")
@@ -2885,8 +2917,8 @@ class Planner(_News):
         def fields(self):
             override = (
                 Field('title', column_label=_("Event"), descr=_("The event brief summary.")),
-                )
-            sample_date = datetime.datetime.today() + datetime.timedelta(weeks=1) 
+            )
+            sample_date = datetime.datetime.today() + datetime.timedelta(weeks=1)
             extra = (
                 Field('planner_id', editable=NEVER),
                 Field('start_date', _("Date"), width=10, type=wiking.Date(not_null=True),
@@ -2896,7 +2928,7 @@ class Planner(_News):
                 Field('end_date', _("End date"), width=10, type=wiking.Date(),
                       descr=_("The date when the event ends if it is not the same as the "
                               "start date (for events which last several days).")),
-                )
+            )
             return extra + self._inherited_fields(Planner.Spec, override=override)
         sorting = (('start_date', ASC),)
         columns = ('title', 'date', 'author')
@@ -2918,7 +2950,7 @@ class Planner(_News):
     _INSERT_LABEL = _("New event")
     _RSS_TITLE_COLUMN = 'date_title'
     _RSS_DATE_COLUMN = None
-    
+
     def _condition(self, req):
         scondition = super(Planner, self)._condition(req)
         today = pd.Date.datetime()
@@ -2937,28 +2969,31 @@ class Discussions(ContentManagementModule, EmbeddableCMSModule):
         # Translators: Help string describing more precisely the meaning of the "News" section.
         help = _("Allow logged in users to post messages as in a simple forum.")
         table = 'cms_discussions'
-        def fields(self): return (
-            Field('comment_id', editable=NEVER),
-            Field('page_id', codebook='PageStructure', editable=ONCE,
-                  runtime_filter=computer(lambda r: pd.EQ('site', pd.sval(wiking.cfg.server_hostname)))),
-            Field('lang', codebook='Languages', editable=ONCE,
-                  selection_type=CHOICE, value_column='lang'),
-            Field('in_reply_to'),
-            Field('tree_order', type=pd.TreeOrder()),
-            Field('timestamp', type=wiking.DateTime(not_null=True, utc=True), default=now),
-            Field('author', codebook='Users'),
-            # Translators: Field label for posting a message to the discussion.
-            Field('text', _("Your comment"), height=6, width=80, compact=True,),
+        def fields(self):
+            return (
+                Field('comment_id', editable=NEVER),
+                Field('page_id', codebook='PageStructure', editable=ONCE,
+                      runtime_filter=computer(lambda r:
+                                              pd.EQ('site', pd.sval(wiking.cfg.server_hostname)))),
+                Field('lang', codebook='Languages', editable=ONCE,
+                      selection_type=CHOICE, value_column='lang'),
+                Field('in_reply_to'),
+                Field('tree_order', type=pd.TreeOrder()),
+                Field('timestamp', type=wiking.DateTime(not_null=True, utc=True), default=now),
+                Field('author', codebook='Users'),
+                # Translators: Field label for posting a message to the discussion.
+                Field('text', _("Your comment"), height=6, width=80, compact=True,),
             )
         sorting = (('tree_order', ASC),)
         layout = ('text',)
         def list_layout(self):
-            import textwrap, urllib
+            import textwrap
+            import urllib
             def reply_info(element, context, record):
                 if record.req().check_roles(Roles.USER):
                     g = context.generator()
                     text = textwrap.fill(record['text'].value(), 60, replace_whitespace=False)
-                    quoted = '\n'.join(['> '+line for line in text.splitlines()]) +'\n\n'
+                    quoted = '\n'.join(['> ' + line for line in text.splitlines()]) + '\n\n'
                     # This hidden 'div.discussion-reply' is a placeholder and
                     # information needed for the Javascript 'Discussion' class
                     # instantiated below the form in the method related().
@@ -2975,12 +3010,12 @@ class Discussions(ContentManagementModule, EmbeddableCMSModule):
         if cid is None:
             return None
         return super(Discussions, self)._link_provider(req, uri, record, cid, **kwargs)
-    
+
     def _actions(self, req, record):
         # Disable the New Record button under the list as we have the insertion
         # form just below.
         return [a for a in super(Discussions, self)._actions(req, record) if a.id() != 'insert']
-    
+
     def _authorized(self, req, action, record=None):
         if action in ('list', 'insert', 'reply'):
             return req.page_read_access
@@ -2989,7 +3024,7 @@ class Discussions(ContentManagementModule, EmbeddableCMSModule):
 
     def _redirect_after_insert(self, req, record):
         req.message(_("Your comment was posted to the discussion."))
-        raise wiking.Redirect(self._binding_parent_uri(req))
+        raise Redirect(self._binding_parent_uri(req))
 
     def _prefill(self, req):
         return dict(super(Discussions, self)._prefill(req),
@@ -2997,7 +3032,7 @@ class Discussions(ContentManagementModule, EmbeddableCMSModule):
                     author=req.user().uid(),
                     page_id=req.page_record['page_id'].value(),
                     lang=req.page_record['lang'].value())
-    
+
     def action_reply(self, req, record):
         prefill = dict(self._prefill(req),
                        in_reply_to=record['comment_id'].value(),
@@ -3011,7 +3046,7 @@ class Discussions(ContentManagementModule, EmbeddableCMSModule):
             raise Redirect(self._binding_parent_uri(req))
         else:
             return self._redirect_after_insert(req, record)
-        
+
     def _list_form_content(self, req, form, uri=None):
         content = super(Discussions, self)._list_form_content(req, form, uri=uri)
         if uri is not None:
@@ -3036,21 +3071,21 @@ class Discussions(ContentManagementModule, EmbeddableCMSModule):
             # Wrap in a names container to allow css styling.
             content = [lcg.Container(content, name='discussions')]
         return content
-    
-        
-class SiteMap(Module, Embeddable):
+
+
+class SiteMap(wiking.Module, Embeddable):
     """Extend page content by including a hierarchical listing of the main menu."""
 
     # Translators: Section heading and menu item. Computer terminology idiom.
     _TITLE = _("Site Map")
-    
+
     def embed(self, req):
         return [lcg.RootIndex()]
 
 
 class Resources(wiking.Resources):
     """Serve resource files.
-    
+
     The Wiking base Resources class is extended to retrieve the stylesheet
     contents from the database driven 'StyleSheets' module (in addition to
     serving the default styles installed on the filesystem).
@@ -3059,7 +3094,7 @@ class Resources(wiking.Resources):
     def _stylesheet(self, filename):
         return wiking.module('StyleSheets').stylesheet(filename)
 
-   
+
 class StyleSheets(SiteSpecificContentModule, StyleManagementModule):
     """Manage available Cascading Style Sheets through a Pytis data object."""
     class Scopes(pp.Enumeration):
@@ -3071,8 +3106,8 @@ class StyleSheets(SiteSpecificContentModule, StyleManagementModule):
             # (everything outside the management interface) or both ("Global"
             # scope).
             ('website', _("Website")),
-            ('wmi',     _("Management interface")),
-            )
+            ('wmi', _("Management interface")),
+        )
     class MediaTypes(pp.Enumeration):
         enumeration = (('all', _("All types")),
                        # Translators: Braille as a type of media
@@ -3098,33 +3133,35 @@ class StyleSheets(SiteSpecificContentModule, StyleManagementModule):
         table = 'cms_stylesheets'
         # Translators: Help string. Cascading Style Sheet (CSS) is computer terminology idiom.
         help = _("Manage available Cascading Style Sheets.")
-        def fields(self): return (
-            Field('stylesheet_id'),
-            Field('site'),
-            # Translators: Unique identifier of a stylesheet.
-            Field('identifier', _("Identifier"), width=16),
-            Field('description', _("Description"), width=50),
-            Field('active', _("Active"), default=True),
-            # Translators: Heading of a form field determining in
-            # which media the page is displayed. E.g. web, print,
-            # Braille, speech.
-            Field('media', _("Media"), default='all', enumerator=StyleSheets.MediaTypes),
-            # Translators: Scope of applicability of a stylesheet on different website parts.
-            Field('scope', _("Scope"), enumerator=StyleSheets.Scopes,
-                  selection_type=pp.SelectionType.RADIO,
-                  # Translators: Global scope (applies to all parts of the website).
-                  null_display=_("Global"), not_null=False,
-                  # Translators: Description of scope options.  Make sure you
-                  # use the same terms as in the options themselves, which are
-                  # defined a few items above.
-                  descr=_("Determines where this style sheet is applicable. "
-                          'The "Management interface" is the area for CMS administration, '
-                          '"Website" means the regular pages outside the management interface '
-                          'and "Global" means both.')),
-            Field('ord', _("Order"), width=5,
-                  # Translators: Precedence meaning position in a sequence of importance or priority.
-                  descr=_("Number denoting the style sheet precedence.")),
-            Field('content',     _("Content"), height=20, width=80),
+        def fields(self):
+            return (
+                Field('stylesheet_id'),
+                Field('site'),
+                # Translators: Unique identifier of a stylesheet.
+                Field('identifier', _("Identifier"), width=16),
+                Field('description', _("Description"), width=50),
+                Field('active', _("Active"), default=True),
+                # Translators: Heading of a form field determining in
+                # which media the page is displayed. E.g. web, print,
+                # Braille, speech.
+                Field('media', _("Media"), default='all', enumerator=StyleSheets.MediaTypes),
+                # Translators: Scope of applicability of a stylesheet on different website parts.
+                Field('scope', _("Scope"), enumerator=StyleSheets.Scopes,
+                      selection_type=pp.SelectionType.RADIO,
+                      # Translators: Global scope (applies to all parts of the website).
+                      null_display=_("Global"), not_null=False,
+                      # Translators: Description of scope options.  Make sure you
+                      # use the same terms as in the options themselves, which are
+                      # defined a few items above.
+                      descr=_("Determines where this style sheet is applicable. "
+                              'The "Management interface" is the area for CMS administration, '
+                              '"Website" means the regular pages outside the management interface '
+                              'and "Global" means both.')),
+                Field('ord', _("Order"), width=5,
+                      # Translators: Precedence meaning position in a sequence of importance or
+                      # priority.
+                      descr=_("Number denoting the style sheet precedence.")),
+                Field('content', _("Content"), height=20, width=80),
             )
         layout = ('identifier', 'active', 'media', 'scope', 'ord', 'description', 'content')
         columns = ('identifier', 'active', 'media', 'scope', 'ord', 'description')
@@ -3135,14 +3172,14 @@ class StyleSheets(SiteSpecificContentModule, StyleManagementModule):
         scopes = (None, req.wmi and 'wmi' or 'website')
         base_uri = req.module_uri('Resources')
         return [lcg.Stylesheet(row['identifier'].value(),
-                               uri=base_uri+'/'+row['identifier'].value(),
+                               uri=base_uri + '/' + row['identifier'].value(),
                                media=row['media'].value())
                 for row in self._data.get_rows(site=wiking.cfg.server_hostname,
                                                active=True,
                                                condition=pd.OR(*[pd.EQ('scope', pd.sval(s))
                                                                  for s in scopes]),
                                                sorting=self._sorting)]
-        
+
     def stylesheet(self, name):
         row = self._data.get_row(identifier=name, active=True, site=wiking.cfg.server_hostname)
         if row:
@@ -3175,7 +3212,7 @@ class Text(Structure):
         Structure.__init__(self, label=label, description=description, text=text)
         self._module_class().register_text(self)
 
-    
+
 class CommonTexts(SettingsManagementModule):
     """Management of predefined texts editable by administrators.
 
@@ -3195,12 +3232,12 @@ class CommonTexts(SettingsManagementModule):
 
     Wiking modules can access the texts by using the 'text()' method.  See also
     'TextReferrer' class.
-    
+
     """
     class Spec(Specification):
         # This must be a private attribute, otherwise Pytis handles it in a special way
         _texts = {}
-        
+
         def fields(self):
             return (
                 Field('text_id'),
@@ -3210,7 +3247,7 @@ class CommonTexts(SettingsManagementModule):
                 Field('descr', _("Purpose"), width=64, virtual=True,
                       computer=computer(self._description)),
                 ContentField('content', _("Text"), width=80, height=10),
-                )
+            )
 
         columns = ('label', 'descr',)
         sorting = (('label', ASC,),)
@@ -3226,7 +3263,7 @@ class CommonTexts(SettingsManagementModule):
                     # May happen only for obsolete texts in the database
                     descr = ''
             return descr
-        
+
     _LIST_BY_LANGUAGE = True
     _REFERER = 'label'
 
@@ -3235,11 +3272,11 @@ class CommonTexts(SettingsManagementModule):
             return False
         else:
             return super(CommonTexts, self)._authorized(req, action, **kwargs)
-    
+
     def _delayed_init(self):
         super(CommonTexts, self)._delayed_init()
         self._register_texts()
-        
+
     def _register_texts(self):
         pass
 
@@ -3290,7 +3327,7 @@ class Texts(CommonTexts):
     The texts are LCG structured texts and they are language dependent.  Each
     of the texts is identified by a 'Text' instance with unique identifier (its
     'label' attribute).  See 'Text' class for more details.
-    
+
     """
     class Spec(CommonTexts.Spec):
         table = 'cms_v_system_texts'
@@ -3299,17 +3336,16 @@ class Texts(CommonTexts):
         def fields(self):
             extra = (
                 Field('site'),
-                )
+            )
             return self._inherited_fields(Texts.Spec) + extra
 
-    
     _DB_FUNCTIONS = dict(CommonTexts._DB_FUNCTIONS,
                          cms_add_text_label=(('label', pd.String()), ('site', pd.String())))
 
     def _refered_row_values(self, req, value):
         return dict(super(Texts, self)._refered_row_values(req, value),
                     site=wiking.cfg.server_hostname)
-    
+
     def _condition(self, req):
         return pd.AND(super(Texts, self)._condition(req),
                       pd.EQ('site', pd.sval(wiking.cfg.server_hostname)))
@@ -3332,7 +3368,7 @@ class Texts(CommonTexts):
             if isinstance(text, Text):
                 site = wiking.cfg.server_hostname
                 self._call_db_function('cms_add_text_label', text.label(), site)
-                
+
     def text(self, req, text, lang=None, args=None):
         """Return text corresponding to 'text'.
 
@@ -3351,7 +3387,7 @@ class Texts(CommonTexts):
         text is not available for the selected language in the database, the
         method looks for the predefined text in the application and gettext
         mechanism is used for its translation.
-          
+
         """
         assert isinstance(text, Text)
         lang = self._select_language(req, lang)
@@ -3373,7 +3409,7 @@ class Texts(CommonTexts):
         This method is the same as 'text()' but instead of returning LCG
         structured text, it returns its parsed form, as an 'lcg.Content'
         instance.  If the given text doesn't exist, 'None' is returned.
-        
+
         """
         return text2content(req, self.text(req, text, lang=lang, args=args))
 
@@ -3427,7 +3463,7 @@ class Emails(CommonTexts):
             if isinstance(obj, basestring) and not obj.startswith('_'):
                 obj = '_' + obj
             return pytis.data.String._validate(self, obj, **kwargs)
-    
+
     class Spec(CommonTexts.Spec):
 
         table = 'cms_v_emails'
@@ -3436,14 +3472,14 @@ class Emails(CommonTexts):
         def fields(self):
             override = (
                 Field('label', type=Emails.LabelType(maxlen=64), editable=ONCE),
-                )
+            )
             extra = (
                 Field('subject', _("Subject")),
                 Field('cc', _("Additional recipients"),
                       descr=_("Comma separated list of e-mail addresses.")),
-                )
+            )
             return self._inherited_fields(Emails.Spec, override=override) + extra
-        
+
         columns = ('label', 'descr',)
         sorting = (('label', ASC,),)
         layout = ('label', 'descr', 'subject', 'cc', 'content',)
@@ -3458,7 +3494,7 @@ class Emails(CommonTexts):
         if record is not None and not record['label'].value().startswith('_'):
             actions = [a for a in actions if a.id() != 'delete']
         return actions
-    
+
     def _auto_filled_fields(self, req):
         def content(req, record, field_id):
             label = record['label'].value()
@@ -3496,7 +3532,7 @@ class Emails(CommonTexts):
         text is not available for the selected language in the database, the
         method looks for the predefined text in the application and gettext
         mechanism is used for its translation.
-          
+
         """
         assert isinstance(text, EmailText)
         lang = self._select_language(req, lang)
@@ -3538,7 +3574,7 @@ class TextReferrer(object):
 
         Looking texts for a particular language is performed according the
         rules documented in 'Texts.text()'.
-          
+
         """
         assert isinstance(text, Text)
         return _method(wiking.module('Texts'), req, text, lang=lang, args=args)
@@ -3569,14 +3605,14 @@ class TextReferrer(object):
             kinds of elements: 1. string containing '@' representing an e-mail
             address, 2. 'Role' instance representing a user role,
             3. 'None' representing all registered users including disabled
-            users            
+            users
           lang -- two-character string identifying the preferred language of
             the text
           args -- dictionary of formatting arguments for the text; if
             non-empty, the text is processed by the '%' operator and all '%'
             occurences within it must be properly escaped
           kwargs -- other arguments to be passed to 'send_mail'
-        
+
         """
         lang_args = {}
         def lang_email_args(lang):
@@ -3594,11 +3630,11 @@ class TextReferrer(object):
             if r is None or isinstance(r, wiking.Role):
                 users = self._module.find_users(role=r)
                 for u in users:
-                    send_mail(u.email(), **lang_email_args(u.lang()))
+                    wiking.send_mail(u.email(), **lang_email_args(u.lang()))
             else:
                 addr.append(r)
         if addr:
-            send_mail(addr, **lang_email_args(lang))
+            wiking.send_mail(addr, **lang_email_args(lang))
 
 
 class EmailSpool(MailManagementModule):
@@ -3610,21 +3646,23 @@ class EmailSpool(MailManagementModule):
         # Translators: Section title and menu item. Sending emails to multiple recipients.
         title = _("Bulk E-mails")
 
-        def fields(self): return (
-            Field('id', editable=NEVER),
-            Field('sender_address', _("Sender address"), default=wiking.cfg.default_sender_address,
-                  descr=_("E-mail address of the sender.")),
-            # Translators: List of recipients of an email message
-            Field('role_id', _("Recipients"), not_null=False,
-                  # Translators: All users are intended recipients of an email message
-                  codebook='UserGroups', null_display=_("All users")),
-            Field('subject', _("Subject")),
-            ContentField('content', _("Text"), width=80, height=10),
-            Field('date', _("Date"), type=wiking.DateTime(), default=now, editable=NEVER),
-            Field('pid', editable=NEVER),
-            Field('finished', editable=NEVER),
-            Field('state', _("State"), type=pytis.data.String(), editable=NEVER,
-                  virtual=True, computer=computer(self._state_computer)),
+        def fields(self):
+            return (
+                Field('id', editable=NEVER),
+                Field('sender_address', _("Sender address"),
+                      default=wiking.cfg.default_sender_address,
+                      descr=_("E-mail address of the sender.")),
+                # Translators: List of recipients of an email message
+                Field('role_id', _("Recipients"), not_null=False,
+                      # Translators: All users are intended recipients of an email message
+                      codebook='UserGroups', null_display=_("All users")),
+                Field('subject', _("Subject")),
+                ContentField('content', _("Text"), width=80, height=10),
+                Field('date', _("Date"), type=wiking.DateTime(), default=now, editable=NEVER),
+                Field('pid', editable=NEVER),
+                Field('finished', editable=NEVER),
+                Field('state', _("State"), type=pytis.data.String(), editable=NEVER,
+                      virtual=True, computer=computer(self._state_computer)),
             )
 
         def _state_computer(self, row, pid, finished):
@@ -3638,18 +3676,18 @@ class EmailSpool(MailManagementModule):
                 # Translators: State of processing of an email message (e.g. Pending, Sending, Sent)
                 state = _("Pending")
             return state
-        
+
         columns = ('id', 'subject', 'date', 'state',)
         sorting = (('date', DESC,),)
         layout = ('role_id', 'sender_address', 'subject', 'content', 'date', 'state',)
-    
+
     _TITLE_TEMPLATE = _('%(subject)s')
     _LAYOUT = {'insert': ('role_id', 'sender_address', 'subject', 'content',)}
     # Translators: Button label meaning save this email text for later repeated usage
     _COPY_LABEL = _("Use as a Template")
     # Translators: Description of button for creating a template of an email
     _COPY_DESCR = _("Edit this mail for repeated use")
-    
+
     def _authorized(self, req, action, **kwargs):
         if action == 'update':
             return False
