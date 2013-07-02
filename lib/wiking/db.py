@@ -2170,17 +2170,17 @@ class PytisModule(Module, ActionHandler):
             errors = self._validate(req, record, layout)
             if self._is_ajax_request(req):
                 return self._handle_ajax_request(req, record, layout, errors)
+            if not errors:
+                try:
+                    transaction = self._update_transaction(req, record)
+                    self._in_transaction(transaction, self._update, req, record, transaction)
+                    record.reload()
+                except pd.DBException as e:
+                    errors = (self._analyze_exception(e),)
+                else:
+                    return self._redirect_after_update(req, record)
         else:
             errors = ()
-        if req.param('submit') and not errors:
-            try:
-                transaction = self._update_transaction(req, record)
-                self._in_transaction(transaction, self._update, req, record, transaction)
-                record.reload()
-            except pd.DBException as e:
-                errors = (self._analyze_exception(e),)
-            else:
-                return self._redirect_after_update(req, record)
         form = self._form(pw.EditForm, req, record=record, action=action,
                           layout=layout,
                           invalid_prefill=self._invalid_prefill(req, record, layout),
