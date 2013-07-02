@@ -293,7 +293,7 @@ class PytisModule(Module, ActionHandler):
                 dbcolumns.append(dbcolumn)
                 rdata.append((id, value))
             return pd.Row(rdata)
-            
+
     @classmethod
     def title(cls):
         return cls.Spec.title
@@ -1842,6 +1842,8 @@ class PytisModule(Module, ActionHandler):
         'PytisModule._link_provider()'.
 
         """
+        if cfg.debug:
+            debug("Deprecated method PytisModule.link() used!", self.name(), key, args, kwargs)
         if self._link_cache_req is not req:
             self._link_cache = {}
             self._link_cache_req = req
