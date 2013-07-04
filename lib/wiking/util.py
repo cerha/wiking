@@ -1803,7 +1803,7 @@ class MailAttachment(object):
     
 def send_mail(addr, subject, text, sender=None, sender_name=None, html=None,
               export=False, lang=None, cc=(), headers=(), attachments=(),
-              smtp_server=None, smtp_port=None):
+              smtp_server=None, smtp_port=None, uid=None):
     """Send a MIME e-mail message.
 
     Arguments:
@@ -1833,6 +1833,9 @@ def send_mail(addr, subject, text, sender=None, sender_name=None, html=None,
         string; if 'None', server given in configuration is used
       smtp_port -- SMTP port to use for sending the message as a
         number; if 'None', server given in configuration is used
+      uid -- if not 'None' then special CC addresses defined in
+        'wiking.cfg.special_cc_addresses' are added if the given uid is not in any of the
+        'wiking.cfg.special_cc_exclude_roles'.
       
     """
     assert isinstance(addr, (basestring, tuple, list,)), ('type error', addr,)
@@ -1846,6 +1849,7 @@ def send_mail(addr, subject, text, sender=None, sender_name=None, html=None,
     assert isinstance(cc, (tuple, list,)), ('type error', cc,)
     assert smtp_server is None or isinstance(smtp_server, basestring), ('type error', smtp_server,)
     assert smtp_port is None or isinstance(smtp_port, int), ('type error', smtp_port,)
+    assert uid is None or isinstance(uid, int), uid
     if __debug__:
         for a in attachments:
             assert isinstance(a, MailAttachment), ('type error', attachments, a,)
@@ -1866,6 +1870,15 @@ def send_mail(addr, subject, text, sender=None, sender_name=None, html=None,
         sender = wiking.cfg.default_sender_address
     if sender_name:
         sender = '"%s" <%s>' % (Header(sender_name, 'utf-8').encode(), sender)
+    if uid is not None:
+        special_cc_addresses = wiking.cfg.special_cc_addresses
+        if special_cc_addresses:
+            # `Users' is in wiking.cms, but we probably don't want to make
+            # wiking.cms.send_mail because of this, don't we?
+            user_roles = wiking.module('Users').user(uid=uid).roles()
+            special_roles = wiking.cfg.special_cc_exclude_roles
+            if not set(user_roles).intersection(set(special_roles)):
+                cc = tuple(cc) + tuple(wiking.cfg.special_cc_addresses)
     # Set up message headers.
     msg['From'] = sender
     msg['To'] = addr

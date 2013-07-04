@@ -448,3 +448,14 @@ class Configuration(pc):
                 "http://en.wikipedia.org/wiki/Robots_exclusion_standard for more info.")
         _DEFAULT = None
         
+    class _Option_special_cc_addresses(pc.Option):
+        _DESCR = "Sequence of e-mail addresses to add to CC under certain circumstances."
+        _DOC = ("Those addresses are added to CC of e-mails sent by Wiking where user id "
+                "is declared.")
+        _DEFAULT = ()
+
+    class _Option_special_cc_exclude_roles(pc.Option):
+        _DESCR = "Sequence of Roles to ignore for special CC."
+        _DOC = ("Don't add special CC addresses when the declared user id is in any of the "
+                "roles ('Roles' constants) given here.")
+        _DEFAULT = ()
