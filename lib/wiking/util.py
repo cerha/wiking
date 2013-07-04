@@ -15,9 +15,23 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-import lcg, pytis, pytis.presentation
-import sys, httplib, collections, datetime, mimetypes
+import collections
+import datetime
+import httplib
+import mimetypes
+import os
+import re
+import string
+import sys
+import time
+import urllib
 from xml.sax import saxutils
+
+import pytis.data as pd
+import pytis.presentation as pp
+import pytis.util
+import lcg
+import wiking
 
 DBG = pytis.util.DEBUG
 EVT = pytis.util.EVENT
@@ -25,9 +39,6 @@ OPR = pytis.util.OPERATIONAL
 log = pytis.util.StreamLogger(sys.stderr).log
 
 _ = lcg.TranslatableTextFactory('wiking')
-
-import wiking
-from wiking import *
 
 
 class RequestError(Exception):
@@ -85,7 +96,7 @@ class RequestError(Exception):
                 return _("Error %(code)d: %(name)s", code=code, name=name)
 
     def content(self, req):
-        """Return the error page content as an 'lcg.Content' element structure.""" 
+        """Return the error page content as an 'lcg.Content' element structure."""
         pass
 
     def status_code(self, req):
@@ -103,7 +114,7 @@ class RequestError(Exception):
         created.  The returned value is a list of tuples as returned by
         'inspect.stack()'.
 
-        """ 
+        """
         return self._stack
 
 
@@ -274,7 +285,7 @@ class BadRequest(RequestError):
     argument.  This message will be printed into user's browser window.  If
     no argument is passed, the default message `Invalid request arguments.'
     is printed.  If more arguments are passed, each message is printed as
-    separate paragraph. 
+    separate paragraph.
 
     """
     _STATUS_CODE = httplib.BAD_REQUEST
@@ -493,7 +504,7 @@ class Theme(object):
         Color('inactive-folder'),
         Color('meta-fg', inherit='foreground'),
         Color('meta-bg', inherit='background'),
-        )
+    )
 
     _DEFAULTS = {'foreground': '#000',
                  'background': '#fff',
@@ -702,29 +713,28 @@ class LoginPanel(Panel):
                         result += g.br() + '\n' + lcg.concat(role_names, separator=', ')
                 expiration = user.password_expiration()
                 if expiration:
-                    import datetime
                     if datetime.date.today() >= expiration:
                         # Translators: Information text on login panel.
-                        result += g.br() +'\n'+ _("Your password expired")
+                        result += g.br() + '\n' + _("Your password expired")
                     else:
                         date = lcg.LocalizableDateTime(str(expiration))
                         # Translators: Login panel info. '%(date)s' is replaced by a concrete date.
-                        result += g.br() +'\n'+ _("Your password expires on %(date)s", date=date)
+                        result += g.br() + '\n' + _("Your password expires on %(date)s", date=date)
                 uri = appl.password_change_uri(req)
                 if uri:
                     # Translators: Link on login panel on the webpage.
-                    result += g.br() +'\n'+ g.a(_("Change your password"), href=uri)
+                    result += g.br() + '\n' + g.a(_("Change your password"), href=uri)
             else:
                 uri = appl.registration_uri(req)
                 if uri:
                     # Translators: Login panel/dialog registration link.  Registration allows the
                     # user to obtain access to the website/application by submitting his personal
                     # details.
-                    result += g.br() +'\n'+ g.a(_("New user registration"), href=uri)
+                    result += g.br() + '\n' + g.a(_("New user registration"), href=uri)
             added_content = appl.login_panel_content(req)
             if added_content:
                 exported = lcg.coerce(added_content).export(context)
-                result += '\n'+ g.div(exported, cls='login-panel-content')
+                result += '\n' + g.div(exported, cls='login-panel-content')
             return result
         
     def __init__(self):
@@ -909,8 +919,7 @@ class Response(object):
     
     def filename(self):
         return self._filename
-        
-    
+
     
 class BoundCache(object):
     """Simple unlimited cache caching only in a limited scope.
@@ -1052,9 +1061,11 @@ class ChannelContent(object):
         """
         assert isinstance(title, str) or isinstance(title, collections.Callable), title
         assert link is None or isinstance(link, str) or isinstance(link, collections.Callable), link
-        assert descr is None or isinstance(descr, str) or isinstance(descr, collections.Callable), descr
+        assert (descr is None or isinstance(descr, str) or
+                isinstance(descr, collections.Callable)), descr
         assert date is None or isinstance(date, str) or isinstance(date, collections.Callable), date
-        assert author is None or isinstance(author, str) or isinstance(author, collections.Callable), author
+        assert (author is None or isinstance(author, str) or
+                isinstance(author, collections.Callable)), author
         self._title = title
         self._link = link
         self._descr = descr
@@ -1176,7 +1187,7 @@ class PanelItem(lcg.Content):
     def export(self, context):
         g = context.generator()
         items = [g.span(uri and g.a(value, href=uri) or value,
-                        cls="panel-field-"+id)
+                        cls="panel-field-" + id)
                  for id, value, uri in self._fields]
         return g.div(items, cls="item")
 
@@ -1200,7 +1211,7 @@ class LoginCtrl(lcg.Content):
             # Translators: Logout button label (verb in imperative).
             cmd, label = ('logout', _("log out"))
         else:
-            # Translators: Login status info.  If logged, the username is displayed instead. 
+            # Translators: Login status info.  If logged, the username is displayed instead.
             username = _("not logged")
             # Translators: Login button label (verb in imperative).
             cmd, label = ('login', _("log in"))
@@ -1210,7 +1221,7 @@ class LoginCtrl(lcg.Content):
         if self._inline:
             link = '[' + link + ']'
         else:
-            link = g.span('[', cls="hidden") + link + g.span(']',cls="hidden")
+            link = g.span('[', cls="hidden") + link + g.span(']', cls="hidden")
         result = username + ' ' + link
         if self._inline:
             # Translators: Login info label (noun) followed by login name and other info.
@@ -1252,15 +1263,15 @@ class LoginDialog(lcg.Content):
         hidden = [hidden_field(param, req.param(param)) for param in req.params()
                   if param not in ('command', 'login', 'password', '__log_in')]
         content = (
-            g.label((self._login_is_email and _("Your e-mail address") or _("Login name"))+':',
+            g.label((self._login_is_email and _("Your e-mail address") or _("Login name")) + ':',
                     id='login') + g.br(),
             g.field(name='login', value=login, id='login', size=18, maxlength=64),
-            g.br(), 
-            g.label(_("Password")+':', id='password') + g.br(),
+            g.br(),
+            g.label(_("Password") + ':', id='password') + g.br(),
             g.field(name='password', id='password', password=True, size=18, maxlength=32),
             g.br(),
             g.hidden(name='__log_in', value='1'),
-            ) + tuple(hidden) + (
+        ) + tuple(hidden) + (
             # Translators: Login button label - verb in imperative.
             g.submit(_("Log in"), cls='submit'),)
         links = [g.li(g.a(label, href=uri)) for label, uri in
@@ -1275,11 +1286,11 @@ class LoginDialog(lcg.Content):
             uri = req.server_uri(force_https=True) + req.uri()
         else:
             uri = req.uri()
-        result = (self._message and g.div(g.escape(self._message), cls='errors') or '') + \
-                 g.form(content, method='POST', action=uri, name='login_form', cls='login-form') +\
-                 g.script("onload_ = window.onload; window.onload = function() { "
-                          "if (onload_) onload_(); "
-                          "setTimeout(function () { document.login_form.login.focus() }, 0); };")
+        result = ((self._message and g.div(g.escape(self._message), cls='errors') or '') +
+                  g.form(content, method='POST', action=uri, name='login_form', cls='login-form') +
+                  g.script("onload_ = window.onload; window.onload = function() { "
+                           "if (onload_) onload_(); "
+                           "setTimeout(function () { document.login_form.login.focus() }, 0); };"))
         if self._extra_content:
             exported = lcg.coerce(self._extra_content).export(context)
             result += "\n" + g.div(exported, cls='login-dialog-content')
@@ -1299,7 +1310,7 @@ class DecryptionDialog(lcg.Content):
         # Translators: Web form label and message
         message = _("Decryption password for '%s'", self._decryption_name)
         content = (
-            g.label(message+':', id='__decryption_password') + g.br(),
+            g.label(message + ':', id='__decryption_password') + g.br(),
             g.field(name='__decryption_password', id='__decryption_password', password=True,
                     size=18, maxlength=32),
             g.br(),
@@ -1433,7 +1444,7 @@ class WikingDefaultDataClass(DBAPIData):
     def get_rows(self, skip=None, limit=None, sorting=(), condition=None, arguments=None,
                  columns=None, transaction=None, **kwargs):
         if kwargs:
-            conds = [pd.EQ(k,v) for k,v in self._row_data(**kwargs)]
+            conds = [pd.EQ(k, v) for k, v in self._row_data(**kwargs)]
             if condition:
                 conds.append(condition)
             condition = pd.AND(*conds)
@@ -1474,7 +1485,7 @@ class WikingDefaultDataClass(DBAPIData):
             function = self.__class__._dbfunction[name]
         except KeyError:
             function = self.__class__._dbfunction[name] = \
-                       pytis.data.DBFunctionDefault(name, self._dbconnection)
+                pd.DBFunctionDefault(name, self._dbconnection)
         result = function.call(pytis.data.Row(args))
         return result[0][0].value()
 
@@ -1507,7 +1518,7 @@ class Specification(pp.Specification):
     
 
 class Binding(pp.Binding):
-    """Extension of Pytis 'Binding' with web specific parameters.""" 
+    """Extension of Pytis 'Binding' with web specific parameters."""
     def __init__(self, *args, **kwargs):
         """Arguments:
 
@@ -1595,7 +1606,7 @@ class WikingResolver(pytis.util.Resolver):
 
     def available_modules(self):
         """Return a tuple of classes of all available Wiking modules."""
-        return [module_cls for name, module_cls in self.walk(Module)]
+        return [module_cls for name, module_cls in self.walk(wiking.Module)]
 
 
 class ModuleInstanceResolver(object):
@@ -1754,7 +1765,7 @@ def timeit(func, *args, **kwargs):
     """
     t1, t2 = time.clock(), time.time()
     result = func(*args, **kwargs)
-    return result,  time.clock() - t1, time.time() - t2
+    return result, time.clock() - t1, time.time() - t2
 
 
 class MailAttachment(object):
@@ -1849,7 +1860,6 @@ def send_mail(addr, subject, text, sender=None, sender_name=None, html=None,
     msg = MIMEMultipart(multipart_type)
     localizer = lcg.Localizer(lang, translation_path=wiking.cfg.translation_path)
 
-    
     if isinstance(text, unicode):
         text = localizer.localize(text)
     if not sender or sender == '-': # Hack: '-' is the Wiking CMS Admin default value...
@@ -1880,7 +1890,7 @@ def send_mail(addr, subject, text, sender=None, sender_name=None, html=None,
         exporter = lcg.HtmlExporter(translations=wiking.cfg.translation_path)
         node = lcg.ContentNode('mail', title=subject, content=content)
         context = exporter.context(node, lang)
-        html = "<html>\n"+ content.export(context) +"\n</html>\n"
+        html = "<html>\n" + content.export(context) + "\n</html>\n"
     if html:
         msg.attach(MIMEText(html, 'html', 'utf-8'))
     # The attachment section.
@@ -1953,7 +1963,7 @@ def validate_email_address(address, helo=None):
     import smtplib
     try:
         # DNS query doesn't work with unicode
-        address = str(address) 
+        address = str(address)
         # We validate only common addresses, not pathological cases
         __, domain = address.split('@')
     except (UnicodeEncodeError, ValueError):
@@ -2028,12 +2038,12 @@ def make_uri(base, *args, **kwargs):
         else:
             uri = urllib.quote(base.encode('utf-8'))
     if args and isinstance(args[0], basestring):
-        uri += '#'+ urllib.quote(unicode(args[0]).encode('utf-8'))
+        uri += '#' + urllib.quote(unicode(args[0]).encode('utf-8'))
         args = args[1:]
-    query = ';'.join([k +"="+ urllib.quote_plus(unicode(v).encode('utf-8'))
+    query = ';'.join([k + "=" + urllib.quote_plus(unicode(v).encode('utf-8'))
                       for k, v in args + tuple(kwargs.items()) if v is not None])
     if query:
-        uri += '?'+ query
+        uri += '?' + query
     return uri
 
 _WKDAY = ('Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun',)
@@ -2048,7 +2058,7 @@ def format_http_date(dt):
 
     """
     formatted = dt.strftime('%%s, %d %%s %Y %H:%M:%S GMT')
-    formatted = formatted % (_WKDAY[dt.weekday()], _MONTH[dt.month-1],)
+    formatted = formatted % (_WKDAY[dt.weekday()], _MONTH[dt.month - 1],)
     return formatted
 
 def parse_http_date(date_string):
@@ -2087,7 +2097,7 @@ def parse_http_date(date_string):
     for i, m in enumerate(_MONTH):
         pos = date_string.find(m)
         if pos >= 0:
-            date_string = '%s%02d%s' % (date_string[:pos], i+1, date_string[pos+3:],)
+            date_string = '%s%02d%s' % (date_string[:pos], i + 1, date_string[pos + 3:],)
             break
     # Parse the date
     dt = None
@@ -2128,9 +2138,9 @@ def generate_random_string(length):
     """Return a random string of given length."""
     #import base64
     try:
-        code = ''.join(['%02x' % ord(c) for c in os.urandom(length/2+1)])
+        code = ''.join(['%02x' % ord(c) for c in os.urandom(length / 2 + 1)])
     except NotImplementedError:
         import random
         random.seed()
-        code = ''.join(['%02x' % random.randint(0, 255) for i in range(length/2+1)])
+        code = ''.join(['%02x' % random.randint(0, 255) for i in range(length / 2 + 1)])
     return code[:length]
