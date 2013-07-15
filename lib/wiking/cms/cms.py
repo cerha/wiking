@@ -2178,6 +2178,11 @@ class Publications(NavigablePages, EmbeddableCMSModule):
     def action_export_braille(self, req, record):
         page_width = int(req.param('braille_page_width') or '0')
         page_height = int(req.param('braille_page_height') or '0')
+        inner_margin = int(req.param('braille_inner_margin') or '0')
+        outer_margin = int(req.param('braille_outer_margin') or '0')
+        top_margin = int(req.param('braille_top_margin') or '0')
+        bottom_margin = int(req.param('braille_bottom_margin') or '0')
+        printer = req.param('braille_printer')
         try:
             presentation = lcg.braille_presentation('presentation-braille-local.py')
         except IOError:
@@ -2187,6 +2192,11 @@ class Publications(NavigablePages, EmbeddableCMSModule):
             exporter = lcg.BrailleExporter(translations=wiking.cfg.translation_path)
             presentation.page_width = lcg.UFont(page_width)
             presentation.page_height = lcg.UFont(page_height)
+            presentation.inner_margin = lcg.UFont(inner_margin)
+            presentation.outer_margin = lcg.UFont(outer_margin)
+            presentation.top_margin = lcg.UFont(top_margin)
+            presentation.bottom_margin = lcg.UFont(bottom_margin)
+            presentation.default_printer = printer
             presentation_set = lcg.PresentationSet(((presentation, lcg.TopLevelMatcher(),),))
             context = exporter.context(node, req.preferred_language(),
                                        presentation=presentation_set)
@@ -2202,30 +2212,58 @@ class Publications(NavigablePages, EmbeddableCMSModule):
                 page_width = presentation.page_width.size()
             if not page_height:
                 page_height = presentation.page_height.size()
+            if inner_margin is None:
+                inner_margin = presentation.inner_margin.size()
+            if outer_margin is None:
+                outer_margin = presentation.outer_margin.size()
+            if top_margin is None:
+                top_margin = presentation.top_margin.size()
+            if bottom_margin is None:
+                bottom_margin = presentation.bottom_margin.size()
+            if printer is None:
+                printer = presentation.default_printer
             class Form(lcg.Content):
-                def __init__(self, uri, page_width, page_height):
+                def __init__(self, uri, page_width, page_height, inner_margin, outer_margin,
+                             top_margin, bottom_margin, printer):
                     self._uri = uri
                     self._page_width = page_width
                     self._page_height = page_height
+                    self._inner_margin = inner_margin
+                    self._outer_margin = outer_margin
+                    self._top_margin = top_margin
+                    self._bottom_margin = bottom_margin
+                    self._printer = printer
                     super(Form, self).__init__()
                 def export(self, context):
                     g = context.generator()
+                    def braille_field(label, id_, value):
+                        return (g.label(label, id_),
+                                g.field(value=str(value), name=id_, size=3, id=id_),
+                                g.br(),)
                     buttons = g.submit(_("Export"))
-                    form_elements = (g.label(_("Page width:"), 'braille_page_width'),
-                                     g.field(value=str(self._page_width),
-                                             name='braille_page_width', size=3,
-                                             id='braille_page_width'),
-                                     g.br(),
-                                     g.label(_("Page height:"), 'braille_page_height'),
-                                     g.field(value=str(self._page_height),
-                                             name='braille_page_height', size=3,
-                                             id='braille_page_height'),
-                                     g.br(),
-                                     buttons,)
+                    available_printers = [(p, p) for p in presentation.printers.keys()]
+                    form_elements = ((g.label(_("Printer:"), 'braille_printer'),
+                                      g.select('braille_printer', available_printers,
+                                               selected=self._printer),
+                                      g.br(),) +
+                                     braille_field(_("Page width:"), 'braille_page_width',
+                                                   self._page_width) +
+                                     braille_field(_("Page height:"), 'braille_page_height',
+                                                   self._page_height) +
+                                     braille_field(_("Inner margin:"), 'braille_inner_margin',
+                                                   self._inner_margin) +
+                                     braille_field(_("Outer margin:"), 'braille_outer_margin',
+                                                   self._outer_margin) +
+                                     braille_field(_("Top margin:"), 'braille_top_margin',
+                                                   self._top_margin) +
+                                     braille_field(_("Bottom margin:"), 'braille_bottom_margin',
+                                                   self._bottom_margin) +
+                                     (buttons,))
                     return g.form(form_elements +
                                   (g.hidden('action', 'export_braille'),),
                                   action=g.uri(self._uri))
-            return Form(req.uri(), page_width, page_height)
+            return Form(req.uri(), page_width, page_height, inner_margin, outer_margin,
+                        top_margin, bottom_margin, printer)
             
                     
 class PublicationChapters(NavigablePages):
