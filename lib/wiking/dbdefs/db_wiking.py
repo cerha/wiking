@@ -62,7 +62,8 @@ class CmsConfig(sql.SQLTable):
 class CmsCountries(sql.SQLTable):
     name = 'cms_countries'
     fields = (sql.PrimaryColumn('country_id', pytis.data.Serial(not_null=True)),
-              sql.Column('country', pytis.data.String(minlen=2, maxlen=2, not_null=True)),
+              sql.Column('country', pytis.data.String(minlen=2, maxlen=2, not_null=True),
+                         unique=True),
               )
 
 #
