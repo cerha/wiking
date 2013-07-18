@@ -296,6 +296,7 @@ class CmsPages(sql.SQLTable):
                          references=sql.a(sql.r.Roles, onupdate='CASCADE', ondelete='SET DEFAULT')),
               )
     unique = (('identifier', 'site',),)
+
 class CmsPagesRaw(sql.SQLRaw):
     name = 'cms_pages_raw'
     depends_on = (CmsPages,)
