@@ -591,7 +591,8 @@ class PytisModule(Module, ActionHandler):
     def _document_title(self, req, record):
         if record:
             if self._TITLE_TEMPLATE:
-                title = self._TITLE_TEMPLATE.interpolate(lambda key: record[key].export())
+                title = self._TITLE_TEMPLATE.interpolate(lambda key:
+                                                         pw.localizable_export(record[key]))
             else:
                 title = record[self._title_column].export()
         else:
