@@ -1364,11 +1364,11 @@ class Users(UserManagementModule):
 
         """
         assert (role is None or isinstance(role, wiking.Role) or
-                (is_sequence(role) and all([isinstance(r, wiking.Role) for r in role]))), role
+                (isinstance(role, (tuple, list)) and all([isinstance(r, wiking.Role) for r in role]))), role
         String = pd.String()
         condition = pd.EQ('state', pd.Value(String, self.AccountState.ENABLED))
         if role is not None:
-            if not is_sequence(role):
+            if not isinstance(role, (tuple, list)):
                 role = (role,)
             user_ids = set()
             for r in role:
