@@ -200,6 +200,8 @@ class Handler(object):
         node = self._build(req, document)
         context = self._exporter.context(node, node.lang(), sec_lang=node.sec_lang(), req=req)
         exported = self._exporter.export(context)
+        #exported, t1, t2 = timeit(self._exporter.export, context)
+        #log(OPR, "Document exported in %.1f ms (%.1f ms CPU):" % (1000*t2, 1000*t1), req.uri())
         return req.send_response(context.localize(exported), status_code=status_code)
 
     def _serve_content(self, req, content):
@@ -331,7 +333,8 @@ class Handler(object):
             return self._result
         else:
             #result, t1, t2 = timeit(self._handle, req)
-            #log(OPR, "Request processed in %.1f ms (%.1f ms wall time):" % (1000*t1, 1000*t2), req.uri())
+            #log(OPR, "Request processed in %.1f ms (%.1f ms CPU):" % (1000*t2, 1000*t1), req.uri())
+            #return result
             return self._handle(req)
             
 try:
