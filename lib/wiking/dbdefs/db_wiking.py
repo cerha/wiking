@@ -75,6 +75,7 @@ class Roles(sql.SQLTable):
               sql.Column('system', pytis.data.Boolean(not_null=True), default=False),
               sql.Column('auto', pytis.data.Boolean(not_null=True), default=False),
               )
+    init_columns = ('role_id', 'name', 'system', 'auto',)
 
 class RoleSets(sql.SQLTable):
     name = 'role_sets'
@@ -990,6 +991,7 @@ class CmsCryptoNames(sql.SQLTable):
     fields = (sql.PrimaryColumn('name', pytis.data.String(not_null=True)),
               sql.Column('description', pytis.data.String()),
               )
+    init_columns = ('name', 'description',)
     access_rights = (('ALL', 'www-data',),)
 
 class CmsCryptoKeys(sql.SQLTable):
