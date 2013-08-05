@@ -1618,7 +1618,10 @@ class ModuleInstanceResolver(object):
         if name.startswith('_'):
             return super(ModuleInstanceResolver, self).__getattr__(name)
         else:
-            return wiking.cfg.resolver.wiking_module(name)
+            try:
+                return wiking.cfg.resolver.wiking_module(name)
+            except pytis.util.ResolverError as e:
+                raise AttributeError(str(e))
 
         
 module = ModuleInstanceResolver()
