@@ -40,10 +40,9 @@ import sys
 import time
 import difflib
 
+import pytis.data, pytis.util
 from pytis.util import OPERATIONAL, Attribute, Structure, format_byte_size, log
-import pytis.data
-from pytis.presentation import computer, CodebookSpec, \
-    Field, ColumnLayout, Action
+from pytis.presentation import computer, CodebookSpec, Field, ColumnLayout, Action
 
 CHOICE = pp.SelectionType.CHOICE
 ALPHANUMERIC = pp.TextFilter.ALPHANUMERIC
@@ -59,23 +58,26 @@ enum = lambda seq: pd.FixedEnumerator(seq)
 _ = lcg.TranslatableTextFactory('wiking-cms')
 
 class ContentField(Field):
-    def __init__(self, name, label=None, descr=None, **kwargs):
-        editor = wiking.cms.cfg.content_editor
-        if editor == 'plain':
-            msg = _("The content should be formatted as LCG structured text. "
-                    "See the %(manual)s.",
-                    manual=lcg.format('<a target="help" href="%s">%s</a>',
-                                      '/_doc/lcg/structured-text',
-                                      _("formatting manual")))
-            if descr:
-                descr += ' ' + msg
+    def __init__(self, name, label=None, descr=None, text_format=None, **kwargs):
+        if text_format is None:
+            editor = wiking.cms.cfg.content_editor
+            if editor == 'plain':
+                text_format = pp.TextFormat.LCG
+            elif editor == 'html':
+                text_format = pp.TextFormat.HTML
             else:
-                descr = msg
-            text_format = pp.TextFormat.LCG
-        elif editor == 'html':
-            text_format = pp.TextFormat.HTML
-        else:
-            raise Exception("Invalid value of 'wiking.cms.cfg.content_editor': %s" % editor)
+                raise Exception("Invalid value of 'wiking.cms.cfg.content_editor': %s" % editor)
+        if text_format == pp.TextFormat.LCG:
+            if descr:
+                descr += ' '
+            else:
+                descr = ''
+            descr += _("The content should be formatted as LCG structured text. "
+                       "See the %(manual)s.",
+                       manual=lcg.format('<a target="help" href="%s">%s</a>',
+                                         '/_doc/lcg/structured-text',
+                                         _("formatting manual")))
+        debug("--", name, text_format)
         Field.__init__(self, name, label, descr=descr, text_format=text_format, **kwargs)
 
 
@@ -3236,18 +3238,30 @@ class Text(Structure):
         administrators managing the texts
       text -- the text itself, as a translatable string or unicode in LCG
         formatting
-
-    Note the predefined texts get automatically localized.
+      text_format -- One of 'pytis.presentation.TextFormat' constants.  The
+        default value None denotes that the format depends on the current
+        setting of 'wiking.cfg.content_editor'.  Otherwise the format of given
+        text is explititly set and the text will be treated as such.  This
+        option is useful for application defined texts, which may for some
+        reason prefer a certain format and don't want to handle the text
+        differently depending on 'wiking.cfg.content_editor' setting.  The
+        management interface will respect this setting when editing the text
+        value.
 
     """
     _attributes = (Attribute('label', str),
                    Attribute('description', basestring),
-                   Attribute('text', basestring),)
+                   Attribute('text', basestring),
+                   Attribute('text_format', basestring),)
+
     @classmethod
     def _module_class(class_):
         return Texts
-    def __init__(self, label, description, text):
-        Structure.__init__(self, label=label, description=description, text=text)
+
+    def __init__(self, label, description, text, text_format=None):
+        assert text_format is None or text_format in pytis.util.public_attr_values(pp.TextFormat)
+        Structure.__init__(self, label=label, description=description, text=text, 
+                           text_format=text_format)
         self._module_class().register_text(self)
 
 
@@ -3271,6 +3285,11 @@ class CommonTexts(SettingsManagementModule):
     Wiking modules can access the texts by using the 'text()' method.  See also
     'TextReferrer' class.
 
+    Note the predefined (default) text values get localized automatically.
+    When the text is customized through the management interface, the
+    customized value only applies for the language in which it is customized,
+    so don't forget to customize all language variants where appropriate.
+
     """
     class Spec(Specification):
         # This must be a private attribute, otherwise Pytis handles it in a special way
@@ -3285,11 +3304,14 @@ class CommonTexts(SettingsManagementModule):
                 Field('descr', _("Purpose"), width=64, virtual=True,
                       computer=computer(self._description)),
                 ContentField('content', _("Text"), width=80, height=10),
+                ContentField('plain_content', _("Text"), dbcolumn='content',
+                             text_format=pp.TextFormat.LCG, width=80, height=10),
+                ContentField('html_content', _("Text"), dbcolumn='content',
+                             text_format=pp.TextFormat.HTML, width=80, height=10),
             )
 
         columns = ('label', 'descr',)
         sorting = (('label', ASC,),)
-        layout = ('label', 'descr', 'content',)
 
         def _description(self, row, label, description):
             if description:
@@ -3304,19 +3326,8 @@ class CommonTexts(SettingsManagementModule):
 
     _LIST_BY_LANGUAGE = True
     _REFERER = 'label'
-
-    def _authorized(self, req, action, **kwargs):
-        if action in ('insert', 'delete'):
-            return False
-        else:
-            return super(CommonTexts, self)._authorized(req, action, **kwargs)
-
-    def _delayed_init(self):
-        super(CommonTexts, self)._delayed_init()
-        self._register_texts()
-
-    def _register_texts(self):
-        pass
+    _DELETE_PROMPT = _("This text is no longer in use by the application."
+                       " Do you want to remove it?")
 
     @classmethod
     def register_text(class_, text):
@@ -3334,6 +3345,49 @@ class CommonTexts(SettingsManagementModule):
         label = text.label()
         if label not in texts:
             texts[label] = text
+
+    def _authorized(self, req, action, record=None, **kwargs):
+        if action == 'insert':
+            return False
+        elif action == 'delete':
+            # Allow deletion of texts which don't exist in the application anymore.
+            return record['label'].value() not in self.Spec._texts
+        else:
+            return super(CommonTexts, self)._authorized(req, action, record=record, **kwargs)
+
+    def _delayed_init(self):
+        super(CommonTexts, self)._delayed_init()
+        self._register_texts()
+
+    def _register_texts(self):
+        pass
+
+    def _layout(self, req, action, record=None):
+        try:
+            text = self.Spec._texts[record['label'].value()]
+        except KeyError:
+            if action == 'delete':
+                text_format = None # Avoid redirection loop.
+            else:
+                raise Redirect(self._current_record_uri(req, record), action='delete',
+                               __invoked_from='ListView')
+        else:
+            text_format = text.text_format()
+        if text_format == pp.TextFormat.LCG:
+            content_field = 'plain_content'
+        elif text_format == pp.TextFormat.HTML:
+            content_field = 'html_content'
+        elif text_format is None:
+            content_field = 'content'
+        else:
+            raise Exception('Unsupported text format: %s' % text_format)
+        return ('label', 'descr', content_field,)
+
+    def _update(self, req, record, transaction):
+        # Use the value of the layout column for update. 
+        row = pd.Row([(fid.replace('plain_', '').replace('html_', ''), record[fid]) 
+                      for fid in self._layout(req, 'update', record=record)])
+        self._data.update(record.key(), row, transaction=transaction)
 
     def _select_language(self, req, lang):
         if lang is None:
@@ -3471,7 +3525,8 @@ class EmailText(Structure):
                    Attribute('description', basestring),
                    Attribute('text', basestring),
                    Attribute('subject', basestring),
-                   Attribute('cc', str, default=''),)
+                   Attribute('cc', str, default=''),
+                   Attribute('text_format', basestring),)
     @classmethod
     def _module_class(class_):
         return Emails
