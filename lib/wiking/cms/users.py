@@ -32,6 +32,7 @@ L{RoleSets}, L{RoleMembers}, L{ApplicationRoles}.
 import datetime
 import time
 import weakref
+import random
 
 import pytis.data as pd
 import pytis.presentation as pp
@@ -924,7 +925,6 @@ class Users(UserManagementModule):
             # validation.
             record['login'] = pd.Value(record.type('login'), req.param('login'))
         if not errors and record.new() and record['autogenerate_password'].value():
-            import random
             random.seed()
             password = ''.join(random.sample(string.digits + string.ascii_letters, 10))
             record['password'] = pd.Value(record.type('password'), password)
