@@ -1507,8 +1507,8 @@ class Registration(Module, ActionHandler):
                 if wiking.cms.cfg.password_storage == 'md5':
                     try:
                         password = users_module.reset_password(user)
-                    except Exception as e:
-                        req.message(unicode(e.exception()), type=req.ERROR)
+                    except pd.DBException as e:
+                        req.message(unicode(e), type=req.ERROR)
                         return Document(title, self.ReminderForm())
                     # Translators: Credentials such as password...
                     intro_text = _("Your credentials were reset to:")
