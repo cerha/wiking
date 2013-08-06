@@ -2500,7 +2500,7 @@ class Attachments(ContentManagementModule):
                 Field('ext', virtual=True, computer=computer(self._ext)),
                 # Translators: Size of a file, in number of bytes, kilobytes etc.
                 Field('bytesize', _("Size"),
-                      computer=computer(lambda r, file: file and pp.format_byte_size(len(file)))),
+                      computer=computer(lambda r, file: file and format_byte_size(len(file)))),
                 Field('thumbnail', '', type=pd.Image(), computer=computer(self._thumbnail)),
                 # Translators: Thumbnail is a small image preview in computer terminology.
                 Field('thumbnail_size', _("Preview size"), not_null=False,
@@ -2747,7 +2747,7 @@ class Attachments(ContentManagementModule):
             os.makedirs(dir, 0700)
         buf = record['file'].value()
         if buf is not None:
-            log(OPERATIONAL, "Saving file:", (fname, pp.format_byte_size(len(buf))))
+            log(OPERATIONAL, "Saving file:", (fname, format_byte_size(len(buf))))
             buf.save(fname)
 
     def _insert_transaction(self, req, record):
