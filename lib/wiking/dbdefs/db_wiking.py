@@ -902,6 +902,10 @@ class CmsVSystemTexts(sql.SQLView):
     insert into cms_system_texts (label, site, lang, description, content)
            values (new.label, new.site, new.lang, new.description, new.content);
         )""",)
+    # gensqlalchemy doesn't generate a proper where clause here (maybe multicolumn foreign key?)
+    #delete_order = (CmsSystemTextLabels,)
+    def on_delete(self):
+        return ("delete from cms_system_text_labels where label = old.label and site = old.site;",)
 
 #
 
