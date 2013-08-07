@@ -77,7 +77,6 @@ class ContentField(Field):
                        manual=lcg.format('<a target="help" href="%s">%s</a>',
                                          '/_doc/lcg/structured-text',
                                          _("formatting manual")))
-        debug("--", name, text_format)
         Field.__init__(self, name, label, descr=descr, text_format=text_format, **kwargs)
 
 
