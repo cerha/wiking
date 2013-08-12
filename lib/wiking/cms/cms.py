@@ -2206,8 +2206,8 @@ class Publications(NavigablePages, EmbeddableCMSModule):
             except lcg.BrailleError, e:
                 req.message(e.message(), type=req.ERROR)
                 raise Redirect(self._current_record_uri(req, record))
-            return wiking.Response(result, content_type='text/plain',
-                                   filename='%s.txt' % record['identifier'].value())
+            return wiking.Response(result, content_type='application/octet-stream',
+                                   filename='%s.brl' % record['identifier'].value())
         else:
             if not page_width:
                 page_width = presentation.page_width.size()
