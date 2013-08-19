@@ -19,9 +19,13 @@
 
 from __future__ import unicode_literals
 
+import sqlalchemy
+
 import pytis.data.gensqlalchemy as sql
 import pytis.data
-from pytis.data.dbdefs import and_, coalesce, func, null, select, stype, sval
+from pytis.data.dbdefs import and_, coalesce, func, ival, null, select, stype, sval
+
+current_timestamp_0 = sqlalchemy.sql.expression.Function('current_timestamp', ival(0))
 
 #
 
@@ -116,7 +120,8 @@ class Users(sql.SQLTable):
               sql.Column('uri', pytis.data.String()),
               sql.Column('state', pytis.data.String(not_null=True), default='new'),
               sql.Column('last_password_change', pytis.data.DateTime(not_null=True)),
-              sql.Column('since', pytis.data.DateTime(not_null=True)),
+              sql.Column('since', pytis.data.DateTime(not_null=True),
+                         default=func.timezone(sval('GMT'), current_timestamp_0)),
               sql.Column('lang', pytis.data.String(minlen=2, maxlen=2),
                          references=sql.a(sql.r.CmsLanguages.lang, onupdate='CASCADE',
                                           ondelete='SET NULL')),
@@ -128,15 +133,7 @@ class Users(sql.SQLTable):
               sql.Column('gender', pytis.data.String(minlen=1, maxlen=1),
                          doc="[m]ale, [f]emale, NULL=unknown"),
               )
-class UsersRaw(sql.SQLRaw):
-    name = 'users_raw'
-    depends_on = (Users,)
-    @classmethod
-    def sql(class_):
-        return """
-alter table users alter column since set default current_timestamp(0) at time zone 'GMT';
-grant all on users_uid_seq to "www-data";
-"""
+    access_rights = (('ALL', 'www-data',),)
 
 class CmsFInsertOrUpdateUser(sql.SQLPlFunction):
     name = 'cms_f_insert_or_update_user'
@@ -229,25 +226,12 @@ class CmsSession(sql.SQLTable):
               sql.Column('last_access', pytis.data.DateTime()),
               )
     unique = (('uid', 'session_key',),)
-    # In the following, CmsSessionLog is not found -- there are apparently
-    # some problems with dependencies.
-    # def on_delete_also(self):
-    #     log = sql.t.CmsSessionLog
-    #     return (log.update().
-    #             where(log.c.session_id == sqlalchemy.literal_column('old.session_id')).
-    #             values(end_time=sqlalchemy.literal_column('old.last_access')),)
-    # depends = (CmsSessionLog,)
-# See above.
-class CmsSessionRaw(sql.SQLRaw):
-    name = 'cms_session_raw'
-    depends_on = (CmsSession, CmsSessionLog,)
-    @classmethod
-    def sql(class_):
-        return """
-create or replace rule cms_session_delete as on delete to cms_session do (
-       update cms_session_log set end_time=old.last_access WHERE session_id=old.session_id;
-);
-"""
+    def on_delete_also(self):
+        log = sql.t.CmsSessionLog
+        return (log.update().
+                where(log.c.session_id == sqlalchemy.literal_column('old.session_id')).
+                values(end_time=sqlalchemy.literal_column('old.last_access')),)
+    depends_on = (CmsSessionLog,)
     
 class CmsVSessionLog(sql.SQLView):
     name = 'cms_v_session_log'
@@ -300,6 +284,9 @@ class CmsPages(sql.SQLTable):
     unique = (('identifier', 'site',),)
 
 class CmsPagesRaw(sql.SQLRaw):
+    # This strange construct can be implemented only as raw definition.
+    # SQLAlchemy can accept only SQL expressions evaluating to one of the table
+    # columns in index definitions.
     name = 'cms_pages_raw'
     depends_on = (CmsPages,)
     @classmethod
@@ -1010,14 +997,6 @@ class CmsCryptoKeys(sql.SQLTable):
               )
     unique = (('name', 'uid',),)
     access_rights = (('ALL', 'www-data',),)
-class CmsCryptoKeysRaw(sql.SQLRaw):
-    name = 'cms_crypto_keys_raw'
-    depends_on = (CmsCryptoKeys,)
-    @classmethod
-    def sql(class_):
-        return """
-grant all on cms_crypto_keys_key_id_seq to "www-data";
-"""
 
 class CmsCryptoExtractKey(sql.SQLPlFunction):
     name = 'cms_crypto_extract_key'
