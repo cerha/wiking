@@ -15,10 +15,12 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-import re
+import os
+import sys
 
 import wiking
 import lcg
+from pytis.util import OPERATIONAL, log
 
 _ = lcg.TranslatableTextFactory('wiking')
 
@@ -64,7 +66,7 @@ class Handler(object):
                     if value.isdigit():
                         value = int(value)
                     else:
-                        log(OPR, "Invalid numeric value for '%s':" % name, value)
+                        log(OPERATIONAL, "Invalid numeric value for '%s':" % name, value)
                         continue
                 elif isinstance(option, wiking.cfg.BooleanOption):
                     if value.lower() in ('yes', 'true', 'on'):
@@ -72,10 +74,10 @@ class Handler(object):
                     elif value.lower() in ('no', 'false', 'off'):
                         value = False
                     else:
-                        log(OPR, "Invalid boolean value for '%s':" % name, value)
+                        log(OPERATIONAL, "Invalid boolean value for '%s':" % name, value)
                         continue
                 elif not isinstance(option, wiking.cfg.StringOption):
-                    log(OPR, "Unable to set '%s' through request options." % name)
+                    log(OPERATIONAL, "Unable to set '%s' through request options." % name)
                     continue
                 setattr(wiking.cfg, name, value)
         # Apply default values which depend on the request.
@@ -96,7 +98,7 @@ class Handler(object):
         if wiking.cfg.default_sender_address is None:
             wiking.cfg.default_sender_address = 'wiking@' + domain
         if wiking.cfg.dbname is None:
-           wiking.cfg.dbname = server_hostname
+            wiking.cfg.dbname = server_hostname
         if wiking.cfg.resolver is None:
             wiking.cfg.resolver = wiking.WikingResolver(wiking.cfg.modules)
         # Modify pytis configuration.
@@ -105,6 +107,7 @@ class Handler(object):
         config.dblisten = False
         config.log_exclude = [pytis.util.ACTION, pytis.util.EVENT, pytis.util.DEBUG]
         for option in ('dbname', 'dbhost', 'dbport', 'dbuser', 'dbpass', 'dbsslm', 'dbschemas',):
+            # Where does `cfg' come from?
             setattr(config, option, getattr(cfg, option))
         config.dbconnections = wiking.cfg.connections
         config.dbconnection = config.option('dbconnection').default()
@@ -114,7 +117,7 @@ class Handler(object):
         self._exporter = wiking.cfg.exporter(translations=wiking.cfg.translation_path)
         application.initialize(config_file)
         # Save the current handler instance for profiling purposes.
-        Handler._instance = self 
+        Handler._instance = self
 
     def _resource_provider(self, req):
         styles = []
@@ -133,14 +136,14 @@ class Handler(object):
         
         """
         application = self._application
-        uri = '/'+req.uri().strip('/')
+        uri = '/' + req.uri().strip('/')
         lang = document.lang() or req.preferred_language(raise_error=False) or 'en'
         nodes = {}
         resource_provider = self._resource_provider(req)
         def mknode(item):
             # Caution - make the same uri transformation as above to get same
             # results in all cases (such as for '/').
-            item_uri = '/'+item.id().strip('/') 
+            item_uri = '/' + item.id().strip('/')
             if item_uri == uri:
                 heading = document.title() or item.title()
                 if heading and document.subtitle():
@@ -164,20 +167,23 @@ class Handler(object):
                 hidden = True
             # The identifier is encoded to allow unicode characters within it.  The encoding
             # actually doesnt't matter, we just need any unique 8-bit string.
-            node = WikingNode(item_uri.encode('utf-8'), title=item.title(), page_heading=heading,
-                              descr=item.descr(), content=content,
-                              lang=lang, sec_lang=document.sec_lang(), variants=variants or (),
-                              active=item.active(), foldable=item.foldable(), hidden=hidden,
-                              children=[mknode(i) for i in item.submenu()],
-                              resource_provider=resource_provider, globals=document.globals(),
-                              panels=panels, layout=document.layout())
+            node = wiking.WikingNode(item_uri.encode('utf-8'), title=item.title(),
+                                     page_heading=heading,
+                                     descr=item.descr(), content=content,
+                                     lang=lang, sec_lang=document.sec_lang(),
+                                     variants=variants or (),
+                                     active=item.active(), foldable=item.foldable(), hidden=hidden,
+                                     children=[mknode(i) for i in item.submenu()],
+                                     resource_provider=resource_provider,
+                                     globals=document.globals(),
+                                     panels=panels, layout=document.layout())
             nodes[item_uri] = node
             return node
         top_level_nodes = [mknode(item) for item in application.menu(req)]
         # Find the parent node by the identifier prefix.
         parent = None
-        for i in range(len(req.path)-1):
-            key = '/'+'/'.join(req.path[:len(req.path)-i-1])
+        for i in range(len(req.path) - 1):
+            key = '/' + '/'.join(req.path[:len(req.path) - i - 1])
             if key in nodes:
                 parent = nodes[key]
                 break
@@ -186,12 +192,12 @@ class Handler(object):
         except KeyError:
             # Create the current document's node if it was not created with the menu.
             variants = document.variants() or parent and parent.variants() or None
-            node = mknode(MenuItem(uri, document.title(), hidden=True, variants=variants))
+            node = mknode(wiking.MenuItem(uri, document.title(), hidden=True, variants=variants))
             if parent:
                 parent.add_child(node)
             else:
                 top_level_nodes.append(node)
-        root = WikingNode('__wiking_root_node__', title='root', content=lcg.Content(),
+        wiking.WikingNode('__wiking_root_node__', title='root', content=lcg.Content(),
                           children=top_level_nodes)
         return node
 
@@ -201,13 +207,13 @@ class Handler(object):
         context = self._exporter.context(node, node.lang(), sec_lang=node.sec_lang(), req=req)
         exported = self._exporter.export(context)
         #exported, t1, t2 = timeit(self._exporter.export, context)
-        #log(OPR, "Document exported in %.1f ms (%.1f ms CPU):" % (1000*t2, 1000*t1), req.uri())
+        #log(OPERATIONAL, "Document exported in %.1f ms (%.1f ms CPU):" %
+        #                  (1000*t2, 1000*t1), req.uri())
         return req.send_response(context.localize(exported), status_code=status_code)
 
     def _serve_content(self, req, content):
         """Serve a document using the Wiking exporter."""
-        import json
-        node = lcg.ContentNode(req.uri(), content=content, 
+        node = lcg.ContentNode(req.uri(), content=content,
                                resource_provider=self._resource_provider(req))
         context = self._exporter.context(node, lang=req.preferred_language(), req=req)
         return req.send_response(context.localize(content.export(context)))
@@ -307,12 +313,14 @@ class Handler(object):
                 except:
                     import traceback
                     tb = "".join(traceback.format_exception(*einfo))
-                log(OPR, "\n"+ tb)
-            return self._handle_request_error(req, InternalServerError(einfo))
+                log(OPERATIONAL, "\n" + tb)
+            return self._handle_request_error(req, wiking.InternalServerError(einfo))
             
     def handle(self, req):
         if wiking.cfg.debug and req.param('profile') == '1':
-            import cProfile as profile, pstats, tempfile
+            import cProfile as profile
+            import pstats
+            import tempfile
             self._profile_req = req
             tmpfile = tempfile.NamedTemporaryFile().name
             profile.run('from wiking.handler import Handler; '
@@ -323,7 +331,7 @@ class Handler(object):
                 stats = pstats.Stats(tmpfile)
                 stats.strip_dirs()
                 stats.sort_stats('cumulative')
-                debug("Profile statistics for %s:" % req.uri())
+                wiking.debug("Profile statistics for %s:" % req.uri())
                 stats.stream = sys.stderr
                 sys.stderr.write('   ')
                 stats.print_stats()
@@ -333,7 +341,8 @@ class Handler(object):
             return self._result
         else:
             #result, t1, t2 = timeit(self._handle, req)
-            #log(OPR, "Request processed in %.1f ms (%.1f ms CPU):" % (1000*t2, 1000*t1), req.uri())
+            #log(OPERATIONAL, "Request processed in %.1f ms (%.1f ms CPU):" %
+            #                  (1000*t2, 1000*t1), req.uri())
             #return result
             return self._handle(req)
             
