@@ -203,6 +203,13 @@ class Configuration(pc):
                 "production environment.  It is only intended for developers.")
         _DEFAULT = False
 
+    class _Option_profile(pc.BooleanOption):
+        _DESCR = "Profiling mode"
+        _DOC = ("Turn on the profiling mode to log profiling information. "
+                "It only works when debugging mode is enabled as well. "
+                "This option is intended only for developers.")
+        _DEFAULT = False
+
     class _Option_log_format(pc.StringOption):
         _DESCR = "Logging format"
         _DOC = ("""Python format string used for printing error message to the system log.

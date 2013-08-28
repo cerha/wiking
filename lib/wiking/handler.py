@@ -317,7 +317,7 @@ class Handler(object):
             return self._handle_request_error(req, wiking.InternalServerError(einfo))
             
     def handle(self, req):
-        if wiking.cfg.debug and req.param('profile') == '1':
+        if wiking.cfg.debug and (wiking.cfg.profile or req.param('profile') == '1'):
             import cProfile as profile
             import pstats
             import tempfile
