@@ -322,6 +322,11 @@ class Handler(object):
             import pstats
             import tempfile
             self._profile_req = req
+            queries = []
+            def query_callback(query, start_time, end_time):
+                queries.append((end_time - start_time, query,))
+            wiking.DBAPIData.set_query_callback(query_callback)
+            uri = req.uri()
             tmpfile = tempfile.NamedTemporaryFile().name
             profile.run('from wiking.handler import Handler; '
                         'self = Handler._instance; '
@@ -331,13 +336,18 @@ class Handler(object):
                 stats = pstats.Stats(tmpfile)
                 stats.strip_dirs()
                 stats.sort_stats('cumulative')
-                wiking.debug("Profile statistics for %s:" % req.uri())
+                wiking.debug("Profile statistics for %s:" % (uri,))
                 stats.stream = sys.stderr
                 sys.stderr.write('   ')
                 stats.print_stats()
                 sys.stderr.flush()
             finally:
                 os.remove(tmpfile)
+            wiking.debug("Database queries for: %s" % (uri,))
+            for q in queries:
+                info = ('#' if q[0] >= 0.01 else ' ',) + q
+                sys.stderr.write('   %s%0.3f %s\n' % info)
+            sys.stderr.flush()
             return self._result
         else:
             #result, t1, t2 = timeit(self._handle, req)
