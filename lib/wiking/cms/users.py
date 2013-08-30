@@ -29,6 +29,7 @@ L{RoleSets}, L{RoleMembers}, L{ApplicationRoles}.
 
 """
 
+import copy
 import datetime
 import time
 import weakref
@@ -1197,26 +1198,24 @@ class Users(UserManagementModule):
         else:
             uri = req.module_uri('Registration')
         uid = record['uid'].value()
-        roles = [Roles.ANYONE, Roles.AUTHENTICATED]
+        roles = set([Roles.ANYONE, Roles.AUTHENTICATED])
         if record['state'].value() != self.AccountState.NEW:
-            roles.append(Roles.REGISTERED)
+            roles.add(Roles.REGISTERED)
         if record['state'].value() == self.AccountState.ENABLED:
-            roles.append(Roles.USER)
+            roles.add(Roles.USER)
             roles_instance = self.Roles()
             for role_id in wiking.module('RoleMembers').user_role_ids(uid):
                 role = roles_instance[role_id]
-                if role not in roles:
-                    roles.append(role)
+                roles.add(role)
         # Resolve contained roles here to also count with roles contained in
         # AUTHENTICATED, and REGISTERED.
         application = wiking.module('Application')
-        for role in roles:
+        for role in copy.copy(roles):
             for r in application.contained_roles(req, role):
-                if r not in roles:
-                    roles.append(r)
+                roles.add(r)
         return dict(login=login, uid=uid, name=record['user'].value(),
                     firstname=record['firstname'].value(), surname=record['surname'].value(),
-                    uri=uri, email=record['email'].value(), data=record, roles=roles,
+                    uri=uri, email=record['email'].value(), data=record, roles=list(roles),
                     state=record['state'].value(), gender=record['gender'].value(),
                     lang=record['lang'].value(), confirm=record['confirm'].value())
 
