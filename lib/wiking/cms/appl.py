@@ -321,7 +321,10 @@ class Application(CookieAuthentication, wiking.Application):
 
     def contained_roles(self, req, role):
         role_sets = wiking.module('RoleSets')
-        role_ids = role_sets.included_role_ids(role)
+        if isinstance(role, (list, tuple, set)): # role is actually role ids
+            role_ids = role_sets.included_role_ids_by_role_ids(role)
+        else:
+            role_ids = role_sets.included_role_ids(role)
         if self._roles_instance is None:
             self._roles_instance = wiking.module('Users').Roles()
         roles_instance = self._roles_instance

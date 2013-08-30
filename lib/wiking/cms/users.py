@@ -29,7 +29,6 @@ L{RoleSets}, L{RoleMembers}, L{ApplicationRoles}.
 
 """
 
-import copy
 import datetime
 import time
 import weakref
@@ -142,6 +141,9 @@ class RoleSets(UserManagementModule):
 
     def _related_role_ids(self, role, what_to_add):
         assert isinstance(role, wiking.Role), role
+        return self._related_role_ids_by_role_ids([role.id()], what_to_add)
+
+    def _related_role_ids_by_role_ids(self, init_role_ids, what_to_add):
         containment = self._dictionary()
         if what_to_add == 'including':
             c = {}
@@ -151,14 +153,14 @@ class RoleSets(UserManagementModule):
             containment = c
         else:
             assert what_to_add == 'included', what_to_add
-        role_ids = []
-        queue = [role.id()]
+        role_ids = set()
+        queue = set([r for r in init_role_ids])
         while queue:
             r_id = queue.pop()
             if r_id not in role_ids:
-                role_ids.append(r_id)
-            queue += list(containment.get(r_id, []))
-        return role_ids
+                role_ids.add(r_id)
+                queue.union(set(containment.get(r_id, [])))
+        return list(role_ids)
         
     def included_role_ids(self, role):
         """
@@ -171,6 +173,18 @@ class RoleSets(UserManagementModule):
           
         """
         return self._related_role_ids(role, 'included')
+        
+    def included_role_ids_by_role_ids(self, role_ids):
+        """
+        @type role_ids: sequence of strings
+        @param role_ids: Ids of roles whose contained role ids should be returned.
+
+        @rtype: sequence of strings
+        @return: Sequence of role identifiers included in the given role,
+          including C{role_ids} themselves.
+          
+        """
+        return self._related_role_ids_by_role_ids(role_ids, 'included')
 
     def containing_role_ids(self, role):
         """
@@ -1198,24 +1212,19 @@ class Users(UserManagementModule):
         else:
             uri = req.module_uri('Registration')
         uid = record['uid'].value()
-        roles = set([Roles.ANYONE, Roles.AUTHENTICATED])
+        role_ids = set([Roles.ANYONE.id(), Roles.AUTHENTICATED.id()])
         if record['state'].value() != self.AccountState.NEW:
-            roles.add(Roles.REGISTERED)
+            role_ids.add(Roles.REGISTERED.id())
         if record['state'].value() == self.AccountState.ENABLED:
-            roles.add(Roles.USER)
-            roles_instance = self.Roles()
+            role_ids.add(Roles.USER.id())
             for role_id in wiking.module('RoleMembers').user_role_ids(uid):
-                role = roles_instance[role_id]
-                roles.add(role)
+                role_ids.add(role_id)
         # Resolve contained roles here to also count with roles contained in
         # AUTHENTICATED, and REGISTERED.
-        application = wiking.module('Application')
-        for role in copy.copy(roles):
-            for r in application.contained_roles(req, role):
-                roles.add(r)
+        roles = wiking.module('Application').contained_roles(req, role_ids)
         return dict(login=login, uid=uid, name=record['user'].value(),
                     firstname=record['firstname'].value(), surname=record['surname'].value(),
-                    uri=uri, email=record['email'].value(), data=record, roles=list(roles),
+                    uri=uri, email=record['email'].value(), data=record, roles=roles,
                     state=record['state'].value(), gender=record['gender'].value(),
                     lang=record['lang'].value(), confirm=record['confirm'].value())
 
