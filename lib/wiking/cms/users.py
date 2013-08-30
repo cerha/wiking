@@ -33,14 +33,23 @@ import datetime
 import time
 import weakref
 import random
+import socket
+import string
 
 import pytis.data as pd
 import pytis.presentation as pp
+import pytis.web as pw
 import pytis.util
 import wiking
-from wiking.cms import *
+import lcg
 
-from pytis.presentation import Field, Action
+from pytis.presentation import Action, CodebookSpec, Field, FieldSet, computer
+from wiking import Binding, OPR
+from wiking.cms import Abort, ActionHandler, AuthenticationError, BadRequest, \
+    ConfirmationDialog, DateTime, Document, \
+    EmbeddableCMSModule, Forbidden, Module, PytisModule, Redirect, Role, Roles, Specification, \
+    UserManagementModule, enum, log, now, send_mail, \
+    ASC, DESC, NEVER, ONCE
 
 _ = lcg.TranslatableTextFactory('wiking-cms')
 
@@ -78,14 +87,14 @@ class RoleSets(UserManagementModule):
     
     def _form(self, form, req, *args, **kwargs):
         if issubclass(form, pw.ItemizedView) and req.check_roles(Roles.USER_ADMIN):
-            kwargs['template'] = lcg.TranslatableText("%("+ self._TITLE_COLUMN +")s [%(delete)s]")
+            kwargs['template'] = lcg.TranslatableText("%(" + self._TITLE_COLUMN + ")s [%(delete)s]")
         return super(RoleSets, self)._form(form, req, *args, **kwargs)
     
     def _link_provider(self, req, uri, record, cid, **kwargs):
         if cid is None:
             return self._link_provider(req, uri, record, self._TITLE_COLUMN, **kwargs)
         elif cid == 'delete':
-            return req.make_uri(uri +'/'+ record['role_set_id'].export(), action='delete')
+            return req.make_uri(uri + '/' + record['role_set_id'].export(), action='delete')
         else:
             return super(RoleSets, self)._link_provider(req, uri, record, cid, **kwargs)
 
@@ -112,8 +121,8 @@ class RoleSets(UserManagementModule):
           doesn't contain any information about users.
           
         """
-        if (self._cached_dictionary is None or
-            time.time() - self._cached_dictionary_time > 30):
+        if ((self._cached_dictionary is None or
+             time.time() - self._cached_dictionary_time > 30)):
             self._cached_dictionary = self._make_dictionary()
             self._cached_dictionary_time = time.time()
         return self._cached_dictionary
@@ -211,14 +220,14 @@ class RoleMembers(UserManagementModule):
     
     def _form(self, form, req, *args, **kwargs):
         if issubclass(form, pw.ItemizedView) and req.check_roles(Roles.USER_ADMIN):
-            kwargs['template'] = lcg.TranslatableText("%("+ self._TITLE_COLUMN +")s [%(delete)s]")
+            kwargs['template'] = lcg.TranslatableText("%(" + self._TITLE_COLUMN + ")s [%(delete)s]")
         return super(RoleMembers, self)._form(form, req, *args, **kwargs)
     
     def _link_provider(self, req, uri, record, cid, **kwargs):
         if cid is None:
             return self._link_provider(req, uri, record, self._TITLE_COLUMN, **kwargs)
         elif cid == 'delete':
-            return req.make_uri(uri +'/'+ record['role_member_id'].export(), action='delete')
+            return req.make_uri(uri + '/' + record['role_member_id'].export(), action='delete')
         else:
             return super(RoleMembers, self)._link_provider(req, uri, record, cid, **kwargs)
 
@@ -237,7 +246,10 @@ class RoleMembers(UserManagementModule):
         """
         assert isinstance(role, wiking.Role), role
         assert isinstance(strict, bool), strict
-        included_role_ids = (role.id(),) if strict else wiking.module('RoleSets').containing_role_ids(role)
+        if strict:
+            included_role_ids = (role.id(),)
+        else:
+            included_role_ids = wiking.module('RoleSets').containing_role_ids(role)
         condition = pd.OR(*[pd.EQ('role_id', pd.sval(m_id)) for m_id in included_role_ids])
         user_ids = []
         def add_user_id(row):
@@ -291,24 +303,27 @@ class ApplicationRoles(UserManagementModule):
         def __init__(self, *args, **kwargs):
             super(ApplicationRoles.Spec, self).__init__(*args, **kwargs)
             self._roles = wiking.module('Users').Roles()
-        def fields(self): return (
-            # Translators: Form field label.
-            pp.Field('role_id', _("Identifier"), editable=computer(self._editable)),
-            # Translators: Form field label, noun.
-            pp.Field('name', _("Name"), not_null=True, editable=computer(self._editable)),
-            pp.Field('xname', _("Name"), computer=computer(self._xname_computer), virtual=True),
-            # Translators: Form field label, adjective related to a "User group" (use the
-            # appropriate gender.
-            pp.Field('system', _("System"), default=False, editable=pp.Editable.NEVER),
-            pp.Field('auto', _("Automatic"), default=False, editable=pp.Editable.NEVER),
-            pp.Field('role_info', computer=computer(self._role_info), virtual=True),
+        def fields(self):
+            return (
+                # Translators: Form field label.
+                pp.Field('role_id', _("Identifier"), editable=computer(self._editable)),
+                # Translators: Form field label, noun.
+                pp.Field('name', _("Name"), not_null=True, editable=computer(self._editable)),
+                pp.Field('xname', _("Name"), computer=computer(self._xname_computer), virtual=True),
+                # Translators: Form field label, adjective related to a "User group" (use the
+                # appropriate gender.
+                pp.Field('system', _("System"), default=False, editable=pp.Editable.NEVER),
+                pp.Field('auto', _("Automatic"), default=False, editable=pp.Editable.NEVER),
+                pp.Field('role_info', computer=computer(self._role_info), virtual=True),
             )
         def _editable(self, record, system):
             return not system
         def _xname_computer(self, record, role_id, name):
             return name or role_id and self._xname(role_id) # 'role_id' is None in a new record.
         def _xname_display(self, row):
-            return row['name'].value() or self._xname(row['role_id'].value()) or row['role_id'].value()
+            return (row['name'].value() or
+                    self._xname(row['role_id'].value()) or
+                    row['role_id'].value())
         def _xname(self, role_id):
             try:
                 role = self._roles[role_id]
@@ -406,8 +421,8 @@ class ApplicationRoles(UserManagementModule):
         @rtype: L{Role}
         @return: Role instance corresponding to given role_id.
         """
-        if (self._roles_cache is None or
-            time.time() - self._roles_cache_time > 30):
+        if ((self._roles_cache is None or
+             time.time() - self._roles_cache_time > 30)):
             self._roles_cache = self._read_roles()
             self._roles_cache_time = time.time()
         try:
@@ -487,83 +502,87 @@ class Users(UserManagementModule):
         def fields(self):
             md5_passwords = (wiking.cms.cfg.password_storage == 'md5')
             return (
-            Field('uid', width=8, editable=NEVER),
-            # Translators: Login name for a website. Registration form field.
-            Field('login', _("Login name"), width=36, editable=ONCE,
-                  type=pd.RegexString(maxlen=64, not_null=True,
-                                      regex='^[a-zA-Z][0-9a-zA-Z_\.@-]*$'),
-                  computer=(wiking.cms.cfg.login_is_email and computer(lambda r, email: email) or None),
-                  descr=_("A valid login name can only contain letters, digits, underscores, "
-                          "dashes, at signs and dots and must start with a letter.")),
-            Field('autogenerate_password', _("Generate Password"), width=16, virtual=True,
-                  type=pd.Boolean(), default=False, editable=pp.Editable.ALWAYS,
-                  descr=_("If checked, the password will be generated automatically and "
-                          "sent to the user's e-mail address.")),
-            Field('password', _("Password"), width=16,
-                  type=pd.Password(minlen=4, maxlen=32, not_null=True, md5=md5_passwords),
-                  editable=computer(lambda r, autogenerate_password: not autogenerate_password),
-                  descr=_("Please, write the password into each of the two fields to eliminate "
-                          "typos.")),
-            Field('old_password', _(u"Old password"), virtual=True, width=16,
-                  type=pd.Password(verify=False, not_null=True, md5=md5_passwords),
-                  descr=_(u"Verify your identity by entering your original (current) password.")),
-            Field('new_password', _("New password"), virtual=True, width=16,
-                  type=pd.Password(verify=True, not_null=True),
-                  descr=_("Please, write the password into each of the two fields to eliminate "
-                          "typos.")),
-            # Translators: User account information field label (contains date and time).
-            # TODO: Last password change is currently not displayed anywhere.  It should be only
-            # visible to the admin and to the user himself, so it requires a dynamic 'view' layout.
-            Field('last_password_change', _("Last password change"), type=DateTime(utc=True),
-                  default=now, computer=computer(self._last_password_change)),
-            # Translators: Full name of a person. Registration form field.
-            Field('fullname', _("Full Name"), virtual=True, editable=NEVER,
-                  computer=computer(self._fullname)),
-            # TODO: What does this mean (missing translators note): Translators: 
-            Field('user', _("User"), dbcolumn='user_',
-                  computer=computer(lambda r, nickname, fullname: nickname or fullname)),
-            Field('firstname', _("First name")),
-            Field('surname', _("Surname")),
-            # Translators: Name of a user to display on a website if he doesn't want the
-            # default "Name Surname". Registration form field.
-            Field('nickname', _("Displayed name"),
-                  descr=_("Leave blank if you want to be referred by your full name or enter an "
-                          "alternate name, such as nickname or monogram.")),
-            Field('gender', _("Gender"), not_null=False,
-                  enumerator=enum(self._module.Gender.states()),
-                  display=self._gender_display, prefer_display=True,
-                  selection_type=pp.SelectionType.RADIO),
-            # Translators: E-mail address. Registration form field.
-            Field('email', _("E-mail"), width=36, not_null=(not wiking.cms.cfg.login_is_email)),
-            # Translators: Telephone number. Registration form field.
-            Field('phone', _("Phone")),
-            # Translators: Post address. Registration form field.
-            Field('address', _("Address"), width=20, height=3),
-            # Translators: Do not translate (means Uniform Resource Identifier).
-            Field('uri', _("URI"), width=36),
-            # Translators: Generic note for further information. Registration form field.
-            Field('note', _("Note"), width=60, height=6, compact=True,
-                  descr=_("Optional message for the administrator.  If you summarize briefly why "
-                          "you register, what role you expect in the system or whom you have "
-                          "talked to, this may help in processing your request.")),
-            # Translators: Label of a checkbox to confirm usage conditions or a
-            # similar kind of agreement specific for given website.
-            Field('confirm', _("I agree"), type=pd.Boolean,
-                  descr=_("Please check if (and only if) you have read the conditions above "
-                          "and you agree with them.")),
-            # Translators: Since when the user is registered. Table column heading
-            # and field label for a date/time value.
-            Field('since', _("Registered since"), type=DateTime(show_time=False), default=now),
-            # Translators: The state of the user account (e.g. Enabled vs Disabled).  Column
-            # heading and field label.
-            Field('state', _("State"), computer=computer(self._default_state),
-                  enumerator=enum(self._module.AccountState.states()),
-                  display=self._module.AccountState.label, prefer_display=True,
-                  style=self._state_style),
-            Field('lang'),
-            Field('regexpire', default=self._registration_expiry, type=DateTime()),
-            Field('regcode', default=self._generate_registration_code),
-            Field('state_info', virtual=True, computer=computer(self._state_info)),
+                Field('uid', width=8, editable=NEVER),
+                # Translators: Login name for a website. Registration form field.
+                Field('login', _("Login name"), width=36, editable=ONCE,
+                      type=pd.RegexString(maxlen=64, not_null=True,
+                                          regex='^[a-zA-Z][0-9a-zA-Z_\.@-]*$'),
+                      computer=(computer(lambda r, email: email)
+                                if wiking.cms.cfg.login_is_email else
+                                None),
+                      descr=_("A valid login name can only contain letters, digits, underscores, "
+                              "dashes, at signs and dots and must start with a letter.")),
+                Field('autogenerate_password', _("Generate Password"), width=16, virtual=True,
+                      type=pd.Boolean(), default=False, editable=pp.Editable.ALWAYS,
+                      descr=_("If checked, the password will be generated automatically and "
+                              "sent to the user's e-mail address.")),
+                Field('password', _("Password"), width=16,
+                      type=pd.Password(minlen=4, maxlen=32, not_null=True, md5=md5_passwords),
+                      editable=computer(lambda r, autogenerate_password: not autogenerate_password),
+                      descr=_("Please, write the password into each of the two fields to eliminate "
+                              "typos.")),
+                Field('old_password', _(u"Old password"), virtual=True, width=16,
+                      type=pd.Password(verify=False, not_null=True, md5=md5_passwords),
+                      descr=_(u"Verify your identity by entering your original (current) "
+                              "password.")),
+                Field('new_password', _("New password"), virtual=True, width=16,
+                      type=pd.Password(verify=True, not_null=True),
+                      descr=_("Please, write the password into each of the two fields to eliminate "
+                              "typos.")),
+                # Translators: User account information field label (contains date and time).
+                # TODO: Last password change is currently not displayed anywhere.  It should be only
+                # visible to the admin and to the user himself, so it requires a dynamic 'view'
+                # layout.
+                Field('last_password_change', _("Last password change"), type=DateTime(utc=True),
+                      default=now, computer=computer(self._last_password_change)),
+                # Translators: Full name of a person. Registration form field.
+                Field('fullname', _("Full Name"), virtual=True, editable=NEVER,
+                      computer=computer(self._fullname)),
+                # TODO: What does this mean (missing translators note): Translators:
+                Field('user', _("User"), dbcolumn='user_',
+                      computer=computer(lambda r, nickname, fullname: nickname or fullname)),
+                Field('firstname', _("First name")),
+                Field('surname', _("Surname")),
+                # Translators: Name of a user to display on a website if he doesn't want the
+                # default "Name Surname". Registration form field.
+                Field('nickname', _("Displayed name"),
+                      descr=_("Leave blank if you want to be referred by your full name or enter "
+                              "an alternate name, such as nickname or monogram.")),
+                Field('gender', _("Gender"), not_null=False,
+                      enumerator=enum(self._module.Gender.states()),
+                      display=self._gender_display, prefer_display=True,
+                      selection_type=pp.SelectionType.RADIO),
+                # Translators: E-mail address. Registration form field.
+                Field('email', _("E-mail"), width=36, not_null=(not wiking.cms.cfg.login_is_email)),
+                # Translators: Telephone number. Registration form field.
+                Field('phone', _("Phone")),
+                # Translators: Post address. Registration form field.
+                Field('address', _("Address"), width=20, height=3),
+                # Translators: Do not translate (means Uniform Resource Identifier).
+                Field('uri', _("URI"), width=36),
+                # Translators: Generic note for further information. Registration form field.
+                Field('note', _("Note"), width=60, height=6, compact=True,
+                      descr=_("Optional message for the administrator.  If you summarize briefly "
+                              "why you register, what role you expect in the system or whom you "
+                              "have talked to, this may help in processing your request.")),
+                # Translators: Label of a checkbox to confirm usage conditions or a
+                # similar kind of agreement specific for given website.
+                Field('confirm', _("I agree"), type=pd.Boolean,
+                      descr=_("Please check if (and only if) you have read the conditions above "
+                              "and you agree with them.")),
+                # Translators: Since when the user is registered. Table column heading
+                # and field label for a date/time value.
+                Field('since', _("Registered since"), type=DateTime(show_time=False), default=now),
+                # Translators: The state of the user account (e.g. Enabled vs Disabled).  Column
+                # heading and field label.
+                Field('state', _("State"), computer=computer(self._default_state),
+                      enumerator=enum(self._module.AccountState.states()),
+                      display=self._module.AccountState.label, prefer_display=True,
+                      style=self._state_style),
+                Field('lang'),
+                Field('regexpire', default=self._registration_expiry, type=DateTime()),
+                Field('regcode', default=self._generate_registration_code),
+                Field('state_info', virtual=True, computer=computer(self._state_info)),
             )
         def _default_state(self, record, autogenerate_password):
             req = record.req()
@@ -598,7 +617,7 @@ class Users(UserManagementModule):
             elif state == Users.AccountState.UNAPPROVED:
                 texts = _("The activation code was succesfully confirmed."),
                 if req.check_roles(Roles.USER_ADMIN):
-                    texts = (texts[0] +' '+ \
+                    texts = (texts[0] + ' ' +
                              _("Therefore it was verified that given e-mail address "
                                "belongs to the person who requested the registration."),)
                     texts += _("The user is now able to log in, but still has no rights "
@@ -644,23 +663,25 @@ class Users(UserManagementModule):
         sorting = (('surname', ASC), ('firstname', ASC))
         layout = () # Force specific layout definition for each action.
         cb = CodebookSpec(display='user', prefer_display=True)
-        def filters(self): return (
-            # Translators: Name of group of users who have full access to the system.
-            pp.Filter('enabled', _("Active users"),
-                      pd.EQ('state', pd.Value(pd.String(), Users.AccountState.ENABLED))),
-            # Translators: Name for a group of users accounts, who were not yet approved by the
-            # administrator.
-            pp.Filter('unapproved', _("Unapproved accounts (pending admin approvals)"),
-                      pd.EQ('state', pd.Value(pd.String(), Users.AccountState.UNAPPROVED))),
-            # Translators: Name for a group of users which did not confirm their registration yet
-            # by replying to an email with an activation code.
-            pp.Filter('new', _("Unfinished registration requests (activation code not confirmed)"),
-                      pd.EQ('state', pd.Value(pd.String(), Users.AccountState.NEW))),
-            # Translators: Name for a group of users whose accounts were blocked.
-            pp.Filter('disabled', _("Disabled users"),
-                      pd.EQ('state', pd.Value(pd.String(), Users.AccountState.DISABLED))),
-            # Translators: Accounts as in user accounts (computer terminology).
-            pp.Filter('all', _("All accounts"), None),
+        def filters(self):
+            return (
+                # Translators: Name of group of users who have full access to the system.
+                pp.Filter('enabled', _("Active users"),
+                          pd.EQ('state', pd.Value(pd.String(), Users.AccountState.ENABLED))),
+                # Translators: Name for a group of users accounts, who were not yet approved by the
+                # administrator.
+                pp.Filter('unapproved', _("Unapproved accounts (pending admin approvals)"),
+                          pd.EQ('state', pd.Value(pd.String(), Users.AccountState.UNAPPROVED))),
+                # Translators: Name for a group of users which did not confirm their registration
+                # yet by replying to an email with an activation code.
+                pp.Filter('new',
+                          _("Unfinished registration requests (activation code not confirmed)"),
+                          pd.EQ('state', pd.Value(pd.String(), Users.AccountState.NEW))),
+                # Translators: Name for a group of users whose accounts were blocked.
+                pp.Filter('disabled', _("Disabled users"),
+                          pd.EQ('state', pd.Value(pd.String(), Users.AccountState.DISABLED))),
+                # Translators: Accounts as in user accounts (computer terminology).
+                pp.Filter('all', _("All accounts"), None),
             )
         default_filter = 'enabled'
         actions = (
@@ -687,7 +708,7 @@ class Users(UserManagementModule):
             Action('delete', _("Delete"), descr=_("Remove the account completely"),
                    visible=lambda r: r['state'].value() in (Users.AccountState.NEW,
                                                             Users.AccountState.UNAPPROVED)),
-            )
+        )
         def _crypto_user(self, record):
             uid = record.req().user().uid()
             if uid is None:
@@ -697,13 +718,13 @@ class Users(UserManagementModule):
                 return True
             else:
                 return False
-        
+
     class AccountState(object):
         """Available user accout states enumeration.
-        
+
         A state is assigned to every user account.  The available account
         state codes are defined by this class's public constants.
-        
+
         """
         NEW = 'new'
         """New users who are registered but haven't confirmed their registration yet."""
@@ -715,12 +736,12 @@ class Users(UserManagementModule):
            users, refused registration requests etc."""
         ENABLED = 'enabled'
         """Users with full access to the application."""
-        
+
         _STATES = {NEW: _("New account"),
                    UNAPPROVED: _("Unapproved account"),
                    DISABLED: _("Account disabled"),
                    ENABLED: _("Active account")}
-        
+
         @classmethod
         def states(cls):
             return cls._STATES.keys()
@@ -728,11 +749,11 @@ class Users(UserManagementModule):
         @classmethod
         def label(cls, gender):
             return cls._STATES[gender]
-        
+
     class Gender(object):
         _GENDERS = {wiking.User.MALE: _("Male"),
                     wiking.User.FEMALE: _("Female")}
-        
+
         @classmethod
         def states(cls):
             return cls._GENDERS.keys()
@@ -740,7 +761,7 @@ class Users(UserManagementModule):
         @classmethod
         def label(cls, state):
             return cls._GENDERS[state]
-        
+
     class User(wiking.User):
         """CMS specific User class."""
 
@@ -756,7 +777,7 @@ class Users(UserManagementModule):
             self._surname = surname
             self._state = state
             self._confirm = confirm
-        
+
         def state(self):
             """
             @rtype: string
@@ -777,21 +798,21 @@ class Users(UserManagementModule):
             @return: Users first name.
             """
             return self._firstname
-        
+
         def surname(self):
             """
             @rtype: string or 'None'
             @return: Users surname.
             """
             return self._surname
-        
+
     class Roles(Roles):
         """Definition of the 'Roles' class used by the application.
 
         You may define a custom class derived from L{wiking.Roles} here.  It is
         nested within the 'Users' module so that the application is able to
         locate the right class to use.
-        
+
         """
         pass
 
@@ -809,7 +830,7 @@ class Users(UserManagementModule):
         self._user_cache = weakref.WeakKeyDictionary()
         self._find_users_cache = weakref.WeakKeyDictionary()
         super(Users, self).__init__(*args, **kwargs)
-        
+
     def _authorized(self, req, action, record=None, **kwargs):
         if action in ('insert', 'confirm', 'regreminder'):
             return True
@@ -835,7 +856,7 @@ class Users(UserManagementModule):
                         account_state.append(regconfirm)
                 # Translators: Personal data -- first name, surname, nickname ...
                 layout = [FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname',)),
-                          FieldSet(_("Contact information"), ('email', 'phone', 'address','uri')),
+                          FieldSet(_("Contact information"), ('email', 'phone', 'address', 'uri')),
                           FieldSet(_("Others"), ('note',)),
                           FieldSet(_("Account state"), account_state),
                           lambda r: r['state_info'].value(),
@@ -855,19 +876,19 @@ class Users(UserManagementModule):
                              ((not wiking.cms.cfg.login_is_email) and ('email',) or ()) +
                              ('phone', 'address', 'uri')),
                     FieldSet(_("Login information"), login_information),
-                    FieldSet(_("Others"), ('note',))]                    
+                    FieldSet(_("Others"), ('note',))]
                 regconfirm = cms_text(wiking.cms.texts.regconfirm)
                 if regconfirm:
                     # Translators: Confirmation of website terms&conditions. Form label.
                     layout.append(FieldSet(_("Confirmation"), (regconfirm, 'confirm',)))
                 return tuple(layout)
             elif action == 'update':
-                layout =  [FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname',)),
-                           # Translators: Contact information -- email, phone, address...
-                           FieldSet(_("Contact information"), ('email', 'phone', 'address', 'uri')),
-                           # Translators: Others is a label for a group of unspecified form fields
-                           # (as in Personal data, Contact information, Others).
-                           FieldSet(_("Others"), ('note',))]
+                layout = [FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname',)),
+                          # Translators: Contact information -- email, phone, address...
+                          FieldSet(_("Contact information"), ('email', 'phone', 'address', 'uri')),
+                          # Translators: Others is a label for a group of unspecified form fields
+                          # (as in Personal data, Contact information, Others).
+                          FieldSet(_("Others"), ('note',))]
                 regconfirm = cms_text(wiking.cms.texts.regconfirm)
                 if regconfirm:
                     if not record['confirm'].value():
@@ -878,7 +899,8 @@ class Users(UserManagementModule):
                 return layout
             elif action == 'passwd' and record is not None:
                 layout = ['new_password']
-                if not req.check_roles(Roles.USER_ADMIN) or req.user().uid() == record['uid'].value():
+                if ((not req.check_roles(Roles.USER_ADMIN) or
+                     req.user().uid() == record['uid'].value())):
                     # Don't require old password for admin, unless he is changing his own password.
                     layout.insert(0, 'old_password')
                 if not wiking.cms.cfg.login_is_email:
@@ -930,12 +952,11 @@ class Users(UserManagementModule):
             record['password'] = pd.Value(record.type('password'), password)
         return errors
 
-        
     def _default_actions_last(self, req, record):
         # Omit the default `delete' action to allow its redefinition in Spec.actions.
         return tuple([a for a in super(Users, self)._default_actions_last(req, record)
                       if a.id() != 'delete'])
-    
+
     def _base_uri(self, req):
         if req.path[0] == '_registration':
             return '_registration'
@@ -945,7 +966,7 @@ class Users(UserManagementModule):
         if action == 'insert' and req.path[0] == '_registration':
             return None
         return super(Users, self)._action_subtitle(req, action, record=record)
-        
+
     def _hidden_fields(self, req, action, record=None):
         fields = super(Users, self)._hidden_fields(req, action, record=record)
         if action == 'insert' and req.param('action') == 'reinsert':
@@ -954,7 +975,7 @@ class Users(UserManagementModule):
                 ('action', 'reinsert'),
                 # The regcode serves as a temporary authorization token.
                 ('regcode', req.param('regcode')),
-                ]
+            ]
             layout = self._layout_instance(self._layout(req, action))
             if 'login' not in layout.order():
                 # Pass the login field as hidden when it is not in the layout
@@ -962,10 +983,11 @@ class Users(UserManagementModule):
                 # 'wiking.cms.cfg.login_is_email' = True)
                 fields.append(('login', req.param('login')))
         return fields
-        
+
     def _redirect_after_insert(self, req, record):
         row = self._data.get_row(login=record['login'].value())
-        if row['state'].value() != Users.AccountState.NEW and not record['autogenerate_password'].value():
+        if ((row['state'].value() != Users.AccountState.NEW and
+             not record['autogenerate_password'].value())):
             # Detect re-registration: The user is already confirmed in the
             # Wiking CMS user table, no need to confirm again for the
             # application user table.
@@ -992,13 +1014,14 @@ class Users(UserManagementModule):
                     req.message(m)
                 raise wiking.Redirect(self._current_record_uri(req, record))
             else:
-                #base_uri = req.server_uri() + (req.module_uri('Registration') or '/_wmi/'+ self.name())
+                #base_uri = \
+                # req.server_uri() + (req.module_uri('Registration') or '/_wmi/' + self.name())
                 #uri=req.make_uri(base_uri, command='login', login=record['login'].value()),
                 #msg += _("Log in"),
                 return Document(_("Registration completed"), content=[lcg.p(m) for m in msg])
 
     def _send_registration_email(self, req, record):
-        base_uri = req.server_uri() + (req.module_uri('Registration') or '/_wmi/'+ self.name())
+        base_uri = req.server_uri() + (req.module_uri('Registration') or '/_wmi/' + self.name())
         if record['autogenerate_password'].value():
             text = _("Your account at %(server_hostname)s was created.\n\n"
                      "Your password is: %(password)s\n\n"
@@ -1014,8 +1037,8 @@ class Users(UserManagementModule):
                      "click on the following link:\n\n"
                      "%(uri)s\n\n",
                      server_hostname=wiking.cfg.server_hostname,
-                     uri = req.make_uri(base_uri, action='confirm', uid=record['uid'].value(),
-                                        regcode=record['regcode'].value()),
+                     uri=req.make_uri(base_uri, action='confirm', uid=record['uid'].value(),
+                                      regcode=record['regcode'].value()),
                      code=record['regcode'].value())
         err = send_mail(record['email'].value(),
                         _("Your registration at %s", wiking.cfg.server_hostname),
@@ -1026,8 +1049,7 @@ class Users(UserManagementModule):
             # account without someone's help) so we rather raise an error if we
             # fail sending it.  This should bring the problem to the
             # administrator's attention.
-            raise Exception(_("Failed sending e-mail notification:") +' '+ err)
-        
+            raise Exception(_("Failed sending e-mail notification:") + ' ' + err)
 
     def _check_registration_code(self, req):
         """Check whether given request contains valid login and activation code.
@@ -1057,8 +1079,8 @@ class Users(UserManagementModule):
         return record
 
     def _send_admin_approval_mail(self, req, record):
-        base_uri = req.module_uri(self.name()) or '/_wmi/'+ self.name()
-        subject = _("New user account:") +' '+ record['fullname'].value()
+        base_uri = req.module_uri(self.name()) or '/_wmi/' + self.name()
+        subject = _("New user account:") + ' ' + record['fullname'].value()
         if req.user() is None:
             text = _("New user %(fullname)s registered at %(server_hostname)s.",
                      fullname=record['fullname'].value(),
@@ -1076,7 +1098,7 @@ class Users(UserManagementModule):
         elif wiking.cms.cfg.autoapprove_new_users:
             text += _("The account was approved automatically according to server setup.")
         else:
-            uri = req.server_uri() + base_uri +'/'+ record['login'].value()
+            uri = req.server_uri() + base_uri + '/' + record['login'].value()
             text += _("Please approve the account:") + '\n' + uri
         if record['note'].value():
             text += '\n\n' + _("Note:") + '\n\n' + record['note'].value()
@@ -1093,7 +1115,7 @@ class Users(UserManagementModule):
         if content is None:
             content = lcg.Content()
         return content
-    
+
     def _confirmation_success_content(self, req, record):
         texts = wiking.module('Texts')
         if wiking.cms.cfg.autoapprove_new_users:
@@ -1106,7 +1128,7 @@ class Users(UserManagementModule):
         """Confirm the activation code sent by e-mail to make user registration valid.
 
         Additionally send e-mail notification to the administrator to ask him for account approval.
-        
+
         """
         record = self._check_registration_code(req)
         if wiking.cms.cfg.autoapprove_new_users:
@@ -1133,13 +1155,14 @@ class Users(UserManagementModule):
                 err = send_mail(email, _("Your account has been enabled."),
                                 text, lang=record['lang'].value())
                 if err:
-                    req.message(_("Failed sending e-mail notification:") +' '+ err, type=req.ERROR)
+                    req.message(_("Failed sending e-mail notification:") + ' ' + err,
+                                type=req.ERROR)
                 else:
-                    req.message(_("E-mail notification has been sent to:") +' '+ email)
+                    req.message(_("E-mail notification has been sent to:") + ' ' + email)
             elif state == self.AccountState.DISABLED:
                 req.message(_("The account was disabled."))
         raise wiking.Redirect(self._current_record_uri(req, record))
-    
+
     def action_enable(self, req, record):
         if record['state'].value() == self.AccountState.NEW and not req.param('submit'):
             if record['regexpire'].value() <= pd.DateTime.datetime():
@@ -1157,7 +1180,7 @@ class Users(UserManagementModule):
 
     def action_disable(self, req, record):
         self._change_state(req, record, self.AccountState.DISABLED)
-    
+
     def action_passwd(self, req, record):
         return self.action_update(req, record, action='passwd')
 
@@ -1170,7 +1193,7 @@ class Users(UserManagementModule):
         record = self._record(req, row)
         base_uri = req.module_uri('ActiveUsers')
         if base_uri:
-            uri = base_uri +'/'+ login
+            uri = base_uri + '/' + login
         else:
             uri = req.module_uri('Registration')
         uid = record['uid'].value()
@@ -1244,7 +1267,7 @@ class Users(UserManagementModule):
         only returns the first user with that email, not all users).
 
         Use 'user()' or 'find_users()' instead.
-        
+
         """
         if isinstance(query, int):
             row = self._data.get_row(uid=query)
@@ -1314,7 +1337,7 @@ class Users(UserManagementModule):
         """Reset md5 password for given 'User' instance and return the new password.
 
         May raise 'pd.DBException' if the database operation fails.
-        
+
         """
         record = user.data()
         password = self._generate_password()
@@ -1337,10 +1360,10 @@ class Users(UserManagementModule):
         regcode = wiking.generate_random_string(16)
         record.update(regcode=regcode)
         return regcode
-    
+
     def send_mail(self, role, subject, text, include_uids=(), exclude_uids=(), **kwargs):
         """Send mail to all active users of given C{role}.
-        
+
         @type role: L{wiking.Role} or sequence of L{wiking.Role}s or C{None}
         @param role: Destination role to send the mail to, all active users
           belonging to the role will receive the mail.  If C{None}, the mail is
@@ -1364,9 +1387,8 @@ class Users(UserManagementModule):
 
         """
         assert (role is None or isinstance(role, wiking.Role) or
-                (isinstance(role, (tuple, list)) and all([isinstance(r, wiking.Role) for r in role]))), role
-        String = pd.String()
-        condition = pd.EQ('state', pd.Value(String, self.AccountState.ENABLED))
+                (isinstance(role, (tuple, list)) and
+                 all([isinstance(r, wiking.Role) for r in role]))), role
         if role is not None:
             if not isinstance(role, (tuple, list)):
                 role = (role,)
@@ -1388,7 +1410,7 @@ class Users(UserManagementModule):
                     n += 1
         return n, errors
 
-    
+
 class ActiveUsers(Users, EmbeddableCMSModule):
     """User listing to be embedded into page content.
 
@@ -1414,19 +1436,19 @@ class Registration(Module, ActionHandler):
     This module is statically mapped by Wiking CMS to the reserved `_registration' URI to always
     provide an interface for new user registration, password reminder, password change and other
     user account related operations.
-    
+
     All these operations are in fact provided by the 'Users' module.  The 'Users' module, however,
     may not be reachable from outside unless used as an extension module for an existing page.  If
     that's not the case, the 'Registration' module provides the needed operations (by proxying the
     requests to the 'Users' module).
-    
+
     """
     class ReminderForm(lcg.Content):
         def export(self, context):
             g = context.generator()
             req = context.req()
             controls = (
-                g.label(_("Enter your login name or e-mail address")+':', id='query'),
+                g.label(_("Enter your login name or e-mail address") + ':', id='query'),
                 g.field(name='query', value=req.param('query'), id='query', tabindex=0, size=32),
                 # Translators: Button name. Computer terminology. Use an appropriate term common
                 # for submitting forms in a computer application.
@@ -1443,7 +1465,7 @@ class Registration(Module, ActionHandler):
             return req.check_roles(Roles.REGISTERED)
         else:
             return super(Registration, self)._authorized(req, action, **kwargs)
-    
+
     def _default_action(self, req, **kwargs):
         return 'view'
 
@@ -1482,7 +1504,7 @@ class Registration(Module, ActionHandler):
                         prefill = None
                     return self.action_insert(req, prefill=prefill)
         raise AuthenticationError()
-    
+
     def action_remind(self, req):
         title = _("Password reminder")
         query = req.param('query')
@@ -1516,20 +1538,21 @@ class Registration(Module, ActionHandler):
                     password = user.data()['password'].value()
                     # Translators: Credentials such as password...
                     intro_text = _("Your credentials are:")
-                text = concat(
+                text = lcg.concat(
                     _("A password reminder request has been made at %(server_uri)s.",
                       server_uri=req.server_uri()),
                     '',
                     intro_text,
-                    '   '+_("Login name") +': '+ user.login(),
-                    '   '+_("Password") +': '+ password,
+                    '   ' + _("Login name") + ': ' + user.login(),
+                    '   ' + _("Password") + ': ' + password,
                     '',
                     _("We strongly recommend you change your password at nearest occassion, "
                       "since it has been exposed to an unsecure channel."),
                     '', separator='\n')
                 err = send_mail(user.email(), title, text, lang=req.preferred_language())
                 if err:
-                    req.message(_("Failed sending e-mail notification:") +' '+ err, type=req.ERROR)
+                    req.message(_("Failed sending e-mail notification:") + ' ' + err,
+                                type=req.ERROR)
                     msg = _("Please try repeating your request later or contact the administrator!")
                 else:
                     msg = _("E-mail information has been sent to your email address.")
@@ -1543,10 +1566,10 @@ class Registration(Module, ActionHandler):
 
     def action_update(self, req):
         return wiking.module('Users').action_update(req, req.user().data())
-    
+
     def action_passwd(self, req):
         return wiking.module('Users').action_passwd(req, req.user().data())
-    
+
     def action_confirm(self, req):
         return wiking.module('Users').action_confirm(req)
 
@@ -1583,7 +1606,7 @@ class ActivationForm(lcg.Content):
             result += g.form((g.submit(_("Continue without activation")),),
                              method='GET', action=req.uri())
         return result
-    
+
 
 class Session(PytisModule, wiking.Session):
     """Implement Wiking session management by storing session information in database."""
@@ -1599,7 +1622,8 @@ class Session(PytisModule, wiking.Session):
         uid = user.uid()
         expiration = datetime.timedelta(hours=wiking.cfg.session_expiration)
         data.delete_many(pd.LE('last_access', pd.Value(pd.DateTime(), now_ - expiration)))
-        row, success = data.insert(data.make_row(uid=uid, session_key=session_key, last_access=now_))
+        row, success = data.insert(data.make_row(uid=uid, session_key=session_key,
+                                                 last_access=now_))
         wiking.module('SessionLog').log(req, now_, row['session_id'].value(), uid, user.login())
         # Display info page for users without proper access
         def abort(title, text_id, form=None):
@@ -1619,11 +1643,11 @@ class Session(PytisModule, wiking.Session):
             abort(_("Account not activated"), wiking.cms.texts.unconfirmed, ActivationForm(uid))
         elif state == Users.AccountState.UNAPPROVED:
             abort(_("Account not approved"), wiking.cms.texts.unapproved)
-    
+
     def failure(self, req, user, login):
         wiking.module('SessionLog').log(req, pytis.data.DateTime.datetime(), None,
                                         user and user.uid(), login)
-        
+
     def check(self, req, user, session_key):
         row = self._data.get_row(uid=user.uid(), session_key=session_key)
         if row:
@@ -1647,31 +1671,36 @@ class SessionLog(UserManagementModule):
         title = _("Login History")
         help = _("History of successful login sessions and unsuccessful login attempts.")
         table = 'cms_v_session_log'
-        def fields(self): return (
-            Field('log_id'),
-            Field('session_id'),
-            Field('uid', _('User'), codebook='Users',
-                  inline_display='uid_user', inline_referer='uid_login'),
-            # Translators: Login name.
-            Field('login', _("Login")),
-            # Translators: Form field saying whether the users attempt was succesful. Values are Yes/No.
-            Field('success', _("Success")),
-            # Translators: Table column heading. Time of the start of user session, followed by a date and time.
-            Field('start_time', _("Start time"), type=DateTime(exact=True, not_null=True)),
-            # Translators: Table column heading. The length of user session. Contains time.
-            Field('duration', _("Duration"), type=pytis.data.TimeInterval()),
-            # Translators: Table column heading. Whether the account is active. Values are yes/no.
-            Field('active', _("Active")),
-            Field('ip_address', _("IP address")),
-            # Translators: Internet name of the remote computer (computer terminology).
-            Field('hostname', _("Hostname"), virtual=True, computer=computer(self._hostname)),
-            # Translators: "User agent" is a generalized name for browser or more precisely the
-            # software which produced the HTTP request (was used to access the website).
-            Field('user_agent', _("User agent")),
-            # Translators: Meaning where the user came from. Computer terminology. Do not translate
-            # "HTTP" and if unsure, don't translate at all (it is a very technical term).
-            Field('referer', _("HTTP Referer")),
-            Field('uid_login'))
+        def fields(self):
+            return (
+                Field('log_id'),
+                Field('session_id'),
+                Field('uid', _('User'), codebook='Users',
+                      inline_display='uid_user', inline_referer='uid_login'),
+                # Translators: Login name.
+                Field('login', _("Login")),
+                # Translators: Form field saying whether the users attempt was succesful.
+                # Values are Yes/No.
+                Field('success', _("Success")),
+                # Translators: Table column heading.
+                # Time of the start of user session, followed by a date and time.
+                Field('start_time', _("Start time"), type=DateTime(exact=True, not_null=True)),
+                # Translators: Table column heading. The length of user session. Contains time.
+                Field('duration', _("Duration"), type=pytis.data.TimeInterval()),
+                # Translators: Table column heading.
+                # Whether the account is active. Values are yes/no.
+                Field('active', _("Active")),
+                Field('ip_address', _("IP address")),
+                # Translators: Internet name of the remote computer (computer terminology).
+                Field('hostname', _("Hostname"), virtual=True, computer=computer(self._hostname)),
+                # Translators: "User agent" is a generalized name for browser or more precisely the
+                # software which produced the HTTP request (was used to access the website).
+                Field('user_agent', _("User agent")),
+                # Translators: Meaning where the user came from. Computer terminology.
+                # Do not translate
+                # "HTTP" and if unsure, don't translate at all (it is a very technical term).
+                Field('referer', _("HTTP Referer")),
+                Field('uid_login'))
         def _hostname(self, row, ip_address):
             try:
                 return socket.gethostbyaddr(ip_address)[0]
@@ -1686,9 +1715,9 @@ class SessionLog(UserManagementModule):
                   'hostname', 'user_agent', 'referer')
         columns = ('start_time', 'duration', 'active', 'success', 'uid', 'login', 'ip_address')
         sorting = (('start_time', DESC),)
-        
+
     _ASYNC_LOAD = True
-        
+
     def log(self, req, time, session_id, uid, login):
         row = self._data.make_row(session_id=session_id, uid=uid, login=login,
                                   success=session_id is not None, start_time=time,
