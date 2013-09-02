@@ -159,7 +159,7 @@ class RoleSets(UserManagementModule):
             r_id = queue.pop()
             if r_id not in role_ids:
                 role_ids.add(r_id)
-                queue.union(set(containment.get(r_id, [])))
+                queue = queue.union(set(containment.get(r_id, [])))
         return list(role_ids)
         
     def included_role_ids(self, role):
