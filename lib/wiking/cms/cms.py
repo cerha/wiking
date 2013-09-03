@@ -2157,12 +2157,18 @@ class Publications(NavigablePages, EmbeddableCMSModule):
 
     def action_export_epub(self, req, record):
         class EpubExporter(lcg.EpubExporter):
-            def _get_resource_data(self, context, resource):
-                if resource.src_file():
-                    return resource.get()
+            def _get_resource_data(self, context, node, resource):
+                page_id = module.PublicationChapters.get_page_id(node.id())
+                data = module.Attachments.retrieve(req, page_id, resource.filename())
+                if data:
+                    return data
                 else:
-                    # TODO: Retrieve the attachment.
-                    return None
+                    resource = wiking.module.Resources.resource(resource.filename())
+                    if resource and resource.src_file():
+                        return resource.get()
+                    else:
+                        raise Exception("Unable to retrieve resource %s." % resource.filename())
+
         node = self._publication(req, record)
         exporter = EpubExporter(translations=wiking.cfg.translation_path)
         context = exporter.context(node, req.preferred_language())
@@ -2321,6 +2327,13 @@ class PublicationChapters(NavigablePages):
                                        **restriction):
             children.setdefault(row['parent'].value(), []).append(row)
         return children
+
+    def get_page_id(self, identifier): 
+        row = self._data.get_row(identifier=identifier)
+        if row:
+            return row['page_id'].value()
+        else:
+            return None
 
 
 class PageHistory(ContentManagementModule):
@@ -2785,6 +2798,14 @@ class Attachments(ContentManagementModule):
                 return None
         else:
             return _("Attachment '%s' not found!", filename)
+
+    def retrieve(self, req, page_id, filename):
+        row = self._data.get_row(page_id=page_id, filename=filename)
+        if row:
+            record = self._record(req, row)
+            return record['file'].value().buffer()
+        else:
+            return None
 
     def action_move(self, req, record):
         return self.action_update(req, record, action='move')
