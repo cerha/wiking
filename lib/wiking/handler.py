@@ -107,8 +107,7 @@ class Handler(object):
         config.dblisten = False
         config.log_exclude = [pytis.util.ACTION, pytis.util.EVENT, pytis.util.DEBUG]
         for option in ('dbname', 'dbhost', 'dbport', 'dbuser', 'dbpass', 'dbsslm', 'dbschemas',):
-            # Where does `cfg' come from?
-            setattr(config, option, getattr(cfg, option))
+            setattr(config, option, getattr(wiking.cfg, option))
         config.dbconnections = wiking.cfg.connections
         config.dbconnection = config.option('dbconnection').default()
         config.resolver = wiking.cfg.resolver
