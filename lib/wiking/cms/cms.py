@@ -1764,13 +1764,6 @@ class Pages(SiteSpecificContentModule):
             # Translators: Section title. Attachments as in email attachments.
             content.append(lcg.Section(title=_("Attachments"), content=lcg.ul(listed_attachments),
                                        anchor='attachment-automatic-list')) # Prevent dupl. anchor.
-        # Load Lightbox if there are any images with thumbnails within the attachments.
-        if any(isinstance(r, lcg.Image) and r.thumbnail() for r in resources):
-            resources.extend((lcg.Script('prototype.js'),
-                              lcg.Script('effects.js'),
-                              lcg.Script('builder.js'),
-                              lcg.Script('lightbox.js'),
-                              lcg.Stylesheet('lightbox.css')))
         if content and resources:
             return [lcg.Container(content, resources=resources)]
         else:
