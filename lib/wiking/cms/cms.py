@@ -2120,13 +2120,14 @@ class Publications(NavigablePages, EmbeddableCMSModule):
 
     def _publication(self, req, record):
         children = self._child_rows(req, record)
+        resource_provider = lcg.ResourceProvider(dirs=wiking.cfg.resource_path)
         def node(row):
+            # Call the super class _inner_page_content to avoid a table of contents in every node.
+            content = super(Publications, self)._inner_page_content(req, self._record(req, row))
             return lcg.ContentNode(row['identifier'].value(),
                                    title=row['title'].value(),
-                                   # Call the super class _inner_page_content to
-                                   # avoid a table of contents in every node.
-                                   content=super(Publications, self).
-                                   _inner_page_content(req, self._record(req, row)),
+                                   content=content,
+                                   resource_provider=resource_provider,
                                    children=[node(r) for r in
                                              children.get(row['page_id'].value(), ())])
         return node(record.row())
