@@ -1,4 +1,4 @@
-# Copyright (C) 2010, 2011, 2012 Brailcom, o.p.s.
+# Copyright (C) 2010, 2011, 2012, 2013 Brailcom, o.p.s.
 # Author: Tomas Cerha <cerha@brailcom.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -15,7 +15,11 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-import wsgiref.util, wsgiref.headers, cgi, httplib
+import cgi
+import httplib
+import os
+import wsgiref.util
+import wsgiref.headers
 import wiking
 
     
@@ -127,7 +131,7 @@ class WsgiRequest(wiking.Request):
             raise RuntimeError("start_http_response() can only be called once!")
 
     def option(self, name, default=None):
-        return self._environ.get('wiking.'+ name, default)
+        return self._environ.get('wiking.' + name, default)
 
 
 class WsgiEntryPoint(object):
@@ -154,3 +158,12 @@ class WsgiEntryPoint(object):
 
 
 application = WsgiEntryPoint()
+
+# Hack to allow wsgi shell access, any better solution is welcome.
+
+_wsgi_shell_config_file = os.path.join(os.getenv('HOME'), 'ispyd.ini')
+if os.access(_wsgi_shell_config_file, os.R_OK):
+    from ispyd.manager import ShellManager
+    shell_manager = ShellManager(_wsgi_shell_config_file)
+    from ispyd.plugins.wsgi import WSGIApplicationWrapper
+    application = WSGIApplicationWrapper(application)
