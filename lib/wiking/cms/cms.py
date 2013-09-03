@@ -2158,14 +2158,17 @@ class Publications(NavigablePages, EmbeddableCMSModule):
     def action_export_epub(self, req, record):
         class EpubExporter(lcg.EpubExporter):
             def _get_resource_data(self, context, node, resource):
-                page_id = module.PublicationChapters.get_page_id(node.id())
+                if node.id() == record['identifier'].value():
+                    page_id = record['page_id'].value()
+                else:
+                    page_id = module.PublicationChapters.get_page_id(node.id())
                 data = module.Attachments.retrieve(req, page_id, resource.filename())
                 if data:
                     return data
                 else:
-                    resource = wiking.module.Resources.resource(resource.filename())
-                    if resource and resource.src_file():
-                        return resource.get()
+                    r = wiking.module.Resources.resource(resource.filename())
+                    if r and r.src_file():
+                        return r.get()
                     else:
                         raise Exception("Unable to retrieve resource %s." % resource.filename())
 
