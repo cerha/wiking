@@ -1752,9 +1752,9 @@ class Pages(SiteSpecificContentModule):
         storage = record.attachment_storage('_content')
         resources = storage.resources()
         # Create automatic image gallery if any attachments are marked as in gallery.
-        gallery_images = [r for r in resources if r.info()['in_gallery']]
+        gallery_images = [lcg.InlineImage(r) for r in resources if r.info()['in_gallery']]
         if gallery_images:
-            content.append(Attachments.ImageGallery(gallery_images))
+            content.append(lcg.Container(gallery_images, name='wiking-image-gallery'))
         # Create automatic attachment list if any attachments are marked as listed.
         listed_attachments = [(lcg.link(r.uri(), r.title() or r.filename()),
                                ' (' + r.info()['byte_size'] + ') ',
@@ -2601,34 +2601,6 @@ class Attachments(ContentManagementModule):
             # Translators: Button label
             Action('move', _("Move"), descr=_("Move the attachment to another page.")),
         )
-
-    class ImageGallery(lcg.Content):
-
-        def __init__(self, images):
-            self._images = images
-            super(Attachments.ImageGallery, self).__init__()
-
-        def _export_item(self, context, resource):
-            g = context.generator()
-            title = resource.title() or resource.filename()
-            if resource.descr():
-                title += ': ' + resource.descr()
-            thumbnail = resource.thumbnail()
-            if thumbnail:
-                size = thumbnail.size()
-                if size:
-                    width, height = size
-                else:
-                    width, height = None, None
-                img = g.img(thumbnail.uri(), width=width, height=height)
-                return g.a(img, href=resource.uri(), rel='lightbox[gallery]', title=title)
-            else:
-                return g.img(resource.uri())
-
-        def export(self, context):
-            g = context.generator()
-            content = [self._export_item(context, r) for r in self._images]
-            return g.div(content, cls='wiking-image-gallery')
 
     class AttachmentStorage(pp.AttachmentStorage):
 
