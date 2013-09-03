@@ -1756,7 +1756,7 @@ class Pages(SiteSpecificContentModule):
         if gallery_images:
             content.append(lcg.Container(gallery_images, name='wiking-image-gallery'))
         # Create automatic attachment list if any attachments are marked as listed.
-        listed_attachments = [(lcg.link(r.uri(), r.title() or r.filename()),
+        listed_attachments = [(lcg.link(r, r.title() or r.filename()),
                                ' (' + r.info()['byte_size'] + ') ',
                                lcg.coerce(r.descr() or '', formatted=True))
                               for r in resources if r.info()['listed']]
