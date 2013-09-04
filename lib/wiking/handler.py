@@ -304,15 +304,7 @@ class Handler(object):
                 # window and it is better to leave the error log for printing
                 # debugging information (the exception makes too much noise
                 # there...) so we log the traceback only when debug is off.
-                try:
-                    # cgitb sometimes fails when the introspection touches
-                    # something sensitive, such as database objects.
-                    import cgitb
-                    tb = cgitb.text(einfo)
-                except:
-                    import traceback
-                    tb = "".join(traceback.format_exception(*einfo))
-                log(OPERATIONAL, "\n" + tb)
+                self.log_traceback(req, einfo)
             return self._handle_request_error(req, wiking.InternalServerError(einfo))
             
     def handle(self, req):

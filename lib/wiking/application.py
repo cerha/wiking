@@ -513,6 +513,23 @@ class Application(Module):
             message += ' ' + error.buginfo()
         log(OPR, message)
 
+    def log_traceback(self, req, einfo):
+        """Write Python exception traceback to server's error log.
+
+        The argument 'einfo' is the exception information as returned by
+        'sys.exc_info()'.
+
+        """
+        try:
+            # cgitb sometimes fails when the introspection touches
+            # something sensitive, such as database objects.
+            import cgitb
+            tb = cgitb.text(einfo)
+        except:
+            import traceback
+            tb = "".join(traceback.format_exception(*einfo))
+        log(OPR, "\n"+ tb)
+
     def send_bug_report(self, req, einfo):
         """Send bug report by email if 'bug_report_address' is configured.
 

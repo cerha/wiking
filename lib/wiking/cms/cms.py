@@ -91,10 +91,15 @@ def text2content(req, text):
             else:
                 content = _processor.html2lcg(text)
         except Exception as e:
-            content = lcg.Container((lcg.p(_("Error processing document content:")),
-                                     lcg.PreformattedText("%s: %s" % (e.__class__.__name__, e))),
-                                    name='wiking-content-processing-error')
-            wiking.module.Application.send_bug_report(req, sys.exc_info())
+            content = [lcg.p(_("Error processing document content:"))]
+            einfo = sys.exc_info()
+            if wiking.cfg.debug:
+                content.append(wiking.HtmlTraceback(einfo))
+            else:
+                content.append(lcg.PreformattedText("%s: %s" % (e.__class__.__name__, e)))
+                wiking.module.Application.log_exception(req, einfo)
+            content = lcg.Container(content, name='wiking-content-processing-error')
+            wiking.module.Application.send_bug_report(req, einfo)
     else:
         content = None
     return content

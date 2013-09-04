@@ -359,14 +359,7 @@ class InternalServerError(RequestError):
         while tb.tb_next is not None:
             tb = tb.tb_next
         if wiking.cfg.debug:
-            try:
-                # cgitb sometimes fails when the introspection touches
-                # something sensitive, such as database objects.
-                import cgitb
-                html_traceback = cgitb.html(einfo)
-            except:
-                html_traceback = "<pre>" + "".join(traceback.format_exception(*einfo)) + "</pre>"
-            self._html_traceback = html_traceback
+            self._html_traceback = HtmlTraceback(einfo)
         self._message = message
         self._exception_class = einfo[0]
         self._filename = os.path.split(tb.tb_frame.f_code.co_filename)[-1]
@@ -382,7 +375,7 @@ class InternalServerError(RequestError):
         # is not formatted as a link during internal server error export.  It
         # works well in all other cases.
         if wiking.cfg.debug:
-            return HtmlContent(self._html_traceback)
+            return self._html_traceback
         else:
             return (lcg.p(_("The server was unable to complete your request.")),
                     lcg.p(_("Please inform the server administrator, %s if the problem "
@@ -1351,6 +1344,27 @@ class HtmlContent(lcg.TextContent):
     """
     def export(self, context):
         return self._text
+
+
+class HtmlTraceback(HtmlContent):
+    """LCG content element displaying a Python exception traceback in HTML.
+
+    Accepts the exception information as returned by 'sys.exc_info()' as the
+    first constructor argument.
+
+    """
+    def __init__(self, einfo, **kwargs):
+        # Generete the traceback in constructor to avoid storing references
+        # to einfo (see sys.exc_info() documentation).
+        try:
+            # cgitb sometimes fails when the introspection touches
+            # something sensitive, such as database objects.
+            import cgitb
+            html = cgitb.html(einfo)
+        except:
+            html = "<pre>" + "".join(traceback.format_exception(*einfo)) + "</pre>"
+        super(HtmlTraceback, self).__init__(html, **kwargs)
+
 
 class HtmlRenderer(lcg.Content):
     """LCG content class for wrapping a direct HTML renderer function.
