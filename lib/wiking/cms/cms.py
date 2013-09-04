@@ -2349,7 +2349,8 @@ class PageHistory(ContentManagementModule):
                 Field('page_key', codebook='Pages'),
                 Field('page_id'),
                 Field('lang'),
-                Field('uid', codebook='Users'),
+                Field('uid', codebook='Users', inline_referer='login'),
+                Field('login'),
                 Field('user', _("Changed by"), computer=pp.CbComputer('uid', 'user_')),
                 Field('timestamp', _("Date"), utc=True),
                 Field('comment', _("Comment")),
@@ -2445,6 +2446,7 @@ class PageHistory(ContentManagementModule):
                         changed += a
                         deleted += a - b
             row = self._data.make_row(
+                history_id=pytis.util.nextval('cms_page_history_history_id_seq')(),
                 page_id=page['page_id'].value(),
                 lang=page['lang'].value(),
                 uid=req.user().uid(),

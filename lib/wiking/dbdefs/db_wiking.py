@@ -438,6 +438,7 @@ class CmsVPageHistory(sql.SQLView):
         u = sql.t.Users.alias('u')
         return select([h,
                        u.c.user_.label('user'),
+                       u.c.login,
                        (stype(h.c.page_id) + sval('.') + h.c.lang).label('page_key'),
                        (stype(h.c.inserted_lines) + sval(' / ') +
                         stype(h.c.changed_lines) + sval(' / ') +
