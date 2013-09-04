@@ -220,7 +220,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         return content
 
     def _title(self, context):
-        return context.application.site_title(context.req()) +' - '+ context.node().page_heading()
+        return context.node().page_heading() +' - '+ context.application.site_title(context.req())
 
     def _top(self, context):
         g = self._generator
