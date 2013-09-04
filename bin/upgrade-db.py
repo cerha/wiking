@@ -35,7 +35,7 @@ def usage(msg=None):
     message = """Perform incremental upgrades of an existing Wiking CMS database.
 Usage: %s [-p port] database directory
   database ... name of the Wiking CMS database to upgrade
-  directory ... path to Wiking upgrade scripts (the `sql' subdirectory of a
+  directory ... path to Wiking upgrade scripts (the `upgrade' subdirectory of a
     Wiking source archive)
 """ % sys.argv[0]
     if msg:
