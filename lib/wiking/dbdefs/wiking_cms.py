@@ -27,20 +27,23 @@ from pytis.data.dbdefs import and_, coalesce, func, ival, null, select, stype, s
 
 current_timestamp_0 = sqlalchemy.sql.expression.Function('current_timestamp', ival(0))
 
+class CommonAccesRights(object):
+    access_rights = (('all', 'www-data'),)
+
 #
 
 class CmsDatabaseVersion(sql.SQLTable):
     name = 'cms_database_version'
     fields = (sql.Column('version', pytis.data.Integer()),)
 
-class CmsLanguages(sql.SQLTable):
+class CmsLanguages(CommonAccesRights, sql.SQLTable):
     name = 'cms_languages'
     fields = (sql.PrimaryColumn('lang_id', pytis.data.Serial()),
               sql.Column('lang', pytis.data.String(minlen=2, maxlen=2, not_null=True),
                          unique=True),
               )
 
-class CmsConfig(sql.SQLTable):
+class CmsConfig(CommonAccesRights, sql.SQLTable):
     name = 'cms_config'
     fields = (sql.PrimaryColumn('site', pytis.data.String()),
               sql.Column('site_title', pytis.data.String()),
@@ -63,7 +66,7 @@ class CmsConfig(sql.SQLTable):
                          references=sql.r.CmsThemes),
               )
 
-class CmsCountries(sql.SQLTable):
+class CmsCountries(CommonAccesRights, sql.SQLTable):
     name = 'cms_countries'
     fields = (sql.PrimaryColumn('country_id', pytis.data.Serial(not_null=True)),
               sql.Column('country', pytis.data.String(minlen=2, maxlen=2, not_null=True),
@@ -72,7 +75,7 @@ class CmsCountries(sql.SQLTable):
 
 #
 
-class Roles(sql.SQLTable):
+class Roles(CommonAccesRights, sql.SQLTable):
     name = 'roles'
     fields = (sql.PrimaryColumn('role_id', pytis.data.Name()),
               sql.Column('name', pytis.data.String()),
@@ -81,7 +84,7 @@ class Roles(sql.SQLTable):
               )
     init_columns = ('role_id', 'name', 'system', 'auto',)
 
-class RoleSets(sql.SQLTable):
+class RoleSets(CommonAccesRights, sql.SQLTable):
     name = 'role_sets'
     fields = (sql.PrimaryColumn('role_set_id', pytis.data.Serial(not_null=True)),
               sql.Column('role_id', pytis.data.Name(not_null=True),
@@ -105,7 +108,7 @@ class UnrelatedRoles(sql.SQLFunction):
     multirow = True
     stability = 'stable'
 
-class Users(sql.SQLTable):
+class Users(CommonAccesRights, sql.SQLTable):
     name = 'users'
     fields = (sql.PrimaryColumn('uid', pytis.data.Serial(not_null=True)),
               sql.Column('login', pytis.data.String(maxlen=64, not_null=True, unique=True)),
@@ -161,7 +164,7 @@ class CmsFInsertOrUpdateUser(sql.SQLPlFunction):
                  )
     result_type = None
 
-class RoleMembers(sql.SQLTable):
+class RoleMembers(CommonAccesRights, sql.SQLTable):
     name = 'role_members'
     fields = (sql.PrimaryColumn('role_member_id', pytis.data.Serial(not_null=True)),
               sql.Column('role_id', pytis.data.Name(not_null=True),
@@ -171,7 +174,7 @@ class RoleMembers(sql.SQLTable):
               )
     unique = (('role_id', 'uid',),)
 
-class AUserRoles(sql.SQLTable):
+class AUserRoles(CommonAccesRights, sql.SQLTable):
     name = 'a_user_roles'
     fields = (sql.Column('uid', pytis.data.Integer(), index=True,
                          references=sql.a(sql.r.Users, onupdate='CASCADE', ondelete='CASCADE')),
@@ -199,7 +202,7 @@ class RoleMembersUpdateUserRolesTrigger(sql.SQLTrigger):
     each_row = False
     body = UpdateUserRoles
 
-class CmsSessionLog(sql.SQLTable):
+class CmsSessionLog(CommonAccesRights, sql.SQLTable):
     name = 'cms_session_log'
     fields = (sql.PrimaryColumn('log_id', pytis.data.Serial(not_null=True)),
               sql.Column('session_id', pytis.data.Integer(),
@@ -217,7 +220,7 @@ class CmsSessionLog(sql.SQLTable):
               sql.Column('referer', pytis.data.String()),
               )
 
-class CmsSession(sql.SQLTable):
+class CmsSession(CommonAccesRights, sql.SQLTable):
     name = 'cms_session'
     fields = (sql.PrimaryColumn('session_id', pytis.data.Serial(not_null=True)),
               sql.Column('uid', pytis.data.Integer(not_null=True),
@@ -233,7 +236,7 @@ class CmsSession(sql.SQLTable):
                 values(end_time=sqlalchemy.literal_column('old.last_access')),)
     depends_on = (CmsSessionLog,)
     
-class CmsVSessionLog(sql.SQLView):
+class CmsVSessionLog(CommonAccesRights, sql.SQLView):
     name = 'cms_v_session_log'
     @classmethod
     def query(cls):
@@ -262,7 +265,7 @@ class CmsVSessionLog(sql.SQLView):
 
 #
 
-class CmsPages(sql.SQLTable):
+class CmsPages(CommonAccesRights, sql.SQLTable):
     name = 'cms_pages'
     fields = (sql.PrimaryColumn('page_id', pytis.data.Serial(not_null=True)),
               sql.Column('site', pytis.data.String(not_null=True),
@@ -301,7 +304,7 @@ class CmsPagesUpdateOrder(sql.SQLPlFunction, sql.SQLTrigger):
     events = ('insert', 'update',)
     position = 'before'
 
-class CmsPageTexts(sql.SQLTable):
+class CmsPageTexts(CommonAccesRights, sql.SQLTable):
     name = 'cms_page_texts'
     fields = (sql.Column('page_id', pytis.data.Integer(not_null=True),
                          references=sql.a(sql.r.CmsPages, ondelete='CASCADE')),
@@ -326,7 +329,7 @@ class CmsPageTreeOrder(sql.SQLFunction):
     result_type = pytis.data.String()
     depends_on = (CmsPages,)
 
-class CmsVPages(sql.SQLView):
+class CmsVPages(CommonAccesRights, sql.SQLView):
     name = 'cms_v_pages'
     @classmethod
     def query(cls):
@@ -413,7 +416,7 @@ class CmsVPages(sql.SQLView):
         )""",)
     delete_order = (CmsPages,)
 
-class CmsPageHistory(sql.SQLTable):
+class CmsPageHistory(CommonAccesRights, sql.SQLTable):
     name = 'cms_page_history'
     fields = (sql.PrimaryColumn('history_id', pytis.data.Serial(not_null=True)),
               sql.Column('page_id', pytis.data.Integer(not_null=True)),
@@ -430,7 +433,7 @@ class CmsPageHistory(sql.SQLTable):
                           (sql.r.CmsPageTexts.page_id, sql.r.CmsPageTexts.lang,),
                           ondelete='cascade'),)
 
-class CmsVPageHistory(sql.SQLView):
+class CmsVPageHistory(CommonAccesRights, sql.SQLView):
     name = 'cms_v_page_history'
     @classmethod
     def query(cls):
@@ -448,7 +451,7 @@ class CmsVPageHistory(sql.SQLView):
 
 #
 
-class CmsPageAttachments(sql.SQLTable):
+class CmsPageAttachments(CommonAccesRights, sql.SQLTable):
     name = 'cms_page_attachments'
     fields = (sql.PrimaryColumn('attachment_id', pytis.data.Serial(not_null=True)),
               sql.Column('page_id', pytis.data.Integer(not_null=True),
@@ -474,7 +477,7 @@ class CmsPageAttachments(sql.SQLTable):
               )
     unique = (('filename', 'page_id',),)
 
-class CmsPageAttachmentTexts(sql.SQLTable):
+class CmsPageAttachmentTexts(CommonAccesRights, sql.SQLTable):
     name = 'cms_page_attachment_texts'
     fields = (sql.Column('attachment_id', pytis.data.Integer(not_null=True),
                          references=sql.a(sql.r.CmsPageAttachments, ondelete='CASCADE',
@@ -487,7 +490,7 @@ class CmsPageAttachmentTexts(sql.SQLTable):
               )
     unique = (('attachment_id', 'lang',),)
 
-class CmsVPageAttachments(sql.SQLView):
+class CmsVPageAttachments(CommonAccesRights, sql.SQLView):
     name = 'cms_v_page_attachments'
     @classmethod
     def query(cls):
@@ -561,7 +564,7 @@ class CmsVPageAttachments(sql.SQLView):
 
 #
 
-class CmsPublications(sql.SQLTable):
+class CmsPublications(CommonAccesRights, sql.SQLTable):
     """bibliographic data of the original (paper) books"""
     name = 'cms_publications'
     fields = (sql.Column('page_id', pytis.data.Integer(not_null=True), unique=True,
@@ -583,7 +586,7 @@ class CmsPublications(sql.SQLTable):
                          doc="any other additional info, such as translator(s), reviewer(s) etc."),
               )
 
-class CmsVPublications(sql.SQLView):
+class CmsVPublications(CommonAccesRights, sql.SQLView):
     name = 'cms_v_publications'
     @classmethod
     def query(cls):
@@ -660,7 +663,7 @@ class CmsVPublications(sql.SQLView):
      delete from cms_pages where page_id = old.page_id;
         )""",)
 
-class CmsPublicationLanguages(sql.SQLTable):
+class CmsPublicationLanguages(CommonAccesRights, sql.SQLTable):
     """list of content languages available for given publication"""
     name = 'cms_publication_languages'
     fields = (sql.Column('page_id', pytis.data.Integer(not_null=True),
@@ -670,7 +673,7 @@ class CmsPublicationLanguages(sql.SQLTable):
               )
     unique = (('page_id', 'lang',),)
 
-class CmsPublicationIndexes(sql.SQLTable):
+class CmsPublicationIndexes(CommonAccesRights, sql.SQLTable):
     """list of indexes available for given publication"""
     name = 'cms_publication_indexes'
     fields = (sql.PrimaryColumn('index_id', pytis.data.Serial(not_null=True)),
@@ -682,7 +685,7 @@ class CmsPublicationIndexes(sql.SQLTable):
 
 #
 
-class CmsNews(sql.SQLTable):
+class CmsNews(CommonAccesRights, sql.SQLTable):
     name = 'cms_news'
     fields = (sql.PrimaryColumn('news_id', pytis.data.Serial(not_null=True)),
               sql.Column('page_id', pytis.data.Integer(not_null=True),
@@ -714,7 +717,7 @@ class CmsRecentTimestamp(sql.SQLFunction):
         """
         return 'select (current_date - $1::date) < $2'
 
-class CmsPlanner(sql.SQLTable):
+class CmsPlanner(CommonAccesRights, sql.SQLTable):
     name = 'cms_planner'
     fields = (sql.PrimaryColumn('planner_id', pytis.data.Serial(not_null=True)),
               sql.Column('page_id', pytis.data.Integer(not_null=True),
@@ -730,7 +733,7 @@ class CmsPlanner(sql.SQLTable):
               sql.Column('content', pytis.data.String(not_null=True)),
               )
 
-class CmsDiscussions(sql.SQLTable):
+class CmsDiscussions(CommonAccesRights, sql.SQLTable):
     name = 'cms_discussions'
     fields = (sql.PrimaryColumn('comment_id', pytis.data.Serial(not_null=True)),
               sql.Column('page_id', pytis.data.Integer(not_null=True),
@@ -753,7 +756,7 @@ class CmsDiscussionsTriggerBeforeInsert(sql.SQLPlFunction, sql.SQLTrigger):
     position = 'before'
     events = ('insert',)
 
-class CmsPanels(sql.SQLTable):
+class CmsPanels(CommonAccesRights, sql.SQLTable):
     name = 'cms_panels'
     fields = (sql.PrimaryColumn('panel_id', pytis.data.Serial(not_null=True)),
               sql.Column('site', pytis.data.String(not_null=True),
@@ -773,7 +776,7 @@ class CmsPanels(sql.SQLTable):
               )
     unique = (('identifier', 'site', 'lang',),)
 
-class CmsVPanels(sql.SQLView):
+class CmsVPanels(CommonAccesRights, sql.SQLView):
     name = 'cms_v_panels'
     @classmethod
     def query(cls):
@@ -788,7 +791,7 @@ class CmsVPanels(sql.SQLView):
 
 #
 
-class CmsStylesheets(sql.SQLTable):
+class CmsStylesheets(CommonAccesRights, sql.SQLTable):
     name = 'cms_stylesheets'
     fields = (sql.PrimaryColumn('stylesheet_id', pytis.data.Serial(not_null=True)),
               sql.Column('site', pytis.data.String(not_null=True),
@@ -804,7 +807,7 @@ class CmsStylesheets(sql.SQLTable):
               )
     unique = (('identifier', 'site',),)
 
-class CmsThemes(sql.SQLTable):
+class CmsThemes(CommonAccesRights, sql.SQLTable):
     name = 'cms_themes'
     fields = (sql.PrimaryColumn('theme_id', pytis.data.Serial(not_null=True),
                                 references=sql.r.CmsThemes),
@@ -841,7 +844,7 @@ class CmsThemes(sql.SQLTable):
 
 #
 
-class CmsSystemTextLabels(sql.SQLTable):
+class CmsSystemTextLabels(CommonAccesRights, sql.SQLTable):
     name = 'cms_system_text_labels'
     fields = (sql.Column('label', pytis.data.Name(not_null=True)),
               sql.Column('site', pytis.data.String(not_null=True),
@@ -857,7 +860,7 @@ class CmsAddTextLabel(sql.SQLPlFunction):
                  sql.Column('_site', pytis.data.String()),)
     result_type = None
 
-class CmsSystemTexts(sql.SQLTable):
+class CmsSystemTexts(CommonAccesRights, sql.SQLTable):
     name = 'cms_system_texts'
     fields = (sql.Column('label', pytis.data.Name(not_null=True)),
               sql.Column('site', pytis.data.String(not_null=True)),
@@ -872,7 +875,7 @@ class CmsSystemTexts(sql.SQLTable):
                           (sql.r.CmsSystemTextLabels.label, sql.r.CmsSystemTextLabels.site,),
                           onupdate='CASCADE', ondelete='CASCADE'),)
 
-class CmsVSystemTexts(sql.SQLView):
+class CmsVSystemTexts(CommonAccesRights, sql.SQLView):
     name = 'cms_v_system_texts'
     @classmethod
     def query(cls):
@@ -897,7 +900,7 @@ class CmsVSystemTexts(sql.SQLView):
 
 #
 
-class CmsEmailLabels(sql.SQLTable):
+class CmsEmailLabels(CommonAccesRights, sql.SQLTable):
     name = 'cms_email_labels'
     fields = (sql.PrimaryColumn('label', pytis.data.Name(not_null=True)),)
 
@@ -906,7 +909,7 @@ class CmsAddEmailLabel(sql.SQLPlFunction):
     arguments = (sql.Column('_label', pytis.data.Name()),)
     result_type = None
     
-class CmsEmails(sql.SQLTable):
+class CmsEmails(CommonAccesRights, sql.SQLTable):
     name = 'cms_emails'
     fields = (sql.Column('label', pytis.data.Name(not_null=True),
                          references=sql.r.CmsEmailLabels),
@@ -920,7 +923,7 @@ class CmsEmails(sql.SQLTable):
               )
     unique = (('label', 'lang',),)
 
-class CmsVEmails(sql.SQLView):
+class CmsVEmails(CommonAccesRights, sql.SQLView):
     name = 'cms_v_emails'
     @classmethod
     def query(cls):
@@ -950,7 +953,7 @@ class CmsVEmails(sql.SQLView):
     delete from cms_email_labels where label = old.label;
         )""",)
 
-class CmsEmailAttachments(sql.SQLTable):
+class CmsEmailAttachments(CommonAccesRights, sql.SQLTable):
     name = 'cms_email_attachments'
     fields = (sql.PrimaryColumn('attachment_id', pytis.data.Serial(not_null=True)),
               sql.Column('label', pytis.data.Name(not_null=True),
@@ -959,7 +962,7 @@ class CmsEmailAttachments(sql.SQLTable):
               sql.Column('mime_type', pytis.data.String(not_null=True)),
               )
 
-class CmsEmailSpool(sql.SQLTable):
+class CmsEmailSpool(CommonAccesRights, sql.SQLTable):
     name = 'cms_email_spool'
     fields = (sql.PrimaryColumn('id', pytis.data.Serial(not_null=True)),
               sql.Column('sender_address', pytis.data.String()),
@@ -978,7 +981,7 @@ class CmsEmailSpool(sql.SQLTable):
 
 #
 
-class CmsCryptoNames(sql.SQLTable):
+class CmsCryptoNames(CommonAccesRights, sql.SQLTable):
     name = 'cms_crypto_names'
     fields = (sql.PrimaryColumn('name', pytis.data.String(not_null=True)),
               sql.Column('description', pytis.data.String()),
@@ -986,7 +989,7 @@ class CmsCryptoNames(sql.SQLTable):
     init_columns = ('name', 'description',)
     access_rights = (('ALL', 'www-data',),)
 
-class CmsCryptoKeys(sql.SQLTable):
+class CmsCryptoKeys(CommonAccesRights, sql.SQLTable):
     name = 'cms_crypto_keys'
     fields = (sql.PrimaryColumn('key_id', pytis.data.Serial(not_null=True)),
               sql.Column('name', pytis.data.String(not_null=True),
@@ -1049,7 +1052,7 @@ class CmsCryptoDeleteKey(sql.SQLPlFunction):
 
 #
 
-class CmsCryptoUnlockedPasswords(sql.SQLTable):
+class CmsCryptoUnlockedPasswords(CommonAccesRights, sql.SQLTable):
     name = 'cms_crypto_unlocked_passwords'
     fields = (sql.Column('key_id', pytis.data.Integer(not_null=True),
                          references=sql.a(sql.r.CmsCryptoKeys,
