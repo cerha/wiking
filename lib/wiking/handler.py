@@ -304,7 +304,7 @@ class Handler(object):
                 # window and it is better to leave the error log for printing
                 # debugging information (the exception makes too much noise
                 # there...) so we log the traceback only when debug is off.
-                self.log_traceback(req, einfo)
+                self._application.log_traceback(req, einfo)
             return self._handle_request_error(req, wiking.InternalServerError(einfo))
             
     def handle(self, req):
