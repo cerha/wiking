@@ -2192,10 +2192,15 @@ class Publications(NavigablePages, EmbeddableCMSModule):
         top_margin = int(req.param('braille_top_margin') or '0')
         bottom_margin = int(req.param('braille_bottom_margin') or '0')
         printer = req.param('braille_printer')
+        presentation = lcg.braille_presentation()
         try:
-            presentation = lcg.braille_presentation('presentation-braille-local.py')
+            local_presentation = lcg.braille_presentation('presentation-braille-local.py')
         except IOError:
-            presentation = lcg.braille_presentation()
+            pass
+        else:
+            for o in dir(local_presentation):
+                if o[0] in string.lowercase and hasattr(presentation, o):
+                    setattr(presentation, o, getattr(local_presentation, o))
         if page_width and page_height:
             node = self._publication(req, record)
             exporter = lcg.BrailleExporter(translations=wiking.cfg.translation_path)
