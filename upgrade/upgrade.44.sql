@@ -1,3 +1,5 @@
+drop view cms_v_page_history;
+
 CREATE OR REPLACE VIEW "public"."cms_v_page_history" AS
 SELECT h.history_id, h.page_id, h.lang, h.uid, h.timestamp, h.content, h.comment, h.inserted_lines, h.changed_lines, h.deleted_lines, u.user_ AS "user", u.login, CAST(h.page_id AS TEXT) || '.' || h.lang AS page_key, CAST(h.inserted_lines AS TEXT) || ' / ' || CAST(h.changed_lines AS TEXT) || ' / ' || CAST(h.deleted_lines AS TEXT) AS changes 
 FROM public.cms_page_history AS h JOIN public.users AS u ON h.uid = u.uid;
