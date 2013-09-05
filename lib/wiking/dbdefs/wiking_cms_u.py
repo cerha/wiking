@@ -26,7 +26,7 @@ from __future__ import unicode_literals
 import pytis.data.gensqlalchemy as sql
 import pytis.data
 
-from db_wiking import RoleSets
+from wiking_cms import RoleSets
 
 class RoleSetsCycleCheck(sql.SQLPyFunction):
     name = 'role_sets_cycle_check'
