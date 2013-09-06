@@ -1362,6 +1362,7 @@ class HtmlTraceback(HtmlContent):
             import cgitb
             html = cgitb.html(einfo)
         except:
+            import traceback
             html = "<pre>" + "".join(traceback.format_exception(*einfo)) + "</pre>"
         super(HtmlTraceback, self).__init__(html, **kwargs)
 
