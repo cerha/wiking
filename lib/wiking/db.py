@@ -369,10 +369,10 @@ class PytisModule(Module, ActionHandler):
                     referer = column
                 self._links[f.id()] = (codebook, referer, column, value_column)
         
-    def _record(self, req, row, new=False, prefill=None):
+    def _record(self, req, row, new=False, prefill=None, transaction=None):
         """Return the Record instance initialized by given data row."""
         return self.Record(req, self._view.fields(), self._data, row,
-                           prefill=prefill, resolver=wiking.cfg.resolver, new=new)
+                           prefill=prefill, resolver=wiking.cfg.resolver, new=new, transaction=transaction)
 
     def _binding_forward(self, req):
         # Return the ForwardInfo instance for the last forward made because of the binding
