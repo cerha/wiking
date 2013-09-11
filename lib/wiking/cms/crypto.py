@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2011, 2012 Brailcom, o.p.s.
+# Copyright (C) 2011, 2012, 2013 Brailcom, o.p.s.
 #
 # COPYRIGHT NOTICE
 #
@@ -34,13 +34,14 @@ class CryptoNames(CMSExtensionModule):
     here.  The actual password managament is performed by CryptoKeys
     side-form module.
 
-    """    
+    """
     class Spec(wiking.Specification):
         table = 'cms_crypto_names'
         title = _("Crypto Areas")
-        def fields(self): return (
-            Field('name', _("Name")),
-            Field('description', _("Description")),
+        def fields(self):
+            return (
+                Field('name', _("Name")),
+                Field('description', _("Description")),
             )
         sorting = (('name', pd.ASCENDENT,),
                    )
@@ -72,25 +73,26 @@ class CryptoKeys(CMSExtensionModule):
       another copy of the key exists.
 
     All the actions are performed using special database functions.
-    
+
     """
     class Spec(wiking.Specification):
         table = 'cms_crypto_keys'
         title = _("Users and Encryption Keys")
-        def fields(self): return (
-            Field('key_id', _("Id"), editable=Editable.NEVER),
-            Field('name', _("Name"), codebook='CryptoNames', editable=Editable.NEVER),
-            Field('uid', _("User"), codebook='Users', editable=Editable.ONCE),
-            Field('new_uid', _("New user"), codebook='Users', type=pd.Integer, virtual=True,
-                  runtime_filter=computer(self._new_uid_filter)),
-            Field('key', _("Key")),
-            Field('remove', _("Action"), virtual=True,
-                  computer=computer(lambda r: _("Remove"))),
-            Field('old_password', _("Current password"),
-                  type=pd.Password, verify=False, virtual=True),
-            Field('new_password', _("New password"),
-                  type=pd.Password, virtual=True),
-            Field('delete', virtual=True, computer=computer(lambda row: _("Remove"))),
+        def fields(self):
+            return (
+                Field('key_id', _("Id"), editable=Editable.NEVER),
+                Field('name', _("Name"), codebook='CryptoNames', editable=Editable.NEVER),
+                Field('uid', _("User"), codebook='Users', editable=Editable.ONCE),
+                Field('new_uid', _("New user"), codebook='Users', type=pd.Integer, virtual=True,
+                      runtime_filter=computer(self._new_uid_filter)),
+                Field('key', _("Key")),
+                Field('remove', _("Action"), virtual=True,
+                      computer=computer(lambda r: _("Remove"))),
+                Field('old_password', _("Current password"),
+                      type=pd.Password, verify=False, virtual=True),
+                Field('new_password', _("New password"),
+                      type=pd.Password, virtual=True),
+                Field('delete', virtual=True, computer=computer(lambda row: _("Remove"))),
             )
         def _new_uid_filter(self, row, name):
             assigned_users = wiking.module(self._resolver).assigned_users(row['name'])
@@ -102,8 +104,7 @@ class CryptoKeys(CMSExtensionModule):
         actions = (
             Action('password', _("Change password"), descr=_("Change key password")),
             Action('adduser', _("Copy to user"), descr=_("Add another user of the key")),
-            )
-
+        )
 
     _DB_FUNCTIONS = dict(CMSExtensionModule._DB_FUNCTIONS,
                          cms_crypto_delete_key=(('name_', pd.String(),),
@@ -139,7 +140,7 @@ class CryptoKeys(CMSExtensionModule):
     def _prefill(self, req):
         return dict(super(CryptoKeys, self)._prefill(req),
                     uid=req.user().uid())
-    
+
     def _layout(self, req, action, record=None):
         if action == 'insert':
             layout = ('name', 'uid', 'new_password',)
@@ -156,23 +157,23 @@ class CryptoKeys(CMSExtensionModule):
         if not req.has_param('_crypto_name'):
             columns = [c for c in columns if c != 'delete']
         return columns
-    
+
     def _link_provider(self, req, uri, record, cid, **kwargs):
         if cid == 'delete':
             return req.make_uri(uri, key_id=record['key_id'].value(), action='delete')
         else:
             return super(CryptoKeys, self)._link_provider(req, uri, record, cid, **kwargs)
-        
+
     def _form(self, form, req, *args, **kwargs):
         if issubclass(form, pw.ItemizedView) and req.check_roles(Roles.USER_ADMIN):
-            kwargs['template'] = lcg.TranslatableText("%("+ self._TITLE_COLUMN +")s [%(delete)s]")
+            kwargs['template'] = lcg.TranslatableText("%(" + self._TITLE_COLUMN + ")s [%(delete)s]")
         return super(CryptoKeys, self)._form(form, req, *args, **kwargs)
 
     def related(self, req, binding, record, uri):
-        if record.has_key('name'):
+        if 'name' in record:
             req.set_param('_crypto_name', record['name'])
         return super(CryptoKeys, self).related(req, binding, record, uri)
-    
+
     def _actions(self, req, record):
         actions = super(CryptoKeys, self)._actions(req, record)
         if record is None and req.has_param('_crypto_name'):
@@ -197,7 +198,7 @@ class CryptoKeys(CMSExtensionModule):
                                       record['new_password'].value(),
                                       transaction=transaction):
             raise pd.DBException(_("New key not created. Maybe it already exists?"))
-    
+
     def _update(self, req, record, transaction):
         action = req.param('action')
         if action == 'password':
@@ -225,11 +226,12 @@ class CryptoKeys(CMSExtensionModule):
                                       record['uid'].value(),
                                       False,
                                       transaction=transaction):
-            raise pd.DBException(_("The user couldn't be deleted. Maybe he is the last key holder?"))
+            raise pd.DBException(_("The user couldn't be deleted. "
+                                   "Maybe he is the last key holder?"))
 
     def action_adduser(self, req, record, action='adduser'):
         return super(CryptoKeys, self).action_update(req, record, action=action)
-    
+
     def action_password(self, req, record=None):
         return self.action_update(req, record=record, action='password')
 
