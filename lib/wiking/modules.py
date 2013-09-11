@@ -15,7 +15,12 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-from wiking import *
+import os
+import re
+
+import lcg
+import wiking
+from wiking import AuthenticationError, Forbidden, NotFound, Redirect, User
 
 """Definition of the basic Wiking module classes."""
 
@@ -108,7 +113,7 @@ class RequestHandler(object):
             if not req.user():
                 raise AuthenticationError()
             else:
-                raise AuthorizationError()
+                raise wiking.AuthorizationError()
 
     def _handle(self, req):
         raise Exception("Method '_handle()' not implemented.")
@@ -167,12 +172,12 @@ class ActionHandler(RequestHandler):
         
     def _authorized(self, req, action, **kwargs):
         try:
-            roles = getattr(self, 'RIGHTS_'+action)
+            roles = getattr(self, 'RIGHTS_' + action)
         except AttributeError:
             roles = ()
         if req.check_roles(roles):
             return True
-        elif Roles.OWNER in roles:
+        elif wiking.Roles.OWNER in roles:
             return self._check_owner(req, action, **kwargs)
         else:
             return False
@@ -180,7 +185,7 @@ class ActionHandler(RequestHandler):
     def _handle(self, req, action, **kwargs):
         """Perform action authorization and call the action method."""
         self._authorize(req, action=action, **kwargs)
-        method = getattr(self, 'action_'+ action)
+        method = getattr(self, 'action_' + action)
         return method(req, **kwargs)
 
     def handle(self, req):
@@ -195,9 +200,10 @@ class Documentation(Module, RequestHandler):
     This module is not bound to a data object.  It serves on-line documentation directly from files
     on the disk.
 
-    By default, the first component of unresolved path refers to the key of `wiking.cfg.doc_dirs' which
-    determines the base directory, where the documents are searched.  The rest of unresolved path
-    refers to the actual file within this directory.  Filename extension and language variant is
+    By default, the first component of unresolved path refers to the key of
+    `wiking.cfg.doc_dirs' which determines the base directory, where the
+    documents are searched.  The rest of unresolved path refers to the actual
+    file within this directory.  Filename extension and language variant is
     added automatically.
 
     For example a request to '/doc/wiking/user/navigation' is resolved as follows:
@@ -220,7 +226,8 @@ class Documentation(Module, RequestHandler):
         try:
             basedir = wiking.cfg.doc_dirs[component]
         except KeyError:
-            log(OPR, "Component '%s' not found in 'wiking.cfg.doc_dirs':" % component, wiking.cfg.doc_dirs)
+            wiking.log(wiking.OPR, "Component '%s' not found in 'wiking.cfg.doc_dirs':" % component,
+                       wiking.cfg.doc_dirs)
             raise NotFound()
         if not os.path.exists(basedir):
             raise Exception("Documentation directory for '%s' does not exist. "
@@ -269,7 +276,7 @@ class Documentation(Module, RequestHandler):
             layout = wiking.Exporter.Layout.FRAME
         else:
             layout = None
-        return Document(title, content, lang=lang, variants=variants, layout=layout)
+        return wiking.Document(title, content, lang=lang, variants=variants, layout=layout)
         
 
 class Stylesheets(Module, RequestHandler):
@@ -282,7 +289,7 @@ class Stylesheets(Module, RequestHandler):
     Map the module to a particular URI within your application to use it.
 
     """
-    _MATCHER = re.compile (r"\$(\w[\w-]*)(?:\.(\w[\w-]*))?")
+    _MATCHER = re.compile(r"\$(\w[\w-]*)(?:\.(\w[\w-]*))?")
 
     def _theme(self, req):
         """Return the color theme to be used for stylesheet color substitution.
@@ -360,7 +367,7 @@ class Resources(Stylesheets):
                 # with resource URIs using type specific subdirectories.
                 # Wiking no longer generates such URIs and applications should
                 # avoid them too as this hack will be removed in future.
-                filename = filename[len(subdir)+1:]
+                filename = filename[len(subdir) + 1:]
             else:
                 subdir = None
             resource = self._provider.resource(filename)
@@ -463,7 +470,7 @@ class SubmenuRedirect(Module, RequestHandler):
         item = find(wiking.module('Application').menu(req), id)
         if item:
             if item.submenu():
-                raise Redirect('/'+ item.submenu()[0].id())
+                raise Redirect('/' + item.submenu()[0].id())
             else:
                 raise Exception("Menu item '%s' has no childs." % id)
         else:
@@ -518,9 +525,9 @@ class CookieAuthentication(object):
           req -- current request object
           user -- 'User' instance of the authenticated user
 
-        """ 
+        """
         pass
-    
+
     def authenticate(self, req):
         session = wiking.module('Session')
         # When HTTP authentication is used, req.credentials() returns the
@@ -537,7 +544,7 @@ class CookieAuthentication(object):
         # would be able to use HTTP authentication to make unnoticed logins.
         credentials = req.credentials()
         secure = self._SECURE_AUTH_COOKIES
-        day = 24*3600
+        day = 24 * 3600
         if credentials:
             login, password = credentials
             if not login:
@@ -552,7 +559,7 @@ class CookieAuthentication(object):
             # Login succesfull
             self._auth_hook(req, user)
             session_key = session.session_key()
-            req.set_cookie(self._LOGIN_COOKIE, login, expires=730*day, secure=secure)
+            req.set_cookie(self._LOGIN_COOKIE, login, expires=(730 * day), secure=secure)
             req.set_cookie(self._SESSION_COOKIE, session_key, secure=secure)
             session.init(req, user, session_key)
         else:
@@ -566,7 +573,6 @@ class CookieAuthentication(object):
                     # Session expiration is implemented internally by the session module.
                     req.set_cookie(self._SESSION_COOKIE, session_key, secure=secure)
                 else:
-                    session_timed_out = True # This is not true after logout.
                     user = None
             else:
                 user = None
@@ -575,33 +581,33 @@ class CookieAuthentication(object):
             self._logout_hook(req, user)
             user = None
         elif req.param('command') == 'login' and not user:
-            raise AuthenticationRedirect()
+            raise wiking.AuthenticationRedirect()
         if user is not None:
             password_expiration = user.password_expiration()
             if password_expiration is not None and req.uri() != self.password_change_uri(req):
                 import datetime
                 if password_expiration <= datetime.date.today():
-                    raise PasswordExpirationError()
+                    raise wiking.PasswordExpirationError()
         return user
 
     def _logout_hook(self, req, user):
         req.set_cookie(self._SESSION_COOKIE, None, secure=self._SECURE_AUTH_COOKIES)
 
-    
+
 class Session(Module):
     """Session management module abstract interface.
 
     The 'Session' module is required by 'CookieAuthentication' module.  The application must
     implement the methods 'init()', 'check()' and 'close()' to store session information between
     requests.
-    
+
     """
 
     def session_key(self, length=64):
         """Generate a new random session key and return it as a string.
 
         Arguments:
-        
+
           length -- character length of session key string
 
         This method may be used to generate a new key to be passed to the 'init()' method, but the
@@ -611,7 +617,7 @@ class Session(Module):
 
         """
         return wiking.generate_random_string(length)
-    
+
     def init(self, req, user, session_key):
         """Begin new session for given user ('User' instance) with given session key.
 
@@ -626,7 +632,7 @@ class Session(Module):
 
         """
         return None
-        
+
     def check(self, req, user, session_key):
         """Return true if session_key is valid for an active session of given user."""
         return False
@@ -634,11 +640,11 @@ class Session(Module):
     def close(self, req, user, session_key):
         """Remove persistent session information and clean-up after user logged out."""
         pass
-    
+
     def failure(self, req, user, login):
         """Store information about unsuccessful login attempt (optional)."""
         return None
-        
+
 
 class Search(Module, ActionHandler):
 
@@ -647,7 +653,7 @@ class Search(Module, ActionHandler):
     _EMPTY_SEARCH_MESSAGE = _("Given search term doesn't contain any searchable term.")
 
     class SearchForm(lcg.Content):
-        
+
         _SEARCH_FIELD_LABEL = _("Search words:")
         _SEARCH_BUTTON_LABEL = _("Search")
 
@@ -660,7 +666,7 @@ class Search(Module, ActionHandler):
                     generator.field(name='input', id='input', tabindex=0, size=20),
                     generator.br(),
                     generator.submit(self._SEARCH_BUTTON_LABEL, cls='submit'),)
-        
+
         def export(self, exporter):
             generator = exporter.generator()
             contents = self._contents(generator)
@@ -668,7 +674,7 @@ class Search(Module, ActionHandler):
             return generator.form(contents, method='POST', action=self._uri)
 
     class Result:
-        def __init__ (self, uri, title, sample=None):
+        def __init__(self, uri, title, sample=None):
             self._title = title
             self._sample = sample
             self._uri = uri
@@ -684,7 +690,7 @@ class Search(Module, ActionHandler):
         if message is not None:
             content.append(lcg.p(message))
         content = [self.SearchForm(req)]
-        return Document(self._SEARCH_TITLE, lcg.Container(content))
+        return wiking.Document(self._SEARCH_TITLE, lcg.Container(content))
 
     def _transform_input(self, input):
         input = re.sub('[&|!()"\'\\\\]', ' ', input)
@@ -712,16 +718,16 @@ class Search(Module, ActionHandler):
             content = lcg.Container([self._result_item(item) for item in result])
         else:
             content = self._empty_result_page()
-        return Document(self._RESULT_TITLE, content)
-    
+        return wiking.Document(self._RESULT_TITLE, content)
+
     # Actions
-    
+
     def _default_action(self, req, **kwargs):
         return 'view'
 
     def action_view(self, req, **kwargs):
         return self._search_form(req)
-        
+
     def action_search(self, req, **kwargs):
         input = req.param('input', '')
         expression = self._transform_input(input)
@@ -759,11 +765,9 @@ class Reload(Module):
                 except:
                     pass
         return module_names
-    
+
     def _handle(self, req):
         module_names = self._reload_modules(req)
         content = lcg.coerce((lcg.p(_("The following modules were successfully reloaded:")),
                               lcg.p(", ".join(module_names)),))
-        return Document(_("Reload"), lcg.coerce(content))
-        
-
+        return wiking.Document(_("Reload"), lcg.coerce(content))
