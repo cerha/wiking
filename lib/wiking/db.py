@@ -17,16 +17,23 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 import collections
-import re, cStringIO as StringIO
+import cStringIO as StringIO
+import re
 
-from wiking import *
+import pytis.data as pd
+import pytis.presentation as pp
 from pytis.presentation import Action
+import pytis.util
+import pytis.web as pw
 from pytis.web import UriType
+import lcg
+import wiking
+from wiking import AuthorizationError, BadRequest, Forbidden, NotFound, Redirect
 
 _ = lcg.TranslatableTextFactory('wiking')
 
 
-class DBException(pytis.data.DBException):
+class DBException(pd.DBException):
     """Exception to abort database operations within the application code.
 
     This exception is recognized within PytisModule._analyze_exception() and
@@ -38,7 +45,7 @@ class DBException(pytis.data.DBException):
     particular form field.  The effect is similar as if the error occured
     within the database itself.
 
-    Unlike 'pytis.data.DBException' which wraps an error within the database
+    Unlike 'pd.DBException' which wraps an error within the database
     backend, 'wiking.DBException' is designed to be raised within the
     application code.
 
@@ -51,7 +58,7 @@ class DBException(pytis.data.DBException):
         return self._column
         
 
-class PytisModule(Module, ActionHandler):
+class PytisModule(wiking.Module, wiking.ActionHandler):
     """Module bound to a Pytis data object.
 
     Each subclass of this module must define a pytis specification by defining
@@ -101,14 +108,14 @@ class PytisModule(Module, ActionHandler):
         ('update or delete on table .* violates foreign key constraint .*',
          # Translators: This is delete action failure message in a web page.
          _("Record couldn't be deleted because other records refer to it.")),
-        )
+    )
     """Specification of error messages for different database exceptions.
 
     The purpose of this specification is to provide user readable error messages
     for known database exceptions through matching the exception string and
     possibly also identify the form field, which caused the error.
 
-    The specification is a tuple of 2-tuples.  
+    The specification is a tuple of 2-tuples.
 
     The first element of the 2-tuple is a regular expression that matches the
     database exception string.  The regular expression may include a group named
@@ -147,7 +154,7 @@ class PytisModule(Module, ActionHandler):
     you should define an entry in this mapping to indicate which form field
     caused the error.  This will result in a more understandable error message
     for the users.
-    
+
     """
     # Translators: Button label for new database record creation (computer terminology).
     _INSERT_LABEL = _("New record")
@@ -191,7 +198,7 @@ class PytisModule(Module, ActionHandler):
     _UPDATE_MSG = _("The record was successfully updated.")
     # Translators: Message displayed after a database record deletion (computer terminology).
     _DELETE_MSG = _("The record was deleted.")
-    
+
     _OWNER_COLUMN = None
     _SEQUENCE_FIELDS = ()
     _ARRAY_FIELDS = ()
@@ -199,7 +206,7 @@ class PytisModule(Module, ActionHandler):
 
     Tuple of tuples where the inner tuples consist of (FIELD_ID, SPEC_NAME,
     LINKING_COLUMN, VALUE_COLUMN).  FIELD_ID is the id of the array field
-    (type=pytis.data.Array), SPEC_NAME is the name of the linking table
+    (type=pd.Array), SPEC_NAME is the name of the linking table
     specification, LINKING_COLUMN is the id of the column in the linking table
     which refers to the key column of this module (where the array field is
     used) and VALUE_COLUMN is the id of the column in the linking table, which
@@ -212,14 +219,14 @@ class PytisModule(Module, ActionHandler):
     automatically update the linking table on insert/update operations and will
     also read the field values when displaying a form (pytis web forms can
     handle array fields).
-    
+
     """
     _DB_FUNCTIONS = {}
     """Specification of available DB functions and their arguments.
 
     Dictionary keyed by function name, where values are sequences of pairs (NAME, TYPE) describing
     function arguments and their pytis data types.
-    
+
     """
     _BROWSE_FORM_LIMITS = (50, 100, 200, 500)
     """Default value to pass to 'pytis.web.BrowseForm' 'limits' constructor argument."""
@@ -235,7 +242,7 @@ class PytisModule(Module, ActionHandler):
     "If true, action menu created also for each table row in BrowseForm/ListView forms."
     _ASYNC_LOAD = False
     "If true, form data are loaded asynchronously through AJAX."
-    
+
     _SUBMIT_BUTTONS = {}
     "Dictionary of form buttons keyed by action name (see '_submit_buttons()' method)."
     _LAYOUT = {}
@@ -244,7 +251,7 @@ class PytisModule(Module, ActionHandler):
     # Just a hack, see its use.  If you redefine _record_uri method, set it the
     # flag value to False.
     _OPTIMIZE_LINKS = True
-    
+
     class Record(pp.PresentedRow):
         """An abstraction of one record within the module's data object.
 
@@ -273,7 +280,7 @@ class PytisModule(Module, ActionHandler):
             """Update the record in the database by values of given keyword args."""
             self._data.update(self.key(), self._data.make_row(**kwargs), transaction=transaction)
             self.reload(transaction=transaction)
-    
+
         def rowdata(self):
             """Return record's row data for insert/update operations."""
             update = not self.new()
@@ -297,13 +304,13 @@ class PytisModule(Module, ActionHandler):
     @classmethod
     def title(cls):
         return cls.Spec.title
-    
+
     @classmethod
     def descr(cls):
         return cls.Spec.help
-    
+
     # Instance methods
-    
+
     def __init__(self, name):
         self._link_cache = {}
         self._link_cache_req = None
@@ -333,7 +340,7 @@ class PytisModule(Module, ActionHandler):
         self._key = key = self._data.key()[0].id()
         self._sorting = self._view.sorting()
         if self._sorting is None:
-            self._sorting = ((key, pytis.data.ASCENDENT),)
+            self._sorting = ((key, pd.ASCENDENT),)
         self._referer = self._REFERER or self._view.referer() or key
         self._array_fields = []
         resolver = wiking.cfg.resolver
@@ -346,7 +353,7 @@ class PytisModule(Module, ActionHandler):
         # record at the same time, so we create a record here just to save the data types of all
         # fields for future use.
         record = pp.PresentedRow(fields, self._data, None, resolver=resolver)
-        self._type = dict([(key, record.type(key)) for key in record.keys()])
+        self._type = dict([(k, record.type(k)) for k in record.keys()])
         self._links = {}
         for f in fields:
             if f.codebook():
@@ -358,7 +365,7 @@ class PytisModule(Module, ActionHandler):
             column = cb_field.id()
             codebook = cb_field.codebook()
             enumerator = self._type[column].enumerator()
-            if codebook and isinstance(enumerator, pytis.data.DataEnumerator):
+            if codebook and isinstance(enumerator, pd.DataEnumerator):
                 referer = cb_field.inline_referer()
                 value_column = enumerator.value_column()
                 if not referer and wiking.module(codebook).referer() == value_column:
@@ -368,11 +375,12 @@ class PytisModule(Module, ActionHandler):
                     # as the inline referer (it is the same value).
                     referer = column
                 self._links[f.id()] = (codebook, referer, column, value_column)
-        
+
     def _record(self, req, row, new=False, prefill=None, transaction=None):
         """Return the Record instance initialized by given data row."""
         return self.Record(req, self._view.fields(), self._data, row,
-                           prefill=prefill, resolver=wiking.cfg.resolver, new=new, transaction=transaction)
+                           prefill=prefill, resolver=wiking.cfg.resolver, new=new,
+                           transaction=transaction)
 
     def _binding_forward(self, req):
         # Return the ForwardInfo instance for the last forward made because of the binding
@@ -394,7 +402,7 @@ class PytisModule(Module, ActionHandler):
                 col = self._type[binding_column].enumerator().value_column()
                 return (binding_column, fw.arg('record')[col].value())
         return None, None
-    
+
     def _validate(self, req, record, layout):
         # TODO: This should go to pytis.web....
         errors = []
@@ -420,7 +428,7 @@ class PytisModule(Module, ActionHandler):
                         value, kwargs['verify'] = value
                     elif not isinstance(type, pd.Array):
                         value = value[-1]
-                elif isinstance(value, FileUpload):
+                elif isinstance(value, wiking.FileUpload):
                     if isinstance(type, pd.Binary):
                         fname = value.filename()
                         if fname:
@@ -463,7 +471,7 @@ class PytisModule(Module, ActionHandler):
                 if isinstance(type, pd.Date):
                     format = locale_data.date_format
                 else:
-                    if not isinstance(type, (DateTime, Time)) or type.exact():
+                    if not isinstance(type, (wiking.DateTime, wiking.Time)) or type.exact():
                         # wiking.Time and wiking.DateTime allow locale independent format options.
                         time_format = locale_data.exact_time_format
                     else:
@@ -471,11 +479,11 @@ class PytisModule(Module, ActionHandler):
                     if isinstance(type, pd.Time):
                         format = time_format
                     else:
-                        format = locale_data.date_format +' '+ time_format
+                        format = locale_data.date_format + ' ' + time_format
                 kwargs['format'] = format
             if isinstance(type, (pd.Binary, pd.Password)) and not value:
                 try:
-                    size = int(req.param('_pytis_file_size_'+id))
+                    size = int(req.param('_pytis_file_size_' + id))
                 except (ValueError, TypeError):
                     pass
                 else:
@@ -501,7 +509,7 @@ class PytisModule(Module, ActionHandler):
                     continue
                 if not record.new():
                     # Keep the original file if no file is uploaded.
-                    continue 
+                    continue
             if isinstance(type, pd.Password) and kwargs.get('verify') is None:
                 kwargs['verify'] = not type.verify() and value or ''
             error = record.validate(id, value, **kwargs)
@@ -572,7 +580,7 @@ class PytisModule(Module, ActionHandler):
                 else:
                     field_id = None
                 return (field_id, msg)
-        return (None, _("Unable to perform a database operation:") +' '+ error)
+        return (None, _("Unable to perform a database operation:") + ' ' + error)
 
     def _error_message(self, fid, error):
         # Return an error message string out of _analyze_exception() result.
@@ -604,7 +612,7 @@ class PytisModule(Module, ActionHandler):
             fw = self._binding_forward(req)
             if fw and fw.arg('title'):
                 if title:
-                    title = fw.arg('title') +' :: '+ title
+                    title = fw.arg('title') + ' :: ' + title
                 else:
                     title = fw.arg('title')
         messages = req.messages(heading=True)
@@ -625,12 +633,12 @@ class PytisModule(Module, ActionHandler):
                 return dict(title=title, extra=extra)[key]
             title = lcg.TranslatableText('%(title)s (%(extra)s)').interpolate(interpolate)
         return title
-        
+
     def _document(self, req, content, record=None, lang=None, **kwargs):
         title = self._document_title(req, record)
         if record and lang is None and self._LIST_BY_LANGUAGE:
             lang = str(record['lang'].value())
-        return Document(title, content, lang=lang, **kwargs)
+        return wiking.Document(title, content, lang=lang, **kwargs)
 
     def _default_actions_first(self, req, record):
         return (Action('insert', self._INSERT_LABEL, descr=self._INSERT_DESCR,
@@ -649,7 +657,7 @@ class PytisModule(Module, ActionHandler):
                        enabled=lambda r: self._delete_enabled(r.req(), r)),
                 Action('list', self._LIST_LABEL, descr=self._LIST_DESCR),
                 )
-    
+
     def _actions(self, req, record):
         """Return the list of all possible actions of this module.
 
@@ -664,8 +672,8 @@ class PytisModule(Module, ActionHandler):
         the 'actions' argument to a pytis form constructor.
 
         """
-        return tuple(self._default_actions_first(req, record) + 
-                     self._view.actions() + 
+        return tuple(self._default_actions_first(req, record) +
+                     self._view.actions() +
                      self._default_actions_last(req, record))
 
     def _form_actions(self, req, record, form):
@@ -680,7 +688,7 @@ class PytisModule(Module, ActionHandler):
         web user and which make sense in the current context (actions with
         'ActionContext.GLOBAL' when 'record' is None and 'ActionContext.RECORD'
         otherwise.
-        
+
 
         """
         if isinstance(form, pw.ListView) and self._view.list_layout():
@@ -702,7 +710,7 @@ class PytisModule(Module, ActionHandler):
         return [action for action in self._actions(req, record)
                 if action.id() not in exclude and action.context() == required_context
                 and self._authorized(req, action=action.id(), record=record)]
-    
+
     def _form_actions_argument(self, req):
         """Return a callable to be passed to 'actions' form constructor argument.
 
@@ -716,37 +724,37 @@ class PytisModule(Module, ActionHandler):
 
         """
         return lambda form, record: self._form_actions(req, record, form)
-    
+
     def _insert_enabled(self, req):
         """Return true iff the default 'insert' action is enabled for given request.
 
         Please, note the difference between disabled actions and actions
         unavailable due to insuffucient access rights as described in User
         Interface Design Guidelines in Wiking Developers Documentation.
-        
+
         """
         return True
-    
+
     def _update_enabled(self, req, record):
         """Return true iff the default 'update' action is enabled for given record.
 
         Please, note the difference between disabled actions and actions
         unavailable due to insuffucient access rights as described in User
         Interface Design Guidelines in Wiking Developers Documentation.
-        
+
         """
         return True
-    
+
     def _delete_enabled(self, req, record):
         """Return true iff the default 'delete' action is enabled for given record.
 
         Please, note the difference between disabled actions and actions
         unavailable due to insuffucient access rights as described in User
         Interface Design Guidelines in Wiking Developers Documentation.
-        
+
         """
         return True
-    
+
     def _link_provider(self, req, uri, record, cid, **kwargs):
         """Return a link target for given form field.
 
@@ -774,7 +782,7 @@ class PytisModule(Module, ActionHandler):
         instance if it is necessary to specify also some extended link
         attributes, such as title (tooltip text) or target (such as _blank).
         For array fields (when 'cid' belongs to a field of type
-        'pytis.data.Array'), the return value must be a function of one
+        'pd.Array'), the return value must be a function of one
         argument -- the internal python value of the field's inner type.  The
         function will return an URI or Link instance as above for given array
         value.
@@ -794,7 +802,8 @@ class PytisModule(Module, ActionHandler):
         """
         if cid is None:
             if uri:
-                return req.make_uri(uri.rstrip('/') +'/'+ record[self._referer].export(), **kwargs)
+                return req.make_uri(uri.rstrip('/') + '/' + record[self._referer].export(),
+                                    **kwargs)
             else:
                 return None
         try:
@@ -823,16 +832,16 @@ class PytisModule(Module, ActionHandler):
             return self._link_provider(req, uri, record, None, action='print_field', field=cid)
         else:
             return None
-    
+
     def _action_uri_provider(self, req, uri, record, form_cls, action):
         params = dict([(name, value is True and 'true' or value)
                        for name, value in action.kwargs().items()],
                       action=action.id(),
                       __invoked_from=form_cls.__name__)
         return self._link_provider(req, uri, record, None, **params)
-    
+
     def _record_uri(self, req, record, *args, **kwargs):
-        # Return the absolute URI of module's record if a direct mapping of the module exists.  
+        # Return the absolute URI of module's record if a direct mapping of the module exists.
         # Use the method '_current_record_uri()' to get URI in the context of the current request.
         return self.record_uri(req, record[self._referer].export(), *args, **kwargs)
 
@@ -842,13 +851,14 @@ class PytisModule(Module, ActionHandler):
         if record:
             # If the referer value is changed, the URI still contains the original value.
             referer = record.original_row()[self._referer].export()
-            if uri.endswith('/'+referer):
-                uri = uri[:-(len(referer)+1)]
+            if uri.endswith('/' + referer):
+                uri = uri[:-(len(referer) + 1)]
         return uri
 
     def _current_record_uri(self, req, record):
         # Return the URI of given record in the context of the current request.
-        return self._current_base_uri(req, record).rstrip('/') +'/'+ record[self._referer].export()
+        return (self._current_base_uri(req, record).rstrip('/') + '/' +
+                record[self._referer].export())
 
     def _form(self, form, req, record=None, action=None, new=False, prefill=None,
               invalid_prefill=None, handler=None, binding_uri=None, hidden_fields=(), **kwargs):
@@ -886,16 +896,16 @@ class PytisModule(Module, ActionHandler):
             uri = self._current_base_uri(req, record)
         if issubclass(form, pw.BrowseForm):
             default_kwargs = dict(
-                limits = self._BROWSE_FORM_LIMITS,
-                limit = self._BROWSE_FORM_DEFAULT_LIMIT,
-                allow_query_search = self._ALLOW_QUERY_SEARCH,
-                top_actions = self._TOP_ACTIONS,
-                bottom_actions = self._BOTTOM_ACTIONS,
-                row_actions = self._ROW_ACTIONS,
-                async_load = self._ASYNC_LOAD,
-                immediate_filters = wiking.cfg.immediate_filters,
-                actions = (), # Display no actions by default, rather than just spec actions.
-                )
+                limits=self._BROWSE_FORM_LIMITS,
+                limit=self._BROWSE_FORM_DEFAULT_LIMIT,
+                allow_query_search=self._ALLOW_QUERY_SEARCH,
+                top_actions=self._TOP_ACTIONS,
+                bottom_actions=self._BOTTOM_ACTIONS,
+                row_actions=self._ROW_ACTIONS,
+                async_load=self._ASYNC_LOAD,
+                immediate_filters=wiking.cfg.immediate_filters,
+                actions=(), # Display no actions by default, rather than just spec actions.
+            )
             kwargs = dict(default_kwargs, **kwargs)
         layout = kwargs.get('layout')
         if layout is not None and not isinstance(layout, pp.GroupSpec):
@@ -941,7 +951,7 @@ class PytisModule(Module, ActionHandler):
                 method = self._print_uri_provider
             return method(req, uri, record, target)
         return uri_provider
-    
+
     def _layout_instance(self, layout):
         if layout is None:
             layout = self._view.layout().group()
@@ -997,7 +1007,7 @@ class PytisModule(Module, ActionHandler):
 
         The default implementation returns the list [('action', action),
         ('submit', 'submit')] as these parameters are used by wiking itself.
-            
+
         """
         return [('action', action),
                 ('submit', 'submit')]
@@ -1047,7 +1057,7 @@ class PytisModule(Module, ActionHandler):
 
     def _exported_columns(self, req):
         """Return a list of columns present in CSV export (action 'export').
-        
+
         Override this metod to dynamically change the list of columns present
         in exported data.  The default implementation returns the same as
         '_columns()'.
@@ -1058,7 +1068,7 @@ class PytisModule(Module, ActionHandler):
     def _export_filename(self, req):
         """Return the filename (string) of the CSV export download (action 'export')."""
         return 'export.csv'
-    
+
     def _profiles(self, req):
         """Return dynamically created profiles.
 
@@ -1117,7 +1127,7 @@ class PytisModule(Module, ActionHandler):
         else:
             args = dict()
         return args
-    
+
     def _default_action(self, req, record=None):
         """Return the name of the action to perform if 'action' request parameter was not passed.
 
@@ -1184,9 +1194,9 @@ class PytisModule(Module, ActionHandler):
         if self._LIST_BY_LANGUAGE:
             values['lang'] = req.preferred_language(raise_error=False)
         return values
-    
+
     def _refered_row(self, req, value):
-        """Return a 'pytis.data.Row' instance corresponding to the refered record.
+        """Return a 'pd.Row' instance corresponding to the refered record.
 
         The argument is a string representation of the module's referer column value (from URI
         path).  Raise 'NotFound' error if the refered row doesn't exist.
@@ -1197,7 +1207,7 @@ class PytisModule(Module, ActionHandler):
         if row is None:
             raise NotFound()
         return row
-        
+
     def _check_owner(self, req, action, record=None):
         if record and self._OWNER_COLUMN is not None:
             return self._check_uid(req, record, self._OWNER_COLUMN)
@@ -1209,7 +1219,7 @@ class PytisModule(Module, ActionHandler):
 
     def _prefill(self, req):
         """Return the new record prefill values as a dictionary.
-        
+
         The dictionary is passed as 'prefill' argument to the
         L{PytisModule.Record} constructor for the new record on insertinon.  The
         dictionary keys are field identifiers and values are internal Python
@@ -1222,7 +1232,7 @@ class PytisModule(Module, ActionHandler):
         The base class implementation automatically handles binding column
         prefill in binding forwarded requests and default language if
         '_LIST_BY_LANGUAGE' is True.
-        
+
         """
         # TODO: The same prefill should also be used by the form when
         # initializing it's `Record' instance, since visible form fields
@@ -1246,7 +1256,7 @@ class PytisModule(Module, ActionHandler):
             if lang:
                 prefill['lang'] = lang
         return prefill
-    
+
     def _invalid_prefill(self, req, record, layout):
         # Note, this method is only used for prefilling the fields in a
         # displayed form.  It has no effect on the 'prefill' passed to the
@@ -1257,12 +1267,12 @@ class PytisModule(Module, ActionHandler):
         prefill = {}
         for key in layout.order():
             invalid_string = record.invalid_string(key)
-            if invalid_string != None:
+            if invalid_string is not None:
                 prefill[key] = invalid_string
         return prefill
 
     def _binding_condition(self, binding, record):
-        """Return a binding condition as a 'pytis.data.Operator' instance.
+        """Return a binding condition as a 'pd.Operator' instance.
 
         Arguments:
 
@@ -1273,7 +1283,7 @@ class PytisModule(Module, ActionHandler):
         Returns a condition for filtering this module's records based on a
         relation to the parent module's record, where the relation is described
         by given binding specification.
-        
+
         """
         cfunc = binding.condition()
         if cfunc:
@@ -1295,9 +1305,9 @@ class PytisModule(Module, ActionHandler):
             else:
                 condition = bcond
         return condition
-        
+
     def _condition(self, req):
-        """Return the filtering condition as a pytis.data.Operator instance or None.
+        """Return the filtering condition as a pd.Operator instance or None.
 
         Returns the condition for filtering records visible to the current
         request user.  This condition is used for filtering the rows visible
@@ -1330,12 +1340,12 @@ class PytisModule(Module, ActionHandler):
             return self._binding_condition(binding, record)
         else:
             return None
-        
+
     def _arguments(self, req):
         """Return runtime database table function arguments.
 
-        Return None or a dictionary of 'pytis.data.Value' instances.  The dictionary is passed as
-        'arguments' to 'pytis.data.DBData.select()' call.  Note that you must define the arguments
+        Return None or a dictionary of 'pd.Value' instances.  The dictionary is passed as
+        'arguments' to 'pd.DBData.select()' call.  Note that you must define the arguments
         in the specification, to get them used for the data object.
 
         """
@@ -1347,7 +1357,7 @@ class PytisModule(Module, ActionHandler):
         else:
             return None
         return None
-        
+
     def _binding_arguments(self, binding, record):
         function = binding.arguments()
         if function:
@@ -1355,11 +1365,11 @@ class PytisModule(Module, ActionHandler):
         else:
             arguments = None
         return arguments
-        
+
     def _rows(self, req, condition=None, lang=None, limit=None, sorting=None):
         return list(self._rows_generator(req, condition=condition, lang=lang, limit=limit,
                                          sorting=sorting))
-    
+
     def _rows_generator(self, req, condition=None, lang=None, limit=None, sorting=None):
         def generator(cond, args):
             data = self._data
@@ -1476,16 +1486,16 @@ class PytisModule(Module, ActionHandler):
         By default, this method returns the result of '_binding_enabled()'.
         You may override this method to control the side form presence
         separately from the functional aspects of binding availability.
-        
+
         """
         return self._binding_enabled(req, record, binding)
-        
+
     def _perform_binding_forward(self, req, record, binding):
         # TODO: respect the binding condition in the forwarded module.
         mod = wiking.module(binding.name())
         return req.forward(mod, binding=binding, record=record, forwarded_by=self,
                            title=self._document_title(req, record))
-    
+
     def _handle_subpath(self, req, record):
         for binding in self._bindings(req, record):
             if req.unresolved_path[0] == binding.id():
@@ -1501,22 +1511,22 @@ class PytisModule(Module, ActionHandler):
         """Call database function NAME with given arguments and return the result.
 
         'args' are Python values wich will be automatically wrapped into
-        'pytis.data.Value' instances.  'kwargs' may contain 'transaction'
+        'pd.Value' instances.  'kwargs' may contain 'transaction'
         argument to be passed to the database function.
-        
+
         """
         transaction = kwargs.get('transaction')
         try:
             function, arg_spec = self._db_function[name]
         except KeyError:
-            function = pytis.data.DBFunctionDefault(name, self._dbconnection,
-                                                    connection_name=self.Spec.connection)
+            function = pd.DBFunctionDefault(name, self._dbconnection,
+                                            connection_name=self.Spec.connection)
             arg_spec = self._DB_FUNCTIONS[name]
             self._db_function[name] = function, arg_spec
         assert len(args) == len(arg_spec), \
-               "Wrong number of arguments for '%s': %r" % (name, args)
+            "Wrong number of arguments for '%s': %r" % (name, args)
         arg_data = [(spec[0], pd.Value(spec[1], value)) for spec, value in zip(arg_spec, args)]
-        return function.call(pytis.data.Row(arg_data), transaction=transaction)
+        return function.call(pd.Row(arg_data), transaction=transaction)
 
     def _call_db_function(self, name, *args, **kwargs):
         """Call database function NAME with given arguments and return the first result.
@@ -1525,9 +1535,9 @@ class PytisModule(Module, ActionHandler):
         of the first row; otherwise return 'None'.
 
         'args' are Python values wich will be automatically wrapped into
-        'pytis.data.Value' instances.  'kwargs' may contain 'transaction'
+        'pd.Value' instances.  'kwargs' may contain 'transaction'
         argument to be passed to the database function.
-        
+
         """
         transaction = kwargs.get('transaction')
         row = self._call_rows_db_function(name, *args, transaction=transaction)[0]
@@ -1543,7 +1553,7 @@ class PytisModule(Module, ActionHandler):
         If the current request is a pytis form update request, return True,
         Otherwise return False.  If True is returned, request processing should
         be passed to the method '_handle_ajax_request()'.
-        
+
         """
         return req.param('_pytis_form_update_request') is not None
 
@@ -1560,9 +1570,8 @@ class PytisModule(Module, ActionHandler):
                                                  uri_provider=self._uri_provider(req, uri,
                                                                                  pw.EditForm))
         except pw.BadRequest:
-            raise BadRequest()
+            raise wiking.BadRequest()
         return wiking.Response(response, content_type='application/json')
-         
 
     def _list_form_content(self, req, form, uri=None):
         """Return the page content for the 'list' action form as a list of 'lcg.Content' instances.
@@ -1573,7 +1582,7 @@ class PytisModule(Module, ActionHandler):
           uri -- binding URI if the 'form' is a side form or None if 'form' is
             a main form.  The URI normally has the form
             '<main_form_uri>/<binding_id>'.
-        
+
         You may override this method to modify page content for the list form
         in derived classes.
 
@@ -1582,7 +1591,7 @@ class PytisModule(Module, ActionHandler):
 
     def _print_field_title(self, req, record, field):
         """Return the document title used by the 'print_field' action.
-        
+
         @type req: C{wiking.Request}
         @param req: current request object
         @type record: C{wiking.PytisModule.Record}
@@ -1597,10 +1606,10 @@ class PytisModule(Module, ActionHandler):
 
         """
         return field.label()
-        
+
     def _print_field_filename(self, req, record, field):
         """Return the file name of the PDF document produced by the 'print_field' action.
-        
+
         @type req: C{wiking.Request}
         @param req: current request object
         @type record: C{wiking.PytisModule.Record}
@@ -1615,11 +1624,11 @@ class PytisModule(Module, ActionHandler):
         is the value of the referer field (see L{PytisModule._REFERER}).
 
         """
-        return record[self._referer].export() +'-'+ field.id() +'.pdf'
-        
+        return record[self._referer].export() + '-' + field.id() + '.pdf'
+
     def _print_field_content(self, req, record, field):
         """Build the content to export into PDF for the 'print_field' action.
-        
+
         @type req: C{wiking.Request}
         @param req: current request object
         @type record: C{wiking.PytisModule.Record}
@@ -1647,7 +1656,7 @@ class PytisModule(Module, ActionHandler):
         else:
             resources = ()
         return lcg.Container(content, resources=resources)
-    
+
     def _transaction(self):
         """Create a new transaction and return it as 'pd.DBTransactionDefault' instance."""
         return pd.DBTransactionDefault(self._dbconnection, connection_name=self.Spec.connection)
@@ -1655,7 +1664,7 @@ class PytisModule(Module, ActionHandler):
     def _in_transaction(self, transaction, operation, *args, **kwargs):
         """Perform operation within given transaction and return the result.
 
-        @type transaction: C{pytis.data.DBTransactionDefault} or C{None}.
+        @type transaction: C{pd.DBTransactionDefault} or C{None}.
         @param transaction: transaction object encapsulating the database
             operation environment or 'None' (meaning default environment).
         @type operation: callable
@@ -1664,7 +1673,7 @@ class PytisModule(Module, ActionHandler):
         If transaction is not None, exceptions during operation execution are handled and
         transaction is rolled back if any exception occurs.  If no exception occurs, the
         transaction is commited and result is returned.
-        
+
         If transaction is None, the operation is simply called and result is returned.
 
         @note: All this method basically does is handling commit/rollback
@@ -1701,7 +1710,7 @@ class PytisModule(Module, ActionHandler):
             return self._transaction()
         else:
             return None
-            
+
     def _update_transaction(self, req, record):
         """Return the transaction for the 'update' action operation.
 
@@ -1716,7 +1725,7 @@ class PytisModule(Module, ActionHandler):
             return self._transaction()
         else:
             return None
-            
+
     def _delete_transaction(self, req, record):
         """Return the transaction for the 'delete' action operation.
 
@@ -1728,7 +1737,7 @@ class PytisModule(Module, ActionHandler):
 
         """
         return None
-        
+
     # ===== Methods which modify the database =====
 
     def _update_linking_tables(self, req, record, transaction):
@@ -1751,7 +1760,7 @@ class PytisModule(Module, ActionHandler):
                 if count != 1:
                     row = pd.Row([(linking_column, key), (value_column, value)])
                     data.insert(row, transaction=transaction)
-    
+
     def _insert(self, req, record, transaction):
         """Insert new row into the database and return a Record instance.
 
@@ -1782,7 +1791,7 @@ class PytisModule(Module, ActionHandler):
                 if key in record:
                     record[key] = result[key]
             self._update_linking_tables(req, record, transaction)
-        
+
     def _update(self, req, record, transaction):
         """Update the record data in the database.
 
@@ -1803,9 +1812,9 @@ class PytisModule(Module, ActionHandler):
 
         """
         self._data.delete(record.key(), transaction=transaction)
-        
+
     # ===== Public methods =====
-    
+
     def referer(self):
         """Temporary internal method.  Don't use in application code."""
         # This temporary method is used within PytisModule._delayed_init() to
@@ -1814,7 +1823,6 @@ class PytisModule(Module, ActionHandler):
         # PytisModule._REFERER constant, we will be able to retrieve it through
         # the resolver and we will not need this method.
         return self._referer
-        
 
     def record_uri(self, req, referer, *args, **kwargs):
         """Return URI of module's record determined by given referer value.
@@ -1830,7 +1838,7 @@ class PytisModule(Module, ActionHandler):
         """
         base_uri = self._base_uri(req)
         if base_uri:
-            result = req.make_uri(base_uri +'/'+ referer, *args, **kwargs)
+            result = req.make_uri(base_uri + '/' + referer, *args, **kwargs)
         else:
             result = None
         return result
@@ -1843,8 +1851,9 @@ class PytisModule(Module, ActionHandler):
         'PytisModule._link_provider()'.
 
         """
-        if cfg.debug:
-            debug("Deprecated method PytisModule.link() used!", self.name(), key, args, kwargs)
+        if wiking.cfg.debug:
+            wiking.debug("Deprecated method PytisModule.link() used!", self.name(), key,
+                         args, kwargs)
         if self._link_cache_req is not req:
             self._link_cache = {}
             self._link_cache_req = req
@@ -1862,9 +1871,9 @@ class PytisModule(Module, ActionHandler):
             # incorrect hack because if a successor redefines _record_uri
             # method, the redefined method doesn't get called.  At least we
             # provide escape path by the _OPTIMIZE_LINKS flag.
-            if (self._OPTIMIZE_LINKS and
-                self._key == self._referer and
-                (not isinstance(key, dict) or key.keys() == [self._key])):
+            if ((self._OPTIMIZE_LINKS and
+                 self._key == self._referer and
+                 (not isinstance(key, dict) or key.keys() == [self._key]))):
                 if isinstance(key, dict):
                     key = key[self._key]
                 if isinstance(key, pd.Value):
@@ -1888,7 +1897,7 @@ class PytisModule(Module, ActionHandler):
             except TypeError:           # catch unhashable keys
                 pass
         return result
-        
+
     def related(self, req, binding, record, uri):
         """Return the binding side form content for other module's main form record.
 
@@ -1898,8 +1907,8 @@ class PytisModule(Module, ActionHandler):
         is True).
 
         """
-        binding_uri = uri +'/'+ binding.id()
-        if isinstance(binding, Binding) and binding.form_cls() is not None:
+        binding_uri = uri + '/' + binding.id()
+        if isinstance(binding, wiking.Binding) and binding.form_cls() is not None:
             form_cls = binding.form_cls()
             form_kwargs = binding.form_kwargs()
         else:
@@ -1930,7 +1939,7 @@ class PytisModule(Module, ActionHandler):
             condition = pd.AND(self._condition(req),
                                self._binding_condition(binding, record),
                                lcondition)
-            form = self._form(form_cls, req, 
+            form = self._form(form_cls, req,
                               binding_uri=binding_uri, condition=condition,
                               columns=[c for c in self._columns(req)
                                        if c != binding.binding_column()],
@@ -1942,7 +1951,7 @@ class PytisModule(Module, ActionHandler):
         return lcg.Container(content)
 
     # ===== Action handlers =====
-    
+
     def action_list(self, req, record=None):
         if record is not None:
             raise Redirect(self._current_base_uri(req, record), action='list',
@@ -1981,9 +1990,9 @@ class PytisModule(Module, ActionHandler):
         if fw:
             path = fw.uri().lstrip('/').split('/')
             if path and path[-1] == fw.arg('binding').id():
-                return '/'+ '/'.join(path[:-1])
+                return '/' + '/'.join(path[:-1])
         return None
-    
+
     def _binding_parent_redirect(self, req, **kwargs):
         uri = self._binding_parent_uri(req)
         if uri is not None:
@@ -2008,13 +2017,13 @@ class PytisModule(Module, ActionHandler):
             if self._binding_visible(req, record, binding):
                 content = self._binding_content(req, record, binding)
                 if content:
-                    anchor = 'binding-'+binding.id()
+                    anchor = 'binding-' + binding.id()
                     if req.param('form_name') == binding.name():
                         active = anchor
                     sections.append(lcg.Section(title=binding.title(), descr=binding.descr(),
                                                 anchor=anchor, content=content))
         if sections:
-            return [lcg.Notebook(sections, name='bindings-'+self.name(), active=active)]
+            return [lcg.Notebook(sections, name='bindings-' + self.name(), active=active)]
         else:
             return []
 
@@ -2046,14 +2055,14 @@ class PytisModule(Module, ActionHandler):
           req -- current 'Request' instance.
           form -- 'pytis.web.ShowForm' instance.
           record -- the current record of the form as 'PytisModule.Record'.
-        
+
         You may override this method to modify page content for the view form
         in derived classes.  The default implementation returns the form
         itself and the result of '_related_content()' packed in one list.
 
         """
         return [form] + self._related_content(req, record)
-    
+
     def _update_form_content(self, req, form, record):
         """Return page content for 'update' action form as a list of 'lcg.Content' instances.
 
@@ -2061,7 +2070,7 @@ class PytisModule(Module, ActionHandler):
           req -- current 'Request' instance.
           form -- 'pytis.web.EditForm' instance.
           record -- the current record of the form as 'PytisModule.Record'.
-        
+
         You may override this method to modify page content for the edit form
         in derived classes.  The default implementation returns just the form
         itself.
@@ -2076,14 +2085,14 @@ class PytisModule(Module, ActionHandler):
           req -- current 'Request' instance.
           form -- 'pytis.web.ShowForm' instance.
           record -- the current record of the form as 'PytisModule.Record'.
-        
+
         You may override this method to modify page content for the deletion
         confirmation form in derived classes.  The default implementation
         returns just the form itself.
 
         """
         return [form]
-        
+
     def action_view(self, req, record):
         form = self._form(pw.ShowForm, req, record=record,
                           layout=self._layout(req, 'view', record),
@@ -2164,7 +2173,7 @@ class PytisModule(Module, ActionHandler):
                     if not computer or key not in computer.depends():
                         prefill[fid] = record[fid].value()
         return self.action_insert(req, prefill=prefill, action=action)
-            
+
     def action_update(self, req, record, action='update'):
         layout = self._layout_instance(self._layout(req, action, record))
         if req.param('submit'):
@@ -2217,14 +2226,14 @@ class PytisModule(Module, ActionHandler):
         req.message(self._delete_prompt(req, record))
         return self._document(req, self._delete_form_content(req, form, record), record,
                               subtitle=self._action_subtitle(req, action, record))
-        
+
     def action_export(self, req):
         columns = self._exported_columns(req)
-        export_kwargs = dict([(cid, isinstance(self._type[cid], pytis.data.Float)
+        export_kwargs = dict([(cid, isinstance(self._type[cid], pd.Float)
                                and dict(locale_format=False) or {}) for cid in columns])
         def generator(records):
             data = ''
-            buffer_size = 1024*512
+            buffer_size = 1024 * 512
             for record in records:
                 coldata = []
                 for cid in columns:
@@ -2239,7 +2248,6 @@ class PytisModule(Module, ActionHandler):
         return wiking.Response(generator(self._records(req)),
                                content_type='text/plain; charset=utf-8',
                                filename=self._export_filename(req))
-
 
     def action_jsondata(self, req):
         import json
@@ -2260,7 +2268,7 @@ class PytisModule(Module, ActionHandler):
         data = [dict([(cid, export_value(record, cid)) for cid in columns])
                 for record in self._records(req)]
         return wiking.Response(json.dumps(data), content_type='application/json')
-                
+
     def action_print_field(self, req, record):
         field = self._view.field(req.param('field'))
         if not field:
@@ -2275,7 +2283,7 @@ class PytisModule(Module, ActionHandler):
         result = exporter.export(context)
         return wiking.Response(result, content_type='application/pdf',
                                filename=self._print_field_filename(req, record, field))
-    
+
     def _action_subtitle(self, req, action, record=None):
         if action == 'list':
             # Don't use subtitle for 'list' by default (avoid "Back to List" subtitle).
@@ -2290,21 +2298,21 @@ class PytisModule(Module, ActionHandler):
                'update': self._UPDATE_LABEL,
                'delete': self._UPDATE_LABEL}
         return map.get(action)
-        
+
     def _delete_prompt(self, req, record):
         return self._DELETE_PROMPT
-    
+
     # ===== Feedback messages after successful data operations =====
 
     def _insert_msg(self, req, record):
         return self._INSERT_MSG
-        
+
     def _update_msg(self, req, record):
         return self._UPDATE_MSG
-        
+
     def _delete_msg(self, req, record):
         return self._DELETE_MSG
-    
+
     # ===== Request redirection after successful data operations =====
     # HTTP redirect is used to prevent multiple submissions (see
     # http://en.wikipedia.org/wiki/Post/Redirect/Get).
@@ -2314,15 +2322,15 @@ class PytisModule(Module, ActionHandler):
 
         The default redirection URI leads to the list action of the
         same module.
-        
+
         @rtype: tuple of (basestring, dict)
         @return: Pair (uri, kwargs), where 'uri' is the base URI and
         'kwargs' is the dictionary of URI parameters to encoded into
         the final redirection URI.
-    
+
         """
         return self._current_base_uri(req, record), kwargs
-        
+
     def _redirect_after_update_uri(self, req, record, **kwargs):
         """Return the URI for HTTP redirection after succesful record insertion.
 
@@ -2333,14 +2341,14 @@ class PytisModule(Module, ActionHandler):
         @return: Pair (uri, kwargs), where 'uri' is the base URI and
         'kwargs' is the dictionary of URI parameters to encoded into
         the final redirection URI.
-    
+
         """
         if req.param('__invoked_from') == 'ListView':
             kwargs.update(form_name=self.name(), search=record[self._key].export())
             return self._current_base_uri(req, record), kwargs
         else:
             return self._current_record_uri(req, record), kwargs
-        
+
     def _redirect_after_delete_uri(self, req, record, **kwargs):
         """Return the URI for HTTP redirection after succesful record insertion.
 
@@ -2351,28 +2359,28 @@ class PytisModule(Module, ActionHandler):
         @return: Pair (uri, kwargs), where 'uri' is the base URI and
         'kwargs' is the dictionary of URI parameters to encoded into
         the final redirection URI.
-    
+
         """
         return self._current_base_uri(req, record), kwargs
-    
+
     def _redirect_after_insert(self, req, record):
         req.message(self._insert_msg(req, record))
         uri, kwargs = self._redirect_after_insert_uri(req, record)
         raise Redirect(uri, **kwargs)
-        
+
     def _redirect_after_update(self, req, record):
         req.message(self._update_msg(req, record))
         uri, kwargs = self._redirect_after_update_uri(req, record)
         raise Redirect(uri, **kwargs)
-        
+
     def _redirect_after_delete(self, req, record):
         req.message(self._delete_msg(req, record))
         uri, kwargs = self._redirect_after_delete_uri(req, record)
         raise Redirect(uri, **kwargs)
 
-        
+
 # ==============================================================================
-# Module extensions 
+# Module extensions
 # ==============================================================================
 
 
@@ -2402,7 +2410,7 @@ class RssModule(object):
         # This is the case for determination of the uri in `_rss_info()' and of the title in
         # `action_rss()'.  It is necessary to be able to determine the URI globally, but it is
         # currently not possible when a module is mapped more than once in CMS.
-        return req.uri() +'.'+ req.preferred_language() +'.rss'
+        return req.uri() + '.' + req.preferred_language() + '.rss'
 
     def _rss_info(self, req, lang=None):
         # Argument lang is unused (defined only for backwards compatibility).
@@ -2410,20 +2418,20 @@ class RssModule(object):
             # Translators: RSS channel is a computer idiom, see Wikipedia.
             return lcg.p(_("An RSS channel is available for this section:"), ' ',
                          lcg.link(self._rss_channel_uri(req),
-                                  self._rss_channel_title(req)+' RSS',
+                                  self._rss_channel_title(req) + ' RSS',
                                   type='application/rss+xml'),
                          " (", lcg.link('_doc/wiking/user/rss', _("more about RSS")), ")")
         return None
 
     def _rss_title(self, req, record):
         return record[self._RSS_TITLE_COLUMN].export()
-    
+
     def _rss_uri(self, req, record, lang=None):
         return self._record_uri(req, record, setlang=lang)
 
     def _rss_description(self, req, record):
         return None
-        
+
     def _rss_column_description(self, req, record):
         return record[self._RSS_DESCR_COLUMN].export()
 
@@ -2432,13 +2440,13 @@ class RssModule(object):
             return record[self._RSS_DATE_COLUMN].value()
         else:
             return None
-        
+
     def _rss_author(self, req, record):
         if self._RSS_AUTHOR_COLUMN:
             return record[self._RSS_AUTHOR_COLUMN].export()
         else:
             return wiking.cfg.webmaster_address
-        
+
     def has_channel(self):
         # TODO: If the methods `_rss_channel_title()' and `_rss_channel_uri()' can be used
         # globally, this method can be replaced by a new method returning a `Channel' instance
@@ -2478,9 +2486,9 @@ class RssModule(object):
             condition = None
         base_uri = req.server_uri(current=True)
         buff = StringIO.StringIO()
-        writer = RssWriter(buff)
+        writer = wiking.RssWriter(buff)
         writer.start(base_uri,
-                     req.localize(wiking.cfg.site_title +' - '+ self._rss_channel_title(req)),
+                     req.localize(wiking.cfg.site_title + ' - ' + self._rss_channel_title(req)),
                      description=req.localize(wiking.cfg.site_subtitle),
                      webmaster=wiking.cfg.webmaster_address,
                      generator='Wiking %s' % wiking.__version__,
@@ -2510,7 +2518,7 @@ class PytisRssModule(PytisModule):
     def _channels(self, req):
         """Define available channels as a sequence of 'Channel' instances."""
         return ()
-    
+
     def _action_args(self, req):
         # Resolves to 'channel' and 'lang' arguments if the URI corrensponds to
         # an existing RSS channel.  Otherwise postpones the resolution to the
@@ -2552,8 +2560,8 @@ class PytisRssModule(PytisModule):
     def _rss_channel_uri(self, req, channel, uri):
         if uri is None:
             uri = self._current_base_uri(req)
-        return uri +'/'+ channel.id() +'.rss'
-        
+        return uri + '/' + channel.id() + '.rss'
+
     def _list_form_content(self, req, form, uri=None):
         content = super(PytisRssModule, self)._list_form_content(req, form, uri=uri)
         channel_links = [lcg.link(self._rss_channel_uri(req, ch, uri), ch.title(),
@@ -2571,7 +2579,7 @@ class PytisRssModule(PytisModule):
                                  " (", doc_link, "):", lcg.ul(channel_links))
             content.append(rss_info)
         return content
-        
+
     def action_rss(self, req, channel, lang):
         # TODO: 'lang' may be None here.
         def localize(value):
@@ -2609,9 +2617,9 @@ class PytisRssModule(PytisModule):
         date = func(spec.date(), raw=True)
         #
         buff = StringIO.StringIO()
-        writer = RssWriter(buff)
+        writer = wiking.RssWriter(buff)
         writer.start(base_uri,
-                     localize(wiking.cfg.site_title +' - '+ channel.title()),
+                     localize(wiking.cfg.site_title + ' - ' + channel.title()),
                      description=localize(channel.descr() or wiking.cfg.site_subtitle),
                      webmaster=channel.webmaster() or wiking.cfg.webmaster_address,
                      generator='Wiking %s' % wiking.__version__,
@@ -2625,9 +2633,3 @@ class PytisRssModule(PytisModule):
                         pubdate=date(record))
         writer.finish()
         return wiking.Response(buff.getvalue(), content_type='application/xml')
-      
-
-
-
-                
-
