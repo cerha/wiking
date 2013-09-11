@@ -22,12 +22,12 @@ The CMS application is defined as an implementation of Wiking Application Interf
 
 """
 
-import pytis.data as pd
-from wiking.cms import *
+import lcg
+import wiking
+from wiking.cms import CMSExtension, CMSExtensionModule, CookieAuthentication, Roles, Users, \
+    text2content
 
 _ = lcg.TranslatableTextFactory('wiking-cms')
-
-import time
 
 class Application(CookieAuthentication, wiking.Application):
     
@@ -73,13 +73,13 @@ class Application(CookieAuthentication, wiking.Application):
                           # Translators: See "Production mode"
                           ('1', _("Preview mode")))
                 current_value = wiking.module('Application').preview_mode(req) and '1' or '0'
-                return g.form([g.radio(id=name+'_'+value, name=name, value=value,
-                                       checked=current_value==value,
-                                       onchange='this.form.submit();') + 
-                               g.label(label, name+'_'+value) + g.br()
+                return g.form([g.radio(id=name + '_' + value, name=name, value=value,
+                                       checked=(current_value == value),
+                                       onchange='this.form.submit();') +
+                               g.label(label, name + '_' + value) + g.br()
                                for value, label in values],
                               action=req.uri(), method='GET')
-            
+
     def preview_mode(self, req):
         """Query the current state of preview mode.
 
@@ -97,7 +97,7 @@ class Application(CookieAuthentication, wiking.Application):
             return req.cookie(self._PREVIEW_MODE_COOKIE) == '1'
         else:
             return False
-        
+
     def set_preview_mode(self, req, value):
         """Change the current state of preview mode.
 
@@ -113,12 +113,12 @@ class Application(CookieAuthentication, wiking.Application):
                 message = _("Switching to production mode")
             req.message(message, type=req.WARNING)
             req.set_cookie(self._PREVIEW_MODE_COOKIE, value and '1' or '0')
-        
+
     def initialize(self, req):
         config_file = wiking.cfg.user_config_file
         if config_file:
             wiking.cms.cfg.user_config_file = config_file
-        
+
     def handle(self, req):
         req.wmi = False # Will be set to True by `WikingManagementInterface' if needed.
         if req.check_roles(Roles.CONTENT_ADMIN):
@@ -131,7 +131,7 @@ class Application(CookieAuthentication, wiking.Application):
                 modname = self._MAPPING[req.unresolved_path[0]]
             except KeyError:
                 modname = 'Pages'
-            else:            
+            else:
                 # Consume the unresolved path if it was in static mapping or
                 # leave it for further resolution when passing to Pages.
                 del req.unresolved_path[0]
@@ -143,7 +143,7 @@ class Application(CookieAuthentication, wiking.Application):
         else:
             try:
                 return super(Application, self).handle(req)
-            except Forbidden:
+            except wiking.Forbidden:
                 # The parent method raises Forbidden when there are no menu items to redirect to.
                 if req.check_roles(Roles.CONTENT_ADMIN):
                     # Give the administrator some hints on a fresh install.
@@ -159,7 +159,6 @@ class Application(CookieAuthentication, wiking.Application):
                                     type=req.WARNING)
                 raise
         return req.forward(wiking.module(modname))
-        
 
     def module_uri(self, req, modname):
         """Return the base URI of given Wiking module (relative to server root).
@@ -205,7 +204,7 @@ class Application(CookieAuthentication, wiking.Application):
            req.module_uri('Documentation')
 
          Returns '/_doc'.
-           
+
            req.module_uri('Planner')
 
          Returns '/_wmi/Planner' in WMI or '/planner' outside WMI if the module
@@ -213,14 +212,14 @@ class Application(CookieAuthentication, wiking.Application):
          the module 'Planner' is not used in any CMS page or if it is used more
          than once.  The identifier, of course, may be any string the user
          decides to use, not just 'planner'.
-         
+
            req.module_uri('BugComments')
 
          Returns '/_wmi/BugComments' in WMI or '/bts/bug-comments' outside WMI
          if the module 'WikingBTS' is used in a page with an identifier 'bts'
          ('BugComments' is a submodule of 'WikingBTS' with a static subpath
          'bug-comments').
-        
+
         """
         # Try the static mapping first.
         uri = super(Application, self).module_uri(req, modname)
@@ -257,21 +256,21 @@ class Application(CookieAuthentication, wiking.Application):
             return None
         else:
             return wiking.cfg.site_subtitle
-    
+
     def menu(self, req):
         modname = req.wmi and 'WikingManagementInterface' or 'Pages'
         return wiking.module(modname).menu(req)
-    
+
     def panels(self, req, lang):
         if wiking.cms.cfg.allow_login_panel:
-            panels = [LoginPanel()]
+            panels = [wiking.LoginPanel()]
         else:
             panels = []
         return panels + wiking.module('Panels').panels(req, lang)
-        
+
     def languages(self):
         return wiking.module('Languages').languages()
-        
+
     def stylesheets(self, req):
         return wiking.module('StyleSheets').stylesheets(req)
 
@@ -293,9 +292,9 @@ class Application(CookieAuthentication, wiking.Application):
         if not wiking.module('Users').user(req, user.login()):
             # See _auth_user() for comments.
             regcode = wiking.module('wiking.cms.Users').regenerate_registration_code(user)
-            raise Redirect(self.module_uri(req, 'Registration'),
-                           action='reinsert', login=user.login(), regcode=regcode)
-    
+            raise wiking.Redirect(self.module_uri(req, 'Registration'),
+                                  action='reinsert', login=user.login(), regcode=regcode)
+
     def _auth_check_password(self, user, password):
         record = user.data()
         password_storage = wiking.cms.cfg.password_storage
@@ -312,7 +311,7 @@ class Application(CookieAuthentication, wiking.Application):
         else:
             raise Exception("Invalid password storage option", password_storage)
         return password == record['password'].value()
-    
+
     def _logout_hook(self, req, user):
         super(Application, self)._logout_hook(req, user)
         if user is None:
@@ -330,12 +329,12 @@ class Application(CookieAuthentication, wiking.Application):
         roles_instance = self._roles_instance
         result = tuple([roles_instance[role_id] for role_id in role_ids])
         return result
-    
+
     def registration_uri(self, req):
         if wiking.cms.cfg.allow_registration:
             return req.make_uri(req.module_uri('Registration'), action='insert')
         return None
-        
+
     def password_reminder_uri(self, req):
         return req.make_uri(req.module_uri('Registration'), action='remind')
 
@@ -349,7 +348,7 @@ class Application(CookieAuthentication, wiking.Application):
 
     def login_is_email(self, req):
         return wiking.cms.cfg.login_is_email
-        
+
     def right_panels_bottom_content(self, req):
         if req.check_roles(Roles.CONTENT_ADMIN):
             def content(renderer, context):
@@ -361,7 +360,7 @@ class Application(CookieAuthentication, wiking.Application):
             return wiking.HtmlRenderer(content)
         else:
             return None
-        
+
     def bottom_bar_left_content(self, req):
         result = self._powered_by_wiking(req)
         if not wiking.cms.cfg.allow_login_panel:
@@ -369,16 +368,16 @@ class Application(CookieAuthentication, wiking.Application):
             if link:
                 result = (result, ' | ', link)
         return result
-    
+
     def bottom_bar_right_content(self, req):
         if wiking.cms.cfg.allow_login_panel:
             return self._accessibility_statement_link(req)
         elif req.user() is None:
             return self.WMILink()
         elif wiking.module('WikingManagementInterface').authorized(req):
-            return (LoginCtrl(inline=True), ' ', self.WMILink())
+            return (wiking.LoginCtrl(inline=True), ' ', self.WMILink())
         else:
-            return LoginCtrl(inline=True)
+            return wiking.LoginCtrl(inline=True)
 
     def _text_content(self, req, text):
         texts = wiking.module('Texts')
@@ -388,8 +387,7 @@ class Application(CookieAuthentication, wiking.Application):
 
     def top_content(self, req):
         return text2content(req, self._text_content(req, wiking.cms.texts.top))
-    
+
     def footer_content(self, req):
         text = self._text_content(req, wiking.cms.texts.footer)
         return text2content(req, text.replace('$webmaster_address', wiking.cfg.webmaster_address))
-    
