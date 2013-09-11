@@ -2055,16 +2055,25 @@ class Publications(NavigablePages, EmbeddableCMSModule):
     _EMBED_BINDING_COLUMN = 'parent'
     _LAYOUT = {}
 
-    def _authorized(self, req, action, **kwargs):
-        if action in ('new_page', 'list', 'options'):
-            return False
-        elif action == 'new_chapter':
+    def _handle(self, req, action, **kwargs):
+        if not hasattr(req, 'publication_record'):
+            record = kwargs['record']
+            req.publication_record = kwargs.get('record')
+            req.publication_read_access = self._check_page_access(req, record, readonly=True)
+            req.publication_write_access = self._check_page_access(req, record)
+        return super(Publications, self)._handle(req, action, **kwargs)
+
+    def _authorized(self, req, action, record=None, **kwargs):
+        if action in ('insert',):
             return req.page_write_access
-        elif action in ('export_epub', 'export_braille'):
-            return req.page_read_access
+        elif record and action in ('view', 'rss', 'export_epub', 'export_braille'):
+            return self._check_page_access(req, record, readonly=True)
+        elif record and action in ('update', 'commit', 'revert', 'new_chapter',
+                                   'publish', 'unpublish', 'translate', 'delete'):
+            return self._check_page_access(req, record)
         else:
-            return super(Publications, self)._authorized(req, action, **kwargs)
-    
+            return False # raise NotFound or BadRequest?
+
     def _condition(self, req):
         condition = super(Publications, self)._condition(req)
         if not wiking.module('Application').preview_mode(req):
@@ -2089,10 +2098,6 @@ class Publications(NavigablePages, EmbeddableCMSModule):
         if cid == 'lang':
             return None
         return super(Publications, self)._link_provider(req, uri, record, cid, **kwargs)
-
-    def _handle(self, req, action, **kwargs):
-        req.publication_record = kwargs.get('record')
-        return super(Publications, self)._handle(req, action, **kwargs)
 
     def _binding_visible(self, req, record, binding):
         return (binding.id() != 'chapters' and
@@ -2321,11 +2326,15 @@ class PublicationChapters(NavigablePages):
                    insert=('title', 'description', '_content', 'parent', 'ord'),
                    options=('parent', 'ord'),
                    )
-    def _authorized(self, req, action, **kwargs):
-        if action in ('new_page', 'list'):
-            return False
+
+    def _authorized(self, req, action, record=None, **kwargs):
+        if action in ('view',):
+            return req.publication_read_access
+        elif action in ('insert', 'update', 'commit', 'revert', 'publish', 'unpublish', 
+                        'translate', 'delete'):
+            return req.publication_write_access
         else:
-            return super(PublicationChapters, self)._authorized(req, action, **kwargs)
+            return False # raise NotFound or BadRequest?
 
     def _current_base_uri(self, req, record=None):
         # Use PytisModule._current_base_uri (skip Pages._current_base_uri).
