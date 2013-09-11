@@ -2059,8 +2059,12 @@ class Publications(NavigablePages, EmbeddableCMSModule):
         if not hasattr(req, 'publication_record'):
             record = kwargs['record']
             req.publication_record = kwargs.get('record')
-            req.publication_read_access = self._check_page_access(req, record, readonly=True)
-            req.publication_write_access = self._check_page_access(req, record)
+            # Overwrite the following variables when we dive into a publication.
+            # This will make Attachments and other nested modules respect
+            # the rights of the current publication instead of the page
+            # where the publication belongs.
+            req.page_read_access = self._check_page_access(req, record, readonly=True)
+            req.page_write_access = self._check_page_access(req, record)
         return super(Publications, self)._handle(req, action, **kwargs)
 
     def _authorized(self, req, action, record=None, **kwargs):
@@ -2314,9 +2318,10 @@ class PublicationChapters(NavigablePages):
                                                  '%s.*' % publication['tree_order'].value())))
                           )
         def _attachment_storage_uri(self, record):
+            req = record.req()
             return '/%s/data/%s/chapters/%s/attachments' % \
-                (record.req().page_record['identifier'].value(),
-                 record.req().publication_record['identifier'].value(),
+                (req.page_record['identifier'].value(),
+                 req.publication_record['identifier'].value(),
                  record['identifier'].value())
         condition = pd.EQ('kind', pd.sval('chapter'))
         columns = ('title', 'status')
@@ -2329,10 +2334,10 @@ class PublicationChapters(NavigablePages):
 
     def _authorized(self, req, action, record=None, **kwargs):
         if action in ('view',):
-            return req.publication_read_access
+            return req.page_read_access
         elif action in ('insert', 'update', 'commit', 'revert', 'publish', 'unpublish', 
                         'translate', 'delete'):
-            return req.publication_write_access
+            return req.page_write_access
         else:
             return False # raise NotFound or BadRequest?
 
