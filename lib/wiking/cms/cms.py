@@ -1481,33 +1481,39 @@ class Pages(SiteSpecificContentModule):
 
     def __init__(self, *args, **kwargs):
         super(Pages, self).__init__(*args, **kwargs)
-        
+
+    def _check_page_access(self, req, record, readonly=False):
+        if req.check_roles(Roles.CONTENT_ADMIN):
+            return True
+        elif record:
+            role_ids = [record['write_role_id'].value()]
+            if readonly:
+                role_ids.append(record['read_role_id'].value())
+            roles = wiking.module('Users').Roles()
+            return req.check_roles(*[roles[role_id] for role_id in role_ids])
+        else:
+            return False
+
     def _handle(self, req, action, **kwargs):
         # TODO: This is a hack to find out the parent page and access rights in
         # the embedded modules.
         if not hasattr(req, 'page_record'):
             record = kwargs.get('record')
             req.page_record = record
-            req.page_read_access = self._authorized(req, 'view', record=record)
-            req.page_write_access = self._authorized(req, 'update', record=record)
+            req.page_read_access = self._check_page_access(req, record, readonly=True)
+            req.page_write_access = self._check_page_access(req, record)
         return super(Pages, self)._handle(req, action, **kwargs)
         
     def _authorized(self, req, action, record=None, **kwargs):
         if action in ('new_page', 'insert', 'list', 'options', 'publish', 'unpublish',
                       'delete', 'translate'):
-            roles = (Roles.CONTENT_ADMIN,)
+            return req.check_roles(Roles.CONTENT_ADMIN,)
+        elif record and action in ('view', 'rss'):
+            return self._check_page_access(req, record, readonly=True)
+        elif record and action in ('update', 'commit', 'revert',):
+            return self._check_page_access(req, record)
         else:
-            roles_module = wiking.module('Users').Roles()
-            if record and action in ('view', 'rss'):
-                roles = (roles_module[record['read_role_id'].value()],
-                         roles_module[record['write_role_id'].value()],
-                         Roles.CONTENT_ADMIN,)
-            elif record and action in ('update', 'commit', 'revert', 'attachments'):
-                roles = (roles_module[record['write_role_id'].value()],
-                         Roles.CONTENT_ADMIN,)
-            else:
-                roles = () # raise NotFound or BadRequest?
-        return req.check_roles(*roles)
+            return False # raise NotFound or BadRequest?
         
     def _handle_subpath(self, req, record):
         modname = record['modname'].value()
