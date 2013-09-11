@@ -1802,7 +1802,7 @@ class Pages(SiteSpecificContentModule):
                         break
                     else:
                         raise Redirect('/' + row['identifier'].value())
-        if req.check_roles(Roles.CONTENT_ADMIN):
+        if req.page_write_access:
             # Append an empty show form just for the action menu.
             form = self._form(pw.ShowForm, req, record=record, layout=(),
                               actions=self._form_actions_argument(req))
