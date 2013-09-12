@@ -1483,6 +1483,7 @@ class Pages(SiteSpecificContentModule):
         super(Pages, self).__init__(*args, **kwargs)
 
     def _check_page_access(self, req, record, readonly=False):
+        # Return true if the current user has readonly/readwrite access to given page record.
         if req.check_roles(Roles.CONTENT_ADMIN):
             return True
         elif record:
