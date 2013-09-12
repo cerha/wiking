@@ -1543,26 +1543,26 @@ class Pages(SiteSpecificContentModule):
         return '/'
 
     def _resolve(self, req):
-        if wiking.module('Application').preview_mode(req):
-            restriction = {}
-        else:
-            restriction = {'published': True}
         if not req.unresolved_path:
             return None
+        def check_published(row):
+            if row['published'].value() or wiking.module('Application').preview_mode(req):
+                return row
+            else:
+                raise Forbidden()
+            
         identifier = req.unresolved_path[0]
         # Recognize special path of RSS channel as '<identifier>.<lang>.rss'.
         if identifier.endswith('.rss'):
             req.set_param('action', 'rss')
             identifier = identifier[:-4]
             if len(identifier) > 3 and identifier[-3] == '.' and identifier[-2:].isalpha():
-                lang = str(identifier[-2:])
                 row = self._data.get_row(site=wiking.cfg.server_hostname,
-                                         identifier=identifier[:-3], lang=lang, **restriction)
+                                         identifier=identifier, lang=str(identifier[-2:]))
                 if row:
                     del req.unresolved_path[0]
-                    return row
-        rows = self._data.get_rows(site=wiking.cfg.server_hostname,
-                                   identifier=identifier, **restriction)
+                    return check_published(row)
+        rows = self._data.get_rows(site=wiking.cfg.server_hostname, identifier=identifier)
         if rows:
             if req.has_param(self._key):
                 # If key is passed (on form submission), resolve by key
@@ -1572,17 +1572,20 @@ class Pages(SiteSpecificContentModule):
                 keys = [r[self._key].export() for r in rows]
                 if key in keys:
                     del req.unresolved_path[0]
-                    return rows[keys.index(key)]
+                    return check_published(rows[keys.index(key)])
+            if not wiking.module('Application').preview_mode(req):
+                rows = [r for r in rows if r['published'].value()]
+                if not rows:
+                    if req.check_roles(Roles.CONTENT_ADMIN):
+                        req.message(_("The page exists but is not published. "
+                                      "You need to switch to the Preview mode "
+                                      "to be able to access it."),
+                                    type=req.WARNING)
+                    raise Forbidden()
             variants = [str(r['lang'].value()) for r in rows]
             lang = req.preferred_language(variants)
             del req.unresolved_path[0]
             return rows[variants.index(lang)]
-        elif self._data.get_rows(identifier=identifier, site=wiking.cfg.server_hostname):
-            if req.check_roles(Roles.CONTENT_ADMIN) and restriction:
-                req.message(_("The page exists but is not published. "
-                              "You need to switch to the Preview mode to be able to access it."),
-                            type=req.WARNING)
-            raise Forbidden()
         else:
             raise NotFound()
 
