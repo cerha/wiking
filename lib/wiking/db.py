@@ -453,7 +453,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                 value = "F"
             else:
                 value = ""
-            if isinstance(type, pd.Float):
+            if isinstance(type, pd.Number):
                 locale_data = req.localizer().locale_data()
                 if isinstance(type, pd.Monetary):
                     decimal_point = locale_data.mon_decimal_point
