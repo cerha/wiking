@@ -2060,14 +2060,15 @@ class Publications(NavigablePages, EmbeddableCMSModule):
 
     def _handle(self, req, action, **kwargs):
         if not hasattr(req, 'publication_record'):
-            record = kwargs['record']
+            record = kwargs.get('record')
             req.publication_record = kwargs.get('record')
-            # Overwrite the following variables when we dive into a publication.
-            # This will make Attachments and other nested modules respect
-            # the rights of the current publication instead of the page
-            # where the publication belongs.
-            req.page_read_access = self._check_page_access(req, record, readonly=True)
-            req.page_write_access = self._check_page_access(req, record)
+            if record:
+                # Overwrite the following variables when we dive into a publication.
+                # This will make Attachments and other nested modules respect
+                # the rights of the current publication instead of the page
+                # where the publication belongs.
+                req.page_read_access = self._check_page_access(req, record, readonly=True)
+                req.page_write_access = self._check_page_access(req, record)
         return super(Publications, self)._handle(req, action, **kwargs)
 
     def _authorized(self, req, action, record=None, **kwargs):
