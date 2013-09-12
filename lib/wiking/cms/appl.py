@@ -93,7 +93,7 @@ class Application(CookieAuthentication, wiking.Application):
         may be used by adimnistrators to check the differences.
 
         """
-        if req.check_roles(Roles.CONTENT_ADMIN):
+        if req.check_roles(Roles.CONTENT_ADMIN) or req.__dict__.get('page_write_access'):
             return req.cookie(self._PREVIEW_MODE_COOKIE) == '1'
         else:
             return False
@@ -121,10 +121,9 @@ class Application(CookieAuthentication, wiking.Application):
 
     def handle(self, req):
         req.wmi = False # Will be set to True by `WikingManagementInterface' if needed.
-        if req.check_roles(Roles.CONTENT_ADMIN):
-            preview_mode = req.param(self._PREVIEW_MODE_PARAM)
-            if preview_mode is not None:
-                req.set_cookie(self._PREVIEW_MODE_COOKIE, preview_mode == '1' and '1' or None)
+        preview_mode_param = req.param(self._PREVIEW_MODE_PARAM)
+        if preview_mode_param is not None:
+            req.set_cookie(self._PREVIEW_MODE_COOKIE, preview_mode_param == '1' and '1' or None)
         wiking.module('Config').configure(req)
         if req.unresolved_path:
             try:
@@ -340,7 +339,7 @@ class Application(CookieAuthentication, wiking.Application):
 
     def login_panel_content(self, req):
         content = []
-        if req.check_roles(Roles.CONTENT_ADMIN):
+        if req.check_roles(Roles.CONTENT_ADMIN) or req.__dict__.get('page_write_access'):
             content.append(self.PreviewModeCtrl())
         if wiking.module('WikingManagementInterface').authorized(req):
             content.append(self.WMILink())
