@@ -962,8 +962,12 @@ class Users(UserManagementModule):
             # validation.
             record['login'] = pd.Value(record.type('login'), req.param('login'))
         if not errors and record.new() and record['autogenerate_password'].value():
-            random.seed()
-            password = ''.join(random.sample(string.digits + string.ascii_letters, 10))
+            password = self._generate_password()
+            # Save the plaintext password into the virtual field to be able to send it by e-mail.
+            record['new_password'] = pd.Value(record.type('new_password'), password)
+            if wiking.cms.cfg.password_storage == 'md5':
+                from hashlib import md5
+                password = md5(password).hexdigest()
             record['password'] = pd.Value(record.type('password'), password)
         return errors
 
@@ -1046,7 +1050,7 @@ class Users(UserManagementModule):
                      "%(uri)s\n\n",
                      server_hostname=wiking.cfg.server_hostname,
                      uri=req.make_uri(base_uri, command='login', login=record['login'].value()),
-                     password=record['password'].value())
+                     password=record['new_password'].value())
         else:
             text = _("To finish your registration at %(server_hostname)s, "
                      "click on the following link:\n\n"
@@ -1337,9 +1341,8 @@ class Users(UserManagementModule):
         return users
 
     def _generate_password(self):
-        characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01233456789'
         random.seed()
-        return string.join([random.choice(characters) for i in range(8)], '')
+        return ''.join(random.sample(string.digits + string.ascii_letters, 10))
 
     def reset_password(self, user):
         """Reset md5 password for given 'User' instance and return the new password.
@@ -1347,11 +1350,10 @@ class Users(UserManagementModule):
         May raise 'pd.DBException' if the database operation fails.
 
         """
+        from hashlib import md5
         record = user.data()
         password = self._generate_password()
-        value, error = pytis.data.Password(md5=True).validate(password, verify=password)
-        assert error is None, error
-        record.update(password=value.value(), last_password_change=now())
+        record.update(password=md5(password).hexdigest(), last_password_change=now())
         return password
 
     def regenerate_registration_code(self, user):
