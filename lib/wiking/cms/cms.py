@@ -36,11 +36,13 @@ import collections
 import datetime
 import os
 import re
+import string
 import sys
 import time
 import difflib
 
-import pytis.data, pytis.util
+import pytis.data
+import pytis.util
 from pytis.util import OPERATIONAL, Attribute, Structure, format_byte_size, log
 from pytis.presentation import computer, CodebookSpec, Field, ColumnLayout, Action
 
@@ -2186,8 +2188,8 @@ class Publications(NavigablePages, EmbeddableCMSModule):
                 if node.id() == record['identifier'].value():
                     page_id = record['page_id'].value()
                 else:
-                    page_id = module.PublicationChapters.get_page_id(node.id())
-                data = module.Attachments.retrieve(req, page_id, resource.filename())
+                    page_id = wiking.module.PublicationChapters.get_page_id(node.id())
+                data = wiking.module.Attachments.retrieve(req, page_id, resource.filename())
                 if data:
                     return data
                 else:
@@ -2340,7 +2342,7 @@ class PublicationChapters(NavigablePages):
     def _authorized(self, req, action, record=None, **kwargs):
         if action in ('view',):
             return req.page_read_access
-        elif action in ('insert', 'update', 'commit', 'revert', 'publish', 'unpublish', 
+        elif action in ('insert', 'update', 'commit', 'revert', 'publish', 'unpublish',
                         'translate', 'delete'):
             return req.page_write_access
         else:
@@ -2366,7 +2368,7 @@ class PublicationChapters(NavigablePages):
             children.setdefault(row['parent'].value(), []).append(row)
         return children
 
-    def get_page_id(self, identifier): 
+    def get_page_id(self, identifier):
         row = self._data.get_row(identifier=identifier)
         if row:
             return row['page_id'].value()
@@ -2427,9 +2429,9 @@ class PageHistory(ContentManagementModule):
         if action == 'view':
             return (('comment',),
                     ColumnLayout(
-                    FieldSet(_("Change Summary"), ('inserted_lines', 'changed_lines',
-                                                   'deleted_lines')),
-                    FieldSet(_("Colors"), ('diff_add', 'diff_chg', 'diff_sub')),
+                        FieldSet(_("Change Summary"), ('inserted_lines', 'changed_lines',
+                                                       'deleted_lines')),
+                        FieldSet(_("Colors"), ('diff_add', 'diff_chg', 'diff_sub')),
                     ),
                     self._diff)
         else:
@@ -3286,7 +3288,7 @@ class Text(Structure):
 
     def __init__(self, label, description, text, text_format=None):
         assert text_format is None or text_format in pytis.util.public_attr_values(pp.TextFormat)
-        Structure.__init__(self, label=label, description=description, text=text, 
+        Structure.__init__(self, label=label, description=description, text=text,
                            text_format=text_format)
         self._module_class().register_text(self)
 
@@ -3410,8 +3412,8 @@ class CommonTexts(SettingsManagementModule):
         return ('label', 'descr', content_field,)
 
     def _update(self, req, record, transaction):
-        # Use the value of the layout column for update. 
-        row = pd.Row([(fid.replace('plain_', '').replace('html_', ''), record[fid]) 
+        # Use the value of the layout column for update.
+        row = pd.Row([(fid.replace('plain_', '').replace('html_', ''), record[fid])
                       for fid in self._layout(req, 'update', record=record)])
         self._data.update(record.key(), row, transaction=transaction)
 
