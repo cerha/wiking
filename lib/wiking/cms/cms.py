@@ -1489,7 +1489,12 @@ class Pages(SiteSpecificContentModule):
         super(Pages, self).__init__(*args, **kwargs)
 
     def _check_page_access(self, req, record, readonly=False):
-        # Return true if the current user has readonly/readwrite access to given page record.
+        """Return true if the current user has readonly/readwrite access to given page record.
+        
+        Note, this logic is duplicated at 'Publications._condition()', so any
+        change here should be reflected there as well.
+
+        """
         if req.check_roles(Roles.CONTENT_ADMIN):
             return True
         elif record:
@@ -2109,10 +2114,17 @@ class Publications(NavigablePages, EmbeddableCMSModule):
             return False # raise NotFound or BadRequest?
 
     def _condition(self, req):
-        condition = super(Publications, self)._condition(req)
+        uid = req.user() and req.user().uid()
+        conditions = [
+            super(Publications, self)._condition(req),
+            # Beware, this condition actually duplicates the logic in _check_page_access().
+            pd.OR(pd.EQ('owner', pd.ival(uid)),
+                  *[pd.FunctionCondition('cms_f_role_member', pd.ival(uid), role) for role in 
+                    ('read_role_id', 'write_role_id', pd.sval(Roles.CONTENT_ADMIN.id()))])
+        ]
         if not wiking.module('Application').preview_mode(req):
-            condition = pd.AND(condition, pd.EQ('published', pd.bval(True)))
-        return condition
+            conditions.append(pd.EQ('published', pd.bval(True)))
+        return pd.AND(*conditions)
 
     def _prefill(self, req):
         return dict(super(Publications, self)._prefill(req),

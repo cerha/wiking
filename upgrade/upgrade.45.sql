@@ -161,4 +161,19 @@ DO INSTEAD (
      delete from cms_pages where page_id = old.page_id;
         );
 
+CREATE OR REPLACE FUNCTION "public"."cms_f_all_user_roles"("uid_" INTEGER) RETURNS SETOF NAME LANGUAGE sql stable AS $$
+select role_id from a_user_roles where ($1 is null and uid is null) or ($1 is not null and uid=$1);
+$$;
 
+COMMENT ON FUNCTION "public"."cms_f_all_user_roles"("uid_" INTEGER) IS 'Return all user''s roles and their included roles.
+    Both explicitly assigned and implicit roles (such as ''anyone'') are considered.';
+
+CREATE OR REPLACE FUNCTION "public"."cms_f_role_member"("uid_" INTEGER, "role_id_" NAME) RETURNS BOOLEAN LANGUAGE plpgsql stable AS $$
+begin
+  if role_id_ is null then
+    return False;
+  else
+    return role_id_ in (select cms_f_all_user_roles(uid_));
+  end if;
+end;
+$$;

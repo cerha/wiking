@@ -202,6 +202,23 @@ class RoleMembersUpdateUserRolesTrigger(sql.SQLTrigger):
     each_row = False
     body = UpdateUserRoles
 
+class CmsFAllUserRoles(sql.SQLFunction):
+    """Return all user's roles and their included roles.
+    Both explicitly assigned and implicit roles (such as 'anyone') are considered."""
+    name = 'cms_f_all_user_roles'
+    arguments = (sql.Column('uid_', pytis.data.Integer()),)
+    result_type = pytis.data.Name()
+    multirow = True
+    stability = 'stable'
+    depends_on = (AUserRoles,)
+
+class CmsFRoleMember(sql.SQLPlFunction):
+    name = 'cms_f_role_member'
+    arguments = (sql.Column('uid_', pytis.data.Integer()),
+                 sql.Column('role_id_', pytis.data.Name()),)
+    result_type = pytis.data.Boolean()
+    stability = 'stable'
+
 class CmsSessionLog(CommonAccesRights, sql.SQLTable):
     name = 'cms_session_log'
     fields = (sql.PrimaryColumn('log_id', pytis.data.Serial(not_null=True)),
@@ -229,11 +246,11 @@ class CmsSession(CommonAccesRights, sql.SQLTable):
               sql.Column('last_access', pytis.data.DateTime()),
               )
     unique = (('uid', 'session_key',),)
-    def on_delete_also(self):
-        log = sql.t.CmsSessionLog
-        return (log.update().
-                where(log.c.session_id == sqlalchemy.literal_column('old.session_id')).
-                values(end_time=sqlalchemy.literal_column('old.last_access')),)
+    #def on_delete_also(self):
+    #    log = sql.t.CmsSessionLog
+    #    return (log.update().
+    #            where(log.c.session_id == sqlalchemy.literal_column('old.session_id')).
+    #            values(end_time=sqlalchemy.literal_column('old.last_access')),)
     depends_on = (CmsSessionLog,)
     
 class CmsVSessionLog(CommonAccesRights, sql.SQLView):
