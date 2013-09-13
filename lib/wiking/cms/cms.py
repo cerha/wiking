@@ -795,6 +795,7 @@ class PageStructure(SiteSpecificContentModule):
                   Field('ord'),
                   Field('menu_visibility'),
                   Field('tree_order'),
+                  Field('owner'),
                   Field('read_role_id'),
                   Field('write_role_id'),
                   )
@@ -1382,6 +1383,9 @@ class Pages(SiteSpecificContentModule):
                 Field('write_role_id', _("Read/write access"), codebook='ApplicationRoles',
                       default=Roles.CONTENT_ADMIN.id(),
                       descr=_("Select the role allowed to edit the page contents.")),
+                Field('owner', _("Owner"), codebook='Users',
+                      descr=_("The owner has full read/write access regardless of roles "
+                              "settings above.")),
             )
         def _status(self, record, published, _content, content):
             if not published:
@@ -1460,14 +1464,14 @@ class Pages(SiteSpecificContentModule):
                          ('identifier', 'modname',
                           FieldSet(_("Menu position"), ('parent', 'ord', 'menu_visibility',
                                                         'foldable')),
-                          FieldSet(_("Access Rights"), ('read_role_id', 'write_role_id',)),
+                          FieldSet(_("Access Rights"), ('read_role_id', 'write_role_id', 'owner')),
                           ))),
                'update': ('title', 'description', '_content', 'comment'),
                'delete': (),
                'options':
                (FieldSet(_("Basic Options"), ('identifier', 'modname',)),
                 FieldSet(_("Menu position"), ('parent', 'menu_visibility', 'ord', 'foldable')),
-                FieldSet(_("Access Rights"), ('read_role_id', 'write_role_id')),
+                FieldSet(_("Access Rights"), ('read_role_id', 'write_role_id', 'owner')),
                 )
                }
     _SUBMIT_BUTTONS_ = ((_("Save as concept"), None), (_("Save and publish"), 'commit'))
@@ -1489,6 +1493,8 @@ class Pages(SiteSpecificContentModule):
         if req.check_roles(Roles.CONTENT_ADMIN):
             return True
         elif record:
+            if req.check_roles(Roles.USER) and req.user().uid() == record['owner'].value():
+                return True
             role_ids = [record['write_role_id'].value()]
             if readonly:
                 role_ids.append(record['read_role_id'].value())
@@ -1691,9 +1697,7 @@ class Pages(SiteSpecificContentModule):
         if visibility == 'always':
             return True
         elif visibility == 'authorized':
-            roles = wiking.module('Users').Roles()
-            return req.check_roles(roles[row['read_role_id'].value()],
-                                   roles[row['write_role_id'].value()])
+            return self._check_page_access(req, row, readonly=True)
         elif visibility == 'never':
             return False
 
@@ -2003,8 +2007,7 @@ class Publications(NavigablePages, EmbeddableCMSModule):
                       computer=computer(lambda r: r.req().page_record['page_id'].value())),
                 Field('menu_visibility', default='never'),
                 Field('status', visible=computer(self._preview_mode)),
-                #Field('read_role_id', visible=computer(self._is_admin)),
-                #Field('write_role_id', visible=computer(self._is_admin)),
+                Field('write_role_id', default=Roles.OWNER.id()),
             )
             extra = (
                 Field('author', _("Author"), width=60, not_null=True,
@@ -2034,8 +2037,6 @@ class Publications(NavigablePages, EmbeddableCMSModule):
             return self._inherited_fields(Publications.Spec, override=override) + extra
         def _preview_mode(self, record):
             return wiking.module('Application').preview_mode(record.req())
-        #def _is_admin(self, record):
-        #    return record.req().check_roles(Roles.CONTENT_ADMIN)
         def _attachment_filter(self, record, page_id, lang):
             return pd.AND(pd.EQ('page_id', pd.ival(page_id)),
                           pd.EQ('lang', pd.sval(lang)),
@@ -2061,7 +2062,7 @@ class Publications(NavigablePages, EmbeddableCMSModule):
                             'publisher', 'published_year', 'edition', 'notes')),
                   '_content',
                   FieldSet(_("Access Rights"),
-                           ('read_role_id', 'write_role_id',)),
+                           ('read_role_id', 'write_role_id', 'owner')),
                   )
         columns = ('title', 'author', 'publisher', 'status')
         sorting = ('title', pd.ASCENDENT),
@@ -2112,6 +2113,10 @@ class Publications(NavigablePages, EmbeddableCMSModule):
         if not wiking.module('Application').preview_mode(req):
             condition = pd.AND(condition, pd.EQ('published', pd.bval(True)))
         return condition
+
+    def _prefill(self, req):
+        return dict(super(Publications, self)._prefill(req),
+                    owner=req.user().uid())
 
     def _insert_msg(self, req, record):
         if record['published'].value():

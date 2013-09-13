@@ -279,6 +279,7 @@ class CmsPages(CommonAccesRights, sql.SQLTable):
               sql.Column('foldable', pytis.data.Boolean(not_null=False)),
               sql.Column('ord', pytis.data.Integer(not_null=True)),
               sql.Column('tree_order', pytis.data.String()),
+              sql.Column('owner', pytis.data.Integer(), references=sql.r.Users),
               sql.Column('read_role_id', pytis.data.Name(not_null=True), default='anyone',
                          references=sql.a(sql.r.Roles, onupdate='CASCADE')),
               sql.Column('write_role_id', pytis.data.Name(not_null=True), default='content_admin',
@@ -340,7 +341,7 @@ class CmsVPages(CommonAccesRights, sql.SQLView):
                        p.c.site, p.c.kind, l.c.lang,
                        p.c.page_id, p.c.identifier, p.c.parent, p.c.modname,
                        p.c.menu_visibility, p.c.foldable, p.c.ord, p.c.tree_order,
-                       p.c.read_role_id, p.c.write_role_id,
+                       p.c.owner, p.c.read_role_id, p.c.write_role_id,
                        coalesce(t.c.published, False).label('published'),
                        t.c.creator, t.c.created, t.c.published_since,
                        coalesce(t.c.title, p.c.identifier).label('title_or_identifier'),
@@ -350,10 +351,12 @@ class CmsVPages(CommonAccesRights, sql.SQLView):
                       whereclause=and_(p.c.page_id == t.c.page_id, l.c.lang == t.c.lang))
     def on_insert(self):
         return ("""(
-     insert into cms_pages (site, kind, identifier, parent, modname, read_role_id, write_role_id,
+     insert into cms_pages (site, kind, identifier, parent, modname,
+                            owner, read_role_id, write_role_id,
                             menu_visibility, foldable, ord)
      values (new.site, new.kind, new.identifier, new.parent, new.modname,
-             new.read_role_id, new.write_role_id, new.menu_visibility, new.foldable, new.ord);
+             new.owner, new.read_role_id, new.write_role_id,
+             new.menu_visibility, new.foldable, new.ord);
      update cms_pages set tree_order = cms_page_tree_order(page_id)
             where site=new.site and kind=new.kind;
      insert into cms_page_texts (page_id, lang, published,
@@ -367,7 +370,7 @@ class CmsVPages(CommonAccesRights, sql.SQLView):
      from cms_pages where identifier=new.identifier and site=new.site and kind=new.kind
      returning page_id ||'.'|| lang, null::text, null::text,
        lang, page_id, null::text, null::int, null::text, null::text, null::boolean,
-       null::int, null::text, null::name, null::name,
+       null::int, null::text, null::int, null::name, null::name,
        published, creator, created, published_since, title, title, description, content, _title,
        _description, _content;
         )""",)
@@ -382,6 +385,7 @@ class CmsVPages(CommonAccesRights, sql.SQLView):
         identifier = new.identifier,
         parent = new.parent,
         modname = new.modname,
+        owner = new.owner,
         read_role_id = new.read_role_id,
         write_role_id = new.write_role_id,
         menu_visibility = new.menu_visibility,
@@ -599,12 +603,14 @@ class CmsVPublications(CommonAccesRights, sql.SQLView):
                                 join(publications, pages.c.page_id == publications.c.page_id)])
     def on_insert(self):
         return ("""(
-     insert into cms_v_pages (site, kind, identifier, parent, modname, read_role_id, write_role_id,
+     insert into cms_v_pages (site, kind, identifier, parent, modname,
+                              owner, read_role_id, write_role_id,
                               menu_visibility, foldable, ord, lang, published,
                               creator, created, published_since,
                               title, description, content, _title, _description, _content)
      values (new.site, new.kind, new.identifier, new.parent, new.modname,
-             new.read_role_id, new.write_role_id, new.menu_visibility, new.foldable, new.ord,
+             new.owner, new.read_role_id, new.write_role_id,
+             new.menu_visibility, new.foldable, new.ord,
              new.lang, new.published, new.creator, new.created, new.published_since,
              new.title, new.description, new.content,
              new._title, new._description, new._content);
@@ -616,7 +622,7 @@ class CmsVPublications(CommonAccesRights, sql.SQLView):
      returning page_id, page_id ||'.'|| (select min(lang) from cms_page_texts
         where page_id=cms_publications.page_id), null::text,
        null::text, null::char(2), null::text, null::int, null::text, null::text, null::boolean,
-       null::int, null::text, null::name, null::name,
+       null::int, null::text, null::int, null::name, null::name,
        null::bool, null::int, null::timestamp, null::timestamp, null::text, null::text,
        null::text, null::text, null::text, null::text, null::text,
        author, isbn, cover_image, illustrator,
@@ -630,6 +636,7 @@ class CmsVPublications(CommonAccesRights, sql.SQLView):
         identifier = new.identifier,
         parent = new.parent,
         modname = new.modname,
+        owner = new.owner,
         read_role_id = new.read_role_id,
         write_role_id = new.write_role_id,
         menu_visibility = new.menu_visibility,
