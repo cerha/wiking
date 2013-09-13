@@ -1498,8 +1498,30 @@ class Pages(SiteSpecificContentModule):
             return False
 
     def _handle(self, req, action, **kwargs):
-        # TODO: This is a hack to find out the parent page and access rights in
-        # the embedded modules.
+        """Setup specific environment when processing a request for a CMS page.
+        
+        Attaching the attributes 'page_record', 'page_read_access' and
+        'page_write_access' to the request is a quick hack.  It allows us to
+        quickly determine the current page within further request processing.
+        As we also save the access rights of the current page, we can also
+        quickly determine access to related subcontent, such as attachments or
+        records of embedded modules.  Some modules may override the access
+        attributes when we dive into content with specific access settings.
+        For example the module 'Publications' will owerwrite the attributes
+        'req.page_read_access' and 'req.page_write_access' according to the
+        access settings of the current publication when we dive into a
+        publication (the request leads to some content within it).  Thus the
+        Attachments module will automatically respect theese attributes when
+        accessing attachments of a publication.
+
+        A cleaner approach would be to store these properties within the
+        request forwarding information (see 'req.forward()') and having some
+        nice API to access them, but for now this simple approach satisfies our
+        needs.
+
+        """
+        # Check hasattr to avoid overwriting page_record in derived classes,
+        # such as in Publications, which are processed inside pages.
         if not hasattr(req, 'page_record'):
             record = kwargs.get('record')
             req.page_record = record
