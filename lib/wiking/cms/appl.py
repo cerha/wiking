@@ -22,8 +22,6 @@ The CMS application is defined as an implementation of Wiking Application Interf
 
 """
 
-import weakref
-
 import lcg
 import wiking
 from wiking.cms import CMSExtension, CMSExtensionModule, CookieAuthentication, Roles, Users, \
@@ -43,8 +41,6 @@ class Application(CookieAuthentication, wiking.Application):
     _PREVIEW_MODE_COOKIE = 'wiking_cms_preview_mode'
     _PREVIEW_MODE_PARAM = '_wiking_cms_preview_mode'
     
-    _roles_instance = None
-
     class WMILink(lcg.Content):
         # Used in login panel or bottom bar.
         def export(self, context):
@@ -120,13 +116,13 @@ class Application(CookieAuthentication, wiking.Application):
         config_file = wiking.cfg.user_config_file
         if config_file:
             wiking.cms.cfg.user_config_file = config_file
-        self._contained_roles_cache = weakref.WeakKeyDictionary()
         
     def handle(self, req):
         req.wmi = False # Will be set to True by `WikingManagementInterface' if needed.
         preview_mode_param = req.param(self._PREVIEW_MODE_PARAM)
         if preview_mode_param is not None:
             req.set_cookie(self._PREVIEW_MODE_COOKIE, preview_mode_param == '1' and '1' or None)
+        wiking.module('CachedTables').reload_info(req)
         wiking.module('Config').configure(req)
         if req.unresolved_path:
             try:
@@ -323,26 +319,10 @@ class Application(CookieAuthentication, wiking.Application):
     def contained_roles(self, req, role):
         role_sets = wiking.module('RoleSets')
         if isinstance(role, (list, tuple, set,)): # role is actually role ids
-            cacheable = True
-            role = tuple(role)
-            cache = self._contained_roles_cache.get(req)
-            if cache is None:
-                cache = self._contained_roles_cache[req] = {}
-            else:
-                result = cache.get(role)
-                if result is not None:
-                    return result
-            role_ids = role_sets.included_role_ids_by_role_ids(role)
+            role_ids = role_sets.included_role_ids_by_role_ids(role, instances=True)
         else:
-            cacheable = False
-            role_ids = role_sets.included_role_ids(role)
-        if self._roles_instance is None:
-            self._roles_instance = wiking.module('Users').Roles()
-        roles_instance = self._roles_instance
-        result = tuple([roles_instance[role_id] for role_id in role_ids])
-        if cacheable:
-            cache[role] = result
-        return result
+            role_ids = role_sets.included_role_ids(role, instances=True)
+        return role_ids
 
     def registration_uri(self, req):
         if wiking.cms.cfg.allow_registration:

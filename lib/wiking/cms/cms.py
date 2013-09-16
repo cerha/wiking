@@ -594,7 +594,7 @@ class CMSExtensionModule(CMSModule, CMSExtensionMenuModule):
     _HONOUR_SPEC_TITLE = True
 
 
-class Config(SettingsManagementModule):
+class Config(SettingsManagementModule, wiking.CachingPytisModule):
     """Site specific configuration provider.
 
     This implementation stores the configuration variables as one row in a
@@ -687,6 +687,8 @@ class Config(SettingsManagementModule):
         called once on Application initialization.
 
         """
+        if self._check_cache(req, load=True):
+            return
         # This dummy read of wiking.cms.cfg.allow_registration is here to
         # force reading wiking.cms.cfg before updating it.  Not doing so may
         # lead to owerwriting the updated values by the default values from the
@@ -866,7 +868,7 @@ class PageStructure(SiteSpecificContentModule):
         return result
     
     
-class Panels(SiteSpecificContentModule):
+class Panels(SiteSpecificContentModule, wiking.CachingPytisModule):
     """Manage a set of side panels.
 
     The panels are stored in a Pytis data object to allow their management through WMI.
@@ -966,6 +968,10 @@ class Panels(SiteSpecificContentModule):
                        panel_id=record['panel_id'].export(), submit=1),)
         
     def panels(self, req, lang):
+        return self._get_value(req, lang)
+
+    def _load_value(self, req, key, transaction=None):
+        lang = key
         panels = []
         #TODO: tady uvidim prirazenou stranku, navigable
         roles = wiking.module('Users').Roles()
@@ -990,7 +996,8 @@ class Panels(SiteSpecificContentModule):
                                              relation=binding and (binding, row)))
                 if mod.has_channel():
                     channel = '/' + '.'.join((row['identifier'].value(), lang, 'rss'))
-
+                if modname not in self._cache_dependencies:
+                    self._cache_dependencies = self._cache_dependencies + (modname,)
             if row['content'].value():
                 content += (text2content(req, row['content'].value()),)
             content = lcg.Container(content)
@@ -1014,8 +1021,7 @@ class Panels(SiteSpecificContentModule):
             else:
                 titlebar_content = None
             panels.append(wiking.Panel(panel_id, title, content,
-                                       titlebar_content=titlebar_content, channel=channel))
-            
+                                       titlebar_content=titlebar_content, channel=channel))            
         return panels
 
     def action_publish(self, req, record, publish=True):
@@ -1035,7 +1041,7 @@ class Panels(SiteSpecificContentModule):
         return self.action_publish(req, record, publish=False)
 
     
-class Languages(SettingsManagementModule):
+class Languages(SettingsManagementModule, wiking.CachingPytisModule):
     """List all languages available for given site.
 
     This implementation stores the list of available languages in a Pytis data
@@ -1068,10 +1074,11 @@ class Languages(SettingsManagementModule):
     _language_list_time = None
     
     def languages(self):
-        if ((self._language_list_time is None or
-             time.time() - self._language_list_time > 30)):
-            Languages._language_list = [str(r['lang'].value()) for r in self._data.get_rows()]
-            Languages._language_list_time = time.time()
+        return self._get_value(None, None, loader=self._load_languages)
+
+    def _load_languages(self, req, key, transaction=None):
+        Languages._language_list = [str(r['lang'].value()) for r in self._data.get_rows()]
+        Languages._language_list_time = time.time()
         return self._language_list
 
 
@@ -1274,7 +1281,7 @@ class Themes(StyleManagementModule):
 # The modules above are system modules used internally by Wiking.
 # ==============================================================================
 
-class Pages(SiteSpecificContentModule):
+class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
     """Define available pages and their content and allow their management.
 
     This module implements the key CMS functionality.  Pages, their hierarchy, content and other
@@ -1485,8 +1492,7 @@ class Pages(SiteSpecificContentModule):
     _HONOUR_SPEC_TITLE = True
     _ROW_ACTIONS = True
 
-    def __init__(self, *args, **kwargs):
-        super(Pages, self).__init__(*args, **kwargs)
+    _cache_ids = ('default', 'module_uri',)
 
     def _check_page_access(self, req, record, readonly=False):
         """Return true if the current user has readonly/readwrite access to given page record.
@@ -1746,8 +1752,11 @@ class Pages(SiteSpecificContentModule):
             restriction = {}
         else:
             restriction = {'published': True}
-        for row in self._data.get_rows(site=wiking.cfg.server_hostname,
-                                       sorting=self._sorting, **restriction):
+        def loader(req, key, transaction=None):
+            return self._data.get_rows(site=wiking.cfg.server_hostname,
+                                       sorting=self._sorting, **restriction)
+        rows = self._get_value(req, preview_mode, loader=loader)
+        for row in rows:
             page_id = row['page_id'].value()
             if page_id not in translations:
                 children.setdefault(row['parent'].value(), []).append(row)
@@ -1766,6 +1775,10 @@ class Pages(SiteSpecificContentModule):
         return len(self._data.get_rows(site=wiking.cfg.server_hostname)) == 0
 
     def module_uri(self, req, modname):
+        return self._get_value(req, modname, cache_id='module_uri', loader=self._load_module_uri)
+
+    def _load_module_uri(self, req, key, transaction=None):
+        modname = key
         if modname == self.name():
             uri = '/'
         else:
@@ -2909,7 +2922,7 @@ class Attachments(ContentManagementModule):
             return Response(value.buffer(), content_type='image/%s' % value.image().format.lower())
 
 
-class _News(ContentManagementModule, EmbeddableCMSModule):
+class _News(ContentManagementModule, EmbeddableCMSModule, wiking.CachingPytisModule):
     """Common base class for News and Planner."""
     class Spec(Specification):
         def fields(self):
@@ -2975,6 +2988,16 @@ class _News(ContentManagementModule, EmbeddableCMSModule):
     def _rss_author(self, req, record):
         cbvalue = record.cb_value('author', 'email')
         return cbvalue and cbvalue.export()
+
+    def panelize(self, req, lang, count, relation=None):
+        # The hash is not necessarily unique but we don't care much.
+        hash_ = None if relation is None else hash(relation)
+        key = (lang, count, hash_)
+        return self._get_value(req, key, relation=relation, loader=self._load_panelize)
+
+    def _load_panelize(self, req, key, transaction=None, relation=None, **kwargs):
+        lang, count, _hash = key
+        return ContentManagementModule.panelize(self, req, lang, count, relation=relation)
 
 
 class News(_News):
@@ -3202,7 +3225,8 @@ class Resources(wiking.Resources):
         return wiking.module('StyleSheets').stylesheet(filename)
 
 
-class StyleSheets(SiteSpecificContentModule, StyleManagementModule):
+class StyleSheets(SiteSpecificContentModule, StyleManagementModule,
+                  wiking.CachingPytisModule):
     """Manage available Cascading Style Sheets through a Pytis data object."""
     class Scopes(pp.Enumeration):
         enumeration = (
@@ -3275,24 +3299,33 @@ class StyleSheets(SiteSpecificContentModule, StyleManagementModule):
         sorting = (('ord', ASC),)
     _REFERER = 'identifier'
 
-    def stylesheets(self, req):
-        scopes = (None, req.wmi and 'wmi' or 'website')
-        base_uri = req.module_uri('Resources')
-        return [lcg.Stylesheet(row['identifier'].value(),
-                               uri=base_uri + '/' + row['identifier'].value(),
-                               media=row['media'].value())
-                for row in self._data.get_rows(site=wiking.cfg.server_hostname,
-                                               active=True,
-                                               condition=pd.OR(*[pd.EQ('scope', pd.sval(s))
-                                                                 for s in scopes]),
-                                               sorting=self._sorting)]
+    _cache_ids = ('default', 'single',)
 
+    def stylesheets(self, req):
+        return self._get_value(req, None)
+        
     def stylesheet(self, name):
-        row = self._data.get_row(identifier=name, active=True, site=wiking.cfg.server_hostname)
-        if row:
-            return row['content'].value()
+        return self._get_value(None, name, cache_id='single')
+
+    def _load_value(self, req, key, transaction=None):
+        if key is None:
+            scopes = (None, req.wmi and 'wmi' or 'website')
+            base_uri = req.module_uri('Resources')
+            return [lcg.Stylesheet(row['identifier'].value(),
+                                   uri=base_uri + '/' + row['identifier'].value(),
+                                   media=row['media'].value())
+                    for row in self._data.get_rows(site=wiking.cfg.server_hostname,
+                                                   active=True,
+                                                   condition=pd.OR(*[pd.EQ('scope', pd.sval(s))
+                                                                     for s in scopes]),
+                                                   sorting=self._sorting)]
         else:
-            return None
+            name = key
+            row = self._data.get_row(identifier=name, active=True, site=wiking.cfg.server_hostname)
+            if row:
+                return row['content'].value()
+            else:
+                return None
 
 
 class Text(Structure):
@@ -3480,7 +3513,7 @@ class CommonTexts(SettingsManagementModule):
         return record
 
 
-class Texts(CommonTexts):
+class Texts(CommonTexts, wiking.CachingPytisModule):
     """Management of simple texts.
 
     The texts are LCG structured texts and they are language dependent.  Each
@@ -3528,6 +3561,9 @@ class Texts(CommonTexts):
                 site = wiking.cfg.server_hostname
                 self._call_db_function('cms_add_text_label', text.label(), site)
 
+    def _load_value(self, req, key, transaction=None):
+        return self._data.get_row(text_id=key)
+
     def text(self, req, text, lang=None, args=None):
         """Return text corresponding to 'text'.
 
@@ -3551,7 +3587,7 @@ class Texts(CommonTexts):
         assert isinstance(text, Text)
         lang = self._select_language(req, lang)
         text_id = ':'.join((text.label(), wiking.cfg.server_hostname, lang))
-        row = self._data.get_row(text_id=text_id)
+        row = self._get_value(req, text_id)
         if row is None:
             retrieved_text = None
         else:

@@ -31,7 +31,6 @@ L{RoleSets}, L{RoleMembers}, L{ApplicationRoles}.
 
 import datetime
 import time
-import weakref
 import random
 import socket
 import string
@@ -44,7 +43,7 @@ import wiking
 import lcg
 
 from pytis.presentation import Action, CodebookSpec, Field, FieldSet, computer
-from wiking import Binding, OPR
+from wiking import Binding, CachingPytisModule, OPR
 from wiking.cms import Abort, ActionHandler, AuthenticationError, BadRequest, \
     ConfirmationDialog, DateTime, Document, \
     EmbeddableCMSModule, Forbidden, Module, PytisModule, Redirect, Role, Roles, Specification, \
@@ -54,7 +53,7 @@ from wiking.cms import Abort, ActionHandler, AuthenticationError, BadRequest, \
 _ = lcg.TranslatableTextFactory('wiking-cms')
 
 
-class RoleSets(UserManagementModule):
+class RoleSets(UserManagementModule, CachingPytisModule):
     """Accessor of role containment information stored in the database.
 
     Roles can contain other roles.  Those may be any L{Role} instances,
@@ -79,8 +78,9 @@ class RoleSets(UserManagementModule):
     _TITLE_COLUMN = 'member_role_id'
     _INSERT_LABEL = _("Add rights of group")
 
-    _cached_dictionary = None
-    _cached_dictionary_time = None
+    _roles_instance = None
+    _cache_ids = ('containment', 'resolution',)
+    _DEFAULT_CACHE_ID = 'containment'
     
     def _layout(self, req, action, record=None):
         return (self._TITLE_COLUMN,)
@@ -98,34 +98,17 @@ class RoleSets(UserManagementModule):
         else:
             return super(RoleSets, self)._link_provider(req, uri, record, cid, **kwargs)
 
-    def _make_dictionary(self):
-        dictionary = {}
+    def _load_cache(self, req, transaction=None):
+        super(RoleSets, self)._load_cache(req, transaction=transaction)
+        cache = self._get_cache('containment')
         def add(row):
             role_id = row['role_id'].value()
             contained_role_id = row['member_role_id'].value()
-            contained_roles = dictionary.get(role_id)
+            contained_roles = cache.get(role_id)
             if contained_roles is None:
-                contained_roles = dictionary[role_id] = []
+                contained_roles = cache[role_id] = []
             contained_roles.append(contained_role_id)
-        self._data.select_map(add)
-        return dictionary
-        
-    def _dictionary(self):
-        """
-        @rtype: dictionary of strings as keys and sequences of strings as values
-        @return: Role containment information in the form of dictionary with
-          role identifiers as keys and sequences of identifiers of their
-          corresponding contained roles.
-
-        @note: The dictionary contains only roles contained in other roles.  It
-          doesn't contain any information about users.
-          
-        """
-        if ((self._cached_dictionary is None or
-             time.time() - self._cached_dictionary_time > 30)):
-            self._cached_dictionary = self._make_dictionary()
-            self._cached_dictionary_time = time.time()
-        return self._cached_dictionary
+        self._data.select_map(add, transaction=transaction)
 
     def related(self, req, binding, record, uri):
         content = super(RoleSets, self).related(req, binding, record, uri)
@@ -139,12 +122,18 @@ class RoleSets(UserManagementModule):
             info = None
         return info and lcg.Container((lcg.p(info), content)) or content
 
-    def _related_role_ids(self, role, what_to_add):
+    def _related_role_ids(self, role, what_to_add, instances=False):
         assert isinstance(role, wiking.Role), role
-        return self._related_role_ids_by_role_ids([role.id()], what_to_add)
+        return self._related_role_ids_by_role_ids([role.id()], what_to_add, instances=instances)
 
-    def _related_role_ids_by_role_ids(self, init_role_ids, what_to_add):
-        containment = self._dictionary()
+    def _related_role_ids_by_role_ids(self, init_role_ids, what_to_add, instances=False):
+        self._check_cache(None, load=True)
+        key = tuple(init_role_ids) + (what_to_add, instances,)
+        resolution_cache = self._get_cache('resolution')
+        result = resolution_cache.get(key)
+        if result is not None:
+            return result
+        containment = self._get_cache('containment')
         if what_to_add == 'including':
             c = {}
             for r, role_list in containment.items():
@@ -160,31 +149,45 @@ class RoleSets(UserManagementModule):
             if r_id not in role_ids:
                 role_ids.add(r_id)
                 queue = queue.union(set(containment.get(r_id, [])))
-        return list(role_ids)
+        if instances:
+            if self._roles_instance is None:
+                self._roles_instance = wiking.module('Users').Roles()
+            roles_instance = self._roles_instance
+            result = [roles_instance[role_id] for role_id in role_ids]
+        else:
+            result = list(role_ids)
+        resolution_cache[key] = result
+        return result
         
-    def included_role_ids(self, role):
+    def included_role_ids(self, role, instances=False):
         """
         @type role: L{Role}
         @param role: Role whose contained roles should be returned.
+        @type instances: boolean
+        @param instances: Iff true then return L{Role} instances rather than
+          role ids
 
         @rtype: sequence of strings
         @return: Sequence of role identifiers included in the given role,
           including the identifier of C{role} itself.
           
         """
-        return self._related_role_ids(role, 'included')
+        return self._related_role_ids(role, 'included', instances=instances)
         
-    def included_role_ids_by_role_ids(self, role_ids):
+    def included_role_ids_by_role_ids(self, role_ids, instances=False):
         """
         @type role_ids: sequence of strings
         @param role_ids: Ids of roles whose contained role ids should be returned.
+        @type instances: boolean
+        @param instances: Iff true then return L{Role} instances rather than
+          role ids
 
         @rtype: sequence of strings
         @return: Sequence of role identifiers included in the given role,
           including C{role_ids} themselves.
           
         """
-        return self._related_role_ids_by_role_ids(role_ids, 'included')
+        return self._related_role_ids_by_role_ids(role_ids, 'included', instances=instances)
 
     def containing_role_ids(self, role):
         """
@@ -475,7 +478,7 @@ class UserGroups(ApplicationRoles):
         return req.module_uri('ApplicationRoles')
 
         
-class Users(UserManagementModule):
+class Users(UserManagementModule, CachingPytisModule):
     """
     TODO: General description
 
@@ -841,10 +844,8 @@ class Users(UserManagementModule):
     # Translators: Button label. Modify the users data (email, address...)
     _UPDATE_DESCR = _("Modify user's record")
 
-    def __init__(self, *args, **kwargs):
-        self._user_cache = weakref.WeakKeyDictionary()
-        self._find_users_cache = weakref.WeakKeyDictionary()
-        super(Users, self).__init__(*args, **kwargs)
+    _cache_dependencies = ('roles', 'role_sets',)
+    _cache_ids = ('default', 'find',)
 
     def _authorized(self, req, action, record=None, **kwargs):
         if action in ('insert', 'confirm', 'regreminder'):
@@ -1248,12 +1249,11 @@ class Users(UserManagementModule):
         Returns a 'User' instance (defined in request.py) or None.
 
         """
-        key = (login, uid, transaction and id(transaction))
-        user_cache = self._user_cache.get(req)
-        if user_cache is None:
-            user_cache = self._user_cache[req] = {}
-        elif key in user_cache:
-            return user_cache[key]
+        key = (login, uid,)
+        return self._get_value(req, key, transaction=transaction, loader=self._load_user)
+
+    def _load_user(self, req, key, transaction=None):
+        login, uid = key
         # Get the user data from db
         if login is not None and uid is None:
             kwargs = dict(login=login)
@@ -1268,7 +1268,6 @@ class Users(UserManagementModule):
             # Convert user data into a User instance
             user_kwargs = self._user_arguments(req, row['login'].value(), row)
             user = self._make_user(user_kwargs)
-        user_cache[key] = user
         return user
 
     def find_user(self, req, query):
@@ -1315,11 +1314,10 @@ class Users(UserManagementModule):
         else:
             role_id = role.id()
         key = (email, state, role_id, confirm,)
-        user_cache = self._find_users_cache.get(req)
-        if user_cache is None:
-            user_cache = self._find_users_cache[req] = {}
-        elif key in user_cache:
-            return user_cache[key]
+        return self._get_value(req, key, cache_id='find', loader=self._load_find_users, role=role)
+
+    def _load_find_users(self, req, key, transaction=None, role=None):
+        email, state, role_id, confirm = key
         if role is not None:
             role_user_ids = wiking.module('RoleMembers').user_ids(role)
         def make_user(row):
@@ -1337,7 +1335,6 @@ class Users(UserManagementModule):
         users = [make_user(row) for row in self._data.get_rows(**kwargs)]
         if role is not None:
             users = [u for u in users if u is not None]
-        user_cache[key] = users
         return users
 
     def _generate_password(self):
