@@ -3,7 +3,7 @@
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
+# the Free Software Foundation; either version 3 of the License, or
 # (at your option) any later version.
 #
 # This program is distributed in the hope that it will be useful,
@@ -1742,18 +1742,11 @@ def serve_file(req, path, content_type=None, filename=None, lock=False):
         mime_type, encoding = mimetypes.guess_type(path)
         content_type = mime_type or 'application/octet-stream'
     mtime = datetime.datetime.utcfromtimestamp(info.st_mtime)
-    since_header = req.header('If-Modified-Since')
-    if since_header:
-        try:
-            since = parse_http_date(since_header)
-        except:
-            # Ignore the 'If-Modified-Since' header if the date format is
-            # invalid.
-            pass
-        else:
-            if mtime == since:
-                return wiking.Response('', status_code=httplib.NOT_MODIFIED,
-                                       content_type=content_type)
+    modified_since_header = req.header('If-Modified-Since')
+    if modified_since_header:
+        modified_since = parse_http_date(modified_since_header)
+        if modified_since is not None and mtime == modified_since:
+            return wiking.Response('', status_code=httplib.NOT_MODIFIED, content_type=content_type)
     headers = (('Last-Modified', format_http_date(mtime)),)
     def generator():
         f = file(path)
@@ -2100,8 +2093,9 @@ def parse_http_date(date_string):
       date_string -- basestring representing date and time in one of the
         formats supported by RFC 2616
 
-    Return corresponding 'datetime.datetime' instance in UTC.
-    
+    Returns corresponding 'datetime.datetime' instance in UTC or None when the
+    date string doesn't match one of the expected formats.
+
     """
     date_string = date_string.strip()
     tz_offset = None
@@ -2131,18 +2125,16 @@ def parse_http_date(date_string):
             date_string = '%s%02d%s' % (date_string[:pos], i + 1, date_string[pos + 3:],)
             break
     # Parse the date
-    dt = None
     for format_ in ('%d %m %Y %H:%M:%S', '%d-%m-%y %H:%M:%S', '%m %d %H:%M:%S %Y',):
         try:
             dt = datetime.datetime.strptime(date_string, format_)
-            break
         except ValueError:
             pass
-    if dt is None:
-        raise Exception("Invalid date format")
-    if tz_offset is not None:
-        dt -= tz_offset
-    return dt
+        else:
+            if tz_offset is not None:
+                dt -= tz_offset
+            return dt
+    return None
 
 def pdf_document(content, lang):
     """Return PDF document created from 'lcg_content'.
