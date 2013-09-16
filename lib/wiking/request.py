@@ -1,4 +1,4 @@
-# Copyright (C) 2006-2012 Brailcom, o.p.s.
+# Copyright (C) 2006-2013 Brailcom, o.p.s.
 # Author: Tomas Cerha <cerha@brailcom.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -17,7 +17,7 @@
 
 import os, string, Cookie, re, urllib, datetime, httplib, types
 import wiking, lcg, pytis
-from wiking import log, OPR, format_http_date, parse_http_date
+from wiking import log, OPR
 
 _ = lcg.TranslatableTextFactory('wiking')
 
