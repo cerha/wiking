@@ -1504,6 +1504,31 @@ class WikingDefaultDataClass(DBAPIData):
         result = function.call(pytis.data.Row(args))
         return result[0][0].value()
 
+    def insert(self, *args, **kwargs):
+        result = super(WikingDefaultDataClass, self).insert(*args, **kwargs)
+        wiking.module('CachedTables').reload_info(None)
+        return result
+
+    def update(self, *args, **kwargs):
+        result = super(WikingDefaultDataClass, self).update(*args, **kwargs)
+        wiking.module('CachedTables').reload_info(None)
+        return result
+
+    def update_many(self, *args, **kwargs):
+        result = super(WikingDefaultDataClass, self).update_many(*args, **kwargs)
+        wiking.module('CachedTables').reload_info(None)
+        return result
+
+    def delete(self, *args, **kwargs):
+        result = super(WikingDefaultDataClass, self).delete(*args, **kwargs)
+        wiking.module('CachedTables').reload_info(None)
+        return result
+
+    def delete_many(self, *args, **kwargs):
+        result = super(WikingDefaultDataClass, self).delete_many(*args, **kwargs)
+        wiking.module('CachedTables').reload_info(None)
+        return result
+
 
 class Specification(pp.Specification):
     help = None # Default value needed by CMSModule.descr()

@@ -19,5 +19,6 @@
 
 import sqlalchemy
 
+from wiking_db import *
 from wiking_cms import *
 from wiking_cms_u import *

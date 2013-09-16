@@ -19,6 +19,8 @@
 import collections
 import cStringIO as StringIO
 import re
+import string
+import weakref
 
 import pytis.data as pd
 import pytis.presentation as pp
@@ -2633,3 +2635,261 @@ class PytisRssModule(PytisModule):
                         pubdate=date(record))
         writer.finish()
         return wiking.Response(buff.getvalue(), content_type='application/xml')
+
+
+class CachedTables(PytisModule):
+    """Management of information about cached database tables.
+
+    It maintains information about versions of data tables.  It is supposed to
+    be used only by 'CachingPytisModule'.  It provides the following methods to
+    the module: 'reload_info()' to reload the information from the database;
+    and 'current_version()' to get version of given database data.
+
+    """
+    class Spec(wiking.Specification):
+        table = 'cached_tables'
+        fields = (pp.Field('object_schema'),
+                  pp.Field('object_name'),
+                  pp.Field('version'),
+                  pp.Field('stamp'),
+                  )
+
+    def __init__(self, *args, **kwargs):
+        super(CachedTables, self).__init__(*args, **kwargs)
+        class Key(object):
+            pass
+        self._no_transaction_key = Key()
+        self._table_info = weakref.WeakKeyDictionary()
+        self.reload_info(None)
+
+    def reload_info(self, req, transaction=None):
+        """Reload version information from the database.
+
+        This is typically to be done at the beginning of each HTTP request to
+        ensure some synchronization with other application processes, and then
+        anytime some cached data changes in this application process.
+
+        Arguments:
+
+          transaction -- particular transaction for which the version
+            information should  be reloaded
+
+        Be careful about all the changes which may happen to the data.  Data
+        may be changed in many situations, e.g. on direct database writes in a
+        given transaction, on commits (the changes become visible outside the
+        transaction) or perhaps indirectly by triggers or database functions.
+        It is not important what particular has changed, just calling the
+        reload on any relevant change is enough.
+
+        """
+        transaction_key = self._no_transaction_key if transaction is None else transaction
+        info = self._table_info.get(transaction_key)
+        if info is None:
+            info = self._table_info[transaction_key] = {}
+        else:
+            info.clear()
+        def add(row):
+            key = row['object_schema'].value() + '.' + row['object_name'].value()
+            info[key] = (row['version'].value(), row['stamp'].value(),)
+        self._data.select_map(add, transaction=transaction)
+        
+    def current_stamp(self, schema, table, transaction=None):
+        """Return current version and timestamp.
+
+        Arguments:
+
+          schema -- schema of the database object; string
+          table -- name of the database object; string.  The database object
+            may be a table or a view.
+          transaction -- transaction for which the information should be
+            reported or 'None'; note that different transactions may report
+            different object stamps at the same moment.
+
+        The return value is the pair (VERSION, TIMESTAMP,).  See
+        'current_version()' for information about VERSION.  TIMESTAMP is a
+        datetime instance containg the last modification time of the given
+        version of the table.  Both VERSION and TIMESTAMP may be 'None' if no
+        information is available about the table.
+
+        """
+        if transaction is None:
+            transaction = self._no_transaction_key
+        info = self._table_info.get(transaction)
+        if info is None:
+            info = self._table_info.get(self._no_transaction_key, {})
+        key = schema + '.' + table
+        stamp = info.get(key)
+        if stamp is None:
+            return None, None
+        return stamp
+
+    def current_version(self, schema, table, transaction=None):
+        """Return current version of the given database object.
+
+        Arguments:
+
+          schema -- schema of the database object; string
+          table -- name of the database object; string.  The database object
+            may be a table or a view.
+          transaction -- transaction for which the version should be reported
+            or 'None'; note that different transactions may report different
+            object versions at the same moment.
+
+        The returned value is an integer.  Don't try to interpret the value;
+        e.g. there is no guarantee that the version number of a particular
+        database objects always increases, it may decrease on rollbacks.  The
+        only guarantee is that if two version numbers are the same in two given
+        moments within some transaction (or both outside any transaction) then
+        the cached data from the first moment may be reused at the second
+        moment.
+
+        """
+        version = self.current_stamp(schema, table, transaction=transaction)[0]
+        return version or 0
+
+class CachingPytisModule(PytisModule):
+    """Pytis module with general caching ability.
+
+    It supports caching of database data accross HTTP requests with automated
+    refreshes from the database.  It should make data caching as simple as
+    possible but it is still important to understand all the caching rules.
+
+    Each subclass may use any number of caches.  Each cache has its name which
+    must be present in '_cache_ids' attribute (tuple of strings).  The default
+    cache name is stored in '_DEFAULT_CACHE_ID' attribute (string).  All the
+    caches specified in '_cache_ids' are created as empty dictionaries
+    automatically by default.  If you want to redefine the initialization
+    process (it's rarely useful) you may do so by overriding '_init_cache()'
+    and '_flush_cache()' methods.  Note the methods serve for cache
+    initialization, not for loading the data.
+
+    If cached data depends on objects other than the module table then the
+    other objects must be specified in '_cache_dependencies' attribute (tuple
+    of strings).  Each of the objects may be either a module name, starting
+    with an uppercase letter, or a database object name, starting with a
+    lowercase letter.
+
+    Data can be loaded into the caches in two ways.  The first way is to load
+    all the data at once by extending '_load_cache()' method.  It is important
+    to store current database object versions at the same time; the default
+    '_load_cache()' implementation does exactly that (and nothing more).  Often
+    you do not want to load all data at once but only on demand.  In such a
+    case you can redefine '_load_value()' to return the proper value for the
+    given key.  Default '_load_value()' implementation returns
+    'pytis.util.UNDEFINED' meaning the value is not available in the cache.  If
+    you use more than one cache, you may define other value retrieval methods,
+    more on that below.
+
+    Each piece of data is retrieved by its key, it may be any object which can
+    be used as Python dictionary key.  Data is retrieved using '_get_value()'
+    method.  It takes Wiking request (use 'None' when it's not available) and
+    the key as arguments.  There are additional keyword arguments: current
+    transaction (don't forget to use it when needed), cache name (if not the
+    default) and loader permitting to specify other data loading function than
+    '_load_value()' which is very useful when using multiple caches.  If the
+    given value is not present the cache or the cache is dirty, the method
+    tries to retrieve the value using 'loader' or (if no loader was specified)
+    '_load_value()'.  If it returns 'pytis.util.UNDEFINED' then '_get_value()'
+    tries to load all data using '_load_cache' and get the value again.  This
+    way you usually don't have to load any data explicitly, it's just enough to
+    redefine or extend one or more methods and using proper '_get_value()'
+    arguments.  '_get_value()' provides complete cache handling and value
+    retrieval implementation and shouldn't be redefined.
+
+    A given cache may be accessed directly using '_get_cache()' method.  But
+    there is seldom need to handle caches this way outside the direct cache
+    management methods.
+
+    It's sometimes useful to check for data freshness, using '_check_cache()'
+    method.  The method returns true if the cache is up-to-date, and false
+    otherwise.  If the cache is dirty, it's flushed.  Additionally, if the
+    optional argument 'load' is true then the dirty cache is also reloaded
+    using '_load_cache()'.
+
+    Enjoy your caching and be careful!
+
+    """
+    _cache_ids = ('default',)
+    _DEFAULT_CACHE_ID = 'default'
+    _cache_dependencies = ()
+
+    def __init__(self, *args, **kwargs):
+        super(CachingPytisModule, self).__init__(*args, **kwargs)
+        self._init_cache()
+
+    def _init_cache(self):
+        self._caches = [(id_, {},) for id_ in self._cache_ids]
+        self._cache_versions = {}
+        
+    def _flush_cache(self, req):
+        self._init_cache()
+
+    def _update_cache_versions(self, req, transaction=None):
+        versions = self._cache_versions
+        versions[None] = self._cached_table_version(req, transaction=transaction)
+        for d in self._cache_dependencies:
+            if self._database_dependency(d):
+                versions[d] = self._cached_table_version(req, d, transaction=transaction)
+
+    _cached_tables_module = None
+    def _cached_table_version(self, req, table=None, transaction=None):
+        cache_module = CachingPytisModule._cached_tables_module
+        if cache_module is None:
+            cache_module = CachingPytisModule._cached_tables_module = wiking.module('CachedTables')
+        if table is None:
+            table = self.Spec.table
+        return cache_module.current_version('public', table, transaction=transaction)
+
+    def _database_dependency(self, dependency):
+        return dependency[0] in string.lowercase
+
+    def _load_cache(self, req, transaction=None):
+        self._update_cache_versions(req, transaction=transaction)
+
+    def _load_value(self, req, key, transaction=None, **kwargs):
+        return pytis.util.UNDEFINED
+
+    def _get_value(self, req, key, transaction=None, cache_id=None, loader=None, **kwargs):
+        self._check_cache(req, transaction=transaction, load=True)
+        if cache_id is None:
+            cache_id = self._DEFAULT_CACHE_ID
+        cache = self._get_cache(cache_id)
+        value = cache.get(key, pytis.util.UNDEFINED)
+        if value is pytis.util.UNDEFINED:
+            if loader is None:
+                loader = self._load_value
+            value = loader(req, key, transaction=transaction, **kwargs)
+            if value is pytis.util.UNDEFINED:
+                self._flush_cache(req)
+                self._load_cache(req, transaction=transaction)
+                value = self._cache[key]
+            else:
+                cache[key] = value
+        return value
+
+    def _get_cache(self, cache_id):
+        cache_cell = pytis.util.assoc(cache_id, self._caches)
+        assert cache_cell is not None, ('Invalid cache name: ' + cache_id)
+        return cache_cell[1]
+
+    def _check_cache(self, req, load=False, transaction=None):
+        cache_version = self._cached_table_version(req, transaction=transaction)
+        db_version = self._cache_versions.get(None)
+        up_to_date = (cache_version == db_version)
+        if up_to_date:
+            for d in self._cache_dependencies:
+                if self._database_dependency(d):
+                    if self._cache_versions.get(d) != self._cached_table_version(req, d):
+                        up_to_date = False
+                        break
+                else:
+                    if not wiking.module(d)._check_cache(req, transaction=transaction):
+                        up_to_date = False
+                        break
+        if not up_to_date:
+            self._flush_cache(req)
+            if load:
+                self._load_cache(req, transaction=transaction)
+            else:
+                self._update_cache_versions(req, transaction=transaction)
+        return up_to_date
