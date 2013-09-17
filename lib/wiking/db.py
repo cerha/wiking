@@ -2862,7 +2862,7 @@ class CachingPytisModule(PytisModule):
             if value is pytis.util.UNDEFINED:
                 self._flush_cache(req)
                 self._load_cache(req, transaction=transaction)
-                value = self._cache[key]
+                value = self._get_cache(cache_id)[key]
             else:
                 cache[key] = value
         return value
