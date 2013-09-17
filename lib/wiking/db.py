@@ -2785,16 +2785,18 @@ class CachingPytisModule(PytisModule):
     method.  It takes Wiking request (use 'None' when it's not available) and
     the key as arguments.  There are additional keyword arguments: current
     transaction (don't forget to use it when needed), cache name (if not the
-    default) and loader permitting to specify other data loading function than
-    '_load_value()' which is very useful when using multiple caches.  If the
-    given value is not present the cache or the cache is dirty, the method
-    tries to retrieve the value using 'loader' or (if no loader was specified)
-    '_load_value()'.  If it returns 'pytis.util.UNDEFINED' then '_get_value()'
-    tries to load all data using '_load_cache' and get the value again.  This
-    way you usually don't have to load any data explicitly, it's just enough to
-    redefine or extend one or more methods and using proper '_get_value()'
-    arguments.  '_get_value()' provides complete cache handling and value
-    retrieval implementation and shouldn't be redefined.
+    default), loader permitting to specify other data loading function than
+    '_load_value()' which is very useful when using multiple caches, and
+    default value to return in case of key error (preventing retrieval of any
+    database values if the cache is up-to-date).  If the given value is not
+    present the cache or the cache is dirty, the method tries to retrieve the
+    value using 'loader' or (if no loader was specified) '_load_value()'.  If
+    it returns 'pytis.util.UNDEFINED' then '_get_value()' tries to load all
+    data using '_load_cache' and get the value again.  This way you usually
+    don't have to load any data explicitly, it's just enough to redefine or
+    extend one or more methods and using proper '_get_value()' arguments.
+    '_get_value()' provides complete cache handling and value retrieval
+    implementation and shouldn't be redefined.
 
     A given cache may be accessed directly using '_get_cache()' method.  But
     there is seldom need to handle caches this way outside the direct cache
@@ -2849,13 +2851,16 @@ class CachingPytisModule(PytisModule):
     def _load_value(self, req, key, transaction=None, **kwargs):
         return pytis.util.UNDEFINED
 
-    def _get_value(self, req, key, transaction=None, cache_id=None, loader=None, **kwargs):
+    def _get_value(self, req, key, transaction=None, cache_id=None, loader=None,
+                   default=pytis.util.UNDEFINED, **kwargs):
         self._check_cache(req, transaction=transaction, load=True)
         if cache_id is None:
             cache_id = self._DEFAULT_CACHE_ID
         cache = self._get_cache(cache_id)
         value = cache.get(key, pytis.util.UNDEFINED)
         if value is pytis.util.UNDEFINED:
+            if default is not pytis.util.UNDEFINED:
+                return default
             if loader is None:
                 loader = self._load_value
             value = loader(req, key, transaction=transaction, **kwargs)
