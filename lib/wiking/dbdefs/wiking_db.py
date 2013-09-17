@@ -60,8 +60,9 @@ class FUpdateCachedTablesAfter(sql.SQLPlFunction, sql.SQLTrigger):
     
 class CachedTablesUpdateTrigger(sql.SQLTrigger):
     name = 'cached_tables_update_trigger'
-    events = ('insert', 'update', 'delete',)
+    events = ('insert', 'update', 'delete', 'truncate',)
     position = 'after'
+    each_row = False
     body = FUpdateCachedTablesAfter
 
 class Base_CachingTable(sql.SQLTable):
