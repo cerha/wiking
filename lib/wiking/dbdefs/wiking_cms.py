@@ -73,7 +73,7 @@ class CmsCountries(CommonAccesRights, sql.SQLTable):
 
 #
 
-class Roles(CommonAccesRights, sql.SQLTable):
+class Roles(CommonAccesRights, Base_CachingTable):
     name = 'roles'
     fields = (sql.PrimaryColumn('role_id', pytis.data.Name()),
               sql.Column('name', pytis.data.String()),
@@ -162,7 +162,7 @@ class CmsFInsertOrUpdateUser(sql.SQLPlFunction):
                  )
     result_type = None
 
-class RoleMembers(CommonAccesRights, sql.SQLTable):
+class RoleMembers(CommonAccesRights, Base_CachingTable):
     name = 'role_members'
     fields = (sql.PrimaryColumn('role_member_id', pytis.data.Serial(not_null=True)),
               sql.Column('role_id', pytis.data.Name(not_null=True),
@@ -172,7 +172,7 @@ class RoleMembers(CommonAccesRights, sql.SQLTable):
               )
     unique = (('role_id', 'uid',),)
 
-class AUserRoles(CommonAccesRights, sql.SQLTable):
+class AUserRoles(CommonAccesRights, Base_CachingTable):
     name = 'a_user_roles'
     fields = (sql.Column('uid', pytis.data.Integer(), index=True,
                          references=sql.a(sql.r.Users, onupdate='CASCADE', ondelete='CASCADE')),
