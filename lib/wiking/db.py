@@ -263,8 +263,9 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         Warning: Instances of this class should not persist across multiple requests!
 
         """
-        def __init__(self, req, *args, **kwargs):
+        def __init__(self, req, module, *args, **kwargs):
             self._req = req
+            self._module = module
             super(PytisModule.Record, self).__init__(*args, **kwargs)
 
         def req(self):
@@ -302,6 +303,10 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                 dbcolumns.append(dbcolumn)
                 rdata.append((id, value))
             return pd.Row(rdata)
+            
+        def display(self, key):
+            open('/var/tmp/wwwdebug', 'a').write('%s %s\n' % (key, self._module.name(),))
+            return super(PytisModule.Record, self).display(key)
 
     @classmethod
     def title(cls):
@@ -380,7 +385,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
 
     def _record(self, req, row, new=False, prefill=None, transaction=None):
         """Return the Record instance initialized by given data row."""
-        return self.Record(req, self._view.fields(), self._data, row,
+        return self.Record(req, self, self._view.fields(), self._data, row,
                            prefill=prefill, resolver=wiking.cfg.resolver, new=new,
                            transaction=transaction)
 
@@ -2898,3 +2903,36 @@ class CachingPytisModule(PytisModule):
             else:
                 self._update_cache_versions(req, transaction=transaction)
         return up_to_date
+
+class CbCachingPytisModule(CachingPytisModule):
+    """Pytis module caching codebook exports.
+
+    It automatically caches fields whose ids are in '_cached_field_ids'
+    attribute.  Technically any field displayed using 'Record.display()' method
+    can be cached here, not just codebooks.
+
+    """
+    _cached_field_ids = ()
+    _cache_ids = ('default', 'fields',)
+            
+    class Record(CachingPytisModule.Record):
+
+        def _load_value(self, req, key, transaction=None, **kwargs):
+            return CachingPytisModule.Record.display(self, key[-2])
+            
+        def display(self, key):
+            module = self._module
+            if key in module._cached_field_ids:
+                cache_key = self.key() + (key, self[key].value(),)
+                return module._get_value(self._req, cache_key, cache_id='fields',
+                                         loader=self._load_value, transaction=self._transaction)
+            return super(CbCachingPytisModule.Record, self).display(key)
+
+    def __init__(self, *args, **kwargs):
+        super(CbCachingPytisModule, self).__init__(*args, **kwargs)
+        for f in self._view.fields():
+            if f.id() in self._cached_field_ids:
+                codebook = f.codebook()
+                if codebook is not None:
+                    # This may sometimes unnecessarily invalidate other caches.
+                    self._cache_dependencies = self._cache_dependencies + (codebook,)
