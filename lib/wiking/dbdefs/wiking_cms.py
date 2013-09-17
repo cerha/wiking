@@ -24,7 +24,7 @@ import sqlalchemy
 import pytis.data.gensqlalchemy as sql
 import pytis.data
 from pytis.data.dbdefs import and_, coalesce, func, ival, null, select, stype, sval
-from wiking_db import _CachingTable, CommonAccesRights
+from wiking_db import Base_CachingTable, CommonAccesRights
 
 current_timestamp_0 = sqlalchemy.sql.expression.Function('current_timestamp', ival(0))
 
@@ -34,14 +34,14 @@ class CmsDatabaseVersion(sql.SQLTable):
     name = 'cms_database_version'
     fields = (sql.Column('version', pytis.data.Integer()),)
 
-class CmsLanguages(CommonAccesRights, _CachingTable):
+class CmsLanguages(CommonAccesRights, Base_CachingTable):
     name = 'cms_languages'
     fields = (sql.PrimaryColumn('lang_id', pytis.data.Serial()),
               sql.Column('lang', pytis.data.String(minlen=2, maxlen=2, not_null=True),
                          unique=True),
               )
 
-class CmsConfig(CommonAccesRights, _CachingTable):
+class CmsConfig(CommonAccesRights, Base_CachingTable):
     name = 'cms_config'
     fields = (sql.PrimaryColumn('site', pytis.data.String()),
               sql.Column('site_title', pytis.data.String()),
@@ -82,7 +82,7 @@ class Roles(CommonAccesRights, sql.SQLTable):
               )
     init_columns = ('role_id', 'name', 'system', 'auto',)
 
-class RoleSets(CommonAccesRights, _CachingTable):
+class RoleSets(CommonAccesRights, Base_CachingTable):
     name = 'role_sets'
     fields = (sql.PrimaryColumn('role_set_id', pytis.data.Serial(not_null=True)),
               sql.Column('role_id', pytis.data.Name(not_null=True),
@@ -106,7 +106,7 @@ class UnrelatedRoles(sql.SQLFunction):
     multirow = True
     stability = 'stable'
 
-class Users(CommonAccesRights, _CachingTable):
+class Users(CommonAccesRights, Base_CachingTable):
     name = 'users'
     fields = (sql.PrimaryColumn('uid', pytis.data.Serial(not_null=True)),
               sql.Column('login', pytis.data.String(maxlen=64, not_null=True, unique=True)),
@@ -280,7 +280,7 @@ class CmsVSessionLog(CommonAccesRights, sql.SQLView):
 
 #
 
-class CmsPages(CommonAccesRights, _CachingTable):
+class CmsPages(CommonAccesRights, Base_CachingTable):
     name = 'cms_pages'
     fields = (sql.PrimaryColumn('page_id', pytis.data.Serial(not_null=True)),
               sql.Column('site', pytis.data.String(not_null=True),
@@ -320,7 +320,7 @@ class CmsPagesUpdateOrder(sql.SQLPlFunction, sql.SQLTrigger):
     events = ('insert', 'update',)
     position = 'before'
 
-class CmsPageTexts(CommonAccesRights, _CachingTable):
+class CmsPageTexts(CommonAccesRights, Base_CachingTable):
     name = 'cms_page_texts'
     fields = (sql.Column('page_id', pytis.data.Integer(not_null=True),
                          references=sql.a(sql.r.CmsPages, ondelete='CASCADE')),
@@ -707,7 +707,7 @@ class CmsPublicationIndexes(CommonAccesRights, sql.SQLTable):
 
 #
 
-class CmsNews(CommonAccesRights, _CachingTable):
+class CmsNews(CommonAccesRights, Base_CachingTable):
     name = 'cms_news'
     fields = (sql.PrimaryColumn('news_id', pytis.data.Serial(not_null=True)),
               sql.Column('page_id', pytis.data.Integer(not_null=True),
@@ -739,7 +739,7 @@ class CmsRecentTimestamp(sql.SQLFunction):
         """
         return 'select (current_date - $1::date) < $2'
 
-class CmsPlanner(CommonAccesRights, _CachingTable):
+class CmsPlanner(CommonAccesRights, Base_CachingTable):
     name = 'cms_planner'
     fields = (sql.PrimaryColumn('planner_id', pytis.data.Serial(not_null=True)),
               sql.Column('page_id', pytis.data.Integer(not_null=True),
@@ -778,7 +778,7 @@ class CmsDiscussionsTriggerBeforeInsert(sql.SQLPlFunction, sql.SQLTrigger):
     position = 'before'
     events = ('insert',)
 
-class CmsPanels(CommonAccesRights, _CachingTable):
+class CmsPanels(CommonAccesRights, Base_CachingTable):
     name = 'cms_panels'
     fields = (sql.PrimaryColumn('panel_id', pytis.data.Serial(not_null=True)),
               sql.Column('site', pytis.data.String(not_null=True),
@@ -813,7 +813,7 @@ class CmsVPanels(CommonAccesRights, sql.SQLView):
 
 #
 
-class CmsStylesheets(CommonAccesRights, _CachingTable):
+class CmsStylesheets(CommonAccesRights, Base_CachingTable):
     name = 'cms_stylesheets'
     fields = (sql.PrimaryColumn('stylesheet_id', pytis.data.Serial(not_null=True)),
               sql.Column('site', pytis.data.String(not_null=True),
@@ -829,7 +829,7 @@ class CmsStylesheets(CommonAccesRights, _CachingTable):
               )
     unique = (('identifier', 'site',),)
 
-class CmsThemes(CommonAccesRights, _CachingTable):
+class CmsThemes(CommonAccesRights, Base_CachingTable):
     name = 'cms_themes'
     fields = (sql.PrimaryColumn('theme_id', pytis.data.Serial(not_null=True),
                                 references=sql.r.CmsThemes),
@@ -866,7 +866,7 @@ class CmsThemes(CommonAccesRights, _CachingTable):
 
 #
 
-class CmsSystemTextLabels(CommonAccesRights, _CachingTable):
+class CmsSystemTextLabels(CommonAccesRights, Base_CachingTable):
     name = 'cms_system_text_labels'
     fields = (sql.Column('label', pytis.data.Name(not_null=True)),
               sql.Column('site', pytis.data.String(not_null=True),
@@ -882,7 +882,7 @@ class CmsAddTextLabel(sql.SQLPlFunction):
                  sql.Column('_site', pytis.data.String()),)
     result_type = None
 
-class CmsSystemTexts(CommonAccesRights, _CachingTable):
+class CmsSystemTexts(CommonAccesRights, Base_CachingTable):
     name = 'cms_system_texts'
     fields = (sql.Column('label', pytis.data.Name(not_null=True)),
               sql.Column('site', pytis.data.String(not_null=True)),

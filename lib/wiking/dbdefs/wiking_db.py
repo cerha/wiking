@@ -64,11 +64,11 @@ class CachedTablesUpdateTrigger(sql.SQLTrigger):
     position = 'after'
     body = FUpdateCachedTablesAfter
 
-class _CachingTable(sql.SQLTable):
+class Base_CachingTable(sql.SQLTable):
     """Base class for tables with CachedTablesUpdateTrigger.
     Such tables increase their version in CachedTables on each modification.
     """
     @property
     def triggers(self):
-        return (super(_CachingTable, self).triggers +
+        return (super(Base_CachingTable, self).triggers +
                 ((CachedTablesUpdateTrigger, self.schema, self.pytis_name(), True,),))
