@@ -301,18 +301,10 @@ class CmsPages(CommonAccesRights, Base_CachingTable):
                          references=sql.a(sql.r.Roles, onupdate='CASCADE', ondelete='SET DEFAULT')),
               )
     unique = (('identifier', 'site',),)
-
-class CmsPagesRaw(sql.SQLRaw):
-    # This strange construct can be implemented only as raw definition.
-    # SQLAlchemy can accept only SQL expressions evaluating to one of the table
-    # columns in index definitions.
-    name = 'cms_pages_raw'
-    depends_on = (CmsPages,)
-    @classmethod
-    def sql(class_):
-        return """
-create unique index cms_pages_unique_tree_order on cms_pages (ord, coalesce(parent, 0), site, kind);
-        """
+    @property
+    def index_columns(self):
+        parent = sqlalchemy.func.coalesce(sql.c.CmsPages.parent, ival(0))
+        return (sql.a('ord', parent, 'site', 'kind', unique=True),)
 
 class CmsPagesUpdateOrder(sql.SQLPlFunction, sql.SQLTrigger):
     name = 'cms_pages_update_order'
