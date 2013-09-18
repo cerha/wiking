@@ -305,7 +305,6 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
             return pd.Row(rdata)
             
         def display(self, key):
-            open('/var/tmp/wwwdebug', 'a').write('%s %s\n' % (key, self._module.name(),))
             return super(PytisModule.Record, self).display(key)
 
     @classmethod
