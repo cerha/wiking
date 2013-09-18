@@ -2844,6 +2844,8 @@ class CachingPytisModule(PytisModule):
             cache_module = CachingPytisModule._cached_tables_module = wiking.module('CachedTables')
         if table is None:
             table = self.Spec.table
+            if table is None:
+                table = pytis.util.camel_case_to_lower(self.name(), '_')
         return cache_module.current_version('public', table, transaction=transaction)
 
     def _database_dependency(self, dependency):
