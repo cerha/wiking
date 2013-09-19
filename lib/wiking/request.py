@@ -113,7 +113,13 @@ class ServerInterface(pytis.web.Request):
         pass
 
     def set_header(self, name, value):
-        """Set the value of given (outgoing) response HTTP header."""
+        """Set the value of given (outgoing) response HTTP header.
+
+        You should always pass response headers along with the
+        'wiking.Response' instance instead of calling this method directly
+        within the application code.
+
+        """
         pass
 
     def port(self):
