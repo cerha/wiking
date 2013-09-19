@@ -891,6 +891,14 @@ class Response(object):
           last_modified -- last modification time as a python datetime
             instance.  The value will be used for the 'Last-Modified' HTTP
             header (the appropriate date formatting is applied automatically).
+            Also, if the given modification time is equal or older than the
+            'If-Modified-Since' header passed by the client, the response is
+            automatically replaced by the 403 Not modified HTTP response (see
+            also 'Request.cached_since()').  If it may save some extra
+            processing, you are still encouraged to raise the
+            'wiking.NotModified' exception earlier but if not, you don't need
+            to care and just pass 'last_modified' and let the handler decide
+            for you.
 
           headers -- any additional HTTP headers to be sent with the request as
             a sequence of pairs NAME, VALUE (strings).

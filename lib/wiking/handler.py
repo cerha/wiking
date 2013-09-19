@@ -266,6 +266,9 @@ class Handler(object):
                     else:
                         return self._serve_content(req, result)
                 elif isinstance(result, wiking.Response):
+                    last_modified = result.last_modified()
+                    if last_modified is not None and req.cached_since(last_modified):
+                        raise wiking.NotModified()
                     for header, value in result.headers():
                         req.set_header(header, value)
                     filename = result.filename()
