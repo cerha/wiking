@@ -486,7 +486,8 @@ class Request(ServerInterface):
                 return True
         return False
 
-    def start_response(self, status_code=httplib.OK, content_type=None, content_length=None):
+    def start_response(self, status_code=httplib.OK, content_type=None, content_length=None,
+                       last_modified=None):
         """Set some common HTTP response attributes and send the HTTP headers.
 
         Arguments:
@@ -500,6 +501,9 @@ class Request(ServerInterface):
             prior to this call.
           content_length -- equivalent to calling "set_header('Content-Length', ...)"
             prior to this call.
+          last_modified -- last modification time as a python datetime
+            instance.  Equivalent to calling "set_header('Last-Modified',
+            format_http_date(...))"  prior to this call.
 
         This is actually just a little more convenient way of calling
         'start_http_response()' defined by the low level server API.  Calling
@@ -525,12 +529,14 @@ class Request(ServerInterface):
             self.set_header('Content-Type', content_type)
         if content_length is not None:
             self.set_header('Content-Length', str(content_length))
+        if last_modified is not None:
+            self.set_header('Last-Modified', format_http_date(last_modified))
         if status_code == 401:
             self.set_header('WWW-Authenticate', 'Basic realm="%s"' % wiking.cfg.site_title)
         self.start_http_response(status_code)
 
     def send_response(self, data, content_type="text/html", content_length=None,
-                      status_code=httplib.OK):
+                      status_code=httplib.OK, last_modified=None):
         """Start the HTTP response and send response data to the client.
 
         Arguments:
@@ -541,6 +547,7 @@ class Request(ServerInterface):
             "application/xml", "text/css" and "text/plain".  So for example
             "text/plain" will be converted to "text/plain; charset=UTF-8".
           status_code -- same as in 'start_response()'.
+          last_modified -- same as in 'start_response()'.
           
         This method is actually just a shorthand for calling 'start_response()'
         and returning response data in one step with additional unicode
@@ -566,7 +573,8 @@ class Request(ServerInterface):
             result = [data]
             if content_length is None:
                 content_length = len(data)
-        self.start_response(status_code, content_type=content_type, content_length=content_length)
+        self.start_response(status_code, content_type=content_type, content_length=content_length,
+                            last_modified=last_modified)
         return result
 
     def _redirect(self, uri, permanent=False):

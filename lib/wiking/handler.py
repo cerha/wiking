@@ -274,7 +274,8 @@ class Handler(object):
                                        'attachment; filename="%s"' % filename)
                     return req.send_response(result.data(), content_type=result.content_type(),
                                              content_length=result.content_length(),
-                                             status_code=result.status_code())
+                                             status_code=result.status_code(),
+                                             last_modified=result.last_modified())
                 else:
                     raise Exception('Invalid wiking handler result: %s' % type(result))
             except wiking.NotModified as error:

@@ -860,7 +860,7 @@ class Response(object):
     
     """
     def __init__(self, data, content_type='text/html', content_length=None,
-                 status_code=httplib.OK, filename=None, headers=()):
+                 status_code=httplib.OK, last_modified=None, filename=None, headers=()):
         """Arguments:
         
           data -- respnse data as one of the types described below.
@@ -887,6 +887,10 @@ class Response(object):
             'headers'.  The browser will usually show a "Save File" dialog and
             suggest given file name as the default name for saving the request
             result into a file.
+        
+          last_modified -- last modification time as a python datetime
+            instance.  The value will be used for the 'Last-Modified' HTTP
+            header (the appropriate date formatting is applied automatically).
 
           headers -- any additional HTTP headers to be sent with the request as
             a sequence of pairs NAME, VALUE (strings).
@@ -897,12 +901,13 @@ class Response(object):
           unicode -- is encoded to str using the current request encoding
           iterable -- iterable object (typically a generator) returning
             response data in chunks.  The returned chunks must be strings.
-          
+
         """
         self._data = data
         self._content_type = content_type
         self._content_length = content_length
         self._status_code = status_code
+        self._last_modified = last_modified
         self._headers = headers
         self._filename = filename
         
@@ -917,6 +922,9 @@ class Response(object):
 
     def status_code(self):
         return self._status_code
+
+    def last_modified(self):
+        return self._last_modified
 
     def headers(self):
         return self._headers
@@ -1780,7 +1788,6 @@ def serve_file(req, path, content_type=None, filename=None, lock=False):
     if content_type is None:
         mime_type, encoding = mimetypes.guess_type(path)
         content_type = mime_type or 'application/octet-stream'
-    headers = (('Last-Modified', format_http_date(mtime)),)
     def generator():
         f = file(path)
         if lock:
@@ -1798,7 +1805,7 @@ def serve_file(req, path, content_type=None, filename=None, lock=False):
                 fcntl.lockf(f, fcntl.LOCK_UN)
             f.close()
     return wiking.Response(generator(), content_type=content_type, content_length=info.st_size,
-                           filename=filename, headers=headers)
+                           filename=filename, last_modified=mtime)
 
 def timeit(func, *args, **kwargs):
     """Measure the function execution time.
