@@ -456,6 +456,36 @@ class Request(ServerInterface):
             result += ':'+ str(port)
         return result
 
+    def cached_since(self, mtime):
+        """Return true if the client's cached resource is from given 'mtime' or later.
+
+        Arguments: 
+          mtime -- last modification time of the resource on the
+            server as a datetime instance.
+
+        Returns true if the client's cached version of the requested resource
+        was last modified by the given datetime or later.  It does so by
+        comparing the timestamp passed by the client in the 'If-Modified-Since'
+        HTTP header to given 'mtime'.  If the header was not passed or has
+        invalid format, False is returned.
+
+        In other words, true is returned if the client's cached version is
+        recent enough and doesn't need to be refreshed.  The server's response
+        in this case should be 304 Not Modified.
+
+        Typical usage:
+        
+          if req.cached_since(mtime):
+              raise wiking.NotModified()
+
+        """
+        header = self.header('If-Modified-Since')
+        if header:
+            cached_mtime = parse_http_date(header)
+            if cached_mtime is not None and cached_mtime >= mtime:
+                return True
+        return False
+
     def start_response(self, status_code=httplib.OK, content_type=None, content_length=None):
         """Set some common HTTP response attributes and send the HTTP headers.
 

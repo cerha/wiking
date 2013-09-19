@@ -1775,17 +1775,8 @@ def serve_file(req, path, content_type=None, filename=None, lock=False):
         log(OPR, "File not found:", path)
         raise wiking.NotFound()
     mtime = datetime.datetime.utcfromtimestamp(info.st_mtime)
-    since_header = req.header('If-Modified-Since')
-    if since_header:
-        try:
-            since = parse_http_date(since_header)
-        except:
-            # Ignore the 'If-Modified-Since' header if the date format is
-            # invalid.
-            pass
-        else:
-            if mtime == since:
-                raise wiking.NotModified()
+    if req.cached_since(mtime):
+        raise wiking.NotModified()
     if content_type is None:
         mime_type, encoding = mimetypes.guess_type(path)
         content_type = mime_type or 'application/octet-stream'
