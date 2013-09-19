@@ -312,6 +312,17 @@ class NotFound(RequestError):
                       formatted=True))
     #return lcg.coerce([lcg.p(p) for p in msg])
 
+
+class NotModified(RequestError):
+    """Exception indicating that the requested has not been changed on server.
+
+    Use when the current version of the resource is not newer than the version
+    cached by the client.  Usually based on 'If-Modified-Since' headers or
+    similar negotiation mechanism.
+
+    """
+    _STATUS_CODE = httplib.NOT_MODIFIED
+
     
 class NotAcceptable(RequestError):
     """Error indicating unavailability of the resource in the requested language.
@@ -1763,15 +1774,21 @@ def serve_file(req, path, content_type=None, filename=None, lock=False):
     except OSError:
         log(OPR, "File not found:", path)
         raise wiking.NotFound()
+    mtime = datetime.datetime.utcfromtimestamp(info.st_mtime)
+    since_header = req.header('If-Modified-Since')
+    if since_header:
+        try:
+            since = parse_http_date(since_header)
+        except:
+            # Ignore the 'If-Modified-Since' header if the date format is
+            # invalid.
+            pass
+        else:
+            if mtime == since:
+                raise wiking.NotModified()
     if content_type is None:
         mime_type, encoding = mimetypes.guess_type(path)
         content_type = mime_type or 'application/octet-stream'
-    mtime = datetime.datetime.utcfromtimestamp(info.st_mtime)
-    modified_since_header = req.header('If-Modified-Since')
-    if modified_since_header:
-        modified_since = parse_http_date(modified_since_header)
-        if modified_since is not None and mtime == modified_since:
-            return wiking.Response('', status_code=httplib.NOT_MODIFIED, content_type=content_type)
     headers = (('Last-Modified', format_http_date(mtime)),)
     def generator():
         f = file(path)

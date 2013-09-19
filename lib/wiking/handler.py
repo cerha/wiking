@@ -277,6 +277,8 @@ class Handler(object):
                                              status_code=result.status_code())
                 else:
                     raise Exception('Invalid wiking handler result: %s' % type(result))
+            except wiking.NotModified as error:
+                return req.send_response('', status_code=error.status_code(req), content_type=None)
             except wiking.RequestError as error:
                 # Try to authenticate now, but ignore all errors within authentication except
                 # for AuthenticationError.
