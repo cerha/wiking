@@ -2838,15 +2838,22 @@ class CachingPytisModule(PytisModule):
                 versions[d] = self._cached_table_version(req, d, transaction=transaction)
 
     _cached_tables_module = None
-    def _cached_table_version(self, req, table=None, transaction=None):
+
+    def _cached_table_stamp(self, req, table=None, transaction=None):
         cache_module = CachingPytisModule._cached_tables_module
         if cache_module is None:
-            cache_module = CachingPytisModule._cached_tables_module = wiking.module('CachedTables')
+            cache_module = CachingPytisModule._cached_tables_module = wiking.module.CachedTables
         if table is None:
             table = self.Spec.table
             if table is None:
                 table = pytis.util.camel_case_to_lower(self.name(), '_')
-        return cache_module.current_version('public', table, transaction=transaction)
+        return cache_module.current_stamp('public', table, transaction=transaction)
+
+    def _cached_table_version(self, req, table=None, transaction=None):
+        return self._cached_table_stamp(req, table=table, transaction=transaction)[0]
+
+    def _cached_table_timestamp(self, req, table=None, transaction=None):
+        return self._cached_table_stamp(req, table=table, transaction=transaction)[1]
 
     def _database_dependency(self, dependency):
         return dependency[0] in string.lowercase
