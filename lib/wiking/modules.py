@@ -312,15 +312,14 @@ class Stylesheets(Module, RequestHandler):
 
     def _handle(self, req):
         """Serve the stylesheet from a file."""
-        def stylesheet(path):
-            for resource_dir in wiking.cfg.resource_path:
-                filename = os.path.join(resource_dir, 'css', *path)
-                if os.path.exists(filename):
-                    return "".join(file(filename).readlines())
-            raise NotFound()
         if len(req.unresolved_path) >= 1:
-            theme = self._theme(req)
-            return ('text/css', self._substitute(stylesheet(req.unresolved_path), theme))
+            for resource_dir in wiking.cfg.resource_path:
+                filename = os.path.join(resource_dir, 'css', *req.unresolved_path)
+                if os.path.exists(filename):
+                    theme = self._theme(req)
+                    content = self._substitute("".join(file(filename).readlines()), theme)
+                    return wiking.Response(content, content_type='text/css')
+            raise NotFound()
         elif not req.unresolved_path:
             raise Forbidden()
         else:
@@ -346,57 +345,56 @@ class Resources(Stylesheets):
         self._provider = lcg.ResourceProvider(dirs=wiking.cfg.resource_path)
 
     def _stylesheet(self, filename):
-        """Return the dynamic stylesheet content as a string or None.
-        
-        When None is returned, the resource file is searched in
-        wiking.cfg.resource_path and served from there if found.
-        
-        This method is overriden in wiking.cms.Resources to handle dynamic
-        style sheets defined in the database through the wiking.cms.StyleSheets
-        module.
-        
-        """
+        """Deprecated: Override '_handle_resource()' instead."""
         return None
+
+    def _handle_resource(self, req, filename):
+        if filename.endswith('css'):
+            content = self._stylesheet(filename)
+            if content is not None:
+                return wiking.Response(content, content_type='text/css')
+        subdir = filename.split('/', 1)[0]
+        if subdir in ('images', 'css', 'scripts', 'media', 'flash'):
+            # This is just a temporary hack to allow backward compatibility
+            # with resource URIs using type specific subdirectories.
+            # Wiking no longer generates such URIs and applications should
+            # avoid them too as this hack will be removed in future.
+            filename = filename[len(subdir) + 1:]
+        else:
+            subdir = None
+        resource = self._provider.resource(filename)
+        if resource and resource.src_file() and (subdir is None or resource.SUBDIR == subdir):
+            return wiking.serve_file(req, resource.src_file())
+        else:
+            raise NotFound()
 
     def _handle(self, req):
         """Serve the resource from a file."""
-        def find_resource(filename):
-            subdir = filename.split('/', 1)[0]
-            if subdir in ('images', 'css', 'scripts', 'media', 'flash'):
-                # This is just a temporary hack to allow backward compatibility
-                # with resource URIs using type specific subdirectories.
-                # Wiking no longer generates such URIs and applications should
-                # avoid them too as this hack will be removed in future.
-                filename = filename[len(subdir) + 1:]
-            else:
-                subdir = None
-            resource = self._provider.resource(filename)
-            if resource is not None and (subdir is None or resource.SUBDIR == subdir):
-                if resource.src_file():
-                    return resource
-            return None
-        if len(req.unresolved_path) >= 1:
-            if '..' in req.unresolved_path:
-                # Avoid direcory traversal attacks.
-                raise Forbidden()
-            filename = os.path.join(*req.unresolved_path)
-            if filename.endswith('css'):
-                content = self._stylesheet(filename)
-                if content is None:
-                    resource = find_resource(filename)
-                    if resource:
-                        content = "".join(file(resource.src_file()).readlines())
-                if content is not None:
-                    theme = self._theme(req)
-                    return ('text/css', self._substitute(content, theme))
-                else:
-                    raise NotFound()
-            resource = find_resource(filename)
-            if resource is not None:
-                return wiking.serve_file(req, resource.src_file())
-            raise NotFound()
-        else:
+        if len(req.unresolved_path) < 1 or '..' in req.unresolved_path:
+            # Avoid direcory traversal attacks.
             raise Forbidden()
+        filename = os.path.join(*req.unresolved_path)
+        response = self._handle_resource(req, filename)
+        if response.status_code() == httplib.OK and filename.endswith('.css'):
+            theme = self._theme(req)
+            mtimes = (response.last_modified(), theme.mtime())
+            if None in mtimes:
+                mtime = None
+            else:
+                mtime = max(mtimes)
+            if mtime is not None and req.cached_since(mtime):
+                raise wiking.NotModified()
+            # Substitute the current color theme in stylesheets.
+            data = response.data()
+            if isinstance(data, (list, types.GeneratorType)):
+                data = ''.join(data)
+            elif isinstance(data, buffer):
+                data = str(data)
+            data = self._substitute(data, theme)
+            response = wiking.Response(data, content_type=response.content_type(),
+                                       last_modified=mtime, filename=response.filename(), 
+                                       headers=response.headers())
+        return response
 
     def resource(self, filename):
         """Obtain a 'lcg.Resource' instance from the global resource provider.

@@ -624,15 +624,12 @@ class Config(SettingsManagementModule, wiking.CachingPytisModule):
                             transform_default = lambda x: x is None and _("undefined") or repr(x)
                     descr += ' ' + _("The default value is %s.", transform_default(default))
                 self._cfg_option = option
-                self._cfg_default_value = default
+                self._default_value = default
                 Field.__init__(self, name, label, descr=descr, **kwargs)
-            def configure(self, value):
-                option = self._cfg_option
-                if option is not None:
-                    if value is None:
-                        value = self._cfg_default_value
-                    option.set_value(value)
-                
+            def cfg_option(self):
+                return self._cfg_option
+            def default_value(self):
+                return self._default_value
         # Translators: Website heading and menu item
         title = _("Basic Configuration")
         help = _("Edit site configuration.")
@@ -687,7 +684,7 @@ class Config(SettingsManagementModule, wiking.CachingPytisModule):
         called once on Application initialization.
 
         """
-        if self._check_cache(req, load=True):
+        if self._check_cache(req, load=True) and hasattr(self, '_theme_id'):
             return
         # This dummy read of wiking.cms.cfg.allow_registration is here to
         # force reading wiking.cms.cfg before updating it.  Not doing so may
@@ -708,18 +705,14 @@ class Config(SettingsManagementModule, wiking.CachingPytisModule):
             if row:
                 self._data.update((row['site'],), self._data.make_row(site=site))
         assert row is not None, site
-        for f in self._view.fields():
-            f.configure(row[f.id()].value())
-        try:
-            theme_id = int(req.param('preview_theme'))
-        except (TypeError, ValueError):
-            theme_id = row['theme_id'].value()
-        if theme_id is None:
-            if isinstance(wiking.cfg.theme, Themes.Theme):
-                wiking.cfg.theme = Theme()
-        elif (not isinstance(wiking.cfg.theme, Themes.Theme) or
-              wiking.cfg.theme.theme_id() != theme_id):
-            wiking.cfg.theme = wiking.module('Themes').theme(theme_id)
+        for field in self._view.fields():
+            option = field.cfg_option()
+            if option:
+                value = row[field.id()].value()
+                if value is None:
+                    value = field.default_value()
+                option.set_value(value)
+        self._theme_id = row['theme_id'].value()
 
     def set_theme(self, req, theme_id):
         row = self._data.get_row(site=wiking.cfg.server_hostname)
@@ -728,6 +721,11 @@ class Config(SettingsManagementModule, wiking.CachingPytisModule):
             record.update(theme_id=theme_id)
         except pd.DBException as e:
             return self._error_message(*self._analyze_exception(e))
+        else:
+            self._theme_id = theme_id
+
+    def theme_id(self):
+        return self._theme_id
 
     def site_title(self, site):
         """Return site title for given 'site' if available.
@@ -1119,7 +1117,7 @@ class Countries(SettingsManagementModule):
     _language_list_time = None
 
     
-class Themes(StyleManagementModule):
+class Themes(StyleManagementModule, wiking.CachingPytisModule):
     class Spec(Specification):
         class _Field(Field):
             def __init__(self, id, label, descr=None):
@@ -1202,8 +1200,7 @@ class Themes(StyleManagementModule):
                 fields.extend(group)
             return fields
         def _is_active(self, row, theme_id):
-            return (isinstance(wiking.cfg.theme, Themes.Theme) and
-                    wiking.cfg.theme.theme_id() == theme_id)
+            return wiking.module.Config.theme_id() == theme_id
         def _title(self, row, name, active):
             return name + (active and ' (' + _("active") + ')' or '')
         def _preview(self, record):
@@ -1239,15 +1236,6 @@ class Themes(StyleManagementModule):
         
     _ROW_ACTIONS = True
 
-    class Theme(Theme):
-        def __init__(self, row):
-            self._theme_id = row['theme_id'].value()
-            colors = [(c.id(), row[c.id()].value())
-                      for c in self.COLORS if row[c.id()].value() is not None]
-            super(Themes.Theme, self).__init__(colors=dict(colors))
-        def theme_id(self):
-            return self._theme_id
-
     def _authorized(self, req, action, **kwargs):
         if action in ('copy', 'activate'):
             return req.check_roles(*self._ADMIN_ROLES)
@@ -1256,18 +1244,22 @@ class Themes(StyleManagementModule):
         
     def theme(self, theme_id):
         row = self._data.get_row(theme_id=theme_id)
-        return self.Theme(row)
+        colors = dict([(c.id(), row[c.id()].value())
+                       for c in wiking.Theme.COLORS if row[c.id()].value() is not None])
+        dt = self._cached_table_timestamp(None)
+        # Convert to naive datetime instance in UTC (dt already is UTC).
+        mtime = datetime.datetime(dt.year, dt.month, dt.day, 
+                                  dt.hour, dt.minute, dt.second, dt.microsecond)
+        return wiking.Theme(colors, mtime=mtime)
         
     def action_activate(self, req, record=None):
         if record:
             theme_id = record['theme_id'].value()
             name = record['name'].value()
-            wiking.cfg.theme = self.Theme(record.row())
         else:
             theme_id = None
             name = _("Default")
-            wiking.cfg.theme = Theme()
-        err = wiking.module('Config').set_theme(req, theme_id)
+        err = wiking.module.Config.set_theme_id(req, theme_id)
         if err is None:
             req.message(_("The color theme \"%s\" has been activated.", name))
         else:
@@ -3221,8 +3213,25 @@ class Resources(wiking.Resources):
     serving the default styles installed on the filesystem).
 
     """
-    def _stylesheet(self, filename):
-        return wiking.module('StyleSheets').stylesheet(filename)
+    _DEFAULT_THEME = Theme()
+
+    def _theme(self, req):
+        try:
+            theme_id = int(req.param('preview_theme'))
+        except (TypeError, ValueError):
+            theme_id = wiking.module.Config.theme_id()
+        if theme_id is None:
+            theme = self._DEFAULT_THEME
+        else:
+            theme = wiking.module.Themes.theme(theme_id)
+        return theme
+
+    def _handle_resource(self, req, filename):
+        content, mtime = wiking.module.StyleSheets.stylesheet(req, filename)
+        if content:
+            return wiking.Response(content, content_type='text/css', last_modified=mtime)
+        else:
+            return super(Resources, self)._handle_resource(req, filename)
 
 
 class StyleSheets(SiteSpecificContentModule, StyleManagementModule,
@@ -3304,8 +3313,10 @@ class StyleSheets(SiteSpecificContentModule, StyleManagementModule,
     def stylesheets(self, req):
         return self._get_value(req, None)
         
-    def stylesheet(self, name):
-        return self._get_value(None, name, cache_id='single')
+    def stylesheet(self, req, filename):
+        content = self._get_value(req, filename, cache_id='single')
+        mtime = self._cached_table_timestamp(req)
+        return content, mtime
 
     def _load_value(self, req, key, transaction=None):
         if key is None:
@@ -3320,8 +3331,7 @@ class StyleSheets(SiteSpecificContentModule, StyleManagementModule,
                                                                      for s in scopes]),
                                                    sorting=self._sorting)]
         else:
-            name = key
-            row = self._data.get_row(identifier=name, active=True, site=wiking.cfg.server_hostname)
+            row = self._data.get_row(identifier=key, active=True, site=wiking.cfg.server_hostname)
             if row:
                 return row['content'].value()
             else:

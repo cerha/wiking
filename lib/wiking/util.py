@@ -469,8 +469,23 @@ class PermanentRedirect(Redirect):
 # ============================================================================
 
 class Theme(object):
+    """Color theme representation.
 
+    Color themes are used for substitution of symbolic color names by color
+    values in stylesheets served by Wiking's 'Resources' module.
+
+    The available colors are defined by 'Theme.COLORS' as a tuple of
+    'Theme.Color' instances.
+
+    """
     class Color(object):
+        """Theme color specification.
+        
+        Each color defines its own identifier and optionally the identifier of
+        another theme color, which provides the default value for this color if
+        no explicit value is defined in the color 'Theme'.
+
+        """
         def __init__(self, id, inherit=None):
             self._id = id
             self._inherit = inherit
@@ -533,12 +548,31 @@ class Theme(object):
                  'inactive-folder': '#d2d8e0',
                  }
 
-    def __init__(self, colors=None):
+    def __init__(self, colors=None, mtime=None):
+        """Arguments:
+        
+           colors -- dictionary of theme colors.  Keys are string identifiers
+             of theme colors from 'Theme.COLORS' and values are RGB string color
+             representaions, such as "#0f0" or "#00ff00".
+           mtime -- last theme modification time as a datetime instance.  It
+             should be defined to support HTTP client side caching when serving
+             stylesheets.  If None, the last modification time is unknown and
+             caching can not be used which means that all stylesheets will be
+             unnecessarily sent again for every page request.  A special case
+             is when no 'colors' are passed.  In this case 'mtime' is
+             automatically set to the last modification time of the source file
+             where this class is defined as all colors depend on the default
+             values defined in the source code.
+
+        """
         if not colors:
             colors = self._DEFAULTS
+            if mtime is None:
+                mtime = datetime.datetime.utcfromtimestamp(os.stat(__file__).st_mtime)
         self._colors = dict([(c.id(), c) for c in self.COLORS])
         self._theme = {'color': dict([(key, self._color(key, colors))
                                       for key in self._colors.keys()])}
+        self._mtime = mtime
         
     def _color(self, key, colors):
         if key in colors:
@@ -554,6 +588,9 @@ class Theme(object):
         
     def __getitem__(self, key):
         return self._theme[key]
+
+    def mtime(self):
+        return self._mtime
     
         
 class MenuItem(object):
@@ -1790,9 +1827,6 @@ def serve_file(req, path, content_type=None, filename=None, lock=False):
     except OSError:
         log(OPR, "File not found:", path)
         raise wiking.NotFound()
-    mtime = datetime.datetime.utcfromtimestamp(info.st_mtime)
-    if req.cached_since(mtime):
-        raise wiking.NotModified()
     if content_type is None:
         mime_type, encoding = mimetypes.guess_type(path)
         content_type = mime_type or 'application/octet-stream'
@@ -1813,7 +1847,8 @@ def serve_file(req, path, content_type=None, filename=None, lock=False):
                 fcntl.lockf(f, fcntl.LOCK_UN)
             f.close()
     return wiking.Response(generator(), content_type=content_type, content_length=info.st_size,
-                           filename=filename, last_modified=mtime)
+                           last_modified=datetime.datetime.utcfromtimestamp(info.st_mtime),
+                           filename=filename)
 
 def timeit(func, *args, **kwargs):
     """Measure the function execution time.
