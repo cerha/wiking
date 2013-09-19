@@ -399,7 +399,7 @@ class Resources(Stylesheets):
             raise Forbidden()
 
     def resource(self, filename):
-        """Obtain a resource instance from the global resource provider.
+        """Obtain a 'lcg.Resource' instance from the global resource provider.
         
         This method may be useful when you need to search resources in wiking
         module's code.  Otherwise the resource provider is only available in
@@ -409,7 +409,7 @@ class Resources(Stylesheets):
         return self._provider.resource(filename)
 
     def resource_provider(self):
-        """Return the global resource provider instance."""
+        """Return the global resource provider as 'lcg.ResourceProvider' instance."""
         return self._provider
         
 
