@@ -457,6 +457,19 @@ class Configuration(pc):
                 "show obfuscated data instead.")
         _DEFAULT = ()
 
+    class _Option_resource_client_cache_max_age(pc.NumericOption):
+        _DESCR = "Maximum age to allow clients to cache resources without re-requesting them."
+        _DOC = ("If not None, the 'Resources' module (which is normally responsible for serving "
+                "stylesheets, images, javascript and other static files) will allow the browser "
+                "to consider the resource files being fresh once loaded for given number of "
+                "seconds without querying the server again. This is done by setting the "
+                "'Cache-Control' HTTP header for all resource file request responses to "
+                "'max-age=n'.  This will reduce the number of requests needed for a page "
+                "to load and thus reduce server load and improve user experience, but there "
+                "is no way to make the browser to reload the resource when it is changed on "
+                "server, so use with caution.  The default value is ten minutes.")
+        _DEFAULT = 600
+
     class _Option_crawl_delay(pc.NumericOption):
         _DESCR = "Minimum delay in seconds between two successive requests from spiders."
         _DOC = ("If not None, the application will serve a 'robots.txt' file with 'Crawl-Delay' "

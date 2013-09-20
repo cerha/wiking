@@ -1784,7 +1784,7 @@ class Time(pytis.data.Time):
 # Misc functions
 # ============================================================================
 
-def serve_file(req, path, content_type=None, filename=None, lock=False):
+def serve_file(req, path, content_type=None, filename=None, lock=False, headers=()):
     """Return 'wiking.Response' instance to send the contents of a given file to the client.
 
     Arguments:
@@ -1796,6 +1796,8 @@ def serve_file(req, path, content_type=None, filename=None, lock=False):
          This will force the browser to save the file under given file name instead
          of displaying it.
       lock -- Iff True, shared lock will be aquired on the file while it is served.
+      headers -- HTTP headers to pass to 'wiking.Response' as a sequence of pairs
+        NAME, VALUE (strings).
 
     'wiking.NotFound' exception is raised if the file does not exist.
 
@@ -1829,7 +1831,7 @@ def serve_file(req, path, content_type=None, filename=None, lock=False):
             f.close()
     return wiking.Response(generator(), content_type=content_type, content_length=info.st_size,
                            last_modified=datetime.datetime.utcfromtimestamp(info.st_mtime),
-                           filename=filename)
+                           filename=filename, headers=headers)
 
 def timeit(func, *args, **kwargs):
     """Measure the function execution time.

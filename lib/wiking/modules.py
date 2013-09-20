@@ -347,7 +347,12 @@ class Resources(Module, RequestHandler):
             subdir = None
         resource = self._provider.resource(filename)
         if resource and resource.src_file() and (subdir is None or resource.SUBDIR == subdir):
-            return wiking.serve_file(req, resource.src_file())
+            max_age = wiking.cfg.resource_client_cache_max_age
+            if max_age:
+                headers = (('Cache-Control', 'max-age=%d' % max_age),)
+            else:
+                headers = ()
+            return wiking.serve_file(req, resource.src_file(), headers=headers)
         else:
             raise NotFound()
 
