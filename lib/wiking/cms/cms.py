@@ -3212,9 +3212,6 @@ class Resources(wiking.Resources):
     serving the default styles installed on the filesystem).
 
     """
-    _DEFAULT_THEME = wiking.Theme()
-    _DEFAULT_THEME_MTIME = datetime.datetime.utcnow()
-
     def _theme(self, req):
         try:
             theme_id = int(req.param('preview_theme'))
@@ -3223,7 +3220,7 @@ class Resources(wiking.Resources):
             theme_id = wiking.module.Config.theme_id()
             cfg_mtime = wiking.module.Config.cached_table_timestamp(utc=True)
         if theme_id is None:
-            theme = self._DEFAULT_THEME
+            theme = wiking.cfg.theme
             theme_mtime = self._DEFAULT_THEME_MTIME
         else:
             theme = wiking.module.Themes.theme(theme_id)

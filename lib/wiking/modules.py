@@ -280,18 +280,25 @@ class Documentation(Module, RequestHandler):
         return wiking.Document(title, content, lang=lang, variants=variants, layout=layout)
         
 
-class Stylesheets(Module, RequestHandler):
-    """Serve installed stylesheets.
+class Resources(Module, RequestHandler):
+    """Serve the resource files as provided by the LCG's 'ResourceProvider'.
 
-    The default implementation serves stylesheet files from the wiking resources directory.
-
-    Consider using a more generic 'Resources' module which also handles style sheets.
+    This module will automatically serve all resources found within the
+    directories configured through the 'resource_path' option.  Use with
+    caution, since this module will expose all files located within configured
+    directories to the internet!  Note that the LCG's default resource
+    directory (as configured within the LCG package) is always automatically
+    added to the search path.
 
     Map the module to a particular URI within your application to use it.
 
     """
     _MATCHER = re.compile(r"\$(\w[\w-]*)(?:\.(\w[\w-]*))?")
-    _THEME_TIMESTAMP = datetime.datetime.utcnow()
+    _DEFAULT_THEME_MTIME = datetime.datetime.utcnow()
+
+    def __init__(self, *args, **kwargs):
+        super(Resources, self).__init__(*args, **kwargs)
+        self._provider = lcg.ResourceProvider(dirs=wiking.cfg.resource_path)
 
     def _theme(self, req):
         """Return the color theme to be used for stylesheet color substitution.
@@ -309,7 +316,11 @@ class Stylesheets(Module, RequestHandler):
         (eg. according to user's preferences, etc.).
 
         """
-        return wiking.cfg.theme, self._THEME_TIMESTAMP
+        return wiking.cfg.theme, self._DEFAULT_THEME_MTIME
+
+    def _stylesheet(self, filename):
+        """Deprecated: Override '_handle_resource()' instead."""
+        return None
 
     def _substitute(self, stylesheet, theme):
         def subst(match):
@@ -320,46 +331,8 @@ class Stylesheets(Module, RequestHandler):
             return value
         return self._MATCHER.sub(subst, stylesheet)
 
-    def _handle(self, req):
-        """Serve the stylesheet from a file."""
-        if len(req.unresolved_path) >= 1:
-            for resource_dir in wiking.cfg.resource_path:
-                filename = os.path.join(resource_dir, 'css', *req.unresolved_path)
-                if os.path.exists(filename):
-                    theme, mtime = self._theme(req)
-                    content = self._substitute("".join(file(filename).readlines()), theme)
-                    return wiking.Response(content, content_type='text/css')
-            raise NotFound()
-        elif not req.unresolved_path:
-            raise Forbidden()
-        else:
-            raise NotFound()
-        
-
-class Resources(Stylesheets):
-    """Serve the resource files as provided by the LCG's 'ResourceProvider'.
-
-    This module will automatically serve all resources found within the
-    directories configured through the 'resource_path' option.  Use with
-    caution, since this module will expose all files located within configured
-    directories to the internet!  Note that the LCG's default resource
-    directory (as configured within the LCG package) is always automatically
-    added to the search path.
-
-    Map the module to a particular URI within your application to use it.
-
-    """
-
-    def __init__(self, *args, **kwargs):
-        super(Resources, self).__init__(*args, **kwargs)
-        self._provider = lcg.ResourceProvider(dirs=wiking.cfg.resource_path)
-
-    def _stylesheet(self, filename):
-        """Deprecated: Override '_handle_resource()' instead."""
-        return None
-
     def _handle_resource(self, req, filename):
-        if filename.endswith('css'):
+        if filename.endswith('.css'):
             content = self._stylesheet(filename)
             if content is not None:
                 return wiking.Response(content, content_type='text/css')
@@ -420,6 +393,21 @@ class Resources(Stylesheets):
         """Return the global resource provider as 'lcg.ResourceProvider' instance."""
         return self._provider
         
+class Stylesheets(Resources):
+    """Serve installed stylesheets.
+
+    The default implementation serves stylesheet files from the wiking
+    resources directory.  Consider using a more generic 'Resources' module
+    which also handles style sheets.  Map the module to a particular URI within
+    your application to use it.
+
+    """
+    def _handle_resource(self, req, filename):
+        if filename.endswith('.css'):
+            return super(Stylesheets, self)._handle_resource(req, filename)
+        else:
+            raise NotFound()
+
 
 class SiteIcon(Module, RequestHandler):
     """Serve site icon according to the configuration option 'site_icon'.
