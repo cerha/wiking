@@ -714,7 +714,7 @@ class Config(SettingsManagementModule, wiking.CachingPytisModule):
                 option.set_value(value)
         self._theme_id = row['theme_id'].value()
 
-    def set_theme(self, req, theme_id):
+    def set_theme_id(self, req, theme_id):
         row = self._data.get_row(site=wiking.cfg.server_hostname)
         record = self._record(req, row)
         try:
@@ -1231,7 +1231,7 @@ class Themes(StyleManagementModule, wiking.CachingPytisModule):
             # Translators: Button label
             Action('activate', _("Activate default"), context=pp.ActionContext.GLOBAL,
                    descr=_("Activate the default color theme"),
-                   enabled=lambda r: isinstance(wiking.cfg.theme, Themes.Theme)),
+                   enabled=lambda r: wiking.module.Config.theme_id() is not None),
         )
         
     _ROW_ACTIONS = True
