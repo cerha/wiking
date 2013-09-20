@@ -561,24 +561,20 @@ class Theme(object):
              unnecessarily sent again for every page request.
 
         """
-        if not colors:
-            colors = self._DEFAULTS
-        self._colors = dict([(c.id(), c) for c in self.COLORS])
-        self._theme = {'color': dict([(key, self._color(key, colors))
-                                      for key in self._colors.keys()])}
-        self._mtime = mtime
-        
-    def _color(self, key, colors):
-        if key in colors:
-            return colors[key]
-        else:
-            inherit = self._colors[key].inherit()
-            if inherit:
-                return self._color(inherit, colors)
-            elif colors != self._DEFAULTS:
-                return self._color(key, self._DEFAULTS)
+        coldict = dict([(c.id(), c) for c in self.COLORS])
+        def color(key):
+            if colors and key in colors:
+                return colors[key]
+            elif key in self._DEFAULTS:
+                return self._DEFAULTS[key]
             else:
-                return 'inherit'
+                inherit = coldict[key].inherit()
+                if inherit:
+                    return color(inherit)
+                else:
+                    return 'inherit'
+        self._theme = {'color': dict([(key, color(key)) for key in coldict])}
+        self._mtime = mtime
         
     def __getitem__(self, key):
         return self._theme[key]
