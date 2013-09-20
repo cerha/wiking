@@ -3228,8 +3228,9 @@ class Resources(wiking.Resources):
         return wiking.Theme(colors, mtime=mtime)
 
     def _handle_resource(self, req, filename):
-        content, mtime = wiking.module.StyleSheets.stylesheet(req, filename)
+        content = wiking.module.StyleSheets.stylesheet(req, filename)
         if content:
+            mtime = wiking.module.StyleSheets.cached_table_timestamp(utc=True)
             return wiking.Response(content, content_type='text/css', last_modified=mtime)
         else:
             return super(Resources, self)._handle_resource(req, filename)
@@ -3315,9 +3316,7 @@ class StyleSheets(SiteSpecificContentModule, StyleManagementModule,
         return self._get_value(req, None)
         
     def stylesheet(self, req, filename):
-        content = self._get_value(req, filename, cache_id='single')
-        mtime = self.cached_table_timestamp(utc=True)
-        return content, mtime
+        return self._get_value(req, filename, cache_id='single')
 
     def _load_value(self, req, key, transaction=None):
         if key is None:
