@@ -1261,6 +1261,15 @@ class Themes(StyleManagementModule, wiking.CachingPytisModule):
         err = wiking.module.Config.set_theme_id(req, theme_id)
         if err is None:
             req.message(_("The color theme \"%s\" has been activated.", name))
+            max_age = wiking.cfg.resource_client_cache_max_age
+            if max_age:
+                req.message(_("The server is configured to let clients cache resource files "
+                              "for %d seconds. It is necessary to force-reload the page to "
+                              "see the changes to take effect within this period "
+                              "(holding the Shift key while reloading in most browsers). "
+                              "This may be changed by the configuration option "
+                              "'resource_client_cache_max_age'."),
+                            type=req.WARNING)
         else:
             req.message(err, type=req.ERROR)
         req.set_param('search', theme_id)
