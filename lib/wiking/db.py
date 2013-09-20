@@ -333,7 +333,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         self._title_column = self._TITLE_COLUMN or self._view.columns()[0]
 
     def __getattr__(self, name):
-        if name not in ('_data', '_key', '_sorting', '_referer', '_links', '_type'):
+        if name not in ('_data', '_key', '_table', '_sorting', '_referer', '_links', '_type'):
             try:
                 return super(PytisModule, self).__getattr__(name)
             except AttributeError: # can be thrown in absence of __getattr__ itself!
@@ -344,6 +344,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
     def _delayed_init(self):
         self._data = self._data_spec.create(connection_data=self._dbconnection)
         self._key = key = self._data.key()[0].id()
+        self._table = self._data.table(key)
         self._sorting = self._view.sorting()
         if self._sorting is None:
             self._sorting = ((key, pd.ASCENDENT),)
@@ -2820,9 +2821,7 @@ class CachingPytisModule(PytisModule):
         if cache_module is None:
             cache_module = CachingPytisModule._cached_tables_module = wiking.module.CachedTables
         if table is None:
-            table = self.Spec.table
-            if table is None:
-                table = pytis.util.camel_case_to_lower(self.name(), '_')
+            table = self._table
         return cache_module.current_stamp('public', table, transaction=transaction)
 
     def _cached_table_version(self, table=None, transaction=None):
