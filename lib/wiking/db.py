@@ -2831,6 +2831,28 @@ class CachingPytisModule(PytisModule):
     def _cached_table_timestamp(self, table=None, transaction=None):
         return self._cached_table_stamp(table=table, transaction=transaction)[1]
 
+    def cached_table_version(self, transaction=None):
+        """Return the version number of the module's cached table data as int."""
+        return self._cached_table_version(transaction=transaction)
+
+    def cached_table_timestamp(self, transaction=None, utc=False):
+        """Return the timestamp of the module's cached table data as datetime instance.
+
+        Arguments:
+          transaction -- the current DB transaction or None
+          utc -- if True, the timestamp will be converted to a naive datetime
+            instance in UTC timezone.  Otherwise the timestamp is a timezone
+            aware instance.
+
+        Returns None if no information is available about the table.
+
+        """
+        dt = self._cached_table_timestamp(transaction=transaction)
+        if dt and utc:
+            dt = datetime.datetime(dt.year, dt.month, dt.day, 
+                                   dt.hour, dt.minute, dt.second, dt.microsecond)
+        return dt
+
     def _database_dependency(self, dependency):
         return dependency[0] in string.lowercase
 

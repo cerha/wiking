@@ -1246,10 +1246,7 @@ class Themes(StyleManagementModule, wiking.CachingPytisModule):
         row = self._data.get_row(theme_id=theme_id)
         colors = dict([(c.id(), row[c.id()].value())
                        for c in wiking.Theme.COLORS if row[c.id()].value() is not None])
-        dt = self._cached_table_timestamp()
-        # Convert to naive datetime instance in UTC (dt already is UTC).
-        mtime = datetime.datetime(dt.year, dt.month, dt.day, 
-                                  dt.hour, dt.minute, dt.second, dt.microsecond)
+        mtime = self.cached_table_timestamp(utc=True)
         return wiking.Theme(colors, mtime=mtime)
         
     def action_activate(self, req, record=None):
@@ -3315,7 +3312,7 @@ class StyleSheets(SiteSpecificContentModule, StyleManagementModule,
         
     def stylesheet(self, req, filename):
         content = self._get_value(req, filename, cache_id='single')
-        mtime = self._cached_table_timestamp()
+        mtime = self.cached_table_timestamp(utc=True)
         return content, mtime
 
     def _load_value(self, req, key, transaction=None):
