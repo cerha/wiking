@@ -2727,30 +2727,6 @@ class CachedTables(PytisModule):
             return None, None
         return stamp
 
-    def current_version(self, schema, table, transaction=None):
-        """Return current version of the given database object.
-
-        Arguments:
-
-          schema -- schema of the database object; string
-          table -- name of the database object; string.  The database object
-            may be a table or a view.
-          transaction -- transaction for which the version should be reported
-            or 'None'; note that different transactions may report different
-            object versions at the same moment.
-
-        The returned value is an integer.  Don't try to interpret the value;
-        e.g. there is no guarantee that the version number of a particular
-        database objects always increases, it may decrease on rollbacks.  The
-        only guarantee is that if two version numbers are the same in two given
-        moments within some transaction (or both outside any transaction) then
-        the cached data from the first moment may be reused at the second
-        moment.
-
-        """
-        version = self.current_stamp(schema, table, transaction=transaction)[0]
-        return version or 0
-
 class CachingPytisModule(PytisModule):
     """Pytis module with general caching ability.
 
@@ -2850,7 +2826,8 @@ class CachingPytisModule(PytisModule):
         return cache_module.current_stamp('public', table, transaction=transaction)
 
     def _cached_table_version(self, req, table=None, transaction=None):
-        return self._cached_table_stamp(req, table=table, transaction=transaction)[0]
+        version = self._cached_table_stamp(req, table=table, transaction=transaction)[0]
+        return version or 0
 
     def _cached_table_timestamp(self, req, table=None, transaction=None):
         return self._cached_table_stamp(req, table=table, transaction=transaction)[1]
