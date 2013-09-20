@@ -488,6 +488,12 @@ class Request(ServerInterface):
         header = self.header('If-Modified-Since')
         if header:
             cached_mtime = parse_http_date(header)
+            if mtime.microsecond != 0:
+                # Timestamps in HTTP are truncated to seconds by
+                # format_http_date(), so truncate the compared
+                # timstamp too to get the comparison right.
+                mtime = datetime.datetime(mtime.year, mtime.month, mtime.day, 
+                                          mtime.hour, mtime.minute, mtime.second)
             if cached_mtime is not None and cached_mtime >= mtime:
                 return True
         return False
