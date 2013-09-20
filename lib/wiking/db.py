@@ -2808,14 +2808,14 @@ class CachingPytisModule(PytisModule):
 
     def _update_cache_versions(self, req, transaction=None):
         versions = self._cache_versions
-        versions[None] = self._cached_table_version(req, transaction=transaction)
+        versions[None] = self._cached_table_version(transaction=transaction)
         for d in self._cache_dependencies:
             if self._database_dependency(d):
-                versions[d] = self._cached_table_version(req, d, transaction=transaction)
+                versions[d] = self._cached_table_version(d, transaction=transaction)
 
     _cached_tables_module = None
 
-    def _cached_table_stamp(self, req, table=None, transaction=None):
+    def _cached_table_stamp(self, table=None, transaction=None):
         cache_module = CachingPytisModule._cached_tables_module
         if cache_module is None:
             cache_module = CachingPytisModule._cached_tables_module = wiking.module.CachedTables
@@ -2825,12 +2825,12 @@ class CachingPytisModule(PytisModule):
                 table = pytis.util.camel_case_to_lower(self.name(), '_')
         return cache_module.current_stamp('public', table, transaction=transaction)
 
-    def _cached_table_version(self, req, table=None, transaction=None):
-        version = self._cached_table_stamp(req, table=table, transaction=transaction)[0]
+    def _cached_table_version(self, table=None, transaction=None):
+        version = self._cached_table_stamp(table=table, transaction=transaction)[0]
         return version or 0
 
-    def _cached_table_timestamp(self, req, table=None, transaction=None):
-        return self._cached_table_stamp(req, table=table, transaction=transaction)[1]
+    def _cached_table_timestamp(self, table=None, transaction=None):
+        return self._cached_table_stamp(table=table, transaction=transaction)[1]
 
     def _database_dependency(self, dependency):
         return dependency[0] in string.lowercase
@@ -2868,13 +2868,13 @@ class CachingPytisModule(PytisModule):
         return cache_cell[1]
 
     def _check_cache(self, req, load=False, transaction=None):
-        cache_version = self._cached_table_version(req, transaction=transaction)
+        cache_version = self._cached_table_version(transaction=transaction)
         db_version = self._cache_versions.get(None)
         up_to_date = (cache_version == db_version)
         if up_to_date:
             for d in self._cache_dependencies:
                 if self._database_dependency(d):
-                    if self._cache_versions.get(d) != self._cached_table_version(req, d):
+                    if self._cache_versions.get(d) != self._cached_table_version(d):
                         up_to_date = False
                         break
                 else:
