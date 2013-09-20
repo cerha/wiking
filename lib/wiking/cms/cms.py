@@ -1242,12 +1242,10 @@ class Themes(StyleManagementModule, wiking.CachingPytisModule):
         else:
             return super(Themes, self)._authorized(req, action, **kwargs)
         
-    def theme(self, theme_id):
+    def colors(self, theme_id):
         row = self._data.get_row(theme_id=theme_id)
-        colors = dict([(c.id(), row[c.id()].value())
-                       for c in wiking.Theme.COLORS if row[c.id()].value() is not None])
-        mtime = self.cached_table_timestamp(utc=True)
-        return wiking.Theme(colors, mtime=mtime)
+        return dict([(c.id(), row[c.id()].value())
+                     for c in wiking.Theme.COLORS if row[c.id()].value() is not None])
         
     def action_activate(self, req, record=None):
         if record:
@@ -3210,18 +3208,24 @@ class Resources(wiking.Resources):
     serving the default styles installed on the filesystem).
 
     """
-    _DEFAULT_THEME = Theme()
-
     def _theme(self, req):
         try:
             theme_id = int(req.param('preview_theme'))
+            cfg_mtime = datetime.datetime.utcnow()
         except (TypeError, ValueError):
             theme_id = wiking.module.Config.theme_id()
+            cfg_mtime = wiking.module.Config.cached_table_timestamp(utc=True)
         if theme_id is None:
-            theme = self._DEFAULT_THEME
+            colors = None
+            theme_mtime = cfg_mtime
         else:
-            theme = wiking.module.Themes.theme(theme_id)
-        return theme
+            colors = wiking.module.Themes.colors(theme_id)
+            theme_mtime = wiking.module.Themes.cached_table_timestamp(utc=True)
+        if theme_mtime and cfg_mtime:
+            mtime = max(theme_mtime, cfg_mtime)
+        else:
+            mtime = None
+        return wiking.Theme(colors, mtime=mtime)
 
     def _handle_resource(self, req, filename):
         content, mtime = wiking.module.StyleSheets.stylesheet(req, filename)

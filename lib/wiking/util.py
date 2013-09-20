@@ -558,17 +558,11 @@ class Theme(object):
              should be defined to support HTTP client side caching when serving
              stylesheets.  If None, the last modification time is unknown and
              caching can not be used which means that all stylesheets will be
-             unnecessarily sent again for every page request.  A special case
-             is when no 'colors' are passed.  In this case 'mtime' is
-             automatically set to the last modification time of the source file
-             where this class is defined as all colors depend on the default
-             values defined in the source code.
+             unnecessarily sent again for every page request.
 
         """
         if not colors:
             colors = self._DEFAULTS
-            if mtime is None:
-                mtime = datetime.datetime.utcfromtimestamp(os.stat(__file__).st_mtime)
         self._colors = dict([(c.id(), c) for c in self.COLORS])
         self._theme = {'color': dict([(key, self._color(key, colors))
                                       for key in self._colors.keys()])}
