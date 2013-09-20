@@ -1242,10 +1242,14 @@ class Themes(StyleManagementModule, wiking.CachingPytisModule):
         else:
             return super(Themes, self)._authorized(req, action, **kwargs)
         
-    def colors(self, theme_id):
-        row = self._data.get_row(theme_id=theme_id)
-        return dict([(c.id(), row[c.id()].value())
-                     for c in wiking.Theme.COLORS if row[c.id()].value() is not None])
+    def theme(self, theme_id):
+        return self._get_value(None, theme_id)
+
+    def _load_value(self, req, key, transaction=None):
+        row = self._data.get_row(theme_id=key, transaction=transaction)
+        colors = dict([(c.id(), row[c.id()].value())
+                       for c in wiking.Theme.COLORS if row[c.id()].value() is not None])
+        return wiking.Theme(colors)
         
     def action_activate(self, req, record=None):
         if record:
@@ -3208,6 +3212,9 @@ class Resources(wiking.Resources):
     serving the default styles installed on the filesystem).
 
     """
+    _DEFAULT_THEME = wiking.Theme()
+    _DEFAULT_THEME_MTIME = datetime.datetime.utcnow()
+
     def _theme(self, req):
         try:
             theme_id = int(req.param('preview_theme'))
@@ -3216,16 +3223,16 @@ class Resources(wiking.Resources):
             theme_id = wiking.module.Config.theme_id()
             cfg_mtime = wiking.module.Config.cached_table_timestamp(utc=True)
         if theme_id is None:
-            colors = None
-            theme_mtime = cfg_mtime
+            theme = self._DEFAULT_THEME
+            theme_mtime = self._DEFAULT_THEME_MTIME
         else:
-            colors = wiking.module.Themes.colors(theme_id)
+            theme = wiking.module.Themes.theme(theme_id)
             theme_mtime = wiking.module.Themes.cached_table_timestamp(utc=True)
         if theme_mtime and cfg_mtime:
             mtime = max(theme_mtime, cfg_mtime)
         else:
             mtime = None
-        return wiking.Theme(colors, mtime=mtime)
+        return theme, mtime
 
     def _handle_resource(self, req, filename):
         content = wiking.module.StyleSheets.stylesheet(req, filename)

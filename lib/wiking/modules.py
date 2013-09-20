@@ -17,6 +17,7 @@
 
 import os
 import re
+import datetime
 
 import lcg
 import wiking
@@ -290,16 +291,25 @@ class Stylesheets(Module, RequestHandler):
 
     """
     _MATCHER = re.compile(r"\$(\w[\w-]*)(?:\.(\w[\w-]*))?")
+    _THEME_TIMESTAMP = datetime.datetime.utcnow()
 
     def _theme(self, req):
         """Return the color theme to be used for stylesheet color substitution.
 
-        Returns wiking.cfg.theme by default but may be overriden to select the current
-        theme based on some application specific logic (eg. according to user's
-        preferences, etc.).
-        
+        Returns a tuple of (theme, timestamp), where theme is a 'wiking.Theme'
+        instance and timestamp is a timezone naive 'datetime.datetime' instance
+        in UTC representing the last modification time of the theme or None
+        when unknown.  It should not be None to support HTTP client side
+        caching when serving stylesheets.  If None, caching can not be used
+        which means that all stylesheets will be unnecessarily sent again for
+        every page request.
+
+        'wiking.cfg.theme' is returned by default but may be overriden to
+        select the current theme based on some application specific logic
+        (eg. according to user's preferences, etc.).
+
         """
-        return wiking.cfg.theme
+        return wiking.cfg.theme, self._THEME_TIMESTAMP
 
     def _substitute(self, stylesheet, theme):
         def subst(match):
@@ -316,7 +326,7 @@ class Stylesheets(Module, RequestHandler):
             for resource_dir in wiking.cfg.resource_path:
                 filename = os.path.join(resource_dir, 'css', *req.unresolved_path)
                 if os.path.exists(filename):
-                    theme = self._theme(req)
+                    theme, mtime = self._theme(req)
                     content = self._substitute("".join(file(filename).readlines()), theme)
                     return wiking.Response(content, content_type='text/css')
             raise NotFound()
@@ -376,14 +386,14 @@ class Resources(Stylesheets):
         filename = os.path.join(*req.unresolved_path)
         response = self._handle_resource(req, filename)
         if response.status_code() == httplib.OK and filename.endswith('.css'):
-            theme = self._theme(req)
-            mtimes = (response.last_modified(), theme.mtime())
-            if None in mtimes:
-                mtime = None
+            theme, theme_mtime = self._theme(req)
+            stylesheet_mtime = response.last_modified()
+            if stylesheet_mtime and theme_mtime:
+                mtime = max(stylesheet_mtime, theme_mtime)
+                if req.cached_since(mtime):
+                    raise wiking.NotModified()
             else:
-                mtime = max(mtimes)
-            if mtime is not None and req.cached_since(mtime):
-                raise wiking.NotModified()
+                mtime = None
             # Substitute the current color theme in stylesheets.
             data = response.data()
             if isinstance(data, (list, types.GeneratorType)):
@@ -583,7 +593,6 @@ class CookieAuthentication(object):
         if user is not None:
             password_expiration = user.password_expiration()
             if password_expiration is not None and req.uri() != self.password_change_uri(req):
-                import datetime
                 if password_expiration <= datetime.date.today():
                     raise wiking.PasswordExpirationError()
         return user

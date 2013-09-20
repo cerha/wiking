@@ -548,17 +548,12 @@ class Theme(object):
                  'inactive-folder': '#d2d8e0',
                  }
 
-    def __init__(self, colors=None, mtime=None):
+    def __init__(self, colors=None):
         """Arguments:
         
            colors -- dictionary of theme colors.  Keys are string identifiers
              of theme colors from 'Theme.COLORS' and values are RGB string color
              representaions, such as "#0f0" or "#00ff00".
-           mtime -- last theme modification time as a datetime instance.  It
-             should be defined to support HTTP client side caching when serving
-             stylesheets.  If None, the last modification time is unknown and
-             caching can not be used which means that all stylesheets will be
-             unnecessarily sent again for every page request.
 
         """
         coldict = dict([(c.id(), c) for c in self.COLORS])
@@ -574,14 +569,10 @@ class Theme(object):
                 else:
                     return 'inherit'
         self._theme = {'color': dict([(key, color(key)) for key in coldict])}
-        self._mtime = mtime
         
     def __getitem__(self, key):
         return self._theme[key]
 
-    def mtime(self):
-        return self._mtime
-    
         
 class MenuItem(object):
     """Abstract menu item representation."""
