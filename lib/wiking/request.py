@@ -467,7 +467,8 @@ class Request(ServerInterface):
 
         Arguments: 
           mtime -- last modification time of the resource on the
-            server as a datetime instance.
+            server as a datetime instance.  It may be a timezone
+            aware instance or a naive instance in UTC.
 
         Returns true if the client's cached version of the requested resource
         was last modified by the given datetime or later.  It does so by
@@ -488,14 +489,19 @@ class Request(ServerInterface):
         header = self.header('If-Modified-Since')
         if header:
             cached_mtime = parse_http_date(header)
-            if mtime.microsecond != 0:
-                # Timestamps in HTTP are truncated to seconds by
-                # format_http_date(), so truncate the compared
-                # timstamp too to get the comparison right.
-                mtime = datetime.datetime(mtime.year, mtime.month, mtime.day, 
-                                          mtime.hour, mtime.minute, mtime.second)
-            if cached_mtime is not None and cached_mtime >= mtime:
-                return True
+            if cached_mtime is not None:
+                tz = mtime.tzinfo
+                if tz:
+                    # Convert a timezone aware datetime instance to a naive one in
+                    # UTC, as parse_http_date also returns naive datetime in UTC.
+                    mtime = mtime.replace(tzinfo=None) - tz.utcoffset(mtime)
+                if mtime.microsecond != 0:
+                    # Timestamps in HTTP are truncated to seconds by
+                    # format_http_date(), so truncate the compared
+                    # timstamp too to get the comparison right.
+                    mtime = mtime.replace(microsecond=0)
+                if cached_mtime >= mtime:
+                    return True
         return False
 
     def start_response(self, status_code=httplib.OK, content_type=None, content_length=None,

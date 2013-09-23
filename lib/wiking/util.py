@@ -2144,12 +2144,17 @@ def format_http_date(dt):
 
     Arguments:
 
-      dt -- 'datetime.datetime' instance to be formatted
+      dt -- 'datetime.datetime' instance to be formatted.  It may be a timezone
+        aware instance or a naive instance in UTC.
 
     """
-    formatted = dt.strftime('%%s, %d %%s %Y %H:%M:%S GMT')
-    formatted = formatted % (_WKDAY[dt.weekday()], _MONTH[dt.month - 1],)
-    return formatted
+    tz = dt.tzinfo
+    if tz:
+        # Convert a timezone aware datetime instance to a naive one in UTC.
+        dt = dt.replace(tzinfo=None) - tz.utcoffset(dt)
+    return '%s, %02d %s %04d %02d:%02d:%02d GMT' % (_WKDAY[dt.weekday()], dt.day, 
+                                                    _MONTH[dt.month - 1], dt.year, 
+                                                    dt.hour, dt.minute, dt.second)
 
 def parse_http_date(date_string):
     """Return datetime corresponding to RFC 2616 date_string.
