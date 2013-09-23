@@ -2599,6 +2599,9 @@ class Attachments(ContentManagementModule):
                 Field('description', _("Description"), height=3, width=60, maxlen=240,
                       descr=_("Optional description used for the listing of attachments "
                               "(see below).")),
+                Field('created', _("Created"), editable=pp.Editable.NEVER, default=now),
+                Field('last_modified', _("Last Modified"), editable=pp.Editable.NEVER, default=now,
+                      computer=computer(self._last_modified)),
                 Field('ext', virtual=True, computer=computer(self._ext)),
                 # Translators: Size of a file, in number of bytes, kilobytes etc.
                 Field('bytesize', _("Size"),
@@ -2631,7 +2634,7 @@ class Attachments(ContentManagementModule):
                               "at the bottom of the page.")),
                 #Field('author', _("Author"), width=30),
                 #Field('location', _("Location"), width=50),
-                #Field('exif_date', _("EXIF date"), type=wiking.DateTime()),
+                #Field('exif_date', _("EXIF date")),
                 Field('_filename', virtual=True, computer=computer(self._filename)),
             )
         def _ext(self, record, filename):
@@ -2698,10 +2701,15 @@ class Attachments(ContentManagementModule):
                       'medium': _("Medium") + " (%dpx)" % wiking.cms.cfg.image_thumbnail_sizes[1],
                       'large': _("Large") + " (%dpx)" % wiking.cms.cfg.image_thumbnail_sizes[2]}
             return labels.get(size, size)
+        def _last_modified(self, record, file):
+            if record.field_changed('file'):
+                return now()
+            else:
+                return record['last_modified'].value()
 
         layout = ('file', 'title', 'description', 'thumbnail_size', 'in_gallery', 'listed')
-        columns = ('filename', 'title', 'bytesize', 'mime_type', 'thumbnail_size', 'in_gallery',
-                   'listed', 'page_id')
+        columns = ('filename', 'title', 'bytesize', 'thumbnail_size', 'created', 'last_modified',
+                   'in_gallery', 'listed', 'page_id')
         sorting = (('filename', ASC),)
         actions = (
             #Action('insert_image', _("New image"), descr=_("Insert a new image attachment"),
@@ -2905,21 +2913,24 @@ class Attachments(ContentManagementModule):
         return self.action_update(req, record, action='move')
 
     def action_download(self, req, record):
-        return Response(record['file'].value().buffer(), content_type=record['mime_type'].value())
+        if req.cached_since(record['last_modified'].value()):
+            raise wiking.NotModified()
+        return Response(record['file'].value().buffer(), content_type=record['mime_type'].value(),
+                        last_modified=record['last_modified'].value())
 
     def action_thumbnail(self, req, record):
-        value = record['thumbnail'].value()
-        if not value:
-            raise NotFound()
-        else:
-            return Response(value.buffer(), content_type='image/%s' % value.image().format.lower())
+        return self.action_image(req, record, field='thumbnail')
 
-    def action_image(self, req, record):
-        value = record['image'].value()
+    def action_image(self, req, record, field='image'):
+        last_modified = record['last_modified'].value()
+        if req.cached_since(last_modified):
+            raise wiking.NotModified()
+        value = record[field].value()
         if not value:
             raise NotFound()
         else:
-            return Response(value.buffer(), content_type='image/%s' % value.image().format.lower())
+            return Response(value.buffer(), content_type='image/%s' % value.image().format.lower(),
+                            last_modified=last_modified)
 
 
 class _News(ContentManagementModule, EmbeddableCMSModule, wiking.CachingPytisModule):

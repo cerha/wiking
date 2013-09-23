@@ -23,7 +23,7 @@ import sqlalchemy
 
 import pytis.data.gensqlalchemy as sql
 import pytis.data
-from pytis.data.dbdefs import and_, coalesce, func, ival, null, select, stype, sval
+from pytis.data.dbdefs import and_, or_, coalesce, func, ival, null, select, stype, sval
 from wiking_db import Base_CachingTable, CommonAccesRights
 
 current_timestamp_0 = sqlalchemy.sql.expression.Function('current_timestamp', ival(0))
@@ -470,6 +470,8 @@ class CmsPageAttachments(CommonAccesRights, sql.SQLTable):
               sql.Column('filename', pytis.data.String(not_null=True)),
               sql.Column('mime_type', pytis.data.String(not_null=True)),
               sql.Column('bytesize', pytis.data.String(not_null=True)),
+              sql.Column('created', pytis.data.DateTime(not_null=True)),
+              sql.Column('last_modified', pytis.data.DateTime(not_null=True)),
               sql.Column('image', pytis.data.Binary()),
               sql.Column('thumbnail', pytis.data.Binary()),
               sql.Column('thumbnail_size', pytis.data.String(),
@@ -484,7 +486,6 @@ class CmsPageAttachments(CommonAccesRights, sql.SQLTable):
               sql.Column('location', pytis.data.String()),
               sql.Column('width', pytis.data.Integer()),
               sql.Column('height', pytis.data.Integer()),
-              sql.Column('timestamp', pytis.data.DateTime()),
               )
     unique = (('filename', 'page_id',),)
 
@@ -515,10 +516,11 @@ class CmsVPageAttachments(CommonAccesRights, sql.SQLView):
                        a.c.image,
                        a.c.thumbnail, a.c.thumbnail_size, a.c.thumbnail_width, a.c.thumbnail_height,
                        a.c.in_gallery, a.c.listed, a.c.author, a.c.location, a.c.width, a.c.height,
-                       a.c.timestamp],
-                      from_obj=[a, l.outerjoin(t)],
-                      whereclause=and_(a.c.attachment_id == t.c.attachment_id,
-                                       l.c.lang == t.c.lang))
+                       a.c.created, a.c.last_modified],
+                      from_obj=[a.join(l, ival(1) == 1).
+                                outerjoin(t, and_(a.c.attachment_id == t.c.attachment_id,
+                                                  l.c.lang == t.c.lang))]
+        )
     def on_insert(self):
         return ("""(
     insert into cms_page_attachment_texts (attachment_id, lang, title, description)
@@ -526,18 +528,20 @@ class CmsVPageAttachments(CommonAccesRights, sql.SQLView):
            where new.title is not null OR new.description is not null;
     insert into cms_page_attachments (attachment_id, page_id, filename, mime_type, bytesize, image,
                                  thumbnail, thumbnail_size, thumbnail_width, thumbnail_height,
-                                 in_gallery, listed, author, "location", width, height, "timestamp")
+                                 in_gallery, listed, author, "location", width, height,
+                                 created, last_modified)
            values (new.attachment_id, new.page_id, new.filename, new.mime_type,
                    new.bytesize, new.image, new.thumbnail, new.thumbnail_size,
                    new.thumbnail_width, new.thumbnail_height, new.in_gallery, new.listed,
-                   new.author, new."location", new.width, new.height, new."timestamp")
+                   new.author, new."location", new.width, new.height,
+                   new.created, new.last_modified)
            returning
              attachment_id ||'.'|| (select max(lang) from cms_page_attachment_texts
                                     where attachment_id=attachment_id), null::char(2),
              attachment_id, page_id, null::text, null::text,
              filename, mime_type, bytesize, image, thumbnail,
              thumbnail_size, thumbnail_width, thumbnail_height, in_gallery, listed,
-             author, "location", width, height, "timestamp"
+             author, "location", width, height, created, last_modified
         )""",)
     def on_update(self):
         return ("""(
@@ -557,7 +561,8 @@ class CmsVPageAttachments(CommonAccesRights, sql.SQLView):
            "location" = new."location",
            width = new.width,
            height = new.height,
-           "timestamp" = new."timestamp"
+           created = new.created,
+           last_modified = new.last_modified
            where attachment_id = old.attachment_id;
     update cms_page_attachment_texts set
            title=new.title,
