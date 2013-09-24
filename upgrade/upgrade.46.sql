@@ -156,3 +156,7 @@ FOR EACH STATEMENT EXECUTE PROCEDURE "public"."f_update_cached_tables_after"('pu
 CREATE TRIGGER "public__a_user_roles__cached_tables_update_trigger__after" after insert OR update OR delete OR truncate ON "a_user_roles"
 FOR EACH STATEMENT EXECUTE PROCEDURE "public"."f_update_cached_tables_after"('public', 'a_user_roles', True);
 
+
+update cms_stylesheets set identifier=identifier;
+update cms_themes set name=name;
+update cms_config set site_title=site_title;
