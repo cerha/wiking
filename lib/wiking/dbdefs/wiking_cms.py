@@ -366,8 +366,7 @@ class CmsVPages(CommonAccesRights, sql.SQLView):
      values (new.site, new.kind, new.identifier, new.parent, new.modname,
              new.owner, new.read_role_id, new.write_role_id,
              new.menu_visibility, new.foldable, new.ord);
-     update cms_pages set tree_order = cms_page_tree_order(page_id)
-            where site=new.site and kind=new.kind;
+     update cms_pages set tree_order = cms_page_tree_order(page_id) where site=new.site;
      insert into cms_page_texts (page_id, lang, published,
                                  creator, created, published_since,
                                  title, description, content,
@@ -401,8 +400,7 @@ class CmsVPages(CommonAccesRights, sql.SQLView):
         foldable = new.foldable,
         ord = new.ord
     where cms_pages.page_id = old.page_id;
-    update cms_pages set tree_order = cms_page_tree_order(page_id)
-           where site=new.site and kind=new.kind;
+    update cms_pages set tree_order = cms_page_tree_order(page_id) where site=new.site;
     update cms_page_texts set
         published = new.published,
         title = new.title,
