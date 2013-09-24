@@ -354,8 +354,10 @@ class CmsVPages(CommonAccesRights, sql.SQLView):
                        coalesce(t.c.title, p.c.identifier).label('title_or_identifier'),
                        t.c.title, t.c.description, t.c.content, t.c._title,
                        t.c._description, t.c._content],
-                      from_obj=[p, l.outerjoin(t)],
-                      whereclause=and_(p.c.page_id == t.c.page_id, l.c.lang == t.c.lang))
+                      from_obj=[p.join(l, ival(1) == 1). # cross join
+                                outerjoin(t, and_(t.c.page_id == p.c.page_id,
+                                                  t.c.lang == l.c.lang))],
+        )
     def on_insert(self):
         return ("""(
      insert into cms_pages (site, kind, identifier, parent, modname,
@@ -517,7 +519,7 @@ class CmsVPageAttachments(CommonAccesRights, sql.SQLView):
                        a.c.thumbnail, a.c.thumbnail_size, a.c.thumbnail_width, a.c.thumbnail_height,
                        a.c.in_gallery, a.c.listed, a.c.author, a.c.location, a.c.width, a.c.height,
                        a.c.created, a.c.last_modified],
-                      from_obj=[a.join(l, ival(1) == 1).
+                      from_obj=[a.join(l, ival(1) == 1). # cross join
                                 outerjoin(t, and_(a.c.attachment_id == t.c.attachment_id,
                                                   l.c.lang == t.c.lang))]
         )
