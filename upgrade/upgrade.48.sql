@@ -75,3 +75,5 @@ DO INSTEAD (
 
 CREATE OR REPLACE RULE "cms_v_pages__delete_instead" AS ON DELETE TO "public"."cms_v_pages"
 DO INSTEAD DELETE FROM public.cms_pages WHERE public.cms_pages.page_id = old.page_id;
+
+update cms_pages set tree_order = cms_page_tree_order(page_id);
