@@ -3,9 +3,9 @@ alter table cms_page_attachments add column created TIMESTAMP(0) WITHOUT TIME ZO
 update cms_page_attachments set created=coalesce(timestamp, current_timestamp(0) at time zone 'GMT'), last_modified=current_timestamp(0) at time zone 'GMT';
 alter table cms_page_attachments alter column created set not null;
 alter table cms_page_attachments alter column last_modified set not null;
-alter table cms_page_attachments drop column timestamp;
 
 drop view cms_v_page_attachments;
+alter table cms_page_attachments drop column timestamp;
 
 CREATE OR REPLACE VIEW "public"."cms_v_page_attachments" AS
 SELECT CAST(a.attachment_id AS TEXT) || '.' || l.lang AS attachment_key, l.lang, a.attachment_id, a.page_id, t.title, t.description, a.filename, a.mime_type, a.bytesize, a.image, a.thumbnail, a.thumbnail_size, a.thumbnail_width, a.thumbnail_height, a.in_gallery, a.listed, a.author, a.location, a.width, a.height, a.created, a.last_modified 
