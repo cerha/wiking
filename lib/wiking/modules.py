@@ -347,12 +347,7 @@ class Resources(Module, RequestHandler):
             subdir = None
         resource = self._provider.resource(filename)
         if resource and resource.src_file() and (subdir is None or resource.SUBDIR == subdir):
-            max_age = wiking.cfg.resource_client_cache_max_age
-            if max_age:
-                headers = (('Cache-Control', 'max-age=%d' % max_age),)
-            else:
-                headers = ()
-            return wiking.serve_file(req, resource.src_file(), headers=headers)
+            return wiking.serve_file(req, resource.src_file())
         else:
             raise NotFound()
 
@@ -382,6 +377,10 @@ class Resources(Module, RequestHandler):
             response = wiking.Response(data, content_type=response.content_type(),
                                        last_modified=mtime, filename=response.filename(), 
                                        headers=response.headers())
+        max_age = wiking.cfg.resource_client_cache_max_age
+        if ((max_age is not None and response.last_modified() is not None
+             and 'Cache-Control' not in dict(response.headers()))):
+            response.add_header('Cache-Control', 'max-age=%d' % max_age)
         return response
 
     def resource(self, filename):

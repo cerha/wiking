@@ -952,11 +952,16 @@ class Response(object):
     def last_modified(self):
         return self._last_modified
 
-    def headers(self):
-        return self._headers
-    
     def filename(self):
         return self._filename
+        
+    def headers(self):
+        return tuple(self._headers)
+    
+    def add_header(self, name, value):
+        if not isinstance(self._headers, list):
+            self._headers = list(self._headers)
+        self._headers.append((name, value))
 
     
 class BoundCache(object):
