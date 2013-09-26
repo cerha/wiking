@@ -1577,6 +1577,15 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
     def _current_base_uri(self, req, record=None):
         return '/'
 
+    def _load_page_rows(self, key, transaction=None):
+        identifier, preview_mode = key
+        kwargs = dict(site=wiking.cfg.server_hostname)
+        if not preview_mode:
+            kwargs['published'] = True
+        if identifier is not None:
+            kwargs['identifier'] = identifier
+        return self._data.get_rows(sorting=self._sorting, **kwargs)
+
     def _resolve(self, req):
         if not req.unresolved_path:
             return None
@@ -1585,7 +1594,6 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                 return row
             else:
                 raise Forbidden()
-            
         identifier = req.unresolved_path[0]
         # Recognize special path of RSS channel as '<identifier>.<lang>.rss'.
         if identifier.endswith('.rss'):
@@ -1597,7 +1605,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                 if row:
                     del req.unresolved_path[0]
                     return check_published(row)
-        rows = self._data.get_rows(site=wiking.cfg.server_hostname, identifier=identifier)
+        rows = self._get_value((identifier, True), loader=self._load_page_rows)
         if rows:
             if req.has_param(self._key):
                 # If key is passed (on form submission), resolve by key
@@ -1741,14 +1749,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                             foldable=bool(row['foldable'].value()),
                             variants=variants,
                             submenu=submenu)
-        if preview_mode:
-            restriction = {}
-        else:
-            restriction = {'published': True}
-        def loader(key, transaction=None):
-            return self._data.get_rows(site=wiking.cfg.server_hostname,
-                                       sorting=self._sorting, **restriction)
-        rows = self._get_value(preview_mode, loader=loader)
+        rows = self._get_value((None, preview_mode), loader=self._load_page_rows)
         for row in rows:
             page_id = row['page_id'].value()
             if page_id not in translations:
