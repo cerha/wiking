@@ -1246,7 +1246,7 @@ class Users(UserManagementModule, CachingPytisModule):
         Returns a 'User' instance (defined in request.py) or None.
 
         """
-        key = (login, uid, req.module_uri('ActiveUsers'))
+        key = (login, uid, req.module_uri('ActiveUsers'), req.module_uri('Registration'))
         return self._get_value(key, transaction=transaction, loader=self._load_user)
 
     def _load_user(self, key, transaction=None):
