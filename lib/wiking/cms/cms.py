@@ -1067,16 +1067,12 @@ class Languages(SettingsManagementModule, wiking.CachingPytisModule):
     _REFERER = 'lang'
     # Translators: Do not translate this.
     _TITLE_TEMPLATE = _('%(name)s')
-    _language_list = None
-    _language_list_time = None
     
     def languages(self):
         return self._get_value(None, loader=self._load_languages)
 
     def _load_languages(self, key, transaction=None):
-        Languages._language_list = [str(r['lang'].value()) for r in self._data.get_rows()]
-        Languages._language_list_time = time.time()
-        return self._language_list
+        return [str(row['lang'].value()) for row in self._data.get_rows()]
 
 
 class Countries(SettingsManagementModule):
@@ -1112,8 +1108,6 @@ class Countries(SettingsManagementModule):
     _REFERER = 'country'
     # Translators: Do not translate this.
     _TITLE_TEMPLATE = _('%(name)s')
-    _language_list = None
-    _language_list_time = None
 
     
 class Themes(StyleManagementModule, wiking.CachingPytisModule):
