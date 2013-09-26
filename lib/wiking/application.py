@@ -28,9 +28,10 @@ _ = lcg.TranslatableTextFactory('wiking')
 class Application(Module):
     """Define Wiking application behavior.
 
-    Wiking application is itself a Wiking module.  This module defines the basic application
-    behavior.  You may customize your application by overriding this module and implementing the
-    methods which form the Application API by your own means.
+    Wiking application is itself a Wiking module.  This module defines the
+    basic application behavior.  You may customize your application by
+    overriding this module and implementing the methods which form the
+    Application API by your own means.
 
     """
 
@@ -41,22 +42,23 @@ class Application(Module):
                 }
     """Defines static assignment of modules responsible for handling distinct URI paths. 
 
-    The value is a dictionary, where keys are uri's and values are the names of the responsible
-    modules as strings.  Only the first part of the request uri is used to determine the module.
-    Other parts (after the first slash) may be used by the module for further resolution of the
-    request.
+    The value is a dictionary, where keys are uri's and values are the names of
+    the responsible modules as strings.  Only the first part of the request uri
+    is used to determine the module.  Other parts (after the first slash) may
+    be used by the module for further resolution of the request.
 
-    This constant is used by the default implementation of 'Application.handle()' and
-    'Application.module_uri()'.  See their documentation for more information.
-    
+    This constant is used by the default implementation of
+    'Application.handle()' and 'Application.module_uri()'.  See their
+    documentation for more information.
+
     """
     
     _STYLESHEETS = (('default.css', 'all'), ('layout.css', 'screen'), ('print.css', 'print'))
     """Static list of available style sheets used by the 'stylesheets()' method.
 
-    The list consists of pairs (FILENAME, MEDIA), where FILENAME will be prefixed by the current
-    URI of the 'Stylesheets' module and MEDIA corresponds to the 'lcg.Stylesheet' constructor
-    argument of the same name.
+    The list consists of pairs (FILENAME, MEDIA), where FILENAME will be
+    prefixed by the current URI of the 'Stylesheets' module and MEDIA
+    corresponds to the 'lcg.Stylesheet' constructor argument of the same name.
 
     """
     _PREFERRED_LANGUAGE_COOKIE = 'wiking_preferred_language'
@@ -147,19 +149,22 @@ class Application(Module):
 
         The argument 'modname' is the Wiking module name as a string.
 
-        If the module has no definite global path within the application, None may be returned.
-        The exact behavior depends on the particular application in use.  Please see the
-        documentation of this method in the relevant application class (such as
-        'wiking.cms.Application.module_uri()' for applications built on Wiking CMS) for more
-        details.
+        If the module has no definite global path within the application, None
+        may be returned.  The exact behavior depends on the particular
+        application in use.  Please see the documentation of this method in the
+        relevant application class (such as
+        'wiking.cms.Application.module_uri()' for applications built on Wiking
+        CMS) for more details.
 
-        The default implementation performs a reverse lookup in the '\_MAPPING' dictionary.  None
-        is returned when there is no mapping item for the module, or when there is more than one
-        item for the same module (which is also legal).
+        The default implementation performs a reverse lookup in the '\_MAPPING'
+        dictionary.  None is returned when there is no mapping item for the
+        module, or when there is more than one item for the same module (which
+        is also legal).
 
         This method should not be called directly by application code.  Use
-        'wiking.Request.module_uri()' instead (which calls this method internally if necessary).
-        
+        'wiking.Request.module_uri()' instead (which calls this method
+        internally if necessary).
+
         """
         identitier = self._reverse_mapping.get(modname)
         return identitier and '/'+identitier or None
@@ -167,20 +172,21 @@ class Application(Module):
     def site_title(self, req):
         """Return site title as a string.
 
-        This method returns the value of configuration option 'site_title' by default.  It may
-        be overriden to change the title dynamically.
-        
+        This method returns the value of configuration option 'site_title' by
+        default.  It may be overriden to change the title dynamically.
+
         """
         return wiking.cfg.site_title
 
     def site_subtitle(self, req):
         """Return site subtitle as a string or None.
 
-        Site subtitle is normally appended to site title separated by a dash (if not 'None').  It
-        is, however, exported in a differnt html element to allow independent styling.
+        Site subtitle is normally appended to site title separated by a dash
+        (if not 'None').  It is, however, exported in a differnt html element
+        to allow independent styling.
 
-        This method returns the value of configuration option 'site_subtitle' by default.  It may
-        be overriden to change the subtitle dynamically.
+        This method returns the value of configuration option 'site_subtitle'
+        by default.  It may be overriden to change the subtitle dynamically.
 
         """
         return wiking.cfg.site_subtitle
@@ -192,36 +198,41 @@ class Application(Module):
         
           req -- the current request object.
 
-        Returns a sequence of 'MenuItem' instances representing the main menu hierarchy.
+        Returns a sequence of 'MenuItem' instances representing the main menu
+        hierarchy.
         
-        The menu structure should usually remains unchanged throughout the application or at least
-        throughout its major states, but this is just a common practice, not a requirement.  The
-        application may decide to return a different menu for each request.
-        
+        The menu structure should usually remains unchanged throughout the
+        application or at least throughout its major states, but this is just a
+        common practice, not a requirement.  The application may decide to
+        return a different menu for each request.
+
         """
         return ()
                 
     def authenticate(self, req):
         """Perform authentication and return a 'User' instance if successful.
 
-        This method is called when authentication is needed.  A 'User' instance must be returned if
-        authentication was successful or None if not.  'AuthenticationError' may be raised if
-        authentication credentials are supplied but are not correct.  'PasswordExpirationError' may
-        be raised if the user is correctly authenticated, but user's 'password_expiration' date is
-        today or earlier.  In other cases, None as the returned value means, that the user is not
-        logged or that the session expired.
+        This method is called when authentication is needed.  A 'User' instance
+        must be returned if authentication was successful or None if not.
+        'AuthenticationError' may be raised if authentication credentials are
+        supplied but are not correct.  'PasswordExpirationError' may be raised
+        if the user is correctly authenticated, but user's
+        'password_expiration' date is today or earlier.  In other cases, None
+        as the returned value means, that the user is not logged or that the
+        session expired.
 
-        The only argument is the request object, which may be used to obtain authentication
-        credentials, store session data (for example as cookies) or whatever else is needed by the
-        implemented authentication mechanism.
+        The only argument is the request object, which may be used to obtain
+        authentication credentials, store session data (for example as cookies)
+        or whatever else is needed by the implemented authentication mechanism.
 
-        The default implementation does nothing, so the authentication process is passed
-        succesfully, but no user is authenticated, so any further authorization checking will lead
-        to an error.
+        The default implementation does nothing, so the authentication process
+        is passed succesfully, but no user is authenticated, so any further
+        authorization checking will lead to an error.
 
-        Wiking also provides the `CookieAuthentication' class, which implements standard cookie
-        based authentication and may be extended to perform login validation against any external
-        source.  This module should be usefult for most real authentication scenarios.
+        Wiking also provides the `CookieAuthentication' class, which implements
+        standard cookie based authentication and may be extended to perform
+        login validation against any external source.  This module should be
+        usefult for most real authentication scenarios.
 
         """
         return None
@@ -234,34 +245,35 @@ class Application(Module):
           req -- Current request as a 'Request' instance.
           role -- User role as a 'Role' instance.
 
-        In general, user roles may be contained in each other.  This means that user's membersip in
-        one role (let's say role A) may automatically imply his membership in other roles (B and C
-        for example).  Roles B and C contain role A in this example.  If role containment
-        is supported by the application, this method must be implemented and must return the list
-        of all contained roles (including the given role itself and also transitively contained
-        roles).
+        In general, user roles may be contained in each other.  This means that
+        user's membersip in one role (let's say role A) may automatically imply
+        his membership in other roles (B and C for example).  Roles B and C
+        contain role A in this example.  If role containment is supported by
+        the application, this method must be implemented and must return the
+        list of all contained roles (including the given role itself and also
+        transitively contained roles).
 
-        In any case there may be no cycles in role containment, i.e. no role may contain itself,
-        including transitive relations.  For instance, role A may not contain A; or if A contains B
-        and B contains C then C may not contain A nor B nor C.
+        In any case there may be no cycles in role containment, i.e. no role
+        may contain itself, including transitive relations.  For instance, role
+        A may not contain A; or if A contains B and B contains C then C may not
+        contain A nor B nor C.
 
-        
         """
         return ()
     
     def panels(self, req, lang):
         """Return a list of 'Panel' instances representing panels displayed on the page.
 
-        The set of panels will usually be constant throughout the application, but this is just a
-        common practice, not a requirement.  The application may decide to return a different set
-        of panels for each request.
+        The set of panels will usually be constant throughout the application,
+        but this is just a common practice, not a requirement.  The application
+        may decide to return a different set of panels for each request.
 
-        Note, that except for the generic 'Panel' class, there are also predefined single purpose
-        classes, such as 'LoginPanel'.
+        Note, that except for the generic 'Panel' class, there are also
+        predefined single purpose classes, such as 'LoginPanel'.
 
-        See the Navigation section of the Wiking User's documentation for general information about
-        panels.
-        
+        See the Navigation section of the Wiking User's documentation for
+        general information about panels.
+
         """
         return []
         
@@ -330,11 +342,13 @@ class Application(Module):
     def stylesheets(self, req):
         """Return the list of all available style sheets as 'lcg.Stylesheet' instances.
 
-        The application is responsible for handling the stylesheets (by their URIs) correctly.
-        Wiking provides a generic 'Stylesheets' module for this purpose.
+        The application is responsible for handling the stylesheets (by their
+        URIs) correctly.  Wiking provides a generic 'Stylesheets' module for
+        this purpose.
 
-        The default implementation returns the list of style sheets defined by the '_STYLESHEETS'
-        constant of the class (see its docstring for more info).
+        The default implementation returns the list of style sheets defined by
+        the '_STYLESHEETS' constant of the class (see its docstring for more
+        info).
 
         """
         uri = req.module_uri('Stylesheets') or req.module_uri('Resources')
@@ -442,7 +456,8 @@ class Application(Module):
         """Return the additional content to be displayed in the hierarchical menu panel.
 
         Any content acceptable by 'lcg.coerce()' may be returned.  The content
-        will be placed under the actual hierarchical menu list (at the bottom of the panel).
+        will be placed under the actual hierarchical menu list (at the bottom
+        of the panel).
 
         """
         return None
