@@ -366,20 +366,20 @@ class CMSModule(wiking.PytisModule, wiking.RssModule):
     def submenu(self, req):
         return []
 
+    def _panel_rows(self, req, relation, lang, count):
+        return self._data.get_rows(condition=self._panel_condition(req, relation), 
+                                   lang=lang, limit=count)
+
     def panelize(self, req, lang, count, relation=None):
-        count = count or self._PANEL_DEFAULT_COUNT
-        fields = [self._view.field(id)
-                  for id in self._PANEL_FIELDS or self._view.columns()]
+        fields = [self._view.field(id) for id in self._PANEL_FIELDS or self._view.columns()]
         record = self._record(req, None)
         items = []
-        for row in self._rows(req, condition=self._panel_condition(req, relation),
-                              lang=lang, limit=count):
+        for row in self._panel_rows(req, relation, lang, count or self._PANEL_DEFAULT_COUNT):
             record.set_row(row)
-            item = PanelItem([(f.id(), record[f.id()].export(),
-                               f.id() == self._title_column and
-                               self._record_uri(req, record)) or None
-                              for f in fields])
-            items.append(item)
+            items.append(PanelItem([(f.id(), record[f.id()].export(),
+                                     f.id() == self._title_column and
+                                     self._record_uri(req, record)) or None
+                                    for f in fields]))
         if items:
             return items
         else:
@@ -684,7 +684,7 @@ class Config(SettingsManagementModule, wiking.CachingPytisModule):
         called once on Application initialization.
 
         """
-        if self._check_cache(req, load=True) and hasattr(self, '_theme_id'):
+        if self._check_cache(load=True) and hasattr(self, '_theme_id'):
             return
         # This dummy read of wiking.cms.cfg.allow_registration is here to
         # force reading wiking.cms.cfg before updating it.  Not doing so may
@@ -964,21 +964,22 @@ class Panels(SiteSpecificContentModule, wiking.CachingPytisModule):
     def _delete_confirmation_actions(self, req, record, action):
         return (Action('delete', self._DELETE_LABEL, _manage_cms_panels='1',
                        panel_id=record['panel_id'].export(), submit=1),)
-        
-    def panels(self, req, lang):
-        return self._get_value(req, lang)
 
-    def _load_value(self, req, key, transaction=None):
-        lang = key
-        panels = []
-        #TODO: tady uvidim prirazenou stranku, navigable
-        roles = wiking.module('Users').Roles()
-        if wiking.module('Application').preview_mode(req):
+        return 
+
+    def _load_value(self, key, transaction=None):
+        lang, preview_mode = key
+        if preview_mode:
             restriction = {}
         else:
             restriction = {'published': True}
-        for row in self._data.get_rows(site=wiking.cfg.server_hostname, lang=lang,
-                                       sorting=self._sorting, **restriction):
+        return self._data.get_rows(site=wiking.cfg.server_hostname, lang=lang,
+                                   sorting=self._sorting, **restriction)
+        
+    def panels(self, req, lang):
+        panels = []
+        roles = wiking.module.Users.Roles()
+        for row in self._get_value((lang, wiking.module.Application.preview_mode(req))):
             role_id = row['read_role_id'].value()
             if role_id is not None and not req.check_roles(roles[role_id]):
                 continue
@@ -994,8 +995,6 @@ class Panels(SiteSpecificContentModule, wiking.CachingPytisModule):
                                              relation=binding and (binding, row)))
                 if mod.has_channel():
                     channel = '/' + '.'.join((row['identifier'].value(), lang, 'rss'))
-                if modname not in self._cache_dependencies:
-                    self._cache_dependencies = self._cache_dependencies + (modname,)
             if row['content'].value():
                 content += (text2content(req, row['content'].value()),)
             content = lcg.Container(content)
@@ -1072,9 +1071,9 @@ class Languages(SettingsManagementModule, wiking.CachingPytisModule):
     _language_list_time = None
     
     def languages(self):
-        return self._get_value(None, None, loader=self._load_languages)
+        return self._get_value(None, loader=self._load_languages)
 
-    def _load_languages(self, req, key, transaction=None):
+    def _load_languages(self, key, transaction=None):
         Languages._language_list = [str(r['lang'].value()) for r in self._data.get_rows()]
         Languages._language_list_time = time.time()
         return self._language_list
@@ -1243,9 +1242,9 @@ class Themes(StyleManagementModule, wiking.CachingPytisModule):
             return super(Themes, self)._authorized(req, action, **kwargs)
         
     def theme(self, theme_id):
-        return self._get_value(None, theme_id)
+        return self._get_value(theme_id)
 
-    def _load_value(self, req, key, transaction=None):
+    def _load_value(self, key, transaction=None):
         row = self._data.get_row(theme_id=key, transaction=transaction)
         colors = dict([(c.id(), row[c.id()].value())
                        for c in wiking.Theme.COLORS if row[c.id()].value() is not None])
@@ -1752,10 +1751,10 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
             restriction = {}
         else:
             restriction = {'published': True}
-        def loader(req, key, transaction=None):
+        def loader(key, transaction=None):
             return self._data.get_rows(site=wiking.cfg.server_hostname,
                                        sorting=self._sorting, **restriction)
-        rows = self._get_value(req, preview_mode, loader=loader)
+        rows = self._get_value(preview_mode, loader=loader)
         for row in rows:
             page_id = row['page_id'].value()
             if page_id not in translations:
@@ -1775,9 +1774,9 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
         return len(self._data.get_rows(site=wiking.cfg.server_hostname)) == 0
 
     def module_uri(self, req, modname):
-        return self._get_value(req, modname, cache_id='module_uri', loader=self._load_module_uri)
+        return self._get_value(modname, cache_id='module_uri', loader=self._load_module_uri)
 
-    def _load_module_uri(self, req, key, transaction=None):
+    def _load_module_uri(self, key, transaction=None):
         modname = key
         if modname == self.name():
             uri = '/'
@@ -3000,15 +2999,14 @@ class _News(ContentManagementModule, EmbeddableCMSModule, wiking.CachingPytisMod
         cbvalue = record.cb_value('author', 'email')
         return cbvalue and cbvalue.export()
 
-    def panelize(self, req, lang, count, relation=None):
-        # The hash is not necessarily unique but we don't care much.
-        hash_ = None if relation is None else hash(relation)
-        key = (lang, count, hash_)
-        return self._get_value(req, key, relation=relation, loader=self._load_panelize)
+    def _load_panel_rows(self, key, transaction=None, **kwargs):
+        condition, lang, count = key
+        return self._data.get_rows(condition=condition, lang=lang, limit=count)
 
-    def _load_panelize(self, req, key, transaction=None, relation=None, **kwargs):
-        lang, count, _hash = key
-        return ContentManagementModule.panelize(self, req, lang, count, relation=relation)
+    def _panel_rows(self, req, relation, lang, count):
+        key = (self._panel_condition(req, relation), lang, count)
+        #return self._load_panel_rows(key)
+        return self._get_value(key, loader=self._load_panel_rows)
 
 
 class News(_News):
@@ -3337,15 +3335,16 @@ class StyleSheets(SiteSpecificContentModule, StyleManagementModule,
     _cache_ids = ('default', 'single',)
 
     def stylesheets(self, req):
-        return self._get_value(req, None)
+        base_uri = req.module_uri('Resources')
+        return self._get_value((None, base_uri, req.wmi))
         
     def stylesheet(self, req, filename):
-        return self._get_value(req, filename, cache_id='single')
+        return self._get_value((filename, None, None), cache_id='single')
 
-    def _load_value(self, req, key, transaction=None):
-        if key is None:
-            scopes = (None, req.wmi and 'wmi' or 'website')
-            base_uri = req.module_uri('Resources')
+    def _load_value(self, key, transaction=None):
+        identifier, base_uri, wmi = key
+        if identifier is None:
+            scopes = (None, wmi and 'wmi' or 'website')
             return [lcg.Stylesheet(row['identifier'].value(),
                                    uri=base_uri + '/' + row['identifier'].value(),
                                    media=row['media'].value())
@@ -3355,7 +3354,8 @@ class StyleSheets(SiteSpecificContentModule, StyleManagementModule,
                                                                      for s in scopes]),
                                                    sorting=self._sorting)]
         else:
-            row = self._data.get_row(identifier=key, active=True, site=wiking.cfg.server_hostname)
+            row = self._data.get_row(identifier=identifier, active=True,
+                                     site=wiking.cfg.server_hostname)
             if row:
                 return row['content'].value()
             else:
@@ -3595,7 +3595,7 @@ class Texts(CommonTexts, wiking.CachingPytisModule):
                 site = wiking.cfg.server_hostname
                 self._call_db_function('cms_add_text_label', text.label(), site)
 
-    def _load_value(self, req, key, transaction=None):
+    def _load_value(self, key, transaction=None):
         return self._data.get_row(text_id=key)
 
     def text(self, req, text, lang=None, args=None):
@@ -3621,7 +3621,7 @@ class Texts(CommonTexts, wiking.CachingPytisModule):
         assert isinstance(text, Text)
         lang = self._select_language(req, lang)
         text_id = ':'.join((text.label(), wiking.cfg.server_hostname, lang))
-        row = self._get_value(req, text_id)
+        row = self._get_value(text_id)
         if row is None:
             retrieved_text = None
         else:

@@ -98,8 +98,8 @@ class RoleSets(UserManagementModule, CachingPytisModule):
         else:
             return super(RoleSets, self)._link_provider(req, uri, record, cid, **kwargs)
 
-    def _load_cache(self, req, transaction=None):
-        super(RoleSets, self)._load_cache(req, transaction=transaction)
+    def _load_cache(self, transaction=None):
+        super(RoleSets, self)._load_cache(transaction=transaction)
         cache = self._get_cache('containment')
         def add(row):
             role_id = row['role_id'].value()
@@ -127,7 +127,7 @@ class RoleSets(UserManagementModule, CachingPytisModule):
         return self._related_role_ids_by_role_ids([role.id()], what_to_add, instances=instances)
 
     def _related_role_ids_by_role_ids(self, init_role_ids, what_to_add, instances=False):
-        self._check_cache(None, load=True)
+        self._check_cache(load=True)
         key = tuple(init_role_ids) + (what_to_add, instances,)
         resolution_cache = self._get_cache('resolution')
         result = resolution_cache.get(key)
@@ -1207,13 +1207,12 @@ class Users(UserManagementModule, CachingPytisModule):
         req.message(_("The activation code was sent to %s.", record['email'].value()))
         raise Redirect(self._current_record_uri(req, record))
 
-    def _user_arguments(self, req, login, row):
-        record = self._record(req, row)
-        base_uri = req.module_uri('ActiveUsers')
+    def _user_arguments(self, login, row, base_uri, registration_uri):
+        record = self._record(None, row)
         if base_uri:
             uri = base_uri + '/' + login
         else:
-            uri = req.module_uri('Registration')
+            uri = registration_uri
         uid = record['uid'].value()
         role_ids = set([Roles.ANYONE.id(), Roles.AUTHENTICATED.id()])
         if record['state'].value() != self.AccountState.NEW:
@@ -1247,11 +1246,11 @@ class Users(UserManagementModule, CachingPytisModule):
         Returns a 'User' instance (defined in request.py) or None.
 
         """
-        key = (login, uid,)
-        return self._get_value(req, key, transaction=transaction, loader=self._load_user)
+        key = (login, uid, req.module_uri('ActiveUsers'))
+        return self._get_value(key, transaction=transaction, loader=self._load_user)
 
-    def _load_user(self, req, key, transaction=None):
-        login, uid = key
+    def _load_user(self, key, transaction=None):
+        login, uid, base_uri, registration_uri = key
         # Get the user data from db
         if login is not None and uid is None:
             kwargs = dict(login=login)
@@ -1264,7 +1263,8 @@ class Users(UserManagementModule, CachingPytisModule):
             user = None
         else:
             # Convert user data into a User instance
-            user_kwargs = self._user_arguments(req, row['login'].value(), row)
+            user_kwargs = self._user_arguments(row['login'].value(), row,
+                                               base_uri, registration_uri)
             user = self._make_user(user_kwargs)
         return user
 
@@ -1318,10 +1318,12 @@ class Users(UserManagementModule, CachingPytisModule):
         email, state, role_id, confirm = key
         if role is not None:
             role_user_ids = wiking.module.RoleMembers.user_ids(role)
+        base_uri = req.module_uri('ActiveUsers')
+        registration_uri = req.module_uri('Registration')
         def make_user(row):
             if role is not None and row['uid'].value() not in role_user_ids:
                 return None
-            kwargs = self._user_arguments(req, row['login'].value(), row)
+            kwargs = self._user_arguments(row['login'].value(), row, base_uri, registration_uri)
             return self._make_user(kwargs)
         kwargs = {}
         if email is not None:

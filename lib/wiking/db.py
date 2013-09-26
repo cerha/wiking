@@ -2763,21 +2763,26 @@ class CachingPytisModule(PytisModule):
 
     Each piece of data is retrieved by its key, it may be any object which can
     be used as Python dictionary key.  Data is retrieved using '_get_value()'
-    method.  It takes Wiking request (use 'None' when it's not available) and
-    the key as arguments.  There are additional keyword arguments: current
-    transaction (don't forget to use it when needed), cache name (if not the
-    default), loader permitting to specify other data loading function than
-    '_load_value()' which is very useful when using multiple caches, and
-    default value to return in case of key error (preventing retrieval of any
-    database values if the cache is up-to-date).  If the given value is not
-    present the cache or the cache is dirty, the method tries to retrieve the
-    value using 'loader' or (if no loader was specified) '_load_value()'.  If
-    it returns 'pytis.util.UNDEFINED' then '_get_value()' tries to load all
-    data using '_load_cache' and get the value again.  This way you usually
-    don't have to load any data explicitly, it's just enough to redefine or
-    extend one or more methods and using proper '_get_value()' arguments.
-    '_get_value()' provides complete cache handling and value retrieval
-    implementation and shouldn't be redefined.
+    method.  It takes the key as argument.  There are additional keyword
+    arguments: current transaction (don't forget to use it when needed), cache
+    name (if not the default), loader permitting to specify other data loading
+    function than '_load_value()' which is very useful when using multiple
+    caches, and default value to return in case of key error (preventing
+    retrieval of any database values if the cache is up-to-date).  If the given
+    value is not present the cache or the cache is dirty, the method tries to
+    retrieve the value using 'loader' or (if no loader was specified)
+    '_load_value()'.  If it returns 'pytis.util.UNDEFINED' then '_get_value()'
+    tries to load all data using '_load_cache' and get the value again.  This
+    way you usually don't have to load any data explicitly, it's just enough to
+    redefine or extend one or more methods and using proper '_get_value()'
+    arguments.  '_get_value()' provides complete cache handling and value
+    retrieval implementation and shouldn't be redefined.
+
+    The request object is intentionally unavailable within caching methods,
+    because cached values should be request independent (they live across
+    multiple requests and may be shared among multiple users.  Pass values
+    obtained from the request explicitly as a part of the key when really
+    desired (and think of the consequences).
 
     A given cache may be accessed directly using '_get_cache()' method.  But
     there is seldom need to handle caches this way outside the direct cache
@@ -2804,10 +2809,10 @@ class CachingPytisModule(PytisModule):
         self._caches = [(id_, {},) for id_ in self._cache_ids]
         self._cache_versions = {}
         
-    def _flush_cache(self, req):
+    def _flush_cache(self):
         self._init_cache()
 
-    def _update_cache_versions(self, req, transaction=None):
+    def _update_cache_versions(self, transaction=None):
         versions = self._cache_versions
         versions[None] = self._cached_table_version(transaction=transaction)
         for d in self._cache_dependencies:
@@ -2856,15 +2861,15 @@ class CachingPytisModule(PytisModule):
     def _database_dependency(self, dependency):
         return dependency[0] in string.lowercase
 
-    def _load_cache(self, req, transaction=None):
-        self._update_cache_versions(req, transaction=transaction)
+    def _load_cache(self, transaction=None):
+        self._update_cache_versions(transaction=transaction)
 
-    def _load_value(self, req, key, transaction=None, **kwargs):
+    def _load_value(self, key, transaction=None, **kwargs):
         return pytis.util.UNDEFINED
 
-    def _get_value(self, req, key, transaction=None, cache_id=None, loader=None,
+    def _get_value(self, key, transaction=None, cache_id=None, loader=None,
                    default=pytis.util.UNDEFINED, **kwargs):
-        self._check_cache(req, transaction=transaction, load=True)
+        self._check_cache(transaction=transaction, load=True)
         if cache_id is None:
             cache_id = self._DEFAULT_CACHE_ID
         cache = self._get_cache(cache_id)
@@ -2874,10 +2879,10 @@ class CachingPytisModule(PytisModule):
                 return default
             if loader is None:
                 loader = self._load_value
-            value = loader(req, key, transaction=transaction, **kwargs)
+            value = loader(key, transaction=transaction, **kwargs)
             if value is pytis.util.UNDEFINED:
-                self._flush_cache(req)
-                self._load_cache(req, transaction=transaction)
+                self._flush_cache()
+                self._load_cache(transaction=transaction)
                 value = self._get_cache(cache_id)[key]
             else:
                 cache[key] = value
@@ -2888,7 +2893,7 @@ class CachingPytisModule(PytisModule):
         assert cache_cell is not None, ('Invalid cache name: ' + cache_id)
         return cache_cell[1]
 
-    def _check_cache(self, req, load=False, transaction=None):
+    def _check_cache(self, load=False, transaction=None):
         cache_version = self._cached_table_version(transaction=transaction)
         db_version = self._cache_versions.get(None)
         up_to_date = (cache_version == db_version)
@@ -2899,15 +2904,15 @@ class CachingPytisModule(PytisModule):
                         up_to_date = False
                         break
                 else:
-                    if not wiking.module(d)._check_cache(req, transaction=transaction):
+                    if not wiking.module(d)._check_cache(transaction=transaction):
                         up_to_date = False
                         break
         if not up_to_date:
-            self._flush_cache(req)
+            self._flush_cache()
             if load:
-                self._load_cache(req, transaction=transaction)
+                self._load_cache(transaction=transaction)
             else:
-                self._update_cache_versions(req, transaction=transaction)
+                self._update_cache_versions(transaction=transaction)
         return up_to_date
 
 class CbCachingPytisModule(CachingPytisModule):
@@ -2923,14 +2928,14 @@ class CbCachingPytisModule(CachingPytisModule):
             
     class Record(CachingPytisModule.Record):
 
-        def _load_value(self, req, key, transaction=None, **kwargs):
+        def _load_value(self, key, transaction=None, **kwargs):
             return CachingPytisModule.Record.display(self, key[-2])
             
         def display(self, key):
             module = self._module
             if key in module._cached_field_ids:
                 cache_key = self.key() + (key, self[key].value(),)
-                return module._get_value(self._req, cache_key, cache_id='fields',
+                return module._get_value(cache_key, cache_id='fields',
                                          loader=self._load_value, transaction=self._transaction)
             return super(CbCachingPytisModule.Record, self).display(key)
 
