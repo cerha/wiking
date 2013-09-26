@@ -203,20 +203,23 @@ class Application(CookieAuthentication, wiking.Application):
 
          Returns '/_doc'.
 
+           req.module_uri('Users')
+
+         Returns '/users' if the module 'Users' is used in a CMS page with an
+         identifier 'users'.  If the module is not used in any CMS page
+         '/_wmi/users/Users' is returned.
+
            req.module_uri('Planner')
 
-         Returns '/_wmi/Planner' in WMI or '/planner' outside WMI if the module
-         'Planner' is used in a page with an identifier 'planner' or None if
-         the module 'Planner' is not used in any CMS page or if it is used more
-         than once.  The identifier, of course, may be any string the user
-         decides to use, not just 'planner'.
+         Returns '/events' if the module 'Planner' is used in a CMS page with an
+         identifier 'events' or None if it is not used.
 
            req.module_uri('BugComments')
 
-         Returns '/_wmi/BugComments' in WMI or '/bts/bug-comments' outside WMI
-         if the module 'WikingBTS' is used in a page with an identifier 'bts'
-         ('BugComments' is a submodule of 'WikingBTS' with a static subpath
-         'bug-comments').
+         Returns '/bts/bug-comments' if the CMS extension module
+         'BugTrackingSystem' is used in a page with an identifier 'bts' and
+         'BugComments' is a submodule of 'BugTrackingSystem' with a static
+         subpath 'bug-comments').
 
         """
         # Try the static mapping first.
