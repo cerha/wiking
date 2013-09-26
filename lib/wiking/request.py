@@ -968,7 +968,7 @@ class Request(ServerInterface):
             except AttributeError:
                 # Determine the roles just once per request (may be used many times).
                 application = wiking.module.Application
-                user_roles = self._anonymous_roles = application.contained_roles(self, Roles.ANYONE)
+                user_roles = self._anonymous_roles = application.contained_roles(Roles.ANYONE)
         else:
             user_roles = user.roles()
         for role in roles:

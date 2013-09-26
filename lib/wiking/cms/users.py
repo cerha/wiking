@@ -1224,7 +1224,7 @@ class Users(UserManagementModule, CachingPytisModule):
                 role_ids.add(role_id)
         # Resolve contained roles here to also count with roles contained in
         # AUTHENTICATED, and REGISTERED.
-        roles = wiking.module.Application.contained_roles(req, role_ids)
+        roles = wiking.module.Application.contained_roles(role_ids)
         return dict(login=login, uid=uid, name=record['user'].value(),
                     firstname=record['firstname'].value(), surname=record['surname'].value(),
                     uri=uri, email=record['email'].value(), data=record, roles=roles,

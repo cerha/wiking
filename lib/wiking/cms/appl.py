@@ -319,8 +319,8 @@ class Application(CookieAuthentication, wiking.Application):
             return
         wiking.module.CryptoKeys.clear_crypto_passwords(req, user)
 
-    def contained_roles(self, req, role):
-        role_sets = wiking.module('RoleSets')
+    def contained_roles(self, role):
+        role_sets = wiking.module.RoleSets
         if isinstance(role, (list, tuple, set,)): # role is actually role ids
             role_ids = role_sets.included_role_ids_by_role_ids(role, instances=True)
         else:

@@ -237,12 +237,11 @@ class Application(Module):
         """
         return None
 
-    def contained_roles(self, req, role):
+    def contained_roles(self, role):
         """Return the sequence of user roles contained in given role.
 
         Arguments:
         
-          req -- Current request as a 'Request' instance.
           role -- User role as a 'Role' instance.
 
         In general, user roles may be contained in each other.  This means that
