@@ -151,7 +151,7 @@ class RoleSets(UserManagementModule, CachingPytisModule):
                 queue = queue.union(set(containment.get(r_id, [])))
         if instances:
             if self._roles_instance is None:
-                self._roles_instance = wiking.module('Users').Roles()
+                self._roles_instance = wiking.module.Users.Roles()
             roles_instance = self._roles_instance
             result = [roles_instance[role_id] for role_id in role_ids]
         else:
@@ -267,7 +267,7 @@ class RoleMembers(UserManagementModule):
         if strict:
             included_role_ids = (role.id(),)
         else:
-            included_role_ids = wiking.module('RoleSets').containing_role_ids(role)
+            included_role_ids = wiking.module.RoleSets.containing_role_ids(role)
         condition = pd.OR(*[pd.EQ('role_id', pd.sval(m_id)) for m_id in included_role_ids])
         user_ids = []
         def add_user_id(row):
@@ -320,7 +320,7 @@ class ApplicationRoles(UserManagementModule):
         title = _("User Groups")
         def __init__(self, *args, **kwargs):
             super(ApplicationRoles.Spec, self).__init__(*args, **kwargs)
-            self._roles = wiking.module('Users').Roles()
+            self._roles = wiking.module.Users.Roles()
         def fields(self):
             return (
                 # Translators: Form field label.
@@ -731,7 +731,7 @@ class Users(UserManagementModule, CachingPytisModule):
             uid = record.req().user().uid()
             if uid is None:
                 return None
-            crypto_keys = wiking.module('CryptoKeys')
+            crypto_keys = wiking.module.CryptoKeys
             if crypto_keys.assigned_names(uid):
                 return True
             else:
@@ -859,8 +859,7 @@ class Users(UserManagementModule, CachingPytisModule):
 
     def _layout(self, req, action, record=None):
         def cms_text(cms_text):
-            texts = wiking.module('Texts')
-            return texts.parsed_text(req, cms_text, lang=req.preferred_language())
+            return wiking.module.Texts.parsed_text(req, cms_text, lang=req.preferred_language())
         if action not in self._LAYOUT: # Allow overriding this layout in derived classes.
             if action == 'view':
                 regconfirm = cms_text(wiking.cms.texts.regconfirm)
@@ -1130,19 +1129,18 @@ class Users(UserManagementModule, CachingPytisModule):
 
     def _registration_form_intro(self, record):
         req = record.req()
-        texts = wiking.module('Texts')
-        content = texts.parsed_text(req, wiking.cms.texts.regintro, lang=req.preferred_language())
+        content = wiking.module.Texts.parsed_text(req, wiking.cms.texts.regintro, 
+                                                  lang=req.preferred_language())
         if content is None:
             content = lcg.Content()
         return content
 
     def _confirmation_success_content(self, req, record):
-        texts = wiking.module('Texts')
         if wiking.cms.cfg.autoapprove_new_users:
             text = wiking.cms.texts.regsuccess_autoapproved
         else:
             text = wiking.cms.texts.regsuccess
-        return texts.parsed_text(req, text, lang=req.preferred_language())
+        return wiking.module.Texts.parsed_text(req, text, lang=req.preferred_language())
 
     def action_confirm(self, req):
         """Confirm the activation code sent by e-mail to make user registration valid.
@@ -1222,11 +1220,11 @@ class Users(UserManagementModule, CachingPytisModule):
             role_ids.add(Roles.REGISTERED.id())
         if record['state'].value() == self.AccountState.ENABLED:
             role_ids.add(Roles.USER.id())
-            for role_id in wiking.module('RoleMembers').user_role_ids(uid):
+            for role_id in wiking.module.RoleMembers.user_role_ids(uid):
                 role_ids.add(role_id)
         # Resolve contained roles here to also count with roles contained in
         # AUTHENTICATED, and REGISTERED.
-        roles = wiking.module('Application').contained_roles(req, role_ids)
+        roles = wiking.module.Application.contained_roles(req, role_ids)
         return dict(login=login, uid=uid, name=record['user'].value(),
                     firstname=record['firstname'].value(), surname=record['surname'].value(),
                     uri=uri, email=record['email'].value(), data=record, roles=roles,
@@ -1319,7 +1317,7 @@ class Users(UserManagementModule, CachingPytisModule):
     def _load_find_users(self, req, key, transaction=None, role=None):
         email, state, role_id, confirm = key
         if role is not None:
-            role_user_ids = wiking.module('RoleMembers').user_ids(role)
+            role_user_ids = wiking.module.RoleMembers.user_ids(role)
         def make_user(row):
             if role is not None and row['uid'].value() not in role_user_ids:
                 return None
@@ -1401,7 +1399,7 @@ class Users(UserManagementModule, CachingPytisModule):
                 role = (role,)
             user_ids = set()
             for r in role:
-                user_ids |= set(wiking.module('RoleMembers').user_ids(r))
+                user_ids |= set(wiking.module.RoleMembers.user_ids(r))
             user_ids |= set(include_uids)
             user_ids -= set(exclude_uids)
         user_rows = self._data.get_rows()
@@ -1479,13 +1477,13 @@ class Registration(Module, ActionHandler):
     def _handle(self, req, action, **kwargs):
         if len(req.unresolved_path) > 1 and req.user() \
                 and req.unresolved_path[0] == req.user().login():
-            return wiking.module('Users').handle(req)
+            return wiking.module.Users.handle(req)
         else:
             return super(Registration, self)._handle(req, action, **kwargs)
 
     def action_view(self, req):
         if req.user():
-            return wiking.module('Users').action_view(req, req.user().data())
+            return wiking.module.Users.action_view(req, req.user().data())
         elif req.param('command') == 'logout':
             raise Redirect('/')
         else:
@@ -1494,7 +1492,7 @@ class Registration(Module, ActionHandler):
     def action_insert(self, req, prefill=None, action='insert'):
         if not wiking.cms.cfg.allow_registration:
             raise Forbidden()
-        return wiking.module('Users').action_insert(req, prefill=prefill, action=action)
+        return wiking.module.Users.action_insert(req, prefill=prefill, action=action)
 
     def action_reinsert(self, req):
         login = req.param('login')
@@ -1516,7 +1514,7 @@ class Registration(Module, ActionHandler):
         title = _("Password reminder")
         query = req.param('query')
         if query:
-            users_module = wiking.module('Users')
+            users_module = wiking.module.Users
             if query.find('@') == -1:
                 user = users_module.user(req, query)
             else:
@@ -1572,13 +1570,13 @@ class Registration(Module, ActionHandler):
         return Document(title, content)
 
     def action_update(self, req):
-        return wiking.module('Users').action_update(req, req.user().data())
+        return wiking.module.Users.action_update(req, req.user().data())
 
     def action_passwd(self, req):
-        return wiking.module('Users').action_passwd(req, req.user().data())
+        return wiking.module.Users.action_passwd(req, req.user().data())
 
     def action_confirm(self, req):
-        return wiking.module('Users').action_confirm(req)
+        return wiking.module.Users.action_confirm(req)
 
 
 class ActivationForm(lcg.Content):
@@ -1631,11 +1629,10 @@ class Session(PytisModule, wiking.Session):
         data.delete_many(pd.LE('last_access', pd.Value(pd.DateTime(), now_ - expiration)))
         row, success = data.insert(data.make_row(uid=uid, session_key=session_key,
                                                  last_access=now_))
-        wiking.module('SessionLog').log(req, now_, row['session_id'].value(), uid, user.login())
+        wiking.module.SessionLog.log(req, now_, row['session_id'].value(), uid, user.login())
         # Display info page for users without proper access
         def abort(title, text_id, form=None):
-            texts = wiking.module('Texts')
-            content = texts.parsed_text(req, text_id, lang=req.preferred_language())
+            content = wiking.module.Texts.parsed_text(req, text_id, lang=req.preferred_language())
             if form:
                 content = (content, form)
             else:
@@ -1652,8 +1649,8 @@ class Session(PytisModule, wiking.Session):
             abort(_("Account not approved"), wiking.cms.texts.unapproved)
 
     def failure(self, req, user, login):
-        wiking.module('SessionLog').log(req, pytis.data.DateTime.datetime(), None,
-                                        user and user.uid(), login)
+        wiking.module.SessionLog.log(req, pytis.data.DateTime.datetime(), None,
+                                     user and user.uid(), login)
 
     def check(self, req, user, session_key):
         row = self._data.get_row(uid=user.uid(), session_key=session_key)

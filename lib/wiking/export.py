@@ -60,7 +60,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
                 # Not needed when exporting AJAX response content, which does not use WikingNode.
                 self.has_menu = bool([n for n in self.node().root().children() if not n.hidden()])
                 self.has_submenu = bool([n for n in self.node().top().children() if not n.hidden()])
-            self.application = wiking.module('Application')
+            self.application = wiking.module.Application
             super(Exporter.Context, self)._init_kwargs(timezone=req.timezone(), **kwargs)
             # Make sure that Prototype.js is always loaded first, so that it is
             # available in any other scripts.

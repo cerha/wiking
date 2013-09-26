@@ -70,7 +70,7 @@ class Application(CookieAuthentication, wiking.Application):
                 values = (('0', _("Production mode")),
                           # Translators: See "Production mode"
                           ('1', _("Preview mode")))
-                current_value = wiking.module('Application').preview_mode(req) and '1' or '0'
+                current_value = wiking.module.Application.preview_mode(req) and '1' or '0'
                 return g.form([g.radio(id=name + '_' + value, name=name, value=value,
                                        checked=(current_value == value),
                                        onchange='this.form.submit();') +
@@ -122,8 +122,8 @@ class Application(CookieAuthentication, wiking.Application):
         preview_mode_param = req.param(self._PREVIEW_MODE_PARAM)
         if preview_mode_param is not None:
             req.set_cookie(self._PREVIEW_MODE_COOKIE, preview_mode_param == '1' and '1' or None)
-        wiking.module('CachedTables').reload_info(req)
-        wiking.module('Config').configure(req)
+        wiking.module.CachedTables.reload_info(req)
+        wiking.module.Config.configure(req)
         if req.unresolved_path:
             try:
                 modname = self._MAPPING[req.unresolved_path[0]]
@@ -145,7 +145,7 @@ class Application(CookieAuthentication, wiking.Application):
                 # The parent method raises Forbidden when there are no menu items to redirect to.
                 if req.check_roles(Roles.CONTENT_ADMIN):
                     # Give the administrator some hints on a fresh install.
-                    if wiking.module('Pages').empty(req):
+                    if wiking.module.Pages.empty(req):
                         raise wiking.Abort(_("Welcome to Wiking CMS"),
                                            lcg.Container((lcg.p("There are currently no pages."),
                                                           lcg.p(lcg.link("/?action=insert",
@@ -226,7 +226,7 @@ class Application(CookieAuthentication, wiking.Application):
         uri = super(Application, self).module_uri(req, modname)
         if uri is None:
             # Try if the module is directly embedded in a page.
-            uri = wiking.module('Pages').module_uri(req, modname)
+            uri = wiking.module.Pages.module_uri(req, modname)
             if uri is None:
                 # If not embeded directly, try if it is a submodule of an embedded module.
                 mod = wiking.module(modname)
@@ -243,7 +243,7 @@ class Application(CookieAuthentication, wiking.Application):
                     if parent is not None:
                         uri = parent.submodule_uri(req, modname)
                 if uri is None:
-                    uri = wiking.module('WikingManagementInterface').module_uri(req, modname)
+                    uri = wiking.module.WikingManagementInterface.module_uri(req, modname)
         return uri
 
     def site_title(self, req):
@@ -267,16 +267,16 @@ class Application(CookieAuthentication, wiking.Application):
             panels = [wiking.LoginPanel()]
         else:
             panels = []
-        return panels + wiking.module('Panels').panels(req, lang)
+        return panels + wiking.module.Panels.panels(req, lang)
 
     def languages(self):
-        return wiking.module('Languages').languages()
+        return wiking.module.Languages.languages()
 
     def stylesheets(self, req):
-        return wiking.module('StyleSheets').stylesheets(req)
+        return wiking.module.StyleSheets.stylesheets(req)
 
     def _auth_user(self, req, login):
-        user = wiking.module('Users').user(req, login)
+        user = wiking.module.Users.user(req, login)
         if user is None and wiking.cms.cfg.allow_registration:
             # It is possible, that the user doesn't exist in the
             # application specific users table, but exists in the base
@@ -290,10 +290,10 @@ class Application(CookieAuthentication, wiking.Application):
         return user
 
     def _auth_hook(self, req, user):
-        if not wiking.module('Users').user(req, user.login()):
+        if not wiking.module.Users.user(req, user.login()):
             # See _auth_user() for comments.
             regcode = wiking.module('wiking.cms.Users').regenerate_registration_code(user)
-            raise wiking.Redirect(self.module_uri(req, 'Registration'),
+            raise wiking.Redirect(req.module_uri('Registration'),
                                   action='reinsert', login=user.login(), regcode=regcode)
 
     def _auth_check_password(self, user, password):
@@ -317,7 +317,7 @@ class Application(CookieAuthentication, wiking.Application):
         super(Application, self)._logout_hook(req, user)
         if user is None:
             return
-        wiking.module('CryptoKeys').clear_crypto_passwords(req, user)
+        wiking.module.CryptoKeys.clear_crypto_passwords(req, user)
 
     def contained_roles(self, req, role):
         role_sets = wiking.module('RoleSets')
@@ -339,7 +339,7 @@ class Application(CookieAuthentication, wiking.Application):
         content = []
         if req.check_roles(Roles.CONTENT_ADMIN) or req.__dict__.get('page_write_access'):
             content.append(self.PreviewModeCtrl())
-        if wiking.module('WikingManagementInterface').authorized(req):
+        if wiking.module.WikingManagementInterface.authorized(req):
             content.append(self.WMILink())
         return content or None
 
@@ -371,16 +371,15 @@ class Application(CookieAuthentication, wiking.Application):
             return self._accessibility_statement_link(req)
         elif req.user() is None:
             return self.WMILink()
-        elif wiking.module('WikingManagementInterface').authorized(req):
+        elif wiking.module.WikingManagementInterface.authorized(req):
             return (wiking.LoginCtrl(inline=True), ' ', self.WMILink())
         else:
             return wiking.LoginCtrl(inline=True)
 
     def _text_content(self, req, text):
-        texts = wiking.module('Texts')
         # Default to English to avoid raising NotAcceptable where it is not handled.
         lang = req.preferred_language(raise_error=False) or 'en'
-        return texts.text(req, text, lang=lang)
+        return wiking.module.Texts.text(req, text, lang=lang)
 
     def top_content(self, req):
         return text2content(req, self._text_content(req, wiking.cms.texts.top))

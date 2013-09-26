@@ -246,7 +246,7 @@ class Documentation(Module, RequestHandler):
             raise Forbidden()
         import codecs
         basename = os.path.join(self._document_base_dir(req), *self._document_path(req))
-        variants = [lang for lang in wiking.module('Application').languages()
+        variants = [lang for lang in wiking.module.Application.languages()
                     if os.path.exists('.'.join((basename, lang, 'txt')))]
         if not variants:
             # HACK: Try fallback to English if no application language variants
@@ -467,7 +467,7 @@ class SubmenuRedirect(Module, RequestHandler):
                         return item
             return None
         id = req.path[0]
-        item = find(wiking.module('Application').menu(req), id)
+        item = find(wiking.module.Application.menu(req), id)
         if item:
             if item.submenu():
                 raise Redirect('/' + item.submenu()[0].id())
@@ -529,7 +529,7 @@ class CookieAuthentication(object):
         pass
 
     def authenticate(self, req):
-        session = wiking.module('Session')
+        session = wiking.module.Session
         # When HTTP authentication is used, req.credentials() returns the
         # credentials for every subsequent request (for cookie authentication
         # the credentials are sent just once on login form submission).  This

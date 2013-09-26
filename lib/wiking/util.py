@@ -161,7 +161,7 @@ class AuthenticationError(RequestError):
             return httplib.OK
 
     def content(self, req):
-        appl = wiking.module('Application')
+        appl = wiking.module.Application
         return LoginDialog(message=self.args and self.args[0] or None,
                            registration_uri=appl.registration_uri(req),
                            password_reminder_uri=appl.password_reminder_uri(req),
@@ -220,7 +220,7 @@ class PasswordExpirationError(RequestError):
     def content(self, req):
         content = lcg.p(_("Your password expired.  Access to the application is now blocked for "
                           "security reasons until you change your password."))
-        uri = wiking.module('Application').password_change_uri(req)
+        uri = wiking.module.Application.password_change_uri(req)
         if uri:
             # Translators: This is a link on a webpage
             content = (content, lcg.p(lcg.link(uri, _("Change your password"))))
@@ -723,7 +723,7 @@ class LoginPanel(Panel):
             req = context.req()
             user = req.user()
             result = LoginCtrl().export(context)
-            appl = wiking.module('Application')
+            appl = wiking.module.Application
             if user:
                 if wiking.cfg.display_role_in_login_panel:
                     # TODO: show only explicitly assigned roles, not special
@@ -1556,27 +1556,27 @@ class WikingDefaultDataClass(DBAPIData):
 
     def insert(self, *args, **kwargs):
         result = super(WikingDefaultDataClass, self).insert(*args, **kwargs)
-        wiking.module('CachedTables').reload_info(None)
+        wiking.module.CachedTables.reload_info(None)
         return result
 
     def update(self, *args, **kwargs):
         result = super(WikingDefaultDataClass, self).update(*args, **kwargs)
-        wiking.module('CachedTables').reload_info(None)
+        wiking.module.CachedTables.reload_info(None)
         return result
 
     def update_many(self, *args, **kwargs):
         result = super(WikingDefaultDataClass, self).update_many(*args, **kwargs)
-        wiking.module('CachedTables').reload_info(None)
+        wiking.module.CachedTables.reload_info(None)
         return result
 
     def delete(self, *args, **kwargs):
         result = super(WikingDefaultDataClass, self).delete(*args, **kwargs)
-        wiking.module('CachedTables').reload_info(None)
+        wiking.module.CachedTables.reload_info(None)
         return result
 
     def delete_many(self, *args, **kwargs):
         result = super(WikingDefaultDataClass, self).delete_many(*args, **kwargs)
-        wiking.module('CachedTables').reload_info(None)
+        wiking.module.CachedTables.reload_info(None)
         return result
 
 
@@ -1957,7 +1957,7 @@ def send_mail(addr, subject, text, sender=None, sender_name=None, html=None,
         if special_cc_addresses:
             # `Users' is in wiking.cms, but we probably don't want to make
             # wiking.cms.send_mail because of this, don't we?
-            user_roles = wiking.module('Users').user(uid=uid).roles()
+            user_roles = wiking.module.Users.user(uid=uid).roles()
             special_roles = wiking.cfg.special_cc_exclude_roles
             if not set(user_roles).intersection(set(special_roles)):
                 cc = tuple(cc) + tuple(wiking.cfg.special_cc_addresses)

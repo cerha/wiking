@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2006-2012 Brailcom, o.p.s.
+# Copyright (C) 2006-2013 Brailcom, o.p.s.
 # Author: Milan Zamazal
 #
 # This program is free software; you can redistribute it and/or modify
@@ -295,16 +295,14 @@ class UserCertificates(Certificates):
             certificate, a string
         
         """
-        user = None
         import gnutls.crypto
         x509 = gnutls.crypto.X509Certificate(certificate)
         serial_number = int(x509.serial_number)
         row = self._data.get_row(serial_number=serial_number)
         if row is not None:
-            uid = row['uid'].value()
-            user_module = self._module('Users')
-            user_record = user_module.find_user(req, uid)
-            user = user_module.user(req, user_record['login'].value())
+            user = wiking.module.Users.user(req, uid=row['uid'].value())
+        else:
+            user = None
         return user
 
 class CertificateRequest(UserCertificates):

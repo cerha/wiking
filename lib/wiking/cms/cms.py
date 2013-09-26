@@ -170,7 +170,7 @@ class WikingManagementInterface(wiking.Module, wiking.RequestHandler):
         return self._authorized(req)
 
     def menu(self, req):
-        variants = wiking.module('Application').languages()
+        variants = wiking.module.Application.languages()
         return [MenuItem('/_wmi/' + section, title, descr=descr, variants=variants,
                          submenu=[MenuItem('/_wmi/' + section + '/' + m.name(),
                                            m.title(),
@@ -265,14 +265,14 @@ class Roles(wiking.Roles):
         try:
             return super(Roles, self).__getitem__(role_id)
         except KeyError:
-            role = wiking.module('ApplicationRoles').get_role(role_id)
+            role = wiking.module.ApplicationRoles.get_role(role_id)
             if role is None:
                 raise KeyError(role_id)
             return role
     
     def all_roles(self):
         standard_roles = super(Roles, self).all_roles()
-        user_defined_roles = wiking.module('ApplicationRoles').user_defined_roles()
+        user_defined_roles = wiking.module.ApplicationRoles.user_defined_roles()
         return standard_roles + user_defined_roles
 
 
@@ -351,7 +351,7 @@ class CMSModule(wiking.PytisModule, wiking.RssModule):
             raise wiking.DecryptionError(unavailable_names.pop())
 
     def _generate_crypto_cookie(self):
-        return wiking.module('Session').session_key()
+        return wiking.module.Session.session_key()
 
     def _panel_condition(self, req, relation):
         if relation:
@@ -1210,7 +1210,7 @@ class Themes(StyleManagementModule, wiking.CachingPytisModule):
             req = record.req()
             # We can't rely on redirection here as it would not pass the
             # preview_theme argument.
-            menu = [item for item in wiking.module('Pages').menu(req) if not item.hidden()]
+            menu = [item for item in wiking.module.Pages.menu(req) if not item.hidden()]
             if menu:
                 uri = menu[0].id()
             else:
@@ -1290,7 +1290,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
     """
     class PagePositionEnumerator(pytis.data.Enumerator):
         def values(self, **kwargs):
-            return wiking.module('PageStructure').page_position_selection(**kwargs)
+            return wiking.module.PageStructure.page_position_selection(**kwargs)
         def last_position(self, row, site, parent, page_id):
             return self.values(site=site, parent=parent, page_id=page_id)[-1]
     class MenuVisibility(pp.Enumeration):
@@ -1509,7 +1509,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
             role_ids = [record['write_role_id'].value()]
             if readonly:
                 role_ids.append(record['read_role_id'].value())
-            roles = wiking.module('Users').Roles()
+            roles = wiking.module.Users.Roles()
             return req.check_roles(*[roles[role_id] for role_id in role_ids])
         else:
             return False
@@ -1588,7 +1588,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
         if not req.unresolved_path:
             return None
         def check_published(row):
-            if row['published'].value() or wiking.module('Application').preview_mode(req):
+            if row['published'].value() or wiking.module.Application.preview_mode(req):
                 return row
             else:
                 raise Forbidden()
@@ -1615,7 +1615,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                 if key in keys:
                     del req.unresolved_path[0]
                     return check_published(rows[keys.index(key)])
-            if not wiking.module('Application').preview_mode(req):
+            if not wiking.module.Application.preview_mode(req):
                 rows = [r for r in rows if r['published'].value()]
                 if not rows:
                     if req.check_roles(Roles.CONTENT_ADMIN):
@@ -1660,12 +1660,12 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
     
     def _insert(self, req, record, transaction):
         result = super(Pages, self)._insert(req, record, transaction)
-        wiking.module('PageHistory').on_page_change(req, record, transaction=transaction)
+        wiking.module.PageHistory.on_page_change(req, record, transaction=transaction)
         return result
         
     def _update(self, req, record, transaction):
         result = super(Pages, self)._update(req, record, transaction)
-        wiking.module('PageHistory').on_page_change(req, record, transaction=transaction)
+        wiking.module.PageHistory.on_page_change(req, record, transaction=transaction)
         return result
 
     def _insert_msg(self, req, record):
@@ -1690,13 +1690,13 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
     def _redirect_after_insert(self, req, record):
         req.message(self._insert_msg(req, record))
         if not req.has_param('commit'):
-            wiking.module('Application').set_preview_mode(req, True)
+            wiking.module.Application.set_preview_mode(req, True)
         raise Redirect(self._current_record_uri(req, record))
         
     def _redirect_after_update(self, req, record):
         req.message(self._update_msg(req, record))
         if not req.has_param('commit'):
-            wiking.module('Application').set_preview_mode(req, True)
+            wiking.module.Application.set_preview_mode(req, True)
         raise Redirect(req.uri())
         
     def _delete_form_content(self, req, form, record):
@@ -1717,7 +1717,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
     def menu(self, req):
         children = {None: []}
         translations = {}
-        application = wiking.module('Application')
+        application = wiking.module.Application
         available_languages = application.languages()
         preview_mode = application.preview_mode(req)
         def item(row):
@@ -1799,7 +1799,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
             content = wiking.module(modname).embed(req)
         else:
             content = []
-        if wiking.module('Application').preview_mode(req):
+        if wiking.module.Application.preview_mode(req):
             text = record['_content'].value()
         else:
             text = record['content'].value()
@@ -1845,7 +1845,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                                pd.EQ('site', pd.sval(wiking.cfg.server_hostname)))
             for row in self._data.get_rows(condition=condition, sorting=self._sorting):
                 if self._visible_in_menu(req, row):
-                    if wiking.module('Application').preview_mode(req):
+                    if wiking.module.Application.preview_mode(req):
                         req.message(_("This page has no content. "
                                       "Users will be redirected to the first visible "
                                       "subpage in production mode.", type=req.WARNING))
@@ -1861,7 +1861,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
         return self._document(req, content, record)
 
     def action_update(self, req, record, action='update'):
-        application = wiking.module('Application')
+        application = wiking.module.Application
         if action == 'update' and not application.preview_mode(req) \
                 and record['content'].value() != record['_content'].value():
             req.message(_("The page has unpublished changes (not visible in production mode)."),
@@ -1944,7 +1944,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
         else:
             req.message(_("The page was unpublished. "
                           "It will not be visible in production mode anymore."))
-        wiking.module('Application').set_preview_mode(req, True)
+        wiking.module.Application.set_preview_mode(req, True)
         raise Redirect(self._current_record_uri(req, record))
 
     def action_new_page(self, req, record):
@@ -2054,7 +2054,7 @@ class Publications(NavigablePages, EmbeddableCMSModule):
             )
             return self._inherited_fields(Publications.Spec, override=override) + extra
         def _preview_mode(self, record):
-            return wiking.module('Application').preview_mode(record.req())
+            return wiking.module.Application.preview_mode(record.req())
         def _attachment_filter(self, record, page_id, lang):
             return pd.AND(pd.EQ('page_id', pd.ival(page_id)),
                           pd.EQ('lang', pd.sval(lang)),
@@ -2135,7 +2135,7 @@ class Publications(NavigablePages, EmbeddableCMSModule):
                   *[pd.FunctionCondition('cms_f_role_member', pd.ival(uid), role) for role in 
                     ('read_role_id', 'write_role_id', pd.sval(Roles.CONTENT_ADMIN.id()))])
         ]
-        if not wiking.module('Application').preview_mode(req):
+        if not wiking.module.Application.preview_mode(req):
             conditions.append(pd.EQ('published', pd.bval(True)))
         return pd.AND(*conditions)
 
@@ -2191,9 +2191,9 @@ class Publications(NavigablePages, EmbeddableCMSModule):
                 [lcg.NodeIndex(title=_("Table of Contents"))])
 
     def _child_rows(self, req, record):
-        children = wiking.module('PublicationChapters').child_rows(req,
-                                                                   record['tree_order'].value(),
-                                                                   record['lang'].value())
+        children = wiking.module.PublicationChapters.child_rows(req,
+                                                                record['tree_order'].value(),
+                                                                record['lang'].value())
         children[record['parent'].value()] = [record.row()]
         return children
 
@@ -2406,7 +2406,7 @@ class PublicationChapters(NavigablePages):
 
     def child_rows(self, req, tree_order, lang):
         children = {}
-        if wiking.module('Application').preview_mode(req):
+        if wiking.module.Application.preview_mode(req):
             restriction = {}
         else:
             restriction = {'published': True}
@@ -2727,7 +2727,7 @@ class Attachments(ContentManagementModule):
             self._base_uri = base_uri
 
         def _api_call(self, name, *args, **kwargs):
-            method = getattr(wiking.module('Attachments'), 'storage_api_' + name)
+            method = getattr(wiking.module.Attachments, 'storage_api_' + name)
             return method(self._req, self._page_id, self._lang, *args, **kwargs)
 
         def _row_resource(self, row):
@@ -3807,7 +3807,7 @@ class TextReferrer(object):
 
         """
         assert isinstance(text, Text)
-        return _method(wiking.module('Texts'), req, text, lang=lang, args=args)
+        return _method(wiking.module.Texts, req, text, lang=lang, args=args)
 
     def _parsed_text(self, req, text, args=None, lang='en'):
         """Return parsed text corresponding to 'text'.
@@ -3822,7 +3822,7 @@ class TextReferrer(object):
 
     def _email_args(self, *args, **kwargs):
         """The same as 'Emails.email_args'"""
-        return wiking.module('Emails').email_args(*args, **kwargs)
+        return wiking.module.Emails.email_args(*args, **kwargs)
 
     def _send_mail(self, req, text, recipients, lang=None, args=None, **kwargs):
         """Send e-mail identified by 'text' to 'recipients'.

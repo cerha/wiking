@@ -792,7 +792,7 @@ class Request(ServerInterface):
         """
         result = self._preferred_languages
         if result is None:
-            application = wiking.module('Application')
+            application = wiking.module.Application
             self._preferred_languages = result = application.preferred_languages(self)
         return result
 
@@ -814,7 +814,7 @@ class Request(ServerInterface):
         if variants is None:
             if self._preferred_language is not None:
                 return self._preferred_language
-            variants = wiking.module('Application').languages()
+            variants = wiking.module.Application.languages()
             save_default = True
         else:
             save_default = False
@@ -935,9 +935,8 @@ class Request(ServerInterface):
         if self._user is self._UNDEFINED:
             # Set to None for the case that authentication raises an exception.
             self._user = None
-            application = wiking.module('Application')
             # AuthenticationError may be raised if the credentials are invalid.
-            self._user = application.authenticate(self)
+            self._user = wiking.module.Application.authenticate(self)
         if require and self._user is None:
             #if session_timed_out:
             #      raise AuthenticationError(_("Session expired. Please log in again."))
@@ -968,7 +967,7 @@ class Request(ServerInterface):
                 user_roles = self._anonymous_roles
             except AttributeError:
                 # Determine the roles just once per request (may be used many times).
-                application = wiking.module('Application')
+                application = wiking.module.Application
                 user_roles = self._anonymous_roles = application.contained_roles(self, Roles.ANYONE)
         else:
             user_roles = user.roles()
@@ -1001,7 +1000,7 @@ class Request(ServerInterface):
         try:
             uri = self._module_uri[modname]
         except KeyError:
-            application = wiking.module('Application')
+            application = wiking.module.Application
             uri = self._module_uri[modname] = application.module_uri(self, modname)
         return uri
         
