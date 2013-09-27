@@ -958,8 +958,22 @@ class Request(ServerInterface):
 
         Authentication will be performed only if needed.  In other words, if 'args' contain
         ANYONE, True will be returned without an attempt to authenticate the user.
-        
+
         """
+        return self.check_user_roles(self.user(), *args)
+
+    @classmethod
+    def check_user_roles(class_, user, *args):
+        """Return true, iff the given user belongs to at least one of given roles.
+
+        Arguments may be roles or nested sequences of roles, which will be unpacked.  Roles are
+        represented by 'Role' instances.  'user' is a 'User' instance or 'None'.
+
+        Authentication will be performed only if needed.  In other words, if 'args' contain
+        ANYONE, True will be returned without an attempt to authenticate the user.
+
+        """
+
         roles = []
         for arg in args:
             if isinstance(arg, (list, tuple)):
@@ -968,14 +982,13 @@ class Request(ServerInterface):
                 roles.append(arg)
         if Roles.ANYONE in roles:
             return True
-        user = self.user()
         if user is None:
             try:
-                user_roles = self._anonymous_roles
+                user_roles = class_._anonymous_roles
             except AttributeError:
                 # Determine the roles just once per request (may be used many times).
                 application = wiking.module.Application
-                user_roles = self._anonymous_roles = application.contained_roles(Roles.ANYONE)
+                user_roles = class_._anonymous_roles = application.contained_roles(Roles.ANYONE)
         else:
             user_roles = user.roles()
         for role in roles:
