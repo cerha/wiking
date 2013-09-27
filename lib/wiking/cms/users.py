@@ -1312,14 +1312,15 @@ class Users(UserManagementModule, CachingPytisModule):
         else:
             role_id = role.id()
         key = (email, state, role_id, confirm,)
-        return self._get_value(req, key, cache_id='find', loader=self._load_find_users, role=role)
+        return self._get_value(key, cache_id='find', loader=self._load_find_users, role=role)
 
-    def _load_find_users(self, req, key, transaction=None, role=None):
+    def _load_find_users(self, key, transaction=None, role=None):
         email, state, role_id, confirm = key
         if role is not None:
             role_user_ids = wiking.module.RoleMembers.user_ids(role)
-        base_uri = req.module_uri('ActiveUsers')
-        registration_uri = req.module_uri('Registration')
+            application = wiking.module.Application
+        base_uri = application.module_uri(None, 'ActiveUsers')
+        registration_uri = application.module_uri(None, 'Registration')
         def make_user(row):
             if role is not None and row['uid'].value() not in role_user_ids:
                 return None
