@@ -15,9 +15,19 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-import os, string, Cookie, re, urllib, datetime, httplib, types
-import wiking, lcg, pytis
-from wiking import log, OPR
+
+import Cookie
+import datetime
+import httplib
+import re
+import string
+import types
+import urllib
+
+import pytis
+import lcg
+import wiking
+from wiking import log, OPR, format_http_date, parse_http_date
 
 _ = lcg.TranslatableTextFactory('wiking')
 
@@ -30,7 +40,7 @@ class FileUpload(pytis.web.FileUpload):
     The interface is defined by the 'pytis.web.FileUpload' class with no Wiking
     specific extensions.  The implementation relies on receiving a field object
     compatible with cgi.FieldStorage class.
-    
+
     """
     def __init__(self, field, encoding):
         self._field = field
@@ -42,7 +52,7 @@ class FileUpload(pytis.web.FileUpload):
     def mime_type(self):
         return self._field.type
 
-    
+
 class ServerInterface(pytis.web.Request):
     """Generic HTTP server interface specification.
 
@@ -58,16 +68,16 @@ class ServerInterface(pytis.web.Request):
     applications.  The web server interface methods are defined here separately
     just for the clarity's sake.  The web server interface drivers should be
     derived from 'Request', not from this class directly.
-    
+
     """
-    
+
     def uri(self):
         """Return request URI path relative to server's root.
 
         The returned URI is a unicode value, which normally starts with a slash
         and continues with an arbitrary numper of path elements separated by
         slashes.  Transfer encoding and HTTP escapes are decoded.
-        
+
         """
         pass
 
@@ -75,7 +85,7 @@ class ServerInterface(pytis.web.Request):
         """Return URI path including any request parameters (query string).
 
         Transfer encoding and HTTP escapes are not decoded.
-        
+
         """
         pass
 
@@ -89,7 +99,7 @@ class ServerInterface(pytis.web.Request):
 
         """
         pass
-        
+
     def params(self):
         """Return the names of all request parameters."""
         pass
@@ -125,7 +135,7 @@ class ServerInterface(pytis.web.Request):
     def port(self):
         """Return the current connection server port id as int."""
         pass
-        
+
     def https(self):
         """Return True if the current connection is secured by HTTPS."""
         pass
@@ -163,10 +173,10 @@ class ServerInterface(pytis.web.Request):
         not designed to be used in applications.  It is only used by Wiking
         internally to determine the default value of
         'wiking.cfg.server_hostname'.
-        
+
         """
         pass
-        
+
     def start_http_response(self, status_code):
         """Start the HTTP response.
 
@@ -177,13 +187,13 @@ class ServerInterface(pytis.web.Request):
         This is a low level server interface method.  See also
         'Request.start_response()' for a more convenient application interface
         method.
-        
+
         Raise 'ClosedConnection' if the client closes the connection during the
         operation.
-        
+
         """
         pass
-        
+
     def option(self, name, default=None):
         pass
 
@@ -196,7 +206,7 @@ class Request(ServerInterface):
     specific for the Wiking request handling process on top of the server
     interface methods.  See the Wiking Developer's Documentation for an
     overview.
-    
+
     """
 
     class ForwardInfo(object):
@@ -219,28 +229,28 @@ class Request(ServerInterface):
                 may be later inspected through the 'arg()' method and make it possible to pass any
                 application defined data for later inspection.
 
-            """  
+            """
             self._module = module
             self._resolved_path = tuple(resolved_path)
             self._unresolved_path = tuple(unresolved_path)
             self._data = kwargs
-            
+
         def module(self):
             """Return the 'module' to which this forward was passed."""
             return self._module
-        
+
         def resolved_path(self):
             """Return resolved portion of the path as a tuple."""
             return self._resolved_path
-        
+
         def unresolved_path(self):
             """Return unresolved portion of the path as a tuple."""
             return self._unresolved_path
-        
+
         def uri(self):
             """Return the string URI corresponding to 'resolved_path'."""
             return '/' + '/'.join(self._resolved_path)
-        
+
         def arg(self, name):
             """Return the value of keyword argument 'name' passed to the constructor or None."""
             try:
@@ -256,18 +266,18 @@ class Request(ServerInterface):
         the last Sunday in March until the last Sunday in October in modern
         timezones.  So using this class when this assumption doesn't apply is a
         fault.
-        
+
         """
-        
+
         def __init__(self, summer_offset, winter_offset):
             self._summer_offset = summer_offset
             self._winter_offset = winter_offset
         def _offset(self, dt):
-            d1 = datetime.datetime(dt.year, 4, 1)   
+            d1 = datetime.datetime(dt.year, 4, 1)
             dst_start = d1 - datetime.timedelta(days=d1.weekday() + 1)
             d2 = datetime.datetime(dt.year, 11, 1)
             dst_end = d2 - datetime.timedelta(days=d2.weekday() + 1)
-            if dst_start <=  dt.replace(tzinfo=None) < dst_end:
+            if dst_start <= dt.replace(tzinfo=None) < dst_end:
                 return self._summer_offset
             else:
                 return self._winter_offset
@@ -275,21 +285,20 @@ class Request(ServerInterface):
             return datetime.timedelta(minutes=self._offset(dt))
         def tzname(self, dt):
             offset = self._offset(dt)
-            sign = offset/abs(offset)
+            sign = offset / abs(offset)
             div, mod = divmod(abs(offset), 60)
             if mod:
-                return "GMT %+d:%d" % (div*sign, mod)
+                return "GMT %+d:%d" % (div * sign, mod)
             else:
-                return "GMT %+d" % div*sign
+                return "GMT %+d" % div * sign
         def dst(self, dt):
             return self.utcoffset(dt) - datetime.timedelta(minutes=self._winter_offset)
 
-        
     _PANELS_COOKIE = 'wiking_show_panels'
     _MESSAGES_COOKIE = 'wiking_messages'
     _TZ_OFFSETS_COOKIE = 'wiking_tz_offsets'
     _UNDEFINED = object()
-    
+
     INFO = 'INFO'
     """Message type constant for informational messages."""
     WARNING = 'WARNING'
@@ -395,7 +404,7 @@ class Request(ServerInterface):
                 return default
         else:
             return default
-        
+
     def set_cookie(self, name, value, expires=None, secure=False):
         """Set given value as a cookie with given name.
 
@@ -435,7 +444,7 @@ class Request(ServerInterface):
             use the result of 'server_hostname()' (see its docstring for more
             information) and False means to use the global name from
             'wiking.cfg.server_hostname'.
-        
+
         The URI in the form 'http://www.yourdomain.com' is constructed
         including port and scheme specification.  If current request port
         corresponds to one of 'https_ports' configuration option (443 by
@@ -457,15 +466,15 @@ class Request(ServerInterface):
             server_hostname = self.server_hostname()
         else:
             server_hostname = wiking.cfg.server_hostname
-        result = scheme + '://'+ server_hostname
+        result = scheme + '://' + server_hostname
         if port != default_port:
-            result += ':'+ str(port)
+            result += ':' + str(port)
         return result
 
     def cached_since(self, mtime):
         """Return true if the client's cached resource is from given 'mtime' or later.
 
-        Arguments: 
+        Arguments:
           mtime -- last modification time of the resource on the
             server as a datetime instance.  It may be a timezone
             aware instance or a naive instance in UTC.
@@ -481,7 +490,7 @@ class Request(ServerInterface):
         in this case should be 304 Not Modified.
 
         Typical usage:
-        
+
           if req.cached_since(mtime):
               raise wiking.NotModified()
 
@@ -532,7 +541,7 @@ class Request(ServerInterface):
         header is automatically set to 'Basic realm="<wiking.cfg.site_title>"'.  Use
         the lower level method 'start_http_response()' if you want to avoid
         this side effect.
-        
+
         Raises 'ClosedConnection' if the client closes the connection during the
         operation.
 
@@ -566,7 +575,7 @@ class Request(ServerInterface):
             "text/plain" will be converted to "text/plain; charset=UTF-8".
           status_code -- same as in 'start_response()'.
           last_modified -- same as in 'start_response()'.
-          
+
         This method is actually just a shorthand for calling 'start_response()'
         and returning response data in one step with additional unicode
         handling.  The 'Content-Length' HTTP header is automatically set
@@ -578,7 +587,7 @@ class Request(ServerInterface):
 
         """
         if isinstance(data, (list, types.GeneratorType)):
-            result = data 
+            result = data
         else:
             if isinstance(data, unicode):
                 data = data.encode(self._encoding)
@@ -608,12 +617,12 @@ class Request(ServerInterface):
             # redirected request's locale will be the same as for this request,
             # but that seems quite appropriate assumption.
             lines = [urllib.quote(uri.encode(self._encoding))] + \
-                [type +':'+ urllib.quote(self.localize(message).encode(self._encoding))
-                 for message, type  in self._messages]
-            self.set_cookie(self._MESSAGES_COOKIE,  "\n".join(lines))
+                [type + ':' + urllib.quote(self.localize(message).encode(self._encoding))
+                 for message, type in self._messages]
+            self.set_cookie(self._MESSAGES_COOKIE, "\n".join(lines))
         html = ("<html><head><title>Redirected</title></head>"
                 "<body>Your request has been redirected to "
-                "<a href='"+uri+"'>"+uri+"</a>.</body></html>").encode(self._encoding)
+                "<a href='" + uri + "'>" + uri + "</a>.</body></html>").encode(self._encoding)
         self.set_header('Location', uri)
         if permanent:
             status_code = httplib.MOVED_PERMANENTLY
@@ -643,7 +652,7 @@ class Request(ServerInterface):
         Calling this method directly from application code is deprecated.
         Redirection should be now triggered by raising the `wiking.Redirect'
         exception.
-            
+
         """
         if not (uri.startswith('http://') or uri.startswith('https://')):
             if not uri.startswith('/'):
@@ -659,7 +668,7 @@ class Request(ServerInterface):
         """Return a URI constructed from given base URI and arguments.
 
         Arguments:
-        
+
           base_uri -- base URI.  May be a relative path, such as '/xx/yy', absolute
             URI, such as 'http://host.domain.com/xx/yy' or a mailto URI, such
             as 'mailto:name@domain.com'.
@@ -670,13 +679,13 @@ class Request(ServerInterface):
             that's the case, the anchor is appended to 'base_uri' after a '#'
             sign and the first argument is not considered to be a (NAME, VALUE)
             pair.
-          
+
           **kwargs -- keyword arguments representing additional arguments to
             append to the URI.  Use 'kwargs' if you don't care about the order
             of arguments in the returned URI, otherwise use 'args'.
 
         If any of 'args' or 'kwargs' VALUE is None, the argument is omitted.
-            
+
         The URI and the arguments may be unicode strings.  All strings are
         properly encoded in the returned URI.
 
@@ -694,14 +703,13 @@ class Request(ServerInterface):
             args = args[1:]
         else:
             anchor = None
-        query = ';'.join([k +"="+ urllib.quote_plus(unicode(v).encode(self._encoding))
+        query = ';'.join([k + "=" + urllib.quote_plus(unicode(v).encode(self._encoding))
                           for k, v in args + tuple(kwargs.items()) if v is not None])
         if query:
-            uri += '?'+ query
+            uri += '?' + query
         if anchor:
-            uri += '#'+ anchor
+            uri += '#' + anchor
         return uri
-
 
     def fresh_login(self):
         """Return True iff this is a fresh login.
@@ -719,7 +727,7 @@ class Request(ServerInterface):
           handler -- 'wiking.RequestHandler' instance to handle request.
           kwargs -- all keyword arguments are passed to the 'ForwardInfo' instance created for
             this forward (later available in forward history using the method 'forwards()').
-  
+
         Returns the result of calling 'handler.handle(req)'.
 
         """
@@ -781,14 +789,14 @@ class Request(ServerInterface):
         accepted.sort()
         accepted.reverse()
         return tuple([lang for q, lang in accepted])
-    
+
     def preferred_languages(self):
         """Return a list of user's preferred languages in the order of their preference.
 
         Returns the result of curren't application's method
         'Application.preferred_languages()' and caches its result for the
         current request.
-        
+
         """
         result = self._preferred_languages
         if result is None:
@@ -806,7 +814,7 @@ class Request(ServerInterface):
 
           variants -- list of language codes of avialable language variants.  If None (default),
             all languages defined by the current Wiking application will be considered.
-          
+
           raise_error -- if false, None is returned if there is no acceptable
             variant in the list.  Otherwise NotAcceptable error is raised.
 
@@ -839,7 +847,7 @@ class Request(ServerInterface):
             offsets = self.cookie(self._TZ_OFFSETS_COOKIE)
             try:
                 summer_offset, winter_offset = [int(x) for x in urllib.unquote(offsets).split(';')]
-            except (ValueError, TypeError, AttributeError) as e:
+            except (ValueError, TypeError, AttributeError):
                 timezone = None
             else:
                 timezone = self.TZInfo(summer_offset, winter_offset)
@@ -873,7 +881,7 @@ class Request(ServerInterface):
         """Return an 'lcg.Localizer()' instance for given language.
 
         If 'lang' is None, the current preferred language is used instead.
-        
+
         Using this method is encouraged as the created instance is cached for
         the duration of the request.
 
@@ -887,7 +895,7 @@ class Request(ServerInterface):
                                       timezone=self.timezone())
             self._localizer[lang] = localizer
         return localizer
-    
+
     def credentials(self):
         """Return the login name and password as given by the user.
 
@@ -904,7 +912,7 @@ class Request(ServerInterface):
         The return value does not indicate anything about authentication.  The
         credentials are actually used by the authentication mechanism which
         decides whether they are valid or not.
-        
+
         """
         if self._credentials:
             return self._credentials
@@ -915,7 +923,6 @@ class Request(ServerInterface):
                 encoded_credentials = auth_header.split()[1]
                 return encoded_credentials.decode("base64").split(":", 1)
         return None
-
 
     def decryption_password(self):
         """Return decryption password as given by the user."""
@@ -980,10 +987,10 @@ class Request(ServerInterface):
         """Return the base URI of given Wiking module (relative to server root).
 
         The argument 'modname' is the Wiking module name as a string.
-        
+
         If the module has no definite global path within the application, None
         may be returned.
-        
+
         The URI is actually obtained from 'Application.module_uri()', but is
         cached at this level for performance reasons.  The Application may
         often need to access the database to determine the answer, so using
@@ -995,7 +1002,7 @@ class Request(ServerInterface):
         items after mapping changes in the multiprocess server invironment.
         This method can be implemented using a global cache if this limitation
         doesn't apply in another environment.
-        
+
         """
         try:
             uri = self._module_uri[modname]
@@ -1003,7 +1010,7 @@ class Request(ServerInterface):
             application = wiking.module.Application
             uri = self._module_uri[modname] = application.module_uri(self, modname)
         return uri
-        
+
     def message(self, message, type=None):
         """Add a message to the stack.
 
@@ -1036,7 +1043,7 @@ class Request(ServerInterface):
             messages = [m for m in self._messages if m[1] != self.HEADING]
         return tuple(messages)
 
-    
+
 class User(object):
     """Representation of the logged in user.
 
@@ -1053,7 +1060,7 @@ class User(object):
     """
     MALE = 'm'
     FEMALE = 'f'
-    
+
     def __init__(self, login, uid=None, name=None, roles=(), email=None,
                  password=None, password_expiration=None, gender=None, lang='en',
                  uri=None, data=None):
@@ -1094,19 +1101,19 @@ class User(object):
         self._uri = uri
         self._data = data
         self._lang = lang
-        
+
     def login(self):
         """Return user's login name as a string."""
         return self._login
-    
+
     def uid(self):
         """Return user's identifier for ownership determination."""
         return self._uid
-    
+
     def name(self):
         """Return user's visible name as a string."""
         return self._name
-    
+
     def roles(self):
         """Return valid user's roles as a tuple of 'Role' instances."""
         return self._roles
@@ -1114,7 +1121,7 @@ class User(object):
     def email(self):
         """Return user's e-mail address as a string or None if not defined."""
         return self._email
-    
+
     def password(self):
         """Return user's authentication password as a string or None."""
         return self._password
@@ -1142,7 +1149,7 @@ class User(object):
 
 class Role(object):
     """Representation of a user role.
-    
+
     Every user can have assigned any number of roles.  The roles can serve
     various purposes, for instance:
 
@@ -1199,7 +1206,7 @@ class Role(object):
 
     def __repr__(self):
         return "<role '%s'>" % self._id
-    
+
     def __cmp__(self, other):
         """
         Two roles are equal if their unique identifiers are equal.
@@ -1209,7 +1216,7 @@ class Role(object):
         else:
             result = cmp(id(self), id(other))
         return result
-    
+
     def id(self):
         """
         @rtype: string
@@ -1223,7 +1230,7 @@ class Role(object):
         @return: Human readable name of the role.
         """
         return self._name
-    
+
 class Roles(object):
     """Set of available user roles.
 
@@ -1281,7 +1288,7 @@ class Roles(object):
         """
         @type role_id: string
         @param role_id: Unique identifier of the role to be returned.
-        
+
         @rtype: L{Role}
         @return: The role identified by C{role_id}.
 
