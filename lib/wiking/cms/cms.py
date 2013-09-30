@@ -1485,7 +1485,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
     _HONOUR_SPEC_TITLE = True
     _ROW_ACTIONS = True
 
-    _cache_ids = ('default', 'module_uri',)
+    _cache_ids = ('default', 'module_uri', 'page_uri')
 
     def _check_page_access(self, req, record, readonly=False):
         """Return true if the current user has readonly/readwrite access to given page record.
@@ -1770,9 +1770,33 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
 
     def module_uri(self, req, modname):
         return self._get_value(modname, cache_id='module_uri', loader=self._load_module_uri)
-
+        
     def _load_module_uri(self, key, transaction=None):
         modname = key
+        if modname == self.name():
+            uri = '/'
+        else:
+            row = self._data.get_row(modname=modname, site=wiking.cfg.server_hostname)
+            if row:
+                uri = '/' + row['identifier'].value()
+                binding = self._embed_binding(modname)
+                if binding:
+                    uri += '/' + binding.id()
+            else:
+                uri = None
+        return uri
+
+    def page_uri(self, req, page_id):
+        return self._get_value(page_id, cache_id='page_uri', loader=self._load_page_uri)
+
+    def _load_page_uri(self, page_id, transaction=None):
+        row = self._data.get_row(page_id=page_id, site=wiking.cfg.server_hostname)
+        if row:
+            return '/' + row['identifier'].value()
+        else:
+            return None
+
+    def _load_module_uri(self, modname, transaction=None):
         if modname == self.name():
             uri = '/'
         else:
@@ -2960,7 +2984,6 @@ class _News(ContentManagementModule, EmbeddableCMSModule, wiking.CachingPytisMod
     _PANEL_FIELDS = ('date', 'title')
     _ROW_ACTIONS = True
     _RSS_DESCR_COLUMN = 'content'
-    _page_identifier_cache = wiking.BoundCache()
 
     def _authorized(self, req, action, record=None, **kwargs):
         if action == 'list':
@@ -2975,15 +2998,9 @@ class _News(ContentManagementModule, EmbeddableCMSModule, wiking.CachingPytisMod
                     author=req.user().uid())
 
     def _record_uri(self, req, record, *args, **kwargs):
-        def get():
-            return record.cb_value('page_id', 'identifier').value()
-        # BoundCache will cache only in the scope of one request.
-        uri = '/' + self._page_identifier_cache.get(req, record['page_id'].value(), get)
-        #if args or kwargs:
-        #    uri += '/data/' + record[self._referer].export()
-        #    return req.make_uri(uri, *args, **kwargs)
+        page_uri = wiking.module.Pages.page_uri(req, record['page_id'].value())
         anchor = 'item-' + record[self._referer].export()
-        return make_uri(uri, anchor)
+        return make_uri(page_uri, anchor)
 
     def _redirect_after_insert(self, req, record):
         req.message(self._insert_msg(req, record))
