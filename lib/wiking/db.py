@@ -250,10 +250,6 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
     _LAYOUT = {}
     "Dictionary of form layouts keyed by action name (see '_layout()' method)."
 
-    # Just a hack, see its use.  If you redefine _record_uri method, set it the
-    # flag value to False.
-    _OPTIMIZE_LINKS = True
-
     class Record(pp.PresentedRow):
         """An abstraction of one record within the module's data object.
 
@@ -318,8 +314,6 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
     # Instance methods
 
     def __init__(self, name):
-        self._link_cache = {}
-        self._link_cache_req = None
         super(PytisModule, self).__init__(name)
         import config
         self._dbconnection = config.dbconnection.select(self.Spec.connection)
@@ -381,7 +375,11 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                     # codebook's value_column, we can use the codebook column
                     # as the inline referer (it is the same value).
                     referer = column
-                self._links[f.id()] = (codebook, referer, column, value_column)
+                if referer:
+                    self._links[f.id()] = (codebook, referer)
+                elif wiking.cfg.debug:
+                    wiking.debug("Referer undefined for %s.%s: %s" % (self.name(), f.id(), codebook))
+
 
     def _record(self, req, row, new=False, prefill=None, transaction=None):
         """Return the Record instance initialized by given data row."""
@@ -813,23 +811,13 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                                     **kwargs)
             else:
                 return None
-        try:
-            codebook, referer, column, value_column = self._links[cid]
-        except KeyError:
-            pass
         else:
-            if referer:
-                return wiking.module(codebook).record_uri(req, record[referer].export())
-            # TODO: If the referer is not defined, we temporarily use the old
-            # method, but it is deprecated.  Inline referer should be defined
-            # everywhere (if it is not the value_column) or links will not
-            # be displayed.
             try:
-                mod = wiking.module(codebook)
-            except AttributeError:
+                modname, referer = self._links[cid]
+            except KeyError:
                 return None
-            return mod.link(req, {value_column: record[column].value()}, **kwargs)
-        return None
+            else:
+                return wiking.module(modname).record_uri(req, record[referer].export())
 
     def _image_provider(self, req, record, cid, uri):
         return None
@@ -1848,61 +1836,6 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
             result = req.make_uri(base_uri + '/' + referer, *args, **kwargs)
         else:
             result = None
-        return result
-
-    def link(self, req, key, *args, **kwargs):
-        """DEPRACATED!  Use 'record_uri()' instead.
-
-        Don't use in application code and don't rely on implicit links which
-        require subqueries.  See also the comment in
-        'PytisModule._link_provider()'.
-
-        """
-        if wiking.cfg.debug:
-            wiking.debug("Deprecated method PytisModule.link() used!", self.name(), key,
-                         args, kwargs)
-        if self._link_cache_req is not req:
-            self._link_cache = {}
-            self._link_cache_req = req
-        if not args and not kwargs:
-            if isinstance(key, dict):
-                cache_key = tuple(key.items())
-            else:
-                cache_key = key
-            try:
-                if cache_key in self._link_cache:
-                    return self._link_cache[cache_key]
-            except TypeError:           # catch unhashable keys
-                pass
-            # TODO: The following is an important optimization hack.  It is an
-            # incorrect hack because if a successor redefines _record_uri
-            # method, the redefined method doesn't get called.  At least we
-            # provide escape path by the _OPTIMIZE_LINKS flag.
-            if ((self._OPTIMIZE_LINKS and
-                 self._key == self._referer and
-                 (not isinstance(key, dict) or key.keys() == [self._key]))):
-                if isinstance(key, dict):
-                    key = key[self._key]
-                if isinstance(key, pd.Value):
-                    key = key.value()
-                uri = self._base_uri(req)
-                if uri:
-                    return req.make_uri('%s/%s' % (uri, key,))
-                else:
-                    return None
-        if isinstance(key, dict):
-            row = self._data.get_row(arguments=self._arguments(req), **key)
-        else:
-            row = self._data.row(key)
-        if row:
-            result = self._record_uri(req, self._record(req, row), *args, **kwargs)
-        else:
-            result = None
-        if not args and not kwargs:
-            try:
-                self._link_cache[cache_key] = result
-            except TypeError:           # catch unhashable keys
-                pass
         return result
 
     def related(self, req, binding, record, uri):
