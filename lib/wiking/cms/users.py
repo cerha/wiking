@@ -307,7 +307,7 @@ class UserRoles(RoleMembers):
     _INSERT_LABEL = _("Add to group")
 
 
-class ApplicationRoles(UserManagementModule):
+class ApplicationRoles(UserManagementModule, CachingPytisModule):
     """Accessor and editor of application roles.
 
     This class can read roles from and store them to the database.  Its main
@@ -385,9 +385,6 @@ class ApplicationRoles(UserManagementModule):
                }
     _TITLE_COLUMN = 'xname'
 
-    _roles_cache = None
-    _roles_cache_time = None
-
     def _authorized(self, req, action, **kwargs):
         if action in ('view', 'list'):
             return req.check_roles(Roles.USER)
@@ -439,19 +436,14 @@ class ApplicationRoles(UserManagementModule):
         @rtype: L{Role}
         @return: Role instance corresponding to given role_id.
         """
-        if ((self._roles_cache is None or
-             time.time() - self._roles_cache_time > 30)):
-            self._roles_cache = self._read_roles()
-            self._roles_cache_time = time.time()
-        try:
-            return self._roles_cache[role_id]
-        except KeyError:
-            row = self._data.row(pd.Value(pd.String(), role_id))
-            if row:
-                self._roles_cache[role_id] = role = self._make_role(row)
-                return role
-            else:
-                return None
+        return self._get_value(role_id, loader=self._load_role)
+
+    def _load_role(self, role_id, transaction=None):
+        row = self._data.row(pd.Value(pd.String(), role_id))
+        if row:
+            return self._make_role(row)
+        else:
+            return None
 
 
 class UserGroups(ApplicationRoles):
