@@ -377,7 +377,8 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                     referer = column
                 if referer:
                     self._links[f.id()] = (codebook, referer)
-                elif wiking.cfg.debug:
+                elif wiking.cfg.debug and f.label() != f.id():
+                    # Don't warn on unlabeled fields - they typically don't figure in the UI.
                     wiking.debug("Referer undefined for %s.%s: %s" % (self.name(), f.id(), codebook))
 
 
