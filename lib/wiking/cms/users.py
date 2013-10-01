@@ -221,11 +221,15 @@ class RoleMembers(UserManagementModule):
     """Accessor of user role membership information stored in the database."""
     class Spec(wiking.Specification):
         title = _("User Roles")
-        table = 'role_members'
+        table = 'cms_v_role_members'
         def fields(self):
             return (pp.Field('role_member_id'),
-                    pp.Field('role_id', _("Group"), codebook='UserGroups'),
-                    pp.Field('uid', _("User"), codebook='Users'),
+                    pp.Field('role_id', _("Group"), codebook='UserGroups'), 
+                    pp.Field('role_name'),
+                    pp.Field('uid', _("User"), codebook='Users',
+                             inline_display='user_name', inline_referer='user_login'),
+                    pp.Field('user_login'),
+                    pp.Field('user_name'),
                     pp.Field('delete', virtual=True, computer=computer(lambda r: _("Remove"))),
                     )
         columns = layout = ('role_id', 'uid',)

@@ -2966,7 +2966,10 @@ class _News(ContentManagementModule, EmbeddableCMSModule, wiking.CachingPytisMod
                 Field('title', _("Title"), column_label=_("Message"), width=32,
                       descr=_("The item brief summary.")),
                 ContentField('content', _("Message"), height=6, width=80),
-                Field('author', _("Author"), codebook='Users'),
+                Field('author', _("Author"), codebook='Users', 
+                      inline_referer='author_login', inline_display='author_name'),
+                Field('author_name'),
+                Field('author_login'),
                 Field('date', _("Date"), virtual=True, computer=computer(self._date),
                       descr=_("Date of the news item creation.")),
                 Field('date_title', virtual=True, computer=computer(self._date_title)),
@@ -3027,7 +3030,7 @@ class News(_News):
         title = _("News")
         # Translators: Help string describing more precisely the meaning of the "News" section.
         help = _("Publish site news.")
-        table = 'cms_news'
+        table = 'cms_v_news'
         def fields(self):
             extra = (
                 Field('news_id', editable=NEVER),
@@ -3064,7 +3067,7 @@ class Planner(_News):
         # Translators: Section heading and menu item
         title = _("Planner")
         help = _("Announce future events by date in a callendar-like listing.")
-        table = 'cms_planner'
+        table = 'cms_v_planner'
         def fields(self):
             override = (
                 Field('title', column_label=_("Event"), descr=_("The event brief summary.")),

@@ -172,6 +172,24 @@ class RoleMembers(CommonAccesRights, Base_CachingTable):
               )
     unique = (('role_id', 'uid',),)
 
+class CmsVRoleMembers(CommonAccesRights, sql.SQLView):
+    name = 'cms_v_role_members'
+    @classmethod
+    def query(cls):
+        m = sql.t.RoleMembers.alias('m')
+        r = sql.t.Roles.alias('r')
+        u = sql.t.Users.alias('u')
+        return select([m,
+                       r.c.name.label('role_name'),
+                       u.c.user_.label('user_name'),
+                       u.c.login.label('user_login'),
+                      ],
+                      from_obj=[m.join(r, r.c.role_id == m.c.role_id).join(u, m.c.uid == u.c.uid)])
+    insert_order = (RoleMembers,)
+    update_order = (RoleMembers,)
+    delete_order = (RoleMembers,)
+    no_insert_columns = ('role_member_id',)
+
 class AUserRoles(CommonAccesRights, Base_CachingTable):
     name = 'a_user_roles'
     fields = (sql.Column('uid', pytis.data.Integer(), index=True,
@@ -719,6 +737,24 @@ class CmsNews(CommonAccesRights, Base_CachingTable):
               sql.Column('days_displayed', pytis.data.Integer(not_null=True)),
               )
 
+
+class CmsVNews(CommonAccesRights, sql.SQLView):
+    name = 'cms_v_news'
+    @classmethod
+    def query(cls):
+        n = sql.t.CmsNews.alias('n')
+        u = sql.t.Users.alias('u')
+        return select([n,
+                       u.c.user_.label('author_name'),
+                       u.c.login.label('author_login'),
+                      ],
+                      from_obj=[n.join(u, n.c.author == u.c.uid)])
+    insert_order = (CmsNews,)
+    update_order = (CmsNews,)
+    delete_order = (CmsNews,)
+    no_insert_columns = ('news_id',)
+
+
 class CmsRecentTimestamp(sql.SQLFunction):
     """Return true if `ts' is not older than `max_days' days.  Needed for a pytis
     filtering condition (FunctionCondition is currently too simple to express
@@ -751,6 +787,23 @@ class CmsPlanner(CommonAccesRights, Base_CachingTable):
               sql.Column('title', pytis.data.String(not_null=True)),
               sql.Column('content', pytis.data.String(not_null=True)),
               )
+
+class CmsVPlanner(CommonAccesRights, sql.SQLView):
+    name = 'cms_v_planner'
+    @classmethod
+    def query(cls):
+        p = sql.t.CmsPlanner.alias('p')
+        u = sql.t.Users.alias('u')
+        return select([p,
+                       u.c.user_.label('author_name'),
+                       u.c.login.label('author_login'),
+                      ],
+                      from_obj=[p.join(u, p.c.author == u.c.uid)])
+    insert_order = (CmsPlanner,)
+    update_order = (CmsPlanner,)
+    delete_order = (CmsPlanner,)
+    no_insert_columns = ('planner_id',)
+
 
 class CmsDiscussions(CommonAccesRights, sql.SQLTable):
     name = 'cms_discussions'
