@@ -1414,6 +1414,12 @@ class Users(UserManagementModule, CachingPytisModule):
                     n += 1
         return n, errors
 
+    def handle_registration_action(self, req, action, **kwargs):
+        # We can not use the record from req.user().data() directly as it
+        # doesn't contain reference to the current request (cached instance).
+        record = self._record(req, req.user().data().row())
+        method = getattr(self, 'action_' + action)
+        return method(req, record, **kwargs)
 
 class ActiveUsers(Users, EmbeddableCMSModule):
     """User listing to be embedded into page content.
@@ -1482,7 +1488,7 @@ class Registration(Module, ActionHandler):
 
     def action_view(self, req):
         if req.user():
-            return wiking.module.Users.action_view(req, req.user().data())
+            return wiking.module.Users.handle_registration_action(req, 'view')
         elif req.param('command') == 'logout':
             raise Redirect('/')
         else:
@@ -1491,7 +1497,7 @@ class Registration(Module, ActionHandler):
     def action_insert(self, req, prefill=None, action='insert'):
         if not wiking.cms.cfg.allow_registration:
             raise Forbidden()
-        return wiking.module.Users.action_insert(req, prefill=prefill, action=action)
+        return wiking.module.Users.handle_registration_action(req, 'insert', prefill=prefill)
 
     def action_reinsert(self, req):
         login = req.param('login')
@@ -1569,10 +1575,10 @@ class Registration(Module, ActionHandler):
         return Document(title, content)
 
     def action_update(self, req):
-        return wiking.module.Users.action_update(req, req.user().data())
+        return wiking.module.Users.handle_registration_action(req, 'update')
 
     def action_passwd(self, req):
-        return wiking.module.Users.action_passwd(req, req.user().data())
+        return wiking.module.Users.handle_registration_action(req, 'passwd')
 
     def action_confirm(self, req):
         return wiking.module.Users.action_confirm(req)
