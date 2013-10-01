@@ -1203,7 +1203,7 @@ class PanelItem(lcg.Content):
         items = [g.span(uri and g.a(value, href=uri) or value,
                         cls="panel-field-" + id)
                  for id, value, uri in self._fields]
-        return g.div(items, cls="item")
+        return g.div(lcg.concat(items, separator=' '), cls="item")
 
 
 class LoginCtrl(lcg.Content):
