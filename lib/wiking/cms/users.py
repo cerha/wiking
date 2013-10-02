@@ -1497,7 +1497,7 @@ class Registration(Module, ActionHandler):
     def action_insert(self, req, prefill=None, action='insert'):
         if not wiking.cms.cfg.allow_registration:
             raise Forbidden()
-        return wiking.module.Users.handle_registration_action(req, 'insert', prefill=prefill)
+        return wiking.module.Users.action_insert(req, prefill=prefill, action=action)
 
     def action_reinsert(self, req):
         login = req.param('login')
