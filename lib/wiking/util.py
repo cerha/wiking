@@ -2188,7 +2188,8 @@ def pdf_document(content, lang):
 
     Arguments:
 
-      content -- document content, sequence of 'lcg.Content' instances
+      content -- document content, sequence of 'lcg.Content' or
+        'lcg.ContentNode' instances
       lang -- document language as an ISO 639-1 Alpha-2 lowercase
         language code string or 'None'
 
@@ -2198,7 +2199,10 @@ def pdf_document(content, lang):
     exporter = lcg.pdf.PDFExporter()
     children = []
     for i in range(len(content)):
-        children.append(lcg.ContentNode(id='wiking%d' % (i,), title=' ', content=content[i]))
+        c = content[i]
+        if not isinstance(c, lcg.ContentNode):
+            c = lcg.ContentNode(id='wiking%d' % (i,), title=' ', content=c)
+        children.append(c)
     lcg_content = lcg.ContentNode(id='__dummy', content=lcg.Content(), children=children)
     context = exporter.context(lcg_content, lang)
     pdf = exporter.export(context)
