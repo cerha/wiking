@@ -2195,7 +2195,7 @@ def pdf_document(content, lang):
 
     """
     assert isinstance(content, (list, tuple)), content
-    assert all([isinstance(c, lcg.Content) for c in content])
+    assert all([isinstance(c, (lcg.Content, lcg.ContentNode,)) for c in content])
     exporter = lcg.pdf.PDFExporter()
     children = []
     for i in range(len(content)):
