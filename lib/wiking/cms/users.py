@@ -30,7 +30,6 @@ L{RoleSets}, L{RoleMembers}, L{ApplicationRoles}.
 """
 
 import datetime
-import time
 import random
 import socket
 import string
@@ -224,7 +223,7 @@ class RoleMembers(UserManagementModule):
         table = 'cms_v_role_members'
         def fields(self):
             return (pp.Field('role_member_id'),
-                    pp.Field('role_id', _("Group"), codebook='UserGroups'), 
+                    pp.Field('role_id', _("Group"), codebook='UserGroups'),
                     pp.Field('role_name'),
                     pp.Field('uid', _("User"), codebook='Users',
                              inline_display='user_name', inline_referer='user_login'),
@@ -1125,7 +1124,7 @@ class Users(UserManagementModule, CachingPytisModule):
 
     def _registration_form_intro(self, record):
         req = record.req()
-        content = wiking.module.Texts.parsed_text(req, wiking.cms.texts.regintro, 
+        content = wiking.module.Texts.parsed_text(req, wiking.cms.texts.regintro,
                                                   lang=req.preferred_language())
         if content is None:
             content = lcg.Content()
@@ -1312,9 +1311,9 @@ class Users(UserManagementModule, CachingPytisModule):
 
     def _load_find_users(self, key, transaction=None, role=None):
         email, state, role_id, confirm = key
+        application = wiking.module.Application
         if role is not None:
             role_user_ids = wiking.module.RoleMembers.user_ids(role)
-            application = wiking.module.Application
         base_uri = application.module_uri(None, 'ActiveUsers')
         registration_uri = application.module_uri(None, 'Registration')
         def make_user(row):
