@@ -314,6 +314,11 @@ class Handler(object):
             return self._handle_request_error(req, wiking.InternalServerError(einfo))
             
     def handle(self, req):
+        if not hasattr(self, '_first_request_served'):
+            if __debug__:
+                wiking.debug("Python optimization off.")
+            else:
+                wiking.debug("Python optimization on.")
         if wiking.cfg.debug and (wiking.cfg.profile or req.param('profile') == '1'):
             enable_profiling = True
             if not hasattr(self, '_first_request_served'):
