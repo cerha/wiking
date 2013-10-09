@@ -315,15 +315,13 @@ class Handler(object):
             
     def handle(self, req):
         if wiking.cfg.debug and (wiking.cfg.profile or req.param('profile') == '1'):
-            if not hasattr(self, '_first_request_served') and not req.param('force'):
-                # The first request usually loads caches and thus is not much 
-                # relevant for profiling, so we simply avoid profiling it.
-                wiking.debug("Profiling disabled for the initial request. "
-                             "Repeat to get the results or pass force=1 to "
-                             "force profiling the initial request.")
-                enable_profiling = False
-            else:
-                enable_profiling = True
+            enable_profiling = True
+            if not hasattr(self, '_first_request_served'):
+                if req.param('ignore_first'):
+                    wiking.debug("Profiling disabled for the initial request.")
+                    enable_profiling = False
+                else:
+                    wiking.debug("Profiling note: This is an initial request.")
         else:
             enable_profiling = False
         self._first_request_served = True
