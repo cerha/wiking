@@ -338,7 +338,7 @@ class Handler(object):
             queries = []
             def query_callback(query, start_time, end_time):
                 queries.append((end_time - start_time, query,))
-            wiking.DBAPIData.set_query_callback(query_callback)
+            wiking.WikingDefaultDataClass.set_query_callback(query_callback)
             uri = req.uri()
             tmpfile = tempfile.NamedTemporaryFile().name
             profile.run('from wiking.handler import Handler; '
@@ -367,7 +367,12 @@ class Handler(object):
             #log(OPERATIONAL, "Request processed in %.1f ms (%.1f ms CPU):" %
             #                  (1000*t2, 1000*t1), req.uri())
             #return result
-            return self._handle(req)
+            try:
+                return self._handle(req)
+            finally:
+                # We can observe pending transactions in Wiking applications,
+                # so let's close them all after each request.
+                wiking.WikingDefaultDataClass.rollback_connections()
             
 try:
     # Only for backwards compatibility with older Apache/mod_python
