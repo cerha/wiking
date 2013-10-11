@@ -2654,6 +2654,9 @@ class Attachments(ContentManagementModule):
                 #Field('location', _("Location"), width=50),
                 #Field('exif_date', _("EXIF date")),
                 Field('_filename', virtual=True, computer=computer(self._filename)),
+                Field('archive', _("Archive"), virtual=True,
+                      type=pd.Binary(not_null=True, maxlen=1000*wiking.cms.cfg.upload_limit),
+                      descr=_("Upload multiple attachments in a ZIP, TAR or TAG.GZ archive.")),
             )
         def _ext(self, record, filename):
             if filename is None:
@@ -2734,6 +2737,8 @@ class Attachments(ContentManagementModule):
             #       context=pp.ActionContext.GLOBAL),
             # Translators: Button label
             Action('move', _("Move"), descr=_("Move the attachment to another page.")),
+            Action('upload_archive', _("Upload Archive"), context=pp.ActionContext.GLOBAL,
+                   descr=_("Upload multiple attachments at once as a ZIP, TAR or TAR.GZ archive.")),
         )
 
     class AttachmentStorage(pp.AttachmentStorage):
@@ -2795,7 +2800,8 @@ class Attachments(ContentManagementModule):
 
     _INSERT_LABEL = _("New attachment")
     _REFERER = 'filename'
-    _LAYOUT = {'move': ('page_id',)}
+    _LAYOUT = {'move': ('page_id',),
+               'upload_archive': ('archive',)}
     _LIST_BY_LANGUAGE = True
     _SEQUENCE_FIELDS = (('attachment_id', 'cms_page_attachments_attachment_id_seq'),)
     _EXCEPTION_MATCHERS = (
@@ -2810,7 +2816,7 @@ class Attachments(ContentManagementModule):
     def _authorized(self, req, action, **kwargs):
         if action in ('download', 'image', 'thumbnail'):
             return req.page_read_access
-        elif action in ('list', 'view', 'insert', 'update', 'delete', 'move'):
+        elif action in ('list', 'view', 'insert', 'upload_archive', 'update', 'delete', 'move'):
             return req.page_write_access
         else:
             return False
@@ -2834,35 +2840,35 @@ class Attachments(ContentManagementModule):
             return self._link_provider(req, uri, record, None, action='thumbnail')
         return super(Attachments, self)._image_provider(req, uri, record, cid, **kwargs)
 
-    def _save_files(self, record):
-        directory = wiking.cms.cfg.storage
-        if not os.path.exists(directory) or not os.access(directory, os.W_OK):
+    def _save_attachment_file(self, record):
+        storage = wiking.cms.cfg.storage
+        if not os.path.exists(storage) or not os.access(storage, os.W_OK):
             import getpass
-            raise Exception("The configuration option 'storage' points to '%(dir)s', but this "
+            raise Exception("The configuration option 'storage' points to '%(storage)s', but this "
                             "directory does not exist or is not writable by user '%(user)s'." %
-                            dict(dir=directory, user=getpass.getuser()))
-        fname = record['_filename'].value()
-        dir = os.path.split(fname)[0]
-        if not os.path.exists(dir):
-            os.makedirs(dir, 0700)
-        buf = record['file'].value()
-        if buf is not None:
-            log(OPERATIONAL, "Saving file:", (fname, format_byte_size(len(buf))))
-            buf.save(fname)
+                            dict(storage=storage, user=getpass.getuser()))
+        filename = record['_filename'].value()
+        directory = os.path.split(filename)[0]
+        if not os.path.exists(directory):
+            os.makedirs(directory, 0700)
+        value = record['file'].value()
+        if value is not None:
+            log(OPERATIONAL, "Saving file:", (filename, format_byte_size(len(value))))
+            value.save(filename)
 
     def _insert_transaction(self, req, record):
         return self._transaction()
 
     def _insert(self, req, record, transaction):
         super(Attachments, self)._insert(req, record, transaction)
-        self._save_files(record)
+        self._save_attachment_file(record)
 
     def _update_transaction(self, req, record):
         return self._transaction()
 
     def _update(self, req, record, transaction):
         super(Attachments, self)._update(req, record, transaction)
-        self._save_files(record)
+        self._save_attachment_file(record)
 
     def _delete_transaction(self, req, record):
         return self._transaction()
@@ -2949,6 +2955,96 @@ class Attachments(ContentManagementModule):
         else:
             return Response(value.buffer(), content_type='image/%s' % value.image().format.lower(),
                             last_modified=last_modified)
+
+    def action_upload_archive(self, req):
+        upload = req.param('archive')
+        if not upload:
+            return self.action_insert(req, action='upload_archive')
+        elif not isinstance(upload, wiking.FileUpload):
+            raise wiking.BadRequest()
+        class Error(Exception):
+            pass
+        class Archive(object):
+            pass
+        class ZipArchive(Archive):
+            def __init__(self, fileobj):
+                import zipfile
+                self._archive = zipfile.ZipFile(fileobj, mode='r')
+            def items(self):
+                return self._archive.infolist()
+            def isfile(self, item):
+                return True
+            def filename(self, item):
+                return unicode(item.filename, "cp437")
+            def open(self, item):
+                return self._archive.open(item)
+            def close(self):
+                return self._archive.close()
+        class TarArchive(Archive):
+            def __init__(self, fileobj):
+                import tarfile
+                self._archive = tarfile.open(fileobj=upload.file(), mode='r')
+            def items(self):
+                return self._archive.getmembers()
+            def isfile(self, item):
+                return item.isfile()
+            def filename(self, item):
+                return item.name
+            def open(self, item):
+                return self._archive.extractfile(item)
+            def close(self):
+                return self._archive.close()
+        saved_files = []
+        def insert_attachments(archive, prefill, transaction):
+            for item in archive.items():
+                if not archive.isfile(item):
+                    # Ignore special files such as symlinks (security!)
+                    continue
+                filename = re.split(r'[\\/]', archive.filename(item))[-1]
+                mime_type = mimetypes.guess_type(filename)[0] or 'application/octet-stream'
+                record = self._record(req, None, new=True, prefill=prefill)
+                data = archive.open(item)
+                error = record.validate('file', data, filename=filename, mime_type=mime_type)
+                if error:
+                    raise Error(filename, error.message())
+                else:
+                    try:
+                        self._insert(req, record, transaction=transaction)
+                    except pd.DBException as e:
+                        raise Error(filename, self._analyze_exception(e)[1])
+                    else:
+                        saved_files.append(record['_filename'].value())
+        def failure(error):
+            req.message(error, type=req.ERROR)
+            req.set_param('submit', None)
+            return self.action_insert(req, action='upload_archive')
+        try:
+            filename = upload.filename()
+            lname = filename.lower()
+            if lname.endswith(".zip"):
+                archive = ZipArchive(upload.file())
+            elif lname.endswith(".tar") or lname.endswith(".tar.gz") or lname.endswith(".tgz"):
+                archive = TarArchive(upload.file())
+            else:
+                return failure(_("Unknow archive file type: %s", filename))
+        except Exception as e:
+            return failure(_("Unable to read archive: %s", str(e)))
+        try:
+            prefill = dict(self._prefill(req), listed=False)
+            transaction = self._transaction()
+            self._in_transaction(transaction, insert_attachments, archive, prefill, transaction)
+        except Exception as e:
+            for filename in saved_files:
+                if os.path.exists(filename):
+                    os.unlink(filename)
+            if isinstance(e, Error):
+                return failure(concat(e.args, separator=': '))
+            raise
+        else:
+            req.message(_("%d attachments succesfully extracted.", len(saved_files)))
+        finally:
+            archive.close()
+        raise wiking.Redirect(req.uri())
 
 
 class _News(ContentManagementModule, EmbeddableCMSModule, wiking.CachingPytisModule):
