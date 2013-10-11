@@ -2656,7 +2656,8 @@ class Attachments(ContentManagementModule):
                 Field('_filename', virtual=True, computer=computer(self._filename)),
                 Field('archive', _("Archive"), virtual=True,
                       type=pd.Binary(not_null=True, maxlen=1000*wiking.cms.cfg.upload_limit),
-                      descr=_("Upload multiple attachments in a ZIP, TAR or TAG.GZ archive.")),
+                      descr=_("Upload multiple attachments at once "
+                              "as a ZIP, TAR or TAR.GZ archive.")),
             )
         def _ext(self, record, filename):
             if filename is None:
@@ -3041,7 +3042,8 @@ class Attachments(ContentManagementModule):
                 return failure(concat(e.args, separator=': '))
             raise
         else:
-            req.message(_("%d attachments succesfully extracted.", len(saved_files)))
+            req.message(_.ngettext("%d attachment succesfully inserted.",
+                                   "%d attachments succesfully inserted.", len(saved_files)))
         finally:
             archive.close()
         raise wiking.Redirect(req.uri())
