@@ -39,7 +39,7 @@ class Handler(object):
         """Initialize the global wiking handler instance.
         
         The argument 'req' is the initial request which triggered the Handler
-        creation, however the handler will normally exist much longer thant for
+        creation, however the handler will normally exist much longer than for
         this single request and its method 'handle()' will be called to handle
         also other requests (including this one).  The constructor only needs
         the request instance to gather some global information to be able to
