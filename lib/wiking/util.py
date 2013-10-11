@@ -1525,29 +1525,39 @@ class WikingDefaultDataClass(DBAPIData):
         result = function.call(pytis.data.Row(args))
         return result[0][0].value()
 
+    def _update_cached_tables(self):
+        try:
+            cached_tables = wiking.module.CachedTables
+        except AttributeError:
+            # The module may not be available in applications which don't
+            # use Wiking CMS or caching explicitly.
+            pass
+        else:
+            cached_tables.reload_info(None)
+
     def insert(self, *args, **kwargs):
         result = super(WikingDefaultDataClass, self).insert(*args, **kwargs)
-        wiking.module.CachedTables.reload_info(None)
+        self._update_cached_tables()
         return result
 
     def update(self, *args, **kwargs):
         result = super(WikingDefaultDataClass, self).update(*args, **kwargs)
-        wiking.module.CachedTables.reload_info(None)
+        self._update_cached_tables()
         return result
 
     def update_many(self, *args, **kwargs):
         result = super(WikingDefaultDataClass, self).update_many(*args, **kwargs)
-        wiking.module.CachedTables.reload_info(None)
+        self._update_cached_tables()
         return result
 
     def delete(self, *args, **kwargs):
         result = super(WikingDefaultDataClass, self).delete(*args, **kwargs)
-        wiking.module.CachedTables.reload_info(None)
+        self._update_cached_tables()
         return result
 
     def delete_many(self, *args, **kwargs):
         result = super(WikingDefaultDataClass, self).delete_many(*args, **kwargs)
-        wiking.module.CachedTables.reload_info(None)
+        self._update_cached_tables()
         return result
 
 
