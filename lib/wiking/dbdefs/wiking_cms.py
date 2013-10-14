@@ -354,6 +354,7 @@ class CmsPageTreeOrder(sql.SQLFunction):
     arguments = (sql.Column('page_id', pytis.data.Integer()),)
     result_type = pytis.data.String()
     depends_on = (CmsPages,)
+    stability = 'stable'
 
 class CmsVPages(CommonAccesRights, sql.SQLView):
     name = 'cms_v_pages'
@@ -384,7 +385,9 @@ class CmsVPages(CommonAccesRights, sql.SQLView):
      values (new.site, new.kind, new.identifier, new.parent, new.modname,
              new.owner, new.read_role_id, new.write_role_id,
              new.menu_visibility, new.foldable, new.ord);
-     update cms_pages set tree_order = cms_page_tree_order(page_id) where site=new.site;
+     update cms_pages set tree_order = cms_page_tree_order(page_id)
+            where site = new.site and
+                  (identifier = new.identifier or tree_order != cms_page_tree_order(page_id));
      insert into cms_page_texts (page_id, lang, published,
                                  creator, created, published_since,
                                  title, description, content,
@@ -418,7 +421,9 @@ class CmsVPages(CommonAccesRights, sql.SQLView):
         foldable = new.foldable,
         ord = new.ord
     where cms_pages.page_id = old.page_id;
-    update cms_pages set tree_order = cms_page_tree_order(page_id) where site=new.site;
+    update cms_pages set tree_order = cms_page_tree_order(page_id)
+           where site = new.site and tree_order != cms_page_tree_order(page_id) and
+                 (identifier = new.identifier or tree_order != cms_page_tree_order(page_id));
     update cms_page_texts set
         published = new.published,
         title = new.title,
