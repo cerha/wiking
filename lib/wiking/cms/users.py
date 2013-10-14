@@ -595,7 +595,6 @@ class Users(UserManagementModule, CachingPytisModule):
                 Field('lang'),
                 Field('regexpire', default=self._registration_expiry, type=DateTime()),
                 Field('regcode', default=self._generate_registration_code),
-                Field('state_info', virtual=True, computer=computer(self._state_info)),
             )
         def _default_state(self, record, autogenerate_password):
             req = record.req()
@@ -603,49 +602,6 @@ class Users(UserManagementModule, CachingPytisModule):
                 return self._module.AccountState.ENABLED
             else:
                 return self._module.AccountState.NEW
-        def _state_info(self, record, state, regexpire):
-            req = record.req()
-            if state == Users.AccountState.NEW:
-                if regexpire > pd.DateTime.datetime():
-                    texts = (_("The activation code was not yet confirmed by the user. Therefore "
-                               "it is not possible to trust that given e-mail address belongs to "
-                               "the person who requested the registration."),
-                             # Translators: %(date)s is replaced by date and time of registration
-                             # expiration.
-                             _("The activation code will expire on %(date)s and the user will "
-                               "not be able to complete the registration anymore.",
-                               date=record['regexpire'].export()))
-                    if req.check_roles(Roles.USER_ADMIN):
-                        texts += _("Use the button \"Resend activation code\" below to remind the "
-                                   "user of his pending registration."),
-                else:
-                    # Translators: %(date)s is replaced by date and time of registration expiration.
-                    texts = _("The registration expired on %(date)s.  The user didn't confirm the "
-                              "activation code sent to the declared e-mail address in time.",
-                              date=record['regexpire'].export()),
-                    if req.check_roles(Roles.USER_ADMIN):
-                        texts += _("The account should be deleted automatically if the server "
-                                   "maintenence script is installed correctly.  Otherwise you can "
-                                   "delete the account manually."),
-            elif state == Users.AccountState.UNAPPROVED:
-                texts = _("The activation code was succesfully confirmed."),
-                if req.check_roles(Roles.USER_ADMIN):
-                    texts = (texts[0] + ' ' +
-                             _("Therefore it was verified that given e-mail address "
-                               "belongs to the person who requested the registration."),)
-                    texts += _("The user is now able to log in, but still has no rights "
-                               "(other than an anonymous user)."),
-                texts += _("The account now awaits administrator's action to be approved."),
-            elif state == Users.AccountState.DISABLED:
-                texts = (_("The account is blocked.  The user is able to log in, but has no "
-                           "access to protected services until the administrator enables the "
-                           "account again."),)
-            else:
-                texts = ()
-            if texts:
-                return lcg.Container([lcg.p(text) for text in texts], name='wiking-info-bar')
-            else:
-                return lcg.Content()
         def _gender_display(self, gender):
             return self._module.Gender.label(gender)
         def _state_style(self, record):
@@ -869,7 +825,7 @@ class Users(UserManagementModule, CachingPytisModule):
                           FieldSet(_("Contact information"), ('email', 'phone', 'address', 'uri')),
                           FieldSet(_("Others"), ('note',)),
                           FieldSet(_("Account state"), account_state),
-                          lambda r: r['state_info'].value(),
+                          lambda r: self._state_info(req, r),
                           ]
                 return layout
             if action == 'insert':
@@ -1121,6 +1077,50 @@ class Users(UserManagementModule, CachingPytisModule):
             log(OPR, "Failed sending e-mail notification:", err)
         if sent:
             req.message(_("E-mail notification has been sent to server administrators."))
+
+    def _state_info(self, req, record):
+        state = record['state'].value()
+        if state == Users.AccountState.NEW:
+            if record['regexpire'].value() > pd.DateTime.datetime():
+                texts = (_("The activation code was not yet confirmed by the user. Therefore "
+                           "it is not possible to trust that given e-mail address belongs to "
+                           "the person who requested the registration."),
+                         # Translators: %(date)s is replaced by date and time of registration
+                         # expiration.
+                         _("The activation code will expire on %(date)s and the user will "
+                           "not be able to complete the registration anymore.",
+                           date=record['regexpire'].export()))
+                if req.check_roles(Roles.USER_ADMIN):
+                    texts += _("Use the button \"Resend activation code\" below to remind the "
+                               "user of his pending registration."),
+            else:
+                # Translators: %(date)s is replaced by date and time of registration expiration.
+                texts = _("The registration expired on %(date)s.  The user didn't confirm the "
+                          "activation code sent to the declared e-mail address in time.",
+                          date=record['regexpire'].export()),
+                if req.check_roles(Roles.USER_ADMIN):
+                    texts += _("The account should be deleted automatically if the server "
+                               "maintenence script is installed correctly.  Otherwise you can "
+                               "delete the account manually."),
+        elif state == Users.AccountState.UNAPPROVED:
+            texts = _("The activation code was succesfully confirmed."),
+            if req.check_roles(Roles.USER_ADMIN):
+                texts = (texts[0] + ' ' +
+                         _("Therefore it was verified that given e-mail address "
+                           "belongs to the person who requested the registration."),)
+                texts += _("The user is now able to log in, but still has no rights "
+                           "(other than an anonymous user)."),
+            texts += _("The account now awaits administrator's action to be approved."),
+        elif state == Users.AccountState.DISABLED:
+            texts = (_("The account is blocked.  The user is able to log in, but has no "
+                       "access to protected services until the administrator enables the "
+                       "account again."),)
+        else:
+            texts = ()
+        if texts:
+            return lcg.Container([lcg.p(text) for text in texts], name='wiking-info-bar')
+        else:
+            return lcg.Content()
 
     def _registration_form_intro(self, record):
         req = record.req()
