@@ -1363,7 +1363,11 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                       descr=_("Check if you want the relevant menu item to be foldable (only makes "
                               "sense for pages, which have subordinary items in the menu).")),
                 Field('tree_order', type=pd.TreeOrder()),
-                Field('creator', _("Creator"), codebook='Users'),
+                Field('creator', _("Creator"), codebook='Users',
+                      inline_referer='creator_login', inline_display='creator_name'),
+                Field('creator_login'),
+                Field('creator_name'),
+
                 Field('created', _("Created"), default=now),
                 Field('published_since', _("Published since")),
                 # Translators: Configuration option determining whether the page is published or not
@@ -1383,9 +1387,12 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                 Field('write_role_id', _("Read/write access"), codebook='ApplicationRoles',
                       default=Roles.CONTENT_ADMIN.id(),
                       descr=_("Select the role allowed to edit the page contents.")),
-                Field('owner', _("Owner"), codebook='Users',
+                Field('owner', _("Owner"), codebook='Users', not_null=False,
+                      inline_referer='owner_login', inline_display='owner_name', 
                       descr=_("The owner has full read/write access regardless of roles "
                               "settings above.")),
+                Field('owner_login'),
+                Field('owner_name'),
             )
         def _status(self, record, published, _content, content):
             if not published:

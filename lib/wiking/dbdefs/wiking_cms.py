@@ -363,6 +363,8 @@ class CmsVPages(CommonAccesRights, sql.SQLView):
         p = sql.t.CmsPages.alias('p')
         l = sql.t.CmsLanguages.alias('l')
         t = sql.t.CmsPageTexts.alias('t')
+        cu = sql.t.Users.alias('cu')
+        ou = sql.t.Users.alias('ou')
         return select([(stype(p.c.page_id) + sval('.') + l.c.lang).label('page_key'),
                        p.c.site, p.c.kind, l.c.lang,
                        p.c.page_id, p.c.identifier, p.c.parent, p.c.modname,
@@ -372,10 +374,19 @@ class CmsVPages(CommonAccesRights, sql.SQLView):
                        t.c.creator, t.c.created, t.c.published_since,
                        coalesce(t.c.title, p.c.identifier).label('title_or_identifier'),
                        t.c.title, t.c.description, t.c.content, t.c._title,
-                       t.c._description, t.c._content],
-                      from_obj=[p.join(l, ival(1) == 1). # cross join
+                       t.c._description, t.c._content,
+                       cu.c.login.label('creator_login'),
+                       cu.c.user_.label('creator_name'),
+                       ou.c.login.label('owner_login'),
+                       ou.c.user_.label('owner_name'),
+                   ],
+                      from_obj=[p.
+                                join(l, ival(1) == 1). # cross join
                                 outerjoin(t, and_(t.c.page_id == p.c.page_id,
-                                                  t.c.lang == l.c.lang))],
+                                                  t.c.lang == l.c.lang)).
+                                join(cu, cu.c.uid == t.c.creator).
+                                outerjoin(ou, ou.c.uid == p.c.owner)
+                            ],
         )
     def on_insert(self):
         return ("""(
@@ -401,7 +412,7 @@ class CmsVPages(CommonAccesRights, sql.SQLView):
        lang, page_id, null::text, null::int, null::text, null::text, null::boolean,
        null::int, null::text, null::int, null::name, null::name,
        published, creator, created, published_since, title, title, description, content, _title,
-       _description, _content;
+       _description, _content, null::varchar(64), null::text, null::varchar(64), null::text;
         )""",)
     def on_update(self):
         return ("""(
@@ -660,6 +671,7 @@ class CmsVPublications(CommonAccesRights, sql.SQLView):
        null::int, null::text, null::int, null::name, null::name,
        null::bool, null::int, null::timestamp, null::timestamp, null::text, null::text,
        null::text, null::text, null::text, null::text, null::text,
+       null::varchar(64), null::text, null::varchar(64), null::text,
        author, isbn, cover_image, illustrator,
        publisher, published_year, edition, notes;
         )""",)
