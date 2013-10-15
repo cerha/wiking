@@ -3,7 +3,7 @@ DROP VIEW "public"."cms_v_pages";
 
 CREATE OR REPLACE VIEW "public"."cms_v_pages" AS
 SELECT CAST(p.page_id AS TEXT) || '.' || l.lang AS page_key, p.site, p.kind, l.lang, p.page_id, p.identifier, p.parent, p.modname, p.menu_visibility, p.foldable, p.ord, p.tree_order, p.owner, p.read_role_id, p.write_role_id, coalesce(t.published, False) AS published, t.creator, t.created, t.published_since, coalesce(t.title, p.identifier) AS title_or_identifier, t.title, t.description, t.content, t._title, t._description, t._content, cu.login AS creator_login, cu.user_ AS creator_name, ou.login AS owner_login, ou.user_ AS owner_name 
-FROM public.cms_pages AS p JOIN public.cms_languages AS l ON 1 = 1 LEFT OUTER JOIN public.cms_page_texts AS t ON t.page_id = p.page_id AND t.lang = l.lang JOIN public.users AS cu ON cu.uid = t.creator LEFT OUTER JOIN public.users AS ou ON ou.uid = p.owner;
+FROM public.cms_pages AS p JOIN public.cms_languages AS l ON 1 = 1 LEFT OUTER JOIN public.cms_page_texts AS t ON t.page_id = p.page_id AND t.lang = l.lang LEFT OUTER JOIN public.users AS cu ON cu.uid = t.creator LEFT OUTER JOIN public.users AS ou ON ou.uid = p.owner;
 
 GRANT all ON "public".cms_v_pages TO "www-data";
 
@@ -84,7 +84,7 @@ DO INSTEAD DELETE FROM public.cms_pages WHERE public.cms_pages.page_id = old.pag
 
 CREATE OR REPLACE VIEW "public"."cms_v_publications" AS
 SELECT pages.page_id, pages.page_key, pages.site, pages.kind, pages.lang, pages.identifier, pages.parent, pages.modname, pages.menu_visibility, pages.foldable, pages.ord, pages.tree_order, pages.owner, pages.read_role_id, pages.write_role_id, pages.published, pages.creator, pages.created, pages.published_since, pages.title_or_identifier, pages.title, pages.description, pages.content, pages._title, pages._description, pages._content, pages.creator_login, pages.creator_name, pages.owner_login, pages.owner_name, publications.author, publications.isbn, publications.cover_image, publications.illustrator, publications.publisher, publications.published_year, publications.edition, publications.notes, attachments.filename AS cover_image_filename 
-FROM "public"."cms_v_pages" AS pages JOIN public.cms_publications AS publications ON publications.page_id = pages.page_id JOIN public.cms_page_attachments AS attachments ON attachments.attachment_id = publications.cover_image;
+FROM "public"."cms_v_pages" AS pages JOIN public.cms_publications AS publications ON publications.page_id = pages.page_id LEFT OUTER JOIN public.cms_page_attachments AS attachments ON attachments.attachment_id = publications.cover_image;
 
 GRANT all ON "public".cms_v_publications TO "www-data";
 

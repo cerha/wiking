@@ -384,7 +384,7 @@ class CmsVPages(CommonAccesRights, sql.SQLView):
                                 join(l, ival(1) == 1). # cross join
                                 outerjoin(t, and_(t.c.page_id == p.c.page_id,
                                                   t.c.lang == l.c.lang)).
-                                join(cu, cu.c.uid == t.c.creator).
+                                outerjoin(cu, cu.c.uid == t.c.creator).
                                 outerjoin(ou, ou.c.uid == p.c.owner)
                             ],
         )
@@ -649,7 +649,7 @@ class CmsVPublications(CommonAccesRights, sql.SQLView):
                       from_obj=[
                           pages.
                           join(publications, publications.c.page_id == pages.c.page_id).
-                          join(attachments, attachments.c.attachment_id == publications.c.cover_image)
+                          outerjoin(attachments, attachments.c.attachment_id == publications.c.cover_image)
                       ])
     def on_insert(self):
         return ("""(
