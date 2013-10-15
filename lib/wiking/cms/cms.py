@@ -2059,10 +2059,12 @@ class Publications(NavigablePages, EmbeddableCMSModule):
                       descr=_("ISBN of the original book if the publication is "
                               "a digitalized book.")),
                 Field('cover_image', _("Cover Image"), not_null=False,
-                      codebook='Attachments', value_column='attachment_id',
+                      codebook='Attachments', value_column='attachment_id', 
+                      inline_referer='cover_image_filename',
                       runtime_filter=computer(self._attachment_filter), display='filename',
                       descr=_("Insert the image as an attachment and select it "
                               "from the list here.")),
+                Field('cover_image_filename'),
                 Field('illustrator', _("Illustrator"), width=50,
                       descr=_("Full name or a comma separated list of full names.")),
                 Field('publisher', _("Publisher"), width=30,
@@ -2225,16 +2227,23 @@ class Publications(NavigablePages, EmbeddableCMSModule):
     def _publication(self, req, record):
         children = self._child_rows(req, record)
         resource_provider = lcg.ResourceProvider(dirs=wiking.cfg.resource_path)
-        def node(row):
+        def node(row, cover_image_filename=None):
             # Call the super class _inner_page_content to avoid a table of contents in every node.
             content = super(Publications, self)._inner_page_content(req, self._record(req, row))
+            if cover_image_filename:
+                cover_image = pytis.util.find(cover_image_filename,
+                                              lcg.Container(content).resources(),
+                                              key=lambda r: r.filename())
+            else:
+                cover_image = None
             return lcg.ContentNode(row['identifier'].value(),
                                    title=row['title'].value(),
                                    content=content,
+                                   cover_image=cover_image,
                                    resource_provider=resource_provider,
                                    children=[node(r) for r in
                                              children.get(row['page_id'].value(), ())])
-        return node(record.row())
+        return node(record.row(), cover_image_filename=record['cover_image_filename'].value())
         
     def submenu(self, req):
         # TODO: This partially duplicates Pages.menu() - refactor?

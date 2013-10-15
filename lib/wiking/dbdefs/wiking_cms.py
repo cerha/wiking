@@ -642,11 +642,16 @@ class CmsVPublications(CommonAccesRights, sql.SQLView):
     def query(cls):
         pages = sql.t.CmsVPages.alias('pages')
         publications = sql.t.CmsPublications.alias('publications')
+        attachments = sql.t.CmsPageAttachments.alias('attachments')
         return select(([pages.c.page_id] +
                        cls._exclude(pages, publications.c.page_id) +
-                       cls._exclude(publications, publications.c.page_id)),
-                      from_obj=[pages.
-                                join(publications, pages.c.page_id == publications.c.page_id)])
+                       cls._exclude(publications, publications.c.page_id) +
+                       [attachments.c.filename.label('cover_image_filename')]),
+                      from_obj=[
+                          pages.
+                          join(publications, publications.c.page_id == pages.c.page_id).
+                          join(attachments, attachments.c.attachment_id == publications.c.cover_image)
+                      ])
     def on_insert(self):
         return ("""(
      insert into cms_v_pages (site, kind, identifier, parent, modname,
@@ -673,7 +678,7 @@ class CmsVPublications(CommonAccesRights, sql.SQLView):
        null::text, null::text, null::text, null::text, null::text,
        null::varchar(64), null::text, null::varchar(64), null::text,
        author, isbn, cover_image, illustrator,
-       publisher, published_year, edition, notes;
+       publisher, published_year, edition, notes, null::text;
         )""",)
     def on_update(self):
         return ("""(
