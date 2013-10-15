@@ -433,8 +433,7 @@ class CmsVPages(CommonAccesRights, sql.SQLView):
         ord = new.ord
     where cms_pages.page_id = old.page_id;
     update cms_pages set tree_order = cms_page_tree_order(page_id)
-           where site = new.site and tree_order != cms_page_tree_order(page_id) and
-                 (identifier = new.identifier or tree_order != cms_page_tree_order(page_id));
+           where site = new.site and tree_order != cms_page_tree_order(page_id);
     update cms_page_texts set
         published = new.published,
         title = new.title,
