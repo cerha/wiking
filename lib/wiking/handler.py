@@ -372,7 +372,14 @@ class Handler(object):
             finally:
                 # We can observe pending transactions in Wiking applications,
                 # so let's close them all after each request.
-                wiking.WikingDefaultDataClass.rollback_connections()
+                if __debug__ and wiking.cfg.debug:
+                    def callback(connection):
+                        stack = connection.connection_info('transaction_start_stack')
+                        if stack:
+                            wiking.debug("Unclosed transaction started at:\n%s\n" % (stack,))
+                else:
+                    callback = None
+                wiking.WikingDefaultDataClass.rollback_connections(callback=callback)
             
 try:
     # Only for backwards compatibility with older Apache/mod_python
