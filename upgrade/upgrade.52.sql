@@ -1,3 +1,6 @@
+drop trigger public__a_user_roles__cached_tables_update_trigger__after ON a_user_roles;
+
+CREATE OR REPLACE FUNCTION "public"."update_user_roles"() RETURNS trigger LANGUAGE plpgsql AS $$
 declare
   uid_ int;
   role_id_ name;
@@ -11,3 +14,4 @@ begin
   perform f_update_cached_tables('public', 'a_user_roles', 'true');
   return null;
 end;
+$$;
