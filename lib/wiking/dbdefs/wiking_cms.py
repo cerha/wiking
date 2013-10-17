@@ -23,7 +23,7 @@ import sqlalchemy
 
 import pytis.data.gensqlalchemy as sql
 import pytis.data
-from pytis.data.dbdefs import and_, or_, coalesce, func, ival, null, select, stype, sval
+from pytis.data.dbdefs import and_, coalesce, func, ival, null, select, stype, sval
 from wiking_db import Base_CachingTable, CommonAccesRights
 
 current_timestamp_0 = sqlalchemy.sql.expression.Function('current_timestamp', ival(0))
@@ -183,7 +183,7 @@ class CmsVRoleMembers(CommonAccesRights, sql.SQLView):
                        r.c.name.label('role_name'),
                        u.c.user_.label('user_name'),
                        u.c.login.label('user_login'),
-                      ],
+                       ],
                       from_obj=[m.join(r, r.c.role_id == m.c.role_id).join(u, m.c.uid == u.c.uid)])
     insert_order = (RoleMembers,)
     update_order = (RoleMembers,)
@@ -379,15 +379,15 @@ class CmsVPages(CommonAccesRights, sql.SQLView):
                        cu.c.user_.label('creator_name'),
                        ou.c.login.label('owner_login'),
                        ou.c.user_.label('owner_name'),
-                   ],
+                       ],
                       from_obj=[p.
                                 join(l, ival(1) == 1). # cross join
                                 outerjoin(t, and_(t.c.page_id == p.c.page_id,
                                                   t.c.lang == l.c.lang)).
                                 outerjoin(cu, cu.c.uid == t.c.creator).
                                 outerjoin(ou, ou.c.uid == p.c.owner)
-                            ],
-        )
+                                ],
+                      )
     def on_insert(self):
         return ("""(
      insert into cms_pages (site, kind, identifier, parent, modname,
@@ -553,7 +553,7 @@ class CmsVPageAttachments(CommonAccesRights, sql.SQLView):
                       from_obj=[a.join(l, ival(1) == 1). # cross join
                                 outerjoin(t, and_(a.c.attachment_id == t.c.attachment_id,
                                                   l.c.lang == t.c.lang))]
-        )
+                      )
     def on_insert(self):
         return ("""(
     insert into cms_page_attachment_texts (attachment_id, lang, title, description)
@@ -649,7 +649,8 @@ class CmsVPublications(CommonAccesRights, sql.SQLView):
                       from_obj=[
                           pages.
                           join(publications, publications.c.page_id == pages.c.page_id).
-                          outerjoin(attachments, attachments.c.attachment_id == publications.c.cover_image)
+                          outerjoin(attachments,
+                                    attachments.c.attachment_id == publications.c.cover_image)
                       ])
     def on_insert(self):
         return ("""(
@@ -768,7 +769,7 @@ class CmsVNews(CommonAccesRights, sql.SQLView):
         return select([n,
                        u.c.user_.label('author_name'),
                        u.c.login.label('author_login'),
-                      ],
+                       ],
                       from_obj=[n.join(u, n.c.author == u.c.uid)])
     insert_order = (CmsNews,)
     update_order = (CmsNews,)
@@ -818,7 +819,7 @@ class CmsVPlanner(CommonAccesRights, sql.SQLView):
         return select([p,
                        u.c.user_.label('author_name'),
                        u.c.login.label('author_login'),
-                      ],
+                       ],
                       from_obj=[p.join(u, p.c.author == u.c.uid)])
     insert_order = (CmsPlanner,)
     update_order = (CmsPlanner,)
