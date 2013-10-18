@@ -1850,7 +1850,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
             # Translators: Section title. Attachments as in email attachments.
             content.append(lcg.Section(title=_("Attachments"), content=lcg.ul(listed_attachments),
                                        anchor='attachment-automatic-list')) # Prevent dupl. anchor.
-        if content and resources:
+        if content or resources:
             return [lcg.Container(content, resources=resources)]
         else:
             return content
