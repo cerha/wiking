@@ -45,6 +45,10 @@ a:link:hover, a:visited:hover { color: $color.link-hover; }
 #page {
     padding-top: 0.3em;
     min-width: 100%;
+    margin-top: 0.9em;
+}
+#page.with-menu {
+    margin-top: 0;
 }
 
 #links {
