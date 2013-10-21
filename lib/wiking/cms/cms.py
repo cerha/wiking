@@ -2852,10 +2852,10 @@ class Attachments(ContentManagementModule):
             kwargs['action'] = 'download'
         return super(Attachments, self)._link_provider(req, uri, record, cid, **kwargs)
 
-    def _image_provider(self, req, uri, record, cid, **kwargs):
+    def _image_provider(self, req, uri, record, cid):
         if cid == 'file':
             return self._link_provider(req, uri, record, None, action='thumbnail')
-        return super(Attachments, self)._image_provider(req, uri, record, cid, **kwargs)
+        return super(Attachments, self)._image_provider(req, uri, record, cid)
 
     def _save_attachment_file(self, record):
         storage = wiking.cms.cfg.storage
