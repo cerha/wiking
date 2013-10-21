@@ -19,7 +19,15 @@ begin
 end;
 $$;
 
-update cms_page_attachments a set filename = page_id::text || '-' || filename where filename in (select filename from cms_page_attachments where page_id=_parent_publication(a.page_id));
-update cms_page_attachments set page_id=_parent_publication(page_id) where _parent_publication(page_id) is not null;
+-- Rename duplicate attachments (same file in multiple chapters) as we can not delete
+-- them here because this would leave stray files on the disk.
+update cms_page_attachments a set filename = 'xxx-' || page_id::text || '-' || filename
+from (select a.attachment_id
+      from cms_page_attachments a
+      join cms_page_attachments b
+      on a.filename=b.filename
+      and _parent_publication(a.page_id) in (_parent_publication(b.page_id), b.page_id)
+) as x
+where a.attachment_id=x.attachment_id;
 
 drop FUNCTION _parent_publication(page_id_ INTEGER);
