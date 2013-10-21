@@ -2410,12 +2410,19 @@ class PublicationChapters(NavigablePages):
                                       pd.WMValue(pd.String(),
                                                  '%s.*' % publication['tree_order'].value())))
                           )
-        def _attachment_storage_uri(self, record):
+        def _attachment_storage(self, record):
             req = record.req()
-            return '/%s/data/%s/chapters/%s/attachments' % \
-                (req.page_record['identifier'].value(),
-                 req.publication_record['identifier'].value(),
-                 record['identifier'].value())
+            return Attachments.AttachmentStorage(req,
+                                                 req.publication_record['page_id'].value(),
+                                                 record['lang'].value(),
+                                                 '/%s/data/%s/attachments' % \
+                                                 (req.page_record['identifier'].value(),
+                                                  req.publication_record['identifier'].value()))
+        bindings = (
+            Binding('attachments', _("Attachments"), 'Attachments', 
+                    condition=lambda r: pd.EQ('page_id', pd.ival(r.req().publication_record['page_id'].value())),
+                    prefill=lambda r: dict(page_id=r.req().publication_record['page_id'])),
+        ) + tuple([_b for _b in Pages.Spec.bindings if _b.id() != 'attachments'])
         condition = pd.EQ('kind', pd.sval('chapter'))
         columns = ('title', 'status')
         sorting = ('ord', pd.ASCENDENT),
