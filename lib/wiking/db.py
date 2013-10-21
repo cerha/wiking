@@ -823,6 +823,9 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
     def _image_provider(self, req, uri, record, cid):
         return None
 
+    def _tooltip_provider(self, req, uri, record, cid):
+        return None
+
     def _print_uri_provider(self, req, uri, record, cid):
         if self._authorized(req, action='print_field', record=record):
             return self._link_provider(req, uri, record, None, action='print_field', field=cid)
@@ -943,6 +946,8 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                 method = self._link_provider
             elif kind == UriType.IMAGE:
                 method = self._image_provider
+            elif kind == UriType.TOOLTIP:
+                method = self._tooltip_provider
             elif kind == UriType.PRINT:
                 method = self._print_uri_provider
             return method(req, uri, record, target)
