@@ -820,7 +820,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
             else:
                 return wiking.module(modname).record_uri(req, record[referer].export())
 
-    def _image_provider(self, req, record, cid, uri):
+    def _image_provider(self, req, uri, record, cid):
         return None
 
     def _print_uri_provider(self, req, uri, record, cid):
