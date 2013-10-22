@@ -190,7 +190,7 @@ class CmsVRoleMembers(CommonAccesRights, sql.SQLView):
     delete_order = (RoleMembers,)
     no_insert_columns = ('role_member_id',)
 
-class AUserRoles(CommonAccesRights):
+class AUserRoles(CommonAccesRights, sql.SQLTable):
     name = 'a_user_roles'
     fields = (sql.Column('uid', pytis.data.Integer(), index=True,
                          references=sql.a(sql.r.Users, onupdate='CASCADE', ondelete='CASCADE')),
