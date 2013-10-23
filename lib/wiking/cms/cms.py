@@ -2864,6 +2864,11 @@ class Attachments(ContentManagementModule):
             return self._link_provider(req, uri, record, None, action='thumbnail')
         return super(Attachments, self)._image_provider(req, uri, record, cid)
 
+    def _tooltip_provider(self, req, uri, record, cid):
+        if cid == 'filename':
+            return self._link_provider(req, uri, record, None, action='thumbnail')
+        return super(Attachments, self)._tooltip_provider(req, uri, record, cid)
+        
     def _save_attachment_file(self, record):
         storage = wiking.cms.cfg.storage
         if not os.path.exists(storage) or not os.access(storage, os.W_OK):
