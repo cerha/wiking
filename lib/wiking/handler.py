@@ -16,7 +16,9 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 import os
+import string
 import sys
+import traceback
 
 import wiking
 import lcg
@@ -375,8 +377,9 @@ class Handler(object):
                 if __debug__ and wiking.cfg.debug:
                     def callback(connection):
                         stack = connection.connection_info('transaction_start_stack')
-                        if stack:
-                            wiking.debug("Unclosed transaction started at:\n%s\n" % (stack,))
+                        if stack is not None:
+                            wiking.debug("Unclosed transaction started at:\n%s\n" %
+                                         (string.join(traceback.format_stack(stack), ''),))
                 else:
                     callback = None
                 wiking.WikingDefaultDataClass.rollback_connections(callback=callback)
