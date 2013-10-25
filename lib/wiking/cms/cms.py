@@ -3002,7 +3002,7 @@ class Attachments(ContentManagementModule):
             def items(self):
                 return self._archive.infolist()
             def isfile(self, item):
-                return True
+                return not item.filename.endswith('/') # Directory names end with a slash...
             def filename(self, item):
                 return unicode(item.filename, "cp437")
             def open(self, item):
