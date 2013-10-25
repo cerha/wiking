@@ -2630,10 +2630,10 @@ class Attachments(ContentManagementModule):
                               "underscores, dashes and dots are safe.  "
                               "You risk problems with most other characters.")),
                 Field('filename', _("Filename"),
-                      computer=computer(lambda r, file: file and file.filename()),
+                      computer=computer(lambda r, file: file and file.filename() or None),
                       type=pd.RegexString(maxlen=64, not_null=True, regex='^[0-9a-zA-Z_\.-]*$')),
                 Field('mime_type', _("Mime-type"), width=22,
-                      computer=computer(lambda r, file: file and file.mime_type())),
+                      computer=computer(lambda r, file: file and file.mime_type() or None)),
                 Field('title', _("Title"), width=30, maxlen=64,
                       descr=_("The name of the attachment (e.g. the full name of the document). "
                               "If empty, the file name will be used instead.")),
