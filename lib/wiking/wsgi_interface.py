@@ -56,6 +56,9 @@ class WsgiRequest(wiking.Request):
         def init_value(value):
             if isinstance(value, (tuple, list)):
                 return tuple([init_value(v) for v in value])
+            elif value.filename == '' and value.value == '':
+                # Empty file upload fields give this strange combination...
+                return None
             elif value.filename:
                 return wiking.FileUpload(value, encoding)
             else:
