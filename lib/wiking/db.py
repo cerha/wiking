@@ -409,134 +409,6 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                 return (binding_column, fw.arg('record')[col].value())
         return None, None
 
-    def _validate(self, req, record, layout):
-        # TODO: This should go to pytis.web....
-        errors = []
-        order = layout.order()
-        # Validate the changed field last (for AJAX update request) to invoke computers correctly.
-        changed_field = req.param('_pytis_form_changed_field')
-        if changed_field:
-            order = [id for id in order if id != changed_field] + [str(changed_field)]
-        for id in order:
-            f = self._view.field(id)
-            if not record.editable(id):
-                continue
-            if changed_field and f.computer() and changed_field in f.computer().depends():
-                # Ignore fields which depend on the field currently changed by
-                # the user during AJAX form updates.
-                continue
-            type = record.type(id)
-            kwargs = {}
-            if req.has_param(id):
-                value = req.param(id)
-                if isinstance(value, tuple):
-                    if len(value) == 2 and isinstance(type, pd.Password):
-                        value, kwargs['verify'] = value
-                    elif not isinstance(type, pd.Array):
-                        value = value[-1]
-                elif isinstance(value, wiking.FileUpload):
-                    if isinstance(type, pd.Binary):
-                        fname = value.filename()
-                        if fname:
-                            kwargs['filename'] = fname
-                            kwargs['mime_type'] = value.mime_type()
-                            value = value.file()
-                        else:
-                            value = None
-                    else:
-                        value = value.filename()
-                elif isinstance(type, pd.Array):
-                    value = pytis.util.xtuple(value)
-                elif value == '' and isinstance(type, pd.Binary):
-                    value = None
-            elif isinstance(type, pd.Binary):
-                value = None
-            elif isinstance(type, pd.Boolean) and f.selection_type() is None:
-                # Imply False only for checkbox (when selection_type is None)
-                # to allow not null check for radio and choice selections
-                # (force the user to select the True or False option
-                # explicitly.
-                value = "F"
-            else:
-                value = ""
-            if isinstance(type, pd.Number):
-                locale_data = req.localizer().locale_data()
-                if isinstance(type, pd.Monetary):
-                    decimal_point = locale_data.mon_decimal_point
-                    thousands_sep = locale_data.mon_thousands_sep
-                else:
-                    decimal_point = locale_data.decimal_point
-                    thousands_sep = locale_data.thousands_sep
-                # Convert the value to 'C' locale formatting before validation.
-                if thousands_sep:
-                    value = value.replace(thousands_sep, '')
-                if decimal_point != '.':
-                    value = value.replace(decimal_point, '.')
-            if isinstance(type, pd.DateTime):
-                locale_data = req.localizer().locale_data()
-                if isinstance(type, pd.Date):
-                    format = locale_data.date_format
-                else:
-                    if not isinstance(type, (wiking.DateTime, wiking.Time)) or type.exact():
-                        # wiking.Time and wiking.DateTime allow locale independent format options.
-                        time_format = locale_data.exact_time_format
-                    else:
-                        time_format = locale_data.time_format
-                    if isinstance(type, pd.Time):
-                        format = time_format
-                    else:
-                        format = locale_data.date_format + ' ' + time_format
-                kwargs['format'] = format
-            if isinstance(type, (pd.Binary, pd.Password)) and not value:
-                try:
-                    size = int(req.param('_pytis_file_size_' + id))
-                except (ValueError, TypeError):
-                    pass
-                else:
-                    # Handle AJAX request for validation of file size (only
-                    # size is sent by the form to prevent uploading potentially
-                    # large files through AJAX requests before form submission).
-                    from pytis.util import format_byte_size
-                    if type.minlen() is not None and size < type.minlen():
-                        # Take the string from the pytis domain as the
-                        # validation belongs to pytis anyway so when it is
-                        # moved, this hack will vanish.
-                        error = lcg.TranslatableText(u"Minimal size %(minlen)s not satisfied",
-                                                     minlen=format_byte_size(type.minlen()),
-                                                     _domain='pytis')
-                        errors.append((id, error))
-                    if type.maxlen() is not None and size > type.maxlen():
-                        error = lcg.TranslatableText(u"Maximal size %(maxlen)s exceeded",
-                                                     maxlen=format_byte_size(type.maxlen()),
-                                                     _domain='pytis')
-                        errors.append((id, error))
-                    # Don't perform real type validation as we don't have the real
-                    # value to validate here.
-                    continue
-                if not record.new():
-                    # Keep the original file if no file is uploaded.
-                    continue
-            if isinstance(type, pd.Password) and kwargs.get('verify') is None:
-                kwargs['verify'] = not type.verify() and value or ''
-            error = record.validate(id, value, **kwargs)
-            #log(OPR, "Validation:", (id, value, kwargs, error))
-            if error:
-                errors.append((id, error.message()))
-        if not errors:
-            if record.new() and self._LIST_BY_LANGUAGE and record['lang'].value() is None:
-                lang = req.preferred_language(raise_error=False)
-                record['lang'] = pd.Value(record.type('lang'), lang)
-            for check in self._view.check():
-                result = check(record)
-                if result:
-                    if isinstance(result, (str, unicode)):
-                        result = (result, _("Integrity check failed."))
-                    else:
-                        assert isinstance(result, tuple) and len(result) == 2, \
-                            ('Invalid check() result:', result)
-                    errors.append(result)
-        return errors
-
     def _analyze_exception(self, e):
         """Translate exception error string to a custom error message.
 
@@ -860,7 +732,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                 record[self._referer].export())
 
     def _form(self, form, req, record=None, action=None, new=False, prefill=None,
-              invalid_prefill=None, handler=None, binding_uri=None, hidden_fields=(), **kwargs):
+              handler=None, binding_uri=None, hidden_fields=(), **kwargs):
         """Form instance creation wrapper.
 
         You may override this method if you need to tweek form constructor
@@ -917,8 +789,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
             values = tuple([r[value_column] for r in rows])
             form_record[fid] = pd.Value(form_record.type(fid), values)
         form_instance = form(self._view, req, form_record, handler=handler or req.uri(),
-                             name=self.name(), prefill=invalid_prefill,
-                             uri_provider=self._uri_provider(req, form, uri),
+                             name=self.name(), uri_provider=self._uri_provider(req, form, uri),
                              hidden=hidden_fields, **kwargs)
         if binding_uri is None:
             # We use heading_info only for main form, not for binding side
@@ -1233,20 +1104,6 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                 prefill['lang'] = lang
         return prefill
 
-    def _invalid_prefill(self, req, record, layout):
-        # Note, this method is only used for prefilling the fields in a
-        # displayed form.  It has no effect on the 'prefill' passed to the
-        # created 'Record' instances.  The returned dictionary values must be
-        # user input string which didn't pass validation, but the form should
-        # still display them in fields so that the user can fix them and try
-        # validation again.
-        prefill = {}
-        for key in layout.order():
-            invalid_string = record.invalid_string(key)
-            if invalid_string is not None:
-                prefill[key] = invalid_string
-        return prefill
-
     def _binding_condition(self, binding, record):
         """Return a binding condition as a 'pd.Operator' instance.
 
@@ -1522,32 +1379,6 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         else:
             result = None
         return result
-
-    def _is_ajax_request(self, req):
-        """Return True if the request is an AJAX request.
-
-        If the current request is a pytis form update request, return True,
-        Otherwise return False.  If True is returned, request processing should
-        be passed to the method '_handle_ajax_request()'.
-
-        """
-        return req.param('_pytis_form_update_request') is not None
-
-    def _handle_ajax_request(self, req, record, layout, errors):
-        """Handle the AJAX request and return the result.
-
-        This method should be called when the method '_is_ajax_request()'
-        returns true.
-
-        """
-        uri = self._current_base_uri(req, record)
-        try:
-            response = pw.EditForm.ajax_response(req, record, layout, errors, req.localizer(),
-                                                 uri_provider=self._uri_provider(req, uri,
-                                                                                 pw.EditForm))
-        except pw.BadRequest:
-            raise wiking.BadRequest()
-        return wiking.Response(response, content_type='application/json')
 
     def _list_form_content(self, req, form, uri=None):
         """Return the page content for the 'list' action form as a list of 'lcg.Content' instances.
@@ -2028,50 +1859,37 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         # 'prefill' is passed eg. on copying an existing record.  It is only
         # used to initialize form fields and is ignored on form submission (the
         # submitted form should pass those values through request arguments).
-        layout = self._layout_instance(self._layout(req, action))
-        if req.param('submit'):
-            record = self._record(req, None, new=True, prefill=self._prefill(req))
-            errors = self._validate(req, record, layout)
-            if self._is_ajax_request(req):
-                return self._handle_ajax_request(req, record, layout, errors)
-            if not errors:
-                try:
-                    transaction = self._insert_transaction(req, record)
-                    self._in_transaction(transaction, self._insert, req, record, transaction)
-                except pd.DBException as e:
-                    errors = (self._analyze_exception(e),)
-                else:
-                    return self._redirect_after_insert(req, record)
-            # The record created above is not passed to the form, so we must
-            # pass the values through prefill/invalid_prefill to the newly
-            # displayed form.
-            invalid_prefill = self._invalid_prefill(req, record, layout)
-            prefill = dict([(key, record[key].value()) for key in layout.order()
-                            if record.field_changed(key)])
-        else:
-            errors = ()
-            prefill = dict(self._prefill(req), **(prefill or {}))
-            invalid_prefill = {}
-            for key in layout.order():
-                # Use values passed as request arguments as form prefill.
-                if req.has_param(key):
-                    type = self._type[key]
-                    if not isinstance(type, (pd.Binary, pd.Password)):
-                        string_value = req.param(key)
-                        value, error = type.validate(string_value, strict=False)
-                        if not error:
-                            prefill[key] = value.value()
-                        else:
-                            invalid_prefill[key] = string_value
         # TODO: Redirect handler to HTTPS if wiking.cfg.force_https_login is true?
         # The primary motivation is to protect registration form data.  The
         # same would apply for action_edit.
+        layout = self._layout_instance(self._layout(req, action))
+        if req.param('submit'):
+            prefill = self._prefill(req)
+        else:
+            prefill = dict(self._prefill(req), **(prefill or {}))
         form = self._form(pw.EditForm, req, new=True, action=action,
                           layout=layout,
                           prefill=prefill,
-                          invalid_prefill=invalid_prefill,
-                          submit=self._submit_buttons(req, action),
-                          errors=errors)
+                          submit=self._submit_buttons(req, action))
+        if form.is_ajax_request(req):
+            try:
+                response = form.ajax_response(req)
+            except pw.BadRequest:
+                raise wiking.BadRequest()
+            return wiking.Response(response, content_type='application/json')
+        if not req.param('submit'):
+            # Prefill form values from request parameters.
+            form.prefill(req)
+        elif form.validate(req):
+            record = form.row()
+            try:
+                transaction = self._insert_transaction(req, record)
+                self._in_transaction(transaction, self._insert, req, record, transaction)
+            except pd.DBException as e:
+                field_id, error = self._analyze_exception(e)
+                form.set_error(field_id, error)
+            else:
+                return self._redirect_after_insert(req, record)
         return self._document(req, form, subtitle=self._action_subtitle(req, action))
 
     def action_copy(self, req, record, action='insert'):
@@ -2097,26 +1915,25 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
 
     def action_update(self, req, record, action='update'):
         layout = self._layout_instance(self._layout(req, action, record))
-        if req.param('submit'):
-            errors = self._validate(req, record, layout)
-            if self._is_ajax_request(req):
-                return self._handle_ajax_request(req, record, layout, errors)
-            if not errors:
-                try:
-                    transaction = self._update_transaction(req, record)
-                    self._in_transaction(transaction, self._update, req, record, transaction)
-                    record.reload()
-                except pd.DBException as e:
-                    errors = (self._analyze_exception(e),)
-                else:
-                    return self._redirect_after_update(req, record)
-        else:
-            errors = ()
         form = self._form(pw.EditForm, req, record=record, action=action,
                           layout=layout,
-                          invalid_prefill=self._invalid_prefill(req, record, layout),
-                          submit=self._submit_buttons(req, action, record),
-                          errors=errors)
+                          submit=self._submit_buttons(req, action, record))
+        if form.is_ajax_request(req):
+            try:
+                response = form.ajax_response(req)
+            except pw.BadRequest:
+                raise wiking.BadRequest()
+            return wiking.Response(response, content_type='application/json')
+        if req.param('submit') and form.validate(req):
+            try:
+                transaction = self._update_transaction(req, record)
+                self._in_transaction(transaction, self._update, req, record, transaction)
+                record.reload()
+            except pd.DBException as e:
+                field_id, error = self._analyze_exception(e)
+                form.set_error(field_id, error)
+            else:
+                return self._redirect_after_update(req, record)
         content = self._update_form_content(req, form, record)
         return self._document(req, content, record,
                               subtitle=self._action_subtitle(req, action, record=record))
