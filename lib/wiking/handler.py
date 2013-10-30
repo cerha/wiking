@@ -382,6 +382,7 @@ class Handler(object):
                                          (string.join(traceback.format_stack(stack), ''),))
                 else:
                     callback = None
+                wiking.WikingDefaultDataClass.close_idle_connections()
                 wiking.WikingDefaultDataClass.rollback_connections(callback=callback)
             
 try:
