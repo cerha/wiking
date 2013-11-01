@@ -2837,6 +2837,11 @@ class Attachments(ContentManagementModule):
     _ROW_ACTIONS = True
     _ASYNC_LOAD = True
 
+    def _delayed_init(self):
+        super(Attachments, self)._delayed_init()
+        self._non_binary_columns = [c.id() for c in self._data.columns() 
+                                    if not isinstance(c.type(), pd.Binary)]
+
     def _authorized(self, req, action, **kwargs):
         if action in ('download', 'image', 'thumbnail'):
             return req.page_read_access
@@ -2916,10 +2921,12 @@ class Attachments(ContentManagementModule):
         return super(Attachments, self)._redirect_after_update_uri(req, record, **kwargs)
 
     def storage_api_row(self, req, page_id, lang, filename):
-        return self._data.get_row(page_id=page_id, lang=lang, filename=filename)
+        return self._data.get_row(columns=self._non_binary_columns,
+                                  page_id=page_id, lang=lang, filename=filename)
 
     def storage_api_rows(self, req, page_id, lang):
-        self._data.select(condition=pd.AND(pd.EQ('page_id', pd.ival(page_id)),
+        self._data.select(columns=self._non_binary_columns,
+                          condition=pd.AND(pd.EQ('page_id', pd.ival(page_id)),
                                            pd.EQ('lang', pd.sval(lang))))
         while True:
             row = self._data.fetchone()
@@ -2955,7 +2962,9 @@ class Attachments(ContentManagementModule):
             return _("Attachment '%s' not found!", filename)
 
     def retrieve(self, req, page_id, filename):
-        row = self._data.get_row(page_id=page_id, filename=filename)
+        # The column 'file' is virtual and doesn't depend on binary columns.
+        row = self._data.get_row(self._non_binary_columns, 
+                                 page_id=page_id, filename=filename)
         if row:
             record = self._record(req, row)
             return record['file'].value().buffer()
