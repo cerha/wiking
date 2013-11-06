@@ -2963,7 +2963,7 @@ class Attachments(ContentManagementModule):
 
     def retrieve(self, req, page_id, filename):
         # The column 'file' is virtual and doesn't depend on binary columns.
-        row = self._data.get_row(self._non_binary_columns, 
+        row = self._data.get_row(columns=self._non_binary_columns, 
                                  page_id=page_id, filename=filename)
         if row:
             record = self._record(req, row)
