@@ -2760,7 +2760,7 @@ class Attachments(ContentManagementModule):
             else:
                 return record['last_modified'].value()
 
-        columns = ('filename', 'title', 'bytesize', 'thumbnail_size', 'created', 'last_modified',
+        columns = ('filename', 'title', 'bytesize', 'created', 'last_modified',
                    'in_gallery', 'listed', 'page_id')
         sorting = (('filename', ASC),)
 
@@ -2872,7 +2872,11 @@ class Attachments(ContentManagementModule):
                 f = 'upload'
             else:
                 f ='file_data'
-            return (f, 'title', 'description', 'thumbnail_size', 'in_gallery', 'listed')
+            layout = [f, 'title', 'description', 'thumbnail_size', 'in_gallery', 'listed']
+            if record and not record['mime_type'].value().startswith('image/'):
+                layout.remove('thumbnail_size')
+                layout.remove('in_gallery')
+            return layout
         return super(Attachments, self)._layout(req, action, record=record)
 
     def _link_provider(self, req, uri, record, cid, **kwargs):
