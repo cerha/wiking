@@ -2620,8 +2620,7 @@ class Attachments(ContentManagementModule):
                 Field('lang', _("Language"), codebook='Languages', editable=ONCE,
                       value_column='lang'),
                 # Translators: Noun. File on disk. Computer terminology.
-                Field('file', _("File"), virtual=True, editable=ALWAYS,
-                      computer=computer(self._file),
+                Field('upload', _("File"), virtual=True, editable=ALWAYS,
                       type=pd.Binary(not_null=True, maxlen=wiking.cms.cfg.upload_limit),
                       descr=_("Upload a file from your local system.  The file name will be used "
                               "to refer to the attachment within the page content.  Please note, "
@@ -2629,11 +2628,13 @@ class Attachments(ContentManagementModule):
                               "should not contain any special characters.  Letters, digits, "
                               "underscores, dashes and dots are safe.  "
                               "You risk problems with most other characters.")),
+                Field('file_data', _("File"), virtual=True,
+                      computer=computer(self._file_data), type=pd.Binary()),
                 Field('filename', _("Filename"),
-                      computer=computer(lambda r, file: file and file.filename() or None),
+                      computer=computer(lambda r, upload: upload and upload.filename() or None),
                       type=pd.RegexString(maxlen=64, not_null=True, regex='^[0-9a-zA-Z_\.-]*$')),
                 Field('mime_type', _("Mime-type"), width=22,
-                      computer=computer(lambda r, file: file and file.mime_type() or None)),
+                      computer=computer(lambda r, upload: upload and upload.mime_type() or None)),
                 Field('title', _("Title"), width=30, maxlen=64,
                       descr=_("The name of the attachment (e.g. the full name of the document). "
                               "If empty, the file name will be used instead.")),
@@ -2646,7 +2647,7 @@ class Attachments(ContentManagementModule):
                 Field('ext', virtual=True, computer=computer(self._ext)),
                 # Translators: Size of a file, in number of bytes, kilobytes etc.
                 Field('bytesize', _("Size"),
-                      computer=computer(lambda r, file: file and format_byte_size(len(file)))),
+                      computer=computer(lambda r, upload: upload and format_byte_size(len(upload)))),
                 Field('thumbnail', '', type=pd.Image(), computer=computer(self._thumbnail)),
                 # Translators: Thumbnail is a small image preview in computer terminology.
                 Field('thumbnail_size', _("Preview size"), not_null=False,
@@ -2676,35 +2677,35 @@ class Attachments(ContentManagementModule):
                 #Field('author', _("Author"), width=30),
                 #Field('location', _("Location"), width=50),
                 #Field('exif_date', _("EXIF date")),
-                Field('_filename', virtual=True, computer=computer(self._filename)),
+                Field('file_path', virtual=True, computer=computer(self._file_path)),
                 Field('archive', _("Archive"), virtual=True,
                       type=pd.Binary(not_null=True, maxlen=1000*wiking.cms.cfg.upload_limit),
                       descr=_("Upload multiple attachments at once "
                               "as a ZIP, TAR or TAR.GZ archive.")),
             )
+
         def _ext(self, record, filename):
             if filename is None:
                 return ''
             else:
                 ext = filename and os.path.splitext(filename)[1].lower()
                 return len(ext) > 1 and ext[1:] or ext
-        def _file(self, record):
-            value = record['file']
-            result = value.value()
-            if result is not None or record.new():
-                return result
+
+        def _file_data(self, record, upload, file_path, mime_type, filename):
+            if upload is not None or record.new():
+                return upload
             else:
-                #log(OPR, "Loading file:", record['_filename'].value())
-                return value.type().Buffer(record['_filename'].value(),
-                                           mime_type=str(record['mime_type'].value()),
-                                           filename=unicode(record['filename'].value()))
-        def _resize(self, file, size):
+                #log(OPR, "Loading file:", file_path)
+                return record.type('file_data').Buffer(file_path, mime_type=str(mime_type), 
+                                                       filename=unicode(filename))
+
+        def _resize(self, upload, size):
             # Compute the value by resizing the original image.
             import PIL.Image
             import cStringIO
-            if file is None:
+            if upload is None:
                 return None
-            f = cStringIO.StringIO(file.buffer())
+            f = cStringIO.StringIO(upload.buffer())
             try:
                 image = PIL.Image.open(f)
             except IOError:
@@ -2715,9 +2716,11 @@ class Attachments(ContentManagementModule):
                 stream = cStringIO.StringIO()
                 img.save(stream, image.format)
                 return pd.Image.Buffer(buffer(stream.getvalue()))
-        def _image(self, record, file):
-            return self._resize(file, wiking.cms.cfg.image_screen_size)
-        def _thumbnail(self, record, file, thumbnail_size):
+
+        def _image(self, record, upload):
+            return self._resize(upload, wiking.cms.cfg.image_screen_size)
+
+        def _thumbnail(self, record, upload, thumbnail_size):
             if thumbnail_size is None:
                 return None
             elif thumbnail_size == 'small':
@@ -2726,36 +2729,41 @@ class Attachments(ContentManagementModule):
                 size = wiking.cms.cfg.image_thumbnail_sizes[1]
             else:
                 size = wiking.cms.cfg.image_thumbnail_sizes[2]
-            return self._resize(file, (size, size))
+            return self._resize(upload, (size, size))
+
         def _thumbnail_width(self, record, thumbnail):
             if thumbnail:
                 return thumbnail.image().size[0]
             else:
                 return None
+
         def _thumbnail_height(self, record, thumbnail):
             if thumbnail:
                 return thumbnail.image().size[1]
             else:
                 return None
-        def _filename(self, record, attachment_id, ext):
+
+        def _file_path(self, record, attachment_id, ext):
             fname = str(attachment_id) + '.' + ext
             return os.path.join(wiking.cms.cfg.storage, wiking.cfg.dbname, 'attachments', fname)
+
         def _thumbnail_size_display(self, size):
             # Translators: Size label related to "Preview size" field (pronoun).
             labels = {'small': _("Small") + " (%dpx)" % wiking.cms.cfg.image_thumbnail_sizes[0],
                       'medium': _("Medium") + " (%dpx)" % wiking.cms.cfg.image_thumbnail_sizes[1],
                       'large': _("Large") + " (%dpx)" % wiking.cms.cfg.image_thumbnail_sizes[2]}
             return labels.get(size, size)
-        def _last_modified(self, record, file):
-            if record.field_changed('file'):
+
+        def _last_modified(self, record, upload):
+            if record.field_changed('upload'):
                 return now()
             else:
                 return record['last_modified'].value()
 
-        layout = ('file', 'title', 'description', 'thumbnail_size', 'in_gallery', 'listed')
         columns = ('filename', 'title', 'bytesize', 'thumbnail_size', 'created', 'last_modified',
                    'in_gallery', 'listed', 'page_id')
         sorting = (('filename', ASC),)
+
         actions = (
             #Action('insert_image', _("New image"), descr=_("Insert a new image attachment"),
             #       context=pp.ActionContext.GLOBAL),
@@ -2824,15 +2832,13 @@ class Attachments(ContentManagementModule):
 
     _INSERT_LABEL = _("New attachment")
     _REFERER = 'filename'
-    _LAYOUT = {'move': ('page_id',),
-               'upload_archive': ('archive',)}
     _LIST_BY_LANGUAGE = True
     _SEQUENCE_FIELDS = (('attachment_id', 'cms_page_attachments_attachment_id_seq'),)
     _EXCEPTION_MATCHERS = (
         ('duplicate key (value )?violates unique constraint "cms_page_attachments_filename_key"',
-         ('file', _("Attachment of the same file name already exists for this page."))),
+         ('upload', _("Attachment of the same file name already exists for this page."))),
         ('value too long for type character varying\(64\)',
-         ('file', _("Attachment file name exceeds the maximal length 64 characters."))),
+         ('upload', _("Attachment file name exceeds the maximal length 64 characters."))),
     )
     _ROW_ACTIONS = True
     _ASYNC_LOAD = True
@@ -2856,16 +2862,29 @@ class Attachments(ContentManagementModule):
         else:
             return 'download'
 
+    def _layout(self, req, action, record=None):
+        if action == 'move':
+            return ('page_id',)
+        elif action == 'upload_archive':
+            return ('archive',)
+        else:
+            if action in ('insert', 'update'):
+                f = 'upload'
+            else:
+                f ='file_data'
+            return (f, 'title', 'description', 'thumbnail_size', 'in_gallery', 'listed')
+        return super(Attachments, self)._layout(req, action, record=record)
+
     def _link_provider(self, req, uri, record, cid, **kwargs):
         if cid is None and not kwargs:
             kwargs['action'] = 'view'
-        elif cid == 'file':
+        elif cid == 'file_data':
             cid = None
             kwargs['action'] = 'download'
         return super(Attachments, self)._link_provider(req, uri, record, cid, **kwargs)
 
     def _image_provider(self, req, uri, record, cid):
-        if cid == 'file':
+        if cid == 'file_data':
             return self._link_provider(req, uri, record, None, action='thumbnail')
         return super(Attachments, self)._image_provider(req, uri, record, cid)
 
@@ -2881,14 +2900,14 @@ class Attachments(ContentManagementModule):
             raise Exception("The configuration option 'storage' points to '%(storage)s', but this "
                             "directory does not exist or is not writable by user '%(user)s'." %
                             dict(storage=storage, user=getpass.getuser()))
-        filename = record['_filename'].value()
-        directory = os.path.split(filename)[0]
+        path = record['file_path'].value()
+        directory = os.path.split(path)[0]
         if not os.path.exists(directory):
             os.makedirs(directory, 0700)
-        value = record['file'].value()
+        value = record['upload'].value()
         if value is not None:
-            log(OPERATIONAL, "Saving file:", (filename, format_byte_size(len(value))))
-            value.save(filename)
+            log(OPERATIONAL, "Saving file:", (path, format_byte_size(len(value))))
+            value.save(path)
 
     def _insert_transaction(self, req, record):
         return self._transaction()
@@ -2909,9 +2928,9 @@ class Attachments(ContentManagementModule):
 
     def _delete(self, req, record, transaction):
         super(Attachments, self)._delete(req, record, transaction)
-        fname = record['_filename'].value()
-        if os.path.exists(fname):
-            os.unlink(fname)
+        path = record['file_path'].value()
+        if os.path.exists(path):
+            os.unlink(path)
 
     def _redirect_after_update_uri(self, req, record, **kwargs):
         if req.param('__invoked_from') == 'ShowForm':
@@ -2938,7 +2957,7 @@ class Attachments(ContentManagementModule):
     def storage_api_insert(self, req, page_id, lang, filename, data, values):
         prefill = dict(page_id=page_id, lang=lang, listed=False)
         record = self._record(req, None, new=True, prefill=prefill)
-        error = record.validate('file', data, filename=filename, mime_type=values.pop('mime_type'))
+        error = record.validate('upload', data, filename=filename, mime_type=values.pop('mime_type'))
         if error:
             return error.message()
         try:
@@ -2962,12 +2981,12 @@ class Attachments(ContentManagementModule):
             return _("Attachment '%s' not found!", filename)
 
     def retrieve(self, req, page_id, filename):
-        # The column 'file' is virtual and doesn't depend on binary columns.
+        # The column 'file_data' is virtual and doesn't depend on binary columns.
         row = self._data.get_row(columns=self._non_binary_columns, 
                                  page_id=page_id, filename=filename)
         if row:
             record = self._record(req, row)
-            return record['file'].value().buffer()
+            return record['file_data'].value().buffer()
         else:
             return None
 
@@ -2977,7 +2996,7 @@ class Attachments(ContentManagementModule):
     def action_download(self, req, record):
         if req.cached_since(record['last_modified'].value()):
             raise wiking.NotModified()
-        return Response(record['file'].value().buffer(), content_type=record['mime_type'].value(),
+        return Response(record['file_data'].value().buffer(), content_type=record['mime_type'].value(),
                         last_modified=record['last_modified'].value())
 
     def action_thumbnail(self, req, record):
@@ -3042,7 +3061,7 @@ class Attachments(ContentManagementModule):
                 mime_type = mimetypes.guess_type(filename)[0] or 'application/octet-stream'
                 record = self._record(req, None, new=True, prefill=prefill)
                 data = archive.open(item)
-                error = record.validate('file', data, filename=filename, mime_type=mime_type)
+                error = record.validate('upload', data, filename=filename, mime_type=mime_type)
                 if error:
                     raise Error(filename, error.message())
                 else:
@@ -3051,7 +3070,7 @@ class Attachments(ContentManagementModule):
                     except pd.DBException as e:
                         raise Error(filename, self._analyze_exception(e)[1])
                     else:
-                        saved_files.append(record['_filename'].value())
+                        saved_files.append(record['file_path'].value())
         def failure(error):
             req.message(error, type=req.ERROR)
             req.set_param('submit', None)
