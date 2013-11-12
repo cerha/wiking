@@ -3000,8 +3000,8 @@ class Attachments(ContentManagementModule):
     def action_download(self, req, record):
         if req.cached_since(record['last_modified'].value()):
             raise wiking.NotModified()
-        return Response(record['file_data'].value().buffer(), content_type=record['mime_type'].value(),
-                        last_modified=record['last_modified'].value())
+        return wiking.serve_file(req, record['file_path'].value(), #lock=False,
+                                 content_type=record['mime_type'].value())
 
     def action_thumbnail(self, req, record):
         return self.action_image(req, record, field='thumbnail')
