@@ -2601,6 +2601,16 @@ class Attachments(ContentManagementModule):
     """
 
     class Spec(Specification):
+        class _FakeFile(unicode):
+            """The string value determines the file path, len() returns its size."""
+            def __len__(self):
+                try:
+                    info = os.stat(self)
+                except OSError:
+                    return 0
+                else:
+                    return info.st_size
+                    
         # Translators: Section title. Attachments as in email attachments.
         title = _("Attachments")
         help = _("Manage page attachments. Go to a page to create new attachments.")
@@ -2630,6 +2640,14 @@ class Attachments(ContentManagementModule):
                               "You risk problems with most other characters.")),
                 Field('file_data', _("File"), virtual=True,
                       computer=computer(self._file_data), type=pd.Binary()),
+                Field('fake_file', _("File"), virtual=True,
+                      # Hack: To avoid reading the file into memory in ShowForm, 
+                      # this field is represented as pytis.web.FileField thanks to
+                      # the 'filename' specification.  The field is represented as
+                      # "filename (size)" in the UI and _FakeFile fakes the value
+                      # len() by the file's size.
+                      computer=computer(lambda r, file_path: self._FakeFile(file_path)),
+                      filename=lambda r: r['filename'].value()),
                 Field('filename', _("Filename"),
                       computer=computer(lambda r, upload: upload and upload.filename() or None),
                       type=pd.RegexString(maxlen=64, not_null=True, regex='^[0-9a-zA-Z_\.-]*$')),
@@ -2871,7 +2889,7 @@ class Attachments(ContentManagementModule):
             if action in ('insert', 'update'):
                 f = 'upload'
             else:
-                f ='file_data'
+                f = 'fake_file'
             layout = [f, 'title', 'description', 'thumbnail_size', 'in_gallery', 'listed']
             if record and not record['mime_type'].value().startswith('image/'):
                 layout.remove('thumbnail_size')
@@ -2881,14 +2899,13 @@ class Attachments(ContentManagementModule):
 
     def _link_provider(self, req, uri, record, cid, **kwargs):
         if cid is None and not kwargs:
-            kwargs['action'] = 'view'
-        elif cid == 'file_data':
-            cid = None
-            kwargs['action'] = 'download'
+            return self._link_provider(req, uri, record, None, action='view')
+        elif cid == 'fake_file':
+            return self._link_provider(req, uri, record, None, action='download')
         return super(Attachments, self)._link_provider(req, uri, record, cid, **kwargs)
 
     def _image_provider(self, req, uri, record, cid):
-        if cid == 'file_data':
+        if cid == 'fake_file':
             if record['mime_type'].value().startswith('image/'):
                 return self._link_provider(req, uri, record, None, action='thumbnail')
             else:
