@@ -2638,8 +2638,6 @@ class Attachments(ContentManagementModule):
                               "should not contain any special characters.  Letters, digits, "
                               "underscores, dashes and dots are safe.  "
                               "You risk problems with most other characters.")),
-                Field('file_data', _("File"), virtual=True,
-                      computer=computer(self._file_data), type=pd.Binary()),
                 Field('fake_file', _("File"), virtual=True,
                       # Hack: To avoid reading the file into memory in ShowForm, 
                       # this field is represented as pytis.web.FileField thanks to
@@ -2708,14 +2706,6 @@ class Attachments(ContentManagementModule):
             else:
                 ext = filename and os.path.splitext(filename)[1].lower()
                 return len(ext) > 1 and ext[1:] or ext
-
-        def _file_data(self, record, upload, file_path, mime_type, filename):
-            if upload is not None or record.new():
-                return upload
-            else:
-                #log(OPR, "Loading file:", file_path)
-                return record.type('file_data').Buffer(file_path, mime_type=str(mime_type), 
-                                                       filename=unicode(filename))
 
         def _resize(self, upload, size):
             # Compute the value by resizing the original image.
@@ -3008,12 +2998,19 @@ class Attachments(ContentManagementModule):
             return _("Attachment '%s' not found!", filename)
 
     def retrieve(self, req, page_id, filename):
-        # The column 'file_data' is virtual and doesn't depend on binary columns.
+        # Used by Publications.action_export_epub().
         row = self._data.get_row(columns=self._non_binary_columns, 
                                  page_id=page_id, filename=filename)
         if row:
             record = self._record(req, row)
-            return record['file_data'].value().buffer()
+            path = record['file_path'].value()
+            #log(OPR, "Loading file:", path)
+            f = file(path)
+            try:
+                data = f.read()
+            finally:
+                f.close()
+            return data
         else:
             return None
 
