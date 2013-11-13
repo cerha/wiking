@@ -2642,8 +2642,8 @@ class Attachments(ContentManagementModule):
                       # Hack: To avoid reading the file into memory in ShowForm, 
                       # this field is represented as pytis.web.FileField thanks to
                       # the 'filename' specification.  The field is represented as
-                      # "filename (size)" in the UI and _FakeFile fakes the value
-                      # len() by the file's size.
+                      # "filename (size)" in the UI and _FakeFile reports its size
+                      # as the size of the file.
                       computer=computer(lambda r, file_path: self._FakeFile(file_path)),
                       filename=lambda r: r['filename'].value()),
                 Field('filename', _("Filename"),
