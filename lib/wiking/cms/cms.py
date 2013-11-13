@@ -2889,12 +2889,18 @@ class Attachments(ContentManagementModule):
 
     def _image_provider(self, req, uri, record, cid):
         if cid == 'file_data':
-            return self._link_provider(req, uri, record, None, action='thumbnail')
+            if record['mime_type'].value().startswith('image/'):
+                return self._link_provider(req, uri, record, None, action='thumbnail')
+            else:
+                return None
         return super(Attachments, self)._image_provider(req, uri, record, cid)
 
     def _tooltip_provider(self, req, uri, record, cid):
         if cid == 'filename':
-            return self._link_provider(req, uri, record, None, action='thumbnail')
+            if record['mime_type'].value().startswith('image/'):
+                return self._link_provider(req, uri, record, None, action='thumbnail')
+            else:
+                return None
         return super(Attachments, self)._tooltip_provider(req, uri, record, cid)
         
     def _save_attachment_file(self, record):
