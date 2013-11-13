@@ -1925,6 +1925,10 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                 raise wiking.BadRequest()
             return wiking.Response(response, content_type='application/json')
         if req.param('submit') and form.validate(req):
+            # The form works with another Record instance (see '_form()') and we
+            # need to save the instance that passed validation.  Maybe that
+            # creation of another instance in _form() is no longer relevant?
+            record = form.row()
             try:
                 transaction = self._update_transaction(req, record)
                 self._in_transaction(transaction, self._update, req, record, transaction)
