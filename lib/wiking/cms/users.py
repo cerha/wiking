@@ -513,35 +513,38 @@ class Users(UserManagementModule, CachingPytisModule):
         def _generate_registration_code():
             return wiking.generate_random_string(16)
         def fields(self):
-            md5_passwords = (wiking.cms.cfg.password_storage == 'md5')
             return (
                 Field('uid', width=8, editable=NEVER),
                 # Translators: Login name for a website. Registration form field.
                 Field('login', _("Login name"), width=36, editable=ONCE,
                       type=pd.RegexString(maxlen=64, not_null=True,
                                           regex='^[a-zA-Z][0-9a-zA-Z_\.@-]*$'),
-                      computer=(computer(lambda r, email: email)
-                                if wiking.cms.cfg.login_is_email else
-                                None),
+                      computer=computer(self._login),
                       descr=_("A valid login name can only contain letters, digits, underscores, "
                               "dashes, at signs and dots and must start with a letter.")),
+                # UI Fields for new user insertion (by admin or by registration).
                 Field('autogenerate_password', _("Generate Password"), width=16, virtual=True,
                       type=pd.Boolean(), default=False, editable=pp.Editable.ALWAYS,
                       descr=_("If checked, the password will be generated automatically and "
                               "sent to the user's e-mail address.")),
-                Field('password', _("Password"), width=16,
-                      type=pd.Password(minlen=4, maxlen=32, not_null=True, md5=md5_passwords),
+                Field('initial_password', _("Password"), virtual=True, width=16,
+                      type=pd.Password(minlen=4, maxlen=32, verify=True, not_null=True),
                       editable=computer(lambda r, autogenerate_password: not autogenerate_password),
                       descr=_("Please, write the password into each of the two fields to eliminate "
                               "typos.")),
+                # UI Fields for password change.
                 Field('old_password', _(u"Old password"), virtual=True, width=16,
-                      type=pd.Password(verify=False, not_null=True, md5=md5_passwords),
+                      type=pd.Password(verify=False, not_null=True),
                       descr=_(u"Verify your identity by entering your original (current) "
                               "password.")),
+                # The only difference between initial_password and new_password is in label.
                 Field('new_password', _("New password"), virtual=True, width=16,
-                      type=pd.Password(verify=True, not_null=True),
+                      type=pd.Password(minlen=4, maxlen=32, verify=True, not_null=True),
                       descr=_("Please, write the password into each of the two fields to eliminate "
                               "typos.")),
+                # The actual DB password field (never present in the UI)
+                Field('password', type=pd.Password(not_null=True),
+                      computer=computer(self._password)),
                 # Translators: User account information field label (contains date and time).
                 # TODO: Last password change is currently not displayed anywhere.  It should be only
                 # visible to the admin and to the user himself, so it requires a dynamic 'view'
@@ -592,34 +595,102 @@ class Users(UserManagementModule, CachingPytisModule):
                       enumerator=enum(self._module.AccountState.states()),
                       display=self._module.AccountState.label, prefer_display=True,
                       style=self._state_style),
-                Field('lang'),
+                Field('lang', computer=computer(self._lang)),
                 Field('regexpire', default=self._registration_expiry, type=DateTime()),
                 Field('regcode', default=self._generate_registration_code),
             )
+
+        def _login(self, record, email):
+            if record.req().param('action') == 'reinsert' and record['login'].value() is None:
+                # This is necessary, because the value of login is needed for
+                # the DB function cms_f_insert_or_update_user() and the hidden
+                # field value (see _hidden_fields) is not processed by
+                # validation.
+                return req.param('login')
+            elif wiking.cms.cfg.login_is_email:
+                return email
+            else:
+                return None
+
         def _default_state(self, record, autogenerate_password):
             req = record.req()
             if autogenerate_password and req.check_roles(Roles.USER_ADMIN):
                 return self._module.AccountState.ENABLED
             else:
                 return self._module.AccountState.NEW
+
         def _gender_display(self, gender):
             return self._module.Gender.label(gender)
+
         def _state_style(self, record):
             if record['state'].value() in (Users.AccountState.NEW, Users.AccountState.UNAPPROVED):
                 return pp.Style(foreground='#a20')
             else:
                 return None
+
         def _last_password_change(self, record, password):
             if record.field_changed('password'):
                 return now()
             else:
                 return record['last_password_change'].value()
-        def check(self, record):
+
+        def _initial_password(self, record, autogenerate_password):
+            if record.new() and autogenerate_password:
+                return wiking.module.Users.generate_password()
+            else:
+                return record['initial_password'].value()
+
+        def _password(self, record, initial_password, new_password):
+            if initial_password is not None:
+                password = initial_password
+            else:
+                password = new_password
+            return self._stored_password(password)
+
+        def _lang(self, record):
+            if record.new():
+                # This language is used for translation of email messages 
+                # sent to the user.  This way it is set only once during
+                # registration.  It would make sense to change it on each
+                # change of user interface language by that user.
+                return record.req().preferred_language()
+            else:
+                return record['lang'].value()
+        def _check_email(self, record):
             if not record.req().param('_pytis_form_update_request') \
                     and record['email'].value() and record.field_changed('email'):
                 ok, msg = wiking.validate_email_address(record['email'].value())
                 if not ok:
                     return ('email', _("Invalid e-mail address: %s", msg))
+                    
+        def _stored_password(self, plaintext_password):
+            if plaintext_password is None:
+                return None
+            elif wiking.cms.cfg.password_storage == 'md5':
+                from hashlib import md5
+                return md5(plaintext_password).hexdigest()
+            else:
+                return plaintext_password
+
+        def _check_old_password(self, record):
+            if record.req().param('action') == 'passwd':
+                old_password = self._stored_password(record['old_password'].value())
+                if not old_password:
+                    return ('old_password', _(u"Enter your current password."))
+                elif old_password != record.original_row()['password'].value():
+                    return ('old_password', _(u"Invalid password."))
+
+        def _check_new_password(self, record):
+            if record.req().param('action') == 'passwd':
+                new_password = record['new_password'].value()
+                if not new_password:
+                    return ('new_password', _(u"Enter the new password."))
+                elif record['password'].value() == record.original_row()['password'].value():
+                    return ('new_password', _(u"The new password is the same as the old one."))
+
+        def check(self):
+            return (self._check_email, self._check_old_password, self._check_new_password)
+
         def bindings(self):
             return (Binding('roles', _("User's Groups"), 'UserRoles', 'uid',
                             form=pw.ItemizedView),
@@ -834,7 +905,7 @@ class Users(UserManagementModule, CachingPytisModule):
                 if req.param('action') != 'reinsert':
                     if req.check_roles(Roles.USER_ADMIN):
                         login_information += ('autogenerate_password',)
-                    login_information += ('password',)
+                    login_information += ('initial_password',)
                 layout = [
                     self._registration_form_intro,
                     FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname',)),
@@ -876,51 +947,6 @@ class Users(UserManagementModule, CachingPytisModule):
                     layout.insert(0, 'login') # Don't include email, since it is editable.
                 return layout
         return super(Users, self)._layout(req, action, record=record)
-
-    def _validate(self, req, record, layout):
-        if record.new():
-            # This language is used for translation of email messages sent to the user.  This way
-            # it is set only once during registration.  It would make sense to change it on each
-            # change of user interface language by that user.
-            record['lang'] = pd.Value(record.type('lang'), req.preferred_language())
-        errors = super(Users, self)._validate(req, record, layout)
-        if 'old_password' in layout.order():
-            #if not req.check_roles(Roles.USER_ADMIN): Too dangerous?
-            old_password = req.param('old_password')
-            if not old_password:
-                errors.append(('old_password', _(u"Enter your current password.")))
-            else:
-                error = record.validate('old_password', old_password, verify=old_password)
-                if error or record['old_password'].value() != record['password'].value():
-                    errors.append(('old_password', _(u"Invalid password.")))
-        if 'new_password' in layout.order():
-            new_password = req.param('new_password')
-            if not new_password:
-                errors.append(('new_password', _(u"Enter the new password.")))
-            else:
-                current_password_value = record['password'].value()
-                error = record.validate('password', new_password[0], verify=new_password[1])
-                if error:
-                    errors.append(('new_password', error.message(),))
-                elif record['password'].value() == current_password_value:
-                    errors.append(('new_password',
-                                   _(u"The new password is the same as the old one.")))
-        if not errors and req.param('action') == 'reinsert' and req.param('login') \
-                and 'login' not in layout.order():
-            # This is necessary, because the value of login is needed for
-            # the DB function cms_f_insert_or_update_user() and the hidden
-            # field value (see _hidden_fields) is not processed by
-            # validation.
-            record['login'] = pd.Value(record.type('login'), req.param('login'))
-        if not errors and record.new() and record['autogenerate_password'].value():
-            password = self._generate_password()
-            # Save the plaintext password into the virtual field to be able to send it by e-mail.
-            record['new_password'] = pd.Value(record.type('new_password'), password)
-            if wiking.cms.cfg.password_storage == 'md5':
-                from hashlib import md5
-                password = md5(password).hexdigest()
-            record['password'] = pd.Value(record.type('password'), password)
-        return errors
 
     def _default_actions_last(self, req, record):
         # Omit the default `delete' action to allow its redefinition in Spec.actions.
@@ -1014,7 +1040,7 @@ class Users(UserManagementModule, CachingPytisModule):
                      "%(uri)s\n\n",
                      server_hostname=wiking.cfg.server_hostname,
                      uri=req.make_uri(base_uri, command='login', login=record['login'].value()),
-                     password=record['new_password'].value())
+                     password=record['initial_password'].value())
         else:
             text = _("To finish your registration at %(server_hostname)s, "
                      "click on the following link:\n\n"
@@ -1342,7 +1368,7 @@ class Users(UserManagementModule, CachingPytisModule):
             users = [u for u in users if u is not None]
         return users
 
-    def _generate_password(self):
+    def generate_password(self):
         random.seed()
         return ''.join(random.sample(string.digits + string.ascii_letters, 10))
 
@@ -1354,7 +1380,7 @@ class Users(UserManagementModule, CachingPytisModule):
         """
         from hashlib import md5
         record = user.data()
-        password = self._generate_password()
+        password = self.generate_password()
         record.update(password=md5(password).hexdigest(), last_password_change=now())
         return password
 

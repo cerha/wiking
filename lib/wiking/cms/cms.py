@@ -1663,9 +1663,8 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                     lang=req.preferred_language(raise_error=False),
                     creator=req.user().uid())
 
-    def _validate(self, req, record, layout):
-        errors = super(Pages, self)._validate(req, record, layout)
-        if not errors and req.has_param('commit'):
+    def _before_page_change(self, req, record):
+        if req.has_param('commit'):
             record['content'] = record['_content']
             record['published'] = pd.bval(True)
             if ((not record.original_row()['published'].value() and
@@ -1677,7 +1676,6 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
             record['creator'] = pd.Value(record.type('creator'), req.user().uid())
         if record['created'].value() is None:
             record['created'] = pd.Value(record.type('created'), now())
-        return errors
 
     def _insert_transaction(self, req, record):
         return self._transaction()
@@ -1686,11 +1684,13 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
         return self._transaction()
 
     def _insert(self, req, record, transaction):
+        self._before_page_change(req, record)
         result = super(Pages, self)._insert(req, record, transaction)
         wiking.module.PageHistory.on_page_change(req, record, transaction=transaction)
         return result
 
     def _update(self, req, record, transaction):
+        self._before_page_change(req, record)
         result = super(Pages, self)._update(req, record, transaction)
         wiking.module.PageHistory.on_page_change(req, record, transaction=transaction)
         return result
