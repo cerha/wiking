@@ -731,7 +731,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         return (self._current_base_uri(req, record).rstrip('/') + '/' +
                 record[self._referer].export())
 
-    def _form(self, form, req, record=None, action=None, new=False, prefill=None,
+    def _form(self, form_cls, req, record=None, action=None, new=False, prefill=None,
               handler=None, binding_uri=None, hidden_fields=(), **kwargs):
         """Form instance creation wrapper.
 
@@ -765,7 +765,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
             uri = binding_uri
         else:
             uri = self._current_base_uri(req, record)
-        if issubclass(form, pw.BrowseForm):
+        if issubclass(form_cls, pw.BrowseForm):
             default_kwargs = dict(
                 limits=self._BROWSE_FORM_LIMITS,
                 limit=self._BROWSE_FORM_DEFAULT_LIMIT,
@@ -788,13 +788,13 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
             rows = data.get_rows(condition=pd.EQ(linking_column, form_record[self._key]))
             values = tuple([r[value_column] for r in rows])
             form_record[fid] = pd.Value(form_record.type(fid), values)
-        form_instance = form(self._view, req, form_record, handler=handler or req.uri(),
-                             name=self.name(), uri_provider=self._uri_provider(req, form, uri),
-                             hidden=hidden_fields, **kwargs)
+        form = form_cls(self._view, req, form_record, handler=handler or req.uri(),
+                        name=self.name(), uri_provider=self._uri_provider(req, form_cls, uri),
+                        hidden=hidden_fields, **kwargs)
         if binding_uri is None:
             # We use heading_info only for main form, not for binding side
             # forms.  That's why we test binding_uri here (not very nice...).
-            heading_info = form_instance.heading_info()
+            heading_info = form.heading_info()
             if heading_info:
                 # TODO: Am I the only one who thinks that passing the heading
                 # info through req.message() is an ugly hack?  What about
@@ -803,7 +803,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                 # Some other hacks to achieve the same exist, such as passing
                 # data through req.set_param().
                 req.message(heading_info, req.HEADING)
-        return form_instance
+        return form
 
     def _uri_provider(self, req, form_cls, uri):
         """Return the uri_provider function to pass the pytis form."""
