@@ -1750,6 +1750,20 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         if uri is not None:
             raise Redirect(uri, **kwargs)
 
+    def _ajax_response(self, req, form):
+        try:
+            response = form.ajax_response(req)
+        except pw.BadRequest:
+            raise wiking.BadRequest()
+        if isinstance(response, lcg.Content):
+            return response
+        else:
+            try:
+                import json
+            except:
+                import simplejson as json
+            return wiking.Response(json.dumps(response), content_type='application/json')
+
     def _related_content(self, req, record):
         """Return the content related to given record as a list of 'lcg.Content' instances.
 
@@ -1872,11 +1886,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                           prefill=prefill,
                           submit=self._submit_buttons(req, action))
         if form.is_ajax_request(req):
-            try:
-                response = form.ajax_response(req)
-            except pw.BadRequest:
-                raise wiking.BadRequest()
-            return wiking.Response(response, content_type='application/json')
+            return self._ajax_response(req, form)
         if not req.param('submit'):
             # Prefill form values from request parameters.
             form.prefill(req)
@@ -1919,11 +1929,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                           layout=layout,
                           submit=self._submit_buttons(req, action, record))
         if form.is_ajax_request(req):
-            try:
-                response = form.ajax_response(req)
-            except pw.BadRequest:
-                raise wiking.BadRequest()
-            return wiking.Response(response, content_type='application/json')
+            return self._ajax_response(req, form)
         if req.param('submit') and form.validate(req):
             # The form works with another Record instance (see '_form()') and we
             # need to save the instance that passed validation.  Maybe that
