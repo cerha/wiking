@@ -300,8 +300,8 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                 rdata.append((id, value))
             return pd.Row(rdata)
             
-        def display(self, key):
-            return super(PytisModule.Record, self).display(key)
+        def display(self, key, **kwargs):
+            return super(PytisModule.Record, self).display(key, **kwargs)
 
     @classmethod
     def title(cls):
@@ -2870,13 +2870,13 @@ class CbCachingPytisModule(CachingPytisModule):
         def _load_value(self, key, transaction=None, **kwargs):
             return CachingPytisModule.Record.display(self, key[-2])
             
-        def display(self, key):
+        def display(self, key, **kwargs):
             module = self._module
             if key in module._cached_field_ids:
                 cache_key = self.key() + (key, self[key].value(),)
                 return module._get_value(cache_key, cache_id='fields',
                                          loader=self._load_value, transaction=self._transaction)
-            return super(CbCachingPytisModule.Record, self).display(key)
+            return super(CbCachingPytisModule.Record, self).display(key, **kwargs)
 
     def __init__(self, *args, **kwargs):
         super(CbCachingPytisModule, self).__init__(*args, **kwargs)
