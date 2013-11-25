@@ -2418,6 +2418,10 @@ class PublicationChapters(NavigablePages):
                                                  '/%s/data/%s/attachments' % \
                                                  (req.page_record['identifier'].value(),
                                                   req.publication_record['identifier'].value()))
+        actions =  (
+            Action('position', _("Position"),
+                   descr=_("Change the position of this chapter in hierarchy")),
+        ) + tuple(Pages.Spec.actions)
         bindings = (
             Binding('attachments', _("Attachments"), 'Attachments', 
                     condition=lambda r: pd.EQ('page_id', pd.ival(r.req().publication_record['page_id'].value())),
@@ -2429,13 +2433,13 @@ class PublicationChapters(NavigablePages):
     _INSERT_LABEL = _("New Chapter")
     _LAYOUT = dict(Pages._LAYOUT,
                    insert=('title', 'description', '_content', 'parent', 'ord'),
-                   options=('parent', 'ord'),
+                   position=('parent', 'ord'),
                    )
 
     def _authorized(self, req, action, record=None, **kwargs):
         if action in ('view',):
             return req.page_read_access
-        elif action in ('insert', 'update', 'commit', 'revert', 'publish', 'unpublish',
+        elif action in ('insert', 'update', 'position', 'commit', 'revert', 'publish', 'unpublish',
                         'translate', 'delete'):
             return req.page_write_access
         else:
@@ -2445,6 +2449,9 @@ class PublicationChapters(NavigablePages):
         # Use PytisModule._current_base_uri (skip Pages._current_base_uri).
         return super(Pages, self)._current_base_uri(req, record=record)
 
+    def action_position(self, req, record):
+        return self.action_update(req, record, action='position')
+    
     def child_rows(self, req, tree_order, lang):
         children = {}
         if wiking.module.Application.preview_mode(req):
