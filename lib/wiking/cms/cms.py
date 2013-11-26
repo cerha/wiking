@@ -2045,6 +2045,11 @@ class Publications(NavigablePages, EmbeddableCMSModule):
                 Field('_content', _("Title Page")),
                 Field('description', _("Subtitle")),
                 Field('owner_name', _("Digitalized by")),
+                Field('owner',
+                      descr=(_("The owner has full read/write access regardless of roles "
+                               "settings above.") + ' ' +
+                             _('The owner is also used for the "Digitalized by" field in '
+                               "publication's meta data."))),
                 Field('published_since', _("Available since")),
                 Field('parent',
                       computer=computer(lambda r: r.req().page_record['page_id'].value())),
