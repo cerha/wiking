@@ -2044,7 +2044,7 @@ class Publications(NavigablePages, EmbeddableCMSModule):
                 Field('kind', default='publication'),
                 Field('_content', _("Title Page")),
                 Field('description', _("Subtitle")),
-                Field('creator', _("Digitalized by")),
+                Field('owner_name', _("Digitalized by")),
                 Field('published_since', _("Available since")),
                 Field('parent',
                       computer=computer(lambda r: r.req().page_record['page_id'].value())),
@@ -2189,6 +2189,8 @@ class Publications(NavigablePages, EmbeddableCMSModule):
     def _link_provider(self, req, uri, record, cid, **kwargs):
         if cid == 'lang':
             return None
+        if cid == 'owner_name':
+            return self._link_provider(req, uri, record, 'owner')
         return super(Publications, self)._link_provider(req, uri, record, cid, **kwargs)
 
     def _binding_visible(self, req, record, binding):
@@ -2214,7 +2216,7 @@ class Publications(NavigablePages, EmbeddableCMSModule):
                  self._form(pw.ShowForm, req, record=record, actions=(),
                             layout=[fid for fid in ('description', 'author', 'illustrator',
                                                     'isbn', 'pubinfo', 'lang',
-                                                    'creator', 'published_since', 'notes')
+                                                    'owner_name', 'published_since', 'notes')
                                     if record[fid].value() is not None])] +
                 super(Publications, self)._inner_page_content(req, record) +
                 [lcg.NodeIndex(title=_("Table of Contents"))])
