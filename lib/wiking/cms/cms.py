@@ -2048,6 +2048,8 @@ class Publications(NavigablePages, EmbeddableCMSModule):
                 Field('published_since', _("Available since")),
                 Field('parent',
                       computer=computer(lambda r: r.req().page_record['page_id'].value())),
+                # Avoid default ord=1 to work around slow insertion!
+                Field('ord', enumerator=None, default=None, computer=None), 
                 Field('menu_visibility', default='never'),
                 Field('status', visible=computer(self._preview_mode)),
                 Field('write_role_id', default=Roles.OWNER.id()),
