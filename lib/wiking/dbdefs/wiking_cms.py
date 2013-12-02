@@ -28,6 +28,8 @@ from wiking_db import Base_CachingTable, CommonAccesRights
 
 current_timestamp_0 = sqlalchemy.sql.expression.Function('current_timestamp', ival(0))
 
+name_is_not_null = sql.SQLFlexibleValue('name_not_null', default=True)
+
 #
 
 class CmsDatabaseVersion(sql.SQLTable):
@@ -111,8 +113,10 @@ class Users(CommonAccesRights, Base_CachingTable):
     fields = (sql.PrimaryColumn('uid', pytis.data.Serial(not_null=True)),
               sql.Column('login', pytis.data.String(maxlen=64, not_null=True, unique=True)),
               sql.Column('password', pytis.data.String(maxlen=32)),
-              sql.Column('firstname', pytis.data.String(not_null=True)),
-              sql.Column('surname', pytis.data.String(not_null=True)),
+              sql.Column('firstname',
+                         pytis.data.String(not_null=name_is_not_null.value(globals()))),
+              sql.Column('surname',
+                         pytis.data.String(not_null=name_is_not_null.value(globals()))),
               sql.Column('nickname', pytis.data.String()),
               sql.Column('user_', pytis.data.String(not_null=True)),
               sql.Column('email', pytis.data.String(not_null=True)),
