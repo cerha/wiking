@@ -513,6 +513,9 @@ class Users(UserManagementModule, CachingPytisModule):
         def _generate_registration_code():
             return wiking.generate_random_string(16)
         def fields(self):
+            pwdtype = pd.Password(strength=wiking.cms.cfg.password_strength,
+                                  minlen=wiking.cms.cfg.password_min_length,
+                                  maxlen=32, verify=True, not_null=True)
             return (
                 Field('uid', width=8, editable=NEVER),
                 # Translators: Login name for a website. Registration form field.
@@ -527,8 +530,7 @@ class Users(UserManagementModule, CachingPytisModule):
                       type=pd.Boolean(), default=False, editable=pp.Editable.ALWAYS,
                       descr=_("If checked, the password will be generated automatically and "
                               "sent to the user's e-mail address.")),
-                Field('initial_password', _("Password"), virtual=True, width=16,
-                      type=pd.Password(minlen=4, maxlen=32, verify=True, not_null=True),
+                Field('initial_password', _("Password"), virtual=True, width=16, type=pwdtype,
                       editable=computer(lambda r, autogenerate_password: not autogenerate_password),
                       descr=_("Please, write the password into each of the two fields to eliminate "
                               "typos.")),
@@ -538,8 +540,7 @@ class Users(UserManagementModule, CachingPytisModule):
                       descr=_(u"Verify your identity by entering your original (current) "
                               "password.")),
                 # The only difference between initial_password and new_password is in label.
-                Field('new_password', _("New password"), virtual=True, width=16,
-                      type=pd.Password(minlen=4, maxlen=32, verify=True, not_null=True),
+                Field('new_password', _("New password"), virtual=True, width=16, type=pwdtype,
                       descr=_("Please, write the password into each of the two fields to eliminate "
                               "typos.")),
                 # The actual DB password field (never present in the UI)

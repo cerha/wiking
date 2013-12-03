@@ -96,6 +96,21 @@ class CMSConfiguration(pc):
                 "and 'md5' (passwords are stored in the form of MD5 hashes).")
         _DEFAULT = 'plain'
  
+    class _Option_password_strength(pc.Option):
+        _DESCR = "Specification of password strength checking."
+        _DOC = ("If 'None', no special checks are performed.  If 'True', default "
+                "checking is performed (both characters and non-characters "
+                "must be used).  If anything else, it must be a function of "
+                "a single argument, the password string, that returns either "
+                "'None' when the password is strong enough or an error message "
+                "if the password is weak.")
+        _DEFAULT = None
+
+    class _Option_password_min_length(pc.NumericOption):
+        _DESCR = "Minimal password length"
+        _DOC = "The minimal length of a Wiking CMS user password."
+        _DEFAULT = 4
+
     class _Option_login_is_email(pc.BooleanOption):
         _DESCR = _("Whether to use e-mails as login names")
         _DOC = _("Iff true, users must use e-mail addresses as their login names.")
