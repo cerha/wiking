@@ -988,6 +988,7 @@ class Users(UserManagementModule, CachingPytisModule):
     def _insert(self, req, record, transaction):
         super(Users, self)._insert(req, record, transaction)
         row = self._data.get_row(login=record['login'].value(), transaction=transaction)
+        # Don't send e-mails on re-registration (the account is already confirmed).
         if ((row['state'].value() == Users.AccountState.NEW 
              or record['autogenerate_password'].value())):
             err = self._send_registration_email(req, record)
@@ -1009,13 +1010,15 @@ class Users(UserManagementModule, CachingPytisModule):
             # Wiking CMS user table, no need to confirm again for the
             # application user table.
             req.message(_("Registration completed. You can log in now."))
-            uri = req.module_uri('Registration')
+            raise wiking.Redirect(req.module_uri('Registration'))
         else:
             req.message(_("The account has been created."))
             if record['autogenerate_password'].value():
                 req.message(_("The generated password was sent to %s.", record['email'].value()))
+                raise wiking.Redirect(req.module_uri('Registration'))
             elif req.check_roles(Roles.USER_ADMIN):
                 req.message(_("The activation code was sent to %s.", record['email'].value()))
+                raise wiking.Redirect(self._current_record_uri(req, record))
             else:
                 # Translators: Follows an email addres, e.g. ``... was sent to
                 # your email address at joe@brailcom.org''
@@ -1024,11 +1027,6 @@ class Users(UserManagementModule, CachingPytisModule):
                                                  "the activation code that was sent to your "
                                                  "email address at %s.", 
                                                  record['email'].value()))))
-            if req.check_roles(Roles.USER_ADMIN):
-                uri = self._current_record_uri(req, record)
-            else:
-                uri = req.module_uri('Registration')
-        raise wiking.Redirect(uri)
 
     def _send_registration_email(self, req, record):
         base_uri = req.server_uri() + (req.module_uri('Registration') or '/_wmi/' + self.name())
