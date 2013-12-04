@@ -1186,11 +1186,14 @@ class Users(UserManagementModule, CachingPytisModule):
         return Document(_("Registration confirmed"),
                         content=self._confirmation_success_content(req, record))
 
-    def _change_state(self, req, record, state):
+    def _change_state(self, req, record, state, transaction=None):
+        # Note: The return value is important for overriding this method,
+        # which is used for example in Wiking Biblio.
         try:
-            record.update(state=state)
+            record.update(state=state, transaction=transaction)
         except pd.DBException as e:
             req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
+            return False
         else:
             if state == self.AccountState.ENABLED:
                 req.message(_("The account was enabled."))
@@ -1207,7 +1210,7 @@ class Users(UserManagementModule, CachingPytisModule):
                     req.message(_("E-mail notification has been sent to:") + ' ' + email)
             elif state == self.AccountState.DISABLED:
                 req.message(_("The account was disabled."))
-        raise wiking.Redirect(self._current_record_uri(req, record))
+            return True
 
     def action_enable(self, req, record):
         if record['state'].value() == self.AccountState.NEW and not req.param('submit'):
@@ -1218,14 +1221,17 @@ class Users(UserManagementModule, CachingPytisModule):
                               actions=(Action('enable', _("Continue"), submit=1),
                                        # Translators: Button label to get to a previous state.
                                        Action('view', _("Back"))))
-            req.message(_("The registration code was not confirmed by the user!"))
+            req.message(_("The registration code was not confirmed by the user!"), type=req.WARNING)
             req.message(_("Please enable the account only if you are sure that "
                           "the e-mail address belongs to given user."))
             return self._document(req, (form), record)
-        self._change_state(req, record, self.AccountState.ENABLED)
+        else:
+            self._change_state(req, record, self.AccountState.ENABLED)
+            raise wiking.Redirect(self._current_record_uri(req, record))
 
     def action_disable(self, req, record):
         self._change_state(req, record, self.AccountState.DISABLED)
+        raise wiking.Redirect(self._current_record_uri(req, record))
 
     def action_passwd(self, req, record):
         return self.action_update(req, record, action='passwd')
