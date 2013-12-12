@@ -29,17 +29,17 @@ import pytis.presentation as pp
 import pytis.web as pw
 import wiking
 from wiking import Binding, FieldSet, Forbidden, MenuItem, NotFound, PanelItem, \
-    Redirect, Response, Role, Specification, Theme, make_uri
+    Redirect, Response, Role, Specification, make_uri
 import wiking.cms
 
 import collections
 import datetime
+import difflib
+import mimetypes
 import os
 import re
 import string
 import sys
-import time
-import difflib
 
 import pytis.data
 import pytis.util
@@ -367,7 +367,7 @@ class CMSModule(wiking.PytisModule, wiking.RssModule):
         return []
 
     def _panel_rows(self, req, relation, lang, count):
-        return self._data.get_rows(condition=self._panel_condition(req, relation), 
+        return self._data.get_rows(condition=self._panel_condition(req, relation),
                                    lang=lang, limit=count)
 
     def panelize(self, req, lang, count, relation=None):
@@ -965,7 +965,7 @@ class Panels(SiteSpecificContentModule, wiking.CachingPytisModule):
         return (Action('delete', self._DELETE_LABEL, _manage_cms_panels='1',
                        panel_id=record['panel_id'].export(), submit=1),)
 
-        return 
+        return
 
     def _load_value(self, key, transaction=None):
         lang, preview_mode = key
@@ -1018,7 +1018,7 @@ class Panels(SiteSpecificContentModule, wiking.CachingPytisModule):
             else:
                 titlebar_content = None
             panels.append(wiking.Panel(panel_id, title, content,
-                                       titlebar_content=titlebar_content, channel=channel))            
+                                       titlebar_content=titlebar_content, channel=channel))
         return panels
 
     def action_publish(self, req, record, publish=True):
@@ -1037,7 +1037,7 @@ class Panels(SiteSpecificContentModule, wiking.CachingPytisModule):
     def action_unpublish(self, req, record):
         return self.action_publish(req, record, publish=False)
 
-    
+
 class Languages(SettingsManagementModule, wiking.CachingPytisModule):
     """List all languages available for given site.
 
@@ -1067,7 +1067,7 @@ class Languages(SettingsManagementModule, wiking.CachingPytisModule):
     _REFERER = 'lang'
     # Translators: Do not translate this.
     _TITLE_TEMPLATE = _('%(name)s')
-    
+
     def languages(self):
         return self._get_value(None, loader=self._load_languages)
 
@@ -1109,7 +1109,7 @@ class Countries(SettingsManagementModule):
     # Translators: Do not translate this.
     _TITLE_TEMPLATE = _('%(name)s')
 
-    
+
 class Themes(StyleManagementModule, wiking.CachingPytisModule):
     class Spec(Specification):
         class _Field(Field):
@@ -1210,7 +1210,7 @@ class Themes(StyleManagementModule, wiking.CachingPytisModule):
                 uri = '/_wmi/Users'
             uri += '?preview_theme=%d' % record['theme_id'].value()
             return wiking.IFrame(uri, width=800, height=220)
-            
+
         def layout(self):
             return ('name',) + tuple([FieldSet(label, [f.id() for f in fields])
                                       for label, fields in self._FIELDS])
@@ -1226,7 +1226,7 @@ class Themes(StyleManagementModule, wiking.CachingPytisModule):
                    descr=_("Activate the default color theme"),
                    enabled=lambda r: wiking.module.Config.theme_id() is not None),
         )
-        
+
     _ROW_ACTIONS = True
 
     def _authorized(self, req, action, **kwargs):
@@ -1234,7 +1234,7 @@ class Themes(StyleManagementModule, wiking.CachingPytisModule):
             return req.check_roles(*self._ADMIN_ROLES)
         else:
             return super(Themes, self)._authorized(req, action, **kwargs)
-        
+
     def theme(self, theme_id):
         return self._get_value(theme_id)
 
@@ -1243,7 +1243,7 @@ class Themes(StyleManagementModule, wiking.CachingPytisModule):
         colors = dict([(c.id(), row[c.id()].value())
                        for c in wiking.Theme.COLORS if row[c.id()].value() is not None])
         return wiking.Theme(colors)
-        
+
     def action_activate(self, req, record=None):
         if record:
             theme_id = record['theme_id'].value()
@@ -1267,7 +1267,7 @@ class Themes(StyleManagementModule, wiking.CachingPytisModule):
             req.message(err, type=req.ERROR)
         req.set_param('search', theme_id)
         raise Redirect(self._current_base_uri(req, record))
-    
+
 
 # ==============================================================================
 # The modules below handle the actual content.
@@ -1279,7 +1279,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
 
     This module implements the key CMS functionality.  Pages, their hierarchy, content and other
     properties are managed throug a Pytis data object.
-    
+
     """
     class PagePositionEnumerator(pytis.data.Enumerator):
         def values(self, **kwargs):
@@ -1388,7 +1388,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                       default=Roles.CONTENT_ADMIN.id(),
                       descr=_("Select the role allowed to edit the page contents.")),
                 Field('owner', _("Owner"), codebook='Users', not_null=False,
-                      inline_referer='owner_login', inline_display='owner_name', 
+                      inline_referer='owner_login', inline_display='owner_name',
                       descr=_("The owner has full read/write access regardless of roles "
                               "settings above.")),
                 Field('owner_login'),
@@ -1496,7 +1496,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
 
     def _check_page_access(self, req, record, readonly=False):
         """Return true if the current user has readonly/readwrite access to given page record.
-        
+
         Note, this logic is duplicated at 'Publications._condition()', so any
         change here should be reflected there as well.
 
@@ -1516,7 +1516,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
 
     def _handle(self, req, action, **kwargs):
         """Setup specific environment when processing a request for a CMS page.
-        
+
         Attaching the attributes 'page_record', 'page_read_access' and
         'page_write_access' to the request is a quick hack.  It allows us to
         quickly determine the current page within further request processing.
@@ -1545,7 +1545,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
             req.page_read_access = self._check_page_access(req, record, readonly=True)
             req.page_write_access = self._check_page_access(req, record)
         return super(Pages, self)._handle(req, action, **kwargs)
-        
+
     def _authorized(self, req, action, record=None, **kwargs):
         if action in ('new_page', 'insert', 'list', 'options', 'publish', 'unpublish',
                       'delete', 'translate'):
@@ -1556,7 +1556,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
             return self._check_page_access(req, record)
         else:
             return False # raise NotFound or BadRequest?
-        
+
     def _handle_subpath(self, req, record):
         modname = record['modname'].value()
         if modname:
@@ -1659,18 +1659,18 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
         if record['created'].value() is None:
             record['created'] = pd.Value(record.type('created'), now())
         return errors
-    
+
     def _insert_transaction(self, req, record):
         return self._transaction()
-    
+
     def _update_transaction(self, req, record):
         return self._transaction()
-    
+
     def _insert(self, req, record, transaction):
         result = super(Pages, self)._insert(req, record, transaction)
         wiking.module.PageHistory.on_page_change(req, record, transaction=transaction)
         return result
-        
+
     def _update(self, req, record, transaction):
         result = super(Pages, self)._update(req, record, transaction)
         wiking.module.PageHistory.on_page_change(req, record, transaction=transaction)
@@ -1682,7 +1682,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
         else:
             return _("New page was successfully created, but was not published yet. "
                      "Publish it when you are done.")
-        
+
     def _update_msg(self, req, record):
         if record['content'].value() == record['_content'].value():
             return super(Pages, self)._update_msg(req, record)
@@ -1700,13 +1700,13 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
         if not req.has_param('commit'):
             wiking.module.Application.set_preview_mode(req, True)
         raise Redirect(self._current_record_uri(req, record))
-        
+
     def _redirect_after_update(self, req, record):
         req.message(self._update_msg(req, record))
         if not req.has_param('commit'):
             wiking.module.Application.set_preview_mode(req, True)
         raise Redirect(req.uri())
-        
+
     def _delete_form_content(self, req, form, record):
         return [form] + self._page_content(req, record)
 
@@ -1721,7 +1721,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
             return False
 
     # Public methods
-    
+
     def menu(self, req):
         children = {None: []}
         translations = {}
@@ -1777,21 +1777,6 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
 
     def module_uri(self, req, modname):
         return self._get_value(modname, cache_id='module_uri', loader=self._load_module_uri)
-        
-    def _load_module_uri(self, key, transaction=None):
-        modname = key
-        if modname == self.name():
-            uri = '/'
-        else:
-            row = self._data.get_row(modname=modname, site=wiking.cfg.server_hostname)
-            if row:
-                uri = '/' + row['identifier'].value()
-                binding = self._embed_binding(modname)
-                if binding:
-                    uri += '/' + binding.id()
-            else:
-                uri = None
-        return uri
 
     def page_uri(self, req, page_id):
         return self._get_value(page_id, cache_id='page_uri', loader=self._load_page_uri)
@@ -1856,7 +1841,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
             return content
 
     # Action handlers.
-        
+
     def action_view(self, req, record):
         content = self._page_content(req, record)
         if not content:
@@ -1902,10 +1887,10 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
             return mod.action_rss(req, relation=binding and (binding, record))
         else:
             raise NotFound()
-        
+
     def action_options(self, req, record):
         return self.action_update(req, record, action='options')
-    
+
     def action_translate(self, req, record):
         lang = req.param('src_lang')
         if not lang:
@@ -1960,7 +1945,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
         else:
             req.message(_("The page contents was reverted to its previous state."))
         raise Redirect(self._current_record_uri(req, record))
-    
+
     def action_unpublish(self, req, record):
         try:
             record.update(published=False)
@@ -1988,7 +1973,7 @@ class NavigablePages(Pages):
         def __init__(self, position):
             self._position = position
             super(NavigablePages.Navigation, self).__init__()
-            
+
         def export(self, context):
             g = context.generator()
             req = context.req()
@@ -2033,9 +2018,9 @@ class Publications(NavigablePages, EmbeddableCMSModule):
     and it will consist of a listing of available e-Publications in
     alphabetical order.  Entering a particular publication will add its
     hierarchy to the CMS menu.
-    
+
     """
-    
+
     class Spec(Pages.Spec):
         title = _("e-Publications")
         table = 'cms_v_publications'
@@ -2054,7 +2039,7 @@ class Publications(NavigablePages, EmbeddableCMSModule):
                 Field('parent',
                       computer=computer(lambda r: r.req().page_record['page_id'].value())),
                 # Avoid default ord=1 to work around slow insertion!
-                Field('ord', enumerator=None, default=None, computer=None), 
+                Field('ord', enumerator=None, default=None, computer=None),
                 Field('menu_visibility', default='never'),
                 Field('status', visible=computer(self._preview_mode)),
                 Field('write_role_id', default=Roles.OWNER.id()),
@@ -2066,7 +2051,7 @@ class Publications(NavigablePages, EmbeddableCMSModule):
                       descr=_("ISBN of the original book if the publication is "
                               "a digitalized book.")),
                 Field('cover_image', _("Cover Image"), not_null=False,
-                      codebook='Attachments', value_column='attachment_id', 
+                      codebook='Attachments', value_column='attachment_id',
                       inline_referer='cover_image_filename',
                       runtime_filter=computer(self._attachment_filter), display='filename',
                       descr=_("Insert the image as an attachment and select it "
@@ -2129,7 +2114,7 @@ class Publications(NavigablePages, EmbeddableCMSModule):
             Action('export_braille', _("Export to Braille"),
                    descr=_("Export the publication to Braille")),
         )
-    
+
     _LIST_BY_LANGUAGE = False
     _INSERT_LABEL = _("New e-Publication")
     _UPDATE_LABEL = _("Edit")
@@ -2166,7 +2151,7 @@ class Publications(NavigablePages, EmbeddableCMSModule):
             super(Publications, self)._condition(req),
             # Beware, this condition actually duplicates the logic in _check_page_access().
             pd.OR(pd.EQ('owner', pd.ival(uid)),
-                  *[pd.FunctionCondition('cms_f_role_member', pd.ival(uid), role) for role in 
+                  *[pd.FunctionCondition('cms_f_role_member', pd.ival(uid), role) for role in
                     ('read_role_id', 'write_role_id', pd.sval(Roles.CONTENT_ADMIN.id()))])
         ]
         if not wiking.module.Application.preview_mode(req):
@@ -2187,10 +2172,10 @@ class Publications(NavigablePages, EmbeddableCMSModule):
     def _current_base_uri(self, req, record=None):
         # Use PytisModule._current_base_uri (skip Pages._current_base_uri).
         return super(Pages, self)._current_base_uri(req, record=record)
-    
+
     def _redirect_after_delete_uri(self, req, record, **kwargs):
         return '/' + req.page_record['identifier'].value(), kwargs
-        
+
     def _link_provider(self, req, uri, record, cid, **kwargs):
         if cid == 'lang':
             return None
@@ -2201,12 +2186,15 @@ class Publications(NavigablePages, EmbeddableCMSModule):
     def _binding_visible(self, req, record, binding):
         return (binding.id() != 'chapters' and
                 super(Publications, self)._binding_visible(req, record, binding))
-        
+
     def _inner_page_content(self, req, record):
         def cover_image(element, context):
             if record['cover_image'].value():
                 g = context.generator()
-                filename = record.cb_value('cover_image', 'filename').value()
+                filename_x = record.cb_value('cover_image', 'filename')
+                if filename_x is None:
+                    return ''
+                filename = filename_x.value()
                 storage = record.attachment_storage('_content')
                 image = storage.resource(filename)
                 if image.size():
@@ -2253,7 +2241,7 @@ class Publications(NavigablePages, EmbeddableCMSModule):
                                    children=[node(r) for r in
                                              children.get(row['page_id'].value(), ())])
         return node(record.row(), cover_image_filename=record['cover_image_filename'].value())
-        
+
     def submenu(self, req):
         # TODO: This partially duplicates Pages.menu() - refactor?
         if not hasattr(req, 'publication_record') or req.publication_record is None:
@@ -2300,7 +2288,7 @@ class Publications(NavigablePages, EmbeddableCMSModule):
         result = exporter.export(context)
         return wiking.Response(result, content_type='application/epub+zip',
                                filename='%s.epub' % record['identifier'].value())
-    
+
     def action_export_braille(self, req, record):
         page_width = int(req.param('braille_page_width') or '0')
         page_height = int(req.param('braille_page_height') or '0')
@@ -2395,8 +2383,8 @@ class Publications(NavigablePages, EmbeddableCMSModule):
                                   action=g.uri(self._uri))
             return Form(req.uri(), page_width, page_height, inner_margin, outer_margin,
                         top_margin, bottom_margin, printer)
-            
-                    
+
+
 class PublicationChapters(NavigablePages):
     """e-Publication chapters are regular CMS pages """
     class Spec(Pages.Spec):
@@ -2424,16 +2412,18 @@ class PublicationChapters(NavigablePages):
             return Attachments.AttachmentStorage(req,
                                                  req.publication_record['page_id'].value(),
                                                  record['lang'].value(),
-                                                 '/%s/data/%s/attachments' % \
+                                                 '/%s/data/%s/attachments' %
                                                  (req.page_record['identifier'].value(),
                                                   req.publication_record['identifier'].value()))
-        actions =  (
+        actions = (
             Action('position', _("Position"),
                    descr=_("Change the position of this chapter in hierarchy")),
         ) + tuple(Pages.Spec.actions)
         bindings = (
-            Binding('attachments', _("Attachments"), 'Attachments', 
-                    condition=lambda r: pd.EQ('page_id', pd.ival(r.req().publication_record['page_id'].value())),
+            Binding('attachments', _("Attachments"), 'Attachments',
+                    condition=(lambda r:
+                               pd.EQ('page_id', pd.ival(r.req().publication_record['page_id']
+                                                        .value()))),
                     prefill=lambda r: dict(page_id=r.req().publication_record['page_id'])),
         ) + tuple([_b for _b in Pages.Spec.bindings if _b.id() != 'attachments'])
         condition = pd.EQ('kind', pd.sval('chapter'))
@@ -2460,7 +2450,7 @@ class PublicationChapters(NavigablePages):
 
     def action_position(self, req, record):
         return self.action_update(req, record, action='position')
-    
+
     def child_rows(self, req, tree_order, lang):
         children = {}
         if wiking.module.Application.preview_mode(req):
@@ -2626,7 +2616,7 @@ class Attachments(ContentManagementModule):
                     return 0
                 else:
                     return info.st_size
-                    
+
         # Translators: Section title. Attachments as in email attachments.
         title = _("Attachments")
         help = _("Manage page attachments. Go to a page to create new attachments.")
@@ -2655,7 +2645,7 @@ class Attachments(ContentManagementModule):
                               "underscores, dashes and dots are safe.  "
                               "You risk problems with most other characters.")),
                 Field('fake_file', _("File"), virtual=True,
-                      # Hack: To avoid reading the file into memory in ShowForm, 
+                      # Hack: To avoid reading the file into memory in ShowForm,
                       # this field is represented as pytis.web.FileField thanks to
                       # the 'filename' specification.  The field is represented as
                       # "filename (size)" in the UI and _FakeFile reports its size
@@ -2679,7 +2669,8 @@ class Attachments(ContentManagementModule):
                 Field('ext', virtual=True, computer=computer(self._ext)),
                 # Translators: Size of a file, in number of bytes, kilobytes etc.
                 Field('bytesize', _("Size"),
-                      computer=computer(lambda r, upload: upload and format_byte_size(len(upload)))),
+                      computer=computer(lambda r, upload:
+                                        upload and format_byte_size(len(upload)))),
                 Field('thumbnail', '', type=pd.Image(), computer=computer(self._thumbnail)),
                 # Translators: Thumbnail is a small image preview in computer terminology.
                 Field('thumbnail_size', _("Preview size"), not_null=False,
@@ -2711,7 +2702,7 @@ class Attachments(ContentManagementModule):
                 #Field('exif_date', _("EXIF date")),
                 Field('file_path', virtual=True, computer=computer(self._file_path)),
                 Field('archive', _("Archive"), virtual=True,
-                      type=pd.Binary(not_null=True, maxlen=1000*wiking.cms.cfg.upload_limit),
+                      type=pd.Binary(not_null=True, maxlen=1000 * wiking.cms.cfg.upload_limit),
                       descr=_("Upload multiple attachments at once "
                               "as a ZIP, TAR or TAR.GZ archive.")),
             )
@@ -2869,7 +2860,7 @@ class Attachments(ContentManagementModule):
 
     def _delayed_init(self):
         super(Attachments, self)._delayed_init()
-        self._non_binary_columns = [c.id() for c in self._data.columns() 
+        self._non_binary_columns = [c.id() for c in self._data.columns()
                                     if not isinstance(c.type(), pd.Binary)]
 
     def _authorized(self, req, action, **kwargs):
@@ -2925,7 +2916,7 @@ class Attachments(ContentManagementModule):
             else:
                 return None
         return super(Attachments, self)._tooltip_provider(req, uri, record, cid)
-        
+
     def _save_attachment_file(self, record):
         storage = wiking.cms.cfg.storage
         if not os.path.exists(storage) or not os.access(storage, os.W_OK):
@@ -2990,7 +2981,8 @@ class Attachments(ContentManagementModule):
     def storage_api_insert(self, req, page_id, lang, filename, data, values):
         prefill = dict(page_id=page_id, lang=lang, listed=False)
         record = self._record(req, None, new=True, prefill=prefill)
-        error = record.validate('upload', data, filename=filename, mime_type=values.pop('mime_type'))
+        error = record.validate('upload', data, filename=filename,
+                                mime_type=values.pop('mime_type'))
         if error:
             return error.message()
         try:
@@ -3015,7 +3007,7 @@ class Attachments(ContentManagementModule):
 
     def retrieve(self, req, page_id, filename):
         # Used by Publications.action_export_epub().
-        row = self._data.get_row(columns=self._non_binary_columns, 
+        row = self._data.get_row(columns=self._non_binary_columns,
                                  page_id=page_id, filename=filename)
         if row:
             record = self._record(req, row)
@@ -3135,7 +3127,7 @@ class Attachments(ContentManagementModule):
                 if os.path.exists(filename):
                     os.unlink(filename)
             if isinstance(e, Error):
-                return failure(concat(e.args, separator=': '))
+                return failure(lcg.concat(e.args, separator=': '))
             raise
         else:
             req.message(_.ngettext("%d attachment succesfully inserted.",
@@ -3160,7 +3152,7 @@ class _News(ContentManagementModule, EmbeddableCMSModule, wiking.CachingPytisMod
                 Field('title', _("Title"), column_label=_("Message"), width=32,
                       descr=_("The item brief summary.")),
                 ContentField('content', _("Message"), height=6, width=80),
-                Field('author', _("Author"), codebook='Users', 
+                Field('author', _("Author"), codebook='Users',
                       inline_referer='author_login', inline_display='author_name'),
                 Field('author_name'),
                 Field('author_login'),
@@ -3546,7 +3538,7 @@ class StyleSheets(SiteSpecificContentModule, StyleManagementModule,
     def stylesheets(self, req):
         base_uri = req.module_uri('Resources')
         return self._get_value((None, base_uri, req.wmi))
-        
+
     def stylesheet(self, req, filename):
         return self._get_value((filename, None, None), cache_id='single')
 
