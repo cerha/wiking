@@ -497,6 +497,20 @@ class CmsVPageHistory(CommonAccesRights, sql.SQLView):
                       from_obj=[h.join(u, h.c.uid == u.c.uid)])
     insert_order = (CmsPageHistory,)
 
+class CmsPageExcerpts(sql.SQLTable):
+    """Excerpts from CMS pages.
+    Currently serving for printing parts of e-books in Braille.
+    """
+    name = 'cms_page_excerpts'
+    fields = (sql.PrimaryColumn('id', pytis.data.Serial(not_null=True)),
+              sql.Column('page_id', pytis.data.Integer(),
+                         references=sql.a(sql.r.CmsPages, onupdate='CASCADE', ondelete='CASCADE')),
+              sql.Column('lang', pytis.data.String(not_null=True)),
+              sql.Column('title', pytis.data.String(not_null=True)),
+              sql.Column('content', pytis.data.String(not_null=True)),
+              )
+    access_rights = (('ALL', 'www-data',),)
+    
 #
 
 class CmsPageAttachments(CommonAccesRights, sql.SQLTable):

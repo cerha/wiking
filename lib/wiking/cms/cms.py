@@ -864,6 +864,9 @@ class PageStructure(SiteSpecificContentModule):
         else:
             result.append(Order(1, _("First")))
         return result
+
+    def page_row(self, page_id):
+        return self._data.row(pd.ival(page_id))
     
     
 class Panels(SiteSpecificContentModule, wiking.CachingPytisModule):
@@ -1393,6 +1396,10 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                               "settings above.")),
                 Field('owner_login'),
                 Field('owner_name'),
+                Field('excerpt_title', _("Excerpt title"), virtual=True,
+                      type=pd.String(not_null=True)),
+                ContentField('_excerpt_content', _("Excerpt"), compact=True, height=20, width=80,
+                             virtual=True),
             )
         def _status(self, record, published, _content, content):
             if not published:
@@ -1440,6 +1447,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
             Action('unpublish', _("Unpublish"),
                    descr=_("Make the page invisible in production mode"),
                    enabled=lambda r: r['published'].value()),
+            Action('excerpt', _("Store Excerpt")),
             Action('revert', _("Revert"),
                    descr=_("Revert the unpublished changes in page text "
                            "to the last published state"),
@@ -1454,7 +1462,8 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
         )
         # Translators: Noun. Such as e-mail attachments (here attachments for a webpage).
         bindings = (Binding('attachments', _("Attachments"), 'Attachments', 'page_id'),
-                    Binding('history', _("History"), 'PageHistory', 'page_key'),)
+                    Binding('history', _("History"), 'PageHistory', 'page_key'),
+                    Binding('excerpts', _("Excerpts"), 'CmsPageExcerpts', 'page_id'),)
 
     _REFERER = 'identifier'
     _EXCEPTION_MATCHERS = (
@@ -1473,17 +1482,19 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                                                         'foldable')),
                           FieldSet(_("Access Rights"), ('read_role_id', 'write_role_id', 'owner')),
                           ))),
-               'update': ('title', 'description', '_content', 'comment'),
+               'update': ('title', 'description', '_content', 'comment',),
                'delete': (),
                'options':
                (FieldSet(_("Basic Options"), ('identifier', 'modname',)),
                 FieldSet(_("Menu position"), ('parent', 'menu_visibility', 'ord', 'foldable')),
                 FieldSet(_("Access Rights"), ('read_role_id', 'write_role_id', 'owner')),
-                )
+                ),
+               'excerpt': ('_content', '_excerpt_content', 'excerpt_title',),
                }
     _SUBMIT_BUTTONS_ = ((_("Save as concept"), None), (_("Save and publish"), 'commit'))
     _SUBMIT_BUTTONS = {'update': _SUBMIT_BUTTONS_,
-                       'insert': _SUBMIT_BUTTONS_}
+                       'insert': _SUBMIT_BUTTONS_,
+                       'excerpt': ((_("Store"), None),)}
     _INSERT_LABEL = _("New page")
     _UPDATE_LABEL = _("Edit Text")
     _UPDATE_DESCR = _("Edit title, description and content for the current language")
@@ -1513,6 +1524,14 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
             return req.check_roles(*[roles[role_id] for role_id in role_ids])
         else:
             return False
+
+    def check_page_access(self, req, page_id, readonly=False):
+        assert isinstance(page_id, int), page_id
+        assert isinstance(readonly, bool), readonly
+        row = wiking.module.PageStructure.page_row(page_id)
+        if row is None:
+            return False
+        return self._check_page_access(req, row, readonly=readonly)
 
     def _handle(self, req, action, **kwargs):
         """Setup specific environment when processing a request for a CMS page.
@@ -1552,7 +1571,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
             return req.check_roles(Roles.CONTENT_ADMIN,)
         elif record and action in ('view', 'rss'):
             return self._check_page_access(req, record, readonly=True)
-        elif record and action in ('update', 'commit', 'revert',):
+        elif record and action in ('update', 'commit', 'revert', 'excerpt',):
             return self._check_page_access(req, record)
         else:
             return False # raise NotFound or BadRequest?
@@ -1960,6 +1979,34 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
     def action_new_page(self, req, record):
         raise Redirect(self._current_base_uri(req, record), action='insert',
                        parent=record['parent'].value(), ord=record['ord'].value())
+        
+    def action_excerpt(self, req, record):
+        action = 'excerpt'
+        layout = self._layout_instance(self._layout(req, action, record))
+        if req.param('submit'):
+            errors = self._validate(req, record, layout)
+            if not errors:
+                lang = record['lang']
+                if lang.value() is not None:
+                    lang = pd.sval(req.preferred_language())
+                excerpts = wiking.module.CmsPageExcerpts
+                try:
+                    excerpts.store_excerpt(req, record['page_id'], lang,
+                                           record['excerpt_title'], record['_excerpt_content'])
+                except pd.DBException as e:
+                    errors = (self._analyze_exception(e),)
+                else:
+                    return self._redirect_after_update(req, record)
+        else:
+            errors = ()
+        form = self._form(pw.EditForm, req, record=record, action=action,
+                          layout=layout,
+                          invalid_prefill=self._invalid_prefill(req, record, layout),
+                          submit=self._submit_buttons(req, action, record),
+                          errors=errors)
+        content = self._update_form_content(req, form, record)
+        return self._document(req, content, record,
+                              subtitle=self._action_subtitle(req, action, record=record))
 
     #def action_help(self, req, record):
     #    raise Redirect('/_doc/wiking/cms/pages')
@@ -2007,6 +2054,33 @@ class NavigablePages(Pages):
         return ([self.Navigation('top')] +
                 self._inner_page_content(req, record) +
                 [self.Navigation('bottom')])
+
+
+class CmsPageExcerpts(EmbeddableCMSModule):
+
+    class Spec(wiking.Specification):
+        title = _("Excerpts")
+        table = 'cms_page_excerpts'
+        def fields(self):
+            return (Field('id', _("Id")),
+                    Field('title', _("Title")),
+                    Field('page_id', _("Page"), codebook='PageStructure'),
+                    Field('lang'),
+                    ContentField('content', _("Content")),
+                    )
+        columns = ('title', 'page_id',)
+        layout = ('title', 'page_id', 'content',)
+
+    def _authorized(self, req, action, record=None, **kwargs):
+        if action == 'view' or (record and action == 'delete'):
+            return wiking.module.Pages.check_page_access(req, record['page_id'].value(),
+                                                         readonly=True)
+        return False
+
+    def store_excerpt(self, req, page_id, lang, title, content, transaction=None):
+        row = pd.Row((('page_id', page_id), ('lang', lang),
+                      ('title', title), ('content', content),))
+        return self._data.insert(row, transaction=transaction)
 
 
 class Publications(NavigablePages, EmbeddableCMSModule):
@@ -2439,7 +2513,7 @@ class PublicationChapters(NavigablePages):
         if action in ('view',):
             return req.page_read_access
         elif action in ('insert', 'update', 'position', 'commit', 'revert', 'publish', 'unpublish',
-                        'translate', 'delete'):
+                        'translate', 'delete', 'excerpt',):
             return req.page_write_access
         else:
             return False # raise NotFound or BadRequest?
