@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright (C) 2011, 2012 Brailcom, o.p.s.
+# Copyright (C) 2011, 2012, 2013 Brailcom, o.p.s.
 #
 # COPYRIGHT NOTICE
 #
@@ -21,13 +21,18 @@
 
 Thumbnails are normally updated automatically on source image changes, but when
 the administrator decides to change the thumbnail sizes (configuration option
-image_thumbnail_sizes of Wiking CMS), all thumbnails must be regenerated to
+image_thumbnail_sizes of Wiking CMS) or resized image size (configuration
+option image_screen_size), thumbnails and rezized images must be regenerated to
 match the new settings.
 
 """
 
 import sys, getopt, types, os, cStringIO, PIL.Image
-import pytis.util, pytis.data as pd, config
+import pytis.util
+import pytis.data as pd
+import config
+import wiking
+import wiking.cms
 
 def usage(msg=None):
     sys.stderr.write("""Update Wiking attachment thumbnails in the database.
@@ -39,6 +44,14 @@ Options: Pytis command line options, such as --config or --dbhost and --dbname.
         sys.stderr.write('\n')
     sys.exit(1)
 
+
+def resize(image, size):
+    img = image.copy()
+    img.thumbnail(size, PIL.Image.ANTIALIAS)
+    stream = cStringIO.StringIO()
+    img.save(stream, image.format)
+    return pd.Image.Buffer(buffer(stream.getvalue())), img.size
+
 def run():
     if '--help' in sys.argv:
         usage()
@@ -48,17 +61,15 @@ def run():
             usage()
     except getopt.GetoptError as e:
         usage(e.msg)
-    # Disable pytis logging and notification thread.
+    wiking.cfg.user_config_file = config.config_file
+    wiking.cms.cfg.user_config_file = config.config_file
     config.dblisten = False
-    # Disable pytis logging of data operations etc.
     config.log_exclude = [pytis.util.ACTION, pytis.util.EVENT, pytis.util.DEBUG, pytis.util.OPERATIONAL]
-
     while True:
         try:
-            data = pd.dbtable('_attachments',
-                              ('attachment_id', 'mime_type', 'filename',
-                               'listed', 'image', 'thumbnail', 'thumbnail_size',
-                               'thumbnail_width', 'thumbnail_height'),
+            data = pd.dbtable('cms_page_attachments',
+                              ('attachment_id', 'filename', 'image', 'thumbnail', 
+                               'thumbnail_size', 'thumbnail_width', 'thumbnail_height'),
                               config.dbconnection)
         except pd.DBLoginException as e:
             if config.dbconnection.password() is None:
@@ -66,46 +77,58 @@ def run():
                 login = config.dbuser
                 password = getpass.getpass("Enter database password for %s: " % login)
                 config.dbconnection.update_login_data(user=login, password=password)
+        else:
+            break
+    image_screen_size = wiking.cms.cfg.image_screen_size
+    image_thumbnail_sizes = wiking.cms.cfg.image_thumbnail_sizes
+    transaction = pd.DBTransactionDefault(config.dbconnection)
+    data.select(transaction=transaction)
+    try:
+        while True:
+            row = data.fetchone()
+            if row is None:
+                break
+            ext = os.path.splitext(row['filename'].value())[1].lower()
+            path = os.path.join(wiking.cms.cfg.storage, config.dbname, 'attachments',
+                                row['attachment_id'].export() + (ext or '.'))
+            attachment = file(path)
+            try:
+                image = PIL.Image.open(attachment)
+            except IOError, e:
+                continue
+            thumbnail_size = row['thumbnail_size'].value()
+            if thumbnail_size is None:
+                thumbnail_value, thumbnail_size = None, (None, None)
             else:
-                sys.stderr.write(e.message())
-                sys.exit(1)
-        else:
-            break
-    data.select()
-    rows = []
-    while True:
-        row = data.fetchone()
-        if row is None:
-            break
-        else:
-            rows.append(row)
-    for row in rows:
-        ext = os.path.splitext(row['filename'].value())[1].lower()
-        fname = os.path.join('/var/lib/wiking', config.dbname, 'attachments',
-                             str(row['attachment_id'].value()) + ext)
+                if thumbnail_size == 'small':
+                    size = image_thumbnail_sizes[0]
+                elif thumbnail_size == 'medium':
+                    size = image_thumbnail_sizes[1]
+                else:
+                    size = image_thumbnail_sizes[2]
+                thumbnail_value, real_thumbnail_size = resize(image, (size, size))
+                sys.stderr.write("Resizing thumbnail %s: %r -> %r\n" % 
+                                 (row['filename'].value(), image.size, real_thumbnail_size))
+            resized_image_value, resized_image_size = resize(image, image_screen_size)
+            sys.stderr.write("Resizing image %s: %r -> %r\n" %
+                             (row['filename'].value(), image.size, resized_image_size))
+            values = dict(thumbnail=thumbnail_value,
+                          thumbnail_width=real_thumbnail_size[0],
+                          thumbnail_height=real_thumbnail_size[1],
+                          image=resized_image_value)
+            r = pd.Row([(key, pd.Value(row[key].type(), value)) for key, value in values.items()])
+            #data.update(row['attachment_id'], r, transaction=transaction)
+    except:
         try:
-            image = PIL.Image.open(file(fname))
-        except IOError:
-            continue
-        else:
-            if image.size[0] > 400 or image.size[1] > 400:
-                img = image.copy()
-                img.thumbnail((180, 180), PIL.Image.ANTIALIAS)
-                stream = cStringIO.StringIO()
-                img.save(stream, image.format)
-                img2 = image.copy()
-                img2.thumbnail((800, 600), PIL.Image.ANTIALIAS)
-                stream2 = cStringIO.StringIO()
-                img2.save(stream2, image.format)
-                row['thumbnail'] = pd.Value(pd.Image(), pd.Image.Buffer(buffer(stream.getvalue())))
-                row['image'] = pd.Value(pd.Image(), pd.Image.Buffer(buffer(stream2.getvalue())))
-                row['thumbnail_size'] = pd.sval('medium')
-                row['thumbnail_width'] = pd.ival(img.size[0])
-                row['thumbnail_height'] = pd.ival(img.size[1])
-                row['listed'] = pd.bval(False)
-                print row['filename'].value(), image.size, img.size
-                data.update(row['attachment_id'], row)
-
+            transaction.rollback()
+        except:
+            pass
+        sys.stderr.write("Transaction rolled back.\n")
+        raise
+    else:
+        sys.stderr.write("Transaction commited.\n")
+        transaction.commit()
+    transaction.close()
 
 if __name__ == '__main__':
     run()
