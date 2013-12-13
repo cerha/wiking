@@ -2916,6 +2916,16 @@ class Attachments(ContentManagementModule):
             else:
                 return None
         return super(Attachments, self)._tooltip_provider(req, uri, record, cid)
+        
+    def _binding_column(self, req):
+        column, value = super(Attachments, self)._binding_column(req)
+        if not column:
+            # If the parent page is not the in binding column, it is in the 
+            # binding prefill, see PublicationChapters.Spec.bindings... 
+            fw = self._binding_forward(req)
+            binding, record = fw.arg('binding'), fw.arg('record') 
+            column, value = 'page_id', binding.prefill()(record)['page_id'].value()
+        return column, value
 
     def _save_attachment_file(self, record):
         storage = wiking.cms.cfg.storage
