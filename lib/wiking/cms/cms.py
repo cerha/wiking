@@ -2745,14 +2745,14 @@ class Attachments(ContentManagementModule):
             return data
 
         def _thumbnail(self, record, upload, thumbnail_size):
-            if thumbnail_size is None:
-                return None
-            elif thumbnail_size == 'small':
+            if thumbnail_size == 'small':
                 size = wiking.cms.cfg.image_thumbnail_sizes[0]
             elif thumbnail_size == 'medium':
                 size = wiking.cms.cfg.image_thumbnail_sizes[1]
-            else:
+            elif thumbnail_size == 'large':
                 size = wiking.cms.cfg.image_thumbnail_sizes[2]
+            else:
+                return None
             if upload:
                 image = upload.buffer()
             elif record['attachment_id'].value() is not None:
