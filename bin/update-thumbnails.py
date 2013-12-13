@@ -96,6 +96,8 @@ def run():
                 image = PIL.Image.open(attachment)
             except IOError, e:
                 continue
+            sys.stderr.write("Resizing %s (%dx%d): " % 
+                             (row['filename'].value(), image.size[0], image.size[1]))
             thumbnail_size = row['thumbnail_size'].value()
             if thumbnail_size is None:
                 thumbnail_value, real_thumbnail_size = None, (None, None)
@@ -107,11 +109,9 @@ def run():
                 else:
                     size = image_thumbnail_sizes[2]
                 thumbnail_value, real_thumbnail_size = resize(image, (size, size))
-                sys.stderr.write("Resizing thumbnail %s: %r -> %r\n" % 
-                                 (row['filename'].value(), image.size, real_thumbnail_size))
+                sys.stderr.write("%dx%d, " % real_thumbnail_size)
             resized_image_value, resized_image_size = resize(image, image_screen_size)
-            sys.stderr.write("Resizing image %s: %r -> %r\n" %
-                             (row['filename'].value(), image.size, resized_image_size))
+            sys.stderr.write("%dx%d\n" % resized_image_size)
             values = dict(thumbnail=thumbnail_value,
                           thumbnail_width=real_thumbnail_size[0],
                           thumbnail_height=real_thumbnail_size[1],
