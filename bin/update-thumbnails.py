@@ -98,7 +98,7 @@ def run():
                 continue
             thumbnail_size = row['thumbnail_size'].value()
             if thumbnail_size is None:
-                thumbnail_value, thumbnail_size = None, (None, None)
+                thumbnail_value, real_thumbnail_size = None, (None, None)
             else:
                 if thumbnail_size == 'small':
                     size = image_thumbnail_sizes[0]
