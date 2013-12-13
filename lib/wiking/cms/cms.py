@@ -3021,8 +3021,11 @@ class Attachments(ContentManagementModule):
     def storage_api_update(self, req, page_id, lang, filename, values):
         row = self._data.get_row(page_id=page_id, lang=lang, filename=filename)
         if row:
+            record = self._record(req, row)
+            for key, value in values.items():
+                record[key] = pd.Value(record.type(key), value)
             try:
-                self._data.update(row['attachment_key'], self._data.make_row(**values))
+                self._data.update(record.key(), record.rowdata())
             except pd.DBException as e:
                 return self._error_message(*self._analyze_exception(e))
             else:
