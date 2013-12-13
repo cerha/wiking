@@ -2714,13 +2714,13 @@ class Attachments(ContentManagementModule):
                 ext = filename and os.path.splitext(filename)[1].lower()
                 return len(ext) > 1 and ext[1:] or ext
 
-        def _resize(self, upload, size):
+        def _resize(self, image, size):
             # Compute the value by resizing the original image.
             import PIL.Image
             import cStringIO
-            if upload is None:
+            if image is None:
                 return None
-            f = cStringIO.StringIO(upload.buffer())
+            f = cStringIO.StringIO(image)
             try:
                 image = PIL.Image.open(f)
             except IOError:
@@ -2733,7 +2733,16 @@ class Attachments(ContentManagementModule):
                 return pd.Image.Buffer(buffer(stream.getvalue()))
 
         def _image(self, record, upload):
-            return self._resize(upload, wiking.cms.cfg.image_screen_size)
+            return self._resize(upload and upload.buffer(), wiking.cms.cfg.image_screen_size)
+        
+        def _file_data(self, record):
+            path = record['file_path'].value()
+            f = file(path)
+            try:
+                data = f.read()
+            finally:
+                f.close()
+            return data
 
         def _thumbnail(self, record, upload, thumbnail_size):
             if thumbnail_size is None:
@@ -2744,7 +2753,13 @@ class Attachments(ContentManagementModule):
                 size = wiking.cms.cfg.image_thumbnail_sizes[1]
             else:
                 size = wiking.cms.cfg.image_thumbnail_sizes[2]
-            return self._resize(upload, (size, size))
+            if upload:
+                image = upload.buffer()
+            elif record['attachment_id'].value() is not None:
+                image = self._file_data(record)
+            else:
+                image = None
+            return self._resize(image, (size, size))
 
         def _thumbnail_width(self, record, thumbnail):
             if thumbnail:
