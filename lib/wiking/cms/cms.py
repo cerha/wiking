@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2006-2013 Brailcom, o.p.s.
+# Copyright (C) 2006-2014 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -1881,12 +1881,15 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                         break
                     else:
                         raise Redirect('/' + row['identifier'].value())
+        if req.page_write_access or self.name() != 'Pages':
+            # The above condition is just to avoid unnecessary slowdown in the simplest case...
+            actions = self._form_actions_argument(req)
+            form = self._form(pw.ShowForm, req, record=record, layout=(), actions=actions)
+            if any(a for a in actions(form, record) if a.name() != 'view'):
+                # Append an empty show form just for the action menu.
+                content.append(lcg.Container(form, id='cms-page-actions'))
         if req.page_write_access:
-            # Append an empty show form just for the action menu.
-            form = self._form(pw.ShowForm, req, record=record, layout=(),
-                              actions=self._form_actions_argument(req))
-            content.extend([lcg.Container(form, id='cms-page-actions')] +
-                           self._related_content(req, record))
+            content.extend(self._related_content(req, record))
         return self._document(req, content, record)
 
     def action_update(self, req, record, action='update'):
