@@ -1,4 +1,4 @@
-# Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Brailcom, o.p.s.
+# Copyright (C) 2006 - 2014 Brailcom, o.p.s.
 # Author: Tomas Cerha <cerha@brailcom.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -420,6 +420,13 @@ class Configuration(pc):
         _DOC = ("A number of hours to keep the login session alive.  The session is automatically "
                 "terminated when the user has no activity for given time interval.")
         _DEFAULT = 2
+      
+    class _Option_persistent_sessions(pc.BooleanOption):
+        _DESCR = "Persistent sessions"
+        _DOC = ("When set to False (by default), the session will be ended when the browser "
+                "is closed.  When True, the remote session overlaps browser life time, but "
+                "in both cases, the option 'session_expiration' is honoured.")
+        _DEFAULT = False
       
     class _Option_resolver(pc.Option):
         _DESCR = "Wiking module resolver"

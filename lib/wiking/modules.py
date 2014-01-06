@@ -1,4 +1,4 @@
-# Copyright (C) 2005-2013 Brailcom, o.p.s.
+# Copyright (C) 2005-2014 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -544,7 +544,15 @@ class CookieAuthentication(object):
         # would be able to use HTTP authentication to make unnoticed logins.
         credentials = req.credentials()
         secure = self._SECURE_AUTH_COOKIES
-        day = 24 * 3600
+        # Session cookie expiration is used just to make the cookie persist
+        # across browser sessions. Session expiration time is checked in
+        # both cases by the session module (we don't rely on the client).
+        if wiking.cfg.persistent_sessions:
+            session_expires = wiking.cfg.session_expiration * 3600
+        else:
+            # This should make the cookie valid only until the end of the
+            # browser session.
+            session_expires = None
         if credentials:
             login, password = credentials
             if not login:
@@ -559,8 +567,9 @@ class CookieAuthentication(object):
             # Login succesfull
             self._auth_hook(req, user)
             session_key = session.session_key()
-            req.set_cookie(self._LOGIN_COOKIE, login, expires=(730 * day), secure=secure)
-            req.set_cookie(self._SESSION_COOKIE, session_key, secure=secure)
+            req.set_cookie(self._LOGIN_COOKIE, login, expires=(730 * 24 * 3600), secure=secure)
+            req.set_cookie(self._SESSION_COOKIE, session_key, expires=session_expires,
+                           secure=secure)
             session.init(req, user, session_key)
         else:
             login, session_key = (req.cookie(self._LOGIN_COOKIE),
@@ -569,9 +578,8 @@ class CookieAuthentication(object):
                 user = self._auth_user(req, login)
                 if user and session.check(req, user, session_key):
                     assert isinstance(user, User)
-                    # Session cookie expiration is unset to prevent cookie persistency.
-                    # Session expiration is implemented internally by the session module.
-                    req.set_cookie(self._SESSION_COOKIE, session_key, secure=secure)
+                    req.set_cookie(self._SESSION_COOKIE, session_key, expires=session_expires, 
+                                   secure=secure)
                 else:
                     user = None
             else:
