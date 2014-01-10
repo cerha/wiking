@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2006-2013 Brailcom, o.p.s.
+# Copyright (C) 2006-2014 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -532,17 +532,17 @@ class Application(Module):
 
         The argument 'einfo' is the exception information as returned by
         'sys.exc_info()'.
-
+        
         """
-        try:
-            # cgitb sometimes fails when the introspection touches
-            # something sensitive, such as database objects.
-            import cgitb
-            tb = cgitb.text(einfo)
-        except:
-            import traceback
-            tb = "".join(traceback.format_exception(*einfo))
-        log(OPR, "\n"+ tb)
+        # Just a brief traceback information is written to the log.
+        # The full information from cgitb is sent by email or to the
+        # browser window in debug mode.  So we keep the log short,
+        # also because the developer may observe it to find other
+        # debugging information.  On the other hand we want to log
+        # the tracebeck to allow the developer to jump to the code
+        # in an IDE.
+        import traceback
+        log(OPR, "\n" + "".join(traceback.format_exception(*einfo)))
 
     def send_bug_report(self, req, einfo):
         """Send bug report by email if 'bug_report_address' is configured.

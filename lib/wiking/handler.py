@@ -1,4 +1,4 @@
-# Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Brailcom, o.p.s.
+# Copyright (C) 2006-2014 Brailcom, o.p.s.
 # Author: Tomas Cerha <cerha@brailcom.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -307,12 +307,7 @@ class Handler(object):
             # except blocks of the inner level.
             einfo = sys.exc_info()
             self._application.send_bug_report(req, einfo)
-            if not wiking.cfg.debug:
-                # When debug is on, the full traceback goes to the browser
-                # window and it is better to leave the error log for printing
-                # debugging information (the exception makes too much noise
-                # there...) so we log the traceback only when debug is off.
-                self._application.log_traceback(req, einfo)
+            self._application.log_traceback(req, einfo)
             return self._handle_request_error(req, wiking.InternalServerError(einfo))
             
     def handle(self, req):

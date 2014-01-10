@@ -99,7 +99,7 @@ def text2content(req, text):
                 content.append(wiking.HtmlTraceback(einfo))
             else:
                 content.append(lcg.PreformattedText("%s: %s" % (e.__class__.__name__, e)))
-                wiking.module.Application.log_traceback(req, einfo)
+            wiking.module.Application.log_traceback(req, einfo)
             content = lcg.Container(content, name='wiking-content-processing-error')
             wiking.module.Application.send_bug_report(req, einfo)
     else:
