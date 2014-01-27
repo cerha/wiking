@@ -18,14 +18,16 @@
 
 """Definition of default Wiking application and its API."""
 
-from wiking import *
-
-from pytis.presentation import Computer, CbComputer
+import re
+import pytis
+import wiking
+import lcg
+from wiking import OPR, log
 
 _ = lcg.TranslatableTextFactory('wiking')
 
 
-class Application(Module):
+class Application(wiking.Module):
     """Define Wiking application behavior.
 
     Wiking application is itself a Wiking module.  This module defines the
@@ -40,7 +42,7 @@ class Application(Module):
                 'favicon.ico': 'SiteIcon',
                 'robots.txt': 'Robots',
                 }
-    """Defines static assignment of modules responsible for handling distinct URI paths. 
+    """Defines static assignment of modules responsible for handling distinct URI paths.
 
     The value is a dictionary, where keys are uri's and values are the names of
     the responsible modules as strings.  Only the first part of the request uri
@@ -65,7 +67,7 @@ class Application(Module):
     
     def __init__(self, *args, **kwargs):
         super(Application, self).__init__(*args, **kwargs)
-        self._reverse_mapping = dict([(v,k) for k,v in self._MAPPING.items()])
+        self._reverse_mapping = dict([(v, k) for k, v in self._MAPPING.items()])
 
     def initialize(self, req):
         """Perform application specific initialization.
@@ -123,7 +125,7 @@ class Application(Module):
             # be discarded by the redirection.
             user = req.user()
             if menu:
-                raise Redirect(menu[0].id())
+                raise wiking.Redirect(menu[0].id())
             elif not user:
                 # Here we handle the common case, that the menu is empty for
                 # non-authenticated users and will be non-empty after the user
@@ -131,16 +133,16 @@ class Application(Module):
                 # valid in all cases, but it typically works as expected.  If
                 # the application doesn't want this behavior, it should not
                 # return an empty menu.
-                raise AuthenticationError()
+                raise wiking.AuthenticationError()
             else:
-                raise Forbidden()
+                raise wiking.Forbidden()
         identifier = req.unresolved_path[0]
         try:
             modname = self._MAPPING[identifier]
         except KeyError:
-            raise NotFound()
+            raise wiking.NotFound()
         mod = wiking.module(modname)
-        assert isinstance(mod, RequestHandler)
+        assert isinstance(mod, wiking.RequestHandler)
         req.unresolved_path.pop(0)
         return req.forward(mod)
     
@@ -167,7 +169,7 @@ class Application(Module):
 
         """
         identitier = self._reverse_mapping.get(modname)
-        return identitier and '/'+identitier or None
+        return identitier and '/' + identitier or None
 
     def site_title(self, req):
         """Return site title as a string.
@@ -352,7 +354,7 @@ class Application(Module):
         """
         uri = req.module_uri('Stylesheets') or req.module_uri('Resources')
         if uri is not None:
-            return [lcg.Stylesheet(file, uri=uri+'/'+file, media=media)
+            return [lcg.Stylesheet(file, uri=uri + '/' + file, media=media)
                     for file, media in self._STYLESHEETS]
         else:
             return []
@@ -494,7 +496,8 @@ class Application(Module):
 
         """
         return lcg.p(_("Contact:"), ' ',
-                     lcg.link("mailto:"+wiking.cfg.webmaster_address, wiking.cfg.webmaster_address))
+                     lcg.link("mailto:" + wiking.cfg.webmaster_address,
+                              wiking.cfg.webmaster_address))
     
     def _request_info(self, req):
         return dict(
@@ -505,9 +508,9 @@ class Application(Module):
             remote_host=req.remote_host(),
             referer=req.header('Referer'),
             user_agent=req.header('User-Agent'),
-            server_software='Wiking %s, LCG %s, Pytis %s' % \
-                (wiking.__version__, lcg.__version__, pytis.__version__),
-            )
+            server_software=('Wiking %s, LCG %s, Pytis %s' %
+                             (wiking.__version__, lcg.__version__, pytis.__version__)),
+        )
     
     def log_error(self, req, error):
         """Write information about given RequestError instance into server's log.
@@ -523,7 +526,7 @@ class Application(Module):
         if wiking.cfg.debug:
             frames = ['%s:%d:%s()' % tuple(frame[1:4]) for frame in error.stack()]
             message += " (%s)" % ", ".join(reversed(frames))
-        if isinstance(error, InternalServerError):
+        if isinstance(error, wiking.InternalServerError):
             message += ' ' + error.buginfo()
         log(OPR, message)
 
@@ -556,7 +559,8 @@ class Application(Module):
         if address is None:
             return
         from xml.sax import saxutils
-        import cgitb, traceback
+        import cgitb
+        import traceback
         def param_value(param):
             if param in ('passwd', 'password'):
                 value = '<password hidden>'
@@ -582,10 +586,10 @@ class Application(Module):
             ("HTTP referer", req_info_values['referer']),
             ("User agent", req_info_values['user_agent']),
             ('Server software', req_info_values['server_software']),
-            ("Request parameters", "\n"+
+            ("Request parameters", "\n" +
              "\n".join(["  %s = %s" % (saxutils.escape(param), param_value(param))
                         for param in req.params()])),
-            )
+        )
         def escape(text):
             if isinstance(text, (tuple, list,)):
                 return [escape(t) for t in text]
@@ -595,23 +599,24 @@ class Application(Module):
             text = ("\n".join(["%s: %s" % pair for pair in req_info]) + "\n\n" +
                     cgitb.text(einfo))
         except UnicodeDecodeError:
-            text = ("\n".join(["%s: %s" % (label, escape(value),) for label, value in req_info]) + "\n\n" +
-                    escape(cgitb.text(einfo)))
+            text = ("\n".join(["%s: %s" % (label, escape(value),) for label, value in req_info]) +
+                    "\n\n" + escape(cgitb.text(einfo)))
         try:
             html = ("<html><pre>" +
-                    "".join([format_info(label, value) for label, value in req_info]) +"\n\n"+
+                    "".join([format_info(label, value) for label, value in req_info]) + "\n\n" +
                     "".join(traceback.format_exception(*einfo)) +
-                    "</pre>"+
-                    cgitb.html(einfo) +"</html>")
+                    "</pre>" +
+                    cgitb.html(einfo) + "</html>")
         except UnicodeDecodeError:
             html = ("<html><pre>" +
-                    "".join([format_info(label, escape(value)) for label, value in req_info]) +"\n\n"+
+                    "".join([format_info(label, escape(value)) for label, value in req_info]) +
+                    "\n\n" +
                     "".join(escape(traceback.format_exception(*einfo))) +
-                    "</pre>"+
+                    "</pre>" +
                     escape(cgitb.html(einfo))
-                    +"</html>")
-        subject = 'Wiking Error: ' + InternalServerError(einfo).buginfo()
-        err = send_mail(address, subject, text, html=html,
+                    + "</html>")
+        subject = 'Wiking Error: ' + wiking.InternalServerError(einfo).buginfo()
+        err = wiking.send_mail(address, subject, text, html=html,
                         headers=(('Reply-To', address),
                                  ('X-Wiking-Bug-Report-From', wiking.cfg.server_hostname)))
         if err:
