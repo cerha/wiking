@@ -1825,7 +1825,16 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
         # Main content
         modname = record['modname'].value()
         if modname is not None:
-            content = wiking.module(modname).embed(req)
+            from pytis.util import ResolverError
+            try:
+                module = wiking.module(modname)
+            except ResolverError:
+                # Allow changing the module if it no longer exists.
+                content = [lcg.Container(lcg.coerce(_("Unknown module: %s", modname)), 
+                                         name='errors')]
+                wiking.module.Application.send_bug_report(req, sys.exc_info())
+            else:
+                content = module.embed(req)
         else:
             content = []
         if wiking.module.Application.preview_mode(req):
