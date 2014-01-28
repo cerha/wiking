@@ -2033,16 +2033,30 @@ class NavigablePages(Pages):
             self._position = position
             super(NavigablePages.Navigation, self).__init__()
 
-        def export(self, context):
-            g = context.generator()
-            req = context.req()
-            node = context.node()
+        def _navigation_links(self, req, node):
             publication_id = '/%s/data/%s' % (req.page_record['identifier'].value(),
                                               req.publication_record['identifier'].value())
-            publication = [n for n in node.path() if n.id() == publication_id][0]
-            def ctrl(target, cls, label):
+            top = [n for n in node.path() if n.id() == publication_id][0]
+            def target(tnode):
+                if tnode and tnode is not node and top in tnode.path():
+                    return tnode
+                else:
+                    return None
+            return (
+                # Translators: Label of a link in sequential navigation.
+                (target(node.prev()), 'prev', _('Previous Chapter')),
+                # Translators: Label of a link in sequential navigation.
+                (target(node.next()), 'next', _('Next Chapter')),
+                # Translators: Label of a link to the start page of a publication.
+                (target(top), 'top', _('Top')),
+            )
+            
+
+        def export(self, context):
+            g = context.generator()
+            def ctrl(node, label, cls):
                 # Check that the target node is within the publications's children.
-                if target and publication in target.path():
+                if node:
                     uri = context.uri(target)
                     title = target.title()
                 else:
@@ -2054,9 +2068,8 @@ class NavigablePages(Pages):
                     cls += ' dead'
                 return g.a(label, href=uri, title=label + ': ' + title,
                            cls='navigation-ctrl ' + cls)
-            # Translators: Label of a link in sequential navigation.
-            return g.div((ctrl(node.prev(), 'prev', _('Previous Chapter')), ' | ',
-                          ctrl(node.next(), 'next', _('Next Chapter'))),
+            return g.div(' | '.join([ctrl(target, label, cls) for target, cls, label
+                                     in self._navigation_links(context.req(), context.node())]),
                          cls='page-navigation ' + self._position)
 
     def _inner_page_content(self, req, record):
