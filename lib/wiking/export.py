@@ -1,4 +1,4 @@
-# Copyright (C) 2006-2013 Brailcom, o.p.s.
+# Copyright (C) 2006-2014 Brailcom, o.p.s.
 # Author: Tomas Cerha <cerha@brailcom.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -125,6 +125,10 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
                     for node in context.node().path()[1:-1]])
         cls.extend(['lang-%s' % context.lang(),
                     (context.node().layout() or self.Layout.DEFAULT) + '-layout'])
+        if context.req().maximized():
+            cls.append('maximized')
+        else:
+            cls.append('non-maximized')
         return super(Exporter, self)._body_attr(context, onload=onload, cls=' '.join(cls), **kwargs)
 
     def _body_content(self, context):
@@ -354,11 +358,21 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
     
     def _main(self, context):
         g = self._generator
+        if context.req().maximized():
+            label = g.img('/_resources/minimize.png', alt=_("Minimize"))
+            tooltip = _("Exit the maximized mode.")
+            href = '?maximize=0'
+        else:
+            label = g.img('/_resources/maximize.png', alt=_("Maximize"))
+            tooltip = _("Maximize the main content to the full size of the browser window.")
+            href = '?maximize=1'
         return (g.hr(cls='hidden'),
-                g.div((g.h(g.a(context.node().page_heading(), tabindex=0,
-                               name='main-heading', id='main-heading'), 1),
-                       self._messages(context),
-                       super(Exporter, self)._content(context)), id='content'),
+                g.div((
+                    g.a(label, href=href, title=tooltip, id='maximized-mode-control'),
+                    g.h(g.a(context.node().page_heading(), tabindex=0,
+                            name='main-heading', id='main-heading'), 1),
+                    self._messages(context),
+                    super(Exporter, self)._content(context)), id='content'),
                 g.div('&nbsp;', id='clearing'))
 
     def _page_clearing(self, context):

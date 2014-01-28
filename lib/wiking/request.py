@@ -1,4 +1,4 @@
-# Copyright (C) 2006-2013 Brailcom, o.p.s.
+# Copyright (C) 2006-2014 Brailcom, o.p.s.
 # Author: Tomas Cerha <cerha@brailcom.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -295,6 +295,7 @@ class Request(ServerInterface):
             return self.utcoffset(dt) - datetime.timedelta(minutes=self._winter_offset)
 
     _PANELS_COOKIE = 'wiking_show_panels'
+    _MAXIMIZED_MODE_COOKIE = 'wiking_maximized_mode'
     _MESSAGES_COOKIE = 'wiking_messages'
     _TZ_OFFSETS_COOKIE = 'wiking_tz_offsets'
     _UNDEFINED = object()
@@ -338,6 +339,11 @@ class Request(ServerInterface):
             self._show_panels = True
         else:
             self._show_panels = self.cookie(self._PANELS_COOKIE) != 'no'
+        if self.has_param('maximize'):
+            self._maximized = self.param('maximize') == '1'
+            self.set_cookie(self._MAXIMIZED_MODE_COOKIE, self._maximized and 'yes' or 'no')
+        else:
+            self._maximized = self.cookie(self._MAXIMIZED_MODE_COOKIE) == 'yes' 
         self.path = [item for item in self.uri().split('/')[1:] if item]
         if '..' in self.path:
             # Prevent directory traversal attacs globally (no need to handle them all around).
@@ -760,6 +766,15 @@ class Request(ServerInterface):
 
         """
         return self._show_panels
+
+    def maximized(self):
+        """Return True if Wiking maximized content mode is currently on.
+
+        The Request instance tracks the state of maximization and
+        uses cookies to make this setting persistent.
+
+        """
+        return self._maximized
 
     def accepted_languages(self):
         """Return the tuple of language codes set in 'Accept-Language' sorted by their preference.
