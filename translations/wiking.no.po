@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2013-12-13 21:02+0100\n"
+"POT-Creation-Date: 2014-01-28 20:32+0100\n"
 "PO-Revision-Date: 2010-01-19 16:40+0100\n"
 "Last-Translator: Petr Topiarz <topiarz@post.cz>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
@@ -18,26 +18,26 @@ msgstr ""
 
 #. Website idiom. This is followed by information on the underlying software
 #. tools.  Means: This website runs on [...this and that software...].
-#: ../lib/wiking/application.py:412
+#: ../lib/wiking/application.py:414
 msgid "Powered by"
 msgstr "Drevet av"
 
-#: ../lib/wiking/application.py:430
+#: ../lib/wiking/application.py:432
 msgid "Accessibility Statement"
 msgstr "Tilgjengelighetserklæring"
 
 #. Heading of webpage left side hierarchical navigation
 #. menu containing a list of links to pages in this web section
-#: ../lib/wiking/application.py:443
+#: ../lib/wiking/application.py:445
 msgid "In this section:"
 msgstr "I denne seksjonen:"
 
-#: ../lib/wiking/application.py:452 ../lib/wiking/export.py:106
-#: ../lib/wiking/export.py:243
+#: ../lib/wiking/application.py:454 ../lib/wiking/export.py:106
+#: ../lib/wiking/export.py:247
 msgid "Local navigation"
 msgstr "Lokalnavigasjon"
 
-#: ../lib/wiking/application.py:496
+#: ../lib/wiking/application.py:498
 msgid "Contact:"
 msgstr "Kontakt:"
 
@@ -122,11 +122,11 @@ msgstr ""
 #. Settings label. URI means a link. Do not translate ''URI''.
 #. Yes/No configuration option label.
 #. Should the login panel display user role (as Admin, Student, Tutor etc.)
-#: ../lib/wiking/configuration.py:445
+#: ../lib/wiking/configuration.py:452
 msgid "Display role in login panel"
 msgstr ""
 
-#: ../lib/wiking/configuration.py:446
+#: ../lib/wiking/configuration.py:453
 msgid ""
 "If enabled, the login panel on each page will not display only the current "
 "username, but also his current user role, which affects his permissions."
@@ -290,12 +290,12 @@ msgstr "En RSS-kanal  er tilgjengelig for denne seksjonen:"
 msgid "Page heading"
 msgstr "Sideoverskrift"
 
-#: ../lib/wiking/export.py:105 ../lib/wiking/export.py:241
-#: ../lib/wiking/export.py:271 ../lib/wiking/export.py:289
+#: ../lib/wiking/export.py:105 ../lib/wiking/export.py:245
+#: ../lib/wiking/export.py:275 ../lib/wiking/export.py:293
 msgid "Main navigation"
 msgstr "Hovednavigasjon"
 
-#: ../lib/wiking/export.py:107 ../lib/wiking/export.py:239
+#: ../lib/wiking/export.py:107 ../lib/wiking/export.py:243
 msgid "Main content"
 msgstr "Innhold"
 
@@ -304,7 +304,7 @@ msgid "Page footer"
 msgstr "Sidefot"
 
 #. Title of a dialog on a webpage
-#: ../lib/wiking/export.py:109 ../lib/wiking/export.py:245
+#: ../lib/wiking/export.py:109 ../lib/wiking/export.py:249
 #: ../lib/wiking/util.py:336
 msgid "Language selection"
 msgstr "Språkvalg"
@@ -314,40 +314,56 @@ msgstr "Språkvalg"
 msgid "Language:"
 msgstr "Språk:"
 
-#: ../lib/wiking/export.py:249
+#: ../lib/wiking/export.py:253
 msgid "Jump in page"
 msgstr "Gå på siden"
 
 #. A label followed by location information in webpage navigation
-#: ../lib/wiking/export.py:254
+#: ../lib/wiking/export.py:258
 msgid "You are here:"
 msgstr "Du er her:"
 
-#: ../lib/wiking/export.py:292
+#: ../lib/wiking/export.py:296
 msgid "Expand/collapse complete menu hierarchy"
 msgstr ""
 
 #. Panels are small windows on the side of the page. This is a label
 #. for a link that shows/hides the panels.
-#: ../lib/wiking/export.py:309
+#: ../lib/wiking/export.py:313
 msgid "Show panels"
 msgstr "Vis panelene"
 
-#: ../lib/wiking/export.py:310
+#: ../lib/wiking/export.py:314
 msgid "Hide panels"
 msgstr "Skjul panelene"
 
 #. ``RSS channel'' is terminology idiom, see Wikipedia
-#: ../lib/wiking/export.py:322
+#: ../lib/wiking/export.py:326
 msgid "RSS channel"
 msgstr "RSS-kanal"
 
-#: ../lib/wiking/export.py:347
+#: ../lib/wiking/export.py:351
 msgid "Warning"
 msgstr "Advarsel"
 
+#: ../lib/wiking/export.py:362
+msgid "Minimize"
+msgstr ""
+
+#: ../lib/wiking/export.py:363
+msgid "Exit the maximized mode."
+msgstr ""
+
+#: ../lib/wiking/export.py:366
+msgid "Maximize"
+msgstr ""
+
+#: ../lib/wiking/export.py:367
+msgid "Maximize the main content to the full size of the browser window."
+msgstr ""
+
 #. Information about last change of a webpage (when and who)
-#: ../lib/wiking/export.py:370
+#: ../lib/wiking/export.py:384
 #, python-format
 msgid "Last change: %(date)s, %(user)s"
 msgstr "Sist endret: %(date)s, %(user)s"
@@ -364,63 +380,63 @@ msgstr "Vedlikeholdsmodus"
 msgid "The system is temporarily down for maintenance."
 msgstr "Systemet er midlertidig nede for vedlikehold."
 
-#: ../lib/wiking/modules.py:551
+#: ../lib/wiking/modules.py:559
 msgid "Enter your login name, please!"
 msgstr "Vennligst skriv inn ditt innloggingsnavn!"
 
-#: ../lib/wiking/modules.py:553
+#: ../lib/wiking/modules.py:561
 msgid "Enter your password, please!"
 msgstr "Vennligst skriv inn ditt passord!"
 
-#: ../lib/wiking/modules.py:557
+#: ../lib/wiking/modules.py:565
 msgid "Invalid login!"
 msgstr "Ugyldig innlogging!"
 
-#: ../lib/wiking/modules.py:650
+#: ../lib/wiking/modules.py:658
 msgid "Searching"
 msgstr "Søker"
 
-#: ../lib/wiking/modules.py:651
+#: ../lib/wiking/modules.py:659
 msgid "Search results"
 msgstr "Søkeresultat"
 
-#: ../lib/wiking/modules.py:652
+#: ../lib/wiking/modules.py:660
 msgid "Given search term doesn't contain any searchable term."
 msgstr "Oppgitt søkeord inneholder ingen søkbare termer."
 
-#: ../lib/wiking/modules.py:656
+#: ../lib/wiking/modules.py:664
 msgid "Search words:"
 msgstr "Søk ordene:"
 
-#: ../lib/wiking/modules.py:657
+#: ../lib/wiking/modules.py:665
 msgid "Search"
 msgstr "Søk"
 
-#: ../lib/wiking/modules.py:713
+#: ../lib/wiking/modules.py:721
 msgid "Nothing found."
 msgstr "Ingenting funnet."
 
-#: ../lib/wiking/modules.py:770
+#: ../lib/wiking/modules.py:778
 msgid "The following modules were successfully reloaded:"
 msgstr "Følgende moduler lastet på nytt:"
 
-#: ../lib/wiking/modules.py:772
+#: ../lib/wiking/modules.py:780
 msgid "Reload"
 msgstr "Last på nytt"
 
 #. Short description of a user group purpose.
-#: ../lib/wiking/request.py:1266
+#: ../lib/wiking/request.py:1281
 msgid "Anyone"
 msgstr ""
 
 #. Short description of a user group purpose.
-#: ../lib/wiking/request.py:1269
+#: ../lib/wiking/request.py:1284
 #, fuzzy
 msgid "Any authenticated user"
 msgstr "Godkjenning kreves"
 
 #. Short description of a user group purpose.
-#: ../lib/wiking/request.py:1276
+#: ../lib/wiking/request.py:1291
 msgid "Current record owner"
 msgstr ""
 
