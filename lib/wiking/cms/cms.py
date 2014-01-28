@@ -2414,7 +2414,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                                                     'owner_name', 'published_since', 'notes')
                                     if record[fid].value() is not None])] +
                 super(Publications, self)._inner_page_content(req, record) +
-                [lcg.NodeIndex(title=_("Table of Contents"))])
+                [lcg.Section(_("Table of Contents"), lcg.NodeIndex())])
 
     def _child_rows(self, req, record):
         children = wiking.module.PublicationChapters.child_rows(req,
