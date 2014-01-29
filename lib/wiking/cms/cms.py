@@ -2044,14 +2044,13 @@ class NavigablePages(Pages):
                     return None
             return (
                 # Translators: Label of a link in sequential navigation.
-                (target(node.prev()), 'prev', _('Previous Chapter')),
+                (target(node.prev()), 'prev', _("Previous Chapter")),
                 # Translators: Label of a link in sequential navigation.
-                (target(node.next()), 'next', _('Next Chapter')),
+                (target(node.next()), 'next', _("Next Chapter")),
                 # Translators: Label of a link to the start page of a publication.
-                (target(top), 'top', _('Top')),
+                (target(top), 'top', _("Top")),
             )
             
-
         def export(self, context):
             g = context.generator()
             def ctrl(node, label, cls):
@@ -2068,8 +2067,9 @@ class NavigablePages(Pages):
                     cls += ' dead'
                 return g.a(label, href=uri, title=label + ': ' + title,
                            cls='navigation-ctrl ' + cls)
-            return g.div(' | '.join([ctrl(target, label, cls) for target, cls, label
-                                     in self._navigation_links(context.req(), context.node())]),
+            return g.div(lcg.concat([ctrl(target, label, cls) for target, cls, label
+                                     in self._navigation_links(context.req(), context.node())],
+                                    separator=' | '),
                          cls='page-navigation ' + self._position)
 
     def _inner_page_content(self, req, record):
