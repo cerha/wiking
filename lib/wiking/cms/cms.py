@@ -3359,6 +3359,12 @@ class _News(ContentManagementModule, EmbeddableCMSModule, wiking.CachingPytisMod
 
 
 class News(_News):
+    class Filters(pp.Enumeration):
+        enumeration = (
+            ('recent', _("Recent news")),
+            ('archive', _("Archive of older news")),
+        )
+
     class Spec(_News.Spec):
         # Translators: Section title and menu item
         title = _("News")
@@ -3377,14 +3383,18 @@ class News(_News):
         layout = ('timestamp', 'days_displayed', 'title', 'content')
         list_layout = pp.ListLayout('title', meta=('timestamp', 'author'), content=('content',),
                                     anchor="item-%s", popup_actions=True)
-        filter_sets = (pp.FilterSet('filter', _("Show"), default='recent', filters=(
-            pp.Filter('recent', _("Recent news"),
-                      pd.FunctionCondition('cms_recent_timestamp',
-                                           'timestamp', 'days_displayed')),
-            pp.Filter('archive', _("Archive of older news"),
-                      pd.NOT(pd.FunctionCondition('cms_recent_timestamp',
-                                                  'timestamp', 'days_displayed'))),
-            pp.Filter('all', _("All items")))),)
+        def query_fields(self):
+            return (Field('filter', _("Show"), enumerator=News.Filters,
+                          null_display=_("All items"), not_null=False, default='recent'),)
+        def condition_provider(self, query_fields={}, **kwargs):
+            f = query_fields['filter'].value()
+            if f == 'recent':
+                return pd.FunctionCondition('cms_recent_timestamp', 'timestamp', 'days_displayed')
+            elif f == 'archive':
+                return pd.NOT(pd.FunctionCondition('cms_recent_timestamp',
+                                                   'timestamp', 'days_displayed'))
+            else:
+                return None
 
     # Translators: Button label for creating a new message in "News".
     _INSERT_LABEL = _("New message")
