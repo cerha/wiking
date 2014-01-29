@@ -1086,14 +1086,6 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
 
     def _filter_sets(self, req):
         """DEPRECATED: Use query_fields ins specification instead."""
-        filters = self._filters(req)
-        if filters:
-            return (pp.FilterSet('filter', _("Filter"), filters),)
-        else:
-            return None
-
-    def _filters(self, req):
-        """DEPRECATED: Use query_fields ins specification instead."""
         return None
 
     def _action_args(self, req):
