@@ -258,6 +258,7 @@ div.panel form { margin: 0.3em 0; }
 #main h1 {
     margin-top: 0;
     margin-bottom: 0.8em;
+    padding-right: 24px; /* Space for the maximize/minimize button. */
 }
 #content {
     position: relative; /* fix MSIE background painting */
