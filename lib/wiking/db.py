@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2005-2013 Brailcom, o.p.s.
+# Copyright (C) 2005-2014 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -1085,18 +1085,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         return None
 
     def _filter_sets(self, req):
-        """Return dynamically created filter sets.
-
-        'None' means to use the default list of filter sets defined by the
-        specification.  Otherwise a sequence 'pytis.presentation.FilterSet'
-        instances is expected.
-
-        Override this metod to dynamically change the list of user visible
-        filter sets in the BrowseForm/ListView form.  The default
-        implementation returns 'None' (to use the default static list from
-        specification).
-
-        """
+        """DEPRECATED: Use query_fields ins specification instead."""
         filters = self._filters(req)
         if filters:
             return (pp.FilterSet('filter', _("Filter"), filters),)
@@ -1104,13 +1093,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
             return None
 
     def _filters(self, req):
-        """Return a list of dynamic filters as 'pytis.presentation.Filter' instances or None.
-
-        This is just a more convenient filter set definition for cases when
-        there is just one set of filters.  Use '_filter_sets()' in all other
-        cases.
-
-        """
+        """DEPRECATED: Use query_fields ins specification instead."""
         return None
 
     def _action_args(self, req):
