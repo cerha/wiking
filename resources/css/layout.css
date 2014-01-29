@@ -77,8 +77,8 @@ body.non-maximized #page.with-menu {
 
 #maximized-mode-control {
     position: absolute;
-    top: 2px;
-    right: 3px;
+    top: 4px;
+    right: 4px;
 }
 
 body.maximized #top,
