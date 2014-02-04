@@ -25,6 +25,7 @@ import types
 import urllib
 
 import pytis
+import pytis.web
 import lcg
 import wiking
 from wiking import log, OPR, format_http_date, parse_http_date

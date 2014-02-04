@@ -235,7 +235,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
     _BROWSE_FORM_DEFAULT_LIMIT = 50
     """Default value to pass to 'pytis.web.BrowseForm' 'limit' constructor argument."""
     _ALLOW_QUERY_SEARCH = None
-    """Default value to pass to 'pytis.web.BrowseForm' 'allow_query_search' constructor argument."""
+    """Default value to pass to 'pytis.web.BrowseForm' 'allow_text_search' constructor argument."""
     _TOP_ACTIONS = False
     "If true, action menu is put above BrowseForm/ListView forms."
     _BOTTOM_ACTIONS = True
@@ -769,7 +769,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
             default_kwargs = dict(
                 limits=self._BROWSE_FORM_LIMITS,
                 limit=self._BROWSE_FORM_DEFAULT_LIMIT,
-                allow_query_search=self._ALLOW_QUERY_SEARCH,
+                allow_text_search=self._ALLOW_QUERY_SEARCH,
                 top_actions=self._TOP_ACTIONS,
                 bottom_actions=self._BOTTOM_ACTIONS,
                 row_actions=self._ROW_ACTIONS,
