@@ -1784,7 +1784,11 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                 content = self._binding_content(req, record, binding)
                 if content:
                     anchor = 'binding-' + binding.id()
-                    if req.param('form_name') == binding.name():
+                    if req.param('set_binding_id') == binding.id():
+                        active = anchor
+                    if active is None and req.param('form_name') == binding.name():
+                        # Form name may not be unique, so always give a higher precedence to
+                        # binding_id if present...
                         active = anchor
                     sections.append(lcg.Section(title=binding.title(), descr=binding.descr(),
                                                 anchor=anchor, content=content))
