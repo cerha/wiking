@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2006-2013 Brailcom, o.p.s.
+# Copyright (C) 2006-2014 Brailcom, o.p.s.
 #
 # COPYRIGHT NOTICE
 #
@@ -674,7 +674,8 @@ class Users(UserManagementModule, CachingPytisModule):
                 return plaintext_password
 
         def _check_old_password(self, record):
-            if record.req().param('action') == 'passwd':
+            req = record.req()
+            if req.param('action') == 'passwd' and not req.check_roles(Roles.USER_ADMIN):
                 old_password = self._stored_password(record['old_password'].value())
                 if not old_password:
                     return ('old_password', _(u"Enter your current password."))
