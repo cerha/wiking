@@ -2280,9 +2280,9 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                       descr=_("Year when the original work was published.")),
                 Field('edition', _("Edition"), width=3,
                       descr=_("Numeric order of the original work's edition.")),
-                Field('copyright_notice', _("Copyright Notice"), width=60, height=4,
+                Field('copyright_notice', _("Copyright Notice"), width=78, height=4, compact=True,
                       computer=computer(self._copyright_notice), editable=ALWAYS),
-                Field('notes', _("Notes"), width=60, height=4,
+                Field('notes', _("Notes"), width=78, height=4, compact=True,
                       descr=_("Any other additional information about the publication, "
                               "such as names of translators, reviewers etc.")),
                 Field('pubinfo', _("Published<publisher>"), virtual=True,
