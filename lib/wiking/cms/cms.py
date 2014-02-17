@@ -2298,10 +2298,11 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
         def _attachment_storage_uri(self, record):
             return '/%s/data/%s/attachments' % (record.req().page_record['identifier'].value(),
                                                 record['identifier'].value())
-        def _copyright_notice(self, record):
+        def _copyright_notice(self, record, lang):
             notice = record['copyright_notice'].value()
             if record.new() and notice is None:
-                notice = wiking.module.Texts.text(wiking.cms.texts.default_copyright_notice)
+                notice = wiking.module.Texts.text(record.req(),
+                                                  wiking.cms.texts.default_copyright_notice, lang)
             return notice
         def _pubinfo(self, record, publisher, published_year, edition):
             if publisher:
