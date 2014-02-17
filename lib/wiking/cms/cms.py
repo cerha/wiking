@@ -2430,10 +2430,10 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                 return ''
         return ([wiking.HtmlRenderer(cover_image),
                  self._form(pw.ShowForm, req, record=record, actions=(),
-                            layout=[fid for fid in ('description', 'copyright_notice',
-                                                    'author', 'illustrator',
+                            layout=[fid for fid in ('description', 'author', 'illustrator',
                                                     'isbn', 'pubinfo', 'lang',
-                                                    'owner_name', 'published_since', 'notes')
+                                                    'owner_name', 'published_since', 
+                                                    'copyright_notice', 'notes')
                                     if record[fid].value() is not None])] +
                 super(Publications, self)._inner_page_content(req, record) +
                 [lcg.Section(_("Table of Contents"), lcg.NodeIndex())])
