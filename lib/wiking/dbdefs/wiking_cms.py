@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2006-2013 Brailcom, o.p.s.
+# Copyright (C) 2006-2014 Brailcom, o.p.s.
 #
 # COPYRIGHT NOTICE
 #
@@ -649,6 +649,7 @@ class CmsPublications(CommonAccesRights, sql.SQLTable):
                          doc="year published"),
               sql.Column('edition', pytis.data.Integer(),
                          doc="first, second, ..."),
+              sql.Column('copyright_notice', pytis.data.String()),
               sql.Column('notes', pytis.data.String(),
                          doc="any other additional info, such as translator(s), reviewer(s) etc."),
               )
@@ -684,9 +685,9 @@ class CmsVPublications(CommonAccesRights, sql.SQLView):
              new.title, new.description, new.content,
              new._title, new._description, new._content);
      insert into cms_publications (page_id, author, isbn, cover_image, illustrator,
-                                   publisher, published_year, edition, notes)
+                                   publisher, published_year, edition, copyright_notice, notes)
      select page_id, new.author, new.isbn, new.cover_image, new.illustrator,
-            new.publisher, new.published_year, new.edition, new.notes
+            new.publisher, new.published_year, new.edition, copyright_notice, new.notes
      from cms_pages where identifier=new.identifier and site=new.site and kind=new.kind
      returning page_id, page_id ||'.'|| (select min(lang) from cms_page_texts
         where page_id=cms_publications.page_id), null::text,
@@ -696,7 +697,7 @@ class CmsVPublications(CommonAccesRights, sql.SQLView):
        null::text, null::text, null::text, null::text, null::text,
        null::varchar(64), null::text, null::varchar(64), null::text,
        author, isbn, cover_image, illustrator,
-       publisher, published_year, edition, notes, null::text;
+       publisher, published_year, edition, copyright_notice, notes, null::text;
         )""",)
     def on_update(self):
         return ("""(
@@ -732,6 +733,7 @@ class CmsVPublications(CommonAccesRights, sql.SQLView):
         publisher = new.publisher,
         published_year = new.published_year,
         edition = new.edition,
+        copyright_notice = new.copyright_notice,
         notes = new.notes
     where page_id = old.page_id;
         )""",)

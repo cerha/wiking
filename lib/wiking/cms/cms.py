@@ -2280,6 +2280,8 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                       descr=_("Year when the original work was published.")),
                 Field('edition', _("Edition"), width=3,
                       descr=_("Numeric order of the original work's edition.")),
+                Field('copyright_notice', _("Copyright Notice"), width=60, height=4,
+                      computer=computer(self._copyright_notice), editable=ALWAYS),
                 Field('notes', _("Notes"), width=60, height=4,
                       descr=_("Any other additional information about the publication, "
                               "such as names of translators, reviewers etc.")),
@@ -2296,6 +2298,11 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
         def _attachment_storage_uri(self, record):
             return '/%s/data/%s/attachments' % (record.req().page_record['identifier'].value(),
                                                 record['identifier'].value())
+        def _copyright_notice(self, record):
+            notice = record['copyright_notice'].value()
+            if record.new() and notice is None:
+                notice = wiking.module.Texts.text(wiking.cms.texts.default_copyright_notice)
+            return notice
         def _pubinfo(self, record, publisher, published_year, edition):
             if publisher:
                 info = publisher
@@ -2311,7 +2318,8 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
         layout = ('title', 'description', 'lang', 'identifier', 'cover_image',
                   FieldSet(_("Bibliographic information"),
                            ('author', 'illustrator', 'isbn',
-                            'publisher', 'published_year', 'edition', 'notes')),
+                            'publisher', 'published_year', 'edition',
+                            'copyright_notice', 'notes')),
                   '_content',
                   FieldSet(_("Access Rights"),
                            ('read_role_id', 'write_role_id', 'owner')),
@@ -2422,7 +2430,8 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                 return ''
         return ([wiking.HtmlRenderer(cover_image),
                  self._form(pw.ShowForm, req, record=record, actions=(),
-                            layout=[fid for fid in ('description', 'author', 'illustrator',
+                            layout=[fid for fid in ('description', 'copyright_notice',
+                                                    'author', 'illustrator',
                                                     'isbn', 'pubinfo', 'lang',
                                                     'owner_name', 'published_since', 'notes')
                                     if record[fid].value() is not None])] +

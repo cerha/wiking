@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2009, 2010, 2011, 2012, 2013 Brailcom, o.p.s.
+# Copyright (C) 2009-2014 Brailcom, o.p.s.
 #
 # COPYRIGHT NOTICE
 #
@@ -98,3 +98,8 @@ footer = Text(
     # Translators: Label followed by an email address link.
     _("Contact:") + ' $webmaster_address')
     
+
+default_copyright_notice = Text(
+    'cms.default_copyright_notice',
+    _("Default value of the Copyright Notice field for newly created publications."),
+    None)
