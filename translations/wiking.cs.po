@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-01-28 20:32+0100\n"
+"POT-Creation-Date: 2014-02-17 17:17+0100\n"
 "PO-Revision-Date: 2014-01-28 20:38+0100\n"
 "Last-Translator: Hynek Hanke <hanke@brailcom.org>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
@@ -271,39 +271,31 @@ msgstr "Záznam byl úspěšně aktualizován."
 msgid "The record was deleted."
 msgstr "Záznam byl odstraněn."
 
-#: ../lib/wiking/db.py:533
-msgid "Integrity check failed."
-msgstr "Kontrola integrity dat selhala."
-
-#: ../lib/wiking/db.py:589
+#: ../lib/wiking/db.py:461
 msgid "Unable to perform a database operation:"
 msgstr "Provedení databázové operace se nezdařilo:"
 
-#: ../lib/wiking/db.py:1102
-msgid "Filter"
-msgstr "Filtr"
-
-#: ../lib/wiking/db.py:2157
+#: ../lib/wiking/db.py:1963
 msgid "Back"
 msgstr "Zpět"
 
 #. Back button label. Standard computer terminology.
 #. RSS channel is a computer idiom, see Wikipedia.
-#: ../lib/wiking/db.py:2365 ../lib/wiking/db.py:2521
+#: ../lib/wiking/db.py:2171 ../lib/wiking/db.py:2327
 msgid "An RSS channel is available for this section:"
 msgstr "K dispozici je také RSS kanál pro tuto sekci:"
 
 #. RSS channel is a computer idiom, see Wikipedia.  Don't translateg 'RSS'.
-#: ../lib/wiking/db.py:2369 ../lib/wiking/db.py:2519
+#: ../lib/wiking/db.py:2175 ../lib/wiking/db.py:2325
 msgid "more about RSS"
 msgstr "více o RSS"
 
-#: ../lib/wiking/db.py:2514
+#: ../lib/wiking/db.py:2320
 #, python-format
 msgid "RSS channel \"%s\""
 msgstr "RSS kanál „%s“"
 
-#: ../lib/wiking/db.py:2524
+#: ../lib/wiking/db.py:2330
 msgid "RSS channels are available for this section"
 msgstr "Pro tuto sekci jsou k dispozici RSS kanály"
 
@@ -447,17 +439,17 @@ msgid "Reload"
 msgstr "Načíst znovu"
 
 #. Short description of a user group purpose.
-#: ../lib/wiking/request.py:1281
+#: ../lib/wiking/request.py:1282
 msgid "Anyone"
 msgstr "Kdokoliv"
 
 #. Short description of a user group purpose.
-#: ../lib/wiking/request.py:1284
+#: ../lib/wiking/request.py:1285
 msgid "Any authenticated user"
 msgstr "Jakýkoliv autentizovaný uživatel"
 
 #. Short description of a user group purpose.
-#: ../lib/wiking/request.py:1291
+#: ../lib/wiking/request.py:1292
 msgid "Current record owner"
 msgstr "Vlastník tohoto záznamu"
 
@@ -685,13 +677,13 @@ msgstr "Použít heslo"
 msgid "Continue"
 msgstr "Pokračovat"
 
-#: ../lib/wiking/util.py:2046
+#: ../lib/wiking/util.py:2051
 msgid "Invalid format"
 msgstr "Neplatný formát"
 
 #. Computer terminology. `gmail.com' is a domain name in email address
 #. `joe@gmail.com'.
-#: ../lib/wiking/util.py:2054 ../lib/wiking/util.py:2061
+#: ../lib/wiking/util.py:2059 ../lib/wiking/util.py:2066
 msgid "Domain not found"
 msgstr "Doména nenalezena"
 
@@ -718,6 +710,12 @@ msgstr "Citovat"
 #: ../resources/scripts/discussion.js:108
 msgid "Cancel"
 msgstr "Zrušit"
+
+#~ msgid "Integrity check failed."
+#~ msgstr "Kontrola integrity dat selhala."
+
+#~ msgid "Filter"
+#~ msgstr "Filtr"
 
 #~ msgid "No records."
 #~ msgstr "Žádné záznamy"

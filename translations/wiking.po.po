@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-01-28 20:32+0100\n"
+"POT-Creation-Date: 2014-02-17 17:17+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Petr Topiarz <topiarz@post.cz>\n"
 "Language-Team: \n"
@@ -244,40 +244,32 @@ msgstr "O registo foi actualizado com êxito."
 msgid "The record was deleted."
 msgstr "O registo foi apagado."
 
-#: ../lib/wiking/db.py:533
-msgid "Integrity check failed."
-msgstr "Controlo íntegro falhou."
-
-#: ../lib/wiking/db.py:589
+#: ../lib/wiking/db.py:461
 #, fuzzy
 msgid "Unable to perform a database operation:"
 msgstr "Não é possível executar a operação na base de dados."
 
-#: ../lib/wiking/db.py:1102
-msgid "Filter"
-msgstr ""
-
-#: ../lib/wiking/db.py:2157
+#: ../lib/wiking/db.py:1963
 msgid "Back"
 msgstr "Voltar"
 
 #. Back button label. Standard computer terminology.
 #. RSS channel is a computer idiom, see Wikipedia.
-#: ../lib/wiking/db.py:2365 ../lib/wiking/db.py:2521
+#: ../lib/wiking/db.py:2171 ../lib/wiking/db.py:2327
 msgid "An RSS channel is available for this section:"
 msgstr "Para esta secção também está disponível em canal RSS:"
 
 #. RSS channel is a computer idiom, see Wikipedia.  Don't translateg 'RSS'.
-#: ../lib/wiking/db.py:2369 ../lib/wiking/db.py:2519
+#: ../lib/wiking/db.py:2175 ../lib/wiking/db.py:2325
 msgid "more about RSS"
 msgstr "mais sobre RSS"
 
-#: ../lib/wiking/db.py:2514
+#: ../lib/wiking/db.py:2320
 #, fuzzy, python-format
 msgid "RSS channel \"%s\""
 msgstr "Canal RSS"
 
-#: ../lib/wiking/db.py:2524
+#: ../lib/wiking/db.py:2330
 #, fuzzy
 msgid "RSS channels are available for this section"
 msgstr "Para esta secção também está disponível em canal RSS:"
@@ -421,18 +413,18 @@ msgid "Reload"
 msgstr "Tranferir"
 
 #. Short description of a user group purpose.
-#: ../lib/wiking/request.py:1281
+#: ../lib/wiking/request.py:1282
 msgid "Anyone"
 msgstr ""
 
 #. Short description of a user group purpose.
-#: ../lib/wiking/request.py:1284
+#: ../lib/wiking/request.py:1285
 #, fuzzy
 msgid "Any authenticated user"
 msgstr "Pedido de autenticação"
 
 #. Short description of a user group purpose.
-#: ../lib/wiking/request.py:1291
+#: ../lib/wiking/request.py:1292
 msgid "Current record owner"
 msgstr ""
 
@@ -658,13 +650,13 @@ msgstr "Palavra-passe"
 msgid "Continue"
 msgstr ""
 
-#: ../lib/wiking/util.py:2046
+#: ../lib/wiking/util.py:2051
 msgid "Invalid format"
 msgstr "Formato inválido"
 
 #. Computer terminology. `gmail.com' is a domain name in email address
 #. `joe@gmail.com'.
-#: ../lib/wiking/util.py:2054 ../lib/wiking/util.py:2061
+#: ../lib/wiking/util.py:2059 ../lib/wiking/util.py:2066
 msgid "Domain not found"
 msgstr "Domínio não encontrado"
 
@@ -691,6 +683,9 @@ msgstr ""
 #: ../resources/scripts/discussion.js:108
 msgid "Cancel"
 msgstr ""
+
+#~ msgid "Integrity check failed."
+#~ msgstr "Controlo íntegro falhou."
 
 #~ msgid "No records."
 #~ msgstr "Sem registos."
