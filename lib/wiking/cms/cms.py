@@ -2287,6 +2287,8 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                               "such as names of translators, reviewers etc.")),
                 Field('pubinfo', _("Published<publisher>"), virtual=True,
                       computer=computer(self._pubinfo)),
+                Field('current_timestamp', _("Created"), virtual=True, type=pd.DateTime(),
+                      computer=computer(lambda r: now())),
             )
             return self._inherited_fields(Publications.Spec, override=override) + extra
         def _preview_mode(self, record):
@@ -2436,9 +2438,11 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                 [lcg.Section(_("Table of Contents"), lcg.NodeIndex()),
                  self.Navigation('bottom')])
 
-    def _publication_info(self, req, record):
+    def _publication_info(self, req, record, online=True):
         fields = ('title', 'description', 'author', 'illustrator', 'isbn', 'pubinfo', 'lang',
                   'owner_name', 'published_since')
+        if not online:
+            fields += ('current_timestamp',)
         content = [lcg.fieldset([(self._view.field(fid).label() + ':',
                                   record.display(fid) or pw.localizable_export(record[fid]))
                                  for fid in fields if record[fid].value() is not None])]
@@ -2468,7 +2472,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                     cover_image = pytis.util.find(filename,
                                                   lcg.Container(content).resources(),
                                                   key=lambda r: r.filename())
-                content.append(self._publication_info(req, record))
+                content.append(self._publication_info(req, record, online=False))
             content.extend(self._inner_page_content(req, self._record(req, row)))
             return lcg.ContentNode(row['identifier'].value(),
                                    title=row['title'].value(),
