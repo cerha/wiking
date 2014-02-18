@@ -2448,9 +2448,10 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                                  for fid in fields if record[fid].value() is not None])]
         for fid in ('copyright_notice', 'notes'):
             if record[fid].value() is not None:
-                content.append(lcg.Container((
+                content.append(lcg.p(
                     lcg.Strong(lcg.coerce(self._view.field(fid).label() + ':')),
-                    lcg.coerce(' ' + record[fid].value()))))
+                    lcg.coerce(' ' + record[fid].value()),
+                ))
         return lcg.Container(content)
 
     def _child_rows(self, req, record):
