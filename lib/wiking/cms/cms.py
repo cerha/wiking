@@ -2411,7 +2411,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
         return (binding.id() != 'chapters' and
                 super(Publications, self)._binding_visible(req, record, binding))
 
-    def _inner_page_content(self, req, record):
+    def _page_content(self, req, record):
         def cover_image(element, context):
             if record['cover_image'].value():
                 g = context.generator()
@@ -2429,15 +2429,25 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                              cls='publication-cover-image')
             else:
                 return ''
-        return ([wiking.HtmlRenderer(cover_image),
-                 self._form(pw.ShowForm, req, record=record, actions=(),
-                            layout=[fid for fid in ('description', 'author', 'illustrator',
-                                                    'isbn', 'pubinfo', 'lang',
-                                                    'owner_name', 'published_since', 
-                                                    'copyright_notice', 'notes')
-                                    if record[fid].value() is not None])] +
-                super(Publications, self)._inner_page_content(req, record) +
-                [lcg.Section(_("Table of Contents"), lcg.NodeIndex())])
+        return ([self.Navigation('top'),
+                 wiking.HtmlRenderer(cover_image),
+                 self._publication_info(req, record)] +
+                self._inner_page_content(req, record) + 
+                [lcg.Section(_("Table of Contents"), lcg.NodeIndex()),
+                 self.Navigation('bottom')])
+
+    def _publication_info(self, req, record):
+        fields = ('title', 'description', 'author', 'illustrator', 'isbn', 'pubinfo', 'lang',
+                  'owner_name', 'published_since')
+        content = [lcg.fieldset([(self._view.field(fid).label() + ':',
+                                  record.display(fid) or pw.localizable_export(record[fid]))
+                                 for fid in fields if record[fid].value() is not None])]
+        for fid in ('copyright_notice', 'notes'):
+            if record[fid].value() is not None:
+                content.append(lcg.Container((
+                    lcg.Strong(lcg.coerce(self._view.field(fid).label() + ':')),
+                    lcg.coerce(' ' + record[fid].value()))))
+        return lcg.Container(content)
 
     def _child_rows(self, req, record):
         children = wiking.module.PublicationChapters.child_rows(req,
@@ -2449,15 +2459,17 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
     def _publication(self, req, record):
         children = self._child_rows(req, record)
         resource_provider = lcg.ResourceProvider(dirs=wiking.cfg.resource_path)
-        def node(row, cover_image_filename=None):
-            # Call the super class _inner_page_content to avoid a table of contents in every node.
-            content = super(Publications, self)._inner_page_content(req, self._record(req, row))
-            if cover_image_filename:
-                cover_image = pytis.util.find(cover_image_filename,
-                                              lcg.Container(content).resources(),
-                                              key=lambda r: r.filename())
-            else:
-                cover_image = None
+        def node(row, root=False):
+            content = []
+            cover_image = None
+            if root:
+                filename = row['cover_image_filename'].value()
+                if filename:
+                    cover_image = pytis.util.find(filename,
+                                                  lcg.Container(content).resources(),
+                                                  key=lambda r: r.filename())
+                content.append(self._publication_info(req, record))
+            content.extend(self._inner_page_content(req, self._record(req, row)))
             return lcg.ContentNode(row['identifier'].value(),
                                    title=row['title'].value(),
                                    content=content,
@@ -2465,7 +2477,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                                    resource_provider=resource_provider,
                                    children=[node(r) for r in
                                              children.get(row['page_id'].value(), ())])
-        return node(record.row(), cover_image_filename=record['cover_image_filename'].value())
+        return node(record.row(), root=True)
 
     def submenu(self, req):
         # TODO: This partially duplicates Pages.menu() - refactor?
