@@ -2465,7 +2465,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
         children = self._child_rows(req, record)
         resource_provider = lcg.ResourceProvider(dirs=wiking.cfg.resource_path)
         def node(row, root=False):
-            content = []
+            content = self._inner_page_content(req, self._record(req, row))
             cover_image = None
             if root:
                 filename = row['cover_image_filename'].value()
@@ -2473,8 +2473,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                     cover_image = pytis.util.find(filename,
                                                   lcg.Container(content).resources(),
                                                   key=lambda r: r.filename())
-                content.append(self._publication_info(req, record, online=False))
-            content.extend(self._inner_page_content(req, self._record(req, row)))
+                content.insert(0, self._publication_info(req, record, online=False))
             return lcg.ContentNode(row['identifier'].value(),
                                    title=row['title'].value(),
                                    content=content,
