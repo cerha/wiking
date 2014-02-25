@@ -76,7 +76,9 @@ dl dt {
 table.lcg-table {
     border-collapse: collapse;
 }
-table.lcg-table, table.lcg-fieldset { margin: 0.5em 0; }
+table.lcg-table, table.lcg-fieldset {
+    margin: 0.5em 0;
+}
 table.lcg-table td, table.lcg-table th {
     padding: 2pt;
     vertical-align: top;
@@ -90,7 +92,18 @@ table.lcg-table caption, table.lcg-fieldset caption {
     font-size: 1.1em;
     text-align: left;
 }
-table.lcg-fieldset th { white-space: nowrap; text-align: left; padding-right: 0.5em; }
+table.lcg-fieldset {
+    padding: 0;
+    border-collapse: collapse;
+}
+table.lcg-fieldset tr { 
+    padding: 0;
+}
+table.lcg-fieldset th { 
+    white-space: nowrap;
+    text-align: left; 
+    padding: 0 0.5em 0 0;
+}
 
 pre.lcg-preformatted-text {
     background-color: $color.frame-bg;
