@@ -2439,19 +2439,25 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                  self.Navigation('bottom')])
 
     def _publication_info(self, req, record, online=True):
-        fields = ('title', 'description', 'author', 'illustrator', 'isbn', 'pubinfo', 'lang',
-                  'owner_name', 'published_since')
+        def fields(field_ids):
+            return [(self._view.field(fid).label() + ':',
+                     record.display(fid) or pw.localizable_export(record[fid]))
+                    for fid in field_ids if record[fid].value() is not None]
+        content = [lcg.fieldset(fields(('title', 'description', 'author', 
+                                        'illustrator', 'isbn', 'pubinfo', 'lang')))]
+        if record['copyright_notice'].value():
+            content.append(lcg.p(record['copyright_notice'].value()))
+        extra_fields = fields(('owner_name', 'published_since',))
         if not online:
-            fields += ('current_timestamp',)
-        content = [lcg.fieldset([(self._view.field(fid).label() + ':',
-                                  record.display(fid) or pw.localizable_export(record[fid]))
-                                 for fid in fields if record[fid].value() is not None])]
-        for fid in ('copyright_notice', 'notes'):
-            if record[fid].value() is not None:
-                content.append(lcg.p(
-                    lcg.Strong(lcg.coerce(self._view.field(fid).label() + ':')),
-                    lcg.coerce(' ' + record[fid].value()),
-                ))
+            extra_fields.extend(fields(('current_timestamp',)))
+        if extra_fields:
+            content.extend((
+                lcg.strong(_("Information about this adaptation of the work:")),
+                lcg.fieldset(extra_fields)
+            ))
+        if online and record['notes'].value():
+            content.append(lcg.p(lcg.strong(_("Notes") + ':'), ' ', 
+                                 record['notes'].value()))
         return lcg.Container(content)
 
     def _child_rows(self, req, record):
