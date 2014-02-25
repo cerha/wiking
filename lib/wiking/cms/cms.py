@@ -2477,6 +2477,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
         def node(row, root=False):
             content = self._inner_page_content(req, self._record(req, row))
             cover_image = None
+            metadata = None
             if root:
                 filename = row['cover_image_filename'].value()
                 if filename:
@@ -2484,13 +2485,18 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                                                   lcg.Container(content).resources(),
                                                   key=lambda r: r.filename())
                 content.insert(0, self._publication_info(req, record, online=False))
+                metadata = lcg.Metadata(authors=(row['author'].value(),),
+                                        original_isbn=row['isbn'].value(),
+                                        publisher=row['publisher'].value(),
+                                        published=row['published_year'].export(),)
             return lcg.ContentNode(row['identifier'].value(),
                                    title=row['title'].value(),
                                    content=content,
                                    cover_image=cover_image,
                                    resource_provider=resource_provider,
                                    children=[node(r) for r in
-                                             children.get(row['page_id'].value(), ())])
+                                             children.get(row['page_id'].value(), ())],
+                                   metadata=metadata)
         return node(record.row(), root=True)
 
     def submenu(self, req):
