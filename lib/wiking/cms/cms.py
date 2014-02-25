@@ -2291,8 +2291,6 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                               "reviewers etc.")),
                 Field('pubinfo', _("Published<publisher>"), virtual=True,
                       computer=computer(self._pubinfo)),
-                Field('current_timestamp', _("Created"), virtual=True, type=pd.DateTime(),
-                      computer=computer(lambda r: now())),
             )
             return self._inherited_fields(Publications.Spec, override=override) + extra
         def _preview_mode(self, record):
@@ -2453,7 +2451,9 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
             content.append(lcg.p(record['copyright_notice'].value()))
         extra_fields = fields(('owner_name', 'published_since',))
         if not online:
-            extra_fields.extend(fields(('current_timestamp',)))
+            timestamp = now().strftime('%Y-%m-%d %H:%M:%S')
+            extra_fields.append((_("Created"),
+                                 lcg.LocalizableDateTime(timestamp, utc=True)))
         if extra_fields:
             content.extend((
                 lcg.strong(_("Information about this adaptation of the work:")),
