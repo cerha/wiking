@@ -2261,7 +2261,8 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
             )
             extra = (
                 Field('author', _("Author"), width=60, not_null=True,
-                      descr=_("Author's full name or a comma separated list of full names.")),
+                      descr=_("Full name of the creator of the original work "
+                              "or a comma separated list of full names.")),
                 Field('isbn', _("ISBN"), width=20,
                       descr=_("ISBN of the original book if the publication is "
                               "a digitalized book.")),
@@ -2275,16 +2276,19 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                 Field('illustrator', _("Illustrator"), width=50,
                       descr=_("Full name or a comma separated list of full names.")),
                 Field('publisher', _("Publisher"), width=30,
-                      descr=_("Name of the organization which published the original work.")),
+                      descr=_("Name of the organization which published the "
+                              "original work.")),
                 Field('published_year', _("Year Published"), width=4,
                       descr=_("Year when the original work was published.")),
                 Field('edition', _("Edition"), width=3,
                       descr=_("Numeric order of the original work's edition.")),
-                Field('copyright_notice', _("Copyright Notice"), width=78, height=4, compact=True,
-                      computer=computer(self._copyright_notice), editable=ALWAYS),
+                Field('copyright_notice', _("Copyright Notice"), width=78, height=4,
+                      compact=True, computer=computer(self._copyright_notice),
+                      editable=ALWAYS),
                 Field('notes', _("Notes"), width=78, height=4, compact=True,
-                      descr=_("Any other additional information about the publication, "
-                              "such as names of translators, reviewers etc.")),
+                      descr=_("Any other additional information about the "
+                              "publication, such as names of translators, "
+                              "reviewers etc.")),
                 Field('pubinfo', _("Published<publisher>"), virtual=True,
                       computer=computer(self._pubinfo)),
                 Field('current_timestamp', _("Created"), virtual=True, type=pd.DateTime(),
