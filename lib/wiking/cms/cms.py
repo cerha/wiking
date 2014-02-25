@@ -2244,11 +2244,11 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                 Field('kind', default='publication'),
                 Field('_content', _("Title Page")),
                 Field('description', _("Subtitle")),
-                Field('owner_name', _("Digitalized by")),
+                Field('owner_name', _("Adapted by")),
                 Field('owner',
                       descr=(_("The owner has full read/write access regardless of roles "
                                "settings above.") + ' ' +
-                             _('The owner is also used for the "Digitalized by" field in '
+                             _('The owner is also used for the "Adapted by" field in '
                                "publication's meta data."))),
                 Field('published_since', _("Available since")),
                 Field('parent',
