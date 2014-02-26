@@ -2476,21 +2476,23 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
     def _publication(self, req, record):
         children = self._child_rows(req, record)
         resource_provider = lcg.ResourceProvider(dirs=wiking.cfg.resource_path)
+        resources = []
         def node(row, root=False):
             content = self._inner_page_content(req, self._record(req, row))
             cover_image = None
             metadata = None
             if root:
                 filename = row['cover_image_filename'].value()
+                resources.extend(lcg.Container(content).resources())
                 if filename:
-                    cover_image = pytis.util.find(filename,
-                                                  lcg.Container(content).resources(),
-                                                  key=lambda r: r.filename())
+                    cover_image = pytis.util.find(filename, resources, key=lambda r: r.filename())
                 content.insert(0, self._publication_info(req, record, online=False))
                 metadata = lcg.Metadata(authors=(row['author'].value(),),
                                         original_isbn=row['isbn'].value(),
                                         publisher=row['publisher'].value(),
                                         published=row['published_year'].export(),)
+            else:
+                content = lcg.Container(content, resources=resources)
             return lcg.ContentNode(row['identifier'].value(),
                                    title=row['title'].value(),
                                    content=content,
@@ -2525,12 +2527,9 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
         raise Redirect(req.uri() + '/chapters', action='insert')
 
     def action_export_epub(self, req, record):
+        page_id = record['page_id'].value()
         class EpubExporter(lcg.EpubExporter):
             def _get_resource_data(self, context, node, resource):
-                if node.id() == record['identifier'].value():
-                    page_id = record['page_id'].value()
-                else:
-                    page_id = wiking.module.PublicationChapters.get_page_id(node.id())
                 data = wiking.module.Attachments.retrieve(req, page_id, resource.filename())
                 if data:
                     return data
@@ -2540,7 +2539,6 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                         return r.get()
                     else:
                         raise Exception("Unable to retrieve resource %s." % resource.filename())
-
         node = self._publication(req, record)
         exporter = EpubExporter(translations=wiking.cfg.translation_path)
         context = exporter.context(node, req.preferred_language())
@@ -2630,13 +2628,6 @@ class PublicationChapters(NavigablePages):
                                        **restriction):
             children.setdefault(row['parent'].value(), []).append(row)
         return children
-
-    def get_page_id(self, identifier):
-        row = self._data.get_row(identifier=identifier)
-        if row:
-            return row['page_id'].value()
-        else:
-            return None
 
 
 class PageHistory(ContentManagementModule):
