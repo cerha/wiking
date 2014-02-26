@@ -2449,8 +2449,10 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                                         'illustrator', 'isbn', 'pubinfo', 'lang')))]
         if record['copyright_notice'].value():
             content.append(lcg.p(record['copyright_notice'].value()))
-        extra_fields = fields(('owner_name', 'published_since',))
-        if not online:
+        extra_fields = fields(('owner_name',))
+        if online:
+            extra_fields.extend(fields(('published_since',)))
+        else:
             timestamp = now().strftime('%Y-%m-%d %H:%M:%S')
             extra_fields.append((_("Created") + ':',
                                  lcg.LocalizableDateTime(timestamp, utc=True)))
