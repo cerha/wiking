@@ -2313,8 +2313,8 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                 info = publisher
                 if published_year:
                     info += ' %d' % (published_year,)
-                    if edition:
-                        info += ' (' + _("%d. edition", edition) + ')'
+                if edition:
+                    info += ' (' + _("%d. edition", edition) + ')'
                 return info
             else:
                 return None
