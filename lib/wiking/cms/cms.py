@@ -1690,10 +1690,17 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
         return result
 
     def _update(self, req, record, transaction):
-        self._before_page_change(req, record)
-        result = super(Pages, self)._update(req, record, transaction)
-        wiking.module.PageHistory.on_page_change(req, record, transaction=transaction)
-        return result
+        if req.param('action') == 'excerpt':
+            lang = record['lang']
+            if lang.value() is not None:
+                lang = pd.sval(req.preferred_language())
+            wiking.module.CmsPageExcerpts.store_excerpt(req, record['page_id'], lang,
+                                                        record['excerpt_title'],
+                                                        record['_excerpt_content'])
+        else:
+            self._before_page_change(req, record)
+            super(Pages, self)._update(req, record, transaction)
+            wiking.module.PageHistory.on_page_change(req, record, transaction=transaction)
 
     def _insert_msg(self, req, record):
         if record['published'].value():
@@ -1993,35 +2000,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                        parent=record['parent'].value(), ord=record['ord'].value())
         
     def action_excerpt(self, req, record):
-        action = 'excerpt'
-        layout = self._layout_instance(self._layout(req, action, record))
-        if req.param('submit'):
-            errors = self._validate(req, record, layout)
-            if not errors:
-                lang = record['lang']
-                if lang.value() is not None:
-                    lang = pd.sval(req.preferred_language())
-                excerpts = wiking.module.CmsPageExcerpts
-                try:
-                    excerpts.store_excerpt(req, record['page_id'], lang,
-                                           record['excerpt_title'], record['_excerpt_content'])
-                except pd.DBException as e:
-                    errors = (self._analyze_exception(e),)
-                else:
-                    return self._redirect_after_update(req, record)
-        else:
-            errors = ()
-        form = self._form(pw.EditForm, req, record=record, action=action,
-                          layout=layout,
-                          invalid_prefill=self._invalid_prefill(req, record, layout),
-                          submit=self._submit_buttons(req, action, record),
-                          errors=errors)
-        content = self._update_form_content(req, form, record)
-        return self._document(req, content, record,
-                              subtitle=self._action_subtitle(req, action, record=record))
-
-    #def action_help(self, req, record):
-    #    raise Redirect('/_doc/wiking/cms/pages')
+        return self.action_update(req, record, action='excerpt')
 
 
 class NavigablePages(Pages):
