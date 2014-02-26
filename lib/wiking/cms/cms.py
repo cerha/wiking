@@ -2289,7 +2289,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                       descr=_("Any other additional information about the "
                               "publication, such as names of translators, "
                               "reviewers etc.")),
-                Field('pubinfo', _("Published<publisher>"), virtual=True,
+                Field('pubinfo', _("Publisher"), virtual=True,
                       computer=computer(self._pubinfo)),
             )
             return self._inherited_fields(Publications.Spec, override=override) + extra
