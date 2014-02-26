@@ -607,7 +607,7 @@ class Users(UserManagementModule, CachingPytisModule):
                 # the DB function cms_f_insert_or_update_user() and the hidden
                 # field value (see _hidden_fields) is not processed by
                 # validation.
-                return req.param('login')
+                return record.req().param('login')
             elif wiking.cms.cfg.login_is_email:
                 return email
             else:
@@ -650,7 +650,7 @@ class Users(UserManagementModule, CachingPytisModule):
 
         def _lang(self, record):
             if record.new():
-                # This language is used for translation of email messages 
+                # This language is used for translation of email messages
                 # sent to the user.  This way it is set only once during
                 # registration.  It would make sense to change it on each
                 # change of user interface language by that user.
@@ -990,7 +990,7 @@ class Users(UserManagementModule, CachingPytisModule):
         super(Users, self)._insert(req, record, transaction)
         row = self._data.get_row(login=record['login'].value(), transaction=transaction)
         # Don't send e-mails on re-registration (the account is already confirmed).
-        if ((row['state'].value() == Users.AccountState.NEW 
+        if ((row['state'].value() == Users.AccountState.NEW
              or record['autogenerate_password'].value())):
             err = self._send_registration_email(req, record)
             if err:
@@ -1026,7 +1026,7 @@ class Users(UserManagementModule, CachingPytisModule):
                 return Document(_("Registration completed"),
                                 content=lcg.p((_("To finish your registration, please confirm "
                                                  "the activation code that was sent to your "
-                                                 "email address at %s.", 
+                                                 "email address at %s.",
                                                  record['email'].value()))))
 
     def _send_registration_email(self, req, record):
