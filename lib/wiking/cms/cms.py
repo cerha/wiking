@@ -2452,7 +2452,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
         extra_fields = fields(('owner_name', 'published_since',))
         if not online:
             timestamp = now().strftime('%Y-%m-%d %H:%M:%S')
-            extra_fields.append((_("Created"),
+            extra_fields.append((_("Created") + ':',
                                  lcg.LocalizableDateTime(timestamp, utc=True)))
         if extra_fields:
             content.extend((
