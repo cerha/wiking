@@ -2508,7 +2508,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
     def action_export_epub(self, req, record):
         page_id = record['page_id'].value()
         class EpubExporter(lcg.EpubExporter):
-            def _get_resource_data(self, context, node, resource):
+            def _get_resource_data(self, context, resource):
                 data = wiking.module.Attachments.retrieve(req, page_id, resource.filename())
                 if data:
                     return data
