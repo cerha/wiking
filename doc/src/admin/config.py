@@ -22,7 +22,7 @@ class Reader(lcg.Reader):
             [lcg.TableOfContents(title="Available options in Wiking", depth=2)] + \
             [lcg.Section(title=title,
                          content=[lcg.Section(title="Option '%s': %s" % (o.name(),o.description()),
-                                              anchor=o.name(),
+                                              id=o.name(),
                                               content=descr(o))
                                   for o in cfg.options(sort=True) if o.visible()])
              for title, cfg in [("Wiking", wiking.cfg), ("Wiking CMS", wiking.cms.cfg)]]

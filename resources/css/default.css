@@ -97,11 +97,13 @@ table.lcg-fieldset {
     border-collapse: collapse;
 }
 table.lcg-fieldset tr { 
+    vertical-align: top;
     padding: 0;
 }
 table.lcg-fieldset th { 
     white-space: nowrap;
     text-align: left; 
+    vertical-align: top;
     padding: 0 0.5em 0 0;
 }
 
