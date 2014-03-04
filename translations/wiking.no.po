@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-02-25 11:29+0100\n"
+"POT-Creation-Date: 2014-03-04 11:49+0100\n"
 "PO-Revision-Date: 2010-01-19 16:40+0100\n"
 "Last-Translator: Petr Topiarz <topiarz@post.cz>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
@@ -651,13 +651,13 @@ msgstr "Passord"
 msgid "Continue"
 msgstr ""
 
-#: ../lib/wiking/util.py:2051
+#: ../lib/wiking/util.py:2052
 msgid "Invalid format"
 msgstr "Ugyldig format"
 
 #. Computer terminology. `gmail.com' is a domain name in email address
 #. `joe@gmail.com'.
-#: ../lib/wiking/util.py:2059 ../lib/wiking/util.py:2066
+#: ../lib/wiking/util.py:2060 ../lib/wiking/util.py:2067
 #, fuzzy
 msgid "Domain not found"
 msgstr "Ingenting funnet."
