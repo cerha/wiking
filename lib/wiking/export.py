@@ -208,11 +208,10 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         return uri
     
     def _head(self, context):
-        result = super(Exporter, self)._head(context)
-        channels = [('<link rel="alternate" type="application/rss+xml" '
-                     'title="'+ p.title() +'" href="'+ p.channel() +'">')
-                    for p in context.node().panels() if p.channel() is not None]
-        return lcg.concat(result, channels, separator="\n  ")
+        return (super(Exporter, self)._head(context) +
+                [('<link rel="alternate" type="application/rss+xml" '
+                  'title="'+ p.title() +'" href="'+ p.channel() +'">')
+                 for p in context.node().panels() if p.channel() is not None])
     
     def _site_title(self, context):
         g = self._generator
