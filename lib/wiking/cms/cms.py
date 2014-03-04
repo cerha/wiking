@@ -2239,9 +2239,12 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                 Field('write_role_id', default=Roles.OWNER.id()),
             )
             extra = (
-                Field('author', _("Author"), width=60, not_null=True,
-                      descr=_("Full name of the creator of the original work "
-                              "or a comma separated list of full names.")),
+                Field('author', _("Author"), width=40, height=3, not_null=True,
+                      descr=_("Full name(s) of the creator(s) of the original work. "
+                              "Each author on a separate line.")),
+                Field('illustrator', _("Illustrator"), width=40, height=3,
+                      descr=_("Full name(s) of the author(s) of illustrations used in the "
+                              "publication. Each author on a separate line.")),
                 Field('isbn', _("ISBN"), width=20,
                       descr=_("ISBN of the original book if the publication is "
                               "a digitalized book.")),
@@ -2252,8 +2255,6 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                       descr=_("Insert the image as an attachment and select it "
                               "from the list here.")),
                 Field('cover_image_filename'),
-                Field('illustrator', _("Illustrator"), width=50,
-                      descr=_("Full name or a comma separated list of full names.")),
                 Field('publisher', _("Publisher"), width=30,
                       descr=_("Name of the organization which published the "
                               "original work.")),
@@ -2420,9 +2421,13 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                  self.Navigation('bottom')])
 
     def _publication_info(self, req, record, online=True):
+        def format(fid):
+            if isinstance(record.type(fid), pd.DateTime):
+                return pw.localizable_export(record[fid])
+            else:
+                return record.display(fid) or '; '.join(record[fid].export().splitlines())
         def fields(field_ids):
-            return [(self._view.field(fid).label() + ':',
-                     record.display(fid) or pw.localizable_export(record[fid]))
+            return [(self._view.field(fid).label() + ':', format(fid))                     
                     for fid in field_ids if record[fid].value() is not None]
         content = [lcg.fieldset(fields(('title', 'description', 'author', 
                                         'illustrator', 'isbn', 'pubinfo', 'lang')))]
@@ -2466,7 +2471,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                 if filename:
                     cover_image = pytis.util.find(filename, resources, key=lambda r: r.filename())
                 content.insert(0, self._publication_info(req, record, online=False))
-                metadata = lcg.Metadata(authors=(row['author'].value(),),
+                metadata = lcg.Metadata(authors=row['author'].export().splitlines(),
                                         original_isbn=row['isbn'].value(),
                                         publisher=row['publisher'].value(),
                                         published=row['published_year'].export(),)
