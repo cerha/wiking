@@ -2237,10 +2237,10 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                       descr=_("Full name(s) of the creator(s) of the publication or "
                               "the original work, if the publication is a derived work. "
                               "One name per line.")),
-                Field('illustrator', _("Illustrator"), width=40, height=3,
+                Field('illustrator', _("Illustrations"), width=40, height=3,
                       descr=_("Full name(s) of the author(s) of illustrations used in the "
                               "publication. One name per line.")),
-                Field('contributor', _("Contributor"), width=40, height=3,
+                Field('contributor', _("Contributors"), width=40, height=3,
                       descr=_("Creators of the publication with a less significant role "
                               "than the author(s). One name per line.")),
                 Field('original_isbn', _("Original ISBN"), width=40,
