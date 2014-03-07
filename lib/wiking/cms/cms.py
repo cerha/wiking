@@ -2425,7 +2425,10 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
             if isinstance(record.type(fid), pd.DateTime):
                 return pw.localizable_export(record[fid])
             else:
-                return record.display(fid) or '; '.join(record[fid].export().splitlines())
+                value = record.display(fid) or record[fid].export()
+                if not isinstance(value, lcg.Localizable):
+                    value = '; '.join(record[fid].export().splitlines())
+                return value
         def fields(field_ids):
             return [(self._view.field(fid).label() + ':', format(fid))
                     for fid in field_ids if record[fid].value() is not None]
