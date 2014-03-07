@@ -2250,9 +2250,9 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                       descr=_("ISBN identifier of this publication if it has one assigned.")),
                 Field('adapted_by', _("Adapted by"), width=40, height=3,
                       descr=_("Name(s) of person(s) or organization(s), who created this "
-                              "digital publication if not already mentioned in the above "
-                              "fields. Typically authors of a digitalized version or another "
-                              "kind of derived work. One name per line.")),
+                              "digital publication.  These are typically not the authors "
+                              "of the content itself, but authors of its digital version. "
+                              "One name per line.")),
                 Field('cover_image', _("Cover Image"), not_null=False,
                       codebook='Attachments', value_column='attachment_id',
                       inline_referer='cover_image_filename',
@@ -2473,6 +2473,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
         resource_provider = lcg.ResourceProvider(dirs=wiking.cfg.resource_path)
         resources = []
         def node(row, root=False):
+            # TODO: Don't ignore content processing error here!
             content = self._inner_page_content(req, self._record(req, row))
             cover_image = None
             metadata = None
