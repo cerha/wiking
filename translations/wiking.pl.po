@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-03-04 11:49+0100\n"
+"POT-Creation-Date: 2014-03-07 14:34+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Petr Topiarz <topiarz@post.cz>\n"
 "Language-Team: \n"
@@ -29,7 +29,7 @@ msgid "In this section:"
 msgstr "W tej części:"
 
 #: ../lib/wiking/application.py:454 ../lib/wiking/export.py:106
-#: ../lib/wiking/export.py:247
+#: ../lib/wiking/export.py:246
 msgid "Local navigation"
 msgstr "Nawigacja lokalna"
 
@@ -128,151 +128,151 @@ msgid ""
 "username, but also his current user role, which affects his permissions."
 msgstr ""
 
-#: ../lib/wiking/db.py:103
+#: ../lib/wiking/db.py:104
 msgid "Row with this key already exists."
 msgstr ""
 
-#: ../lib/wiking/db.py:105
+#: ../lib/wiking/db.py:106
 #, fuzzy
 msgid "This value already exists.  Enter a unique value."
 msgstr "Ta wartość już istnieje. Wprowadź inną wartość."
 
 #. This is about an empty (not filled in) value in a web form. Field means a
 #. form field.
-#: ../lib/wiking/db.py:109
+#: ../lib/wiking/db.py:110
 msgid "Empty value.  This field is mandatory."
 msgstr "Pusta wartość. To pole jest obowiązkowe."
 
 #. This is delete action failure message in a web page.
-#: ../lib/wiking/db.py:112
+#: ../lib/wiking/db.py:113
 msgid "Record couldn't be deleted because other records refer to it."
 msgstr ""
 
 #. Button label for new database record creation (computer terminology).
-#: ../lib/wiking/db.py:162
+#: ../lib/wiking/db.py:163
 msgid "New record"
 msgstr "Nowe nagranie"
 
 #. Tooltip of new database record creation button (computer terminology).
-#: ../lib/wiking/db.py:164
+#: ../lib/wiking/db.py:165
 msgid "Create a new record"
 msgstr "Stwórz nowe nagranie"
 
 #. Button label for database record modification (verb in imperative,
 #. computer terminology).
-#: ../lib/wiking/db.py:167
+#: ../lib/wiking/db.py:168
 msgid "Edit"
 msgstr "Edytuj"
 
 #. Tooltip of database record modification button (computer terminology)
-#: ../lib/wiking/db.py:169
+#: ../lib/wiking/db.py:170
 msgid "Modify the record"
 msgstr "Zmodyfikuj nagranie"
 
 #. Button label for database record display (verb in imperative).
-#: ../lib/wiking/db.py:171
+#: ../lib/wiking/db.py:172
 msgid "View"
 msgstr ""
 
 #. Tooltip of database record display button (computer terminology)
-#: ../lib/wiking/db.py:173
+#: ../lib/wiking/db.py:174
 #, fuzzy
 msgid "Display the record"
 msgstr "Zmodyfikuj nagranie"
 
 #. Button label for database record deletion (verb in imperative,
 #. computer terminology).
-#: ../lib/wiking/db.py:176
+#: ../lib/wiking/db.py:177
 msgid "Remove"
 msgstr "Zlikwiduj"
 
 #. Tooltip of database record deletion button (computer terminology).
-#: ../lib/wiking/db.py:178
+#: ../lib/wiking/db.py:179
 msgid "Remove the record permanently"
 msgstr "Usuń nagranie na stałe."
 
 #. Prompt before database record deletion (computer terminology).
-#: ../lib/wiking/db.py:180
+#: ../lib/wiking/db.py:181
 msgid "Please, confirm removing the record permanently."
 msgstr "Potwierdź chęć usunięcia na stałe nagrania."
 
 #. Button label for database record copying (verb in imperative,
 #. computer terminology).
-#: ../lib/wiking/db.py:183
+#: ../lib/wiking/db.py:184
 msgid "Copy"
 msgstr "Kopiuj"
 
 #. Tooltip of database record copy button (computer terminology).
-#: ../lib/wiking/db.py:185
+#: ../lib/wiking/db.py:186
 msgid "Create new record initialized by values of this record"
 msgstr "Twórz nowy zapis inicjalizowany przez wartości tego zapisu"
 
 #. Button label for returning from a single record view to the listing of all
 #. database records (computer terminology).
-#: ../lib/wiking/db.py:188
+#: ../lib/wiking/db.py:189
 msgid "Back to list"
 msgstr "Wróć do listy"
 
 #. Tooltip of a button for returning from a single record view to the
 #. listing of all records (computer terminology).
-#: ../lib/wiking/db.py:191
+#: ../lib/wiking/db.py:192
 msgid "Back to the list of all records"
 msgstr "Wróć do listy wszystkich nagrań"
 
 #. Button label (verb in imperative, computer terminology).
-#: ../lib/wiking/db.py:193
+#: ../lib/wiking/db.py:194
 msgid "Export"
 msgstr ""
 
 #. Button tooltip.  Don't translate `CSV', it is an
 #. internationally recognized computer abbreviation.
-#: ../lib/wiking/db.py:196
+#: ../lib/wiking/db.py:197
 msgid "Export the listing into a CSV format"
 msgstr ""
 
 #. Message displayed after new database record creation (computer terminology).
-#: ../lib/wiking/db.py:198
+#: ../lib/wiking/db.py:199
 #, fuzzy
 msgid "New record was successfully inserted."
 msgstr "Nowy zapis został pomyślnie umieszczony."
 
 #. Message displayed after a database record modification (computer
 #. terminology).
-#: ../lib/wiking/db.py:200
+#: ../lib/wiking/db.py:201
 msgid "The record was successfully updated."
 msgstr "Nowe nagranie zostało pomyślnie uaktualnione."
 
 #. Message displayed after a database record deletion (computer terminology).
-#: ../lib/wiking/db.py:202
+#: ../lib/wiking/db.py:203
 msgid "The record was deleted."
 msgstr "Nagranie zostało zlikwidowane."
 
-#: ../lib/wiking/db.py:461
+#: ../lib/wiking/db.py:462
 #, fuzzy
 msgid "Unable to perform a database operation:"
 msgstr "Nie można wykonać operacji bazy danych."
 
-#: ../lib/wiking/db.py:1963
+#: ../lib/wiking/db.py:1964
 msgid "Back"
 msgstr "Cofnij"
 
 #. Back button label. Standard computer terminology.
 #. RSS channel is a computer idiom, see Wikipedia.
-#: ../lib/wiking/db.py:2171 ../lib/wiking/db.py:2327
+#: ../lib/wiking/db.py:2172 ../lib/wiking/db.py:2328
 msgid "An RSS channel is available for this section:"
 msgstr "RSS kanał jest dostępny dla tego rozdziału:"
 
 #. RSS channel is a computer idiom, see Wikipedia.  Don't translateg 'RSS'.
-#: ../lib/wiking/db.py:2175 ../lib/wiking/db.py:2325
+#: ../lib/wiking/db.py:2176 ../lib/wiking/db.py:2326
 msgid "more about RSS"
 msgstr "więcej o RSS"
 
-#: ../lib/wiking/db.py:2320
+#: ../lib/wiking/db.py:2321
 #, fuzzy, python-format
 msgid "RSS channel \"%s\""
 msgstr "RSS kanał"
 
-#: ../lib/wiking/db.py:2330
+#: ../lib/wiking/db.py:2331
 #, fuzzy
 msgid "RSS channels are available for this section"
 msgstr "RSS kanał jest dostępny dla tego rozdziału:"
@@ -281,12 +281,12 @@ msgstr "RSS kanał jest dostępny dla tego rozdziału:"
 msgid "Page heading"
 msgstr "Tytuł strony"
 
-#: ../lib/wiking/export.py:105 ../lib/wiking/export.py:245
-#: ../lib/wiking/export.py:275 ../lib/wiking/export.py:293
+#: ../lib/wiking/export.py:105 ../lib/wiking/export.py:244
+#: ../lib/wiking/export.py:274 ../lib/wiking/export.py:292
 msgid "Main navigation"
 msgstr "Główna nawigacja"
 
-#: ../lib/wiking/export.py:107 ../lib/wiking/export.py:243
+#: ../lib/wiking/export.py:107 ../lib/wiking/export.py:242
 msgid "Main content"
 msgstr "Spis treści"
 
@@ -295,7 +295,7 @@ msgid "Page footer"
 msgstr "Stopka strony"
 
 #. Title of a dialog on a webpage
-#: ../lib/wiking/export.py:109 ../lib/wiking/export.py:249
+#: ../lib/wiking/export.py:109 ../lib/wiking/export.py:248
 #: ../lib/wiking/util.py:336
 msgid "Language selection"
 msgstr "Języki"
@@ -305,56 +305,56 @@ msgstr "Języki"
 msgid "Language:"
 msgstr "Język:"
 
-#: ../lib/wiking/export.py:253
+#: ../lib/wiking/export.py:252
 msgid "Jump in page"
 msgstr "Idź do strony"
 
 #. A label followed by location information in webpage navigation
-#: ../lib/wiking/export.py:258
+#: ../lib/wiking/export.py:257
 msgid "You are here:"
 msgstr "Jesteś tutaj:"
 
-#: ../lib/wiking/export.py:296
+#: ../lib/wiking/export.py:295
 msgid "Expand/collapse complete menu hierarchy"
 msgstr ""
 
 #. Panels are small windows on the side of the page. This is a label
 #. for a link that shows/hides the panels.
-#: ../lib/wiking/export.py:313
+#: ../lib/wiking/export.py:312
 msgid "Show panels"
 msgstr "Pokaż panel"
 
-#: ../lib/wiking/export.py:314
+#: ../lib/wiking/export.py:313
 msgid "Hide panels"
 msgstr "Ukryj panel"
 
 #. ``RSS channel'' is terminology idiom, see Wikipedia
-#: ../lib/wiking/export.py:326
+#: ../lib/wiking/export.py:325
 msgid "RSS channel"
 msgstr "RSS kanał"
 
-#: ../lib/wiking/export.py:351
+#: ../lib/wiking/export.py:350
 msgid "Warning"
 msgstr "Ostrzeżenie"
 
-#: ../lib/wiking/export.py:362
+#: ../lib/wiking/export.py:361
 msgid "Minimize"
 msgstr ""
 
-#: ../lib/wiking/export.py:363
+#: ../lib/wiking/export.py:362
 msgid "Exit the maximized mode."
 msgstr ""
 
-#: ../lib/wiking/export.py:366
+#: ../lib/wiking/export.py:365
 msgid "Maximize"
 msgstr ""
 
-#: ../lib/wiking/export.py:367
+#: ../lib/wiking/export.py:366
 msgid "Maximize the main content to the full size of the browser window."
 msgstr ""
 
 #. Information about last change of a webpage (when and who)
-#: ../lib/wiking/export.py:384
+#: ../lib/wiking/export.py:383
 #, python-format
 msgid "Last change: %(date)s, %(user)s"
 msgstr "Ostatnia zmiana:  %(date)s, %(user)s"

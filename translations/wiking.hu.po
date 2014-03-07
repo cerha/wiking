@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-03-04 11:49+0100\n"
+"POT-Creation-Date: 2014-03-07 14:34+0100\n"
 "PO-Revision-Date: 2010-02-04 00:17+0100\n"
 "Last-Translator: Hostomský Károly <khostomsky@gmail.com>\n"
 "Language-Team: Hungarian <wiking@lists.freebsoft.org>\n"
@@ -33,7 +33,7 @@ msgid "In this section:"
 msgstr "Szekció tartalmazza:"
 
 #: ../lib/wiking/application.py:454 ../lib/wiking/export.py:106
-#: ../lib/wiking/export.py:247
+#: ../lib/wiking/export.py:246
 msgid "Local navigation"
 msgstr "Almenü"
 
@@ -132,149 +132,149 @@ msgid ""
 "username, but also his current user role, which affects his permissions."
 msgstr ""
 
-#: ../lib/wiking/db.py:103
+#: ../lib/wiking/db.py:104
 msgid "Row with this key already exists."
 msgstr ""
 
-#: ../lib/wiking/db.py:105
+#: ../lib/wiking/db.py:106
 msgid "This value already exists.  Enter a unique value."
 msgstr "Ez az érték már létezik. Válasszon egyedi értéket."
 
 #. This is about an empty (not filled in) value in a web form. Field means a
 #. form field.
-#: ../lib/wiking/db.py:109
+#: ../lib/wiking/db.py:110
 msgid "Empty value.  This field is mandatory."
 msgstr "Üres mező. A mező kitöltése kötelező."
 
 #. This is delete action failure message in a web page.
-#: ../lib/wiking/db.py:112
+#: ../lib/wiking/db.py:113
 msgid "Record couldn't be deleted because other records refer to it."
 msgstr ""
 
 #. Button label for new database record creation (computer terminology).
-#: ../lib/wiking/db.py:162
+#: ../lib/wiking/db.py:163
 msgid "New record"
 msgstr "Új elem"
 
 #. Tooltip of new database record creation button (computer terminology).
-#: ../lib/wiking/db.py:164
+#: ../lib/wiking/db.py:165
 msgid "Create a new record"
 msgstr "Új elem létrehozása"
 
 #. Button label for database record modification (verb in imperative,
 #. computer terminology).
-#: ../lib/wiking/db.py:167
+#: ../lib/wiking/db.py:168
 msgid "Edit"
 msgstr "Szerkeszt"
 
 #. Tooltip of database record modification button (computer terminology)
-#: ../lib/wiking/db.py:169
+#: ../lib/wiking/db.py:170
 msgid "Modify the record"
 msgstr "Elem szerkesztése"
 
 #. Button label for database record display (verb in imperative).
-#: ../lib/wiking/db.py:171
+#: ../lib/wiking/db.py:172
 msgid "View"
 msgstr ""
 
 #. Tooltip of database record display button (computer terminology)
-#: ../lib/wiking/db.py:173
+#: ../lib/wiking/db.py:174
 #, fuzzy
 msgid "Display the record"
 msgstr "Elem szerkesztése"
 
 #. Button label for database record deletion (verb in imperative,
 #. computer terminology).
-#: ../lib/wiking/db.py:176
+#: ../lib/wiking/db.py:177
 msgid "Remove"
 msgstr "Töröl"
 
 #. Tooltip of database record deletion button (computer terminology).
-#: ../lib/wiking/db.py:178
+#: ../lib/wiking/db.py:179
 msgid "Remove the record permanently"
 msgstr "Elem végleges törlése"
 
 #. Prompt before database record deletion (computer terminology).
-#: ../lib/wiking/db.py:180
+#: ../lib/wiking/db.py:181
 msgid "Please, confirm removing the record permanently."
 msgstr "Kérem, erősítse meg az elem végleges törlését."
 
 #. Button label for database record copying (verb in imperative,
 #. computer terminology).
-#: ../lib/wiking/db.py:183
+#: ../lib/wiking/db.py:184
 msgid "Copy"
 msgstr "Másol"
 
 #. Tooltip of database record copy button (computer terminology).
-#: ../lib/wiking/db.py:185
+#: ../lib/wiking/db.py:186
 msgid "Create new record initialized by values of this record"
 msgstr "Új elem létrehozása ezen rekord értékei szerint iniciálva"
 
 #. Button label for returning from a single record view to the listing of all
 #. database records (computer terminology).
-#: ../lib/wiking/db.py:188
+#: ../lib/wiking/db.py:189
 msgid "Back to list"
 msgstr "Vissza a listához"
 
 #. Tooltip of a button for returning from a single record view to the
 #. listing of all records (computer terminology).
-#: ../lib/wiking/db.py:191
+#: ../lib/wiking/db.py:192
 msgid "Back to the list of all records"
 msgstr "Vissz a elemek listájához"
 
 #. Button label (verb in imperative, computer terminology).
-#: ../lib/wiking/db.py:193
+#: ../lib/wiking/db.py:194
 msgid "Export"
 msgstr ""
 
 #. Button tooltip.  Don't translate `CSV', it is an
 #. internationally recognized computer abbreviation.
-#: ../lib/wiking/db.py:196
+#: ../lib/wiking/db.py:197
 msgid "Export the listing into a CSV format"
 msgstr ""
 
 #. Message displayed after new database record creation (computer terminology).
-#: ../lib/wiking/db.py:198
+#: ../lib/wiking/db.py:199
 msgid "New record was successfully inserted."
 msgstr "Az új elem sikeresen be lett szúrva."
 
 #. Message displayed after a database record modification (computer
 #. terminology).
-#: ../lib/wiking/db.py:200
+#: ../lib/wiking/db.py:201
 msgid "The record was successfully updated."
 msgstr "Az elemet sikeresen frissítette."
 
 #. Message displayed after a database record deletion (computer terminology).
-#: ../lib/wiking/db.py:202
+#: ../lib/wiking/db.py:203
 msgid "The record was deleted."
 msgstr "Az elem törlődött."
 
-#: ../lib/wiking/db.py:461
+#: ../lib/wiking/db.py:462
 #, fuzzy
 msgid "Unable to perform a database operation:"
 msgstr "A művelet végrehajtása az adatbázisban sikertelen."
 
-#: ../lib/wiking/db.py:1963
+#: ../lib/wiking/db.py:1964
 msgid "Back"
 msgstr "Vissza"
 
 #. Back button label. Standard computer terminology.
 #. RSS channel is a computer idiom, see Wikipedia.
-#: ../lib/wiking/db.py:2171 ../lib/wiking/db.py:2327
+#: ../lib/wiking/db.py:2172 ../lib/wiking/db.py:2328
 msgid "An RSS channel is available for this section:"
 msgstr "RSS csatorna elérhető a következő szekcióhoz:"
 
 #. RSS channel is a computer idiom, see Wikipedia.  Don't translateg 'RSS'.
-#: ../lib/wiking/db.py:2175 ../lib/wiking/db.py:2325
+#: ../lib/wiking/db.py:2176 ../lib/wiking/db.py:2326
 msgid "more about RSS"
 msgstr "több információ az RSS-ről"
 
-#: ../lib/wiking/db.py:2320
+#: ../lib/wiking/db.py:2321
 #, fuzzy, python-format
 msgid "RSS channel \"%s\""
 msgstr "RSS csatorna"
 
-#: ../lib/wiking/db.py:2330
+#: ../lib/wiking/db.py:2331
 #, fuzzy
 msgid "RSS channels are available for this section"
 msgstr "RSS csatorna elérhető a következő szekcióhoz:"
@@ -283,12 +283,12 @@ msgstr "RSS csatorna elérhető a következő szekcióhoz:"
 msgid "Page heading"
 msgstr "Oldalcím"
 
-#: ../lib/wiking/export.py:105 ../lib/wiking/export.py:245
-#: ../lib/wiking/export.py:275 ../lib/wiking/export.py:293
+#: ../lib/wiking/export.py:105 ../lib/wiking/export.py:244
+#: ../lib/wiking/export.py:274 ../lib/wiking/export.py:292
 msgid "Main navigation"
 msgstr "Főmenü"
 
-#: ../lib/wiking/export.py:107 ../lib/wiking/export.py:243
+#: ../lib/wiking/export.py:107 ../lib/wiking/export.py:242
 msgid "Main content"
 msgstr "Fő tartalom"
 
@@ -297,7 +297,7 @@ msgid "Page footer"
 msgstr "Lábjegyzet"
 
 #. Title of a dialog on a webpage
-#: ../lib/wiking/export.py:109 ../lib/wiking/export.py:249
+#: ../lib/wiking/export.py:109 ../lib/wiking/export.py:248
 #: ../lib/wiking/util.py:336
 msgid "Language selection"
 msgstr "Nyelv választás"
@@ -307,56 +307,56 @@ msgstr "Nyelv választás"
 msgid "Language:"
 msgstr "Nyelv:"
 
-#: ../lib/wiking/export.py:253
+#: ../lib/wiking/export.py:252
 msgid "Jump in page"
 msgstr "Ugrás az oldalon"
 
 #. A label followed by location information in webpage navigation
-#: ../lib/wiking/export.py:258
+#: ../lib/wiking/export.py:257
 msgid "You are here:"
 msgstr "Ön itt áll:"
 
-#: ../lib/wiking/export.py:296
+#: ../lib/wiking/export.py:295
 msgid "Expand/collapse complete menu hierarchy"
 msgstr ""
 
 #. Panels are small windows on the side of the page. This is a label
 #. for a link that shows/hides the panels.
-#: ../lib/wiking/export.py:313
+#: ../lib/wiking/export.py:312
 msgid "Show panels"
 msgstr "Ablakok mutatása"
 
-#: ../lib/wiking/export.py:314
+#: ../lib/wiking/export.py:313
 msgid "Hide panels"
 msgstr "Ablakok elrejtése"
 
 #. ``RSS channel'' is terminology idiom, see Wikipedia
-#: ../lib/wiking/export.py:326
+#: ../lib/wiking/export.py:325
 msgid "RSS channel"
 msgstr "RSS csatorna"
 
-#: ../lib/wiking/export.py:351
+#: ../lib/wiking/export.py:350
 msgid "Warning"
 msgstr "Figyelmeztetés"
 
-#: ../lib/wiking/export.py:362
+#: ../lib/wiking/export.py:361
 msgid "Minimize"
 msgstr ""
 
-#: ../lib/wiking/export.py:363
+#: ../lib/wiking/export.py:362
 msgid "Exit the maximized mode."
 msgstr ""
 
-#: ../lib/wiking/export.py:366
+#: ../lib/wiking/export.py:365
 msgid "Maximize"
 msgstr ""
 
-#: ../lib/wiking/export.py:367
+#: ../lib/wiking/export.py:366
 msgid "Maximize the main content to the full size of the browser window."
 msgstr ""
 
 #. Information about last change of a webpage (when and who)
-#: ../lib/wiking/export.py:384
+#: ../lib/wiking/export.py:383
 #, python-format
 msgid "Last change: %(date)s, %(user)s"
 msgstr "Utólsó változtatások: %(date)s, %(user)s"
