@@ -17,6 +17,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 import collections
+import datetime
 import cStringIO as StringIO
 import re
 import string
@@ -379,8 +380,8 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                     self._links[f.id()] = (codebook, referer)
                 elif wiking.cfg.debug and f.label() != f.id():
                     # Don't warn on unlabeled fields - they typically don't figure in the UI.
-                    wiking.debug("Referer undefined for %s.%s: %s" % (self.name(), f.id(), codebook))
-
+                    wiking.debug("Referer undefined for %s.%s: %s" %
+                                 (self.name(), f.id(), codebook))
 
     def _record(self, req, row, new=False, prefill=None, transaction=None):
         """Return the Record instance initialized by given data row."""
@@ -2599,7 +2600,7 @@ class CachingPytisModule(PytisModule):
         """
         dt = self._cached_table_timestamp(transaction=transaction)
         if dt and utc:
-            dt = datetime.datetime(dt.year, dt.month, dt.day, 
+            dt = datetime.datetime(dt.year, dt.month, dt.day,
                                    dt.hour, dt.minute, dt.second, dt.microsecond)
         return dt
 
