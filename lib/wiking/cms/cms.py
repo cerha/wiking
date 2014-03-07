@@ -1837,7 +1837,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                 module = wiking.module(modname)
             except ResolverError:
                 # Allow changing the module if it no longer exists.
-                content = [lcg.Container(lcg.coerce(_("Unknown module: %s", modname)), 
+                content = [lcg.Container(lcg.coerce(_("Unknown module: %s", modname)),
                                          name='errors')]
                 wiking.module.Application.send_bug_report(req, sys.exc_info())
             else:
@@ -2416,7 +2416,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
         return ([self.Navigation('top'),
                  wiking.HtmlRenderer(cover_image),
                  self._publication_info(req, record)] +
-                self._inner_page_content(req, record) + 
+                self._inner_page_content(req, record) +
                 [lcg.Section(_("Table of Contents"), lcg.NodeIndex()),
                  self.Navigation('bottom')])
 
@@ -2427,9 +2427,9 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
             else:
                 return record.display(fid) or '; '.join(record[fid].export().splitlines())
         def fields(field_ids):
-            return [(self._view.field(fid).label() + ':', format(fid))                     
+            return [(self._view.field(fid).label() + ':', format(fid))
                     for fid in field_ids if record[fid].value() is not None]
-        content = [lcg.fieldset(fields(('title', 'description', 'author', 
+        content = [lcg.fieldset(fields(('title', 'description', 'author',
                                         'illustrator', 'isbn', 'pubinfo', 'lang')))]
         if record['copyright_notice'].value():
             content.append(lcg.p(record['copyright_notice'].value()))
@@ -2446,8 +2446,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                 lcg.fieldset(extra_fields)
             ))
         if online and record['notes'].value():
-            content.append(lcg.p(lcg.strong(_("Notes") + ':'), ' ', 
-                                 record['notes'].value()))
+            content.append(lcg.p(lcg.strong(_("Notes") + ':'), ' ', record['notes'].value()))
         return lcg.Container(content)
 
     def _child_rows(self, req, record):
