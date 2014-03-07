@@ -2223,12 +2223,6 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                 Field('kind', default='publication'),
                 Field('_content', _("Title Page")),
                 Field('description', _("Subtitle")),
-                Field('owner_name', _("Adapted by")),
-                Field('owner',
-                      descr=(_("The owner has full read/write access regardless of roles "
-                               "settings above.") + ' ' +
-                             _('The owner is also used for the "Adapted by" field in '
-                               "publication's meta data."))),
                 Field('published_since', _("Available since")),
                 Field('parent',
                       computer=computer(lambda r: r.req().page_record['page_id'].value())),
@@ -2240,14 +2234,25 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
             )
             extra = (
                 Field('author', _("Author"), width=40, height=3, not_null=True,
-                      descr=_("Full name(s) of the creator(s) of the original work. "
-                              "Each author on a separate line.")),
+                      descr=_("Full name(s) of the creator(s) of the publication or "
+                              "the original work, if the publication is a derived work. "
+                              "One name per line.")),
                 Field('illustrator', _("Illustrator"), width=40, height=3,
                       descr=_("Full name(s) of the author(s) of illustrations used in the "
-                              "publication. Each author on a separate line.")),
-                Field('isbn', _("ISBN"), width=20,
-                      descr=_("ISBN of the original book if the publication is "
-                              "a digitalized book.")),
+                              "publication. One name per line.")),
+                Field('contributor', _("Contributor"), width=40, height=3,
+                      descr=_("Creators of the publication with a less significant role "
+                              "than the author(s). One name per line.")),
+                Field('original_isbn', _("Original ISBN"), width=40,
+                      descr=_("ISBN identifier of the original work if the publication is "
+                              "a digitalized book or another kind of derived work.")),
+                Field('isbn', _("ISBN"), width=40,
+                      descr=_("ISBN identifier of this publication if it has one assigned.")),
+                Field('adapted_by', _("Adapted by"), width=40, height=3,
+                      descr=_("Name(s) of person(s) or organization(s), who created this "
+                              "digital publication if not already mentioned in the above "
+                              "fields. Typically authors of a digitalized version or another "
+                              "kind of derived work. One name per line.")),
                 Field('cover_image', _("Cover Image"), not_null=False,
                       codebook='Attachments', value_column='attachment_id',
                       inline_referer='cover_image_filename',
@@ -2302,8 +2307,9 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                            pd.NE('title', pd.sval(None)))
         layout = ('title', 'description', 'lang', 'identifier', 'cover_image',
                   FieldSet(_("Bibliographic information"),
-                           ('author', 'illustrator', 'isbn',
+                           ('author', 'contributor', 'illustrator', 
                             'publisher', 'published_year', 'edition',
+                            'original_isbn', 'isbn', 'adapted_by',
                             'copyright_notice', 'notes')),
                   '_content',
                   FieldSet(_("Access Rights"),
@@ -2387,8 +2393,6 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
     def _link_provider(self, req, uri, record, cid, **kwargs):
         if cid == 'lang':
             return None
-        if cid == 'owner_name':
-            return self._link_provider(req, uri, record, 'owner')
         return super(Publications, self)._link_provider(req, uri, record, cid, **kwargs)
 
     def _binding_visible(self, req, record, binding):
@@ -2429,14 +2433,19 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                 if not isinstance(value, lcg.Localizable):
                     value = '; '.join(record[fid].export().splitlines())
                 return value
+        def label(fid):
+            if fid == 'original_isbn' and record['isbn'].value() is None:
+                fid = 'isbn'
+            return self._view.field(fid).label()
         def fields(field_ids):
-            return [(self._view.field(fid).label() + ':', format(fid))
+            return [(label(fid) + ':', format(fid))
                     for fid in field_ids if record[fid].value() is not None]
-        content = [lcg.fieldset(fields(('title', 'description', 'author',
-                                        'illustrator', 'isbn', 'pubinfo', 'lang')))]
+        content = [lcg.fieldset(fields(('title', 'description', 'author', 'contributor',
+                                        'illustrator', 'pubinfo', 'original_isbn',
+                                        'lang')))]
         if record['copyright_notice'].value():
             content.append(lcg.p(record['copyright_notice'].value()))
-        extra_fields = fields(('owner_name',))
+        extra_fields = fields(('isbn', 'adapted_by',))
         if online:
             extra_fields.extend(fields(('published_since',)))
         else:
@@ -2474,7 +2483,10 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                     cover_image = pytis.util.find(filename, resources, key=lambda r: r.filename())
                 content.insert(0, self._publication_info(req, record, online=False))
                 metadata = lcg.Metadata(authors=row['author'].export().splitlines(),
-                                        original_isbn=row['isbn'].value(),
+                                        contributors=(row['contributor'].export().splitlines() +
+                                                      row['adapted_by'].export().splitlines()),
+                                        original_isbn=row['original_isbn'].value(),
+                                        isbn=row['isbn'].value(),
                                         publisher=row['publisher'].value(),
                                         published=row['published_year'].export(),)
             else:

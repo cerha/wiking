@@ -637,18 +637,32 @@ class CmsPublications(CommonAccesRights, sql.SQLTable):
     fields = (sql.Column('page_id', pytis.data.Integer(not_null=True), unique=True,
                          references=sql.a(sql.r.CmsPages, ondelete='CASCADE')),
               sql.Column('author', pytis.data.String(not_null=True),
-                         doc="full name or a comma separated list of names"),
-              sql.Column('isbn', pytis.data.String()),
-              sql.Column('cover_image', pytis.data.Integer(),
-                         references=sql.a(sql.r.CmsPageAttachments, ondelete='SET NULL')),
+                         doc="creator(s) of the original work; full name(s), one name per line"),
+              sql.Column('contributor', pytis.data.String(),
+                         doc=("creator(s) of the original work with less significant "
+                              "role than author(s); full name(s), one name per line")),
               sql.Column('illustrator', pytis.data.String(),
-                         doc="full name or a comma separated list of names"),
+                         doc=("author(s) of illustrations in the original work; "
+                              "full name(s), one name per line")),
               sql.Column('publisher', pytis.data.String(),
                          doc="full name of the publisher"),
               sql.Column('published_year', pytis.data.Integer(),
                          doc="year published"),
               sql.Column('edition', pytis.data.Integer(),
                          doc="first, second, ..."),
+              sql.Column('original_isbn', pytis.data.String(),
+                         doc=("ISBN identifier of the original work; if not null, the "
+                              "publication is a work derived from it and fields author, "
+                              "contributor, illustrator, publisher, published_year and "
+                              "edition relate to the original work")),
+              sql.Column('isbn', pytis.data.String(),
+                         'ISBN of this publication it it has one assigned'),
+              sql.Column('adapted_by', pytis.data.String(),
+                         doc=("people or organization(s), who created this digital "
+                              "publication if these are not already mentioned in the "
+                              "above fields; full name(s), one name per line")),
+              Sql.Column('cover_image', pytis.data.Integer(),
+                         references=sql.a(sql.r.CmsPageAttachments, ondelete='SET NULL')),
               sql.Column('copyright_notice', pytis.data.String()),
               sql.Column('notes', pytis.data.String(),
                          doc="any other additional info, such as translator(s), reviewer(s) etc."),
@@ -684,10 +698,14 @@ class CmsVPublications(CommonAccesRights, sql.SQLView):
              new.lang, new.published, new.creator, new.created, new.published_since,
              new.title, new.description, new.content,
              new._title, new._description, new._content);
-     insert into cms_publications (page_id, author, isbn, cover_image, illustrator,
-                                   publisher, published_year, edition, copyright_notice, notes)
-     select page_id, new.author, new.isbn, new.cover_image, new.illustrator,
-            new.publisher, new.published_year, new.edition, copyright_notice, new.notes
+     insert into cms_publications (page_id, author, contributor, illustrator, 
+                                   publisher, published_year, edition,
+                                   original_isbn, isbn, adapted_by, cover_image,
+                                   copyright_notice, notes)
+     select page_id, new.author, new.contributor, new.illustrator,
+            new.publisher, new.published_year, new.edition,
+            new.original_isbn, new.isbn, new.adapted_by, new.cover_image,
+            new.copyright_notice, new.notes
      from cms_pages where identifier=new.identifier and site=new.site and kind=new.kind
      returning page_id, page_id ||'.'|| (select min(lang) from cms_page_texts
         where page_id=cms_publications.page_id), null::text,
@@ -696,8 +714,8 @@ class CmsVPublications(CommonAccesRights, sql.SQLView):
        null::bool, null::int, null::timestamp, null::timestamp, null::text, null::text,
        null::text, null::text, null::text, null::text, null::text,
        null::varchar(64), null::text, null::varchar(64), null::text,
-       author, isbn, cover_image, illustrator,
-       publisher, published_year, edition, copyright_notice, notes, null::text;
+       author, contributor, illustrator, publisher, published_year, edition,
+       original_isbn, isbn, adapted_by, cover_image, copyright_notice, notes, null::text;
         )""",)
     def on_update(self):
         return ("""(
@@ -727,12 +745,15 @@ class CmsVPublications(CommonAccesRights, sql.SQLView):
     where page_id = old.page_id and lang = old.lang;
     update cms_publications set
         author = new.author,
-        isbn = new.isbn,
-        cover_image = new.cover_image,
+        contributor = new.contributor,
         illustrator = new.illustrator,
         publisher = new.publisher,
         published_year = new.published_year,
         edition = new.edition,
+        original_isbn = new.original_isbn,
+        isbn = new.isbn,
+        adapted_by = new.adapted_by,
+        cover_image = new.cover_image,
         copyright_notice = new.copyright_notice,
         notes = new.notes
     where page_id = old.page_id;
