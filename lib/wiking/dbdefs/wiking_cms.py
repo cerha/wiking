@@ -661,7 +661,7 @@ class CmsPublications(CommonAccesRights, sql.SQLTable):
                          doc=("people or organization(s), who created this digital "
                               "publication if these are not already mentioned in the "
                               "above fields; full name(s), one name per line")),
-              Sql.Column('cover_image', pytis.data.Integer(),
+              sql.Column('cover_image', pytis.data.Integer(),
                          references=sql.a(sql.r.CmsPageAttachments, ondelete='SET NULL')),
               sql.Column('copyright_notice', pytis.data.String()),
               sql.Column('notes', pytis.data.String(),
