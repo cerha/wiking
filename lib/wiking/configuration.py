@@ -495,3 +495,7 @@ class Configuration(pc):
         _DOC = ("Don't add special CC addresses when the declared user id is in any of the "
                 "roles ('Roles' constants) given here.")
         _DEFAULT = ()
+
+    class _Option_print_spec_dir(pc.StringOption):
+        _DESCR = _("Directory of output specifications.")
+        _DEFAULT = './output'
