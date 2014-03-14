@@ -1491,7 +1491,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                 ),
                'excerpt': ('_content', '_excerpt_content', 'excerpt_title',),
                }
-    _SUBMIT_BUTTONS_ = ((_("Save as concept"), None), (_("Save and publish"), 'commit'))
+    _SUBMIT_BUTTONS_ = ((None, _("Save as concept")), ('commit', _("Save and publish")))
     _SUBMIT_BUTTONS = {'update': _SUBMIT_BUTTONS_,
                        'insert': _SUBMIT_BUTTONS_,
                        'excerpt': ((_("Store"), None),)}

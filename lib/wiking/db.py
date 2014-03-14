@@ -886,7 +886,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                 ('submit', 'submit')]
 
     def _submit_buttons(self, req, action, record=None):
-        """Return the sequence of form submit buttons as pairs (LABEL, NAME).
+        """Return the sequence of form submit buttons as pairs (NAME, LABEL).
 
         This method may be overriden to change form buttons dynamically based
         on the combination of record, action and current request properties.
@@ -898,12 +898,11 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
           record -- the current record instance or None (for actions which
             don't work on an existing record, such as 'insert')
 
-        The returned value is a sequence of pairs (LABEL, NAME), where LABEL is
+        The returned value is a sequence of pairs (NAME, LABEL), where LABEL is
         the button label and NAME is the name of the corresponding request
-        parameter, which will be submitted along with the form when the button
-        is pressed.  The parameter's value is the button LABEL, but you will
-        not want to check against the label if your application is
-        internationalized (you get different labels for different languages).
+        parameter which has the value '1' if the form was submitted using given
+        submit button.  If NAME is None, no request parameter is sent by the
+        button.
 
         The default implementation returns one of (statical) button
         specifications defined by in '_SUBMIT_BUTTONS' constant (dictionary
@@ -1889,9 +1888,15 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         form = self._form(pw.EditForm, req, new=True, action=action,
                           layout=layout,
                           prefill=prefill,
-                          submit=self._submit_buttons(req, action))
+                          submit_buttons=self._submit_buttons(req, action),
+                          show_cancel_button=True)
         if form.is_ajax_request(req):
             return self._ajax_response(req, form)
+        if req.param('_cancel'):
+            # Check this AFTER AJAX handling, because AJAX requests have
+            # all submit button parameters set.
+            wiking.debug('!!!', req.param('_cancel'))
+            raise Redirect(req.uri())
         if not req.param('submit'):
             # Prefill form values from request parameters.
             form.prefill(req)
@@ -1932,9 +1937,14 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         layout = self._layout_instance(self._layout(req, action, record))
         form = self._form(pw.EditForm, req, record=record, action=action,
                           layout=layout,
-                          submit=self._submit_buttons(req, action, record))
+                          submit_buttons=self._submit_buttons(req, action, record),
+                          show_cancel_button=True)
         if form.is_ajax_request(req):
             return self._ajax_response(req, form)
+        if req.param('_cancel'):
+            # Check this AFTER AJAX handling, because AJAX requests have
+            # all submit button parameters set.
+            raise Redirect(req.uri())
         if req.param('submit') and form.validate(req):
             # The form works with another Record instance (see '_form()') and we
             # need to save the instance that passed validation.  Maybe that
