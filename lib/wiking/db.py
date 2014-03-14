@@ -1702,32 +1702,42 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
             content = self._list_form_content(req, form, uri=binding_uri)
         return lcg.Container(content)
 
-    def pdf(self, template_id, record, data, lang, translations=()):
+    def pdf(self, template_id, record, lang, translations=(), parameters=None, condition=None,
+            sorting=None):
         """Return PDF string made from given output specification.
 
         Arguments:
 
           template_id -- name of the output specification; string
           record -- current record or 'None'
-          data -- data object to access module data or 'None'
           lang -- to be passed to PDF exporter
           translations -- to be passed to PDF exporter
+          parameters -- dictionary of user output parameters
+          condition -- condition to use when accessing whole data
+          sorting -- sorting to use when accessing whole data; if 'None' then
+            use default module sorting
         
         """
         resolver = wiking.WikingResolver()
         output_resolvers = (pytis.output.FileResolver(wiking.cfg.print_spec_dir),)
         name = self.name()
         prefix = name + '/'
-        parameters = {(pytis.output.P_NAME): name,
-                      (prefix + pytis.output.P_CONDITION): None,
-                      (prefix + pytis.output.P_SORTING): self._sorting,
-                      (prefix + pytis.output.P_KEY): record.key(),
-                      (prefix + pytis.output.P_ROW): record,
-                      (prefix + pytis.output.P_DATA): data,
-                      (prefix + pytis.output.P_LANGUAGE): lang,
-                      }
+        if record is not None:
+            key = record.key()
+        if sorting is None:
+            sorting = self._sorting
+        output_parameters = {(pytis.output.P_NAME): name,
+                             (prefix + pytis.output.P_CONDITION): condition,
+                             (prefix + pytis.output.P_SORTING): sorting,
+                             (prefix + pytis.output.P_KEY): key,
+                             (prefix + pytis.output.P_ROW): record,
+                             (prefix + pytis.output.P_DATA): self._data,
+                             (prefix + pytis.output.P_LANGUAGE): lang,
+                             }
+        if parameters:
+            output_parameters.update(parameters)
         formatter = pytis.output.Formatter(resolver, output_resolvers, template_id,
-                                           parameters=parameters, translations=translations)
+                                           parameters=output_parameters, translations=translations)
         return formatter.pdf()
 
     # ===== Action handlers =====
