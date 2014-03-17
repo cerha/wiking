@@ -5,7 +5,7 @@ ALTER TABLE public.cms_publications ADD COLUMN original_isbn TEXT;
 
 ALTER TABLE public.cms_publications ADD COLUMN adapted_by TEXT;
 
-update cms_v_publications set original_isbn=isbn, adapted_by=owner_name;
+update cms_publications p set original_isbn=p.isbn, adapted_by=(select owner_name from cms_v_publications where page_id=p.page_id limit 1);
 update cms_publications set isbn=null;
 
 DROP VIEW "public"."cms_v_publications";
