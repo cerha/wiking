@@ -1,4 +1,4 @@
-# Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Brailcom, o.p.s.
+# Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -1901,6 +1901,12 @@ def send_mail(addr, subject, text, sender=None, sender_name=None, html=None,
         'wiking.cfg.special_cc_exclude_roles'.
       
     """
+    return None
+    wiking.debug('--------------------------------------------------------------------------------')
+    wiking.debug('To:', addr)
+    wiking.debug('Subject:', subject)
+    wiking.debug(text)
+    return None
     assert isinstance(addr, (basestring, tuple, list,)), ('type error', addr,)
     assert isinstance(subject, basestring), ('type error', subject,)
     assert isinstance(text, basestring), ('type error', text,)

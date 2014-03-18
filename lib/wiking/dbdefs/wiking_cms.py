@@ -520,7 +520,7 @@ class CmsPageAttachments(CommonAccesRights, sql.SQLTable):
                          references=sql.a(sql.r.CmsPages, ondelete='CASCADE')),
               sql.Column('filename', pytis.data.String(not_null=True)),
               sql.Column('mime_type', pytis.data.String(not_null=True)),
-              sql.Column('bytesize', pytis.data.String(not_null=True)),
+              sql.Column('bytesize', pytis.data.Integer(not_null=True)),
               sql.Column('created', pytis.data.DateTime(not_null=True)),
               sql.Column('last_modified', pytis.data.DateTime(not_null=True)),
               sql.Column('image', pytis.data.Binary()),

@@ -369,7 +369,7 @@ class Handler(object):
             finally:
                 # We can observe pending transactions in Wiking applications,
                 # so let's close them all after each request.
-                if __debug__ and wiking.cfg.debug:
+                if False and __debug__ and wiking.cfg.debug:
                     def callback(connection):
                         stack = connection.connection_info('transaction_start_stack')
                         if stack is not None:

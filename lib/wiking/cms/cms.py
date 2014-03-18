@@ -1863,7 +1863,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
             content.append(lcg.Container(gallery_images, name='wiking-image-gallery'))
         # Create automatic attachment list if any attachments are marked as listed.
         listed_attachments = [(lcg.link(r, r.title() or r.filename()),
-                               ' (' + r.info()['byte_size'] + ') ',
+                               ' (' + format_byte_size(r.info()['byte_size']) + ') ',
                                lcg.coerce(r.descr() or '', formatted=True))
                               for r in resources if r.info()['listed']]
         if listed_attachments:
@@ -2823,8 +2823,8 @@ class Attachments(ContentManagementModule):
                 Field('ext', virtual=True, computer=computer(self._ext)),
                 # Translators: Size of a file, in number of bytes, kilobytes etc.
                 Field('bytesize', _("Size"),
-                      computer=computer(lambda r, upload:
-                                        upload and format_byte_size(len(upload)))),
+                      computer=computer(lambda r, upload: upload and len(upload)),
+                      formatter=format_byte_size),
                 Field('thumbnail', '', type=pd.Image(), computer=computer(self._thumbnail)),
                 # Translators: Thumbnail is a small image preview in computer terminology.
                 Field('thumbnail_size', _("Preview size"), not_null=False,
@@ -2978,7 +2978,7 @@ class Attachments(ContentManagementModule):
                                   title=row['title'].value(),
                                   descr=row['description'].value(),
                                   info=dict(mime_type=row['mime_type'].value(),
-                                            byte_size=row['bytesize'].export(),
+                                            byte_size=row['bytesize'].value(),
                                             listed=row['listed'].value(),
                                             in_gallery=row['in_gallery'].value(),
                                             thumbnail_size=row['thumbnail_size'].value()),
