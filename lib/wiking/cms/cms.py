@@ -2859,6 +2859,10 @@ class Attachments(ContentManagementModule):
                       type=pd.Binary(not_null=True, maxlen=1000 * wiking.cms.cfg.upload_limit),
                       descr=_("Upload multiple attachments at once "
                               "as a ZIP, TAR or TAR.GZ archive.")),
+                Field('overwrite', _("Overwrite existing files"), virtual=True, 
+                      type=pd.Boolean(not_null=True),
+                      descr=_("If checked, the existing attachments will be updated when "
+                              "the archive contains files of the same name.")),
             )
 
         def _ext(self, record, filename):
@@ -3050,7 +3054,7 @@ class Attachments(ContentManagementModule):
         if action == 'move':
             return ('page_id',)
         elif action == 'upload_archive':
-            return ('archive',)
+            return ('archive', 'overwrite')
         else:
             if action in ('insert', 'update'):
                 f = 'upload'
@@ -3228,6 +3232,7 @@ class Attachments(ContentManagementModule):
                             last_modified=last_modified)
 
     def action_upload_archive(self, req):
+        import shutil
         upload = req.param('archive')
         if not upload:
             return self.action_insert(req, action='upload_archive')
@@ -3265,7 +3270,9 @@ class Attachments(ContentManagementModule):
                 return self._archive.extractfile(item)
             def close(self):
                 return self._archive.close()
-        saved_files = []
+        overwrite = req.param('overwrite') == 'T'
+        inserted_files = []
+        updated_files = []
         def insert_attachments(archive, prefill, transaction):
             for item in archive.items():
                 if not archive.isfile(item):
@@ -3273,18 +3280,33 @@ class Attachments(ContentManagementModule):
                     continue
                 filename = re.split(r'[\\/]', archive.filename(item))[-1]
                 mime_type = mimetypes.guess_type(filename)[0] or 'application/octet-stream'
-                record = self._record(req, None, new=True, prefill=prefill)
+                if overwrite:
+                    row = self._data.get_row(columns=self._non_binary_columns,
+                                             page_id=prefill['page_id'], filename=filename)
+                else:
+                    row = None
+                if row:
+                    record = self._record(req, row)
+                    operation = self._update
+                    files = updated_files
+                    # Create a backup copy in case we want to revert the whole operation.
+                    shutil.copyfile(record['file_path'].value(),
+                                    record['file_path'].value() + '.backup')
+                else:
+                    record = self._record(req, None, new=True, prefill=prefill)
+                    operation = self._insert
+                    files = inserted_files
                 data = archive.open(item)
                 error = record.validate('upload', data, filename=filename, mime_type=mime_type)
                 if error:
                     raise Error(filename, error.message())
                 else:
                     try:
-                        self._insert(req, record, transaction=transaction)
+                        operation(req, record, transaction=transaction)
                     except pd.DBException as e:
                         raise Error(filename, self._analyze_exception(e)[1])
                     else:
-                        saved_files.append(record['file_path'].value())
+                        files.append(record['file_path'].value())
         def failure(error):
             req.message(error, type=req.ERROR)
             req.set_param('submit', None)
@@ -3305,15 +3327,30 @@ class Attachments(ContentManagementModule):
             transaction = self._transaction()
             self._in_transaction(transaction, insert_attachments, archive, prefill, transaction)
         except Exception as e:
-            for filename in saved_files:
-                if os.path.exists(filename):
-                    os.unlink(filename)
+            for path in inserted_files:
+                if os.path.exists(path):
+                    os.unlink(path)
+            for path in updated_files:
+                backup = path + '.backup'
+                if os.path.exists(backup):
+                    shutil.copyfile(backup, path)
+                    os.unlink(backup)
             if isinstance(e, Error):
                 return failure(lcg.concat(e.args, separator=': '))
             raise
         else:
-            req.message(_.ngettext("%d attachment succesfully inserted.",
-                                   "%d attachments succesfully inserted.", len(saved_files)))
+            for path in updated_files:
+                backup = path + '.backup'
+                if os.path.exists(backup):
+                    os.unlink(backup)
+            msg = []
+            if inserted_files:
+                msg.append(_.ngettext("%d attachment succesfully inserted",
+                                      "%d attachments succesfully inserted", len(inserted_files)))
+            if updated_files:
+                msg.append(_.ngettext("%d attachment succesfully updated",
+                                      "%d attachments succesfully updated", len(updated_files)))
+            req.message(lcg.concat(msg, separator=', ') + '.')
         finally:
             archive.close()
         raise wiking.Redirect(req.uri())
