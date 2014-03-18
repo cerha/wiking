@@ -3592,8 +3592,8 @@ class Discussions(ContentManagementModule, EmbeddableCMSModule):
                 content.append(wiking.HtmlRenderer(render))
                 # We don't want to insert messages through a separate insert form,
                 # so we embed one directly below the message list.
-                content.append(self._form(pw.EditForm, req, reset=None, action='insert',
-                                          handler=uri))
+                content.append(self._form(pw.EditForm, req, action='insert', handler=uri,
+                                          show_reset_button=False))
             else:
                 # Translators: The square brackets mark a link.  Please leave the brackets and the
                 # link target '?command=login' untouched and traslate 'log in' to fit into the
