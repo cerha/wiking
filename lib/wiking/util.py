@@ -1901,12 +1901,6 @@ def send_mail(addr, subject, text, sender=None, sender_name=None, html=None,
         'wiking.cfg.special_cc_exclude_roles'.
       
     """
-    return None
-    wiking.debug('--------------------------------------------------------------------------------')
-    wiking.debug('To:', addr)
-    wiking.debug('Subject:', subject)
-    wiking.debug(text)
-    return None
     assert isinstance(addr, (basestring, tuple, list,)), ('type error', addr,)
     assert isinstance(subject, basestring), ('type error', subject,)
     assert isinstance(text, basestring), ('type error', text,)
