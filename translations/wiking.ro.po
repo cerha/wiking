@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-03-07 14:34+0100\n"
+"POT-Creation-Date: 2014-03-19 19:07+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Petr Topiarz <topiarz@post.cz>\n"
 "Language-Team: \n"
@@ -249,27 +249,27 @@ msgstr "Referinţa a fost ştearsă."
 msgid "Unable to perform a database operation:"
 msgstr "Efectuarea operaţiei de bază de date a eşuat."
 
-#: ../lib/wiking/db.py:1964
+#: ../lib/wiking/db.py:1974
 msgid "Back"
 msgstr "Înapoi"
 
 #. Back button label. Standard computer terminology.
 #. RSS channel is a computer idiom, see Wikipedia.
-#: ../lib/wiking/db.py:2172 ../lib/wiking/db.py:2328
+#: ../lib/wiking/db.py:2182 ../lib/wiking/db.py:2338
 msgid "An RSS channel is available for this section:"
 msgstr "Pentru această secţiune este disponibil şi un canal RSS:"
 
 #. RSS channel is a computer idiom, see Wikipedia.  Don't translateg 'RSS'.
-#: ../lib/wiking/db.py:2176 ../lib/wiking/db.py:2326
+#: ../lib/wiking/db.py:2186 ../lib/wiking/db.py:2336
 msgid "more about RSS"
 msgstr "mai mult despre RSS"
 
-#: ../lib/wiking/db.py:2321
+#: ../lib/wiking/db.py:2331
 #, fuzzy, python-format
 msgid "RSS channel \"%s\""
 msgstr "RSS canal"
 
-#: ../lib/wiking/db.py:2331
+#: ../lib/wiking/db.py:2341
 #, fuzzy
 msgid "RSS channels are available for this section"
 msgstr "Pentru această secţiune este disponibil şi un canal RSS:"
@@ -655,13 +655,13 @@ msgstr "Parola"
 msgid "Continue"
 msgstr ""
 
-#: ../lib/wiking/util.py:2052
+#: ../lib/wiking/util.py:2046
 msgid "Invalid format"
 msgstr "Format invalid"
 
 #. Computer terminology. `gmail.com' is a domain name in email address
 #. `joe@gmail.com'.
-#: ../lib/wiking/util.py:2060 ../lib/wiking/util.py:2067
+#: ../lib/wiking/util.py:2054 ../lib/wiking/util.py:2061
 msgid "Domain not found"
 msgstr "Domeniul nu a fost găsit"
 

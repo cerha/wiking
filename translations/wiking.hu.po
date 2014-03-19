@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-03-07 14:34+0100\n"
+"POT-Creation-Date: 2014-03-19 19:07+0100\n"
 "PO-Revision-Date: 2010-02-04 00:17+0100\n"
 "Last-Translator: Hostomský Károly <khostomsky@gmail.com>\n"
 "Language-Team: Hungarian <wiking@lists.freebsoft.org>\n"
@@ -254,27 +254,27 @@ msgstr "Az elem törlődött."
 msgid "Unable to perform a database operation:"
 msgstr "A művelet végrehajtása az adatbázisban sikertelen."
 
-#: ../lib/wiking/db.py:1964
+#: ../lib/wiking/db.py:1974
 msgid "Back"
 msgstr "Vissza"
 
 #. Back button label. Standard computer terminology.
 #. RSS channel is a computer idiom, see Wikipedia.
-#: ../lib/wiking/db.py:2172 ../lib/wiking/db.py:2328
+#: ../lib/wiking/db.py:2182 ../lib/wiking/db.py:2338
 msgid "An RSS channel is available for this section:"
 msgstr "RSS csatorna elérhető a következő szekcióhoz:"
 
 #. RSS channel is a computer idiom, see Wikipedia.  Don't translateg 'RSS'.
-#: ../lib/wiking/db.py:2176 ../lib/wiking/db.py:2326
+#: ../lib/wiking/db.py:2186 ../lib/wiking/db.py:2336
 msgid "more about RSS"
 msgstr "több információ az RSS-ről"
 
-#: ../lib/wiking/db.py:2321
+#: ../lib/wiking/db.py:2331
 #, fuzzy, python-format
 msgid "RSS channel \"%s\""
 msgstr "RSS csatorna"
 
-#: ../lib/wiking/db.py:2331
+#: ../lib/wiking/db.py:2341
 #, fuzzy
 msgid "RSS channels are available for this section"
 msgstr "RSS csatorna elérhető a következő szekcióhoz:"
@@ -654,13 +654,13 @@ msgstr "Jelszó"
 msgid "Continue"
 msgstr ""
 
-#: ../lib/wiking/util.py:2052
+#: ../lib/wiking/util.py:2046
 msgid "Invalid format"
 msgstr "Érvénytelen formátum"
 
 #. Computer terminology. `gmail.com' is a domain name in email address
 #. `joe@gmail.com'.
-#: ../lib/wiking/util.py:2060 ../lib/wiking/util.py:2067
+#: ../lib/wiking/util.py:2054 ../lib/wiking/util.py:2061
 msgid "Domain not found"
 msgstr "Domain nem található"
 
