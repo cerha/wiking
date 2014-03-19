@@ -1373,8 +1373,8 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
 
                 Field('created', _("Created"), default=now),
                 Field('published_since', _("Published since")),
-                # Translators: Configuration option determining whether the page is published or not
-                # (passive form of publish).  The label may be followed by a checkbox.
+                # Translators: Configuration option determining whether the page is published
+                # or not (passive form of publish).  The label may be followed by a checkbox.
                 Field('published', _("Published"), default=False,
                       descr=_("Allows you to control the availability of this page in each of the "
                               "supported languages (switch language to control the availability in "
@@ -1499,6 +1499,11 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
     _UPDATE_LABEL = _("Edit Text")
     _UPDATE_DESCR = _("Edit title, description and content for the current language")
     _LIST_LABEL = _("List all pages")
+    _INSERT_MSG = _("New page was successfully created, but was not published yet. "
+                    "Publish it when you are done.")
+    _INSERT_MSG_PUBLISHED = _("New page was successfully created and published.")
+    _UNPUBLISH_MSG = ("The page was unpublished. "
+                      "It will not be visible in production mode anymore.")
     _SEPARATOR = re.compile('^====+\s*$', re.MULTILINE)
     _HONOUR_SPEC_TITLE = True
     _ROW_ACTIONS = True
@@ -1704,10 +1709,9 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
 
     def _insert_msg(self, req, record):
         if record['published'].value():
-            return _("New page was successfully created and published.")
+            return self._INSERT_MSG_PUBLISHED
         else:
-            return _("New page was successfully created, but was not published yet. "
-                     "Publish it when you are done.")
+            return self._INSERT_MSG
 
     def _update_msg(self, req, record):
         if record['content'].value() == record['_content'].value():
@@ -1723,13 +1727,17 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
 
     def _redirect_after_insert(self, req, record):
         req.message(self._insert_msg(req, record))
-        if not req.has_param('commit'):
+        if ((record['content'].value() != record['_content'].value()
+             or not record['published'].value())):
+            # Make sure uncommited changes are visible in the displayed page.
             wiking.module.Application.set_preview_mode(req, True)
         raise Redirect(self._current_record_uri(req, record))
 
     def _redirect_after_update(self, req, record):
         req.message(self._update_msg(req, record))
-        if not req.has_param('commit'):
+        if ((record['content'].value() != record['_content'].value()
+             or not record['published'].value())):
+            # Make sure uncommited changes are visible in the displayed page.
             wiking.module.Application.set_preview_mode(req, True)
         raise Redirect(req.uri())
 
@@ -1990,8 +1998,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
         except pd.DBException as e:
             req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
         else:
-            req.message(_("The page was unpublished. "
-                          "It will not be visible in production mode anymore."))
+            req.message(self._UNPUBLISH_MSG)
         wiking.module.Application.set_preview_mode(req, True)
         raise Redirect(self._current_record_uri(req, record))
 
@@ -2229,7 +2236,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                 # Avoid default ord=1 to work around slow insertion!
                 Field('ord', enumerator=None, default=None, computer=None),
                 Field('menu_visibility', default='never'),
-                Field('status', visible=computer(self._preview_mode)),
+                Field('published', visible=computer(self._preview_mode)),
                 Field('write_role_id', default=Roles.OWNER.id()),
             )
             extra = (
@@ -2303,6 +2310,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                 return info
             else:
                 return None
+
         condition = pd.AND(pd.EQ('kind', pd.sval('publication')),
                            pd.NE('title', pd.sval(None)))
         layout = ('title', 'description', 'lang', 'identifier', 'cover_image',
@@ -2315,12 +2323,18 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                   FieldSet(_("Access Rights"),
                            ('read_role_id', 'write_role_id', 'owner')),
                   )
-        columns = ('title', 'author', 'publisher', 'status')
+        columns = ('title', 'author', 'publisher', 'published')
         sorting = ('title', pd.ASCENDENT),
         bindings = (
             Binding('chapters', _("Chapters"), 'PublicationChapters', 'parent'),
         ) + Pages.Spec.bindings
-        actions = Pages.Spec.actions + (
+        actions = tuple(_a for _a in Pages.Spec.actions if _a.id() != 'unpublish') + (
+            Action('publish', _("Publish"),
+                   descr=_("Make the publication visible in production mode"),
+                   enabled=lambda r: not r['published'].value()),
+            Action('unpublish', _("Unpublish"),
+                   descr=_("Make the publication invisible in production mode"),
+                   enabled=lambda r: r['published'].value()),
             Action('new_chapter', _("New Chapter"),
                    descr=_("Create a new chapter in this publication.")),
             Action('export_epub', _("Export to EPUB"),
@@ -2334,6 +2348,13 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
     _UPDATE_LABEL = _("Edit")
     _EMBED_BINDING_COLUMN = 'parent'
     _LAYOUT = {}
+    _SUBMIT_BUTTONS = dict(Pages._SUBMIT_BUTTONS, insert=None, update=None)
+    _INSERT_MSG = _("New publication was successfully created, but was not published yet. "
+                    "Publish it when you are done.")
+    _PUBLISH_MSG = ("The publication was published. "
+                    "It will be visible in production mode from now on.")
+    _UNPUBLISH_MSG = ("The publication was unpublished. "
+                      "It will not be visible in production mode anymore.")
 
     def _handle(self, req, action, **kwargs):
         if not hasattr(req, 'publication_record'):
@@ -2353,7 +2374,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
             return req.page_write_access
         elif record and action in ('view', 'rss', 'export_epub', 'export_braille'):
             return self._check_page_access(req, record, readonly=True)
-        elif record and action in ('update', 'commit', 'revert', 'new_chapter',
+        elif record and action in ('update', 'new_chapter',
                                    'publish', 'unpublish', 'translate', 'delete'):
             return self._check_page_access(req, record)
         else:
@@ -2376,6 +2397,10 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
         return dict(super(Publications, self)._prefill(req),
                     owner=req.user().uid())
 
+    def _before_page_change(self, req, record):
+        record['content'] = record['_content'] # Automatically 'commit' all content changes.
+        super(Publications, self)._before_page_change(req, record)
+        
     def _insert_msg(self, req, record):
         if record['published'].value():
             return _("New e-Publication was successfully created and published.")
@@ -2525,6 +2550,19 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
     def action_new_chapter(self, req, record):
         raise Redirect(req.uri() + '/chapters', action='insert')
 
+    def action_publish(self, req, record):
+        if record['published_since'].value() is None:
+            kwargs = dict(published_since=now())
+        else:
+            kwargs = dict()
+        try:
+            record.update(published=True, **kwargs)
+        except pd.DBException as e:
+            req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
+        else:
+            req.message(self._PUBLISH_MSG)
+        raise Redirect(self._current_record_uri(req, record))
+
     def action_export_epub(self, req, record):
         page_id = record['page_id'].value()
         class EpubExporter(lcg.EpubExporter):
@@ -2553,6 +2591,7 @@ class PublicationChapters(NavigablePages):
             override = (
                 Field('kind', default='chapter'),
                 Field('parent', runtime_filter=computer(self._parent_filter)),
+                Field('published', default=True),
             )
             return self._inherited_fields(PublicationChapters.Spec, override=override)
         def _default_identifier(self, record, title):
@@ -2591,6 +2630,8 @@ class PublicationChapters(NavigablePages):
         columns = ('title', 'status')
         sorting = ('ord', pd.ASCENDENT),
     _INSERT_LABEL = _("New Chapter")
+    _INSERT_MSG_PUBLISHED = _("New chapter was successfully created.")
+    _SUBMIT_BUTTONS = dict(Pages._SUBMIT_BUTTONS, insert=None, update=None)
     _LAYOUT = dict(Pages._LAYOUT,
                    insert=('title', 'description', '_content', 'parent', 'ord'),
                    position=('parent', 'ord'),
@@ -2599,8 +2640,7 @@ class PublicationChapters(NavigablePages):
     def _authorized(self, req, action, record=None, **kwargs):
         if action in ('view',):
             return req.page_read_access
-        elif action in ('insert', 'update', 'position', 'commit', 'revert', 'publish', 'unpublish',
-                        'translate', 'delete', 'excerpt',):
+        elif action in ('insert', 'update', 'position', 'delete', 'excerpt',):
             return req.page_write_access
         else:
             return False # raise NotFound or BadRequest?
@@ -2609,22 +2649,21 @@ class PublicationChapters(NavigablePages):
         # Use PytisModule._current_base_uri (skip Pages._current_base_uri).
         return super(Pages, self)._current_base_uri(req, record=record)
 
+    def _before_page_change(self, req, record):
+        record['content'] = record['_content'] # Automatically 'commit' all content changes.
+        super(PublicationChapters, self)._before_page_change(req, record)
+        
     def action_position(self, req, record):
         return self.action_update(req, record, action='position')
 
     def child_rows(self, req, tree_order, lang):
         children = {}
-        if wiking.module.Application.preview_mode(req):
-            restriction = {}
-        else:
-            restriction = {'published': True}
         for row in self._data.get_rows(site=wiking.cfg.server_hostname,
                                        condition=pd.WM('tree_order',
                                                        pd.WMValue(pd.String(),
                                                                   '%s.*' % tree_order)),
                                        lang=lang,
-                                       sorting=(('tree_order', pd.ASCENDENT),),
-                                       **restriction):
+                                       sorting=(('tree_order', pd.ASCENDENT),)):
             children.setdefault(row['parent'].value(), []).append(row)
         return children
 
