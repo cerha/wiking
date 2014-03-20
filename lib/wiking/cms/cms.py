@@ -1494,7 +1494,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
     _SUBMIT_BUTTONS_ = ((None, _("Save as concept")), ('commit', _("Save and publish")))
     _SUBMIT_BUTTONS = {'update': _SUBMIT_BUTTONS_,
                        'insert': _SUBMIT_BUTTONS_,
-                       'excerpt': ((_("Store"), None),)}
+                       'excerpt': ((None, _("Store")),)}
     _INSERT_LABEL = _("New page")
     _UPDATE_LABEL = _("Edit Text")
     _UPDATE_DESCR = _("Edit title, description and content for the current language")
