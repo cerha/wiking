@@ -2453,6 +2453,8 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
         def format(fid):
             if isinstance(record.type(fid), pd.DateTime):
                 return pw.localizable_export(record[fid])
+            if isinstance(record.type(fid), pd.Boolean):
+                return record[fid].value() and _("Yes") or _("No")
             else:
                 value = record.display(fid) or record[fid].export()
                 if not isinstance(value, lcg.Localizable):
@@ -2472,7 +2474,10 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
             content.append(lcg.p(record['copyright_notice'].value()))
         extra_fields = fields(('isbn', 'adapted_by',))
         if online:
-            extra_fields.extend(fields(('published_since',)))
+            if record['published'].value():
+                extra_fields.extend(fields(('published_since',)))
+            else:
+                extra_fields.extend(fields(('created', 'published',)))
         else:
             timestamp = now().strftime('%Y-%m-%d %H:%M:%S')
             extra_fields.append((_("Created") + ':',
