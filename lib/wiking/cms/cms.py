@@ -1309,10 +1309,11 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                 Field('identifier', _("Identifier"), width=20, fixed=True, editable=ONCE,
                       type=pd.RegexString(not_null=True, regex='^[a-zA-Z][0-9a-zA-Z_-]*$'),
                       computer=computer(self._default_identifier),
-                      descr=_("The identifier may be used to refer to this page from outside "
-                              "and also from other pages. "
-                              "A valid identifier can only contain letters, digits, "
-                              "dashes and underscores.  It must start with a letter.")),
+                      descr=_("The identifier may be used to refer to this page from "
+                              "outside and also from other pages. The same identifier "
+                              "is used for all language variants of one page. A valid "
+                              "identifier can only contain letters, digits, dashes and "
+                              "underscores.  It must start with a letter.")),
                 Field('lang', _("Language"), editable=ONCE, codebook='Languages',
                       value_column='lang'),
                 Field('title_or_identifier', _("Title")),
