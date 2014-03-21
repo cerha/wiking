@@ -2646,7 +2646,7 @@ class PublicationChapters(NavigablePages):
         elif action == 'position':
             return ('parent', 'ord'),
         else:
-            return super(Pages, self)._current_base_uri(req, record=record)
+            return super(PublicationChapters, self)._layout(req, action, record=record)
 
     def _current_base_uri(self, req, record=None):
         # Use PytisModule._current_base_uri (skip Pages._current_base_uri).
