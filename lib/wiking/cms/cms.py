@@ -2404,6 +2404,12 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
             conditions.append(pd.EQ('published', pd.bval(True)))
         return pd.AND(*conditions)
 
+    def _columns(self, req):
+        columns = super(Publications, self)._columns(req)
+        if not wiking.module.Application.preview_mode(req):
+            columns = [c for c in columns if c != 'published']
+        return columns
+
     def _prefill(self, req):
         return dict(super(Publications, self)._prefill(req),
                     owner=req.user().uid())
