@@ -920,7 +920,7 @@ class Panels(SiteSpecificContentModule, wiking.CachingPytisModule):
                 # Translators: Content of a page (text or something else)
                 ContentField('content', _("Content"), height=10, width=80,
                              descr=_("Additional text content displayed on the panel.")),
-                # Translators: Yes/no option whether the item is publically
+                # Translators: Yes/no option whether the item is publicly
                 # visible. Followed by a checkbox.
                 Field('published', _("Published"), default=True,
                       descr=_("Controls whether the panel is actually displayed.")),
@@ -1371,15 +1371,20 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                       inline_referer='creator_login', inline_display='creator_name'),
                 Field('creator_login'),
                 Field('creator_name'),
-
                 Field('created', _("Created"), default=now),
-                Field('published_since', _("Published since")),
-                # Translators: Configuration option determining whether the page is published
-                # or not (passive form of publish).  The label may be followed by a checkbox.
+                # Translators: Configuration option determining whether the page is publicly
+                # visible or not (passive form of publish).  The label may be followed by
+                # a checkbox.
                 Field('published', _("Published"), default=False,
-                      descr=_("Allows you to control the availability of this page in each of the "
-                              "supported languages (switch language to control the availability in "
-                              "other languages)")),
+                      # Translators: Item is a generic term to refer to a web page,
+                      # publication, article or another kind of content.
+                      descr=_("Check to make the item visible in production mode. "
+                              "Otherwise the page is only visible in preview mode. "
+                              "Allows content development before publishing it. "
+                              "Different language variants of the same page may "
+                              "be published independently (switch language to control "
+                              "availability in other languages).")),
+                Field('published_since', _("Available since")),
                 Field('status', _("Status"), virtual=True, computer=computer(self._status)),
                 #Field('grouping', virtual=True,
                 #      computer=computer(lambda r, tree_order: tree_order.split('.')[1])),
@@ -1402,10 +1407,8 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                 ContentField('_excerpt_content', _("Excerpt"), compact=True, height=20, width=80,
                              virtual=True),
             )
-        def _status(self, record, published, _content, content):
-            if not published:
-                return _("Not published")
-            elif _content == content:
+        def _status(self, record, _content, content):
+            if _content == content:
                 return _("Ok")
             else:
                 return _("Changed")
@@ -1434,25 +1437,23 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
         sorting = (('tree_order', ASC), ('identifier', ASC),)
         #grouping = 'grouping'
         #group_heading = 'title'
-        layout = ()
+        layout = () # Defined by _layout() method.
         columns = ('title_or_identifier', 'identifier', 'modname', 'status',
                    'menu_visibility', 'read_role_id', 'write_role_id')
         cb = CodebookSpec(display='title_or_identifier', prefer_display=True)
         actions = (
             # Translators: Button label. Page configuration options.
             Action('options', _("Options"),
-                   descr=_("Edit global (language independent) page options and menu position")),
-            Action('commit', _("Publish"), descr=_("Publish the page in its current state"),
-                   enabled=lambda r: (r['_content'].value() != r['content'].value()
-                                      or not r['published'].value())),
-            Action('unpublish', _("Unpublish"),
-                   descr=_("Make the page invisible in production mode"),
-                   enabled=lambda r: r['published'].value()),
-            Action('excerpt', _("Store Excerpt")),
+                   descr=_("Edit global page options, such as visibility menu position and access rights.")),
+            Action('commit', _("Commit"),
+                   descr=_("Publish the current concept in production mode."),
+                   enabled=lambda r: (r['published'].value() and
+                                      r['_content'].value() != r['content'].value())),
             Action('revert', _("Revert"),
-                   descr=_("Revert the unpublished changes in page text "
-                           "to the last published state"),
-                   enabled=lambda r: r['_content'].value() != r['content'].value()),
+                   descr=_("Replace the current concept with the production version."),
+                   enabled=lambda r: (r['published'].value() and
+                                      r['_content'].value() != r['content'].value())),
+            Action('excerpt', _("Store Excerpt")),
             #Action('translate', _("Translate"),
             #      descr=_("Create the content by translating another language variant"),
             #       enabled=lambda r: r['_content'].value() is None),
@@ -1474,37 +1475,12 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
          _("Duplicate menu order at this level of hierarchy.")),) + \
         SiteSpecificContentModule._EXCEPTION_MATCHERS
     _LIST_BY_LANGUAGE = True
-    _LAYOUT = {'insert':
-               (FieldSet(_("Page Text (for the current language)"),
-                         ('title', 'description', '_content')),
-                FieldSet(_("Global Options (for all languages)"),
-                         ('identifier', 'modname',
-                          FieldSet(_("Menu position"), ('parent', 'ord', 'menu_visibility',
-                                                        'foldable')),
-                          FieldSet(_("Access Rights"), ('read_role_id', 'write_role_id', 'owner')),
-                          ))),
-               'update': ('title', 'description', '_content', 'comment',),
-               'delete': (),
-               'options':
-               (FieldSet(_("Basic Options"), ('identifier', 'modname',)),
-                FieldSet(_("Menu position"), ('parent', 'menu_visibility', 'ord', 'foldable')),
-                FieldSet(_("Access Rights"), ('read_role_id', 'write_role_id', 'owner')),
-                ),
-               'excerpt': ('_content', '_excerpt_content', 'excerpt_title',),
-               }
-    _SUBMIT_BUTTONS_ = ((None, _("Save as concept")), ('commit', _("Save and publish")))
-    _SUBMIT_BUTTONS = {'update': _SUBMIT_BUTTONS_,
-                       'insert': _SUBMIT_BUTTONS_,
-                       'excerpt': ((None, _("Store")),)}
     _INSERT_LABEL = _("New page")
     _UPDATE_LABEL = _("Edit Text")
     _UPDATE_DESCR = _("Edit title, description and content for the current language")
     _LIST_LABEL = _("List all pages")
-    _INSERT_MSG = _("New page was successfully created, but was not published yet. "
-                    "Publish it when you are done.")
-    _INSERT_MSG_PUBLISHED = _("New page was successfully created and published.")
-    _UNPUBLISH_MSG = ("The page was unpublished. "
-                      "It will not be visible in production mode anymore.")
+    _INSERT_MSG = _("New page was successfully created.")
+    _UPDATE_MSG = _("The page was successfully updated.")
     _SEPARATOR = re.compile('^====+\s*$', re.MULTILINE)
     _HONOUR_SPEC_TITLE = True
     _ROW_ACTIONS = True
@@ -1572,8 +1548,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
         return super(Pages, self)._handle(req, action, **kwargs)
 
     def _authorized(self, req, action, record=None, **kwargs):
-        if action in ('new_page', 'insert', 'list', 'options', 'publish', 'unpublish',
-                      'delete', 'translate'):
+        if action in ('new_page', 'insert', 'list', 'options', 'commit', 'revert', 'delete'):
             return req.check_roles(Roles.CONTENT_ADMIN,)
         elif record and action in ('view', 'rss'):
             return self._check_page_access(req, record, readonly=True)
@@ -1582,6 +1557,24 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
         else:
             return False # raise NotFound or BadRequest?
 
+    def _layout(self, req, action, record=None):
+        if action in ('insert', 'options'):
+            layout = [
+                FieldSet(_("Basic Options"), ('identifier', 'modname', 'published')), 
+                FieldSet(_("Menu position"), ('parent', 'ord', 'menu_visibility', 'foldable')),
+                FieldSet(_("Access Rights"), ('read_role_id', 'write_role_id', 'owner')),
+            ]
+            if action == 'insert':
+                layout.insert(0, FieldSet(_("Page Text (for the current language)"),
+                                          ('title', 'description', '_content')))
+            return layout
+        elif action == 'update':
+            return ('title', 'description', '_content', 'comment',)
+        elif action == 'excerpt':
+            return ('_content', '_excerpt_content', 'excerpt_title',)
+        elif action == 'delete':
+            return ()
+  
     def _handle_subpath(self, req, record):
         modname = record['modname'].value()
         if modname:
@@ -1652,8 +1645,8 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                 rows = [r for r in rows if r['published'].value()]
                 if not rows:
                     if req.check_roles(Roles.CONTENT_ADMIN):
-                        req.message(_("The page exists but is not published. "
-                                      "You need to switch to the Preview mode "
+                        req.message(_("The page exists but is not visible in production mode. "
+                                      "You need to switch to the preview mode "
                                       "to be able to access it."),
                                     type=req.WARNING)
                     raise Forbidden()
@@ -1664,24 +1657,47 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
         else:
             raise NotFound()
 
+    def _link_provider(self, req, uri, record, cid, **kwargs):
+        if cid == 'parent':
+            return None
+        return super(Pages, self)._link_provider(req, uri, record, cid, **kwargs)
+
     def _prefill(self, req):
         return dict(super(Pages, self)._prefill(req),
                     lang=req.preferred_language(raise_error=False),
                     creator=req.user().uid())
 
+    def _submit_buttons(self, req, action, record=None):
+        if action == 'insert':
+            return ((None, _("Save")),)
+        elif action == 'update' and not record['published'].value():
+            return ((None, _("Save as Concept")),)
+        elif action == 'update':
+            return ((None, _("Save as Concept")), ('commit', _("Save as Production Version")))
+        elif action == 'excerpt':
+            return ((None, _("Store")),)
+        else:
+            return super(Pages, self)._submit_buttons(req, action, record=record)
+
     def _before_page_change(self, req, record):
-        if req.has_param('commit'):
+        if req.has_param('commit') or record.new() and record['published'].value():
             record['content'] = record['_content']
-            record['published'] = pd.bval(True)
-            if ((not record.original_row()['published'].value() and
-                 record['published_since'].value() is None)):
-                record['published_since'] = pd.Value(record.type('published_since'), now())
+        if ((record.field_changed('published') and record['published'].value() and
+             record['published_since'].value() is None)):
+            record['published_since'] = pd.Value(record.type('published_since'), now())
         if record['creator'].value() is None:
             # Supply creator to a newly created language variant (where prefill
             # doesn't apply because it actually is an update, not insert).
             record['creator'] = pd.Value(record.type('creator'), req.user().uid())
         if record['created'].value() is None:
             record['created'] = pd.Value(record.type('created'), now())
+        if record['title'].value() is None and record['published'].value():
+            if record['modname'].value() is not None:
+                # Supply the module's title automatically.
+                mod = wiking.module(record['modname'].value())
+                values['title'] = req.localize(mod.title(), record['lang'].value())
+            else:
+                raise wiking.DBError(_("Can't publish untitled page."))
 
     def _insert_transaction(self, req, record):
         return self._transaction()
@@ -1709,37 +1725,47 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
             wiking.module.PageHistory.on_page_change(req, record, transaction=transaction)
 
     def _insert_msg(self, req, record):
+        msg = self._INSERT_MSG
         if record['published'].value():
-            return self._INSERT_MSG_PUBLISHED
+            # Translators: "It" refers to a page, publication or another kind of content
+            # mentioned in a previous sentence.  The formulation shoud work for all cases.
+            note = _("It is now visible in production mode.")
         else:
-            return self._INSERT_MSG
+            note = _("It is now only visible in preview mode. "
+                     'Set as "Published" for publishing in production mode.')
+
+        return msg + ' ' + note
 
     def _update_msg(self, req, record):
-        if record['content'].value() == record['_content'].value():
-            return super(Pages, self)._update_msg(req, record)
-        else:
-            return _("Page content was modified, however the changes remain unpublished. "
-                     "Don't forget to publish the changes when you are done.")
+        msg = self._UPDATE_MSG
+        if record.field_changed('published'):
+            if record['published'].value():
+                # Translators: "It" refers to a page, publication or another kind of content
+                # mentioned in a previous sentence.  The formulation shoud work for all cases.
+                note = _("It will be visible in production mode from now on.")
+            else:
+                note = _("It will be only visible in preview mode from now on.")
+            msg += ' ' + note
+        if ((record.field_changed('_content') and 
+             record['content'].value() != record['_content'].value())):
+            msg += _("The content was modified, however the changes are only visible in "
+                     "preview mode. Commit the changes to make them visible in production mode.")
+        return msg
 
-    def _link_provider(self, req, uri, record, cid, **kwargs):
-        if cid == 'parent':
-            return None
-        return super(Pages, self)._link_provider(req, uri, record, cid, **kwargs)
-
-    def _redirect_after_insert(self, req, record):
-        req.message(self._insert_msg(req, record))
+    def _set_preview_mode_if_necessary(self, req, record):
         if ((record['content'].value() != record['_content'].value()
              or not record['published'].value())):
             # Make sure uncommited changes are visible in the displayed page.
             wiking.module.Application.set_preview_mode(req, True)
+
+    def _redirect_after_insert(self, req, record):
+        req.message(self._insert_msg(req, record))
+        self._set_preview_mode_if_necessary(req, record)
         raise Redirect(self._current_record_uri(req, record))
 
     def _redirect_after_update(self, req, record):
         req.message(self._update_msg(req, record))
-        if ((record['content'].value() != record['_content'].value()
-             or not record['published'].value())):
-            # Make sure uncommited changes are visible in the displayed page.
-            wiking.module.Application.set_preview_mode(req, True)
+        self._set_preview_mode_if_necessary(req, record)
         raise Redirect(req.uri())
 
     def _delete_form_content(self, req, form, record):
@@ -1921,8 +1947,8 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
         application = wiking.module.Application
         if action == 'update' and not application.preview_mode(req) \
                 and record['content'].value() != record['_content'].value():
-            req.message(_("The page has unpublished changes (not visible in production mode)."),
-                        type=req.WARNING)
+            req.message(_("There are unpublished changes which are not visible "
+                          "in production mode."), type=req.WARNING)
             application.set_preview_mode(req, True)
         return super(Pages, self).action_update(req, record, action=action)
 
@@ -1965,19 +1991,8 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
             return self.action_update(req, record)
 
     def action_commit(self, req, record):
-        values = dict(content=record['_content'].value(), published=True)
-        if not record['published'].value() and record['published_since'].value() is None:
-            values['published_since'] = now()
-        if record['title'].value() is None:
-            if record['modname'].value() is not None:
-                # Supply the module's title automatically.
-                mod = wiking.module(record['modname'].value())
-                values['title'] = req.localize(mod.title(), record['lang'].value())
-            else:
-                req.message(_("Can't publish untitled page."), type=req.ERROR)
-                raise Redirect(self._current_record_uri(req, record))
         try:
-            record.update(**values)
+            record.update(content=record['_content'].value())
         except pd.DBException as e:
             req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
         else:
@@ -1991,16 +2006,6 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
             req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
         else:
             req.message(_("The page contents was reverted to its previous state."))
-        raise Redirect(self._current_record_uri(req, record))
-
-    def action_unpublish(self, req, record):
-        try:
-            record.update(published=False)
-        except pd.DBException as e:
-            req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
-        else:
-            req.message(self._UNPUBLISH_MSG)
-        wiking.module.Application.set_preview_mode(req, True)
         raise Redirect(self._current_record_uri(req, record))
 
     def action_new_page(self, req, record):
@@ -2212,32 +2217,29 @@ class CmsPageExcerpts(EmbeddableCMSModule, BrailleExporter):
 
 
 class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
-    """e-Publications management as a CMS module.
+    """CMS module to manage electronic publications.
 
-    e-Publication (e-Book) is created as a hierarchy of CMS pages.  The top
-    level page represents the publication, subordinary pages are its chapters.
-    This module may be added to any CMS page (it is an embeddable CMS module)
-    and it will consist of a listing of available e-Publications in
-    alphabetical order.  Entering a particular publication will add its
-    hierarchy to the CMS menu.
+    A publication is created as a hierarchy of CMS pages.  The top level page
+    represents the publication, subordinary pages are its chapters.  This
+    module may be added to any CMS page (it is an embeddable CMS module) and it
+    will consist of a listing of available publications in alphabetical
+    order.  Entering a particular publication will add its hierarchy to the CMS
+    menu.
 
     """
 
     class Spec(Pages.Spec):
-        title = _("e-Publications")
+        title = _("Publications")
         table = 'cms_v_publications'
         def fields(self):
             override = (
                 Field('kind', default='publication'),
-                Field('_content', _("Title Page")),
                 Field('description', _("Subtitle")),
-                Field('published_since', _("Available since")),
                 Field('parent',
                       computer=computer(lambda r: r.req().page_record['page_id'].value())),
                 # Avoid default ord=1 to work around slow insertion!
                 Field('ord', enumerator=None, default=None, computer=None),
                 Field('menu_visibility', default='never'),
-                Field('published', visible=computer(self._preview_mode)),
                 Field('write_role_id', default=Roles.OWNER.id()),
             )
             extra = (
@@ -2314,28 +2316,12 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
 
         condition = pd.AND(pd.EQ('kind', pd.sval('publication')),
                            pd.NE('title', pd.sval(None)))
-        layout = ('title', 'description', 'lang', 'identifier', 'cover_image',
-                  FieldSet(_("Bibliographic information"),
-                           ('author', 'contributor', 'illustrator', 
-                            'publisher', 'published_year', 'edition',
-                            'original_isbn', 'isbn', 'adapted_by',
-                            'copyright_notice', 'notes')),
-                  '_content',
-                  FieldSet(_("Access Rights"),
-                           ('read_role_id', 'write_role_id', 'owner')),
-                  )
         columns = ('title', 'author', 'publisher', 'published')
         sorting = ('title', pd.ASCENDENT),
         bindings = (
             Binding('chapters', _("Chapters"), 'PublicationChapters', 'parent'),
         ) + Pages.Spec.bindings
-        actions = tuple(_a for _a in Pages.Spec.actions if _a.id() != 'unpublish') + (
-            Action('publish', _("Publish"),
-                   descr=_("Make the publication visible in production mode"),
-                   enabled=lambda r: not r['published'].value()),
-            Action('unpublish', _("Unpublish"),
-                   descr=_("Make the publication invisible in production mode"),
-                   enabled=lambda r: r['published'].value()),
+        actions = Pages.Spec.actions + (
             Action('new_chapter', _("New Chapter"),
                    descr=_("Create a new chapter in this publication.")),
             Action('export_epub', _("Export to EPUB"),
@@ -2345,17 +2331,12 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
         )
 
     _LIST_BY_LANGUAGE = False
-    _INSERT_LABEL = _("New e-Publication")
-    _UPDATE_LABEL = _("Edit")
+    _INSERT_LABEL = _("New Publication")
+    _UPDATE_LABEL = _("Title Page Text")
+    _UPDATE_DESCR = _("Edit the text displayed on the title page.")
     _EMBED_BINDING_COLUMN = 'parent'
-    _LAYOUT = {}
-    _SUBMIT_BUTTONS = dict(Pages._SUBMIT_BUTTONS, insert=None, update=None)
-    _INSERT_MSG = _("New publication was successfully created, but was not published yet. "
-                    "Publish it when you are done.")
-    _PUBLISH_MSG = ("The publication was published. "
-                    "It will be visible in production mode from now on.")
-    _UNPUBLISH_MSG = ("The publication was unpublished. "
-                      "It will not be visible in production mode anymore.")
+    _INSERT_MSG = _("New publication was successfully created.")
+    _UPDATE_MSG = _("The publication was successfully updated.")
 
     def _handle(self, req, action, **kwargs):
         if not hasattr(req, 'publication_record'):
@@ -2370,13 +2351,35 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                 req.page_write_access = self._check_page_access(req, record)
         return super(Publications, self)._handle(req, action, **kwargs)
 
+    def _layout(self, req, action, record=None):
+        if action in ('insert', 'options'):
+            layout = [
+                FieldSet(_("Basic Options"),
+                         ('title', 'description', 'lang', 'identifier', 
+                          'cover_image', 'published')),
+                FieldSet(_("Bibliographic Information"),
+                         ('author', 'contributor', 'illustrator',
+                          'publisher', 'published_year', 'edition',
+                          'original_isbn', 'isbn', 'adapted_by',
+                          'copyright_notice', 'notes')),
+                FieldSet(_("Access Rights"),
+                         ('read_role_id', 'write_role_id', 'owner')),
+            ]
+            if action == 'insert':
+                layout.insert(2, FieldSet(_("Title Page Content"), ('_content',)))
+            return layout
+        elif action == 'update':
+            return ('_content', 'comment')
+        elif action == 'delete':
+            return ()
+
     def _authorized(self, req, action, record=None, **kwargs):
         if action in ('insert',):
             return req.page_write_access
         elif record and action in ('view', 'rss', 'export_epub', 'export_braille'):
             return self._check_page_access(req, record, readonly=True)
-        elif record and action in ('update', 'new_chapter',
-                                   'publish', 'unpublish', 'translate', 'delete'):
+        elif record and action in ('update', 'options', 'new_chapter', 
+                                   'commit', 'revert', 'delete'):
             return self._check_page_access(req, record)
         else:
             return False # raise NotFound or BadRequest?
@@ -2397,17 +2400,6 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
     def _prefill(self, req):
         return dict(super(Publications, self)._prefill(req),
                     owner=req.user().uid())
-
-    def _before_page_change(self, req, record):
-        record['content'] = record['_content'] # Automatically 'commit' all content changes.
-        super(Publications, self)._before_page_change(req, record)
-        
-    def _insert_msg(self, req, record):
-        if record['published'].value():
-            return _("New e-Publication was successfully created and published.")
-        else:
-            return _("New e-Publication was successfully created, but was not published yet. "
-                     "Publish it when you are done.")
 
     def _current_base_uri(self, req, record=None):
         # Use PytisModule._current_base_uri (skip Pages._current_base_uri).
@@ -2551,19 +2543,6 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
     def action_new_chapter(self, req, record):
         raise Redirect(req.uri() + '/chapters', action='insert')
 
-    def action_publish(self, req, record):
-        if record['published_since'].value() is None:
-            kwargs = dict(published_since=now())
-        else:
-            kwargs = dict()
-        try:
-            record.update(published=True, **kwargs)
-        except pd.DBException as e:
-            req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
-        else:
-            req.message(self._PUBLISH_MSG)
-        raise Redirect(self._current_record_uri(req, record))
-
     def action_export_epub(self, req, record):
         page_id = record['page_id'].value()
         class EpubExporter(lcg.EpubExporter):
@@ -2586,7 +2565,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
 
 
 class PublicationChapters(NavigablePages):
-    """e-Publication chapters are regular CMS pages """
+    """Publication chapters are regular CMS pages """
     class Spec(Pages.Spec):
         def fields(self):
             override = (
@@ -2631,29 +2610,30 @@ class PublicationChapters(NavigablePages):
         columns = ('title', 'status')
         sorting = ('ord', pd.ASCENDENT),
     _INSERT_LABEL = _("New Chapter")
-    _INSERT_MSG_PUBLISHED = _("New chapter was successfully created.")
-    _SUBMIT_BUTTONS = dict(Pages._SUBMIT_BUTTONS, insert=None, update=None)
-    _LAYOUT = dict(Pages._LAYOUT,
-                   insert=('title', 'description', '_content', 'parent', 'ord'),
-                   position=('parent', 'ord'),
-                   )
+    _INSERT_MSG = _("New chapter was successfully created.")
+    _UPDATE_MSG = _("The chapter was successfully updated.")
 
     def _authorized(self, req, action, record=None, **kwargs):
         if action in ('view',):
             return req.page_read_access
-        elif action in ('insert', 'update', 'position', 'delete', 'excerpt',):
+        elif action in ('insert', 'update', 'position', 'commit', 'revert', 'delete', 'excerpt',):
             return req.page_write_access
         else:
             return False # raise NotFound or BadRequest?
+
+    def _layout(self, req, action, record=None):
+        if action == 'insert':
+            return ('title', 'description', '_content',
+                    FieldSet(_("Position in Publication"), ('parent', 'ord')))
+        elif action == 'position':
+            return ('parent', 'ord'),
+        else:
+            return super(Pages, self)._current_base_uri(req, record=record)
 
     def _current_base_uri(self, req, record=None):
         # Use PytisModule._current_base_uri (skip Pages._current_base_uri).
         return super(Pages, self)._current_base_uri(req, record=record)
 
-    def _before_page_change(self, req, record):
-        record['content'] = record['_content'] # Automatically 'commit' all content changes.
-        super(PublicationChapters, self)._before_page_change(req, record)
-        
     def action_position(self, req, record):
         return self.action_update(req, record, action='position')
 
