@@ -1379,11 +1379,11 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                       # Translators: Item is a generic term to refer to a web page,
                       # publication, article or another kind of content.
                       descr=_("Check to make the item visible in production mode. "
-                              "Otherwise the page is only visible in preview mode. "
+                              "Otherwise it is only visible in preview mode. "
                               "Allows content development before publishing it. "
-                              "Different language variants of the same page may "
-                              "be published independently (switch language to control "
-                              "availability in other languages).")),
+                              "Different language variants may be published "
+                              "independently (switch language to control availability "
+                              "in other languages).")),
                 Field('published_since', _("Available since")),
                 Field('status', _("Status"), virtual=True, computer=computer(self._status)),
                 #Field('grouping', virtual=True,
@@ -1444,7 +1444,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
         actions = (
             # Translators: Button label. Page configuration options.
             Action('options', _("Options"),
-                   descr=_("Edit global page options, such as visibility menu position and access rights.")),
+                   descr=_("Edit global options, such as visibility menu position and access rights.")),
             Action('commit', _("Commit"),
                    descr=_("Publish the current concept in production mode."),
                    enabled=lambda r: (r['published'].value() and
@@ -2373,7 +2373,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                          ('read_role_id', 'write_role_id', 'owner')),
             ]
             if action == 'insert':
-                layout.insert(2, FieldSet(_("Title Page Content"), ('_content',)))
+                layout.insert(2, FieldSet(_("Title Page Text"), ('_content',)))
             return layout
         elif action == 'update':
             return ('_content', 'comment')
