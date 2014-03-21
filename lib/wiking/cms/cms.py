@@ -1680,7 +1680,14 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
             return super(Pages, self)._submit_buttons(req, action, record=record)
 
     def _before_page_change(self, req, record):
-        if req.has_param('commit') or record.new() and record['published'].value():
+        if req.has_param('commit') or not record['published'].value() or record.new():
+            # When the page is not published, we commit the changes
+            # automatically.  It makes no difference in preview mode and the page
+            # is not visible in production mode anyway.  We also want the page to
+            # appear in the expected state once it is published.
+            # We also autocommit the content on insertion because when published
+            # immediately, the user will expect it to be published in the current
+            # state (and when not published immediately, the above applies).
             record['content'] = record['_content']
         if ((record.field_changed('published') and record['published'].value() and
              record['published_since'].value() is None)):
@@ -1732,7 +1739,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
             note = _("It is now visible in production mode.")
         else:
             note = _("It is now only visible in preview mode. "
-                     'Set as "Published" for publishing in production mode.')
+                     'Set as "Published" to appear in production mode.')
 
         return msg + ' ' + note
 
@@ -1746,7 +1753,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
             else:
                 note = _("It will be only visible in preview mode from now on.")
             msg += ' ' + note
-        if ((record.field_changed('_content') and 
+        if ((record.field_changed('_content') and
              record['content'].value() != record['_content'].value())):
             msg += _("The content was modified, however the changes are only visible in "
                      "preview mode. Commit the changes to make them visible in production mode.")
@@ -2005,7 +2012,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
         except pd.DBException as e:
             req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
         else:
-            req.message(_("The page contents was reverted to its previous state."))
+            req.message(_("The content was reverted to its previous state."))
         raise Redirect(self._current_record_uri(req, record))
 
     def action_new_page(self, req, record):
