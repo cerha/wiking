@@ -1444,7 +1444,8 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
         actions = (
             # Translators: Button label. Page configuration options.
             Action('options', _("Options"),
-                   descr=_("Edit global options, such as visibility menu position and access rights.")),
+                   descr=_("Edit global options, such as visibility, "
+                           "menu position and access rights.")),
             Action('commit', _("Commit"),
                    descr=_("Publish the current concept in production mode."),
                    enabled=lambda r: (r['published'].value() and
@@ -1560,7 +1561,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
     def _layout(self, req, action, record=None):
         if action in ('insert', 'options'):
             layout = [
-                FieldSet(_("Basic Options"), ('identifier', 'modname', 'published')), 
+                FieldSet(_("Basic Options"), ('identifier', 'modname', 'published')),
                 FieldSet(_("Menu position"), ('parent', 'ord', 'menu_visibility', 'foldable')),
                 FieldSet(_("Access Rights"), ('read_role_id', 'write_role_id', 'owner')),
             ]
@@ -2362,7 +2363,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
         if action in ('insert', 'options'):
             layout = [
                 FieldSet(_("Basic Options"),
-                         ('title', 'description', 'lang', 'identifier', 
+                         ('title', 'description', 'lang', 'identifier',
                           'cover_image', 'published')),
                 FieldSet(_("Bibliographic Information"),
                          ('author', 'contributor', 'illustrator',
@@ -2897,7 +2898,7 @@ class Attachments(ContentManagementModule):
                       type=pd.Binary(not_null=True, maxlen=1000 * wiking.cms.cfg.upload_limit),
                       descr=_("Upload multiple attachments at once "
                               "as a ZIP, TAR or TAR.GZ archive.")),
-                Field('overwrite', _("Overwrite existing files"), virtual=True, 
+                Field('overwrite', _("Overwrite existing files"), virtual=True,
                       type=pd.Boolean(not_null=True),
                       descr=_("If checked, the existing attachments will be updated when "
                               "the archive contains files of the same name.")),
