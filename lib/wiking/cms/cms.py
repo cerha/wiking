@@ -28,6 +28,7 @@ import pytis.data as pd
 import pytis.presentation as pp
 import pytis.web as pw
 import wiking
+import wiking.dbdefs
 from wiking import Binding, FieldSet, Forbidden, MenuItem, NotFound, PanelItem, \
     Redirect, Response, Role, Specification, make_uri
 import wiking.cms
@@ -2087,14 +2088,8 @@ class BrailleExporter(wiking.Module):
     _OMIT_FOOTER = False
     _FILE_NAME_FIELD = 'identifier'
 
-    def action_export_braille(self, req, record):
-        page_width = int(req.param('braille_page_width') or '0')
-        page_height = int(req.param('braille_page_height') or '0')
-        inner_margin = int(req.param('braille_inner_margin') or '0')
-        outer_margin = int(req.param('braille_outer_margin') or '0')
-        top_margin = int(req.param('braille_top_margin') or '0')
-        bottom_margin = int(req.param('braille_bottom_margin') or '0')
-        printer = req.param('braille_printer')
+    def export_braille(self, req, record, page_width=None, page_height=None, inner_margin=None,
+                        outer_margin=None, top_margin=None, bottom_margin=None, printer=None):
         presentation = lcg.braille_presentation()
         try:
             local_presentation = lcg.braille_presentation('presentation-braille-local.py')
@@ -2104,24 +2099,38 @@ class BrailleExporter(wiking.Module):
             for o in dir(local_presentation):
                 if o[0] in string.lowercase and hasattr(presentation, o):
                     setattr(presentation, o, getattr(local_presentation, o))
+        node = self._publication(req, record)
+        exporter = lcg.BrailleExporter(translations=wiking.cfg.translation_path)
+        presentation.page_width = lcg.UFont(page_width)
+        presentation.page_height = lcg.UFont(page_height)
+        presentation.inner_margin = lcg.UFont(inner_margin)
+        presentation.outer_margin = lcg.UFont(outer_margin)
+        presentation.top_margin = lcg.UFont(top_margin)
+        presentation.bottom_margin = lcg.UFont(bottom_margin)
+        presentation.default_printer = printer
+        if self._OMIT_FOOTER:
+            presentation.left_page_footer = None
+        presentation.right_page_footer = None
+        presentation_set = lcg.PresentationSet(((presentation, lcg.TopLevelMatcher(),),))
+        context = exporter.context(node, req.preferred_language(),
+                                   presentation=presentation_set)
+        return exporter.export(context, recursive=True)
+
+    def action_export_braille(self, req, record):
+        page_width = int(req.param('braille_page_width') or '0')
+        page_height = int(req.param('braille_page_height') or '0')
+        inner_margin = int(req.param('braille_inner_margin') or '0')
+        outer_margin = int(req.param('braille_outer_margin') or '0')
+        top_margin = int(req.param('braille_top_margin') or '0')
+        bottom_margin = int(req.param('braille_bottom_margin') or '0')
+        printer = req.param('braille_printer')
         if page_width and page_height:
-            node = self._publication(req, record)
-            exporter = lcg.BrailleExporter(translations=wiking.cfg.translation_path)
-            presentation.page_width = lcg.UFont(page_width)
-            presentation.page_height = lcg.UFont(page_height)
-            presentation.inner_margin = lcg.UFont(inner_margin)
-            presentation.outer_margin = lcg.UFont(outer_margin)
-            presentation.top_margin = lcg.UFont(top_margin)
-            presentation.bottom_margin = lcg.UFont(bottom_margin)
-            presentation.default_printer = printer
-            if self._OMIT_FOOTER:
-                presentation.left_page_footer = None
-                presentation.right_page_footer = None
-            presentation_set = lcg.PresentationSet(((presentation, lcg.TopLevelMatcher(),),))
-            context = exporter.context(node, req.preferred_language(),
-                                       presentation=presentation_set)
             try:
-                result = exporter.export(context, recursive=True)
+                result = self.export_braille(req, record, 
+                                             page_width=page_width, page_height=page_height, 
+                                             inner_margin=inner_margin, outer_margin=outer_margin,
+                                             top_margin=top_margin, bottom_margin=bottom_margin,
+                                             printer=printer)
             except lcg.BrailleError, e:
                 req.message(e.message(), type=req.ERROR)
                 raise Redirect(self._current_record_uri(req, record))
@@ -2327,9 +2336,10 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                            pd.NE('title', pd.sval(None)))
         columns = ('title', 'author', 'publisher', 'published')
         sorting = ('title', pd.ASCENDENT),
-        bindings = (
+        bindings = Pages.Spec.bindings + (
             Binding('chapters', _("Chapters"), 'PublicationChapters', 'parent'),
-        ) + Pages.Spec.bindings
+            Binding('exports', _("Exported Versions"), 'PublicationExports', 'page_key'),
+        )
         actions = Pages.Spec.actions + (
             Action('new_chapter', _("New Chapter"),
                    descr=_("Create a new chapter in this publication.")),
@@ -2563,7 +2573,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
     def action_new_chapter(self, req, record):
         raise Redirect(req.uri() + '/chapters', action='insert')
 
-    def action_export_epub(self, req, record):
+    def export_epub(self, req, record):
         page_id = record['page_id'].value()
         class EpubExporter(lcg.EpubExporter):
             def _get_resource_data(self, context, resource):
@@ -2579,8 +2589,11 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
         node = self._publication(req, record)
         exporter = EpubExporter(translations=wiking.cfg.translation_path)
         context = exporter.context(node, req.preferred_language())
-        result = exporter.export(context)
-        return wiking.Response(result, content_type='application/epub+zip',
+        return exporter.export(context)
+
+    def action_export_epub(self, req, record):
+        return wiking.Response(self.export_epub(req, record),
+                               content_type='application/epub+zip',
                                filename='%s.epub' % record['identifier'].value())
 
 
@@ -2667,6 +2680,91 @@ class PublicationChapters(NavigablePages):
                                        sorting=(('tree_order', pd.ASCENDENT),)):
             children.setdefault(row['parent'].value(), []).append(row)
         return children
+
+class PublicationExports(ContentManagementModule):
+    """e-Publication exported versions."""
+    class Formats(pp.Enumeration):
+        enumeration = (
+            #('html', _("HTML")),
+            ('epub', _("EPUB")),
+            ('braille', _("Braille")),
+        )
+    class Spec(Specification):
+        title = _("Exported Publication Versions")
+        table = wiking.dbdefs.CmsVPublicationExports
+        def fields(self):
+            override = (
+                Field('page_key', codebook='Publications'),
+                Field('format', _("Format"), enumerator=PublicationExports.Formats),
+                Field('version', _("Version")),
+                Field('timestamp', default=now),
+                Field('public', _("Public"), default=True),
+                Field('bytesize', _("Size"), formatter=format_byte_size),
+                Field('notes', _("Notes")),
+            )
+            return self._inherited_fields(PublicationExports.Spec, override=override)
+        layout = ('format', 'version', 'public', 'notes')
+        columns = ('format', 'version', 'timestamp', 'public')
+        actions = (
+            Action('download', _("Download")),
+        )
+
+    def _authorized(self, req, action, **kwargs):
+        if action in ('list', 'view', 'download'):
+            return req.page_read_access
+        if action in ('insert', 'update', 'delete'):
+            # TODO: check publication write access, not page write access
+            return req.page_write_access
+        else:
+            return False
+
+    def _file_path(self, req, record):
+        fname = record['export_id'].export() + '.' + record['format'].export()
+        wiking.debug('::', os.path.join(wiking.cms.cfg.storage, wiking.cfg.dbname, 'exports', fname))
+        return os.path.join(wiking.cms.cfg.storage, wiking.cfg.dbname, 'exports', fname)
+
+    def _insert_transaction(self, req, record):
+        return self._transaction()
+
+    def _insert(self, req, record, transaction):
+        export_format = record['format'].value()
+        publication_record = req.publication_record
+        if export_format == 'epub':
+            data = wiking.module.Publications.export_epub(req, publication_record)
+        elif export_format == 'braille':
+            data = wiking.module.Publications.export_braille(req, publication_record,
+                                                             page_width=40, page_height=20)
+        bytesize = len(data)
+        for key, value in (('page_id', publication_record['page_id'].value()),
+                           ('lang', publication_record['lang'].value()),
+                           ('bytesize', bytesize)):
+            record[key] = pd.Value(record.type(key), value)
+        super(PublicationExports, self)._insert(req, record, transaction)
+        path = self._file_path(req, record)
+        directory = os.path.split(path)[0]
+        if not os.path.exists(directory):
+            os.makedirs(directory, 0700)
+        log(OPERATIONAL, "Saving file:", (path, format_byte_size(bytesize)))
+        f = open(path, 'wb')
+        try:
+            f.write(data)
+        finally:
+            f.close()
+
+    def action_download(self, req, record):
+        if req.cached_since(record['timestamp'].value()):
+            raise wiking.NotModified()
+        export_format = record['format'].value()
+        if export_format == 'epub':
+            ext = 'epub'
+            content_type = 'application/epub+zip'
+        elif export_format == 'braille':
+            content_type = 'application/octet-stream'
+            ext = 'brl'
+        filename = '%s-%s.%s' % (req.publication_record['identifier'].value(),
+                                 record['version'].value(), ext)
+        return wiking.serve_file(req, self._file_path(req, record), content_type=content_type,
+                                 filename=filename)
 
 
 class PageHistory(ContentManagementModule):

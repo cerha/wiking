@@ -698,7 +698,7 @@ class CmsVPublications(CommonAccesRights, sql.SQLView):
              new.lang, new.published, new.creator, new.created, new.published_since,
              new.title, new.description, new.content,
              new._title, new._description, new._content);
-     insert into cms_publications (page_id, author, contributor, illustrator, 
+     insert into cms_publications (page_id, author, contributor, illustrator,
                                    publisher, published_year, edition,
                                    original_isbn, isbn, adapted_by, cover_image,
                                    copyright_notice, notes)
@@ -783,7 +783,36 @@ class CmsPublicationIndexes(CommonAccesRights, sql.SQLTable):
               )
     unique = (('page_id', 'title',),)
 
-#
+class CmsPublicationExports(CommonAccesRights, sql.SQLTable):
+    """Exported publication versions."""
+    name = 'cms_publication_exports'
+    fields = (sql.PrimaryColumn('export_id', pytis.data.Serial(not_null=True)),
+              sql.Column('page_id', pytis.data.Integer(not_null=True),
+                         references=sql.a(sql.r.CmsPublications.page_id, ondelete='CASCADE')),
+              sql.Column('lang', pytis.data.String(minlen=2, maxlen=2, not_null=True),
+                         references=sql.a(sql.r.CmsLanguages.lang,
+                                          onupdate='CASCADE', ondelete='CASCADE')),
+              sql.Column('format', pytis.data.String(not_null=True)),
+              sql.Column('version', pytis.data.String(not_null=True)),
+              sql.Column('timestamp', pytis.data.DateTime(not_null=True)),
+              sql.Column('public', pytis.data.Boolean(not_null=True), default=True),
+              sql.Column('bytesize', pytis.data.Integer(not_null=True)),
+              sql.Column('notes', pytis.data.String()),
+    )
+    unique = (('page_id', 'lang', 'format', 'version',),)
+    
+class CmsVPublicationExports(CommonAccesRights, sql.SQLView):
+    name = 'cms_v_publication_exports'
+    @classmethod
+    def query(cls):
+        exports = sql.t.CmsPublicationExports.alias('e')
+        return select(list(exports.c) +
+                      [(stype(exports.c.page_id) + sval('.') + exports.c.lang).label('page_key')],
+                      from_obj=exports)
+    insert_order = (CmsPublicationExports,)
+    update_order = (CmsPublicationExports,)
+    delete_order = (CmsPublicationExports,)
+
 
 class CmsNews(CommonAccesRights, Base_CachingTable):
     name = 'cms_news'
