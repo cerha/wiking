@@ -1703,7 +1703,8 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
             if record['modname'].value() is not None:
                 # Supply the module's title automatically.
                 mod = wiking.module(record['modname'].value())
-                values['title'] = req.localize(mod.title(), record['lang'].value())
+                record['title'] = pd.Value(record.type('title'),
+                                           req.localize(mod.title(), record['lang'].value()))
             else:
                 raise wiking.DBError(_("Can't publish untitled page."))
 
