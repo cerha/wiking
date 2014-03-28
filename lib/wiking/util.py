@@ -310,7 +310,7 @@ class NotFound(RequestError):
                         "this error, please contact the administrator at %s.",
                         wiking.cfg.webmaster_address),
                       formatted=True))
-    #return lcg.coerce([lcg.p(p) for p in msg])
+    # return lcg.coerce([lcg.p(p) for p in msg])
 
 
 class NotModified(RequestError):
@@ -1666,9 +1666,9 @@ class WikingResolver(pytis.util.Resolver):
         try:
             module_instance = self._wiking_module_instance_cache[key]
             # TODO: Check the class definition for changes and reload in runtime?
-            #if module_instance.__class__ is not cls:
-            #    # Dispose the instance if the class definition has changed.
-            #    raise KeyError()
+            # if module_instance.__class__ is not cls:
+            #     # Dispose the instance if the class definition has changed.
+            #     raise KeyError()
         except KeyError:
             cls = self.wiking_module_cls(name)
             module_instance = cls(name, **kwargs)
@@ -2172,8 +2172,8 @@ def format_http_date(dt):
     if tz:
         # Convert a timezone aware datetime instance to a naive one in UTC.
         dt = dt.replace(tzinfo=None) - tz.utcoffset(dt)
-    return '%s, %02d %s %04d %02d:%02d:%02d GMT' % (_WKDAY[dt.weekday()], dt.day, 
-                                                    _MONTH[dt.month - 1], dt.year, 
+    return '%s, %02d %s %04d %02d:%02d:%02d GMT' % (_WKDAY[dt.weekday()], dt.day,
+                                                    _MONTH[dt.month - 1], dt.year,
                                                     dt.hour, dt.minute, dt.second)
 
 def parse_http_date(date_string):
@@ -2254,7 +2254,7 @@ def pdf_document(content, lang):
 
 def generate_random_string(length):
     """Return a random string of given length."""
-    #import base64
+    # import base64
     try:
         code = ''.join(['%02x' % ord(c) for c in os.urandom(length / 2 + 1)])
     except NotImplementedError:
