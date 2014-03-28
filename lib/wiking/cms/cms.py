@@ -2737,9 +2737,14 @@ class PublicationExports(ContentManagementModule):
             else:
                 return ''
 
-    def _authorized(self, req, action, **kwargs):
-        if action in ('list', 'view', 'download'):
+    def _authorized(self, req, action, record=None, **kwargs):
+        if action == 'list':
             return req.page_read_access
+        elif action in ('view', 'download'):
+            if record['public'].value():
+                return req.page_read_access
+            else:
+                return req.page_write_access
         if action in ('insert', 'update', 'delete'):
             return req.page_write_access
         else:
