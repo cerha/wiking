@@ -2714,7 +2714,6 @@ class PublicationExports(ContentManagementModule):
         if action in ('list', 'view', 'download'):
             return req.page_read_access
         if action in ('insert', 'update', 'delete'):
-            # TODO: check publication write access, not page write access
             return req.page_write_access
         else:
             return False
