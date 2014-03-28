@@ -2698,11 +2698,31 @@ class PublicationExports(ContentManagementModule):
             override = (
                 Field('page_key', codebook='Publications'),
                 Field('format', _("Format"), enumerator=PublicationExports.Formats),
-                Field('version', _("Version")),
+                Field('version', _("Version"),
+                      descr=_("Version number and optional variant identifiers.  The whole string "
+                              "is used as a part of the output file name, so it should only "
+                              "contain digits, letters, dashes and periods.  Version number may "
+                              "consist of major and minor version numbers, such as 2.4, where 2 "
+                              "is the major version and 4 is the minor version.  Major version "
+                              "typically changes on significant changes while minor version "
+                              "changes on fixes and less significant changes.  Variant identifier "
+                              "may be used for example to distinguish exported variants for "
+                              "different purposes, such as various braille formats and sizes. "
+                              "Example version string may be '2.4-evernote' to denote the target "
+                              "Braille printer.  The final file name will be "
+                              "'publication-identifier-2.4-evernote.brl' in this case. "
+                              "Use creatively to distinguish between different exported versions "
+                              "but take care decide for one versioning scheme and use it "
+                              "consistently throughout your publications.")),
                 Field('timestamp', default=now),
-                Field('public', _("Public"), default=True),
+                Field('public', _("Public"), default=True,
+                      descr=_("If checked, this export will be available to anyone having access "
+                              "to the publication, otherwise only editors (with read/write "
+                              "access) will see it.")),
                 Field('bytesize', _("Size"), formatter=format_byte_size),
-                Field('notes', _("Notes")),
+                Field('notes', _("Notes"),
+                      descr=_("Short text describing this exported version and/or variant. "
+                              "Leave empty if there is nothing important to note.")),
             )
             return self._inherited_fields(PublicationExports.Spec, override=override)
         layout = ('format', 'version', 'public', 'notes')
