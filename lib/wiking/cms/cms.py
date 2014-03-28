@@ -2466,6 +2466,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                  self._publication_info(req, record)] +
                 self._inner_page_content(req, record) +
                 [lcg.Section(_("Table of Contents"), lcg.NodeIndex()),
+                 PublicationExports.ExportedVersions(),
                  self.Navigation('bottom')])
 
     def _publication_info(self, req, record, online=True):
@@ -2709,6 +2710,32 @@ class PublicationExports(ContentManagementModule):
         actions = (
             Action('download', _("Download")),
         )
+    class ExportedVersions(lcg.Content):
+        """List of publication exported versions visible on publication title page.""" 
+
+        def export(self, context):
+            g = context.generator()
+            req = context.req()
+            page_id = req.publication_record['page_id'].value()
+            formats = dict(PublicationExports.Formats.enumeration)
+            base_uri = req.uri() + '/exports/'
+            items = [g.li(g.a(_("%(format)s version %(version)s",
+                                format=formats[row['format'].value()],
+                                version=row['version'].value()),
+                              href=req.make_uri(base_uri + row['export_id'].export(),
+                                                action='download')) + ' ' +
+                          lcg.format("(%(bytesize)s, %(timestamp)s) %(notes)s",
+                                     timestamp=pw.localizable_export(row['timestamp']), 
+                                     bytesize=format_byte_size(row['bytesize'].value()),
+                                     notes=(row['notes'].export() and ' ' + row['notes'].value())))
+                     for row in wiking.module.PublicationExports.exported_versions(page_id)]
+            if items:
+                return g.div((
+                    g.h(_("Available Download Versions"), 2),
+                    g.ul(*items),
+                ), cls='publication-exports')
+            else:
+                return ''
 
     def _authorized(self, req, action, **kwargs):
         if action in ('list', 'view', 'download'):
@@ -2765,6 +2792,11 @@ class PublicationExports(ContentManagementModule):
                                  record['version'].value(), ext)
         return wiking.serve_file(req, self._file_path(req, record), content_type=content_type,
                                  filename=filename)
+
+    def exported_versions(self, page_id):
+        #columns = ('format', 'version', 'timestamp', 'bytesize', 'notes')
+        return self._data.get_rows(page_id=page_id, public=True, 
+                                   sorting=(('timestamp', pd.DESCENDANT),))
 
 
 class PageHistory(ContentManagementModule):
