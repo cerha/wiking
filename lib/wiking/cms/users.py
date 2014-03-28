@@ -1336,7 +1336,7 @@ class Users(UserManagementModule, CachingPytisModule):
           state -- if not 'None', only users with the given state (one of the
             state codes defined by L{Users.AccountState}) are returned
           role -- if not 'None', only users belonging to the given role ('Role'
-            instance) are returned
+            instance or role name as basestring) are returned
           confirm -- if not 'None', only users with this value of 'confirm' flag
             (boolean) are returned
 
@@ -1345,8 +1345,13 @@ class Users(UserManagementModule, CachingPytisModule):
         """
         if role is None:
             role_id = None
-        else:
+        elif isinstance(role, Role):
             role_id = role.id()
+        elif isinstance(role, basestring):
+            role_id = role
+            role = wiking.module.ApplicationRoles.get_role(role_id)
+        else:
+            raise Exception("Invalid role argument", role)
         key = (email, state, role_id, confirm,)
         return self._get_value(key, cache_id='find', loader=self._load_find_users, role=role)
 
