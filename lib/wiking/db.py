@@ -24,6 +24,7 @@ import string
 import weakref
 
 import pytis.data as pd
+import pytis.output
 import pytis.presentation as pp
 from pytis.presentation import Action
 import pytis.util
