@@ -2100,8 +2100,8 @@ class BrailleExporter(wiking.Module):
                     setattr(presentation, o, getattr(local_presentation, o))
         return presentation
 
-    def export_braille(self, req, record, page_width=None, page_height=None, inner_margin=None,
-                        outer_margin=None, top_margin=None, bottom_margin=None, printer=None):
+    def export_braille(self, req, record, page_width=35, page_height=29, inner_margin=0,
+                       outer_margin=0, top_margin=0, bottom_margin=0, printer=0):
         presentation = self._braille_presentation()
         node = self._publication(req, record)
         exporter = lcg.BrailleExporter(translations=wiking.cfg.translation_path)
@@ -2789,8 +2789,7 @@ class PublicationExports(ContentManagementModule):
         if export_format == 'epub':
             data = wiking.module.Publications.export_epub(req, publication_record)
         elif export_format == 'braille':
-            data = wiking.module.Publications.export_braille(req, publication_record,
-                                                             page_width=40, page_height=20)
+            data = wiking.module.Publications.export_braille(req, publication_record)
         bytesize = len(data)
         for key, value in (('page_id', publication_record['page_id'].value()),
                            ('lang', publication_record['lang'].value()),
