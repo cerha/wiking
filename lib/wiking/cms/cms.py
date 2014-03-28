@@ -2088,8 +2088,7 @@ class BrailleExporter(wiking.Module):
     _OMIT_FOOTER = False
     _FILE_NAME_FIELD = 'identifier'
 
-    def export_braille(self, req, record, page_width=None, page_height=None, inner_margin=None,
-                        outer_margin=None, top_margin=None, bottom_margin=None, printer=None):
+    def _braille_presentation(self):
         presentation = lcg.braille_presentation()
         try:
             local_presentation = lcg.braille_presentation('presentation-braille-local.py')
@@ -2099,6 +2098,11 @@ class BrailleExporter(wiking.Module):
             for o in dir(local_presentation):
                 if o[0] in string.lowercase and hasattr(presentation, o):
                     setattr(presentation, o, getattr(local_presentation, o))
+        return presentation
+
+    def export_braille(self, req, record, page_width=None, page_height=None, inner_margin=None,
+                        outer_margin=None, top_margin=None, bottom_margin=None, printer=None):
+        presentation = self._braille_presentation()
         node = self._publication(req, record)
         exporter = lcg.BrailleExporter(translations=wiking.cfg.translation_path)
         presentation.page_width = lcg.UFont(page_width)
@@ -2137,6 +2141,7 @@ class BrailleExporter(wiking.Module):
             return wiking.Response(result, content_type='application/octet-stream',
                                    filename='%s.brl' % record[self._FILE_NAME_FIELD].value())
         else:
+            presentation = self._braille_presentation()
             if not page_width:
                 page_width = presentation.page_width.size()
             if not page_height:
