@@ -1766,6 +1766,40 @@ class Time(pytis.data.Time):
         return lcg.LocalizableTime(super(Time, self)._export(value, **kwargs))
 
 
+class InputForm(pytis.web.EditForm):
+
+    def __init__(self, req, specification_kwargs, prefill=None, action=None, 
+                 hidden_fields=(), **kwargs):
+        class Spec(pp.Specification):
+            data_cls = pytis.data.RestrictedMemData
+        class Record(pp.PresentedRow):
+            def req(self):
+                return req
+        for key, value in specification_kwargs.items():
+            if isinstance(value, collections.Callable):
+                # This is necessary to avoid calling functions (such as 'check'
+                # or 'row_style') as methods.
+                function = value
+                if len(pytis.util.argument_names(function)) > 0:
+                    # This is an ugly hack.  It is necessary to make the introspection
+                    # in Specification.__init__ work.  It actually makes sure that the
+                    # condition len(argument_names(value)) == 0 returns the same results
+                    # for 'value' and for 'function'.
+                    value = lambda self, x, *args, **kwargs: function(x, *args, **kwargs)
+                else:
+                    value = lambda self, *args, **kwargs: function(*args, **kwargs)
+            setattr(Spec, key, value)
+        specification = Spec(wiking.cfg.resolver)
+        view_spec = specification.view_spec()
+        data_spec = specification.data_spec()
+        data = data_spec.create()
+        record = Record(view_spec.fields(), data, None, prefill=prefill,
+                        resolver=wiking.cfg.resolver)
+        hidden_fields += (('action', action),
+                          ('submit', 'submit'))
+        super(InputForm, self).__init__(view_spec, req, record, handler=req.uri(),
+                                        name='VirtualForm', hidden=hidden_fields, **kwargs)
+
 # ============================================================================
 # Misc functions
 # ============================================================================
