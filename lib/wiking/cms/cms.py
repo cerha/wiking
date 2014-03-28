@@ -2395,9 +2395,10 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
     def _authorized(self, req, action, record=None, **kwargs):
         if action in ('insert',):
             return req.page_write_access
-        elif record and action in ('view', 'rss', 'export_epub', 'export_braille'):
+        elif record and action in ('view', 'rss'):
             return self._check_page_access(req, record, readonly=True)
         elif record and action in ('update', 'options', 'new_chapter', 
+                                   'export_epub', 'export_braille',
                                    'commit', 'revert', 'delete'):
             return self._check_page_access(req, record)
         else:
