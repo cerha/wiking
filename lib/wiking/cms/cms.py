@@ -1762,16 +1762,23 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
     def _update_msg(self, req, record):
         msg = self._UPDATE_MSG
         if record.field_changed('published'):
-            if not record['published'].value():
-                note = _("It will be only visible in preview mode from now on.")
-            elif record['parents_published'].value():
-                # Translators: "It" refers to a page, publication or another kind of content
-                # mentioned in a previous sentence.  The formulation shoud work for all cases.
-                note = _("It will be visible in production mode from now on.")
+            # Translators: "It" refers to a page, publication or another kind of content
+            # mentioned in a previous sentence.  The formulation shoud work for all cases.
+            if record['published'].value():
+                if record['parents_published'].value():
+                    note = _("It will be visible in production mode from now on.")
+                else:
+                    note = _("It will remain only visible in preview mode for now "
+                             "due to unpublished parent items, but will appear in "
+                             "production mode as soon as all parents are published.")
             else:
-                note = _("It will remain only visible in preview mode for now "
-                         "due to unpublished parent items, but will appear in "
-                         "production mode as soon as all parents are published.")
+                if record['parents_published'].value():
+                    note = _("It will be only visible in preview mode from now on.")
+                else:
+                    note = _("It will not become visible in production mode even if "
+                             "parents are published until you set it as published "
+                             "explicitly.")
+
             msg += ' ' + note
         if ((record.field_changed('_content') and
              record['content'].value() != record['_content'].value())):
