@@ -341,6 +341,7 @@ class CmsPageTexts(CommonAccesRights, Base_CachingTable):
               sql.Column('lang', pytis.data.String(minlen=2, maxlen=2, not_null=True),
                          references=sql.a(sql.r.CmsLanguages.lang, onupdate='CASCADE')),
               sql.Column('published', pytis.data.Boolean(not_null=True), default=True),
+              sql.Column('parents_published', pytis.data.Boolean(not_null=True)),
               sql.Column('creator', pytis.data.Integer(not_null=True), references=sql.r.Users),
               sql.Column('created', pytis.data.DateTime(not_null=True), default=func.now()),
               sql.Column('published_since', pytis.data.DateTime()),
@@ -360,6 +361,14 @@ class CmsPageTreeOrder(sql.SQLFunction):
     depends_on = (CmsPages,)
     stability = 'stable'
 
+class CmsPageTreePublished(sql.SQLFunction):
+    name = 'cms_page_tree_published'
+    arguments = (sql.Column('page_id', pytis.data.Integer()), 
+                 sql.Column('lang', pytis.data.String()),)
+    result_type = pytis.data.Boolean()
+    depends_on = (CmsPages, CmsPageTexts)
+    stability = 'stable'
+
 class CmsVPages(CommonAccesRights, sql.SQLView):
     name = 'cms_v_pages'
     @classmethod
@@ -375,7 +384,9 @@ class CmsVPages(CommonAccesRights, sql.SQLView):
                        p.c.menu_visibility, p.c.foldable, p.c.ord, p.c.tree_order,
                        p.c.owner, p.c.read_role_id, p.c.write_role_id,
                        coalesce(t.c.published, False).label('published'),
-                       t.c.creator, t.c.created, t.c.published_since,
+                       coalesce(t.c.parents_published, False).label('parents_published'),
+                       t.c.published_since,
+                       t.c.creator, t.c.created,
                        coalesce(t.c.title, p.c.identifier).label('title_or_identifier'),
                        t.c.title, t.c.description, t.c.content, t.c._title,
                        t.c._description, t.c._content,
@@ -403,11 +414,11 @@ class CmsVPages(CommonAccesRights, sql.SQLView):
      update cms_pages set tree_order = cms_page_tree_order(page_id)
             where site = new.site and
                   (identifier = new.identifier or tree_order != cms_page_tree_order(page_id));
-     insert into cms_page_texts (page_id, lang, published,
+     insert into cms_page_texts (page_id, lang, published, parents_published,
                                  creator, created, published_since,
                                  title, description, content,
                                  _title, _description, _content)
-     select page_id, new.lang, new.published,
+     select page_id, new.lang, new.published, cms_page_tree_published(new.parent, new.lang),
             new.creator, new.created, new.published_since,
             new.title, new.description, new.content,
             new._title, new._description, new._content
@@ -415,7 +426,8 @@ class CmsVPages(CommonAccesRights, sql.SQLView):
      returning page_id ||'.'|| lang, null::text, null::text,
        lang, page_id, null::text, null::int, null::text, null::text, null::boolean,
        null::int, null::text, null::int, null::name, null::name,
-       published, creator, created, published_since, title, title, description, content, _title,
+       published, parents_published, published_since, creator,
+       created, title, title, description, content, _title,
        _description, _content, null::varchar(64), null::text, null::varchar(64), null::text;
         )""",)
     def on_update(self):
@@ -450,18 +462,24 @@ class CmsVPages(CommonAccesRights, sql.SQLView):
         _description = new._description,
         _content = new._content
     where page_id = old.page_id and lang = new.lang;
-    insert into cms_page_texts (page_id, lang, published,
+    insert into cms_page_texts (page_id, lang, published, parents_published,
                                 creator, created, published_since,
                                 title, description, content,
                                 _title, _description, _content)
            select old.page_id, new.lang, new.published,
+                  cms_page_tree_published(new.parent, new.lang),
                   new.creator, new.created, new.published_since,
                   new.title, new.description, new.content,
                   new._title, new._description, new._content
            where new.lang not in (select lang from cms_page_texts where page_id=old.page_id)
                  and coalesce(new.title, new.description, new.content,
                               new._title, new._description, new._content) is not null;
-        )""",)
+    update cms_page_texts t set parents_published = x.parents_published
+        from (select page_id, lang, cms_page_tree_published(parent, lang) as parents_published
+              from cms_pages join cms_page_texts using (page_id)) as x
+        where t.page_id=x.page_id and t.lang=x.lang
+              and t.parents_published != x.parents_published;
+    )""",)
     delete_order = (CmsPages,)
 
 class CmsPageHistory(CommonAccesRights, sql.SQLTable):
@@ -689,13 +707,13 @@ class CmsVPublications(CommonAccesRights, sql.SQLView):
         return ("""(
      insert into cms_v_pages (site, kind, identifier, parent, modname,
                               owner, read_role_id, write_role_id,
-                              menu_visibility, foldable, ord, lang, published,
-                              creator, created, published_since,
+                              menu_visibility, foldable, ord, lang,
+                              published, published_since, creator, created,
                               title, description, content, _title, _description, _content)
      values (new.site, new.kind, new.identifier, new.parent, new.modname,
              new.owner, new.read_role_id, new.write_role_id,
-             new.menu_visibility, new.foldable, new.ord,
-             new.lang, new.published, new.creator, new.created, new.published_since,
+             new.menu_visibility, new.foldable, new.ord, new.lang, 
+             new.published, new.published_since, new.creator, new.created,
              new.title, new.description, new.content,
              new._title, new._description, new._content);
      insert into cms_publications (page_id, author, contributor, illustrator,
@@ -711,7 +729,7 @@ class CmsVPublications(CommonAccesRights, sql.SQLView):
         where page_id=cms_publications.page_id), null::text,
        null::text, null::char(2), null::text, null::int, null::text, null::text, null::boolean,
        null::int, null::text, null::int, null::name, null::name,
-       null::bool, null::int, null::timestamp, null::timestamp, null::text, null::text,
+       null::bool, null::bool, null::timestamp, null::int, null::timestamp, null::text, null::text,
        null::text, null::text, null::text, null::text, null::text,
        null::varchar(64), null::text, null::varchar(64), null::text,
        author, contributor, illustrator, publisher, published_year, edition,

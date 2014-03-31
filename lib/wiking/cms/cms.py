@@ -1384,8 +1384,10 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                               "Allows content development before publishing it. "
                               "Different language variants may be published "
                               "independently (switch language to control availability "
-                              "in other languages).")),
+                              "in other languages). Unpublishing also applies to "
+                              "all descendant items in the hierarchy.")),
                 Field('published_since', _("Available since")),
+                Field('parents_published'),
                 Field('status', _("Status"), virtual=True, computer=computer(self._status)),
                 #Field('grouping', virtual=True,
                 #      computer=computer(lambda r, tree_order: tree_order.split('.')[1])),
@@ -1429,7 +1431,10 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                                                  record['lang'].value(),
                                                  self._attachment_storage_uri(record))
         def row_style(self, record):
-            return not record['published'].value() and pp.Style(foreground='#777') or None
+            if not record['published'].value() or not record['parents_published'].value():
+                return pp.Style(foreground='#777')
+            else:
+                return None
         def check(self, record):
             parent = record['parent'].value()
             if parent is not None and parent == record['page_id'].value():
@@ -1449,11 +1454,11 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                            "menu position and access rights.")),
             Action('commit', _("Commit"),
                    descr=_("Publish the current concept in production mode."),
-                   enabled=lambda r: (r['published'].value() and
+                   enabled=lambda r: (r['parents_published'].value() and r['published'].value() and
                                       r['_content'].value() != r['content'].value())),
             Action('revert', _("Revert"),
                    descr=_("Replace the current concept with the production version."),
-                   enabled=lambda r: (r['published'].value() and
+                   enabled=lambda r: (r['parents_published'].value() and r['published'].value() and
                                       r['_content'].value() != r['content'].value())),
             Action('excerpt', _("Store Excerpt")),
             #Action('translate', _("Translate"),
@@ -1609,6 +1614,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
         kwargs = dict(site=wiking.cfg.server_hostname)
         if not preview_mode:
             kwargs['published'] = True
+            kwargs['parents_published'] = True
         if identifier is not None:
             kwargs['identifier'] = identifier
         return self._data.get_rows(sorting=self._sorting, **kwargs)
@@ -1617,7 +1623,8 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
         if not req.unresolved_path:
             return None
         def check_published(row):
-            if row['published'].value() or wiking.module.Application.preview_mode(req):
+            if ((row['published'].value() and row['parents_published'].value()
+                 or wiking.module.Application.preview_mode(req))):
                 return row
             else:
                 raise Forbidden()
@@ -1672,17 +1679,20 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
     def _submit_buttons(self, req, action, record=None):
         if action == 'insert':
             return ((None, _("Save")),)
-        elif action == 'update' and not record['published'].value():
-            return ((None, _("Save as Concept")),)
         elif action == 'update':
-            return ((None, _("Save as Concept")), ('commit', _("Save as Production Version")))
+            if not record['published'].value() or not record['parents_published'].value():
+                return ((None, _("Save as Concept")),)
+            else:
+                return ((None, _("Save as Concept")), 
+                        ('commit', _("Save as Production Version")))
         elif action == 'excerpt':
             return ((None, _("Store")),)
         else:
             return super(Pages, self)._submit_buttons(req, action, record=record)
 
     def _before_page_change(self, req, record):
-        if req.has_param('commit') or not record['published'].value() or record.new():
+        if req.has_param('commit') or record.new() or not (record['published'].value() and 
+                                                           record['parents_published'].value()):
             # When the page is not published, we commit the changes
             # automatically.  It makes no difference in preview mode and the page
             # is not visible in production mode anyway.  We also want the page to
@@ -1693,6 +1703,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
             record['content'] = record['_content']
         if ((record.field_changed('published') and record['published'].value() and
              record['published_since'].value() is None)):
+            # TODO: This should be done in DB to propagate publication through parent pages.
             record['published_since'] = pd.Value(record.type('published_since'), now())
         if record['creator'].value() is None:
             # Supply creator to a newly created language variant (where prefill
@@ -1735,26 +1746,32 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
             wiking.module.PageHistory.on_page_change(req, record, transaction=transaction)
 
     def _insert_msg(self, req, record):
-        msg = self._INSERT_MSG
-        if record['published'].value():
-            # Translators: "It" refers to a page, publication or another kind of content
-            # mentioned in a previous sentence.  The formulation shoud work for all cases.
-            note = _("It is now visible in production mode.")
-        else:
+        if not record['published'].value():
             note = _("It is now only visible in preview mode. "
                      'Set as "Published" to appear in production mode.')
-
-        return msg + ' ' + note
+        elif not record['parents_published'].value():
+            # Translators: "It" refers to a page, publication or another kind of content
+            # mentioned in a previous sentence.  The formulation shoud work for all cases.
+            note = _("It is now only visible in preview mode because of "
+                     "unpublished parent items. Publish the unpublished "
+                     "parent to make this item visible in production mode.")
+        else:
+            note = _("It is now visible in production mode.")
+        return self._INSERT_MSG + ' ' + note
 
     def _update_msg(self, req, record):
         msg = self._UPDATE_MSG
         if record.field_changed('published'):
-            if record['published'].value():
+            if not record['published'].value():
+                note = _("It will be only visible in preview mode from now on.")
+            elif record['parents_published'].value():
                 # Translators: "It" refers to a page, publication or another kind of content
                 # mentioned in a previous sentence.  The formulation shoud work for all cases.
                 note = _("It will be visible in production mode from now on.")
             else:
-                note = _("It will be only visible in preview mode from now on.")
+                note = _("It will remain only visible in preview mode for now "
+                         "due to unpublished parent items, but will appear in "
+                         "production mode as soon as all parents are published.")
             msg += ' ' + note
         if ((record.field_changed('_content') and
              record['content'].value() != record['_content'].value())):
@@ -1764,7 +1781,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
 
     def _set_preview_mode_if_necessary(self, req, record):
         if ((record['content'].value() != record['_content'].value()
-             or not record['published'].value())):
+             or not record['published'].value() or not record['parents_published'].value())):
             # Make sure uncommited changes are visible in the displayed page.
             wiking.module.Application.set_preview_mode(req, True)
 
