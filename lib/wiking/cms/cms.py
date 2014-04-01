@@ -2126,9 +2126,9 @@ class BrailleExporter(wiking.Module):
                     setattr(presentation, o, getattr(local_presentation, o))
         return presentation
 
-    def export_braille(self, req, record, page_width=35, page_height=29, inner_margin=0,
-                       outer_margin=0, top_margin=0, bottom_margin=0,
-                       printer='Index Everest-D V3'):
+    def export_braille(self, req, record, page_width=33, page_height=28, inner_margin=1,
+                       outer_margin=O, top_margin=0, bottom_margin=0,
+                       printer='Index Everest-D V2'):
         presentation = self._braille_presentation()
         node = self._publication(req, record)
         exporter = lcg.BrailleExporter(translations=wiking.cfg.translation_path)
