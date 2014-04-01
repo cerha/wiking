@@ -2128,11 +2128,11 @@ class BrailleExporter(wiking.Module):
                     setattr(presentation, o, getattr(local_presentation, o))
         return presentation
 
-    def export_braille(self, req, record, page_width=33, page_height=28, inner_margin=1,
-                       outer_margin=0, top_margin=0, bottom_margin=0,
-                       printer='Index Everest-D V2'):
+    def export_braille(self, req, record, preview=False, printer='Index Everest-D V2',
+                       page_width=33, page_height=28, inner_margin=1,
+                       outer_margin=0, top_margin=0, bottom_margin=0):
         presentation = self._braille_presentation()
-        node = self._publication(req, record)
+        node = self._publication(req, record, preview=preview)
         exporter = lcg.BrailleExporter(translations=wiking.cfg.translation_path)
         presentation.page_width = lcg.UFont(page_width)
         presentation.page_height = lcg.UFont(page_height)
@@ -2158,8 +2158,9 @@ class BrailleExporter(wiking.Module):
         bottom_margin = int(req.param('braille_bottom_margin') or '0')
         printer = req.param('braille_printer')
         if page_width and page_height:
+            preview = wiking.module.Application.preview_mode(req)
             try:
-                result = self.export_braille(req, record, 
+                result = self.export_braille(req, record, preview=preview, 
                                              page_width=page_width, page_height=page_height, 
                                              inner_margin=inner_margin, outer_margin=outer_margin,
                                              top_margin=top_margin, bottom_margin=bottom_margin,
@@ -2545,21 +2546,21 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
             content.append(lcg.p(lcg.strong(_("Notes") + ':'), ' ', record['notes'].value()))
         return lcg.Container(content)
 
-    def _child_rows(self, req, record, published_only=True):
+    def _child_rows(self, req, record, preview=False):
         children = wiking.module.PublicationChapters.child_rows(req,
                                                                 record['tree_order'].value(),
                                                                 record['lang'].value(),
-                                                                published_only=published_only)
+                                                                preview=preview)
         children[record['parent'].value()] = [record.row()]
         return children
 
-    def _publication(self, req, record):
-        children = self._child_rows(req, record)
+    def _publication(self, req, record, preview=False):
+        children = self._child_rows(req, record, preview=preview)
         resource_provider = lcg.ResourceProvider(dirs=wiking.cfg.resource_path)
         resources = []
         def node(row, root=False):
             # TODO: Don't ignore content processing error here!
-            content = self._inner_page_content(req, self._record(req, row))
+            content = self._inner_page_content(req, self._record(req, row), preview=preview)
             cover_image = None
             metadata = None
             if root:
@@ -2594,7 +2595,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
         record = req.publication_record
         
         children = self._child_rows(req, record, 
-                                    published_only=not wiking.module.Application.preview_mode(req))
+                                    preview=wiking.module.Application.preview_mode(req))
         base_uri = '/%s/data/%s' % (req.page_record['identifier'].value(),
                                     record['identifier'].value())
         def item(row):
@@ -2612,7 +2613,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
     def action_new_chapter(self, req, record):
         raise Redirect(req.uri() + '/chapters', action='insert')
 
-    def export_epub(self, req, record):
+    def export_epub(self, req, record, preview=False):
         page_id = record['page_id'].value()
         class EpubExporter(lcg.EpubExporter):
             def _get_resource_data(self, context, resource):
@@ -2625,13 +2626,14 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                         return r.get()
                     else:
                         raise Exception("Unable to retrieve resource %s." % resource.filename())
-        node = self._publication(req, record)
+        node = self._publication(req, record, preview=preview)
         exporter = EpubExporter(translations=wiking.cfg.translation_path)
         context = exporter.context(node, req.preferred_language())
         return exporter.export(context)
 
     def action_export_epub(self, req, record):
-        return wiking.Response(self.export_epub(req, record),
+        preview = wiking.module.Application.preview_mode(req)
+        return wiking.Response(self.export_epub(req, record, preview=preview),
                                content_type='application/epub+zip',
                                filename='%s.epub' % record['identifier'].value())
 
@@ -2704,14 +2706,14 @@ class PublicationChapters(NavigablePages):
         # Use PytisModule._current_base_uri (skip Pages._current_base_uri).
         return super(Pages, self)._current_base_uri(req, record=record)
 
-    def child_rows(self, req, tree_order, lang, published_only=True):
+    def child_rows(self, req, tree_order, lang, preview=False):
         children = {}
         conditions = [
             pd.WM('tree_order', pd.WMValue(pd.String(), '%s.*' % tree_order)),
             pd.EQ('lang', pd.sval(lang)),
             pd.EQ('site', pd.sval(wiking.cfg.server_hostname)),
         ]
-        if published_only:
+        if not preview:
             conditions.extend((
                 pd.EQ('published', pd.bval(True)),
                 pd.EQ('parents_published', pd.bval(True)),
