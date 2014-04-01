@@ -1805,7 +1805,8 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
         raise Redirect(req.uri())
 
     def _delete_form_content(self, req, form, record):
-        return [form] + self._page_content(req, record)
+        preview_mode = wiking.module.Application.preview_mode(req)
+        return [form] + self._page_content(req, record, preview=preview_mode)
 
     def _visible_in_menu(self, req, row):
         """Return True or False if page described by row is visible or not in the menu"""
@@ -1899,7 +1900,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                 uri = None
         return uri
 
-    def _page_content(self, req, record):
+    def _page_content(self, req, record, preview=False):
         # Main content
         modname = record['modname'].value()
         if modname is not None:
@@ -1915,7 +1916,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                 content = module.embed(req)
         else:
             content = []
-        if wiking.module.Application.preview_mode(req):
+        if preview:
             text = record['_content'].value()
         else:
             text = record['content'].value()
@@ -1949,7 +1950,8 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
     # Action handlers.
 
     def action_view(self, req, record):
-        content = self._page_content(req, record)
+        preview_mode = wiking.module.Application.preview_mode(req)
+        content = self._page_content(req, record, preview=preview_mode)
         if not content:
             # Redirect to the first visible subpage (if any) when the page
             # has no content.  This makes it possible to create menu items
@@ -1961,7 +1963,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                                pd.EQ('site', pd.sval(wiking.cfg.server_hostname)))
             for row in self._data.get_rows(condition=condition, sorting=self._sorting):
                 if self._visible_in_menu(req, row):
-                    if wiking.module.Application.preview_mode(req):
+                    if preview_mode:
                         req.message(_("This page has no content. "
                                       "Users will be redirected to the first visible "
                                       "subpage in production mode.", type=req.WARNING))
@@ -2100,12 +2102,12 @@ class NavigablePages(Pages):
                                     separator=' | '),
                          cls='page-navigation ' + self._position)
 
-    def _inner_page_content(self, req, record):
-        return super(NavigablePages, self)._page_content(req, record)
+    def _inner_page_content(self, req, record, preview=False):
+        return super(NavigablePages, self)._page_content(req, record, preview=preview)
 
-    def _page_content(self, req, record):
+    def _page_content(self, req, record, preview=False):
         return ([self.Navigation('top')] +
-                self._inner_page_content(req, record) +
+                self._inner_page_content(req, record, preview=preview) +
                 [self.Navigation('bottom')])
 
 
@@ -2475,7 +2477,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
         return (binding.id() != 'chapters' and
                 super(Publications, self)._binding_visible(req, record, binding))
 
-    def _page_content(self, req, record):
+    def _page_content(self, req, record, preview=False):
         def cover_image(element, context):
             if record['cover_image'].value():
                 g = context.generator()
@@ -2496,7 +2498,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
         return ([self.Navigation('top'),
                  wiking.HtmlRenderer(cover_image),
                  self._publication_info(req, record)] +
-                self._inner_page_content(req, record) +
+                self._inner_page_content(req, record, preview=preview) +
                 [lcg.Section(_("Table of Contents"), lcg.NodeIndex()),
                  PublicationExports.ExportedVersions(),
                  self.Navigation('bottom')])
