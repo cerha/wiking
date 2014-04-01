@@ -1385,7 +1385,9 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                               "Different language variants may be published "
                               "independently (switch language to control availability "
                               "in other languages). Unpublishing also applies to "
-                              "all descendant items in the hierarchy.")),
+                              "all descendant items in the hierarchy. In other words "
+                              "the item needs to be published itself as well as all "
+                              "its parent items to be actually available.")),
                 Field('published_since', _("Available since")),
                 Field('parents_published'),
                 Field('status', _("Status"), virtual=True, computer=computer(self._status)),
