@@ -2543,10 +2543,11 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
             content.append(lcg.p(lcg.strong(_("Notes") + ':'), ' ', record['notes'].value()))
         return lcg.Container(content)
 
-    def _child_rows(self, req, record):
+    def _child_rows(self, req, record, published_only=True):
         children = wiking.module.PublicationChapters.child_rows(req,
                                                                 record['tree_order'].value(),
-                                                                record['lang'].value())
+                                                                record['lang'].value(),
+                                                                published_only=published_only)
         children[record['parent'].value()] = [record.row()]
         return children
 
@@ -2589,7 +2590,9 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
         if not hasattr(req, 'publication_record') or req.publication_record is None:
             return []
         record = req.publication_record
-        children = self._child_rows(req, record)
+        
+        children = self._child_rows(req, record, 
+                                    published_only=not wiking.module.Application.preview_mode(req))
         base_uri = '/%s/data/%s' % (req.page_record['identifier'].value(),
                                     record['identifier'].value())
         def item(row):
@@ -2699,14 +2702,14 @@ class PublicationChapters(NavigablePages):
         # Use PytisModule._current_base_uri (skip Pages._current_base_uri).
         return super(Pages, self)._current_base_uri(req, record=record)
 
-    def child_rows(self, req, tree_order, lang):
+    def child_rows(self, req, tree_order, lang, published_only=True):
         children = {}
         conditions = [
             pd.WM('tree_order', pd.WMValue(pd.String(), '%s.*' % tree_order)),
             pd.EQ('lang', pd.sval(lang)),
             pd.EQ('site', pd.sval(wiking.cfg.server_hostname)),
         ]
-        if not wiking.module.Application.preview_mode(req):
+        if published_only:
             conditions.extend((
                 pd.EQ('published', pd.bval(True)),
                 pd.EQ('parents_published', pd.bval(True)),
