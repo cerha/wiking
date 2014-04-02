@@ -1391,7 +1391,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                 Field('published_since', _("Available since")),
                 Field('parents_published'),
                 Field('status', _("Status"), virtual=True, computer=computer(self._status)),
-                #Field('grouping', virtual=True,
+                # Field('grouping', virtual=True,
                 #      computer=computer(lambda r, tree_order: tree_order.split('.')[1])),
                 # Translators: Label of a selector of a group allowed to access the page read only.
                 Field('read_role_id', _("Read only access"), codebook='ApplicationRoles',
@@ -1443,8 +1443,8 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                 return ('parent', _("A page can not be its own parent."))
         condition = pd.EQ('kind', pd.sval('page'))
         sorting = (('tree_order', ASC), ('identifier', ASC),)
-        #grouping = 'grouping'
-        #group_heading = 'title'
+        # grouping = 'grouping'
+        # group_heading = 'title'
         layout = () # Defined by _layout() method.
         columns = ('title_or_identifier', 'identifier', 'modname', 'status',
                    'menu_visibility', 'read_role_id', 'write_role_id')
@@ -1463,13 +1463,13 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                    enabled=lambda r: (r['parents_published'].value() and r['published'].value() and
                                       r['_content'].value() != r['content'].value())),
             Action('excerpt', _("Store Excerpt")),
-            #Action('translate', _("Translate"),
+            # Action('translate', _("Translate"),
             #      descr=_("Create the content by translating another language variant"),
             #       enabled=lambda r: r['_content'].value() is None),
             Action('new_page', _("New Page"), descr=_("Create a new page")),
             # The action seems inadequate in row context menu and the help page
             # is out of date anyway.
-            #Action('help', _("Help")),
+            # Action('help', _("Help")),
         )
         # Translators: Noun. Such as e-mail attachments (here attachments for a webpage).
         bindings = (Binding('attachments', _("Attachments"), 'Attachments', 'page_id'),
@@ -1685,7 +1685,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
             if not record['published'].value() or not record['parents_published'].value():
                 return ((None, _("Save as Concept")),)
             else:
-                return ((None, _("Save as Concept")), 
+                return ((None, _("Save as Concept")),
                         ('commit', _("Save as Production Version")))
         elif action == 'excerpt':
             return ((None, _("Store")),)
@@ -1693,7 +1693,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
             return super(Pages, self)._submit_buttons(req, action, record=record)
 
     def _before_page_change(self, req, record):
-        if req.has_param('commit') or record.new() or not (record['published'].value() and 
+        if req.has_param('commit') or record.new() or not (record['published'].value() and
                                                            record['parents_published'].value()):
             # When the page is not published, we commit the changes
             # automatically.  It makes no difference in preview mode and the page
@@ -2161,8 +2161,8 @@ class BrailleExporter(wiking.Module):
         if page_width and page_height:
             preview = wiking.module.Application.preview_mode(req)
             try:
-                result = self.export_braille(req, record, preview=preview, 
-                                             page_width=page_width, page_height=page_height, 
+                result = self.export_braille(req, record, preview=preview,
+                                             page_width=page_width, page_height=page_height,
                                              inner_margin=inner_margin, outer_margin=outer_margin,
                                              top_margin=top_margin, bottom_margin=bottom_margin,
                                              printer=printer)
@@ -2433,7 +2433,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
             return req.page_write_access
         elif record and action in ('view', 'rss'):
             return self._check_page_access(req, record, readonly=True)
-        elif record and action in ('update', 'options', 'new_chapter', 
+        elif record and action in ('update', 'options', 'new_chapter',
                                    'export_epub', 'export_braille',
                                    'commit', 'revert', 'delete'):
             return self._check_page_access(req, record)
@@ -2595,7 +2595,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
             return []
         record = req.publication_record
         
-        children = self._child_rows(req, record, 
+        children = self._child_rows(req, record,
                                     preview=wiking.module.Application.preview_mode(req))
         base_uri = '/%s/data/%s' % (req.page_record['identifier'].value(),
                                     record['identifier'].value())
@@ -2646,7 +2646,7 @@ class PublicationChapters(NavigablePages):
             override = (
                 Field('kind', default='chapter'),
                 Field('parent', not_null=True, editable=ALWAYS,
-                      runtime_filter=computer(self._parent_filter), 
+                      runtime_filter=computer(self._parent_filter),
                       computer=computer(lambda r: r.req().publication_record['page_id'].value()),
                       descr=_("Select the superordinate chapter in hierarchy.")),
                 Field('published', default=True),
@@ -2718,7 +2718,7 @@ class PublicationChapters(NavigablePages):
             conditions.extend((
                 pd.EQ('published', pd.bval(True)),
                 pd.EQ('parents_published', pd.bval(True)),
-            ))                      
+            ))
         for row in self._data.get_rows(condition=pd.AND(*conditions),
                                        sorting=(('tree_order', pd.ASCENDENT),)):
             children.setdefault(row['parent'].value(), []).append(row)
@@ -2728,7 +2728,7 @@ class PublicationExports(ContentManagementModule):
     """e-Publication exported versions."""
     class Formats(pp.Enumeration):
         enumeration = (
-            #('html', _("HTML")),
+            # ('html', _("HTML")),
             ('epub', _("EPUB")),
             ('braille', _("Braille")),
         )
@@ -2772,7 +2772,7 @@ class PublicationExports(ContentManagementModule):
             Action('download', _("Download")),
         )
     class ExportedVersions(lcg.Content):
-        """List of publication exported versions visible on publication title page.""" 
+        """List of publication exported versions visible on publication title page."""
 
         def export(self, context):
             g = context.generator()
@@ -2786,7 +2786,7 @@ class PublicationExports(ContentManagementModule):
                               href=req.make_uri(base_uri + row['export_id'].export(),
                                                 action='download')) + ' ' +
                           lcg.format("(%(bytesize)s, %(timestamp)s) %(notes)s",
-                                     timestamp=pw.localizable_export(row['timestamp']), 
+                                     timestamp=pw.localizable_export(row['timestamp']),
                                      bytesize=format_byte_size(row['bytesize'].value()),
                                      notes=(row['notes'].export() and ' ' + row['notes'].value())))
                      for row in wiking.module.PublicationExports.exported_versions(page_id)]
@@ -2813,7 +2813,8 @@ class PublicationExports(ContentManagementModule):
 
     def _file_path(self, req, record):
         fname = record['export_id'].export() + '.' + record['format'].export()
-        wiking.debug('::', os.path.join(wiking.cms.cfg.storage, wiking.cfg.dbname, 'exports', fname))
+        wiking.debug('::',
+                     os.path.join(wiking.cms.cfg.storage, wiking.cfg.dbname, 'exports', fname))
         return os.path.join(wiking.cms.cfg.storage, wiking.cfg.dbname, 'exports', fname)
 
     def _insert_transaction(self, req, record):
@@ -2859,8 +2860,8 @@ class PublicationExports(ContentManagementModule):
                                  filename=filename)
 
     def exported_versions(self, page_id):
-        #columns = ('format', 'version', 'timestamp', 'bytesize', 'notes')
-        return self._data.get_rows(page_id=page_id, public=True, 
+        # columns = ('format', 'version', 'timestamp', 'bytesize', 'notes')
+        return self._data.get_rows(page_id=page_id, public=True,
                                    sorting=(('timestamp', pd.DESCENDANT),))
 
 
@@ -2893,9 +2894,9 @@ class PageHistory(ContentManagementModule):
             )
         sorting = (('timestamp', pd.DESCENDANT),)
         columns = ('timestamp', 'user', 'comment', 'changes')
-        #actions = (
-        #    Action('diff', _("Show differences against the current version")),
-        #    )
+        # actions = (
+        #     Action('diff', _("Show differences against the current version")),
+        #     )
 
     _ASYNC_LOAD = True
 
@@ -2916,11 +2917,10 @@ class PageHistory(ContentManagementModule):
     def _layout(self, req, action, record=None):
         if action == 'view':
             return (('comment',),
-                    ColumnLayout(
-                        FieldSet(_("Change Summary"), ('inserted_lines', 'changed_lines',
-                                                       'deleted_lines')),
-                        FieldSet(_("Colors"), ('diff_add', 'diff_chg', 'diff_sub')),
-                    ),
+                    ColumnLayout(FieldSet(_("Change Summary"),
+                                          ('inserted_lines', 'changed_lines', 'deleted_lines')),
+                                 FieldSet(_("Colors"), ('diff_add', 'diff_chg', 'diff_sub')),
+                                 ),
                     self._diff)
         else:
             return super(PageHistory, self)._layout(req, action, record=record)
@@ -3078,17 +3078,17 @@ class Attachments(ContentManagementModule):
                 Field('thumbnail_height', computer=computer(self._thumbnail_height)),
                 Field('image', type=pd.Image(), computer=computer(self._image)),
                 Field('in_gallery', _("In Gallery"),
-                      #editable=computer(lambda r, thumbnail_size: thumbnail_size is not None),
+                      # editable=computer(lambda r, thumbnail_size: thumbnail_size is not None),
                       # The computer doesn't work (probably a PresentedRow issue?).
-                      #computer=computer(lambda r, thumbnail_size: thumbnail_size is not None),
+                      # computer=computer(lambda r, thumbnail_size: thumbnail_size is not None),
                       descr=_("Check if you want the image to appear in an image Gallery "
                               "below the page text.")),
                 Field('listed', _("Listed"), default=True,
                       descr=_("Check if you want the item to appear in the listing of attachments "
                               "at the bottom of the page.")),
-                #Field('author', _("Author"), width=30),
-                #Field('location', _("Location"), width=50),
-                #Field('exif_date', _("EXIF date")),
+                # Field('author', _("Author"), width=30),
+                # Field('location', _("Location"), width=50),
+                # Field('exif_date', _("EXIF date")),
                 Field('file_path', virtual=True, computer=computer(self._file_path)),
                 Field('archive', _("Archive"), virtual=True,
                       type=pd.Binary(not_null=True, maxlen=1000 * wiking.cms.cfg.upload_limit),
@@ -3188,8 +3188,8 @@ class Attachments(ContentManagementModule):
         sorting = (('filename', ASC),)
 
         actions = (
-            #Action('insert_image', _("New image"), descr=_("Insert a new image attachment"),
-            #       context=pp.ActionContext.GLOBAL),
+            # Action('insert_image', _("New image"), descr=_("Insert a new image attachment"),
+            #        context=pp.ActionContext.GLOBAL),
             # Translators: Button label
             Action('move', _("Move"), descr=_("Move the attachment to another page.")),
             Action('upload_archive', _("Upload Archive"), context=pp.ActionContext.GLOBAL,
@@ -3433,7 +3433,7 @@ class Attachments(ContentManagementModule):
         if row:
             record = self._record(req, row)
             path = record['file_path'].value()
-            #log(OPR, "Loading file:", path)
+            # log(OPR, "Loading file:", path)
             f = file(path)
             try:
                 data = f.read()
@@ -3660,7 +3660,7 @@ class _News(ContentManagementModule, EmbeddableCMSModule, wiking.CachingPytisMod
 
     def _panel_rows(self, req, relation, lang, count):
         key = (self._panel_condition(req, relation), lang, count)
-        #return self._load_panel_rows(key)
+        # return self._load_panel_rows(key)
         return self._get_value(key, loader=self._load_panel_rows)
 
 
@@ -3941,18 +3941,18 @@ class StyleSheets(SiteSpecificContentModule, StyleManagementModule,
         enumeration = (('all', _("All types")),
                        # Translators: Braille as a type of media
                        ('braille', _("Braille")), # braille tactile feedback devices
-                       #('embossed', _("Embossed") # for paged braille printers
+                       # ('embossed', _("Embossed") # for paged braille printers
                        # Translators: Handheld device. Small computer.
                        ('handheld', _("Handheld")),  # typically small screen, limited bandwidth
                        # Translators: Print as a type of media (print, speech...)
                        ('print', _("Print")), # paged material
-                       #('projection', _(""))), # projected presentations, for example projectors
+                       # ('projection', _(""))), # projected presentations, for example projectors
                        # Translators: Meaning computer screen
                        ('screen', _("Screen")), # color computer screens
                        # Translators: Speech as a type of media (print, speech...)
                        ('speech', _("Speech")), # for speech synthesizers
-                       #('tty', _(""))), # media using a fixed-pitch character grid
-                       #('tv', _(""))), # television-type devices
+                       # ('tty', _(""))), # media using a fixed-pitch character grid
+                       # ('tv', _(""))), # television-type devices
                        )
 
     class Spec(Specification):
