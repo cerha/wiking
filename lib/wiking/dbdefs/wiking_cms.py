@@ -647,6 +647,13 @@ class CmsVPageAttachments(CommonAccesRights, sql.SQLView):
      delete from cms_page_attachments where attachment_id = old.attachment_id;
         )""",)
 
+
+class CmsAttachmentsAfterUpdateTrigger(sql.SQLPlFunction, sql.SQLTrigger):
+    name = 'cms_attachments_after_update_trigger'
+    table = CmsPageAttachments
+    events = ('update',)
+    position = 'after'
+
 #
 
 class CmsPublications(CommonAccesRights, sql.SQLTable):

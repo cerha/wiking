@@ -2133,8 +2133,6 @@ class BrailleExporter(wiking.Module):
                        page_width=33, page_height=28, inner_margin=1,
                        outer_margin=0, top_margin=0, bottom_margin=0):
         presentation = self._braille_presentation()
-        node = self._publication(req, record, preview=preview)
-        exporter = lcg.BrailleExporter(translations=wiking.cfg.translation_path)
         presentation.page_width = lcg.UFont(page_width)
         presentation.page_height = lcg.UFont(page_height)
         presentation.inner_margin = lcg.UFont(inner_margin)
@@ -2146,6 +2144,8 @@ class BrailleExporter(wiking.Module):
             presentation.left_page_footer = None
         presentation.right_page_footer = None
         presentation_set = lcg.PresentationSet(((presentation, lcg.TopLevelMatcher(),),))
+        node = self._publication(req, record, preview=preview)
+        exporter = lcg.BrailleExporter(translations=wiking.cfg.translation_path)
         context = exporter.context(node, req.preferred_language(),
                                    presentation=presentation_set)
         return exporter.export(context, recursive=True)
@@ -3098,6 +3098,13 @@ class Attachments(ContentManagementModule):
                       type=pd.Boolean(not_null=True),
                       descr=_("If checked, the existing attachments will be updated when "
                               "the archive contains files of the same name.")),
+                Field('retype', _("Change file types"), virtual=True,
+                      type=pd.Boolean(not_null=True),
+                      editable=computer(lambda r, overwrite: overwrite),
+                      descr=_("If checked, the files to overwrite will be matched by name "
+                              "without extension instead of full file name.  This makes it "
+                              "possible to change types of some files, such as replace "
+                              "JPEGs by PNGs.")),
             )
 
         def _ext(self, record, filename):
@@ -3289,7 +3296,7 @@ class Attachments(ContentManagementModule):
         if action == 'move':
             return ('page_id',)
         elif action == 'upload_archive':
-            return ('archive', 'overwrite')
+            return ('archive', 'overwrite', 'retype')
         else:
             if action in ('insert', 'update'):
                 f = 'upload'
@@ -3506,9 +3513,10 @@ class Attachments(ContentManagementModule):
             def close(self):
                 return self._archive.close()
         overwrite = req.param('overwrite') == 'T'
-        inserted_files = []
-        updated_files = []
+        retype = req.param('retype') == 'T'
+        files = []
         def insert_attachments(archive, prefill, transaction):
+            page_id, lang = prefill['page_id'], prefill['lang']
             for item in archive.items():
                 if not archive.isfile(item):
                     # Ignore special files such as symlinks (security!)
@@ -3516,32 +3524,51 @@ class Attachments(ContentManagementModule):
                 filename = re.split(r'[\\/]', archive.filename(item))[-1]
                 mime_type = mimetypes.guess_type(filename)[0] or 'application/octet-stream'
                 if overwrite:
-                    row = self._data.get_row(columns=self._non_binary_columns,
-                                             page_id=prefill['page_id'], filename=filename)
+                    if retype:
+                        matcher = os.path.splitext(filename)[0] + '.*'
+                        rows = self._data.get_rows(columns=self._non_binary_columns,
+                                                   page_id=page_id, lang=lang,
+                                                   condition=pd.WM('filename', pd.wmval(matcher)),
+                                                   transaction=transaction)
+                        if not rows:
+                            row = None
+                        elif len(rows) == 1:
+                            row = rows[0]
+                        else:
+                            raise Error(matcher, _("Multiple files match"),
+                                        ', '.join(r['filename'].value() for r in rows))
+                    else:
+                        row = self._data.get_row(columns=self._non_binary_columns,
+                                                 page_id=page_id, filename=filename,
+                                                 transaction=transaction)
                 else:
                     row = None
                 if row:
                     record = self._record(req, row)
                     operation = self._update
-                    files = updated_files
-                    # Create a backup copy in case we want to revert the whole operation.
-                    shutil.copyfile(record['file_path'].value(),
-                                    record['file_path'].value() + '.backup')
+                    orig_path = record['file_path'].value()
                 else:
                     record = self._record(req, None, new=True, prefill=prefill)
                     operation = self._insert
-                    files = inserted_files
+                    orig_path = None
                 data = archive.open(item)
                 error = record.validate('upload', data, filename=filename, mime_type=mime_type)
                 if error:
                     raise Error(filename, error.message())
                 else:
+                    new_path = record['file_path'].value()
+                    if new_path == orig_path:
+                        backup_path = orig_path + '.backup'
+                        # Create a backup copy in case we want to revert the whole operation.
+                        shutil.copyfile(orig_path, backup_path)
+                    else:
+                        backup_path = None
                     try:
                         operation(req, record, transaction=transaction)
                     except pd.DBException as e:
                         raise Error(filename, self._analyze_exception(e)[1])
                     else:
-                        files.append(record['file_path'].value())
+                        files.append((orig_path, new_path, backup_path))
         def failure(error):
             req.message(error, type=req.ERROR)
             req.set_param('submit', None)
@@ -3562,29 +3589,37 @@ class Attachments(ContentManagementModule):
             transaction = self._transaction()
             self._in_transaction(transaction, insert_attachments, archive, prefill, transaction)
         except Exception as e:
-            for path in inserted_files:
-                if os.path.exists(path):
-                    os.unlink(path)
-            for path in updated_files:
-                backup = path + '.backup'
-                if os.path.exists(backup):
-                    shutil.copyfile(backup, path)
-                    os.unlink(backup)
+            for orig_path, new_path, backup_path in files:
+                if new_path != orig_path and os.path.exists(new_path):
+                    # On insert and on update when the new file has a different extension (retype).
+                    os.unlink(new_path)
+                if new_path == orig_path and os.path.exists(backup_path):
+                    # On update when the new file has the same extension.
+                    shutil.copyfile(backup_path, orig_path)
+                    os.unlink(backup_path)
             if isinstance(e, Error):
                 return failure(lcg.concat(e.args, separator=': '))
             raise
         else:
-            for path in updated_files:
-                backup = path + '.backup'
-                if os.path.exists(backup):
-                    os.unlink(backup)
+            inserted_files, updated_files = 0, 0
+            for orig_path, new_path, backup_path in files:
+                if orig_path is None:
+                    inserted_files += 1
+                else:
+                    updated_files += 1
+                    if backup_path and os.path.exists(backup_path):
+                        os.unlink(backup_path)
+                    if orig_path != new_path and os.path.exists(orig_path):
+                        # TODO: This should probably be done in _save_attachment_file()
+                        # because it may happen on single attachment update as well. 
+                        os.unlink(orig_path)
             msg = []
             if inserted_files:
                 msg.append(_.ngettext("%d attachment succesfully inserted",
-                                      "%d attachments succesfully inserted", len(inserted_files)))
+                                      "%d attachments succesfully inserted", inserted_files))
             if updated_files:
                 msg.append(_.ngettext("%d attachment succesfully updated",
-                                      "%d attachments succesfully updated", len(updated_files)))
+                                      "%d attachments succesfully updated", updated_files))
             req.message(lcg.concat(msg, separator=', ') + '.')
         finally:
             archive.close()
