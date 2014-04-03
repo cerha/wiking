@@ -3104,7 +3104,8 @@ class Attachments(ContentManagementModule):
                       descr=_("If checked, the files to overwrite will be matched by name "
                               "without extension instead of full file name.  This makes it "
                               "possible to change types of some files, such as replace "
-                              "JPEGs by PNGs.")),
+                              "JPEGs by PNGs (file 'xy.png' replaces an existing file "
+                              "'xy.jpg' because their names without extension match).")),
             )
 
         def _ext(self, record, filename):
