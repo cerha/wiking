@@ -3527,9 +3527,10 @@ class Attachments(ContentManagementModule):
                 if overwrite:
                     if retype:
                         matcher = os.path.splitext(filename)[0] + '.*'
+                        matcher_value = pd.WMValue(pd.String(), matcher)
                         rows = self._data.get_rows(columns=self._non_binary_columns,
                                                    page_id=page_id, lang=lang,
-                                                   condition=pd.WM('filename', pd.wmval(matcher)),
+                                                   condition=pd.WM('filename', matcher_value),
                                                    transaction=transaction)
                         if not rows:
                             row = None
@@ -3612,7 +3613,7 @@ class Attachments(ContentManagementModule):
                         os.unlink(backup_path)
                     if orig_path != new_path and os.path.exists(orig_path):
                         # TODO: This should probably be done in _save_attachment_file()
-                        # because it may happen on single attachment update as well. 
+                        # because it may happen on single attachment update as well.
                         os.unlink(orig_path)
             msg = []
             if inserted_files:
