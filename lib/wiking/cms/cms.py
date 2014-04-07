@@ -2262,7 +2262,7 @@ class CmsPageExcerpts(EmbeddableCMSModule, BrailleExporter):
                       ('title', title), ('content', content),))
         return self._data.insert(row, transaction=transaction)
 
-    def _publication(self, req, record):
+    def _publication(self, req, record, preview=False):
         resource_provider = lcg.ResourceProvider(dirs=wiking.cfg.resource_path)
         row = record.row()
         content = text2content(req, row['content'].value())
