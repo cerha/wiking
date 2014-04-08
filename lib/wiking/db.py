@@ -1737,6 +1737,8 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                              }
         if parameters:
             output_parameters.update(parameters)
+        if not translations:
+            translations = wiking.cfg.translation_path
         formatter = pytis.output.Formatter(resolver, output_resolvers, template_id,
                                            parameters=output_parameters, translations=translations,
                                            language=lang)
