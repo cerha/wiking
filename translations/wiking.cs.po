@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-03-19 19:07+0100\n"
+"POT-Creation-Date: 2014-04-08 12:07+0200\n"
 "PO-Revision-Date: 2014-01-28 20:38+0100\n"
 "Last-Translator: Hynek Hanke <hanke@brailcom.org>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
@@ -155,147 +155,151 @@ msgstr ""
 "uživatele zobrazovat i popis jeho uživatelské role v systému, která určuje "
 "oprávnění."
 
-#: ../lib/wiking/db.py:104
+#: ../lib/wiking/configuration.py:500
+msgid "Directory of output specifications."
+msgstr ""
+
+#: ../lib/wiking/db.py:105
 msgid "Row with this key already exists."
 msgstr "Řádek s tímto klíčem již existuje."
 
-#: ../lib/wiking/db.py:106
+#: ../lib/wiking/db.py:107
 msgid "This value already exists.  Enter a unique value."
 msgstr "Taková hodnota již existuje.  Zadejte unikátní hodnotu."
 
 #. This is about an empty (not filled in) value in a web form. Field means a
 #. form field.
-#: ../lib/wiking/db.py:110
+#: ../lib/wiking/db.py:111
 msgid "Empty value.  This field is mandatory."
 msgstr "Prázdná hodnota.  Tato položka je povinná."
 
 #. This is delete action failure message in a web page.
-#: ../lib/wiking/db.py:113
+#: ../lib/wiking/db.py:114
 msgid "Record couldn't be deleted because other records refer to it."
 msgstr "Záznam nemohl být smazán, protože se na něj odkazují jiné záznamy."
 
 #. Button label for new database record creation (computer terminology).
-#: ../lib/wiking/db.py:163
+#: ../lib/wiking/db.py:164
 msgid "New record"
 msgstr "Nový záznam"
 
 #. Tooltip of new database record creation button (computer terminology).
-#: ../lib/wiking/db.py:165
+#: ../lib/wiking/db.py:166
 msgid "Create a new record"
 msgstr "Vytvořit nový záznam"
 
 #. Button label for database record modification (verb in imperative,
 #. computer terminology).
-#: ../lib/wiking/db.py:168
+#: ../lib/wiking/db.py:169
 msgid "Edit"
 msgstr "Upravit"
 
 #. Tooltip of database record modification button (computer terminology)
-#: ../lib/wiking/db.py:170
+#: ../lib/wiking/db.py:171
 msgid "Modify the record"
 msgstr "Změnit záznam"
 
 #. Button label for database record display (verb in imperative).
-#: ../lib/wiking/db.py:172
+#: ../lib/wiking/db.py:173
 msgid "View"
 msgstr "Zobrazit"
 
 #. Tooltip of database record display button (computer terminology)
-#: ../lib/wiking/db.py:174
+#: ../lib/wiking/db.py:175
 msgid "Display the record"
 msgstr "Zobrazit náhled záznamu"
 
 #. Button label for database record deletion (verb in imperative,
 #. computer terminology).
-#: ../lib/wiking/db.py:177
+#: ../lib/wiking/db.py:178
 msgid "Remove"
 msgstr "Smazat"
 
 #. Tooltip of database record deletion button (computer terminology).
-#: ../lib/wiking/db.py:179
+#: ../lib/wiking/db.py:180
 msgid "Remove the record permanently"
 msgstr "Nevratně odstranit záznam"
 
 #. Prompt before database record deletion (computer terminology).
-#: ../lib/wiking/db.py:181
+#: ../lib/wiking/db.py:182
 msgid "Please, confirm removing the record permanently."
 msgstr "Potvrďte, prosím, nevratné smazání záznamu."
 
 #. Button label for database record copying (verb in imperative,
 #. computer terminology).
-#: ../lib/wiking/db.py:184
+#: ../lib/wiking/db.py:185
 msgid "Copy"
 msgstr "Vytvořit kopii"
 
 #. Tooltip of database record copy button (computer terminology).
-#: ../lib/wiking/db.py:186
+#: ../lib/wiking/db.py:187
 msgid "Create new record initialized by values of this record"
 msgstr "Vytvořit nový záznam předvyplněný hodnotami tohoto záznamu"
 
 #. Button label for returning from a single record view to the listing of all
 #. database records (computer terminology).
-#: ../lib/wiking/db.py:189
+#: ../lib/wiking/db.py:190
 msgid "Back to list"
 msgstr "Zpět na seznam"
 
 #. Tooltip of a button for returning from a single record view to the
 #. listing of all records (computer terminology).
-#: ../lib/wiking/db.py:192
+#: ../lib/wiking/db.py:193
 msgid "Back to the list of all records"
 msgstr "Zpět na výpis všech záznamů"
 
 #. Button label (verb in imperative, computer terminology).
-#: ../lib/wiking/db.py:194
+#: ../lib/wiking/db.py:195
 msgid "Export"
 msgstr "Exportovat"
 
 #. Button tooltip.  Don't translate `CSV', it is an
 #. internationally recognized computer abbreviation.
-#: ../lib/wiking/db.py:197
+#: ../lib/wiking/db.py:198
 msgid "Export the listing into a CSV format"
 msgstr "Exportovat výpis do CSV formátu"
 
 #. Message displayed after new database record creation (computer terminology).
-#: ../lib/wiking/db.py:199
+#: ../lib/wiking/db.py:200
 msgid "New record was successfully inserted."
 msgstr "Nový záznam byl úspěšně vložen."
 
 #. Message displayed after a database record modification (computer
 #. terminology).
-#: ../lib/wiking/db.py:201
+#: ../lib/wiking/db.py:202
 msgid "The record was successfully updated."
 msgstr "Záznam byl úspěšně aktualizován."
 
 #. Message displayed after a database record deletion (computer terminology).
-#: ../lib/wiking/db.py:203
+#: ../lib/wiking/db.py:204
 msgid "The record was deleted."
 msgstr "Záznam byl odstraněn."
 
-#: ../lib/wiking/db.py:462
+#: ../lib/wiking/db.py:463
 msgid "Unable to perform a database operation:"
 msgstr "Provedení databázové operace se nezdařilo:"
 
-#: ../lib/wiking/db.py:1974
+#: ../lib/wiking/db.py:2014
 msgid "Back"
 msgstr "Zpět"
 
 #. Back button label. Standard computer terminology.
 #. RSS channel is a computer idiom, see Wikipedia.
-#: ../lib/wiking/db.py:2182 ../lib/wiking/db.py:2338
+#: ../lib/wiking/db.py:2222 ../lib/wiking/db.py:2378
 msgid "An RSS channel is available for this section:"
 msgstr "K dispozici je také RSS kanál pro tuto sekci:"
 
 #. RSS channel is a computer idiom, see Wikipedia.  Don't translateg 'RSS'.
-#: ../lib/wiking/db.py:2186 ../lib/wiking/db.py:2336
+#: ../lib/wiking/db.py:2226 ../lib/wiking/db.py:2376
 msgid "more about RSS"
 msgstr "více o RSS"
 
-#: ../lib/wiking/db.py:2331
+#: ../lib/wiking/db.py:2371
 #, python-format
 msgid "RSS channel \"%s\""
 msgstr "RSS kanál „%s“"
 
-#: ../lib/wiking/db.py:2341
+#: ../lib/wiking/db.py:2381
 msgid "RSS channels are available for this section"
 msgstr "Pro tuto sekci jsou k dispozici RSS kanály"
 
@@ -677,13 +681,13 @@ msgstr "Použít heslo"
 msgid "Continue"
 msgstr "Pokračovat"
 
-#: ../lib/wiking/util.py:2046
+#: ../lib/wiking/util.py:2080
 msgid "Invalid format"
 msgstr "Neplatný formát"
 
 #. Computer terminology. `gmail.com' is a domain name in email address
 #. `joe@gmail.com'.
-#: ../lib/wiking/util.py:2054 ../lib/wiking/util.py:2061
+#: ../lib/wiking/util.py:2088 ../lib/wiking/util.py:2095
 msgid "Domain not found"
 msgstr "Doména nenalezena"
 

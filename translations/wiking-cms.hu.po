@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-04-03 17:42+0200\n"
+"POT-Creation-Date: 2014-04-08 12:07+0200\n"
 "PO-Revision-Date: 2010-02-04 00:15+0100\n"
 "Last-Translator: Hostomský Károly <khostomsky@gmail.com>\n"
 "Language-Team: Hungarian <wiking@lists.freebsoft.org>\n"
@@ -169,8 +169,8 @@ msgstr "Hibás aktivációs kód."
 msgid "Manage user and other kinds of certificates."
 msgstr "Intézmények és egyéb szervezetek irányítása."
 
-#: ../lib/wiking/cms/certificates.py:228 ../lib/wiking/cms/cms.py:4408
-#: ../lib/wiking/cms/cms.py:4590
+#: ../lib/wiking/cms/certificates.py:228 ../lib/wiking/cms/cms.py:4410
+#: ../lib/wiking/cms/cms.py:4592
 msgid "Subject"
 msgstr "Tárgy"
 
@@ -385,14 +385,14 @@ msgstr ""
 "Kezelő panelok - kis ablakok, melyek az oldalak szélén helyezkednek el."
 
 #: ../lib/wiking/cms/cms.py:892 ../lib/wiking/cms/cms.py:1318
-#: ../lib/wiking/cms/cms.py:3025 ../lib/wiking/cms/cms.py:3638
+#: ../lib/wiking/cms/cms.py:3026 ../lib/wiking/cms/cms.py:3640
 msgid "Language"
 msgstr "Nyelv"
 
 #. Title in the meaning of a heading
 #: ../lib/wiking/cms/cms.py:895 ../lib/wiking/cms/cms.py:1320
-#: ../lib/wiking/cms/cms.py:1321 ../lib/wiking/cms/cms.py:2244
-#: ../lib/wiking/cms/cms.py:3049 ../lib/wiking/cms/cms.py:3642
+#: ../lib/wiking/cms/cms.py:1321 ../lib/wiking/cms/cms.py:2245
+#: ../lib/wiking/cms/cms.py:3050 ../lib/wiking/cms/cms.py:3644
 msgid "Title"
 msgstr "Cím"
 
@@ -401,7 +401,7 @@ msgstr "Cím"
 #. Unique identifier of a stylesheet.
 #. Form field label.
 #: ../lib/wiking/cms/cms.py:898 ../lib/wiking/cms/cms.py:1310
-#: ../lib/wiking/cms/cms.py:4006 ../lib/wiking/cms/users.py:330
+#: ../lib/wiking/cms/cms.py:4008 ../lib/wiking/cms/users.py:330
 msgid "Identifier"
 msgstr "Azonosító"
 
@@ -412,7 +412,7 @@ msgid ""
 msgstr ""
 
 #. Order in the meaning of sequence. A noun, not verb.
-#: ../lib/wiking/cms/cms.py:904 ../lib/wiking/cms/cms.py:4025
+#: ../lib/wiking/cms/cms.py:904 ../lib/wiking/cms/cms.py:4027
 msgid "Order"
 msgstr "Sorrend"
 
@@ -454,7 +454,7 @@ msgstr ""
 
 #. Content of a page (text or something else)
 #: ../lib/wiking/cms/cms.py:922 ../lib/wiking/cms/cms.py:1325
-#: ../lib/wiking/cms/cms.py:2247 ../lib/wiking/cms/cms.py:4029
+#: ../lib/wiking/cms/cms.py:2248 ../lib/wiking/cms/cms.py:4031
 msgid "Content"
 msgstr "Tartalom"
 
@@ -548,9 +548,9 @@ msgstr "Közönséges oldalszínek"
 #: ../lib/wiking/cms/cms.py:1125 ../lib/wiking/cms/cms.py:1140
 #: ../lib/wiking/cms/cms.py:1148 ../lib/wiking/cms/cms.py:1155
 #: ../lib/wiking/cms/cms.py:1164 ../lib/wiking/cms/cms.py:1168
-#: ../lib/wiking/cms/cms.py:1172 ../lib/wiking/cms/cms.py:4141
-#: ../lib/wiking/cms/cms.py:4142 ../lib/wiking/cms/cms.py:4144
-#: ../lib/wiking/cms/cms.py:4591
+#: ../lib/wiking/cms/cms.py:1172 ../lib/wiking/cms/cms.py:4143
+#: ../lib/wiking/cms/cms.py:4144 ../lib/wiking/cms/cms.py:4146
+#: ../lib/wiking/cms/cms.py:4593
 msgid "Text"
 msgstr "Szöveg"
 
@@ -779,8 +779,8 @@ msgstr ""
 "Az érvényes azonosító csak betűket, számjegyeket, kötőjelet és aláhúzójelet "
 "tartalmazhat. Betűvel kell, hogy kezdődjön."
 
-#: ../lib/wiking/cms/cms.py:1322 ../lib/wiking/cms/cms.py:3052
-#: ../lib/wiking/cms/cms.py:4007 ../lib/wiking/cms/crypto.py:44
+#: ../lib/wiking/cms/cms.py:1322 ../lib/wiking/cms/cms.py:3053
+#: ../lib/wiking/cms/cms.py:4009 ../lib/wiking/cms/crypto.py:44
 msgid "Description"
 msgstr "Leírás"
 
@@ -791,7 +791,7 @@ msgid ""
 "site map."
 msgstr "Tömör oldalleírás (buboréksúgóként megjelenik az oldaltérképen)."
 
-#: ../lib/wiking/cms/cms.py:1328 ../lib/wiking/cms/cms.py:2881
+#: ../lib/wiking/cms/cms.py:1328 ../lib/wiking/cms/cms.py:2883
 #, fuzzy
 msgid "Comment"
 msgstr "Saját hozzászólás"
@@ -864,8 +864,8 @@ msgstr ""
 msgid "Creator"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:1375 ../lib/wiking/cms/cms.py:2539
-#: ../lib/wiking/cms/cms.py:3055
+#: ../lib/wiking/cms/cms.py:1375 ../lib/wiking/cms/cms.py:2540
+#: ../lib/wiking/cms/cms.py:3056
 msgid "Created"
 msgstr ""
 
@@ -929,7 +929,7 @@ msgstr ""
 msgid "Ok"
 msgstr "Ok"
 
-#: ../lib/wiking/cms/cms.py:1419 ../lib/wiking/cms/cms.py:2889
+#: ../lib/wiking/cms/cms.py:1419 ../lib/wiking/cms/cms.py:2891
 msgid "Changed"
 msgstr "Megváltoztatva"
 
@@ -977,7 +977,7 @@ msgstr "Új oldal"
 #. Noun. Such as e-mail attachments (here attachments for a webpage).
 #. Section title. Attachments as in email attachments.
 #: ../lib/wiking/cms/cms.py:1475 ../lib/wiking/cms/cms.py:1943
-#: ../lib/wiking/cms/cms.py:2677 ../lib/wiking/cms/cms.py:3010
+#: ../lib/wiking/cms/cms.py:2678 ../lib/wiking/cms/cms.py:3011
 msgid "Attachments"
 msgstr "Csatolmány"
 
@@ -986,7 +986,7 @@ msgstr "Csatolmány"
 msgid "History"
 msgstr "Bejelentkezési napló"
 
-#: ../lib/wiking/cms/cms.py:1477 ../lib/wiking/cms/cms.py:2240
+#: ../lib/wiking/cms/cms.py:1477 ../lib/wiking/cms/cms.py:2241
 msgid "Excerpts"
 msgstr ""
 
@@ -1024,7 +1024,7 @@ msgstr "Az új oldal sikeresen elkészült és közzététetett."
 msgid "The page was successfully updated."
 msgstr "Az új oldal sikeresen elkészült és közzététetett."
 
-#: ../lib/wiking/cms/cms.py:1572 ../lib/wiking/cms/cms.py:2412
+#: ../lib/wiking/cms/cms.py:1572 ../lib/wiking/cms/cms.py:2413
 #, fuzzy
 msgid "Basic Options"
 msgstr "Beállítások"
@@ -1034,7 +1034,7 @@ msgstr "Beállítások"
 msgid "Menu position"
 msgstr "Leírás"
 
-#: ../lib/wiking/cms/cms.py:1574 ../lib/wiking/cms/cms.py:2420
+#: ../lib/wiking/cms/cms.py:1574 ../lib/wiking/cms/cms.py:2421
 #, fuzzy
 msgid "Access Rights"
 msgstr "Belépési jogok"
@@ -1215,277 +1215,277 @@ msgid "Inner margin:"
 msgstr ""
 
 #: ../lib/wiking/cms/cms.py:2220
-msgid "Outer margin:"
+msgid "Outer margin (v2: Left margin):"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2222
+#: ../lib/wiking/cms/cms.py:2223
 msgid "Top margin:"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2224
+#: ../lib/wiking/cms/cms.py:2225
 msgid "Bottom margin:"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2243 ../lib/wiking/cms/crypto.py:83
+#: ../lib/wiking/cms/cms.py:2244 ../lib/wiking/cms/crypto.py:83
 msgid "Id"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2245 ../lib/wiking/cms/cms.py:3019
-#: ../lib/wiking/cms/cms.py:3635
+#: ../lib/wiking/cms/cms.py:2246 ../lib/wiking/cms/cms.py:3020
+#: ../lib/wiking/cms/cms.py:3637
 msgid "Page"
 msgstr "Oldal"
 
-#: ../lib/wiking/cms/cms.py:2251 ../lib/wiking/cms/cms.py:2384
+#: ../lib/wiking/cms/cms.py:2252 ../lib/wiking/cms/cms.py:2385
 msgid "Export to Braille"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2252
+#: ../lib/wiking/cms/cms.py:2253
 msgid "Export the excerpt to Braille"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2286
+#: ../lib/wiking/cms/cms.py:2287
 #, fuzzy
 msgid "Publications"
 msgstr "Közzétesz"
 
-#: ../lib/wiking/cms/cms.py:2291
+#: ../lib/wiking/cms/cms.py:2292
 #, fuzzy
 msgid "Subtitle"
 msgstr "A webhely alcíme"
 
-#: ../lib/wiking/cms/cms.py:2300 ../lib/wiking/cms/cms.py:3645
+#: ../lib/wiking/cms/cms.py:2301 ../lib/wiking/cms/cms.py:3647
 msgid "Author"
 msgstr "Szerző"
 
-#: ../lib/wiking/cms/cms.py:2301
+#: ../lib/wiking/cms/cms.py:2302
 msgid ""
 "Full name(s) of the creator(s) of the publication or the original work, if "
 "the publication is a derived work. One name per line."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2304
+#: ../lib/wiking/cms/cms.py:2305
 #, fuzzy
 msgid "Illustrations"
 msgstr "Eltöltött idő"
 
-#: ../lib/wiking/cms/cms.py:2305
+#: ../lib/wiking/cms/cms.py:2306
 msgid ""
 "Full name(s) of the author(s) of illustrations used in the publication. One "
 "name per line."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2307
+#: ../lib/wiking/cms/cms.py:2308
 #, fuzzy
 msgid "Contributors"
 msgstr "Tartalom"
 
-#: ../lib/wiking/cms/cms.py:2308
+#: ../lib/wiking/cms/cms.py:2309
 msgid ""
 "Creators of the publication with a less significant role than the author(s). "
 "One name per line."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2310
+#: ../lib/wiking/cms/cms.py:2311
 msgid "Original ISBN"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2311
+#: ../lib/wiking/cms/cms.py:2312
 msgid ""
 "ISBN identifier of the original work if the publication is a digitalized "
 "book or another kind of derived work."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2313
+#: ../lib/wiking/cms/cms.py:2314
 msgid "ISBN"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2314
+#: ../lib/wiking/cms/cms.py:2315
 msgid "ISBN identifier of this publication if it has one assigned."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2315
+#: ../lib/wiking/cms/cms.py:2316
 #, fuzzy
 msgid "Adapted by"
 msgstr "Megváltoztatva"
 
-#: ../lib/wiking/cms/cms.py:2316
+#: ../lib/wiking/cms/cms.py:2317
 msgid ""
 "Name(s) of person(s) or organization(s), who created this digital "
 "publication.  These are typically not the authors of the content itself, but "
 "authors of its digital version. One name per line."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2320
+#: ../lib/wiking/cms/cms.py:2321
 msgid "Cover Image"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2324
+#: ../lib/wiking/cms/cms.py:2325
 msgid "Insert the image as an attachment and select it from the list here."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2327 ../lib/wiking/cms/cms.py:2341
+#: ../lib/wiking/cms/cms.py:2328 ../lib/wiking/cms/cms.py:2342
 #, fuzzy
 msgid "Publisher"
 msgstr "Közzétesz"
 
-#: ../lib/wiking/cms/cms.py:2328
+#: ../lib/wiking/cms/cms.py:2329
 msgid "Name of the organization which published the original work."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2330
+#: ../lib/wiking/cms/cms.py:2331
 #, fuzzy
 msgid "Year Published"
 msgstr "Közzétesz"
 
-#: ../lib/wiking/cms/cms.py:2331
+#: ../lib/wiking/cms/cms.py:2332
 #, fuzzy
 msgid "Year when the original work was published."
 msgstr "A oldal nincs közzétéve."
 
-#: ../lib/wiking/cms/cms.py:2332
+#: ../lib/wiking/cms/cms.py:2333
 #, fuzzy
 msgid "Edition"
 msgstr "Leírás"
 
-#: ../lib/wiking/cms/cms.py:2333
+#: ../lib/wiking/cms/cms.py:2334
 msgid "Numeric order of the original work's edition."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2334
+#: ../lib/wiking/cms/cms.py:2335
 msgid "Copyright Notice"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2337 ../lib/wiking/cms/cms.py:2547
-#: ../lib/wiking/cms/cms.py:2764
+#: ../lib/wiking/cms/cms.py:2338 ../lib/wiking/cms/cms.py:2548
+#: ../lib/wiking/cms/cms.py:2765
 msgid "Notes"
 msgstr "Megjegyzések"
 
-#: ../lib/wiking/cms/cms.py:2338
+#: ../lib/wiking/cms/cms.py:2339
 msgid ""
 "Any other additional information about the publication, such as names of "
 "translators, reviewers etc."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2366
+#: ../lib/wiking/cms/cms.py:2367
 #, fuzzy, python-format
 msgid "%d. edition"
 msgstr "Leírás"
 
-#: ../lib/wiking/cms/cms.py:2376
+#: ../lib/wiking/cms/cms.py:2377
 msgid "Chapters"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2377
+#: ../lib/wiking/cms/cms.py:2378
 msgid "Exported Versions"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2380 ../lib/wiking/cms/cms.py:2686
+#: ../lib/wiking/cms/cms.py:2381 ../lib/wiking/cms/cms.py:2687
 #, fuzzy
 msgid "New Chapter"
 msgstr "Új oldal"
 
-#: ../lib/wiking/cms/cms.py:2381
+#: ../lib/wiking/cms/cms.py:2382
 msgid "Create a new chapter in this publication."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2382
+#: ../lib/wiking/cms/cms.py:2383
 msgid "Export to EPUB"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2383
+#: ../lib/wiking/cms/cms.py:2384
 msgid "Export the publication to EPUB format"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2385
+#: ../lib/wiking/cms/cms.py:2386
 msgid "Export the publication to Braille"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2389
+#: ../lib/wiking/cms/cms.py:2390
 msgid "New Publication"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2390 ../lib/wiking/cms/cms.py:2424
+#: ../lib/wiking/cms/cms.py:2391 ../lib/wiking/cms/cms.py:2425
 #, fuzzy
 msgid "Title Page Text"
 msgstr "Cím"
 
-#: ../lib/wiking/cms/cms.py:2391
+#: ../lib/wiking/cms/cms.py:2392
 #, fuzzy
 msgid "Edit the text displayed on the title page."
 msgstr "További szöveg, amely a panelen megjelenik."
 
-#: ../lib/wiking/cms/cms.py:2393
+#: ../lib/wiking/cms/cms.py:2394
 #, fuzzy
 msgid "New publication was successfully created."
 msgstr "Az új oldal sikeresen elkészült és közzététetett."
 
-#: ../lib/wiking/cms/cms.py:2394
+#: ../lib/wiking/cms/cms.py:2395
 #, fuzzy
 msgid "The publication was successfully updated."
 msgstr "Az új oldal sikeresen elkészült és közzététetett."
 
-#: ../lib/wiking/cms/cms.py:2415
+#: ../lib/wiking/cms/cms.py:2416
 #, fuzzy
 msgid "Bibliographic Information"
 msgstr "Belépési információk"
 
-#: ../lib/wiking/cms/cms.py:2504
+#: ../lib/wiking/cms/cms.py:2505
 msgid "Table of Contents"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2513
+#: ../lib/wiking/cms/cms.py:2514
 msgid "Yes"
 msgstr "Igen"
 
-#: ../lib/wiking/cms/cms.py:2513
+#: ../lib/wiking/cms/cms.py:2514
 #, fuzzy
 msgid "No"
 msgstr "Megjegyzés"
 
-#: ../lib/wiking/cms/cms.py:2543
+#: ../lib/wiking/cms/cms.py:2544
 #, fuzzy
 msgid "Information about this adaptation of the work:"
 msgstr "Nem jóváhagyott fiókok (függőben levő jóváhagyások az adminnál)"
 
-#: ../lib/wiking/cms/cms.py:2651
+#: ../lib/wiking/cms/cms.py:2652
 #, fuzzy
 msgid "Select the superordinate chapter in hierarchy."
 msgstr ""
 "Válaszd ki a fölérendelt elemet az oldalhierarchiában. Hagyd üresen a "
 "legfelsőbb szintű oldalnál."
 
-#: ../lib/wiking/cms/cms.py:2687
+#: ../lib/wiking/cms/cms.py:2688
 #, fuzzy
 msgid "New chapter was successfully created."
 msgstr "Az új oldal sikeresen elkészült és közzététetett."
 
-#: ../lib/wiking/cms/cms.py:2688
+#: ../lib/wiking/cms/cms.py:2689
 #, fuzzy
 msgid "The chapter was successfully updated."
 msgstr "Az új oldal sikeresen elkészült és közzététetett."
 
-#: ../lib/wiking/cms/cms.py:2732
+#: ../lib/wiking/cms/cms.py:2733
 msgid "EPUB"
 msgstr ""
 
 #. Braille as a type of media
-#: ../lib/wiking/cms/cms.py:2733 ../lib/wiking/cms/cms.py:3979
+#: ../lib/wiking/cms/cms.py:2734 ../lib/wiking/cms/cms.py:3981
 msgid "Braille"
 msgstr "Braille sajtó"
 
-#: ../lib/wiking/cms/cms.py:2736
+#: ../lib/wiking/cms/cms.py:2737
 msgid "Exported Publication Versions"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2741
+#: ../lib/wiking/cms/cms.py:2742
 msgid "Format"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2742
+#: ../lib/wiking/cms/cms.py:2743
 msgid "Version"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2743
+#: ../lib/wiking/cms/cms.py:2744
 msgid ""
 "Version number and optional variant identifiers.  The whole string is used "
 "as a part of the output file name, so it should only contain digits, "
@@ -1502,135 +1502,135 @@ msgid ""
 "throughout your publications."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2759
+#: ../lib/wiking/cms/cms.py:2760
 #, fuzzy
 msgid "Public"
 msgstr "Közzétesz"
 
-#: ../lib/wiking/cms/cms.py:2760
+#: ../lib/wiking/cms/cms.py:2761
 msgid ""
 "If checked, this export will be available to anyone having access to the "
 "publication, otherwise only editors (with read/write access) will see it."
 msgstr ""
 
 #. Size of a file, in number of bytes, kilobytes etc.
-#: ../lib/wiking/cms/cms.py:2763 ../lib/wiking/cms/cms.py:3060
+#: ../lib/wiking/cms/cms.py:2764 ../lib/wiking/cms/cms.py:3061
 msgid "Size"
 msgstr "Méret"
 
-#: ../lib/wiking/cms/cms.py:2765
+#: ../lib/wiking/cms/cms.py:2766
 msgid ""
 "Short text describing this exported version and/or variant. Leave empty if "
 "there is nothing important to note."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2772
+#: ../lib/wiking/cms/cms.py:2773
 msgid "Download"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2785
+#: ../lib/wiking/cms/cms.py:2786
 #, python-format
 msgid "%(format)s version %(version)s"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2795
+#: ../lib/wiking/cms/cms.py:2796
 msgid "Available Download Versions"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2879
+#: ../lib/wiking/cms/cms.py:2881
 #, fuzzy
 msgid "Changed by"
 msgstr "Megváltoztatva"
 
-#: ../lib/wiking/cms/cms.py:2880 ../lib/wiking/cms/cms.py:3640
-#: ../lib/wiking/cms/cms.py:3649 ../lib/wiking/cms/cms.py:3764
-#: ../lib/wiking/cms/cms.py:4592
+#: ../lib/wiking/cms/cms.py:2882 ../lib/wiking/cms/cms.py:3642
+#: ../lib/wiking/cms/cms.py:3651 ../lib/wiking/cms/cms.py:3766
+#: ../lib/wiking/cms/cms.py:4594
 msgid "Date"
 msgstr "Dátum"
 
-#: ../lib/wiking/cms/cms.py:2883
+#: ../lib/wiking/cms/cms.py:2885
 #, fuzzy
 msgid "Inserted lines"
 msgstr "Látogatott link"
 
-#: ../lib/wiking/cms/cms.py:2884
+#: ../lib/wiking/cms/cms.py:2886
 #, fuzzy
 msgid "Changed lines"
 msgstr "Megváltoztatva"
 
-#: ../lib/wiking/cms/cms.py:2885
+#: ../lib/wiking/cms/cms.py:2887
 #, fuzzy
 msgid "Deleted lines"
 msgstr "Alapértelmezett"
 
-#: ../lib/wiking/cms/cms.py:2886
+#: ../lib/wiking/cms/cms.py:2888
 msgid "Inserted / Changed / Deleted Lines"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2887
+#: ../lib/wiking/cms/cms.py:2889
 #, fuzzy
 msgid "Inserted"
 msgstr "Látogatott link"
 
-#: ../lib/wiking/cms/cms.py:2888
+#: ../lib/wiking/cms/cms.py:2890
 #, fuzzy
 msgid "Green"
 msgstr "Képernyő"
 
-#: ../lib/wiking/cms/cms.py:2890
+#: ../lib/wiking/cms/cms.py:2892
 msgid "Yellow"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2891
+#: ../lib/wiking/cms/cms.py:2893
 #, fuzzy
 msgid "Deleted"
 msgstr "Alapértelmezett"
 
-#: ../lib/wiking/cms/cms.py:2892
+#: ../lib/wiking/cms/cms.py:2894
 msgid "Red"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2912
+#: ../lib/wiking/cms/cms.py:2914
 #, fuzzy, python-format
 msgid "Changed on %s"
 msgstr "Megváltoztatva"
 
-#: ../lib/wiking/cms/cms.py:2920
+#: ../lib/wiking/cms/cms.py:2921
 #, fuzzy
 msgid "Change Summary"
 msgstr "Jelszó megváltoztatása"
 
-#: ../lib/wiking/cms/cms.py:2922
+#: ../lib/wiking/cms/cms.py:2923
 #, fuzzy
 msgid "Colors"
 msgstr "Színsémák"
 
-#: ../lib/wiking/cms/cms.py:2938
+#: ../lib/wiking/cms/cms.py:2939
 msgid "No differences against previous version."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2940
+#: ../lib/wiking/cms/cms.py:2941
 msgid "Original version"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2942
+#: ../lib/wiking/cms/cms.py:2943
 msgid "Modified version"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2949
+#: ../lib/wiking/cms/cms.py:2950
 msgid "Previous version empty (no differences available)."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:2979
+#: ../lib/wiking/cms/cms.py:2980
 msgid "Initial version"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:3011
+#: ../lib/wiking/cms/cms.py:3012
 msgid "Manage page attachments. Go to a page to create new attachments."
 msgstr ""
 "Oldal csatolmányok kezelése. Menj az oldalra új csatolmány létrehozásához."
 
-#: ../lib/wiking/cms/cms.py:3022
+#: ../lib/wiking/cms/cms.py:3023
 msgid ""
 "Select the page where you want to move this attachment.  Don't forget to "
 "update all explicit links to this attachment within page text(s)."
@@ -1640,11 +1640,11 @@ msgstr ""
 "szövegében."
 
 #. Noun. File on disk. Computer terminology.
-#: ../lib/wiking/cms/cms.py:3028 ../lib/wiking/cms/cms.py:3036
+#: ../lib/wiking/cms/cms.py:3029 ../lib/wiking/cms/cms.py:3037
 msgid "File"
 msgstr "Fájl"
 
-#: ../lib/wiking/cms/cms.py:3030
+#: ../lib/wiking/cms/cms.py:3031
 msgid ""
 "Upload a file from your local system.  The file name will be used to refer "
 "to the attachment within the page content.  Please note, that the file will "
@@ -1658,15 +1658,15 @@ msgstr ""
 "számjegyek,  kötőjelek, aláhúzóvonalak és pontok biztonságosak. Minden egyéb "
 "jel, problémát okozhat."
 
-#: ../lib/wiking/cms/cms.py:3044
+#: ../lib/wiking/cms/cms.py:3045
 msgid "Filename"
 msgstr "Fájlnév"
 
-#: ../lib/wiking/cms/cms.py:3047
+#: ../lib/wiking/cms/cms.py:3048
 msgid "Mime-type"
 msgstr "MIME-típus"
 
-#: ../lib/wiking/cms/cms.py:3050
+#: ../lib/wiking/cms/cms.py:3051
 msgid ""
 "The name of the attachment (e.g. the full name of the document). If empty, "
 "the file name will be used instead."
@@ -1674,36 +1674,36 @@ msgstr ""
 "A csatolmány neve (pl. az fájl egész neve). Ha üresen van hagyva, a fájlnév "
 "lesz használatos."
 
-#: ../lib/wiking/cms/cms.py:3053
+#: ../lib/wiking/cms/cms.py:3054
 msgid "Optional description used for the listing of attachments (see below)."
 msgstr "Választható leírás a csatolmányok listájához (lásd lent)."
 
-#: ../lib/wiking/cms/cms.py:3056
+#: ../lib/wiking/cms/cms.py:3057
 msgid "Last Modified"
 msgstr ""
 
 #. Thumbnail is a small image preview in computer terminology.
-#: ../lib/wiking/cms/cms.py:3065
+#: ../lib/wiking/cms/cms.py:3066
 #, fuzzy
 msgid "Preview size"
 msgstr "Előnézet"
 
-#: ../lib/wiking/cms/cms.py:3068
+#: ../lib/wiking/cms/cms.py:3069
 msgid "Full size (don't resize)"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:3070
+#: ../lib/wiking/cms/cms.py:3071
 msgid ""
 "Only relevant for images.  When set, the image will not be displayed in full "
 "size, but as a small clickable preview."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:3080
+#: ../lib/wiking/cms/cms.py:3081
 #, fuzzy
 msgid "In Gallery"
 msgstr "Galériában"
 
-#: ../lib/wiking/cms/cms.py:3084
+#: ../lib/wiking/cms/cms.py:3085
 #, fuzzy
 msgid ""
 "Check if you want the image to appear in an image Gallery below the page "
@@ -1711,11 +1711,11 @@ msgid ""
 msgstr ""
 "Jelöld be ha a kép jelenjen meg egy automatikusan generált képgalériában."
 
-#: ../lib/wiking/cms/cms.py:3086
+#: ../lib/wiking/cms/cms.py:3087
 msgid "Listed"
 msgstr "Felsorolva"
 
-#: ../lib/wiking/cms/cms.py:3087
+#: ../lib/wiking/cms/cms.py:3088
 msgid ""
 "Check if you want the item to appear in the listing of attachments at the "
 "bottom of the page."
@@ -1723,30 +1723,30 @@ msgstr ""
 "Jelöld be, ha az elem megjelenjen az oldal alján levő csatolmányok "
 "listájában."
 
-#: ../lib/wiking/cms/cms.py:3093
+#: ../lib/wiking/cms/cms.py:3094
 msgid "Archive"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:3095 ../lib/wiking/cms/cms.py:3204
+#: ../lib/wiking/cms/cms.py:3096 ../lib/wiking/cms/cms.py:3205
 msgid "Upload multiple attachments at once as a ZIP, TAR or TAR.GZ archive."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:3097
+#: ../lib/wiking/cms/cms.py:3098
 msgid "Overwrite existing files"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:3099
+#: ../lib/wiking/cms/cms.py:3100
 msgid ""
 "If checked, the existing attachments will be updated when the archive "
 "contains files of the same name."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:3101
+#: ../lib/wiking/cms/cms.py:3102
 #, fuzzy
 msgid "Change file types"
 msgstr "Megváltoztatva"
 
-#: ../lib/wiking/cms/cms.py:3104
+#: ../lib/wiking/cms/cms.py:3105
 msgid ""
 "If checked, the files to overwrite will be matched by name without extension "
 "instead of full file name.  This makes it possible to change types of some "
@@ -1755,150 +1755,150 @@ msgid ""
 msgstr ""
 
 #. Size label related to "Preview size" field (pronoun).
-#: ../lib/wiking/cms/cms.py:3183
+#: ../lib/wiking/cms/cms.py:3184
 msgid "Small"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:3184
+#: ../lib/wiking/cms/cms.py:3185
 #, fuzzy
 msgid "Medium"
 msgstr "Média típusa"
 
-#: ../lib/wiking/cms/cms.py:3185
+#: ../lib/wiking/cms/cms.py:3186
 msgid "Large"
 msgstr ""
 
 #. Button label
-#: ../lib/wiking/cms/cms.py:3202
+#: ../lib/wiking/cms/cms.py:3203
 msgid "Move"
 msgstr "Áthelyez"
 
-#: ../lib/wiking/cms/cms.py:3202
+#: ../lib/wiking/cms/cms.py:3203
 msgid "Move the attachment to another page."
 msgstr "Helyezd át a csatolmányt más oldalhoz."
 
-#: ../lib/wiking/cms/cms.py:3203
+#: ../lib/wiking/cms/cms.py:3204
 msgid "Upload Archive"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:3264
+#: ../lib/wiking/cms/cms.py:3265
 msgid "New attachment"
 msgstr "Új csatolmány"
 
-#: ../lib/wiking/cms/cms.py:3270
+#: ../lib/wiking/cms/cms.py:3271
 msgid "Attachment of the same file name already exists for this page."
 msgstr "Azonos nevű csatolmány már létezik az oldalhoz."
 
-#: ../lib/wiking/cms/cms.py:3272
+#: ../lib/wiking/cms/cms.py:3273
 msgid "Attachment file name exceeds the maximal length 64 characters."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:3435
+#: ../lib/wiking/cms/cms.py:3436
 #, python-format
 msgid "Attachment '%s' not found!"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:3539
+#: ../lib/wiking/cms/cms.py:3541
 msgid "Multiple files match"
-msgstr ""
-
-#: ../lib/wiking/cms/cms.py:3585
-#, python-format
-msgid "Unknow archive file type: %s"
 msgstr ""
 
 #: ../lib/wiking/cms/cms.py:3587
 #, python-format
+msgid "Unknow archive file type: %s"
+msgstr ""
+
+#: ../lib/wiking/cms/cms.py:3589
+#, python-format
 msgid "Unable to read archive: %s"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:3619
+#: ../lib/wiking/cms/cms.py:3621
 #, python-format
 msgid "%d attachment succesfully inserted"
 msgid_plural "%d attachments succesfully inserted"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../lib/wiking/cms/cms.py:3622
+#: ../lib/wiking/cms/cms.py:3624
 #, python-format
 msgid "%d attachment succesfully updated"
 msgid_plural "%d attachments succesfully updated"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../lib/wiking/cms/cms.py:3642 ../lib/wiking/cms/cms.py:3644
+#: ../lib/wiking/cms/cms.py:3644 ../lib/wiking/cms/cms.py:3646
 msgid "Message"
 msgstr "Üzenet"
 
-#: ../lib/wiking/cms/cms.py:3643
+#: ../lib/wiking/cms/cms.py:3645
 msgid "The item brief summary."
 msgstr "Az elem tömör összefoglalója."
 
-#: ../lib/wiking/cms/cms.py:3650
+#: ../lib/wiking/cms/cms.py:3652
 msgid "Date of the news item creation."
 msgstr "Új elem létrejöttének időpontja."
 
-#: ../lib/wiking/cms/cms.py:3706
+#: ../lib/wiking/cms/cms.py:3708
 #, fuzzy
 msgid "Recent news"
 msgstr "Fölötte álló elem"
 
-#: ../lib/wiking/cms/cms.py:3707
+#: ../lib/wiking/cms/cms.py:3709
 #, fuzzy
 msgid "Archive of older news"
 msgstr "Inaktív mappa"
 
 #. Section title and menu item
-#: ../lib/wiking/cms/cms.py:3712
+#: ../lib/wiking/cms/cms.py:3714
 msgid "News"
 msgstr "Hírek"
 
 #. Help string describing more precisely the meaning of the "News" section.
-#: ../lib/wiking/cms/cms.py:3714
+#: ../lib/wiking/cms/cms.py:3716
 msgid "Publish site news."
 msgstr "Hírek közlése."
 
-#: ../lib/wiking/cms/cms.py:3719
+#: ../lib/wiking/cms/cms.py:3721
 #, fuzzy
 msgid "Displayed days"
 msgstr "Megjelenítendő név"
 
-#: ../lib/wiking/cms/cms.py:3720
+#: ../lib/wiking/cms/cms.py:3722
 msgid "Number of days the item stays displayed in news."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:3729
+#: ../lib/wiking/cms/cms.py:3731
 msgid "Show"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:3730
+#: ../lib/wiking/cms/cms.py:3732
 #, fuzzy
 msgid "All items"
 msgstr "Minden típus"
 
 #. Button label for creating a new message in "News".
-#: ../lib/wiking/cms/cms.py:3742
+#: ../lib/wiking/cms/cms.py:3744
 msgid "New message"
 msgstr "Új üzenet"
 
 #. Section heading and menu item
-#: ../lib/wiking/cms/cms.py:3754
+#: ../lib/wiking/cms/cms.py:3756
 msgid "Planner"
 msgstr "Tervező"
 
-#: ../lib/wiking/cms/cms.py:3755
+#: ../lib/wiking/cms/cms.py:3757
 msgid "Announce future events by date in a callendar-like listing."
 msgstr "Jelentsd a jövőbeli eseményeket dátum szerint, a naptárszerű listában."
 
-#: ../lib/wiking/cms/cms.py:3759
+#: ../lib/wiking/cms/cms.py:3761
 msgid "Event"
 msgstr "Esemény"
 
-#: ../lib/wiking/cms/cms.py:3759
+#: ../lib/wiking/cms/cms.py:3761
 msgid "The event brief summary."
 msgstr "Az esemény tömör összefoglalója."
 
-#: ../lib/wiking/cms/cms.py:3767
+#: ../lib/wiking/cms/cms.py:3769
 #, fuzzy, python-format
 msgid ""
 "The date when the planned event begins. Enter the date including year.  "
@@ -1907,11 +1907,11 @@ msgstr ""
 "Az időpont, amikor a tervezett esemény kezdődik. Adja meg a dátumot a "
 "évszámmal együtt. Például: %(date)s"
 
-#: ../lib/wiking/cms/cms.py:3768
+#: ../lib/wiking/cms/cms.py:3770
 msgid "End date"
 msgstr "Záró dátum"
 
-#: ../lib/wiking/cms/cms.py:3769
+#: ../lib/wiking/cms/cms.py:3771
 msgid ""
 "The date when the event ends if it is not the same as the start date (for "
 "events which last several days)."
@@ -1919,51 +1919,51 @@ msgstr ""
 "Az esemény záródátuma, abban az esetben, ha nem egyezik a kezdődátummal "
 "(több napos események esetében)."
 
-#: ../lib/wiking/cms/cms.py:3786
+#: ../lib/wiking/cms/cms.py:3788
 msgid "Date in the past"
 msgstr "Múltbeli dátum"
 
-#: ../lib/wiking/cms/cms.py:3788
+#: ../lib/wiking/cms/cms.py:3790
 msgid "End date precedes start date"
 msgstr "A záródátum megelőzi a kezdődátumot"
 
 #. Button label for creating a new event in "Planner".
-#: ../lib/wiking/cms/cms.py:3790
+#: ../lib/wiking/cms/cms.py:3792
 #, fuzzy
 msgid "New event"
 msgstr "Új csatolmány"
 
 #. Name of the extension module for simple forum-like discussions.
-#: ../lib/wiking/cms/cms.py:3808
+#: ../lib/wiking/cms/cms.py:3810
 msgid "Discussions"
 msgstr "Fórum"
 
 #. Help string describing more precisely the meaning of the "News" section.
-#: ../lib/wiking/cms/cms.py:3810
+#: ../lib/wiking/cms/cms.py:3812
 msgid "Allow logged in users to post messages as in a simple forum."
 msgstr ""
 "A bejelentkezett felhasználók küldhetnek üzeneteket, mint egy egyszerű "
 "fórumba."
 
 #. Field label for posting a message to the discussion.
-#: ../lib/wiking/cms/cms.py:3825
+#: ../lib/wiking/cms/cms.py:3827
 msgid "Your comment"
 msgstr "Saját hozzászólás"
 
-#: ../lib/wiking/cms/cms.py:3866
+#: ../lib/wiking/cms/cms.py:3868
 msgid "Your comment was posted to the discussion."
 msgstr "A hozzászólásod el lett küldve a fórumba."
 
 #. The square brackets mark a link.  Please leave the brackets and the
 #. link target '?command=login' untouched and traslate 'log in' to fit into the
 #. sentence.  The user only sees it as 'You need to log in before ...'.
-#: ../lib/wiking/cms/cms.py:3909
+#: ../lib/wiking/cms/cms.py:3911
 msgid "Note: You need to [?command=login log in] before you can post messages."
 msgstr ""
 "Megjegyzés: [?command=login Be kell jelentkeznie] mielőtt üzenetet hagyna."
 
 #. Section heading and menu item. Computer terminology idiom.
-#: ../lib/wiking/cms/cms.py:3920
+#: ../lib/wiking/cms/cms.py:3922
 msgid "Site Map"
 msgstr "Honlaptérkép"
 
@@ -1973,78 +1973,78 @@ msgstr "Honlaptérkép"
 #. interface (the area where only administrators are allowed), pages
 #. (everything outside the management interface) or both ("Global"
 #. scope).
-#: ../lib/wiking/cms/cms.py:3973
+#: ../lib/wiking/cms/cms.py:3975
 msgid "Website"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:3974
+#: ../lib/wiking/cms/cms.py:3976
 #, fuzzy
 msgid "Management interface"
 msgstr "Wiking kezelőfelület"
 
-#: ../lib/wiking/cms/cms.py:3977
+#: ../lib/wiking/cms/cms.py:3979
 msgid "All types"
 msgstr "Minden típus"
 
 #. Handheld device. Small computer.
-#: ../lib/wiking/cms/cms.py:3982
+#: ../lib/wiking/cms/cms.py:3984
 msgid "Handheld"
 msgstr "Kéziszámítógép"
 
 #. Print as a type of media (print, speech...)
-#: ../lib/wiking/cms/cms.py:3984
+#: ../lib/wiking/cms/cms.py:3986
 msgid "Print"
 msgstr "Nyomtatott sajtó"
 
 #. Meaning computer screen
-#: ../lib/wiking/cms/cms.py:3987
+#: ../lib/wiking/cms/cms.py:3989
 msgid "Screen"
 msgstr "Képernyő"
 
 #. Speech as a type of media (print, speech...)
-#: ../lib/wiking/cms/cms.py:3989
+#: ../lib/wiking/cms/cms.py:3991
 msgid "Speech"
 msgstr "Élőbeszéd"
 
 #. Section heading and menu item. Meaning the visual appearance. Computer
 #. terminology.
-#: ../lib/wiking/cms/cms.py:3997
+#: ../lib/wiking/cms/cms.py:3999
 #, fuzzy
 msgid "Style sheets"
 msgstr "Stíluslapok"
 
 #. Help string. Cascading Style Sheet (CSS) is computer terminology idiom.
-#: ../lib/wiking/cms/cms.py:4000
+#: ../lib/wiking/cms/cms.py:4002
 msgid "Manage available Cascading Style Sheets."
 msgstr "Elérhető CSS kezelése."
 
 #. Table column heading.
 #. Whether the account is active. Values are yes/no.
-#: ../lib/wiking/cms/cms.py:4008 ../lib/wiking/cms/users.py:1746
+#: ../lib/wiking/cms/cms.py:4010 ../lib/wiking/cms/users.py:1746
 msgid "Active"
 msgstr "Aktív"
 
 #. Heading of a form field determining in
 #. which media the page is displayed. E.g. web, print,
 #. Braille, speech.
-#: ../lib/wiking/cms/cms.py:4012
+#: ../lib/wiking/cms/cms.py:4014
 msgid "Media"
 msgstr "Média típusa"
 
 #. Scope of applicability of a stylesheet on different website parts.
-#: ../lib/wiking/cms/cms.py:4014
+#: ../lib/wiking/cms/cms.py:4016
 msgid "Scope"
 msgstr ""
 
 #. Global scope (applies to all parts of the website).
-#: ../lib/wiking/cms/cms.py:4017
+#: ../lib/wiking/cms/cms.py:4019
 msgid "Global"
 msgstr ""
 
 #. Description of scope options.  Make sure you
 #. use the same terms as in the options themselves, which are
 #. defined a few items above.
-#: ../lib/wiking/cms/cms.py:4021
+#: ../lib/wiking/cms/cms.py:4023
 msgid ""
 "Determines where this style sheet is applicable. The \"Management interface"
 "\" is the area for CMS administration, \"Website\" means the regular pages "
@@ -2053,105 +2053,105 @@ msgstr ""
 
 #. Precedence meaning position in a sequence of importance or
 #. priority.
-#: ../lib/wiking/cms/cms.py:4028
+#: ../lib/wiking/cms/cms.py:4030
 msgid "Number denoting the style sheet precedence."
 msgstr "A stíluslap (fontossági) sorrendjét jelző szám."
 
-#: ../lib/wiking/cms/cms.py:4136
+#: ../lib/wiking/cms/cms.py:4138
 msgid "Label"
 msgstr "Címke"
 
-#: ../lib/wiking/cms/cms.py:4139
+#: ../lib/wiking/cms/cms.py:4141
 msgid "Purpose"
 msgstr "Cél"
 
-#: ../lib/wiking/cms/cms.py:4164
+#: ../lib/wiking/cms/cms.py:4166
 msgid ""
 "This text is no longer in use by the application. Do you want to remove it?"
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:4261
+#: ../lib/wiking/cms/cms.py:4263
 msgid "System Texts"
 msgstr "Rendszerüzenetek"
 
-#: ../lib/wiking/cms/cms.py:4262
+#: ../lib/wiking/cms/cms.py:4264
 msgid "Edit miscellaneous system texts."
 msgstr "Különféle rendszerüzenetek szerkesztése."
 
-#: ../lib/wiking/cms/cms.py:4401
+#: ../lib/wiking/cms/cms.py:4403
 msgid "E-mails"
 msgstr "E-mailek"
 
-#: ../lib/wiking/cms/cms.py:4402
+#: ../lib/wiking/cms/cms.py:4404
 msgid "Edit e-mail texts."
 msgstr "E-mail szöveg szerkesztése."
 
-#: ../lib/wiking/cms/cms.py:4409
+#: ../lib/wiking/cms/cms.py:4411
 msgid "Additional recipients"
 msgstr "További címzettek"
 
-#: ../lib/wiking/cms/cms.py:4410
+#: ../lib/wiking/cms/cms.py:4412
 msgid "Comma separated list of e-mail addresses."
 msgstr "Vesszővel elválasztott e-mail címek listája."
 
 #. Section title and menu item. Sending emails to multiple recipients.
-#: ../lib/wiking/cms/cms.py:4578
+#: ../lib/wiking/cms/cms.py:4580
 msgid "Bulk E-mails"
 msgstr "Tömeges emailek"
 
-#: ../lib/wiking/cms/cms.py:4583
+#: ../lib/wiking/cms/cms.py:4585
 msgid "Sender address"
 msgstr "A küldő címe"
 
-#: ../lib/wiking/cms/cms.py:4585
+#: ../lib/wiking/cms/cms.py:4587
 msgid "E-mail address of the sender."
 msgstr "A küldő email címe."
 
 #. List of recipients of an email message
-#: ../lib/wiking/cms/cms.py:4587
+#: ../lib/wiking/cms/cms.py:4589
 msgid "Recipients"
 msgstr "Címzettek"
 
 #. All users are intended recipients of an email message
-#: ../lib/wiking/cms/cms.py:4589
+#: ../lib/wiking/cms/cms.py:4591
 #, fuzzy
 msgid "All users"
 msgstr "Minden típus"
 
 #. The state of the user account (e.g. Enabled vs Disabled).  Column
 #. heading and field label.
-#: ../lib/wiking/cms/cms.py:4595 ../lib/wiking/cms/users.py:595
+#: ../lib/wiking/cms/cms.py:4597 ../lib/wiking/cms/users.py:595
 msgid "State"
 msgstr "Állapot"
 
 #. State of processing of an email message (e.g. Pending, Sending, Sent)
-#: ../lib/wiking/cms/cms.py:4602
+#: ../lib/wiking/cms/cms.py:4604
 msgid "Sent"
 msgstr "Elküldött"
 
 #. State of processing of an email message (e.g. Pending, Sending, Sent)
-#: ../lib/wiking/cms/cms.py:4605
+#: ../lib/wiking/cms/cms.py:4607
 msgid "Sending"
 msgstr "Küldés"
 
 #. State of processing of an email message (e.g. Pending, Sending, Sent)
-#: ../lib/wiking/cms/cms.py:4608
+#: ../lib/wiking/cms/cms.py:4610
 #, fuzzy
 msgid "Pending"
 msgstr "Küldés"
 
-#: ../lib/wiking/cms/cms.py:4615
+#: ../lib/wiking/cms/cms.py:4617
 #, python-format
 msgid "%(subject)s"
 msgstr "%(subject)s"
 
 #. Button label meaning save this email text for later repeated usage
-#: ../lib/wiking/cms/cms.py:4618
+#: ../lib/wiking/cms/cms.py:4620
 msgid "Use as a Template"
 msgstr "Mentsd el sablonként"
 
 #. Description of button for creating a template of an email
-#: ../lib/wiking/cms/cms.py:4620
+#: ../lib/wiking/cms/cms.py:4622
 msgid "Edit this mail for repeated use"
 msgstr "Mentsd el a mailt sablonként"
 
