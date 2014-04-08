@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-04-08 12:07+0200\n"
+"POT-Creation-Date: 2014-04-08 12:13+0200\n"
 "PO-Revision-Date: 2009-09-14 15:18+0100\n"
 "Last-Translator: Petr Topiarz <topiarz@post.cz>\n"
 "Language-Team: Slovak <wiking@lists.freebsoft.org>\n"
@@ -1205,12 +1205,13 @@ msgid "Printer:"
 msgstr "Privátne"
 
 #: ../lib/wiking/cms/cms.py:2214
-msgid "Page width:"
+msgid "Characters per line:"
 msgstr ""
 
 #: ../lib/wiking/cms/cms.py:2216
-msgid "Page height:"
-msgstr ""
+#, fuzzy
+msgid "Page lines:"
+msgstr "Zmenené"
 
 #: ../lib/wiking/cms/cms.py:2218
 msgid "Inner margin:"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-04-08 12:07+0200\n"
+"POT-Creation-Date: 2014-04-08 12:13+0200\n"
 "PO-Revision-Date: 2010-02-04 00:15+0100\n"
 "Last-Translator: Hostomský Károly <khostomsky@gmail.com>\n"
 "Language-Team: Hungarian <wiking@lists.freebsoft.org>\n"
@@ -1203,12 +1203,13 @@ msgid "Printer:"
 msgstr "Nyomtatott sajtó"
 
 #: ../lib/wiking/cms/cms.py:2214
-msgid "Page width:"
+msgid "Characters per line:"
 msgstr ""
 
 #: ../lib/wiking/cms/cms.py:2216
-msgid "Page height:"
-msgstr ""
+#, fuzzy
+msgid "Page lines:"
+msgstr "Megváltoztatva"
 
 #: ../lib/wiking/cms/cms.py:2218
 msgid "Inner margin:"

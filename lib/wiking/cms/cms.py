@@ -2211,9 +2211,9 @@ class BrailleExporter(wiking.Module):
                                       g.select('braille_printer', available_printers,
                                                selected=self._printer),
                                       g.br(),) +
-                                     braille_field(_("Page width:"), 'braille_page_width',
+                                     braille_field(_("Characters per line:"), 'braille_page_width',
                                                    self._page_width) +
-                                     braille_field(_("Page height:"), 'braille_page_height',
+                                     braille_field(_("Page lines:"), 'braille_page_height',
                                                    self._page_height) +
                                      braille_field(_("Inner margin:"), 'braille_inner_margin',
                                                    self._inner_margin) +

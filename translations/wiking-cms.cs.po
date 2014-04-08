@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-04-08 12:07+0200\n"
-"PO-Revision-Date: 2014-04-08 12:07+0200\n"
+"POT-Creation-Date: 2014-04-08 12:13+0200\n"
+"PO-Revision-Date: 2014-04-08 12:14+0200\n"
 "Last-Translator: Hynek Hanke <hanke@brailcom.org>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
 "Language: cs\n"
@@ -1214,12 +1214,12 @@ msgid "Printer:"
 msgstr "Tiskárna:"
 
 #: ../lib/wiking/cms/cms.py:2214
-msgid "Page width:"
-msgstr "Šířka stránky:"
+msgid "Characters per line:"
+msgstr "Počet znaků na řádku:"
 
 #: ../lib/wiking/cms/cms.py:2216
-msgid "Page height:"
-msgstr "Počet řádků stránky:"
+msgid "Page lines:"
+msgstr "Počet řádků na stránce:"
 
 #: ../lib/wiking/cms/cms.py:2218
 msgid "Inner margin:"
@@ -3272,6 +3272,12 @@ msgstr "Prohlížeč"
 #: ../lib/wiking/cms/users.py:1756
 msgid "HTTP Referer"
 msgstr "HTTP Referer"
+
+#~ msgid "Page width:"
+#~ msgstr "Šířka stránky:"
+
+#~ msgid "Page height:"
+#~ msgstr "Počet řádků stránky:"
 
 #~ msgid "Outer margin:"
 #~ msgstr "Vnější okraj:"
