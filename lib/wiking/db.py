@@ -1738,7 +1738,8 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         if parameters:
             output_parameters.update(parameters)
         formatter = pytis.output.Formatter(resolver, output_resolvers, template_id,
-                                           parameters=output_parameters, translations=translations)
+                                           parameters=output_parameters, translations=translations,
+                                           language=lang)
         return formatter.pdf()
 
     # ===== Action handlers =====
