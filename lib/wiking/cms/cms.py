@@ -2217,7 +2217,8 @@ class BrailleExporter(wiking.Module):
                                                    self._page_height) +
                                      braille_field(_("Inner margin:"), 'braille_inner_margin',
                                                    self._inner_margin) +
-                                     braille_field(_("Outer margin:"), 'braille_outer_margin',
+                                     braille_field(_("Outer margin (v2: Left margin):"),
+                                                   'braille_outer_margin',
                                                    self._outer_margin) +
                                      braille_field(_("Top margin:"), 'braille_top_margin',
                                                    self._top_margin) +
