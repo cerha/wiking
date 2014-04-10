@@ -336,3 +336,21 @@ td.diff_header, td.diff_next { background-color: $color.frame-bg; }
 span.diff_add, span.field.id-diff_add { background-color: #aaffaa; }
 span.diff_chg, span.field.id-diff_chg { background-color: #ffff77; }
 span.diff_sub, span.field.id-diff_sub { background-color: #ffaaaa; }
+
+.pytis-form.publication-export-form div.group,
+.pytis-form.publication-export-form div.submit,
+.pytis-form.excerpt-export-form div.group,
+.pytis-form.excerpt-export-form div.submit {
+    margin: 2px;
+    padding: 0;
+    border: none;
+    background: transparent !important;
+    text-align: left;
+}
+.pytis-form.publication-export-form .submit button,
+.pytis-form.excerpt-export-form .submit button {
+    margin: 0;
+}
+.pytis-form.publication-export-form th.label {
+    width: 1%; /* Prevent label spanning too wide in Safari */
+}

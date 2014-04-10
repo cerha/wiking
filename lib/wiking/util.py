@@ -1768,8 +1768,8 @@ class Time(pytis.data.Time):
 
 class InputForm(pytis.web.EditForm):
 
-    def __init__(self, req, specification_kwargs, prefill=None, action=None, 
-                 hidden_fields=(), **kwargs):
+    def __init__(self, req, specification_kwargs, prefill=None, action=None,
+                 hidden_fields=(), name='InputForm', new=True, **kwargs):
         class Spec(pp.Specification):
             data_cls = pytis.data.RestrictedMemData
         class Record(pp.PresentedRow):
@@ -1794,11 +1794,11 @@ class InputForm(pytis.web.EditForm):
         data_spec = specification.data_spec()
         data = data_spec.create()
         record = Record(view_spec.fields(), data, None, prefill=prefill,
-                        resolver=wiking.cfg.resolver)
+                        resolver=wiking.cfg.resolver, new=new)
         hidden_fields += (('action', action),
                           ('submit', 'submit'))
         super(InputForm, self).__init__(view_spec, req, record, handler=req.uri(),
-                                        name='VirtualForm', hidden=hidden_fields, **kwargs)
+                                        name=name, hidden=hidden_fields, **kwargs)
 
 # ============================================================================
 # Misc functions
