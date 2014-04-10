@@ -1875,6 +1875,21 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         """
         return [form] + self._related_content(req, record)
 
+    def _insert_form_content(self, req, form, record):
+        """Return page content for 'insert' action form as a list of 'lcg.Content' instances.
+
+        Arguments:
+          req -- current 'Request' instance.
+          form -- 'pytis.web.EditForm' instance.
+          record -- the current record of the form as 'PytisModule.Record'.
+
+        You may override this method to modify page content for the edit form
+        in derived classes.  The default implementation returns just the form
+        itself.
+
+        """
+        return [form]
+
     def _update_form_content(self, req, form, record):
         """Return page content for 'update' action form as a list of 'lcg.Content' instances.
 
@@ -1952,7 +1967,8 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                 form.set_error(field_id, error)
             else:
                 return self._redirect_after_insert(req, record)
-        return self._document(req, form, subtitle=self._action_subtitle(req, action))
+        content = self._insert_form_content(req, form, form.row())
+        return self._document(req, content, subtitle=self._action_subtitle(req, action))
 
     def action_copy(self, req, record, action='insert'):
         # Copy values of the existing record as prefill values for the new
