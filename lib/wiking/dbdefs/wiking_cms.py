@@ -695,6 +695,7 @@ class CmsPublications(CommonAccesRights, sql.SQLTable):
 
 class CmsVPublications(CommonAccesRights, sql.SQLView):
     name = 'cms_v_publications'
+
     @classmethod
     def query(cls):
         pages = sql.t.CmsVPages.alias('pages')
@@ -710,83 +711,56 @@ class CmsVPublications(CommonAccesRights, sql.SQLView):
                           outerjoin(attachments,
                                     attachments.c.attachment_id == publications.c.cover_image)
                       ])
+
     def on_insert(self):
-        return ("""(
-     insert into cms_v_pages (site, kind, identifier, parent, modname,
-                              owner, read_role_id, write_role_id,
-                              menu_visibility, foldable, ord, lang,
-                              published, published_since, creator, created,
-                              title, description, content, _title, _description, _content)
-     values (new.site, new.kind, new.identifier, new.parent, new.modname,
-             new.owner, new.read_role_id, new.write_role_id,
-             new.menu_visibility, new.foldable, new.ord, new.lang, 
-             new.published, new.published_since, new.creator, new.created,
-             new.title, new.description, new.content,
-             new._title, new._description, new._content);
-     insert into cms_publications (page_id, author, contributor, illustrator,
-                                   publisher, published_year, edition,
-                                   original_isbn, isbn, adapted_by, cover_image,
-                                   copyright_notice, notes)
-     select page_id, new.author, new.contributor, new.illustrator,
-            new.publisher, new.published_year, new.edition,
-            new.original_isbn, new.isbn, new.adapted_by, new.cover_image,
-            new.copyright_notice, new.notes
-     from cms_pages where identifier=new.identifier and site=new.site and kind=new.kind
-     returning page_id, page_id ||'.'|| (select min(lang) from cms_page_texts
-        where page_id=cms_publications.page_id), null::text,
-       null::text, null::char(2), null::text, null::int, null::text, null::text, null::boolean,
-       null::int, null::text, null::int, null::name, null::name,
-       null::bool, null::bool, null::timestamp, null::int, null::timestamp, null::text, null::text,
-       null::text, null::text, null::text, null::text, null::text,
-       null::varchar(64), null::text, null::varchar(64), null::text,
-       author, contributor, illustrator, publisher, published_year, edition,
-       original_isbn, isbn, adapted_by, cover_image, copyright_notice, notes, null::text;
-        )""",)
+        def returning_column(c):
+            if c.name == 'page_id':
+                return c.name
+            elif c.name == 'page_key':
+                return ("page_id ||'.'|| (select min(lang) from cms_page_texts "
+                        "where page_id=cms_publications.page_id)")
+            elif c.name.endswith('_role_id'):
+                return 'null::name'
+            else:
+                casted = str(sqlalchemy.cast(null, c.type))
+                # force serial to int and varchar to text
+                return casted.replace('SERIAL', 'INTEGER').replace('VARCHAR)', 'TEXT)')
+        vpages = sql.t.CmsVPages
+        page_columns = [c.name for c in vpages.c if c.name not in ('page_id', 'page_key')]
+        publications = sql.t.CmsPublications
+        return [sqlalchemy.text(q) for q in (
+            "insert into cms_v_pages (%s) values (%s)" % (
+                ', '.join(page_columns),
+                ', '.join(['new.' + cname for cname in page_columns]),
+            ),
+            "insert into cms_publications (%s) "
+            "select %s from cms_pages "
+            "where identifier=new.identifier and site=new.site and kind=new.kind "
+            "returning %s" % (
+                ', '.join(c.name for c in publications.c),
+                ', '.join([c.name if c.name in vpages.c else 'new.' + c.name 
+                           for c in publications.c]),
+                ', '.join([returning_column(c) for c in self.c]),
+            )
+        )]
+
     def on_update(self):
-        return ("""(
-    update cms_v_pages set
-        site = new.site,
-        kind = new.kind,
-        identifier = new.identifier,
-        parent = new.parent,
-        modname = new.modname,
-        owner = new.owner,
-        read_role_id = new.read_role_id,
-        write_role_id = new.write_role_id,
-        menu_visibility = new.menu_visibility,
-        foldable = new.foldable,
-        ord = new.ord,
-        lang = new.lang,
-        published = new.published,
-        creator = new.creator,
-        created = new.created,
-        published_since = new.published_since,
-        title = new.title,
-        description = new.description,
-        content = new.content,
-        _title = new._title,
-        _description = new._description,
-        _content = new._content
-    where page_id = old.page_id and lang = old.lang;
-    update cms_publications set
-        author = new.author,
-        contributor = new.contributor,
-        illustrator = new.illustrator,
-        publisher = new.publisher,
-        published_year = new.published_year,
-        edition = new.edition,
-        original_isbn = new.original_isbn,
-        isbn = new.isbn,
-        adapted_by = new.adapted_by,
-        cover_image = new.cover_image,
-        copyright_notice = new.copyright_notice,
-        notes = new.notes
-    where page_id = old.page_id;
-        )""",)
+        def update_columns(table):
+            return ', '.join('%s = new.%s' % (c.name, c.name) for c in table.c
+                             if c.name not in ('page_id', 'page_key'))
+        return [sqlalchemy.text(q) for q in (
+            "update cms_v_pages set %s where page_id = old.page_id and lang = old.lang" % (
+                update_columns(sql.t.CmsVPages),),
+            "update cms_publications set %s where page_id = old.page_id;" % (
+                update_columns(sql.t.CmsPublications),)
+        )]
+
+
     def on_delete(self):
-        return ("""(
-     delete from cms_pages where page_id = old.page_id;
-        )""",)
+        return ("delete from cms_pages where page_id = old.page_id",)
+
+    update_order = (CmsVPages, CmsPublications)
+    delete_order = (CmsPages,)
 
 class CmsPublicationLanguages(CommonAccesRights, sql.SQLTable):
     """list of content languages available for given publication"""
