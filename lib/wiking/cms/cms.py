@@ -2462,7 +2462,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                     Field('format', _("Format"), enumerator=PublicationExports.Formats),
                 ) + self.braille_option_fields(),
                 layout=(
-                    'format', 
+                    'format',
                     FieldSet(
                         _("Braille Export Options"),
                         (ColumnLayout(
@@ -2754,6 +2754,8 @@ class PublicationExports(ContentManagementModule):
             ('braille', _("Braille")),
         )
         default = 'epub'
+        selection_type = pp.SelectionType.RADIO
+        orientation = pp.Orientation.HORIZONTAL
     class Spec(Specification):
         title = _("Exported Publication Versions")
         table = wiking.dbdefs.CmsVPublicationExports

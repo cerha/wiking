@@ -32,18 +32,16 @@ wiking.cms = {};
 wiking.cms.PublicationExportForm = Class.create({
     initialize: function (form_id) {
 	var form = $(form_id);
-	var select = form.down('select[name="format"]');
 	this.form = form;
 	this.braille_options = form.down('.label-braille-export-options');
-	select.down('option[value=""]').remove();
-	if (select.value !== 'braille') {
+	if (form.down('input:checked[name="format"]').value !== 'braille') {
 	    this.braille_options.hide();
 	}
-	select.observe('change', this.on_format_change.bind(this));
-	form.down('select[name="printer"]').down('option[value=""]').remove();
+	form.on('change', 'input[name="format"]', this.on_format_change.bind(this));
+	form.down('select[name="printer"] option[value=""]').remove();
     },
 
-    on_format_change: function (event) {
+    on_format_change: function (event, element) {
 	if (event.element().value === 'braille') {
 	    // The effect seems strange because the fieldset label moves beyond the box...
 	    //if (Effect !== undefined) {
