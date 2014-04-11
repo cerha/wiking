@@ -1,7 +1,6 @@
 declare
     tree_order_matcher text := '';
 begin
-    raise warning '% -> %', old.filename, new.filename;
     if old.filename != new.filename then
        tree_order_matcher := (select tree_order || '.%' from cms_pages		  
                               where page_id=new.page_id and kind='publication');
