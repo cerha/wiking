@@ -2128,12 +2128,17 @@ class BrailleExporter(wiking.Module):
 
     @classmethod
     def braille_option_fields(cls, virtual=False):
-        presentation = cls.braille_presentation()
+        try:
+            presentation = cls.braille_presentation()
+        except:
+            printers = ()
+            default_printer = None
+        else:
+            printers = presentation.printers.keys()
+            default_printer = presentation.default_printer
         return (
             Field('printer', _("Printer"), virtual=virtual,
-                  type=pd.String(),
-                  enumerator=enum(presentation.printers.keys()),
-                  default=presentation.default_printer),
+                  type=pd.String(), enumerator=enum(printers), default=default_printer),
             Field('page_width', _("Characters per line"), width=3, virtual=virtual,
                   type=pd.Integer(), default=33),
             Field('page_height', _("Page lines"), width=3, virtual=virtual,
