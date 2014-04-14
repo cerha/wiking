@@ -2269,7 +2269,10 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                 # Avoid default ord=1 to work around slow insertion!
                 Field('ord', enumerator=None, default=None, computer=None),
                 Field('menu_visibility', default='never'),
-                Field('write_role_id', default=Roles.OWNER.id()),
+                Field('read_role_id',
+                      descr=_("Select the role allowed to view the publication.")),
+                Field('write_role_id', default=Roles.OWNER.id(),
+                      descr=_("Select the role allowed to edit the publication.")),
             )
             extra = (
                 Field('author', _("Author"), width=40, height=3, not_null=True,
