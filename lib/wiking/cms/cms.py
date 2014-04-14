@@ -2329,8 +2329,11 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                               "use in one of the available download formats. Users with "
                               "read/write access are always allowed to download the publication "
                               "(because they create the downloadable versions). When empty, "
-                              "download is only allowed to users with read/wite access and "
-                              "no one else.")),
+                              "download is only allowed to users with read/write access and "
+                              "no one else. Users can not download without at least a read only "
+                              "access to the publication, so they actually need to be members "
+                              "of both roles, the download access role as well as the role set "
+                              'for "Read only access".')),
             )
             return self._inherited_fields(Publications.Spec, override=override) + extra
         def _preview_mode(self, record):
