@@ -691,7 +691,10 @@ class CmsPublications(CommonAccesRights, sql.SQLTable):
               sql.Column('copyright_notice', pytis.data.String()),
               sql.Column('notes', pytis.data.String(),
                          doc="any other additional info, such as translator(s), reviewer(s) etc."),
-              )
+              sql.Column('download_role_id', pytis.data.Name(),
+                         references=sql.a(sql.r.Roles, onupdate='CASCADE'),
+                         doc="role allowed to download the offline version of the publication."),
+          )
 
 class CmsVPublications(CommonAccesRights, sql.SQLView):
     name = 'cms_v_publications'

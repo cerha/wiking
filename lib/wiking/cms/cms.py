@@ -2315,6 +2315,14 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                               "reviewers etc.")),
                 Field('pubinfo', _("Publisher"), virtual=True,
                       computer=computer(self._pubinfo)),
+                Field('download_role_id', _("Download acces"), codebook='ApplicationRoles',
+                      default=Roles.ANYONE.id(),
+                      descr=_("Select the role allowed to download the publication for offline "
+                              "use in one of the available download formats. Users with "
+                              "read/write access are always allowed to download the publication "
+                              "(because they create the downloadable versions). When empty, "
+                              "download is only allowed to users with read/wite access and "
+                              "no one else.")),
             )
             return self._inherited_fields(Publications.Spec, override=override) + extra
         def _preview_mode(self, record):
@@ -2389,7 +2397,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                           'original_isbn', 'isbn', 'adapted_by',
                           'copyright_notice', 'notes')),
                 FieldSet(_("Access Rights"),
-                         ('read_role_id', 'write_role_id', 'owner')),
+                         ('read_role_id', 'download_role_id', 'write_role_id', 'owner')),
             ]
             if action == 'insert':
                 layout.insert(2, FieldSet(_("Title Page Text"), ('_content',)))
@@ -2509,7 +2517,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                  self._publication_info(req, record)] +
                 self._inner_page_content(req, record, preview=preview) +
                 [lcg.Section(_("Table of Contents"), lcg.NodeIndex()),
-                 PublicationExports.ExportedVersions(),
+                 wiking.module.PublicationExports.exported_versions_list(req),
                  self._publication_export_form(req, record),
                  self.Navigation('bottom')])
 
@@ -2796,45 +2804,21 @@ class PublicationExports(ContentManagementModule):
         actions = (
             Action('download', _("Download")),
         )
-    class ExportedVersions(lcg.Content):
-        """List of publication exported versions visible on publication title page."""
-
-        def export(self, context):
-            g = context.generator()
-            req = context.req()
-            page_id = req.publication_record['page_id'].value()
-            formats = dict(PublicationExports.Formats.enumeration)
-            base_uri = req.uri() + '/exports/'
-            items = [g.li(g.a(_("%(format)s version %(version)s",
-                                format=formats[row['format'].value()],
-                                version=row['version'].value()),
-                              href=req.make_uri(base_uri + row['export_id'].export(),
-                                                action='download')) + ' ' +
-                          lcg.format("(%(bytesize)s, %(timestamp)s) %(notes)s",
-                                     timestamp=pw.localizable_export(row['timestamp']),
-                                     bytesize=format_byte_size(row['bytesize'].value()),
-                                     notes=(row['notes'].export() and ' ' + row['notes'].value())))
-                     for row in wiking.module.PublicationExports.exported_versions(page_id)]
-            if items:
-                return g.div((
-                    g.h(_("Available Download Versions"), 2),
-                    g.ul(*items),
-                ), cls='publication-exports')
-            else:
-                return ''
 
     def _authorized(self, req, action, record=None, **kwargs):
-        if action == 'list':
-            return req.page_read_access
-        elif action in ('view', 'download'):
-            if record['public'].value():
-                return req.page_read_access
-            else:
-                return req.page_write_access
-        if action in ('insert', 'update', 'delete'):
+        if action == 'download' and record['public'].value():
+            return self._check_publication_download_access(req)
+        if action in ('list', 'view', 'insert', 'update', 'delete'):
             return req.page_write_access
         else:
             return False
+            
+    def _check_publication_download_access(self, req):
+        if req.page_write_access:
+            return True
+        else:
+            role_id = req.publication_record['download_role_id'].value()
+            return req.check_roles(wiking.module.Users.Roles()[role_id])
 
     def _layout(self, req, action, record=None):
         if action == 'insert':
@@ -2904,12 +2888,33 @@ class PublicationExports(ContentManagementModule):
         return wiking.serve_file(req, self._file_path(req, record), content_type=content_type,
                                  filename=filename)
 
-    def exported_versions(self, page_id):
-        # columns = ('format', 'version', 'timestamp', 'bytesize', 'notes')
-        return self._data.get_rows(page_id=page_id, public=True,
-                                   sorting=(('timestamp', pd.DESCENDANT),))
-
-
+    def exported_versions_list(self, req):
+        def export(self, context, rows):
+            g = context.generator()
+            req = context.req()
+            formats = dict(PublicationExports.Formats.enumeration)
+            base_uri = req.uri() + '/exports/'
+            return g.div((
+                g.h(_("Available Download Versions"), 2),
+                g.ul(*[g.li(g.a(_("%(format)s version %(version)s",
+                                  format=formats[row['format'].value()],
+                                  version=row['version'].value()),
+                                href=req.make_uri(base_uri + row['export_id'].export(),
+                                                  action='download')) + ' ' +
+                            lcg.format("(%(bytesize)s, %(timestamp)s) %(notes)s",
+                                       timestamp=pw.localizable_export(row['timestamp']),
+                                       bytesize=format_byte_size(row['bytesize'].value()),
+                                       notes=(row['notes'].export() and ' ' + row['notes'].value())))
+                       for row in rows]),
+            ), cls='publication-exports')
+        if self._check_publication_download_access(req):
+            rows = self._data.get_rows(page_id=req.publication_record['page_id'].value(),
+                                       public=True, sorting=(('timestamp', pd.DESCENDANT),))
+            if rows:
+                return wiking.HtmlRenderer(export, rows)
+        return lcg.Content()
+                
+                
 class PageHistory(ContentManagementModule):
     """History of page content changes."""
     class Spec(Specification):
