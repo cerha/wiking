@@ -2138,13 +2138,13 @@ class BrailleExporter(wiking.Module):
             printers = presentation.printers.keys()
             default_printer = presentation.default_printer
         return (
-            Field('printer', _("Printer"), virtual=virtual,
-                  type=pd.String(), enumerator=enum(printers), default=default_printer),
+            Field('printer', _("Printer"), virtual=virtual, type=pd.String(), 
+                  enumerator=enum(printers), default=default_printer, not_null=False),
             Field('page_width', _("Characters per line"), width=3, virtual=virtual,
                   type=pd.Integer(), default=33),
             Field('page_height', _("Page lines"), width=3, virtual=virtual,
                   type=pd.Integer(), default=28),
-            Field('inner_margin', _("Inner margin"), width=3,  virtual=virtual,
+            Field('inner_margin', _("Inner margin"), width=3, virtual=virtual,
                   type=pd.Integer(), default=1),
             Field('outer_margin', _("Outer margin (v2: Left margin)"), width=3, virtual=virtual,
                   type=pd.Integer(), default=0),
