@@ -2551,6 +2551,10 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
         def fields(field_ids):
             return [(label(fid) + ':', format(fid))
                     for fid in field_ids if record[fid].value() is not None]
+        def watermark_value(value, name):
+            # Use anchor to get <span id="watermark-..."> in HTML output.  This marks the values
+            # for later substitution in PublicationExports.action_download(). 
+            return lcg.Anchor('watermark-' + name, value)
         content = [lcg.fieldset(fields(('title', 'description', 'author', 'contributor',
                                         'illustrator', 'pubinfo', 'original_isbn',
                                         'lang')))]
@@ -2573,6 +2577,16 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
             ))
         if online and record['notes'].value():
             content.append(lcg.p(lcg.strong(_("Notes") + ':'), ' ', record['notes'].value()))
+        # Checking 'format' request param is a quick hack - we currently only support
+        # watermarking in EPUB export...
+        if not online and req.param('format') == 'epub':
+            date = lcg.LocalizableDateTime(now().strftime('%Y-%m-%d %H:%M:%S'), utc=True)
+            content.extend((
+                lcg.strong(_("Authorization for this copy:")),
+                lcg.fieldset(((_("Authorized Person") + ':', watermark_value(req.user().name(), 'name')),
+                              (_("E-mail") + ':', watermark_value(req.user().email(), 'email')),
+                              (_("Date") + ':', watermark_value(date, 'date'))))
+            ))
         return lcg.Container(content)
 
     def _child_rows(self, req, record, preview=False):
@@ -2817,6 +2831,9 @@ class PublicationExports(ContentManagementModule):
             Action('download', _("Download")),
         )
 
+    # See note in Publications._publication_info() where these spans are created.
+    _WATERMARK_SUBSTITUTION_REGEX = re.compile(r'<span id="watermark-([a-z]+)">([^<]*)</span>')
+
     def _authorized(self, req, action, record=None, **kwargs):
         if action == 'download' and record['public'].value():
             return self._check_publication_download_access(req)
@@ -2887,16 +2904,31 @@ class PublicationExports(ContentManagementModule):
         if req.cached_since(record['timestamp'].value()):
             raise wiking.NotModified()
         export_format = record['format'].value()
+        identifier = req.publication_record['identifier'].value()
+        filename_template = '%s-%s.%%s' % (identifier, record['version'].value())
         if export_format == 'epub':
-            ext = 'epub'
-            content_type = 'application/epub+zip'
+            import zipfile
+            import cStringIO
+            date = lcg.LocalizableDateTime(now().strftime('%Y-%m-%d %H:%M:%S'), utc=True)
+            watermark_values = dict(name=req.user().name(),
+                                    email=req.user().email(),
+                                    date=req.localize(date))
+            def substitute(match):
+                return watermark_values[match.group(1)]
+            result = cStringIO.StringIO()
+            with zipfile.ZipFile(self._file_path(req, record), mode='r') as src_zip:
+                with zipfile.ZipFile(result, 'w') as dst_zip:
+                    for item in src_zip.infolist():
+                        data = src_zip.read(item.filename)
+                        if item.filename.endswith('.xhtml'):
+                            data = self._WATERMARK_SUBSTITUTION_REGEX.sub(substitute, data)
+                        dst_zip.writestr(item, data)
+            return wiking.Response(result.getvalue(), content_type='application/epub+zip',
+                                   filename=filename_template % 'epub')
         elif export_format == 'braille':
-            content_type = 'application/octet-stream'
-            ext = 'brl'
-        filename = '%s-%s.%s' % (req.publication_record['identifier'].value(),
-                                 record['version'].value(), ext)
-        return wiking.serve_file(req, self._file_path(req, record), content_type=content_type,
-                                 filename=filename)
+            return wiking.serve_file(req, self._file_path(req, record),
+                                     content_type='application/octet-stream',
+                                     filename=filename_template % 'brl')
 
     def exported_versions_list(self, req):
         def export(self, context, rows):
