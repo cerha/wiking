@@ -551,7 +551,8 @@ class CMSExtension(wiking.Module, Embeddable, wiking.RequestHandler):
         def menu_item(item):
             submodule = wiking.module(item.modname)
             identifier = self.submodule_uri(req, item.modname)[1:]
-            submenu = [menu_item(i) for i in item.submenu] + submodule.submenu(req)
+            submenu = [menu_item(i) for i in item.submenu
+                       if i.enabled is None or i.enabled(req)] + submodule.submenu(req)
             kwargs = dict(dict(title=submodule.title(), descr=submodule.descr()), **item.kwargs)
             return MenuItem(identifier, submenu=submenu, **kwargs)
         return [menu_item(item) for item in self._MENU
