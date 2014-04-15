@@ -2857,8 +2857,6 @@ class PublicationExports(ContentManagementModule):
 
     def _file_path(self, req, record):
         fname = record['export_id'].export() + '.' + record['format'].export()
-        wiking.debug('::',
-                     os.path.join(wiking.cms.cfg.storage, wiking.cfg.dbname, 'exports', fname))
         return os.path.join(wiking.cms.cfg.storage, wiking.cfg.dbname, 'exports', fname)
 
     def _insert_transaction(self, req, record):
