@@ -2834,6 +2834,7 @@ class PublicationExports(ContentManagementModule):
 
     # See note in Publications._publication_info() where these spans are created.
     _WATERMARK_SUBSTITUTION_REGEX = re.compile(r'<span id="watermark-([a-z]+)">([^<]*)</span>')
+    _ROW_ACTIONS = True
 
     def _authorized(self, req, action, record=None, **kwargs):
         if action == 'download' and record['public'].value():
