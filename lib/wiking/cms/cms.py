@@ -2825,8 +2825,8 @@ class PublicationExports(ContentManagementModule):
             )
             return (self._inherited_fields(PublicationExports.Spec, override=override) +
                     BrailleExporter.braille_option_fields(virtual=True))
-        layout = ('format', 'version', 'public', 'notes')
-        columns = ('format', 'version', 'timestamp', 'public')
+        layout = ('format', 'version', 'timestamp', 'bytesize', 'public', 'notes')
+        columns = ('format', 'version', 'timestamp', 'bytesize', 'public')
         actions = (
             Action('download', _("Download")),
         )
