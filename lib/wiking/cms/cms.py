@@ -2918,7 +2918,7 @@ class PublicationExports(ContentManagementModule):
                     import cStringIO
                     date = lcg.LocalizableDateTime(now().strftime('%Y-%m-%d %H:%M:%S'), utc=True)
                     user = req.user()
-                    substitutions = dict(name=' '.join((user().firstname(), user.surname())),
+                    substitutions = dict(name=' '.join((user.firstname(), user.surname())),
                                          email=user.email(),
                                          date=req.localize(date))
                     result = cStringIO.StringIO()
