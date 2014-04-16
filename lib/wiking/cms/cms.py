@@ -2798,6 +2798,7 @@ class PublicationExports(ContentManagementModule):
                 Field('page_key', codebook='Publications'),
                 Field('format', _("Format"), enumerator=PublicationExports.Formats),
                 Field('version', _("Version"),
+                      type=pd.RegexString(maxlen=64, regex='^[0-9a-zA-Z\.\-]+$'),
                       descr=_("Version number and optional variant identifiers.  The whole string "
                               "is used as a part of the output file name, so it should only "
                               "contain digits, letters, dashes and periods.  Version number may "
