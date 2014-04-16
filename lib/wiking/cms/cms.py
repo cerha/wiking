@@ -2918,9 +2918,14 @@ class PublicationExports(ContentManagementModule):
                     import cStringIO
                     date = lcg.LocalizableDateTime(now().strftime('%Y-%m-%d %H:%M:%S'), utc=True)
                     user = req.user()
+                    # Visible watermark substitutions (the exported HTML must contain
+                    # placeholders created in Publications._publication_info()).
                     substitutions = dict(name=' '.join((user.firstname(), user.surname())),
                                          email=user.email(),
                                          date=req.localize(date))
+                    # Simple invisible watermark (relying on known LCG export constructs).
+                    replacement = ('<div id="heading">',
+                                   '<div id="heading" class="heading-%d">' % user.uid())
                     result = cStringIO.StringIO()
                     dst_zip = zipfile.ZipFile(result, 'w')
                     try:
@@ -2931,6 +2936,8 @@ class PublicationExports(ContentManagementModule):
                                     lambda match: substitutions[match.group(1)],
                                     data,
                                 )
+                            if item.filename.endswith('.xhtml'):
+                                data = data.replace(*replacement)
                             dst_zip.writestr(item, data)
                     finally:
                         dst_zip.close()
