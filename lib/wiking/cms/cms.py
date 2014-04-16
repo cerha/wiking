@@ -2911,7 +2911,8 @@ class PublicationExports(ContentManagementModule):
         if export_format == 'epub':
             import zipfile
             titlepage = 'rsrc/%s.xhtml' % identifier
-            with zipfile.ZipFile(path, mode='r') as src_zip:
+            src_zip = zipfile.ZipFile(path, mode='r')
+            try:
                 if self._WATERMARK_SUBSTITUTION_REGEX.search(src_zip.read(titlepage)):
                     import cStringIO
                     date = lcg.LocalizableDateTime(now().strftime('%Y-%m-%d %H:%M:%S'), utc=True)
@@ -2919,7 +2920,8 @@ class PublicationExports(ContentManagementModule):
                                          email=req.user().email(),
                                          date=req.localize(date))
                     result = cStringIO.StringIO()
-                    with zipfile.ZipFile(result, 'w') as dst_zip:
+                    dst_zip = zipfile.ZipFile(result, 'w')
+                    try:
                         for item in src_zip.infolist():
                             data = src_zip.read(item.filename)
                             if item.filename == titlepage:
@@ -2928,11 +2930,15 @@ class PublicationExports(ContentManagementModule):
                                     data,
                                 )
                             dst_zip.writestr(item, data)
+                    finally:
+                        dst_zip.close()
                     return wiking.Response(result.getvalue(), content_type='application/epub+zip',
                                            filename=filename_template % 'epub')
                 else:
                     return wiking.serve_file(req, path, content_type='application/epub+zip',
                                              filename=filename_template % 'epub')
+            finally:
+                src_zip.close()
         elif export_format == 'braille':
             return wiking.serve_file(req, path, content_type='application/octet-stream',
                                      filename=filename_template % 'brl')
