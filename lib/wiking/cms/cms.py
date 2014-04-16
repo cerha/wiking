@@ -2906,28 +2906,34 @@ class PublicationExports(ContentManagementModule):
         export_format = record['format'].value()
         identifier = req.publication_record['identifier'].value()
         filename_template = '%s-%s.%%s' % (identifier, record['version'].value())
+        path = self._file_path(req, record)
         if export_format == 'epub':
             import zipfile
-            import cStringIO
-            date = lcg.LocalizableDateTime(now().strftime('%Y-%m-%d %H:%M:%S'), utc=True)
-            watermark_values = dict(name=req.user().name(),
-                                    email=req.user().email(),
-                                    date=req.localize(date))
-            def substitute(match):
-                return watermark_values[match.group(1)]
-            result = cStringIO.StringIO()
-            with zipfile.ZipFile(self._file_path(req, record), mode='r') as src_zip:
-                with zipfile.ZipFile(result, 'w') as dst_zip:
-                    for item in src_zip.infolist():
-                        data = src_zip.read(item.filename)
-                        if item.filename.endswith('.xhtml'):
-                            data = self._WATERMARK_SUBSTITUTION_REGEX.sub(substitute, data)
-                        dst_zip.writestr(item, data)
-            return wiking.Response(result.getvalue(), content_type='application/epub+zip',
-                                   filename=filename_template % 'epub')
+            titlepage = 'rsrc/%s.xhtml' % identifier
+            with zipfile.ZipFile(path, mode='r') as src_zip:
+                if self._WATERMARK_SUBSTITUTION_REGEX.search(src_zip.read(titlepage)):
+                    import cStringIO
+                    date = lcg.LocalizableDateTime(now().strftime('%Y-%m-%d %H:%M:%S'), utc=True)
+                    substitutions = dict(name=req.user().name(),
+                                         email=req.user().email(),
+                                         date=req.localize(date))
+                    result = cStringIO.StringIO()
+                    with zipfile.ZipFile(result, 'w') as dst_zip:
+                        for item in src_zip.infolist():
+                            data = src_zip.read(item.filename)
+                            if item.filename == titlepage:
+                                data = self._WATERMARK_SUBSTITUTION_REGEX.sub(
+                                    lambda match: substitutions[match.group(1)],
+                                    data,
+                                )
+                            dst_zip.writestr(item, data)
+                    return wiking.Response(result.getvalue(), content_type='application/epub+zip',
+                                           filename=filename_template % 'epub')
+                else:
+                    return wiking.serve_file(req, path, content_type='application/epub+zip',
+                                             filename=filename_template % 'epub')
         elif export_format == 'braille':
-            return wiking.serve_file(req, self._file_path(req, record),
-                                     content_type='application/octet-stream',
+            return wiking.serve_file(req, path, content_type='application/octet-stream',
                                      filename=filename_template % 'brl')
 
     def exported_versions_list(self, req):
