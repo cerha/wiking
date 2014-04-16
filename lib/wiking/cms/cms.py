@@ -2917,8 +2917,9 @@ class PublicationExports(ContentManagementModule):
                 if self._WATERMARK_SUBSTITUTION_REGEX.search(src_zip.read(titlepage)):
                     import cStringIO
                     date = lcg.LocalizableDateTime(now().strftime('%Y-%m-%d %H:%M:%S'), utc=True)
-                    substitutions = dict(name=req.user().name(),
-                                         email=req.user().email(),
+                    user = req.user()
+                    substitutions = dict(name=' '.join((user().firstname(), user.surname())),
+                                         email=user.email(),
                                          date=req.localize(date))
                     result = cStringIO.StringIO()
                     dst_zip = zipfile.ZipFile(result, 'w')
