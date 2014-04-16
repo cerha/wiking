@@ -2138,7 +2138,7 @@ class BrailleExporter(wiking.Module):
             printers = presentation.printers.keys()
             default_printer = presentation.default_printer
         return (
-            Field('printer', _("Printer"), virtual=virtual, type=pd.String(), 
+            Field('printer', _("Printer"), virtual=virtual, type=pd.String(),
                   enumerator=enum(printers), default=default_printer, not_null=False),
             Field('page_width', _("Characters per line"), width=3, virtual=virtual,
                   type=pd.Integer(), default=33),
@@ -2215,7 +2215,7 @@ class CmsPageExcerpts(EmbeddableCMSModule, BrailleExporter):
             req, dict(
                 fields=self.braille_option_fields(),
                 layout=FieldSet(
-                    _("Braille Export Options"), 
+                    _("Braille Export Options"),
                     (ColumnLayout(
                         ('printer', 'page_width', 'page_height',),
                         FieldSet(_("Margins"),
@@ -2551,9 +2551,9 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
         def fields(field_ids):
             return [(label(fid) + ':', format(fid))
                     for fid in field_ids if record[fid].value() is not None]
-        def watermark_value(value, name):
+        def watermark(value, name):
             # Use anchor to get <span id="watermark-..."> in HTML output.  This marks the values
-            # for later substitution in PublicationExports.action_download(). 
+            # for later substitution in PublicationExports.action_download().
             return lcg.Anchor('watermark-' + name, value)
         content = [lcg.fieldset(fields(('title', 'description', 'author', 'contributor',
                                         'illustrator', 'pubinfo', 'original_isbn',
@@ -2583,9 +2583,9 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
             date = lcg.LocalizableDateTime(now().strftime('%Y-%m-%d %H:%M:%S'), utc=True)
             content.extend((
                 lcg.strong(_("Authorization for this copy:")),
-                lcg.fieldset(((_("Authorized Person") + ':', watermark_value(req.user().name(), 'name')),
-                              (_("E-mail") + ':', watermark_value(req.user().email(), 'email')),
-                              (_("Date") + ':', watermark_value(date, 'date'))))
+                lcg.fieldset(((_("Authorized Person") + ':', watermark(req.user().name(), 'name')),
+                              (_("E-mail") + ':', watermark(req.user().email(), 'email')),
+                              (_("Date") + ':', watermark(date, 'date'))))
             ))
         return lcg.Container(content)
 
@@ -2946,7 +2946,7 @@ class PublicationExports(ContentManagementModule):
                             lcg.format("(%(bytesize)s, %(timestamp)s) %(notes)s",
                                        timestamp=pw.localizable_export(row['timestamp']),
                                        bytesize=format_byte_size(row['bytesize'].value()),
-                                       notes=(row['notes'].export() and ' ' + row['notes'].value())))
+                                       notes=row['notes'].export()))
                        for row in rows]),
             ), cls='publication-exports')
         if self._check_publication_download_access(req):
