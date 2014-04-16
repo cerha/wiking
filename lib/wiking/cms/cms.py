@@ -2813,7 +2813,7 @@ class PublicationExports(ContentManagementModule):
                               "Use creatively to distinguish between different exported versions "
                               "but take care decide for one versioning scheme and use it "
                               "consistently throughout your publications.")),
-                Field('timestamp', default=now),
+                Field('timestamp', _("Created"), default=now),
                 Field('public', _("Public"), default=True,
                       descr=_("If checked, this export will be available to anyone having access "
                               "to the publication, otherwise only editors (with read/write "
