@@ -2838,7 +2838,7 @@ class PublicationExports(ContentManagementModule):
     def _authorized(self, req, action, record=None, **kwargs):
         if action == 'download' and record['public'].value():
             return self._check_publication_download_access(req)
-        if action in ('list', 'view', 'insert', 'update', 'delete'):
+        if action in ('list', 'view', 'insert', 'update', 'delete', 'download'):
             return req.page_write_access
         else:
             return False
