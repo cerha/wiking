@@ -218,66 +218,6 @@ div.table-of-contents ul {
     padding-left: 18px;
 }
 
-
-div.discussions .pytis-form.list-view.discussions .summary { display: none; }
-div.discussions .pytis-form.list-view.discussions h3 { 
-    margin-top: 0;
-    font-weight: normal;
-    font-size: 1em;
-    background-color: #eee;
-    border-width: 1px 0;
-}
-div.discussions .pytis-form.list-view.discussions div.list-item { 
-    padding-top: 1em;
-    padding-bottom: 0.3em;
-    margin-bottom: 0;
-}
-div.discussions .pytis-form.list-view.discussions div.list-item.group-start { 
-    padding-top: 0;
-}
-div.discussions .pytis-form.list-view.discussions div.list-item .actions { 
-    text-align: right;
-    margin: 0;
-}
-div.discussions .pytis-form.list-view.discussions div.list-item .actions button,
-div.discussions .pytis-form.list-view.discussions div.list-item .actions button span {
-    line-height: 1em;
-    padding: 0;
-}
-div.discussions .pytis-form.edit-form { 
-    margin: 1.2em 0;
-    background-color: $color.frame-bg;
-    border: 1px solid $color.frame-border;
-    border-width: 1px 0;
-    padding: 0.3em;
-}
-div.discussions .pytis-form.edit-form div.group,
-div.discussions .pytis-form.edit-form div.submit { 
-    margin: 0;
-    padding: 0;
-    background: none;
-    border: none;
-}
-div.discussions .pytis-form.edit-form div.submit { 
-    padding: 0;
-    text-align: right;
-}
-div.discussions .pytis-form.edit-form div.submit input { 
-    margin: 0;
-}
-div.discussions .pytis-form.edit-form.discussions div.footer { display: none; }
-
-div.discussions div.login-info p {
-    margin: 1em 0;
-    padding: 0.5em;
-    padding-left: 28px;
-    border: dotted 2px $color.message-border;
-    /* background-color: $color.background; */
-    background-image: url(/_resources/info.png);
-    background-position: left center;
-    background-repeat: no-repeat;
-}
-
 div.wiking-image-gallery img {
     margin-right: 1.6em;
     margin-top: .8em;

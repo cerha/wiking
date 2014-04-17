@@ -4005,26 +4005,29 @@ class Discussions(ContentManagementModule, EmbeddableCMSModule):
     def _list_form_content(self, req, form, uri=None):
         content = super(Discussions, self)._list_form_content(req, form, uri=uri)
         if uri is not None:
-            if req.check_roles(Roles.USER):
-                # Add JavaScript initialization above the list.
-                def render(element, context):
+            def render(element, context):
+                # Add JavaScript initialization below the list.
+                context.resource('discussion.css')
+                if req.check_roles(Roles.USER):
                     g = context.generator()
                     context.resource('effects.js')
                     context.resource('discussion.js')
                     return g.script(g.js_call('new Discussion', form.form_id(), uri, 'text'))
-                content.append(wiking.HtmlRenderer(render))
-                # We don't want to insert messages through a separate insert form,
-                # so we embed one directly below the message list.
+                else:
+                    return ''
+            content.append(wiking.HtmlRenderer(render))
+            if req.check_roles(Roles.USER):
+                # Embed insertion form directly below the message list.
                 content.append(self._form(pw.EditForm, req, action='insert', handler=uri,
-                                          show_reset_button=False))
+                                      show_reset_button=False))
             else:
                 # Translators: The square brackets mark a link.  Please leave the brackets and the
                 # link target '?command=login' untouched and traslate 'log in' to fit into the
                 # sentence.  The user only sees it as 'You need to log in before ...'.
                 msg = _("Note: You need to [?command=login log in] before you can post messages.")
                 content.append(lcg.Container((lcg.p(msg, formatted=True),), name='login-info'))
-            # Wrap in a names container to allow css styling.
-            content = [lcg.Container(content, name='discussions')]
+            # Wrap in a named container to allow css styling.
+            content = [lcg.Container(content, name='discussion-list')]
         return content
 
 
