@@ -305,6 +305,9 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         def display(self, key, **kwargs):
             return super(PytisModule.Record, self).display(key, **kwargs)
 
+        def module(self):
+            return self._module
+
     @classmethod
     def title(cls):
         return cls.Spec.title
