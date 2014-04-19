@@ -3510,7 +3510,8 @@ class Attachments(ContentManagementModule):
     def storage_api_rows(self, req, page_id, lang):
         self._data.select(columns=self._non_binary_columns,
                           condition=pd.AND(pd.EQ('page_id', pd.ival(page_id)),
-                                           pd.EQ('lang', pd.sval(lang))))
+                                           pd.EQ('lang', pd.sval(lang))),
+                          sort=self._sorting)
         while True:
             row = self._data.fetchone()
             if row is None:
