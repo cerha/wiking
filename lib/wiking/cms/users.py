@@ -532,6 +532,7 @@ class Users(UserManagementModule, CachingPytisModule):
                               "sent to the user's e-mail address.")),
                 Field('initial_password', _("Password"), virtual=True, width=16, type=pwdtype,
                       editable=computer(lambda r, autogenerate_password: not autogenerate_password),
+                      computer=computer(self._initial_password),
                       descr=_("Please, write the password into each of the two fields to eliminate "
                               "typos.")),
                 # UI Fields for password change.
