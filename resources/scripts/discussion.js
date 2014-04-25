@@ -1,6 +1,6 @@
 /* -*- coding: utf-8 -*-
  *
- * Copyright (C) 2012, 2013 Brailcom, o.p.s.
+ * Copyright (C) 2012, 2013, 2014 Brailcom, o.p.s.
  * Author: Tomas Cerha
  *
  * This program is free software; you can redistribute it and/or modify
@@ -26,12 +26,22 @@
  * all when JavaScript is off).  The button, when pressed, inserts a form for
  * entering a reply to given comment into the page just below the comment.
  * 
- * An instance of the Discussion class must be created below the exported pytis
- * form.  The new instance will automatically locate all '.discussion-reply'
- * elements in the document and bind Javascript handlers to the related HTML
- * elements of the discussion list.
+ * An instance of the wiking.Discussion class must be created below the exported
+ * pytis form.  The new instance will automatically locate all
+ * '.discussion-reply' elements in the document and bind Javascript handlers
+ * to the related HTML elements of the discussion list.
+ */
 
-*/
+/*jslint browser: true */
+/*jslint unparam: true */
+/*global Class */
+/*global Element */
+/*global Effect */
+/*global $ */
+/*global $$ */
+/*global wiking */
+
+"use strict";
 
 var Discussion = Class.create({
 
@@ -39,11 +49,13 @@ var Discussion = Class.create({
 	this.form = $(form_id);
 	this.uri = uri;
 	this.field = field;
-	if (typeof(attachment_field) == 'undefined')
+	if (attachment_field === undefined) {
 	    attachment_field = null;
+	}
 	this.attachment_field = attachment_field;
-	if (this.form.instance)
+	if (this.form.instance) {
 	    this.form.instance.on_load(this.add_reply_buttons.bind(this));
+	}
     },
 
     add_reply_buttons: function () {
@@ -51,11 +63,10 @@ var Discussion = Class.create({
 	this.form.select('.discussion-reply').each(function (div) {
 	    var comment_id = div.down('span.id').innerHTML;
 	    var quoted = decodeURIComponent(div.down('span.quoted').innerHTML);
-	    var button = div.down('button.reply');
 	    var item = div.up('.list-item');
 	    var actions = item.down('.actions');
-	    if (actions == null) {
-	        actions = new Element('div', {'class': 'actions'})
+	    if (actions === null) {
+	        actions = new Element('div', {'class': 'actions'});
 	        item.insert(actions);
 	    }
             var button = new Element('button', {'class': 'reply'}).update(wiking._("Reply"));
@@ -67,8 +78,9 @@ var Discussion = Class.create({
     },
 
     on_reply: function (item, comment_id, quoted) {
-	if (item.down('form.edit-form'))
+	if (item.down('form.edit-form')) {
 	    return;
+	}
         var form = new Element('form', {'action': this.uri+'/'+comment_id,
 					'method': 'POST',
      					'style': 'display: none',
@@ -85,7 +97,7 @@ var Discussion = Class.create({
      					     'name': this.field,
 					     'id': field_id,
      					     'aria-required': 'true'}));
-	if (this.attachment_field != null) {
+	if (this.attachment_field !== null) {
 	    form.setAttribute('enctype', 'multipart/form-data');
 	    var attachment_field_id = field_id + 'attachment';
 	    var alabel = new Element('label', {'for': attachment_field_id});
@@ -102,7 +114,7 @@ var Discussion = Class.create({
      	form.insert(new Element('input', {'type': 'hidden', 'name': 'action', 'value': 'reply'}));
 	var buttons = [
 	    [wiking._("Submit"), {'type': 'submit', 'value': '1'}, 
-	     function (event) {}],
+	     function (event) { return; }],
 	    [wiking._("Quote"), {'onclick': 'return false;'}, 
 	     function (event) { this.on_quote(form[this.field], quoted); }],
 	    [wiking._("Cancel"), {'onclick': 'return false;'}, 
@@ -125,10 +137,11 @@ var Discussion = Class.create({
 
     on_cancel: function (form) {
 	this.slide_up(form, true);
-	if (typeof(Effect) != 'undefined')
+	if (Effect !== undefined) {
 	    setTimeout(function () { form.remove(); }, 200);
-	else
+	} else {
 	    form.remove();
+	}
 	$$('.actions button.reply').each(function(button) {
 	    button.enable();
 	});
@@ -136,8 +149,9 @@ var Discussion = Class.create({
 
     on_quote: function (field, quoted) {
 	if (field.value) {
-     	    if (field.value.substr(field.value.length-1) != '\n')
+     	    if (field.value.substr(field.value.length-1) !== '\n') {
      		field.value += '\n';
+	    }
      	    field.value += quoted;
         } else {
      	    field.value = quoted;
@@ -146,9 +160,10 @@ var Discussion = Class.create({
     },
 
     slide_up: function (element, duration) {
-	if (typeof(Effect) != 'undefined') {
-	    if (typeof(duration) == 'undefined')
+	if (Effect !== undefined) {
+	    if (duration === undefined) {
 		duration = 0.2;
+	    }
 	    new Effect.SlideUp(element, {duration: duration});
 	} else {
 	    element.hide();
@@ -156,9 +171,10 @@ var Discussion = Class.create({
     },
 
     slide_down: function (element, duration) {
-	if (typeof(Effect) != 'undefined') {
-	    if (typeof(duration) == 'undefined')
-		duration = 0.2
+	if (Effect !== undefined) {
+	    if (duration === undefined) {
+		duration = 0.2;
+	    }
 	    new Effect.SlideDown(element, {duration: duration});
 	} else {
 	    element.show();
