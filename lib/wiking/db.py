@@ -1587,7 +1587,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                 value = counter.next(transaction=transaction)
                 record[key] = pd.Value(record.type(key), value)
         result, success = self._data.insert(record.rowdata(), transaction=transaction)
-        #debug(":::", success, result)
+        # debug(":::", success, result)
         if not success:
             raise pd.DBException(result)
         elif result is not None:
@@ -1726,8 +1726,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         output_resolvers = (pytis.output.FileResolver(wiking.cfg.print_spec_dir),)
         name = self.name()
         prefix = name + '/'
-        if record is not None:
-            key = record.key()
+        key = None if record is None else record.key()
         if sorting is None:
             sorting = self._sorting
         output_parameters = {(pytis.output.P_NAME): name,
@@ -2424,8 +2423,8 @@ class PytisRssModule(PytisModule):
             elif raw:
                 return lambda record: localize(record[spec].value())
             # TODO: allow HTML formatting as in the old RssModule (hopefully more efficient).
-            #elif ...:
-            #    return lambda record: format(localize(record[spec].export()))
+            # elif ...:
+            #     return lambda record: format(localize(record[spec].export()))
             else:
                 return lambda record: localize(record[spec].export())
         import wiking
