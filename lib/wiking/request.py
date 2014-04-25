@@ -1130,6 +1130,7 @@ class User(object):
         self._uri = uri
         self._data = data
         self._lang = lang
+        self._gender = gender
 
     def login(self):
         """Return user's login name as a string."""
@@ -1161,7 +1162,7 @@ class User(object):
 
     def gender(self):
         """Return the user's gender as MALE/FEMALE class constant or None if unknown."""
-        return self._lang
+        return self._gender
 
     def lang(self):
         """Return code of the user's preferred language."""
