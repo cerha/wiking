@@ -116,7 +116,10 @@ class RequestHandler(object):
             if not req.user():
                 raise AuthenticationError()
             else:
-                raise wiking.AuthorizationError()
+                self._authorization_error(req, **kwargs)
+
+    def _authorization_error(self, req, **kwargs):
+        raise wiking.AuthorizationError()
 
     def _handle(self, req):
         raise Exception("Method '_handle()' not implemented.")
