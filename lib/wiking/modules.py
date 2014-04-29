@@ -15,9 +15,11 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+import datetime
+import httplib
 import os
 import re
-import datetime
+import types
 
 import lcg
 import wiking
@@ -60,7 +62,7 @@ class Module(object):
 
         """
         self._resolved_name = name
-        #log(OPR, 'New module instance: %s[%x]' % (name, lcg.positive_id(self)))
+        # log(OPR, 'New module instance: %s[%x]' % (name, lcg.positive_id(self)))
         super(Module, self).__init__()
 
     def _module(self, name, **kwargs):
@@ -375,7 +377,7 @@ class Resources(Module, RequestHandler):
                 data = str(data)
             data = self._substitute(data, theme)
             response = wiking.Response(data, content_type=response.content_type(),
-                                       last_modified=mtime, filename=response.filename(), 
+                                       last_modified=mtime, filename=response.filename(),
                                        headers=response.headers())
         max_age = wiking.cfg.resource_client_cache_max_age
         if ((max_age is not None and response.last_modified() is not None
@@ -578,7 +580,7 @@ class CookieAuthentication(object):
                 user = self._auth_user(req, login)
                 if user and session.check(req, user, session_key):
                     assert isinstance(user, User)
-                    req.set_cookie(self._SESSION_COOKIE, session_key, expires=session_expires, 
+                    req.set_cookie(self._SESSION_COOKIE, session_key, expires=session_expires,
                                    secure=secure)
                 else:
                     user = None
