@@ -2296,6 +2296,10 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                               "a digitalized book or another kind of derived work.")),
                 Field('isbn', _("ISBN"), width=40,
                       descr=_("ISBN identifier of this publication if it has one assigned.")),
+                Field('uuid', _("UUID"), width=40,
+                      descr=_("Universally unique identifier of this publication. "
+                              "Used when ISBN is not defined."),
+                      computer=computer(self._uuid)),
                 Field('adapted_by', _("Adapted by"), width=40, height=3,
                       descr=_("Name(s) of person(s) or organization(s), who created this "
                               "digital publication.  These are typically not the authors "
@@ -2346,6 +2350,12 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
         def _attachment_storage_uri(self, record):
             return '/%s/data/%s/attachments' % (record.req().page_record['identifier'].value(),
                                                 record['identifier'].value())
+        def _uuid(self, record, isbn):
+            if isbn is None:
+                import uuid
+                return str(uuid.uuid1())
+            else:
+                return None
         def _copyright_notice(self, record, lang):
             notice = record['copyright_notice'].value()
             if record.new() and notice is None:
@@ -2560,7 +2570,9 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                                         'lang')))]
         if record['copyright_notice'].value():
             content.append(lcg.p(record['copyright_notice'].value()))
-        extra_fields = fields(('isbn', 'adapted_by',))
+        extra_fields = fields(('adapted_by', 'isbn',))
+        if record['isbn'].value() is None:
+            extra_fields.extend(fields(('uuid',)))
         if online:
             if record['published'].value():
                 extra_fields.extend(fields(('published_since',)))
@@ -2617,6 +2629,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                                                       row['adapted_by'].export().splitlines()),
                                         original_isbn=row['original_isbn'].value(),
                                         isbn=row['isbn'].value(),
+                                        uuid=row['uuid'].value(),
                                         publisher=row['publisher'].value(),
                                         published=row['published_year'].export(),)
             else:

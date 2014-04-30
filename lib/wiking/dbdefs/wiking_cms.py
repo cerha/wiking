@@ -659,42 +659,45 @@ class CmsAttachmentsAfterUpdateTrigger(sql.SQLPlFunction, sql.SQLTrigger):
 class CmsPublications(CommonAccesRights, sql.SQLTable):
     """bibliographic data of the original (paper) books"""
     name = 'cms_publications'
-    fields = (sql.Column('page_id', pytis.data.Integer(not_null=True), unique=True,
-                         references=sql.a(sql.r.CmsPages, ondelete='CASCADE')),
-              sql.Column('author', pytis.data.String(not_null=True),
-                         doc="creator(s) of the original work; full name(s), one name per line"),
-              sql.Column('contributor', pytis.data.String(),
-                         doc=("creator(s) of the original work with less significant "
-                              "role than author(s); full name(s), one name per line")),
-              sql.Column('illustrator', pytis.data.String(),
-                         doc=("author(s) of illustrations in the original work; "
-                              "full name(s), one name per line")),
-              sql.Column('publisher', pytis.data.String(),
-                         doc="full name of the publisher"),
-              sql.Column('published_year', pytis.data.Integer(),
-                         doc="year published"),
-              sql.Column('edition', pytis.data.Integer(),
-                         doc="first, second, ..."),
-              sql.Column('original_isbn', pytis.data.String(),
-                         doc=("ISBN identifier of the original work; if not null, the "
-                              "publication is a work derived from it and fields author, "
-                              "contributor, illustrator, publisher, published_year and "
-                              "edition relate to the original work")),
-              sql.Column('isbn', pytis.data.String(),
-                         'ISBN of this publication it it has one assigned'),
-              sql.Column('adapted_by', pytis.data.String(),
-                         doc=("people or organization(s), who created this digital "
-                              "publication if these are not already mentioned in the "
-                              "above fields; full name(s), one name per line")),
-              sql.Column('cover_image', pytis.data.Integer(),
-                         references=sql.a(sql.r.CmsPageAttachments, ondelete='SET NULL')),
-              sql.Column('copyright_notice', pytis.data.String()),
-              sql.Column('notes', pytis.data.String(),
-                         doc="any other additional info, such as translator(s), reviewer(s) etc."),
-              sql.Column('download_role_id', pytis.data.Name(),
-                         references=sql.a(sql.r.Roles, onupdate='CASCADE'),
-                         doc="role allowed to download the offline version of the publication."),
-          )
+    fields = (
+        sql.Column('page_id', pytis.data.Integer(not_null=True), unique=True,
+                   references=sql.a(sql.r.CmsPages, ondelete='CASCADE')),
+        sql.Column('author', pytis.data.String(not_null=True),
+                   doc="creator(s) of the original work; full name(s), one name per line"),
+        sql.Column('contributor', pytis.data.String(),
+                   doc=("creator(s) of the original work with less significant "
+                        "role than author(s); full name(s), one name per line")),
+        sql.Column('illustrator', pytis.data.String(),
+                   doc=("author(s) of illustrations in the original work; "
+                        "full name(s), one name per line")),
+        sql.Column('publisher', pytis.data.String(),
+                   doc="full name of the publisher"),
+        sql.Column('published_year', pytis.data.Integer(),
+                   doc="year published"),
+        sql.Column('edition', pytis.data.Integer(),
+                doc="first, second, ..."),
+        sql.Column('original_isbn', pytis.data.String(),
+                   doc=("ISBN identifier of the original work; if not null, the "
+                        "publication is a work derived from it and fields author, "
+                        "contributor, illustrator, publisher, published_year and "
+                        "edition relate to the original work")),
+        sql.Column('isbn', pytis.data.String(),
+                   'ISBN of this publication if it has one assigned'),
+        sql.Column('uuid', pytis.data.String(),
+                   'Universally Unique Identifier if ISBN is not assigned'),
+        sql.Column('adapted_by', pytis.data.String(),
+                   doc=("people or organization(s), who created this digital "
+                        "publication if these are not already mentioned in the "
+                        "above fields; full name(s), one name per line")),
+        sql.Column('cover_image', pytis.data.Integer(),
+                   references=sql.a(sql.r.CmsPageAttachments, ondelete='SET NULL')),
+        sql.Column('copyright_notice', pytis.data.String()),
+        sql.Column('notes', pytis.data.String(),
+                   doc="any other additional info, such as translator(s), reviewer(s) etc."),
+        sql.Column('download_role_id', pytis.data.Name(),
+                   references=sql.a(sql.r.Roles, onupdate='CASCADE'),
+                   doc="role allowed to download the offline version of the publication."),
+    )
 
 class CmsVPublications(CommonAccesRights, sql.SQLView):
     name = 'cms_v_publications'
