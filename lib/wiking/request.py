@@ -344,7 +344,7 @@ class Request(ServerInterface):
             self._maximized = self.param('maximize') == '1'
             self.set_cookie(self._MAXIMIZED_MODE_COOKIE, self._maximized and 'yes' or 'no')
         else:
-            self._maximized = self.cookie(self._MAXIMIZED_MODE_COOKIE) == 'yes' 
+            self._maximized = self.cookie(self._MAXIMIZED_MODE_COOKIE) == 'yes'
         self.path = [item for item in self.uri().split('/')[1:] if item]
         if '..' in self.path:
             # Prevent directory traversal attacs globally (no need to handle them all around).
@@ -915,12 +915,12 @@ class Request(ServerInterface):
     def credentials(self):
         """Return the login name and password as given by the user.
 
-        The return value is either a pair of strings (user, password) or None
-        if no credentials were passed with the request. The method supports
-        both, the cookie based authentication mechanism (through the Wiking
-        Login form) and standard HTTP Basic authentication in this order of
-        priority.  The difference is that HTTP authentication credentials are
-        sent repetitively for all subsequent requests, however with cookie
+        The return value is either a pair of unicode strings (user, password)
+        or None if no credentials were passed with the request. The method
+        supports both, the cookie based authentication mechanism (through the
+        Wiking Login form) and standard HTTP Basic authentication in this order
+        of priority.  The difference is that HTTP authentication credentials
+        are sent repetitively for all subsequent requests, however with cookie
         authentication, the credentials are sent just once (after login form
         submission).  HTTP authentication also doesnt support logout (there is
         no way to tell the user agent to drop the cached credentials).
@@ -937,7 +937,11 @@ class Request(ServerInterface):
             auth_header = self.header('Authorization')
             if auth_header and auth_header.startswith('Basic '):
                 encoded_credentials = auth_header.split()[1]
-                return encoded_credentials.decode("base64").split(":", 1)
+                decoded_credentials = encoded_credentials.decode("base64").split(":", 1)
+                try:
+                    return tuple([unicode(x, self._encoding) for x in decoded_credentials])
+                except UnicodeError:
+                    return None
         return None
 
     def decryption_password(self):
