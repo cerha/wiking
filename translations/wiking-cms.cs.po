@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-04-16 10:20+0200\n"
-"PO-Revision-Date: 2014-04-16 10:22+0200\n"
+"POT-Creation-Date: 2014-05-07 11:42+0200\n"
+"PO-Revision-Date: 2014-05-07 12:02+0200\n"
 "Last-Translator: Hynek Hanke <hanke@brailcom.org>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
 "Language: cs\n"
@@ -74,7 +74,14 @@ msgstr ""
 msgid "Wiking Management Interface"
 msgstr "Správcovské rozhraní"
 
-#: ../lib/wiking/cms/appl.py:353
+#: ../lib/wiking/cms/appl.py:297 ../lib/wiking/cms/users.py:1005
+#, python-format
+msgid ""
+"User %s is already registered for another site. Please, confirm the account "
+"for this site."
+msgstr "Uživatel %s je již registrován pro přidružený web.  Potvrďte prosím účet pro tento web."
+
+#: ../lib/wiking/cms/appl.py:355
 msgid "New Panel"
 msgstr "Nový panel"
 
@@ -166,8 +173,8 @@ msgstr "Uživatelské certifikáty"
 msgid "Manage user and other kinds of certificates."
 msgstr "Správa uživatelských a ostatních certifikátů."
 
-#: ../lib/wiking/cms/certificates.py:228 ../lib/wiking/cms/cms.py:4507
-#: ../lib/wiking/cms/cms.py:4689
+#: ../lib/wiking/cms/certificates.py:228 ../lib/wiking/cms/cms.py:4540
+#: ../lib/wiking/cms/cms.py:4722
 msgid "Subject"
 msgstr "Předmět"
 
@@ -181,8 +188,8 @@ msgid "Name"
 msgstr "Název"
 
 #. E-mail address. Registration form field.
-#: ../lib/wiking/cms/certificates.py:232 ../lib/wiking/cms/cms.py:2587
-#: ../lib/wiking/cms/users.py:573
+#: ../lib/wiking/cms/certificates.py:232 ../lib/wiking/cms/cms.py:2599
+#: ../lib/wiking/cms/users.py:574
 msgid "E-mail"
 msgstr "E-mail"
 
@@ -375,14 +382,14 @@ msgid "Manage panels – the small windows shown by the side of every page."
 msgstr "Správa panelů – malých „okének“ zobrazených na boku každé stránky."
 
 #: ../lib/wiking/cms/cms.py:893 ../lib/wiking/cms/cms.py:1319
-#: ../lib/wiking/cms/cms.py:3123 ../lib/wiking/cms/cms.py:3737
+#: ../lib/wiking/cms/cms.py:3152 ../lib/wiking/cms/cms.py:3767
 msgid "Language"
 msgstr "Jazyk"
 
 #. Title in the meaning of a heading
 #: ../lib/wiking/cms/cms.py:896 ../lib/wiking/cms/cms.py:1321
 #: ../lib/wiking/cms/cms.py:1322 ../lib/wiking/cms/cms.py:2197
-#: ../lib/wiking/cms/cms.py:3147 ../lib/wiking/cms/cms.py:3741
+#: ../lib/wiking/cms/cms.py:3176 ../lib/wiking/cms/cms.py:3771
 msgid "Title"
 msgstr "Název"
 
@@ -391,7 +398,7 @@ msgstr "Název"
 #. Unique identifier of a stylesheet.
 #. Form field label.
 #: ../lib/wiking/cms/cms.py:899 ../lib/wiking/cms/cms.py:1311
-#: ../lib/wiking/cms/cms.py:4105 ../lib/wiking/cms/users.py:330
+#: ../lib/wiking/cms/cms.py:4138 ../lib/wiking/cms/users.py:330
 msgid "Identifier"
 msgstr "Identifikátor"
 
@@ -405,7 +412,7 @@ msgstr ""
 "tento panel ve stylech."
 
 #. Order in the meaning of sequence. A noun, not verb.
-#: ../lib/wiking/cms/cms.py:905 ../lib/wiking/cms/cms.py:4124
+#: ../lib/wiking/cms/cms.py:905 ../lib/wiking/cms/cms.py:4157
 msgid "Order"
 msgstr "Pořadí"
 
@@ -446,7 +453,7 @@ msgstr "Počet položek vybraného modulu, které budou panelem zobrazeny."
 
 #. Content of a page (text or something else)
 #: ../lib/wiking/cms/cms.py:923 ../lib/wiking/cms/cms.py:1326
-#: ../lib/wiking/cms/cms.py:2200 ../lib/wiking/cms/cms.py:4128
+#: ../lib/wiking/cms/cms.py:2200 ../lib/wiking/cms/cms.py:4161
 msgid "Content"
 msgstr "Obsah"
 
@@ -535,9 +542,9 @@ msgstr "Běžné barvy stránky"
 #: ../lib/wiking/cms/cms.py:1126 ../lib/wiking/cms/cms.py:1141
 #: ../lib/wiking/cms/cms.py:1149 ../lib/wiking/cms/cms.py:1156
 #: ../lib/wiking/cms/cms.py:1165 ../lib/wiking/cms/cms.py:1169
-#: ../lib/wiking/cms/cms.py:1173 ../lib/wiking/cms/cms.py:4240
-#: ../lib/wiking/cms/cms.py:4241 ../lib/wiking/cms/cms.py:4243
-#: ../lib/wiking/cms/cms.py:4690
+#: ../lib/wiking/cms/cms.py:1173 ../lib/wiking/cms/cms.py:4273
+#: ../lib/wiking/cms/cms.py:4274 ../lib/wiking/cms/cms.py:4276
+#: ../lib/wiking/cms/cms.py:4723
 msgid "Text"
 msgstr "Text"
 
@@ -774,8 +781,8 @@ msgstr ""
 "jazykové verze. Platný identifikátor obsahuje pouze písmena bez diakritiky, "
 "číslice, pomlčky a případně i podtržítka.  Musí však vždy začínat písmenem."
 
-#: ../lib/wiking/cms/cms.py:1323 ../lib/wiking/cms/cms.py:3150
-#: ../lib/wiking/cms/cms.py:4106 ../lib/wiking/cms/crypto.py:44
+#: ../lib/wiking/cms/cms.py:1323 ../lib/wiking/cms/cms.py:3179
+#: ../lib/wiking/cms/cms.py:4139 ../lib/wiking/cms/crypto.py:44
 msgid "Description"
 msgstr "Popis"
 
@@ -787,7 +794,7 @@ msgstr ""
 "Stručný popis zobrazený jako bublinová nápověda u odkazů (např. položek "
 "menu) a v mapě stránek."
 
-#: ../lib/wiking/cms/cms.py:1329 ../lib/wiking/cms/cms.py:2980
+#: ../lib/wiking/cms/cms.py:1329 ../lib/wiking/cms/cms.py:3009
 msgid "Comment"
 msgstr "Komentář"
 
@@ -868,8 +875,8 @@ msgstr ""
 msgid "Creator"
 msgstr "Vytvořil"
 
-#: ../lib/wiking/cms/cms.py:1376 ../lib/wiking/cms/cms.py:2571
-#: ../lib/wiking/cms/cms.py:2816 ../lib/wiking/cms/cms.py:3153
+#: ../lib/wiking/cms/cms.py:1376 ../lib/wiking/cms/cms.py:2583
+#: ../lib/wiking/cms/cms.py:2830 ../lib/wiking/cms/cms.py:3182
 msgid "Created"
 msgstr "Vytvořeno"
 
@@ -940,7 +947,7 @@ msgstr "Výňatek"
 msgid "Ok"
 msgstr "Ok"
 
-#: ../lib/wiking/cms/cms.py:1420 ../lib/wiking/cms/cms.py:2988
+#: ../lib/wiking/cms/cms.py:1420 ../lib/wiking/cms/cms.py:3017
 msgid "Changed"
 msgstr "Změněno"
 
@@ -987,7 +994,7 @@ msgstr "Nová stránka"
 #. Noun. Such as e-mail attachments (here attachments for a webpage).
 #. Section title. Attachments as in email attachments.
 #: ../lib/wiking/cms/cms.py:1474 ../lib/wiking/cms/cms.py:1942
-#: ../lib/wiking/cms/cms.py:2732 ../lib/wiking/cms/cms.py:3108
+#: ../lib/wiking/cms/cms.py:2745 ../lib/wiking/cms/cms.py:3137
 msgid "Attachments"
 msgstr "Přílohy"
 
@@ -1031,7 +1038,7 @@ msgstr "Nová stránka byla úspěšně vytvořena."
 msgid "The page was successfully updated."
 msgstr "Stránka byla úspěšně aktualizována."
 
-#: ../lib/wiking/cms/cms.py:1571 ../lib/wiking/cms/cms.py:2403
+#: ../lib/wiking/cms/cms.py:1571 ../lib/wiking/cms/cms.py:2413
 msgid "Basic Options"
 msgstr "Obecné vlastnosti"
 
@@ -1039,7 +1046,7 @@ msgstr "Obecné vlastnosti"
 msgid "Menu position"
 msgstr "Umístění v menu"
 
-#: ../lib/wiking/cms/cms.py:1573 ../lib/wiking/cms/cms.py:2411
+#: ../lib/wiking/cms/cms.py:1573 ../lib/wiking/cms/cms.py:2421
 msgid "Access Rights"
 msgstr "Oprávnění"
 
@@ -1238,22 +1245,22 @@ msgstr "Dolní okraj"
 msgid "Id"
 msgstr "Id"
 
-#: ../lib/wiking/cms/cms.py:2198 ../lib/wiking/cms/cms.py:3117
-#: ../lib/wiking/cms/cms.py:3734
+#: ../lib/wiking/cms/cms.py:2198 ../lib/wiking/cms/cms.py:3146
+#: ../lib/wiking/cms/cms.py:3764
 msgid "Page"
 msgstr "Stránka"
 
-#: ../lib/wiking/cms/cms.py:2218 ../lib/wiking/cms/cms.py:2487
-#: ../lib/wiking/cms/cms.py:2856
+#: ../lib/wiking/cms/cms.py:2218 ../lib/wiking/cms/cms.py:2497
+#: ../lib/wiking/cms/cms.py:2871
 msgid "Braille Export Options"
 msgstr "Volby Braillského exportu"
 
-#: ../lib/wiking/cms/cms.py:2221 ../lib/wiking/cms/cms.py:2491
-#: ../lib/wiking/cms/cms.py:2860
+#: ../lib/wiking/cms/cms.py:2221 ../lib/wiking/cms/cms.py:2501
+#: ../lib/wiking/cms/cms.py:2875
 msgid "Margins"
 msgstr "Okraje"
 
-#: ../lib/wiking/cms/cms.py:2228 ../lib/wiking/cms/cms.py:2500
+#: ../lib/wiking/cms/cms.py:2228 ../lib/wiking/cms/cms.py:2510
 msgid "Export"
 msgstr "Exportovat"
 
@@ -1279,7 +1286,7 @@ msgstr ""
 "Zvolte skupinu, která má mít právo měnit obsah publikace včetně všech jejich "
 "kapitol."
 
-#: ../lib/wiking/cms/cms.py:2284 ../lib/wiking/cms/cms.py:3744
+#: ../lib/wiking/cms/cms.py:2284 ../lib/wiking/cms/cms.py:3774
 msgid "Author"
 msgstr "Autor"
 
@@ -1337,10 +1344,20 @@ msgid "ISBN identifier of this publication if it has one assigned."
 msgstr "ISBN identifikátor této publikace, pokud má tato ISBN přiřazeno."
 
 #: ../lib/wiking/cms/cms.py:2299
+msgid "UUID"
+msgstr "UUID"
+
+#: ../lib/wiking/cms/cms.py:2300
+msgid ""
+"Universally unique identifier of this publication. Used when ISBN is not "
+"defined."
+msgstr "Globálně unikátní identifikátor této publikace. Použit, pokud není přiřazeno ISBN."
+
+#: ../lib/wiking/cms/cms.py:2303
 msgid "Adapted by"
 msgstr "Zpracoval"
 
-#: ../lib/wiking/cms/cms.py:2300
+#: ../lib/wiking/cms/cms.py:2304
 msgid ""
 "Name(s) of person(s) or organization(s), who created this digital "
 "publication.  These are typically not the authors of the content itself, but "
@@ -1350,48 +1367,48 @@ msgstr ""
 "typicky o tvůrce elektronické verze publikace, nikoliv však vlastního "
 "obsahu. Každé jméno na samostatném řádku."
 
-#: ../lib/wiking/cms/cms.py:2304
+#: ../lib/wiking/cms/cms.py:2308
 msgid "Cover Image"
 msgstr "Obrázek na obálku"
 
-#: ../lib/wiking/cms/cms.py:2308
+#: ../lib/wiking/cms/cms.py:2312
 msgid "Insert the image as an attachment and select it from the list here."
 msgstr "Obrázek nejprve vložte jako přílohu a poté vyberte ze seznamu zde."
 
-#: ../lib/wiking/cms/cms.py:2311 ../lib/wiking/cms/cms.py:2325
+#: ../lib/wiking/cms/cms.py:2315 ../lib/wiking/cms/cms.py:2329
 msgid "Publisher"
 msgstr "Nakladatelství"
 
-#: ../lib/wiking/cms/cms.py:2312
+#: ../lib/wiking/cms/cms.py:2316
 msgid "Name of the organization which published the original work."
 msgstr "Název organizace, která vydala původní dílo."
 
-#: ../lib/wiking/cms/cms.py:2314
+#: ../lib/wiking/cms/cms.py:2318
 msgid "Year Published"
 msgstr "Rok vydání"
 
-#: ../lib/wiking/cms/cms.py:2315
+#: ../lib/wiking/cms/cms.py:2319
 msgid "Year when the original work was published."
 msgstr "Rok, kdy bylo vydáno původní dílo."
 
-#: ../lib/wiking/cms/cms.py:2316
+#: ../lib/wiking/cms/cms.py:2320
 msgid "Edition"
 msgstr "Číslo vydání"
 
-#: ../lib/wiking/cms/cms.py:2317
+#: ../lib/wiking/cms/cms.py:2321
 msgid "Numeric order of the original work's edition."
 msgstr "Číslo udávající pořadí vydání původního díla."
 
-#: ../lib/wiking/cms/cms.py:2318
+#: ../lib/wiking/cms/cms.py:2322
 msgid "Copyright Notice"
 msgstr "Informace o šíření a autorském zákoně"
 
-#: ../lib/wiking/cms/cms.py:2321 ../lib/wiking/cms/cms.py:2579
-#: ../lib/wiking/cms/cms.py:2822
+#: ../lib/wiking/cms/cms.py:2325 ../lib/wiking/cms/cms.py:2591
+#: ../lib/wiking/cms/cms.py:2836
 msgid "Notes"
 msgstr "Poznámky"
 
-#: ../lib/wiking/cms/cms.py:2322
+#: ../lib/wiking/cms/cms.py:2326
 msgid ""
 "Any other additional information about the publication, such as names of "
 "translators, reviewers etc."
@@ -1399,11 +1416,11 @@ msgstr ""
 "Jakékoliv další informace o publikaci, jako např. jména překladatelů, "
 "recenzentů apod."
 
-#: ../lib/wiking/cms/cms.py:2327
+#: ../lib/wiking/cms/cms.py:2331
 msgid "Download acces"
 msgstr "Přístup ke stahování"
 
-#: ../lib/wiking/cms/cms.py:2329
+#: ../lib/wiking/cms/cms.py:2333
 msgid ""
 "Select the role allowed to download the publication for offline use in one "
 "of the available download formats. Users with read/write access are always "
@@ -1423,119 +1440,119 @@ msgstr ""
 "nastavenné pro stahování, tak zároveň členem skupiny nastavené pro „Přístup "
 "pouze pro čtení”."
 
-#: ../lib/wiking/cms/cms.py:2361
+#: ../lib/wiking/cms/cms.py:2371
 #, python-format
 msgid "%d. edition"
 msgstr "%d. vydání"
 
-#: ../lib/wiking/cms/cms.py:2371
+#: ../lib/wiking/cms/cms.py:2381
 msgid "Chapters"
 msgstr "Kapitoly"
 
-#: ../lib/wiking/cms/cms.py:2372
+#: ../lib/wiking/cms/cms.py:2382
 msgid "Exported Versions"
 msgstr "Exportované verze"
 
-#: ../lib/wiking/cms/cms.py:2375 ../lib/wiking/cms/cms.py:2741
+#: ../lib/wiking/cms/cms.py:2385 ../lib/wiking/cms/cms.py:2754
 msgid "New Chapter"
 msgstr "Nová kapitola"
 
-#: ../lib/wiking/cms/cms.py:2376
+#: ../lib/wiking/cms/cms.py:2386
 msgid "Create a new chapter in this publication."
 msgstr "Vytvořit novou kapitolu v této publikaci."
 
-#: ../lib/wiking/cms/cms.py:2380
+#: ../lib/wiking/cms/cms.py:2390
 msgid "New Publication"
 msgstr "Nová Publikace"
 
-#: ../lib/wiking/cms/cms.py:2381 ../lib/wiking/cms/cms.py:2415
+#: ../lib/wiking/cms/cms.py:2391 ../lib/wiking/cms/cms.py:2425
 msgid "Title Page Text"
 msgstr "Text titulní stránky"
 
-#: ../lib/wiking/cms/cms.py:2382
+#: ../lib/wiking/cms/cms.py:2392
 msgid "Edit the text displayed on the title page."
 msgstr "Upravit text zobrazený jako součást titulní stránky."
 
-#: ../lib/wiking/cms/cms.py:2384
+#: ../lib/wiking/cms/cms.py:2394
 msgid "New publication was successfully created."
 msgstr "Nová publikace byla úspěšně vytvořena."
 
-#: ../lib/wiking/cms/cms.py:2385
+#: ../lib/wiking/cms/cms.py:2395
 msgid "The publication was successfully updated."
 msgstr "Publikace byla úspěšně aktualizována."
 
-#: ../lib/wiking/cms/cms.py:2406
+#: ../lib/wiking/cms/cms.py:2416
 msgid "Bibliographic Information"
 msgstr "Bibliografické údaje"
 
-#: ../lib/wiking/cms/cms.py:2482 ../lib/wiking/cms/cms.py:2799
+#: ../lib/wiking/cms/cms.py:2492 ../lib/wiking/cms/cms.py:2812
 msgid "Format"
 msgstr "Formát"
 
-#: ../lib/wiking/cms/cms.py:2505
+#: ../lib/wiking/cms/cms.py:2515
 msgid "Current Version Testing Export"
 msgstr "Testovací export aktuální verze"
 
-#: ../lib/wiking/cms/cms.py:2531
+#: ../lib/wiking/cms/cms.py:2541
 msgid "Table of Contents"
 msgstr "Obsah"
 
-#: ../lib/wiking/cms/cms.py:2541
+#: ../lib/wiking/cms/cms.py:2551
 msgid "Yes"
 msgstr "Ano"
 
-#: ../lib/wiking/cms/cms.py:2541
+#: ../lib/wiking/cms/cms.py:2551
 msgid "No"
 msgstr "Ne"
 
-#: ../lib/wiking/cms/cms.py:2575
+#: ../lib/wiking/cms/cms.py:2587
 msgid "Information about this adaptation of the work:"
 msgstr "Informace o tomto zpracování díla:"
 
-#: ../lib/wiking/cms/cms.py:2585
+#: ../lib/wiking/cms/cms.py:2597
 msgid "Authorization for this copy:"
 msgstr "Oprávnění držitele této kopie:"
 
-#: ../lib/wiking/cms/cms.py:2586
+#: ../lib/wiking/cms/cms.py:2598
 msgid "Authorized Person"
 msgstr "Oprávněná osoba"
 
-#: ../lib/wiking/cms/cms.py:2588 ../lib/wiking/cms/cms.py:2979
-#: ../lib/wiking/cms/cms.py:3739 ../lib/wiking/cms/cms.py:3748
-#: ../lib/wiking/cms/cms.py:3863 ../lib/wiking/cms/cms.py:4691
+#: ../lib/wiking/cms/cms.py:2600 ../lib/wiking/cms/cms.py:3008
+#: ../lib/wiking/cms/cms.py:3769 ../lib/wiking/cms/cms.py:3778
+#: ../lib/wiking/cms/cms.py:3893 ../lib/wiking/cms/cms.py:4724
 msgid "Date"
 msgstr "Datum"
 
-#: ../lib/wiking/cms/cms.py:2706
+#: ../lib/wiking/cms/cms.py:2719
 msgid "Select the superordinate chapter in hierarchy."
 msgstr "Zvolte nadřazenou kapitolu v hierarchii."
 
-#: ../lib/wiking/cms/cms.py:2742
+#: ../lib/wiking/cms/cms.py:2755
 msgid "New chapter was successfully created."
 msgstr "Nová kapitola byla úspěšně vytvořena."
 
-#: ../lib/wiking/cms/cms.py:2743
+#: ../lib/wiking/cms/cms.py:2756
 msgid "The chapter was successfully updated."
 msgstr "Kapitola byla úspěšně aktualizována."
 
-#: ../lib/wiking/cms/cms.py:2787
+#: ../lib/wiking/cms/cms.py:2800
 msgid "EPUB"
 msgstr "EPUB"
 
 #. Braille as a type of media
-#: ../lib/wiking/cms/cms.py:2788 ../lib/wiking/cms/cms.py:4078
+#: ../lib/wiking/cms/cms.py:2801 ../lib/wiking/cms/cms.py:4111
 msgid "Braille"
 msgstr "Braille"
 
-#: ../lib/wiking/cms/cms.py:2794
+#: ../lib/wiking/cms/cms.py:2807
 msgid "Exported Publication Versions"
 msgstr "Exportované verze publikace"
 
-#: ../lib/wiking/cms/cms.py:2800
+#: ../lib/wiking/cms/cms.py:2813
 msgid "Version"
 msgstr "Verze"
 
-#: ../lib/wiking/cms/cms.py:2801
+#: ../lib/wiking/cms/cms.py:2815
 msgid ""
 "Version number and optional variant identifiers.  The whole string is used "
 "as a part of the output file name, so it should only contain digits, "
@@ -1564,11 +1581,11 @@ msgstr ""
 "na to, aby bylo zvoleno jedno schéma pojmenovávání verzí a používáno "
 "konzistentně pro všechny publikace."
 
-#: ../lib/wiking/cms/cms.py:2817
+#: ../lib/wiking/cms/cms.py:2831
 msgid "Public"
 msgstr "Veřejné"
 
-#: ../lib/wiking/cms/cms.py:2818
+#: ../lib/wiking/cms/cms.py:2832
 msgid ""
 "If checked, this export will be available to anyone having access to the "
 "publication, otherwise only editors (with read/write access) will see it."
@@ -1578,11 +1595,11 @@ msgstr ""
 "zápisu."
 
 #. Size of a file, in number of bytes, kilobytes etc.
-#: ../lib/wiking/cms/cms.py:2821 ../lib/wiking/cms/cms.py:3158
+#: ../lib/wiking/cms/cms.py:2835 ../lib/wiking/cms/cms.py:3187
 msgid "Size"
 msgstr "Velikost"
 
-#: ../lib/wiking/cms/cms.py:2823
+#: ../lib/wiking/cms/cms.py:2837
 msgid ""
 "Short text describing this exported version and/or variant. Leave empty if "
 "there is nothing important to note."
@@ -1590,99 +1607,99 @@ msgstr ""
 "Krátký text popisující exportovanou verzi a/nebo variantu. Ponechte prázdné\n"
 "pokud není co dodat (export je dostatečně popsán formátem, verzí a datumem)."
 
-#: ../lib/wiking/cms/cms.py:2831
+#: ../lib/wiking/cms/cms.py:2845
 msgid "Download"
 msgstr "Stáhnout"
 
-#: ../lib/wiking/cms/cms.py:2946
+#: ../lib/wiking/cms/cms.py:2975
 msgid "Available Download Versions"
 msgstr "Dostupné verze ke stažení"
 
-#: ../lib/wiking/cms/cms.py:2949
+#: ../lib/wiking/cms/cms.py:2978
 #, python-format
 msgid "%(format)s version %(version)s"
 msgstr "%(format)s verze %(version)s"
 
-#: ../lib/wiking/cms/cms.py:2978
+#: ../lib/wiking/cms/cms.py:3007
 msgid "Changed by"
 msgstr "Změnil"
 
-#: ../lib/wiking/cms/cms.py:2982
+#: ../lib/wiking/cms/cms.py:3011
 msgid "Inserted lines"
 msgstr "Nových řádků"
 
-#: ../lib/wiking/cms/cms.py:2983
+#: ../lib/wiking/cms/cms.py:3012
 msgid "Changed lines"
 msgstr "Změněných řádků"
 
-#: ../lib/wiking/cms/cms.py:2984
+#: ../lib/wiking/cms/cms.py:3013
 msgid "Deleted lines"
 msgstr "Smazaných řádků"
 
-#: ../lib/wiking/cms/cms.py:2985
+#: ../lib/wiking/cms/cms.py:3014
 msgid "Inserted / Changed / Deleted Lines"
 msgstr "Nových / změněných / smazaných řádků"
 
-#: ../lib/wiking/cms/cms.py:2986
+#: ../lib/wiking/cms/cms.py:3015
 msgid "Inserted"
 msgstr "Vloženo"
 
-#: ../lib/wiking/cms/cms.py:2987
+#: ../lib/wiking/cms/cms.py:3016
 msgid "Green"
 msgstr "Zelená"
 
-#: ../lib/wiking/cms/cms.py:2989
+#: ../lib/wiking/cms/cms.py:3018
 msgid "Yellow"
 msgstr "Žlutá"
 
-#: ../lib/wiking/cms/cms.py:2990
+#: ../lib/wiking/cms/cms.py:3019
 msgid "Deleted"
 msgstr "Smazáno"
 
-#: ../lib/wiking/cms/cms.py:2991
+#: ../lib/wiking/cms/cms.py:3020
 msgid "Red"
 msgstr "Červená"
 
-#: ../lib/wiking/cms/cms.py:3011
+#: ../lib/wiking/cms/cms.py:3040
 #, python-format
 msgid "Changed on %s"
 msgstr "Změněno %s"
 
-#: ../lib/wiking/cms/cms.py:3018
+#: ../lib/wiking/cms/cms.py:3047
 msgid "Change Summary"
 msgstr "Souhrn změn"
 
-#: ../lib/wiking/cms/cms.py:3020
+#: ../lib/wiking/cms/cms.py:3049
 msgid "Colors"
 msgstr "Barvy"
 
-#: ../lib/wiking/cms/cms.py:3036
+#: ../lib/wiking/cms/cms.py:3065
 msgid "No differences against previous version."
 msgstr "Žádné změny oproti předchozí verzi."
 
-#: ../lib/wiking/cms/cms.py:3038
+#: ../lib/wiking/cms/cms.py:3067
 msgid "Original version"
 msgstr "Původní verze"
 
-#: ../lib/wiking/cms/cms.py:3040
+#: ../lib/wiking/cms/cms.py:3069
 msgid "Modified version"
 msgstr "Změněná verze"
 
-#: ../lib/wiking/cms/cms.py:3047
+#: ../lib/wiking/cms/cms.py:3076
 msgid "Previous version empty (no differences available)."
 msgstr "Předchozí verze byla prázdná (změny nejsou k dispozici)."
 
-#: ../lib/wiking/cms/cms.py:3077
+#: ../lib/wiking/cms/cms.py:3106
 msgid "Initial version"
 msgstr "Původní verze"
 
-#: ../lib/wiking/cms/cms.py:3109
+#: ../lib/wiking/cms/cms.py:3138
 msgid "Manage page attachments. Go to a page to create new attachments."
 msgstr ""
 "Správa příloh.  Nové přílohy přidávejte vždy přes stránku, ke které chcete "
 "přílohu přiřadit (přejděte do modulu „Stránky“)."
 
-#: ../lib/wiking/cms/cms.py:3120
+#: ../lib/wiking/cms/cms.py:3149
 msgid ""
 "Select the page where you want to move this attachment.  Don't forget to "
 "update all explicit links to this attachment within page text(s)."
@@ -1692,11 +1709,11 @@ msgstr ""
 "automatické odkazy jsou aktualizovány automaticky)."
 
 #. Noun. File on disk. Computer terminology.
-#: ../lib/wiking/cms/cms.py:3126 ../lib/wiking/cms/cms.py:3134
+#: ../lib/wiking/cms/cms.py:3155 ../lib/wiking/cms/cms.py:3163
 msgid "File"
 msgstr "Soubor"
 
-#: ../lib/wiking/cms/cms.py:3128
+#: ../lib/wiking/cms/cms.py:3157
 msgid ""
 "Upload a file from your local system.  The file name will be used to refer "
 "to the attachment within the page content.  Please note, that the file will "
@@ -1711,15 +1728,15 @@ msgstr ""
 "podtržítko a tečka.  Použitím jiných znaků v názvu souboru riskujete "
 "problémy."
 
-#: ../lib/wiking/cms/cms.py:3142
+#: ../lib/wiking/cms/cms.py:3171
 msgid "Filename"
 msgstr "Název souboru"
 
-#: ../lib/wiking/cms/cms.py:3145
+#: ../lib/wiking/cms/cms.py:3174
 msgid "Mime-type"
 msgstr "Typ MIME"
 
-#: ../lib/wiking/cms/cms.py:3148
+#: ../lib/wiking/cms/cms.py:3177
 msgid ""
 "The name of the attachment (e.g. the full name of the document). If empty, "
 "the file name will be used instead."
@@ -1727,24 +1744,24 @@ msgstr ""
 "Název přílohy (např. plný název dokumentu).  Pokud není zadáno, bude "
 "zobrazen přímo název souboru."
 
-#: ../lib/wiking/cms/cms.py:3151
+#: ../lib/wiking/cms/cms.py:3180
 msgid "Optional description used for the listing of attachments (see below)."
 msgstr "Nepovinný popis použitý pro seznam příloh (viz níže)."
 
-#: ../lib/wiking/cms/cms.py:3154
+#: ../lib/wiking/cms/cms.py:3183
 msgid "Last Modified"
 msgstr "Naposledy změněno"
 
 #. Thumbnail is a small image preview in computer terminology.
-#: ../lib/wiking/cms/cms.py:3163
+#: ../lib/wiking/cms/cms.py:3192
 msgid "Preview size"
 msgstr "Velikost náhledu"
 
-#: ../lib/wiking/cms/cms.py:3166
+#: ../lib/wiking/cms/cms.py:3195
 msgid "Full size (don't resize)"
 msgstr "Plná velikost (nezmenšovat)"
 
-#: ../lib/wiking/cms/cms.py:3168
+#: ../lib/wiking/cms/cms.py:3197
 msgid ""
 "Only relevant for images.  When set, the image will not be displayed in full "
 "size, but as a small clickable preview."
@@ -1755,11 +1772,11 @@ msgstr ""
 "až\n"
 "po kliknutí zobrazí zvětšený obrázek. "
 
-#: ../lib/wiking/cms/cms.py:3178
+#: ../lib/wiking/cms/cms.py:3207
 msgid "In Gallery"
 msgstr "V galerii"
 
-#: ../lib/wiking/cms/cms.py:3182
+#: ../lib/wiking/cms/cms.py:3211
 msgid ""
 "Check if you want the image to appear in an image Gallery below the page "
 "text."
@@ -1767,11 +1784,11 @@ msgstr ""
 "Zaškrtněte, pokud chcete, aby byl obrázek zobrazen v automaticky vytvářené\n"
 "galerii pod textem stránky."
 
-#: ../lib/wiking/cms/cms.py:3184
+#: ../lib/wiking/cms/cms.py:3213
 msgid "Listed"
 msgstr "V seznamu"
 
-#: ../lib/wiking/cms/cms.py:3185
+#: ../lib/wiking/cms/cms.py:3214
 msgid ""
 "Check if you want the item to appear in the listing of attachments at the "
 "bottom of the page."
@@ -1779,20 +1796,20 @@ msgstr ""
 "Zaškrtněte, pokud chcete, aby byla tato příloha zobrazena v seznamu příloh "
 "na konci stránky."
 
-#: ../lib/wiking/cms/cms.py:3191
+#: ../lib/wiking/cms/cms.py:3220
 msgid "Archive"
 msgstr "Archiv"
 
-#: ../lib/wiking/cms/cms.py:3193 ../lib/wiking/cms/cms.py:3302
+#: ../lib/wiking/cms/cms.py:3222 ../lib/wiking/cms/cms.py:3331
 msgid "Upload multiple attachments at once as a ZIP, TAR or TAR.GZ archive."
 msgstr ""
 "Nahrajte několik příloh současně jako archiv typu ZIP, TAR nebo TAR.GZ."
 
-#: ../lib/wiking/cms/cms.py:3195
+#: ../lib/wiking/cms/cms.py:3224
 msgid "Overwrite existing files"
 msgstr "Přepsat stávající soubory"
 
-#: ../lib/wiking/cms/cms.py:3197
+#: ../lib/wiking/cms/cms.py:3226
 msgid ""
 "If checked, the existing attachments will be updated when the archive "
 "contains files of the same name."
@@ -1800,11 +1817,11 @@ msgstr ""
 "Pokud je zaškrtnuto, stávající přílohy budou aktualizovány, pokud archiv "
 "obsahuje soubory stejného jména."
 
-#: ../lib/wiking/cms/cms.py:3199
+#: ../lib/wiking/cms/cms.py:3228
 msgid "Change file types"
 msgstr "Umožnit změnu typu souboru"
 
-#: ../lib/wiking/cms/cms.py:3202
+#: ../lib/wiking/cms/cms.py:3231
 msgid ""
 "If checked, the files to overwrite will be matched by name without extension "
 "instead of full file name.  This makes it possible to change types of some "
@@ -1817,63 +1834,63 @@ msgstr ""
 "„xy.png” nahrazuje stávající soubor „xy.jpg”)."
 
 #. Size label related to "Preview size" field (pronoun).
-#: ../lib/wiking/cms/cms.py:3281
+#: ../lib/wiking/cms/cms.py:3310
 msgid "Small"
 msgstr "Malý"
 
-#: ../lib/wiking/cms/cms.py:3282
+#: ../lib/wiking/cms/cms.py:3311
 msgid "Medium"
 msgstr "Střední"
 
-#: ../lib/wiking/cms/cms.py:3283
+#: ../lib/wiking/cms/cms.py:3312
 msgid "Large"
 msgstr "Velký"
 
 #. Button label
-#: ../lib/wiking/cms/cms.py:3300
+#: ../lib/wiking/cms/cms.py:3329
 msgid "Move"
 msgstr "Přesunout"
 
-#: ../lib/wiking/cms/cms.py:3300
+#: ../lib/wiking/cms/cms.py:3329
 msgid "Move the attachment to another page."
 msgstr "Přesunout přílohu do jiné stránky."
 
-#: ../lib/wiking/cms/cms.py:3301
+#: ../lib/wiking/cms/cms.py:3330
 msgid "Upload Archive"
 msgstr "Nahrát archiv"
 
-#: ../lib/wiking/cms/cms.py:3362
+#: ../lib/wiking/cms/cms.py:3391
 msgid "New attachment"
 msgstr "Nová příloha"
 
-#: ../lib/wiking/cms/cms.py:3368
+#: ../lib/wiking/cms/cms.py:3397
 msgid "Attachment of the same file name already exists for this page."
 msgstr "Příloha se stejným názvem souboru již pro tuto stránku existuje."
 
-#: ../lib/wiking/cms/cms.py:3370
+#: ../lib/wiking/cms/cms.py:3399
 msgid "Attachment file name exceeds the maximal length 64 characters."
 msgstr "Délka názvu souboru překračuje limit 64 znaků."
 
-#: ../lib/wiking/cms/cms.py:3533
+#: ../lib/wiking/cms/cms.py:3563
 #, python-format
 msgid "Attachment '%s' not found!"
 msgstr "Příloha „%s“ nenalezena!"
 
-#: ../lib/wiking/cms/cms.py:3638
+#: ../lib/wiking/cms/cms.py:3668
 msgid "Multiple files match"
 msgstr "Více než jeden odpovídající soubor"
 
-#: ../lib/wiking/cms/cms.py:3684
+#: ../lib/wiking/cms/cms.py:3714
 #, python-format
 msgid "Unknow archive file type: %s"
 msgstr "Neznámý typ archivu: %s"
 
-#: ../lib/wiking/cms/cms.py:3686
+#: ../lib/wiking/cms/cms.py:3716
 #, python-format
 msgid "Unable to read archive: %s"
 msgstr "Chyba při čtení archivu: %s"
 
-#: ../lib/wiking/cms/cms.py:3718
+#: ../lib/wiking/cms/cms.py:3748
 #, python-format
 msgid "%d attachment succesfully inserted"
 msgid_plural "%d attachments succesfully inserted"
@@ -1881,7 +1898,7 @@ msgstr[0] "%d příloha úspěšně vložena"
 msgstr[1] "%d přílohy úspěšně vloženy"
 msgstr[2] "%d příloh úspěšně vloženo"
 
-#: ../lib/wiking/cms/cms.py:3721
+#: ../lib/wiking/cms/cms.py:3751
 #, python-format
 msgid "%d attachment succesfully updated"
 msgid_plural "%d attachments succesfully updated"
@@ -1889,76 +1906,76 @@ msgstr[0] "%d příloha úspěšně aktualizována"
 msgstr[1] "%d přílohy úspěšně aktualizovány"
 msgstr[2] "%d příloh úspěšně aktualizováno"
 
-#: ../lib/wiking/cms/cms.py:3741 ../lib/wiking/cms/cms.py:3743
+#: ../lib/wiking/cms/cms.py:3771 ../lib/wiking/cms/cms.py:3773
 msgid "Message"
 msgstr "Zpráva"
 
-#: ../lib/wiking/cms/cms.py:3742
+#: ../lib/wiking/cms/cms.py:3772
 msgid "The item brief summary."
 msgstr "Stručné shrnutí obsahu zprávy."
 
-#: ../lib/wiking/cms/cms.py:3749
+#: ../lib/wiking/cms/cms.py:3779
 msgid "Date of the news item creation."
 msgstr "Datum vložení zprávy."
 
-#: ../lib/wiking/cms/cms.py:3805
+#: ../lib/wiking/cms/cms.py:3835
 msgid "Recent news"
 msgstr "Aktuální zprávy"
 
-#: ../lib/wiking/cms/cms.py:3806
+#: ../lib/wiking/cms/cms.py:3836
 msgid "Archive of older news"
 msgstr "Archiv starších zpráv"
 
 #. Section title and menu item
-#: ../lib/wiking/cms/cms.py:3811
+#: ../lib/wiking/cms/cms.py:3841
 msgid "News"
 msgstr "Novinky"
 
 #. Help string describing more precisely the meaning of the "News" section.
-#: ../lib/wiking/cms/cms.py:3813
+#: ../lib/wiking/cms/cms.py:3843
 msgid "Publish site news."
 msgstr "Publikovat krátké aktuální zprávy."
 
-#: ../lib/wiking/cms/cms.py:3818
+#: ../lib/wiking/cms/cms.py:3848
 msgid "Displayed days"
 msgstr "Zobrazeno dní"
 
-#: ../lib/wiking/cms/cms.py:3819
+#: ../lib/wiking/cms/cms.py:3849
 msgid "Number of days the item stays displayed in news."
 msgstr "Počet dní po které zůstává zobrazena v novinkách."
 
-#: ../lib/wiking/cms/cms.py:3828
+#: ../lib/wiking/cms/cms.py:3858
 msgid "Show"
 msgstr "Zobrazit"
 
-#: ../lib/wiking/cms/cms.py:3829
+#: ../lib/wiking/cms/cms.py:3859
 msgid "All items"
 msgstr "Všechny položky"
 
 #. Button label for creating a new message in "News".
-#: ../lib/wiking/cms/cms.py:3841
+#: ../lib/wiking/cms/cms.py:3871
 msgid "New message"
 msgstr "Nová zpráva"
 
 #. Section heading and menu item
-#: ../lib/wiking/cms/cms.py:3853
+#: ../lib/wiking/cms/cms.py:3883
 msgid "Planner"
 msgstr "Plánovač"
 
-#: ../lib/wiking/cms/cms.py:3854
+#: ../lib/wiking/cms/cms.py:3884
 msgid "Announce future events by date in a callendar-like listing."
 msgstr ""
 "Umožňuje oznamování budoucích událostí podle data v kalendářovém výpisu."
 
-#: ../lib/wiking/cms/cms.py:3858
+#: ../lib/wiking/cms/cms.py:3888
 msgid "Event"
 msgstr "Událost"
 
-#: ../lib/wiking/cms/cms.py:3858
+#: ../lib/wiking/cms/cms.py:3888
 msgid "The event brief summary."
 msgstr "Stručné shrnutí obsahu zprávy."
 
-#: ../lib/wiking/cms/cms.py:3866
+#: ../lib/wiking/cms/cms.py:3896
 #, python-format
 msgid ""
 "The date when the planned event begins. Enter the date including year.  "
@@ -1967,11 +1984,11 @@ msgstr ""
 "Datum, kdy plánovaná událost začíná. Datum vkládejte včetně roku. Např. "
 "%(date)s"
 
-#: ../lib/wiking/cms/cms.py:3867
+#: ../lib/wiking/cms/cms.py:3897
 msgid "End date"
 msgstr "Datum do"
 
-#: ../lib/wiking/cms/cms.py:3868
+#: ../lib/wiking/cms/cms.py:3898
 msgid ""
 "The date when the event ends if it is not the same as the start date (for "
 "events which last several days)."
@@ -1979,50 +1996,50 @@ msgstr ""
 "Datum, kdy plánovaná událost končí, pokud není shodný s datem začátku (pro "
 "události, které trvají několik dní)."
 
-#: ../lib/wiking/cms/cms.py:3885
+#: ../lib/wiking/cms/cms.py:3915
 msgid "Date in the past"
 msgstr "Datum je v minulosti"
 
-#: ../lib/wiking/cms/cms.py:3887
+#: ../lib/wiking/cms/cms.py:3917
 msgid "End date precedes start date"
 msgstr "Datum konce předchází počáteční datum"
 
 #. Button label for creating a new event in "Planner".
-#: ../lib/wiking/cms/cms.py:3889
+#: ../lib/wiking/cms/cms.py:3919
 msgid "New event"
 msgstr "Nová událost"
 
 #. Name of the extension module for simple forum-like discussions.
-#: ../lib/wiking/cms/cms.py:3907
+#: ../lib/wiking/cms/cms.py:3937
 msgid "Discussions"
 msgstr "Diskuse"
 
 #. Help string describing more precisely the meaning of the "News" section.
-#: ../lib/wiking/cms/cms.py:3909
+#: ../lib/wiking/cms/cms.py:3939
 msgid "Allow logged in users to post messages as in a simple forum."
 msgstr ""
 "Umožnit přihlášeným uživatelům komunikovat prostřednictvím jednoduchého fóra."
 
 #. Field label for posting a message to the discussion.
-#: ../lib/wiking/cms/cms.py:3924
+#: ../lib/wiking/cms/cms.py:3954
 msgid "Your comment"
 msgstr "Váš komentář"
 
-#: ../lib/wiking/cms/cms.py:3965
+#: ../lib/wiking/cms/cms.py:3995
 msgid "Your comment was posted to the discussion."
 msgstr "Váš příspěvek byl vložen do diskuse."
 
 #. The square brackets mark a link.  Please leave the brackets and the
 #. link target '?command=login' untouched and traslate 'log in' to fit into the
 #. sentence.  The user only sees it as 'You need to log in before ...'.
-#: ../lib/wiking/cms/cms.py:4008
+#: ../lib/wiking/cms/cms.py:4041
 msgid "Note: You need to [?command=login log in] before you can post messages."
 msgstr ""
 "Pozor: Pokud chcete přispět do diskuse, musíte se nejprve [?command=login "
 "přihlásit]."
 
 #. Section heading and menu item. Computer terminology idiom.
-#: ../lib/wiking/cms/cms.py:4019
+#: ../lib/wiking/cms/cms.py:4052
 msgid "Site Map"
 msgstr "Mapa stránek"
 
@@ -2032,76 +2049,76 @@ msgstr "Mapa stránek"
 #. interface (the area where only administrators are allowed), pages
 #. (everything outside the management interface) or both ("Global"
 #. scope).
-#: ../lib/wiking/cms/cms.py:4072
+#: ../lib/wiking/cms/cms.py:4105
 msgid "Website"
 msgstr "Webové stránky"
 
-#: ../lib/wiking/cms/cms.py:4073
+#: ../lib/wiking/cms/cms.py:4106
 msgid "Management interface"
 msgstr "Správcovské rozhraní"
 
-#: ../lib/wiking/cms/cms.py:4076
+#: ../lib/wiking/cms/cms.py:4109
 msgid "All types"
 msgstr "Všechny typy"
 
 #. Handheld device. Small computer.
-#: ../lib/wiking/cms/cms.py:4081
+#: ../lib/wiking/cms/cms.py:4114
 msgid "Handheld"
 msgstr "Handheld"
 
 #. Print as a type of media (print, speech...)
-#: ../lib/wiking/cms/cms.py:4083
+#: ../lib/wiking/cms/cms.py:4116
 msgid "Print"
 msgstr "Tisk"
 
 #. Meaning computer screen
-#: ../lib/wiking/cms/cms.py:4086
+#: ../lib/wiking/cms/cms.py:4119
 msgid "Screen"
 msgstr "Obrazovka"
 
 #. Speech as a type of media (print, speech...)
-#: ../lib/wiking/cms/cms.py:4088
+#: ../lib/wiking/cms/cms.py:4121
 msgid "Speech"
 msgstr "Řeč"
 
 #. Section heading and menu item. Meaning the visual appearance. Computer
 #. terminology.
-#: ../lib/wiking/cms/cms.py:4096
+#: ../lib/wiking/cms/cms.py:4129
 msgid "Style sheets"
 msgstr "Styly"
 
 #. Help string. Cascading Style Sheet (CSS) is computer terminology idiom.
-#: ../lib/wiking/cms/cms.py:4099
+#: ../lib/wiking/cms/cms.py:4132
 msgid "Manage available Cascading Style Sheets."
 msgstr "Správa použitých kaskádových stylů (CSS)."
 
 #. Table column heading.
 #. Whether the account is active. Values are yes/no.
-#: ../lib/wiking/cms/cms.py:4107 ../lib/wiking/cms/users.py:1746
+#: ../lib/wiking/cms/cms.py:4140 ../lib/wiking/cms/users.py:1781
 msgid "Active"
 msgstr "Aktivní"
 
 #. Heading of a form field determining in
 #. which media the page is displayed. E.g. web, print,
 #. Braille, speech.
-#: ../lib/wiking/cms/cms.py:4111
+#: ../lib/wiking/cms/cms.py:4144
 msgid "Media"
 msgstr "Médium"
 
 #. Scope of applicability of a stylesheet on different website parts.
-#: ../lib/wiking/cms/cms.py:4113
+#: ../lib/wiking/cms/cms.py:4146
 msgid "Scope"
 msgstr "Platnost"
 
 #. Global scope (applies to all parts of the website).
-#: ../lib/wiking/cms/cms.py:4116
+#: ../lib/wiking/cms/cms.py:4149
 msgid "Global"
 msgstr "Globální"
 
 #. Description of scope options.  Make sure you
 #. use the same terms as in the options themselves, which are
 #. defined a few items above.
-#: ../lib/wiking/cms/cms.py:4120
+#: ../lib/wiking/cms/cms.py:4153
 msgid ""
 "Determines where this style sheet is applicable. The \"Management interface"
 "\" is the area for CMS administration, \"Website\" means the regular pages "
@@ -2114,103 +2131,103 @@ msgstr ""
 
 #. Precedence meaning position in a sequence of importance or
 #. priority.
-#: ../lib/wiking/cms/cms.py:4127
+#: ../lib/wiking/cms/cms.py:4160
 msgid "Number denoting the style sheet precedence."
 msgstr "Číslo udávající prioritu daného stylopisu."
 
-#: ../lib/wiking/cms/cms.py:4235
+#: ../lib/wiking/cms/cms.py:4268
 msgid "Label"
 msgstr "Název"
 
-#: ../lib/wiking/cms/cms.py:4238
+#: ../lib/wiking/cms/cms.py:4271
 msgid "Purpose"
 msgstr "Účel"
 
-#: ../lib/wiking/cms/cms.py:4263
+#: ../lib/wiking/cms/cms.py:4296
 msgid ""
 "This text is no longer in use by the application. Do you want to remove it?"
 msgstr "Tento text není aplikací nadále využíván. Chcete jej odstranit?"
 
-#: ../lib/wiking/cms/cms.py:4360
+#: ../lib/wiking/cms/cms.py:4393
 msgid "System Texts"
 msgstr "Systémové texty"
 
-#: ../lib/wiking/cms/cms.py:4361
+#: ../lib/wiking/cms/cms.py:4394
 msgid "Edit miscellaneous system texts."
 msgstr "Přizpůsobit různé systémové texty."
 
-#: ../lib/wiking/cms/cms.py:4500
+#: ../lib/wiking/cms/cms.py:4533
 msgid "E-mails"
 msgstr "E-maily"
 
-#: ../lib/wiking/cms/cms.py:4501
+#: ../lib/wiking/cms/cms.py:4534
 msgid "Edit e-mail texts."
 msgstr "Přizpůsobit texty e-mailů."
 
-#: ../lib/wiking/cms/cms.py:4508
+#: ../lib/wiking/cms/cms.py:4541
 msgid "Additional recipients"
 msgstr "Další adresáti"
 
-#: ../lib/wiking/cms/cms.py:4509
+#: ../lib/wiking/cms/cms.py:4542
 msgid "Comma separated list of e-mail addresses."
 msgstr "Seznam e-mailových adres oddělených čárkami."
 
 #. Section title and menu item. Sending emails to multiple recipients.
-#: ../lib/wiking/cms/cms.py:4677
+#: ../lib/wiking/cms/cms.py:4710
 msgid "Bulk E-mails"
 msgstr "Hromadné maily"
 
-#: ../lib/wiking/cms/cms.py:4682
+#: ../lib/wiking/cms/cms.py:4715
 msgid "Sender address"
 msgstr "Adresa odesílatele"
 
-#: ../lib/wiking/cms/cms.py:4684
+#: ../lib/wiking/cms/cms.py:4717
 msgid "E-mail address of the sender."
 msgstr "E-mailová adresa odesílatele."
 
 #. List of recipients of an email message
-#: ../lib/wiking/cms/cms.py:4686
+#: ../lib/wiking/cms/cms.py:4719
 msgid "Recipients"
 msgstr "Role příjemců"
 
 #. All users are intended recipients of an email message
-#: ../lib/wiking/cms/cms.py:4688
+#: ../lib/wiking/cms/cms.py:4721
 msgid "All users"
 msgstr "Všichni uživatelé"
 
 #. The state of the user account (e.g. Enabled vs Disabled).  Column
 #. heading and field label.
-#: ../lib/wiking/cms/cms.py:4694 ../lib/wiking/cms/users.py:595
+#: ../lib/wiking/cms/cms.py:4727 ../lib/wiking/cms/users.py:596
 msgid "State"
 msgstr "Stav"
 
 #. State of processing of an email message (e.g. Pending, Sending, Sent)
-#: ../lib/wiking/cms/cms.py:4701
+#: ../lib/wiking/cms/cms.py:4734
 msgid "Sent"
 msgstr "Odesláno"
 
 #. State of processing of an email message (e.g. Pending, Sending, Sent)
-#: ../lib/wiking/cms/cms.py:4704
+#: ../lib/wiking/cms/cms.py:4737
 msgid "Sending"
 msgstr "Odesílá se"
 
 #. State of processing of an email message (e.g. Pending, Sending, Sent)
-#: ../lib/wiking/cms/cms.py:4707
+#: ../lib/wiking/cms/cms.py:4740
 msgid "Pending"
 msgstr "Čeká na zpracování"
 
-#: ../lib/wiking/cms/cms.py:4714
+#: ../lib/wiking/cms/cms.py:4747
 #, python-format
 msgid "%(subject)s"
 msgstr "%(subject)s"
 
 #. Button label meaning save this email text for later repeated usage
-#: ../lib/wiking/cms/cms.py:4717
+#: ../lib/wiking/cms/cms.py:4750
 msgid "Use as a Template"
 msgstr "Použít jako vzor"
 
 #. Description of button for creating a template of an email
-#: ../lib/wiking/cms/cms.py:4719
+#: ../lib/wiking/cms/cms.py:4752
 msgid "Edit this mail for repeated use"
 msgstr "Upravit tento mail pro nové použití"
 
@@ -2307,12 +2324,12 @@ msgid "Users and Encryption Keys"
 msgstr "Uživatelé a šifrovací klíče"
 
 #: ../lib/wiking/cms/crypto.py:85 ../lib/wiking/cms/users.py:228
-#: ../lib/wiking/cms/users.py:559 ../lib/wiking/cms/users.py:1732
+#: ../lib/wiking/cms/users.py:560 ../lib/wiking/cms/users.py:1767
 msgid "User"
 msgstr "Uživatel"
 
 #. Button label.
-#: ../lib/wiking/cms/crypto.py:86 ../lib/wiking/cms/users.py:865
+#: ../lib/wiking/cms/crypto.py:86 ../lib/wiking/cms/users.py:866
 msgid "New user"
 msgstr "Nový uživatel"
 
@@ -2333,11 +2350,11 @@ msgstr "Odstranit"
 msgid "Current password"
 msgstr "Současné heslo"
 
-#: ../lib/wiking/cms/crypto.py:93 ../lib/wiking/cms/users.py:543
+#: ../lib/wiking/cms/crypto.py:93 ../lib/wiking/cms/users.py:544
 msgid "New password"
 msgstr "Nové heslo"
 
-#: ../lib/wiking/cms/crypto.py:105 ../lib/wiking/cms/users.py:730
+#: ../lib/wiking/cms/crypto.py:105 ../lib/wiking/cms/users.py:731
 msgid "Change password"
 msgstr "Změna hesla"
 
@@ -2617,7 +2634,7 @@ msgid "Manage registered users and their privileges."
 msgstr "Správa registrovaných uživatelů a jejich oprávnění."
 
 #. Login name for a website. Registration form field.
-#: ../lib/wiking/cms/users.py:522 ../lib/wiking/cms/users.py:1601
+#: ../lib/wiking/cms/users.py:522 ../lib/wiking/cms/users.py:1645
 msgid "Login name"
 msgstr "Přihlašovací jméno"
 
@@ -2642,22 +2659,22 @@ msgstr ""
 "Pokud je zaškrtnuto, heslo bude vygenerováno automaticky a bude posláno na e-"
 "mailovou adresu uživatele."
 
-#: ../lib/wiking/cms/users.py:533 ../lib/wiking/cms/users.py:1602
+#: ../lib/wiking/cms/users.py:533 ../lib/wiking/cms/users.py:1646
 msgid "Password"
 msgstr "Heslo"
 
-#: ../lib/wiking/cms/users.py:535 ../lib/wiking/cms/users.py:544
+#: ../lib/wiking/cms/users.py:536 ../lib/wiking/cms/users.py:545
 msgid ""
 "Please, write the password into each of the two fields to eliminate typos."
 msgstr ""
 "Zapište heslo stejně do obou políček, aby mohly být vyloučeny případné "
 "překlepy."
 
-#: ../lib/wiking/cms/users.py:538
+#: ../lib/wiking/cms/users.py:539
 msgid "Old password"
 msgstr "Staré heslo"
 
-#: ../lib/wiking/cms/users.py:540
+#: ../lib/wiking/cms/users.py:541
 msgid "Verify your identity by entering your original (current) password."
 msgstr "Potvrďte svou identitu zadáním Vašeho původního (současného) hesla."
 
@@ -2667,30 +2684,30 @@ msgstr "Potvrďte svou identitu zadáním Vašeho původního (současného) hes
 #. visible to the admin and to the user himself, so it requires a dynamic
 #. 'view'
 #. layout.
-#: ../lib/wiking/cms/users.py:553
+#: ../lib/wiking/cms/users.py:554
 msgid "Last password change"
 msgstr "Poslední změna hesla"
 
 #. Full name of a person. Registration form field.
-#: ../lib/wiking/cms/users.py:556
+#: ../lib/wiking/cms/users.py:557
 msgid "Full Name"
 msgstr "Celé jméno"
 
-#: ../lib/wiking/cms/users.py:561
+#: ../lib/wiking/cms/users.py:562
 msgid "First name"
 msgstr "Jméno"
 
-#: ../lib/wiking/cms/users.py:562
+#: ../lib/wiking/cms/users.py:563
 msgid "Surname"
 msgstr "Příjmení"
 
 #. Name of a user to display on a website if he doesn't want the
 #. default "Name Surname". Registration form field.
-#: ../lib/wiking/cms/users.py:565
+#: ../lib/wiking/cms/users.py:566
 msgid "Displayed name"
 msgstr "Zobrazené jméno"
 
-#: ../lib/wiking/cms/users.py:566
+#: ../lib/wiking/cms/users.py:567
 msgid ""
 "Leave blank if you want to be referred by your full name or enter an "
 "alternate name, such as nickname or monogram."
@@ -2698,31 +2715,31 @@ msgstr ""
 "Ponechte prázdné, pokud chcete, aby se na Vás systém odkazoval plným jménem, "
 "nebo zadejte jiné jméno, jako např. přezdívku nebo monogram."
 
-#: ../lib/wiking/cms/users.py:568
+#: ../lib/wiking/cms/users.py:569
 msgid "Gender"
 msgstr "Pohlaví"
 
 #. Telephone number. Registration form field.
-#: ../lib/wiking/cms/users.py:575
+#: ../lib/wiking/cms/users.py:576
 msgid "Phone"
 msgstr "Telefon"
 
 #. Post address. Registration form field.
-#: ../lib/wiking/cms/users.py:577
+#: ../lib/wiking/cms/users.py:578
 msgid "Address"
 msgstr "Adresa"
 
 #. Do not translate (means Uniform Resource Identifier).
-#: ../lib/wiking/cms/users.py:579
+#: ../lib/wiking/cms/users.py:580
 msgid "URI"
 msgstr "URI"
 
 #. Generic note for further information. Registration form field.
-#: ../lib/wiking/cms/users.py:581
+#: ../lib/wiking/cms/users.py:582
 msgid "Note"
 msgstr "Poznámka"
 
-#: ../lib/wiking/cms/users.py:582
+#: ../lib/wiking/cms/users.py:583
 msgid ""
 "Optional message for the administrator.  If you summarize briefly why you "
 "register, what role you expect in the system or whom you have talked to, "
@@ -2734,11 +2751,11 @@ msgstr ""
 
 #. Label of a checkbox to confirm usage conditions or a
 #. similar kind of agreement specific for given website.
-#: ../lib/wiking/cms/users.py:587
+#: ../lib/wiking/cms/users.py:588
 msgid "I agree"
 msgstr "Souhlasím"
 
-#: ../lib/wiking/cms/users.py:588
+#: ../lib/wiking/cms/users.py:589
 msgid ""
 "Please check if (and only if) you have read the conditions above and you "
 "agree with them."
@@ -2748,212 +2765,222 @@ msgstr ""
 
 #. Since when the user is registered. Table column heading
 #. and field label for a date/time value.
-#: ../lib/wiking/cms/users.py:592
+#: ../lib/wiking/cms/users.py:593
 msgid "Registered since"
 msgstr "Registrace od"
 
-#: ../lib/wiking/cms/users.py:665
+#: ../lib/wiking/cms/users.py:666
 #, python-format
 msgid "Invalid e-mail address: %s"
 msgstr "Chybná e-mailová adresa: %s"
 
-#: ../lib/wiking/cms/users.py:681
+#: ../lib/wiking/cms/users.py:682
 msgid "Enter your current password."
 msgstr "Zadejte své současné heslo."
 
-#: ../lib/wiking/cms/users.py:683
+#: ../lib/wiking/cms/users.py:684
 msgid "Invalid password."
 msgstr "Neplatné heslo."
 
-#: ../lib/wiking/cms/users.py:689
+#: ../lib/wiking/cms/users.py:690
 msgid "Enter the new password."
 msgstr "Zadejte nové heslo."
 
-#: ../lib/wiking/cms/users.py:691
+#: ../lib/wiking/cms/users.py:692
 msgid "The new password is the same as the old one."
 msgstr "Nové heslo je stejné jako staré."
 
-#: ../lib/wiking/cms/users.py:697
+#: ../lib/wiking/cms/users.py:698
 msgid "User's Groups"
 msgstr "Skupiny uživatele"
 
 #. Heading for an overview when and how the user has accessed the application.
-#: ../lib/wiking/cms/users.py:699 ../lib/wiking/cms/users.py:1725
+#: ../lib/wiking/cms/users.py:700 ../lib/wiking/cms/users.py:1760
 msgid "Login History"
 msgstr "Historie přihlášení"
 
-#: ../lib/wiking/cms/users.py:701
+#: ../lib/wiking/cms/users.py:702
 msgid "Crypto Keys"
 msgstr "Šifrovací klíče"
 
 #. Name of group of users who have full access to the system.
-#: ../lib/wiking/cms/users.py:711 ../lib/wiking/cms/users.py:1479
+#: ../lib/wiking/cms/users.py:712 ../lib/wiking/cms/users.py:1518
 msgid "Active users"
 msgstr "Aktivní uživatelé"
 
 #. Name for a group of users accounts, who were not yet approved by the
 #. administrator.
-#: ../lib/wiking/cms/users.py:715
+#: ../lib/wiking/cms/users.py:716
 msgid "Unapproved accounts (pending admin approvals)"
 msgstr "Neschválené účty (čeká se až správce přidělí přístup)"
 
-#: ../lib/wiking/cms/users.py:720
+#: ../lib/wiking/cms/users.py:721
 msgid "Unfinished registration requests (activation code not confirmed)"
 msgstr "Nedokončené žádosti o registraci (nebyl potvrzen aktivační kód)"
 
 #. Name for a group of users whose accounts were blocked.
-#: ../lib/wiking/cms/users.py:723
+#: ../lib/wiking/cms/users.py:724
 msgid "Disabled users"
 msgstr "Vyřazení uživatelé"
 
 #. Accounts as in user accounts (computer terminology).
-#: ../lib/wiking/cms/users.py:726
+#: ../lib/wiking/cms/users.py:727
 msgid "All accounts"
 msgstr "Všechny účty"
 
-#: ../lib/wiking/cms/users.py:730
+#: ../lib/wiking/cms/users.py:731
 msgid "Change user's password"
 msgstr "Změna přihlašovacího hesla"
 
 #. Button label.  Used to approve user's account by the administrator.
-#: ../lib/wiking/cms/users.py:732
+#: ../lib/wiking/cms/users.py:733
 msgid "Approve"
 msgstr "Schválit"
 
-#: ../lib/wiking/cms/users.py:732
+#: ../lib/wiking/cms/users.py:733
 msgid "Aprove this account"
 msgstr "Schválit tento účet"
 
 #. Button label. Computer terminology. Use common word and form.
-#: ../lib/wiking/cms/users.py:739
+#: ../lib/wiking/cms/users.py:740
 msgid "Enable"
 msgstr "Povolit"
 
-#: ../lib/wiking/cms/users.py:739
+#: ../lib/wiking/cms/users.py:740
 msgid "Enable this account"
 msgstr "Povolit tento účet"
 
 #. Button label. Computer terminology. Use common word and form.
-#: ../lib/wiking/cms/users.py:744
+#: ../lib/wiking/cms/users.py:745
 msgid "Disable"
 msgstr "Zakázat"
 
-#: ../lib/wiking/cms/users.py:744
+#: ../lib/wiking/cms/users.py:745
 msgid "Disable this account"
 msgstr "Zakázat tento účet"
 
-#: ../lib/wiking/cms/users.py:748
+#: ../lib/wiking/cms/users.py:749
 msgid "Resend activation code"
 msgstr "Poslat aktivační kód"
 
-#: ../lib/wiking/cms/users.py:748
+#: ../lib/wiking/cms/users.py:749
 msgid "Re-send registration mail"
 msgstr "Znovu poslat registrační e-mail"
 
-#: ../lib/wiking/cms/users.py:750
+#: ../lib/wiking/cms/users.py:751
 msgid "Delete"
 msgstr "Smazat"
 
-#: ../lib/wiking/cms/users.py:750
+#: ../lib/wiking/cms/users.py:751
 msgid "Remove the account completely"
 msgstr "Úplně odstranit účet"
 
-#: ../lib/wiking/cms/users.py:782
+#: ../lib/wiking/cms/users.py:783
 msgid "New account"
 msgstr "Nový účet"
 
-#: ../lib/wiking/cms/users.py:783
+#: ../lib/wiking/cms/users.py:784
 msgid "Unapproved account"
 msgstr "Neschválený účet"
 
 #. Dialog title (account in the meaning of user account).
-#: ../lib/wiking/cms/users.py:784 ../lib/wiking/cms/users.py:1695
+#: ../lib/wiking/cms/users.py:785 ../lib/wiking/cms/users.py:1730
 msgid "Account disabled"
 msgstr "Účet neaktivní"
 
-#: ../lib/wiking/cms/users.py:785
+#: ../lib/wiking/cms/users.py:786
 msgid "Active account"
 msgstr "Aktivní účet"
 
-#: ../lib/wiking/cms/users.py:796
+#: ../lib/wiking/cms/users.py:797
 msgid "Male"
 msgstr "Muž"
 
-#: ../lib/wiking/cms/users.py:797
+#: ../lib/wiking/cms/users.py:798
 msgid "Female"
 msgstr "Žena"
 
 #. Button label.
-#: ../lib/wiking/cms/users.py:867
+#: ../lib/wiking/cms/users.py:868
 msgid "Edit profile"
 msgstr "Upravit profil"
 
 #. Button label. Modify the users data (email, address...)
-#: ../lib/wiking/cms/users.py:869
+#: ../lib/wiking/cms/users.py:870
 msgid "Modify user's record"
 msgstr "Změnit údaje o uživateli"
 
 #. Personal data -- first name, surname, nickname ...
-#: ../lib/wiking/cms/users.py:897 ../lib/wiking/cms/users.py:913
-#: ../lib/wiking/cms/users.py:925
+#: ../lib/wiking/cms/users.py:898 ../lib/wiking/cms/users.py:914
+#: ../lib/wiking/cms/users.py:926
 msgid "Personal data"
 msgstr "Osobní údaje"
 
 #. Contact information -- email, phone, address...
-#: ../lib/wiking/cms/users.py:898 ../lib/wiking/cms/users.py:914
-#: ../lib/wiking/cms/users.py:927
+#: ../lib/wiking/cms/users.py:899 ../lib/wiking/cms/users.py:915
+#: ../lib/wiking/cms/users.py:928
 msgid "Contact information"
 msgstr "Kontaktní údaje"
 
 #. Others is a label for a group of unspecified form fields
 #. (as in Personal data, Contact information, Others).
-#: ../lib/wiking/cms/users.py:899 ../lib/wiking/cms/users.py:918
-#: ../lib/wiking/cms/users.py:930
+#: ../lib/wiking/cms/users.py:900 ../lib/wiking/cms/users.py:919
+#: ../lib/wiking/cms/users.py:931
 msgid "Others"
 msgstr "Ostatní"
 
-#: ../lib/wiking/cms/users.py:900
+#: ../lib/wiking/cms/users.py:901
 msgid "Account state"
 msgstr "Stav účtu"
 
-#: ../lib/wiking/cms/users.py:917
+#: ../lib/wiking/cms/users.py:918
 msgid "Login information"
 msgstr "Přihlašovací údaje"
 
 #. Confirmation of website terms&conditions. Form label.
-#: ../lib/wiking/cms/users.py:922 ../lib/wiking/cms/users.py:937
+#: ../lib/wiking/cms/users.py:923 ../lib/wiking/cms/users.py:938
 msgid "Confirmation"
 msgstr "Souhlas"
 
-#: ../lib/wiking/cms/users.py:1000 ../lib/wiking/cms/users.py:1241
+#: ../lib/wiking/cms/users.py:1010
+msgid ""
+"This e-mail address is already registered. Please, log in. Use the password "
+"reminder link under the log in form if you forgot your password. "
+msgstr "Tato e-mailová adresa je již registrovaná. Přihlašte se, prosím. Použijte odkaz na připomenutí hesla pod přihlašovacím formuláře, pokud jste heslo zapomněli."
+
+#: ../lib/wiking/cms/users.py:1015
+msgid "This login name is already taken.  Please choose another."
+msgstr "Toto přihlašovací jméno je již používáno. Zvolte, prosím, jiné."
+
+#: ../lib/wiking/cms/users.py:1028 ../lib/wiking/cms/users.py:1269
 msgid "Failed sending e-mail:"
 msgstr "Nepodařilo se odeslat e-mail:"
 
-#: ../lib/wiking/cms/users.py:1013
+#: ../lib/wiking/cms/users.py:1041
 msgid "Registration completed. You can log in now."
 msgstr "Registrace dokončena. Nyní se můžete přihlásit."
 
-#: ../lib/wiking/cms/users.py:1016
+#: ../lib/wiking/cms/users.py:1044
 msgid "The account has been created."
 msgstr "Účet byl vytvořen."
 
-#: ../lib/wiking/cms/users.py:1018
+#: ../lib/wiking/cms/users.py:1046
 #, python-format
 msgid "The generated password was sent to %s."
 msgstr "Vygenerované heslo bylo odesláno na adresu %s."
 
-#: ../lib/wiking/cms/users.py:1021 ../lib/wiking/cms/users.py:1243
+#: ../lib/wiking/cms/users.py:1049 ../lib/wiking/cms/users.py:1271
 #, python-format
 msgid "The activation code was sent to %s."
 msgstr "Aktivační kód byl odeslán na adresu %s."
 
 #. Follows an email addres, e.g. ``... was sent to
 #. your email address at joe@brailcom.org''
-#: ../lib/wiking/cms/users.py:1026
+#: ../lib/wiking/cms/users.py:1054
 msgid "Registration completed"
 msgstr "Registrace dokončena"
 
-#: ../lib/wiking/cms/users.py:1030
+#: ../lib/wiking/cms/users.py:1058
 #, python-format
 msgid ""
 "To finish your registration, please confirm the activation code that was "
@@ -2962,7 +2989,7 @@ msgstr ""
 "Pro dokončení registrace prosím potvrďte aktivační kód zaslaný na Vaši "
 "emailovou adresu %s."
 
-#: ../lib/wiking/cms/users.py:1043
+#: ../lib/wiking/cms/users.py:1071
 #, python-format
 msgid ""
 "Your account at %(server_hostname)s was created.\n"
@@ -2987,7 +3014,7 @@ msgstr ""
 "%(uri)s\n"
 "\n"
 
-#: ../lib/wiking/cms/users.py:1051
+#: ../lib/wiking/cms/users.py:1079
 #, python-format
 msgid ""
 "To finish your registration at %(server_hostname)s, click on the following "
@@ -3002,33 +3029,33 @@ msgstr ""
 "%(uri)s\n"
 "\n"
 
-#: ../lib/wiking/cms/users.py:1053
+#: ../lib/wiking/cms/users.py:1081
 #, python-format
 msgid "Your registration at %s"
 msgstr "Vaše registrace na %s"
 
-#: ../lib/wiking/cms/users.py:1076
+#: ../lib/wiking/cms/users.py:1104
 msgid "User registration already confirmed."
 msgstr "Registrace uživatele již byla dříve potvrzena."
 
-#: ../lib/wiking/cms/users.py:1079
+#: ../lib/wiking/cms/users.py:1107
 msgid "Invalid activation code."
 msgstr "Neplatný aktivační kód."
 
-#: ../lib/wiking/cms/users.py:1080 ../lib/wiking/cms/users.py:1697
+#: ../lib/wiking/cms/users.py:1108 ../lib/wiking/cms/users.py:1732
 msgid "Account not activated"
 msgstr "Účet neaktivní"
 
-#: ../lib/wiking/cms/users.py:1085
+#: ../lib/wiking/cms/users.py:1113
 msgid "New user account:"
 msgstr "Nový účet:"
 
-#: ../lib/wiking/cms/users.py:1088
+#: ../lib/wiking/cms/users.py:1116
 #, python-format
 msgid "New user %(fullname)s registered at %(server_hostname)s."
 msgstr "Nový uživatel %(fullname)s se registroval na %(server_hostname)s."
 
-#: ../lib/wiking/cms/users.py:1095
+#: ../lib/wiking/cms/users.py:1123
 #, python-format
 msgid ""
 "New account for %(fullname)s was created by %(admin_name)s at "
@@ -3037,27 +3064,27 @@ msgstr ""
 "%(admin_name)s vytvořil nový účet pro uživatele %(fullname)s na "
 "%(server_hostname)s."
 
-#: ../lib/wiking/cms/users.py:1099
+#: ../lib/wiking/cms/users.py:1127
 msgid "The account was enabled with an automatically generated password."
 msgstr "Účet byl povolen s automaticky vygenerovaným heslem."
 
-#: ../lib/wiking/cms/users.py:1101
+#: ../lib/wiking/cms/users.py:1129
 msgid "The account was approved automatically according to server setup."
 msgstr "Účet byl schválen automaticky na základě nastavení serveru."
 
-#: ../lib/wiking/cms/users.py:1104
+#: ../lib/wiking/cms/users.py:1132
 msgid "Please approve the account:"
 msgstr "Proveďte, prosím, potvrzení registrace:"
 
-#: ../lib/wiking/cms/users.py:1106
+#: ../lib/wiking/cms/users.py:1134
 msgid "Note:"
 msgstr "Poznámka:"
 
-#: ../lib/wiking/cms/users.py:1111
+#: ../lib/wiking/cms/users.py:1139
 msgid "E-mail notification has been sent to server administrators."
 msgstr "E-mailové upozornění bylo odesláno správcům serveru."
 
-#: ../lib/wiking/cms/users.py:1117
+#: ../lib/wiking/cms/users.py:1145
 msgid ""
 "The activation code was not yet confirmed by the user. Therefore it is not "
 "possible to trust that given e-mail address belongs to the person who "
@@ -3067,7 +3094,7 @@ msgstr ""
 "spolehnout, že zadaná e-mailová adresa skutečně patří tomu, kdo registraci "
 "provedl."
 
-#: ../lib/wiking/cms/users.py:1124
+#: ../lib/wiking/cms/users.py:1152
 #, python-format
 msgid ""
 "The activation code will expire on %(date)s and the user will not be able to "
@@ -3076,7 +3103,7 @@ msgstr ""
 "Aktivační kód vyprší %(date)s. Uživatel po tomto datu nebude mít možnost "
 "registraci dokončit."
 
-#: ../lib/wiking/cms/users.py:1126
+#: ../lib/wiking/cms/users.py:1154
 msgid ""
 "Use the button \"Resend activation code\" below to remind the user of his "
 "pending registration."
@@ -3084,7 +3111,7 @@ msgstr ""
 "Použijte tlačítko „Poslat aktivační kód“ níže pro připomenutí nedokončené "
 "registrace uživateli."
 
-#: ../lib/wiking/cms/users.py:1132
+#: ../lib/wiking/cms/users.py:1160
 #, python-format
 msgid ""
 "The registration expired on %(date)s.  The user didn't confirm the "
@@ -3093,7 +3120,7 @@ msgstr ""
 "Registrace vypršela k %(date)s.  Uživatel včas nepotvrdil aktivační kód "
 "odeslaný na zadanou e-mailovou adresu."
 
-#: ../lib/wiking/cms/users.py:1134
+#: ../lib/wiking/cms/users.py:1162
 msgid ""
 "The account should be deleted automatically if the server maintenence script "
 "is installed correctly.  Otherwise you can delete the account manually."
@@ -3101,11 +3128,11 @@ msgstr ""
 "Účet by měl být odstraněn automaticky, pokud je skript údržby korektně "
 "nainstalován.  Pokud ne, můžete jej smazat manuálně."
 
-#: ../lib/wiking/cms/users.py:1138
+#: ../lib/wiking/cms/users.py:1166
 msgid "The activation code was succesfully confirmed."
 msgstr "Aktivační kód byl úspěšně potvrzen."
 
-#: ../lib/wiking/cms/users.py:1141
+#: ../lib/wiking/cms/users.py:1169
 msgid ""
 "Therefore it was verified that given e-mail address belongs to the person "
 "who requested the registration."
@@ -3113,7 +3140,7 @@ msgstr ""
 "Tím bylo ověřeno, že zadaná e-mailová adresa skutečně patří osobě, která "
 "registraci provedla."
 
-#: ../lib/wiking/cms/users.py:1143
+#: ../lib/wiking/cms/users.py:1171
 msgid ""
 "The user is now able to log in, but still has no rights (other than an "
 "anonymous user)."
@@ -3121,11 +3148,11 @@ msgstr ""
 "Uživatel se nyní může přihlásit, ale nemá žádná práva (jiná než nepřihlášený "
 "uživatel)."
 
-#: ../lib/wiking/cms/users.py:1145
+#: ../lib/wiking/cms/users.py:1173
 msgid "The account now awaits administrator's action to be approved."
 msgstr "Účet se stane aktivní, až jej administrátor schválí."
 
-#: ../lib/wiking/cms/users.py:1147
+#: ../lib/wiking/cms/users.py:1175
 msgid ""
 "The account is blocked.  The user is able to log in, but has no access to "
 "protected services until the administrator enables the account again."
@@ -3133,15 +3160,15 @@ msgstr ""
 "Účet je zablokován.  Uživatel se může přihlásit ale nemá žádná oprávnění k "
 "chráněným službám dokud mu správce účet znovu neaktivuje."
 
-#: ../lib/wiking/cms/users.py:1185
+#: ../lib/wiking/cms/users.py:1213
 msgid "Registration confirmed"
 msgstr "Registrace potvrzena"
 
-#: ../lib/wiking/cms/users.py:1198
+#: ../lib/wiking/cms/users.py:1226
 msgid "The account was enabled."
 msgstr "Účet byl povolen."
 
-#: ../lib/wiking/cms/users.py:1202
+#: ../lib/wiking/cms/users.py:1230
 #, python-format
 msgid ""
 "Your account at %(uri)s has been enabled. Please log in with username "
@@ -3150,41 +3177,41 @@ msgstr ""
 "Váš účet na %(uri)s byl povolen. Přihlašte se, prosím, s Vaším uživatelským "
 "jménem „%(login)s“ a heslem zvoleným při registraci."
 
-#: ../lib/wiking/cms/users.py:1203
+#: ../lib/wiking/cms/users.py:1231
 msgid "Your account has been enabled."
 msgstr "Váš účet byl povolen."
 
-#: ../lib/wiking/cms/users.py:1206 ../lib/wiking/cms/users.py:1609
+#: ../lib/wiking/cms/users.py:1234 ../lib/wiking/cms/users.py:1653
 msgid "Failed sending e-mail notification:"
 msgstr "Nepodařilo se odeslat e-mailové upozornění:"
 
-#: ../lib/wiking/cms/users.py:1209
+#: ../lib/wiking/cms/users.py:1237
 msgid "E-mail notification has been sent to:"
 msgstr "E-mailové upozornění bylo odesláno na:"
 
-#: ../lib/wiking/cms/users.py:1211
+#: ../lib/wiking/cms/users.py:1239
 msgid "The account was disabled."
 msgstr "Účet byl zakázán."
 
-#: ../lib/wiking/cms/users.py:1218
+#: ../lib/wiking/cms/users.py:1246
 #, python-format
 msgid "The registration expired on %(date)s."
 msgstr "Registrace vypršela %(date)s."
 
-#: ../lib/wiking/cms/users.py:1220
+#: ../lib/wiking/cms/users.py:1248
 msgid "Continue"
 msgstr "Pokračovat"
 
 #. Button label to get to a previous state.
-#: ../lib/wiking/cms/users.py:1222
+#: ../lib/wiking/cms/users.py:1250
 msgid "Back"
 msgstr "Zpět"
 
-#: ../lib/wiking/cms/users.py:1223
+#: ../lib/wiking/cms/users.py:1251
 msgid "The registration code was not confirmed by the user!"
 msgstr "Registrační kód nebyl uživatelem potvrzen!"
 
-#: ../lib/wiking/cms/users.py:1224
+#: ../lib/wiking/cms/users.py:1252
 msgid ""
 "Please enable the account only if you are sure that the e-mail address "
 "belongs to given user."
@@ -3192,49 +3219,49 @@ msgstr ""
 "Potvrďte, prosím, účet pouze tehdy, pokud jste si jisti, že e-mailová adresa "
 "skutečně patří danému uživateli."
 
-#: ../lib/wiking/cms/users.py:1480
+#: ../lib/wiking/cms/users.py:1519
 msgid "Listing of all active user accounts."
 msgstr "Výpis všech aktivních uživatelských účtů."
 
-#: ../lib/wiking/cms/users.py:1506
+#: ../lib/wiking/cms/users.py:1545
 msgid "Enter your login name or e-mail address"
 msgstr "Zadejte své přihlašovací jméno, nebo e-mailovou adresu"
 
 #. Button name. Computer terminology. Use an appropriate term common
 #. for submitting forms in a computer application.
-#: ../lib/wiking/cms/users.py:1510 ../lib/wiking/cms/users.py:1658
+#: ../lib/wiking/cms/users.py:1549 ../lib/wiking/cms/users.py:1693
 msgid "Submit"
 msgstr "Odeslat"
 
-#: ../lib/wiking/cms/users.py:1564
+#: ../lib/wiking/cms/users.py:1608
 msgid "Password reminder"
 msgstr "Pomocník zapomenutého hesla"
 
-#: ../lib/wiking/cms/users.py:1577
+#: ../lib/wiking/cms/users.py:1621
 msgid "Multiple user accounts found for given email address."
 msgstr "Pro zadanou e-mailovou adresu bylo nalezeno více uživatelských účtů."
 
-#: ../lib/wiking/cms/users.py:1578
+#: ../lib/wiking/cms/users.py:1622
 msgid "Please, select the account for which you want to remind:"
 msgstr "Zvolte prosím účet, pro který chcete použít funkci připomenutí:"
 
 #. Credentials such as password...
-#: ../lib/wiking/cms/users.py:1591
+#: ../lib/wiking/cms/users.py:1635
 msgid "Your credentials were reset to:"
 msgstr "Vaše přihlašovací údaje byly nastaveny na:"
 
 #. Credentials such as password...
-#: ../lib/wiking/cms/users.py:1595
+#: ../lib/wiking/cms/users.py:1639
 msgid "Your credentials are:"
 msgstr "Vaše přihlašovací údaje jsou:"
 
-#: ../lib/wiking/cms/users.py:1598
+#: ../lib/wiking/cms/users.py:1642
 #, python-format
 msgid "A password reminder request has been made at %(server_uri)s."
 msgstr ""
 "Na serveru %(server_uri)s byl zadán požadavek na zaslání zapomenutého hesla."
 
-#: ../lib/wiking/cms/users.py:1604
+#: ../lib/wiking/cms/users.py:1648
 msgid ""
 "We strongly recommend you change your password at nearest occassion, since "
 "it has been exposed to an unsecure channel."
@@ -3242,75 +3269,75 @@ msgstr ""
 "Silně doporučujeme heslo změnit při nejbližší možné příležitosti, neboť "
 "během přenosu e-mailem mohlo být lehce zachyceno neoprávněnou osobou."
 
-#: ../lib/wiking/cms/users.py:1611
+#: ../lib/wiking/cms/users.py:1655
 msgid "Please try repeating your request later or contact the administrator!"
 msgstr "Zopakujte prosím požadavek později, nebo kontaktujte správce serveru!"
 
-#: ../lib/wiking/cms/users.py:1613
+#: ../lib/wiking/cms/users.py:1657
 msgid "E-mail information has been sent to your email address."
 msgstr "E-mailové upozornění bylo odesláno na Vaši e-mailovou adresu."
 
-#: ../lib/wiking/cms/users.py:1616
+#: ../lib/wiking/cms/users.py:1660
 msgid "No user account for your query."
 msgstr "Žádný uživatelský účet neodpovídá zadání"
 
-#: ../lib/wiking/cms/users.py:1656
+#: ../lib/wiking/cms/users.py:1691
 msgid "Enter the activation code:"
 msgstr "Zadejte aktivační kód:"
 
-#: ../lib/wiking/cms/users.py:1661
+#: ../lib/wiking/cms/users.py:1696
 msgid "Continue without activation"
 msgstr "Pokračovat bez aktivace"
 
-#: ../lib/wiking/cms/users.py:1699
+#: ../lib/wiking/cms/users.py:1734
 msgid "Account not approved"
 msgstr "Účet není schválen"
 
-#: ../lib/wiking/cms/users.py:1726
+#: ../lib/wiking/cms/users.py:1761
 msgid "History of successful login sessions and unsuccessful login attempts."
 msgstr "Historie úspěšných sezení i neúspěšných pokusů o přihlášení."
 
 #. Login name.
-#: ../lib/wiking/cms/users.py:1735
+#: ../lib/wiking/cms/users.py:1770
 msgid "Login"
 msgstr "Přihlašovací jméno"
 
 #. Form field saying whether the users attempt was succesful.
 #. Values are Yes/No.
-#: ../lib/wiking/cms/users.py:1738
+#: ../lib/wiking/cms/users.py:1773
 msgid "Success"
 msgstr "Úspěch"
 
 #. Table column heading.
 #. Time of the start of user session, followed by a date and time.
-#: ../lib/wiking/cms/users.py:1741
+#: ../lib/wiking/cms/users.py:1776
 msgid "Start time"
 msgstr "Začátek"
 
 #. Table column heading. The length of user session. Contains time.
-#: ../lib/wiking/cms/users.py:1743
+#: ../lib/wiking/cms/users.py:1778
 msgid "Duration"
 msgstr "Trvání"
 
-#: ../lib/wiking/cms/users.py:1747
+#: ../lib/wiking/cms/users.py:1782
 msgid "IP address"
 msgstr "IP Adresa"
 
 #. Internet name of the remote computer (computer terminology).
-#: ../lib/wiking/cms/users.py:1749
+#: ../lib/wiking/cms/users.py:1784
 msgid "Hostname"
 msgstr "Jméno počítače"
 
 #. "User agent" is a generalized name for browser or more precisely the
 #. software which produced the HTTP request (was used to access the website).
-#: ../lib/wiking/cms/users.py:1752
+#: ../lib/wiking/cms/users.py:1787
 msgid "User agent"
 msgstr "Prohlížeč"
 
 #. Meaning where the user came from. Computer terminology.
 #. Do not translate
 #. "HTTP" and if unsure, don't translate at all (it is a very technical term).
-#: ../lib/wiking/cms/users.py:1756
+#: ../lib/wiking/cms/users.py:1791
 msgid "HTTP Referer"
 msgstr "HTTP Referer"
 

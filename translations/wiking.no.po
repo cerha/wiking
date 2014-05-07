@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-04-14 14:49+0200\n"
+"POT-Creation-Date: 2014-05-07 11:42+0200\n"
 "PO-Revision-Date: 2010-01-19 16:40+0100\n"
 "Last-Translator: Petr Topiarz <topiarz@post.cz>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
@@ -253,31 +253,31 @@ msgstr "Den nye fortegnelsen ble oppdatert."
 msgid "The record was deleted."
 msgstr "Fortegnelsen ble fjernet."
 
-#: ../lib/wiking/db.py:463
+#: ../lib/wiking/db.py:466
 msgid "Unable to perform a database operation:"
 msgstr ""
 
-#: ../lib/wiking/db.py:2032
+#: ../lib/wiking/db.py:2034
 msgid "Back"
 msgstr "Tilbake"
 
 #. Back button label. Standard computer terminology.
 #. RSS channel is a computer idiom, see Wikipedia.
-#: ../lib/wiking/db.py:2240 ../lib/wiking/db.py:2396
+#: ../lib/wiking/db.py:2242 ../lib/wiking/db.py:2398
 msgid "An RSS channel is available for this section:"
 msgstr "En RSS-kanal  er tilgjengelig for denne seksjonen:"
 
 #. RSS channel is a computer idiom, see Wikipedia.  Don't translateg 'RSS'.
-#: ../lib/wiking/db.py:2244 ../lib/wiking/db.py:2394
+#: ../lib/wiking/db.py:2246 ../lib/wiking/db.py:2396
 msgid "more about RSS"
 msgstr "mer om RSS"
 
-#: ../lib/wiking/db.py:2389
+#: ../lib/wiking/db.py:2391
 #, fuzzy, python-format
 msgid "RSS channel \"%s\""
 msgstr "RSS-kanal"
 
-#: ../lib/wiking/db.py:2399
+#: ../lib/wiking/db.py:2401
 #, fuzzy
 msgid "RSS channels are available for this section"
 msgstr "En RSS-kanal  er tilgjengelig for denne seksjonen:"
@@ -376,63 +376,63 @@ msgstr "Vedlikeholdsmodus"
 msgid "The system is temporarily down for maintenance."
 msgstr "Systemet er midlertidig nede for vedlikehold."
 
-#: ../lib/wiking/modules.py:559
+#: ../lib/wiking/modules.py:564
 msgid "Enter your login name, please!"
 msgstr "Vennligst skriv inn ditt innloggingsnavn!"
 
-#: ../lib/wiking/modules.py:561
+#: ../lib/wiking/modules.py:566
 msgid "Enter your password, please!"
 msgstr "Vennligst skriv inn ditt passord!"
 
-#: ../lib/wiking/modules.py:565
+#: ../lib/wiking/modules.py:570
 msgid "Invalid login!"
 msgstr "Ugyldig innlogging!"
 
-#: ../lib/wiking/modules.py:658
+#: ../lib/wiking/modules.py:663
 msgid "Searching"
 msgstr "Søker"
 
-#: ../lib/wiking/modules.py:659
+#: ../lib/wiking/modules.py:664
 msgid "Search results"
 msgstr "Søkeresultat"
 
-#: ../lib/wiking/modules.py:660
+#: ../lib/wiking/modules.py:665
 msgid "Given search term doesn't contain any searchable term."
 msgstr "Oppgitt søkeord inneholder ingen søkbare termer."
 
-#: ../lib/wiking/modules.py:664
+#: ../lib/wiking/modules.py:669
 msgid "Search words:"
 msgstr "Søk ordene:"
 
-#: ../lib/wiking/modules.py:665
+#: ../lib/wiking/modules.py:670
 msgid "Search"
 msgstr "Søk"
 
-#: ../lib/wiking/modules.py:721
+#: ../lib/wiking/modules.py:726
 msgid "Nothing found."
 msgstr "Ingenting funnet."
 
-#: ../lib/wiking/modules.py:778
+#: ../lib/wiking/modules.py:783
 msgid "The following modules were successfully reloaded:"
 msgstr "Følgende moduler lastet på nytt:"
 
-#: ../lib/wiking/modules.py:780
+#: ../lib/wiking/modules.py:785
 msgid "Reload"
 msgstr "Last på nytt"
 
 #. Short description of a user group purpose.
-#: ../lib/wiking/request.py:1282
+#: ../lib/wiking/request.py:1287
 msgid "Anyone"
 msgstr ""
 
 #. Short description of a user group purpose.
-#: ../lib/wiking/request.py:1285
+#: ../lib/wiking/request.py:1290
 #, fuzzy
 msgid "Any authenticated user"
 msgstr "Godkjenning kreves"
 
 #. Short description of a user group purpose.
-#: ../lib/wiking/request.py:1292
+#: ../lib/wiking/request.py:1297
 msgid "Current record owner"
 msgstr ""
 
@@ -666,27 +666,19 @@ msgstr "Ugyldig format"
 msgid "Domain not found"
 msgstr "Ingenting funnet."
 
-#: ../resources/scripts/discussion.js:61
+#: ../resources/scripts/discussion.js:71
 msgid "Reply"
 msgstr ""
 
-#: ../resources/scripts/discussion.js:78
+#: ../resources/scripts/discussion.js:98
 msgid "Your Reply"
 msgstr ""
 
-#: ../resources/scripts/discussion.js:92
-msgid "Attachment"
-msgstr ""
-
-#: ../resources/scripts/discussion.js:104
-msgid "Submit"
-msgstr ""
-
-#: ../resources/scripts/discussion.js:106
+#: ../resources/scripts/discussion.js:100
 msgid "Quote"
 msgstr ""
 
-#: ../resources/scripts/discussion.js:108
+#: ../resources/scripts/discussion.js:102
 msgid "Cancel"
 msgstr ""
 
