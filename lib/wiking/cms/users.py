@@ -877,7 +877,7 @@ class Users(UserManagementModule, CachingPytisModule):
             return True
         elif action in ('update', 'passwd'):
             return req.check_roles(Roles.USER_ADMIN) or self._check_uid(req, record, 'uid')
-        elif action in ('enable', 'disable'):
+        elif action in ('enable', 'disable', 'reinsert'):
             return req.check_roles(Roles.USER_ADMIN)
         else:
             return super(Users, self)._authorized(req, action, record=record, **kwargs)
@@ -988,9 +988,30 @@ class Users(UserManagementModule, CachingPytisModule):
         return self._transaction()
     
     def _insert(self, req, record, transaction):
-        super(Users, self)._insert(req, record, transaction)
+        try:
+            super(Users, self)._insert(req, record, transaction)
+        except pytis.data.DBException as e:
+            msg = str(e.exception()).strip()
+            if msg == 'duplicate key value violates unique constraint "users_login_key"':
+                login = record['login'].value()
+                # Redirect to reinsert when the user doesn't exist in application specific user
+                # tables but exists in the main CMS user table.
+                user = wiking.module('wiking.cms.Users').user(req, login)
+                if user and not wiking.module.Users.user(req, login):
+                    if not req.check_roles(Roles.USER_ADMIN):
+                        code = wiking.module('wiking.cms.Users').regenerate_registration_code(user)
+                    else:
+                        code = None
+                    req.message(_("User %s is already registered for another site. "
+                                  "Please, confirm the account for this site.", login))
+                    raise wiking.Redirect(req.uri(), action='reinsert', login=login, regcode=code)
+                else:
+                    raise wiking.DBException(_("User already exists."),
+                                             column=('email' if wiking.cms.cfg.login_is_email
+                                                     else 'login'))
+            raise
         row = self._data.get_row(login=record['login'].value(), transaction=transaction)
-        # Don't send e-mails on re-registration (the account is already confirmed).
+        # Don't send e-mails after re-registration (the account is already confirmed).
         if ((row['state'].value() == Users.AccountState.NEW
              or record['autogenerate_password'].value())):
             err = self._send_registration_email(req, record)
@@ -1243,6 +1264,17 @@ class Users(UserManagementModule, CachingPytisModule):
         else:
             req.message(_("The activation code was sent to %s.", record['email'].value()))
         raise Redirect(self._current_record_uri(req, record))
+
+    def action_reinsert(self, req):
+        # Add user which already exists in the global CMS users table to an application
+        # specific user table.
+        if not req.param('submit'):
+            user = wiking.module('wiking.cms.Users').user(req, req.param('login'))
+            row = user.data().row()
+            prefill = dict([(key, row[key].value(),) for key in row.keys()])
+        else:
+            prefill = None
+        return self.action_insert(req, prefill=prefill)
 
     def _user_arguments(self, login, row, base_uri, registration_uri):
         record = self._record(None, row)
@@ -1512,12 +1544,20 @@ class Registration(Module, ActionHandler):
             return g.form(controls, method='POST', cls='password-reminder-form')
 
     def _authorized(self, req, action, **kwargs):
-        if action in ('view', 'insert', 'reinsert', 'remind', 'confirm'):
+        if action in ('view', 'insert', 'remind', 'confirm'):
             return True
         elif action == 'list':
             return False
         elif action in ('update', 'passwd'):
             return req.check_roles(Roles.REGISTERED)
+        elif action == 'reinsert':
+            login = req.param('login')
+            regcode = req.param('regcode')
+            if login and regcode:
+                user = wiking.module('wiking.cms.Users').user(req, login=login)
+                if user and regcode == user.data()['regcode'].value():
+                    return True
+            return False
         else:
             return super(Registration, self)._authorized(req, action, **kwargs)
 
@@ -1545,20 +1585,18 @@ class Registration(Module, ActionHandler):
         return wiking.module.Users.action_insert(req, prefill=prefill, action=action)
 
     def action_reinsert(self, req):
-        login = req.param('login')
-        regcode = req.param('regcode')
-        if login and regcode:
-            user = wiking.module('wiking.cms.Users').user(req, login=login)
-            if user:
-                record = user.data()
-                if regcode == record['regcode'].value():
-                    if not req.param('submit'):
-                        row = record.row()
-                        prefill = dict([(key, row[key].value(),) for key in row.keys()])
-                    else:
-                        prefill = None
-                    return self.action_insert(req, prefill=prefill)
-        raise AuthenticationError()
+        if not wiking.cms.cfg.allow_registration:
+            raise Forbidden()
+        return wiking.module.Users.action_reinsert(req)
+
+    def action_update(self, req):
+        return wiking.module.Users.handle_registration_action(req, 'update')
+
+    def action_passwd(self, req):
+        return wiking.module.Users.handle_registration_action(req, 'passwd')
+
+    def action_confirm(self, req):
+        return wiking.module.Users.action_confirm(req)
 
     def action_remind(self, req):
         title = _("Password reminder")
@@ -1618,15 +1656,6 @@ class Registration(Module, ActionHandler):
         else:
             content = self.ReminderForm()
         return Document(title, content)
-
-    def action_update(self, req):
-        return wiking.module.Users.handle_registration_action(req, 'update')
-
-    def action_passwd(self, req):
-        return wiking.module.Users.handle_registration_action(req, 'passwd')
-
-    def action_confirm(self, req):
-        return wiking.module.Users.action_confirm(req)
 
 
 class ActivationForm(lcg.Content):

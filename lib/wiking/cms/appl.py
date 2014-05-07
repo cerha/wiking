@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Brailcom, o.p.s.
+# Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -293,6 +293,8 @@ class Application(CookieAuthentication, wiking.Application):
         if not wiking.module.Users.user(req, user.login()):
             # See _auth_user() for comments.
             regcode = wiking.module('wiking.cms.Users').regenerate_registration_code(user)
+            req.message(_("User %s is already registered for another site. "
+                          "Please, confirm the account for this site.", user.login()))
             raise wiking.Redirect(req.module_uri('Registration'),
                                   action='reinsert', login=user.login(), regcode=regcode)
 
