@@ -1006,9 +1006,15 @@ class Users(UserManagementModule, CachingPytisModule):
                                   "Please, confirm the account for this site.", login))
                     raise wiking.Redirect(req.uri(), action='reinsert', login=login, regcode=code)
                 else:
-                    raise wiking.DBException(_("User already exists."),
-                                             column=('email' if wiking.cms.cfg.login_is_email
-                                                     else 'login'))
+                    if wiking.cms.cfg.login_is_email:
+                        msg =  _("This e-mail address is already registered. Please, log in. "
+                                 "Use the password reminder link under the log in form if you "
+                                 "forgot your password. ")
+                        column = 'email'
+                    else:
+                        msg = _("This login name is already taken.  Please choose another.")
+                        column = 'login'
+                    raise wiking.DBException(msg, column=column)
             raise
         row = self._data.get_row(login=record['login'].value(), transaction=transaction)
         # Don't send e-mails after re-registration (the account is already confirmed).
