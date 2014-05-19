@@ -869,6 +869,7 @@ class CmsRecentTimestamp(sql.SQLFunction):
         """
         return 'select (current_date - $1::date) < $2'
 
+
 class CmsPlanner(CommonAccesRights, Base_CachingTable):
     name = 'cms_planner'
     fields = (sql.PrimaryColumn('planner_id', pytis.data.Serial(not_null=True)),
@@ -885,6 +886,7 @@ class CmsPlanner(CommonAccesRights, Base_CachingTable):
               sql.Column('content', pytis.data.String(not_null=True)),
               )
 
+
 class CmsVPlanner(CommonAccesRights, sql.SQLView):
     name = 'cms_v_planner'
     @classmethod
@@ -900,6 +902,69 @@ class CmsVPlanner(CommonAccesRights, sql.SQLView):
     update_order = (CmsPlanner,)
     delete_order = (CmsPlanner,)
     no_insert_columns = ('planner_id',)
+
+
+class CmsNewsletters(CommonAccesRights, Base_CachingTable):
+    name = 'cms_newsletters'
+    fields = (
+        sql.PrimaryColumn('newsletter_id', pytis.data.Serial(not_null=True)),
+        sql.Column('page_id', pytis.data.Integer(not_null=True),
+                   references=sql.a(sql.r.CmsPages, ondelete='CASCADE')),
+        sql.Column('lang', pytis.data.String(minlen=2, maxlen=2, not_null=True),
+                   references=sql.a(sql.r.CmsLanguages.lang, onupdate='CASCADE')),
+        sql.Column('title', pytis.data.String(not_null=True)),
+        sql.Column('description', pytis.data.String(not_null=True)),
+        sql.Column('read_role_id', pytis.data.Name(not_null=True), default='anyone',
+                   references=sql.a(sql.r.Roles, onupdate='CASCADE')),
+        sql.Column('write_role_id', pytis.data.Name(not_null=True), default='content_admin',
+                   references=sql.a(sql.r.Roles, onupdate='CASCADE', ondelete='SET DEFAULT')),         
+    )
+
+
+class CmsNewsletterSubscription(CommonAccesRights, Base_CachingTable):
+    name = 'cms_newsletter_subscription'
+    fields = (
+        sql.PrimaryColumn('subscription_id', pytis.data.Serial(not_null=True)),
+        sql.Column('newsletter_id', pytis.data.Integer(not_null=True),
+                   references=sql.a(sql.r.CmsNewsletters, ondelete='CASCADE')),
+        sql.Column('uid', pytis.data.Integer(), references=sql.r.Users),
+        sql.Column('email', pytis.data.String()),
+        sql.Column('code', pytis.data.String(), doc='Unsubscription code (email only)'),
+        sql.Column('timestamp', pytis.data.DateTime(not_null=True), default=func.now()),
+    )
+    check = ('(uid is not null or email is not null and code is not null) '
+             'and (uid is null or email is null and code is null)',)
+    unique = (('newsletter_id', 'uid',),
+              ('newsletter_id', 'email',),)
+
+
+class CmsNewsletterEditions(CommonAccesRights, Base_CachingTable):
+    name = 'cms_newsletter_editions'
+    fields = (
+        sql.PrimaryColumn('edition_id', pytis.data.Serial(not_null=True)),
+        sql.Column('newsletter_id', pytis.data.Integer(not_null=True),
+                   references=sql.a(sql.r.CmsNewsletters, ondelete='CASCADE')),
+        sql.Column('creator', pytis.data.Integer(not_null=True), references=sql.r.Users),
+        sql.Column('created', pytis.data.DateTime(not_null=True), default=func.now()),
+        sql.Column('sent', pytis.data.DateTime()),
+        sql.Column('access_code', pytis.data.String()),
+    )
+
+
+class CmsNewsletterPosts(CommonAccesRights, Base_CachingTable):
+    name = 'cms_newsletter_posts'
+    fields = (
+        sql.PrimaryColumn('post_id', pytis.data.Serial(not_null=True)),
+        sql.Column('edition_id', pytis.data.Integer(not_null=True),
+                   references=sql.a(sql.r.CmsNewsletterEditions, ondelete='CASCADE')),
+        sql.Column('ord', pytis.data.Integer()),
+        sql.Column('title', pytis.data.String(not_null=True)),
+        sql.Column('content', pytis.data.String(not_null=True)),
+        sql.Column('image', pytis.data.Binary()),
+        sql.Column('image_position', pytis.data.String()),
+        sql.Column('image_width', pytis.data.Integer()),
+        sql.Column('image_height', pytis.data.Integer()),
+    )
 
 
 class CmsDiscussions(CommonAccesRights, sql.SQLTable):
