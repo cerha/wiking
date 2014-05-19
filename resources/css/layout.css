@@ -25,9 +25,6 @@ h2, h3 {
     border: solid $color.heading-line 0px;
     border-bottom-width: 1px;
 }
-h3 {
-    border-style: dotted;
-}
 h1 { font-size: 1.5em; }
 h2 { font-size: 1.5em; }
 h3 { font-size: 1.3em; }
