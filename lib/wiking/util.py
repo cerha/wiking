@@ -257,11 +257,11 @@ class AuthorizationError(Forbidden):
     _TITLE = _("Access Denied")
 
     def content(self, req):
+        msg = _("If you are sure that you are logged in under the right account "
+                "and you believe that this is a problem of access rights assignment, "
+                "please contact the administrator at %s.", wiking.cfg.webmaster_address)
         return (lcg.p(_("You don't have sufficient privilegs for this action.")),
-                lcg.p(_("If you are sure that you are logged in under the right account "
-                        "and you believe that this is a problem of access rights assignment, "
-                        "please contact the administrator at %s.", wiking.cfg.webmaster_address),
-                      formatted=True))
+                lcg.p(req.translate(msg), formatted=True))
 
 
 class DecryptionError(RequestError):
