@@ -2329,7 +2329,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                 Field('pubinfo', _("Publisher"), virtual=True,
                       computer=computer(self._pubinfo)),
                 Field('download_role_id', _("Download acces"), codebook='ApplicationRoles',
-                      default=Roles.ANYONE.id(),
+                      not_null=False, # Doesnt work: type=pd.String(not_null=False), 
                       descr=_("Select the role allowed to download the publication for offline "
                               "use in one of the available download formats. Users with "
                               "read/write access are always allowed to download the publication "
@@ -2862,7 +2862,10 @@ class PublicationExports(ContentManagementModule):
             return True
         else:
             role_id = req.publication_record['download_role_id'].value()
-            return req.check_roles(wiking.module.Users.Roles()[role_id])
+            if role_id:
+                return req.check_roles(wiking.module.Users.Roles()[role_id])
+            else:
+                return False
 
     def _layout(self, req, action, record=None):
         if action == 'insert':
