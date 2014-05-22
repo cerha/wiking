@@ -42,12 +42,10 @@ import wiking
 import lcg
 
 from pytis.presentation import Action, CodebookSpec, Field, FieldSet, computer
-from wiking import Binding, CachingPytisModule, OPR
-from wiking.cms import Abort, ActionHandler, AuthenticationError, BadRequest, \
-    ConfirmationDialog, DateTime, Document, \
-    EmbeddableCMSModule, Forbidden, Module, PytisModule, Redirect, Role, Roles, Specification, \
-    UserManagementModule, enum, log, now, send_mail, \
-    ASC, DESC, NEVER, ONCE
+from wiking import Module, ActionHandler, PytisModule, CachingPytisModule, \
+    Document, ConfirmationDialog, send_mail, log, OPR
+from wiking.cms import EmbeddableCMSModule, UserManagementModule, Role, Roles, \
+     enum, now, ASC, DESC, NEVER, ONCE
 
 _ = lcg.TranslatableTextFactory('wiking-cms')
 
@@ -374,14 +372,14 @@ class ApplicationRoles(UserManagementModule, CachingPytisModule):
         def cb(self):
             return pp.CodebookSpec(display=self._xname_display, prefer_display=True)
         def bindings(self):
-            return (Binding('contained', _("Gets Rights of Groups"), 'RoleSets',
-                            'role_id', form=pw.ItemizedView),
-                    Binding('containing', _("Passes Rights to Groups"), 'ContainingRoles',
-                            'member_role_id', form=pw.ItemizedView,
-                            enabled=lambda r: not r['auto'].value()),
-                    Binding('members', _("Members"), 'RoleMembers',
-                            'role_id', form=pw.ItemizedView,
-                            enabled=lambda r: not r['auto'].value()))
+            return (wiking.Binding('contained', _("Gets Rights of Groups"), 'RoleSets',
+                                   'role_id', form=pw.ItemizedView),
+                    wiking.Binding('containing', _("Passes Rights to Groups"), 'ContainingRoles',
+                                   'member_role_id', form=pw.ItemizedView,
+                                   enabled=lambda r: not r['auto'].value()),
+                    wiking.Binding('members', _("Members"), 'RoleMembers',
+                                   'role_id', form=pw.ItemizedView,
+                                   enabled=lambda r: not r['auto'].value()))
     _LAYOUT = {'view': (('role_id', 'xname', 'system'),
                         lambda r: lcg.Container(lcg.coerce(r['role_info'].value()),
                                                 name='wiking-info-bar')),
@@ -498,7 +496,7 @@ class Users(UserManagementModule, CachingPytisModule):
     you change his roles.
 
     """
-    class Spec(Specification):
+    class Spec(wiking.Specification):
         title = _("User Management")
         help = _("Manage registered users and their privileges.")
         def _fullname(self, record, firstname, surname, login):
@@ -551,7 +549,8 @@ class Users(UserManagementModule, CachingPytisModule):
                 # TODO: Last password change is currently not displayed anywhere.  It should be only
                 # visible to the admin and to the user himself, so it requires a dynamic 'view'
                 # layout.
-                Field('last_password_change', _("Last password change"), type=DateTime(utc=True),
+                Field('last_password_change', _("Last password change"), 
+                      type=wiking.DateTime(utc=True),
                       default=now, computer=computer(self._last_password_change)),
                 # Translators: Full name of a person. Registration form field.
                 Field('fullname', _("Full Name"), virtual=True, editable=NEVER,
@@ -590,7 +589,8 @@ class Users(UserManagementModule, CachingPytisModule):
                               "and you agree with them.")),
                 # Translators: Since when the user is registered. Table column heading
                 # and field label for a date/time value.
-                Field('since', _("Registered since"), type=DateTime(show_time=False), default=now),
+                Field('since', _("Registered since"), type=wiking.DateTime(show_time=False),
+                      default=now),
                 # Translators: The state of the user account (e.g. Enabled vs Disabled).  Column
                 # heading and field label.
                 Field('state', _("State"), computer=computer(self._default_state),
@@ -598,7 +598,7 @@ class Users(UserManagementModule, CachingPytisModule):
                       display=self._module.AccountState.label, prefer_display=True,
                       style=self._state_style),
                 Field('lang', computer=computer(self._lang)),
-                Field('regexpire', default=self._registration_expiry, type=DateTime()),
+                Field('regexpire', default=self._registration_expiry, type=wiking.DateTime()),
                 Field('regcode', default=self._generate_registration_code),
             )
 
@@ -695,12 +695,12 @@ class Users(UserManagementModule, CachingPytisModule):
             return (self._check_email, self._check_old_password, self._check_new_password)
 
         def bindings(self):
-            return (Binding('roles', _("User's Groups"), 'UserRoles', 'uid',
-                            form=pw.ItemizedView),
-                    Binding('login-history', _("Login History"), 'SessionLog', 'uid',
-                            enabled=lambda r: r.req().check_roles(Roles.USER_ADMIN)),
-                    Binding('crypto', _("Crypto Keys"), 'CryptoKeys', 'uid',
-                            enabled=self._crypto_user),
+            return (wiking.Binding('roles', _("User's Groups"), 'UserRoles', 'uid',
+                                   form=pw.ItemizedView),
+                    wiking.Binding('login-history', _("Login History"), 'SessionLog', 'uid',
+                                   enabled=lambda r: r.req().check_roles(Roles.USER_ADMIN)),
+                    wiking.Binding('crypto', _("Crypto Keys"), 'CryptoKeys', 'uid',
+                                   enabled=self._crypto_user),
                     )
         columns = ('fullname', 'nickname', 'email', 'state', 'since')
         sorting = (('surname', ASC), ('firstname', ASC))
@@ -1085,12 +1085,12 @@ class Users(UserManagementModule, CachingPytisModule):
         """Check whether given request contains valid login and activation code.
 
         Return a 'Record' instance corresponding to the user id given in the request (if the uid
-        and activation code are valid) or raise 'BadRequest' exception.
+        and activation code are valid) or raise 'wiking.BadRequest' exception.
 
         """
         uid, error = pytis.data.Integer().validate(req.param('uid'))
         if error is not None or uid.value() is None:
-            raise BadRequest()
+            raise wiking.BadRequest()
         # This doesn't prevent double registration confirmation, but how to
         # avoid it?
         row = self._data.get_row(uid=uid.value())
@@ -1099,13 +1099,14 @@ class Users(UserManagementModule, CachingPytisModule):
         else:
             record = self._record(req, row)
         if record is None:
-            raise BadRequest()
+            raise wiking.BadRequest()
         if not record['state'].value() == Users.AccountState.NEW:
-            raise BadRequest(_("User registration already confirmed."))
+            raise wiking.BadRequest(_("User registration already confirmed."))
         code = record['regcode'].value()
         if not code or code != req.param('regcode'):
             req.message(_("Invalid activation code."), type=req.ERROR)
-            raise Abort(_("Account not activated"), ActivationForm(uid.value(), allow_bypass=False))
+            raise wiking.Abort(_("Account not activated"), 
+                               ActivationForm(uid.value(), allow_bypass=False))
         return record
 
     def _send_admin_approval_mail(self, req, record):
@@ -1269,7 +1270,7 @@ class Users(UserManagementModule, CachingPytisModule):
             req.message(_("Failed sending e-mail:") + ' ' + err, type=req.ERROR)
         else:
             req.message(_("The activation code was sent to %s.", record['email'].value()))
-        raise Redirect(self._current_record_uri(req, record))
+        raise wiking.Redirect(self._current_record_uri(req, record))
 
     def action_reinsert(self, req):
         # Add user which already exists in the global CMS users table to an application
@@ -1581,18 +1582,18 @@ class Registration(Module, ActionHandler):
         if req.user():
             return wiking.module.Users.handle_registration_action(req, 'view')
         elif req.param('command') == 'logout':
-            raise Redirect('/')
+            raise wiking.Redirect('/')
         else:
-            raise AuthenticationError()
+            raise wiking.AuthenticationError()
 
     def action_insert(self, req, prefill=None, action='insert'):
         if not wiking.cms.cfg.allow_registration:
-            raise Forbidden()
+            raise wiking.Forbidden()
         return wiking.module.Users.action_insert(req, prefill=prefill, action=action)
 
     def action_reinsert(self, req):
         if not wiking.cms.cfg.allow_registration:
-            raise Forbidden()
+            raise wiking.Forbidden()
         return wiking.module.Users.action_reinsert(req)
 
     def action_update(self, req):
@@ -1700,7 +1701,7 @@ class ActivationForm(lcg.Content):
 
 class Session(PytisModule, wiking.Session):
     """Implement Wiking session management by storing session information in database."""
-    class Spec(Specification):
+    class Spec(wiking.Specification):
         table = 'cms_session'
         fields = [Field(_id) for _id in ('session_id', 'uid', 'session_key', 'last_access')]
 
@@ -1722,7 +1723,7 @@ class Session(PytisModule, wiking.Session):
                 content = (content, form)
             else:
                 content = ConfirmationDialog(content)
-            raise Abort(title, content)
+            raise wiking.Abort(title, content)
         import wiking.cms.texts
         state = user.state()
         if state == Users.AccountState.DISABLED:
@@ -1734,7 +1735,7 @@ class Session(PytisModule, wiking.Session):
             abort(_("Account not approved"), wiking.cms.texts.unapproved)
 
     def failure(self, req, user, login):
-        wiking.module.SessionLog.log(req, pytis.data.DateTime.datetime(), None,
+        wiking.module.SessionLog.log(req, pd.DateTime.datetime(), None,
                                      user and user.uid(), login)
 
     def check(self, req, user, session_key):
@@ -1755,7 +1756,7 @@ class Session(PytisModule, wiking.Session):
 
 
 class SessionLog(UserManagementModule):
-    class Spec(Specification):
+    class Spec(wiking.Specification):
         # Translators: Heading for an overview when and how the user has accessed the application.
         title = _("Login History")
         help = _("History of successful login sessions and unsuccessful login attempts.")
@@ -1773,7 +1774,8 @@ class SessionLog(UserManagementModule):
                 Field('success', _("Success")),
                 # Translators: Table column heading.
                 # Time of the start of user session, followed by a date and time.
-                Field('start_time', _("Start time"), type=DateTime(exact=True, not_null=True)),
+                Field('start_time', _("Start time"),
+                      type=wiking.DateTime(exact=True, not_null=True)),
                 # Translators: Table column heading. The length of user session. Contains time.
                 Field('duration', _("Duration"), type=pytis.data.TimeInterval()),
                 # Translators: Table column heading.
