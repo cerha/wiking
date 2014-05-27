@@ -45,7 +45,7 @@ from pytis.presentation import Action, CodebookSpec, Field, FieldSet, computer
 from wiking import Module, ActionHandler, PytisModule, CachingPytisModule, \
     Document, ConfirmationDialog, send_mail, log, OPR
 from wiking.cms import EmbeddableCMSModule, UserManagementModule, Role, Roles, \
-     enum, now, ASC, DESC, NEVER, ONCE
+    enum, now, ASC, DESC, NEVER, ONCE
 
 _ = lcg.TranslatableTextFactory('wiking-cms')
 
@@ -549,7 +549,7 @@ class Users(UserManagementModule, CachingPytisModule):
                 # TODO: Last password change is currently not displayed anywhere.  It should be only
                 # visible to the admin and to the user himself, so it requires a dynamic 'view'
                 # layout.
-                Field('last_password_change', _("Last password change"), 
+                Field('last_password_change', _("Last password change"),
                       type=wiking.DateTime(utc=True),
                       default=now, computer=computer(self._last_password_change)),
                 # Translators: Full name of a person. Registration form field.
@@ -838,16 +838,25 @@ class Users(UserManagementModule, CachingPytisModule):
         def firstname(self):
             """
             @rtype: string or 'None'
-            @return: Users first name.
+            @return: User's first name.
             """
             return self._firstname
 
         def surname(self):
             """
             @rtype: string or 'None'
-            @return: Users surname.
+            @return: User's surname.
             """
             return self._surname
+
+        def fullname(self):
+            """
+            @rtype: basestring
+            @return: User's full name.
+            """
+            fullname = self._firstname + ' ' if self._firstname else ''
+            fullname += self._surname or ''
+            return fullname
 
     class Roles(Roles):
         """Definition of the 'Roles' class used by the application.
@@ -1007,9 +1016,9 @@ class Users(UserManagementModule, CachingPytisModule):
                     raise wiking.Redirect(req.uri(), action='reinsert', login=login, regcode=code)
                 else:
                     if wiking.cms.cfg.login_is_email:
-                        msg =  _("This e-mail address is already registered. Please, log in. "
-                                 "Use the password reminder link under the log in form if you "
-                                 "forgot your password. ")
+                        msg = _("This e-mail address is already registered. Please, log in. "
+                                "Use the password reminder link under the log in form if you "
+                                "forgot your password. ")
                         column = 'email'
                     else:
                         msg = _("This login name is already taken.  Please choose another.")
@@ -1105,7 +1114,7 @@ class Users(UserManagementModule, CachingPytisModule):
         code = record['regcode'].value()
         if not code or code != req.param('regcode'):
             req.message(_("Invalid activation code."), type=req.ERROR)
-            raise wiking.Abort(_("Account not activated"), 
+            raise wiking.Abort(_("Account not activated"),
                                ActivationForm(uid.value(), allow_bypass=False))
         return record
 
