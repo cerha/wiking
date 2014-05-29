@@ -1723,7 +1723,13 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         
         """
         resolver = wiking.WikingResolver()
-        output_resolvers = (pytis.output.FileResolver(wiking.cfg.print_spec_dir),)
+        class ErrorResolver(pytis.output.Resolver):
+            def get(self, module_name, spec_name, **kwargs):
+                if spec_name == 'body':
+                    raise Exception("Output specification not found", module_name)
+                raise pytis.util.ResolverError()
+        output_resolvers = (pytis.output.FileResolver(wiking.cfg.print_spec_dir),
+                            ErrorResolver(),)
         name = self.name()
         prefix = name + '/'
         key = None if record is None else record.key()
