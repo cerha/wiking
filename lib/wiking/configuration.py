@@ -497,5 +497,5 @@ class Configuration(pc):
         _DEFAULT = ()
 
     class _Option_print_spec_dir(pc.StringOption):
-        _DESCR = _("Directory of output specifications.")
+        _DESCR = "Directory of output specifications."
         _DEFAULT = './output'
