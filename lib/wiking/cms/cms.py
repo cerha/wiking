@@ -4170,7 +4170,12 @@ class NewsletterEditions(CMSModule):
                 Field('access_code',),
             )
             return self._inherited_fields(NewsletterEditions.Spec, override=override)
-        layout = ('created', 'sent',)
+        layout = (
+            lambda r: wiking.HtmlRenderer(
+                lambda element, context:
+                context.generator().img(src='%s/../..?action=image' % context.req().uri()),
+            ),
+            'created',)
         columns = ('created', 'sent',)
         bindings = (
             Binding('posts', _("Posts"), 'NewsletterPosts', 'edition_id'),
