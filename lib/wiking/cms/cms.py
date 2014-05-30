@@ -4032,7 +4032,12 @@ class Newsletters(EmbeddableCMSModule):
             layout = ('title', 'lang', 'description', 'image', 'sender', 'address',
                       'read_role_id', 'write_role_id')
         else:
-            layout = ('unlabeled_image', 'unlabeled_description',)
+            def image(element, context):
+                g = context.generator()
+                uri = req.make_uri(self._current_record_uri(req, record), action='image')
+                return g.img(src=uri)
+            layout = (lambda r: lcg.Container((wiking.HtmlRenderer(image),
+                                               lcg.p(r['description'].export()))),)
         return layout
 
     def _prefill(self, req):
@@ -4201,7 +4206,7 @@ class NewsletterEditions(CMSModule):
                 lambda element, context:
                 context.generator().img(src='%s/../..?action=image' % context.req().uri()),
             ),
-            'created',)
+        )
         columns = ('title',)
         bindings = (
             Binding('posts', _("Posts"), 'NewsletterPosts', 'edition_id'),
