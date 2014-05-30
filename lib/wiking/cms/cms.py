@@ -4090,7 +4090,6 @@ class NewsletterSubscription(CMSModule):
         email = req.param('email')
         if email:
             values['email'] = email
-            values['code'] = wiking.generate_random_string(16)
             success = _("The e-mail address %s has been subscribed succesfully.", email)
         elif req.user():
             values['uid'] = req.user().uid()
