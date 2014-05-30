@@ -4239,7 +4239,6 @@ class NewsletterEditions(CMSModule):
         condition = super(NewsletterEditions, self)._condition(req)
         if not req.newsletter_write_access:
             condition = pd.AND(condition, pd.NE('sent', pd.dtval(None)))
-        wiking.debug('--', req.newsletter_write_access, condition)
         return condition
 
 
