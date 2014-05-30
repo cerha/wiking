@@ -3954,6 +3954,15 @@ class Newsletters(EmbeddableCMSModule):
                 Field('image_height', computer=computer(self._image_height)),
                 Field('sender', _("Sender")),
                 Field('address', _("Address"), height=4, width=50),
+                Field('read_role_id', _("Read only access"), codebook='ApplicationRoles',
+                      default=Roles.ANYONE.id(),
+                      descr=_("Select the role allowed to read the newsletter online and "
+                              "subscribe for e-mail distribution.")),
+                # Translators: Label of a selector of a group allowed to edit the page.
+                Field('write_role_id', _("Read/write access"), codebook='ApplicationRoles',
+                      default=Roles.CONTENT_ADMIN.id(),
+                      descr=_("Select the role allowed create and send the newsletter editions.")),
+                # Template substitution colors.
                 Field('text_color', _("Text"), type=pd.Color(), default='#000000'),
                 Field('link_color', _("Links"), type=pd.Color(), default='#000000'),
                 Field('heading_color', _("Headings"), type=pd.Color(), default='#000000'),
@@ -3964,16 +3973,14 @@ class Newsletters(EmbeddableCMSModule):
                 Field('footer_text_color', _("Text"), type=pd.Color(), default='#000000'),
                 Field('footer_link_color', _("Links"), type=pd.Color(), default='#000000'),
                 Field('footer_bg_color', _("Background"), type=pd.Color(), default='#D8E0F0'),
-                Field('read_role_id', _("Read only access"), codebook='ApplicationRoles',
-                      default=Roles.ANYONE.id(),
-                      descr=_("Select the role allowed to read the newsletter online and "
-                              "subscribe for e-mail distribution.")),
-                # Translators: Label of a selector of a group allowed to edit the page.
-                Field('write_role_id', _("Read/write access"), codebook='ApplicationRoles',
-                      default=Roles.CONTENT_ADMIN.id(),
-                      descr=_("Select the role allowed create and send the newsletter editions.")),
             )
-            return self._inherited_fields(Newsletters.Spec, override=override)
+            extra = (
+                Field('unlabeled_image', '', type=pd.Image(), virtual=True,
+                      computer=computer(lambda r, image: image)),
+                Field('unlabeled_description', '', type=pd.String(), virtual=True, 
+                      computer=computer(lambda r, description: description)),
+            )
+            return self._inherited_fields(Newsletters.Spec, override=override) + extra
 
         def _image_width(self, record, image):
             return image.image().size[0] if image else None
@@ -3981,23 +3988,16 @@ class Newsletters(EmbeddableCMSModule):
         def _image_height(self, record, image):
             return image.image().size[1] if image else None
 
-        layout = (
-            'title', 'lang', 'description', 'image', 'sender', 'address',
-            FieldSet(_("Colors"),
-                     ('text_color', 'link_color', 'heading_color', 'bg_color',
-                      FieldSet(_("Top Bar"),
-                               ('top_bg_color', 'top_text_color', 'top_link_color')),
-                      FieldSet(_("Footer"),
-                               ('footer_bg_color', 'footer_text_color', 'footer_link_color')),
-                      'read_role_id', 'write_role_id')),
-        )
+        layout = () # Defined dynamically in _layout().
         columns = ('title', 'lang', 'read_role_id', 'write_role_id')
         bindings = (
-            Binding('editions', _("Editions"), 'NewsletterEditions', 'newsletter_id'),
+            Binding('editions', _("Editions"), 'NewsletterEditions', 'newsletter_id',
+                    form=pw.ItemizedView),
             Binding('subscribers', _("Subscribers"), 'NewsletterSubscription', 'newsletter_id',
                     enabled=lambda r: r.req().newsletter_write_access),
         )
         actions = (
+            Action('colors', _("Colors")),
             Action('subscribe', _("Subscribe")),
             Action('unsubscribe', _("Unsubscribe")),
         )
@@ -4016,19 +4016,36 @@ class Newsletters(EmbeddableCMSModule):
             return req.page_write_access
         elif action in ('view', 'subscribe', 'unsubscribe', 'image'):
             return req.newsletter_read_access
-        elif action in ('update', 'delete'):
+        elif action in ('update', 'delete', 'colors'):
             return req.newsletter_write_access
         else:
             return False
+
+    def _layout(self, req, action, record=None):
+        if action == 'colors':
+            layout = ('text_color', 'link_color', 'heading_color', 'bg_color',
+                      FieldSet(_("Top Bar"),
+                               ('top_bg_color', 'top_text_color', 'top_link_color')),
+                      FieldSet(_("Footer"),
+                               ('footer_bg_color', 'footer_text_color', 'footer_link_color')))
+        elif action == 'update':
+            layout = ('title', 'lang', 'description', 'image', 'sender', 'address',
+                      'read_role_id', 'write_role_id')
+        else:
+            layout = ('unlabeled_image', 'unlabeled_description',)
+        return layout
 
     def _prefill(self, req):
         return dict(super(Newsletters, self)._prefill(req),
                     lang=req.preferred_language())
         
     def _image_provider(self, req, uri, record, cid):
-        if cid == 'image':
+        if cid in ('image', 'unlabeled_image'):
             return self._link_provider(req, uri, record, None, action='image')
         return super(Newsletters, self)._image_provider(req, uri, record, cid)
+
+    def action_colors(self, req, record):
+        return self.action_update(req, record, action='colors')
 
     def action_subscribe(self, req, record):
         return wiking.module.NewsletterSubscription.subscribe(req, record)
@@ -4169,14 +4186,23 @@ class NewsletterEditions(CMSModule):
                 Field('sent', _("Sent"), editable=pp.Editable.NEVER),
                 Field('access_code',),
             )
-            return self._inherited_fields(NewsletterEditions.Spec, override=override)
+            extra = (
+                Field('title', type=pd.String(), virtual=True, computer=computer(self._title)),
+            )
+            return self._inherited_fields(NewsletterEditions.Spec, override=override) + extra
+        def _title(self, record, created, sent):
+            if sent:
+                return lcg.LocalizableDateTime(sent.strftime('%Y-%m-%d %H:%M'), utc=True)
+            else:
+                return _("Unpublished edition from %s",
+                         lcg.LocalizableDateTime(created.strftime('%Y-%m-%d %H:%M'), utc=True))
         layout = (
             lambda r: wiking.HtmlRenderer(
                 lambda element, context:
                 context.generator().img(src='%s/../..?action=image' % context.req().uri()),
             ),
             'created',)
-        columns = ('created', 'sent',)
+        columns = ('title',)
         bindings = (
             Binding('posts', _("Posts"), 'NewsletterPosts', 'edition_id'),
         )
@@ -4184,21 +4210,32 @@ class NewsletterEditions(CMSModule):
             Action('preview', _("Preview")),
             Action('send', _("Send")),
         )
-
-    _TITLE_TEMPLATE = _("%(sent)s")
+        
+    _LIST_LABEL = _("Overview of Editions")
+    _TITLE_COLUMN = 'title'
     _POST_TEMPLATE_MATCHER = re.compile(r'<!-- POST START -->(.*)<!-- POST END -->',
                                         re.DOTALL | re.MULTILINE)
     _IMAGE_TEMPLATE_MATCHER = re.compile(r'<!-- IMAGE (?P<align>LEFT|RIGHT) START -->'
                                          r'(.*)<!-- IMAGE (?P=align) END -->',
                                          re.DOTALL | re.MULTILINE)
 
-    def _authorized(self, req, action, **kwargs):
-        if action in ('view', 'list'):
+    def _authorized(self, req, action, record=None, **kwargs):
+        if action == 'list':
             return req.newsletter_read_access
+        elif action == 'view':
+            return req.newsletter_read_access and record['sent'].value() is not None
         elif action in ('insert', 'update', 'delete', 'send', 'preview'):
             return req.newsletter_write_access
         else:
             return False
+
+    def _condition(self, req):
+        condition = super(NewsletterEditions, self)._condition(req)
+        if not req.newsletter_write_access:
+            condition = pd.AND(condition, pd.NE('sent', pd.dtval(None)))
+        wiking.debug('--', req.newsletter_write_access, condition)
+        return condition
+
 
     def _prefill(self, req):
         return dict(super(NewsletterEditions, self)._prefill(req),
