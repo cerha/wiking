@@ -3994,7 +3994,8 @@ class Newsletters(EmbeddableCMSModule):
         columns = ('title', 'lang', 'read_role_id', 'write_role_id')
         bindings = (
             Binding('editions', _("Editions"), 'NewsletterEditions', 'newsletter_id'),
-            Binding('subscribers', _("Subscribers"), 'NewsletterSubscription', 'newsletter_id'),
+            Binding('subscribers', _("Subscribers"), 'NewsletterSubscription', 'newsletter_id',
+                    enabled=lambda r: r.req().newsletter_write_access),
         )
         actions = (
             Action('subscribe', _("Subscribe")),
@@ -4053,10 +4054,21 @@ class NewsletterSubscription(CMSModule):
                 Field('uid', _("User"), codebook='Users'),
                 Field('email', _("E-mail"),),
                 Field('timestamp', _("Since"), editable=pp.Editable.NEVER, default=now),
+                Field('code', computer=computer(self._code)),
             )
             return self._inherited_fields(NewsletterSubscription.Spec, override=override)
-        layout = ()
+        def _code(self, record, email):
+            return wiking.generate_random_string(16) if email else None
+        layout = ('email',)
         columns = ('uid', 'email', 'timestamp')
+
+
+    def _authorized(self, req, action, record=None, **kwargs):
+        # TODO: Isn't it posible to hack around this by URI manipulation? 
+        if action in ('view', 'list', 'insert', 'update', 'delete'):
+            return req.newsletter_write_access
+        else:
+            return False
 
     def _subscription_form(self, req, action, newsletter_title):
         if action == 'subscribe':
@@ -4151,7 +4163,8 @@ class NewsletterEditions(CMSModule):
             override = (
                 Field('newsletter_id', codebook='Newsletters'),
                 Field('creator', _("Creator"), codebook='Users'),
-                Field('created', _("Created"), editable=pp.Editable.NEVER, default=now),
+                Field('created', _("Created"), editable=pp.Editable.NEVER, default=now,
+                      visible=computer(lambda r: r.req().newsletter_write_access)),
                 Field('sent', _("Sent"), editable=pp.Editable.NEVER),
                 Field('access_code',),
             )
@@ -4166,6 +4179,7 @@ class NewsletterEditions(CMSModule):
             Action('send', _("Send")),
         )
 
+    _TITLE_TEMPLATE = _("%(sent)s")
     _POST_TEMPLATE_MATCHER = re.compile(r'<!-- POST START -->(.*)<!-- POST END -->',
                                         re.DOTALL | re.MULTILINE)
     _IMAGE_TEMPLATE_MATCHER = re.compile(r'<!-- IMAGE (?P<align>LEFT|RIGHT) START -->'
