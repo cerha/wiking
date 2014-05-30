@@ -4270,7 +4270,7 @@ class NewsletterEditions(CMSModule):
         colors = dict([(k, newsletter_row[k].export()) 
                        for k in newsletter_row.keys() if k.endswith('_color')])
         def post(row, post_template, image_templates, edition_uri):
-            content = pw.format_text(row['content'].value().strip())[1].replace(
+            content = lcg.format_text(row['content'].value().strip()).replace(
                 '<a ', ('<a style="color: %(link_color)s; text-decoration: none; '
                         'font-weight: bold;"' % colors)
             )
