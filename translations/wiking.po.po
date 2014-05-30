@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-05-07 11:42+0200\n"
+"POT-Creation-Date: 2014-05-30 10:09+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Petr Topiarz <topiarz@post.cz>\n"
 "Language-Team: \n"
@@ -36,19 +36,19 @@ msgstr "Navegação local"
 msgid "Contact:"
 msgstr "Contacto:"
 
-#: ../lib/wiking/configuration.py:243
+#: ../lib/wiking/configuration.py:246
 msgid "Webmaster's e-mail address"
 msgstr ""
 
-#: ../lib/wiking/configuration.py:254
+#: ../lib/wiking/configuration.py:257
 msgid "Default sender address"
 msgstr ""
 
-#: ../lib/wiking/configuration.py:272
+#: ../lib/wiking/configuration.py:275
 msgid "Force HTTPS login"
 msgstr ""
 
-#: ../lib/wiking/configuration.py:273
+#: ../lib/wiking/configuration.py:276
 msgid ""
 "If enabled, the login form will always be redirected to an HTTPS address to "
 "ensure the security of the submitted credentials.  This, however, requires "
@@ -56,16 +56,16 @@ msgid ""
 "and pass them to Wiking."
 msgstr ""
 
-#: ../lib/wiking/configuration.py:282
+#: ../lib/wiking/configuration.py:285
 msgid "Allow HTTP authentication"
 msgstr ""
 
 #. Site means a webpage or web application.
-#: ../lib/wiking/configuration.py:343
+#: ../lib/wiking/configuration.py:346
 msgid "Site title"
 msgstr ""
 
-#: ../lib/wiking/configuration.py:344
+#: ../lib/wiking/configuration.py:347
 msgid ""
 "Site title is a short and (hopefully) unique title of the whole website. It "
 "will appear at the top of every page."
@@ -73,11 +73,11 @@ msgstr ""
 
 #. Site means a webpage or web application.
 #. Subtitle as in ,,title -- subtitle''.
-#: ../lib/wiking/configuration.py:351
+#: ../lib/wiking/configuration.py:354
 msgid "Site subtitle"
 msgstr ""
 
-#: ../lib/wiking/configuration.py:352
+#: ../lib/wiking/configuration.py:355
 msgid ""
 "Site subtitle is an optional more descriptive title of the website.  It will "
 "appear at the top of every page together with site title, but where brevity "
@@ -85,18 +85,18 @@ msgid ""
 msgstr ""
 
 #. Web page or web application specific image.
-#: ../lib/wiking/configuration.py:359
+#: ../lib/wiking/configuration.py:362
 msgid "Site icon"
 msgstr ""
 
-#: ../lib/wiking/configuration.py:380
+#: ../lib/wiking/configuration.py:383
 msgid "Default language"
 msgstr ""
 
 #. Language negotiation means the process where the server is trying
 #. to find a language that matches with what the users internet browser asks
 #. for.
-#: ../lib/wiking/configuration.py:383
+#: ../lib/wiking/configuration.py:386
 msgid ""
 "Defines the language (lowercase ISO 639-1 Alpha-2 code) to be used when "
 "content language negotiation fails. If not set (which is the default), the "
@@ -117,18 +117,14 @@ msgstr ""
 #. Settings label. URI means a link. Do not translate ''URI''.
 #. Yes/No configuration option label.
 #. Should the login panel display user role (as Admin, Student, Tutor etc.)
-#: ../lib/wiking/configuration.py:452
+#: ../lib/wiking/configuration.py:455
 msgid "Display role in login panel"
 msgstr ""
 
-#: ../lib/wiking/configuration.py:453
+#: ../lib/wiking/configuration.py:456
 msgid ""
 "If enabled, the login panel on each page will not display only the current "
 "username, but also his current user role, which affects his permissions."
-msgstr ""
-
-#: ../lib/wiking/configuration.py:500
-msgid "Directory of output specifications."
 msgstr ""
 
 #: ../lib/wiking/db.py:105
@@ -485,11 +481,6 @@ msgid "Access Denied"
 msgstr "Acesso negado"
 
 #: ../lib/wiking/util.py:260
-msgid "You don't have sufficient privilegs for this action."
-msgstr ""
-"Não tens direitos suficientes para poderes continuar com esta operação."
-
-#: ../lib/wiking/util.py:261
 #, python-format
 msgid ""
 "If you are sure that you are logged in under the right account and you "
@@ -499,6 +490,11 @@ msgstr ""
 "Se está seguro que está correctamente ligado e registado  mas pensa que está "
 "com problemas, devido aos direitos de acesso, pedimos que contacte o "
 "administrador desta página em %s."
+
+#: ../lib/wiking/util.py:263
+msgid "You don't have sufficient privilegs for this action."
+msgstr ""
+"Não tens direitos suficientes para poderes continuar com esta operação."
 
 #: ../lib/wiking/util.py:297
 msgid "Invalid request arguments."
@@ -664,19 +660,27 @@ msgstr "Formato inválido"
 msgid "Domain not found"
 msgstr "Domínio não encontrado"
 
-#: ../resources/scripts/discussion.js:71
+#: ../resources/scripts/discussion.js:72
 msgid "Reply"
 msgstr ""
 
-#: ../resources/scripts/discussion.js:98
+#: ../resources/scripts/discussion.js:90
 msgid "Your Reply"
 msgstr ""
 
-#: ../resources/scripts/discussion.js:100
+#: ../resources/scripts/discussion.js:104
+msgid "Attachment"
+msgstr ""
+
+#: ../resources/scripts/discussion.js:116
+msgid "Submit"
+msgstr ""
+
+#: ../resources/scripts/discussion.js:118
 msgid "Quote"
 msgstr ""
 
-#: ../resources/scripts/discussion.js:102
+#: ../resources/scripts/discussion.js:120
 msgid "Cancel"
 msgstr ""
 
