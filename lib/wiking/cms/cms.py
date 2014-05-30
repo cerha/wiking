@@ -3934,6 +3934,450 @@ class Planner(_News):
             return condition
 
 
+class Newsletters(EmbeddableCMSModule):
+    """E-mail newsletters with subscription."""
+    class Spec(Specification):
+        title = _("E-mail Newsletters")
+        table = wiking.dbdefs.CmsNewsletters
+
+        def fields(self):
+            override = (
+                Field('page_id', codebook='PageStructure'),
+                Field('title', _("Title")),
+                Field('lang', _("Language"), codebook='Languages', editable=ONCE,
+                      selection_type=CHOICE, value_column='lang'),
+                Field('description', _("Description"), width=80, height=5,
+                      descr=_("Description of the newsletter purpose and estimated "
+                              "target audience.")),
+                Field('image', _("Image"), type=pd.Image()),
+                Field('image_width', computer=computer(self._image_width)),
+                Field('image_height', computer=computer(self._image_height)),
+                Field('sender', _("Sender")),
+                Field('address', _("Address"), height=4, width=50),
+                Field('text_color', _("Text"), type=pd.Color(), default='#000000'),
+                Field('link_color', _("Links"), type=pd.Color(), default='#000000'),
+                Field('heading_color', _("Headings"), type=pd.Color(), default='#000000'),
+                Field('bg_color', _("Background"), type=pd.Color(), default='#FFFFFF'),
+                Field('top_text_color', _("Text"), type=pd.Color(), default='#FFFFFF'),
+                Field('top_link_color', _("Links"), type=pd.Color(), default='#FFFFFF'),
+                Field('top_bg_color', _("Background"), type=pd.Color(), default='#000000'),
+                Field('footer_text_color', _("Text"), type=pd.Color(), default='#000000'),
+                Field('footer_link_color', _("Links"), type=pd.Color(), default='#000000'),
+                Field('footer_bg_color', _("Background"), type=pd.Color(), default='#D8E0F0'),
+                Field('read_role_id', _("Read only access"), codebook='ApplicationRoles',
+                      default=Roles.ANYONE.id(),
+                      descr=_("Select the role allowed to read the newsletter online and "
+                              "subscribe for e-mail distribution.")),
+                # Translators: Label of a selector of a group allowed to edit the page.
+                Field('write_role_id', _("Read/write access"), codebook='ApplicationRoles',
+                      default=Roles.CONTENT_ADMIN.id(),
+                      descr=_("Select the role allowed create and send the newsletter editions.")),
+            )
+            return self._inherited_fields(Newsletters.Spec, override=override)
+
+        def _image_width(self, record, image):
+            return image.image().size[0] if image else None
+
+        def _image_height(self, record, image):
+            return image.image().size[1] if image else None
+
+        layout = (
+            'title', 'lang', 'description', 'image', 'sender', 'address',
+            FieldSet(_("Colors"),
+                     ('text_color', 'link_color', 'heading_color', 'bg_color',
+                      FieldSet(_("Top Bar"),
+                               ('top_bg_color', 'top_text_color', 'top_link_color')),
+                      FieldSet(_("Footer"),
+                               ('footer_bg_color', 'footer_text_color', 'footer_link_color')),
+                      'read_role_id', 'write_role_id')),
+        )
+        columns = ('title', 'lang', 'read_role_id', 'write_role_id')
+        bindings = (
+            Binding('editions', _("Editions"), 'NewsletterEditions', 'newsletter_id'),
+            Binding('subscribers', _("Subscribers"), 'NewsletterSubscription', 'newsletter_id'),
+        )
+        actions = (
+            Action('subscribe', _("Subscribe")),
+            Action('unsubscribe', _("Unsubscribe")),
+        )
+
+    _EMBED_BINDING_COLUMN = 'page_id'
+
+    def _authorized(self, req, action, record=None, **kwargs):
+        roles = wiking.module.Users.Roles()
+        if record:
+            req.newsletter_read_access = req.check_roles(roles[record['read_role_id'].value()])
+            req.newsletter_write_access = req.check_roles(roles[record['write_role_id'].value()])
+        # TODO: Isn't it posible to hack around this by URI manipulation? 
+        if action == 'list':
+            return req.page_read_access
+        elif action == 'insert':
+            return req.page_write_access
+        elif action in ('view', 'subscribe', 'unsubscribe', 'image'):
+            return req.newsletter_read_access
+        elif action in ('update', 'delete'):
+            return req.newsletter_write_access
+        else:
+            return False
+
+    def _prefill(self, req):
+        return dict(super(Newsletters, self)._prefill(req),
+                    lang=req.preferred_language())
+        
+    def _image_provider(self, req, uri, record, cid):
+        if cid == 'image':
+            return self._link_provider(req, uri, record, None, action='image')
+        return super(Newsletters, self)._image_provider(req, uri, record, cid)
+
+    def action_subscribe(self, req, record):
+        return wiking.module.NewsletterSubscription.subscribe(req, record)
+            
+    def action_unsubscribe(self, req, record):
+        return wiking.module.NewsletterSubscription.unsubscribe(req, record)
+        
+    def action_image(self, req, record):
+        #if req.cached_since(last_modified):
+        #    raise wiking.NotModified()
+        value = record['image'].value()
+        return Response(value.buffer(), content_type='image/%s' % value.image().format.lower())
+        #last_modified=last_modified)
+
+
+class NewsletterSubscription(CMSModule):
+    """E-mail newsletters with subscription."""
+    class Spec(Specification):
+        table = wiking.dbdefs.CmsNewsletterSubscription
+        def fields(self):
+            override = (
+                Field('newsletter_id', codebook='Newsletters'),
+                Field('uid', _("User"), codebook='Users'),
+                Field('email', _("E-mail"),),
+                Field('timestamp', _("Since"), editable=pp.Editable.NEVER, default=now),
+            )
+            return self._inherited_fields(NewsletterSubscription.Spec, override=override)
+        layout = ()
+        columns = ('uid', 'email', 'timestamp')
+
+    def _subscription_form(self, req, action, newsletter_title):
+        if action == 'subscribe':
+            submit = _("Subscribe")
+            title = _("Subscribe to %s", newsletter_title)
+        else:
+            submit = _("Unsubscribe")
+            title = _("Unsubscribe from %s", newsletter_title)
+        form = wiking.InputForm(req, dict(fields=(Field('email', _("E-mail"),),)),
+                                name='NewsletterSubscription',
+                                action=action,
+                                submit_buttons=((None, submit),),
+                                show_reset_button=False,
+                                show_footer=False)
+        return wiking.Document(title, form)
+
+    def subscribe(self, req, newsletter_record):
+        values = dict(newsletter_id=newsletter_record['newsletter_id'].value(), timestamp=now())
+        email = req.param('email')
+        if email:
+            values['email'] = email
+            values['code'] = wiking.generate_random_string(16)
+            success = _("The e-mail address %s has been subscribed succesfully.", email)
+        elif req.user():
+            values['uid'] = req.user().uid()
+            success = _("You have been subscribed succesfully.")
+        else:
+            return self._subscription_form(req, 'subscribe', newsletter_record['title'].value())
+        try:
+            self._data.insert(self._data.make_row(**values))
+        except pd.DBException as e:
+            req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
+        else:
+            req.message(success)
+        raise Redirect(req.uri())
+
+    def unsubscribe(self, req, newsletter_record):
+        email = req.param('email')
+        values = dict(newsletter_id=newsletter_record['newsletter_id'].value())
+        if email:
+            values['email'] = email
+            success = _("The e-mail address %s has been unsubscribed succesfully.", email)
+        elif req.user():
+            values['uid'] = req.user().uid()
+            success = _("You have been unsubscribed succesfully.")
+        else:
+            return self._subscription_form(req, 'unsubscribe', newsletter_record['title'].value())
+        row = self._data.get_row(**values)
+        if not row:
+            req.message(_("Cannot unsubscribe when not subscribed."), type=req.ERROR)
+            raise Redirect(req.uri())
+        if email:
+            code = req.param('code')
+            if not code:
+                subject = _("Unsubscribe from %s", newsletter_record['title'].value())
+                text = _("Use the following link to confirm your unsubscription "
+                         "from %(newsletter)s at %(server_hostname)s:\n\n"
+                         "%(uri)s\n\n",
+                         newsletter=newsletter_record['title'].value(),
+                         server_hostname=wiking.cfg.server_hostname,
+                         uri=req.make_uri(req.server_uri() + req.uri(), action='unsubscribe', 
+                                          email=email, code=row['code'].value()))
+                err = send_mail(email, subject, text, lang=req.preferred_language())
+                if err:
+                    req.message(_("Failed sending e-mail:") + ' ' + err, type=req.ERROR)
+                    msg = _("Please try repeating your request later or contact the administrator!")
+                else:
+                    req.message(_("Unsubscription confirmation has been sent to %s. "
+                                  "Please, check your mail and click on the link to "
+                                  "finish unsubscription.", email))
+                raise Redirect(req.uri())
+            elif code != row['code'].value():
+                req.message(_("Invalid unsubscription code."), type=req.ERROR)
+                raise Redirect(req.uri())
+        try:
+            self._data.delete(row['subscription_id'])
+        except pd.DBException as e:
+            req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
+        else:
+            req.message(success)
+        raise Redirect(req.uri())
+
+    def subscribers(self, newsletter_id):
+        return [r['email'].value() for r in self._data.get_rows(newsletter_id=newsletter_id)]
+
+        
+class NewsletterEditions(CMSModule):
+    """E-mail newsletters with subscription."""
+    class Spec(Specification):
+        table = wiking.dbdefs.CmsNewsletterEditions
+        def fields(self):
+            override = (
+                Field('newsletter_id', codebook='Newsletters'),
+                Field('creator', _("Creator"), codebook='Users'),
+                Field('created', _("Created"), editable=pp.Editable.NEVER, default=now),
+                Field('sent', _("Sent"), editable=pp.Editable.NEVER),
+                Field('access_code',),
+            )
+            return self._inherited_fields(NewsletterEditions.Spec, override=override)
+        layout = ('created', 'sent',)
+        columns = ('created', 'sent',)
+        bindings = (
+            Binding('posts', _("Posts"), 'NewsletterPosts', 'edition_id'),
+        )
+        actions = (
+            Action('preview', _("Preview")),
+            Action('send', _("Send")),
+        )
+
+    _POST_TEMPLATE_MATCHER = re.compile(r'<!-- POST START -->(.*)<!-- POST END -->',
+                                        re.DOTALL | re.MULTILINE)
+    _IMAGE_TEMPLATE_MATCHER = re.compile(r'<!-- IMAGE (?P<align>LEFT|RIGHT) START -->'
+                                         r'(.*)<!-- IMAGE (?P=align) END -->',
+                                         re.DOTALL | re.MULTILINE)
+
+    def _authorized(self, req, action, **kwargs):
+        if action in ('view', 'list'):
+            return req.newsletter_read_access
+        elif action in ('insert', 'update', 'delete', 'send', 'preview'):
+            return req.newsletter_write_access
+        else:
+            return False
+
+    def _prefill(self, req):
+        return dict(super(NewsletterEditions, self)._prefill(req),
+                    creator=req.user().uid())
+
+    def _newsletter_html(self, req, record):
+        newsletter_id = record['newsletter_id'].value()
+        newsletter_row = record['newsletter_id'].type().enumerator().row(newsletter_id)
+        lang = newsletter_row['lang'].value()
+        template_resource = wiking.module.Resources.resource('newsletter-template.html')
+        template = template_resource.get()
+        match = self._POST_TEMPLATE_MATCHER.search(template)
+        if not match:
+            req.message(_("%s: Post template not found!", template_resource.src_file()),
+                        type=req.ERROR)
+            raise wiking.Redirect(req.uri())
+        post_template = match.group(1)
+        template = template.replace(match.group(0), '%(posts)s')
+        image_templates = {}
+        def subst(match):
+            align = match.group('align').lower()
+            image_templates[align] = match.group(2)
+            return '%%(image_%s)s' % align
+        post_template = self._IMAGE_TEMPLATE_MATCHER.sub(subst, post_template)
+        if 'left' not in image_templates or 'right' not in image_templates:
+            req.message(_("%s: Image template sections not found!",
+                          template_resource.src_file()), type=req.ERROR)
+            raise wiking.Redirect(req.uri())
+        server_uri = req.server_uri()
+        abs_uri = lambda uri: server_uri + uri
+        newsletter_uri = abs_uri(self._binding_parent_uri(req))
+        edition_uri = abs_uri(self._current_record_uri(req, record))
+        colors = dict([(k, newsletter_row[k].export()) 
+                       for k in newsletter_row.keys() if k.endswith('_color')])
+        def post(row, post_template, image_templates, edition_uri):
+            content = pw.format_text(row['content'].value().strip())[1].replace(
+                '<a ', ('<a style="color: %(link_color)s; text-decoration: none; '
+                        'font-weight: bold;"' % colors)
+            )
+            values = dict(colors, 
+                          title=row['title'].value().strip(),
+                          content=content,
+                          image_left='', 
+                          image_right='')
+            if row['image'].value():
+                align = row['image_position'].value()
+                values['image_' + align] = image_templates[align] % dict(
+                    post_image_uri=req.make_uri(edition_uri + '/posts/' + row['post_id'].export(), 
+                                                action='image'),
+                    post_image_width=row['image_width'].export(),
+                    post_image_height=row['image_height'].export(),
+                )
+            return post_template % values
+        posts = [post(r, post_template, image_templates, edition_uri)
+                 for r in wiking.module.NewsletterPosts.posts(record['edition_id'].value())]
+        translate = lambda x: req.translate(x, lang=lang)
+        try:
+            return template % dict(
+                title = newsletter_row['title'].export(),
+                sender = newsletter_row['sender'].export(),
+                edition_uri=edition_uri,
+                resources_uri=abs_uri('/_resources'),
+                server_uri=server_uri,
+                unsubscribe_uri=newsletter_uri + '?action=unsubscribe',
+                image_uri=newsletter_uri + '?action=image',
+                like_uri='',
+                tweet_uri='',
+                share_uri='',
+                like_msg=translate(_("Like")),
+                tweet_msg=translate(_("Tweet")),
+                share_msg=translate(_("Share")),
+                thank_you_msg=translate(_("Thank you for your attention.")),
+                not_interested_msg=translate(_("Not interested in this newsletter anymore:")),
+                unsubscribe_msg=translate(_("Unsubscribe")),
+                web_version_msg=translate(_("Web version")),
+                address=''.join([r + '<br/>' 
+                                 for r in newsletter_row['address'].export().splitlines()]),
+                posts='\n'.join(posts),
+                # Resize the image to fit 640px wide template maintaining the aspect ratio.
+                image_height=(newsletter_row['image_height'].value() * 
+                              (640 / float(newsletter_row['image_width'].value()))),
+                **colors
+            )
+        except KeyError as e:
+            req.message(_("%s: Invalid template variable: %s" % (template_resource.src_file(), e)),
+                        type=req.ERROR)
+            raise wiking.Redirect(req.uri())
+
+        
+    def action_preview(self, req, record):
+        html = self._newsletter_html(req, record)
+        return wiking.Response(html)
+
+    def action_send(self, req, record):
+        html = self._newsletter_html(req, record)
+        lang = record.cb_value('newsletter_id', 'lang').value()
+        n = 0
+        for email in wiking.module.NewsletterSubscription.subscribers(newsletter_id=newsletter_id):
+            err = wiking.send_mail(email, title, '', html=html, lang=lang)
+            if err:
+                pass
+            else:
+                n += 1
+        try:
+            record.update(sent=now())
+        except pd.DBException as e:
+            req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
+        else:
+            req.message(_("The newsletter has been sent to %d recipients.", n))
+        raise Redirect(req.uri())
+
+
+class NewsletterPosts(CMSModule):
+    """E-mail newsletters with subscription."""
+    class ImagePositions(pp.Enumeration):
+        enumeration = (
+            ('left', _("Left")),
+            ('right', _("Right")),
+        )
+        default = 'left'
+    class Spec(Specification):
+        table = wiking.dbdefs.CmsNewsletterPosts
+        def fields(self):
+            override = (
+                Field('edition_id', codebook='NewsletterEditions'),
+                Field('title', _("Title"), width=70),
+                Field('ord', _("Order"), width=5, computer=computer(self._last_order),
+                      descr=_("Number denoting the order of the post on the page."),),
+                Field('content', _("Content"), width=80, height=6, compact=True),
+                Field('image', _("Image"), type=pd.Image()),
+                Field('image_position', _("Image Position"),
+                      enumerator=NewsletterPosts.ImagePositions),
+                Field('image_width', computer=computer(self._image_width)),
+                Field('image_height', computer=computer(self._image_height)),
+            )
+            return self._inherited_fields(NewsletterPosts.Spec, override=override)
+        def _last_order(self, record, edition_id):
+            return wiking.module.NewsletterPosts.last(edition_id)
+        def _image_width(self, record, image):
+            return image.image().size[0] if image else None
+        def _image_height(self, record, image):
+            return image.image().size[1] if image else None
+        layout = ('title', 'ord', 'image', 'image_position', 'content')
+        columns = ('title',)
+        def list_layout(self):
+            def clearing(element, context):
+                g = context.generator()
+                return g.div('')
+            def image(element, context, record):
+                if record['image_width'].value() is None: # Test width, big values are excluded...
+                    return ''
+                g = context.generator()              
+                return g.img(src='%s/posts/%s?action=image' % (context.req().uri(),
+                                                               record['post_id'].value()),
+                             align=record['image_position'].value(),
+                             width=record['image_width'].value(),
+                             height=record['image_height'].value(),
+                             style='margin-%s: 16px;' % (
+                                 'left' if record['image_position'].value() == 'right' else 'right'
+                             ),
+                             alt='')
+            return pp.ListLayout('title',
+                                 content=(lambda r: wiking.HtmlRenderer(image, r),
+                                          'content',
+                                          lambda r: wiking.HtmlRenderer(clearing),
+                                          ))
+
+    _ROW_ACTIONS = True
+
+    def _authorized(self, req, action, **kwargs):
+        if action in ('view', 'list', 'image'):
+            return req.newsletter_read_access
+        elif action in ('insert', 'update', 'delete'):
+            return req.newsletter_write_access
+        else:
+            return False
+
+    def _image_provider(self, req, uri, record, cid):
+        if cid == 'image':
+            return self._link_provider(req, uri, record, None, action='image')
+        return super(NewsletterPosts, self)._image_provider(req, uri, record, cid)
+
+    def last(self, edition_id):
+        ords = [r['ord'].value() for r in self._data.get_rows(edition_id=edition_id)]
+        if ords:
+            return sorted(ords)[-1] + 1
+        else:
+            return 1
+
+    def posts(self, edition_id):
+        return self._data.get_rows(edition_id=edition_id)
+
+    def action_image(self, req, record):
+        #if req.cached_since(last_modified):
+        #    raise wiking.NotModified()
+        value = record['image'].value()
+        return Response(value.buffer(), content_type='image/%s' % value.image().format.lower())
+        #last_modified=last_modified)
+
 class Discussions(ContentManagementModule, EmbeddableCMSModule):
     class Spec(Specification):
         # Translators: Name of the extension module for simple forum-like discussions.

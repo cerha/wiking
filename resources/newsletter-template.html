@@ -1,0 +1,99 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html lang="cs" xml:lang="cs" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta content="text/html; charset=utf-8" http-equiv="Content-type">
+  <title>%(title)s</title>
+  <base href="s%(edition_uri)s">
+</head>
+<body style="background-color: #e7e7e7; text-align: center; font-family: Helvetica, sans-serif;
+	     font-size: 14px; line-height: 140%%;">
+  <!-- gmail err
+  <h1 style="display: none;">%(title)s</h1>
+  -->
+  <div style="display: block; float: none; background-color: %(bg_color)s;
+	      width: 640px; margin: 20px auto 60px auto; padding: 0;">
+    <div style="background-color: %(top_bg_color)s; color: %(top_text_color)s; font-size: 12px;
+		margin: 0; padding: 5px 8px 5px 8px; border-radius:6px 6px 0px 0px;
+                -moz-border-radius:6px 6px 0px 0px; -webkit-border-radius: 6px 6px 0px 0px;
+                -webkit-font-smoothing:antialiased; font-weight: bold;">
+      <p style="text-align: left; margin: 0px; padding: 0px; float: left;">
+        <a href="%(edition_uri)s" style="color: %(top_link_color)s; text-decoration: none">%(web_version_msg)s</a> |
+        <a href="%(unsubscribe_uri)s" style="color: %(top_link_color)s; text-decoration: none">%(unsubscribe_msg)s</a>
+      </p>
+      <p style="text-align: right; margin: 0px; padding: 0px;">
+        <a href="%(like_uri)s" style="color: %(top_link_color)s; text-decoration: none">
+	  <img src="%(resources_uri)s/social-fb-like-white.png"
+	       style="vertical-align: middle;" alt="">
+	    %(like_msg)s
+	</a>
+	&nbsp;
+        <a href="%(tweet_uri)s" style="color: %(top_link_color)s; text-decoration: none">
+	  <img src="%(resources_uri)s/social-tweet-white.png" 
+	       style="vertical-align: middle;" alt="">
+	    %(tweet_msg)s
+	</a>
+	  &nbsp;
+        <a href="%(share_uri)s" style="color: %(top_link_color)s; text-decoration: none">
+	  <img src="%(resources_uri)s/social-share-white.png"
+	       style="vertical-align: middle;" alt="">
+	    %(share_msg)s
+	</a>
+      </p>
+    </div>
+    <img alt="%(title)s" src="%(image_uri)s" width="640" height="%(image_height)s"
+	 style="display: block; float: none; border: none;">
+    <div style="text-align: left; padding: 26px 30px 10px 30px">
+      <!-- POST START -->
+      <h2 style="clear: both; text-align: left; margin: 0; padding: 10px 0; font-size: 18px; 
+		 font-weight: bold; text-decoration: none; color: %(heading_color)s;">
+	%(title)s
+      </h2>
+      <div style="color: %(text_color)s; font-size: 14px; line-height: 18px;
+                  text-align: left; margin: 0; padding: 14px 0px 14px 0px;">
+        <!-- IMAGE LEFT START -->
+        <img src="%(post_image_uri)s" width="%(post_image_width)s" height="%(post_image_height)s"
+	     align="left" style="border: none; padding: 0 16px 16px 0;">
+        <!-- IMAGE LEFT END -->
+        <!-- IMAGE RIGHT START -->
+        <img src="%(post_image_uri)s" width="%(post_image_width)s" height="%(post_image_height)s" 
+	     align="right" style="border: none; padding: 0 0 16px 16px;">
+        <!-- IMAGE RIGHT END -->
+	%(content)s
+      </div>
+      <!-- POST END -->
+    </div>
+    <div style="clear: both; height: 0px; line-height: 0; padding: 0; margin: 0;"></div>
+    <div style="text-align: left; padding: 30px 30px 30px 30px">
+      <strong>%(thank_you_msg)s</strong><br><br>
+      <strong>
+	<a href="http://a11y.ltd.uk" style="color: %(link_color)s; text-decoration: none">
+	  %(server_uri)s
+	</a>
+      </strong><br>
+    </div>
+    <div style="background-color: %(footer_bg_color)s; margin: 0; padding: 30px 30px 30px 30px;
+		border-radius: 0px 0px 6px 6px;
+                -moz-border-radius:0px 0px 6px 6px; -webkit-border-radius: 0px 0px 6px 6px;">
+        <p style="font-size: 12px; line-height: 18px; color: %(footer_text_color)s;
+		  text-align: left; margin: 18px 0 0 0; padding: 0;
+                  width: 300px; display: block; float: left;">
+          %(not_interested_msg)s
+          <a href="%(unsubscribe_uri)s" style="color: %(footer_link_color)s; text-decoration: none">
+	    %(unsubscribe_msg)s
+	  </a>
+	</p>
+      <p style="font-size: 12px; line-height: 18px; color: %(footer_text_color)s; text-align: right;
+                margin: 0; padding: 0; width: 240px; display: block; float: right;">
+        <strong>%(sender)s</strong><br>
+        %(address)s
+        <strong>
+	  <a href="%(server_uri)s" style="color: %(footer_link_color)s; text-decoration: none">
+	    %(server_uri)s
+	  </a>
+	</strong>
+	<br>
+      </p>
+      <div style="clear: both; height: 0px; line-height: 0; padding: 0; margin: 0;"></div>
+    </div>
+  </div>
+</body>
+</html>
