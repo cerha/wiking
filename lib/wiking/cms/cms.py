@@ -4228,7 +4228,8 @@ class NewsletterEditions(CMSModule):
         if action == 'list':
             return req.newsletter_read_access
         elif action == 'view':
-            return req.newsletter_read_access and record['sent'].value() is not None
+            return (req.newsletter_write_access or 
+                    req.newsletter_read_access and record['sent'].value() is not None)
         elif action in ('insert', 'update', 'delete', 'send', 'preview'):
             return req.newsletter_write_access
         else:
