@@ -4110,14 +4110,16 @@ class NewsletterSubscription(CMSModule):
         if email:
             values['email'] = email
             success = _("The e-mail address %s has been unsubscribed succesfully.", email)
+            failure = _("The e-mail address %s is not subscribed.", email)
         elif req.user():
             values['uid'] = req.user().uid()
             success = _("You have been unsubscribed succesfully.")
+            failure = _("You are not subscribed.")
         else:
             return self._subscription_form(req, 'unsubscribe', newsletter_record['title'].value())
         row = self._data.get_row(**values)
         if not row:
-            req.message(_("Cannot unsubscribe when not subscribed."), type=req.ERROR)
+            qreq.message(_("Cannot unsubscribe: %s.", failure), type=req.ERROR)
             raise Redirect(req.uri())
         if email:
             code = req.param('code')
