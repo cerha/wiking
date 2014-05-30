@@ -3974,13 +3974,7 @@ class Newsletters(EmbeddableCMSModule):
                 Field('footer_link_color', _("Links"), type=pd.Color(), default='#000000'),
                 Field('footer_bg_color', _("Background"), type=pd.Color(), default='#D8E0F0'),
             )
-            extra = (
-                Field('unlabeled_image', '', type=pd.Image(), virtual=True,
-                      computer=computer(lambda r, image: image)),
-                Field('unlabeled_description', '', type=pd.String(), virtual=True, 
-                      computer=computer(lambda r, description: description)),
-            )
-            return self._inherited_fields(Newsletters.Spec, override=override) + extra
+            return self._inherited_fields(Newsletters.Spec, override=override)
 
         def _image_width(self, record, image):
             return image.image().size[0] if image else None
@@ -4045,7 +4039,7 @@ class Newsletters(EmbeddableCMSModule):
                     lang=req.preferred_language())
         
     def _image_provider(self, req, uri, record, cid):
-        if cid in ('image', 'unlabeled_image'):
+        if cid == 'image':
             return self._link_provider(req, uri, record, None, action='image')
         return super(Newsletters, self)._image_provider(req, uri, record, cid)
 
