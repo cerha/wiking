@@ -240,6 +240,8 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
     """Deprecated, use _ALLOW_TEXT_SEARCH."""
     _ALLOW_TEXT_SEARCH = None
     """Default value to pass to 'pytis.web.BrowseForm' 'allow_text_search' constructor argument."""
+    _PERMANENT_TEXT_SEARCH = False
+    """Default value to pass to 'pytis.web.BrowseForm' 'permanent_text_search' constr. argument."""
     _TOP_ACTIONS = False
     "If true, action menu is put above BrowseForm/ListView forms."
     _BOTTOM_ACTIONS = True
@@ -777,6 +779,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                 limits=self._BROWSE_FORM_LIMITS,
                 limit=self._BROWSE_FORM_DEFAULT_LIMIT,
                 allow_text_search=self._ALLOW_QUERY_SEARCH or self._ALLOW_TEXT_SEARCH,
+                permanent_text_search=self._PERMANENT_TEXT_SEARCH,
                 top_actions=self._TOP_ACTIONS,
                 bottom_actions=self._BOTTOM_ACTIONS,
                 row_actions=self._ROW_ACTIONS,
