@@ -26,7 +26,7 @@ import pytis.data
 from pytis.data.dbdefs import and_, coalesce, func, ival, null, select, stype, sval
 from wiking_db import Base_CachingTable, CommonAccesRights
 
-current_timestamp_0 = sqlalchemy.sql.expression.Function('current_timestamp', ival(0))
+current_timestamp_0 = sqlalchemy.sql.functions.Function('current_timestamp', ival(0))
 
 name_is_not_null = sql.SQLFlexibleValue('name_not_null', default=True)
 
