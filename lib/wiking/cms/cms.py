@@ -4329,8 +4329,11 @@ class NewsletterEditions(CMSModule):
         return wiking.Response(html)
 
     def action_send(self, req, record):
+        newsletter_id = record['newsletter_id'].value()
+        newsletter_row = record['newsletter_id'].type().enumerator().row(newsletter_id)
+        title = newsletter_row['title'].value()
+        lang = newsletter_row['lang'].value()
         html = self._newsletter_html(req, record)
-        lang = record.cb_value('newsletter_id', 'lang').value()
         n = 0
         for email in wiking.module.NewsletterSubscription.subscribers(newsletter_id=newsletter_id):
             err = wiking.send_mail(email, title, '', html=html, lang=lang)
