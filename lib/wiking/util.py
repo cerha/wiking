@@ -2126,8 +2126,10 @@ def validate_email_address(address, helo=None):
             if reasons:
                 return False, _("Invalid e-mail address: %s", reasons)
             else:
-                return False, _("Unable to check: Mail servers temporarily unavailable. "
-                                "Please, try again later.")
+                return False, _("Unable to verify e-mail address: Mail servers for "
+                                "'%s' are temporarily unavailable. The problem is "
+                                "not on the side of this application and we can not "
+                                "do anything about it. Please, try again later.")
     return True, None
 
 
