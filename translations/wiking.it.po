@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-05-30 10:09+0200\n"
+"POT-Creation-Date: 2014-06-20 11:39+0200\n"
 "PO-Revision-Date: 2010-01-19 16:27+0100\n"
 "Last-Translator: kkkk <kkkkkkkkkkk>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
@@ -250,31 +250,31 @@ msgstr "Nuova registrazione è stata aggiornata con successo."
 msgid "The record was deleted."
 msgstr "Registrazione è stata annullata."
 
-#: ../lib/wiking/db.py:466
+#: ../lib/wiking/db.py:470
 msgid "Unable to perform a database operation:"
 msgstr ""
 
-#: ../lib/wiking/db.py:2034
+#: ../lib/wiking/db.py:2045
 msgid "Back"
 msgstr "Indietro"
 
 #. Back button label. Standard computer terminology.
 #. RSS channel is a computer idiom, see Wikipedia.
-#: ../lib/wiking/db.py:2242 ../lib/wiking/db.py:2398
+#: ../lib/wiking/db.py:2253 ../lib/wiking/db.py:2409
 msgid "An RSS channel is available for this section:"
 msgstr "Per questa sezione è disponibile anche il canale RSS:"
 
 #. RSS channel is a computer idiom, see Wikipedia.  Don't translateg 'RSS'.
-#: ../lib/wiking/db.py:2246 ../lib/wiking/db.py:2396
+#: ../lib/wiking/db.py:2257 ../lib/wiking/db.py:2407
 msgid "more about RSS"
 msgstr "ulteriori informazioni sul RSS"
 
-#: ../lib/wiking/db.py:2391
+#: ../lib/wiking/db.py:2402
 #, fuzzy, python-format
 msgid "RSS channel \"%s\""
 msgstr "Canale RSS"
 
-#: ../lib/wiking/db.py:2401
+#: ../lib/wiking/db.py:2412
 #, fuzzy
 msgid "RSS channels are available for this section"
 msgstr "Per questa sezione è disponibile anche il canale RSS:"
@@ -662,15 +662,35 @@ msgid "Continue"
 msgstr ""
 
 #: ../lib/wiking/util.py:2080
-msgid "Invalid format"
+#, fuzzy
+msgid "Invalid e-mail address format."
 msgstr "Formato non valido"
 
 #. Computer terminology. `gmail.com' is a domain name in email address
 #. `joe@gmail.com'.
-#: ../lib/wiking/util.py:2088 ../lib/wiking/util.py:2095
+#: ../lib/wiking/util.py:2088 ../lib/wiking/util.py:2096
 #, fuzzy
-msgid "Domain not found"
+msgid "Domain not found."
 msgstr "Nessuna soluzione trovata."
+
+#. Computer terminology.  Don't translate the acronym `DNS'.
+#: ../lib/wiking/util.py:2091 ../lib/wiking/util.py:2099
+#, python-format
+msgid "Unable to retrieve DNS records: %s"
+msgstr ""
+
+#: ../lib/wiking/util.py:2127
+#, python-format
+msgid "Invalid e-mail address: %s"
+msgstr ""
+
+#: ../lib/wiking/util.py:2129
+#, python-format
+msgid ""
+"Unable to verify e-mail address: Mail servers for '%s' are temporarily "
+"unavailable. The problem is not on the side of this application and we can "
+"not do anything about it. Please, try again later."
+msgstr ""
 
 #: ../resources/scripts/discussion.js:72
 msgid "Reply"
