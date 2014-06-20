@@ -2077,7 +2077,7 @@ def validate_email_address(address, helo=None):
         # We validate only common addresses, not pathological cases
         __, domain = address.split('@')
     except (UnicodeEncodeError, ValueError):
-        return False, _("Invalid format")
+        return False, _("Invalid e-mail address format.")
     try:
         mxhosts = dns.resolver.query(domain, 'MX')
     except dns.resolver.NoAnswer:
@@ -2085,16 +2085,18 @@ def validate_email_address(address, helo=None):
     except dns.resolver.NXDOMAIN:
         # Translators: Computer terminology. `gmail.com' is a domain name in email address
         # `joe@gmail.com'.
-        return False, _("Domain not found")
+        return False, _("Domain not found.")
     except Exception as e:
-        return False, str(e) or e.__class__.__name__
+        # Translators: Computer terminology.  Don't translate the acronym `DNS'.
+        return False, _("Unable to retrieve DNS records: %s", str(e) or e.__class__.__name__)
     if mxhosts is None:
         try:
             ahosts = dns.resolver.query(domain, 'A')
         except dns.resolver.NoAnswer:
-            return False, _("Domain not found")
+            return False, _("Domain not found.")
         except Exception as e:
-            return False, str(e) or e.__class__.__name__
+            # Translators: Computer terminology.  Don't translate the acronym `DNS'.
+            return False, _("Unable to retrieve DNS records: %s", str(e) or e.__class__.__name__)
         hosts = [h.to_text() for h in ahosts]
     else:
         hosts = [h.exchange.to_text() for h in mxhosts]
@@ -2115,9 +2117,17 @@ def validate_email_address(address, helo=None):
                 smtp.quit()
                 break
             except Exception as e:
-                reasons += ('%s: %s; ' % (host, e,))
+                if not (hasattr(e, 'errno') and e.errno == 421):
+                    # Error 421 stands for Service temporarily unavailable.
+                    # Skip such hosts without appending to reasons to be able
+                    # to detect, that all servers were unavailable in the end.
+                    reasons += ('%s: %s; ' % (host, e,))
         else:
-            return False, reasons
+            if reasons:
+                return False, _("Invalid e-mail address: %s", reasons)
+            else:
+                return False, _("Unable to check: Mail servers temporarily unavailable. "
+                                "Please, try again later.")
     return True, None
 
 

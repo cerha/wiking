@@ -661,9 +661,9 @@ class Users(UserManagementModule, CachingPytisModule):
         def _check_email(self, record):
             if not record.req().param('_pytis_form_update_request') \
                     and record['email'].value() and record.field_changed('email'):
-                ok, msg = wiking.validate_email_address(record['email'].value())
+                ok, error = wiking.validate_email_address(record['email'].value())
                 if not ok:
-                    return ('email', _("Invalid e-mail address: %s", msg))
+                    return ('email', error)
                     
         def _stored_password(self, plaintext_password):
             if plaintext_password is None:
