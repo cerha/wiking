@@ -2329,7 +2329,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                 Field('pubinfo', _("Publisher"), virtual=True,
                       computer=computer(self._pubinfo)),
                 Field('download_role_id', _("Download acces"), codebook='ApplicationRoles',
-                      not_null=False, # Doesnt work: type=pd.String(not_null=False), 
+                      not_null=False, # Doesnt work: type=pd.String(not_null=False),
                       descr=_("Select the role allowed to download the publication for offline "
                               "use in one of the available download formats. Users with "
                               "read/write access are always allowed to download the publication "
@@ -4003,7 +4003,7 @@ class Newsletters(EmbeddableCMSModule):
         if record:
             req.newsletter_read_access = req.check_roles(roles[record['read_role_id'].value()])
             req.newsletter_write_access = req.check_roles(roles[record['write_role_id'].value()])
-        # TODO: Isn't it posible to hack around this by URI manipulation? 
+        # TODO: Isn't it posible to hack around this by URI manipulation?
         if action == 'list':
             return req.page_read_access
         elif action == 'insert':
@@ -4078,9 +4078,8 @@ class NewsletterSubscription(CMSModule):
         layout = ('email',)
         columns = ('uid', 'email', 'timestamp')
 
-
     def _authorized(self, req, action, record=None, **kwargs):
-        # TODO: Isn't it posible to hack around this by URI manipulation? 
+        # TODO: Isn't it posible to hack around this by URI manipulation?
         if action in ('view', 'list', 'insert', 'update', 'delete'):
             return req.newsletter_write_access
         else:
@@ -4146,9 +4145,9 @@ class NewsletterSubscription(CMSModule):
                          "%(uri)s\n\n",
                          newsletter=newsletter_record['title'].value(),
                          server_hostname=wiking.cfg.server_hostname,
-                         uri=req.make_uri(req.server_uri() + req.uri(), action='unsubscribe', 
+                         uri=req.make_uri(req.server_uri() + req.uri(), action='unsubscribe',
                                           email=email, code=row['code'].value()))
-                err = send_mail(email, subject, text, lang=req.preferred_language())
+                err = wiking.send_mail(email, subject, text, lang=req.preferred_language())
                 if err:
                     req.message(_("Failed sending e-mail:") + ' ' + err, type=req.ERROR)
                     req.message(_("Please try repeating your request later or "
@@ -4223,7 +4222,7 @@ class NewsletterEditions(CMSModule):
         if action == 'list':
             return req.newsletter_read_access
         elif action == 'view':
-            return (req.newsletter_write_access or 
+            return (req.newsletter_write_access or
                     req.newsletter_read_access and record['sent'].value() is not None)
         elif action in ('insert', 'update', 'delete', 'send', 'preview'):
             return req.newsletter_write_access
@@ -4235,7 +4234,6 @@ class NewsletterEditions(CMSModule):
         if not req.newsletter_write_access:
             condition = pd.AND(condition, pd.NE('sent', pd.dtval(None)))
         return condition
-
 
     def _prefill(self, req):
         return dict(super(NewsletterEditions, self)._prefill(req),
@@ -4268,22 +4266,22 @@ class NewsletterEditions(CMSModule):
         abs_uri = lambda uri: server_uri + uri
         newsletter_uri = abs_uri(self._binding_parent_uri(req))
         edition_uri = abs_uri(self._current_record_uri(req, record))
-        colors = dict([(k, newsletter_row[k].export()) 
+        colors = dict([(k, newsletter_row[k].export())
                        for k in newsletter_row.keys() if k.endswith('_color')])
         def post(row, post_template, image_templates, edition_uri):
             content = lcg.format_text(row['content'].value().strip()).replace(
                 '<a ', ('<a style="color: %(link_color)s; text-decoration: none; '
                         'font-weight: bold;"' % colors)
             )
-            values = dict(colors, 
+            values = dict(colors,
                           title=row['title'].value().strip(),
                           content=content,
-                          image_left='', 
+                          image_left='',
                           image_right='')
             if row['image'].value():
                 align = row['image_position'].value()
                 values['image_' + align] = image_templates[align] % dict(
-                    post_image_uri=req.make_uri(edition_uri + '/posts/' + row['post_id'].export(), 
+                    post_image_uri=req.make_uri(edition_uri + '/posts/' + row['post_id'].export(),
                                                 action='image'),
                     post_image_width=row['image_width'].export(),
                     post_image_height=row['image_height'].export(),
@@ -4294,8 +4292,8 @@ class NewsletterEditions(CMSModule):
         translate = lambda x: req.translate(x, lang=lang)
         try:
             return template % dict(
-                title = newsletter_row['title'].export(),
-                sender = newsletter_row['sender'].export(),
+                title=newsletter_row['title'].export(),
+                sender=newsletter_row['sender'].export(),
                 edition_uri=edition_uri,
                 resources_uri=abs_uri('/_resources'),
                 server_uri=server_uri,
@@ -4311,11 +4309,11 @@ class NewsletterEditions(CMSModule):
                 not_interested_msg=translate(_("Not interested in this newsletter anymore:")),
                 unsubscribe_msg=translate(_("Unsubscribe")),
                 web_version_msg=translate(_("Web version")),
-                address=''.join([r + '<br/>' 
+                address=''.join([r + '<br/>'
                                  for r in newsletter_row['address'].export().splitlines()]),
                 posts='\n'.join(posts),
                 # Resize the image to fit 640px wide template maintaining the aspect ratio.
-                image_height=(newsletter_row['image_height'].value() * 
+                image_height=(newsletter_row['image_height'].value() *
                               (640 / float(newsletter_row['image_width'].value()))),
                 **colors
             )
@@ -4324,7 +4322,6 @@ class NewsletterEditions(CMSModule):
                         type=req.ERROR)
             raise wiking.Redirect(req.uri())
 
-        
     def action_preview(self, req, record):
         html = self._newsletter_html(req, record)
         return wiking.Response(html)
@@ -4390,7 +4387,7 @@ class NewsletterPosts(CMSModule):
             def image(element, context, record):
                 if record['image_width'].value() is None: # Test width, big values are excluded...
                     return ''
-                g = context.generator()              
+                g = context.generator()
                 return g.img(src='%s/posts/%s?action=image' % (context.req().uri(),
                                                                record['post_id'].value()),
                              align=record['image_position'].value(),
