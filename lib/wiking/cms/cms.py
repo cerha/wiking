@@ -4135,7 +4135,7 @@ class NewsletterSubscription(CMSModule):
             return self._subscription_form(req, 'unsubscribe', newsletter_record['title'].value())
         row = self._data.get_row(**values)
         if not row:
-            qreq.message(_("Cannot unsubscribe: %s.", failure), type=req.ERROR)
+            req.message(_("Cannot unsubscribe: %s.", failure), type=req.ERROR)
             raise Redirect(req.uri())
         if email:
             code = req.param('code')
