@@ -4151,7 +4151,8 @@ class NewsletterSubscription(CMSModule):
                 err = send_mail(email, subject, text, lang=req.preferred_language())
                 if err:
                     req.message(_("Failed sending e-mail:") + ' ' + err, type=req.ERROR)
-                    msg = _("Please try repeating your request later or contact the administrator!")
+                    req.message(_("Please try repeating your request later or "
+                                  "contact the administrator if the problem persists!"))
                 else:
                     req.message(_("Unsubscription confirmation has been sent to %s. "
                                   "Please, check your mail and click on the link to "
