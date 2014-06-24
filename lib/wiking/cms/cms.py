@@ -4009,8 +4009,10 @@ class Newsletters(EmbeddableCMSModule):
             return req.page_read_access
         elif action == 'insert':
             return req.page_write_access
-        elif action in ('view', 'subscribe', 'unsubscribe', 'image'):
+        elif action in ('view', 'image'):
             return req.newsletter_read_access
+        elif action in ('subscribe', 'unsubscribe'):
+            return req.newsletter_read_access and not req.newsletter_write_access
         elif action in ('update', 'delete', 'colors'):
             return req.newsletter_write_access
         else:
@@ -4064,28 +4066,28 @@ class Newsletters(EmbeddableCMSModule):
 class NewsletterSubscription(CMSModule):
     """E-mail newsletters with subscription."""
     class Spec(Specification):
-        table = wiking.dbdefs.CmsNewsletterSubscription
+        table = wiking.dbdefs.CmsVNewsletterSubscription
         def fields(self):
             override = (
                 Field('newsletter_id', codebook='Newsletters'),
-                Field('uid', _("User"), codebook='Users'),
+                Field('uid', _("User"), codebook='Users',
+                      inline_referer='user_login', inline_display='user_name'),
                 Field('email', _("E-mail"),),
                 Field('timestamp', _("Since"), editable=pp.Editable.NEVER, default=now),
-                Field('code'),
             )
             return self._inherited_fields(NewsletterSubscription.Spec, override=override)
         layout = ('email',)
-        columns = ('uid', 'email', 'timestamp')
+        columns = ('email', 'uid', 'timestamp')
 
     def _authorized(self, req, action, record=None, **kwargs):
         # TODO: Isn't it posible to hack around this by URI manipulation?
-        if action in ('view', 'list', 'insert', 'update', 'delete'):
+        if action in ('view', 'list', 'insert', 'delete'):
             return req.newsletter_write_access
         else:
             return False
 
     def _subscription_form(self, req, action, newsletter_title):
-        if action == 'subscribe':
+        if action in ('subscribe', 'insert'):
             submit = _("Subscribe")
             title = _("Subscribe to %s", newsletter_title)
         else:
@@ -4100,7 +4102,11 @@ class NewsletterSubscription(CMSModule):
                                 show_footer=False)
         return wiking.Document(title, form)
 
-    def subscribe(self, req, newsletter_record):
+    def action_insert(self, req):
+        fw = self._binding_forward(req)
+        return self.subscribe(req, fw.arg('record'), action='insert')
+
+    def subscribe(self, req, newsletter_record, action='subscribe'):
         if req.param('_cancel'):
             raise Redirect(req.uri())
         values = dict(newsletter_id=newsletter_record['newsletter_id'].value(), timestamp=now())
@@ -4109,11 +4115,11 @@ class NewsletterSubscription(CMSModule):
             values['email'] = email
             values['code'] = wiking.generate_random_string(16)
             success = _("The e-mail address %s has been subscribed succesfully.", email)
-        elif req.user():
+        elif action == 'subscribe' and req.user():
             values['uid'] = req.user().uid()
             success = _("You have been subscribed succesfully.")
         else:
-            return self._subscription_form(req, 'subscribe', newsletter_record['title'].value())
+            return self._subscription_form(req, action, newsletter_record['title'].value())
         try:
             self._data.insert(self._data.make_row(**values))
         except pd.DBException as e:

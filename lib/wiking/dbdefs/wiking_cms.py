@@ -954,6 +954,26 @@ class CmsNewsletterSubscription(CommonAccesRights, Base_CachingTable):
               ('newsletter_id', 'email',),)
 
 
+class CmsVNewsletterSubscription(CommonAccesRights, sql.SQLView):
+    name = 'cms_v_newsletter_subscription'
+    @classmethod
+    def query(cls):
+        s = sql.t.CmsNewsletterSubscription.alias('s')
+        u = sql.t.Users.alias('u')
+        return select(cls._exclude(s, s.c.email) +
+                      [coalesce(s.c.email, u.c.email).label('email'),
+                       u.c.user_.label('user_name'),
+                       u.c.login.label('user_login'),
+                       ],
+                      from_obj=[s.outerjoin(u, s.c.uid == u.c.uid)])
+    def on_insert(self):
+        return ("insert into public.cms_newsletter_subscription "
+                "(newsletter_id, email, uid, code, timestamp) "
+                "VALUES (new.newsletter_id, new.email, new.uid, new.code, new.timestamp);",)
+    delete_order = (CmsNewsletterSubscription,)
+    no_insert_columns = ('subscription_id',)
+
+
 class CmsNewsletterEditions(CommonAccesRights, Base_CachingTable):
     name = 'cms_newsletter_editions'
     fields = (
