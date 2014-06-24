@@ -4336,7 +4336,7 @@ class NewsletterEditions(CMSModule):
         title = newsletter_row['title'].value()
         lang = newsletter_row['lang'].value()
         html = self._newsletter_html(req, record)
-        n = 0
+        n, errors = 0, 0
         #  Preserve % signs in HTML template (only keyword substitutions are meant to be used).
         html = re.sub('%(?!\([a-z]+\)s)', '%%', html)
         for email, code in wiking.module.NewsletterSubscription.subscribers(newsletter_id):
@@ -4345,15 +4345,18 @@ class NewsletterEditions(CMSModule):
                                    html=html % dict([(k, urllib.quote(v))
                                                      for k, v in subst.items()]))
             if err:
-                pass
+                errors += 1
+                log(OPERATIONAL, "Error sending newsletter to %s: %s" % (email, err))
             else:
                 n += 1
         try:
             record.update(sent=now())
         except pd.DBException as e:
             req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
-        else:
-            req.message(_("The newsletter has been sent to %d recipients.", n))
+        req.message(_("The newsletter has been sent to %d recipients.", n))
+        if errors:
+            req.message(_("Sending to %d recipients failed. "
+                          "Details can be found in servers error log.", errors), type=req.ERROR)
         raise Redirect(req.uri())
 
 
