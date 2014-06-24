@@ -4301,8 +4301,10 @@ class NewsletterEditions(CMSModule):
                 unsubscribe_uri=newsletter_uri + ('?action=unsubscribe;email=%(email)s;'
                                                   'code=%(code)s'),
                 image_uri=newsletter_uri + '?action=image',
-                like_uri='',
-                tweet_uri='',
+                like_uri=req.make_uri('https://www.facebook.com/sharer/sharer.php', u=edition_uri),
+                tweet_uri=req.make_uri('https://twitter.com/share',
+                                       text=newsletter_row['title'].export(),
+                                       url=edition_uri),
                 share_uri='',
                 like_msg=translate(_("Like")),
                 tweet_msg=translate(_("Tweet")),
