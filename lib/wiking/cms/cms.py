@@ -41,6 +41,7 @@ import os
 import re
 import string
 import sys
+import urllib
 
 import pytis.data
 import pytis.util
@@ -4168,9 +4169,10 @@ class NewsletterSubscription(CMSModule):
         raise Redirect(req.uri())
 
     def subscribers(self, newsletter_id):
-        return [r['email'].value() for r in self._data.get_rows(newsletter_id=newsletter_id)]
+        return [(r['email'].value(), r['code'].value())
+                for r in self._data.get_rows(newsletter_id=newsletter_id)]
 
-        
+
 class NewsletterEditions(CMSModule):
     """E-mail newsletters with subscription."""
     class Spec(Specification):
@@ -4296,7 +4298,8 @@ class NewsletterEditions(CMSModule):
                 edition_uri=edition_uri,
                 resources_uri=abs_uri('/_resources'),
                 server_uri=server_uri,
-                unsubscribe_uri=newsletter_uri + '?action=unsubscribe',
+                unsubscribe_uri=newsletter_uri + ('?action=unsubscribe;email=%(email)s;'
+                                                  'code=%(code)s'),
                 image_uri=newsletter_uri + '?action=image',
                 like_uri='',
                 tweet_uri='',
@@ -4332,8 +4335,13 @@ class NewsletterEditions(CMSModule):
         lang = newsletter_row['lang'].value()
         html = self._newsletter_html(req, record)
         n = 0
-        for email in wiking.module.NewsletterSubscription.subscribers(newsletter_id=newsletter_id):
-            err = wiking.send_mail(email, title, '', html=html, lang=lang)
+        #  Preserve % signs in HTML template (only keyword substitutions are meant to be used).
+        html = re.sub('%(?!\([a-z]+\)s)', '%%', html)
+        for email, code in wiking.module.NewsletterSubscription.subscribers(newsletter_id):
+            subst = dict(email=email, code=code)
+            err = wiking.send_mail(email, title, '', lang=lang,
+                                   html=html % dict([(k, urllib.quote(v))
+                                                     for k, v in subst.items()]))
             if err:
                 pass
             else:
@@ -4460,7 +4468,6 @@ class Discussions(ContentManagementModule, EmbeddableCMSModule):
         layout = ('text',)
         def list_layout(self):
             import textwrap
-            import urllib
             def reply_info(element, context, record):
                 if record.req().check_roles(Roles.USER):
                     g = context.generator()
