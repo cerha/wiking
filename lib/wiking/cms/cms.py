@@ -4070,11 +4070,9 @@ class NewsletterSubscription(CMSModule):
                 Field('uid', _("User"), codebook='Users'),
                 Field('email', _("E-mail"),),
                 Field('timestamp', _("Since"), editable=pp.Editable.NEVER, default=now),
-                Field('code', computer=computer(self._code)),
+                Field('code'),
             )
             return self._inherited_fields(NewsletterSubscription.Spec, override=override)
-        def _code(self, record, email):
-            return wiking.generate_random_string(16) if email else None
         layout = ('email',)
         columns = ('uid', 'email', 'timestamp')
 
@@ -4105,6 +4103,7 @@ class NewsletterSubscription(CMSModule):
         email = req.param('email')
         if email:
             values['email'] = email
+            values['code'] = wiking.generate_random_string(16)
             success = _("The e-mail address %s has been subscribed succesfully.", email)
         elif req.user():
             values['uid'] = req.user().uid()
