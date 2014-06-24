@@ -4096,10 +4096,13 @@ class NewsletterSubscription(CMSModule):
                                 action=action,
                                 submit_buttons=((None, submit),),
                                 show_reset_button=False,
+                                show_cancel_button=True,
                                 show_footer=False)
         return wiking.Document(title, form)
 
     def subscribe(self, req, newsletter_record):
+        if req.param('_cancel'):
+            raise Redirect(req.uri())
         values = dict(newsletter_id=newsletter_record['newsletter_id'].value(), timestamp=now())
         email = req.param('email')
         if email:
@@ -4120,6 +4123,8 @@ class NewsletterSubscription(CMSModule):
         raise Redirect(req.uri())
 
     def unsubscribe(self, req, newsletter_record):
+        if req.param('_cancel'):
+            raise Redirect(req.uri())
         email = req.param('email')
         values = dict(newsletter_id=newsletter_record['newsletter_id'].value())
         if email:
