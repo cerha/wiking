@@ -1965,7 +1965,6 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         if req.param('_cancel'):
             # Check this AFTER AJAX handling, because AJAX requests have
             # all submit button parameters set.
-            wiking.debug('!!!', req.param('_cancel'))
             raise Redirect(req.uri())
         if not req.param('submit'):
             # Prefill form values from request parameters.
