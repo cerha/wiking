@@ -4337,6 +4337,23 @@ class NewsletterEditions(CMSModule):
                         type=req.ERROR)
             raise wiking.Redirect(req.uri())
 
+    def _newsletter_text(self, html):
+        import textwrap
+        def link2text(m):
+            url = m.group(1).strip()
+            label = m.group(2).strip()
+            if url and label and url != label:
+                return '%s: %s' % (label, url)
+            else:
+                return label
+        text = re.sub(r'<!--.*?-->', '', html.replace('&nbsp;', ' '), flags=re.DOTALL)
+        text = re.sub(r'<a href="([^"]+)"[^>]*>(.*?)</a>', link2text, text,
+                      flags=re.MULTILINE | re.DOTALL)
+        text = re.sub(r'<.*?>', '', text, flags=re.MULTILINE | re.DOTALL)
+        return '\n\n'.join([textwrap.fill(paragraph.strip().strip('|').strip(),
+                                          78, replace_whitespace=True)
+                            for paragraph in re.split(r'\n\s*', text, flags=re.MULTILINE)])
+
     def action_preview(self, req, record):
         html = self._newsletter_html(req, record)
         return wiking.Response(html)
@@ -4350,11 +4367,11 @@ class NewsletterEditions(CMSModule):
         n, errors = 0, 0
         #  Preserve % signs in HTML template (only keyword substitutions are meant to be used).
         html = re.sub('%(?!\([a-z]+\)s)', '%%', html)
+        text = self._newsletter_text(html)
         for email, code in wiking.module.NewsletterSubscription.subscribers(newsletter_id):
-            subst = dict(email=email, code=code)
-            err = wiking.send_mail(email, title, '', lang=lang,
-                                   html=html % dict([(k, urllib.quote(v))
-                                                     for k, v in subst.items()]))
+            subst = dict([(k, urllib.quote(v)) for k, v in (('email', email), 
+                                                            ('code', code))])
+            err = wiking.send_mail(email, title, html=html % subst, text=text % subst, lang=lang)
             if err:
                 errors += 1
                 log(OPERATIONAL, "Error sending newsletter to %s: %s" % (email, err))
