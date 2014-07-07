@@ -1,4 +1,4 @@
-# Copyright (C) 2010, 2011, 2012, 2013 Brailcom, o.p.s.
+# Copyright (C) 2010, 2011, 2012, 2013, 2014 Brailcom, o.p.s.
 # Author: Tomas Cerha <cerha@brailcom.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -45,9 +45,9 @@ class WsgiRequest(wiking.Request):
         self._response_headers = wsgiref.headers.Headers(self._response_headers_storage)
         self._params = self._init_params(encoding)
         self._response_started = False
-        self._uri = unicode(environ['SCRIPT_NAME'] + environ['PATH_INFO'], encoding)
+        self._uri = unicode(environ.get('SCRIPT_NAME', '') + environ['PATH_INFO'], encoding)
         super(WsgiRequest, self).__init__(encoding=encoding)
-        #if not self.uri().startswith('/_'):
+        # if not self.uri().startswith('/_'):
         #    wiking.debug("============== %s ==============" % self.uri())
         #    for key, val in sorted(environ.items()):
         #        wiking.debug(key, val)
