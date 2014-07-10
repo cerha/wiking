@@ -4887,7 +4887,7 @@ class CommonTexts(SettingsManagementModule):
             content_field = 'plain_content'
         elif text_format == pp.TextFormat.HTML:
             content_field = 'html_content'
-        elif text_format is None:
+        elif text_format in (pp.TextFormat.PLAIN, None):
             content_field = 'content'
         else:
             raise Exception('Unsupported text format: %s' % text_format)
