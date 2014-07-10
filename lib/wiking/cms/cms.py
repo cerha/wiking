@@ -4813,8 +4813,14 @@ class CommonTexts(SettingsManagementModule):
                 Field('description'),
                 Field('descr', _("Purpose"), width=64, virtual=True,
                       computer=computer(self._description)),
+                # The first field is used implicitly for texts with no text_format
+                # defined and its type is controlled by the current value of
+                # 'wiking.cms.cfg.content_editor'.  The other fields below 
+                # are used for texts with a specific text_format value.
                 ContentField('content', _("Text"), width=80, height=10),
                 ContentField('plain_content', _("Text"), dbcolumn='content',
+                             text_format=pp.TextFormat.PLAIN, width=80, height=10),
+                ContentField('lcg_content', _("Text"), dbcolumn='content',
                              text_format=pp.TextFormat.LCG, width=80, height=10),
                 ContentField('html_content', _("Text"), dbcolumn='content',
                              text_format=pp.TextFormat.HTML, width=80, height=10),
@@ -4883,11 +4889,13 @@ class CommonTexts(SettingsManagementModule):
                                __invoked_from='ListView')
         else:
             text_format = text.text_format()
-        if text_format == pp.TextFormat.LCG:
+        if text_format == pp.TextFormat.PLAIN:
             content_field = 'plain_content'
+        elif text_format == pp.TextFormat.LCG:
+            content_field = 'lcg_content'
         elif text_format == pp.TextFormat.HTML:
             content_field = 'html_content'
-        elif text_format in (pp.TextFormat.PLAIN, None):
+        elif text_format is None:
             content_field = 'content'
         else:
             raise Exception('Unsupported text format: %s' % text_format)
