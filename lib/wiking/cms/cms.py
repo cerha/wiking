@@ -2360,8 +2360,8 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
         def _copyright_notice(self, record, lang):
             notice = record['copyright_notice'].value()
             if record.new() and notice is None:
-                notice = wiking.module.Texts.text(record.req(),
-                                                  wiking.cms.texts.default_copyright_notice, lang)
+                text = wiking.cms.texts.default_copyright_notice
+                notice = wiking.module.Texts.localized_text(record.req(), text, lang=lang)
             return notice
         def _pubinfo(self, record, publisher, published_year, edition):
             if publisher:
@@ -4972,10 +4972,31 @@ class Texts(CommonTexts, wiking.CachingPytisModule):
                 self._call_db_function('cms_add_text_label', text.label(), site)
 
     def _load_value(self, key, transaction=None):
-        return self._data.get_row(text_id=key)
+        label, site = key
+        translations = [(row['lang'].value(), row['content'].value(),)
+                        for row in self._data.get_rows(label=label, site=site)
+                        if row['content'].value() is not None]
+        return dict(translations)
 
-    def text(self, req, text, lang=None, args=None):
-        """Return text corresponding to 'text'.
+    def text(self, text):
+        """Return text corresponding to 'text' as 'lcg.TranslatableText' instance.
+
+        Arguments:
+
+          text -- 'Text' instance identifying the text
+
+        Returns a 'lcg.TranslatableText' instance which in each particular
+        language translates into the site specific text defined in the database
+        or to the application defined default text when no site specific text
+        is defined.
+
+        """
+        assert isinstance(text, Text)
+        translations = self._get_value((text.label(), wiking.cfg.server_hostname))
+        return lcg.SelfTranslatableText(text.text() or '', translations=translations)
+
+    def localized_text(self, req, text, lang=None, args=None):
+        """Return localized text corresponding to 'text' as unicode.
 
         Arguments:
 
@@ -4987,26 +5008,17 @@ class Texts(CommonTexts, wiking.CachingPytisModule):
             occurences within it must be properly escaped; if 'False', no
             formatting is performed
 
-        If the language is not specied explicitly, language of the request is
-        used.  If there is no language set in request, 'en' is assumed.  If the
-        text is not available for the selected language in the database, the
-        method looks for the predefined text in the application and gettext
-        mechanism is used for its translation.
+        If the language is not specified explicitly, language of the request is
+        used.  If there is no language set in request, 'en' is assumed.  If no
+        site specific text for the given language is defined in the database,
+        the application defined default text is used.
 
         """
-        assert isinstance(text, Text)
         lang = self._select_language(req, lang)
-        text_id = ':'.join((text.label(), wiking.cfg.server_hostname, lang))
-        row = self._get_value(text_id)
-        if row is None:
-            retrieved_text = None
-        else:
-            retrieved_text = row['content'].value()
-        if not retrieved_text:
-            retrieved_text = req.localize(text.text(), lang=lang)
+        result = req.localize(self.text(text), lang=lang)
         if args:
-            retrieved_text = retrieved_text % self._localized_args(req, lang, args)
-        return retrieved_text
+            result = result % self._localized_args(req, lang, args)
+        return result
 
     def parsed_text(self, req, text, lang=None, args=None):
         """Return parsed text corresponding to 'text'.
@@ -5016,7 +5028,7 @@ class Texts(CommonTexts, wiking.CachingPytisModule):
         instance.  If the given text doesn't exist, 'None' is returned.
 
         """
-        return text2content(req, self.text(req, text, lang=lang, args=args))
+        return text2content(req, self.localized_text(req, text, lang=lang, args=args))
 
 
 class EmailText(Structure):
@@ -5166,7 +5178,7 @@ class TextReferrer(object):
     modules using multiple inheritance.
 
     """
-    def _text(self, req, text, lang=None, args=None, _method=Texts.text):
+    def _text(self, req, text, lang=None, args=None):
         """Return text corresponding to 'text'.
 
         Arguments:
@@ -5179,11 +5191,10 @@ class TextReferrer(object):
             occurences within it must be properly escaped
 
         Looking texts for a particular language is performed according the
-        rules documented in 'Texts.text()'.
+        rules documented in 'Texts.localized_text()'.
 
         """
-        assert isinstance(text, Text)
-        return _method(wiking.module.Texts, req, text, lang=lang, args=args)
+        return wiking.module.Texts.localized_text(req, text, lang=lang, args=args)
 
     def _parsed_text(self, req, text, args=None, lang='en'):
         """Return parsed text corresponding to 'text'.
@@ -5193,8 +5204,7 @@ class TextReferrer(object):
         instance.  If the given text doesn't exist, 'None' is returned.
 
         """
-        assert isinstance(text, Text)
-        return self._text(req, text, lang=lang, args=args, _method=Texts.parsed_text)
+        return wiking.module.Texts.parsed_text(req, text, lang=lang, args=args)
 
     def _email_args(self, *args, **kwargs):
         """The same as 'Emails.email_args'"""

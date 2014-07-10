@@ -381,7 +381,7 @@ class Application(CookieAuthentication, wiking.Application):
     def _text_content(self, req, text):
         # Default to English to avoid raising NotAcceptable where it is not handled.
         lang = req.preferred_language(raise_error=False) or 'en'
-        return wiking.module.Texts.text(req, text, lang=lang)
+        return wiking.module.Texts.localized_text(req, text, lang=lang)
 
     def top_content(self, req):
         return text2content(req, self._text_content(req, wiking.cms.texts.top))
