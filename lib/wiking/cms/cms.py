@@ -4367,7 +4367,7 @@ class NewsletterEditions(CMSModule):
         html = re.sub('%(?!\([a-z]+\)s)', '%%', html)
         text = self._newsletter_text(html)
         for email, code in wiking.module.NewsletterSubscription.subscribers(newsletter_id):
-            subst = dict([(k, urllib.quote(v)) for k, v in (('email', email), 
+            subst = dict([(k, urllib.quote(v)) for k, v in (('email', email),
                                                             ('code', code))])
             err = wiking.send_mail(email, title, html=html % subst, text=text % subst, lang=lang)
             if err:
@@ -4813,7 +4813,7 @@ class CommonTexts(SettingsManagementModule):
                       computer=computer(self._description)),
                 # The first field is used implicitly for texts with no text_format
                 # defined and its type is controlled by the current value of
-                # 'wiking.cms.cfg.content_editor'.  The other fields below 
+                # 'wiking.cms.cfg.content_editor'.  The other fields below
                 # are used for texts with a specific text_format value.
                 ContentField('content', _("Text"), width=80, height=10),
                 ContentField('plain_content', _("Text"), dbcolumn='content',
