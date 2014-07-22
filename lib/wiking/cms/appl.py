@@ -91,10 +91,18 @@ class Application(CookieAuthentication, wiking.Application):
         may be used by adimnistrators to check the differences.
 
         """
-        if req.check_roles(Roles.CONTENT_ADMIN) or req.__dict__.get('page_write_access'):
+        if self.preview_mode_possible(req):
             return req.cookie(self._PREVIEW_MODE_COOKIE) == '1'
         else:
             return False
+
+    def preview_mode_possible(self, req):
+        """Return true if the current user is allowed to switch to the preview mode.
+
+        Doesn't depend on the current mode, just indicates to possibility.
+
+        """
+        return req.check_roles(Roles.CONTENT_ADMIN) or req.__dict__.get('page_write_access')
 
     def set_preview_mode(self, req, value):
         """Change the current state of preview mode.
@@ -339,7 +347,7 @@ class Application(CookieAuthentication, wiking.Application):
 
     def login_panel_content(self, req):
         content = []
-        if req.check_roles(Roles.CONTENT_ADMIN) or req.__dict__.get('page_write_access'):
+        if self.preview_mode_possible(req):
             content.append(self.PreviewModeCtrl())
         if wiking.module.WikingManagementInterface.authorized(req):
             content.append(self.WMILink())

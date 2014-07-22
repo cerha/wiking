@@ -1503,18 +1503,21 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
         change here should be reflected there as well.
 
         """
+        if not record:
+            return False
+        if not (record['published'].value() and record['parents_published'].value()
+                or wiking.module.Application.preview_mode(req)):
+            return False
         if req.check_roles(Roles.CONTENT_ADMIN):
             return True
-        elif record:
-            if req.check_roles(Roles.USER) and req.user().uid() == record['owner'].value():
-                return True
-            role_ids = [record['write_role_id'].value()]
-            if readonly:
-                role_ids.append(record['read_role_id'].value())
-            roles = wiking.module.Users.Roles()
-            return req.check_roles(*[roles[role_id] for role_id in role_ids])
-        else:
-            return False
+        if req.check_roles(Roles.USER) and req.user().uid() == record['owner'].value():
+            return True
+        roles = wiking.module.Users.Roles()
+        if req.check_roles(roles[record['write_role_id'].value()]):
+            return True
+        if readonly and req.check_roles(roles[record['read_role_id'].value()]):
+            return True
+        return False
 
     def check_page_access(self, req, page_id, readonly=False):
         assert isinstance(page_id, int), page_id
@@ -1555,6 +1558,16 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
             req.page_read_access = self._check_page_access(req, record, readonly=True)
             req.page_write_access = self._check_page_access(req, record)
         return super(Pages, self)._handle(req, action, **kwargs)
+
+    def _authorization_error(self, req, record=None, **kwargs):
+        if ((record
+             and not (record['published'].value() and record['parents_published'].value())
+             and wiking.module.Application.preview_mode_possible(req)
+             and not wiking.module.Application.preview_mode(req))):
+            raise AuthorizationError(_("The page is not visible in production mode. "
+                                        "You need to switch to the preview mode "
+                                        "to be able to access it."))
+        return super(Pages, self)._authorization_error(req, record=record, **kwargs)
 
     def _authorized(self, req, action, record=None, **kwargs):
         if action in ('new_page', 'insert', 'list', 'options', 'commit', 'revert', 'delete'):
@@ -1624,12 +1637,6 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
     def _resolve(self, req):
         if not req.unresolved_path:
             return None
-        def check_published(row):
-            if ((row['published'].value() and row['parents_published'].value()
-                 or wiking.module.Application.preview_mode(req))):
-                return row
-            else:
-                raise Forbidden()
         identifier = req.unresolved_path[0]
         # Recognize special path of RSS channel as '<identifier>.<lang>.rss'.
         if identifier.endswith('.rss'):
@@ -1640,7 +1647,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                                          identifier=identifier, lang=str(identifier[-2:]))
                 if row:
                     del req.unresolved_path[0]
-                    return check_published(row)
+                    return row
         rows = self._get_value((identifier, True), loader=self._load_page_rows)
         if rows:
             if req.has_param(self._key):
@@ -1651,16 +1658,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                 keys = [r[self._key].export() for r in rows]
                 if key in keys:
                     del req.unresolved_path[0]
-                    return check_published(rows[keys.index(key)])
-            if not wiking.module.Application.preview_mode(req):
-                rows = [r for r in rows if r['published'].value()]
-                if not rows:
-                    if req.check_roles(Roles.CONTENT_ADMIN):
-                        req.message(_("The page exists but is not visible in production mode. "
-                                      "You need to switch to the preview mode "
-                                      "to be able to access it."),
-                                    type=req.WARNING)
-                    raise Forbidden()
+                    return rows[keys.index(key)]
             variants = [str(r['lang'].value()) for r in rows]
             lang = req.preferred_language(variants)
             del req.unresolved_path[0]
