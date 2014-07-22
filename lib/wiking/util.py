@@ -251,17 +251,23 @@ class AuthorizationError(Forbidden):
     Typically when the user could be granted additional privilegs to get access
     to the resource.  Use 'Forbidden' when the target is globally unavailable.
 
+    You can pass custom error messages as constructor arguments (each argument
+    will be formatted as a separate paragraph of text).  If no arguments are
+    passed, a default generic message "You don't have sufficient privilegs for
+    this action." is used.
+
     """
     
     # Translators: An error message
     _TITLE = _("Access Denied")
 
     def content(self, req):
-        msg = _("If you are sure that you are logged in under the right account "
-                "and you believe that this is a problem of access rights assignment, "
-                "please contact the administrator at %s.", wiking.cfg.webmaster_address)
-        return (lcg.p(_("You don't have sufficient privilegs for this action.")),
-                lcg.p(req.translate(msg), formatted=True))
+        messages = self.args or (_("You don't have sufficient privilegs for this action."),)
+        notice = _("If you are sure that you are logged in under the right account "
+                   "and you believe that this is a problem of access rights assignment, "
+                   "please contact the administrator at %s.", wiking.cfg.webmaster_address)
+        return (lcg.coerce([lcg.p(msg) for msg in messages]),
+                lcg.p(req.translate(notice), formatted=True))
 
 
 class DecryptionError(RequestError):
