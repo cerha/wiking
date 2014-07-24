@@ -878,7 +878,7 @@ class Users(UserManagementModule, CachingPytisModule):
     # Translators: Button label. Modify the users data (email, address...)
     _UPDATE_DESCR = _("Modify user's record")
 
-    _cache_dependencies = ('roles', 'role_sets',)
+    _cache_dependencies = ('roles', 'role_sets', 'role_members')
     _cache_ids = ('default', 'find',)
 
     def _authorized(self, req, action, record=None, **kwargs):
