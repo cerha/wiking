@@ -4,20 +4,24 @@
     background-color: $color.frame-bg !important;
     border-color: $color.frame-border !important;
 }
+.pytis-form.query-fields-form .group {
+    background: none !important;
+    border: none !important;
+}
 * html .pytis-form fieldset.group legend { 
     color: $color.foreground !important;
 }
-.pytis-form.browse-form table { 
+.pytis-form.browse-form table.data-table { 
     border-color: $color.border !important;
 }
-.pytis-form.browse-form table td, .pytis-form.browse-form table th {
+.pytis-form.browse-form table.data-table td, .pytis-form.browse-form table.data-table th {
     border-color: $color.border !important;
 }
-.pytis-form.browse-form table tr { background-color: $color.table-cell !important; }
-.pytis-form.browse-form table tr.even { background-color: $color.table-cell2 !important; }
-.pytis-form.browse-form table th { background-color: $color.heading-bg !important; }
+.pytis-form.browse-form table.data-table tr { background-color: $color.table-cell !important; }
+.pytis-form.browse-form table.data-table tr.even { background-color: $color.table-cell2 !important; }
+.pytis-form.browse-form table.data-table th { background-color: $color.heading-bg !important; }
 
-.pytis-form.browse-form table tfoot td {
+.pytis-form.browse-form table.data-table tfoot td {
     background-color: $color.frame-bg !important;
     border-color: $color.frame-border !important;
 }
