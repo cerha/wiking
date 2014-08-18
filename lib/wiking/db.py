@@ -1785,6 +1785,8 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                           filter_sets=self._filter_sets(req),
                           actions=self._form_actions_argument(req),
                           )
+        if form.is_ajax_request(req):
+            return self._ajax_response(req, form)
         if async_load:
             return form
         else:
