@@ -2902,6 +2902,13 @@ class PublicationExports(ContentManagementModule):
 
     def _insert(self, req, record, transaction):
         publication_record = req.publication_record
+        for rows in wiking.module.PublicationChapters.child_rows(
+                req, publication_record['tree_order'].value(), publication_record['lang'].value(),
+                preview=True).items():
+            for row in rows:
+                if row['parents_published'].value() and not row['published'].value():
+                    req.message(_("Unpublished chapter: %s", row['title'].value()),
+                                type=req.WARNING)
         data = wiking.module.Publications.export_publication(req, publication_record,
                                                              record['format'].value())
         bytesize = len(data)
