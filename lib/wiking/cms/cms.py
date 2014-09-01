@@ -2608,7 +2608,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
         children[record['parent'].value()] = [record.row()]
         return children
 
-    def _publication(self, req, record, preview=False):
+    def _publication(self, req, record, preview=False, toc=False):
         children = self._child_rows(req, record, preview=preview)
         resource_provider = lcg.ResourceProvider(dirs=wiking.cfg.resource_path)
         resources = []
@@ -2616,13 +2616,14 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
             # TODO: Don't ignore content processing error here!
             content = self._inner_page_content(req, self._record(req, row), preview=preview)
             cover_image = None
-            metadata = None
             if root:
                 filename = row['cover_image_filename'].value()
                 resources.extend(lcg.Container(content).resources())
                 if filename:
                     cover_image = pytis.util.find(filename, resources, key=lambda r: r.filename())
                 content.insert(0, self._publication_info(req, record, online=False))
+                if toc:
+                    content.append(lcg.Section(_("Table of Contents"), lcg.NodeIndex()))
                 metadata = lcg.Metadata(authors=row['author'].export().splitlines(),
                                         contributors=(row['contributor'].export().splitlines() +
                                                       row['adapted_by'].export().splitlines()),
@@ -2633,6 +2634,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                                         published=row['published_year'].export(),)
             else:
                 content = lcg.Container(content, resources=resources)
+                metadata = None
             return lcg.ContentNode(row['identifier'].value(),
                                    title=row['title'].value(),
                                    content=content,
@@ -2661,7 +2663,9 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
         return exporter.export(context)
 
     def export_publication(self, req, record, export_format, preview=False):
-        publication = self._publication(req, record, preview=preview)
+        publication = self._publication(req, record, preview=preview,
+                                        # EPUB has automatic navigation so only Braille needs a TOC
+                                        toc=export_format == 'braille')
         if export_format == 'epub':
             return self._export_epub(req, record, publication)
         elif export_format == 'braille':
