@@ -1406,10 +1406,6 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                               "settings above.")),
                 Field('owner_login'),
                 Field('owner_name'),
-                Field('excerpt_title', _("Excerpt title"), virtual=True,
-                      type=pd.String(not_null=True)),
-                ContentField('_excerpt_content', _("Excerpt"), compact=True, height=20, width=80,
-                             virtual=True),
             )
         def _status(self, record, _content, content):
             if _content == content:
@@ -1459,7 +1455,6 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                    descr=_("Replace the current concept with the production version."),
                    enabled=lambda r: (r['parents_published'].value() and r['published'].value() and
                                       r['_content'].value() != r['content'].value())),
-            Action('excerpt', _("Store Excerpt")),
             # Action('translate', _("Translate"),
             #      descr=_("Create the content by translating another language variant"),
             #       enabled=lambda r: r['_content'].value() is None),
@@ -1469,9 +1464,10 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
             # Action('help', _("Help")),
         )
         # Translators: Noun. Such as e-mail attachments (here attachments for a webpage).
-        bindings = (Binding('attachments', _("Attachments"), 'Attachments', 'page_id'),
-                    Binding('history', _("History"), 'PageHistory', 'page_key'),
-                    Binding('excerpts', _("Excerpts"), 'CmsPageExcerpts', 'page_id'),)
+        bindings = (
+            Binding('attachments', _("Attachments"), 'Attachments', 'page_id'),
+            Binding('history', _("History"), 'PageHistory', 'page_key'),
+        )
 
     _REFERER = 'identifier'
     _EXCEPTION_MATCHERS = (
@@ -1563,7 +1559,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
             return req.check_roles(Roles.CONTENT_ADMIN,)
         elif record and action in ('view', 'rss'):
             return self._check_page_access(req, record, readonly=True)
-        elif record and action in ('update', 'commit', 'revert', 'excerpt',):
+        elif record and action in ('update', 'commit', 'revert',):
             return self._check_page_access(req, record)
         else:
             return False # raise NotFound or BadRequest?
@@ -1581,8 +1577,6 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
             return layout
         elif action == 'update':
             return ('title', 'description', '_content', 'comment',)
-        elif action == 'excerpt':
-            return ('_content', '_excerpt_content', 'excerpt_title',)
         elif action == 'delete':
             return ()
   
@@ -1674,8 +1668,6 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
             else:
                 return ((None, _("Save as Concept")),
                         ('commit', _("Save as Production Version")))
-        elif action == 'excerpt':
-            return ((None, _("Store")),)
         else:
             return super(Pages, self)._submit_buttons(req, action, record=record)
 
@@ -1722,17 +1714,9 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
         return result
 
     def _update(self, req, record, transaction):
-        if req.param('action') == 'excerpt':
-            lang = record['lang']
-            if lang.value() is not None:
-                lang = pd.sval(req.preferred_language())
-            wiking.module.CmsPageExcerpts.store_excerpt(req, record['page_id'], lang,
-                                                        record['excerpt_title'],
-                                                        record['_excerpt_content'])
-        else:
-            self._before_page_change(req, record)
-            super(Pages, self)._update(req, record, transaction)
-            wiking.module.PageHistory.on_page_change(req, record, transaction=transaction)
+        self._before_page_change(req, record)
+        super(Pages, self)._update(req, record, transaction)
+        wiking.module.PageHistory.on_page_change(req, record, transaction=transaction)
 
     def _insert_msg(self, req, record):
         if not record['published'].value():
@@ -2036,9 +2020,6 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
     def action_new_page(self, req, record):
         raise Redirect(self._current_base_uri(req, record), action='insert',
                        parent=record['parent'].value(), ord=record['ord'].value())
-        
-    def action_excerpt(self, req, record):
-        return self.action_update(req, record, action='excerpt')
 
 
 class NavigablePages(Pages):
@@ -2190,7 +2171,7 @@ class CmsPageExcerpts(EmbeddableCMSModule, BrailleExporter):
         columns = ('title', 'page_id',)
 
     def _authorized(self, req, action, record=None, **kwargs):
-        if record and action in ('view', 'delete', 'export_braille'):
+        if action == 'list' or record and action in ('view', 'delete', 'export_braille'):
             return req.page_read_access
         else:
             return False
@@ -2219,6 +2200,10 @@ class CmsPageExcerpts(EmbeddableCMSModule, BrailleExporter):
         )
         return lcg.Container((text2content(req, record['content'].value()),
                               lcg.CollapsiblePane(_("Export to Braille"), form)))
+
+    def _redirect_after_delete_uri(self, req, record, **kwargs):
+        return self._binding_parent_uri(req), kwargs
+
 
     def store_excerpt(self, req, page_id, lang, title, content, transaction=None):
         row = pd.Row((('page_id', page_id), ('lang', lang),
@@ -2711,7 +2696,13 @@ class PublicationChapters(NavigablePages):
                       descr=_("Select the superordinate chapter in hierarchy.")),
                 Field('published', default=True),
             )
-            return self._inherited_fields(PublicationChapters.Spec, override=override)
+            extra = (
+                Field('excerpt_title', _("Excerpt title"), virtual=True,
+                      type=pd.String(not_null=True)),
+                ContentField('excerpt_content', _("Excerpt"), compact=True, height=20, width=80,
+                             virtual=True),
+            )
+            return self._inherited_fields(PublicationChapters.Spec, override=override) + extra
         def _default_identifier(self, record, title):
             identifier = super(PublicationChapters.Spec, self)._default_identifier(record, title)
             if title and record['identifier'].value() is None:
@@ -2739,10 +2730,16 @@ class PublicationChapters(NavigablePages):
                                pd.EQ('page_id', pd.ival(r.req().publication_record['page_id']
                                                         .value()))),
                     prefill=lambda r: dict(page_id=r.req().publication_record['page_id'])),
-        ) + tuple([_b for _b in Pages.Spec.bindings if _b.id() != 'attachments'])
+        ) + tuple([_b for _b in Pages.Spec.bindings if _b.id() != 'attachments']) + (
+            Binding('excerpts', _("Excerpts"), 'CmsPageExcerpts', 'page_id'),
+        )
         condition = pd.EQ('kind', pd.sval('chapter'))
         columns = ('title', 'status')
         sorting = ('ord', pd.ASCENDENT),
+        actions = NavigablePages.Spec.actions + (
+            Action('excerpt', _("Store Excerpt")),
+        )
+
     _INSERT_LABEL = _("New Chapter")
     _INSERT_MSG = _("New chapter was successfully created.")
     _UPDATE_MSG = _("The chapter was successfully updated.")
@@ -2760,8 +2757,27 @@ class PublicationChapters(NavigablePages):
             return ('title', 'description', '_content', 'parent', 'ord', 'published')
         elif action == 'options':
             return ('parent', 'ord', 'published')
+        elif action == 'excerpt':
+            return ('excerpt_title', '_content', 'excerpt_content',)
         else:
             return super(PublicationChapters, self)._layout(req, action, record=record)
+
+    def _submit_buttons(self, req, action, record=None):
+        if action == 'excerpt':
+            return ((None, _("Store")),)
+        else:
+            return super(PublicationChapters, self)._submit_buttons(req, action, record=record)
+
+    def _update(self, req, record, transaction):
+        if req.param('action') == 'excerpt':
+            lang = record['lang']
+            if lang.value() is not None:
+                lang = pd.sval(req.preferred_language())
+            wiking.module.CmsPageExcerpts.store_excerpt(req, record['page_id'], lang,
+                                                        record['excerpt_title'],
+                                                        record['excerpt_content'])
+        else:
+            super(PublicationChapters, self)._update(req, record, transaction)
 
     def _current_base_uri(self, req, record=None):
         # Use PytisModule._current_base_uri (skip Pages._current_base_uri).
@@ -2783,6 +2799,10 @@ class PublicationChapters(NavigablePages):
                                        sorting=(('tree_order', pd.ASCENDENT),)):
             children.setdefault(row['parent'].value(), []).append(row)
         return children
+
+    def action_excerpt(self, req, record):
+        return self.action_update(req, record, action='excerpt')
+
 
 class PublicationExports(ContentManagementModule):
     """e-Publication exported versions."""
