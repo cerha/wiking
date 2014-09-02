@@ -22,6 +22,7 @@ import cStringIO as StringIO
 import re
 import string
 import weakref
+import json
 
 import pytis.data as pd
 import pytis.output
@@ -1815,10 +1816,6 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         if isinstance(response, lcg.Content):
             return response
         else:
-            try:
-                import json
-            except:
-                import simplejson as json
             return wiking.Response(json.dumps(response), content_type='application/json')
 
     def _related_content(self, req, record):
@@ -2085,7 +2082,6 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                                filename=self._export_filename(req))
 
     def action_jsondata(self, req):
-        import json
         columns = list(self._columns(req))
         if self._key not in columns:
             columns.insert(0, self._key)
