@@ -868,10 +868,7 @@ class PageStructure(SiteSpecificContentModule):
             result.append(Order(1, _("First")))
         return result
 
-    def page_row(self, page_id):
-        return self._data.row(pd.ival(page_id))
-    
-    
+
 class Panels(SiteSpecificContentModule, wiking.CachingPytisModule):
     """Manage a set of side panels.
 
@@ -1518,14 +1515,6 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
         if readonly and req.check_roles(roles[record['read_role_id'].value()]):
             return True
         return False
-
-    def check_page_access(self, req, page_id, readonly=False):
-        assert isinstance(page_id, int), page_id
-        assert isinstance(readonly, bool), readonly
-        row = wiking.module.PageStructure.page_row(page_id)
-        if row is None:
-            return False
-        return self._check_page_access(req, row, readonly=readonly)
 
     def _handle(self, req, action, **kwargs):
         """Setup specific environment when processing a request for a CMS page.
@@ -2201,10 +2190,10 @@ class CmsPageExcerpts(EmbeddableCMSModule, BrailleExporter):
         columns = ('title', 'page_id',)
 
     def _authorized(self, req, action, record=None, **kwargs):
-        if action in ('view', 'export_braille',) or (record and action == 'delete'):
-            return wiking.module.Pages.check_page_access(req, record['page_id'].value(),
-                                                         readonly=True)
-        return False
+        if record and action in ('view', 'delete', 'export_braille'):
+            return req.page_read_access
+        else:
+            return False
 
     def _layout(self, req, action, record=None):
         return (lambda record: self._excerpt_content(req, record),)
