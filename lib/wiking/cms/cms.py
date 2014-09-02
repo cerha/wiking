@@ -42,6 +42,8 @@ import re
 import string
 import sys
 import urllib
+import operator
+import json
 
 import pytis.data
 import pytis.util
@@ -2151,8 +2153,9 @@ class BrailleExporter(wiking.Module):
         context = exporter.context(publication, req.preferred_language(),
                                    presentation=lcg.PresentationSet(((presentation,
                                                                       lcg.TopLevelMatcher(),),)))
-        return exporter.export(context, recursive=True)
-        
+        result = exporter.export(context, recursive=True)
+        return result, context.messages()
+
 
 class CmsPageExcerpts(EmbeddableCMSModule, BrailleExporter):
     
@@ -2216,12 +2219,12 @@ class CmsPageExcerpts(EmbeddableCMSModule, BrailleExporter):
                                content=text2content(req, record['content'].value()),
                                resource_provider=resource_provider)
         try:
-            result = self._export_braille(req, node)
+            data, messages = self._export_braille(req, node)
         except lcg.BrailleError, e:
             req.message(e.message(), type=req.ERROR)
             raise Redirect(self._current_record_uri(req, record))
         else:
-            return wiking.Response(result, content_type='application/octet-stream',
+            return wiking.Response(data, content_type='application/octet-stream',
                                    filename='%s.brl' % record['title'].value())
 
 class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
@@ -2634,7 +2637,8 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                         raise Exception("Unable to retrieve resource %s." % resource.filename())
         exporter = EpubExporter(translations=wiking.cfg.translation_path)
         context = exporter.context(publication, req.preferred_language())
-        return exporter.export(context)
+        result = exporter.export(context)
+        return result, context.messages()
 
     def export_publication(self, req, record, export_format, preview=False):
         publication = self._publication(req, record, preview=preview,
@@ -2673,7 +2677,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
     def action_export_publication(self, req, record):
         preview = wiking.module.Application.preview_mode(req)
         export_format = req.param('format', 'epub')
-        data = self.export_publication(req, record, export_format, preview=preview)
+        data, messages = self.export_publication(req, record, export_format, preview=preview)
         if export_format == 'epub':
             content_type = 'application/epub+zip'
             ext = 'epub'
@@ -2892,6 +2896,9 @@ class PublicationExports(ContentManagementModule):
                         ),),
                     ),
                     'version', 'public', 'notes')
+        elif action == 'view':
+            return (self.Spec.layout,
+                    lambda r: ExportMessages(json.loads(r['log'].value() or '[]')))
         else:
             return super(PublicationExports, self)._layout(req, action, record=record)
 
@@ -2911,19 +2918,26 @@ class PublicationExports(ContentManagementModule):
 
     def _insert(self, req, record, transaction):
         publication_record = req.publication_record
-        for rows in wiking.module.PublicationChapters.child_rows(
-                req, publication_record['tree_order'].value(), publication_record['lang'].value(),
-                preview=True).items():
-            for row in rows:
-                if row['parents_published'].value() and not row['published'].value():
-                    req.message(_("Unpublished chapter: %s", row['title'].value()),
-                                type=req.WARNING)
-        data = wiking.module.Publications.export_publication(req, publication_record,
-                                                             record['format'].value())
+        data, messages = wiking.module.Publications.export_publication(req, publication_record,
+                                                                       record['format'].value())
+        children = wiking.module.PublicationChapters.child_rows(
+            req, publication_record['tree_order'].value(), publication_record['lang'].value(),
+            preview=True)
+        messages[0:0] = [(lcg.Exporter.Context.WARNING,
+                          _("Unpublished chapter: %s", row['title'].value()))
+                         for row in reduce(operator.add, children.values(), [])
+                         if row['parents_published'].value() and not row['published'].value()]
+        kinds = [x[0] for x in messages]
+        req.message(_("Publication exported:") + ' ' +
+                    _.ngettext("%d error", "%d errors",
+                               kinds.count(lcg.Exporter.Context.ERROR)) + ', ' +
+                    _.ngettext("%d warning", "%d warnings", 
+                               kinds.count(lcg.Exporter.Context.WARNING)))
         bytesize = len(data)
         for key, value in (('page_id', publication_record['page_id'].value()),
                            ('lang', publication_record['lang'].value()),
-                           ('bytesize', bytesize)):
+                           ('bytesize', bytesize),
+                           ('log', json.dumps([(x, req.localize(msg)) for x, msg in messages]))):
             record[key] = pd.Value(record.type(key), value)
         super(PublicationExports, self)._insert(req, record, transaction)
         path = self._file_path(req, record)

@@ -1361,6 +1361,41 @@ class ConfirmationDialog(lcg.Container):
                      cls='confirmation-dialog')
 
 
+class ExportMessages(lcg.Content):
+    """Content element for HTML presentation of LCG export log messages."""
+    _LABELS = {
+        lcg.Exporter.Context.WARNING: _("Warning"),
+        lcg.Exporter.Context.ERROR: _("Error"),
+    }
+
+    def __init__(self, messages):
+        assert isinstance(messages, (list, tuple))
+        self._messages = messages
+        super(ExportMessages, self).__init__()
+        
+    def export(self, context):
+        g = context.generator()
+        kinds = [x[0] for x in self._messages]
+        return g.div((g.div(lcg.format('%s (%s, %s):',
+                                       # Translators: "Export" in the sense of generating an output
+                                       # presentation of a document an the "log" here is a sequence
+                                       # of messages recorded during the export.
+                                       _("Export Log"),
+                                       _.ngettext("%d error", "%d errors",
+                                                  kinds.count(lcg.Exporter.Context.ERROR)),
+                                       _.ngettext("%d warning", "%d warnings",
+                                                  kinds.count(lcg.Exporter.Context.WARNING))),
+                            cls='log-heading'),
+                      g.div([g.div((g.span(self._LABELS[kind] + ':', cls='label') + ' '
+                                    if kind in self._LABELS else '') +
+                                   message,
+                                   cls=kind.lower() + '-msg')
+                             for kind, message in self._messages],
+                            cls='log-content')),
+                     cls='lcg-export-log')
+        return HtmlRenderer(render)
+
+
 class HtmlContent(lcg.TextContent):
     """LCG content class for wrapping already exported HTML text.
 

@@ -791,18 +791,20 @@ class CmsPublicationIndexes(CommonAccesRights, sql.SQLTable):
 class CmsPublicationExports(CommonAccesRights, sql.SQLTable):
     """Exported publication versions."""
     name = 'cms_publication_exports'
-    fields = (sql.PrimaryColumn('export_id', pytis.data.Serial()),
-              sql.Column('page_id', pytis.data.Integer(not_null=True),
-                         references=sql.a(sql.r.CmsPublications.page_id, ondelete='CASCADE')),
-              sql.Column('lang', pytis.data.String(minlen=2, maxlen=2, not_null=True),
-                         references=sql.a(sql.r.CmsLanguages.lang,
-                                          onupdate='CASCADE', ondelete='CASCADE')),
-              sql.Column('format', pytis.data.String(not_null=True)),
-              sql.Column('version', pytis.data.String(not_null=True)),
-              sql.Column('timestamp', pytis.data.DateTime(not_null=True)),
-              sql.Column('public', pytis.data.Boolean(not_null=True), default=True),
-              sql.Column('bytesize', pytis.data.Integer(not_null=True)),
-              sql.Column('notes', pytis.data.String()),
+    fields = (
+        sql.PrimaryColumn('export_id', pytis.data.Serial()),
+        sql.Column('page_id', pytis.data.Integer(not_null=True),
+                   references=sql.a(sql.r.CmsPublications.page_id, ondelete='CASCADE')),
+        sql.Column('lang', pytis.data.String(minlen=2, maxlen=2, not_null=True),
+                   references=sql.a(sql.r.CmsLanguages.lang,
+                                    onupdate='CASCADE', ondelete='CASCADE')),
+        sql.Column('format', pytis.data.String(not_null=True)),
+        sql.Column('version', pytis.data.String(not_null=True)),
+        sql.Column('timestamp', pytis.data.DateTime(not_null=True)),
+        sql.Column('public', pytis.data.Boolean(not_null=True), default=True),
+        sql.Column('bytesize', pytis.data.Integer(not_null=True)),
+        sql.Column('notes', pytis.data.String()),
+        sql.Column('log', pytis.data.String()),
     )
     unique = (('page_id', 'lang', 'format', 'version',),)
     
