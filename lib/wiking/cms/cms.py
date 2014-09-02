@@ -2704,7 +2704,7 @@ class PublicationChapters(NavigablePages):
                 Field('excerpt_title', _("Excerpt title"), virtual=True,
                       type=pd.String(not_null=True)),
                 ContentField('excerpt_content', _("Excerpt"), compact=True, height=20, width=80,
-                             virtual=True),
+                             attachment_storage=self._attachment_storage, virtual=True),
             )
             return self._inherited_fields(PublicationChapters.Spec, override=override) + extra
         def _default_identifier(self, record, title):
