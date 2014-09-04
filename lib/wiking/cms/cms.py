@@ -2460,6 +2460,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
             return lcg.Content()
         def script(element, context, form):
             g = context.generator()
+            context.resource('wiking-cms.%s.po' % context.lang())
             context.resource('wiking-cms.js')
             return g.script(g.js_call('new wiking.cms.PublicationExportForm', form.form_id()))
         form = wiking.InputForm(
@@ -2948,6 +2949,7 @@ class PublicationExports(ContentManagementModule):
     def _insert_form_content(self, req, form, record):
         def script(element, context):
             g = context.generator()
+            context.resource('wiking-cms.%s.po' % context.lang())
             context.resource('wiking-cms.js')
             return g.script(g.js_call('new wiking.cms.PublicationExportForm', form.form_id()))
         return [form, wiking.HtmlRenderer(script)]

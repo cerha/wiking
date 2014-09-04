@@ -1,6 +1,6 @@
 
 mo_files := $(patsubst wiking.%.po,%/LC_MESSAGES/wiking.mo,$(shell ls *.po)) $(patsubst wiking-cms.%.po,%/LC_MESSAGES/wiking-cms.mo,$(shell ls *.po))
-resource_po_files := $(patsubst wiking.%.po,../resources/translations/wiking.%.po,$(shell ls wiking.*.po))
+resource_po_files := $(patsubst wiking.%.po,../resources/translations/wiking.%.po,$(shell ls wiking.*.po)) $(patsubst wiking-cms.%.po,../resources/translations/wiking-cms.%.po,$(shell ls wiking-cms.*.po))
 
 all: $(mo_files) $(resource_po_files)
 
@@ -17,6 +17,9 @@ all: $(mo_files) $(resource_po_files)
 	mkdir -p ../resources/translations/
 
 ../resources/translations/wiking.%.po: wiking.%.po ../resources/translations
+	cp $< $@
+
+../resources/translations/wiking-cms.%.po: wiking-cms.%.po ../resources/translations
 	cp $< $@
 
 wiking.pot: $(shell find ../lib -name "*.py" -not -path "*/cms/*") $(shell find ../resources/scripts -name "*.js" -not -name "wiking-cms.js")
