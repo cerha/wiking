@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-09-02 12:29+0200\n"
+"POT-Creation-Date: 2014-09-04 12:34+0200\n"
 "PO-Revision-Date: 2010-02-02 15:44+0100\n"
 "Last-Translator: Petr Topiarz <topiarz@post.cz>\n"
 "Language-Team: French <wiking@lists.freebsoft.org>\n"
@@ -335,7 +335,7 @@ msgstr "Masquer les panneaux"
 msgid "RSS channel"
 msgstr "Le canal RSS"
 
-#: ../lib/wiking/export.py:350 ../lib/wiking/util.py:1367
+#: ../lib/wiking/export.py:350
 msgid "Warning"
 msgstr "Le message d'avertissement"
 
@@ -661,55 +661,30 @@ msgstr "Mot de passe"
 msgid "Continue"
 msgstr ""
 
-#: ../lib/wiking/util.py:1368
-msgid "Error"
-msgstr ""
-
-#. "Export" in the sense of generating an output
-#. presentation of a document an the "log" here is a sequence
-#. of messages recorded during the export.
-#: ../lib/wiking/util.py:1383
-msgid "Export Log"
-msgstr ""
-
-#: ../lib/wiking/util.py:1385
-#, python-format
-msgid "%d error"
-msgid_plural "%d errors"
-msgstr[0] ""
-msgstr[1] ""
-
-#: ../lib/wiking/util.py:1387
-#, fuzzy, python-format
-msgid "%d warning"
-msgid_plural "%d warnings"
-msgstr[0] "Le message d'avertissement"
-msgstr[1] "Le message d'avertissement"
-
-#: ../lib/wiking/util.py:2121
+#: ../lib/wiking/util.py:2086
 #, fuzzy
 msgid "Invalid e-mail address format."
 msgstr "Format invalide"
 
 #. Computer terminology. `gmail.com' is a domain name in email address
 #. `joe@gmail.com'.
-#: ../lib/wiking/util.py:2129 ../lib/wiking/util.py:2137
+#: ../lib/wiking/util.py:2094 ../lib/wiking/util.py:2102
 #, fuzzy
 msgid "Domain not found."
 msgstr "Le domaine n'a pas été trouvé."
 
 #. Computer terminology.  Don't translate the acronym `DNS'.
-#: ../lib/wiking/util.py:2132 ../lib/wiking/util.py:2140
+#: ../lib/wiking/util.py:2097 ../lib/wiking/util.py:2105
 #, python-format
 msgid "Unable to retrieve DNS records: %s"
 msgstr ""
 
-#: ../lib/wiking/util.py:2168
+#: ../lib/wiking/util.py:2133
 #, python-format
 msgid "Invalid e-mail address: %s"
 msgstr ""
 
-#: ../lib/wiking/util.py:2170
+#: ../lib/wiking/util.py:2135
 #, python-format
 msgid ""
 "Unable to verify e-mail address: Mail servers for '%s' are temporarily "
@@ -740,6 +715,12 @@ msgstr ""
 #: ../resources/scripts/discussion.js:120
 msgid "Cancel"
 msgstr ""
+
+#, fuzzy
+#~ msgid "%d warning"
+#~ msgid_plural "%d warnings"
+#~ msgstr[0] "Le message d'avertissement"
+#~ msgstr[1] "Le message d'avertissement"
 
 #~ msgid "Integrity check failed."
 #~ msgstr "Contrôle d'intégrité a échoué."

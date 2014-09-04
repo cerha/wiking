@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-09-02 12:29+0200\n"
+"POT-Creation-Date: 2014-09-04 12:34+0200\n"
 "PO-Revision-Date: 2014-09-02 12:39+0200\n"
 "Last-Translator: Hynek Hanke <hanke@brailcom.org>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
@@ -356,7 +356,7 @@ msgstr "Skrýt panely"
 msgid "RSS channel"
 msgstr "RSS kanál"
 
-#: ../lib/wiking/export.py:350 ../lib/wiking/util.py:1367
+#: ../lib/wiking/export.py:350
 msgid "Warning"
 msgstr "Varování"
 
@@ -678,55 +678,28 @@ msgstr "Použít heslo"
 msgid "Continue"
 msgstr "Pokračovat"
 
-#: ../lib/wiking/util.py:1368
-msgid "Error"
-msgstr "Chyba"
-
-#. "Export" in the sense of generating an output
-#. presentation of a document an the "log" here is a sequence
-#. of messages recorded during the export.
-#: ../lib/wiking/util.py:1383
-msgid "Export Log"
-msgstr "Záznam exportu"
-
-#: ../lib/wiking/util.py:1385
-#, python-format
-msgid "%d error"
-msgid_plural "%d errors"
-msgstr[0] "%d chyba"
-msgstr[1] "%d chyby"
-msgstr[2] "%d chyb"
-
-#: ../lib/wiking/util.py:1387
-#, python-format
-msgid "%d warning"
-msgid_plural "%d warnings"
-msgstr[0] "%d varování"
-msgstr[1] "%d varování"
-msgstr[2] "%d varování"
-
-#: ../lib/wiking/util.py:2121
+#: ../lib/wiking/util.py:2086
 msgid "Invalid e-mail address format."
 msgstr "Neplatný formát e-mailové adresy."
 
 #. Computer terminology. `gmail.com' is a domain name in email address
 #. `joe@gmail.com'.
-#: ../lib/wiking/util.py:2129 ../lib/wiking/util.py:2137
+#: ../lib/wiking/util.py:2094 ../lib/wiking/util.py:2102
 msgid "Domain not found."
 msgstr "Doména nenalezena."
 
 #. Computer terminology.  Don't translate the acronym `DNS'.
-#: ../lib/wiking/util.py:2132 ../lib/wiking/util.py:2140
+#: ../lib/wiking/util.py:2097 ../lib/wiking/util.py:2105
 #, python-format
 msgid "Unable to retrieve DNS records: %s"
 msgstr "Nepodařilo se získat DNS záznamy: %s"
 
-#: ../lib/wiking/util.py:2168
+#: ../lib/wiking/util.py:2133
 #, python-format
 msgid "Invalid e-mail address: %s"
 msgstr "Neplatná e-mailová adresa: %s"
 
-#: ../lib/wiking/util.py:2170
+#: ../lib/wiking/util.py:2135
 #, python-format
 msgid ""
 "Unable to verify e-mail address: Mail servers for '%s' are temporarily "
@@ -761,6 +734,24 @@ msgstr "Citovat"
 #: ../resources/scripts/discussion.js:120
 msgid "Cancel"
 msgstr "Zrušit"
+
+#~ msgid "Error"
+#~ msgstr "Chyba"
+
+#~ msgid "Export Log"
+#~ msgstr "Záznam exportu"
+
+#~ msgid "%d error"
+#~ msgid_plural "%d errors"
+#~ msgstr[0] "%d chyba"
+#~ msgstr[1] "%d chyby"
+#~ msgstr[2] "%d chyb"
+
+#~ msgid "%d warning"
+#~ msgid_plural "%d warnings"
+#~ msgstr[0] "%d varování"
+#~ msgstr[1] "%d varování"
+#~ msgstr[2] "%d varování"
 
 #~ msgid "Integrity check failed."
 #~ msgstr "Kontrola integrity dat selhala."
