@@ -316,6 +316,7 @@ span.diff_sub, span.field.id-diff_sub { background-color: #ffaaaa; }
 .export-progress-summary {
     margin-top: 0.3em;
     margin-left: 0.1em;
+    white-space: nowrap;
 }
 .export-progress-summary .label {
     font-weight: bold;
