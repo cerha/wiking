@@ -69,6 +69,12 @@ wiking.cms.PublicationExportForm = Class.create({
 	document.body.style.cursor = "wait";
 	this.form.down('form').request({parameters: {submit: 'test'},
 					onSuccess: this.on_test_result.bind(this)});
+	var container = this.form.down('div.export-progress-log');
+	container.select('div').each(function (e) { e.remove(); });
+	this.form.select('.export-progress-summary').each(function (e) { e.remove(); });
+	container.insert(
+	    new Element('div', {'class': 'info-msg'}).update(wiking.cms._("Export started..."))
+	);
 	event.stop();
     },
 
@@ -77,8 +83,6 @@ wiking.cms.PublicationExportForm = Class.create({
 	try {
 	    var data = response.responseJSON;
 	    var container = this.form.down('div.export-progress-log');
-	    container.select('div').each(function (e) { e.remove(); });
-	    this.form.select('.export-progress-summary').each(function (e) { e.remove(); });
 	    if (data.messages) {
 		var labels = {WARNING: wiking.cms._("Warning"),
 			      ERROR: wiking.cms._("Error")};
@@ -100,6 +104,9 @@ wiking.cms.PublicationExportForm = Class.create({
 		div.insert(' ' + data.summary);
 		container.up().insert(div, {after: container});
 	    }
+	    container.insert(
+		new Element('div', {'class': 'info-msg'}).update(wiking.cms._("Export finished."))
+	    );
 	    this.form.down('button[type="submit"][name=""]').enable();
 	} catch (e) {
 	    // Errors in asynchronous handlers are otherwise silently ignored.
