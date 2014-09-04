@@ -19,10 +19,10 @@ all: $(mo_files) $(resource_po_files)
 ../resources/translations/wiking.%.po: wiking.%.po ../resources/translations
 	cp $< $@
 
-wiking.pot: $(shell find ../lib -name "*.py" -not -path "*/cms/*") $(shell find ../resources/scripts -name "*.js")
+wiking.pot: $(shell find ../lib -name "*.py" -not -path "*/cms/*") $(shell find ../resources/scripts -name "*.js" -not -name "wiking-cms.js")
 	pybabel extract -F wiking.cfg --add-comments=Translators: -s ../ -o wiking.pot
 
-wiking-cms.pot: $(shell find ../lib/wiking/cms -name "*.py")
+wiking-cms.pot: $(shell find ../lib/wiking/cms -name "*.py") ../resources/scripts/wiking-cms.js
 	pybabel extract -F wiking-cms.cfg --add-comments=Translators: -s ../ -o wiking-cms.pot
 
 $(shell ls wiking.*.po): wiking.%.po: wiking.pot

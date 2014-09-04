@@ -295,23 +295,28 @@ span.diff_sub, span.field.id-diff_sub { background-color: #ffaaaa; }
     width: 1%; /* Prevent label spanning too wide in Safari */
 }
 
-.lcg-export-log .log-heading {
-    font-weight: bold;
-}
-.lcg-export-log .log-content {
+.export-progress-log {
+    min-height: 2em;
     max-height: 10em;
+    max-width: 66em;
     overflow: scroll;
-    background-color: $color.frame-bg;
-    border: solid $color.frame-border 1px;
+    border: solid $color.border 1px;
     color: $color.foreground;
     padding: 0.1em;
     white-space: pre;
     
 }
-.lcg-export-log .error-msg .label {
+.export-progress-log .error-msg .label {
     color: #c00;
     font-weight: bold;
 }
-.lcg-export-log .warning-msg .label {
+.export-progress-log .warning-msg .label {
+    font-weight: bold;
+}
+.export-progress-summary {
+    margin-top: 0.3em;
+    margin-left: 0.1em;
+}
+.export-progress-summary .label {
     font-weight: bold;
 }

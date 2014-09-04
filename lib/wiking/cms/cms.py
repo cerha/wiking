@@ -2479,11 +2479,19 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                             ),
                         ),),
                     ),
+                    FieldSet(
+                        # Translators: "Export" in the sense of generating an output
+                        # presentation of a document an the "log" here is a sequence
+                        # of messages recorded during the export.
+                        _("Export Progress Log"),
+                        (lambda r: HtmlRenderer(lambda e, c:
+                                                c.generator().div('', cls='export-progress-log')),),
+                    ),
                 ),
             ),
             name='PublicationExportForm',
             action='export_publication',
-            submit_buttons=((None, _("Export")),),
+            submit_buttons=(('test', _("Export")), (None, _("Download")),),
             show_reset_button=False,
             show_footer=False,
         )
@@ -2678,14 +2686,25 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
         preview = wiking.module.Application.preview_mode(req)
         export_format = req.param('format', 'epub')
         data, messages = self.export_publication(req, record, export_format, preview=preview)
-        if export_format == 'epub':
-            content_type = 'application/epub+zip'
-            ext = 'epub'
-        elif export_format == 'braille':
-            content_type = 'application/octet-stream'
-            ext = 'brl'
-        return wiking.Response(data, content_type=content_type,
-                               filename='%s.%s' % (record['identifier'].value(), ext))
+        if req.param('submit') == 'test':
+            kinds = [x[0] for x in messages]
+            summary = lcg.concat(_.ngettext("%d error", "%d errors", kinds.count(lcg.ERROR)),
+                                 _.ngettext("%d warning", "%d warnings", kinds.count(lcg.WARNING)),
+                                 format_byte_size(len(data)),
+                                 separator=', ')
+            return wiking.Response(json.dumps({'messages': [(kind, req.localize(msg))
+                                                            for kind, msg in messages],
+                                               'summary': req.localize(summary)}),
+                                   content_type='application/json')
+        else:
+            if export_format == 'epub':
+                content_type = 'application/epub+zip'
+                ext = 'epub'
+            elif export_format == 'braille':
+                content_type = 'application/octet-stream'
+                ext = 'brl'
+            return wiking.Response(data, content_type=content_type,
+                                   filename='%s.%s' % (record['identifier'].value(), ext))
 
 
 class PublicationChapters(NavigablePages):
@@ -2898,10 +2917,34 @@ class PublicationExports(ContentManagementModule):
                     'version', 'public', 'notes')
         elif action == 'view':
             return (self.Spec.layout,
-                    lambda r: ExportMessages(json.loads(r['log'].value() or '[]')))
+                    FieldSet(_("Export Progress Log"),
+                             (lambda r: wiking.HtmlRenderer(self._render_export_messages, r),)))
         else:
             return super(PublicationExports, self)._layout(req, action, record=record)
 
+    def _render_export_messages(self, element, context, record):
+        # Note: This code partially duplicates the Javascript code in
+        # wiking.cms.PublicationExportForm.on_test_result().  At least we
+        # need to keep the html structure consistent because of the styles.
+        g = context.generator()
+        messages = json.loads(record['log'].value() or '[]')
+        kinds = [x[0] for x in messages]
+        labels = {lcg.WARNING: _("Warning"),
+                  lcg.ERROR: _("Error")}
+        return (
+            g.div([g.div((g.span(labels[kind] + ':', cls='label') + ' '
+                          if kind in labels else '') +
+                         message,
+                         cls=kind.lower() + '-msg')
+                   for kind, message in messages],
+                  cls='export-progress-log') +
+            g.div(lcg.format('%s %s, %s',
+                             g.span(_("Summary") + ':', cls='label'),
+                             _.ngettext("%d error", "%d errors", kinds.count(lcg.ERROR)),
+                             _.ngettext("%d warning", "%d warnings", kinds.count(lcg.WARNING))),
+                  cls='export-progress-summary')
+        )
+        
     def _insert_form_content(self, req, form, record):
         def script(element, context):
             g = context.generator()
@@ -2923,16 +2966,9 @@ class PublicationExports(ContentManagementModule):
         children = wiking.module.PublicationChapters.child_rows(
             req, publication_record['tree_order'].value(), publication_record['lang'].value(),
             preview=True)
-        messages[0:0] = [(lcg.Exporter.Context.WARNING,
-                          _("Unpublished chapter: %s", row['title'].value()))
+        messages.extend([(lcg.WARNING, _("Unpublished chapter: %s", row['title'].value()))
                          for row in reduce(operator.add, children.values(), [])
-                         if row['parents_published'].value() and not row['published'].value()]
-        kinds = [x[0] for x in messages]
-        req.message(_("Publication exported:") + ' ' +
-                    _.ngettext("%d error", "%d errors",
-                               kinds.count(lcg.Exporter.Context.ERROR)) + ', ' +
-                    _.ngettext("%d warning", "%d warnings", 
-                               kinds.count(lcg.Exporter.Context.WARNING)))
+                         if row['parents_published'].value() and not row['published'].value()])
         bytesize = len(data)
         for key, value in (('page_id', publication_record['page_id'].value()),
                            ('lang', publication_record['lang'].value()),
@@ -2950,6 +2986,10 @@ class PublicationExports(ContentManagementModule):
             f.write(data)
         finally:
             f.close()
+
+    def _redirect_after_insert(self, req, record):
+        req.message(self._insert_msg(req, record))
+        raise Redirect(self._current_record_uri(req, record))
 
     def action_download(self, req, record):
         if req.cached_since(record['timestamp'].value()):

@@ -28,6 +28,8 @@
 "use strict";
 
 wiking.cms = {};
+wiking.cms.gettext = new Gettext({domain:'wiking-cms'});
+wiking.cms._ = function (msg) { return pytis.gettext.gettext(msg); };
 
 wiking.cms.PublicationExportForm = Class.create({
     initialize: function (form_id) {
@@ -39,6 +41,11 @@ wiking.cms.PublicationExportForm = Class.create({
 	}
 	form.on('change', 'input[name="format"]', this.on_format_change.bind(this));
 	form.down('select[name="printer"] option[value=""]').remove();
+	var test_button = form.down('button[type="submit"][name="test"]');
+	if (test_button) {
+	    test_button.on('click', this.on_test_button.bind(this));
+	    form.down('button[type="submit"][name=""]').disable();
+	}
     },
 
     on_format_change: function (event, element) {
@@ -56,5 +63,49 @@ wiking.cms.PublicationExportForm = Class.create({
 	    this.braille_options.hide();
 	    //}
 	}
+    },
+
+    on_test_button: function (event) {
+	document.body.style.cursor = "wait";
+	this.form.down('form').request({parameters: {submit: 'test'},
+					onSuccess: this.on_test_result.bind(this)});
+	event.stop();
+    },
+
+    on_test_result: function(response) {
+	// Show test results in reaction to previously sent AJAX request.
+	try {
+	    var data = response.responseJSON;
+	    var container = this.form.down('div.export-progress-log');
+	    container.select('div').each(function (e) { e.remove(); });
+	    this.form.select('.export-progress-summary').each(function (e) { e.remove(); });
+	    if (data.messages) {
+		var labels = {WARNING: wiking.cms._("Warning"),
+			      ERROR: wiking.cms._("Error")};
+		data.messages.each(function(msg) {
+		    var kind = msg[0], message = msg[1];
+		    var label = labels[kind];
+		    var div = new Element('div', {'class': kind.toLowerCase() + '-msg'});
+		    if (label) {
+			div.insert(new Element('span', {'class': 'label'}).update(label+':'));
+			div.insert(' ');
+		    }
+		    div.insert(message);
+		    container.insert(div);
+		});
+	    }
+	    if (data.summary) {
+		var div = new Element('div', {'class': 'export-progress-summary'});
+		div.insert(new Element('span', {'class': 'label'}).update(wiking.cms._("Summary")+':'));
+		div.insert(' ' + data.summary);
+		container.up().insert(div, {after: container});
+	    }
+	    this.form.down('button[type="submit"][name=""]').enable();
+	} catch (e) {
+	    // Errors in asynchronous handlers are otherwise silently ignored.
+	    console.log(e);
+	}
+	document.body.style.cursor = "default";
     }
+    
 });
