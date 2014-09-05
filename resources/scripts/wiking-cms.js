@@ -22,14 +22,15 @@
 /*global Class */
 /*global Element */
 /*global Effect */
+/*global Gettext */
 /*global $ */
 /*global wiking */
 
 "use strict";
 
 wiking.cms = {};
-wiking.cms.gettext = new Gettext({domain:'wiking-cms'});
-wiking.cms._ = function (msg) { return pytis.gettext.gettext(msg); };
+wiking.cms.gettext = new Gettext({domain: 'wiking-cms'});
+wiking.cms._ = function (msg) { return wiking.cms.gettext.gettext(msg); };
 
 wiking.cms.PublicationExportForm = Class.create({
     initialize: function (form_id) {
