@@ -266,11 +266,11 @@ class CmsSession(CommonAccesRights, sql.SQLTable):
               sql.Column('last_access', pytis.data.DateTime()),
               )
     unique = (('uid', 'session_key',),)
-    #def on_delete_also(self):
-    #    log = sql.t.CmsSessionLog
-    #    return (log.update().
-    #            where(log.c.session_id == sqlalchemy.literal_column('old.session_id')).
-    #            values(end_time=sqlalchemy.literal_column('old.last_access')),)
+    # def on_delete_also(self):
+    #     log = sql.t.CmsSessionLog
+    #     return (log.update().
+    #             where(log.c.session_id == sqlalchemy.literal_column('old.session_id')).
+    #             values(end_time=sqlalchemy.literal_column('old.last_access')),)
     depends_on = (CmsSessionLog,)
     
 class CmsVSessionLog(CommonAccesRights, sql.SQLView):
@@ -363,7 +363,7 @@ class CmsPageTreeOrder(sql.SQLFunction):
 
 class CmsPageTreePublished(sql.SQLFunction):
     name = 'cms_page_tree_published'
-    arguments = (sql.Column('page_id', pytis.data.Integer()), 
+    arguments = (sql.Column('page_id', pytis.data.Integer()),
                  sql.Column('lang', pytis.data.String()),)
     result_type = pytis.data.Boolean()
     depends_on = (CmsPages, CmsPageTexts)
@@ -711,12 +711,11 @@ class CmsVPublications(CommonAccesRights, sql.SQLView):
                        cls._exclude(pages, publications.c.page_id) +
                        cls._exclude(publications, publications.c.page_id) +
                        [attachments.c.filename.label('cover_image_filename')]),
-                      from_obj=[
-                          pages.
-                          join(publications, publications.c.page_id == pages.c.page_id).
-                          outerjoin(attachments,
-                                    attachments.c.attachment_id == publications.c.cover_image)
-                      ])
+                      from_obj=[pages.
+                                join(publications, publications.c.page_id == pages.c.page_id).
+                                outerjoin(attachments,
+                                          attachments.c.attachment_id == publications.c.cover_image)
+                                ])
 
     def on_insert(self):
         def returning_column(c):
@@ -744,7 +743,7 @@ class CmsVPublications(CommonAccesRights, sql.SQLView):
             "where identifier=new.identifier and site=new.site and kind=new.kind "
             "returning %s" % (
                 ', '.join(c.name for c in publications.c),
-                ', '.join([c.name if c.name in vpages.c else 'new.' + c.name 
+                ', '.join([c.name if c.name in vpages.c else 'new.' + c.name
                            for c in publications.c]),
                 ', '.join([returning_column(c) for c in self.c]),
             )
@@ -760,7 +759,6 @@ class CmsVPublications(CommonAccesRights, sql.SQLView):
             "update cms_publications set %s where page_id = old.page_id;" % (
                 update_columns(sql.t.CmsPublications),)
         )]
-
 
     def on_delete(self):
         return ("delete from cms_pages where page_id = old.page_id",)
@@ -924,7 +922,7 @@ class CmsNewsletters(CommonAccesRights, Base_CachingTable):
         sql.Column('read_role_id', pytis.data.Name(not_null=True), default='anyone',
                    references=sql.a(sql.r.Roles, onupdate='CASCADE')),
         sql.Column('write_role_id', pytis.data.Name(not_null=True), default='content_admin',
-                   references=sql.a(sql.r.Roles, onupdate='CASCADE', ondelete='SET DEFAULT')),         
+                   references=sql.a(sql.r.Roles, onupdate='CASCADE', ondelete='SET DEFAULT')),
         sql.Column('bg_color', pytis.data.String(not_null=True)),
         sql.Column('text_color', pytis.data.String(not_null=True)),
         sql.Column('link_color', pytis.data.String(not_null=True)),
@@ -1166,7 +1164,7 @@ class CmsVSystemTexts(CommonAccesRights, sql.SQLView):
            values (new.label, new.site, new.lang, new.description, new.content);
         )""",)
     # gensqlalchemy doesn't generate a proper where clause here (maybe multicolumn foreign key?)
-    #delete_order = (CmsSystemTextLabels,)
+    # delete_order = (CmsSystemTextLabels,)
     def on_delete(self):
         return ("delete from cms_system_text_labels where label = old.label and site = old.site;",)
 
