@@ -1,3 +1,4 @@
+CREATE OR REPLACE FUNCTION "public"."cms_pages_update_order"() RETURNS trigger LANGUAGE plpgsql AS $$
 begin
   if new.ord is null then
     new.ord := coalesce((select max(ord)+1 from cms_pages
@@ -22,3 +23,4 @@ begin
   end if;
   return new;
 end;
+$$;
