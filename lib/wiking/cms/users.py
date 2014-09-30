@@ -676,7 +676,7 @@ class Users(UserManagementModule, CachingPytisModule):
 
         def _check_old_password(self, record):
             req = record.req()
-            if req.param('action') == 'passwd' and not req.check_roles(Roles.USER_ADMIN):
+            if req.param('action') == 'passwd' and req.user().uid() == record['uid'].value():
                 old_password = self._stored_password(record['old_password'].value())
                 if not old_password:
                     return ('old_password', _(u"Enter your current password."))
@@ -948,8 +948,7 @@ class Users(UserManagementModule, CachingPytisModule):
                 return layout
             elif action == 'passwd' and record is not None:
                 layout = ['new_password']
-                if ((not req.check_roles(Roles.USER_ADMIN) or
-                     req.user().uid() == record['uid'].value())):
+                if req.user().uid() == record['uid'].value():
                     # Don't require old password for admin, unless he is changing his own password.
                     layout.insert(0, 'old_password')
                 if not wiking.cms.cfg.login_is_email:
