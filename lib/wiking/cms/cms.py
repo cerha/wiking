@@ -2268,7 +2268,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                 Field('menu_visibility', default='never'),
                 Field('read_role_id',
                       descr=_("Select the role allowed to view the publication.")),
-                Field('write_role_id', default=Roles.OWNER.id(),
+                Field('write_role_id',
                       descr=_("Select the role allowed to edit the publication.")),
             )
             extra = (
@@ -2464,10 +2464,6 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
         if not wiking.module.Application.preview_mode(req):
             columns = [c for c in columns if c != 'published']
         return columns
-
-    def _prefill(self, req):
-        return dict(super(Publications, self)._prefill(req),
-                    owner=req.user().uid())
 
     def _current_base_uri(self, req, record=None):
         # Use PytisModule._current_base_uri (skip Pages._current_base_uri).
