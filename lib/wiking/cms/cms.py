@@ -2124,6 +2124,13 @@ class BrailleExporter(wiking.Module):
             Field('bottom_margin', _("Bottom margin"), width=3, virtual=virtual,
                   type=pd.Integer(), default=0),
         )
+    BRAILLE_EXPORT_OPTIONS_FIELDSET = FieldSet(
+        _("Braille Export Options"),
+        (ColumnLayout(
+            ('printer', 'page_width', 'page_height',),
+            FieldSet(_("Margins"), ('inner_margin', 'outer_margin', 'top_margin', 'bottom_margin')),
+        ),),
+    )
 
     def _export_braille(self, req, publication):
         presentation = self.braille_presentation()
@@ -2186,14 +2193,7 @@ class CmsPageExcerpts(EmbeddableCMSModule, BrailleExporter):
         form = wiking.InputForm(
             req, dict(
                 fields=self.braille_option_fields(),
-                layout=FieldSet(
-                    _("Braille Export Options"),
-                    (ColumnLayout(
-                        ('printer', 'page_width', 'page_height',),
-                        FieldSet(_("Margins"),
-                                 ('inner_margin', 'outer_margin', 'top_margin', 'bottom_margin')),
-                    ),),
-                ),
+                layout=self.BRAILLE_EXPORT_OPTIONS_FIELDSET,
             ),
             name='ExcerptExportForm',
             action='export_braille',
@@ -2370,6 +2370,17 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
     _INSERT_MSG = _("New publication was successfully created.")
     _UPDATE_MSG = _("The publication was successfully updated.")
 
+    EPUB_EXPORT_OPTIONS_FIELDSET = FieldSet(
+        _("EPUB Export Options"),
+        ('allow_interactivity',),
+    )
+    @classmethod
+    def epub_option_fields(cls, virtual=False):
+        return (
+            Field('allow_interactivity', _("Allow interactivity"), virtual=virtual,
+                  type=pd.Boolean(), default=True),
+        )
+
     def _handle(self, req, action, **kwargs):
         if not hasattr(req, 'publication_record'):
             record = kwargs.get('record')
@@ -2467,19 +2478,11 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
             req, dict(
                 fields=(
                     Field('format', _("Format"), enumerator=PublicationExports.Formats),
-                ) + self.braille_option_fields(),
+                ) + self.braille_option_fields() + self.epub_option_fields(),
                 layout=(
                     'format',
-                    FieldSet(
-                        _("Braille Export Options"),
-                        (ColumnLayout(
-                            ('printer', 'page_width', 'page_height',),
-                            FieldSet(
-                                _("Margins"),
-                                ('inner_margin', 'outer_margin', 'top_margin', 'bottom_margin'),
-                            ),
-                        ),),
-                    ),
+                    self.BRAILLE_EXPORT_OPTIONS_FIELDSET,
+                    self.EPUB_EXPORT_OPTIONS_FIELDSET,
                     FieldSet(
                         # Translators: "Export" in the sense of generating an output
                         # presentation of a document an the "log" here is a sequence
@@ -2645,7 +2648,8 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                     else:
                         raise Exception("Unable to retrieve resource %s." % resource.filename())
         exporter = EpubExporter(translations=wiking.cfg.translation_path)
-        context = exporter.context(publication, req.preferred_language())
+        context = exporter.context(publication, req.preferred_language(), 
+                                   allow_interactivity=bool(req.param('allow_interactivity')))
         result = exporter.export(context)
         return result, context.messages()
 
@@ -2874,7 +2878,8 @@ class PublicationExports(ContentManagementModule):
                               "Leave empty if there is nothing important to note.")),
             )
             return (self._inherited_fields(PublicationExports.Spec, override=override) +
-                    BrailleExporter.braille_option_fields(virtual=True))
+                    BrailleExporter.braille_option_fields(virtual=True) +
+                    Publications.epub_option_fields(virtual=True))
         layout = ('format', 'version', 'timestamp', 'bytesize', 'public', 'notes')
         columns = ('format', 'version', 'timestamp', 'bytesize', 'public')
         actions = (
@@ -2906,15 +2911,8 @@ class PublicationExports(ContentManagementModule):
     def _layout(self, req, action, record=None):
         if action == 'insert':
             return ('format',
-                    FieldSet(
-                        _("Braille Export Options"),
-                        (ColumnLayout(
-                            ('printer', 'page_width', 'page_height',),
-                            FieldSet(
-                                _("Margins"),
-                                ('inner_margin', 'outer_margin', 'top_margin', 'bottom_margin')),
-                        ),),
-                    ),
+                    Publications.BRAILLE_EXPORT_OPTIONS_FIELDSET,
+                    Publications.EPUB_EXPORT_OPTIONS_FIELDSET,
                     'version', 'public', 'notes')
         elif action == 'view':
             return (self.Spec.layout,

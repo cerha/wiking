@@ -37,9 +37,12 @@ wiking.cms.PublicationExportForm = Class.create({
 	var form = $(form_id);
 	this.form = form;
 	this.braille_options = form.down('.label-braille-export-options');
-	if (form.down('input:checked[name="format"]').value !== 'braille') {
+	this.epub_options = form.down('.label-epub-export-options');
+	if (form.down('input:checked[name="format"]').value === 'braille') {
+	    this.epub_options.hide();
+	} else {
 	    this.braille_options.hide();
-	}
+	}	    
 	form.on('change', 'input[name="format"]', this.on_format_change.bind(this));
 	form.down('select[name="printer"] option[value=""]').remove();
 	var test_button = form.down('button[type="submit"][name="test"]');
@@ -56,12 +59,14 @@ wiking.cms.PublicationExportForm = Class.create({
 	    //    new Effect.SlideDown(this.braille_options, {duration: 0.2});
 	    //} else {
 	    this.braille_options.show();
+	    this.epub_options.hide();
 	    //}
 	} else {
 	    //if (Effect !== undefined) {
 	    //	new Effect.SlideUp(this.braille_options, {duration: 0.2});
 	    //} else {
 	    this.braille_options.hide();
+	    this.epub_options.show();
 	    //}
 	}
     },
