@@ -2378,7 +2378,11 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
     def epub_option_fields(cls, virtual=False):
         return (
             Field('allow_interactivity', _("Allow interactivity"), virtual=virtual,
-                  type=pd.Boolean(), default=True),
+                  type=pd.Boolean(), 
+                  descr=_("Interactive features (exercises) currently don't work "
+                          "in iBooks, so it is safer to leave this option unchecked. "
+                          "The exercises will remain in the publication, but they "
+                          "will not support interaction.")),
         )
 
     def _handle(self, req, action, **kwargs):
