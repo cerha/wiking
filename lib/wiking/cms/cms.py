@@ -1396,14 +1396,18 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                 #      computer=computer(lambda r, tree_order: tree_order.split('.')[1])),
                 # Translators: Label of a selector of a group allowed to access the page read only.
                 Field('read_role_id', _("Read only access"), codebook='ApplicationRoles',
-                      default=Roles.ANYONE.id(),
+                      computer=self._parent_field_computer('read_role_id', Roles.ANYONE.id()),
+                      editable=ALWAYS,
                       descr=_("Select the role allowed to view the page contents.")),
                 # Translators: Label of a selector of a group allowed to edit the page.
                 Field('write_role_id', _("Read/write access"), codebook='ApplicationRoles',
-                      default=Roles.CONTENT_ADMIN.id(),
+                      computer=self._parent_field_computer('write_role_id',
+                                                           Roles.CONTENT_ADMIN.id()),
+                      editable=ALWAYS,
                       descr=_("Select the role allowed to edit the page contents.")),
                 Field('owner', _("Owner"), codebook='Users', not_null=False,
                       inline_referer='owner_login', inline_display='owner_name',
+                      computer=self._parent_field_computer('owner'), editable=ALWAYS,
                       descr=_("The owner has full read/write access regardless of roles "
                               "settings above.")),
                 Field('owner_login'),
@@ -1427,6 +1431,17 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                                                  record['page_id'].value(),
                                                  record['lang'].value(),
                                                  self._attachment_storage_uri(record))
+        def _parent_field_computer(self, field_id, default=None):
+            return computer(lambda r, parent:
+                            self._parent_field_value(r, parent, field_id, default=default))
+        def _parent_field_value(self, record, parent, field_id, default=None):
+            if record.new():
+                if parent:
+                    return record.cb_value('parent', field_id).value()
+                else:
+                    return default
+            else:
+                return record[field_id].value()
         def row_style(self, record):
             if not record['published'].value() or not record['parents_published'].value():
                 return pp.Style(foreground='#777')
