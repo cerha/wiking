@@ -699,19 +699,27 @@ class Request(ServerInterface):
         """
         if base_uri.startswith('mailto:'):
             uri = base_uri
+            # Many e-mail clients wouldn't replace '+' in the subject by spaces.
+            quote = urllib.quote
+            # Mailto links won't work with the ';' separator (see below).
+            separator = '&'
         else:
             match = self._ABS_URI_MATCHER.match(base_uri)
             if match:
                 uri = match.group(1) + urllib.quote(match.group(3).encode(self._encoding))
             else:
                 uri = urllib.quote(base_uri.encode(self._encoding))
+            quote = urllib.quote_plus
+            # Maybe we should use '&' in all cases, but we started with ';' so we'll
+            # rather keep it for now except for the mailto links which don't like it.
+            separator = ';'
         if args and isinstance(args[0], basestring):
             anchor = urllib.quote(unicode(args[0]).encode(self._encoding))
             args = args[1:]
         else:
             anchor = None
-        query = ';'.join([k + "=" + urllib.quote_plus(unicode(v).encode(self._encoding))
-                          for k, v in args + tuple(kwargs.items()) if v is not None])
+        query = separator.join([k + "=" + quote(unicode(v).encode(self._encoding))
+                                for k, v in args + tuple(kwargs.items()) if v is not None])
         if query:
             uri += '?' + query
         if anchor:
