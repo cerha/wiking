@@ -4492,6 +4492,7 @@ class NewsletterPosts(CMSModule):
                 Field('edition_id', codebook='NewsletterEditions'),
                 Field('title', _("Title"), width=70),
                 Field('ord', _("Order"), width=5, computer=computer(self._last_order),
+                      editable=ALWAYS,
                       descr=_("Number denoting the order of the post on the page."),),
                 Field('content', _("Content"), width=80, height=6, compact=True),
                 Field('image', _("Image"), type=pd.Image()),
