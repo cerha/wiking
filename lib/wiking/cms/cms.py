@@ -4112,7 +4112,7 @@ class Newsletters(EmbeddableCMSModule):
                                ('top_bg_color', 'top_text_color', 'top_link_color')),
                       FieldSet(_("Footer"),
                                ('footer_bg_color', 'footer_text_color', 'footer_link_color')))
-        elif action == 'update':
+        elif action in ('insert', 'update'):
             layout = ('title', 'lang', 'description', 'image', 'sender', 'address',
                       'read_role_id', 'write_role_id')
         else:
