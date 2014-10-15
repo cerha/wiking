@@ -4483,6 +4483,8 @@ class NewsletterEditions(CMSModule):
         raise Redirect(req.uri())
 
     def action_test(self, req, record):
+        if req.param('_cancel'):
+            raise Redirect(req.uri())
         form = wiking.InputForm(req, dict(
             fields=(Field('addresses', _("Addresses"), width=60, height=4, type=pd.String(), 
                           computer=computer(lambda r: r.req().user().email()), editable=ALWAYS,
