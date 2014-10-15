@@ -1050,20 +1050,24 @@ class Users(UserManagementModule, CachingPytisModule):
             raise wiking.Redirect(req.module_uri('Registration'))
         else:
             req.message(_("The account has been created."))
-            if record['autogenerate_password'].value():
-                req.message(_("The generated password was sent to %s.", record['email'].value()))
-                raise wiking.Redirect(req.module_uri('Registration'))
-            elif req.check_roles(Roles.USER_ADMIN):
-                req.message(_("The activation code was sent to %s.", record['email'].value()))
+            if req.user() is not None:
+                # The registration was performed by admin.
+                if record['autogenerate_password'].value():
+                    message = _("The generated password was sent to %s.", record['email'].value())
+                else:
+                    message = _("The activation code was sent to %s.", record['email'].value())
+                req.message(message)
                 raise wiking.Redirect(self._current_record_uri(req, record))
             else:
                 # Translators: Follows an email addres, e.g. ``... was sent to
-                # your email address at joe@brailcom.org''
-                return Document(_("Registration completed"),
-                                content=lcg.p((_("To finish your registration, please confirm "
-                                                 "the activation code that was sent to your "
-                                                 "email address at %s.",
-                                                 record['email'].value()))))
+                # joe@brailcom.org''
+                if record['autogenerate_password'].value():
+                    message = _("The generated password was sent to %s.", record['email'].value())
+                else:
+                    message = _("To finish your registration, please confirm the activation "
+                                "code that was sent to your email address at %s.",
+                                record['email'].value())
+                return Document(_("Registration completed"), content=lcg.p((message)))
 
     def _send_registration_email(self, req, record):
         base_uri = req.server_uri() + (req.module_uri('Registration') or '/_wmi/' + self.name())
