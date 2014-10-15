@@ -4307,6 +4307,7 @@ class NewsletterEditions(CMSModule):
         actions = (
             Action('preview', _("Preview")),
             Action('send', _("Send")),
+            Action('test', _("Test")),
         )
         
     _LIST_LABEL = _("Overview of Editions")
@@ -4323,7 +4324,7 @@ class NewsletterEditions(CMSModule):
         elif action == 'view':
             return (req.newsletter_write_access or
                     req.newsletter_read_access and record['sent'].value() is not None)
-        elif action in ('insert', 'update', 'delete', 'send', 'preview'):
+        elif action in ('insert', 'update', 'delete', 'send', 'test', 'preview'):
             return req.newsletter_write_access
         else:
             return False
@@ -4443,11 +4444,7 @@ class NewsletterEditions(CMSModule):
                                           78, replace_whitespace=True)
                             for paragraph in re.split(r'\n\s*', text, flags=re.MULTILINE)])
 
-    def action_preview(self, req, record):
-        html = self._newsletter_html(req, record)
-        return wiking.Response(html)
-
-    def action_send(self, req, record):
+    def _send_newsletter(self, req, record, addresses):
         newsletter_id = record['newsletter_id'].value()
         newsletter_row = record['newsletter_id'].type().enumerator().row(newsletter_id)
         title = newsletter_row['title'].value()
@@ -4457,7 +4454,7 @@ class NewsletterEditions(CMSModule):
         #  Preserve % signs in HTML template (only keyword substitutions are meant to be used).
         html = re.sub('%(?!\([a-z]+\)s)', '%%', html)
         text = self._newsletter_text(html)
-        for email, code in wiking.module.NewsletterSubscription.subscribers(newsletter_id):
+        for email, code in addresses:
             subst = dict([(k, urllib.quote(v)) for k, v in (('email', email),
                                                             ('code', code))])
             err = wiking.send_mail(email, title, html=html % subst, text=text % subst, lang=lang)
@@ -4474,8 +4471,38 @@ class NewsletterEditions(CMSModule):
         if errors:
             req.message(_("Sending to %d recipients failed. "
                           "Details can be found in servers error log.", errors), type=req.ERROR)
+
+    def action_preview(self, req, record):
+        html = self._newsletter_html(req, record)
+        return wiking.Response(html)
+
+    def action_send(self, req, record):
+        newsletter_id = record['newsletter_id'].value()
+        addresses = wiking.module.NewsletterSubscription.subscribers(newsletter_id)
+        self._send_newsletter(req, record, addresses)
         raise Redirect(req.uri())
 
+    def action_test(self, req, record):
+        form = wiking.InputForm(req, dict(
+            fields=(Field('addresses', _("Addresses"), width=60, height=4, type=pd.String(), 
+                          computer=computer(lambda r: r.req().user().email()), editable=ALWAYS,
+                          descr=_("Type in e-mail addresses separated by colons, "
+                                  "spaces or new lines. The newsletter will be sent "
+                                  "to given addresses only, not to regular subscribers")),),),
+            name='NewsletterTest',
+            action='test',
+            submit_buttons=((None, _("Send")),),
+            show_reset_button=False,
+            show_cancel_button=True,
+            show_footer=False,
+        )
+        if req.param('submit') and form.validate(req):
+            addresses = re.split(r'(?:\s*,\s*|\s+)', form.row()['addresses'].value(),
+                                 re.MULTILINE)
+            self._send_newsletter(req, record, [(a, '') for a in addresses])
+            raise Redirect(req.uri())
+        else:
+            return wiking.Document(_("Test Send to Given Addresses"), form)
 
 class NewsletterPosts(CMSModule):
     """E-mail newsletters with subscription."""
