@@ -616,6 +616,10 @@ class Users(UserManagementModule, CachingPytisModule):
 
         def _default_state(self, record, autogenerate_password):
             req = record.req()
+            # Note, autogenerate_password is important here to detect
+            # re-registration in _redirect_after_insert.  Also it makes
+            # the process a little safer because if the email is wrong,
+            # the user will not be able to find out his password.
             if autogenerate_password and req.check_roles(Roles.USER_ADMIN):
                 return self._module.AccountState.ENABLED
             else:
@@ -1041,6 +1045,8 @@ class Users(UserManagementModule, CachingPytisModule):
 
     def _redirect_after_insert(self, req, record):
         row = self._data.get_row(login=record['login'].value())
+        # TODO: maybe detect re-registration as:
+        # if req.user() is not None and req.user().uid() == record['uid'].value():
         if ((row['state'].value() != Users.AccountState.NEW and
              not record['autogenerate_password'].value())):
             # Detect re-registration: The user is already confirmed in the
