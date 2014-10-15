@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-09-04 12:34+0200\n"
+"POT-Creation-Date: 2014-10-15 11:23+0200\n"
 "PO-Revision-Date: 2010-01-19 16:40+0100\n"
 "Last-Translator: Petr Topiarz <topiarz@post.cz>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
@@ -417,18 +417,18 @@ msgid "Reload"
 msgstr "Last på nytt"
 
 #. Short description of a user group purpose.
-#: ../lib/wiking/request.py:1287
+#: ../lib/wiking/request.py:1295
 msgid "Anyone"
 msgstr ""
 
 #. Short description of a user group purpose.
-#: ../lib/wiking/request.py:1290
+#: ../lib/wiking/request.py:1298
 #, fuzzy
 msgid "Any authenticated user"
 msgstr "Godkjenning kreves"
 
 #. Short description of a user group purpose.
-#: ../lib/wiking/request.py:1297
+#: ../lib/wiking/request.py:1305
 msgid "Current record owner"
 msgstr ""
 

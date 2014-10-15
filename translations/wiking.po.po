@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-09-04 12:34+0200\n"
+"POT-Creation-Date: 2014-10-15 11:23+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Petr Topiarz <topiarz@post.cz>\n"
 "Language-Team: \n"
@@ -413,18 +413,18 @@ msgid "Reload"
 msgstr "Tranferir"
 
 #. Short description of a user group purpose.
-#: ../lib/wiking/request.py:1287
+#: ../lib/wiking/request.py:1295
 msgid "Anyone"
 msgstr ""
 
 #. Short description of a user group purpose.
-#: ../lib/wiking/request.py:1290
+#: ../lib/wiking/request.py:1298
 #, fuzzy
 msgid "Any authenticated user"
 msgstr "Pedido de autenticação"
 
 #. Short description of a user group purpose.
-#: ../lib/wiking/request.py:1297
+#: ../lib/wiking/request.py:1305
 msgid "Current record owner"
 msgstr ""
 
