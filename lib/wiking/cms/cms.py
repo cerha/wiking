@@ -4510,6 +4510,7 @@ class NewsletterPosts(CMSModule):
             return image.image().size[1] if image else None
         layout = ('title', 'ord', 'image', 'image_position', 'content')
         columns = ('title',)
+        sorting = (('ord', ASC),)
         def list_layout(self):
             def clearing(element, context):
                 g = context.generator()
