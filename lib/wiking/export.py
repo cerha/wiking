@@ -29,8 +29,8 @@ class MinimalExporter(lcg.HtmlExporter):
         except:
             uri = '_resources'
         return super(MinimalExporter, self)._head(context) + \
-               ['<link rel="stylesheet" type="text/css" href="/%s/%s">' % (uri, style)
-                for style in ('default.css', 'layout.css')]
+            ['<link rel="stylesheet" type="text/css" href="/%s/%s">' % (uri, style)
+             for style in ('default.css', 'layout.css')]
     
     def _meta(self, context):
         import wiking
@@ -101,11 +101,11 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
     _PAGE_PARTS = ('links', 'breadcrumbs', 'menu', 'submenu', 'panels', 'main', 'page_clearing')
     _BOTTOM_PARTS = ('bottom_bar', 'footer')
     _PART_TITLE = {
-        'top':     _("Page heading"),
-        'menu':    _("Main navigation"),
+        'top': _("Page heading"),
+        'menu': _("Main navigation"),
         'submenu': _("Local navigation"),
-        'main':    _("Main content"),
-        'bottom':  _("Page footer"),
+        'main': _("Main content"),
+        'bottom': _("Page footer"),
         'language_selection': _("Language selection"),
     }
     # Translators: Label for language selection followed by list of languages
@@ -169,10 +169,10 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         return dict(cls=cls)
 
     def _part(self, name, context):
-        content = getattr(self, '_'+name)(context)
+        content = getattr(self, '_' + name)(context)
         if content is not None:
-            if hasattr(self, '_'+name+'_attr'):
-                attr = getattr(self, '_'+name+'_attr')(context)
+            if hasattr(self, '_' + name + '_attr'):
+                attr = getattr(self, '_' + name + '_attr')(context)
             else:
                 attr = {}
             if name in self._PART_TITLE:
@@ -193,7 +193,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
     def _uri_node(self, context, node, lang=None):
         uri = node.id()
         if not uri.startswith('/'):
-            uri = '/'+ uri
+            uri = '/' + uri
         return context.generator().uri(uri, setlang=lang)
 
     def _resource_uri_prefix(self, context, resource):
@@ -210,7 +210,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
     def _head(self, context):
         return (super(Exporter, self)._head(context) +
                 [('<link rel="alternate" type="application/rss+xml" '
-                  'title="'+ p.title() +'" href="'+ p.channel() +'">')
+                  'title="' + p.title() + '" href="' + p.channel() + '">')
                  for p in context.node().panels() if p.channel() is not None])
     
     def _site_title(self, context):
@@ -223,7 +223,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         return content
 
     def _title(self, context):
-        return context.node().page_heading() +' - '+ context.application.site_title(context.req())
+        return context.node().page_heading() + ' - ' + context.application.site_title(context.req())
 
     def _top(self, context):
         g = self._generator
@@ -262,16 +262,16 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         if items:
             top = context.node().top()
             n = len(items)
-            style = "width: %d%%" % (100/n)
-            last_style = "width: %d%%" % (100 - (100 / n * (n-1)))
+            style = "width: %d%%" % (100 / n)
+            last_style = "width: %d%%" % (100 - (100 / n * (n - 1)))
             first, last = items[0], items[-1]
             menu = [g.li(g.a(item.title(), href=self._uri_node(context, item),
                              title=item.descr(), accesskey=(item is first and '1' or None),
-                             cls='navigation-link'+(item is top and ' current' or ''),
-                             )+(item is top and self._hidden(' *') or ''),
+                             cls='navigation-link' + (item is top and ' current' or ''),
+                             ) + (item is top and self._hidden(' *') or ''),
                          style=(item is last and last_style or style))
                     for item in items]
-            title = g.a(_("Main navigation")+':', name='main-navigation', accesskey="3")
+            title = g.a(_("Main navigation") + ':', name='main-navigation', accesskey="3")
             return concat(g.h(title, 3), g.ul(*menu))
         else:
             return None
@@ -286,10 +286,10 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             # If there is the main menu, this is its submenu, but if the main
             # menu is empty, this menu acts as the main menu.
             heading = application.menu_panel_title(req)
-            title = application.menu_panel_tooltip(req)
+            #title = application.menu_panel_tooltip(req)
             name = 'local-navigation'
         else:
-            title = heading = _("Main navigation")
+            heading = _("Main navigation")
             name = 'main-navigation'
         tree = lcg.FoldableTree(context.node().top(),
                                 tooltip=_("Expand/collapse complete menu hierarchy"))
@@ -312,7 +312,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             return g.a(_("Show panels"), href="?show_panels=1", cls='panel-control show')
         result = [g.a(_("Hide panels"), href="?hide_panels=1", cls='panel-control hide')]
         for panel in panels:
-            title = g.a(panel.title(), name='panel-'+panel.id()+'-anchor', tabindex=0,
+            title = g.a(panel.title(), name='panel-' + panel.id() + '-anchor', tabindex=0,
                         cls='panel-anchor')
             titlebar_content = panel.titlebar_content()
             if titlebar_content:
@@ -322,20 +322,20 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
                 icon = context.resource('rss.png')
                 if icon:
                     # Translators: ``RSS channel'' is terminology idiom, see Wikipedia
-                    channel_title = panel.title() +' ('+ _("RSS channel") +')'
+                    channel_title = panel.title() + ' (' + _("RSS channel") + ')'
                     img = g.img(context.uri(icon), align='right', alt=channel_title)
                     link = g.a(img, href=channel, title=channel_title, type='application/rss+xml',
                                cls='feed-icon-link')
-                    title = link +' '+ title
+                    title = link + ' ' + title
             cls = 'panel'
             if panel.id() == 'login' and req.user():
                 cls += ' logged'
             content = panel.content()
             # Add a fake container to force the heading level start at 4.
-            container = lcg.Container(lcg.Section('', lcg.Section('', content)))
+            lcg.Container(lcg.Section('', lcg.Section('', content)))
             result.append(g.div((g.h(title, 3),
                                  g.div(content.export(context), cls='panel-content')),
-                                id='panel-'+self._safe_css_id(panel.id()), cls=cls,
+                                id='panel-' + self._safe_css_id(panel.id()), cls=cls,
                                 title=panel.accessible_title()))
         extra_content = context.application.right_panels_bottom_content(req)
         if extra_content:
@@ -347,7 +347,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         messages = context.req().messages()
         if messages:
             g = self._generator
-            return g.div([g.div((type == Request.WARNING and _("Warning")+': 'or '') + \
+            return g.div([g.div((type == Request.WARNING and _("Warning") + ': ' or '') +
                                 g.escape(message),
                                 cls=self._MESSAGE_TYPE_CLASS[type])
                           for message, type in messages],
@@ -380,11 +380,11 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
     def _last_change(self, context):
         # Currently unused, left here just to have the translation.
         # Translators: Information about last change of a webpage (when and who)
-	return _("Last change: %(date)s, %(user)s")
+        return _("Last change: %(date)s, %(user)s")
 
     def _bottom_bar(self, context):
         req = context.req()
-        left  = context.application.bottom_bar_left_content(req)
+        left = context.application.bottom_bar_left_content(req)
         right = context.application.bottom_bar_right_content(req)
         if left or right:
             g = self._generator
