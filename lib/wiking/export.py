@@ -215,8 +215,8 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         req = context.req()
         return tags + ['<meta property="og:%s" content="%s"/>' % (name, val) for name, val in (
             ('title', context.node().page_heading()),
-            #('type', "product"),
-            #('url', ""),
+            ('type', 'article'),
+            ('url', req.uri()),
             ('site_name', context.application.site_title(req)),
             ('description', context.application.site_subtitle(req)),
             ('image', req.server_uri() + wiking.cfg.site_image if wiking.cfg.site_image else None),
