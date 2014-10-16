@@ -208,11 +208,20 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         return uri
     
     def _head(self, context):
-        return (super(Exporter, self)._head(context) +
-                [('<link rel="alternate" type="application/rss+xml" '
-                  'title="' + p.title() + '" href="' + p.channel() + '">')
-                 for p in context.node().panels() if p.channel() is not None])
-    
+        tags = super(Exporter, self)._head(context) + \
+            [('<link rel="alternate" type="application/rss+xml" '
+              'title="' + p.title() + '" href="' + p.channel() + '"/>')
+             for p in context.node().panels() if p.channel() is not None]
+        req = context.req()
+        return tags + ['<meta property="og:%s" content="%s"/>' % (name, val) for name, val in (
+            ('title', context.node().page_heading()),
+            #('type', "product"),
+            #('url', ""),
+            ('site_name', context.application.site_title(req)),
+            ('description', context.application.site_subtitle(req)),
+            ('image', req.server_uri() + wiking.cfg.site_image if wiking.cfg.site_image else None),
+        ) if val is not None]
+
     def _site_title(self, context):
         g = self._generator
         title = context.application.site_title(context.req())
