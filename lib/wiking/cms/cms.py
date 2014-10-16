@@ -1648,7 +1648,8 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                 if row:
                     del req.unresolved_path[0]
                     return row
-        rows = self._get_value((identifier, True), loader=self._load_page_rows)
+        preview_mode = wiking.module.Application.preview_mode(req)
+        rows = self._get_value((identifier, preview_mode), loader=self._load_page_rows)
         if rows:
             if req.has_param(self._key):
                 # If key is passed (on form submission), resolve by key
