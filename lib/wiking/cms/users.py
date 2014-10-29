@@ -612,7 +612,7 @@ class Users(UserManagementModule, CachingPytisModule):
             elif wiking.cms.cfg.login_is_email:
                 return email
             else:
-                return None
+                return record['login'].value()
 
         def _default_state(self, record, autogenerate_password):
             req = record.req()
