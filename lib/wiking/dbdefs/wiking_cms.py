@@ -319,7 +319,7 @@ class CmsPages(CommonAccesRights, Base_CachingTable):
               sql.Column('owner', pytis.data.Integer(), references=sql.r.Users),
               sql.Column('read_role_id', pytis.data.Name(not_null=True), default='anyone',
                          references=sql.a(sql.r.Roles, onupdate='CASCADE')),
-              sql.Column('write_role_id', pytis.data.Name(not_null=True), default='content_admin',
+              sql.Column('write_role_id', pytis.data.Name(not_null=True), default='cms-content-admin',
                          references=sql.a(sql.r.Roles, onupdate='CASCADE', ondelete='SET DEFAULT')),
               )
     unique = (('identifier', 'site',),)
@@ -921,7 +921,7 @@ class CmsNewsletters(CommonAccesRights, Base_CachingTable):
         sql.Column('address', pytis.data.String(not_null=True)),
         sql.Column('read_role_id', pytis.data.Name(not_null=True), default='anyone',
                    references=sql.a(sql.r.Roles, onupdate='CASCADE')),
-        sql.Column('write_role_id', pytis.data.Name(not_null=True), default='content_admin',
+        sql.Column('write_role_id', pytis.data.Name(not_null=True), default='cms-content-admin',
                    references=sql.a(sql.r.Roles, onupdate='CASCADE', ondelete='SET DEFAULT')),
         sql.Column('bg_color', pytis.data.String(not_null=True)),
         sql.Column('text_color', pytis.data.String(not_null=True)),

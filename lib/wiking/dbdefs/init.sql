@@ -14,25 +14,25 @@ insert into roles (role_id, system, auto) values ('authenticated', 't', 't');
 insert into roles (role_id, system, auto) values ('owner', 't', 't');
 insert into roles (role_id, system, auto) values ('user', 't', 't');
 insert into roles (role_id, system, auto) values ('registered', 't', 't');
-insert into roles (role_id, system, auto) values ('user_admin', 't', 'f');
-insert into roles (role_id, system, auto) values ('crypto_admin', 't', 'f');
-insert into roles (role_id, system, auto) values ('content_admin', 't', 'f');
-insert into roles (role_id, system, auto) values ('settings_admin', 't', 'f');
-insert into roles (role_id, system, auto) values ('mail_admin', 't', 'f');
-insert into roles (role_id, system, auto) values ('style_admin', 't', 'f');
-insert into roles (role_id, system, auto) values ('admin', 't', 'f');
+insert into roles (role_id, system, auto) values ('cms-user-admin', 't', 'f');
+insert into roles (role_id, system, auto) values ('cms-crypto-admin', 't', 'f');
+insert into roles (role_id, system, auto) values ('cms-content-admin', 't', 'f');
+insert into roles (role_id, system, auto) values ('cms-settings-admin', 't', 'f');
+insert into roles (role_id, system, auto) values ('cms-mail-admin', 't', 'f');
+insert into roles (role_id, system, auto) values ('cms-style-admin', 't', 'f');
+insert into roles (role_id, system, auto) values ('cms-admin', 't', 'f');
 
-insert into role_sets (role_id, member_role_id) values ('admin', 'user_admin');
-insert into role_sets (role_id, member_role_id) values ('admin', 'crypto_admin');
-insert into role_sets (role_id, member_role_id) values ('admin', 'content_admin');
-insert into role_sets (role_id, member_role_id) values ('admin', 'settings_admin');
-insert into role_sets (role_id, member_role_id) values ('admin', 'mail_admin');
-insert into role_sets (role_id, member_role_id) values ('admin', 'style_admin');
+insert into role_sets (role_id, member_role_id) values ('cms-admin', 'cms-user-admin');
+insert into role_sets (role_id, member_role_id) values ('cms-admin', 'cms-crypto-admin');
+insert into role_sets (role_id, member_role_id) values ('cms-admin', 'cms-content-admin');
+insert into role_sets (role_id, member_role_id) values ('cms-admin', 'cms-settings-admin');
+insert into role_sets (role_id, member_role_id) values ('cms-admin', 'cms-mail-admin');
+insert into role_sets (role_id, member_role_id) values ('cms-admin', 'cms-style-admin');
 
 insert into users (login, password, firstname, surname, nickname, user_, email, state, last_password_change)
 values ('admin', 'wiking', 'Wiking', 'Admin', 'Admin', 'Admin', '-', 'enabled', '2012-01-01 00:00');
 
-insert into role_members (role_id, uid) values ('admin', (select uid from users where login='admin'));
+insert into role_members (role_id, uid) values ('cms-admin', (select uid from users where login='admin'));
 
 insert into cms_themes ("name", foreground, background, border, heading_fg, heading_bg, heading_line,
     frame_fg, frame_bg, frame_border, link, link_visited, link_hover, meta_fg, meta_bg, help,

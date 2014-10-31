@@ -240,25 +240,25 @@ class Roles(wiking.Roles):
     This is a special purpose role, you can't assign users to this role explicitly.
     """
     # Translators: Name of a predefined user group.
-    USER_ADMIN = Role('user_admin', _("User administrator"))
+    USER_ADMIN = Role('cms-user-admin', _("User administrator"))
     """User administrator."""
     # Translators: Name of a predefined user group.
-    CRYPTO_ADMIN = Role('crypto_admin', _("Crypto administrator"))
+    CRYPTO_ADMIN = Role('cms-crypto-admin', _("Crypto administrator"))
     """Crypto stuff administrator."""
     # Translators: Name of a predefined user group.
-    CONTENT_ADMIN = Role('content_admin', _("Content administrator"))
+    CONTENT_ADMIN = Role('cms-content-admin', _("Content administrator"))
     """Content administrator."""
     # Translators: Name of a predefined user group.
-    SETTINGS_ADMIN = Role('settings_admin', _("Settings administrator"))
+    SETTINGS_ADMIN = Role('cms-settings-admin', _("Settings administrator"))
     """Settings administrator."""
     # Translators: Name of a predefined user group.
-    MAIL_ADMIN = Role('mail_admin', _("Mail administrator"))
+    MAIL_ADMIN = Role('cms-mail-admin', _("Mail administrator"))
     """Bulk mailing user and administrator."""
     # Translators: Name of a predefined user group.
-    STYLE_ADMIN = Role('style_admin', _("Style administrator"))
+    STYLE_ADMIN = Role('cms-style-admin', _("Style administrator"))
     """Administrator of stylesheets, color themes and other web design related settings."""
     # Translators: Name of a predefined user group.
-    ADMIN = Role('admin', _("Administrator"))
+    ADMIN = Role('cms-admin', _("Administrator"))
     """Administrator containing all administration roles.
     This is a container role, including all the C{*_ADMIN} roles defined here.
     Applications may include their own administration roles into this role by
