@@ -1717,7 +1717,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                 record['title'] = pd.Value(record.type('title'),
                                            req.localize(mod.title(), record['lang'].value()))
             else:
-                raise wiking.DBError(_("Can't publish untitled page."))
+                raise wiking.DBException(_("Can't publish untitled page."))
 
     def _insert_transaction(self, req, record):
         return self._transaction()
