@@ -39,54 +39,75 @@ class WsgiRequest(wiking.Request):
             object callable, as per WSGI spec (PEP 333)
 
         """
+        # It is important to avoid possible exceptions (such as UnicodeDecodeError)
+        # here as they would escape Wiking's exception handling.  Thus further
+        # sensitive processing should be done later on demand when instance methods
+        # are called.
         self._environ = environ
         self._start_response = start_response
+        self._uri = None
+        self._params = {}
+        self._raw_params = cgi.FieldStorage(fp=environ['wsgi.input'], environ=environ)
+        self._unset_params = []
         self._response_headers_storage = []
         self._response_headers = wsgiref.headers.Headers(self._response_headers_storage)
-        self._params = self._init_params(encoding)
         self._response_started = False
-        self._uri = unicode(environ.get('SCRIPT_NAME', '') + environ['PATH_INFO'], encoding)
         super(WsgiRequest, self).__init__(encoding=encoding)
-        # if not self.uri().startswith('/_'):
-        #    wiking.debug("============== %s ==============" % self.uri())
-        #    for key, val in sorted(environ.items()):
-        #        wiking.debug(key, val)
-
-    def _init_params(self, encoding):
-        def init_value(value):
-            if isinstance(value, (tuple, list)):
-                return tuple([init_value(v) for v in value])
-            elif value.filename == '' and value.value == '':
-                # Empty file upload fields give this strange combination...
-                return None
-            elif value.filename:
-                return wiking.FileUpload(value, encoding)
-            else:
-                return unicode(value.value, encoding)
-        fields = cgi.FieldStorage(fp=self._environ['wsgi.input'],
-                                  environ=self._environ)
-        return dict([(k, init_value(fields[k])) for k in fields])
 
     def uri(self):
+        if self._uri is None:
+            # Not done in constructor (see the constructor comment).
+            raw_uri = self._environ.get('SCRIPT_NAME', '') + self._environ['PATH_INFO']
+            self._uri = unicode(raw_uri, self._encoding)
         return self._uri
 
     def unparsed_uri(self):
         return self._environ['REQUEST_URI']
         
     def param(self, name, default=None):
-        return self._params.get(name, default)
+        def param_value(value):
+            # Value processing not done in constructor (see the constructor comment).
+            if isinstance(value, (tuple, list)):
+                return tuple([param_value(v) for v in value])
+            elif value.filename == '' and value.value == '':
+                # Empty file upload fields give this strange combination...
+                return None
+            elif value.filename:
+                return wiking.FileUpload(value, self._encoding)
+            else:
+                return unicode(value.value, self._encoding)
+                # TODO: return BadRequest instead of InternalServerError? Is it always
+                # browser's fault if it doesn't encode the request properly?
+                #except UnicodeDecodeError:
+                #    raise wiking.BadRequest(_("Request parameters not encoded properly into %s.",
+                #                              self._encoding))
+        try:
+            return self._params[name]
+        except KeyError:
+            if name in self._unset_params:
+                return default
+            try:
+                raw_value = self._raw_params[name]
+            except KeyError:
+                return default
+            self._params[name] = value = param_value(raw_value)
+            return value
 
     def params(self):
-        return self._params.keys()
+        return tuple(k for k in self._raw_params.keys() if k not in self._unset_params)
 
     def has_param(self, name):
-        return name in self._params
+        return name in self._raw_params and name not in self._unset_params
 
     def set_param(self, name, value):
         if value is None:
             if name in self._params:
                 del self._params[name]
+            if name not in self._unset_params:
+                self._unset_params.append(name)
         else:
+            if name in self._unset_params:
+                self._unset_params.remove(name)
             self._params[name] = value
 
     def header(self, name, default=None):
