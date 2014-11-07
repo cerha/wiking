@@ -787,6 +787,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                 async_load=self._ASYNC_LOAD,
                 immediate_filters=wiking.cfg.immediate_filters,
                 actions=(), # Display no actions by default, rather than just spec actions.
+                cell_editable = lambda *args: self._cell_editable(req, *args)
             )
             kwargs = dict(default_kwargs, **kwargs)
         layout = kwargs.get('layout')
@@ -834,6 +835,10 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                 method = self._print_uri_provider
             return method(req, uri, record, target)
         return uri_provider
+
+    def _cell_editable(self, req, record, cid):
+        """Retrun True it table cell of given column id in given record is editable inline."""
+        return False
 
     def _layout_instance(self, layout):
         if layout is None:
@@ -1764,8 +1769,11 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         if record is not None:
             raise Redirect(self._current_base_uri(req, record), action='list',
                            search=record[self._key].export(), form_name=self.name())
+        # Here we need to get dirty accessing pytis forms's internal parameters to be
+        # able to detect form ajax requests because we don't want to rediredt these requests
+        # through _binding_parent_redirect() below.
         async_load = self._ASYNC_LOAD and req.param('_pytis_async_load_request') is not None
-        if not async_load:
+        if not async_load and req.param('_pytis_form_update_request') is None:
             # Don't display the listing alone, but display the original main form,
             # when this list is accessed through bindings as a related form.
             if req.param('form_name') == self.name():
