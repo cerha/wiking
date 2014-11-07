@@ -897,11 +897,14 @@ class Users(UserManagementModule, CachingPytisModule):
 
     def _layout(self, req, action, record=None):
         def cms_text(cms_text):
-            return wiking.module.Texts.parsed_text(req, cms_text, lang=req.preferred_language())
+            if cms_text.text():
+                return wiking.module.Texts.parsed_text(req, cms_text, lang=req.preferred_language())
+            else:
+                return None
         if action not in self._LAYOUT: # Allow overriding this layout in derived classes.
             if action == 'view':
-                regconfirm = cms_text(wiking.cms.texts.regconfirm)
                 account_state = ['state']
+                regconfirm = cms_text(wiking.cms.texts.regconfirm)
                 if regconfirm:
                     if record['confirm'].value():
                         account_state.append(cms_text(wiking.cms.texts.regconfirm_confirmed))
