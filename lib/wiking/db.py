@@ -971,7 +971,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         return None
 
     def _filter_sets(self, req):
-        """DEPRECATED: Use query_fields ins specification instead."""
+        """DEPRECATED: Use query_fields in specification instead."""
         return None
 
     def _action_args(self, req):
