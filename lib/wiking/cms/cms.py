@@ -3506,6 +3506,12 @@ class Attachments(ContentManagementModule):
         else:
             return False
 
+    def _cell_editable(self, req, record, cid):
+        if cid in ('title', 'in_gallery', 'listed'):
+            return self._authorized(req, 'update', record=record)
+        else:
+            return False
+
     def _default_action(self, req, record=None):
         if record is None:
             return 'list'
