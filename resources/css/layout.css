@@ -7,6 +7,10 @@ body {
     font-size: 0.8em;
     margin: 2pt 6pt;
 }
+button, input, select, textarea {
+    font-size: 1em;
+}
+
 p {
     margin: 0.4em 0;
 }
