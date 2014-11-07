@@ -1,5 +1,12 @@
 /* Override default Pytis form colors by current Wiking color theme colors. */
 
+.pytis-form.edit-form .errors,
+.pytis-form.query-fields-form .errors {
+    color: $color.error-fg !important;
+    background-color: $color.error-bg !important;
+    border-color: $color.error-border !important;
+}
+
 .pytis-form .group, .pytis-form div.submit, .pytis-form .paging-controls {
     background-color: $color.frame-bg !important;
     border-color: $color.frame-border !important;
