@@ -7,7 +7,8 @@ body {
     font-size: 0.8em;
     margin: 2pt 6pt;
 }
-button, input, select, textarea {
+button, input, select {
+    /* Avoid dual application of 0.8em defined above in some elements */
     font-size: 1em;
 }
 
