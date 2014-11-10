@@ -1630,13 +1630,14 @@ class Registration(Module, ActionHandler):
 
     def action_remind(self, req):
         title = _("Password reminder")
-        query = req.param('query')
-        if query:
-            users_module = wiking.module.Users
-            if query.find('@') == -1:
-                user = users_module.user(req, query)
+        uid, query = req.param('uid'), req.param('query')
+        if uid or query:
+            if uid:
+                user = wiking.module.Users.user(req, uid=uid)
+            elif query.find('@') == -1:
+                user = wiking.module.Users.user(req, login=query)
             else:
-                users = users_module.find_users(req, query)
+                users = wiking.module.Users.find_users(req, query)
                 if not users:
                     user = None
                 elif len(users) == 1:
@@ -1645,13 +1646,13 @@ class Registration(Module, ActionHandler):
                     content = (lcg.p(_("Multiple user accounts found for given email address.")),
                                lcg.p(_("Please, select the account for which you want to remind:")),
                                lcg.ul([lcg.link(req.make_uri(req.uri(), action='remind',
-                                                             query=u.login()), u.name())
+                                                             uid=u.uid()), u.name())
                                        for u in users]))
                     return Document(title, content)
             if user:
                 if wiking.cms.cfg.password_storage == 'md5':
                     try:
-                        password = users_module.reset_password(user)
+                        password = wiking.module.Users.reset_password(user)
                     except pd.DBException as e:
                         req.message(unicode(e), type=req.ERROR)
                         return Document(title, self.ReminderForm())
