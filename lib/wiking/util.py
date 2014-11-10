@@ -1284,10 +1284,10 @@ class LoginDialog(lcg.Content):
                   if param not in ('command', 'login', 'password', '__log_in')]
         content = (
             g.label((self._login_is_email and _("Your e-mail address") or _("Login name")) + ':',
-                    id='login') + g.br(),
+                    'login') + g.br(),
             g.field(name='login', value=login, id='login', size=18, maxlength=64),
             g.br(),
-            g.label(_("Password") + ':', id='password') + g.br(),
+            g.label(_("Password") + ':', 'password') + g.br(),
             g.field(name='password', id='password', password=True, size=18, maxlength=32),
             g.br(),
             g.hidden(name='__log_in', value='1'),
@@ -1330,7 +1330,7 @@ class DecryptionDialog(lcg.Content):
         # Translators: Web form label and message
         message = _("Decryption password for '%s'", self._decryption_name)
         content = (
-            g.label(message + ':', id='__decryption_password') + g.br(),
+            g.label(message + ':', '__decryption_password') + g.br(),
             g.field(name='__decryption_password', id='__decryption_password', password=True,
                     size=18, maxlength=32),
             g.br(),

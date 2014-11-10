@@ -674,7 +674,7 @@ class Search(Module, ActionHandler):
             self._uri = req.uri()
 
         def _contents(self, generator):
-            return (generator.label(self._SEARCH_FIELD_LABEL, id='input'), ' ',
+            return (generator.label(self._SEARCH_FIELD_LABEL, 'input'), ' ',
                     generator.field(name='input', id='input', tabindex=0, size=20),
                     generator.br(),
                     generator.submit(self._SEARCH_BUTTON_LABEL, cls='submit'),)

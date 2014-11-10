@@ -1564,7 +1564,7 @@ class Registration(Module, ActionHandler):
             g = context.generator()
             req = context.req()
             controls = (
-                g.label(_("Enter your login name or e-mail address") + ':', id='query'),
+                g.label(_("Enter your login name or e-mail address") + ':', 'query'),
                 g.field(name='query', value=req.param('query'), id='query', tabindex=0, size=32),
                 # Translators: Button name. Computer terminology. Use an appropriate term common
                 # for submitting forms in a computer application.
@@ -1706,12 +1706,12 @@ class ActivationForm(lcg.Content):
         g = context.generator()
         req = context.req()
         uri = req.server_uri() + req.module_uri('Registration')
-        id = 'confirmation-code-field'
+        field_id = 'confirmation-code-field'
         result = g.form((g.hidden('action', 'confirm'),
                          # req.user() is None here (still in authentication).
                          g.hidden('uid', self._uid),
-                         g.label(_("Enter the activation code:"), id=id),
-                         g.field(name='regcode', value=req.param('regcode'), id=id),
+                         g.label(_("Enter the activation code:"), field_id),
+                         g.field(name='regcode', value=req.param('regcode'), id=field_id),
                          g.submit(_("Submit"))),
                         method='POST', action=uri, cls='activation-form')
         if self._allow_bypass:
