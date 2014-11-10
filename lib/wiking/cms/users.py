@@ -1568,8 +1568,10 @@ class Registration(Module, ActionHandler):
                 g.field(name='query', value=req.param('query'), id='query', tabindex=0, size=32),
                 # Translators: Button name. Computer terminology. Use an appropriate term common
                 # for submitting forms in a computer application.
-                g.submit(_("Submit"), cls='submit'),)
-            return g.form(controls, method='POST', cls='password-reminder-form')
+                g.submit(_("Submit"), cls='submit'),
+                g.hidden('action', 'remind'),
+            )
+            return g.form(controls, method='POST', action=req.uri(), cls='password-reminder-form')
 
     def _authorized(self, req, action, **kwargs):
         if action in ('view', 'insert', 'remind', 'confirm'):
