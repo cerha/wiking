@@ -787,7 +787,8 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                 async_load=self._ASYNC_LOAD,
                 immediate_filters=wiking.cfg.immediate_filters,
                 actions=(), # Display no actions by default, rather than just spec actions.
-                cell_editable = lambda *args: self._cell_editable(req, *args)
+                cell_editable=lambda *args: self._cell_editable(req, *args),
+                on_update_row=lambda record: self._do_update(req, record)
             )
             kwargs = dict(default_kwargs, **kwargs)
         layout = kwargs.get('layout')
@@ -1614,6 +1615,19 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                     record[key] = result[key]
             self._update_linking_tables(req, record, transaction)
 
+    def _do_update(self, req, record):
+        # Returns None on success and tuple (field_id, error_message) on error.
+        # This method is not intended to be overriden in application code.
+        # Override the _update() method if needed.
+        try:
+            transaction = self._update_transaction(req, record)
+            self._in_transaction(transaction, self._update, req, record, transaction)
+            record.reload()
+        except pd.DBException as e:
+            return self._analyze_exception(e)
+        else:
+            return None
+
     def _update(self, req, record, transaction):
         """Update the record data in the database.
 
@@ -2027,13 +2041,9 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
             # need to save the instance that passed validation.  Maybe that
             # creation of another instance in _form() is no longer relevant?
             record = form.row()
-            try:
-                transaction = self._update_transaction(req, record)
-                self._in_transaction(transaction, self._update, req, record, transaction)
-                record.reload()
-            except pd.DBException as e:
-                field_id, error = self._analyze_exception(e)
-                form.set_error(field_id, error)
+            error = self._do_update(req, record)
+            if error:
+                form.set_error(*error)
             else:
                 return self._redirect_after_update(req, record)
         content = self._update_form_content(req, form, record)
