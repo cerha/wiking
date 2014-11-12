@@ -20,10 +20,16 @@ div.discussion-list .pytis-form.list-view div.list-item .actions {
     margin: 0;
     margin-top: 0.2em;
 }
-div.discussion-list .pytis-form.list-view div.list-item .actions button,
+div.discussion-list .pytis-form.list-view div.list-item .actions button {
+    padding: 2px;
+}
+div.discussion-list .pytis-form.list-view div.list-item .actions button::-moz-focus-inner { 
+    border: 0;
+    padding: 0px;
+}
 div.discussion-list .pytis-form.list-view div.list-item .actions button span {
-    line-height: 1em;
-    padding: 0;
+    line-height: 1.1em;
+    padding: 1px;
 }
 
 div.discussion-list div.list-item div.attachment-list {

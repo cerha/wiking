@@ -69,7 +69,8 @@ var Discussion = Class.create({
 	        actions = new Element('div', {'class': 'actions'});
 	        item.insert(actions);
 	    }
-            var button = new Element('button', {'class': 'reply'}).update(wiking._("Reply"));
+            var button = new Element('button', {'class': 'reply'}).update(
+		new Element('span').update(wiking._("Reply")));
 	    button.observe('click', function (event) { 
 	        this.on_reply(item, comment_id, quoted);
 	    }.bind(this));
