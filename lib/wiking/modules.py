@@ -323,10 +323,6 @@ class Resources(Module, RequestHandler):
         """
         return wiking.cfg.theme, self._DEFAULT_THEME_MTIME
 
-    def _stylesheet(self, filename):
-        """Deprecated: Override '_handle_resource()' instead."""
-        return None
-
     def _substitute(self, stylesheet, theme):
         def subst(match):
             name, key = match.groups()
@@ -337,10 +333,6 @@ class Resources(Module, RequestHandler):
         return self._MATCHER.sub(subst, stylesheet)
 
     def _handle_resource(self, req, filename):
-        if filename.endswith('.css'):
-            content = self._stylesheet(filename)
-            if content is not None:
-                return wiking.Response(content, content_type='text/css')
         subdir = filename.split('/', 1)[0]
         if subdir in ('images', 'css', 'scripts', 'media', 'flash'):
             # This is just a temporary hack to allow backward compatibility
@@ -364,6 +356,7 @@ class Resources(Module, RequestHandler):
         filename = os.path.join(*req.unresolved_path)
         response = self._handle_resource(req, filename)
         if response.status_code() == httplib.OK and filename.endswith('.css'):
+            # Substitute the current color theme in stylesheets.
             theme, theme_mtime = self._theme(req)
             stylesheet_mtime = response.last_modified()
             if stylesheet_mtime and theme_mtime:
@@ -372,7 +365,6 @@ class Resources(Module, RequestHandler):
                     raise wiking.NotModified()
             else:
                 mtime = None
-            # Substitute the current color theme in stylesheets.
             data = response.data()
             if isinstance(data, (list, types.GeneratorType)):
                 data = ''.join(data)
