@@ -1810,7 +1810,8 @@ class InputForm(pytis.web.EditForm):
 # Misc functions
 # ============================================================================
 
-def serve_file(req, path, content_type=None, filename=None, lock=False, headers=()):
+def serve_file(req, path, content_type=None, filename=None, lock=False, headers=(),
+               allow_redirect=True):
     """Return 'wiking.Response' instance to send the contents of a given file to the client.
 
     Arguments:
@@ -1824,12 +1825,18 @@ def serve_file(req, path, content_type=None, filename=None, lock=False, headers=
       lock -- Iff True, shared lock will be aquired on the file while it is served.
       headers -- HTTP headers to pass to 'wiking.Response' as a sequence of pairs
         NAME, VALUE (strings).
+      allow_redirect -- Allow internal server redirect for file download
+        acceleration (file download is actually handled by the frontend server
+        and the application process is not blocked by the download).  When the
+        redirect is performed, the caller will not be able to further process
+        the response.  So if the caller needs to process the returned response,
+        redirection must be forbiden using this argument.
 
     'wiking.NotFound' exception is raised if the file does not exist.
 
     Important note: The file size is read in advance to determine the Content-Lenght header.
     If the file is changed before it gets sent, the result may be incorrect.
-    
+
     """
     try:
         info = os.stat(path)
@@ -1839,6 +1846,17 @@ def serve_file(req, path, content_type=None, filename=None, lock=False, headers=
     if content_type is None:
         mime_type, encoding = mimetypes.guess_type(path)
         content_type = mime_type or 'application/octet-stream'
+    if allow_redirect:
+        for prefix in wiking.cfg.xsendfile_paths:
+            if path.startswith(prefix):
+                return wiking.Response('', content_type=content_type, filename=filename,
+                                       headers=headers + (('X-Sendfile', path),))
+        for prefix, base_uri in wiking.cfg.xaccel_paths:
+            if path.startswith(prefix):
+                rel_uri = '/'.join(path[len(prefix.rstrip(os.sep)):].split(os.sep))
+                uri = base_uri.rstrip('/') + rel_uri
+                return wiking.Response('', content_type=content_type, filename=filename,
+                                       headers=headers + (('X-Accel', uri),))
     def generator():
         f = file(path)
         if lock:

@@ -344,7 +344,8 @@ class Resources(Module, RequestHandler):
             subdir = None
         resource = self._provider.resource(filename)
         if resource and resource.src_file() and (subdir is None or resource.SUBDIR == subdir):
-            return wiking.serve_file(req, resource.src_file())
+            return wiking.serve_file(req, resource.src_file(),
+                                     allow_redirect=not filename.endswith('.css'))
         else:
             raise NotFound()
 

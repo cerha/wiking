@@ -510,3 +510,25 @@ class Configuration(pc):
     class _Option_print_spec_dir(pc.StringOption):
         _DESCR = "Directory of output specifications."
         _DEFAULT = './output'
+
+    class _Option_xsendfile_paths(pc.Option):
+        _DESCR = "Sequence of filesystem directories enabled for X-SendFile downloads."
+        _DOC = ("Each item is a string representing absolute path to a directory "
+                "where server assisted file downloads using X-SendFile may be used.  "
+                "The paths configured here must be also set up in server's "
+                "configuration and the server must support this feature.  "
+                "X-SendFile is supported by Apache with mod_xsendfile and "
+                "lighttpd.  See 'xaccel_paths' for alternative feature supported "
+                "by the Nginx server.")
+        _DEFAULT = ()
+
+    class _Option_xaccel_paths(pc.Option):
+        _DESCR = "Mapping of filesystem directories to redirection URLs for X-Accel downloads."
+        _DOC = ("Each item of the sequence is a pair of strings, where the "
+                "first string is a directory path and the second string is "
+                "the corresponding URI.  These pairs must match the locations "
+                "configured for internal redirection in server's configuration. "
+                "X-Accel redirection is supported by the Nginx server.  See "
+                "'xsendfile_path' for alternative feature supported "
+                "by Apache and lighttpd servers.")
+        _DEFAULT = ()
