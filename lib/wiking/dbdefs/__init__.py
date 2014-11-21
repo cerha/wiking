@@ -1,6 +1,6 @@
 # -*- coding: utf-8
 
-# Copyright (C) 2013 Brailcom, o.p.s.
+# Copyright (C) 2013, 2014 Brailcom, o.p.s.
 #
 # COPYRIGHT NOTICE
 #
@@ -21,4 +21,3 @@ import sqlalchemy
 
 from wiking_db import *
 from wiking_cms import *
-from wiking_cms_u import *

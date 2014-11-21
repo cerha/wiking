@@ -239,6 +239,24 @@ class CmsFRoleMember(sql.SQLPlFunction):
     result_type = pytis.data.Boolean()
     stability = 'stable'
 
+class RoleSetsCycleCheckVisit(sql.SQLPlFunction):
+    name = 'role_sets_cycle_check_visit'
+    arguments = (sql.Argument('role_id_', pytis.data.String()),
+                 sql.Argument('visited_array', pytis.data.Array(inner_type=pytis.data.String())),)
+    result_type = pytis.data.Boolean()
+
+class RoleSetsCycleCheck(sql.SQLPlFunction):
+    name = 'role_sets_cycle_check'
+    arguments = ()
+    result_type = pytis.data.Boolean()
+
+class RoleSetsTriggerAfter(sql.SQLPlFunction, sql.SQLTrigger):
+    name = 'role_sets_trigger_after'
+    arguments = ()
+    table = RoleSets
+    position = 'after'
+    events = ('insert', 'update', 'delete',)
+
 class CmsSessionLog(CommonAccesRights, sql.SQLTable):
     name = 'cms_session_log'
     fields = (sql.PrimaryColumn('log_id', pytis.data.Serial(not_null=True)),
@@ -319,7 +337,8 @@ class CmsPages(CommonAccesRights, Base_CachingTable):
               sql.Column('owner', pytis.data.Integer(), references=sql.r.Users),
               sql.Column('read_role_id', pytis.data.Name(not_null=True), default='anyone',
                          references=sql.a(sql.r.Roles, onupdate='CASCADE')),
-              sql.Column('write_role_id', pytis.data.Name(not_null=True), default='cms-content-admin',
+              sql.Column('write_role_id', pytis.data.Name(not_null=True),
+                         default='cms-content-admin',
                          references=sql.a(sql.r.Roles, onupdate='CASCADE', ondelete='SET DEFAULT')),
               )
     unique = (('identifier', 'site',),)
