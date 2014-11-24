@@ -1837,6 +1837,12 @@ def serve_file(req, path, content_type=None, filename=None, lock=False, headers=
     Important note: The file size is read in advance to determine the Content-Lenght header.
     If the file is changed before it gets sent, the result may be incorrect.
 
+    Internal rediredtion (as described in 'allow_redirect') is only performed,
+    when the server is actually configured for it on given file path.  If the
+    file path doesn't match one of the directories configured in
+    'xsendfile_paths' or 'xaccel_paths' the file will be served using the
+    native python implementation.
+
     """
     try:
         info = os.stat(path)
