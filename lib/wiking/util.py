@@ -1843,6 +1843,13 @@ def serve_file(req, path, content_type=None, filename=None, lock=False, headers=
     'xsendfile_paths' or 'xaccel_paths' the file will be served using the
     native python implementation.
 
+    Byte range requests are supported by the native implementation, so if the
+    request contains the 'Range' header, the response will contain only the
+    requested portion of the file (and the HTTML status code will be 206
+    instead of 200) according to HTTP protocol specification.  If the 'Range'
+    header format can not be read, it will be ignored (the whole file will be
+    served).
+
     """
     try:
         info = os.stat(path)
@@ -1863,23 +1870,49 @@ def serve_file(req, path, content_type=None, filename=None, lock=False, headers=
                 uri = base_uri.rstrip('/') + rel_uri
                 return wiking.Response('', content_type=content_type, filename=filename,
                                        headers=headers + (('X-Accel', uri),))
-    def generator():
+    offset = limit = None
+    status_code = httplib.OK
+    content_length = info.st_size
+    range_request = req.header('Range')
+    if range_request and range_request.strip().startswith('bytes='):
+        bounds = range_request[6:].strip().split('-')
+        try:
+            range_start, range_end = [int(x.strip()) for x in bounds]
+        except (ValueError, TypeError):
+            pass
+        else:
+            if range_start >= 0 and range_end >= range_start:
+                offset = range_start
+                limit = min(range_end + 1, info.st_size) - range_start
+                status_code = httplib.PARTIAL_CONTENT
+                content_length = limit
+                headers += ('Content-Range', 'bytes %s-%d/%d' %
+                            (range_start, min(range_end, info.st_size - 1), info.st_size)),
+    def generator(offset=None, limit=None):
         f = file(path)
         if lock:
             import fcntl
             fcntl.lockf(f, fcntl.LOCK_SH)
         try:
+            if offset:
+                f.seek(offset)
             while True:
-                # Read the file in 0.5MB chunks.
-                data = f.read(524288)
+                # Read the file in max 0.5MB chunks.
+                read_bytes = 524288
+                if limit is not None:
+                    read_bytes = min(read_bytes, limit)
+                data = f.read(read_bytes)
                 if not data:
                     break
+                if limit is not None:
+                    limit -= len(data)
                 yield data
         finally:
             if lock:
                 fcntl.lockf(f, fcntl.LOCK_UN)
             f.close()
-    return wiking.Response(generator(), content_type=content_type, content_length=info.st_size,
+    return wiking.Response(generator(offset, limit), status_code=status_code,
+                           content_type=content_type, content_length=content_length,
                            last_modified=datetime.datetime.utcfromtimestamp(info.st_mtime),
                            filename=filename, headers=headers)
 
