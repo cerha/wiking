@@ -600,26 +600,35 @@ class Application(wiking.Module):
                 return [escape(t) for t in text]
             else:
                 return re.sub(r'[^\x01-\x7F]', '?', text)
+        basic_traceback = ''.join(traceback.format_exception(*einfo))
         try:
-            text = ("\n".join(["%s: %s" % pair for pair in req_info]) + "\n\n" +
-                    cgitb.text(einfo))
-        except UnicodeDecodeError:
-            text = ("\n".join(["%s: %s" % (label, escape(value),) for label, value in req_info]) +
-                    "\n\n" + escape(cgitb.text(einfo)))
+            text_traceback = cgitb.text(einfo)
+        except:
+            text_traceback = basic_traceback
         try:
-            html = ("<html><pre>" +
-                    "".join([format_info(label, value) for label, value in req_info]) + "\n\n" +
-                    "".join(traceback.format_exception(*einfo)) +
-                    "</pre>" +
-                    cgitb.html(einfo) + "</html>")
+            html_traceback = cgitb.html(einfo)
+        except:
+            html_traceback = '<pre>' + text_traceback + '</pre>'
+        try:
+            text = "\n".join(["%s: %s" % pair for pair in req_info])
         except UnicodeDecodeError:
-            html = ("<html><pre>" +
-                    "".join([format_info(label, escape(value)) for label, value in req_info]) +
-                    "\n\n" +
-                    "".join(escape(traceback.format_exception(*einfo))) +
-                    "</pre>" +
-                    escape(cgitb.html(einfo))
-                    + "</html>")
+            text = "\n".join(["%s: %s" % (label, escape(value),) for label, value in req_info])
+        try:
+            text += "\n\n" + text_traceback
+        except UnicodeDecodeError:
+            text += "\n\n" + escape(text_traceback)
+        try:
+            html = "<html><pre>%s\n\n%s</pre>%s</html>" % (
+                "".join([format_info(label, value) for label, value in req_info]),
+                basic_traceback,
+                html_traceback,
+            )
+        except UnicodeDecodeError:
+            html = "<html><pre>%s\n\n%s</pre>%s</html>" % (
+                "".join([format_info(label, escape(value)) for label, value in req_info]) +
+                escape(basic_traceback),
+                escape(html_traceback),
+            )
         subject = 'Wiking Error: ' + wiking.InternalServerError(einfo).buginfo()
         err = wiking.send_mail(address, subject, text, html=html,
                         headers=(('Reply-To', address),
