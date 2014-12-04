@@ -239,12 +239,6 @@ class CmsFRoleMember(sql.SQLPlFunction):
     result_type = pytis.data.Boolean()
     stability = 'stable'
 
-class RoleSetsCycleCheckVisit(sql.SQLPlFunction):
-    name = 'role_sets_cycle_check_visit'
-    arguments = (sql.Argument('role_id_', pytis.data.String()),
-                 sql.Argument('visited_array', pytis.data.Array(inner_type=pytis.data.String())),)
-    result_type = pytis.data.Boolean()
-
 class RoleSetsCycleCheck(sql.SQLFunction):
     name = 'role_sets_cycle_check'
     arguments = ()
