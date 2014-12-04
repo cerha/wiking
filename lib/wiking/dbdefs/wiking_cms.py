@@ -245,7 +245,7 @@ class RoleSetsCycleCheckVisit(sql.SQLPlFunction):
                  sql.Argument('visited_array', pytis.data.Array(inner_type=pytis.data.String())),)
     result_type = pytis.data.Boolean()
 
-class RoleSetsCycleCheck(sql.SQLPlFunction):
+class RoleSetsCycleCheck(sql.SQLFunction):
     name = 'role_sets_cycle_check'
     arguments = ()
     result_type = pytis.data.Boolean()
