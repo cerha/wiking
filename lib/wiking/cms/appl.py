@@ -378,13 +378,12 @@ class Application(CookieAuthentication, wiking.Application):
 
     def bottom_bar_right_content(self, req):
         if wiking.cms.cfg.allow_login_panel:
-            return self._accessibility_statement_link(req)
-        elif req.user() is None:
-            return self.WMILink()
-        elif wiking.module.WikingManagementInterface.authorized(req):
-            return (wiking.LoginCtrl(inline=True), ' ', self.WMILink())
+            content = self._accessibility_statement_link(req)
         else:
-            return wiking.LoginCtrl(inline=True)
+            content = wiking.LoginCtrl(inline=True)
+            if wiking.module.WikingManagementInterface.authorized(req):
+                content = (content, ' ', self.WMILink())
+        return content
 
     def _text_content(self, req, text):
         # Default to English to avoid raising NotAcceptable where it is not handled.
