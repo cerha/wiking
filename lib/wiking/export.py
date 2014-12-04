@@ -24,12 +24,13 @@ class MinimalExporter(lcg.HtmlExporter):
     _BODY_PARTS = ('main', 'bottom_bar')
 
     def _head(self, context):
+        g = context.generator()
         try:
             uri = context.req().module_uri('Resources')
         except:
             uri = '_resources'
         return super(MinimalExporter, self)._head(context) + \
-            ['<link rel="stylesheet" type="text/css" href="/%s/%s">' % (uri, style)
+            [g.ling(rel='stylesheet', type='text/css', href="/%s/%s" % (uri, style))
              for style in ('default.css', 'layout.css')]
     
     def _meta(self, context):
@@ -37,7 +38,8 @@ class MinimalExporter(lcg.HtmlExporter):
         return (('generator', 'Wiking %s, LCG %s, Pytis %s' %
                  (wiking.__version__, lcg.__version__, pytis.__version__)),)
     def _main(self, context):
-        return (context.generator().h(context.node().title(), 1),
+        g = context.generator()
+        return (g.h(context.node().title(), 1),
                 super(MinimalExporter, self)._content(context))
         
     def _bottom_bar(self, context):
@@ -208,13 +210,15 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         return uri
     
     def _head(self, context):
+        g = self._generator
         tags = super(Exporter, self)._head(context) + \
-            [('<link rel="alternate" type="application/rss+xml" '
-              'title="' + p.title() + '" href="' + p.channel() + '"/>')
+            [g.link(rel='alternate', type='application/rss+xml', title=p.title(), href=p.channel())
              for p in context.node().panels() if p.channel() is not None]
+        if wiking.cfg.site_icon:
+            tags.append(g.link(rel='shortcut icon', href='/favicon.ico'))
         req = context.req()
         server_uri = req.server_uri()
-        return tags + ['<meta property="og:%s" content="%s"/>' % (name, val) for name, val in (
+        return tags + [g.meta(property='og:' + name, content=val) for name, val in (
             ('title', context.node().page_heading()),
             ('type', 'article'),
             ('url', server_uri + req.uri()),
