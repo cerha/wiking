@@ -426,6 +426,15 @@ class Configuration(pc):
                 "correctly and images of all used languages are available.")
         _DEFAULT = None
 
+    class _Option_default_timezone(pc.Option):
+        _DESCR = "Default time zone"
+        _DOC = ("The time zone to use when obtaining client's time zone info fails. "
+                "The value must be a 'datetime.tzinfo' instance.  In most situations "
+                "'wiking.TZInfo' can be used.  See its docstring for usage and "
+                "limitations.  When None, times will be displayed in UTC when "
+                "client's time zone can not be determined.")
+        _DEFAULT = None
+
     class _Option_session_expiration(pc.NumericOption):
         _DESCR = "Session expiration"
         _DOC = ("A number of hours to keep the login session alive.  The session is automatically "

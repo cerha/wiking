@@ -259,42 +259,6 @@ class Request(ServerInterface):
             except KeyError:
                 return None
 
-    class TZInfo(datetime.tzinfo):
-        """Timezone given by numeric UTC offsets in minutes.
-
-        The results may be inaccurate because we need to assume what the DST
-        change times *most likely* are.  In most cases, however, DST lasts from
-        the last Sunday in March until the last Sunday in October in modern
-        timezones.  So using this class when this assumption doesn't apply is a
-        fault.
-
-        """
-
-        def __init__(self, summer_offset, winter_offset):
-            self._summer_offset = summer_offset
-            self._winter_offset = winter_offset
-        def _offset(self, dt):
-            d1 = datetime.datetime(dt.year, 4, 1)
-            dst_start = d1 - datetime.timedelta(days=d1.weekday() + 1)
-            d2 = datetime.datetime(dt.year, 11, 1)
-            dst_end = d2 - datetime.timedelta(days=d2.weekday() + 1)
-            if dst_start <= dt.replace(tzinfo=None) < dst_end:
-                return self._summer_offset
-            else:
-                return self._winter_offset
-        def utcoffset(self, dt):
-            return datetime.timedelta(minutes=self._offset(dt))
-        def tzname(self, dt):
-            offset = self._offset(dt)
-            sign = offset / abs(offset)
-            div, mod = divmod(abs(offset), 60)
-            if mod:
-                return "GMT %+d:%d" % (div * sign, mod)
-            else:
-                return "GMT %+d" % div * sign
-        def dst(self, dt):
-            return self.utcoffset(dt) - datetime.timedelta(minutes=self._winter_offset)
-
     _PANELS_COOKIE = 'wiking_show_panels'
     _MAXIMIZED_MODE_COOKIE = 'wiking_maximized_mode'
     _MESSAGES_COOKIE = 'wiking_messages'
@@ -872,9 +836,9 @@ class Request(ServerInterface):
             try:
                 summer_offset, winter_offset = [int(x) for x in urllib.unquote(offsets).split(';')]
             except (ValueError, TypeError, AttributeError):
-                timezone = None
+                timezone = wiking.cfg.default_timezone
             else:
-                timezone = self.TZInfo(summer_offset, winter_offset)
+                timezone = wiking.TZInfo(summer_offset, winter_offset)
             self._timezone = timezone
         return timezone
 

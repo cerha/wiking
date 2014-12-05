@@ -1772,6 +1772,61 @@ class Time(pytis.data.Time):
         return lcg.LocalizableTime(super(Time, self)._export(value, **kwargs))
 
 
+class TZInfo(datetime.tzinfo):
+    """Timezone given by numeric UTC offsets in minutes.
+
+    The results may be inaccurate because we need to assume what the DST
+    change times *most likely* are.  In most cases, however, DST lasts from
+    the last Sunday in March until the last Sunday in October in modern
+    timezones.  Using this class when this assumption doesn't apply is a
+    fault.
+
+    This class mainly exists to allow specification of the configuration option
+    'default_timezone'.
+    
+    # Example: Central Europe has 120 minutes UTC offset in summer and 60 in winter.
+    default_timezone = wiking.TZInfo(120, 60)
+
+    """
+
+    def __init__(self, summer_offset, winter_offset):
+        """Arguments:
+
+        summer_offset -- summer UTC offset in minutes
+        winter_offset -- winter UTC offset in minutes
+
+        Offsets are positive to the East of GMT and negative to the West.
+
+        """
+        self._summer_offset = summer_offset
+        self._winter_offset = winter_offset
+
+    def _offset(self, dt):
+        d1 = datetime.datetime(dt.year, 4, 1)
+        dst_start = d1 - datetime.timedelta(days=d1.weekday() + 1)
+        d2 = datetime.datetime(dt.year, 11, 1)
+        dst_end = d2 - datetime.timedelta(days=d2.weekday() + 1)
+        if dst_start <= dt.replace(tzinfo=None) < dst_end:
+            return self._summer_offset
+        else:
+            return self._winter_offset
+
+    def utcoffset(self, dt):
+        return datetime.timedelta(minutes=self._offset(dt))
+
+    def tzname(self, dt):
+        offset = self._offset(dt)
+        sign = offset / abs(offset)
+        div, mod = divmod(abs(offset), 60)
+        if mod:
+            return "GMT %+d:%d" % (div * sign, mod)
+        else:
+            return "GMT %+d" % div * sign
+
+    def dst(self, dt):
+        return self.utcoffset(dt) - datetime.timedelta(minutes=self._winter_offset)
+
+
 class InputForm(pytis.web.EditForm):
 
     def __init__(self, req, specification_kwargs, prefill=None, action=None,
