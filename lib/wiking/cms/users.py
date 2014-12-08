@@ -1834,6 +1834,8 @@ class SessionLog(UserManagementModule):
     _ASYNC_LOAD = True
 
     def log(self, req, time, session_id, uid, login):
+        if login is not None and len(login) > 64:
+            login = login[:61] + '...'
         row = self._data.make_row(session_id=session_id, uid=uid, login=login,
                                   success=session_id is not None, start_time=time,
                                   ip_address=req.header('X-Forwarded-For') or req.remote_host(),
