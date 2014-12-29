@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2006, 2007, 2008, 2009, 2012 Brailcom, o.p.s.
+# Copyright (C) 2006, 2007, 2008, 2009, 2012, 2014 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -74,11 +74,9 @@ class CMSConfiguration(pc):
         # Translators: Yes/no configuration label. Can new users register to this
         # website/application?
         _DESCR = _("Allow new user registration")
-        _DOC = _("If enabled, all visitors are allowed to create a user account.  If disabled, "
-                 "new user accounts must be created by administrator.  Note, that the newly "
-                 "created accounts are inactive (at least with the default implementation of the "
-                 "user management module), so the creation of the account doesn't give the user "
-                 "any actual privileges.")
+        # Mention dependence on autoapprove_new_users
+        _DOC = _("If enabled, all visitors are allowed to create a new user account.  If disabled, "
+                 "new user accounts must be created by administrator.")
         _DEFAULT = True
 
     class _Option_upload_limit(pc.NumericOption):
