@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-10-15 11:23+0200\n"
+"POT-Creation-Date: 2014-12-29 10:39+0100\n"
 "PO-Revision-Date: 2014-09-02 12:39+0200\n"
 "Last-Translator: Hynek Hanke <hanke@brailcom.org>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
@@ -19,26 +19,26 @@ msgstr ""
 
 #. Website idiom. This is followed by information on the underlying software
 #. tools.  Means: This website runs on [...this and that software...].
-#: ../lib/wiking/application.py:414
+#: ../lib/wiking/application.py:419
 msgid "Powered by"
 msgstr "Provozováno na"
 
-#: ../lib/wiking/application.py:432
+#: ../lib/wiking/application.py:437
 msgid "Accessibility Statement"
 msgstr "Prohlášení o zpřístupnění"
 
 #. Heading of webpage left side hierarchical navigation
 #. menu containing a list of links to pages in this web section
-#: ../lib/wiking/application.py:445
+#: ../lib/wiking/application.py:450
 msgid "In this section:"
 msgstr "V této sekci:"
 
-#: ../lib/wiking/application.py:454 ../lib/wiking/export.py:106
-#: ../lib/wiking/export.py:246
+#: ../lib/wiking/application.py:459 ../lib/wiking/export.py:108
+#: ../lib/wiking/export.py:260
 msgid "Local navigation"
 msgstr "Navigace této sekce"
 
-#: ../lib/wiking/application.py:498
+#: ../lib/wiking/application.py:503
 msgid "Contact:"
 msgstr "Kontakt:"
 
@@ -103,14 +103,18 @@ msgstr ""
 msgid "Site icon"
 msgstr "Ikona portálu"
 
-#: ../lib/wiking/configuration.py:383
+#: ../lib/wiking/configuration.py:369
+msgid "Open Graph site image URL"
+msgstr ""
+
+#: ../lib/wiking/configuration.py:391
 msgid "Default language"
 msgstr "Výchozí jazyk"
 
 #. Language negotiation means the process where the server is trying
 #. to find a language that matches with what the users internet browser asks
 #. for.
-#: ../lib/wiking/configuration.py:386
+#: ../lib/wiking/configuration.py:394
 msgid ""
 "Defines the language (lowercase ISO 639-1 Alpha-2 code) to be used when "
 "content language negotiation fails. If not set (which is the default), the "
@@ -143,11 +147,11 @@ msgstr ""
 #. Settings label. URI means a link. Do not translate ''URI''.
 #. Yes/No configuration option label.
 #. Should the login panel display user role (as Admin, Student, Tutor etc.)
-#: ../lib/wiking/configuration.py:455
+#: ../lib/wiking/configuration.py:472
 msgid "Display role in login panel"
 msgstr "Zobrazit roli v panelu přihlášení"
 
-#: ../lib/wiking/configuration.py:456
+#: ../lib/wiking/configuration.py:473
 msgid ""
 "If enabled, the login panel on each page will not display only the current "
 "username, but also his current user role, which affects his permissions."
@@ -276,108 +280,108 @@ msgstr "Záznam byl odstraněn."
 msgid "Unable to perform a database operation:"
 msgstr "Provedení databázové operace se nezdařilo:"
 
-#: ../lib/wiking/db.py:2043
+#: ../lib/wiking/db.py:2061
 msgid "Back"
 msgstr "Zpět"
 
 #. Back button label. Standard computer terminology.
 #. RSS channel is a computer idiom, see Wikipedia.
-#: ../lib/wiking/db.py:2250 ../lib/wiking/db.py:2406
+#: ../lib/wiking/db.py:2268 ../lib/wiking/db.py:2424
 msgid "An RSS channel is available for this section:"
 msgstr "K dispozici je také RSS kanál pro tuto sekci:"
 
 #. RSS channel is a computer idiom, see Wikipedia.  Don't translateg 'RSS'.
-#: ../lib/wiking/db.py:2254 ../lib/wiking/db.py:2404
+#: ../lib/wiking/db.py:2272 ../lib/wiking/db.py:2422
 msgid "more about RSS"
 msgstr "více o RSS"
 
-#: ../lib/wiking/db.py:2399
+#: ../lib/wiking/db.py:2417
 #, python-format
 msgid "RSS channel \"%s\""
 msgstr "RSS kanál „%s“"
 
-#: ../lib/wiking/db.py:2409
+#: ../lib/wiking/db.py:2427
 msgid "RSS channels are available for this section"
 msgstr "Pro tuto sekci jsou k dispozici RSS kanály"
 
-#: ../lib/wiking/export.py:104
+#: ../lib/wiking/export.py:106
 msgid "Page heading"
 msgstr "Záhlaví stránky"
 
-#: ../lib/wiking/export.py:105 ../lib/wiking/export.py:244
-#: ../lib/wiking/export.py:274 ../lib/wiking/export.py:292
+#: ../lib/wiking/export.py:107 ../lib/wiking/export.py:258
+#: ../lib/wiking/export.py:288 ../lib/wiking/export.py:306
 msgid "Main navigation"
 msgstr "Hlavní navigace"
 
-#: ../lib/wiking/export.py:107 ../lib/wiking/export.py:242
+#: ../lib/wiking/export.py:109 ../lib/wiking/export.py:256
 msgid "Main content"
 msgstr "Hlavní obsah"
 
-#: ../lib/wiking/export.py:108
+#: ../lib/wiking/export.py:110
 msgid "Page footer"
 msgstr "Zápatí stránky"
 
 #. Title of a dialog on a webpage
-#: ../lib/wiking/export.py:109 ../lib/wiking/export.py:248
+#: ../lib/wiking/export.py:111 ../lib/wiking/export.py:262
 #: ../lib/wiking/util.py:342
 msgid "Language selection"
 msgstr "Výběr jazyka"
 
 #. Label for language selection followed by list of languages
-#: ../lib/wiking/export.py:112
+#: ../lib/wiking/export.py:114
 msgid "Language:"
 msgstr "Jazyk:"
 
-#: ../lib/wiking/export.py:252
+#: ../lib/wiking/export.py:266
 msgid "Jump in page"
 msgstr "Přejít ve stránce"
 
 #. A label followed by location information in webpage navigation
-#: ../lib/wiking/export.py:257
+#: ../lib/wiking/export.py:271
 msgid "You are here:"
 msgstr "Nacházíte se zde:"
 
-#: ../lib/wiking/export.py:295
+#: ../lib/wiking/export.py:309
 msgid "Expand/collapse complete menu hierarchy"
 msgstr "Rozbalit/sbalit kompletní hierarchii menu"
 
 #. Panels are small windows on the side of the page. This is a label
 #. for a link that shows/hides the panels.
-#: ../lib/wiking/export.py:312
+#: ../lib/wiking/export.py:326
 msgid "Show panels"
 msgstr "Zobrazit panely"
 
-#: ../lib/wiking/export.py:313
+#: ../lib/wiking/export.py:327
 msgid "Hide panels"
 msgstr "Skrýt panely"
 
 #. ``RSS channel'' is terminology idiom, see Wikipedia
-#: ../lib/wiking/export.py:325
+#: ../lib/wiking/export.py:339
 msgid "RSS channel"
 msgstr "RSS kanál"
 
-#: ../lib/wiking/export.py:350
+#: ../lib/wiking/export.py:364
 msgid "Warning"
 msgstr "Varování"
 
-#: ../lib/wiking/export.py:361
+#: ../lib/wiking/export.py:375
 msgid "Minimize"
 msgstr "Minimalizovat"
 
-#: ../lib/wiking/export.py:362
+#: ../lib/wiking/export.py:376
 msgid "Exit the maximized mode."
 msgstr "Opistit maximalizovaný režim."
 
-#: ../lib/wiking/export.py:365
+#: ../lib/wiking/export.py:379
 msgid "Maximize"
 msgstr "Maximalizovat"
 
-#: ../lib/wiking/export.py:366
+#: ../lib/wiking/export.py:380
 msgid "Maximize the main content to the full size of the browser window."
 msgstr "Maximalizovat hlavní obsah na celou velikost okna prohlížeče."
 
 #. Information about last change of a webpage (when and who)
-#: ../lib/wiking/export.py:383
+#: ../lib/wiking/export.py:397
 #, python-format
 msgid "Last change: %(date)s, %(user)s"
 msgstr "Poslední změna: %(date)s, %(user)s"
@@ -393,64 +397,64 @@ msgstr "Probíhá údržba systému"
 msgid "The system is temporarily down for maintenance."
 msgstr "Systém je dočasně mimo provoz z důvodů údržby."
 
-#: ../lib/wiking/modules.py:564
+#: ../lib/wiking/modules.py:557
 msgid "Enter your login name, please!"
 msgstr "Zadejte, prosím, vaše uživatelské jméno!"
 
-#: ../lib/wiking/modules.py:566
+#: ../lib/wiking/modules.py:559
 msgid "Enter your password, please!"
 msgstr "Zadejte, prosím, vaše heslo!"
 
-#: ../lib/wiking/modules.py:570
+#: ../lib/wiking/modules.py:563
 msgid "Invalid login!"
 msgstr "Neplatné přihlášení!"
 
-#: ../lib/wiking/modules.py:663
+#: ../lib/wiking/modules.py:656
 msgid "Searching"
 msgstr "Vyhledávání"
 
-#: ../lib/wiking/modules.py:664
+#: ../lib/wiking/modules.py:657
 msgid "Search results"
 msgstr "Výsledky vyhledávání"
 
-#: ../lib/wiking/modules.py:665
+#: ../lib/wiking/modules.py:658
 msgid "Given search term doesn't contain any searchable term."
 msgstr ""
 "Zadaný vyhledávací výraz neobsahuje nic, podle čeho by bylo možno vyhledání "
 "provést."
 
-#: ../lib/wiking/modules.py:669
+#: ../lib/wiking/modules.py:662
 msgid "Search words:"
 msgstr "Vyhledat slova:"
 
-#: ../lib/wiking/modules.py:670
+#: ../lib/wiking/modules.py:663
 msgid "Search"
 msgstr "Vyhledat"
 
-#: ../lib/wiking/modules.py:726
+#: ../lib/wiking/modules.py:719
 msgid "Nothing found."
 msgstr "Nic nebylo nalezeno."
 
-#: ../lib/wiking/modules.py:783
+#: ../lib/wiking/modules.py:776
 msgid "The following modules were successfully reloaded:"
 msgstr "Následující moduly byly úspěšně načteny znovu:"
 
-#: ../lib/wiking/modules.py:785
+#: ../lib/wiking/modules.py:778
 msgid "Reload"
 msgstr "Načíst znovu"
 
 #. Short description of a user group purpose.
-#: ../lib/wiking/request.py:1295
+#: ../lib/wiking/request.py:1259
 msgid "Anyone"
 msgstr "Kdokoliv"
 
 #. Short description of a user group purpose.
-#: ../lib/wiking/request.py:1298
+#: ../lib/wiking/request.py:1262
 msgid "Any authenticated user"
 msgstr "Jakýkoliv autentizovaný uživatel"
 
 #. Short description of a user group purpose.
-#: ../lib/wiking/request.py:1305
+#: ../lib/wiking/request.py:1269
 msgid "Current record owner"
 msgstr "Vlastník tohoto záznamu"
 
@@ -678,28 +682,28 @@ msgstr "Použít heslo"
 msgid "Continue"
 msgstr "Pokračovat"
 
-#: ../lib/wiking/util.py:2086
+#: ../lib/wiking/util.py:2198
 msgid "Invalid e-mail address format."
 msgstr "Neplatný formát e-mailové adresy."
 
 #. Computer terminology. `gmail.com' is a domain name in email address
 #. `joe@gmail.com'.
-#: ../lib/wiking/util.py:2094 ../lib/wiking/util.py:2102
+#: ../lib/wiking/util.py:2206 ../lib/wiking/util.py:2214
 msgid "Domain not found."
 msgstr "Doména nenalezena."
 
 #. Computer terminology.  Don't translate the acronym `DNS'.
-#: ../lib/wiking/util.py:2097 ../lib/wiking/util.py:2105
+#: ../lib/wiking/util.py:2209 ../lib/wiking/util.py:2217
 #, python-format
 msgid "Unable to retrieve DNS records: %s"
 msgstr "Nepodařilo se získat DNS záznamy: %s"
 
-#: ../lib/wiking/util.py:2133
+#: ../lib/wiking/util.py:2245
 #, python-format
 msgid "Invalid e-mail address: %s"
 msgstr "Neplatná e-mailová adresa: %s"
 
-#: ../lib/wiking/util.py:2135
+#: ../lib/wiking/util.py:2247
 #, python-format
 msgid ""
 "Unable to verify e-mail address: Mail servers for '%s' are temporarily "
@@ -711,27 +715,27 @@ msgstr ""
 "nemůžeme udělat nic pro jeho nápravu. Opakujte, prosím, svůj požaqdavek "
 "později."
 
-#: ../resources/scripts/discussion.js:72
+#: ../resources/scripts/discussion.js:73
 msgid "Reply"
 msgstr "Reagovat"
 
-#: ../resources/scripts/discussion.js:90
+#: ../resources/scripts/discussion.js:91
 msgid "Your Reply"
 msgstr "Vaše reakce"
 
-#: ../resources/scripts/discussion.js:104
+#: ../resources/scripts/discussion.js:105
 msgid "Attachment"
 msgstr "Příloha"
 
-#: ../resources/scripts/discussion.js:116
+#: ../resources/scripts/discussion.js:117
 msgid "Submit"
 msgstr "Odeslat"
 
-#: ../resources/scripts/discussion.js:118
+#: ../resources/scripts/discussion.js:119
 msgid "Quote"
 msgstr "Citovat"
 
-#: ../resources/scripts/discussion.js:120
+#: ../resources/scripts/discussion.js:121
 msgid "Cancel"
 msgstr "Zrušit"
 

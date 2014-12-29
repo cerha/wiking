@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-10-15 11:23+0200\n"
+"POT-Creation-Date: 2014-12-29 10:39+0100\n"
 "PO-Revision-Date: 2010-01-19 16:23+0100\n"
 "Last-Translator: david <rohozka@gmail.com>\n"
 "Language-Team: Spanish <wiking@lists.freebsoft.org>\n"
@@ -18,26 +18,26 @@ msgstr ""
 
 #. Website idiom. This is followed by information on the underlying software
 #. tools.  Means: This website runs on [...this and that software...].
-#: ../lib/wiking/application.py:414
+#: ../lib/wiking/application.py:419
 msgid "Powered by"
 msgstr "Desarrollado por"
 
-#: ../lib/wiking/application.py:432
+#: ../lib/wiking/application.py:437
 msgid "Accessibility Statement"
 msgstr "Declaración de accesibilidad"
 
 #. Heading of webpage left side hierarchical navigation
 #. menu containing a list of links to pages in this web section
-#: ../lib/wiking/application.py:445
+#: ../lib/wiking/application.py:450
 msgid "In this section:"
 msgstr "En esta sección:"
 
-#: ../lib/wiking/application.py:454 ../lib/wiking/export.py:106
-#: ../lib/wiking/export.py:246
+#: ../lib/wiking/application.py:459 ../lib/wiking/export.py:108
+#: ../lib/wiking/export.py:260
 msgid "Local navigation"
 msgstr "Navegación local"
 
-#: ../lib/wiking/application.py:498
+#: ../lib/wiking/application.py:503
 msgid "Contact:"
 msgstr "Contacto:"
 
@@ -94,14 +94,18 @@ msgstr ""
 msgid "Site icon"
 msgstr ""
 
-#: ../lib/wiking/configuration.py:383
+#: ../lib/wiking/configuration.py:369
+msgid "Open Graph site image URL"
+msgstr ""
+
+#: ../lib/wiking/configuration.py:391
 msgid "Default language"
 msgstr ""
 
 #. Language negotiation means the process where the server is trying
 #. to find a language that matches with what the users internet browser asks
 #. for.
-#: ../lib/wiking/configuration.py:386
+#: ../lib/wiking/configuration.py:394
 msgid ""
 "Defines the language (lowercase ISO 639-1 Alpha-2 code) to be used when "
 "content language negotiation fails. If not set (which is the default), the "
@@ -122,11 +126,11 @@ msgstr ""
 #. Settings label. URI means a link. Do not translate ''URI''.
 #. Yes/No configuration option label.
 #. Should the login panel display user role (as Admin, Student, Tutor etc.)
-#: ../lib/wiking/configuration.py:455
+#: ../lib/wiking/configuration.py:472
 msgid "Display role in login panel"
 msgstr ""
 
-#: ../lib/wiking/configuration.py:456
+#: ../lib/wiking/configuration.py:473
 msgid ""
 "If enabled, the login panel on each page will not display only the current "
 "username, but also his current user role, which affects his permissions."
@@ -253,109 +257,109 @@ msgstr "El registro ha sido borrado."
 msgid "Unable to perform a database operation:"
 msgstr ""
 
-#: ../lib/wiking/db.py:2043
+#: ../lib/wiking/db.py:2061
 msgid "Back"
 msgstr "Atrás"
 
 #. Back button label. Standard computer terminology.
 #. RSS channel is a computer idiom, see Wikipedia.
-#: ../lib/wiking/db.py:2250 ../lib/wiking/db.py:2406
+#: ../lib/wiking/db.py:2268 ../lib/wiking/db.py:2424
 msgid "An RSS channel is available for this section:"
 msgstr "Un canal RSS está disponible para esta sección:"
 
 #. RSS channel is a computer idiom, see Wikipedia.  Don't translateg 'RSS'.
-#: ../lib/wiking/db.py:2254 ../lib/wiking/db.py:2404
+#: ../lib/wiking/db.py:2272 ../lib/wiking/db.py:2422
 msgid "more about RSS"
 msgstr "Más sobre RSS"
 
-#: ../lib/wiking/db.py:2399
+#: ../lib/wiking/db.py:2417
 #, fuzzy, python-format
 msgid "RSS channel \"%s\""
 msgstr "RSS canal"
 
-#: ../lib/wiking/db.py:2409
+#: ../lib/wiking/db.py:2427
 #, fuzzy
 msgid "RSS channels are available for this section"
 msgstr "Un canal RSS está disponible para esta sección:"
 
-#: ../lib/wiking/export.py:104
+#: ../lib/wiking/export.py:106
 msgid "Page heading"
 msgstr "Título de la página"
 
-#: ../lib/wiking/export.py:105 ../lib/wiking/export.py:244
-#: ../lib/wiking/export.py:274 ../lib/wiking/export.py:292
+#: ../lib/wiking/export.py:107 ../lib/wiking/export.py:258
+#: ../lib/wiking/export.py:288 ../lib/wiking/export.py:306
 msgid "Main navigation"
 msgstr "Navegación principal"
 
-#: ../lib/wiking/export.py:107 ../lib/wiking/export.py:242
+#: ../lib/wiking/export.py:109 ../lib/wiking/export.py:256
 msgid "Main content"
 msgstr "Contenido principal"
 
-#: ../lib/wiking/export.py:108
+#: ../lib/wiking/export.py:110
 msgid "Page footer"
 msgstr "Pie de página"
 
 #. Title of a dialog on a webpage
-#: ../lib/wiking/export.py:109 ../lib/wiking/export.py:248
+#: ../lib/wiking/export.py:111 ../lib/wiking/export.py:262
 #: ../lib/wiking/util.py:342
 msgid "Language selection"
 msgstr "Selección de idioma"
 
 #. Label for language selection followed by list of languages
-#: ../lib/wiking/export.py:112
+#: ../lib/wiking/export.py:114
 msgid "Language:"
 msgstr "Idioma:"
 
-#: ../lib/wiking/export.py:252
+#: ../lib/wiking/export.py:266
 msgid "Jump in page"
 msgstr "Saltar en la página"
 
 #. A label followed by location information in webpage navigation
-#: ../lib/wiking/export.py:257
+#: ../lib/wiking/export.py:271
 msgid "You are here:"
 msgstr "Usted está aquí:"
 
-#: ../lib/wiking/export.py:295
+#: ../lib/wiking/export.py:309
 msgid "Expand/collapse complete menu hierarchy"
 msgstr ""
 
 #. Panels are small windows on the side of the page. This is a label
 #. for a link that shows/hides the panels.
-#: ../lib/wiking/export.py:312
+#: ../lib/wiking/export.py:326
 msgid "Show panels"
 msgstr "Mostrar paneles"
 
-#: ../lib/wiking/export.py:313
+#: ../lib/wiking/export.py:327
 msgid "Hide panels"
 msgstr "Ocultar paneles"
 
 #. ``RSS channel'' is terminology idiom, see Wikipedia
-#: ../lib/wiking/export.py:325
+#: ../lib/wiking/export.py:339
 msgid "RSS channel"
 msgstr "RSS canal"
 
-#: ../lib/wiking/export.py:350
+#: ../lib/wiking/export.py:364
 msgid "Warning"
 msgstr "Advertencia"
 
-#: ../lib/wiking/export.py:361
+#: ../lib/wiking/export.py:375
 msgid "Minimize"
 msgstr ""
 
-#: ../lib/wiking/export.py:362
+#: ../lib/wiking/export.py:376
 msgid "Exit the maximized mode."
 msgstr ""
 
-#: ../lib/wiking/export.py:365
+#: ../lib/wiking/export.py:379
 msgid "Maximize"
 msgstr ""
 
-#: ../lib/wiking/export.py:366
+#: ../lib/wiking/export.py:380
 msgid "Maximize the main content to the full size of the browser window."
 msgstr ""
 
 #. Information about last change of a webpage (when and who)
-#: ../lib/wiking/export.py:383
+#: ../lib/wiking/export.py:397
 #, python-format
 msgid "Last change: %(date)s, %(user)s"
 msgstr "Último cambio: %(date)s, %(user)s"
@@ -372,63 +376,63 @@ msgstr "Modo de mantenimiento"
 msgid "The system is temporarily down for maintenance."
 msgstr "El sistema está temporalmente fuera de servicio por mantenimiento."
 
-#: ../lib/wiking/modules.py:564
+#: ../lib/wiking/modules.py:557
 msgid "Enter your login name, please!"
 msgstr "Introduzca su nombre de usuario, por favor!"
 
-#: ../lib/wiking/modules.py:566
+#: ../lib/wiking/modules.py:559
 msgid "Enter your password, please!"
 msgstr "Introduzca su contraseña, por favor!"
 
-#: ../lib/wiking/modules.py:570
+#: ../lib/wiking/modules.py:563
 msgid "Invalid login!"
 msgstr "Usuario no válido!"
 
-#: ../lib/wiking/modules.py:663
+#: ../lib/wiking/modules.py:656
 msgid "Searching"
 msgstr "Buscando"
 
-#: ../lib/wiking/modules.py:664
+#: ../lib/wiking/modules.py:657
 msgid "Search results"
 msgstr "Resultados de búsqueda"
 
-#: ../lib/wiking/modules.py:665
+#: ../lib/wiking/modules.py:658
 msgid "Given search term doesn't contain any searchable term."
 msgstr "No hay resultados para los parámetros de búsqueda."
 
-#: ../lib/wiking/modules.py:669
+#: ../lib/wiking/modules.py:662
 msgid "Search words:"
 msgstr "Buscar palabras:"
 
-#: ../lib/wiking/modules.py:670
+#: ../lib/wiking/modules.py:663
 msgid "Search"
 msgstr "Búsqueda"
 
-#: ../lib/wiking/modules.py:726
+#: ../lib/wiking/modules.py:719
 msgid "Nothing found."
 msgstr "Nada encontrado."
 
-#: ../lib/wiking/modules.py:783
+#: ../lib/wiking/modules.py:776
 msgid "The following modules were successfully reloaded:"
 msgstr "Los siguientes módulos han sido recargados con éxito:"
 
-#: ../lib/wiking/modules.py:785
+#: ../lib/wiking/modules.py:778
 msgid "Reload"
 msgstr "Recarga"
 
 #. Short description of a user group purpose.
-#: ../lib/wiking/request.py:1295
+#: ../lib/wiking/request.py:1259
 msgid "Anyone"
 msgstr ""
 
 #. Short description of a user group purpose.
-#: ../lib/wiking/request.py:1298
+#: ../lib/wiking/request.py:1262
 #, fuzzy
 msgid "Any authenticated user"
 msgstr "Autentificación necesaria"
 
 #. Short description of a user group purpose.
-#: ../lib/wiking/request.py:1305
+#: ../lib/wiking/request.py:1269
 msgid "Current record owner"
 msgstr ""
 
@@ -655,30 +659,30 @@ msgstr "Contraseña"
 msgid "Continue"
 msgstr ""
 
-#: ../lib/wiking/util.py:2086
+#: ../lib/wiking/util.py:2198
 #, fuzzy
 msgid "Invalid e-mail address format."
 msgstr "Formato inválido"
 
 #. Computer terminology. `gmail.com' is a domain name in email address
 #. `joe@gmail.com'.
-#: ../lib/wiking/util.py:2094 ../lib/wiking/util.py:2102
+#: ../lib/wiking/util.py:2206 ../lib/wiking/util.py:2214
 #, fuzzy
 msgid "Domain not found."
 msgstr "Nada encontrado."
 
 #. Computer terminology.  Don't translate the acronym `DNS'.
-#: ../lib/wiking/util.py:2097 ../lib/wiking/util.py:2105
+#: ../lib/wiking/util.py:2209 ../lib/wiking/util.py:2217
 #, python-format
 msgid "Unable to retrieve DNS records: %s"
 msgstr ""
 
-#: ../lib/wiking/util.py:2133
+#: ../lib/wiking/util.py:2245
 #, python-format
 msgid "Invalid e-mail address: %s"
 msgstr ""
 
-#: ../lib/wiking/util.py:2135
+#: ../lib/wiking/util.py:2247
 #, python-format
 msgid ""
 "Unable to verify e-mail address: Mail servers for '%s' are temporarily "
@@ -686,27 +690,27 @@ msgid ""
 "not do anything about it. Please, try again later."
 msgstr ""
 
-#: ../resources/scripts/discussion.js:72
+#: ../resources/scripts/discussion.js:73
 msgid "Reply"
 msgstr ""
 
-#: ../resources/scripts/discussion.js:90
+#: ../resources/scripts/discussion.js:91
 msgid "Your Reply"
 msgstr ""
 
-#: ../resources/scripts/discussion.js:104
+#: ../resources/scripts/discussion.js:105
 msgid "Attachment"
 msgstr ""
 
-#: ../resources/scripts/discussion.js:116
+#: ../resources/scripts/discussion.js:117
 msgid "Submit"
 msgstr ""
 
-#: ../resources/scripts/discussion.js:118
+#: ../resources/scripts/discussion.js:119
 msgid "Quote"
 msgstr ""
 
-#: ../resources/scripts/discussion.js:120
+#: ../resources/scripts/discussion.js:121
 msgid "Cancel"
 msgstr ""
 
