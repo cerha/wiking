@@ -33,3 +33,7 @@ h7 { font-size: 1.1em; }
 form.list-form-controls .paging-controls {
     display: none;
 }
+
+#maximized-mode-control {
+    display: none;
+}

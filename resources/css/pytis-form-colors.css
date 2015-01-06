@@ -18,12 +18,19 @@
 * html .pytis-form fieldset.group legend { 
     color: $color.foreground !important;
 }
-.pytis-form.browse-form table.data-table { 
+.pytis-form.browse-form table.data-table,
+.pytis-form.browse-form table.data-table td,
+.pytis-form.browse-form table.data-table th {
     border-color: $color.border !important;
 }
-.pytis-form.browse-form table.data-table td, .pytis-form.browse-form table.data-table th {
-    border-color: $color.border !important;
+@media print {
+    .pytis-form.browse-form table.data-table,
+    .pytis-form.browse-form table.data-table td,
+    .pytis-form.browse-form table.data-table th {
+	border-color: #ddd !important;
+    }
 }
+
 .pytis-form.browse-form table.data-table tr { background-color: $color.table-cell !important; }
 .pytis-form.browse-form table.data-table tr.even { background-color: $color.table-cell2 !important; }
 .pytis-form.browse-form table.data-table th { background-color: $color.heading-bg !important; }
