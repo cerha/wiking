@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2006-2014 Brailcom, o.p.s.
+# Copyright (C) 2006-2015 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -3919,7 +3919,8 @@ class _News(ContentManagementModule, EmbeddableCMSModule, wiking.CachingPytisMod
 
     def _load_panel_rows(self, key, transaction=None, **kwargs):
         condition, lang, count = key
-        return self._data.get_rows(condition=condition, lang=lang, limit=count)
+        return self._data.get_rows(condition=condition, lang=lang, limit=count,
+                                   sorting=self.Spec.sorting)
 
     def _panel_rows(self, req, relation, lang, count):
         key = (self._panel_condition(req, relation), lang, count)
