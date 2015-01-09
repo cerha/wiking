@@ -71,12 +71,10 @@ wiking.Handler = Class.create(lcg.KeyHandler, {
 		}
 	    }
 	}
+
 	// Set up global key handler.
 	document.observe('keydown', this.on_key_down.bind(this));
-	// Move focus to the main content if there is no anchor in the current URL.
-	if (self.location.href.match("#") === null) {
-	    this.set_focus($('main-heading'));
-	}
+
 	// Update the information about browser's timezone in the cookie to let
 	// the server know what is the user's time zone.  The problem is that
 	// this information will not be available on the very first request, so
@@ -90,6 +88,21 @@ wiking.Handler = Class.create(lcg.KeyHandler, {
 	var winter_date = new Date(Date.UTC(2005, 12, 30, 0, 0, 0, 0));
 	var winter_offset = -winter_date.getTimezoneOffset();
 	lcg.cookies.set('wiking_tz_offsets', summer_offset + ';' + winter_offset);
+	
+	// Move focus to the main content if there is no anchor in the current URL.
+	if (!self.location.hash) {
+	    this.set_focus($('main-heading'));
+	}
+
+	// Force initial scroll to respect wiking.scroll_offset.
+	if (self.location.hash && wiking.scroll_offset !== 0) {
+	    var anchor_ = self.location.hash.substr(1);
+	    var target_ = $(anchor_) || $$('a[name=' + anchor_ + ']')[0];
+	    if (target_) {
+		Effect.ScrollTo(target_, {offset: -wiking.scroll_offset});
+	    }
+	}
+
 	$$('a').each(function(element) {
 	    // Use smooth scrolling for in-page links.
 	    var href = element.readAttribute('href');
