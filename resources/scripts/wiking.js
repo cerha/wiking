@@ -30,10 +30,20 @@
 
 "use strict";
 
-var wiking = new Object();
+var wiking = {
+    // Offset from the top of the browser window to use for scrolling to
+    // page elements (such as sections or anchors).  Normally we want to
+    // scroll to get the top of the element to the top of the window, but
+    // some layouts (such as when there is a fixed positioned bar at the
+    // top) may need to add an offset;
+    scroll_offset: 0,
 
-wiking.gettext = new Gettext({domain:'wiking'});
-wiking._ = function (msg){ return wiking.gettext.gettext(msg); };
+    gettext: new Gettext({domain:'wiking'}),
+
+    _: function (msg) {
+	return wiking.gettext.gettext(msg);
+    }
+};
 
 wiking.Handler = Class.create(lcg.KeyHandler, {
     // This class is instantiated within the page onload handler.  It is the
@@ -88,7 +98,7 @@ wiking.Handler = Class.create(lcg.KeyHandler, {
 		var target = $(name) || $$('a[name='+name+']')[0];
 		if (target) {
 		    element.observe('click', function(event) {
-			Effect.ScrollTo(target);
+			Effect.ScrollTo(target, {offset: -wiking.scroll_offset});
 			return false;
 		    });
 		}
