@@ -1929,8 +1929,10 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                               for r in resources if r.info()['listed']]
         if listed_attachments:
             # Translators: Section title. Attachments as in email attachments.
-            content.append(lcg.Section(title=_("Attachments"), content=lcg.ul(listed_attachments),
-                                       id='attachment-automatic-list')) # Prevent dupl. anchor.
+            content.append(lcg.Section(title=_("Attachments"),
+                                       content=lcg.ul(listed_attachments),
+                                       id='attachment-automatic-list', # Prevent dupl. anchor.
+                                       in_toc=False))
         if content or resources:
             return [lcg.Container(content, resources=resources)]
         else:
@@ -2542,7 +2544,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                  wiking.HtmlRenderer(cover_image),
                  self._publication_info(req, record)] +
                 self._inner_page_content(req, record, preview=preview) +
-                [lcg.Section(_("Table of Contents"), lcg.NodeIndex()),
+                [lcg.Section(_("Table of Contents"), lcg.NodeIndex(), in_toc=False),
                  wiking.module.PublicationExports.exported_versions_list(req),
                  self._publication_export_form(req, record),
                  self.Navigation('bottom')])
@@ -2628,7 +2630,8 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                     cover_image = pytis.util.find(filename, resources, key=lambda r: r.filename())
                 content.insert(0, self._publication_info(req, record, online=False))
                 if toc:
-                    content.append(lcg.Section(_("Table of Contents"), lcg.NodeIndex()))
+                    content.append(lcg.Section(_("Table of Contents"), lcg.NodeIndex(),
+                                               in_toc=False))
                 metadata = lcg.Metadata(authors=row['author'].export().splitlines(),
                                         contributors=(row['contributor'].export().splitlines() +
                                                       row['adapted_by'].export().splitlines()),

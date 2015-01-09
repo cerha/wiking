@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2005-2014 Brailcom, o.p.s.
+# Copyright (C) 2005-2015 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -1867,7 +1867,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                         # binding_id if present...
                         active = section_id
                     sections.append(lcg.Section(title=binding.title(), descr=binding.descr(),
-                                                id=section_id, content=content))
+                                                id=section_id, in_toc=False, content=content))
         if sections:
             return [lcg.Notebook(sections, name='bindings-' + self.name(), active=active)]
         else:
