@@ -1,6 +1,6 @@
 /* -*- coding: utf-8 -*-
  *
- * Copyright (C) 2008-2013 Brailcom, o.p.s.
+ * Copyright (C) 2008-2013, 2015 Brailcom, o.p.s.
  * Author: Tomas Cerha
  *
  * This program is free software; you can redistribute it and/or modify
@@ -27,16 +27,7 @@ wiking.Handler = Class.create(lcg.KeyHandler, {
     // main javascript interface of a Wiking application.  It creates
     // instances of other javascript classes to handle menus etc if the
     // relevant HTML objects exist..
-    
-    // Landmarks by HTML element id.
-    LANDMARKS: {
-	'top':         'banner',
-	'menu-map':    'navigation',
-	'submenu-map': 'navigation',
-	'main':        'main',
-	'bottom':      'contentinfo'
-    },
-    
+        
     initialize: function ($super) {
 	// Constructor (called on page load).
 	$super();
@@ -56,7 +47,6 @@ wiking.Handler = Class.create(lcg.KeyHandler, {
 		}
 	    }
 	}
-	this.init_landmarks();
 	// Set up global key handler.
 	document.observe('keydown', this.on_key_down.bind(this));
 	// Move focus to the main content if there is no anchor in the current URL.
@@ -99,15 +89,6 @@ wiking.Handler = Class.create(lcg.KeyHandler, {
 	};
     },
 
-    init_landmarks: function () {
-	//Initialize ARIA landmarks;
-	for (var id in this.LANDMARKS) {
-	    var element = $(id);
-	    if (element != null)
-		element.setAttribute('role', this.LANDMARKS[id]);
-	}
-    },
-    
     cmd_menu: function (element) {
 	// Move focus to the menu (the current menu item).
 	var submenu = $('submenu');

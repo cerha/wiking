@@ -1,4 +1,4 @@
-# Copyright (C) 2006-2014 Brailcom, o.p.s.
+# Copyright (C) 2006-2015 Brailcom, o.p.s.
 # Author: Tomas Cerha <cerha@brailcom.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -110,6 +110,13 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         'bottom': _("Page footer"),
         'language_selection': _("Language selection"),
     }
+    _LANDMARKS = {
+	'top': 'banner',
+	'menu': 'navigation',
+	'submenu': 'navigation',
+	'main': 'main',
+	'bottom': 'contentinfo',
+    }
     # Translators: Label for language selection followed by list of languages
     _LANGUAGE_SELECTION_LABEL = _("Language:")
     _MESSAGE_TYPE_CLASS = {Request.INFO: 'info',
@@ -179,6 +186,8 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
                 attr = {}
             if name in self._PART_TITLE:
                 attr['title'] = self._PART_TITLE[name]
+            if name in self._LANDMARKS:
+                attr['role'] = self._LANDMARKS[name]
             return self._generator.div(content, id=name.replace('_', '-'), **attr)
         else:
             return None
