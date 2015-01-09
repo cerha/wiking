@@ -17,6 +17,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*jslint browser: true */
+/*jslint unparam: true */
+/*jslint todo: true */
+/*global Class */
+/*global Effect */
+/*global Gettext */
+/*global $ */
+/*global $$ */
+/*global lcg */
+/*global self */
+
+"use strict";
+
 var wiking = new Object();
 
 wiking.gettext = new Gettext({domain:'wiking'});
@@ -40,9 +53,10 @@ wiking.Handler = Class.create(lcg.KeyHandler, {
 		// Bind given lcg.TreeMenu instance as a descendant of this menu in
 		// keyboard traversal.
 		var parent_item = main_menu.active_item();
+		var i, item;
 		parent_item._lcg_submenu = tree_menu.items;
-		for (var i = 0; i < tree_menu.items.length; i++) {
-		    var item = tree_menu.items[i];
+		for (i = 0; i < tree_menu.items.length; i++) {
+		    item = tree_menu.items[i];
 		    item._lcg_menu_parent = parent_item;
 		}
 	    }
@@ -50,8 +64,9 @@ wiking.Handler = Class.create(lcg.KeyHandler, {
 	// Set up global key handler.
 	document.observe('keydown', this.on_key_down.bind(this));
 	// Move focus to the main content if there is no anchor in the current URL.
-	if (self.location.href.match("#") == null)
+	if (self.location.href.match("#") === null) {
 	    this.set_focus($('main-heading'));
+	}
 	// Update the information about browser's timezone in the cookie to let
 	// the server know what is the user's time zone.  The problem is that
 	// this information will not be available on the very first request, so
@@ -61,7 +76,7 @@ wiking.Handler = Class.create(lcg.KeyHandler, {
 	// the server decide what the DST change dates most likely are.
 	// TODO: Maybe use http://www.pageloom.com/automatic-timezone-detection-with-javascript
 	var summer_date = new Date(Date.UTC(2005, 6, 30, 0, 0, 0, 0));
-	var summer_offset = -summer_date.getTimezoneOffset()
+	var summer_offset = -summer_date.getTimezoneOffset();
 	var winter_date = new Date(Date.UTC(2005, 12, 30, 0, 0, 0, 0));
 	var winter_offset = -winter_date.getTimezoneOffset();
 	lcg.cookies.set('wiking_tz_offsets', summer_offset + ';' + winter_offset);
@@ -96,15 +111,16 @@ wiking.Handler = Class.create(lcg.KeyHandler, {
 	    lcg.widget_instance(submenu.down('.foldable-tree-widget')).focus();
 	} else {
 	    var menu = $('menu');
-	    if (menu)
+	    if (menu) {
 		lcg.widget_instance(menu).focus();
+	    }
 	}
     },
     
     cmd_notebook: function (element) {
 	// Move focus to the first Notebook widget on the page.
 	var nb = document.body.down('div.notebook-widget');
-	if (nb != null) {
+	if (nb !== null) {
 	    var item = $(nb.getAttribute('aria-activedescendant'));
 	    this.set_focus(item);
 	}
@@ -115,15 +131,16 @@ wiking.Handler = Class.create(lcg.KeyHandler, {
 wiking.MainMenu = Class.create(lcg.NotebookMenu, {
     
     keymap: function ($super) {
-	keymap = $super();
-	keymap['Down'] = this.cmd_submenu;
-	keymap['Escape'] = this.cmd_quit;
+	var keymap = $super();
+	keymap.Down = this.cmd_submenu;
+	keymap.Escape = this.cmd_quit;
 	return keymap;
     },
     
     cmd_submenu: function (item) {
-	if (item._lcg_submenu != null)
+	if (item._lcg_submenu !== null) {
 	    this.set_focus(item._lcg_submenu[0]);
+	}
     },
 
     cmd_quit: function (item) {
