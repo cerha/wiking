@@ -103,16 +103,17 @@ wiking.Handler = Class.create(lcg.KeyHandler, {
 	    }
 	}
 
-	$$('a').each(function(element) {
-	    // Use smooth scrolling for in-page links.
+	// Use smooth scrolling for in-page links.
+	$$('a[href*="#"]').each(function(element) {
 	    var href = element.readAttribute('href');
-	    if (href && href[0] == '#' && href.substr(1, 8) != 'binding-') {
-		var name = href.substr(1, href.length);
-		var target = $(name) || $$('a[name='+name+']')[0];
-		if (target) {
+	    var uri = href.substr(0, href.indexOf('#'));
+	    if (uri === '' || uri === self.location.pathname) {
+		var anchor = href.substr(href.indexOf('#') + 1);
+		var target = $(anchor) || $$('a[name=' + anchor + ']')[0];
+		if (target && !target.hasClassName('notebook-page')) {
 		    element.observe('click', function(event) {
 			Effect.ScrollTo(target, {offset: -wiking.scroll_offset});
-			return false;
+			event.stop();
 		    });
 		}
 	    }
