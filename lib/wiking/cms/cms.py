@@ -4753,9 +4753,9 @@ class ContactForm(wiking.Module, Embeddable):
                               _("Phone"), record['phone'].value(),
                               record['message'].value())
             address = wiking.cfg.webmaster_address
-            error = wiking.send_mail(address,
-                                     sender=wiking.cfg.default_sender_address,
-                                     subject=_("Contact Form Enquiry"),
+            error = wiking.send_mail(address, sender=wiking.cfg.default_sender_address,
+                                     subject=_("Contact Form Enquiry from %s",
+                                               req.server_uri() + req.uri()),
                                      text=text, lang=req.preferred_language())
             if error:
                 req.message(_("Error sending your enquiry!"), type=req.ERROR)
