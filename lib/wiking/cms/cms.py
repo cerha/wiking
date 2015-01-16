@@ -4744,7 +4744,7 @@ class ContactForm(wiking.Module, Embeddable):
     )
 
     def embed(self, req):
-        form = pytis.web.VirtualForm(req, wiking.cfg.resolver, fields=self._FIELDS,
+        form = pytis.web.VirtualForm(req, wiking.cfg.resolver, dict(fields=self._FIELDS),
                                      handler=req.uri(), submit_buttons=(('submit', _("Submit")),),
                                      show_reset_button=False)
         if form.is_ajax_request(req):
