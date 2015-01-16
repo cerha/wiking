@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-12-29 10:39+0100\n"
+"POT-Creation-Date: 2015-01-16 08:47+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Petr Topiarz <topiarz@post.cz>\n"
 "Language-Team: \n"
@@ -28,7 +28,7 @@ msgid "In this section:"
 msgstr "În această secţiune:"
 
 #: ../lib/wiking/application.py:459 ../lib/wiking/export.py:108
-#: ../lib/wiking/export.py:260
+#: ../lib/wiking/export.py:269
 msgid "Local navigation"
 msgstr "Navigaţia acestei secţiuni "
 
@@ -253,27 +253,27 @@ msgstr "Referinţa a fost ştearsă."
 msgid "Unable to perform a database operation:"
 msgstr "Efectuarea operaţiei de bază de date a eşuat."
 
-#: ../lib/wiking/db.py:2061
+#: ../lib/wiking/db.py:2051
 msgid "Back"
 msgstr "Înapoi"
 
 #. Back button label. Standard computer terminology.
 #. RSS channel is a computer idiom, see Wikipedia.
-#: ../lib/wiking/db.py:2268 ../lib/wiking/db.py:2424
+#: ../lib/wiking/db.py:2258 ../lib/wiking/db.py:2414
 msgid "An RSS channel is available for this section:"
 msgstr "Pentru această secţiune este disponibil şi un canal RSS:"
 
 #. RSS channel is a computer idiom, see Wikipedia.  Don't translateg 'RSS'.
-#: ../lib/wiking/db.py:2272 ../lib/wiking/db.py:2422
+#: ../lib/wiking/db.py:2262 ../lib/wiking/db.py:2412
 msgid "more about RSS"
 msgstr "mai mult despre RSS"
 
-#: ../lib/wiking/db.py:2417
+#: ../lib/wiking/db.py:2407
 #, fuzzy, python-format
 msgid "RSS channel \"%s\""
 msgstr "RSS canal"
 
-#: ../lib/wiking/db.py:2427
+#: ../lib/wiking/db.py:2417
 #, fuzzy
 msgid "RSS channels are available for this section"
 msgstr "Pentru această secţiune este disponibil şi un canal RSS:"
@@ -282,12 +282,12 @@ msgstr "Pentru această secţiune este disponibil şi un canal RSS:"
 msgid "Page heading"
 msgstr "Titlul paginii"
 
-#: ../lib/wiking/export.py:107 ../lib/wiking/export.py:258
-#: ../lib/wiking/export.py:288 ../lib/wiking/export.py:306
+#: ../lib/wiking/export.py:107 ../lib/wiking/export.py:267
+#: ../lib/wiking/export.py:297 ../lib/wiking/export.py:315
 msgid "Main navigation"
 msgstr "Navigaţia principală"
 
-#: ../lib/wiking/export.py:109 ../lib/wiking/export.py:256
+#: ../lib/wiking/export.py:109 ../lib/wiking/export.py:265
 msgid "Main content"
 msgstr "Cuprinsul principal"
 
@@ -296,66 +296,66 @@ msgid "Page footer"
 msgstr "Subsolul paginii"
 
 #. Title of a dialog on a webpage
-#: ../lib/wiking/export.py:111 ../lib/wiking/export.py:262
+#: ../lib/wiking/export.py:111 ../lib/wiking/export.py:271
 #: ../lib/wiking/util.py:342
 msgid "Language selection"
 msgstr "Selectare limbă"
 
 #. Label for language selection followed by list of languages
-#: ../lib/wiking/export.py:114
+#: ../lib/wiking/export.py:121
 msgid "Language:"
 msgstr "Limba:"
 
-#: ../lib/wiking/export.py:266
+#: ../lib/wiking/export.py:275
 msgid "Jump in page"
 msgstr "Treci la pagina"
 
 #. A label followed by location information in webpage navigation
-#: ../lib/wiking/export.py:271
+#: ../lib/wiking/export.py:280
 msgid "You are here:"
 msgstr "Te afli aici:"
 
-#: ../lib/wiking/export.py:309
+#: ../lib/wiking/export.py:318
 msgid "Expand/collapse complete menu hierarchy"
 msgstr ""
 
 #. Panels are small windows on the side of the page. This is a label
 #. for a link that shows/hides the panels.
-#: ../lib/wiking/export.py:326
+#: ../lib/wiking/export.py:335
 msgid "Show panels"
 msgstr "Afişează panourile"
 
-#: ../lib/wiking/export.py:327
+#: ../lib/wiking/export.py:336
 msgid "Hide panels"
 msgstr "Ascunde panourile"
 
 #. ``RSS channel'' is terminology idiom, see Wikipedia
-#: ../lib/wiking/export.py:339
+#: ../lib/wiking/export.py:348
 msgid "RSS channel"
 msgstr "RSS canal"
 
-#: ../lib/wiking/export.py:364
+#: ../lib/wiking/export.py:373
 msgid "Warning"
 msgstr "Atenţie"
 
-#: ../lib/wiking/export.py:375
+#: ../lib/wiking/export.py:384
 msgid "Minimize"
 msgstr ""
 
-#: ../lib/wiking/export.py:376
+#: ../lib/wiking/export.py:385
 msgid "Exit the maximized mode."
 msgstr ""
 
-#: ../lib/wiking/export.py:379
+#: ../lib/wiking/export.py:388
 msgid "Maximize"
 msgstr ""
 
-#: ../lib/wiking/export.py:380
+#: ../lib/wiking/export.py:389
 msgid "Maximize the main content to the full size of the browser window."
 msgstr ""
 
 #. Information about last change of a webpage (when and who)
-#: ../lib/wiking/export.py:397
+#: ../lib/wiking/export.py:406
 #, python-format
 msgid "Last change: %(date)s, %(user)s"
 msgstr "Ultima modificare: %(date)s, %(user)s"
@@ -659,30 +659,30 @@ msgstr "Parola"
 msgid "Continue"
 msgstr ""
 
-#: ../lib/wiking/util.py:2198
+#: ../lib/wiking/util.py:2215
 #, fuzzy
 msgid "Invalid e-mail address format."
 msgstr "Format invalid"
 
 #. Computer terminology. `gmail.com' is a domain name in email address
 #. `joe@gmail.com'.
-#: ../lib/wiking/util.py:2206 ../lib/wiking/util.py:2214
+#: ../lib/wiking/util.py:2223 ../lib/wiking/util.py:2231
 #, fuzzy
 msgid "Domain not found."
 msgstr "Domeniul nu a fost găsit"
 
 #. Computer terminology.  Don't translate the acronym `DNS'.
-#: ../lib/wiking/util.py:2209 ../lib/wiking/util.py:2217
+#: ../lib/wiking/util.py:2226 ../lib/wiking/util.py:2234
 #, python-format
 msgid "Unable to retrieve DNS records: %s"
 msgstr ""
 
-#: ../lib/wiking/util.py:2245
+#: ../lib/wiking/util.py:2262
 #, python-format
 msgid "Invalid e-mail address: %s"
 msgstr ""
 
-#: ../lib/wiking/util.py:2247
+#: ../lib/wiking/util.py:2264
 #, python-format
 msgid ""
 "Unable to verify e-mail address: Mail servers for '%s' are temporarily "
