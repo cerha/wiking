@@ -4750,10 +4750,11 @@ class ContactForm(wiking.Module, Embeddable):
             return wiking.ajax_response(req, form)
         if req.param('submit') and form.validate(req):
             record = form.row()
-            text = lcg.format("%s: %s\n%s: %s\n%s: %s\n\n%s",
+            text = lcg.format("%s: %s\n%s: %s\n%s: %s\n%s: %s\n\n%s",
                               _("Name"), record['name'].value(),
                               _("E-mail"), record['email'].value(),
                               _("Phone"), record['phone'].value(),
+                              _("Subject"), record['subject'].value(),
                               record['message'].value())
             address = wiking.cfg.webmaster_address
             error = wiking.send_mail(address, sender=wiking.cfg.default_sender_address,
