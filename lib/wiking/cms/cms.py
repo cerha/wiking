@@ -4760,7 +4760,8 @@ class ContactForm(wiking.Module, Embeddable):
             if error:
                 req.message(_("Error sending your enquiry!"), type=req.ERROR)
                 # Our attempt may fail, but the user has a different SMTP server...
-                req.message(_("If the problem persists, please contact %s!" % address))
+                req.message(_("Please, try sending the form later. "
+                              "If the problem persists, contact %s." % address))
                 log(OPERATIONAL, "Error sending mail to %s:" % address, error)
             else:
                 req.message(_("Thank you for contacting us!"))
