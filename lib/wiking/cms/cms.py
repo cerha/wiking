@@ -1648,7 +1648,10 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                 if row:
                     del req.unresolved_path[0]
                     return row
-        preview_mode = wiking.module.Application.preview_mode(req)
+        # Resolve the unpublished language variants when the preview mode is on
+        # or when the current user is authorized to switch.
+        preview_mode = (wiking.module.Application.preview_mode(req)
+                        or wiking.module.Application.preview_mode_possible(req))
         rows = self._get_value((identifier, preview_mode), loader=self._load_page_rows)
         if rows:
             if req.has_param(self._key):
