@@ -4738,6 +4738,7 @@ class ContactForm(wiking.Module, Embeddable):
         Field('name', _("Your Name"), not_null=True),
         Field('email', _("Your e-mail address"), not_null=True),
         Field('phone', _("Your phone number")),
+        Field('subject', _("Subject")),
         Field('message', _("Your Message"), width=67, height=10, 
               compact=True, not_null=True),
     )
