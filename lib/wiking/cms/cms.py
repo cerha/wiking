@@ -4729,6 +4729,46 @@ class SiteMap(wiking.Module, Embeddable):
         return [lcg.RootIndex()]
 
 
+class ContactForm(wiking.Module, Embeddable):
+    _TITLE = _("Contact Form")
+    _FIELDS = (
+        Field('name', _("Your Name"), not_null=True),
+        Field('email', _("Your e-mail address"), not_null=True),
+        Field('phone', _("Your phone number")),
+        Field('message', _("Your Message"), width=67, height=10, 
+              compact=True, not_null=True),
+    )
+
+    def embed(self, req):
+        form = pytis.web.VirtualForm(req, wiking.cfg.resolver, fields=self._FIELDS,
+                                     handler=req.uri(), submit_buttons=(('submit', _("Submit")),),
+                                     show_reset_button=False)
+        if form.is_ajax_request(req):
+            return wiking.ajax_response(req, form)
+        if req.param('submit') and form.validate(req):
+            record = form.row()
+            text = lcg.format("%s: %s\n%s: %s\n%s: %s\n\n%s",
+                              _("Name"), record['name'].value(),
+                              _("E-mail"), record['email'].value(),
+                              _("Phone"), record['phone'].value(),
+                              record['message'].value())
+            address = wiking.cfg.webmaster_address
+            error = wiking.send_mail(address,
+                                     sender=wiking.cfg.default_sender_address,
+                                     subject=_("Contact Form Enquiry"),
+                                     text=text, lang=req.preferred_language())
+            if error:
+                req.message(_("Error sending your enquiry!"), type=req.ERROR)
+                # Our attempt may fail, but the user has a different SMTP server...
+                req.message(_("If the problem persists, please contact %s!" % address))
+                log(OPERATIONAL, "Error sending mail to %s:" % address, error)
+            else:
+                req.message(_("Thank you for contacting us!"))
+                req.message(_("We will process your enquiry at the nearest occasion."))
+                raise wiking.Redirect(req.uri())
+        return [form]
+
+
 class Resources(wiking.Resources):
     """Serve resource files.
 

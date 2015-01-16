@@ -1809,7 +1809,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                           actions=self._form_actions_argument(req),
                           )
         if form.is_ajax_request(req):
-            return self._ajax_response(req, form)
+            return wiking.ajax_response(req, form)
         if async_load:
             return form
         else:
@@ -1829,16 +1829,6 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         uri = self._binding_parent_uri(req)
         if uri is not None:
             raise Redirect(uri, **kwargs)
-
-    def _ajax_response(self, req, form):
-        try:
-            response = form.ajax_response(req)
-        except pw.BadRequest:
-            raise wiking.BadRequest()
-        if isinstance(response, lcg.Content):
-            return response
-        else:
-            return wiking.Response(json.dumps(response), content_type='application/json')
 
     def _related_content(self, req, record):
         """Return the content related to given record as a list of 'lcg.Content' instances.
@@ -1982,7 +1972,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                           submit_buttons=self._submit_buttons(req, action),
                           show_cancel_button=True)
         if form.is_ajax_request(req):
-            return self._ajax_response(req, form)
+            return wiking.ajax_response(req, form)
         if req.param('_cancel'):
             # Check this AFTER AJAX handling, because AJAX requests have
             # all submit button parameters set.
@@ -2031,7 +2021,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                           submit_buttons=self._submit_buttons(req, action, record),
                           show_cancel_button=True)
         if form.is_ajax_request(req):
-            return self._ajax_response(req, form)
+            return wiking.ajax_response(req, form)
         if req.param('_cancel'):
             # Check this AFTER AJAX handling, because AJAX requests have
             # all submit button parameters set.

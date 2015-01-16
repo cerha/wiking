@@ -1,4 +1,4 @@
-# Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Brailcom, o.p.s.
+# Copyright (C) 2006-2015 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -1970,6 +1970,23 @@ def serve_file(req, path, content_type=None, filename=None, lock=False, headers=
                            content_type=content_type, content_length=content_length,
                            last_modified=datetime.datetime.utcfromtimestamp(info.st_mtime),
                            filename=filename, headers=headers)
+
+def ajax_response(req, form):
+    """Call form.ajax_response() and translate the result to a Wiking response.
+    
+    Arguments:
+       req -- 'wiking.Request' instance.
+       form -- 'pytis.web.EditForm' instance.
+
+    """
+    try:
+        response = form.ajax_response(req)
+    except pw.BadRequest:
+        raise wiking.BadRequest()
+    if isinstance(response, lcg.Content):
+        return response
+    else:
+        return wiking.Response(json.dumps(response), content_type='application/json')
 
 def timeit(func, *args, **kwargs):
     """Measure the function execution time.
