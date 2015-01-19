@@ -4743,13 +4743,20 @@ class ContactForm(wiking.Module, Embeddable):
               compact=True, not_null=True),
     )
 
+    def _check_email(self, record):
+        if not record.req().param('_pytis_form_update_request'):
+            ok, error = wiking.validate_email_address(record['email'].value())
+            if not ok:
+                return ('email', error)
+
     def embed(self, req):
         if req.param('contact_form_submission') == 'success':
             return (lcg.p(lcg.strong(_("Thank you for contacting us!")),
                           id='contact-form-response'),
                     lcg.p(_("We will process your enquiry at the nearest occasion."),
                           id='contact-form-response-text'))
-        form = pytis.web.VirtualForm(req, wiking.cfg.resolver, dict(fields=self._FIELDS),
+        form = pytis.web.VirtualForm(req, wiking.cfg.resolver, dict(fields=self._FIELDS,
+                                                                    check=(self._check_email,)),
                                      handler=req.uri(), submit_buttons=(('submit', _("Submit")),),
                                      show_reset_button=False)
         if form.is_ajax_request(req):
