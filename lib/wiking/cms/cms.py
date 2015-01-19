@@ -47,7 +47,7 @@ import json
 
 import pytis.data
 import pytis.util
-from pytis.util import OPERATIONAL, Attribute, Structure, format_byte_size, log
+from pytis.util import OPERATIONAL, Attribute, Structure, format_byte_size, log, find
 from pytis.presentation import computer, CodebookSpec, Field, ColumnLayout, Action
 
 CHOICE = pp.SelectionType.CHOICE
@@ -2630,7 +2630,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                 filename = row['cover_image_filename'].value()
                 resources.extend(lcg.Container(content).resources())
                 if filename:
-                    cover_image = pytis.util.find(filename, resources, key=lambda r: r.filename())
+                    cover_image = find(filename, resources, key=lambda r: r.filename())
                 content.insert(0, self._publication_info(req, record, online=False))
                 if toc:
                     content.append(lcg.Section(_("Table of Contents"), lcg.NodeIndex(),
@@ -4736,9 +4736,9 @@ class ContactForm(wiking.Module, Embeddable):
     _TITLE = _("Contact Form")
     _FIELDS = (
         Field('name', _("Your Name"), width=20, not_null=True),
+        Field('company', _("Company or Organization"), width=20),
         Field('email', _("Your e-mail address"), width=20, not_null=True),
         Field('phone', _("Your phone number"), width=20),
-        Field('subject', _("Subject"), width=50),
         Field('message', _("Your Message"), width=67, height=10, 
               compact=True, not_null=True),
     )
@@ -4751,12 +4751,13 @@ class ContactForm(wiking.Module, Embeddable):
             return wiking.ajax_response(req, form)
         if req.param('submit') and form.validate(req):
             record = form.row()
-            text = lcg.format("%s: %s\n%s: %s\n%s: %s\n%s: %s\n\n%s",
-                              _("Name"), record['name'].value(),
-                              _("E-mail"), record['email'].value(),
-                              _("Phone"), record['phone'].value(),
-                              _("Subject"), record['subject'].value(),
-                              record['message'].value())
+            text = lcg.concat([lcg.format("%s: %s\n", label, record[field].export())
+                               for field, label in (
+                                       ('name', _("Name")),
+                                       ('company', _("Company")),
+                                       ('email', _("E-mail")),
+                                       ('phone', _("Phone")),
+                               )], "\n", record['message'].value())
             address = wiking.cfg.webmaster_address
             error = wiking.send_mail(address, sender=wiking.cfg.default_sender_address,
                                      subject=_("Contact Form Enquiry from %s",
