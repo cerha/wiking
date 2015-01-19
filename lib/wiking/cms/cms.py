@@ -4744,6 +4744,11 @@ class ContactForm(wiking.Module, Embeddable):
     )
 
     def embed(self, req):
+        if req.param('contact_form_submission') == 'success':
+            return (lcg.p(lcg.strong(_("Thank you for contacting us!")),
+                          id='contact-form-response'),
+                    lcg.p(_("We will process your enquiry at the nearest occasion."),
+                          id='contact-form-response-text'))
         form = pytis.web.VirtualForm(req, wiking.cfg.resolver, dict(fields=self._FIELDS),
                                      handler=req.uri(), submit_buttons=(('submit', _("Submit")),),
                                      show_reset_button=False)
@@ -4770,10 +4775,8 @@ class ContactForm(wiking.Module, Embeddable):
                               "If the problem persists, contact %s." % address))
                 log(OPERATIONAL, "Error sending mail to %s:" % address, error)
             else:
-                return (lcg.p(lcg.strong(_("Thank you for contacting us!")),
-                              id='contact-form-response'),
-                        lcg.p(_("We will process your enquiry at the nearest occasion."),
-                              id='contact-form-response-text'))
+                # Protect against multiple submissions by POST/Redirect/GET.
+                raise wiking.Redirect(req.uri(), contact_form_submission='success')
         return [form]
 
 
