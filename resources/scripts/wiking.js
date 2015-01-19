@@ -56,7 +56,7 @@ wiking.Handler = Class.create(lcg.KeyHandler, {
 	$super();
 	var menu = $('menu');
 	if (menu) {
-	    var main_menu = new wiking.MainMenu(menu);
+	    var main_menu = new wiking.MainMenu(menu.down('.main-menu-widget'));
 	    var submenu = $('submenu');
 	    if (submenu) {
 		var tree_menu = lcg.widget_instance(submenu.down('.foldable-tree-widget'));
@@ -136,7 +136,7 @@ wiking.Handler = Class.create(lcg.KeyHandler, {
 	} else {
 	    var menu = $('menu');
 	    if (menu) {
-		lcg.widget_instance(menu).focus();
+		lcg.widget_instance(menu.down('.main-menu-widget')).focus();
 	    }
 	}
     },
@@ -152,13 +152,19 @@ wiking.Handler = Class.create(lcg.KeyHandler, {
     
 });
 
-wiking.MainMenu = Class.create(lcg.NotebookMenu, {
+wiking.MainMenu = Class.create(lcg.Menu, {
+
+    _MANAGE_TABINDEX: false,
     
-    keymap: function ($super) {
-	var keymap = $super();
-	keymap.Down = this.cmd_submenu;
-	keymap.Escape = this.cmd_quit;
-	return keymap;
+    keymap: function () {
+	return {
+	    'Left': this.cmd_prev,
+	    'Right': this.cmd_next,
+	    'Enter': this.cmd_activate,
+	    'Space': this.cmd_activate,
+	    'Down': this.cmd_submenu,
+	    'Escape': this.cmd_quit
+	};
     },
     
     cmd_submenu: function (item) {
@@ -167,12 +173,12 @@ wiking.MainMenu = Class.create(lcg.NotebookMenu, {
 	}
     },
 
+    cmd_activate: function (item) {
+	self.location = item.down('a').getAttribute('href');
+    },
+
     cmd_quit: function (item) {
 	this.set_focus($('main-heading'));
     }
-    
+
 });
-
-
-
-
