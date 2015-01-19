@@ -295,7 +295,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
                          style=(item is last and last_style or style))
                     for item in items]
             title = g.a(_("Main navigation") + ':', name='main-navigation', accesskey="3")
-            return concat(g.h(title, 3), g.div(g.ul(*menu), cls='main-menu-widget'))
+            return concat(g.h(title, 3), g.div(g.ul(*menu), id='main-menu'))
         else:
             return None
 

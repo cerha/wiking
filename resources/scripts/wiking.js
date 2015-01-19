@@ -54,9 +54,9 @@ wiking.Handler = Class.create(lcg.KeyHandler, {
     initialize: function ($super) {
 	// Constructor (called on page load).
 	$super();
-	var menu = $('menu');
+	var menu = $('main-menu');
 	if (menu) {
-	    var main_menu = new wiking.MainMenu(menu.down('.main-menu-widget'));
+	    var main_menu = new wiking.MainMenu(menu);
 	    var submenu = $('submenu');
 	    if (submenu) {
 		var tree_menu = lcg.widget_instance(submenu.down('.foldable-tree-widget'));
