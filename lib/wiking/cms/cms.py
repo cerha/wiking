@@ -4770,9 +4770,10 @@ class ContactForm(wiking.Module, Embeddable):
                               "If the problem persists, contact %s." % address))
                 log(OPERATIONAL, "Error sending mail to %s:" % address, error)
             else:
-                req.message(_("Thank you for contacting us!"))
-                req.message(_("We will process your enquiry at the nearest occasion."))
-                raise wiking.Redirect(req.uri())
+                return (lcg.p(lcg.strong(_("Thank you for contacting us!")),
+                              id='contact-form-response'),
+                        lcg.p(_("We will process your enquiry at the nearest occasion."),
+                              id='contact-form-response-text'))
         return [form]
 
 
