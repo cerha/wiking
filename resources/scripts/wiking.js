@@ -134,9 +134,9 @@ wiking.Handler = Class.create(lcg.KeyHandler, {
 	if (submenu) {
 	    lcg.widget_instance(submenu.down('.foldable-tree-widget')).focus();
 	} else {
-	    var menu = $('menu');
+	    var menu = $('main-menu');
 	    if (menu) {
-		lcg.widget_instance(menu.down('.main-menu-widget')).focus();
+		lcg.widget_instance(menu).focus();
 	    }
 	}
     },
@@ -167,6 +167,16 @@ wiking.MainMenu = Class.create(lcg.Menu, {
 	};
     },
     
+    init_items: function ($super, ul, parent) {
+	ul.setAttribute('role', 'menubar');
+	return $super(ul, parent);
+    },
+
+    init_item: function ($super, item, prev, parent) {
+	$super(item, prev, parent);
+	item.setAttribute('role', 'menuitemradio');
+    },
+    
     cmd_submenu: function (item) {
 	if (item._lcg_submenu !== null) {
 	    this.set_focus(item._lcg_submenu[0]);
@@ -174,7 +184,7 @@ wiking.MainMenu = Class.create(lcg.Menu, {
     },
 
     cmd_activate: function (item) {
-	self.location = item.down('a').getAttribute('href');
+	self.location = item.getAttribute('href');
     },
 
     cmd_quit: function (item) {
