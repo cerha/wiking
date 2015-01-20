@@ -174,7 +174,7 @@ wiking.MainMenu = Class.create(lcg.Menu, {
 
     init_item: function ($super, item, prev, parent) {
 	$super(item, prev, parent);
-	item.setAttribute('role', 'menuitemradio');
+	item.setAttribute('role', 'menuitem');
     },
     
     cmd_submenu: function (item) {
