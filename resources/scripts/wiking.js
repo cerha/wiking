@@ -157,18 +157,24 @@ wiking.MainMenu = Class.create(lcg.Menu, {
     _MANAGE_TABINDEX: false,
     
     keymap: function () {
+	// Arrow keys are duplicated with Ctrl-Shift- to get them accessible to VoiceOver
+	// users as VO doesn't pass single arrow keypresses to the application.
 	return {
 	    'Left': this.cmd_prev,
+	    'Ctrl-Shift-Left': this.cmd_prev,
 	    'Right': this.cmd_next,
+	    'Ctrl-Shift-Right': this.cmd_next,
 	    'Enter': this.cmd_activate,
 	    'Space': this.cmd_activate,
 	    'Down': this.cmd_submenu,
+	    'Ctrl-Shift-Down': this.cmd_submenu,
 	    'Escape': this.cmd_quit
 	};
     },
     
     init_items: function ($super, ul, parent) {
-	ul.setAttribute('role', 'menubar');
+	this.element.setAttribute('role', 'menubar');
+	ul.setAttribute('role', 'presentation');
 	return $super(ul, parent);
     },
 
