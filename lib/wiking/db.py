@@ -792,7 +792,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                 immediate_filters=wiking.cfg.immediate_filters,
                 actions=(), # Display no actions by default, rather than just spec actions.
                 cell_editable=lambda *args: self._cell_editable(req, *args),
-                expand_row=(lambda *args: self._expand_row(req, *args)
+                expand_row=((lambda *args: self._expand_row(req, *args))
                             if self._ROW_EXPANSION else None),
                 async_row_expansion = self._ASYNC_ROW_EXPANSION,
                 on_update_row=lambda record: self._do_update(req, record)
@@ -849,7 +849,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         return False
 
     def _expand_row(self, req, record):
-        """Retrun lcg.Content for expansion of given record in BrowseForm.
+        """Return lcg.Content for expansion of given record in BrowseForm.
         
         Row expansion is additional content which may be displayed within table
         form below the actual row.  This content is initially collapsed, but
