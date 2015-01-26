@@ -251,6 +251,10 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
     "If true, action menu created also for each table row in BrowseForm/ListView forms."
     _ASYNC_LOAD = False
     "If true, form data are loaded asynchronously through AJAX."
+    _ROW_EXPANSION = False
+    "If true, BrowseForm rows can be expanded (see '_expand_row()' method)."
+    _ASYNC_ROW_EXPANSION = False
+    "If true, (and _ROW_EXPANSION is True) rows are expanded asynchronously (on demand)."
 
     _SUBMIT_BUTTONS = {}
     "Dictionary of form buttons keyed by action name (see '_submit_buttons()' method)."
@@ -788,6 +792,9 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                 immediate_filters=wiking.cfg.immediate_filters,
                 actions=(), # Display no actions by default, rather than just spec actions.
                 cell_editable=lambda *args: self._cell_editable(req, *args),
+                expand_row=(lambda *args: self._expand_row(req, *args)
+                            if self._ROW_EXPANSION else None),
+                async_row_expansion = self._ASYNC_ROW_EXPANSION,
                 on_update_row=lambda record: self._do_update(req, record)
             )
             kwargs = dict(default_kwargs, **kwargs)
@@ -840,6 +847,21 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
     def _cell_editable(self, req, record, cid):
         """Retrun True it table cell of given column id in given record is editable inline."""
         return False
+
+    def _expand_row(self, req, record):
+        """Retrun lcg.Content for expansion of given record in BrowseForm.
+        
+        Row expansion is additional content which may be displayed within table
+        form below the actual row.  This content is initially collapsed, but
+        may be expanded by the user.  By default, table forms don't have
+        expandable rows, but you may set the module's constants
+        '_ROW_EXPANSION' (and optionally '_ASYNC_ROW_EXPANSION') to true to
+        enable expansion for a particular Wiking module.  When enabled, this
+        method must be overriden to return the actual content for a particular
+        form row.
+
+        """
+        return None
 
     def _layout_instance(self, layout):
         if layout is None:
