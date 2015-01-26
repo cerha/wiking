@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2006-2014 Brailcom, o.p.s.
+# Copyright (C) 2006-2015 Brailcom, o.p.s.
 #
 # COPYRIGHT NOTICE
 #
@@ -243,6 +243,7 @@ class RoleSetsCycleCheck(sql.SQLFunction):
     name = 'role_sets_cycle_check'
     arguments = ()
     result_type = pytis.data.Boolean()
+    depends_on = (RoleSets,)
 
 class RoleSetsTriggerAfter(sql.SQLPlFunction, sql.SQLTrigger):
     name = 'role_sets_trigger_after'
@@ -494,6 +495,7 @@ class CmsVPages(CommonAccesRights, sql.SQLView):
               and t.parents_published != x.parents_published;
     )""",)
     delete_order = (CmsPages,)
+    depends_on = (CmsPageTreePublished,)
 
 class CmsPageHistory(CommonAccesRights, sql.SQLTable):
     name = 'cms_page_history'
