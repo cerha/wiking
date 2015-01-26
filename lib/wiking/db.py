@@ -568,7 +568,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                      self._view.actions() +
                      self._default_actions_last(req, record))
 
-    def _form_actions(self, req, record, form):
+    def _form_actions(self, req, record, form, exclude=()):
         """Return a list of actions available in form user interface.
 
         Override this method when you need to modify the list of actions
@@ -584,13 +584,11 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
 
         """
         if isinstance(form, pw.ListView) and self._view.list_layout():
-            exclude = ('list', 'view',)
+            exclude += ('list', 'view',)
         elif isinstance(form, pw.BrowseForm):
-            exclude = ('list',)
+            exclude += ('list',)
         elif isinstance(form, pw.ShowForm):
-            exclude = ('view',)
-        else:
-            exclude = ()
+            exclude += ('view',)
         # Action context filtering is redundant here (it is done by the
         # form as well), but we need it here because `_authorized()'
         # methods in applications may historically not expect out of
@@ -603,7 +601,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                 if action.id() not in exclude and action.context() == required_context
                 and self._authorized(req, action=action.id(), record=record)]
 
-    def _form_actions_argument(self, req):
+    def _form_actions_argument(self, req, exclude=()):
         """Return a callable to be passed to 'actions' form constructor argument.
 
         This method returns a callable object to be passed to 'actions'
@@ -615,7 +613,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         available in a form.
 
         """
-        return lambda form, record: self._form_actions(req, record, form)
+        return lambda form, record: self._form_actions(req, record, form, exclude=exclude)
 
     def _insert_enabled(self, req):
         """Return true iff the default 'insert' action is enabled for given request.
@@ -857,11 +855,27 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         expandable rows, but you may set the module's constants
         '_ROW_EXPANSION' (and optionally '_ASYNC_ROW_EXPANSION') to true to
         enable expansion for a particular Wiking module.  When enabled, this
-        method must be overriden to return the actual content for a particular
-        form row.
+        method is called to obtain the actual content displayed for a
+        particular row.
+
+        The default implementation of this method is to return a ShowForm
+        similar as for the 'view' action, but its layout is controlled
+        independently by the method '_expand_row_layout()' and additional
+        content is controlled by '_expand_row_view_form_content()'.
 
         """
-        return None
+        form = self._form(pw.ShowForm, req, record=record,
+                          layout=self._expand_row_layout(req, record),
+                          actions=self._form_actions_argument(req, exclude=('list',)))
+        return lcg.Container(self._expand_row_view_form_content(req, form, record))
+
+    def _expand_row_layout(self, req, record):
+        """Return layout of ShowForm displayed by default '_expand_row()' implementation."""
+        return self._layout(req, 'view', record)
+
+    def _expand_row_view_form_content(self, req, form, record):
+        """As '_view_form_content()', but specific for row expansion (see '_expand_row()')."""
+        return self._view_form_content(req, form, record)
 
     def _layout_instance(self, layout):
         if layout is None:
