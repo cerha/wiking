@@ -4173,7 +4173,7 @@ class NewsletterSubscription(CMSModule):
                 Field('newsletter_id', codebook='Newsletters'),
                 Field('uid', _("User"), codebook='Users',
                       inline_referer='user_login', inline_display='user_name'),
-                Field('email', _("E-mail"),),
+                Field('email', _("E-mail"), type=pd.Email()),
                 Field('timestamp', _("Since"), editable=pp.Editable.NEVER, default=now),
             )
             return self._inherited_fields(NewsletterSubscription.Spec, override=override)
@@ -4737,7 +4737,7 @@ class ContactForm(wiking.Module, Embeddable):
     _FIELDS = (
         Field('name', _("Your Name"), width=20, not_null=True),
         Field('company', _("Company or Organization"), width=20),
-        Field('email', _("Your e-mail address"), width=20, not_null=True),
+        Field('email', _("Your e-mail address"), type=pd.Email(), width=20, not_null=True),
         Field('phone', _("Your phone number"), width=20),
         Field('message', _("Your Message"), width=67, height=10, 
               compact=True, not_null=True),
