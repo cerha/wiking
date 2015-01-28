@@ -364,7 +364,8 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             result.append(g.div((g.h(title, 3),
                                  g.div(content.export(context), cls='panel-content')),
                                 id='panel-' + self._safe_css_id(panel.id()), cls=cls,
-                                title=panel.accessible_title()))
+                                role='complementary',
+                                aria_label=panel.accessible_title()))
         extra_content = context.application.right_panels_bottom_content(req)
         if extra_content:
             result.append(g.div(extra_content.export(context), cls='panels-bottom-content'))
