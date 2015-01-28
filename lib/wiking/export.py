@@ -188,7 +188,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             else:
                 attr = {}
             if name in self._PART_TITLE:
-                attr['title'] = self._PART_TITLE[name]
+                attr['aria_label'] = self._PART_TITLE[name]
             if name in self._PART_LABELEDBY:
                 attr['aria_labeledby'] = self._PART_LABELEDBY[name]
             if name in self._LANDMARKS:
