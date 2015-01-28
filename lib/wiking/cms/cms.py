@@ -1566,9 +1566,9 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
              and not (record['published'].value() and record['parents_published'].value())
              and wiking.module.Application.preview_mode_possible(req)
              and not wiking.module.Application.preview_mode(req))):
-            raise AuthorizationError(_("The page is not visible in production mode. "
-                                        "You need to switch to the preview mode "
-                                        "to be able to access it."))
+            raise wiking.AuthorizationError(_("The page is not visible in production mode. "
+                                              "You need to switch to the preview mode "
+                                              "to be able to access it."))
         return super(Pages, self)._authorization_error(req, record=record, **kwargs)
 
     def _authorized(self, req, action, record=None, **kwargs):
@@ -2228,7 +2228,6 @@ class CmsPageExcerpts(EmbeddableCMSModule, BrailleExporter):
     def _redirect_after_delete_uri(self, req, record, **kwargs):
         return self._binding_parent_uri(req), kwargs
 
-
     def store_excerpt(self, req, page_id, lang, title, content, transaction=None):
         row = pd.Row((('page_id', page_id), ('lang', lang),
                       ('title', title), ('content', content),))
@@ -2399,7 +2398,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
     def epub_option_fields(cls, virtual=False):
         return (
             Field('allow_interactivity', _("Allow interactivity"), virtual=virtual,
-                  type=pd.Boolean(), 
+                  type=pd.Boolean(),
                   descr=_("Interactive features (exercises) currently don't work "
                           "in iBooks, so it is safer to leave this option unchecked. "
                           "The exercises will remain in the publication, but they "
@@ -2509,8 +2508,8 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                         # presentation of a document an the "log" here is a sequence
                         # of messages recorded during the export.
                         _("Export Progress Log"),
-                        (lambda r: HtmlRenderer(lambda e, c:
-                                                c.generator().div('', cls='export-progress-log')),),
+                        (lambda r: wiking.HtmlRenderer(
+                            lambda e, c: c.generator().div('', cls='export-progress-log')),),
                     ),
                 ),
             ),
@@ -2670,7 +2669,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
                     else:
                         raise Exception("Unable to retrieve resource %s." % resource.filename())
         exporter = EpubExporter(translations=wiking.cfg.translation_path)
-        context = exporter.context(publication, req.preferred_language(), 
+        context = exporter.context(publication, req.preferred_language(),
                                    allow_interactivity=bool(req.param('allow_interactivity')))
         result = exporter.export(context)
         return result, context.messages()
@@ -4157,11 +4156,11 @@ class Newsletters(EmbeddableCMSModule):
         return wiking.module.NewsletterSubscription.unsubscribe(req, record)
         
     def action_image(self, req, record):
-        #if req.cached_since(last_modified):
-        #    raise wiking.NotModified()
+        # if req.cached_since(last_modified):
+        #     raise wiking.NotModified()
         value = record['image'].value()
         return Response(value.buffer(), content_type='image/%s' % value.image().format.lower())
-        #last_modified=last_modified)
+        # last_modified=last_modified)
 
 
 class NewsletterSubscription(CMSModule):
@@ -4500,7 +4499,7 @@ class NewsletterEditions(CMSModule):
         if req.param('_cancel'):
             raise Redirect(req.uri())
         form = wiking.InputForm(req, dict(
-            fields=(Field('addresses', _("Addresses"), width=60, height=4, type=pd.String(), 
+            fields=(Field('addresses', _("Addresses"), width=60, height=4, type=pd.String(),
                           computer=computer(lambda r: r.req().user().email()), editable=ALWAYS,
                           descr=_("Type in e-mail addresses separated by colons, "
                                   "spaces or new lines. The newsletter will be sent "
@@ -4603,11 +4602,11 @@ class NewsletterPosts(CMSModule):
         return self._data.get_rows(edition_id=edition_id)
 
     def action_image(self, req, record):
-        #if req.cached_since(last_modified):
-        #    raise wiking.NotModified()
+        # if req.cached_since(last_modified):
+        #     raise wiking.NotModified()
         value = record['image'].value()
         return Response(value.buffer(), content_type='image/%s' % value.image().format.lower())
-        #last_modified=last_modified)
+        # last_modified=last_modified)
 
 class Discussions(ContentManagementModule, EmbeddableCMSModule):
     class Spec(Specification):
@@ -4739,7 +4738,7 @@ class ContactForm(wiking.Module, Embeddable):
         Field('company', _("Company or Organization"), width=20),
         Field('email', _("Your e-mail address"), type=pd.Email(), width=20, not_null=True),
         Field('phone', _("Your phone number"), width=20),
-        Field('message', _("Your Message"), width=67, height=10, 
+        Field('message', _("Your Message"), width=67, height=10,
               compact=True, not_null=True),
     )
 
@@ -4764,12 +4763,11 @@ class ContactForm(wiking.Module, Embeddable):
         if req.param('submit') and form.validate(req):
             record = form.row()
             text = lcg.concat([lcg.format("%s: %s\n", label, record[field].export())
-                               for field, label in (
-                                       ('name', _("Name")),
-                                       ('company', _("Company")),
-                                       ('email', _("E-mail")),
-                                       ('phone', _("Phone")),
-                               )], "\n", record['message'].value())
+                               for field, label in (('name', _("Name")),
+                                                    ('company', _("Company")),
+                                                    ('email', _("E-mail")),
+                                                    ('phone', _("Phone")),)],
+                              "\n", record['message'].value())
             address = wiking.cfg.webmaster_address
             error = wiking.send_mail(address, sender=wiking.cfg.default_sender_address,
                                      subject=_("Contact Form Enquiry from %s",
