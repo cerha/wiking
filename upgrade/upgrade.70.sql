@@ -1,3 +1,4 @@
+CREATE OR REPLACE FUNCTION "public"."f_update_cached_tables"("schema_" TEXT, "name_" TEXT, "top_" BOOLEAN) RETURNS void LANGUAGE plpgsql AS $$
 declare
   processed_ boolean;
   pg_class_oid oid;
@@ -63,3 +64,4 @@ begin
     perform f_update_cached_tables (dep_schema, dep_name, false);
   end loop;
 end;
+$$;
