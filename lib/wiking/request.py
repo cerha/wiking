@@ -1,4 +1,4 @@
-# Copyright (C) 2006-2014 Brailcom, o.p.s.
+# Copyright (C) 2006-2015 Brailcom, o.p.s.
 # Author: Tomas Cerha <cerha@brailcom.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -107,7 +107,7 @@ class ServerInterface(pytis.web.Request):
 
     def has_param(self, name):
         """Return true if the parameter 'name' was sent with the request."""
-        pass
+        return name in self.params()
 
     def set_param(self, name, value):
         """Set the value of given request parameter as if it was passed.

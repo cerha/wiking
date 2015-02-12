@@ -2260,7 +2260,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
 
 
 class RssModule(object):
-    """Deprecated in favour od PytisRssModule defined below."""
+    """Deprecated in favour of PytisRssModule defined below."""
     _RSS_TITLE_COLUMN = None
     _RSS_DESCR_COLUMN = None
     _RSS_DATE_COLUMN = None

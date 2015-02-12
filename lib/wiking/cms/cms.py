@@ -1639,15 +1639,13 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
             return None
         identifier = req.unresolved_path[0]
         # Recognize special path of RSS channel as '<identifier>.<lang>.rss'.
-        if identifier.endswith('.rss'):
-            req.set_param('action', 'rss')
-            identifier = identifier[:-4]
-            if len(identifier) > 3 and identifier[-3] == '.' and identifier[-2:].isalpha():
-                row = self._data.get_row(site=wiking.cfg.server_hostname,
-                                         identifier=identifier, lang=str(identifier[-2:]))
-                if row:
-                    del req.unresolved_path[0]
-                    return row
+        if identifier.endswith('.rss') and len(identifier) > 7 and identifier[-7] == '.':
+            row = self._data.get_row(site=wiking.cfg.server_hostname,
+                                     identifier=identifier[:-7], lang=str(identifier[-6:-4]))
+            if row:
+                req.set_param('action', 'rss')
+                del req.unresolved_path[0]
+                return row
         # Resolve the unpublished language variants when the preview mode is on
         # or when the current user is authorized to switch.
         preview_mode = (wiking.module.Application.preview_mode(req)

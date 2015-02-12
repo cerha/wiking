@@ -1,4 +1,4 @@
-# Copyright (C) 2010, 2011, 2012, 2013, 2014 Brailcom, o.p.s.
+# Copyright (C) 2010, 2011, 2012, 2013, 2014, 2015 Brailcom, o.p.s.
 # Author: Tomas Cerha <cerha@brailcom.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -94,10 +94,7 @@ class WsgiRequest(wiking.Request):
             return value
 
     def params(self):
-        return tuple(k for k in self._raw_params.keys() if k not in self._unset_params)
-
-    def has_param(self, name):
-        return name in self._raw_params and name not in self._unset_params
+        return tuple(set(self._raw_params).union(set(self._params)) - set(self._unset_params))
 
     def set_param(self, name, value):
         if value is None:
