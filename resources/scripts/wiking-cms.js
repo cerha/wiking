@@ -1,6 +1,6 @@
 /* -*- coding: utf-8 -*-
  *
- * Copyright (C) 2014 Brailcom, o.p.s.
+ * Copyright (C) 2014, 2015 Brailcom, o.p.s.
  * Author: Tomas Cerha
  *
  * This program is free software; you can redistribute it and/or modify
@@ -38,11 +38,9 @@ wiking.cms.PublicationExportForm = Class.create({
 	this.form = form;
 	this.braille_options = form.down('.label-braille-export-options');
 	this.epub_options = form.down('.label-epub-export-options');
-	if (form.down('input:checked[name="format"]').value === 'braille') {
-	    this.epub_options.hide();
-	} else {
-	    this.braille_options.hide();
-	}	    
+	this.pdf_options = form.down('.label-pdf-export-options');
+        var format = form.down('input:checked[name="format"]').value;
+        this.show_options (format);
 	form.on('change', 'input[name="format"]', this.on_format_change.bind(this));
 	form.down('select[name="printer"] option[value=""]').remove();
 	var test_button = form.down('button[type="submit"][name="test"]');
@@ -53,21 +51,25 @@ wiking.cms.PublicationExportForm = Class.create({
     },
 
     on_format_change: function (event, element) {
-	if (event.element().value === 'braille') {
-	    // The effect seems strange because the fieldset label moves beyond the box...
-	    //if (Effect !== undefined) {
-	    //    new Effect.SlideDown(this.braille_options, {duration: 0.2});
-	    //} else {
-	    this.braille_options.show();
+        this.show_options (event.element().value);
+    },
+
+    show_options: function (format) {
+        if (format != 'epub') {
 	    this.epub_options.hide();
-	    //}
-	} else {
-	    //if (Effect !== undefined) {
-	    //	new Effect.SlideUp(this.braille_options, {duration: 0.2});
-	    //} else {
+        }
+        if (format != 'braille') {
 	    this.braille_options.hide();
+        }
+        if (format != 'pdf') {
+            this.pdf_options.hide ();
+        }
+        if (format === 'epub') {
 	    this.epub_options.show();
-	    //}
+        } else if (format === 'braille') {
+	    this.braille_options.show();
+	} else if (format === 'pdf') {
+	    this.pdf_options.show();
 	}
     },
 

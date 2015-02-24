@@ -2183,6 +2183,38 @@ class BrailleExporter(wiking.Module):
         return result, context.messages()
 
 
+class PDFExporter(wiking.Module):
+
+    @classmethod
+    def pdf_option_fields(cls, virtual=False):
+        return (
+            Field('zoom', _("Zoom"), virtual=virtual, type=pd.Float(), default=1),
+        )
+    PDF_EXPORT_OPTIONS_FIELDSET = FieldSet(
+        _("PDF Export Options"),
+        ('zoom',),
+    )
+
+    def _export_pdf(self, req, publication):
+        zoom = req.param('zoom')
+        try:
+            zoom = float(zoom)
+        except (TypeError, ValueError):
+            zoom = 1
+        if zoom < 0.1:
+            zoom = 0.1
+        elif zoom > 10:
+            zoom = 10
+        exporter = lcg.pdf.PDFExporter(translations=wiking.cfg.translation_path)
+        presentation = lcg.Presentation()
+        presentation.font_size = zoom
+        context = exporter.context(publication, req.preferred_language(),
+                                   presentation=lcg.PresentationSet(((presentation,
+                                                                      lcg.TopLevelMatcher(),),)))
+        result = exporter.export(context, recursive=True)
+        return result, context.messages()
+
+
 class CmsPageExcerpts(EmbeddableCMSModule, BrailleExporter):
     
     _OMIT_FOOTER = True
@@ -2245,7 +2277,7 @@ class CmsPageExcerpts(EmbeddableCMSModule, BrailleExporter):
             return wiking.Response(data, content_type='application/octet-stream',
                                    filename='%s.brl' % record['title'].value())
 
-class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
+class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter, PDFExporter):
     """CMS module to manage electronic publications.
 
     A publication is created as a hierarchy of CMS pages.  The top level page
@@ -2496,11 +2528,13 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
             req, dict(
                 fields=(
                     Field('format', _("Format"), enumerator=PublicationExports.Formats),
-                ) + self.braille_option_fields() + self.epub_option_fields(),
+                ) +
+                self.braille_option_fields() + self.epub_option_fields() + self.pdf_option_fields(),
                 layout=(
                     'format',
                     self.BRAILLE_EXPORT_OPTIONS_FIELDSET,
                     self.EPUB_EXPORT_OPTIONS_FIELDSET,
+                    self.PDF_EXPORT_OPTIONS_FIELDSET,
                     FieldSet(
                         # Translators: "Export" in the sense of generating an output
                         # presentation of a document an the "log" here is a sequence
@@ -2680,6 +2714,8 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
             return self._export_epub(req, record, publication)
         elif export_format == 'braille':
             return self._export_braille(req, publication)
+        elif export_format == 'pdf':
+            return self._export_pdf(req, publication)
 
     def submenu(self, req):
         # TODO: This partially duplicates Pages.menu() - refactor?
@@ -2727,6 +2763,9 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter):
             elif export_format == 'braille':
                 content_type = 'application/octet-stream'
                 ext = 'brl'
+            elif export_format == 'pdf':
+                content_type = 'application/pdf'
+                ext = 'pdf'
             return wiking.Response(data, content_type=content_type,
                                    filename='%s.%s' % (record['identifier'].value(), ext))
 
@@ -2858,6 +2897,7 @@ class PublicationExports(ContentManagementModule):
             # ('html', _("HTML")),
             ('epub', _("EPUB")),
             ('braille', _("Braille")),
+            ('pdf', _("PDF")),
         )
         default = 'epub'
         selection_type = pp.SelectionType.RADIO
@@ -2898,7 +2938,8 @@ class PublicationExports(ContentManagementModule):
             )
             return (self._inherited_fields(PublicationExports.Spec, override=override) +
                     BrailleExporter.braille_option_fields(virtual=True) +
-                    Publications.epub_option_fields(virtual=True))
+                    Publications.epub_option_fields(virtual=True) +
+                    Publications.pdf_option_fields(virtual=True))
         layout = ('format', 'version', 'timestamp', 'bytesize', 'public', 'notes')
         columns = ('format', 'version', 'timestamp', 'bytesize', 'public')
         actions = (
@@ -2932,6 +2973,7 @@ class PublicationExports(ContentManagementModule):
             return ('format',
                     Publications.BRAILLE_EXPORT_OPTIONS_FIELDSET,
                     Publications.EPUB_EXPORT_OPTIONS_FIELDSET,
+                    Publications.PDF_EXPORT_OPTIONS_FIELDSET,
                     'version', 'public', 'notes')
         elif action == 'view':
             return (self.Spec.layout,
@@ -3059,6 +3101,8 @@ class PublicationExports(ContentManagementModule):
         elif export_format == 'braille':
             return wiking.serve_file(req, path, content_type='application/octet-stream',
                                      filename=filename_template % 'brl')
+        elif export_format == 'pdf':
+            raise wiking.AuthorizationError(_("PDF download not yet supported."))
 
     def exported_versions_list(self, req):
         def export(self, context, rows):
@@ -4559,14 +4603,14 @@ class NewsletterPosts(CMSModule):
                 if record['image_width'].value() is None: # Test width, big values are excluded...
                     return ''
                 g = context.generator()
+                style = ('margin-%s: 16px;' %
+                         ('left' if record['image_position'].value() == 'right' else 'right',))
                 return g.img(src='%s/posts/%s?action=image' % (context.req().uri(),
                                                                record['post_id'].value()),
                              align=record['image_position'].value(),
                              width=record['image_width'].value(),
                              height=record['image_height'].value(),
-                             style='margin-%s: 16px;' % (
-                                 'left' if record['image_position'].value() == 'right' else 'right'
-                             ),
+                             style=style,
                              alt='')
             return pp.ListLayout('title',
                                  content=(lambda r: wiking.HtmlRenderer(image, r),
