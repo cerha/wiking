@@ -178,7 +178,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             cls += ' with-submenu'
         if node.panels() and context.req().show_panels():
             cls += ' with-panels'
-        return dict(cls=cls)
+        return dict(cls=cls.strip() or None)
 
     def _part(self, name, context):
         content = getattr(self, '_' + name)(context)
