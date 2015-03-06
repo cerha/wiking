@@ -981,6 +981,11 @@ class Users(UserManagementModule, CachingPytisModule):
             return None
         return super(Users, self)._action_subtitle(req, action, record=record)
 
+    def _form_actions(self, req, record, form, exclude=()):
+        if req.path[0] == '_registration':
+            exclude += ('list',)
+        return super(Users, self)._form_actions(req, record, form, exclude=exclude)
+
     def _hidden_fields(self, req, action, record=None):
         fields = super(Users, self)._hidden_fields(req, action, record=record)
         if action == 'insert' and req.param('action') == 'reinsert':
