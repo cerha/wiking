@@ -2336,6 +2336,8 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter, PDFExpo
                       codebook='Attachments', value_column='attachment_id',
                       inline_referer='cover_image_filename',
                       runtime_filter=computer(self._attachment_filter), display='filename',
+                      # There are no atttachments to select on insert. TODO: allow uploading one?
+                      visible=computer(lambda r: not r.new()),
                       descr=_("Insert the image as an attachment and select it "
                               "from the list here.")),
                 Field('cover_image_filename'),
