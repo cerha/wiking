@@ -570,8 +570,7 @@ class Users(UserManagementModule, CachingPytisModule):
                       display=self._gender_display, prefer_display=True,
                       selection_type=pp.SelectionType.RADIO),
                 # Translators: E-mail address. Registration form field.
-                Field('email', _("E-mail"), width=36,
-                      type=pd.Email(), not_null=(not wiking.cms.cfg.login_is_email)),
+                Field('email', _("E-mail"), width=36, type=pd.Email(not_null=True)),
                 # Translators: Telephone number. Registration form field.
                 Field('phone', _("Phone")),
                 # Translators: Post address. Registration form field.
