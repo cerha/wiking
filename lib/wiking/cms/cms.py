@@ -2621,11 +2621,8 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter, PDFExpo
             # Use anchor to get <span id="watermark-..."> in HTML output.  This marks the values
             # for later substitution in PublicationExports.action_download().
             return lcg.Anchor('watermark-' + name, value)
-        content = [lcg.fieldset(fields(('title', 'description', 'author', 'contributor',
-                                        'illustrator', 'pubinfo', 'original_isbn',
-                                        'lang')))]
-        if record['copyright_notice'].value():
-            content.append(lcg.p(record['copyright_notice'].value()))
+        basic_fields = fields(('title', 'description', 'author', 'contributor',
+                               'illustrator', 'pubinfo', 'original_isbn', 'lang'))
         extra_fields = fields(('adapted_by', 'isbn',))
         if record['isbn'].value() is None:
             extra_fields.extend(fields(('uuid',)))
@@ -2638,11 +2635,17 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter, PDFExpo
             timestamp = now().strftime('%Y-%m-%d %H:%M:%S')
             extra_fields.append((_("Created") + ':',
                                  lcg.LocalizableDateTime(timestamp, utc=True)))
+        if record['original_isbn'].value() is None:
+            basic_fields.extend(extra_fields)
+            extra_fields = ()
+        content = [lcg.fieldset(basic_fields)]
+        if record['copyright_notice'].value():
+            content.append(lcg.p(record['copyright_notice'].value()))
         if extra_fields:
-            content.extend((
-                lcg.strong(_("Information about this adaptation of the work:")),
-                lcg.fieldset(extra_fields)
-            ))
+                content.extend((
+                    lcg.strong(_("Information about this adaptation of the work:")),
+                    lcg.fieldset(extra_fields)
+                ))
         if online and record['notes'].value():
             content.append(lcg.p(lcg.strong(_("Notes") + ':'), ' ', record['notes'].value()))
         # Checking 'format' request param is a quick hack - we currently only support
