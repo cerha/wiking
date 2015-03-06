@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Brailcom, o.p.s.
+# Copyright (C) 2006-2015 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -99,10 +99,10 @@ class Application(CookieAuthentication, wiking.Application):
     def preview_mode_possible(self, req):
         """Return true if the current user is allowed to switch to the preview mode.
 
-        Doesn't depend on the current mode, just indicates to possibility.
+        Doesn't depend on the current mode, just indicates the possibility.
 
         """
-        return req.check_roles(Roles.CONTENT_ADMIN) or req.__dict__.get('page_write_access')
+        return req.check_roles(Roles.CONTENT_ADMIN) or req.__dict__.get('page_write_access', False)
 
     def set_preview_mode(self, req, value):
         """Change the current state of preview mode.
