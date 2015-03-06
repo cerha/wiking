@@ -180,6 +180,10 @@ div.table-of-contents ul {
     padding-top: 0.2em;
     border-top: 1px solid $color.border;
 }
+.cms-page-actions.cms-publication-actions {
+    margin-top: 0;
+    border-top: none;
+}
 .cms-page-actions button.disabled span { 
     color: $color.foreground;
     opacity: 0.4;
