@@ -1326,7 +1326,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                 ContentField('_content', _("Content"), compact=True, height=20, width=80,
                              attachment_storage=self._attachment_storage),
                 ContentField('content'),
-                Field('comment', _("Comment"), virtual=True, width=70,
+                Field('comment', _("Comment"), virtual=True, width=70, type=pd.String(),
                       descr=_("Describe briefly the changes you made.")),
                 # Translators: "Module" is an independent reusable part of a computer program
                 # (here a module of Wiking CMS).
@@ -1391,7 +1391,8 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                               "its parent items to be actually available.")),
                 Field('published_since', _("Available since")),
                 Field('parents_published'),
-                Field('status', _("Status"), virtual=True, computer=computer(self._status)),
+                Field('status', _("Status"), virtual=True, type=pd.String(),
+                      computer=computer(self._status)),
                 # Field('grouping', virtual=True,
                 #      computer=computer(lambda r, tree_order: tree_order.split('.')[1])),
                 # Translators: Label of a selector of a group allowed to access the page read only.
@@ -2352,7 +2353,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter, PDFExpo
                       descr=_("Any other additional information about the "
                               "publication, such as names of translators, "
                               "reviewers etc.")),
-                Field('pubinfo', _("Publisher"), virtual=True,
+                Field('pubinfo', _("Publisher"), virtual=True, type=pd.String(),
                       computer=computer(self._pubinfo)),
                 Field('download_role_id', _("Download acces"), codebook='ApplicationRoles',
                       not_null=False, # Doesnt work: type=pd.String(not_null=False),
@@ -2785,8 +2786,9 @@ class PublicationChapters(NavigablePages):
             extra = (
                 Field('excerpt_title', _("Excerpt title"), virtual=True,
                       type=pd.String(not_null=True)),
-                ContentField('excerpt_content', _("Excerpt"), compact=True, height=20, width=80,
-                             attachment_storage=self._attachment_storage, virtual=True),
+                ContentField('excerpt_content', _("Excerpt"), compact=True,
+                             height=20, width=80, type=pd.String(), virtual=True,
+                             attachment_storage=self._attachment_storage),
             )
             return self._inherited_fields(PublicationChapters.Spec, override=override) + extra
         def _default_identifier(self, record, title):
