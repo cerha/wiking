@@ -312,6 +312,7 @@ class CmsVSessionLog(CommonAccesRights, sql.SQLView):
                       from_obj=[l.join(u, l.c.uid == u.c.uid).
                                 outerjoin(s, l.c.session_id == s.c.session_id)])
     insert_order = (CmsSessionLog,)
+    no_insert_columns = ('log_id',)
 
 #
 
