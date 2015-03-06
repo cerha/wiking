@@ -1940,6 +1940,15 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
         else:
             return content
 
+    def _page_actions_content(self, req, record):
+        # Create an empty show form just for the action menu.
+        actions = self._form_actions_argument(req)
+        form = self._form(pw.ShowForm, req, record=record, layout=(), actions=actions)
+        if any(a for a in actions(form, record) if a.name() != 'view'):
+            return [form]
+        else:
+            return []
+
     # Action handlers.
 
     def action_view(self, req, record):
@@ -1965,11 +1974,12 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
                         raise Redirect('/' + row['identifier'].value())
         if req.page_write_access or self.name() != 'Pages':
             # The above condition is just to avoid unnecessary slowdown in the simplest case...
-            actions = self._form_actions_argument(req)
-            form = self._form(pw.ShowForm, req, record=record, layout=(), actions=actions)
-            if any(a for a in actions(form, record) if a.name() != 'view'):
-                # Append an empty show form just for the action menu.
-                content.append(lcg.Container(form, id='cms-page-actions'))
+            actions = self._page_actions_content(req, record)
+            if actions:
+                name = ['cms-page-actions']
+                if record['kind'].value() != 'page':
+                    name.append('cms-%s-actions' % record['kind'].value())
+                content.append(lcg.Container(actions, name=name))
         if req.page_write_access:
             content.extend(self._related_content(req, record))
         return self._document(req, content, record)
@@ -2583,8 +2593,11 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter, PDFExpo
                 self._inner_page_content(req, record, preview=preview) +
                 [lcg.Section(_("Table of Contents"), lcg.NodeIndex(), in_toc=False),
                  wiking.module.PublicationExports.exported_versions_list(req),
-                 self._publication_export_form(req, record),
                  self.Navigation('bottom')])
+  
+    def _page_actions_content(self, req, record):
+        return ([self._publication_export_form(req, record)] +
+                super(Publications, self)._page_actions_content(req, record))
 
     def _publication_info(self, req, record, online=True):
         def format(fid):
