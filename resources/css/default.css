@@ -8,8 +8,9 @@
 }
 #messages .info { 
     color: $color.message-fg;
-    background-color: $color.message-bg;
     border-color: $color.message-border;
+    padding-left: 24px;
+    background: $color.message-bg url(ok.png) 2px center no-repeat;
 }
 #messages .error, #messages .warning { 
     color: $color.error-fg;
@@ -26,7 +27,7 @@ img { position: relative; } /* MSIE float workaround */
     padding-left: 32px;
     border: dotted 2px $color.message-border;
     /* background-color: $color.background; */
-    background-image: url(/_resources/info.png);
+    background-image: url(info.png);
     background-position: 2px center;
     background-repeat: no-repeat;
 }
@@ -189,36 +190,36 @@ div.table-of-contents ul {
     opacity: 0.4;
 }
 .cms-page-actions button.action-update span { 
-    background-image: url(/_resources/edit.png);
+    background-image: url(edit.png);
     padding-left: 19px;
 }
 .cms-page-actions button.action-options span { 
-    background-image: url(/_resources/properties.png);
+    background-image: url(properties.png);
     padding-left: 19px;
 }
 .cms-page-actions button.action-commit span { 
-    background-image: url(/_resources/publish.png);
+    background-image: url(publish.png);
     padding-left: 19px;
 }
 .cms-page-actions button.action-revert span { 
-    background-image: url(/_resources/undo.png);
+    background-image: url(undo.png);
     padding-left: 19px;
 }
 .cms-page-actions button.action-attachments span { 
-    background-image: url(/_resources/attachment.png);
+    background-image: url(attachment.png);
     padding-left: 19px;
 }
 .list-form-controls button.prev-page-button span {
-    background-image: url(/_resources/previous.png);
+    background-image: url(previous.png);
     padding-left: 18px;
 }
 .list-form-controls button.next-page-button span {
-    background-image: url(/_resources/next.png);
+    background-image: url(next.png);
     padding-right: 20px;
     background-position: right center;
 }
 .list-form-controls button.search-button span {
-    background-image: url(/_resources/search.png);
+    background-image: url(search.png);
     padding-left: 18px;
 }
 
@@ -259,12 +260,12 @@ div.item span.panel-field-date {
     background-repeat: no-repeat;
 }
 .page-navigation .navigation-ctrl.prev {
-    background-image: url(/_resources/previous.png);
+    background-image: url(previous.png);
     background-position: left center;
     padding-left: 18px;
 }
 .page-navigation .navigation-ctrl.next {
-    background-image: url(/_resources/next.png);
+    background-image: url(next.png);
     background-position: right center;
     padding-right: 18px;
 }
