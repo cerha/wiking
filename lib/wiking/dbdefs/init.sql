@@ -3,7 +3,7 @@
 insert into cms_database_version values (42);
 
 insert into cms_languages (lang) values ('en');
-insert into cms_config (site, site_title) values ('*', 'Wiking Site');
+insert into cms_config (site) values ('*');
 
 insert into cms_stylesheets (identifier, site, media, ord) values ('default.css', '*', 'all', 10);
 insert into cms_stylesheets (identifier, site, media, ord) values ('layout.css', '*', 'screen', 20);
