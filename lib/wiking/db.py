@@ -1650,6 +1650,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                 if key in record:
                     record[key] = result[key]
             self._update_linking_tables(req, record, transaction)
+        return result
 
     def _do_update(self, req, record):
         # Returns None on success and tuple (field_id, error_message) on error.
