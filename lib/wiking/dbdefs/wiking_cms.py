@@ -111,7 +111,7 @@ class UnrelatedRoles(sql.SQLFunction):
 class Users(CommonAccesRights, Base_CachingTable):
     name = 'users'
     fields = (sql.PrimaryColumn('uid', pytis.data.Serial(not_null=True)),
-              sql.Column('login', pytis.data.String(maxlen=64, not_null=True, unique=True)),
+              sql.Column('login', pytis.data.String(maxlen=64, not_null=True), unique=True),
               sql.Column('password', pytis.data.String(maxlen=32)),
               sql.Column('firstname',
                          pytis.data.String(not_null=name_is_not_null.value(globals()))),
