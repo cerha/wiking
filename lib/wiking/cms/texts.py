@@ -69,16 +69,13 @@ regintro = Text(
 regsuccess = Text(
     'cms.regsuccess',
     _("Text displayed after successful user registration"),
-    _("Registration completed successfuly. "
-      "Your account now awaits administrator's approval."))
+    _("Your account now awaits administrator's approval."))
     
 regsuccess_autoapproved = Text(
     'cms.regsuccess_autoapproved',
     _("Text displayed after successful user registration when autoapprove_new_users is set in configuration"),
-    _("Registration completed successfuly. "
-      "Your account is now fully functional but you may need "
-      "to get futher privileges by the administrator to access "
-      "certain restricted services."))
+    _("Your account is now fully functional. You can [?command=login log in] now.\n\n"
+      "You may still need some futher privileges to access certain restricted services."))
     
 regconfirm = Text(
     'cms.regconfirm',
