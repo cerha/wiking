@@ -1240,7 +1240,7 @@ class Users(UserManagementModule, CachingPytisModule):
             content = lcg.Content()
         return content
 
-    def _confirmation_success_content(self, req, record):
+    def _confirmation_success_content(self, req):
         if wiking.cms.cfg.autoapprove_new_users:
             text = wiking.cms.texts.regsuccess_autoapproved
         else:
@@ -1253,6 +1253,9 @@ class Users(UserManagementModule, CachingPytisModule):
         Additionally send e-mail notification to the administrator to ask him for account approval.
 
         """
+        if req.param('success') == 'yes':
+            return Document(_("Registration confirmed"),
+                            content=self._confirmation_success_content(req))
         record = self._check_registration_code(req)
         if wiking.cms.cfg.autoapprove_new_users:
             state = self.AccountState.ENABLED
@@ -1260,8 +1263,10 @@ class Users(UserManagementModule, CachingPytisModule):
             state = self.AccountState.UNAPPROVED
         record.update(state=state, regcode=None)
         self._send_admin_approval_mail(req, record)
-        return Document(_("Registration confirmed"),
-                        content=self._confirmation_success_content(req, record))
+        req.message(_("Registration completed successfuly."))
+        # Redirect - don't display the response here to avoid multiple submissions...
+        raise wiking.Redirect(req.uri(), action='confirm', success='yes')
+
 
     def _change_state(self, req, record, state, transaction=None):
         # Note: The return value is important for overriding this method,
