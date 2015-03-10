@@ -1,6 +1,6 @@
 -- Wiking initial data --
 
-insert into cms_database_version values (42);
+insert into cms_database_version values (70);
 
 insert into cms_languages (lang) values ('en');
 insert into cms_config (site) values ('*');
