@@ -5163,6 +5163,12 @@ class CommonTexts(SettingsManagementModule):
                 lang = 'en'
         return lang
 
+    def _localized_text(self, req, localizable_text, lang, args):
+        result = req.localize(localizable_text, lang=lang)
+        if args:
+            result = result % self._localized_args(req, lang, args)
+        return result
+
     def _localized_args(self, req, lang, args):
         return dict([(k, req.localize(v, lang)) for k, v in args.items()])
 
@@ -5272,20 +5278,28 @@ class Texts(CommonTexts, wiking.CachingPytisModule):
 
         """
         lang = self._select_language(req, lang)
-        result = req.localize(self.text(text), lang=lang)
-        if args:
-            result = result % self._localized_args(req, lang, args)
-        return result
+        return self._localized_text(req, self.text(text), lang, args)
 
     def parsed_text(self, req, text, lang=None, args=None):
-        """Return parsed text corresponding to 'text'.
+        """Return 'lcg.Content' corresponding to given 'Text' instance.
 
-        This method is the same as 'text()' but instead of returning LCG
-        structured text, it returns its parsed form, as an 'lcg.Content'
-        instance.  If the given text doesn't exist, 'None' is returned.
+        This method is similar to 'text()' but instead of returning the source
+        text, it returns the corresponding 'lcg.Content' instance produced by
+        processing the source text.  If the given text doesn't exist, 'None' is
+        returned.
 
         """
-        return text2content(req, self.localized_text(req, text, lang=lang, args=args))
+        lang = self._select_language(req, lang)
+        localizable_text = self.text(text)
+        localized_text = self._localized_text(req, localizable_text, lang, args)
+        # If the text comes from the database, use text2content
+        # to respect the current setting of 'config.content_editor',
+        # but if it is the default text defined by the application,
+        # always parse it as structured text.
+        if lang in localizable_text._translations:
+            return text2content(req, localized_text)
+        else:
+            return lcg.Container(_parser.parse(localized_text))
 
 
 class EmailText(Structure):
