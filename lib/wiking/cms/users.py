@@ -1033,7 +1033,7 @@ class Users(UserManagementModule, CachingPytisModule):
         try:
             result = self._do_insert(req, record, transaction)
         except pytis.data.DBException as e:
-            msg = str(e.exception()).strip()
+            msg = str(e.exception()).splitlines()[0].strip()
             if msg == 'duplicate key value violates unique constraint "users_login_key"':
                 login = record['login'].value()
                 # Redirect to reinsert when the user doesn't exist in application specific user
