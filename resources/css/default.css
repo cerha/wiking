@@ -9,8 +9,8 @@
 #messages .info { 
     color: $color.message-fg;
     border-color: $color.message-border;
-    padding-left: 24px;
-    background: $color.message-bg url(ok.png) 2px center no-repeat;
+    padding-left: 25px;
+    background: $color.message-bg url(ok.png) 4px center no-repeat;
 }
 #messages .error, #messages .warning { 
     color: $color.error-fg;
