@@ -721,7 +721,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                        for name, value in action.kwargs().items()],
                       action=action.id(),
                       __invoked_from=form_cls.__name__)
-        return self._link_provider(req, uri, record, None, **params)
+        return req.make_uri(uri.rstrip('/') + '/' + record[self._referer].export(), **params)
 
     def _record_uri(self, req, record, *args, **kwargs):
         # Return the absolute URI of module's record if a direct mapping of the module exists.
