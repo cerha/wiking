@@ -1049,9 +1049,9 @@ class Users(UserManagementModule, CachingPytisModule):
                     raise wiking.Redirect(req.uri(), action='reinsert', login=login, regcode=code)
                 else:
                     if wiking.cms.cfg.login_is_email:
-                        msg = _("This e-mail address is already registered. Please, log in. "
+                        msg = _("This e-mail address is already registered. Just log in. "
                                 "Use the password reminder link under the log in form if you "
-                                "forgot your password. ")
+                                "forgot your password.")
                         column = 'email'
                     else:
                         msg = _("This login name is already taken.  Please choose another.")
