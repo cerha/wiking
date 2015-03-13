@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-01-16 08:47+0100\n"
+"POT-Creation-Date: 2015-03-13 08:23+0100\n"
 "PO-Revision-Date: 2010-01-19 16:43+0100\n"
 "Last-Translator: Petr Topiarz <topiarz@post.cz>\n"
 "Language-Team: Slovak <wiking@lists.freebsoft.org>\n"
@@ -33,7 +33,7 @@ msgid "In this section:"
 msgstr "V tejto sekcii:"
 
 #: ../lib/wiking/application.py:459 ../lib/wiking/export.py:108
-#: ../lib/wiking/export.py:269
+#: ../lib/wiking/export.py:274
 msgid "Local navigation"
 msgstr "Navigácia tejto sekcie"
 
@@ -253,31 +253,31 @@ msgstr "Záznam bol úspešne aktualizovaný."
 msgid "The record was deleted."
 msgstr "Záznam bol odstránený."
 
-#: ../lib/wiking/db.py:471
+#: ../lib/wiking/db.py:475
 msgid "Unable to perform a database operation:"
 msgstr ""
 
-#: ../lib/wiking/db.py:2051
+#: ../lib/wiking/db.py:2088
 msgid "Back"
 msgstr "Späť"
 
 #. Back button label. Standard computer terminology.
 #. RSS channel is a computer idiom, see Wikipedia.
-#: ../lib/wiking/db.py:2258 ../lib/wiking/db.py:2414
+#: ../lib/wiking/db.py:2295 ../lib/wiking/db.py:2451
 msgid "An RSS channel is available for this section:"
 msgstr "K dispozícii je tiež RSS kanál pre túto sekciu:"
 
 #. RSS channel is a computer idiom, see Wikipedia.  Don't translateg 'RSS'.
-#: ../lib/wiking/db.py:2262 ../lib/wiking/db.py:2412
+#: ../lib/wiking/db.py:2299 ../lib/wiking/db.py:2449
 msgid "more about RSS"
 msgstr "viac o RSS"
 
-#: ../lib/wiking/db.py:2407
+#: ../lib/wiking/db.py:2444
 #, fuzzy, python-format
 msgid "RSS channel \"%s\""
 msgstr "RSS kanál"
 
-#: ../lib/wiking/db.py:2417
+#: ../lib/wiking/db.py:2454
 #, fuzzy
 msgid "RSS channels are available for this section"
 msgstr "K dispozícii je tiež RSS kanál pre túto sekciu:"
@@ -286,12 +286,12 @@ msgstr "K dispozícii je tiež RSS kanál pre túto sekciu:"
 msgid "Page heading"
 msgstr "Začiatok strany"
 
-#: ../lib/wiking/export.py:107 ../lib/wiking/export.py:267
-#: ../lib/wiking/export.py:297 ../lib/wiking/export.py:315
+#: ../lib/wiking/export.py:107 ../lib/wiking/export.py:272
+#: ../lib/wiking/export.py:302 ../lib/wiking/export.py:320
 msgid "Main navigation"
 msgstr "Hlavná navigácia"
 
-#: ../lib/wiking/export.py:109 ../lib/wiking/export.py:265
+#: ../lib/wiking/export.py:109 ../lib/wiking/export.py:270
 #, fuzzy
 msgid "Main content"
 msgstr "Obsah"
@@ -301,66 +301,66 @@ msgid "Page footer"
 msgstr "Ukončenie strany"
 
 #. Title of a dialog on a webpage
-#: ../lib/wiking/export.py:111 ../lib/wiking/export.py:271
+#: ../lib/wiking/export.py:111 ../lib/wiking/export.py:276
 #: ../lib/wiking/util.py:342
 msgid "Language selection"
 msgstr "Výber jazyka"
 
 #. Label for language selection followed by list of languages
-#: ../lib/wiking/export.py:121
+#: ../lib/wiking/export.py:124
 msgid "Language:"
 msgstr "Jazyk:"
 
-#: ../lib/wiking/export.py:275
+#: ../lib/wiking/export.py:280
 msgid "Jump in page"
 msgstr "Prejsť v stránke"
 
 #. A label followed by location information in webpage navigation
-#: ../lib/wiking/export.py:280
+#: ../lib/wiking/export.py:285
 msgid "You are here:"
 msgstr "Nachádzate sa tu:"
 
-#: ../lib/wiking/export.py:318
+#: ../lib/wiking/export.py:323
 msgid "Expand/collapse complete menu hierarchy"
 msgstr ""
 
 #. Panels are small windows on the side of the page. This is a label
 #. for a link that shows/hides the panels.
-#: ../lib/wiking/export.py:335
+#: ../lib/wiking/export.py:340
 msgid "Show panels"
 msgstr "Zobraziť panely"
 
-#: ../lib/wiking/export.py:336
+#: ../lib/wiking/export.py:341
 msgid "Hide panels"
 msgstr "Skryť panely"
 
 #. ``RSS channel'' is terminology idiom, see Wikipedia
-#: ../lib/wiking/export.py:348
+#: ../lib/wiking/export.py:353
 msgid "RSS channel"
 msgstr "RSS kanál"
 
-#: ../lib/wiking/export.py:373
+#: ../lib/wiking/export.py:379
 msgid "Warning"
 msgstr "Varovanie"
 
-#: ../lib/wiking/export.py:384
+#: ../lib/wiking/export.py:390
 msgid "Minimize"
 msgstr ""
 
-#: ../lib/wiking/export.py:385
+#: ../lib/wiking/export.py:391
 msgid "Exit the maximized mode."
 msgstr ""
 
-#: ../lib/wiking/export.py:388
+#: ../lib/wiking/export.py:394
 msgid "Maximize"
 msgstr ""
 
-#: ../lib/wiking/export.py:389
+#: ../lib/wiking/export.py:395
 msgid "Maximize the main content to the full size of the browser window."
 msgstr ""
 
 #. Information about last change of a webpage (when and who)
-#: ../lib/wiking/export.py:406
+#: ../lib/wiking/export.py:412
 #, python-format
 msgid "Last change: %(date)s, %(user)s"
 msgstr "Posledná zmena: %(date)s, %(user)s"
@@ -424,18 +424,18 @@ msgid "Reload"
 msgstr "Načítať znovu"
 
 #. Short description of a user group purpose.
-#: ../lib/wiking/request.py:1259
+#: ../lib/wiking/request.py:1254
 msgid "Anyone"
 msgstr ""
 
 #. Short description of a user group purpose.
-#: ../lib/wiking/request.py:1262
+#: ../lib/wiking/request.py:1257
 #, fuzzy
 msgid "Any authenticated user"
 msgstr "Akcia vyžaduje prihlásenie"
 
 #. Short description of a user group purpose.
-#: ../lib/wiking/request.py:1269
+#: ../lib/wiking/request.py:1264
 msgid "Current record owner"
 msgstr ""
 
