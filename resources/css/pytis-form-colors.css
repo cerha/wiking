@@ -18,7 +18,6 @@
 * html .pytis-form fieldset.group legend { 
     color: $color.foreground !important;
 }
-.pytis-form.browse-form table.data-table,
 .pytis-form.browse-form table.data-table tr.data-row td,
 .pytis-form.browse-form table.data-table tr.column-headings th,
 .pytis-form.browse-form table.data-table tr.group-heading th {
