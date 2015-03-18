@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright (C) 2012, 2013 Brailcom, o.p.s.
+# Copyright (C) 2012, 2013, 2015 Brailcom, o.p.s.
 #
 # COPYRIGHT NOTICE
 #
@@ -27,10 +27,6 @@ rolls back all changes when one of the scripts fails.
 
 import os, sys, glob, psycopg2 as dbapi
 
-def die(msg):
-    sys.stderr.write(msg)
-    sys.exit(1)
-
 def usage(msg=None):
     message = """Perform incremental upgrades of an existing Wiking CMS database.
 Usage: %s [-p port] database directory
@@ -40,7 +36,8 @@ Usage: %s [-p port] database directory
 """ % sys.argv[0]
     if msg:
         message += msg+'\n'
-    die(message)
+    sys.stderr.write(message)
+    sys.exit(1)
 
 def run(args):
     if '--help' in args:
@@ -69,10 +66,13 @@ def run(args):
         cursor.execute("select version from cms_database_version;")
         source_version = cursor.fetchone()[0]
         if source_version == target_version:
-            die("The database is already at version %d.\n" % source_version)
+            print "The database is already at version %d.\n" % source_version
+            sys.exit(0)
         elif source_version > target_version:
-            die("The database is already at version %d, but the highest upgrade script is %d.\n" %
-                (source_version, target_version))
+            sys.stderr.write("The database is already at version %d, "
+                             "but the highest upgrade script is %d.\n" %
+                             (source_version, target_version))
+            sys.exit(1)
         for version in range(source_version+1, target_version+1):
             filename = 'upgrade.%02d.sql' % version
             sql = open(os.path.join(directory, filename)).read()
