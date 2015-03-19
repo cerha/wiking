@@ -62,7 +62,7 @@ wiking.Handler = Class.create(lcg.KeyHandler, {
 		var tree_menu = lcg.widget_instance(submenu.down('.foldable-tree-widget'));
 		// Bind given lcg.TreeMenu instance as a descendant of this menu in
 		// keyboard traversal.
-		var parent_item = main_menu.active_item();
+		var parent_item = main_menu.selected_item();
 		var i, item;
 		parent_item._lcg_submenu = tree_menu.items;
 		for (i = 0; i < tree_menu.items.length; i++) {

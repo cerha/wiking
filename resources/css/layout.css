@@ -85,7 +85,9 @@ body.non-maximized #page.with-menu {
     top: 4px;
     right: 4px;
 }
-
+#maximized-mode-control img {
+    border: none;
+}
 body.maximized #top,
 body.maximized #menu,
 body.maximized #submenu,
