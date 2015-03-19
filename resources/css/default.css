@@ -237,6 +237,10 @@ form.activation-form {
 div.item span.panel-field-date { 
     font-weight: bold;
 }
+.feed-icon-link img {
+    border: none;
+}
+
 
 /* Links to unpublished pages */
 .unpublished { text-decoration: line-through; }
