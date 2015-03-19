@@ -4025,13 +4025,14 @@ class News(_News):
                           null_display=_("All items"), not_null=False, default='recent'),)
         def condition_provider(self, query_fields={}, **kwargs):
             f = query_fields['filter'].value()
-            if f == 'recent':
-                return pd.FunctionCondition('cms_recent_timestamp', 'timestamp', 'days_displayed')
+            recent = pd.FunctionCondition('cms_recent_timestamp', 'timestamp', 'days_displayed')
+            if f ==  'recent':
+                condition = recent
             elif f == 'archive':
-                return pd.NOT(pd.FunctionCondition('cms_recent_timestamp',
-                                                   'timestamp', 'days_displayed'))
+                condition = pd.NOT(recent)
             else:
-                return None
+                condition = None
+            return condition
 
     # Translators: Button label for creating a new message in "News".
     _INSERT_LABEL = _("New message")
