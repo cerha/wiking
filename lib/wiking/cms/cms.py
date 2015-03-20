@@ -2206,7 +2206,7 @@ class PDFExporter(wiking.Module):
         ('zoom',),
     )
 
-    def _export_pdf(self, req, publication):
+    def _export_pdf(self, req, record, publication):
         zoom = req.param('zoom')
         try:
             zoom = float(zoom)
@@ -2216,7 +2216,12 @@ class PDFExporter(wiking.Module):
             zoom = 0.1
         elif zoom > 10:
             zoom = 10
-        exporter = lcg.pdf.PDFExporter(translations=wiking.cfg.translation_path)
+        page_id = record['page_id'].value()
+        class PDFExporter(lcg.pdf.PDFExporter):
+            def _get_resource_data(self, context, resource):
+                return wiking.module.Attachments.retrieve(req, page_id, resource.filename(),
+                                                          path_only=True)
+        exporter = PDFExporter(translations=wiking.cfg.translation_path)
         presentation = lcg.Presentation()
         presentation.font_size = zoom
         context = exporter.context(publication, req.preferred_language(),
@@ -2734,7 +2739,7 @@ class Publications(NavigablePages, EmbeddableCMSModule, BrailleExporter, PDFExpo
         elif export_format == 'braille':
             return self._export_braille(req, publication)
         elif export_format == 'pdf':
-            return self._export_pdf(req, publication)
+            return self._export_pdf(req, record, publication)
 
     def submenu(self, req):
         # TODO: This partially duplicates Pages.menu() - refactor?
@@ -3727,13 +3732,15 @@ class Attachments(ContentManagementModule):
         else:
             return _("Attachment '%s' not found!", filename)
 
-    def retrieve(self, req, page_id, filename):
-        # Used by Publications._export_epub().
+    def retrieve(self, req, page_id, filename, path_only=False):
+        # Used by Publications._export_epub() and Publications._export_pdf().
         row = self._data.get_row(columns=self._non_binary_columns,
                                  page_id=page_id, filename=filename)
         if row:
             record = self._record(req, row)
             path = record['file_path'].value()
+            if path_only:
+                return path
             # log(OPR, "Loading file:", path)
             f = file(path)
             try:
