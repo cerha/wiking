@@ -2218,7 +2218,7 @@ class PDFExporter(wiking.Module):
             zoom = 10
         page_id = record['page_id'].value()
         class PDFExporter(lcg.pdf.PDFExporter):
-            def _get_resource_data(self, context, resource):
+            def _get_resource_path(self, context, resource):
                 return wiking.module.Attachments.retrieve(req, page_id, resource.filename(),
                                                           path_only=True)
         exporter = PDFExporter(translations=wiking.cfg.translation_path)
