@@ -441,12 +441,6 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         else:
             return None
 
-    def _export_inline_image(self, context, element):
-        # Load Lightbox if the image has a thumbnail.
-        if element.image(context).thumbnail():
-            for f in ('prototype.js', 'effects.js', 'builder.js', 'lightbox.js', 'lightbox.css'):
-                context.resource(f)
-        return super(Exporter, self)._export_inline_image(context, element)
 
 class Html5Exporter(lcg.Html5Exporter, Exporter):
     pass
