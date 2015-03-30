@@ -40,6 +40,8 @@ a:link    { color: $color.link; }
 a:visited { color: $color.link-visited; }
 a:link:hover, a:visited:hover { color: $color.link-hover; }
 
+h1 a { outline: none; }
+
 #top hr { display: none; }
 
 #site-title {
