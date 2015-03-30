@@ -23,7 +23,7 @@
 }
 .popup-menu-widget {
     background-color: $color.frame-bg !important;
-    border-color: $color.frame-border !important;
+    border-color: $color.top-border !important;
 }
 .popup-menu-widget li.active a {
     color: $color.foreground !important;
@@ -33,11 +33,8 @@
 }
 .dropdown-selection-widget {
     background-color: $color.background !important;
-    border-color: $color.frame-border !important;
+    border-color: $color.top-border !important;
 }
 .dropdown-selection-widget li.active a {
     color: $color.foreground !important;
-}
-.dropdown-selection-widget li.active:hover {
-    background-color: $color.highlight-bg !important;
 }
