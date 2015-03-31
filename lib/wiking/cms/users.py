@@ -46,6 +46,7 @@ from wiking import Module, ActionHandler, PytisModule, CachingPytisModule, \
     Document, ConfirmationDialog, send_mail, log, OPR
 from wiking.cms import EmbeddableCMSModule, UserManagementModule, Role, Roles, \
     enum, now, ASC, DESC, NEVER, ONCE
+import wiking.dbdefs
 
 _ = lcg.TranslatableTextFactory('wiking-cms')
 
@@ -499,6 +500,7 @@ class Users(UserManagementModule, CachingPytisModule):
     class Spec(wiking.Specification):
         title = _("User Management")
         help = _("Manage registered users and their privileges.")
+        table = wiking.dbdefs.Users
         def _fullname(self, record, firstname, surname, login):
             if firstname and surname:
                 return firstname + " " + surname
@@ -554,7 +556,7 @@ class Users(UserManagementModule, CachingPytisModule):
                       default=now, computer=computer(self._last_password_change)),
                 # Translators: Full name of a person. Registration form field.
                 Field('fullname', _("Full Name"), virtual=True, editable=NEVER,
-                      computer=computer(self._fullname)),
+                      computer=computer(self._fullname), type=pd.String()),
                 # TODO: What does this mean (missing translators note): Translators:
                 Field('user', _("User"), dbcolumn='user_',
                       computer=computer(lambda r, nickname, fullname: nickname or fullname)),
