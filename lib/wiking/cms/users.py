@@ -1339,28 +1339,40 @@ class Users(UserManagementModule, CachingPytisModule):
             prefill = None
         return self.action_insert(req, prefill=prefill)
 
+    def _special_roles(self, row):
+        """Return the list of predefined special roles for given user row.
+
+        'Predefined special roles' are application defined roles which can not
+        be assigned explicitly to a particular user by the administrator, but
+        the application logic decides which users belong to them. 
+
+        See the docstring of L{wiking.Role} class for a more precise definition.
+
+        """
+        roles = [Roles.ANYONE, Roles.AUTHENTICATED]
+        if row['state'].value() != self.AccountState.NEW:
+            roles.append(Roles.REGISTERED)
+        if row['state'].value() == self.AccountState.ENABLED:
+            roles.append(Roles.USER)
+        return roles
+
     def _user_arguments(self, login, row, base_uri, registration_uri):
-        record = self._record(None, row)
         if base_uri:
             uri = base_uri + '/' + login
         else:
             uri = registration_uri
-        uid = record['uid'].value()
-        role_ids = set([Roles.ANYONE.id(), Roles.AUTHENTICATED.id()])
-        if record['state'].value() != self.AccountState.NEW:
-            role_ids.add(Roles.REGISTERED.id())
-        if record['state'].value() == self.AccountState.ENABLED:
-            role_ids.add(Roles.USER.id())
-            for role_id in wiking.module.RoleMembers.user_role_ids(uid):
-                role_ids.add(role_id)
+        uid = row['uid'].value()
+        role_ids = set([role.id() for role in self._special_roles(row)])
+        if row['state'].value() == self.AccountState.ENABLED:
+            role_ids.update(wiking.module.RoleMembers.user_role_ids(uid))
         # Resolve contained roles here to also count with roles contained in
         # AUTHENTICATED, and REGISTERED.
         roles = wiking.module.Application.contained_roles(role_ids)
-        return dict(login=login, uid=uid, name=record['user'].value(),
-                    firstname=record['firstname'].value(), surname=record['surname'].value(),
-                    uri=uri, email=record['email'].value(), data=record, roles=roles,
-                    state=record['state'].value(), gender=record['gender'].value(),
-                    lang=record['lang'].value(), confirm=record['confirm'].value())
+        return dict(login=login, uid=uid, name=row['user'].value(),
+                    firstname=row['firstname'].value(), surname=row['surname'].value(),
+                    uri=uri, email=row['email'].value(), data=self._record(None, row),
+                    roles=roles, state=row['state'].value(), gender=row['gender'].value(),
+                    lang=row['lang'].value(), confirm=row['confirm'].value())
 
     def _make_user(self, kwargs):
         return self.User(**kwargs)
