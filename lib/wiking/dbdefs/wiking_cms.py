@@ -30,11 +30,17 @@ current_timestamp_0 = sqlalchemy.sql.functions.Function('current_timestamp', iva
 
 name_is_not_null = sql.SQLFlexibleValue('name_not_null', default=True)
 
-#
+import os
+import glob
+basedir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+last_upgrade_script = max(glob.glob(os.path.join(basedir, 'upgrade', 'upgrade.*.sql')))
+version = int(last_upgrade_script[len(basedir)+2*len(os.sep)+15:-4])
 
 class CmsDatabaseVersion(sql.SQLTable):
     name = 'cms_database_version'
     fields = (sql.Column('version', pytis.data.Integer()),)
+    init_columns = ('version',)
+    init_values = ((version,),)
 
 class CmsLanguages(CommonAccesRights, Base_CachingTable):
     name = 'cms_languages'
@@ -42,6 +48,8 @@ class CmsLanguages(CommonAccesRights, Base_CachingTable):
               sql.Column('lang', pytis.data.String(minlen=2, maxlen=2, not_null=True),
                          unique=True),
               )
+    init_columns = ('lang',)
+    init_values = (('en',),)
 
 class CmsConfig(CommonAccesRights, Base_CachingTable):
     name = 'cms_config'
@@ -65,6 +73,8 @@ class CmsConfig(CommonAccesRights, Base_CachingTable):
               sql.Column('theme_id', pytis.data.Integer(),
                          references=sql.r.CmsThemes),
               )
+    init_columns = ('site',)
+    init_values = (('*',),)
 
 class CmsCountries(CommonAccesRights, sql.SQLTable):
     name = 'cms_countries'
@@ -72,8 +82,30 @@ class CmsCountries(CommonAccesRights, sql.SQLTable):
               sql.Column('country', pytis.data.String(minlen=2, maxlen=2, not_null=True),
                          unique=True),
               )
-
-#
+    init_columns = ('country',)
+    init_values = [(country,) for country in (
+        'AD', 'AE', 'AF', 'AG', 'AI', 'AL', 'AM', 'AO', 'AQ', 'AR', 'AS', 'AT',
+        'AU', 'AW', 'AX', 'AZ', 'BA', 'BB', 'BD', 'BE', 'BF', 'BG', 'BH', 'BI',
+        'BJ', 'BL', 'BM', 'BN', 'BO', 'BQ', 'BR', 'BS', 'BT', 'BV', 'BW', 'BY',
+        'BZ', 'CA', 'CC', 'CD', 'CF', 'CG', 'CH', 'CI', 'CK', 'CL', 'CM', 'CN',
+        'CO', 'CR', 'CU', 'CV', 'CW', 'CX', 'CY', 'CZ', 'DE', 'DJ', 'DK', 'DM',
+        'DO', 'DZ', 'EC', 'EE', 'EG', 'EH', 'ER', 'ES', 'ET', 'FI', 'FJ', 'FK',
+        'FM', 'FO', 'FR', 'GA', 'GB', 'GD', 'GE', 'GF', 'GG', 'GH', 'GI', 'GL',
+        'GM', 'GN', 'GP', 'GQ', 'GR', 'GS', 'GT', 'GU', 'GW', 'GY', 'HK', 'HM',
+        'HN', 'HR', 'HT', 'HU', 'ID', 'IE', 'IL', 'IM', 'IN', 'IO', 'IQ', 'IR',
+        'IS', 'IT', 'JE', 'JM', 'JO', 'JP', 'KE', 'KG', 'KH', 'KI', 'KM', 'KN',
+        'KP', 'KR', 'KW', 'KY', 'KZ', 'LA', 'LB', 'LC', 'LI', 'LK', 'LR', 'LS',
+        'LT', 'LU', 'LV', 'LY', 'MA', 'MC', 'MD', 'ME', 'MF', 'MG', 'MH', 'MK',
+        'ML', 'MM', 'MN', 'MO', 'MP', 'MQ', 'MR', 'MS', 'MT', 'MU', 'MV', 'MW',
+        'MX', 'MY', 'MZ', 'NA', 'NC', 'NE', 'NF', 'NG', 'NI', 'NL', 'NO', 'NP',
+        'NR', 'NU', 'NZ', 'OM', 'PA', 'PE', 'PF', 'PG', 'PH', 'PK', 'PL', 'PM',
+        'PN', 'PR', 'PS', 'PT', 'PW', 'PY', 'QA', 'RE', 'RO', 'RS', 'RU', 'RW',
+        'SA', 'SB', 'SC', 'SD', 'SE', 'SG', 'SH', 'SI', 'SJ', 'SK', 'SL', 'SM',
+        'SN', 'SO', 'SR', 'SS', 'ST', 'SV', 'SX', 'SY', 'SZ', 'TC', 'TD', 'TF',
+        'TG', 'TH', 'TJ', 'TK', 'TL', 'TM', 'TN', 'TO', 'TR', 'TT', 'TV', 'TW',
+        'TZ', 'UA', 'UG', 'UM', 'US', 'UY', 'UZ', 'VA', 'VC', 'VE', 'VG', 'VI',
+        'VN', 'VU', 'WF', 'WS', 'YE', 'YT', 'ZA', 'ZM', 'ZW',
+    )]
 
 class Roles(CommonAccesRights, Base_CachingTable):
     name = 'roles'
@@ -82,7 +114,21 @@ class Roles(CommonAccesRights, Base_CachingTable):
               sql.Column('system', pytis.data.Boolean(not_null=True), default=False),
               sql.Column('auto', pytis.data.Boolean(not_null=True), default=False),
               )
-    init_columns = ('role_id', 'name', 'system', 'auto',)
+    init_columns = ('role_id', 'system', 'auto',)
+    init_values = (
+        ('anyone', 't', 't'),
+        ('authenticated', 't', 't'),
+        ('owner', 't', 't'),
+        ('user', 't', 't'),
+        ('registered', 't', 't'),
+        ('cms-user-admin', 't', 'f'),
+        ('cms-crypto-admin', 't', 'f'),
+        ('cms-content-admin', 't', 'f'),
+        ('cms-settings-admin', 't', 'f'),
+        ('cms-mail-admin', 't', 'f'),
+        ('cms-style-admin', 't', 'f'),
+        ('cms-admin', 't', 'f'),
+    )
 
 class RoleSets(CommonAccesRights, Base_CachingTable):
     name = 'role_sets'
@@ -93,6 +139,15 @@ class RoleSets(CommonAccesRights, Base_CachingTable):
                          references=sql.a(sql.r.Roles, onupdate='CASCADE', ondelete='CASCADE')),
               )
     unique = (('role_id', 'member_role_id',),)
+    init_columns = ('role_id', 'member_role_id',)
+    init_values = (
+        ('cms-admin', 'cms-user-admin'),
+        ('cms-admin', 'cms-crypto-admin'),
+        ('cms-admin', 'cms-content-admin'),
+        ('cms-admin', 'cms-settings-admin'),
+        ('cms-admin', 'cms-mail-admin'),
+        ('cms-admin', 'cms-style-admin'),
+    )
 
 class ExpandedRole(sql.SQLPlFunction):
     name = 'expanded_role'
@@ -140,6 +195,11 @@ class Users(CommonAccesRights, Base_CachingTable):
               )
     access_rights = (('ALL', 'www-data',),)
 
+    init_columns = ('login', 'password', 'firstname', 'surname', 'nickname', 'user_',
+                    'email', 'state', 'last_password_change',)
+    init_values = (('admin', 'wiking', 'Wiking', 'Admin', 'Admin', 'Admin',
+                    '-', 'enabled', '2012-01-01 00:00'),)
+
 class CmsFInsertOrUpdateUser(sql.SQLPlFunction):
     name = 'cms_f_insert_or_update_user'
     arguments = (sql.Column('uid_', pytis.data.Integer()),
@@ -175,6 +235,8 @@ class RoleMembers(CommonAccesRights, Base_CachingTable):
                          references=sql.a(sql.r.Users, onupdate='CASCADE', ondelete='CASCADE')),
               )
     unique = (('role_id', 'uid',),)
+    init_columns = ('role_id', 'uid')
+    init_values = (('cms-admin', 1),)
 
 class CmsVRoleMembers(CommonAccesRights, sql.SQLView):
     name = 'cms_v_role_members'
@@ -1092,6 +1154,13 @@ class CmsStylesheets(CommonAccesRights, Base_CachingTable):
               sql.Column('ord', pytis.data.Integer()),
               )
     unique = (('identifier', 'site',),)
+    init_columns = ('identifier', 'site', 'media', 'ord',)
+    init_values = (
+        ('default.css', '*', 'all', 10),
+        ('layout.css', '*', 'screen', 20),
+        ('print.css', '*', 'print', 30),
+    )
+
 
 class CmsThemes(CommonAccesRights, Base_CachingTable):
     name = 'cms_themes'
@@ -1127,8 +1196,23 @@ class CmsThemes(CommonAccesRights, Base_CachingTable):
               sql.Column('highlight_bg', pytis.data.String(maxlen=7)),
               sql.Column('inactive_folder', pytis.data.String(maxlen=7)),
               )
-
-#
+    init_columns = (
+        'name', 'foreground', 'background', 'border', 'heading_fg', 'heading_bg',
+        'heading_line', 'frame_fg', 'frame_bg', 'frame_border', 'link',
+        'link_visited', 'link_hover', 'meta_fg', 'meta_bg', 'help', 'error_fg',
+        'error_bg', 'error_border', 'message_fg', 'message_bg', 'message_border',
+        'table_cell', 'table_cell2', 'top_fg', 'top_bg', 'top_border',
+        'highlight_bg', 'inactive_folder',)
+    init_values = (
+        ('Yellowstone', '#000', '#fff9ec', '#eda', '#420', '#fff0b0', '#eca',
+         '#000', '#fff0d4', '#ffde90', '#a30', '#a30', '#f40', None, None,
+         '#553', None, None, None, None, None, None, '#fff', '#fff8f0', '#444',
+         '#fff', '#db9', '#fb7', '#ed9'),
+        ('Olive', '#000', '#fff', '#bcb', '#0b4a44', '#d2e0d8', None, '#000',
+         '#e8eee8', '#d0d7d0', '#042', None, '#d72', None, None, None, None,
+         '#fc9', '#fa8', None, '#dfd', '#aea', '#f8fbfa', '#f1f3f2', None,
+         '#efebe7', '#8a9', '#fc8', '#d2e0d8'),
+    )
 
 class CmsSystemTextLabels(CommonAccesRights, Base_CachingTable):
     name = 'cms_system_text_labels'
