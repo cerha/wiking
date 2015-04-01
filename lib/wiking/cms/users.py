@@ -1008,32 +1008,10 @@ class Users(UserManagementModule, CachingPytisModule):
     def _insert_transaction(self, req, record):
         # To roll back the insertion if sending mail fails.
         return self._transaction()
-    
-    def _do_insert(self, req, record, transaction):
-        """Perform DB operations for new account creation.
-
-        This method should be overriden when some additional DB operations must
-        be done with new account creation.  You usually don't want to override
-        '_insert()' directly, because 'wiking.cms.Users._insert()' sends
-        registration success emails at the end.  Thus if you overrode it,
-        called the parent method to insert the record and then did some
-        additional DB operation which failed, the transaction would be rolled
-        back, but the registraion success emails would have been already sent.
-        This is why 'wiking.PytisModule._insert()' is called in this separate
-        method prior to sending the emails and thus you can sefaly override it
-        and add DB operations here safely.  They will be performed before
-        sending mails and when they fail (exception is raised), no mails are
-        sent.
-
-        In this class ('wiking.cms.Users'), the method simply calls
-        'wiking.PytisModule._insert()' and returns its result.
-
-        """
-        return super(Users, self)._insert(req, record, transaction)
 
     def _insert(self, req, record, transaction):
         try:
-            result = self._do_insert(req, record, transaction)
+            result = super(Users, self)._insert(req, record, transaction)
         except pytis.data.DBException as e:
             msg = str(e.exception()).splitlines()[0].strip()
             if msg == 'duplicate key value violates unique constraint "users_login_key"':
