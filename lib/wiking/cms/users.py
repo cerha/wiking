@@ -897,6 +897,15 @@ class Users(UserManagementModule, CachingPytisModule):
         else:
             return super(Users, self)._authorized(req, action, record=record, **kwargs)
 
+    def _insert_form_content(self, req, form, record):
+        return (self._registration_form_intro(req, record) +
+                super(Users, self)._insert_form_content(req, form, record))
+
+    def _registration_form_intro(self, req, record):
+        content = wiking.module.Texts.parsed_text(req, wiking.cms.texts.regintro,
+                                                  lang=req.preferred_language())
+        return [content] if content else []
+
     def _layout(self, req, action, record=None):
         def cms_text(cms_text):
             if cms_text.text():
@@ -928,7 +937,6 @@ class Users(UserManagementModule, CachingPytisModule):
                         login_information += ('autogenerate_password',)
                     login_information += ('initial_password',)
                 layout = [
-                    self._registration_form_intro,
                     FieldSet(_("Personal data"), ('firstname', 'surname', 'nickname',)),
                     FieldSet(_("Contact information"),
                              ((not wiking.cms.cfg.login_is_email) and ('email',) or ()) +
@@ -1211,14 +1219,6 @@ class Users(UserManagementModule, CachingPytisModule):
             return lcg.Container([lcg.p(text) for text in texts], name='wiking-info-bar')
         else:
             return lcg.Content()
-
-    def _registration_form_intro(self, record):
-        req = record.req()
-        content = wiking.module.Texts.parsed_text(req, wiking.cms.texts.regintro,
-                                                  lang=req.preferred_language())
-        if content is None:
-            content = lcg.Content()
-        return content
 
     def _confirmation_success_content(self, req):
         if wiking.cms.cfg.autoapprove_new_users:
