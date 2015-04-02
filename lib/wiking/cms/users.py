@@ -1243,10 +1243,12 @@ class Users(UserManagementModule, CachingPytisModule):
             state = self.AccountState.UNAPPROVED
         record.update(state=state, regcode=None)
         self._send_admin_approval_mail(req, record)
-        req.message(_("Registration completed successfuly."))
-        # Redirect - don't display the response here to avoid multiple submissions...
-        raise wiking.Redirect(req.uri(), action='confirm', success='yes')
+        return self._redirect_after_confirm(req, record)
 
+    def _redirect_after_confirm(self, req, record):
+        # Redirect - don't display the response here to avoid multiple submissions...
+        req.message(_("Registration completed successfuly."))
+        raise wiking.Redirect(req.uri(), action='confirm', success='yes')
 
     def _change_state(self, req, record, state, transaction=None):
         # Note: The return value is important for overriding this method,
