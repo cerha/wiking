@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-03-13 08:23+0100\n"
+"POT-Creation-Date: 2015-04-03 15:18+0200\n"
 "PO-Revision-Date: 2010-01-19 16:27+0100\n"
 "Last-Translator: kkkk <kkkkkkkkkkk>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
@@ -33,7 +33,7 @@ msgid "In this section:"
 msgstr "In questa sezione:"
 
 #: ../lib/wiking/application.py:459 ../lib/wiking/export.py:108
-#: ../lib/wiking/export.py:274
+#: ../lib/wiking/export.py:275
 msgid "Local navigation"
 msgstr "Navigazione locale"
 
@@ -92,10 +92,6 @@ msgstr ""
 #. Web page or web application specific image.
 #: ../lib/wiking/configuration.py:362
 msgid "Site icon"
-msgstr ""
-
-#: ../lib/wiking/configuration.py:369
-msgid "Open Graph site image URL"
 msgstr ""
 
 #: ../lib/wiking/configuration.py:391
@@ -287,12 +283,12 @@ msgstr "Per questa sezione è disponibile anche il canale RSS:"
 msgid "Page heading"
 msgstr "Intestazione della pagina"
 
-#: ../lib/wiking/export.py:107 ../lib/wiking/export.py:272
-#: ../lib/wiking/export.py:302 ../lib/wiking/export.py:320
+#: ../lib/wiking/export.py:107 ../lib/wiking/export.py:273
+#: ../lib/wiking/export.py:303 ../lib/wiking/export.py:321
 msgid "Main navigation"
 msgstr "Navigazione principale"
 
-#: ../lib/wiking/export.py:109 ../lib/wiking/export.py:270
+#: ../lib/wiking/export.py:109 ../lib/wiking/export.py:271
 msgid "Main content"
 msgstr "Contenuto"
 
@@ -301,7 +297,7 @@ msgid "Page footer"
 msgstr "Fondo della pagina"
 
 #. Title of a dialog on a webpage
-#: ../lib/wiking/export.py:111 ../lib/wiking/export.py:276
+#: ../lib/wiking/export.py:111 ../lib/wiking/export.py:277
 #: ../lib/wiking/util.py:342
 msgid "Language selection"
 msgstr "Selezione di lingua"
@@ -311,56 +307,56 @@ msgstr "Selezione di lingua"
 msgid "Language:"
 msgstr "Lingua:"
 
-#: ../lib/wiking/export.py:280
+#: ../lib/wiking/export.py:281
 msgid "Jump in page"
 msgstr "Vai a pagina"
 
 #. A label followed by location information in webpage navigation
-#: ../lib/wiking/export.py:285
+#: ../lib/wiking/export.py:286
 msgid "You are here:"
 msgstr "Ti trovi qui:"
 
-#: ../lib/wiking/export.py:323
+#: ../lib/wiking/export.py:324
 msgid "Expand/collapse complete menu hierarchy"
 msgstr ""
 
 #. Panels are small windows on the side of the page. This is a label
 #. for a link that shows/hides the panels.
-#: ../lib/wiking/export.py:340
+#: ../lib/wiking/export.py:341
 msgid "Show panels"
 msgstr "Visualizza i pannelli"
 
-#: ../lib/wiking/export.py:341
+#: ../lib/wiking/export.py:342
 msgid "Hide panels"
 msgstr "Nascondi i pannelli"
 
 #. ``RSS channel'' is terminology idiom, see Wikipedia
-#: ../lib/wiking/export.py:353
+#: ../lib/wiking/export.py:354
 msgid "RSS channel"
 msgstr "Canale RSS"
 
-#: ../lib/wiking/export.py:379
+#: ../lib/wiking/export.py:380
 msgid "Warning"
 msgstr "Avvertenza"
 
-#: ../lib/wiking/export.py:390
+#: ../lib/wiking/export.py:391
 msgid "Minimize"
 msgstr ""
 
-#: ../lib/wiking/export.py:391
+#: ../lib/wiking/export.py:392
 msgid "Exit the maximized mode."
 msgstr ""
 
-#: ../lib/wiking/export.py:394
+#: ../lib/wiking/export.py:395
 msgid "Maximize"
 msgstr ""
 
-#: ../lib/wiking/export.py:395
+#: ../lib/wiking/export.py:396
 msgid "Maximize the main content to the full size of the browser window."
 msgstr ""
 
 #. Information about last change of a webpage (when and who)
-#: ../lib/wiking/export.py:412
+#: ../lib/wiking/export.py:413
 #, python-format
 msgid "Last change: %(date)s, %(user)s"
 msgstr "Ultima modifica: %(date)s, %(user)s"
@@ -379,63 +375,63 @@ msgstr ""
 "Il sistema è temporaneamente fuori servizio per i motivi della manutenzione "
 "in corso."
 
-#: ../lib/wiking/modules.py:557
+#: ../lib/wiking/modules.py:554
 msgid "Enter your login name, please!"
 msgstr "Ti preghiamo d'inserire il tuo nome utente!"
 
-#: ../lib/wiking/modules.py:559
+#: ../lib/wiking/modules.py:556
 msgid "Enter your password, please!"
 msgstr "Ti preghiamo d'inserire la tua password!"
 
-#: ../lib/wiking/modules.py:563
+#: ../lib/wiking/modules.py:560
 msgid "Invalid login!"
 msgstr "Accesso non valido!"
 
-#: ../lib/wiking/modules.py:656
+#: ../lib/wiking/modules.py:653
 msgid "Searching"
 msgstr "Ricerca"
 
-#: ../lib/wiking/modules.py:657
+#: ../lib/wiking/modules.py:654
 msgid "Search results"
 msgstr "Risultati della ricerca"
 
-#: ../lib/wiking/modules.py:658
+#: ../lib/wiking/modules.py:655
 msgid "Given search term doesn't contain any searchable term."
 msgstr "Espressione cercata non contiene alcun termine per la ricerca."
 
-#: ../lib/wiking/modules.py:662
+#: ../lib/wiking/modules.py:659
 msgid "Search words:"
 msgstr "Ricerca parole:"
 
-#: ../lib/wiking/modules.py:663
+#: ../lib/wiking/modules.py:660
 msgid "Search"
 msgstr "Ricerca"
 
-#: ../lib/wiking/modules.py:719
+#: ../lib/wiking/modules.py:716
 msgid "Nothing found."
 msgstr "Nessuna soluzione trovata."
 
-#: ../lib/wiking/modules.py:776
+#: ../lib/wiking/modules.py:773
 msgid "The following modules were successfully reloaded:"
 msgstr "Seguenti moduli sono stati caricati con successo:"
 
-#: ../lib/wiking/modules.py:778
+#: ../lib/wiking/modules.py:775
 msgid "Reload"
 msgstr "Ricarica"
 
 #. Short description of a user group purpose.
-#: ../lib/wiking/request.py:1254
+#: ../lib/wiking/request.py:1256
 msgid "Anyone"
 msgstr ""
 
 #. Short description of a user group purpose.
-#: ../lib/wiking/request.py:1257
+#: ../lib/wiking/request.py:1259
 #, fuzzy
 msgid "Any authenticated user"
 msgstr "L'operazione richiede di collegarsi"
 
 #. Short description of a user group purpose.
-#: ../lib/wiking/request.py:1264
+#: ../lib/wiking/request.py:1266
 msgid "Current record owner"
 msgstr ""
 

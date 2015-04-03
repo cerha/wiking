@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-03-13 08:23+0100\n"
+"POT-Creation-Date: 2015-04-03 15:18+0200\n"
 "PO-Revision-Date: 2010-01-19 16:43+0100\n"
 "Last-Translator: Petr Topiarz <topiarz@post.cz>\n"
 "Language-Team: Slovak <wiking@lists.freebsoft.org>\n"
@@ -33,7 +33,7 @@ msgid "In this section:"
 msgstr "V tejto sekcii:"
 
 #: ../lib/wiking/application.py:459 ../lib/wiking/export.py:108
-#: ../lib/wiking/export.py:274
+#: ../lib/wiking/export.py:275
 msgid "Local navigation"
 msgstr "Navigácia tejto sekcie"
 
@@ -92,10 +92,6 @@ msgstr ""
 #. Web page or web application specific image.
 #: ../lib/wiking/configuration.py:362
 msgid "Site icon"
-msgstr ""
-
-#: ../lib/wiking/configuration.py:369
-msgid "Open Graph site image URL"
 msgstr ""
 
 #: ../lib/wiking/configuration.py:391
@@ -286,12 +282,12 @@ msgstr "K dispozícii je tiež RSS kanál pre túto sekciu:"
 msgid "Page heading"
 msgstr "Začiatok strany"
 
-#: ../lib/wiking/export.py:107 ../lib/wiking/export.py:272
-#: ../lib/wiking/export.py:302 ../lib/wiking/export.py:320
+#: ../lib/wiking/export.py:107 ../lib/wiking/export.py:273
+#: ../lib/wiking/export.py:303 ../lib/wiking/export.py:321
 msgid "Main navigation"
 msgstr "Hlavná navigácia"
 
-#: ../lib/wiking/export.py:109 ../lib/wiking/export.py:270
+#: ../lib/wiking/export.py:109 ../lib/wiking/export.py:271
 #, fuzzy
 msgid "Main content"
 msgstr "Obsah"
@@ -301,7 +297,7 @@ msgid "Page footer"
 msgstr "Ukončenie strany"
 
 #. Title of a dialog on a webpage
-#: ../lib/wiking/export.py:111 ../lib/wiking/export.py:276
+#: ../lib/wiking/export.py:111 ../lib/wiking/export.py:277
 #: ../lib/wiking/util.py:342
 msgid "Language selection"
 msgstr "Výber jazyka"
@@ -311,56 +307,56 @@ msgstr "Výber jazyka"
 msgid "Language:"
 msgstr "Jazyk:"
 
-#: ../lib/wiking/export.py:280
+#: ../lib/wiking/export.py:281
 msgid "Jump in page"
 msgstr "Prejsť v stránke"
 
 #. A label followed by location information in webpage navigation
-#: ../lib/wiking/export.py:285
+#: ../lib/wiking/export.py:286
 msgid "You are here:"
 msgstr "Nachádzate sa tu:"
 
-#: ../lib/wiking/export.py:323
+#: ../lib/wiking/export.py:324
 msgid "Expand/collapse complete menu hierarchy"
 msgstr ""
 
 #. Panels are small windows on the side of the page. This is a label
 #. for a link that shows/hides the panels.
-#: ../lib/wiking/export.py:340
+#: ../lib/wiking/export.py:341
 msgid "Show panels"
 msgstr "Zobraziť panely"
 
-#: ../lib/wiking/export.py:341
+#: ../lib/wiking/export.py:342
 msgid "Hide panels"
 msgstr "Skryť panely"
 
 #. ``RSS channel'' is terminology idiom, see Wikipedia
-#: ../lib/wiking/export.py:353
+#: ../lib/wiking/export.py:354
 msgid "RSS channel"
 msgstr "RSS kanál"
 
-#: ../lib/wiking/export.py:379
+#: ../lib/wiking/export.py:380
 msgid "Warning"
 msgstr "Varovanie"
 
-#: ../lib/wiking/export.py:390
+#: ../lib/wiking/export.py:391
 msgid "Minimize"
 msgstr ""
 
-#: ../lib/wiking/export.py:391
+#: ../lib/wiking/export.py:392
 msgid "Exit the maximized mode."
 msgstr ""
 
-#: ../lib/wiking/export.py:394
+#: ../lib/wiking/export.py:395
 msgid "Maximize"
 msgstr ""
 
-#: ../lib/wiking/export.py:395
+#: ../lib/wiking/export.py:396
 msgid "Maximize the main content to the full size of the browser window."
 msgstr ""
 
 #. Information about last change of a webpage (when and who)
-#: ../lib/wiking/export.py:412
+#: ../lib/wiking/export.py:413
 #, python-format
 msgid "Last change: %(date)s, %(user)s"
 msgstr "Posledná zmena: %(date)s, %(user)s"
@@ -377,65 +373,65 @@ msgstr "Údržba systému"
 msgid "The system is temporarily down for maintenance."
 msgstr "Systém je dočasne neprístupný z dôvodu údržby."
 
-#: ../lib/wiking/modules.py:557
+#: ../lib/wiking/modules.py:554
 msgid "Enter your login name, please!"
 msgstr "Zadajte, prosím, vaše uživateľské meno!"
 
-#: ../lib/wiking/modules.py:559
+#: ../lib/wiking/modules.py:556
 msgid "Enter your password, please!"
 msgstr "Zadajte, prosím, vaše heslo!"
 
-#: ../lib/wiking/modules.py:563
+#: ../lib/wiking/modules.py:560
 msgid "Invalid login!"
 msgstr "Neplatné prihlásenie!"
 
-#: ../lib/wiking/modules.py:656
+#: ../lib/wiking/modules.py:653
 msgid "Searching"
 msgstr "Vyhľadávanie"
 
-#: ../lib/wiking/modules.py:657
+#: ../lib/wiking/modules.py:654
 msgid "Search results"
 msgstr "Výsledky vyhľadávania"
 
-#: ../lib/wiking/modules.py:658
+#: ../lib/wiking/modules.py:655
 msgid "Given search term doesn't contain any searchable term."
 msgstr ""
 "Zadaný vyhľadávací výraz neobsahuje nič, podľa čoho by bolo možné "
 "vyhľadávanie uskutočniť."
 
-#: ../lib/wiking/modules.py:662
+#: ../lib/wiking/modules.py:659
 msgid "Search words:"
 msgstr "Vyhľadať slová:"
 
-#: ../lib/wiking/modules.py:663
+#: ../lib/wiking/modules.py:660
 msgid "Search"
 msgstr "Vyhľadať"
 
-#: ../lib/wiking/modules.py:719
+#: ../lib/wiking/modules.py:716
 msgid "Nothing found."
 msgstr "Nič nebolo nájdené."
 
-#: ../lib/wiking/modules.py:776
+#: ../lib/wiking/modules.py:773
 msgid "The following modules were successfully reloaded:"
 msgstr "Nasledujúce moduly boli úspešne prečítané znovu:"
 
-#: ../lib/wiking/modules.py:778
+#: ../lib/wiking/modules.py:775
 msgid "Reload"
 msgstr "Načítať znovu"
 
 #. Short description of a user group purpose.
-#: ../lib/wiking/request.py:1254
+#: ../lib/wiking/request.py:1256
 msgid "Anyone"
 msgstr ""
 
 #. Short description of a user group purpose.
-#: ../lib/wiking/request.py:1257
+#: ../lib/wiking/request.py:1259
 #, fuzzy
 msgid "Any authenticated user"
 msgstr "Akcia vyžaduje prihlásenie"
 
 #. Short description of a user group purpose.
-#: ../lib/wiking/request.py:1264
+#: ../lib/wiking/request.py:1266
 msgid "Current record owner"
 msgstr ""
 
