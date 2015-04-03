@@ -1090,7 +1090,7 @@ class Users(UserManagementModule, CachingPytisModule):
                     message = _("The generated password was sent to %s.", record['email'].value())
                 else:
                     message = _("To finish your registration, please confirm the activation "
-                                "code that was sent to your email address at %s.",
+                                "code that was sent to %s.",
                                 record['email'].value())
                 return Document(_("Registration completed"), content=lcg.p((message)))
 
