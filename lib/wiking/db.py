@@ -2240,17 +2240,17 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         return self._current_base_uri(req, record), kwargs
 
     def _redirect_after_insert(self, req, record):
-        req.message(self._insert_msg(req, record))
+        req.message(self._insert_msg(req, record), type=req.SUCCESS)
         uri, kwargs = self._redirect_after_insert_uri(req, record)
         raise Redirect(uri, **kwargs)
 
     def _redirect_after_update(self, req, record):
-        req.message(self._update_msg(req, record))
+        req.message(self._update_msg(req, record), type=req.SUCCESS)
         uri, kwargs = self._redirect_after_update_uri(req, record)
         raise Redirect(uri, **kwargs)
 
     def _redirect_after_delete(self, req, record):
-        req.message(self._delete_msg(req, record))
+        req.message(self._delete_msg(req, record), type=req.SUCCESS)
         uri, kwargs = self._redirect_after_delete_uri(req, record)
         raise Redirect(uri, **kwargs)
 

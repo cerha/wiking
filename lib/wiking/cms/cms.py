@@ -674,7 +674,7 @@ class Config(SettingsManagementModule, wiking.CachingPytisModule):
         return 'update'
         
     def _redirect_after_update(self, req, record):
-        req.message(self._update_msg(req, record))
+        req.message(self._update_msg(req, record), type=req.SUCCESS)
         raise Redirect(req.uri())
     
     def configure(self, req):
@@ -1036,7 +1036,7 @@ class Panels(SiteSpecificContentModule, wiking.CachingPytisModule):
                 msg = _("The panel was published.")
             else:
                 msg = _("The panel was unpublished.")
-            req.message(msg)
+            req.message(msg, type=req.SUCCESS)
         raise Redirect(req.uri())
 
     def action_unpublish(self, req, record):
@@ -1258,7 +1258,7 @@ class Themes(StyleManagementModule, wiking.CachingPytisModule):
             name = _("Default")
         err = wiking.module.Config.set_theme_id(req, theme_id)
         if err is None:
-            req.message(_("The color theme \"%s\" has been activated.", name))
+            req.message(_("The color theme \"%s\" has been activated.", name), type=req.SUCCESS)
             max_age = wiking.cfg.resource_client_cache_max_age
             if max_age:
                 req.message(_("The server is configured to let clients cache resource files "
@@ -1786,12 +1786,12 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
             wiking.module.Application.set_preview_mode(req, True)
 
     def _redirect_after_insert(self, req, record):
-        req.message(self._insert_msg(req, record))
+        req.message(self._insert_msg(req, record), type=req.SUCCESS)
         self._set_preview_mode_if_necessary(req, record)
         raise Redirect(self._current_record_uri(req, record))
 
     def _redirect_after_update(self, req, record):
-        req.message(self._update_msg(req, record))
+        req.message(self._update_msg(req, record), type=req.SUCCESS)
         self._set_preview_mode_if_necessary(req, record)
         raise Redirect(req.uri())
 
@@ -2037,7 +2037,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
         except pd.DBException as e:
             req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
         else:
-            req.message(_("The changes were published."))
+            req.message(_("The changes were published."), type=req.SUCCESS)
         raise Redirect(self._current_record_uri(req, record))
 
     def action_revert(self, req, record):
@@ -2046,7 +2046,7 @@ class Pages(SiteSpecificContentModule, wiking.CachingPytisModule):
         except pd.DBException as e:
             req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
         else:
-            req.message(_("The content was reverted to its previous state."))
+            req.message(_("The content was reverted to its previous state."), type=req.SUCCESS)
         raise Redirect(self._current_record_uri(req, record))
 
     def action_new_page(self, req, record):
@@ -3074,7 +3074,7 @@ class PublicationExports(ContentManagementModule):
             f.close()
 
     def _redirect_after_insert(self, req, record):
-        req.message(self._insert_msg(req, record))
+        req.message(self._insert_msg(req, record), type=req.SUCCESS)
         raise Redirect(self._current_record_uri(req, record))
 
     def action_download(self, req, record):
@@ -3922,7 +3922,7 @@ class Attachments(ContentManagementModule):
             if updated_files:
                 msg.append(_.ngettext("%d attachment succesfully updated",
                                       "%d attachments succesfully updated", updated_files))
-            req.message(lcg.concat(msg, separator=', ') + '.')
+            req.message(lcg.concat(msg, separator=', ') + '.', type=req.SUCCESS)
         finally:
             archive.close()
         raise wiking.Redirect(req.uri())
@@ -3983,7 +3983,7 @@ class _News(ContentManagementModule, EmbeddableCMSModule, wiking.CachingPytisMod
         return make_uri(page_uri, anchor)
 
     def _redirect_after_insert(self, req, record):
-        req.message(self._insert_msg(req, record))
+        req.message(self._insert_msg(req, record), type=req.SUCCESS)
         identifier = record.cb_value('page_id', 'identifier').value()
         raise Redirect('/' + identifier)
 
@@ -4295,7 +4295,7 @@ class NewsletterSubscription(CMSModule):
         except pd.DBException as e:
             req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
         else:
-            req.message(success)
+            req.message(success, type=req.SUCCESS)
         raise Redirect(req.uri())
 
     def unsubscribe(self, req, newsletter_record):
@@ -4346,7 +4346,7 @@ class NewsletterSubscription(CMSModule):
         except pd.DBException as e:
             req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
         else:
-            req.message(success)
+            req.message(success, type=req.SUCCESS)
         raise Redirect(req.uri())
 
     def subscribers(self, newsletter_id):
@@ -4550,7 +4550,7 @@ class NewsletterEditions(CMSModule):
             record.update(sent=now())
         except pd.DBException as e:
             req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
-        req.message(_("The newsletter has been sent to %d recipients.", n))
+        req.message(_("The newsletter has been sent to %d recipients.", n), type=req.SUCCESS)
         if errors:
             req.message(_("Sending to %d recipients failed. "
                           "Details can be found in servers error log.", errors), type=req.ERROR)
@@ -4738,7 +4738,7 @@ class Discussions(ContentManagementModule, EmbeddableCMSModule):
             return False
 
     def _redirect_after_insert(self, req, record):
-        req.message(_("Your comment was posted to the discussion."))
+        req.message(_("Your comment was posted to the discussion."), type=req.SUCCESS)
         raise Redirect(self._binding_parent_uri(req))
 
     def _prefill(self, req):

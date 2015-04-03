@@ -1071,10 +1071,10 @@ class Users(UserManagementModule, CachingPytisModule):
             # Detect re-registration: The user is already confirmed in the
             # Wiking CMS user table, no need to confirm again for the
             # application user table.
-            req.message(_("Registration completed. You can log in now."))
+            req.message(_("Registration completed. You can log in now."), type=req.SUCCESS)
             raise wiking.Redirect(req.module_uri('Registration'))
         else:
-            req.message(_("The account has been created."))
+            req.message(_("The account has been created."), type=req.SUCCESS)
             if req.user() is not None:
                 # The registration was performed by admin.
                 if record['autogenerate_password'].value():
@@ -1247,7 +1247,7 @@ class Users(UserManagementModule, CachingPytisModule):
 
     def _redirect_after_confirm(self, req, record):
         # Redirect - don't display the response here to avoid multiple submissions...
-        req.message(_("Registration completed successfuly."))
+        req.message(_("Registration completed successfuly."), type=req.SUCCESS)
         raise wiking.Redirect(req.uri(), action='confirm', success='yes')
 
     def _change_state(self, req, record, state, transaction=None):
@@ -1260,7 +1260,7 @@ class Users(UserManagementModule, CachingPytisModule):
             return False
         else:
             if state == self.AccountState.ENABLED:
-                req.message(_("The account was enabled."))
+                req.message(_("The account was enabled."), type=req.SUCCESS)
                 email = record['email'].value()
                 text = _("Your account at %(uri)s has been enabled. "
                          "Please log in with username '%(login)s' and your password.",
@@ -1273,7 +1273,7 @@ class Users(UserManagementModule, CachingPytisModule):
                 else:
                     req.message(_("E-mail notification has been sent to:") + ' ' + email)
             elif state == self.AccountState.DISABLED:
-                req.message(_("The account was disabled."))
+                req.message(_("The account was disabled."), type=req.SUCCESS)
             return True
 
     def action_enable(self, req, record):

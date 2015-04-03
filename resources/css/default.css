@@ -1,12 +1,19 @@
 /* Wiking generic page content styles (to be used with media="all") */
 
-#messages .error, #messages .info, #messages .warning {
+#messages .info, #messages .success, #messages .error, #messages .warning {
     border-style: solid;
     border-width: 1px 0;
     padding: 0.3em;
     margin: 1em 0;
 }
-#messages .info { 
+#messages .info {
+    /* There's currently no color theme for this... */
+    color: $color.foreground;
+    border: dotted #dadac0 1px;
+    padding: 6px 0 6px 25px;
+    background: #fafae8 url(info.png) -2px 0px no-repeat;
+}
+#messages .success {
     color: $color.message-fg;
     border-color: $color.message-border;
     padding-left: 25px;

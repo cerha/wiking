@@ -267,13 +267,15 @@ class Request(ServerInterface):
 
     INFO = 'INFO'
     """Message type constant for informational messages."""
+    SUCCESS = 'SUCCESS'
+    """Message type constant for success messages."""
     WARNING = 'WARNING'
     """Message type constant for warning messages."""
     ERROR = 'ERROR'
     """Message type constant for error messages."""
     HEADING = 'HEADING'
     """Message type constant for messages to be put into document heading."""
-    _MESSAGE_TYPES = (INFO, WARNING, ERROR, HEADING,)
+    _MESSAGE_TYPES = (INFO, SUCCESS, WARNING, ERROR, HEADING,)
 
     _ABS_URI_MATCHER = re.compile(r'^((https?|ftp)://[^/]+)(.*)$')
 

@@ -123,6 +123,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
     # Translators: Label for language selection followed by list of languages
     _LANGUAGE_SELECTION_LABEL = _("Language:")
     _MESSAGE_TYPE_CLASS = {Request.INFO: 'info',
+                           Request.SUCCESS: 'success',
                            Request.WARNING: 'warning',
                            Request.ERROR: 'error'}
     _UNSAFE_CHARS = re.compile(r"[^a-zA-Z0-9_-]")
