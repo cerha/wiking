@@ -1,4 +1,4 @@
-# Copyright (C) 2006 - 2014 Brailcom, o.p.s.
+# Copyright (C) 2006 - 2015 Brailcom, o.p.s.
 # Author: Tomas Cerha <cerha@brailcom.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -366,7 +366,7 @@ class Configuration(pc):
         _DEFAULT = None
 
     class _Option_site_image(pc.StringOption):
-        _DESCR = _("Open Graph site image URL")
+        _DESCR = "Open Graph site image URL"
         _DOC = ("URL of the site image/logo to be used for Open Graph meta data. "
                 "See http://en.wikipedia.org/wiki/Facebook_Platform#Open_Graph_protocol "
                 "for more information.  Note, that this is a URL, not file path as for "
