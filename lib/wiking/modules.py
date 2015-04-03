@@ -1,4 +1,4 @@
-# Copyright (C) 2005-2014 Brailcom, o.p.s.
+# Copyright (C) 2005-2015 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -20,6 +20,7 @@ import httplib
 import os
 import re
 import types
+import codecs
 
 import lcg
 import wiking
@@ -221,14 +222,8 @@ class Documentation(Module, RequestHandler):
         is determined through `Request.preferred_language()'.
 
     """
-    
-    def _document_base_dir(self, req):
-        """Return the documentation base directory."""
-        if req.unresolved_path:
-            component = req.unresolved_path[0]
-            del req.unresolved_path[0]
-        else:
-            raise Forbidden()
+
+    def _documentation_directory(self, component):
         try:
             basedir = wiking.cfg.doc_dirs[component]
         except KeyError:
@@ -239,20 +234,22 @@ class Documentation(Module, RequestHandler):
             raise Exception("Documentation directory for '%s' does not exist. "
                             "Please check 'doc_dirs' configuration option." % component)
         return basedir
-
+    
     def _document_path(self, req):
-        return req.unresolved_path
-        
+        """Return the documentation base directory."""
+        if not req.unresolved_path:
+            raise Forbidden()
+        component = req.unresolved_path.pop(0)
+        return os.path.join(self._documentation_directory(component), *req.unresolved_path)
+
     def _handle(self, req):
         # TODO: the documentation should be processed by LCG first into some
         # reasonable output format.  Now we just search the file in all the
         # source directories and format it.  No global navigation is used.
-        if not req.unresolved_path:
-            raise Forbidden()
-        import codecs
-        basename = os.path.join(self._document_base_dir(req), *self._document_path(req))
+        path = self._document_path(req)
+        wiking.debug('..', path, req.unresolved_path)
         variants = [lang for lang in wiking.module.Application.languages()
-                    if os.path.exists('.'.join((basename, lang, 'txt')))]
+                    if os.path.exists('.'.join((path, lang, 'txt')))]
         if not variants:
             # HACK: Try fallback to English if no application language variants
             # are available.  In fact, the application should never return
@@ -262,12 +259,12 @@ class Documentation(Module, RequestHandler):
             # confusing error.  This should avoid the confusion, but a proper
             # solution would be to have all documentation files translated at
             # least to one application language.
-            if os.path.exists('.'.join((basename, 'en', 'txt'))):
+            if os.path.exists('.'.join((path, 'en', 'txt'))):
                 variants = ['en']
             else:
                 raise NotFound()
         lang = req.preferred_language(variants)
-        filename = '.'.join((basename, lang, 'txt'))
+        filename = '.'.join((path, lang, 'txt'))
         f = codecs.open(filename, encoding='utf-8')
         text = "".join(f.readlines())
         f.close()
@@ -283,7 +280,7 @@ class Documentation(Module, RequestHandler):
         else:
             layout = None
         return wiking.Document(title, content, lang=lang, variants=variants, layout=layout)
-        
+
 
 class Resources(Module, RequestHandler):
     """Serve the resource files as provided by the LCG's 'ResourceProvider'.
