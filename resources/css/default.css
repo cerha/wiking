@@ -3,26 +3,29 @@
 #messages .info, #messages .success, #messages .error, #messages .warning {
     border-style: solid;
     border-width: 1px 0;
-    padding: 0.3em;
-    margin: 1em 0;
+    margin: 0.8em 0;
+    padding: 6px 2px 6px 30px;
 }
 #messages .info {
     /* There's currently no color theme for this... */
     color: $color.foreground;
     border: dotted #dadac0 1px;
-    padding: 6px 0 6px 25px;
-    background: #fafae8 url(info.png) -2px 0px no-repeat;
+    background: #fafae8 url(info.png) left top no-repeat;
 }
 #messages .success {
     color: $color.message-fg;
     border-color: $color.message-border;
-    padding-left: 25px;
-    background: $color.message-bg url(ok.png) 4px center no-repeat;
+    background: $color.message-bg url(ok.png) 8px 4px no-repeat;
 }
-#messages .error, #messages .warning { 
+#messages .warning { 
     color: $color.error-fg;
-    background-color: $color.error-bg;
     border-color: $color.error-border;
+    background: $color.error-bg url(warning.png) 3px 2px no-repeat;
+}
+#messages .error {
+    color: $color.error-fg;
+    border-color: $color.error-border;
+    background: $color.error-bg url(error.png) 3px 2px no-repeat;
 }
 
 img { position: relative; } /* MSIE float workaround */
