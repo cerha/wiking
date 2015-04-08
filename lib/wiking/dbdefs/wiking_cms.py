@@ -32,9 +32,12 @@ name_is_not_null = sql.SQLFlexibleValue('name_not_null', default=True)
 
 import os
 import glob
-basedir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-last_upgrade_script = max(glob.glob(os.path.join(basedir, 'upgrade', 'upgrade.*.sql')))
-version = int(last_upgrade_script[len(basedir)+2*len(os.sep)+15:-4])
+upgrade_directory = os.path.abspath(os.path.join(os.path.realpath(os.path.dirname(__file__)),
+                                                 '..', '..', '..', 'upgrade'))
+upgrade_files = glob.glob(os.path.join(upgrade_directory, 'upgrade.*.sql'))
+assert upgrade_files, 'No upgrade files found in upgrade directory: %s' % upgrade_directory
+last_upgrade_script = max(upgrade_files)
+version = int(last_upgrade_script[len(upgrade_directory)+len(os.sep)+8:-4])
 
 class CmsDatabaseVersion(sql.SQLTable):
     name = 'cms_database_version'
