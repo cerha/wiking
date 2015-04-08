@@ -120,11 +120,6 @@ class Application(CookieAuthentication, wiking.Application):
             req.message(message, type=req.WARNING)
             req.set_cookie(self._PREVIEW_MODE_COOKIE, value and '1' or '0')
 
-    def initialize(self, req):
-        config_file = wiking.cfg.user_config_file
-        if config_file:
-            wiking.cms.cfg.user_config_file = config_file
-        
     def handle(self, req):
         req.wmi = False # Will be set to True by `WikingManagementInterface' if needed.
         preview_mode_param = req.param(self._PREVIEW_MODE_PARAM)

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2006, 2007, 2008, 2009, 2012, 2014 Brailcom, o.p.s.
+# Copyright (C) 2006, 2007, 2008, 2009, 2012, 2014, 2015 Brailcom, o.p.s.
 # Author: Tomas Cerha.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -18,41 +18,20 @@
 
 """Wiking CMS configuration.
 
-This configuration class defines the options specific for Wiking Content Management System.  The
-supposed usage is as the `appl' option in top level Wiking configuration.
+This configuration class defines the options specific for Wiking Content
+Management System.
 
 """
 
-from pytis.util import Configuration as pc
+from wiking import ApplicationConfiguration as cfg
 import lcg, os
 
 _ = lcg.TranslatableTextFactory('wiking-cms')
 
-class CMSConfiguration(pc):
+class CMSConfiguration(cfg):
     """CMS Specific Configuration."""
         
-    class _Option_config_file(pc.StringOption, pc.HiddenOption):
-        _DESCR = "Global Wiking CMS configuration file location"
-        def default(self):
-            for filename in ('/etc/wiking/config.py', '/etc/wiking.py',
-                             '/usr/local/etc/wiking/config.py', '/usr/local/etc/wiking.py'):
-                if os.access(filename, os.F_OK):
-                    return filename
-            return None
-
-    class _Option_user_config_file(pc.StringOption, pc.HiddenOption):
-        _DESCR = "Site specific Wiking CMS configuration file location"
-        def default(self):
-            try:
-                import wikingconfig
-            except ImportError:
-                return None
-            filename = wikingconfig.__file__
-            if filename.endswith('.pyc') or filename.endswith('.pyo'):
-                filename = filename[:-1]
-            return filename
-        
-    class _Option_allow_login_panel(pc.BooleanOption):
+    class _Option_allow_login_panel(cfg.BooleanOption):
         # Translators: Yes/No configuration option label. Should the login panel be visible?
         _DESCR = _("Allow login panel")
         _DOC = _("If enabled, the information about the currently logged user and login/logout "
@@ -60,7 +39,7 @@ class CMSConfiguration(pc):
                  "always be the first panel on the page.")
         _DEFAULT = True
 
-    class _Option_allow_wmi_link(pc.BooleanOption):
+    class _Option_allow_wmi_link(cfg.BooleanOption):
         # Translators: Yes/No configuration option label. Should link to WMI be visible?  "WMI"
         # stands for Wiking Management Interface.  Don't feel obliged to use an abbreviation.  Use
         # whatever brief form obviously referning to whatever translation you used for "Wiking
@@ -70,7 +49,7 @@ class CMSConfiguration(pc):
                 "footer.")
         _DEFAULT = True
 
-    class _Option_allow_registration(pc.BooleanOption):
+    class _Option_allow_registration(cfg.BooleanOption):
         # Translators: Yes/no configuration label. Can new users register to this
         # website/application?
         _DESCR = _("Allow new user registration")
@@ -79,14 +58,14 @@ class CMSConfiguration(pc):
                  "new user accounts must be created by administrator.")
         _DEFAULT = True
 
-    class _Option_upload_limit(pc.NumericOption):
+    class _Option_upload_limit(cfg.NumericOption):
         # Translators: Maximal size an uploaded file can have.
         _DESCR = _("Maximal upload size")
         _DOC = _("The maximal size of uploaded files in bytes.  The server "
                  "needs to be relaoded for the changes in this option to take effect.")
         _DEFAULT = 3*1024*1024
 
-    class _Option_password_storage(pc.StringOption):
+    class _Option_password_storage(cfg.StringOption):
         _DESCR = "Form of storing user passwords in the database"
         _DOC = ("This option defines in which way user passwords are stored in a database. "
                 "The allowed values are the strings 'plain' "
@@ -94,7 +73,7 @@ class CMSConfiguration(pc):
                 "and 'md5' (passwords are stored in the form of MD5 hashes).")
         _DEFAULT = 'plain'
  
-    class _Option_password_strength(pc.Option):
+    class _Option_password_strength(cfg.Option):
         _DESCR = "Specification of password strength checking."
         _DOC = ("If 'None', no special checks are performed.  If 'True', default "
                 "checking is performed (both characters and non-characters "
@@ -104,23 +83,23 @@ class CMSConfiguration(pc):
                 "if the password is weak.")
         _DEFAULT = None
 
-    class _Option_password_min_length(pc.NumericOption):
+    class _Option_password_min_length(cfg.NumericOption):
         _DESCR = "Minimal password length"
         _DOC = "The minimal length of a Wiking CMS user password."
         _DEFAULT = 4
 
-    class _Option_login_is_email(pc.BooleanOption):
+    class _Option_login_is_email(cfg.BooleanOption):
         _DESCR = _("Whether to use e-mails as login names")
         _DOC = _("Iff true, users must use e-mail addresses as their login names.")
         _DEFAULT = False
  
-    class _Option_registration_expiry_days(pc.NumericOption):
+    class _Option_registration_expiry_days(cfg.NumericOption):
         _DESCR = "Number of days after unanswered user registration expires"
         _DOC = ("When registration by e-mail is enabled, each newly registered user is required "
                 "to answer the registration e-mail within the limit given here.")
         _DEFAULT = 2
  
-    class _Option_autoapprove_new_users(pc.StringOption):
+    class _Option_autoapprove_new_users(cfg.StringOption):
         # Change in this option requires server restart to take full effect (the
         # default value of system text 'cms.regsucess' depends on it and system
         # texts are global variables).
@@ -131,18 +110,18 @@ class CMSConfiguration(pc):
                  "after the user confirms the registration code.")
         _DEFAULT = False
  
-    class _Option_storage(pc.StringOption):
+    class _Option_storage(cfg.StringOption):
         _DESCR = "Directory for storing uploaded files"
         _DOC = ("The directory must be writable by the web-server user.")
         _DEFAULT = '/var/lib/wiking'
         
-    class _Option_sql_dir(pc.StringOption):
+    class _Option_sql_dir(cfg.StringOption):
         _DESCR = "SQL directory"
         _DOC = ("The directory where Wiking CMS database initialization/upgrade scripts "
                 "can be found.")
         _DEFAULT = '/usr/local/share/wiking/sql'
         
-    class _Option_image_thumbnail_sizes(pc.Option):
+    class _Option_image_thumbnail_sizes(cfg.Option):
         _DESCR = "Sequence available image thumbnail sizes"
         _DOC = ("Sequence of three integers denoting the pixel size of small, "
                 "medium and large image thumbnail.  The images are resized so "
@@ -150,7 +129,7 @@ class CMSConfiguration(pc):
                 "is smaller to maintain the image proportion).")
         _DEFAULT = (120, 180, 240)
         
-    class _Option_image_screen_size(pc.Option):
+    class _Option_image_screen_size(cfg.Option):
         _DESCR = "Enlarged image screen size"
         _DOC = ("Pair of integers (width, height) in pixels denoting the maximal size "
                 "of an image when displayed on screen (after clicking the thumbnail). "
@@ -159,7 +138,7 @@ class CMSConfiguration(pc):
                 "may be larger than the screen size).  If the original is smaller")
         _DEFAULT = (800, 800)
         
-    class _Option_content_editor(pc.StringOption):
+    class _Option_content_editor(cfg.StringOption):
         _DESCR = "CMS text editor to be used"
         _DOC = ("The currently supported options are 'plain' for plain text editor "
                 "using the LCG Structured Text formatting and 'html' for a JavaScript "

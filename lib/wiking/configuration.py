@@ -17,15 +17,15 @@
 
 """Definition of Wiking configuration options.
 
-The options defined here are generic options for Wiking itself.  Application
-specific options may exist for particular Wiking applications, such as Wiking
-CMS.
+The class 'Configuration' defines options common for all Wiking applications.
+Application specific options may be defined for particular Wiking applications
+by deriving from the class 'ApplicationConfiguration' defined below.
 
 Each option has a short description and documentation.  The convention is to
 make the description as short as possible (well, as long as it is meaningful)
 and put all additional information into the documentation.  The description may
 be used as field label within Wiking CMS web based configuration.  The
-documentation is used as field help in this case.  The options which are
+documentation is used as field description in this case.  The options which are
 available through Wiking CMS web based configuration have the description and
 documentation marked for translation (using the underscore function).  Another
 usage of these values in the automatically generated configuration, where the
@@ -49,7 +49,7 @@ _ = lcg.TranslatableTextFactory('wiking')
 pc = pytis.util.Configuration
 
 
-class Configuration(pc):
+class Configuration(pytis.util.Configuration):
     """Wiking Configuration.
 
     Wiking configuration options can be set through configuration files.  There is one global
@@ -98,6 +98,7 @@ class Configuration(pc):
     options by values set through the Wiking Management Interface.
 
     """
+    
     class _Option_config_file(pc.StringOption, pc.HiddenOption):
         _DESCR = "Wiking global configuration file location"
         def default(self):
@@ -541,3 +542,37 @@ class Configuration(pc):
                 "'xsendfile_path' for alternative feature supported "
                 "by Apache and lighttpd servers.")
         _DEFAULT = ()
+
+
+class ApplicationConfiguration(pytis.util.Configuration):
+    """Base class for application specific configuration.
+
+    Wiking applications may define their own configuration options in a class
+    derived from this one.  An instance of the application specific
+    configuration class must be then created within the application's module
+    name space.
+
+    For example Wiking CMS defines its options in a class
+    'wiking.cms.CMSConfiguration' and this class is instantiated in
+    'wiking.cms.__init__py' as 'wiking.cms.cfg'.  Thus its options may be
+    accessed as 'wiking.cms.cfg.password_storage' etc.
+
+    Application specific configuration options will be automatically read from
+    the same files as the other Wiking configuration options.
+
+    """
+    class _Option_config_file(pc.StringOption, pc.HiddenOption):
+        def default(self):
+            import wiking
+            return wiking.cfg.config_file
+
+    class _Option_user_config_file(pc.StringOption, pc.HiddenOption):
+        def default(self):
+            import wiking
+            return wiking.cfg.user_config_file
+
+    def __init__(self, *args, **kwargs):
+        # Options are not inherited - copy them to force inheritance.
+        self.__class__._Option_config_file = ApplicationConfiguration._Option_config_file
+        self.__class__._Option_user_config_file = ApplicationConfiguration._Option_user_config_file
+        pc.__init__(self, *args, **kwargs)

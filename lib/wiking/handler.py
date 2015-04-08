@@ -116,7 +116,7 @@ class Handler(object):
         del config
         self._application = application = wiking.module.Application
         self._exporter = wiking.cfg.exporter(translations=wiking.cfg.translation_path)
-        application.initialize(config_file)
+        application.initialize(req)
         # Save the current handler instance for profiling purposes.
         Handler._instance = self
 
