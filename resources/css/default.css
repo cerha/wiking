@@ -20,12 +20,12 @@
 #messages .warning { 
     color: $color.error-fg;
     border-color: $color.error-border;
-    background: $color.error-bg url(warning.png) 3px 2px no-repeat;
+    background: $color.error-bg url(warning.png) 4px 3px no-repeat;
 }
 #messages .error {
     color: $color.error-fg;
     border-color: $color.error-border;
-    background: $color.error-bg url(error.png) 3px 2px no-repeat;
+    background: $color.error-bg url(error.png) 4px 3px no-repeat;
 }
 
 img { position: relative; } /* MSIE float workaround */
