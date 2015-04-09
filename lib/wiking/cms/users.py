@@ -1071,10 +1071,10 @@ class Users(UserManagementModule, CachingPytisModule):
             # Detect re-registration: The user is already confirmed in the
             # Wiking CMS user table, no need to confirm again for the
             # application user table.
-            req.message(_("Registration completed. You can log in now."), type=req.SUCCESS)
+            req.message(_("Registration completed. You can log in now."), req.SUCCESS)
             raise wiking.Redirect(req.module_uri('Registration'))
         else:
-            req.message(_("The account has been created."), type=req.SUCCESS)
+            req.message(_("The account has been created."), req.SUCCESS)
             if req.user() is not None:
                 # The registration was performed by admin.
                 if record['autogenerate_password'].value():
@@ -1141,7 +1141,7 @@ class Users(UserManagementModule, CachingPytisModule):
             raise wiking.BadRequest(_("User registration already confirmed."))
         code = record['regcode'].value()
         if not code or code != req.param('regcode'):
-            req.message(_("Invalid activation code."), type=req.ERROR)
+            req.message(_("Invalid activation code."), req.ERROR)
             raise wiking.Abort(_("Account not activated"),
                                ActivationForm(uid.value(), allow_bypass=False))
         return record
@@ -1247,7 +1247,7 @@ class Users(UserManagementModule, CachingPytisModule):
 
     def _redirect_after_confirm(self, req, record):
         # Redirect - don't display the response here to avoid multiple submissions...
-        req.message(_("Registration completed successfuly."), type=req.SUCCESS)
+        req.message(_("Registration completed successfuly."), req.SUCCESS)
         raise wiking.Redirect(req.uri(), action='confirm', success='yes')
 
     def _change_state(self, req, record, state, transaction=None):
@@ -1256,11 +1256,11 @@ class Users(UserManagementModule, CachingPytisModule):
         try:
             record.update(state=state, transaction=transaction)
         except pd.DBException as e:
-            req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
+            req.message(self._error_message(*self._analyze_exception(e)), req.ERROR)
             return False
         else:
             if state == self.AccountState.ENABLED:
-                req.message(_("The account was enabled."), type=req.SUCCESS)
+                req.message(_("The account was enabled."), req.SUCCESS)
                 email = record['email'].value()
                 text = _("Your account at %(uri)s has been enabled. "
                          "Please log in with username '%(login)s' and your password.",
@@ -1268,24 +1268,23 @@ class Users(UserManagementModule, CachingPytisModule):
                 err = send_mail(email, _("Your account has been enabled."),
                                 text, lang=record['lang'].value())
                 if err:
-                    req.message(_("Failed sending e-mail notification:") + ' ' + err,
-                                type=req.ERROR)
+                    req.message(_("Failed sending e-mail notification:") + ' ' + err, req.ERROR)
                 else:
                     req.message(_("E-mail notification has been sent to:") + ' ' + email)
             elif state == self.AccountState.DISABLED:
-                req.message(_("The account was disabled."), type=req.SUCCESS)
+                req.message(_("The account was disabled."), req.SUCCESS)
             return True
 
     def action_enable(self, req, record):
         if record['state'].value() == self.AccountState.NEW and not req.param('submit'):
             if record['regexpire'].value() <= pd.DateTime.datetime():
                 req.message(_("The registration expired on %(date)s.",
-                              date=record['regexpire'].export()), type=req.WARNING)
+                              date=record['regexpire'].export()), req.WARNING)
             form = self._form(pw.ShowForm, req, record, layout=self._layout(req, 'view', record),
                               actions=(Action('enable', _("Continue"), submit=1),
                                        # Translators: Button label to get to a previous state.
                                        Action('view', _("Back"))))
-            req.message(_("The registration code was not confirmed by the user!"), type=req.WARNING)
+            req.message(_("The registration code was not confirmed by the user!"), req.WARNING)
             req.message(_("Please enable the account only if you are sure that "
                           "the e-mail address belongs to given user."))
             return self._document(req, (form), record)
@@ -1303,7 +1302,7 @@ class Users(UserManagementModule, CachingPytisModule):
     def action_regreminder(self, req, record):
         err = self._send_registration_email(req, record)
         if err:
-            req.message(_("Failed sending e-mail:") + ' ' + err, type=req.ERROR)
+            req.message(_("Failed sending e-mail:") + ' ' + err, req.ERROR)
         else:
             req.message(_("The activation code was sent to %s.", record['email'].value()))
         raise wiking.Redirect(self._current_record_uri(req, record))
@@ -1681,7 +1680,7 @@ class Registration(Module, ActionHandler):
                     try:
                         password = wiking.module.Users.reset_password(user)
                     except pd.DBException as e:
-                        req.message(unicode(e), type=req.ERROR)
+                        req.message(unicode(e), req.ERROR)
                         return Document(title, self.ReminderForm())
                     # Translators: Credentials such as password...
                     intro_text = _("Your credentials were reset to:")
@@ -1702,14 +1701,13 @@ class Registration(Module, ActionHandler):
                     '', separator='\n')
                 err = send_mail(user.email(), title, text, lang=req.preferred_language())
                 if err:
-                    req.message(_("Failed sending e-mail notification:") + ' ' + err,
-                                type=req.ERROR)
+                    req.message(_("Failed sending e-mail notification:") + ' ' + err, req.ERROR)
                     msg = _("Please try repeating your request later or contact the administrator!")
                 else:
                     msg = _("E-mail information has been sent to your email address.")
                 content = lcg.p(msg)
             else:
-                req.message(_("No user account for your query."), type=req.ERROR)
+                req.message(_("No user account for your query."), req.ERROR)
                 content = self.ReminderForm()
         else:
             content = self.ReminderForm()

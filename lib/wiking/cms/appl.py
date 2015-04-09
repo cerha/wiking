@@ -117,7 +117,7 @@ class Application(CookieAuthentication, wiking.Application):
                 message = _("Switching to preview mode")
             else:
                 message = _("Switching to production mode")
-            req.message(message, type=req.WARNING)
+            req.message(message, req.WARNING)
             req.set_cookie(self._PREVIEW_MODE_COOKIE, value and '1' or '0')
 
     def handle(self, req):
@@ -157,7 +157,7 @@ class Application(CookieAuthentication, wiking.Application):
                         req.message(_("There are no published pages. "
                                       "You need to switch to the Preview mode "
                                       "to be able to access the unpublished pages."),
-                                    type=req.WARNING)
+                                    req.WARNING)
                 raise
         return req.forward(wiking.module(modname))
 

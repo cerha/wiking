@@ -2093,7 +2093,7 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                 transaction = self._delete_transaction(req, record)
                 self._in_transaction(transaction, self._delete, req, record, transaction)
             except pd.DBException as e:
-                req.message(self._error_message(*self._analyze_exception(e)), type=req.ERROR)
+                req.message(self._error_message(*self._analyze_exception(e)), req.ERROR)
             else:
                 return self._redirect_after_delete(req, record)
         form = self._form(pw.ShowForm, req, record=record,
@@ -2240,17 +2240,17 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
         return self._current_base_uri(req, record), kwargs
 
     def _redirect_after_insert(self, req, record):
-        req.message(self._insert_msg(req, record), type=req.SUCCESS)
+        req.message(self._insert_msg(req, record), req.SUCCESS)
         uri, kwargs = self._redirect_after_insert_uri(req, record)
         raise Redirect(uri, **kwargs)
 
     def _redirect_after_update(self, req, record):
-        req.message(self._update_msg(req, record), type=req.SUCCESS)
+        req.message(self._update_msg(req, record), req.SUCCESS)
         uri, kwargs = self._redirect_after_update_uri(req, record)
         raise Redirect(uri, **kwargs)
 
     def _redirect_after_delete(self, req, record):
-        req.message(self._delete_msg(req, record), type=req.SUCCESS)
+        req.message(self._delete_msg(req, record), req.SUCCESS)
         uri, kwargs = self._redirect_after_delete_uri(req, record)
         raise Redirect(uri, **kwargs)
 

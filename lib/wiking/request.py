@@ -1018,8 +1018,9 @@ class Request(ServerInterface):
 
         Arguments:
           message -- message text as a string.
-          type -- message text as one of INFO, WARNING, ERROR, HEADING constants
-            of the class.  If None, the default is INFO.
+          type -- message text as one of INFO, WARNING, ERROR, HEADING
+            constants of the class.  If None, the default is INFO.  Should be
+            passed as positional if not omitted.
 
         The stacked messages can be later retrieved using the 'messages()' method.
 
