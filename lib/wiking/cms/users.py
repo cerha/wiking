@@ -1176,6 +1176,16 @@ class Users(UserManagementModule, CachingPytisModule):
         if sent:
             req.message(_("E-mail notification has been sent to server administrators."))
 
+    def _redirect_after_update(self, req, record):
+        if record.field_changed('login'):
+            # HACK: Update login in session cookies to let the session continue after login change.
+            # See also comment in wiking.CookieAuthentication._set_session_cookies().
+            req.set_cookie(wiking.module.Application._LOGIN_COOKIE, record['login'].value(),
+                                  expires=(730 * 24 * 3600),
+                                  secure=wiking.module.Application._SECURE_AUTH_COOKIES)
+            req.message(_("You can use %s to log in next time.", record['login'].value()))
+        return super(Users, self)._redirect_after_update(req, record)
+
     def _state_info(self, req, record):
         state = record['state'].value()
         if state == Users.AccountState.NEW:

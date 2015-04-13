@@ -488,13 +488,16 @@ class CookieAuthentication(object):
     _SECURE_AUTH_COOKIES = False
 
     def _auth_user(self, req, login):
-        """Obtain authentication data and return a 'User' instance for given 'login'.
+        """Return a 'User' instance for given 'login'.
 
-        This method may be used to retrieve authentication data from any source, such as database
-        table, file, LDAP server etc.  This should return the user corresponding to given login
-        name if it exists.  Further password checking is performed later by the
-        '_auth_check_password()' method.  'None' may be returned if no user exists for given login
-        name.
+        This method may be used to retrieve authentication data from any
+        source, such as database table, file, LDAP server etc.  A 'User'
+        instance corresponding to given login name must be returned if it
+        exists.  'None' is returned if no such user exists.
+
+        Further password checking is performed later by the method
+        '_auth_check_password()', so this method doesn't care whether
+        authentication is valid or not.
 
         """
         return None
@@ -538,16 +541,6 @@ class CookieAuthentication(object):
         # support login hooks for HTTP authentication too, otherwise the users
         # would be able to use HTTP authentication to make unnoticed logins.
         credentials = req.credentials()
-        secure = self._SECURE_AUTH_COOKIES
-        # Session cookie expiration is used just to make the cookie persist
-        # across browser sessions. Session expiration time is checked in
-        # both cases by the session module (we don't rely on the client).
-        if wiking.cfg.persistent_sessions:
-            session_expires = wiking.cfg.session_expiration * 3600
-        else:
-            # This should make the cookie valid only until the end of the
-            # browser session.
-            session_expires = None
         if credentials:
             login, password = credentials
             if not login:
@@ -562,9 +555,7 @@ class CookieAuthentication(object):
             # Login succesfull
             self._auth_hook(req, user)
             session_key = session.session_key()
-            req.set_cookie(self._LOGIN_COOKIE, login, expires=(730 * 24 * 3600), secure=secure)
-            req.set_cookie(self._SESSION_COOKIE, session_key, expires=session_expires,
-                           secure=secure)
+            self._set_session_cookies(req, login, session_key)
             session.init(req, user, session_key)
         else:
             login, session_key = (req.cookie(self._LOGIN_COOKIE),
@@ -573,8 +564,7 @@ class CookieAuthentication(object):
                 user = self._auth_user(req, login)
                 if user and session.check(req, user, session_key):
                     assert isinstance(user, User)
-                    req.set_cookie(self._SESSION_COOKIE, session_key, expires=session_expires,
-                                   secure=secure)
+                    self._set_session_cookies(req, login, session_key)
                 else:
                     user = None
             else:
@@ -591,6 +581,30 @@ class CookieAuthentication(object):
                 if password_expiration <= datetime.date.today():
                     raise wiking.PasswordExpirationError()
         return user
+
+    def _set_session_cookies(self, req, login, session_key):
+        # Session cookie expiration is used just to make the cookie persist
+        # across browser sessions.  The expiration of the cookie (client side)
+        # is, however, not decisive for the expiration of the session itself.
+        # Session expiration time is checked by the session module independently.
+        if wiking.cfg.persistent_sessions:
+            expires = wiking.cfg.session_expiration * 3600
+        else:
+            # This should make the cookie valid only until the end of the
+            # browser session.
+            expires = None
+        secure = self._SECURE_AUTH_COOKIES
+        if req.cookie(self._LOGIN_COOKIE) != login:
+            # TODO: It would be better to use UID instead of login as part of the
+            # cookie, because when login is changed during the session (typically
+            # when e-mail addresses are used as logins), this causes the session
+            # to be unnecessariy terminated.  We would, however, need to introduce
+            # another API method (_auth_user_by_uid?) or use session_key alone to
+            # check the session (thus changing the API of Session.check()). 
+            # Wiking CMS has a hack to update login cookie after login change in
+            # wiking.cms.Users._redirect_after_update() to overcome this problem.
+            req.set_cookie(self._LOGIN_COOKIE, login, expires=(730 * 24 * 3600), secure=secure)
+        req.set_cookie(self._SESSION_COOKIE, session_key, expires=expires, secure=secure)
 
     def _logout_hook(self, req, user):
         req.set_cookie(self._SESSION_COOKIE, None, secure=self._SECURE_AUTH_COOKIES)
