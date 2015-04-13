@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-04-03 15:14+0200\n"
+"POT-Creation-Date: 2015-04-13 12:21+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Petr Topiarz <topiarz@post.cz>\n"
 "Language-Team: \n"
@@ -51,32 +51,32 @@ msgstr "Poprzedni"
 msgid "Switching to production mode"
 msgstr "Pozwól aby strona była nie widoczna z zewnątrz"
 
-#: ../lib/wiking/cms/appl.py:157
+#: ../lib/wiking/cms/appl.py:152
 msgid "Welcome to Wiking CMS"
 msgstr ""
 
-#: ../lib/wiking/cms/appl.py:160 ../lib/wiking/cms/cms.py:1479
+#: ../lib/wiking/cms/appl.py:155 ../lib/wiking/cms/cms.py:1479
 msgid "Create a new page"
 msgstr ""
 
-#: ../lib/wiking/cms/appl.py:162
+#: ../lib/wiking/cms/appl.py:157
 msgid ""
 "There are no published pages. You need to switch to the Preview mode to be "
 "able to access the unpublished pages."
 msgstr ""
 
-#: ../lib/wiking/cms/appl.py:259
+#: ../lib/wiking/cms/appl.py:254
 msgid "Wiking Management Interface"
 msgstr "Wiking Management Interface"
 
-#: ../lib/wiking/cms/appl.py:305 ../lib/wiking/cms/users.py:1035
+#: ../lib/wiking/cms/appl.py:300 ../lib/wiking/cms/users.py:1035
 #, python-format
 msgid ""
 "User %s is already registered for another site. Please, confirm the account "
 "for this site."
 msgstr ""
 
-#: ../lib/wiking/cms/appl.py:363
+#: ../lib/wiking/cms/appl.py:358
 #, fuzzy
 msgid "New Panel"
 msgstr "Nowa strona"
@@ -2132,7 +2132,7 @@ msgstr ""
 
 #: ../lib/wiking/cms/cms.py:4243 ../lib/wiking/cms/crypto.py:85
 #: ../lib/wiking/cms/users.py:227 ../lib/wiking/cms/users.py:561
-#: ../lib/wiking/cms/users.py:1819
+#: ../lib/wiking/cms/users.py:1827
 msgid "User"
 msgstr "Użytkownik"
 
@@ -2193,7 +2193,7 @@ msgid ""
 msgstr ""
 
 #: ../lib/wiking/cms/cms.py:4333 ../lib/wiking/cms/users.py:1058
-#: ../lib/wiking/cms/users.py:1306
+#: ../lib/wiking/cms/users.py:1315
 #, fuzzy
 msgid "Failed sending e-mail:"
 msgstr "Wysyłanie e-mail zakończyło się niepowodzeniem:"
@@ -2404,8 +2404,8 @@ msgstr ""
 
 #. Button name. Computer terminology. Use an appropriate term common
 #. for submitting forms in a computer application.
-#: ../lib/wiking/cms/cms.py:4829 ../lib/wiking/cms/users.py:1598
-#: ../lib/wiking/cms/users.py:1745
+#: ../lib/wiking/cms/cms.py:4829 ../lib/wiking/cms/users.py:1607
+#: ../lib/wiking/cms/users.py:1753
 msgid "Submit"
 msgstr "Przesyłanie"
 
@@ -2487,7 +2487,7 @@ msgstr "Zarządzaj dostępnymi kaskadowymi arkuszami stylów."
 
 #. Table column heading.
 #. Whether the account is active. Values are yes/no.
-#: ../lib/wiking/cms/cms.py:4940 ../lib/wiking/cms/users.py:1834
+#: ../lib/wiking/cms/cms.py:4940 ../lib/wiking/cms/users.py:1842
 msgid "Active"
 msgstr "Aktywny"
 
@@ -2619,12 +2619,12 @@ msgid "Edit this mail for repeated use"
 msgstr "Edytuj mail do ponownego użycia."
 
 #. Yes/No configuration option label. Should the login panel be visible?
-#: ../lib/wiking/cms/configuration.py:57
+#: ../lib/wiking/cms/configuration.py:36
 #, fuzzy
 msgid "Allow login panel"
 msgstr "Pozwól login panel być widocznym"
 
-#: ../lib/wiking/cms/configuration.py:58
+#: ../lib/wiking/cms/configuration.py:37
 msgid ""
 "If enabled, the information about the currently logged user and login/logout "
 "controls will be present on each page as a separate panel.  This panel will "
@@ -2640,29 +2640,29 @@ msgstr ""
 #. whatever brief form obviously referning to whatever translation you used for
 #. "Wiking
 #. Management Interface".
-#: ../lib/wiking/cms/configuration.py:68
+#: ../lib/wiking/cms/configuration.py:47
 #, fuzzy
 msgid "Allow WMI link"
 msgstr "Pozwól WMI link być widocznym"
 
 #. Yes/no configuration label. Can new users register to this
 #. website/application?
-#: ../lib/wiking/cms/configuration.py:76
+#: ../lib/wiking/cms/configuration.py:55
 msgid "Allow new user registration"
 msgstr "Zgoda na rejestrację nowego użytkownika"
 
-#: ../lib/wiking/cms/configuration.py:78
+#: ../lib/wiking/cms/configuration.py:57
 msgid ""
 "If enabled, all visitors are allowed to create a new user account.  If "
 "disabled, new user accounts must be created by administrator."
 msgstr ""
 
 #. Maximal size an uploaded file can have.
-#: ../lib/wiking/cms/configuration.py:84
+#: ../lib/wiking/cms/configuration.py:63
 msgid "Maximal upload size"
 msgstr "Maksymalny rozmiar przesyłanych plików"
 
-#: ../lib/wiking/cms/configuration.py:85
+#: ../lib/wiking/cms/configuration.py:64
 msgid ""
 "The maximal size of uploaded files in bytes.  The server needs to be "
 "relaoded for the changes in this option to take effect."
@@ -2670,15 +2670,15 @@ msgstr ""
 "Maksymalny rozmiar przesłanych plików w bajtach. Serwer musi być załadowany "
 "ponownie aby zmiany zostały zatwierdzone."
 
-#: ../lib/wiking/cms/configuration.py:113
+#: ../lib/wiking/cms/configuration.py:92
 msgid "Whether to use e-mails as login names"
 msgstr "Czy używać e-mailu jako loginu"
 
-#: ../lib/wiking/cms/configuration.py:114
+#: ../lib/wiking/cms/configuration.py:93
 msgid "Iff true, users must use e-mail addresses as their login names."
 msgstr "Jeśli prawdziwy, użytkownicy muszą użyć adresu e-mail jako loginu."
 
-#: ../lib/wiking/cms/configuration.py:128
+#: ../lib/wiking/cms/configuration.py:107
 msgid ""
 "If set, the newly registered users will be automatically approved without "
 "any administrator's action.  The adminstrator may still need to asign users "
@@ -2979,7 +2979,7 @@ msgid "Manage registered users and their privileges."
 msgstr "Zarządzanie zarejestrowanymi użytkownikami i ich uprawnieniami."
 
 #. Login name for a website. Registration form field.
-#: ../lib/wiking/cms/users.py:522 ../lib/wiking/cms/users.py:1697
+#: ../lib/wiking/cms/users.py:522 ../lib/wiking/cms/users.py:1706
 msgid "Login name"
 msgstr "Login"
 
@@ -3003,7 +3003,7 @@ msgid ""
 "user's e-mail address."
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:533 ../lib/wiking/cms/users.py:1698
+#: ../lib/wiking/cms/users.py:533 ../lib/wiking/cms/users.py:1707
 msgid "Password"
 msgstr "Hasło"
 
@@ -3119,7 +3119,7 @@ msgid "User's Groups"
 msgstr "Użytkownicy"
 
 #. Heading for an overview when and how the user has accessed the application.
-#: ../lib/wiking/cms/users.py:706 ../lib/wiking/cms/users.py:1812
+#: ../lib/wiking/cms/users.py:706 ../lib/wiking/cms/users.py:1820
 msgid "Login History"
 msgstr "Historia logowania"
 
@@ -3128,7 +3128,7 @@ msgid "Crypto Keys"
 msgstr ""
 
 #. Name of group of users who have full access to the system.
-#: ../lib/wiking/cms/users.py:718 ../lib/wiking/cms/users.py:1567
+#: ../lib/wiking/cms/users.py:718 ../lib/wiking/cms/users.py:1576
 msgid "Active users"
 msgstr "Aktywni użytkownicy"
 
@@ -3214,7 +3214,7 @@ msgid "Unapproved account"
 msgstr "Nowe konto"
 
 #. Dialog title (account in the meaning of user account).
-#: ../lib/wiking/cms/users.py:791 ../lib/wiking/cms/users.py:1782
+#: ../lib/wiking/cms/users.py:791 ../lib/wiking/cms/users.py:1790
 msgid "Account disabled"
 msgstr "Konto wyłączone"
 
@@ -3302,7 +3302,7 @@ msgstr "Konto zostało uaktywnione."
 msgid "The generated password was sent to %s."
 msgstr "Nowe hasło jest takie samo jak stare."
 
-#: ../lib/wiking/cms/users.py:1083 ../lib/wiking/cms/users.py:1308
+#: ../lib/wiking/cms/users.py:1083 ../lib/wiking/cms/users.py:1317
 #, fuzzy, python-format
 msgid "The activation code was sent to %s."
 msgstr "Kod aktywacyjny został wysłany do %s."
@@ -3359,7 +3359,7 @@ msgstr "Rejestracja została potwierdzona."
 msgid "Invalid activation code."
 msgstr "Nie ważny kod aktywacji."
 
-#: ../lib/wiking/cms/users.py:1145 ../lib/wiking/cms/users.py:1784
+#: ../lib/wiking/cms/users.py:1145 ../lib/wiking/cms/users.py:1792
 #, fuzzy
 msgid "Account not activated"
 msgstr "Konto wyłączone"
@@ -3408,7 +3408,12 @@ msgstr "Uwagi"
 msgid "E-mail notification has been sent to server administrators."
 msgstr "Powiadomienia e-mail został wysłany do serwera administratora."
 
-#: ../lib/wiking/cms/users.py:1183
+#: ../lib/wiking/cms/users.py:1186
+#, python-format
+msgid "You can use %s to log in next time."
+msgstr ""
+
+#: ../lib/wiking/cms/users.py:1193
 msgid ""
 "The activation code was not yet confirmed by the user. Therefore it is not "
 "possible to trust that given e-mail address belongs to the person who "
@@ -3418,7 +3423,7 @@ msgstr ""
 "prawdopodobnym, że podany adres e-mail nie należy do osoby, która złożyła "
 "wniosek rejestracji."
 
-#: ../lib/wiking/cms/users.py:1190
+#: ../lib/wiking/cms/users.py:1200
 #, python-format
 msgid ""
 "The activation code will expire on %(date)s and the user will not be able to "
@@ -3427,7 +3432,7 @@ msgstr ""
 "Kod aktywacyjny wygasa %(date)s, po tym czasie użytkownik nie będzie mógł "
 "dokończyć rejestracji."
 
-#: ../lib/wiking/cms/users.py:1192
+#: ../lib/wiking/cms/users.py:1202
 msgid ""
 "Use the button \"Resend activation code\" below to remind the user of his "
 "pending registration."
@@ -3435,7 +3440,7 @@ msgstr ""
 "Użyj przycisku \"Resend activation code\" poniżej, aby przypomnieć "
 "użytkownikowi o rejestracji."
 
-#: ../lib/wiking/cms/users.py:1198
+#: ../lib/wiking/cms/users.py:1208
 #, python-format
 msgid ""
 "The registration expired on %(date)s.  The user didn't confirm the "
@@ -3444,7 +3449,7 @@ msgstr ""
 "Rejestracji upłynął %(date)s. Użytkownik nie potwierdził kodu aktywacyjnego "
 "wysłanego do zadeklarowanego adresu e-mail."
 
-#: ../lib/wiking/cms/users.py:1200
+#: ../lib/wiking/cms/users.py:1210
 msgid ""
 "The account should be deleted automatically if the server maintenence script "
 "is installed correctly.  Otherwise you can delete the account manually."
@@ -3452,11 +3457,11 @@ msgstr ""
 "Konto powinno być automatycznie usuwane, jeśli skrypt jest zainstalowany "
 "poprawnie. W przeciwnym razie można usunąć konto ręcznie."
 
-#: ../lib/wiking/cms/users.py:1204
+#: ../lib/wiking/cms/users.py:1214
 msgid "The activation code was succesfully confirmed."
 msgstr "Kod aktywacji został pomyślnie zatwierdzony."
 
-#: ../lib/wiking/cms/users.py:1207
+#: ../lib/wiking/cms/users.py:1217
 msgid ""
 "Therefore it was verified that given e-mail address belongs to the person "
 "who requested the registration."
@@ -3464,7 +3469,7 @@ msgstr ""
 "Ustalono, że podany adres e-mail należy do osoby, która wysłała wniosek o "
 "rejestracje."
 
-#: ../lib/wiking/cms/users.py:1209
+#: ../lib/wiking/cms/users.py:1219
 msgid ""
 "The user is now able to log in, but still has no rights (other than an "
 "anonymous user)."
@@ -3472,33 +3477,33 @@ msgstr ""
 "Użytkownik jest w stanie zalogować się, ale nadal nie ma żadnych praw "
 "(innych niż anonimowych użytkowników)."
 
-#: ../lib/wiking/cms/users.py:1211
+#: ../lib/wiking/cms/users.py:1221
 #, fuzzy
 msgid "The account now awaits administrator's action to be approved."
 msgstr ""
 "Konto oczekuje uprawnień dostępu które mogą być udostępnione przez "
 "administratora."
 
-#: ../lib/wiking/cms/users.py:1213
+#: ../lib/wiking/cms/users.py:1223
 msgid ""
 "The account is blocked.  The user is able to log in, but has no access to "
 "protected services until the administrator enables the account again."
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:1237
+#: ../lib/wiking/cms/users.py:1247
 msgid "Registration confirmed"
 msgstr "Rejestracja została potwierdzona."
 
-#: ../lib/wiking/cms/users.py:1250
+#: ../lib/wiking/cms/users.py:1260
 #, fuzzy
 msgid "Registration completed successfuly."
 msgstr "Rejestracja została potwierdzona."
 
-#: ../lib/wiking/cms/users.py:1263
+#: ../lib/wiking/cms/users.py:1273
 msgid "The account was enabled."
 msgstr "Konto zostało uaktywnione."
 
-#: ../lib/wiking/cms/users.py:1267
+#: ../lib/wiking/cms/users.py:1277
 #, python-format
 msgid ""
 "Your account at %(uri)s has been enabled. Please log in with username "
@@ -3507,86 +3512,86 @@ msgstr ""
 "Twoje konto w  %(uri)s zostało uaktualnione. Zaloguj się z loginem "
 "'%(login)s' i twoim hasłem."
 
-#: ../lib/wiking/cms/users.py:1268
+#: ../lib/wiking/cms/users.py:1278
 msgid "Your account has been enabled."
 msgstr "Twoje konto jest aktywne."
 
-#: ../lib/wiking/cms/users.py:1271 ../lib/wiking/cms/users.py:1705
+#: ../lib/wiking/cms/users.py:1281 ../lib/wiking/cms/users.py:1714
 msgid "Failed sending e-mail notification:"
 msgstr "Wysyłanie e-mail zakończyło się niepowodzeniem:"
 
-#: ../lib/wiking/cms/users.py:1274
+#: ../lib/wiking/cms/users.py:1283
 msgid "E-mail notification has been sent to:"
 msgstr "Powiadomienia e-mail został wysłany do:"
 
-#: ../lib/wiking/cms/users.py:1276
+#: ../lib/wiking/cms/users.py:1285
 #, fuzzy
 msgid "The account was disabled."
 msgstr "Konto zostało uaktywnione."
 
-#: ../lib/wiking/cms/users.py:1283
+#: ../lib/wiking/cms/users.py:1292
 #, fuzzy, python-format
 msgid "The registration expired on %(date)s."
 msgstr "Rejestracja została potwierdzona."
 
-#: ../lib/wiking/cms/users.py:1285
+#: ../lib/wiking/cms/users.py:1294
 #, fuzzy
 msgid "Continue"
 msgstr "Zawartość"
 
 #. Button label to get to a previous state.
-#: ../lib/wiking/cms/users.py:1287
+#: ../lib/wiking/cms/users.py:1296
 msgid "Back"
 msgstr "Wstecz"
 
-#: ../lib/wiking/cms/users.py:1288
+#: ../lib/wiking/cms/users.py:1297
 #, fuzzy
 msgid "The registration code was not confirmed by the user!"
 msgstr "Rejestracja została potwierdzona."
 
-#: ../lib/wiking/cms/users.py:1289
+#: ../lib/wiking/cms/users.py:1298
 #, fuzzy
 msgid ""
 "Please enable the account only if you are sure that the e-mail address "
 "belongs to given user."
 msgstr "Potwierdź konto, jeśli jesteś pewien że e-mail adres należy do ciebie."
 
-#: ../lib/wiking/cms/users.py:1568
+#: ../lib/wiking/cms/users.py:1577
 msgid "Listing of all active user accounts."
 msgstr "Lista wszystkich aktywnych kont użytkowników."
 
-#: ../lib/wiking/cms/users.py:1594
+#: ../lib/wiking/cms/users.py:1603
 msgid "Enter your login name or e-mail address"
 msgstr "Wprowadź swój login alub adres e-mail"
 
-#: ../lib/wiking/cms/users.py:1659
+#: ../lib/wiking/cms/users.py:1668
 msgid "Password reminder"
 msgstr "Przypomnienie hasła"
 
-#: ../lib/wiking/cms/users.py:1673
+#: ../lib/wiking/cms/users.py:1682
 msgid "Multiple user accounts found for given email address."
 msgstr "Wiele kont użytkownika dla danego adresu e-mail."
 
-#: ../lib/wiking/cms/users.py:1674
+#: ../lib/wiking/cms/users.py:1683
 msgid "Please, select the account for which you want to remind:"
 msgstr "Wybierz konto do którego potrzebujesz przypomnienia:"
 
 #. Credentials such as password...
-#: ../lib/wiking/cms/users.py:1687
+#: ../lib/wiking/cms/users.py:1696
 msgid "Your credentials were reset to:"
 msgstr "Twoje dokumenty potwierdzające tożsamość zostały zresetowane do:"
 
 #. Credentials such as password...
-#: ../lib/wiking/cms/users.py:1691
+#: ../lib/wiking/cms/users.py:1700
 msgid "Your credentials are:"
 msgstr "Twoje dokumenty potwierdzające tożsamość to:"
 
-#: ../lib/wiking/cms/users.py:1694
+#: ../lib/wiking/cms/users.py:1703
 #, python-format
 msgid "A password reminder request has been made at %(server_uri)s."
 msgstr "Przypomnienie hasła wniosek został wsłany do %(server_uri)s."
 
-#: ../lib/wiking/cms/users.py:1700
+#: ../lib/wiking/cms/users.py:1709
 msgid ""
 "We strongly recommend you change your password at nearest occassion, since "
 "it has been exposed to an unsecure channel."
@@ -3594,78 +3599,78 @@ msgstr ""
 "Zalecamy zmianę hasła na najbliższej okazji, gdyż był miał styczność z "
 "niezabezpieczonym kanałem."
 
-#: ../lib/wiking/cms/users.py:1707
+#: ../lib/wiking/cms/users.py:1715
 msgid "Please try repeating your request later or contact the administrator!"
 msgstr "Powtórz żądanie później lub skontaktuj się z administratorem!"
 
-#: ../lib/wiking/cms/users.py:1709
+#: ../lib/wiking/cms/users.py:1717
 msgid "E-mail information has been sent to your email address."
 msgstr "Informacja została przesłana na twojego emaila."
 
-#: ../lib/wiking/cms/users.py:1712
+#: ../lib/wiking/cms/users.py:1720
 msgid "No user account for your query."
 msgstr "Brak użytkownika odpowiadającego Twojemu zapytaniu."
 
-#: ../lib/wiking/cms/users.py:1743
+#: ../lib/wiking/cms/users.py:1751
 #, fuzzy
 msgid "Enter the activation code:"
 msgstr "Wyślij ponownie kod aktywacji"
 
-#: ../lib/wiking/cms/users.py:1748
+#: ../lib/wiking/cms/users.py:1756
 #, fuzzy
 msgid "Continue without activation"
 msgstr "Wyślij ponownie kod aktywacji"
 
-#: ../lib/wiking/cms/users.py:1786
+#: ../lib/wiking/cms/users.py:1794
 #, fuzzy
 msgid "Account not approved"
 msgstr "Konto wyłączone"
 
-#: ../lib/wiking/cms/users.py:1813
+#: ../lib/wiking/cms/users.py:1821
 msgid "History of successful login sessions and unsuccessful login attempts."
 msgstr "Historia logowań zakończonych sukcesem i nieudanych prób logowania."
 
 #. Login name.
-#: ../lib/wiking/cms/users.py:1822
+#: ../lib/wiking/cms/users.py:1830
 msgid "Login"
 msgstr "Login"
 
 #. Form field saying whether the users attempt was succesful.
 #. Values are Yes/No.
-#: ../lib/wiking/cms/users.py:1825
+#: ../lib/wiking/cms/users.py:1833
 msgid "Success"
 msgstr "Pomyślnie"
 
 #. Table column heading.
 #. Time of the start of user session, followed by a date and time.
-#: ../lib/wiking/cms/users.py:1828
+#: ../lib/wiking/cms/users.py:1836
 msgid "Start time"
 msgstr "Czas rozpoczęcia"
 
 #. Table column heading. The length of user session. Contains time.
-#: ../lib/wiking/cms/users.py:1831
+#: ../lib/wiking/cms/users.py:1839
 msgid "Duration"
 msgstr "Czas trwania"
 
-#: ../lib/wiking/cms/users.py:1835
+#: ../lib/wiking/cms/users.py:1843
 msgid "IP address"
 msgstr "IP adres"
 
 #. Internet name of the remote computer (computer terminology).
-#: ../lib/wiking/cms/users.py:1837
+#: ../lib/wiking/cms/users.py:1845
 msgid "Hostname"
 msgstr "Nazwa hosta"
 
 #. "User agent" is a generalized name for browser or more precisely the
 #. software which produced the HTTP request (was used to access the website).
-#: ../lib/wiking/cms/users.py:1840
+#: ../lib/wiking/cms/users.py:1848
 msgid "User agent"
 msgstr "agent użytkownika"
 
 #. Meaning where the user came from. Computer terminology.
 #. Do not translate
 #. "HTTP" and if unsure, don't translate at all (it is a very technical term).
-#: ../lib/wiking/cms/users.py:1844
+#: ../lib/wiking/cms/users.py:1852
 msgid "HTTP Referer"
 msgstr "HTTP Referer"
 

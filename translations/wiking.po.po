@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-04-03 15:18+0200\n"
+"POT-Creation-Date: 2015-04-13 12:21+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Petr Topiarz <topiarz@post.cz>\n"
 "Language-Team: \n"
@@ -36,19 +36,19 @@ msgstr "Navegação local"
 msgid "Contact:"
 msgstr "Contacto:"
 
-#: ../lib/wiking/configuration.py:246
+#: ../lib/wiking/configuration.py:247
 msgid "Webmaster's e-mail address"
 msgstr ""
 
-#: ../lib/wiking/configuration.py:257
+#: ../lib/wiking/configuration.py:258
 msgid "Default sender address"
 msgstr ""
 
-#: ../lib/wiking/configuration.py:275
+#: ../lib/wiking/configuration.py:276
 msgid "Force HTTPS login"
 msgstr ""
 
-#: ../lib/wiking/configuration.py:276
+#: ../lib/wiking/configuration.py:277
 msgid ""
 "If enabled, the login form will always be redirected to an HTTPS address to "
 "ensure the security of the submitted credentials.  This, however, requires "
@@ -56,16 +56,16 @@ msgid ""
 "and pass them to Wiking."
 msgstr ""
 
-#: ../lib/wiking/configuration.py:285
+#: ../lib/wiking/configuration.py:286
 msgid "Allow HTTP authentication"
 msgstr ""
 
 #. Site means a webpage or web application.
-#: ../lib/wiking/configuration.py:346
+#: ../lib/wiking/configuration.py:347
 msgid "Site title"
 msgstr ""
 
-#: ../lib/wiking/configuration.py:347
+#: ../lib/wiking/configuration.py:348
 msgid ""
 "Site title is a short and (hopefully) unique title of the whole website. It "
 "will appear at the top of every page."
@@ -73,11 +73,11 @@ msgstr ""
 
 #. Site means a webpage or web application.
 #. Subtitle as in ,,title -- subtitle''.
-#: ../lib/wiking/configuration.py:354
+#: ../lib/wiking/configuration.py:355
 msgid "Site subtitle"
 msgstr ""
 
-#: ../lib/wiking/configuration.py:355
+#: ../lib/wiking/configuration.py:356
 msgid ""
 "Site subtitle is an optional more descriptive title of the website.  It will "
 "appear at the top of every page together with site title, but where brevity "
@@ -85,18 +85,18 @@ msgid ""
 msgstr ""
 
 #. Web page or web application specific image.
-#: ../lib/wiking/configuration.py:362
+#: ../lib/wiking/configuration.py:363
 msgid "Site icon"
 msgstr ""
 
-#: ../lib/wiking/configuration.py:391
+#: ../lib/wiking/configuration.py:392
 msgid "Default language"
 msgstr ""
 
 #. Language negotiation means the process where the server is trying
 #. to find a language that matches with what the users internet browser asks
 #. for.
-#: ../lib/wiking/configuration.py:394
+#: ../lib/wiking/configuration.py:395
 msgid ""
 "Defines the language (lowercase ISO 639-1 Alpha-2 code) to be used when "
 "content language negotiation fails. If not set (which is the default), the "
@@ -117,11 +117,11 @@ msgstr ""
 #. Settings label. URI means a link. Do not translate ''URI''.
 #. Yes/No configuration option label.
 #. Should the login panel display user role (as Admin, Student, Tutor etc.)
-#: ../lib/wiking/configuration.py:472
+#: ../lib/wiking/configuration.py:473
 msgid "Display role in login panel"
 msgstr ""
 
-#: ../lib/wiking/configuration.py:473
+#: ../lib/wiking/configuration.py:474
 msgid ""
 "If enabled, the login panel on each page will not display only the current "
 "username, but also his current user role, which affects his permissions."
@@ -368,63 +368,63 @@ msgstr "Manutençao do sistema e curso"
 msgid "The system is temporarily down for maintenance."
 msgstr "O sistema está de momento fora de serviço para manutenção."
 
-#: ../lib/wiking/modules.py:554
+#: ../lib/wiking/modules.py:547
 msgid "Enter your login name, please!"
 msgstr "Por favor,  escreva  o seu  nome de utente! "
 
-#: ../lib/wiking/modules.py:556
+#: ../lib/wiking/modules.py:549
 msgid "Enter your password, please!"
 msgstr "Por favor, escreva a sua palavra-passe!"
 
-#: ../lib/wiking/modules.py:560
+#: ../lib/wiking/modules.py:553
 msgid "Invalid login!"
 msgstr "Acesso inválido! "
 
-#: ../lib/wiking/modules.py:653
+#: ../lib/wiking/modules.py:667
 msgid "Searching"
 msgstr "Procurar"
 
-#: ../lib/wiking/modules.py:654
+#: ../lib/wiking/modules.py:668
 msgid "Search results"
 msgstr "Resultados encontrados "
 
-#: ../lib/wiking/modules.py:655
+#: ../lib/wiking/modules.py:669
 msgid "Given search term doesn't contain any searchable term."
 msgstr "A expressão procurada não contém nenhuma palavra encontrada."
 
-#: ../lib/wiking/modules.py:659
+#: ../lib/wiking/modules.py:673
 msgid "Search words:"
 msgstr "Procurar palavras:"
 
-#: ../lib/wiking/modules.py:660
+#: ../lib/wiking/modules.py:674
 msgid "Search"
 msgstr "Procurar"
 
-#: ../lib/wiking/modules.py:716
+#: ../lib/wiking/modules.py:730
 msgid "Nothing found."
 msgstr "Não foi encontrado nenhum resutado."
 
-#: ../lib/wiking/modules.py:773
+#: ../lib/wiking/modules.py:787
 msgid "The following modules were successfully reloaded:"
 msgstr "Os seguintes módulos foram transferidos com èxito:"
 
-#: ../lib/wiking/modules.py:775
+#: ../lib/wiking/modules.py:789
 msgid "Reload"
 msgstr "Tranferir"
 
 #. Short description of a user group purpose.
-#: ../lib/wiking/request.py:1256
+#: ../lib/wiking/request.py:1257
 msgid "Anyone"
 msgstr ""
 
 #. Short description of a user group purpose.
-#: ../lib/wiking/request.py:1259
+#: ../lib/wiking/request.py:1260
 #, fuzzy
 msgid "Any authenticated user"
 msgstr "Pedido de autenticação"
 
 #. Short description of a user group purpose.
-#: ../lib/wiking/request.py:1266
+#: ../lib/wiking/request.py:1267
 msgid "Current record owner"
 msgstr ""
 

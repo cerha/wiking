@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-04-03 15:14+0200\n"
+"POT-Creation-Date: 2015-04-13 12:21+0200\n"
 "PO-Revision-Date: 2009-09-14 15:18+0100\n"
 "Last-Translator: Petr Topiarz <topiarz@post.cz>\n"
 "Language-Team: Slovak <wiking@lists.freebsoft.org>\n"
@@ -56,33 +56,33 @@ msgstr "Náhľad"
 msgid "Switching to production mode"
 msgstr "Učiniť stránku neviditeľnou zvonku"
 
-#: ../lib/wiking/cms/appl.py:157
+#: ../lib/wiking/cms/appl.py:152
 msgid "Welcome to Wiking CMS"
 msgstr ""
 
-#: ../lib/wiking/cms/appl.py:160 ../lib/wiking/cms/cms.py:1479
+#: ../lib/wiking/cms/appl.py:155 ../lib/wiking/cms/cms.py:1479
 msgid "Create a new page"
 msgstr ""
 
-#: ../lib/wiking/cms/appl.py:162
+#: ../lib/wiking/cms/appl.py:157
 msgid ""
 "There are no published pages. You need to switch to the Preview mode to be "
 "able to access the unpublished pages."
 msgstr ""
 
-#: ../lib/wiking/cms/appl.py:259
+#: ../lib/wiking/cms/appl.py:254
 #, fuzzy
 msgid "Wiking Management Interface"
 msgstr "Vstúpiť do rozhrania správy obsahu"
 
-#: ../lib/wiking/cms/appl.py:305 ../lib/wiking/cms/users.py:1035
+#: ../lib/wiking/cms/appl.py:300 ../lib/wiking/cms/users.py:1035
 #, python-format
 msgid ""
 "User %s is already registered for another site. Please, confirm the account "
 "for this site."
 msgstr ""
 
-#: ../lib/wiking/cms/appl.py:363
+#: ../lib/wiking/cms/appl.py:358
 #, fuzzy
 msgid "New Panel"
 msgstr "Nová stránka"
@@ -2137,7 +2137,7 @@ msgstr ""
 
 #: ../lib/wiking/cms/cms.py:4243 ../lib/wiking/cms/crypto.py:85
 #: ../lib/wiking/cms/users.py:227 ../lib/wiking/cms/users.py:561
-#: ../lib/wiking/cms/users.py:1819
+#: ../lib/wiking/cms/users.py:1827
 msgid "User"
 msgstr "Používateľ"
 
@@ -2200,7 +2200,7 @@ msgid ""
 msgstr ""
 
 #: ../lib/wiking/cms/cms.py:4333 ../lib/wiking/cms/users.py:1058
-#: ../lib/wiking/cms/users.py:1306
+#: ../lib/wiking/cms/users.py:1315
 #, fuzzy
 msgid "Failed sending e-mail:"
 msgstr "Nepodarilo sa odoslať emailové upozornenie:"
@@ -2411,8 +2411,8 @@ msgstr ""
 
 #. Button name. Computer terminology. Use an appropriate term common
 #. for submitting forms in a computer application.
-#: ../lib/wiking/cms/cms.py:4829 ../lib/wiking/cms/users.py:1598
-#: ../lib/wiking/cms/users.py:1745
+#: ../lib/wiking/cms/cms.py:4829 ../lib/wiking/cms/users.py:1607
+#: ../lib/wiking/cms/users.py:1753
 msgid "Submit"
 msgstr "Odoslať"
 
@@ -2496,7 +2496,7 @@ msgstr "Správa použitých kaskádových štýlov."
 
 #. Table column heading.
 #. Whether the account is active. Values are yes/no.
-#: ../lib/wiking/cms/cms.py:4940 ../lib/wiking/cms/users.py:1834
+#: ../lib/wiking/cms/cms.py:4940 ../lib/wiking/cms/users.py:1842
 msgid "Active"
 msgstr "Aktívne"
 
@@ -2630,11 +2630,11 @@ msgid "Edit this mail for repeated use"
 msgstr ""
 
 #. Yes/No configuration option label. Should the login panel be visible?
-#: ../lib/wiking/cms/configuration.py:57
+#: ../lib/wiking/cms/configuration.py:36
 msgid "Allow login panel"
 msgstr "Zobraziť panel prihlásenia"
 
-#: ../lib/wiking/cms/configuration.py:58
+#: ../lib/wiking/cms/configuration.py:37
 msgid ""
 "If enabled, the information about the currently logged user and login/logout "
 "controls will be present on each page as a separate panel.  This panel will "
@@ -2650,28 +2650,28 @@ msgstr ""
 #. whatever brief form obviously referning to whatever translation you used for
 #. "Wiking
 #. Management Interface".
-#: ../lib/wiking/cms/configuration.py:68
+#: ../lib/wiking/cms/configuration.py:47
 msgid "Allow WMI link"
 msgstr "Povoliť odkaz do správcovského rozhrania"
 
 #. Yes/no configuration label. Can new users register to this
 #. website/application?
-#: ../lib/wiking/cms/configuration.py:76
+#: ../lib/wiking/cms/configuration.py:55
 msgid "Allow new user registration"
 msgstr "Povoliť registráciu nových používateľov"
 
-#: ../lib/wiking/cms/configuration.py:78
+#: ../lib/wiking/cms/configuration.py:57
 msgid ""
 "If enabled, all visitors are allowed to create a new user account.  If "
 "disabled, new user accounts must be created by administrator."
 msgstr ""
 
 #. Maximal size an uploaded file can have.
-#: ../lib/wiking/cms/configuration.py:84
+#: ../lib/wiking/cms/configuration.py:63
 msgid "Maximal upload size"
 msgstr "Maximálna veľkosť pre upload"
 
-#: ../lib/wiking/cms/configuration.py:85
+#: ../lib/wiking/cms/configuration.py:64
 msgid ""
 "The maximal size of uploaded files in bytes.  The server needs to be "
 "relaoded for the changes in this option to take effect."
@@ -2679,17 +2679,17 @@ msgstr ""
 "Maximálna veľkosť pre uploadované súbory v bajtoch. Pozor, aby sa zmeny "
 "uplatnili, je nutné server reštartovať."
 
-#: ../lib/wiking/cms/configuration.py:113
+#: ../lib/wiking/cms/configuration.py:92
 msgid "Whether to use e-mails as login names"
 msgstr "Použiť emailovú adresu ako prihlasovacie meno"
 
-#: ../lib/wiking/cms/configuration.py:114
+#: ../lib/wiking/cms/configuration.py:93
 msgid "Iff true, users must use e-mail addresses as their login names."
 msgstr ""
 "Ak je to tak nastavené, používatelia musia používať emailovú adresu ako "
 "prihlasovacie meno."
 
-#: ../lib/wiking/cms/configuration.py:128
+#: ../lib/wiking/cms/configuration.py:107
 msgid ""
 "If set, the newly registered users will be automatically approved without "
 "any administrator's action.  The adminstrator may still need to asign users "
@@ -2989,7 +2989,7 @@ msgid "Manage registered users and their privileges."
 msgstr "Správa registrovaných používateľov a ich oprávnenia."
 
 #. Login name for a website. Registration form field.
-#: ../lib/wiking/cms/users.py:522 ../lib/wiking/cms/users.py:1697
+#: ../lib/wiking/cms/users.py:522 ../lib/wiking/cms/users.py:1706
 msgid "Login name"
 msgstr "Prihlasovacie meno"
 
@@ -3013,7 +3013,7 @@ msgid ""
 "user's e-mail address."
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:533 ../lib/wiking/cms/users.py:1698
+#: ../lib/wiking/cms/users.py:533 ../lib/wiking/cms/users.py:1707
 msgid "Password"
 msgstr "Heslo"
 
@@ -3129,7 +3129,7 @@ msgid "User's Groups"
 msgstr "Používatelia"
 
 #. Heading for an overview when and how the user has accessed the application.
-#: ../lib/wiking/cms/users.py:706 ../lib/wiking/cms/users.py:1812
+#: ../lib/wiking/cms/users.py:706 ../lib/wiking/cms/users.py:1820
 #, fuzzy
 msgid "Login History"
 msgstr "Prihlasovacie údaje"
@@ -3139,7 +3139,7 @@ msgid "Crypto Keys"
 msgstr ""
 
 #. Name of group of users who have full access to the system.
-#: ../lib/wiking/cms/users.py:718 ../lib/wiking/cms/users.py:1567
+#: ../lib/wiking/cms/users.py:718 ../lib/wiking/cms/users.py:1576
 msgid "Active users"
 msgstr "Aktívni používatelia"
 
@@ -3230,7 +3230,7 @@ msgid "Unapproved account"
 msgstr "Nová príloha"
 
 #. Dialog title (account in the meaning of user account).
-#: ../lib/wiking/cms/users.py:791 ../lib/wiking/cms/users.py:1782
+#: ../lib/wiking/cms/users.py:791 ../lib/wiking/cms/users.py:1790
 msgid "Account disabled"
 msgstr "Neaktívy účet"
 
@@ -3318,7 +3318,7 @@ msgstr "Účet bol povolený."
 msgid "The generated password was sent to %s."
 msgstr "Nové heslo je rovnaké ako staré."
 
-#: ../lib/wiking/cms/users.py:1083 ../lib/wiking/cms/users.py:1308
+#: ../lib/wiking/cms/users.py:1083 ../lib/wiking/cms/users.py:1317
 #, fuzzy, python-format
 msgid "The activation code was sent to %s."
 msgstr "Aktivačný kód bol zaslaný na  %s."
@@ -3374,7 +3374,7 @@ msgstr "Registrácia používateľa už bola potvrdená."
 msgid "Invalid activation code."
 msgstr "Neplatný registračný kód."
 
-#: ../lib/wiking/cms/users.py:1145 ../lib/wiking/cms/users.py:1784
+#: ../lib/wiking/cms/users.py:1145 ../lib/wiking/cms/users.py:1792
 #, fuzzy
 msgid "Account not activated"
 msgstr "Neaktívy účet"
@@ -3423,82 +3423,87 @@ msgstr "Poznámky"
 msgid "E-mail notification has been sent to server administrators."
 msgstr "Emailové upozornenie bolo zaslané správcovi serveru."
 
-#: ../lib/wiking/cms/users.py:1183
+#: ../lib/wiking/cms/users.py:1186
+#, python-format
+msgid "You can use %s to log in next time."
+msgstr ""
+
+#: ../lib/wiking/cms/users.py:1193
 msgid ""
 "The activation code was not yet confirmed by the user. Therefore it is not "
 "possible to trust that given e-mail address belongs to the person who "
 "requested the registration."
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:1190
+#: ../lib/wiking/cms/users.py:1200
 #, python-format
 msgid ""
 "The activation code will expire on %(date)s and the user will not be able to "
 "complete the registration anymore."
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:1192
+#: ../lib/wiking/cms/users.py:1202
 msgid ""
 "Use the button \"Resend activation code\" below to remind the user of his "
 "pending registration."
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:1198
+#: ../lib/wiking/cms/users.py:1208
 #, python-format
 msgid ""
 "The registration expired on %(date)s.  The user didn't confirm the "
 "activation code sent to the declared e-mail address in time."
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:1200
+#: ../lib/wiking/cms/users.py:1210
 msgid ""
 "The account should be deleted automatically if the server maintenence script "
 "is installed correctly.  Otherwise you can delete the account manually."
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:1204
+#: ../lib/wiking/cms/users.py:1214
 #, fuzzy
 msgid "The activation code was succesfully confirmed."
 msgstr "Aktivačný kód bol zaslaný na  %s."
 
-#: ../lib/wiking/cms/users.py:1207
+#: ../lib/wiking/cms/users.py:1217
 msgid ""
 "Therefore it was verified that given e-mail address belongs to the person "
 "who requested the registration."
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:1209
+#: ../lib/wiking/cms/users.py:1219
 msgid ""
 "The user is now able to log in, but still has no rights (other than an "
 "anonymous user)."
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:1211
+#: ../lib/wiking/cms/users.py:1221
 #, fuzzy
 msgid "The account now awaits administrator's action to be approved."
 msgstr ""
 "Registrácia prebehla úspešne. Váš účet teraz čaká na schválenie správcom."
 
-#: ../lib/wiking/cms/users.py:1213
+#: ../lib/wiking/cms/users.py:1223
 msgid ""
 "The account is blocked.  The user is able to log in, but has no access to "
 "protected services until the administrator enables the account again."
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:1237
+#: ../lib/wiking/cms/users.py:1247
 msgid "Registration confirmed"
 msgstr "Registrácia potvrdená"
 
-#: ../lib/wiking/cms/users.py:1250
+#: ../lib/wiking/cms/users.py:1260
 #, fuzzy
 msgid "Registration completed successfuly."
 msgstr "Registrácia potvrdená"
 
-#: ../lib/wiking/cms/users.py:1263
+#: ../lib/wiking/cms/users.py:1273
 msgid "The account was enabled."
 msgstr "Účet bol povolený."
 
-#: ../lib/wiking/cms/users.py:1267
+#: ../lib/wiking/cms/users.py:1277
 #, python-format
 msgid ""
 "Your account at %(uri)s has been enabled. Please log in with username "
@@ -3507,86 +3512,86 @@ msgstr ""
 "Váš účet na %(uri)s bol povolený. Prihláste sa prosím pomocou vášho "
 "používateľského mena '%(login)s' a vášho hesla."
 
-#: ../lib/wiking/cms/users.py:1268
+#: ../lib/wiking/cms/users.py:1278
 msgid "Your account has been enabled."
 msgstr "Váš účet bol povolený."
 
-#: ../lib/wiking/cms/users.py:1271 ../lib/wiking/cms/users.py:1705
+#: ../lib/wiking/cms/users.py:1281 ../lib/wiking/cms/users.py:1714
 msgid "Failed sending e-mail notification:"
 msgstr "Nepodarilo sa odoslať emailové upozornenie:"
 
-#: ../lib/wiking/cms/users.py:1274
+#: ../lib/wiking/cms/users.py:1283
 msgid "E-mail notification has been sent to:"
 msgstr "Emailové upozornenie bolo odoslané na:"
 
-#: ../lib/wiking/cms/users.py:1276
+#: ../lib/wiking/cms/users.py:1285
 #, fuzzy
 msgid "The account was disabled."
 msgstr "Účet bol povolený."
 
-#: ../lib/wiking/cms/users.py:1283
+#: ../lib/wiking/cms/users.py:1292
 #, fuzzy, python-format
 msgid "The registration expired on %(date)s."
 msgstr "Registrácia používateľa už bola potvrdená."
 
-#: ../lib/wiking/cms/users.py:1285
+#: ../lib/wiking/cms/users.py:1294
 #, fuzzy
 msgid "Continue"
 msgstr "Obsah"
 
 #. Button label to get to a previous state.
-#: ../lib/wiking/cms/users.py:1287
+#: ../lib/wiking/cms/users.py:1296
 msgid "Back"
 msgstr "Späť"
 
-#: ../lib/wiking/cms/users.py:1288
+#: ../lib/wiking/cms/users.py:1297
 #, fuzzy
 msgid "The registration code was not confirmed by the user!"
 msgstr "Registrácia používateľa už bola potvrdená."
 
-#: ../lib/wiking/cms/users.py:1289
+#: ../lib/wiking/cms/users.py:1298
 msgid ""
 "Please enable the account only if you are sure that the e-mail address "
 "belongs to given user."
 msgstr ""
 
-#: ../lib/wiking/cms/users.py:1568
+#: ../lib/wiking/cms/users.py:1577
 msgid "Listing of all active user accounts."
 msgstr "Výpis všetkých aktívnych používateľských účtov."
 
-#: ../lib/wiking/cms/users.py:1594
+#: ../lib/wiking/cms/users.py:1603
 msgid "Enter your login name or e-mail address"
 msgstr "Zadajte svoje prihlasovacie meno alebo emailovú adresu"
 
-#: ../lib/wiking/cms/users.py:1659
+#: ../lib/wiking/cms/users.py:1668
 msgid "Password reminder"
 msgstr "Pomocník zabudnutého hesla"
 
-#: ../lib/wiking/cms/users.py:1673
+#: ../lib/wiking/cms/users.py:1682
 msgid "Multiple user accounts found for given email address."
 msgstr "Pre zadanú emailovú adresu bolo nájdených viac používateľských účtov."
 
-#: ../lib/wiking/cms/users.py:1674
+#: ../lib/wiking/cms/users.py:1683
 msgid "Please, select the account for which you want to remind:"
 msgstr "Zvoľte prosím účet, pre ktorý chcete použiť funkciu pripomenutia:"
 
 #. Credentials such as password...
-#: ../lib/wiking/cms/users.py:1687
+#: ../lib/wiking/cms/users.py:1696
 msgid "Your credentials were reset to:"
 msgstr "Vaše prihlasovacie údaje boli nastavené na:"
 
 #. Credentials such as password...
-#: ../lib/wiking/cms/users.py:1691
+#: ../lib/wiking/cms/users.py:1700
 msgid "Your credentials are:"
 msgstr "Vaše prihlasovacie údaje sú:"
 
-#: ../lib/wiking/cms/users.py:1694
+#: ../lib/wiking/cms/users.py:1703
 #, python-format
 msgid "A password reminder request has been made at %(server_uri)s."
 msgstr ""
 "Na serveri %(server_uri)s bola zadaná žiadosť o zaslanie zabudnutého hesla."
 
-#: ../lib/wiking/cms/users.py:1700
+#: ../lib/wiking/cms/users.py:1709
 msgid ""
 "We strongly recommend you change your password at nearest occassion, since "
 "it has been exposed to an unsecure channel."
@@ -3594,76 +3599,76 @@ msgstr ""
 "Silne vám doporučujeme zmeniť si heslo pri najbližšej možnej príležitosti, "
 "pretože počas prenosu emailom mohlo byť zachytené neoprávnenou osobou."
 
-#: ../lib/wiking/cms/users.py:1707
+#: ../lib/wiking/cms/users.py:1715
 msgid "Please try repeating your request later or contact the administrator!"
 msgstr "Zopakujte prosím svoju žiadosť neskôr alebo kontaktujte správcu!"
 
-#: ../lib/wiking/cms/users.py:1709
+#: ../lib/wiking/cms/users.py:1717
 msgid "E-mail information has been sent to your email address."
 msgstr "Emailové upozornenie bolo odoslané na vašu emailovú adresu."
 
-#: ../lib/wiking/cms/users.py:1712
+#: ../lib/wiking/cms/users.py:1720
 msgid "No user account for your query."
 msgstr "Zadaniu nezodpovedá žiadny používateľský účet."
 
-#: ../lib/wiking/cms/users.py:1743
+#: ../lib/wiking/cms/users.py:1751
 #, fuzzy
 msgid "Enter the activation code:"
 msgstr "Znovu poslať registračný kód"
 
-#: ../lib/wiking/cms/users.py:1748
+#: ../lib/wiking/cms/users.py:1756
 #, fuzzy
 msgid "Continue without activation"
 msgstr "Znovu poslať registračný kód"
 
-#: ../lib/wiking/cms/users.py:1786
+#: ../lib/wiking/cms/users.py:1794
 #, fuzzy
 msgid "Account not approved"
 msgstr "Neaktívy účet"
 
-#: ../lib/wiking/cms/users.py:1813
+#: ../lib/wiking/cms/users.py:1821
 msgid "History of successful login sessions and unsuccessful login attempts."
 msgstr ""
 
 #. Login name.
-#: ../lib/wiking/cms/users.py:1822
+#: ../lib/wiking/cms/users.py:1830
 #, fuzzy
 msgid "Login"
 msgstr "Prihlasovacie meno"
 
 #. Form field saying whether the users attempt was succesful.
 #. Values are Yes/No.
-#: ../lib/wiking/cms/users.py:1825
+#: ../lib/wiking/cms/users.py:1833
 msgid "Success"
 msgstr ""
 
 #. Table column heading.
 #. Time of the start of user session, followed by a date and time.
-#: ../lib/wiking/cms/users.py:1828
+#: ../lib/wiking/cms/users.py:1836
 #, fuzzy
 msgid "Start time"
 msgstr "Názov portálu"
 
 #. Table column heading. The length of user session. Contains time.
-#: ../lib/wiking/cms/users.py:1831
+#: ../lib/wiking/cms/users.py:1839
 #, fuzzy
 msgid "Duration"
 msgstr "Popis"
 
-#: ../lib/wiking/cms/users.py:1835
+#: ../lib/wiking/cms/users.py:1843
 #, fuzzy
 msgid "IP address"
 msgstr "Adresa"
 
 #. Internet name of the remote computer (computer terminology).
-#: ../lib/wiking/cms/users.py:1837
+#: ../lib/wiking/cms/users.py:1845
 #, fuzzy
 msgid "Hostname"
 msgstr "Meno"
 
 #. "User agent" is a generalized name for browser or more precisely the
 #. software which produced the HTTP request (was used to access the website).
-#: ../lib/wiking/cms/users.py:1840
+#: ../lib/wiking/cms/users.py:1848
 #, fuzzy
 msgid "User agent"
 msgstr "Správa používateľov"
@@ -3671,7 +3676,7 @@ msgstr "Správa používateľov"
 #. Meaning where the user came from. Computer terminology.
 #. Do not translate
 #. "HTTP" and if unsure, don't translate at all (it is a very technical term).
-#: ../lib/wiking/cms/users.py:1844
+#: ../lib/wiking/cms/users.py:1852
 msgid "HTTP Referer"
 msgstr ""
 

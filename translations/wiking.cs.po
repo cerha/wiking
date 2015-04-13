@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-04-03 15:18+0200\n"
+"POT-Creation-Date: 2015-04-13 12:21+0200\n"
 "PO-Revision-Date: 2014-09-02 12:39+0200\n"
 "Last-Translator: Hynek Hanke <hanke@brailcom.org>\n"
 "Language-Team: Czech <wiking@lists.freebsoft.org>\n"
@@ -42,19 +42,19 @@ msgstr "Navigace této sekce"
 msgid "Contact:"
 msgstr "Kontakt:"
 
-#: ../lib/wiking/configuration.py:246
+#: ../lib/wiking/configuration.py:247
 msgid "Webmaster's e-mail address"
 msgstr "E-mailová adresa správce"
 
-#: ../lib/wiking/configuration.py:257
+#: ../lib/wiking/configuration.py:258
 msgid "Default sender address"
 msgstr "Výchozí adresa odesílatele"
 
-#: ../lib/wiking/configuration.py:275
+#: ../lib/wiking/configuration.py:276
 msgid "Force HTTPS login"
 msgstr "Vynutit HTTPS pro přihlášení"
 
-#: ../lib/wiking/configuration.py:276
+#: ../lib/wiking/configuration.py:277
 msgid ""
 "If enabled, the login form will always be redirected to an HTTPS address to "
 "ensure the security of the submitted credentials.  This, however, requires "
@@ -66,16 +66,16 @@ msgstr ""
 "ovšem vyžaduje, aby byl server zkonfigurován pro obsluhu HTTPS požadavků pro "
 "stejný virtuální server a aby tyto požadavky byly předávány systému Wiking."
 
-#: ../lib/wiking/configuration.py:285
+#: ../lib/wiking/configuration.py:286
 msgid "Allow HTTP authentication"
 msgstr "Povolit HTTP autentizaci"
 
 #. Site means a webpage or web application.
-#: ../lib/wiking/configuration.py:346
+#: ../lib/wiking/configuration.py:347
 msgid "Site title"
 msgstr "Název portálu"
 
-#: ../lib/wiking/configuration.py:347
+#: ../lib/wiking/configuration.py:348
 msgid ""
 "Site title is a short and (hopefully) unique title of the whole website. It "
 "will appear at the top of every page."
@@ -85,11 +85,11 @@ msgstr ""
 
 #. Site means a webpage or web application.
 #. Subtitle as in ,,title -- subtitle''.
-#: ../lib/wiking/configuration.py:354
+#: ../lib/wiking/configuration.py:355
 msgid "Site subtitle"
 msgstr "Podtitul portálu"
 
-#: ../lib/wiking/configuration.py:355
+#: ../lib/wiking/configuration.py:356
 msgid ""
 "Site subtitle is an optional more descriptive title of the website.  It will "
 "appear at the top of every page together with site title, but where brevity "
@@ -99,18 +99,18 @@ msgstr ""
 "záhlaví každé stránky, ale v situacích, kde je nutná stručnost bude vynechán."
 
 #. Web page or web application specific image.
-#: ../lib/wiking/configuration.py:362
+#: ../lib/wiking/configuration.py:363
 msgid "Site icon"
 msgstr "Ikona portálu"
 
-#: ../lib/wiking/configuration.py:391
+#: ../lib/wiking/configuration.py:392
 msgid "Default language"
 msgstr "Výchozí jazyk"
 
 #. Language negotiation means the process where the server is trying
 #. to find a language that matches with what the users internet browser asks
 #. for.
-#: ../lib/wiking/configuration.py:394
+#: ../lib/wiking/configuration.py:395
 msgid ""
 "Defines the language (lowercase ISO 639-1 Alpha-2 code) to be used when "
 "content language negotiation fails. If not set (which is the default), the "
@@ -143,11 +143,11 @@ msgstr ""
 #. Settings label. URI means a link. Do not translate ''URI''.
 #. Yes/No configuration option label.
 #. Should the login panel display user role (as Admin, Student, Tutor etc.)
-#: ../lib/wiking/configuration.py:472
+#: ../lib/wiking/configuration.py:473
 msgid "Display role in login panel"
 msgstr "Zobrazit roli v panelu přihlášení"
 
-#: ../lib/wiking/configuration.py:473
+#: ../lib/wiking/configuration.py:474
 msgid ""
 "If enabled, the login panel on each page will not display only the current "
 "username, but also his current user role, which affects his permissions."
@@ -393,64 +393,64 @@ msgstr "Probíhá údržba systému"
 msgid "The system is temporarily down for maintenance."
 msgstr "Systém je dočasně mimo provoz z důvodů údržby."
 
-#: ../lib/wiking/modules.py:554
+#: ../lib/wiking/modules.py:547
 msgid "Enter your login name, please!"
 msgstr "Zadejte, prosím, vaše uživatelské jméno!"
 
-#: ../lib/wiking/modules.py:556
+#: ../lib/wiking/modules.py:549
 msgid "Enter your password, please!"
 msgstr "Zadejte, prosím, vaše heslo!"
 
-#: ../lib/wiking/modules.py:560
+#: ../lib/wiking/modules.py:553
 msgid "Invalid login!"
 msgstr "Neplatné přihlášení!"
 
-#: ../lib/wiking/modules.py:653
+#: ../lib/wiking/modules.py:667
 msgid "Searching"
 msgstr "Vyhledávání"
 
-#: ../lib/wiking/modules.py:654
+#: ../lib/wiking/modules.py:668
 msgid "Search results"
 msgstr "Výsledky vyhledávání"
 
-#: ../lib/wiking/modules.py:655
+#: ../lib/wiking/modules.py:669
 msgid "Given search term doesn't contain any searchable term."
 msgstr ""
 "Zadaný vyhledávací výraz neobsahuje nic, podle čeho by bylo možno vyhledání "
 "provést."
 
-#: ../lib/wiking/modules.py:659
+#: ../lib/wiking/modules.py:673
 msgid "Search words:"
 msgstr "Vyhledat slova:"
 
-#: ../lib/wiking/modules.py:660
+#: ../lib/wiking/modules.py:674
 msgid "Search"
 msgstr "Vyhledat"
 
-#: ../lib/wiking/modules.py:716
+#: ../lib/wiking/modules.py:730
 msgid "Nothing found."
 msgstr "Nic nebylo nalezeno."
 
-#: ../lib/wiking/modules.py:773
+#: ../lib/wiking/modules.py:787
 msgid "The following modules were successfully reloaded:"
 msgstr "Následující moduly byly úspěšně načteny znovu:"
 
-#: ../lib/wiking/modules.py:775
+#: ../lib/wiking/modules.py:789
 msgid "Reload"
 msgstr "Načíst znovu"
 
 #. Short description of a user group purpose.
-#: ../lib/wiking/request.py:1256
+#: ../lib/wiking/request.py:1257
 msgid "Anyone"
 msgstr "Kdokoliv"
 
 #. Short description of a user group purpose.
-#: ../lib/wiking/request.py:1259
+#: ../lib/wiking/request.py:1260
 msgid "Any authenticated user"
 msgstr "Jakýkoliv autentizovaný uživatel"
 
 #. Short description of a user group purpose.
-#: ../lib/wiking/request.py:1266
+#: ../lib/wiking/request.py:1267
 msgid "Current record owner"
 msgstr "Vlastník tohoto záznamu"
 
