@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-04-13 12:21+0200\n"
+"POT-Creation-Date: 2015-04-16 14:09+0200\n"
 "PO-Revision-Date: 2010-02-04 00:15+0100\n"
 "Last-Translator: Hostomský Károly <khostomsky@gmail.com>\n"
 "Language-Team: Hungarian <wiking@lists.freebsoft.org>\n"
@@ -1997,7 +1997,7 @@ msgstr "Megjelenítendő név"
 msgid "Number of days the item stays displayed in news."
 msgstr ""
 
-#: ../lib/wiking/cms/cms.py:4031
+#: ../lib/wiking/cms/cms.py:4031 ../lib/wiking/cms/users.py:1861
 msgid "Show"
 msgstr ""
 
@@ -3676,6 +3676,26 @@ msgstr "User agent"
 #: ../lib/wiking/cms/users.py:1852
 msgid "HTTP Referer"
 msgstr "HTTP Referer"
+
+#: ../lib/wiking/cms/users.py:1862
+msgid "Successful logins"
+msgstr ""
+
+#: ../lib/wiking/cms/users.py:1863
+msgid "Unsuccessful attempts"
+msgstr ""
+
+#: ../lib/wiking/cms/users.py:1864
+msgid "Everything"
+msgstr ""
+
+#: ../lib/wiking/cms/users.py:1865
+msgid "From"
+msgstr ""
+
+#: ../lib/wiking/cms/users.py:1866
+msgid "To"
+msgstr ""
 
 #: ../resources/scripts/wiking-cms.js:84
 msgid "Export started..."
