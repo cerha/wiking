@@ -1856,6 +1856,26 @@ class SessionLog(UserManagementModule):
                 return socket.gethostbyaddr(ip_address)[0]
             except:
                 return None # _("Unknown")
+        def query_fields(self):
+            return (
+                Field('kind', _("Show"), type=pd.String(), enumerator=('ok', 'failed'),
+                      display=lambda x: (_("Successful logins") if x == 'ok' else
+                                         _("Unsuccessful attempts")),
+                      null_display=_("Everything"), not_null=False),
+                Field('from', _("From"), type=pd.Date()),
+                Field('to', _("To"), type=pd.Date()),
+            )
+        def condition_provider(self, query_fields={}, **kwargs):
+            conditions = []
+            if query_fields['from'].value():
+                conditions.append(pd.GE('start_time', query_fields['from']))
+            d = query_fields['to'].value()
+            if d:
+                dt = datetime.datetime(d.year, d.month, d.day, 23, 59, 59, tzinfo=now().tzinfo)
+                conditions.append(pd.LE('start_time', pd.dtval(dt)))
+            if query_fields['kind'].value():
+                conditions.append(pd.EQ('success', pd.bval(query_fields['kind'].value() == 'ok')))
+            return pd.AND(*conditions) if conditions else None
         def row_style(self, row):
             if row['success'].value():
                 return None
