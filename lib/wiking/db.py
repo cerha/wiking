@@ -123,20 +123,26 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
     The specification is a tuple of 2-tuples.
 
     The first element of the 2-tuple is a regular expression that matches the
-    database exception string.  The regular expression may include a group named
-    'id' which is the name of database table/view column (or any other
-    identifier) to which the error relates.
+    database exception string.  The regular expression may include a group
+    named 'id'.  If present, the string matched by this group will be used as
+    the name of database table/view column to which the error relates.  The
+    matched string may also not be the column name directly, but the name of
+    the DB constraint, which is mapped to the column id by
+    '_UNIQUE_CONSTRAINT_FIELD_MAPPING' described below.
 
-    The second element of the 2-tuple defines the custom error message displayed
-    in the user interface when the exception occurs during a database operation.
-    This can be the error message directly, or a 2-tuple of field_id and error
-    message.  In the second case, the field_id determines the form field which
-    caused the error.  When field_id is not defined, the value of the group
-    named 'id' in the regular expression (if present) is used for the same
-    purpose.  When field_id is defined, it must be a valid identifier of a field
-    present in the specification.  If field_id is not defined, it means that the
-    error message is either not related to a particular form field or that it is
-    not possible to determine which field it is.
+    The second element of the 2-tuple defines the custom error message
+    displayed in the user interface when the exception occurs during a database
+    operation.  This can be the error message directly, or a 2-tuple of
+    field_id and error message.  In the second case, the field_id determines
+    the form field which caused the error.  When field_id is not defined, the
+    value of the group named 'id' in the regular expression (if present) is
+    used for the same purpose.  When field_id is defined, it must be a valid
+    identifier of a field present in the specification.  If field_id is not
+    defined, it means that the error message is either not related to a
+    particular form field or that it is not possible to determine which field
+    it is.  The error message is either a (translatable) string or a function
+    returning the string.  The function will be called with one argument -- the
+    're.Match' instance corresponding to the regular expression match object.
 
     See also '_analyze_exception()' and '_error_message()' methods for more
     details.
@@ -471,6 +477,8 @@ class PytisModule(wiking.Module, wiking.ActionHandler):
                         msg += ' (%s)' % matched_id
                 else:
                     field_id = None
+                if isinstance(msg, collections.Callable):
+                    msg = msg(match)
                 return (field_id, msg)
         return (None, _("Unable to perform a database operation:") + ' ' + error)
 
