@@ -146,7 +146,8 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
 
     def _body_content(self, context):
         if context.node().layout() == self.Layout.FRAME:
-            return self._content(context)
+            return (self._messages(context),
+                    self._content(context))
         else:
             return super(Exporter, self)._body_content(context)
 
