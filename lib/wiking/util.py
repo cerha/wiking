@@ -162,8 +162,9 @@ class AuthenticationError(RequestError):
 
     def content(self, req):
         appl = wiking.module.Application
-        return LoginDialog(message=self.args and self.args[0] or None,
-                           registration_uri=appl.registration_uri(req),
+        if self.args:
+            req.message(self.args[0], req.ERROR)
+        return LoginDialog(registration_uri=appl.registration_uri(req),
                            password_reminder_uri=appl.password_reminder_uri(req),
                            extra_content=appl.login_dialog_content(req),
                            login_is_email=appl.login_is_email(req))
@@ -1251,10 +1252,8 @@ class LoginCtrl(lcg.Content):
 
 class LoginDialog(lcg.Content):
     """Login dialog for entering login name and password."""
-    def __init__(self, message=None, registration_uri=None, password_reminder_uri=None,
+    def __init__(self, registration_uri=None, password_reminder_uri=None,
                  extra_content=None, login_is_email=False):
-        assert message is None or isinstance(message, basestring)
-        self._message = message
         self._registration_uri = registration_uri
         self._password_reminder_uri = password_reminder_uri
         self._extra_content = extra_content
@@ -1306,8 +1305,7 @@ class LoginDialog(lcg.Content):
             uri = req.server_uri(force_https=True) + req.uri()
         else:
             uri = req.uri()
-        result = ((self._message and g.div(g.escape(self._message), cls='errors') or '') +
-                  g.form(content, method='POST', action=uri, name='login_form', cls='login-form') +
+        result = (g.form(content, method='POST', action=uri, name='login_form', cls='login-form') +
                   g.script("onload_ = window.onload; window.onload = function() { "
                            "if (onload_) onload_(); "
                            "setTimeout(function () { document.login_form.login.focus() }, 0); };"))
