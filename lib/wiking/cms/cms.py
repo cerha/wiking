@@ -691,14 +691,6 @@ class Config(SettingsManagementModule, wiking.CachingPytisModule):
         """
         if self._check_cache(load=True) and hasattr(self, '_theme_id'):
             return
-        # This dummy read of wiking.cms.cfg.allow_registration is here to
-        # force reading wiking.cms.cfg before updating it.  Not doing so may
-        # lead to owerwriting the updated values by the default values from the
-        # confuiguration file after its change, because config file
-        # modification is detected only after an attempt to read a value.  This
-        # is not a perfect solution - better would be to recognize the
-        # precedence of configuration value sources directly within the
-        # Configuration class.
         site = wiking.cfg.server_hostname
         row = self._data.get_row(site=site)
         if row is None:
