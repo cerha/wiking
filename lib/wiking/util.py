@@ -30,6 +30,7 @@ from xml.sax import saxutils
 import pytis.data as pd
 import pytis.presentation as pp
 import pytis.util
+import pytis.web
 import lcg
 import wiking
 
@@ -1979,12 +1980,14 @@ def ajax_response(req, form):
     """
     try:
         response = form.ajax_response(req)
-    except pw.BadRequest:
+    except pytis.web.BadRequest:
         raise wiking.BadRequest()
     if isinstance(response, lcg.Content):
         return response
     else:
-        return wiking.Response(json.dumps(response), content_type='application/json')
+        # There is no `json' defined here, so the original line is commented out
+        # return wiking.Response(json.dumps(response), content_type='application/json')
+        raise wiking.BadRequest()
 
 def timeit(func, *args, **kwargs):
     """Measure the function execution time.
