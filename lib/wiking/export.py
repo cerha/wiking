@@ -15,8 +15,11 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-from wiking import *
-from lcg import concat
+import re
+
+import lcg
+import pytis
+import wiking
 
 _ = lcg.TranslatableTextFactory('wiking')
 
@@ -114,18 +117,18 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         'main': 'main-heading',
     }
     _LANDMARKS = {
-	'top': 'banner',
-	'menu': 'navigation',
-	'submenu': 'navigation',
-	'main': 'main',
-	'bottom': 'contentinfo',
+        'top': 'banner',
+        'menu': 'navigation',
+        'submenu': 'navigation',
+        'main': 'main',
+        'bottom': 'contentinfo',
     }
     # Translators: Label for language selection followed by list of languages
     _LANGUAGE_SELECTION_LABEL = _("Language:")
-    _MESSAGE_TYPE_CLASS = {Request.INFO: 'info',
-                           Request.SUCCESS: 'success',
-                           Request.WARNING: 'warning',
-                           Request.ERROR: 'error'}
+    _MESSAGE_TYPE_CLASS = {wiking.Request.INFO: 'info',
+                           wiking.Request.SUCCESS: 'success',
+                           wiking.Request.WARNING: 'warning',
+                           wiking.Request.ERROR: 'error'}
     _UNSAFE_CHARS = re.compile(r"[^a-zA-Z0-9_-]")
 
     def _safe_css_id(self, id):
@@ -279,12 +282,12 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         if context.req().show_panels():
             for panel in context.node().panels():
                 links.append(g.a(panel.accessible_title(), href='#panel-%s-anchor ' % panel.id()))
-        return _("Jump in page") + ": " + concat(links, separator=' | ')
+        return _("Jump in page") + ": " + lcg.concat(links, separator=' | ')
         
     def _breadcrumbs(self, context):
         links = [lcg.link(n).export(context) for n in context.node().path()[1:]]
         # Translators: A label followed by location information in webpage navigation
-        return _("You are here:") + ' ' + concat(links, separator=' / ')
+        return _("You are here:") + ' ' + lcg.concat(links, separator=' / ')
         
     def _menu(self, context):
         g = self._generator
@@ -302,7 +305,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
                          style=(item is last and last_style or style))
                     for item in items]
             title = g.a(_("Main navigation") + ':', name='main-navigation', accesskey="3")
-            return concat(g.h(title, 3), g.div(g.ul(*menu), id='main-menu'))
+            return lcg.concat(g.h(title, 3), g.div(g.ul(*menu), id='main-menu'))
         else:
             return None
 
@@ -316,7 +319,6 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
             # If there is the main menu, this is its submenu, but if the main
             # menu is empty, this menu acts as the main menu.
             heading = application.menu_panel_title(req)
-            #title = application.menu_panel_tooltip(req)
             name = 'local-navigation'
         else:
             heading = _("Main navigation")
@@ -378,7 +380,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         messages = context.req().messages()
         if messages:
             g = self._generator
-            return g.div([g.div((type == Request.WARNING and _("Warning") + ': ' or '') +
+            return g.div([g.div((type == wiking.Request.WARNING and _("Warning") + ': ' or '') +
                                 g.escape(message),
                                 cls=self._MESSAGE_TYPE_CLASS[type])
                           for message, type in messages],
