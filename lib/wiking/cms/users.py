@@ -86,7 +86,9 @@ class RoleSets(UserManagementModule, CachingPytisModule):
     
     def _form(self, form, req, *args, **kwargs):
         if issubclass(form, pw.ItemizedView) and req.check_roles(Roles.USER_ADMIN):
-            kwargs['template'] = lcg.TranslatableText("%(" + self._TITLE_COLUMN + ")s [%(delete)s]")
+            template = lcg.HtmlEscapedUnicode("%(" + self._TITLE_COLUMN + ")s [%(delete)s]",
+                                              escape=False)
+            kwargs['template'] = lcg.TranslatableText(template)
         return super(RoleSets, self)._form(form, req, *args, **kwargs)
     
     def _link_provider(self, req, uri, record, cid, **kwargs):
@@ -242,7 +244,9 @@ class RoleMembers(UserManagementModule):
     
     def _form(self, form, req, *args, **kwargs):
         if issubclass(form, pw.ItemizedView) and req.check_roles(Roles.USER_ADMIN):
-            kwargs['template'] = lcg.TranslatableText("%(" + self._TITLE_COLUMN + ")s [%(delete)s]")
+            template = lcg.HtmlEscapedUnicode("%(" + self._TITLE_COLUMN + ")s [%(delete)s]",
+                                              escape=False)
+            kwargs['template'] = lcg.TranslatableText(template)
         return super(RoleMembers, self)._form(form, req, *args, **kwargs)
     
     def _link_provider(self, req, uri, record, cid, **kwargs):

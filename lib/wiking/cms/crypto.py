@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2011, 2012, 2013 Brailcom, o.p.s.
+# Copyright (C) 2011, 2012, 2013, 2015 Brailcom, o.p.s.
 #
 # COPYRIGHT NOTICE
 #
@@ -166,7 +166,9 @@ class CryptoKeys(CMSExtensionModule):
 
     def _form(self, form, req, *args, **kwargs):
         if issubclass(form, pw.ItemizedView) and req.check_roles(Roles.USER_ADMIN):
-            kwargs['template'] = lcg.TranslatableText("%(" + self._TITLE_COLUMN + ")s [%(delete)s]")
+            template = lcg.HtmlEscapedUnicode("%(" + self._TITLE_COLUMN + ")s [%(delete)s]",
+                                              escape=False)
+            kwargs['template'] = lcg.TranslatableText(template)
         return super(CryptoKeys, self)._form(form, req, *args, **kwargs)
 
     def related(self, req, binding, record, uri):

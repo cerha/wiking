@@ -764,7 +764,7 @@ class LoginPanel(Panel):
             added_content = appl.login_panel_content(req)
             if added_content:
                 exported = lcg.coerce(added_content).export(context)
-                result += '\n' + g.div(exported, cls='login-panel-content')
+                result += g.escape('\n') + g.div(exported, cls='login-panel-content')
             return result
         
     def __init__(self):
@@ -1306,13 +1306,15 @@ class LoginDialog(lcg.Content):
             uri = req.server_uri(force_https=True) + req.uri()
         else:
             uri = req.uri()
-        result = (g.form(content, method='POST', action=uri, name='login_form', cls='login-form') +
+        intro = g.div(g.escape(self._message), cls='errors') if self._message else g.escape('')
+        result = (intro +
+                  g.form(content, method='POST', action=uri, name='login_form', cls='login-form') +
                   g.script("onload_ = window.onload; window.onload = function() { "
                            "if (onload_) onload_(); "
                            "setTimeout(function () { document.login_form.login.focus() }, 0); };"))
         if self._extra_content:
             exported = lcg.coerce(self._extra_content).export(context)
-            result += "\n" + g.div(exported, cls='login-dialog-content')
+            result += g.escape("\n") + g.div(exported, cls='login-dialog-content')
         return result
 
 
@@ -1382,14 +1384,17 @@ class HtmlTraceback(HtmlContent):
     def __init__(self, einfo, **kwargs):
         # Generete the traceback in constructor to avoid storing references
         # to einfo (see sys.exc_info() documentation).
+        U = lcg.HtmlEscapedUnicode
         try:
             # cgitb sometimes fails when the introspection touches
             # something sensitive, such as database objects.
             import cgitb
-            html = cgitb.html(einfo)
+            html = U(cgitb.html(einfo), escape=False)
         except:
             import traceback
-            html = "<pre>" + "".join(traceback.format_exception(*einfo)) + "</pre>"
+            html = (U("<pre>", escape=False) +
+                    U("".join(traceback.format_exception(*einfo)), escape=True) +
+                    U("</pre>", escape=False))
         super(HtmlTraceback, self).__init__(html, **kwargs)
 
 
