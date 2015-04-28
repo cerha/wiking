@@ -1795,7 +1795,7 @@ class Session(PytisModule, wiking.Session):
 
     def failure(self, req, user, login):
         wiking.module.SessionLog.log(req, pd.DateTime.datetime(), None,
-                                     user and user.uid(), login)
+                                     user and user.uid(), login[:64])
 
     def check(self, req, user, session_key):
         row = self._data.get_row(uid=user.uid(), session_key=session_key)
