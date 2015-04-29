@@ -27,7 +27,7 @@ import json
 import pytis.data as pd
 import pytis.output
 import pytis.presentation as pp
-from pytis.presentation import Action
+from pytis.presentation import Action, Field
 import pytis.util
 import pytis.web as pw
 from pytis.web import UriType
@@ -2530,11 +2530,12 @@ class CachedTables(PytisModule):
     """
     class Spec(wiking.Specification):
         table = 'cached_tables'
-        fields = (pp.Field('object_schema'),
-                  pp.Field('object_name'),
-                  pp.Field('version'),
-                  pp.Field('stamp'),
-                  )
+        fields = (
+            Field('object_schema'),
+            Field('object_name'),
+            Field('version'),
+            Field('stamp'),
+        )
 
     def __init__(self, *args, **kwargs):
         super(CachedTables, self).__init__(*args, **kwargs)

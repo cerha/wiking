@@ -66,11 +66,12 @@ class RoleSets(UserManagementModule, CachingPytisModule):
     """
     class Spec(wiking.Specification):
         table = 'role_sets'
-        fields = (pp.Field('role_set_id'),
-                  pp.Field('role_id', _("Group"), codebook='ApplicationRoles'),
-                  pp.Field('member_role_id', _("Gets rights of"), codebook='UserGroups'),
-                  pp.Field('delete', virtual=True, computer=computer(lambda r: _("Remove"))),
-                  )
+        fields = (
+            Field('role_set_id'),
+            Field('role_id', _("Group"), codebook='ApplicationRoles'),
+            Field('member_role_id', _("Gets rights of"), codebook='UserGroups'),
+            Field('delete', virtual=True, computer=computer(lambda r: _("Remove"))),
+        )
         columns = layout = ('role_id', 'member_role_id')
         
     _TITLE_COLUMN = 'member_role_id'
@@ -221,15 +222,16 @@ class RoleMembers(UserManagementModule):
         title = _("User Roles")
         table = 'cms_v_role_members'
         def fields(self):
-            return (pp.Field('role_member_id'),
-                    pp.Field('role_id', _("Group"), codebook='UserGroups'),
-                    pp.Field('role_name'),
-                    pp.Field('uid', _("User"), codebook='Users',
-                             inline_display='user_name', inline_referer='user_login'),
-                    pp.Field('user_login'),
-                    pp.Field('user_name'),
-                    pp.Field('delete', virtual=True, computer=computer(lambda r: _("Remove"))),
-                    )
+            return (
+                Field('role_member_id'),
+                Field('role_id', _("Group"), codebook='UserGroups'),
+                Field('role_name'),
+                Field('uid', _("User"), codebook='Users',
+                      inline_display='user_name', inline_referer='user_login'),
+                Field('user_login'),
+                Field('user_name'),
+                Field('delete', virtual=True, computer=computer(lambda r: _("Remove"))),
+            )
         columns = layout = ('role_id', 'uid',)
         
     _TITLE_COLUMN = 'uid'
@@ -326,15 +328,15 @@ class ApplicationRoles(UserManagementModule, CachingPytisModule):
         def fields(self):
             return (
                 # Translators: Form field label.
-                pp.Field('role_id', _("Identifier"), editable=computer(self._editable)),
+                Field('role_id', _("Identifier"), editable=computer(self._editable)),
                 # Translators: Form field label, noun.
-                pp.Field('name', _("Name"), not_null=True, editable=computer(self._editable)),
-                pp.Field('xname', _("Name"), computer=computer(self._xname_computer), virtual=True),
+                Field('name', _("Name"), not_null=True, editable=computer(self._editable)),
+                Field('xname', _("Name"), computer=computer(self._xname_computer), virtual=True),
                 # Translators: Form field label, adjective related to a "User group" (use the
                 # appropriate gender.
-                pp.Field('system', _("System"), default=False, editable=pp.Editable.NEVER),
-                pp.Field('auto', _("Automatic"), default=False, editable=pp.Editable.NEVER),
-                pp.Field('role_info', computer=computer(self._role_info), virtual=True),
+                Field('system', _("System"), default=False, editable=pp.Editable.NEVER),
+                Field('auto', _("Automatic"), default=False, editable=pp.Editable.NEVER),
+                Field('role_info', computer=computer(self._role_info), virtual=True),
             )
         def _editable(self, record, system):
             return not system
