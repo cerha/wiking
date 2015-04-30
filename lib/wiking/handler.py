@@ -1,4 +1,4 @@
-# Copyright (C) 2006-2014 Brailcom, o.p.s.
+# Copyright (C) 2006-2015 Brailcom, o.p.s.
 # Author: Tomas Cerha <cerha@brailcom.org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -19,6 +19,7 @@ import os
 import string
 import sys
 import traceback
+import urlparse
 
 import wiking
 import lcg
@@ -207,9 +208,9 @@ class Handler(object):
         node = self._build(req, document)
         context = self._exporter.context(node, node.lang(), sec_lang=node.sec_lang(), req=req)
         exported = self._exporter.export(context)
-        #exported, t1, t2 = timeit(self._exporter.export, context)
-        #log(OPERATIONAL, "Document exported in %.1f ms (%.1f ms CPU):" %
-        #                  (1000*t2, 1000*t1), req.uri())
+        # exported, t1, t2 = timeit(self._exporter.export, context)
+        # log(OPERATIONAL, "Document exported in %.1f ms (%.1f ms CPU):" %
+        #                   (1000*t2, 1000*t1), req.uri())
         return req.send_response(context.localize(exported), status_code=status_code)
 
     def _serve_content(self, req, content):
@@ -254,6 +255,14 @@ class Handler(object):
                     # it).  Better would most likely be including some basic styles
                     # directly in MinimalExporter.
                     return self._handle_maintenance_mode(req)
+                # Very basic CSRF prevention
+                if req.param('submit'):
+                    referer = req.header('Referer')
+                    if referer:
+                        referer_uri = urlparse.urlparse(referer)
+                        if ((referer_uri.scheme not in ('', 'http', 'https',) or
+                             (referer_uri.netloc and referer_uri.netloc != req.server_hostname()))):
+                            raise wiking.Redirect(req.server_uri(current=True))
                 result = self._application.handle(req)
                 if isinstance(result, (tuple, list)):
                     # Temporary backwards compatibility conversion.
@@ -360,10 +369,10 @@ class Handler(object):
             sys.stderr.flush()
             return self._result
         else:
-            #result, t1, t2 = timeit(self._handle, req)
-            #log(OPERATIONAL, "Request processed in %.1f ms (%.1f ms CPU):" %
-            #                  (1000*t2, 1000*t1), req.uri())
-            #return result
+            # result, t1, t2 = timeit(self._handle, req)
+            # log(OPERATIONAL, "Request processed in %.1f ms (%.1f ms CPU):" %
+            #                   (1000*t2, 1000*t1), req.uri())
+            # return result
             try:
                 return self._handle(req)
             finally:
