@@ -403,7 +403,7 @@ class Exporter(lcg.StyledHtmlExporter, lcg.HtmlExporter):
         return (g.hr(cls='hidden'),
                 g.div((
                     g.a(label, href=href, title=tooltip, id='maximized-mode-control'),
-                    g.h(g.a(g.escape(context.node().page_heading()), tabindex=0,
+                    g.h(g.a(context.node().page_heading(), tabindex=0,
                             name='main-heading', id='main-heading'), 1),
                     self._messages(context),
                     super(Exporter, self)._content(context)), id='content'),
